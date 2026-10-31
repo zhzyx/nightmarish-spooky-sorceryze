@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "olympus-workspace-integration-20261101",
+  "tenant_id": "olympus-workspace",
+  "request_id": "integrate-olympus-20261101",
+  "kind": "handoff",
+  "occurred_at": "2026-10-31T23:19:31.642773+00:00",
+  "source_ref": "user-request:integrate-Olympus-into-zhzyx/nightmarish-spooky-sorceryze",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "21c0220707f64e5cfe34e37c7807a5e1e961b0c8d0358407acad705bb7bdc217",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "requested_outcome": "将 Olympus 合入指定 GitHub 仓库并将其视为奥林匹斯工作区",
+    "repository": "https://github.com/zhzyx/nightmarish-spooky-sorceryze",
+    "framework_root": "Olympus",
+    "data_root": "olympus-hermes-data",
+    "upstream_version": "0.8.1",
+    "upstream_files_verified": 120,
+    "integration_commit": "f57f37893745e60f3aa6af82afc817f365656ac2",
+    "state_at_recording": "framework_committed_locally_dataset_initialized_remote_push_pending",
+    "agent_snapshot_basis": "Repository AGENTS.md fingerprint identifies the actual workspace instruction snapshot; model/system prompt version is not supplied by host.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "duration_ms": null,
+    "missing_usage_reason": "Host usage measurements not provided",
+    "runtime_agent_admission": "pending_independent_review",
+    "actual_olympus_agents_executed": false
+  },
+  "evidence_refs": [],
+  "sha256": "b98ce27470747810f37320ec29afd41b612de42fc17a1e4f09925c61964006e3"
+}
