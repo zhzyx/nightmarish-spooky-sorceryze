@@ -1,0 +1,594 @@
+{
+  "package": "olympus-framework-design",
+  "version": "0.8.1",
+  "status": "synchronized_candidate_pending_independent_admission",
+  "host_loader_implemented": false,
+  "discovery_index": "README.md",
+  "foundation": "FOUNDATION.md",
+  "governance": "GOVERNANCE.md",
+  "planned_default_instruction_sources": [
+    "upstream/zeus/core.md",
+    "upstream/zeus/agents/zeus.md",
+    "FOUNDATION.md",
+    "<host-issued-task-mandate>"
+  ],
+  "on_demand_organization": "upstream/zeus/skills/hestia/SKILL.md",
+  "specifications": [
+    {
+      "path": "specs/module-system.md",
+      "title": "奥林匹斯模块系统规范",
+      "load_when": "评估、开发或组合生产模块时",
+      "conditional_references": [
+        "GOVERNANCE.md"
+      ]
+    },
+    {
+      "path": "specs/customer-solution.md",
+      "title": "奥林匹斯客户评估与方案配置规范",
+      "load_when": "客户接入、试产或调整方案时",
+      "conditional_references": [
+        "specs/module-system.md"
+      ]
+    },
+    {
+      "path": "specs/agent-organization.md",
+      "title": "奥林匹斯 Agent 动态组织规范",
+      "load_when": "分配职责、调整分工或沉淀方法时",
+      "conditional_references": [
+        "GOVERNANCE.md"
+      ]
+    },
+    {
+      "path": "specs/project-state.md",
+      "title": "奥林匹斯项目状态与记录规范",
+      "load_when": "实现状态、工单、证据和上下文恢复时",
+      "conditional_references": [
+        "GOVERNANCE.md"
+      ]
+    },
+    {
+      "path": "specs/concurrency.md",
+      "title": "奥林匹斯并发生产与集成规范",
+      "load_when": "调度或集成并发工程变更时",
+      "conditional_references": [
+        "specs/project-state.md"
+      ]
+    },
+    {
+      "path": "specs/code-collaboration.md",
+      "title": "奥林匹斯代码与业务协同规范",
+      "load_when": "变更代码、接口、数据或业务规则时",
+      "conditional_references": [
+        "specs/concurrency.md"
+      ]
+    },
+    {
+      "path": "specs/scene-collaboration.md",
+      "title": "奥林匹斯场景与资产协同规范",
+      "load_when": "变更场景对象、共享资产或派生资源时",
+      "conditional_references": [
+        "specs/concurrency.md"
+      ]
+    },
+    {
+      "path": "specs/quality.md",
+      "title": "奥林匹斯过程与结果质量规范",
+      "load_when": "配置或执行适用质量验证时",
+      "conditional_references": [
+        "specs/project-state.md"
+      ]
+    },
+    {
+      "path": "specs/engine-adapter.md",
+      "title": "奥林匹斯引擎适配与迁移规范",
+      "load_when": "接入 Godot 或迁移自研引擎时",
+      "conditional_references": [
+        "specs/module-system.md"
+      ]
+    },
+    {
+      "path": "specs/enterprise-operations.md",
+      "title": "奥林匹斯企业接入与运行规范",
+      "load_when": "接入企业系统、部署或管理容量时",
+      "conditional_references": [
+        "specs/customer-solution.md"
+      ]
+    },
+    {
+      "path": "specs/governance-review.md",
+      "title": "奥林匹斯回查校验与外部 Agent 准入规范",
+      "load_when": "奥林匹斯生产、skill 与 Agent 创建变更、外部 Agent 合入时",
+      "conditional_references": [
+        "GOVERNANCE.md"
+      ]
+    },
+    {
+      "path": "specs/document-design.md",
+      "title": "奥林匹斯文档设计单元",
+      "load_when": "雅典娜独立 Agent 接入、需求理解与设计交接时",
+      "conditional_references": [
+        "specs/agent-organization.md"
+      ]
+    },
+    {
+      "path": "specs/quality-responsibilities.md",
+      "title": "奥林匹斯质量职责与忒弥斯接入规范",
+      "load_when": "分配质量职责、处理跨业务质量事件或接入忒弥斯时",
+      "conditional_references": [
+        "specs/quality.md"
+      ]
+    },
+    {
+      "path": "specs/data-feedback.md",
+      "title": "奥林匹斯数据与反馈模块",
+      "load_when": "接入外部数据、分析用户反馈或提出通用 Agent 优化时",
+      "conditional_references": [
+        "specs/enterprise-operations.md",
+        "specs/project-state.md"
+      ]
+    },
+    {
+      "path": "specs/reporting.md",
+      "title": "奥林匹斯组件默认赫尔墨斯上报",
+      "load_when": "创建、变更、合入或启用 skill 与 Agent 时",
+      "conditional_references": [
+        "specs/governance-review.md"
+      ]
+    }
+  ],
+  "never_bulk_load": [
+    "specs",
+    "references",
+    "upstream/zeus/contracts"
+  ],
+  "zeus_version": "0.4.1",
+  "message_protocol_version": "0.2",
+  "upstream_files": [
+    {
+      "path": "upstream/zeus/agents/zeus.md",
+      "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+    },
+    {
+      "path": "upstream/zeus/contracts/message.schema.json",
+      "sha256": "ac05307b9986193fdc39b041e8283169c51b9f51eaae3f0183bf23b9b19b1889"
+    },
+    {
+      "path": "upstream/zeus/core.md",
+      "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+    },
+    {
+      "path": "upstream/zeus/manifest.json",
+      "sha256": "e15b09e2a5458290aa591b75e566df25447815fcc331759cbe02938b6665f22d"
+    },
+    {
+      "path": "upstream/zeus/README.zh-CN.md",
+      "sha256": "1a73670274c12531c1ae263b84332e8c7477b67d20132ac2ace35b8e6d7fcde6"
+    },
+    {
+      "path": "upstream/zeus/requirements-optional.txt",
+      "sha256": "3351b776ebac83e9f9ed3fd9a0319a9bb6b85deca542ef9a36b7302c74ce3014"
+    },
+    {
+      "path": "upstream/zeus/skills/hestia/SKILL.md",
+      "sha256": "098fd20bc054152267c6616ed872da4d287949f0503a9555009dcc0336bedb58"
+    },
+    {
+      "path": "upstream/zeus/tools/check_message.py",
+      "sha256": "b9c54e6442c002c02ff7a396c13a1c1f9d36ba20486588871de8c61a29d9e9aa"
+    },
+    {
+      "path": "upstream/zeus/tools/context.py",
+      "sha256": "86473d1102f724ee59b4a2d91be44921c1f62f8aacad94c4319dd5a4353a3fdc"
+    }
+  ],
+  "foundation_lock": "foundation.lock.json",
+  "foundation_version": "1.0",
+  "foundation_frozen": true,
+  "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+  "governance_policy": {
+    "root": "zeus",
+    "applies_to": "all_current_and_future_agents",
+    "required": true,
+    "optional": false,
+    "exemptions": [],
+    "includes": [
+      "governance",
+      "management",
+      "scheduling",
+      "design",
+      "production",
+      "review",
+      "temporary",
+      "derived",
+      "external",
+      "third_party_wrapped",
+      "resumed",
+      "migrated"
+    ],
+    "required_lifecycle_checks": [
+      "creation",
+      "derivation",
+      "onboarding",
+      "authorization",
+      "execution",
+      "submission",
+      "resume",
+      "migration",
+      "revocation"
+    ],
+    "reject_unmanaged_execution": true,
+    "reject_unmanaged_results": true,
+    "allow_customer_disable": false,
+    "allow_module_override": false,
+    "allow_deployment_bypass": false,
+    "allow_foundation_changes_by_agents_or_modules": false,
+    "on_unverified_governance": "deny_affected_execution_authorization_and_result_acceptance",
+    "identity_and_authority_enforced_by": "host_with_trusted_zeus_policy",
+    "enforcement_status": "specified_not_deployed"
+  },
+  "mandatory_review": {
+    "events": [
+      "olympus_production",
+      "skill_create_or_change",
+      "agent_create_or_change",
+      "external_agent_admission"
+    ],
+    "callback_entry": "skills/dike/SKILL.md",
+    "procedure": "specs/governance-review.md",
+    "required_checks": [
+      "olympus_framework_review",
+      "zeus_standard_evaluation",
+      "skill_and_agent_concision",
+      "applicable_validation"
+    ],
+    "evidence": "approved_scope_matched_review_pass",
+    "pass_template": "templates/review-pass.json",
+    "template_is_approval": false,
+    "unknown_is_pass": false,
+    "external_admission_requires_both_reviews": true,
+    "authorized_approver_required": true,
+    "runtime_enforcement": "file_procedure_not_host_automatic_interception"
+  },
+  "skills": [
+    {
+      "name": "dike",
+      "path": "skills/dike/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "skills/dike/reporting.json"
+    },
+    {
+      "name": "metis",
+      "path": "agents/athena/skills/metis/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/athena/skills/metis/reporting.json"
+    },
+    {
+      "name": "nike",
+      "path": "skills/nike/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "skills/nike/reporting.json"
+    },
+    {
+      "name": "iris",
+      "path": "agents/hermes/skills/iris/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/hermes/skills/iris/reporting.json"
+    },
+    {
+      "name": "mnemosyne",
+      "path": "agents/hermes/skills/mnemosyne/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/hermes/skills/mnemosyne/reporting.json"
+    },
+    {
+      "name": "cadmus",
+      "path": "agents/hermes/skills/cadmus/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/hermes/skills/cadmus/reporting.json"
+    },
+    {
+      "name": "demeter",
+      "path": "agents/hermes/skills/demeter/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/hermes/skills/demeter/reporting.json"
+    },
+    {
+      "name": "apollo",
+      "path": "agents/hermes/skills/apollo/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "version": "0.2.1",
+      "reporting": "agents/hermes/skills/apollo/reporting.json"
+    }
+  ],
+  "agents": [
+    {
+      "id": "athena",
+      "name": "雅典娜",
+      "kind": "independent_agent",
+      "version": "0.3.1",
+      "entry": "agents/athena/AGENT.md",
+      "manifest": "agents/athena/agent.json",
+      "governance_root": "zeus",
+      "state": "synchronized_candidate_pending_independent_admission",
+      "candidate_digest": "51008e42c5ea6a19566ef8bbe6ef93444ff1511f7fe9ea09e5ef8e78cbd7dece",
+      "admission_pass": "reviews/athena-admission.json",
+      "business_module": "document_design",
+      "candidate_files": [
+        "AGENTS.md",
+        "FOUNDATION.md",
+        "GOVERNANCE.md",
+        "README.md",
+        "agents/athena/AGENT.md",
+        "agents/athena/README.md",
+        "agents/athena/THIRD_PARTY_LICENSE.txt",
+        "agents/athena/agent.json",
+        "agents/athena/provenance.json",
+        "agents/athena/references/adaptation.md",
+        "agents/athena/references/design.md",
+        "agents/athena/references/tools.md",
+        "agents/athena/references/understanding.md",
+        "agents/athena/references/workflow.md",
+        "agents/athena/reporting.json",
+        "agents/athena/skills/metis/SKILL.md",
+        "agents/athena/skills/metis/reporting.json",
+        "agents/hermes/references/data-contract.md",
+        "agents/hermes/references/telemetry.md",
+        "agents/hermes/reporting.json",
+        "agents/hermes/scripts/ledger.py",
+        "agents/hermes/scripts/telemetry.py",
+        "agents/hermes/skills/apollo/reporting.json",
+        "agents/hermes/skills/cadmus/reporting.json",
+        "agents/hermes/skills/demeter/reporting.json",
+        "agents/hermes/skills/iris/reporting.json",
+        "agents/hermes/skills/mnemosyne/reporting.json",
+        "agents/themis/reporting.json",
+        "contracts/admission-policy.json",
+        "contracts/hermes-reporting.json",
+        "extensions/hermes-files/README.md",
+        "extensions/hermes-files/event.schema.json",
+        "extensions/hermes-files/event.template.json",
+        "extensions/hermes-files/hermes_files.py",
+        "foundation.lock.json",
+        "integrations/athena-legacy/athena.mjs",
+        "integrations/athena-legacy/feature-memory.mjs",
+        "integrations/athena-legacy/runtime/cli.mjs",
+        "integrations/athena-legacy/runtime/src/catalog.mjs",
+        "integrations/athena-legacy/runtime/src/production.mjs",
+        "integrations/hestia-reporting.json",
+        "provenance.json",
+        "skills/dike/SKILL.md",
+        "skills/dike/reporting.json",
+        "skills/nike/reporting.json",
+        "specs/data-feedback.md",
+        "specs/document-design.md",
+        "specs/governance-review.md",
+        "specs/quality-responsibilities.md",
+        "specs/reporting.md",
+        "sync/POLICY.md",
+        "sync/gonggong_sync.py",
+        "sync/names.json",
+        "sync/read_hermes.py",
+        "templates/reporting-binding.json",
+        "tools/admission.mjs",
+        "tools/agent-context.mjs",
+        "tools/create-component.py",
+        "tools/hermes-report.py",
+        "tools/reporting.mjs",
+        "tools/verify_framework.py",
+        "upstream/zeus/agents/zeus.md",
+        "upstream/zeus/core.md"
+      ],
+      "reporting": "agents/athena/reporting.json"
+    },
+    {
+      "id": "themis",
+      "name": "忒弥斯",
+      "kind": "independent_agent",
+      "version": "0.3.1",
+      "entry": "agents/themis/AGENT.md",
+      "manifest": "agents/themis/agent.json",
+      "governance_root": "zeus",
+      "state": "synchronized_candidate_pending_independent_admission",
+      "candidate_digest": "17eec169af00a46e9dcc89e304c34f440112038e4022fc89712938383238457c",
+      "admission_pass": "reviews/themis-admission.json",
+      "business_module": "quality_event_oversight",
+      "ownership": "domains/quality/responsibility-map.json",
+      "candidate_files": [
+        "AGENTS.md",
+        "FOUNDATION.md",
+        "GOVERNANCE.md",
+        "README.md",
+        "agents/athena/reporting.json",
+        "agents/athena/skills/metis/reporting.json",
+        "agents/hermes/references/data-contract.md",
+        "agents/hermes/references/telemetry.md",
+        "agents/hermes/reporting.json",
+        "agents/hermes/scripts/ledger.py",
+        "agents/hermes/scripts/telemetry.py",
+        "agents/hermes/skills/apollo/reporting.json",
+        "agents/hermes/skills/cadmus/reporting.json",
+        "agents/hermes/skills/demeter/reporting.json",
+        "agents/hermes/skills/iris/reporting.json",
+        "agents/hermes/skills/mnemosyne/reporting.json",
+        "agents/themis/AGENT.md",
+        "agents/themis/agent.json",
+        "agents/themis/reporting.json",
+        "contracts/admission-policy.json",
+        "contracts/hermes-reporting.json",
+        "domains/quality/provenance.json",
+        "domains/quality/quality-policy.json",
+        "domains/quality/responsibility-map.json",
+        "domains/quality/templates/Feature质量看板.md",
+        "domains/quality/templates/例外与风险接受.md",
+        "domains/quality/templates/检查与验收记录.md",
+        "domains/quality/templates/缺陷工单.md",
+        "domains/quality/templates/质量事件与决策记录.md",
+        "domains/quality/templates/质量约定.md",
+        "extensions/hermes-files/README.md",
+        "extensions/hermes-files/event.schema.json",
+        "extensions/hermes-files/event.template.json",
+        "extensions/hermes-files/hermes_files.py",
+        "foundation.lock.json",
+        "integrations/hestia-reporting.json",
+        "provenance.json",
+        "skills/dike/SKILL.md",
+        "skills/dike/reporting.json",
+        "skills/nike/SKILL.md",
+        "skills/nike/reporting.json",
+        "specs/data-feedback.md",
+        "specs/governance-review.md",
+        "specs/quality-responsibilities.md",
+        "specs/quality.md",
+        "specs/reporting.md",
+        "sync/POLICY.md",
+        "sync/gonggong_sync.py",
+        "sync/names.json",
+        "sync/read_hermes.py",
+        "templates/reporting-binding.json",
+        "tools/admission.mjs",
+        "tools/agent-context.mjs",
+        "tools/check_quality_ownership.py",
+        "tools/create-component.py",
+        "tools/hermes-report.py",
+        "tools/reporting.mjs",
+        "tools/verify_framework.py",
+        "upstream/zeus/agents/zeus.md",
+        "upstream/zeus/core.md"
+      ],
+      "reporting": "agents/themis/reporting.json"
+    },
+    {
+      "id": "hermes",
+      "name": "赫尔墨斯",
+      "kind": "independent_agent",
+      "version": "0.3.1",
+      "entry": "agents/hermes/AGENT.md",
+      "governance_root": "zeus",
+      "admission_pass": "reviews/hermes-admission.json",
+      "manifest": "agents/hermes/agent.json",
+      "state": "synchronized_candidate_pending_independent_admission",
+      "business_module": "data_feedback",
+      "candidate_files": [
+        "AGENTS.md",
+        "FOUNDATION.md",
+        "GOVERNANCE.md",
+        "README.md",
+        "agents/athena/reporting.json",
+        "agents/athena/skills/metis/reporting.json",
+        "agents/hermes/AGENT.md",
+        "agents/hermes/agent.json",
+        "agents/hermes/references/data-contract.md",
+        "agents/hermes/references/optimization.md",
+        "agents/hermes/references/storage.md",
+        "agents/hermes/references/telemetry.md",
+        "agents/hermes/reporting.json",
+        "agents/hermes/scripts/ledger.py",
+        "agents/hermes/scripts/telemetry.py",
+        "agents/hermes/skills/apollo/SKILL.md",
+        "agents/hermes/skills/apollo/reporting.json",
+        "agents/hermes/skills/cadmus/SKILL.md",
+        "agents/hermes/skills/cadmus/reporting.json",
+        "agents/hermes/skills/demeter/SKILL.md",
+        "agents/hermes/skills/demeter/reporting.json",
+        "agents/hermes/skills/iris/SKILL.md",
+        "agents/hermes/skills/iris/reporting.json",
+        "agents/hermes/skills/mnemosyne/SKILL.md",
+        "agents/hermes/skills/mnemosyne/reporting.json",
+        "agents/themis/reporting.json",
+        "contracts/admission-policy.json",
+        "contracts/hermes-reporting.json",
+        "extensions/hermes-files/README.md",
+        "extensions/hermes-files/event.schema.json",
+        "extensions/hermes-files/event.template.json",
+        "extensions/hermes-files/hermes_files.py",
+        "foundation.lock.json",
+        "integrations/hestia-reporting.json",
+        "provenance.json",
+        "skills/dike/SKILL.md",
+        "skills/dike/reporting.json",
+        "skills/nike/reporting.json",
+        "specs/data-feedback.md",
+        "specs/enterprise-operations.md",
+        "specs/governance-review.md",
+        "specs/project-state.md",
+        "specs/quality-responsibilities.md",
+        "specs/reporting.md",
+        "sync/POLICY.md",
+        "sync/gonggong_sync.py",
+        "sync/names.json",
+        "sync/read_hermes.py",
+        "templates/reporting-binding.json",
+        "tools/admission.mjs",
+        "tools/agent-context.mjs",
+        "tools/create-component.py",
+        "tools/hermes-report.py",
+        "tools/reporting.mjs",
+        "tools/verify_framework.py",
+        "upstream/zeus/agents/zeus.md",
+        "upstream/zeus/core.md",
+        "upstream/zeus/skills/hestia/SKILL.md"
+      ],
+      "candidate_digest": "d678f03cc70ce706f88f8ef6da8eb5224726369b49e7c0752c5c2f389e73d4c2",
+      "reporting": "agents/hermes/reporting.json"
+    }
+  ],
+  "quality_domain": {
+    "policy": "domains/quality/quality-policy.json",
+    "ownership": "domains/quality/responsibility-map.json",
+    "templates": "domains/quality/templates",
+    "specification": "specs/quality.md",
+    "boundary": "specs/quality-responsibilities.md",
+    "oversight_agent": "themis",
+    "parallel_quality_gates_allowed": false,
+    "separate_quality_ledger_allowed": false,
+    "host_enforcement_implemented": false
+  },
+  "context_loader": "tools/agent-context.mjs",
+  "legacy_integration": "integrations/athena-legacy",
+  "metadata_paths": "framework_root_relative",
+  "fingerprint_algorithm": "sha256 of sorted root-relative path + NUL + file SHA256 + LF, UTF-8",
+  "upstream_skill_reporting": {
+    "name": "hestia",
+    "version": "0.4.1",
+    "version_basis": "upstream_package",
+    "path": "upstream/zeus/skills/hestia/SKILL.md",
+    "reporting": "integrations/hestia-reporting.json"
+  },
+  "reporting": {
+    "policy": "contracts/hermes-reporting.json",
+    "creator": "tools/create-component.py",
+    "validator": "tools/reporting.mjs",
+    "reporter": "tools/hermes-report.py",
+    "mandatory_for": [
+      "agent",
+      "skill"
+    ],
+    "runtime_deployed": false
+  },
+  "distribution_sync": {
+    "policy": "sync/POLICY.md",
+    "checker": "sync/gonggong_sync.py",
+    "data_reader": "sync/read_hermes.py",
+    "upstream": "gonggong",
+    "full_verification_required": true,
+    "exemptions": [
+      {
+        "id": "hermes-file-data",
+        "module_root": "extensions/hermes-files/",
+        "data_root": "<target-git-root>/olympus-hermes-data",
+        "sync_behavior": "preserve_existing_module_bytes_never_touch_dataset",
+        "authority": "explicit_user_instruction_independent_git_file_data_module",
+        "reader": "extensions/hermes-files/hermes_files.py",
+        "database_required": false,
+        "initialize_only_after_target_repository_integration": true
+      }
+    ]
+  }
+}

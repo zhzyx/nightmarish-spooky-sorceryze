@@ -1,0 +1,15 @@
+{
+  "policy_id": "hermes-reporting-1",
+  "profile_schema": 1,
+  "record_schema": 2,
+  "required": true,
+  "events": ["request", "step", "message", "direction_error", "correction", "quality_issue", "rework", "handoff", "coverage", "request_end"],
+  "binding_fields": ["tenant_id", "source_ref", "agent_snapshot_ref", "request_ref", "outbox_path", "sink_ref", "authority_ref"],
+  "record_contract": "agents/hermes/references/data-contract.md",
+  "metric_contract": "agents/hermes/references/telemetry.md",
+  "delivery": "durable_outbox_then_idempotent_ledger_receipt",
+  "unknown_usage": "null_with_reason",
+  "skill_usage": "attribute_to_executing_agent_step_once",
+  "framework_and_zeus": "reference_only_separate_user_instruction_required",
+  "runtime_authority_granted": false
+}

@@ -1,0 +1,216 @@
+{
+  "namespace": "olympus.quality",
+  "version": "0.3.0",
+  "usage": "single_quality_domain_configuration_not_default_agent_context",
+  "runtime_governance_source": "../../GOVERNANCE.md",
+  "status": "baseline_for_project_configuration",
+  "execution": "declarative_only_host_adapter_required",
+  "unit_types": [
+    "ticket",
+    "feature"
+  ],
+  "authority": "shared_production_ledger_and_host_no_parallel_state",
+  "check_results": [
+    "pass",
+    "fail",
+    "unknown",
+    "not_applicable"
+  ],
+  "gate_verdicts": [
+    "pending",
+    "pass",
+    "fail",
+    "conditional_accept",
+    "stale"
+  ],
+  "criterion_types": [
+    "hard",
+    "signal",
+    "experience"
+  ],
+  "gates": [
+    {
+      "id": "G0",
+      "name": "开工准入",
+      "requires": [
+        "scope",
+        "design_baseline",
+        "acceptance_criteria",
+        "mandate",
+        "dependencies",
+        "risk",
+        "check_plan"
+      ]
+    },
+    {
+      "id": "G1",
+      "name": "工单提交",
+      "requires": [
+        "change_manifest",
+        "editable_sources_if_applicable",
+        "self_checks",
+        "evidence_index",
+        "known_issues",
+        "scope_compliance"
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "集成验证",
+      "requires": [
+        "candidate_manifest",
+        "applicable_integration_checks",
+        "impact_regression",
+        "environment",
+        "defect_disposition"
+      ]
+    },
+    {
+      "id": "G3",
+      "name": "交付验收",
+      "requires": [
+        "criterion_verdicts",
+        "valid_evidence",
+        "authorized_acceptance",
+        "final_manifest_consistency",
+        "residual_risk_disposition"
+      ]
+    },
+    {
+      "id": "G4",
+      "name": "交付观察",
+      "requires": [
+        "agreed_observation_scope",
+        "feedback",
+        "escaped_defect_disposition",
+        "retrospective"
+      ]
+    }
+  ],
+  "risk_profiles": {
+    "low": {
+      "independent_review": false,
+      "checks": [
+        "specification",
+        "self_check",
+        "actual_usage",
+        "change_evidence"
+      ]
+    },
+    "medium": {
+      "independent_review": true,
+      "checks": [
+        "specification",
+        "self_check",
+        "actual_usage",
+        "change_evidence",
+        "candidate_integration",
+        "impact_regression"
+      ]
+    },
+    "high": {
+      "independent_review": true,
+      "authorized_owner_acceptance": true,
+      "checks": [
+        "specification",
+        "self_check",
+        "actual_usage",
+        "change_evidence",
+        "candidate_integration",
+        "impact_regression",
+        "consumer_compatibility",
+        "recovery_plan"
+      ]
+    }
+  },
+  "mandatory_invariants": [
+    "Unknown is never pass.",
+    "Not applicable requires a recorded reason and responsible decision maker.",
+    "Required hard and experience criteria need valid supporting evidence and a verdict.",
+    "Signals alone cannot establish acceptance.",
+    "No aggregate score can override a failed hard criterion.",
+    "A required fail or unknown blocks acceptance unless explicitly waivable and covered by a valid authorized exception.",
+    "An exception preserves original results and produces conditional_accept, never pass.",
+    "Affected stale evidence cannot support current acceptance.",
+    "Independent review is checked against actual execution identity and provenance.",
+    "A feature requires eligible required children plus its own integration and acceptance results.",
+    "A conditional required child makes feature acceptance at least conditional.",
+    "Removal of required scope needs an authorized scope revision, retaining history.",
+    "Only the host verifies authorization and commits workflow state transitions."
+  ],
+  "non_waivable_severities": [
+    "S0",
+    "S1"
+  ],
+  "exception_required_fields": [
+    "id",
+    "unit_id",
+    "criterion_or_defect_ids",
+    "rule_permission",
+    "reason",
+    "impact",
+    "compensation",
+    "approver",
+    "authority_reference",
+    "valid_versions",
+    "expiry_or_exit_condition",
+    "repair_owner",
+    "repair_due",
+    "decision_event"
+  ],
+  "evidence_required_fields": [
+    "id",
+    "unit_id",
+    "criterion_ids",
+    "subject_manifest",
+    "design_version",
+    "policy_version",
+    "dependency_snapshot",
+    "method",
+    "environment",
+    "executed_at",
+    "executor",
+    "run_reference",
+    "result",
+    "artifact_reference",
+    "content_hash"
+  ],
+  "revalidation_triggers": [
+    "design_change",
+    "code_change",
+    "asset_change",
+    "scene_change",
+    "dependency_change",
+    "environment_change",
+    "policy_change",
+    "exception_expiry",
+    "final_manifest_mismatch"
+  ],
+  "revalidation_rule": "Record impact analysis; invalidate affected criteria and dependent unit verdicts; retain unaffected checks only with a traceable justification.",
+  "project_parameters_required": [
+    "role_and_authority_bindings",
+    "repository_and_ticket_mapping",
+    "performance_and_asset_budgets_if_applicable",
+    "test_environments",
+    "evidence_storage",
+    "observation_scope",
+    "defect_response_targets"
+  ],
+  "event_contract": {
+    "required_fields": [
+      "event_id",
+      "unit_id",
+      "expected_record_version",
+      "source",
+      "occurred_at",
+      "payload"
+    ],
+    "idempotency": "host_enforced",
+    "optimistic_version_check": "host_enforced"
+  },
+  "display_name": "奥林匹斯质量制度",
+  "decision_governance_ref": "../../upstream/zeus/core.md",
+  "ownership_ref": "responsibility-map.json",
+  "oversight_agent": "themis",
+  "scope_note": "Domain policy is the existing quality system; Themis coordinates escalated events within it, without independent validation or release authority."
+}

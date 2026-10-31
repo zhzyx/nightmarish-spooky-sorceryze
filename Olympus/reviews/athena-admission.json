@@ -1,0 +1,267 @@
+{
+  "template": false,
+  "status": "pending_independent_review",
+  "subject": {
+    "id": "athena",
+    "version_or_digest": {
+      "version": "0.3.1",
+      "candidate_digest": "51008e42c5ea6a19566ef8bbe6ef93444ff1511f7fe9ea09e5ef8e78cbd7dece",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "717947f0b87e9ef6e51abfbe4e44bf4e822b4c321a04ca58587879dee73676e3"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "41fa149b391ea83e4b05c766f4027aa9e7a9d2d7ee493d497803e1e01fbe7014"
+        },
+        {
+          "path": "README.md",
+          "sha256": "13d7784aebfa563ed55c9da1f8299817c474f7af8d6405fa575825b785404fc6"
+        },
+        {
+          "path": "agents/athena/AGENT.md",
+          "sha256": "da95de2711bf2197907941d1402ab1ae2ee06ed4eb3b872265d13b7d7eca9119"
+        },
+        {
+          "path": "agents/athena/README.md",
+          "sha256": "03244e53e7eaabcf7379b3215b94aabfe502b4cf0390fb7a84a7c9df2148f23a"
+        },
+        {
+          "path": "agents/athena/THIRD_PARTY_LICENSE.txt",
+          "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+        },
+        {
+          "path": "agents/athena/agent.json",
+          "sha256": "7515513d2771fdb0e50f717c5d75421b93871116ba5fa7935845c3554d6c9ecc"
+        },
+        {
+          "path": "agents/athena/provenance.json",
+          "sha256": "243c160a1eaf08c9447ff3a75d446714327ed4a45729b37061c1e3d1ad626891"
+        },
+        {
+          "path": "agents/athena/references/adaptation.md",
+          "sha256": "3611c6fe94d0556cb8fd831a03fb6b245b7b08623cdc4d585603fa1d0ed0a6d3"
+        },
+        {
+          "path": "agents/athena/references/design.md",
+          "sha256": "0ad424680f407ea42ef2359ceeec103bedbf3ca94bc6b8ae9dcafd9aebf11dc3"
+        },
+        {
+          "path": "agents/athena/references/tools.md",
+          "sha256": "9c5aa69632d134928e9e73e73fc6f84f32dd552d45a369fac55a7d0bbc23cb4d"
+        },
+        {
+          "path": "agents/athena/references/understanding.md",
+          "sha256": "66cac114da71b858352a03f7796b7572980433d029b0993660fda9bb10bd844f"
+        },
+        {
+          "path": "agents/athena/references/workflow.md",
+          "sha256": "e8185378c15b712d64f0a495edba31f72ae534b18c7de024107e493b4c276366"
+        },
+        {
+          "path": "agents/athena/reporting.json",
+          "sha256": "837892336a021e284a1d3cbe14999ad9e8900e46d0c3c2a7bc5d928e910767ed"
+        },
+        {
+          "path": "agents/athena/skills/metis/SKILL.md",
+          "sha256": "e512ae620c281cf66055489e3d77c151982ffd9e01cb06e4c27a33459cc29515"
+        },
+        {
+          "path": "agents/athena/skills/metis/reporting.json",
+          "sha256": "2289e830621e4fb744a1009434a59bf82b40755d2d870cee3b0b7dd3568569b4"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/reporting.json",
+          "sha256": "f30632269969529ae44e29279a9389b291059fdc2204a7d5305225664d663771"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/reporting.json",
+          "sha256": "10b3ccf7b38a74a7824c39c982ae6782439fc0e8a422df442014af0686def10d"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/reporting.json",
+          "sha256": "fd11662817d679ff0b57f60f41e6ed4ea56d35f06fd1f1105749ab0a718c80b7"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/reporting.json",
+          "sha256": "6b3107414d812ee03810b0a3ceb74b7ac98dfe9d0d556b90da047bba6ac78582"
+        },
+        {
+          "path": "agents/hermes/skills/iris/reporting.json",
+          "sha256": "59929cab65a3706795ef2fc2128f2398e47e03ee2af534da9239bdc5c0c5a3cb"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/reporting.json",
+          "sha256": "6ee17025736d7055a0f9d3ea7e8d45038c3cf8f0a1d32d6d07eb595597d4039c"
+        },
+        {
+          "path": "agents/themis/reporting.json",
+          "sha256": "86a90f851e8009353c1f384b8724dd07d0b28e4cebbdea563f8a3add7c671b9b"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "integrations/athena-legacy/athena.mjs",
+          "sha256": "b7be46c1fd2cc6204e0da2bdb2c6b3aabcfead0306d11514c04b3c40cdab13b8"
+        },
+        {
+          "path": "integrations/athena-legacy/feature-memory.mjs",
+          "sha256": "525a9eaf9caad1ef62b23a3736b4d4176262dbebd1645259212af0ef6a89da83"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/cli.mjs",
+          "sha256": "fd8cf1dd7f2396dbdd56ae63b23db28f0f9ba7f8377dd3e5ac12550ab0ab538d"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/src/catalog.mjs",
+          "sha256": "f8b8b26cf0498e8994b1e53c83e82b791155380f42eb309da79062b68cffe0bb"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/src/production.mjs",
+          "sha256": "776dc854594752c716756a83a709d5620d7ae750d8f532375709997748e17882"
+        },
+        {
+          "path": "integrations/hestia-reporting.json",
+          "sha256": "a03f43dc93f441029b9176649c428d0347dc7c4766a836a5c9858cc92adcc2d1"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "4d3bb9d841de814aceca059c514a2c6c6a839370ac501cb437af8117d57f7944"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "skills/dike/reporting.json",
+          "sha256": "128c60c7247c473421b2ae7f1f9585ad125d41252f34e5d9544af319488a1425"
+        },
+        {
+          "path": "skills/nike/reporting.json",
+          "sha256": "20ee96354c40b707ec7dae18cbb2bb446f9f8de72f6b9ff719fcb139f16fb760"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "ed525b687bd3e322435a73f6e7aaeb0cbb04333c4718a938c8f783833a129408"
+        },
+        {
+          "path": "specs/document-design.md",
+          "sha256": "2bdc6425b7d31acee88e14955ded40d60d6dd25fc6f208d4d8a0c687bb958a44"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "bb8c71937d64c191daf954ed207b7b9e17cb4f7969cc2f181d4263270370d803"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "047fde315362cc58f0f8524214d23d9f41e471becc979fee591bfd81d6a9b67f"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "cd8bc9e6d0e43a4d1865406f040375d708ed5f8e9016097e3fcb3c5c10e27f0f"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e5ba95f2116b45de4e753f1b6763a4633bcc3955d8fba8ffa34f69e4519d8bee"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "693edf897a2367eda29ab3186c15ba3382f21a785f277b7944adb41325c62b30"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "5a333e6c5967e7510647c49829f6947380cc3b6dd02d00a8fb712ed039165716"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "72fec16c5960d2c5eeea87122ac0c12018597999310d507506b82ab4431d5a01"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "31315279f30d5c809f6eab3ed0c2be2717c716dc2b512959aae23b79cc615066"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ]
+    }
+  },
+  "approval": null,
+  "reason": "Upstream approval preserved as historical evidence; independent admission must bind this candidate."
+}

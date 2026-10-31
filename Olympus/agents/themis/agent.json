@@ -1,0 +1,22 @@
+{
+  "id": "themis",
+  "name": "忒弥斯",
+  "kind": "independent_agent",
+  "version": "0.3.1",
+  "entry": "agents/themis/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "zeus",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/zeus/agents/zeus.md",
+  "review_skill": "skills/dike/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/nike/SKILL.md"
+  ],
+  "admission_pass": "reviews/themis-admission.json",
+  "host_required_for_execution": true,
+  "scope": "escalated_quality_event_oversight_only",
+  "reporting": "agents/themis/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json"
+}

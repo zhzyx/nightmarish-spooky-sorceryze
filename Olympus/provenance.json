@@ -1,0 +1,5 @@
+{
+  "source_framework_version": "0.8.0",
+  "source_directory": "../gonggong-v0.8",
+  "change": "User-requested full audit; consolidated discovery index, removed stale repeated Diting version, fixed pending queue starvation with persistent attempt order and transactional v1 migration. Foundation and Yuanheng unchanged; host auto-collection still pending."
+}
