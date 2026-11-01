@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-01T20:48:05.343799+00:00",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "branch": "main",
+  "subject_commit": "b19545c88031e9d27c889239c29bcc53f164e40e",
+  "subject_tree": "e1f2e5a73e87eb3fd807eeba2b458531b9d5f3af",
+  "method": "GitHub Git objects API after Git HTTPS transport failures; identical tree and commit SHAs verified; fast-forward force=false",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2",
+  "issue_state": "OPEN",
+  "production_admission": false,
+  "remote_binary_published": false,
+  "local_binary_package": {
+    "path": "bin/olympus-godot-windows-x64-candidate-20261102.zip",
+    "asset": "olympus-godot-windows-x64-candidate-20261102.zip",
+    "sha256": "881a4d7fae288d6ef486d04ba304271616262cddd8e31ad5ba1a02e177e2c232",
+    "bytes": 71557065
+  }
+}

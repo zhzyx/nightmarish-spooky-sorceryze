@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-olympus-chat-20261102-git-publication",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-olympus-chat-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T20:48:05.343799+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:main",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "remote_subject_commit": "b19545c88031e9d27c889239c29bcc53f164e40e",
+    "evidence": "data-collection/git-publication-20261102.json",
+    "evidence_sha256": "f318b6ab3125439ab2d14aa4c44469851ae04b154da3b593d490ae8f1c0c5835",
+    "agent_execution_enabled": false,
+    "production_admission": "pending_source_and_local_approval",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-olympus-chat-20261102-review-handoff"
+  ],
+  "sha256": "91da317e6ac6a14635e5b143cd1142816a125927fb6c36845da51abfe52073b6"
+}
