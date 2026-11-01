@@ -17,7 +17,7 @@ if not exist "%GODOT_EXE%" (
 )
 
 set "PROJECT=%~1"
-if "%PROJECT%"=="" set "PROJECT=D:\Projects\new-age"
+if "%PROJECT%"=="" set "PROJECT=%~dp0samples\pong_csharp_debug"
 
 echo [launch] DOTNET_ROOT = %DOTNET_ROOT%
 echo [launch] project     = %PROJECT%

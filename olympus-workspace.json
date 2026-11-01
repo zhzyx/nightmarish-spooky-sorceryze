@@ -17,12 +17,12 @@
   "registered_modules": [
     {
       "id": "ariadne",
-      "version": "0.2.1",
+      "version": "0.4.0",
       "manifest": "Olympus/modules/ariadne/module.json"
     }
   ],
-  "module_source_environments": [
-    "GONGGONG_SINAN_FRAMEWORK_SOURCE",
-    "GONGGONG_SINAN_IMPLEMENTATION_SOURCE"
-  ]
+  "module_source_environments": [],
+  "runtime_entry": "tools/olympus_bridge.py",
+  "editor_launch": "tools/launch_olympus_editor.ps1",
+  "admission_state": "candidate_pending_upstream_and_local_admission"
 }

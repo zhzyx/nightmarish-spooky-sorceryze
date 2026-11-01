@@ -1,0 +1,6 @@
+{
+  "path_base": "this_file_directory",
+  "root": ".",
+  "manifest": "framework-manifest.json",
+  "status": "candidate_pending_admission"
+}

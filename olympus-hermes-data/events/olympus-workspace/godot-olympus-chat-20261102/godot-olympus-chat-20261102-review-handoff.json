@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-olympus-chat-20261102-review-handoff",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-olympus-chat-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T20:41:09.167207+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue-2",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "status": "candidate_ready_for_git_production_blocked",
+    "requirement_document": "design-docs/godot-olympus-chat-20261102.md",
+    "independent_review": "design-docs/godot-olympus-independent-review-20261102.md",
+    "review_sha256": "ef0aa7c6069f46385db09cfb7ac959ae5562b2f2907d8d406725c79a9ac34543",
+    "independent_evaluators": [
+      "/root/review_chat_gate",
+      "/root/review_upstream"
+    ],
+    "user_admission_approval": null,
+    "source_admission_blocker": "Current Gonggong yanshi/kuafu approvals mismatch path-migrated candidate digests",
+    "git_push_state": "not_yet_performed_for_this_candidate",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate",
+    "agent_snapshot_basis": "Repository AGENTS.md instruction snapshot"
+  },
+  "evidence_refs": [],
+  "sha256": "0ba43414615bd9a4cbcca53e34bd497066c9169c0b488737ba51ebbb0d83ce31"
+}

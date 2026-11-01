@@ -1,6 +1,6 @@
 # 来源与适配决策
 
-只读借鉴 D:/WorkFlow/mattpocock-skills。grilling 提供事实先查、按决策依赖逐个提问并给建议；domain-modeling 提供精确术语与及时记录决定；to-spec 提供信息充分后直接综合；to-tickets 提供完整可验证切片及显式阻塞；writing-great-skills 提供单一信息源、精简入口和按需引用。
+只读借鉴 `../../WorkFlow/mattpocock-skills`（相对框架根目录；外部只读参考，未随包交付，缺失时保留来源未知，不自动下载）。grilling 提供事实先查、按决策依赖逐个提问并给建议；domain-modeling 提供精确术语与及时记录决定；to-spec 提供信息充分后直接综合；to-tickets 提供完整可验证切片及显式阻塞；writing-great-skills 提供单一信息源、精简入口和按需引用。
 
 本次保留雅典娜原有三阶段确认，不采用持续盘问直到穷尽所有分支、不重复询问既有决定、不预设长篇用户故事、远程发布或特定平台语法，也不强制串行推进独立任务。来源只借鉴设计思路，未将外部 skill 注册为奥林匹斯 Agent。
 

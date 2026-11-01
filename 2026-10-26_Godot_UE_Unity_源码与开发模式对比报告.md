@@ -2,8 +2,8 @@
 
 - 日期：2026-10-26
 - 对比范围：UE5、现代 Unity、当前本机 Godot 4.8 beta 源码。
-- 本机引擎源码：`D:\Projects\godot-master`
-- 本机官方示例库：`D:\Projects\godot-demo-projects-master`
+- 本机引擎源码：`.`（本仓库根）
+- 本机官方示例库：`external-references/godot-demo-projects-master`（历史来源标识，未随仓库分发，非运行依赖）
 - 当前示例：`3d\platformer\project.godot`
 - 报告性质：架构与开发模式分析，不是同场景性能测试，也不是完整产品功能清单。
 
@@ -284,7 +284,7 @@ Godot 支持多人游戏和专用服务器，也有 RPC、同步节点等基础�
 
 | 阅读目标 | 文件与入口 |
 |---|---|
-| 当前角色游戏逻辑 | `D:\Projects\godot-demo-projects-master\3d\platformer\player\player.gd` |
+| 当前角色游戏逻辑 | `external-references/godot-demo-projects-master/3d/platformer/player/player.gd` |
 | 角色物理帧回调 | 上述脚本第 35 行 `_physics_process()` |
 | 脚本调用原生移动 | 上述脚本第 147 行 `move_and_slide()` |
 | 原生角色移动实现 | `scene/3d/physics/character_body_3d.cpp` 第 43 行 |

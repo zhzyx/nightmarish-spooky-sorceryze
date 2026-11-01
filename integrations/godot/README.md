@@ -1,33 +1,51 @@
-# Godot 接入
+# Godot + Olympus 运行与目录
 
-本目录保存原生编辑器接入代码、可审查增量补丁及验证脚本。Godot 的现有 AI 对话、会话隔离、定时器、自编译、重启恢复和回滚继续使用原实现。新增 `Olympus` 页位于原 AI 工作区第三个标签。
+当前接入直接编译进引擎，不再运行复制补丁安装器。
 
-## 使用
+| 位置 | 职责 |
+| --- | --- |
+| `editor/docks/ai_chat_olympus.cpp` | 所有模型请求前的框架检查与取消隔离 |
+| `editor/docks/olympus_panel.*` | 原生框架状态、校验和分析页面 |
+| `customizations/components/godot-host/` | Python 宿主适配器及单元测试，唯一实现 |
+| `tools/olympus_bridge.py` | 引擎稳定调用入口 |
+| `tools/build_olympus_editor.ps1` | Windows 编译及 AIChat 回归检查 |
+| `tools/launch_olympus_editor.ps1` | 绑定当前工作区、Python、Node 并启动编辑器 |
+| `samples/olympus-workbench/` | 可直接运行的示例工程 |
+| `tests/editor/*olympus*` | 实际编辑器调用链测试 |
+| `Olympus/` | 全量同步框架，独立准入边界不变 |
+| `design-docs/`、`data-collection/`、`olympus-hermes-data/` | 需求、采集交接和真实事件，分别维护 |
 
-在 Olympus 页填写工作区根目录、Python 可执行文件及租户（默认 `olympus-workspace`），然后选择状态、上游核对、数据校验或分析。配置保存于本机 Godot 编辑器设置；也可在首次启动前设置 `OLYMPUS_WORKSPACE`、`OLYMPUS_PYTHON`。桥接工具不复制框架或数据，始终读取该 Git 工作区。
+## 构建和启动
 
-上游核对沿用框架的 `GONGGONG_FRAMEWORK_SOURCE`、`GONGGONG_SINAN_FRAMEWORK_SOURCE`、`GONGGONG_SINAN_IMPLEMENTATION_SOURCE` 环境变量。未配置、缺源或漂移均返回失败。状态读取只展示清单，不证明同步或准入。数据校验和分析可独立执行，无需上游在线。
+需要 Windows C++ 构建环境、Python（3.14 或带 zstandard 的兼容版本）、SCons、Node.js。当前本机构建配置禁用未安装 SDK 的 AccessKit、D3D12 和 ANGLE；不是这些驱动的发布验收。
 
-此入口没有 Agent 启动器。现有 Godot 通用 AI 会话不被重新命名为已获准的 Olympus Agent。以后启用框架 Agent 仍需绑定指纹的独立准入和真实宿主管理。
+```powershell
+./tools/build_olympus_editor.ps1 -Python PATH/TO/python.exe
+./tools/launch_olympus_editor.ps1 -Python PATH/TO/python.exe -Node PATH/TO/node.exe
+```
 
-## 重用与恢复
+二进制位于忽略的 `bin/`；预编译包应解压到对应源码检出的 `bin/`，不提交编译缓存。启动后在 Agents 配置 HTTP 模型 endpoint、model 和凭据，或自行配置已安装的兼容 CLI。仓库不捆绑第三方账号登录状态和 CLI 私有依赖，默认使用 HTTP 配置入口。
 
-`install.py --engine ENGINE --backup NEW_BACKUP --apply` 仅合并已知 AI 面板入口，拒绝重复安装和未知钩子。SCsub 已按通配符编译 docks 下的 C++ 文件。安装前在新备份目录保存原文件及合并后文件；`engine.patch` 是本次实际补丁。新增文件为 `editor/docks/olympus_panel.{h,cpp}` 和 `tools/olympus_bridge.py`。
+Olympus 页设置工作区、Python 和租户，点击任一检查按钮保存设置。上游位置可通过环境变量或本机 `.olympus-local.json` 绑定；示例文件在仓库根。没有有效上游、定义准入或文件数据回执时，聊天明确拒绝发送，不能回退为未受框架管理的模型聊天。
 
-恢复时先核对入口文件未被后续修改，再恢复备份并移除上述三个新增文件，重新编译或使用原二进制备份。不要将旧入口覆盖到后续已编辑的文件上。此操作不涉及 Olympus 框架和数据目录。
+## 验证
 
-## 比对边界与已发现差异
+```powershell
+python customizations/components/godot-host/test_bridge.py
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode accepted
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode cancel
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode tool
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode recovery
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode recovery_rejected
+python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x86_64.console.exe --mode recovery_cancel
+python tests/editor/test_olympus_distribution.py
+```
 
-| 对象 | Godot 现状 | Olympus 现状 | 合并处理 |
-| --- | --- | --- | --- |
-| 编辑器交互 | 已有 AI、定时器和构建恢复 | 无原生编辑器页面 | 增加第三个页面，原入口仅三行增量 |
-| 框架与身份 | 通用 AI 会话 | Zeus 治理、三个待准入 Agent | 共用框架位置，明确未启用 |
-| 数据 | 项目内 AI 会话历史 | Git 文件事件、租户分析 | 直接调用现有 Hermes 工具，不导入会话历史 |
-| 工单模块 | 未发现 Olympus 接入 | Ariadne 0.2.1 | 保留现有版本，不绕过上游全量核验 |
-| 有效共工 | 当前司南登记 0.3.1 | 同步器仍处理旧审查格式 | check/build 均阻断，待兼容新版来源后再全量同步 |
+accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。它不是生产批准；真实框架测试当前验证的是正确阻断。合成数据均位于临时仓库，不写入生产事件目录。
 
-Godot 目录无 Git 元数据，无法证明某项代码相对于其原始历史版本的差异。本次对比依据当前文件与内容摘要，补丁相对于本次合并前快照。没有覆盖 Godot 源码树，也没有将引擎源码当作框架上游。
+源码根的 `bin/` 接受匹配源码提交的 Windows x64 预编译包。构建脚本会重新生成被 Git 忽略的 `.gen.*` 文件；不再提交生成代码与构建缓存。C# 示例另需 .NET 版 Godot 与已安装 .NET SDK，本次验证的运行示例是 `samples/olympus-workbench/`。
 
-## 验证入口
+框架候选通过 `Olympus/sync/gonggong_sync.py prepare` 在新目录生成，全量核对来源。正式 `build`、`check` 和聊天上下文入口仍要求上游正式准入；候选验证不能解锁聊天。来源索引为 `Olympus/source-evidence.json`，原件留在外部上游，不随本仓库复制。源码移动后按示例配置上游相对位置即可重新核验。
 
-`python integrations/godot/test_bridge.py` 覆盖缺失进程、未知动作、上游拒绝传播、租户参数和不自动启用 Agent。`smoke.gd` 在实际编辑器中寻找 Olympus 页并点击状态与数据校验，验证子进程桥接及返回状态。测试数据留在忽略的本地缓存中，不作为生产事件。
+`verification.json` 是初次独立目录接入的历史证据，保持原字节供旧事件引用；其中源码路径与状态不作为当前版本的验证结论。当前需求及验收见 `design-docs/godot-olympus-chat-20261102.md`。

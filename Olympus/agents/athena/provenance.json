@@ -1,7 +1,7 @@
 {
   "source_version": "0.1.1",
-  "source_framework": "../gonggong-v0.2",
-  "historical_package": "../共工v0.4.0整理前历史快照.zip",
-  "runtime_integration": "integrations/yanshi-legacy",
-  "adaptation": "Old instructions and private Yuanheng copy archived; active runtime resume uses shared sources."
+  "source_framework": "../olympus-v0.2",
+  "historical_package": "../奥林匹斯v0.4.0整理前历史快照.zip",
+  "runtime_integration": "integrations/athena-legacy",
+  "adaptation": "Old instructions and private Zeus copy archived; active runtime resume uses shared sources."
 }

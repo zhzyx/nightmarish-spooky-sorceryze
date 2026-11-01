@@ -1,5 +1,5 @@
 {
   "source_framework_version": "0.8.1",
-  "source_directory": "../gonggong-v0.8.1",
-  "change": "User-directed model-neutral runtime, protocol adapters, capability evaluation and automatic local runtime telemetry. Foundation and Yuanheng unchanged; real models and enterprise deployment not verified."
+  "source_directory": "../olympus-v0.8.1",
+  "change": "User-directed model-neutral runtime, protocol adapters, capability evaluation and automatic local runtime telemetry. Foundation and Zeus unchanged; real models and enterprise deployment not verified."
 }

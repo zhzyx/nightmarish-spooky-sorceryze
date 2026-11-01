@@ -60,4 +60,4 @@
 
 配置按平台、企业、项目、工作流和任务分层继承。下层可以在授权内细化约束，不能覆盖上层的权限和根本边界。配置记录来源、生效版本、兼容检查及恢复点；在途任务固定所用版本，变更后明确继续、重验或取消策略。
 
-已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-sinan-history.zip。
+已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-evidence.json。

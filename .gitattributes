@@ -26,3 +26,4 @@ misc/msvs/* eol=crlf
 Olympus/** -text whitespace=cr-at-eol
 integrations/godot/*.patch -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
+integrations/godot/verification*.json -text whitespace=cr-at-eol

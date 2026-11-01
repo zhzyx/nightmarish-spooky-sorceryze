@@ -65,6 +65,29 @@ class TextureRect;
 
 class AIChatDock : public EditorDock {
 	GDCLASS(AIChatDock, EditorDock);
+	Timer *olympus_timer = nullptr;
+	int64_t olympus_pid = -1;
+	uint64_t olympus_generation = 0;
+	bool olympus_resume = false;
+	String olympus_context;
+	String olympus_input_path;
+	String olympus_output_path;
+	Dictionary olympus_reporting;
+	String olympus_report_root;
+	String olympus_report_python;
+	Dictionary olympus_running_steps;
+	Timer *olympus_receipt_timer = nullptr;
+	int64_t olympus_receipt_pid = -1;
+	String olympus_receipt_path;
+	uint64_t olympus_receipt_generation = 0;
+	String olympus_recovered_result;
+	bool olympus_recovery_can_send = false;
+	bool _record_olympus(const String &p_kind, const String &p_phase, const String &p_status, bool p_flush = true);
+	void _poll_olympus_receipt();
+	void _end_olympus(const String &p_status);
+	void _begin_olympus_context();
+	void _poll_olympus_context();
+	void _clear_olympus_files();
 
 	Button *engine_build_button = nullptr;
 	Button *engine_restart_button = nullptr;

@@ -15,7 +15,7 @@ def fingerprint(root,paths):
     return hashlib.sha256(''.join(x['path']+'\0'+x['sha256']+'\n' for x in records).encode()).hexdigest(),records
 
 def verify(root,candidate=False):
-    __import__("runpy").run_path(str(root/"sync/gonggong_sync.py"))["check"](root)
+    __import__("runpy").run_path(str(root/"sync/gonggong_sync.py"))["check"](root,candidate_source=candidate)
     read=lambda p:json.loads(local(root,p).read_text(encoding='utf-8'))
     m=read('framework-manifest.json');lock=read('foundation.lock.json')
     if hashlib.sha256(local(root,'FOUNDATION.md').read_bytes()).hexdigest()!=lock['sha256']:raise ValueError('Frozen foundation changed')

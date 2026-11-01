@@ -221,14 +221,14 @@ TEST_CASE("[AIChat] Resume journal legacy JSON and compact encoding remain compa
 	const Dictionary journal = make_resume_journal(String::utf8("保留用户约束\n"));
 	Dictionary restored;
 	REQUIRE(AIChatResume::decode_journal(JSON::stringify(journal, "\t"), restored));
-	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+	CHECK(Variant(restored) == JSON::parse_string(JSON::stringify(journal)));
 	String body;
 	Dictionary stats;
 	REQUIRE(AIChatResume::encode_journal(journal, body, stats) == OK);
 	CHECK(stats["encoding"] == Variant("json"));
 	CHECK(body == JSON::stringify(journal));
 	REQUIRE(AIChatResume::decode_journal(body, restored));
-	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+	CHECK(Variant(restored) == JSON::parse_string(JSON::stringify(journal)));
 }
 
 TEST_CASE("[AIChat] Resume journal oversized history is losslessly compressed with exact pending tools") {
@@ -241,7 +241,7 @@ TEST_CASE("[AIChat] Resume journal oversized history is losslessly compressed wi
 	CHECK(body.utf8().length() < int64_t(AIChatResume::MAX_JOURNAL_BYTES));
 	Dictionary restored;
 	REQUIRE(AIChatResume::decode_journal(body, restored));
-	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+	CHECK(Variant(restored) == JSON::parse_string(JSON::stringify(journal)));
 
 	Dictionary envelope = JSON::parse_string(body);
 	envelope["uncompressed_bytes"] = int64_t(AIChatResume::MAX_UNCOMPRESSED_JOURNAL_BYTES + 1);

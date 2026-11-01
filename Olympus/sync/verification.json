@@ -1,8 +1,10 @@
 {
   "full_parity": true,
+  "source_integrity_verified": true,
+  "source_admission_verified": false,
   "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
   "preserved_exemption": "extensions/hermes-files/",
-  "source_files": 120,
+  "source_files": 136,
   "distribution_files": 128,
   "upstream_version": "0.9.0",
   "checks": [
@@ -10,5 +12,6 @@
     "passed file-level quality ownership checks; host identity and runtime not verified"
   ],
   "python_and_node_syntax": "pass",
-  "production_admission": false
+  "production_admission": false,
+  "formal_source_validation_error": "Upstream integrity/admission rejected: Admission subject mismatch\n"
 }

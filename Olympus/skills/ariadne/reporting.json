@@ -3,9 +3,9 @@
   "component": {
     "kind": "skill",
     "id": "ariadne",
-    "version": "0.2.1",
+    "version": "0.4.0",
     "entry": "skills/ariadne/SKILL.md",
-    "entry_sha256": "6c7b6c78f0f1ffc34551f63f30a87118e0dd182c62cfbb00a343b68dca50a122"
+    "entry_sha256": "f89e784f8baca25ae714d15b01ac12cc3c0b1c94fcfbeff9ec340b7d58547ad6"
   },
   "required": true,
   "policy": "contracts/hermes-reporting.json",

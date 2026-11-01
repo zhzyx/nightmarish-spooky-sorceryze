@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "basis": "Review/build hashes preserve actual Windows working bytes; Git normalizes C++ text to LF. Content excluding line endings is identical. Immutable verification snapshots use -text so event digests remain exact.",
+  "files": {
+    "editor/docks/ai_chat_olympus.cpp": {
+      "reviewed_worktree_sha256": "6a02de567f561b3ae38256f85b2611995182566e78762a857a457c0779ff5c98",
+      "git_canonical_sha256": "715436725be2dd5ca530ed95076ce7efb74ed8f3045c88e5d5574477a2c32a0c",
+      "eol_only_difference": true
+    },
+    "editor/docks/ai_chat_dock.cpp": {
+      "reviewed_worktree_sha256": "43b2250c93e8576a74281cca7b44f904d65aaabb8b6649007e73d675fb5d020d",
+      "git_canonical_sha256": "43b2250c93e8576a74281cca7b44f904d65aaabb8b6649007e73d675fb5d020d",
+      "eol_only_difference": false
+    },
+    "editor/docks/ai_chat_dock.h": {
+      "reviewed_worktree_sha256": "9b0900a5f48929467904e76f0d1ccb663cc87649d21cf450f68fd3726de881f7",
+      "git_canonical_sha256": "9b0900a5f48929467904e76f0d1ccb663cc87649d21cf450f68fd3726de881f7",
+      "eol_only_difference": false
+    },
+    "editor/docks/olympus_panel.cpp": {
+      "reviewed_worktree_sha256": "37bc27c62890797f2885c48c83cb63c498863d550f96dc4cc2eaf27fce0c0e5b",
+      "git_canonical_sha256": "568c63195f9ea4e75dd050c2b8b68ff73024af44fce4b05392eb5ecf20118f29",
+      "eol_only_difference": true
+    },
+    "editor/docks/olympus_panel.h": {
+      "reviewed_worktree_sha256": "6083baae8b7bbff86aad4fc7db22d7698621b7ec43513fa4c5c5d801af005d89",
+      "git_canonical_sha256": "95fda1073d7a3f89007c28300680d4e0e45d1172544d861585feddd66c852c7d",
+      "eol_only_difference": true
+    },
+    "customizations/components/godot-host/bridge.py": {
+      "reviewed_worktree_sha256": "1e4826017c425da3b7fcc8c27debb4609de568463c2ecea2b2eecd51db453bb7",
+      "git_canonical_sha256": "1e4826017c425da3b7fcc8c27debb4609de568463c2ecea2b2eecd51db453bb7",
+      "eol_only_difference": false
+    },
+    "customizations/components/godot-host/test_bridge.py": {
+      "reviewed_worktree_sha256": "3ebf7394dabab15d114cd312709f8d9c1829c09a245aeafa3ed69b435ae7a1ef",
+      "git_canonical_sha256": "3ebf7394dabab15d114cd312709f8d9c1829c09a245aeafa3ed69b435ae7a1ef",
+      "eol_only_difference": false
+    },
+    "tests/editor/olympus_chat_gate.gd": {
+      "reviewed_worktree_sha256": "6fcf8765d9af6e1e72969b6e046224c7f90d9035efe0ca004af5e3772bee6a80",
+      "git_canonical_sha256": "6fcf8765d9af6e1e72969b6e046224c7f90d9035efe0ca004af5e3772bee6a80",
+      "eol_only_difference": false
+    },
+    "tests/editor/run_olympus_chat_gate.py": {
+      "reviewed_worktree_sha256": "db33bbfa4a2517d2b7b496f078bbab9b6dde90ecd4c73907d2cab8af663ad9ad",
+      "git_canonical_sha256": "db33bbfa4a2517d2b7b496f078bbab9b6dde90ecd4c73907d2cab8af663ad9ad",
+      "eol_only_difference": false
+    },
+    "tests/editor/test_olympus_distribution.py": {
+      "reviewed_worktree_sha256": "913ef03c5b1c3dcfc9bcd728d4469a21658c2c576ebf41d087031564dc09c41d",
+      "git_canonical_sha256": "913ef03c5b1c3dcfc9bcd728d4469a21658c2c576ebf41d087031564dc09c41d",
+      "eol_only_difference": false
+    },
+    "tools/olympus_bridge.py": {
+      "reviewed_worktree_sha256": "f352d5eeada99eb7e332f4006c8d1d21d725bbda8fa76e3f58247f60b7e78979",
+      "git_canonical_sha256": "f352d5eeada99eb7e332f4006c8d1d21d725bbda8fa76e3f58247f60b7e78979",
+      "eol_only_difference": false
+    },
+    "tools/build_olympus_editor.ps1": {
+      "reviewed_worktree_sha256": "0c5aa55b936de12593f0e66a7ddeb7374ae10a559314a89b6abce5c7d5c730ee",
+      "git_canonical_sha256": "0c5aa55b936de12593f0e66a7ddeb7374ae10a559314a89b6abce5c7d5c730ee",
+      "eol_only_difference": false
+    },
+    "tools/launch_olympus_editor.ps1": {
+      "reviewed_worktree_sha256": "5ff06b85d062fd1e7fb912ea460109fbda00cbcabcfd6bbf8d9a10037cc5dd14",
+      "git_canonical_sha256": "5ff06b85d062fd1e7fb912ea460109fbda00cbcabcfd6bbf8d9a10037cc5dd14",
+      "eol_only_difference": false
+    },
+    "Olympus/sync/gonggong_sync.py": {
+      "reviewed_worktree_sha256": "27fab91718e3315c024fcf6c898d095bdc6e1b6447dbff563eab7c508f966a0c",
+      "git_canonical_sha256": "27fab91718e3315c024fcf6c898d095bdc6e1b6447dbff563eab7c508f966a0c",
+      "eol_only_difference": false
+    },
+    "Olympus/sync/sinan_source.py": {
+      "reviewed_worktree_sha256": "991407d3269af72b77494a490b519105824bb982208bd675d38e1c440b80351b",
+      "git_canonical_sha256": "991407d3269af72b77494a490b519105824bb982208bd675d38e1c440b80351b",
+      "eol_only_difference": false
+    },
+    "Olympus/sync/POLICY.md": {
+      "reviewed_worktree_sha256": "582305ccfba3915260e15701b2e254d217190e8f1ae9b7983e61aa7e638b78f9",
+      "git_canonical_sha256": "582305ccfba3915260e15701b2e254d217190e8f1ae9b7983e61aa7e638b78f9",
+      "eol_only_difference": false
+    },
+    "Olympus/source-evidence.json": {
+      "reviewed_worktree_sha256": "be09dd5e6e5d11a34489ee792365694d341454064bd195d8cb9304495f75d882",
+      "git_canonical_sha256": "be09dd5e6e5d11a34489ee792365694d341454064bd195d8cb9304495f75d882",
+      "eol_only_difference": false
+    },
+    "Olympus/framework-manifest.json": {
+      "reviewed_worktree_sha256": "e7806d3eed8a0c47ef65cc5e7580f3ab88f99bdfc222a3cbde989a0de84a7542",
+      "git_canonical_sha256": "e7806d3eed8a0c47ef65cc5e7580f3ab88f99bdfc222a3cbde989a0de84a7542",
+      "eol_only_difference": false
+    }
+  },
+  "line_ending_differences": [
+    "editor/docks/ai_chat_olympus.cpp",
+    "editor/docks/olympus_panel.cpp",
+    "editor/docks/olympus_panel.h"
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-01T20:38:22.858095+00:00",
+  "request_id": "godot-olympus-chat-20261102",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2",
+  "status": "candidate_built_and_verified_production_admission_blocked",
+  "files": {
+    "editor/docks/ai_chat_olympus.cpp": "6a02de567f561b3ae38256f85b2611995182566e78762a857a457c0779ff5c98",
+    "editor/docks/ai_chat_dock.cpp": "43b2250c93e8576a74281cca7b44f904d65aaabb8b6649007e73d675fb5d020d",
+    "editor/docks/ai_chat_dock.h": "9b0900a5f48929467904e76f0d1ccb663cc87649d21cf450f68fd3726de881f7",
+    "editor/docks/olympus_panel.cpp": "37bc27c62890797f2885c48c83cb63c498863d550f96dc4cc2eaf27fce0c0e5b",
+    "editor/docks/olympus_panel.h": "6083baae8b7bbff86aad4fc7db22d7698621b7ec43513fa4c5c5d801af005d89",
+    "customizations/components/godot-host/bridge.py": "1e4826017c425da3b7fcc8c27debb4609de568463c2ecea2b2eecd51db453bb7",
+    "customizations/components/godot-host/test_bridge.py": "3ebf7394dabab15d114cd312709f8d9c1829c09a245aeafa3ed69b435ae7a1ef",
+    "tests/editor/olympus_chat_gate.gd": "6fcf8765d9af6e1e72969b6e046224c7f90d9035efe0ca004af5e3772bee6a80",
+    "tests/editor/run_olympus_chat_gate.py": "db33bbfa4a2517d2b7b496f078bbab9b6dde90ecd4c73907d2cab8af663ad9ad",
+    "tests/editor/test_olympus_distribution.py": "913ef03c5b1c3dcfc9bcd728d4469a21658c2c576ebf41d087031564dc09c41d",
+    "tools/olympus_bridge.py": "f352d5eeada99eb7e332f4006c8d1d21d725bbda8fa76e3f58247f60b7e78979",
+    "tools/build_olympus_editor.ps1": "0c5aa55b936de12593f0e66a7ddeb7374ae10a559314a89b6abce5c7d5c730ee",
+    "tools/launch_olympus_editor.ps1": "5ff06b85d062fd1e7fb912ea460109fbda00cbcabcfd6bbf8d9a10037cc5dd14",
+    "Olympus/sync/gonggong_sync.py": "27fab91718e3315c024fcf6c898d095bdc6e1b6447dbff563eab7c508f966a0c",
+    "Olympus/sync/sinan_source.py": "991407d3269af72b77494a490b519105824bb982208bd675d38e1c440b80351b",
+    "Olympus/sync/POLICY.md": "582305ccfba3915260e15701b2e254d217190e8f1ae9b7983e61aa7e638b78f9",
+    "Olympus/source-evidence.json": "be09dd5e6e5d11a34489ee792365694d341454064bd195d8cb9304495f75d882",
+    "Olympus/framework-manifest.json": "e7806d3eed8a0c47ef65cc5e7580f3ab88f99bdfc222a3cbde989a0de84a7542"
+  },
+  "executables": {
+    "bin/godot.windows.editor.x86_64.exe": "59da0e43b383dd000dafaed9878bcbcd311b92fb2ba8cbf6947f1d0af7031a1b",
+    "bin/godot.windows.editor.x86_64.console.exe": "7a23999fd7c0789f8bf42e264e5d3441fe8222e3ec2205bfbc3a5bcf12247166"
+  },
+  "validation": {
+    "native_ai_chat_tests": {
+      "passed": 12,
+      "assertions_passed": 107
+    },
+    "bridge_unit_tests": {
+      "passed": 7
+    },
+    "distribution_tests": {
+      "passed": 4
+    },
+    "editor_scenarios": {
+      "accepted": {
+        "model_requests": 1,
+        "context": "isolated_fixture"
+      },
+      "rejected": {
+        "model_requests": 0,
+        "context": "real_framework"
+      },
+      "cancel": {
+        "model_requests": 0,
+        "late_context": "accepted_fixture"
+      },
+      "tool": {
+        "model_requests": 2,
+        "context_checks": 2,
+        "tool_supersedes_verified": true
+      },
+      "recovery": {
+        "model_requests": 0,
+        "ending": "paused"
+      },
+      "recovery_rejected": {
+        "model_requests": 0,
+        "journal_retained": true,
+        "context": "real_framework"
+      },
+      "recovery_cancel": {
+        "model_requests": 1,
+        "endings": [
+          "cancelled",
+          "completed"
+        ]
+      }
+    },
+    "external_build_directory_binary": "same accepted fixture scenario passed; configured workspace implementation used",
+    "workbench": "headless project launched and exited successfully",
+    "native_source_build_parity": {
+      "native_input_files": 8262,
+      "differences": [],
+      "comparison": "UTF8/source bytes with CRLF normalized to LF"
+    },
+    "hermes_preservation": {
+      "before_rebuild": {
+        "event.schema.json": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c",
+        "event.template.json": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+        "hermes_files.py": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+        "README.md": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+      },
+      "after_rebuild": {
+        "event.schema.json": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c",
+        "event.template.json": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+        "hermes_files.py": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+        "README.md": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+      },
+      "byte_equal": true,
+      "baseline": "snapshot captured before portable candidate replacement; Git dataset outside replacement root"
+    },
+    "framework_candidate": {
+      "full_parity": true,
+      "source_integrity_verified": true,
+      "source_admission_verified": false,
+      "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+      "preserved_exemption": "extensions/hermes-files/",
+      "source_files": 136,
+      "distribution_files": 128,
+      "upstream_version": "0.9.0",
+      "checks": [
+        "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+        "passed file-level quality ownership checks; host identity and runtime not verified"
+      ],
+      "python_and_node_syntax": "pass",
+      "production_admission": false,
+      "formal_source_validation_error": "Upstream integrity/admission rejected: Admission subject mismatch\n"
+    }
+  },
+  "independent_review": {
+    "chat_gate": {
+      "evaluator": "/root/review_chat_gate",
+      "result": "no_remaining_blocking_code_defect_in_reviewed_scope",
+      "independently_executed": "7 bridge unit tests",
+      "native_tests": "root executed; reviewer inspected root evidence, did not rerun"
+    },
+    "distribution": {
+      "evaluator": "/root/review_upstream",
+      "result": "no_remaining_blocking_code_defect_in_reviewed_scope",
+      "independently_executed": "4 distribution tests"
+    },
+    "user_approval": null,
+    "agent_definition_admission": false
+  },
+  "limitations": [
+    "Upstream yanshi and kuafu approvals do not match their current path-migrated candidates; strict admission rejects them.",
+    "All three Olympus Agent approvals remain null; a changed upstream approval changes source-index and candidate digests and requires regeneration/review.",
+    "Accepted transport tests use isolated fixtures, not production model accounts or Agent approval.",
+    "CLI production account chain is not validated.",
+    "Ordinary pre-model/tool reporting is synchronous with a 15-second flush budget; terminal delivery is asynchronous.",
+    "Headless editor shutdown emitted resource cleanup warnings in test runs; functional assertions passed.",
+    "Windows build disables AccessKit, D3D12 and ANGLE; this is not validation of those backends."
+  ],
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Host did not expose actual task/model usage; not estimated"
+}

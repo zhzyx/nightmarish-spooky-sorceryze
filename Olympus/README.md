@@ -6,7 +6,7 @@
 
 共工为唯一上游；除名称映射及明确的分发接入外，不允许框架行为偏差。赫尔墨斯数据可由共工只读用于优化。详见 [同步与数据共享规则](sync/POLICY.md)。
 
-本包为同步后候选，尚需独立准入；原批准原件见 source-history.zip。不存在后台自动部署服务。运行数据须存放在包外。
+本包为同步后候选，尚需独立准入；原批准原件保留于真实上游，摘要索引见 source-evidence.json。不存在后台自动部署服务。运行数据须存放在包外。
 
 # 奥林匹斯框架
 
@@ -48,4 +48,4 @@
 
 ## 阿里阿德涅（司南）已登记模块同步
 
-共工主线 v0.9.0 与已登记在另一来源树的司南 0.2.1 合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-sinan-history.zip；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/registry.json`；默认没有真实账本或源 CLI。
+共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。

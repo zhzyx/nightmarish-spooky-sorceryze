@@ -1,37 +1,40 @@
 {
-  "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality",
+  "source": "domains/quality",
   "source_policy_sha256": "57f915c933d3f53cbaa5af7ac8d9b986c435f379095bbe32ef573185cb5d4de7",
   "adaptation": "Retain quality rules and templates; replace duplicated generic decision algorithm with shared governance references; source workspace unchanged.",
   "templates": [
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\Feature质量看板.md",
+      "source": "domains/quality/templates/Feature质量看板.md",
       "target": "domains/quality/templates/Feature质量看板.md",
       "sha256": "9764c582ae636b22132a8e525f9ceada65241bdd0e8d50d86fdd32684d7e526b"
     },
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\例外与风险接受.md",
+      "source": "domains/quality/templates/例外与风险接受.md",
       "target": "domains/quality/templates/例外与风险接受.md",
       "sha256": "75fa9dfb4d2d873ce578c196099f79a1f45b309503f13c8ccd11b99c016a6b94"
     },
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\检查与验收记录.md",
+      "source": "domains/quality/templates/检查与验收记录.md",
       "target": "domains/quality/templates/检查与验收记录.md",
       "sha256": "536174846580e11c705fd961652205f8c053577979a79eecc7e013d098f6aa36"
     },
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\缺陷工单.md",
+      "source": "domains/quality/templates/缺陷工单.md",
       "target": "domains/quality/templates/缺陷工单.md",
       "sha256": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0"
     },
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\质量事件与决策记录.md",
+      "source": "domains/quality/templates/质量事件与决策记录.md",
       "target": "domains/quality/templates/质量事件与决策记录.md",
       "sha256": "68a2e7b828134d6088c7edef87da9e71b05e21d07cc8b4583092bf561642a7e5"
     },
     {
-      "source": "C:\\Users\\ROG\\Documents\\Codex\\2026-11-01\\new-chat-4\\outputs\\gonggong-quality\\templates\\质量约定.md",
+      "source": "domains/quality/templates/质量约定.md",
       "target": "domains/quality/templates/质量约定.md",
       "sha256": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d"
     }
-  ]
+  ],
+  "path_base": "gonggong_framework_root",
+  "source_resolution": "Migrated archive copy; original provenance retained in archive/framework-releases/olympus-v0.9.",
+  "evidence_index": "source-evidence.json"
 }

@@ -25,6 +25,15 @@
       "access": "read_only",
       "origin_framework": "github",
       "coverage": "one_issue_only"
+    },
+    {
+      "id": "github-issue-2",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2",
+      "snapshot": "data-collection/github-issue-2-20261102.json",
+      "access": "read_only",
+      "origin_framework": "github",
+      "coverage": "one_issue_only",
+      "validation_artifact": "integrations/godot/verification-20261102.json"
     }
   ],
   "remote_issue_collection": "manual_verified_snapshot"

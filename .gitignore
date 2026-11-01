@@ -406,3 +406,4 @@ __pycache__/
 !.env.example
 .olympus-local.json
 .godot-integration-local/
+.olympus-outbox/

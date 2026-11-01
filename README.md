@@ -1,5 +1,13 @@
 # Godot Engine
 
+# Olympus + Godot 工作区
+
+本仓库包含 Godot 引擎源码、原生 AI/Olympus 页面、Olympus 框架候选及可运行示例。工单使用 GitHub Issue，类别使用 `type:*` 标签；需求文档在 `design-docs/`，谛听采集交接在 `data-collection/`，真实文件事件在 `olympus-hermes-data/`。
+
+从仓库根运行 `tools/launch_olympus_editor.ps1` 启动编译后的编辑器。构建、预编译包安装及模型配置见 [接入说明](integrations/godot/README.md)，本次验收和剩余准入条件见 [需求文档](design-docs/godot-olympus-chat-20261102.md)。AI 聊天每轮调用当前工作区的 Olympus；上游或本地准入无效时拒绝发送。当前交付为未启用候选，测试桩不代表生产模型验收。
+
+交付包含 Olympus 分发内容及来源摘要索引，不包含完整 Gonggong 框架副本；Gonggong 仍是运行时核验的外部来源。下面保留 Godot 原项目说明和许可信息。
+
 <p align="center">
   <a href="https://godotengine.org">
     <img src="misc/logo/logo_outlined.svg" width="400" alt="Godot Engine logo">

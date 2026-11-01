@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-olympus-chat-20261102-verification",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-olympus-chat-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-01T20:41:09.055407+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue-2",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "status": "candidate_engineering_validation_passed",
+    "evidence": "integrations/godot/verification-20261102.json",
+    "evidence_sha256": "12a73b95caab23f4d3719e3cb14c5f89dcb1c78d9a6e7f0e043697b3c1a08c33",
+    "production_admission": false,
+    "model_account_acceptance": false,
+    "synthetic_test_data_imported": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate",
+    "agent_snapshot_basis": "Repository AGENTS.md instruction snapshot"
+  },
+  "evidence_refs": [],
+  "sha256": "3efda00bc3c07c04d962684bd4f8c281d2bfd396ddff67d33d460b72a4e75f83"
+}

@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "ai_chat_dock.h"
+#include "olympus_panel.h"
 
 #include "ai_chat_resume.h"
 #include "ai_chat_tools.h"
@@ -530,6 +531,9 @@ void AIChatDock::_flush_history() {
 // finished exchanges; this keeps the one thing history deliberately drops, the
 // batch that is still in flight, so a restart can continue it.
 void AIChatDock::_save_resume() {
+	if (!olympus_recovered_result.is_empty()) {
+		return; // Preserve the original restart journal until fresh-gate recovery succeeds.
+	}
 	if (!history_loaded || history_restoring || engine_restart_armed) {
 		return;
 	}
@@ -554,6 +558,9 @@ void AIChatDock::_save_resume() {
 }
 
 void AIChatDock::_clear_resume() {
+	if (!olympus_recovered_result.is_empty()) {
+		return;
+	}
 	if (engine_restart_armed) {
 		return; // The armed handoff owns the journal until the successor reads it.
 	}
@@ -770,15 +777,16 @@ void AIChatDock::_load_resume() {
 		// dock that the build check and the restart watchdog are waiting for.
 		AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
 	}
-	AIChatResume::clear_journal();
 	if (bool(journal.get("smoke_check", false))) {
+		AIChatResume::clear_journal();
 		AIChatResume::clear_report();
 		return;
 	}
 	Dictionary report;
 	const bool has_report = AIChatResume::read_report(report);
-	AIChatResume::clear_report();
 	if (restart.is_empty()) {
+		AIChatResume::clear_journal();
+		AIChatResume::clear_report();
 		_append(U"编辑器", U"上一轮的工具批次在编辑器退出时被中断，且不是版本切换，已停止该任务且不会自动重放。请确认实际文件状态后再继续。");
 		return;
 	}
@@ -844,15 +852,15 @@ void AIChatDock::_load_resume() {
 	// recorded and the user resumes manually.
 	const bool interactive = DisplayServer::get_singleton() && DisplayServer::get_singleton()->get_name() != "headless";
 	const bool can_send = interactive && (backend->get_selected() == 1 ? _validate_cli() : !api_key->get_text().strip_edges().is_empty());
-	if (can_send) {
-		queue_paused = false;
-		turn_completed = false;
-		session_generation++;
-		turn_model_requests = 0;
-		_set_busy(true);
-	}
+	queue_paused = !can_send;
+	turn_completed = false;
+	session_generation++;
+	turn_model_requests = 0;
+	_set_busy(true);
 	_append_work(String(U"版本切换完成，继续处理中断前的工具调用：") + String(restart.get("tool_name", "build_engine")));
-	_finish_tool(JSON::stringify(result));
+	olympus_recovered_result = JSON::stringify(result);
+	olympus_recovery_can_send = can_send;
+	_begin_olympus_context(); // Keep journal/report until fresh binding and result receipt succeed.
 	if (!can_send) {
 		_append(U"编辑器", backend->get_selected() == 1 ? U"版本切换结果已记入上下文，但 CLI 配置不完整，未自动继续。补全配置后发送“继续”即可接着做。" : U"版本切换结果已记入上下文，但 API 密钥不会被保存，未自动继续。填入密钥后发送“继续”即可接着做。");
 	}
@@ -1351,6 +1359,9 @@ void AIChatDock::_automation_toggled(bool) {
 
 void AIChatDock::_set_busy(bool p_busy) {
 	const bool was_busy = busy;
+	if (was_busy && !p_busy) {
+		_end_olympus(turn_completed ? "completed" : "failed");
+	}
 	busy = p_busy;
 	if (scheduled_agents.has(active_agent)) {
 		if (p_busy) {
@@ -1362,10 +1373,10 @@ void AIChatDock::_set_busy(bool p_busy) {
 	if (was_busy && !p_busy && schedule_timer) {
 		callable_mp(this, &AIChatDock::_scheduler_finished).call_deferred();
 	}
-	const bool locked = busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed;
+	const bool locked = busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !olympus_recovered_result.is_empty();
 	snapshot_history_button->set_disabled(locked || engine_restart_requested);
 	_refresh_engine_controls();
-	stop_button->set_disabled(!busy && !models_loading && !snapshot_restoring);
+	stop_button->set_disabled(!busy && !models_loading && !snapshot_restoring && olympus_recovered_result.is_empty());
 	for (const Variant &value : find_children("RestoreSessionSnapshot", "Button", true, false)) {
 		Button *button = Object::cast_to<Button>(static_cast<Object *>(value));
 		button->set_disabled(locked || !allow_tools->is_pressed());
@@ -1387,7 +1398,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 	send_button->set_disabled(snapshot_restoring || snapshot_transaction_failed || models_loading || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
 	send_button->set_text(busy || !queued_messages.is_empty() ? U"加入队列" : U"发送");
 	send_button->set_tooltip_text(U"回车发送；执行中加入本会话队列，当前任务完成后按顺序执行。Shift+回车换行。");
-	backend->set_disabled(busy || models_loading);
+	backend->set_disabled(locked);
 	// Leave tabs enabled so their close buttons remain usable during a request.
 	// _agent_selected rejects switches while the shared request state is locked.
 	add_agent->set_disabled(locked || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256));
@@ -1511,6 +1522,9 @@ void AIChatDock::_resume_message_queue() {
 }
 
 void AIChatDock::_dispatch_queued_message(int p_agent) {
+	if (!olympus_recovered_result.is_empty()) {
+		return;
+	}
 	if (!is_inside_tree() || history_restoring || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || p_agent != active_agent || queue_paused || queued_messages.is_empty()) {
 		return;
 	}
@@ -1526,6 +1540,14 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 }
 
 void AIChatDock::_send() {
+	if (!olympus_recovered_result.is_empty()) {
+		if (!busy) {
+			_append(TTR("Editor"), U"正在重新验证待恢复结果；当前输入保留为草稿。可按停止放弃恢复。");
+			_set_busy(true);
+			_begin_olympus_context();
+		}
+		return;
+	}
 	if (send_button->is_disabled() || (input->get_text().strip_edges().is_empty() && draft_images.is_empty())) {
 		return;
 	}
@@ -1627,6 +1649,15 @@ void AIChatDock::_request_completion() {
 	if (!busy) {
 		return;
 	}
+	if (!olympus_resume) {
+		_begin_olympus_context();
+		return;
+	}
+	olympus_resume = false;
+	if (!_record_olympus("step", "model-" + itos(tool_rounds), "running")) {
+		_set_busy(false);
+		return;
+	}
 	Array context_messages;
 	Dictionary context_stats;
 	if (!AIChatTools::compact_context(messages, context_messages, context_stats)) {
@@ -1676,6 +1707,7 @@ void AIChatDock::_request_completion() {
 	instructions += "\nProject directory: " + ProjectSettings::get_singleton()->get_resource_path();
 	instructions += "\nEditor executable: " + OS::get_singleton()->get_executable_path();
 	instructions += "\nOperating system: " + OS::get_singleton()->get_name();
+	instructions += "\n\n" + olympus_context;
 	payload_messages.push_back(chat_message("system", instructions));
 	payload_messages.append_array(context_messages);
 	if (int(context_stats["duplicates"]) || int(context_stats["shortened"]) || int(context_stats["dropped_turns"])) {
@@ -1761,6 +1793,10 @@ void AIChatDock::_request_completion() {
 
 void AIChatDock::_request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation) {
 	if (!busy || p_generation != request_generation) {
+		return;
+	}
+	if (!_record_olympus("step", "model-" + itos(tool_rounds), p_result == HTTPRequest::RESULT_SUCCESS && p_code >= 200 && p_code < 300 ? "response_received" : "failed") || !_record_olympus("message", "model_response", "received_metadata_only")) {
+		_set_busy(false);
 		return;
 	}
 	if (request) {
@@ -1950,6 +1986,10 @@ void AIChatDock::_next_tool(uint64_t p_session) {
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	Variant name_value = function.get("name", Variant());
+	if (!_record_olympus("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "running")) {
+		_set_busy(false);
+		return;
+	}
 	Variant args_value = function.get("arguments", Variant());
 	JSON json;
 	if (name_value.get_type() != Variant::STRING || args_value.get_type() != Variant::STRING || json.parse(args_value) != OK || json.get_data().get_type() != Variant::DICTIONARY) {
@@ -2146,6 +2186,10 @@ void AIChatDock::_next_tool(uint64_t p_session) {
 }
 
 void AIChatDock::_finish_tool(const String &p_result, bool p_file_success) {
+	if (!_record_olympus("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_olympus("message", "tool_result", "received_metadata_only")) {
+		_set_busy(false);
+		return;
+	}
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	const String name = function.get("name", "");
@@ -2351,7 +2395,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 
 void AIChatDock::_agent_selected(int p_index) {
 	ERR_FAIL_INDEX(p_index, agent_tabs->get_tab_count());
-	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring) {
+	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || !olympus_recovered_result.is_empty()) {
 		for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 			if (int(agent_tabs->get_tab_metadata(i)) == active_agent) {
 				agent_tabs->set_current_tab(i);
@@ -2573,6 +2617,10 @@ void AIChatDock::_close_agent() {
 }
 
 void AIChatDock::_add_agent() {
+	if (!olympus_recovered_result.is_empty()) {
+		_append(TTR("Editor"), U"请先恢复当前工具结果，或按停止明确放弃恢复。");
+		return;
+	}
 	if (busy || models_loading || engine_build_pid >= 0 || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256)) {
 		return;
 	}
@@ -2647,6 +2695,9 @@ void AIChatDock::_cancel_all_agents() {
 }
 
 void AIChatDock::_backend_changed(int p_backend) {
+	if (!olympus_recovered_result.is_empty()) {
+		return;
+	}
 	if (busy || models_loading) {
 		return;
 	}
@@ -2863,7 +2914,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 	for (int i = 0; i < records.size(); i++) {
 		current.push_back(JSON::stringify(records[i]));
 	}
-	const String configuration = cli_node->get_text() + "\n" + cli_bridge->get_text() + "\n" + cli_entry->get_text() + "\n" + (allow_tools->is_pressed() ? "tools_enabled" : "tools_disabled");
+	const String configuration = cli_node->get_text() + "\n" + cli_bridge->get_text() + "\n" + cli_entry->get_text() + "\n" + (allow_tools->is_pressed() ? "tools_enabled" : "tools_disabled") + "\n" + olympus_context.sha256_text();
 	bool incremental = cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id) && configuration == cli_configuration && cli_sent_messages.size() <= current.size();
 	for (int i = 0; incremental && i < cli_sent_messages.size(); i++) {
 		incremental = cli_sent_messages[i] == current[i];
@@ -3234,6 +3285,10 @@ void AIChatDock::_poll_cli() {
 }
 
 String AIChatDock::_engine_root() const {
+	const String repository = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir();
+	if (FileAccess::exists(repository.path_join("SConstruct"))) {
+		return repository;
+	}
 	return cli_bridge->get_text().strip_edges().get_base_dir().path_join("../..").simplify_path();
 }
 
@@ -3854,6 +3909,8 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
+	olympus_recovered_result = String();
+	olympus_recovery_can_send = false;
 	if (snapshot_restoring) {
 		_reject_snapshot_restore();
 		return;
@@ -3928,6 +3985,7 @@ void AIChatDock::_stop() {
 	AIChatResume::clear_journal();
 	messages.clear();
 	tool_calls.clear();
+	_end_olympus("cancelled");
 	_set_busy(false);
 	_append(TTR("Editor"), TTR("Stopped. Conversation context was reset; approved file changes were not reverted."));
 }
@@ -4000,7 +4058,7 @@ AIChatDock::AIChatDock() {
 	set_default_slot(DOCK_SLOT_MAIN_SCREEN);
 	EDITOR_DEF("ai_chat/endpoint", "https://api.openai.com/v1/chat/completions");
 	EDITOR_DEF("ai_chat/model", "");
-	EDITOR_DEF("ai_chat/backend", 1);
+	EDITOR_DEF("ai_chat/backend", 0);
 	String node_path;
 #ifdef WINDOWS_ENABLED
 	for (const String &directory : OS::get_singleton()->get_environment("PATH").split(";")) {
@@ -4051,6 +4109,8 @@ AIChatDock::AIChatDock() {
 	workspace_pages->add_child(timers_page);
 	workspace_pages->set_tab_title(0, "Agents");
 	workspace_pages->set_tab_title(1, U"定时器");
+	workspace_pages->add_child(memnew(OlympusPanel));
+	workspace_pages->set_tab_title(2, "Olympus");
 	workspace_pages->set_current_tab(0);
 	Label *heading = memnew(Label);
 	heading->set_text(U"AI 对话");
@@ -5005,6 +5065,9 @@ bool AIChatDock::_check_snapshot_editor(const Dictionary &p_snapshot, String &r_
 }
 
 void AIChatDock::_preview_snapshot_restore(const String &p_id) {
+	if (!olympus_recovered_result.is_empty()) {
+		return;
+	}
 	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || engine_restart_requested || !allow_tools->is_pressed()) {
 		return;
 	}
@@ -5040,6 +5103,9 @@ void AIChatDock::_preview_snapshot_restore(const String &p_id) {
 }
 
 void AIChatDock::_confirm_snapshot_restore() {
+	if (!olympus_recovered_result.is_empty()) {
+		return;
+	}
 	Dictionary fresh;
 	String error;
 	if (!allow_tools->is_pressed() || snapshot_transaction_failed || !_plan_version_restore(restoring_snapshot_id, fresh, error) || JSON::stringify(fresh) != JSON::stringify(restoring_snapshot) || !_check_snapshot_editor(fresh, error)) {
@@ -5176,6 +5242,10 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	if (olympus_pid >= 0) {
+		OS::get_singleton()->kill(olympus_pid);
+	}
+	_clear_olympus_files();
 	// Also cover destruction without EXIT_TREE; children may already be gone.
 	if (history_save_job) {
 		if (history_save_job->thread.is_started()) {

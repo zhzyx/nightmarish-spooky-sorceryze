@@ -20,6 +20,15 @@
       "framework_dependency": "Olympus 0.9.0 file event v1; no framework Agent or Ariadne dispatch invocation",
       "validation": "python customizations/components/issue-workorders/test_work_items.py; remote publication pending authenticated connection",
       "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files"
+    },
+    {
+      "id": "godot-host",
+      "version": "1.0.0",
+      "path": "customizations/components/godot-host",
+      "ownership": "olympus_customization",
+      "framework_dependency": "Olympus tools/agent-context.mjs and Hermes file event v1; valid upstream and independent admission required",
+      "validation": "5 bridge tests; 12 native AIChat tests; isolated editor rejected/accepted/cancel transport tests; production admission not passed",
+      "rollback": "Restore matching source and verified binary; retain events; never remove framework checks to enable chat"
     }
   ]
 }

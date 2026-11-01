@@ -1,7 +1,7 @@
 {
   "id": "ariadne",
   "name": "阿里阿德涅",
-  "version": "0.2.1",
+  "version": "0.4.0",
   "kind": "task_management_and_coordination",
   "layer": "olympus_platform",
   "scope": "all_task_types_in_authorized_registered_sources",
@@ -20,7 +20,8 @@
     "dedicated_agents": [],
     "execution_rule": "Use existing host-registered Zeus-governed agents with valid task mandates; this module neither creates agents nor grants authority",
     "delegation_rule": "Any later delegation or agent creation follows the shared organization and admission rules",
-    "revocation": "Host revokes affected mandates and disables module invocation; preserve source records and label history"
+    "revocation": "Host revokes affected mandates and disables module invocation; preserve source records and label history",
+    "reporting": "skills/ariadne/reporting.json"
   },
   "ownership": {
     "accountable_role": "host_delegated_task_coordinator",
@@ -38,7 +39,8 @@
   "outputs": {
     "board": "items, sourceSnapshots, diagnostics and ready keys",
     "labels": "audited local coordination updates; no source status mutation",
-    "handoff": "executable and argv with fresh-check requirements; execution=not_executed"
+    "handoff": "executable and argv with fresh-check requirements; execution=not_executed",
+    "progress_document": "source-derived states, labels, owners, blockers, acceptance and snapshot versions"
   },
   "dependencies": {
     "required": [
@@ -52,7 +54,7 @@
     },
     "optional_enhancements": [
       "additional source adapters",
-      "host scheduling"
+      "actual business event connectors"
     ],
     "external_replacement": "Adapters must preserve source identity, evidence, authority and dependency semantics; direct external connectors are not implemented"
   },
@@ -63,19 +65,34 @@
       "coordination configuration"
     ],
     "write": [
-      "coordination labels and label_history in the designated registry"
+      "coordination labels and label_history in the designated registry",
+      "derived progress.md beside the designated registry; source state remains authoritative"
     ],
     "source_ledger_write": false,
     "remote_write": false,
-    "automatic_dispatch": false,
+    "automatic_dispatch": "on_actual_task_event_under_current_host_mandate",
     "budget": "Bound by current host mandate; no standing spend or execution budget"
   },
   "runtime": {
     "environment": "Node.js with local filesystem; verified on Node 24 Windows",
     "current_adapter": "existing local Zeus ledger and CLI",
     "host_loader_implemented": false,
-    "coverage": "registered and readable sources only",
-    "compatibility": "Existing IDs, source states and ariadne entry remain valid; task types extensible; Feature references optional"
+    "coverage": "registered sources only; empty by default; no global event listener",
+    "compatibility": "Existing IDs, source states and ariadne entry remain valid; task types extensible; Feature references optional",
+    "scheduler_config": null,
+    "host": "Requires separate current host binding; upstream host authority is not inherited",
+    "concurrency": {
+      "execution_slots": 2,
+      "independent_review_slots": 1,
+      "host_child_slot_limit": 3,
+      "conflicts": "write/write and read/write by canonical path; read/read allowed"
+    },
+    "enabled": false,
+    "invocation": "event_driven",
+    "time_based_invocation": false,
+    "entry": "modules/ariadne/refresh.mjs",
+    "registry": "modules/ariadne/runtime/registry.json",
+    "reporting": "Required shared skill reporting; actual host binding and delivered receipt are mandatory for observed business execution; refresh output is not a receipt."
   },
   "cancel_and_resume": {
     "reads": "Stop and regenerate from fresh source snapshots",
@@ -88,5 +105,12 @@
     "resolve registered entry and runtime bindings",
     "preserve single authoritative source ledger",
     "differentiate definition admission from production deployment"
-  ]
+  ],
+  "implementation_source": {
+    "path": "modules/sinan/coordinator.mjs",
+    "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55",
+    "reuse": "byte-identical coordinator only; historical bindings and timer mechanisms not imported",
+    "path_base": "gonggong_framework_root",
+    "evidence_index": "source-evidence.json"
+  }
 }

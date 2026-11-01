@@ -145,10 +145,11 @@
     },
     {
       "path": "specs/work-order-management.md",
-      "title": "阿里阿德涅｜奥林匹斯统一工单管理规范",
-      "load_when": "各类任务总协调、跨业务依赖与交接时",
+      "title": "阿里阿德涅全任务工单管理与协调",
+      "load_when": "需求、工单进度、依赖、决策或执行回执变化，以及用户主动查询时",
       "conditional_references": [
-        "specs/project-state.md"
+        "specs/project-state.md",
+        "specs/reporting.md"
       ]
     }
   ],
@@ -324,12 +325,12 @@
     },
     {
       "name": "ariadne",
-      "path": "skills/ariadne/SKILL.md",
-      "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne-admission.json",
+      "version": "0.4.0",
       "display_name": "阿里阿德涅",
-      "version": "0.2.1",
-      "reporting": "skills/ariadne/reporting.json"
+      "path": "skills/ariadne/SKILL.md",
+      "reporting": "skills/ariadne/reporting.json",
+      "state": "synchronized_candidate_pending_review",
+      "admission_pass": "reviews/ariadne/event-change-review.json"
     }
   ],
   "agents": [
@@ -342,7 +343,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "923fa2a2b0313522b628011c2e3cbbd6b0d749d5b4fbebef15ed5a04e75b54dd",
+      "candidate_digest": "d824fe0ac121d04835d1cc7f29f95a2509b034b2ec43bdc111d238b369b153fc",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -395,6 +396,7 @@
         "skills/dike/SKILL.md",
         "skills/dike/reporting.json",
         "skills/nike/reporting.json",
+        "source-evidence.json",
         "specs/data-feedback.md",
         "specs/document-design.md",
         "specs/governance-review.md",
@@ -429,7 +431,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "d3f4126e80a50cf7a1954f0950d282635c0c8cb755dc938f487f203d347e2056",
+      "candidate_digest": "7d1a0adb2ce5cfe02076f28a7c7810ea94cd57e1bae4dd960df90c803ea93797",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -479,6 +481,7 @@
         "skills/dike/reporting.json",
         "skills/nike/SKILL.md",
         "skills/nike/reporting.json",
+        "source-evidence.json",
         "specs/data-feedback.md",
         "specs/governance-review.md",
         "specs/model-runtime.md",
@@ -559,6 +562,7 @@
         "skills/dike/SKILL.md",
         "skills/dike/reporting.json",
         "skills/nike/reporting.json",
+        "source-evidence.json",
         "specs/data-feedback.md",
         "specs/enterprise-operations.md",
         "specs/governance-review.md",
@@ -584,7 +588,7 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "427cddf848a7e00f071f944285acae2b650c3ee01c7af4c53090bac960bca576",
+      "candidate_digest": "16f57ed5dc9cdb831bd57e0ca8ac3ac315355015f3fcd1532c59414e1e4eae3a",
       "reporting": "agents/hermes/reporting.json"
     }
   ],
@@ -639,9 +643,7 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.2.1",
-      "kind": "task_management_and_coordination",
-      "layer": "olympus_platform",
+      "version": "0.4.0",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",

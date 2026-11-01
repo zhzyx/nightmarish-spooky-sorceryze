@@ -1,8 +1,14 @@
 {
   "path_base": "framework_root",
   "framework_root": ".",
+  "framework_pointer": "CURRENT_FRAMEWORK.json",
   "coordinator": "modules/ariadne/coordinator.mjs",
-  "default_registry": "modules/ariadne/registry.json",
-  "mode": "source_read_only_with_local_labels_and_command_preparation",
-  "external_ledger_format": ".yuanheng/state.json"
+  "coordinator_state": "available_on_demand",
+  "default_registry": "modules/ariadne/runtime/registry.json",
+  "scheduler": null,
+  "mode": "event_driven_host_invocation",
+  "enabled": false,
+  "relocation": "Paths resolve against the framework root discovered from this file at ../.., not process cwd. Register authorized sources explicitly. Host invokes only for real task events; no background listener or timer.",
+  "refresh": "modules/ariadne/refresh.mjs",
+  "time_based_invocation": false
 }

@@ -2,13 +2,9 @@
   "profiles": {
     "Godot C# Debug": {
       "commandName": "Executable",
-      "executablePath": "D:\\Projects\\godot-master\\bin\\godot.windows.editor.dev.x86_64.dotnet.mono.exe",
-      "commandLineArgs": "--path \"D:\\Projects\\godot-master\\samples\\pong_csharp_debug\"",
-      "workingDirectory": "D:\\Projects\\godot-master\\samples\\pong_csharp_debug",
-      "environmentVariables": {
-        "DOTNET_ROOT": "D:\\Projects\\godot-master\\.dotnet",
-        "DOTNET_ROOT_X64": "D:\\Projects\\godot-master\\.dotnet"
-      }
+      "executablePath": "../../bin/godot.windows.editor.dev.x86_64.dotnet.mono.exe",
+      "commandLineArgs": "--path .",
+      "workingDirectory": "."
     }
   }
 }
