@@ -1,8 +1,8 @@
 {
   "package": "olympus-framework-design",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "status": "synchronized_candidate_pending_independent_admission",
-  "host_loader_implemented": false,
+  "host_loader_implemented": true,
   "discovery_index": "README.md",
   "foundation": "FOUNDATION.md",
   "governance": "GOVERNANCE.md",
@@ -134,6 +134,14 @@
       "conditional_references": [
         "specs/governance-review.md"
       ]
+    },
+    {
+      "path": "specs/model-runtime.md",
+      "title": "跨模型运行与能力准入",
+      "load_when": "模型接入、任务执行和能力评测时",
+      "conditional_references": [
+        "specs/reporting.md"
+      ]
     }
   ],
   "never_bulk_load": [
@@ -254,56 +262,56 @@
       "name": "dike",
       "path": "skills/dike/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "skills/dike/reporting.json"
     },
     {
       "name": "metis",
       "path": "agents/athena/skills/metis/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/athena/skills/metis/reporting.json"
     },
     {
       "name": "nike",
       "path": "skills/nike/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "skills/nike/reporting.json"
     },
     {
       "name": "iris",
       "path": "agents/hermes/skills/iris/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/hermes/skills/iris/reporting.json"
     },
     {
       "name": "mnemosyne",
       "path": "agents/hermes/skills/mnemosyne/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/hermes/skills/mnemosyne/reporting.json"
     },
     {
       "name": "cadmus",
       "path": "agents/hermes/skills/cadmus/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/hermes/skills/cadmus/reporting.json"
     },
     {
       "name": "demeter",
       "path": "agents/hermes/skills/demeter/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/hermes/skills/demeter/reporting.json"
     },
     {
       "name": "apollo",
       "path": "agents/hermes/skills/apollo/SKILL.md",
       "state": "synchronized_candidate_pending_review",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "reporting": "agents/hermes/skills/apollo/reporting.json"
     }
   ],
@@ -312,12 +320,12 @@
       "id": "athena",
       "name": "雅典娜",
       "kind": "independent_agent",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "entry": "agents/athena/AGENT.md",
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "51008e42c5ea6a19566ef8bbe6ef93444ff1511f7fe9ea09e5ef8e78cbd7dece",
+      "candidate_digest": "c650bfdee91651925a4c11dc3146c863bc53be15a61af79aa25eb5089b00d147",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -363,19 +371,26 @@
         "integrations/athena-legacy/runtime/src/production.mjs",
         "integrations/hestia-reporting.json",
         "provenance.json",
+        "runtime/adapters.py",
+        "runtime/evaluate.py",
+        "runtime/hermes.py",
+        "runtime/runner.py",
         "skills/dike/SKILL.md",
         "skills/dike/reporting.json",
         "skills/nike/reporting.json",
         "specs/data-feedback.md",
         "specs/document-design.md",
         "specs/governance-review.md",
+        "specs/model-runtime.md",
         "specs/quality-responsibilities.md",
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "templates/model-plan.json",
         "templates/reporting-binding.json",
+        "tests/test_runtime.py",
         "tools/admission.mjs",
         "tools/agent-context.mjs",
         "tools/create-component.py",
@@ -391,12 +406,12 @@
       "id": "themis",
       "name": "忒弥斯",
       "kind": "independent_agent",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "entry": "agents/themis/AGENT.md",
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "17eec169af00a46e9dcc89e304c34f440112038e4022fc89712938383238457c",
+      "candidate_digest": "a1c12484daff3c8143addf19d49e5f93852e8de05dae5faa685fb47f9490a70f",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -438,12 +453,17 @@
         "foundation.lock.json",
         "integrations/hestia-reporting.json",
         "provenance.json",
+        "runtime/adapters.py",
+        "runtime/evaluate.py",
+        "runtime/hermes.py",
+        "runtime/runner.py",
         "skills/dike/SKILL.md",
         "skills/dike/reporting.json",
         "skills/nike/SKILL.md",
         "skills/nike/reporting.json",
         "specs/data-feedback.md",
         "specs/governance-review.md",
+        "specs/model-runtime.md",
         "specs/quality-responsibilities.md",
         "specs/quality.md",
         "specs/reporting.md",
@@ -451,7 +471,9 @@
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "templates/model-plan.json",
         "templates/reporting-binding.json",
+        "tests/test_runtime.py",
         "tools/admission.mjs",
         "tools/agent-context.mjs",
         "tools/check_quality_ownership.py",
@@ -468,7 +490,7 @@
       "id": "hermes",
       "name": "赫尔墨斯",
       "kind": "independent_agent",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "entry": "agents/hermes/AGENT.md",
       "governance_root": "zeus",
       "admission_pass": "reviews/hermes-admission.json",
@@ -511,12 +533,17 @@
         "foundation.lock.json",
         "integrations/hestia-reporting.json",
         "provenance.json",
+        "runtime/adapters.py",
+        "runtime/evaluate.py",
+        "runtime/hermes.py",
+        "runtime/runner.py",
         "skills/dike/SKILL.md",
         "skills/dike/reporting.json",
         "skills/nike/reporting.json",
         "specs/data-feedback.md",
         "specs/enterprise-operations.md",
         "specs/governance-review.md",
+        "specs/model-runtime.md",
         "specs/project-state.md",
         "specs/quality-responsibilities.md",
         "specs/reporting.md",
@@ -524,7 +551,9 @@
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "templates/model-plan.json",
         "templates/reporting-binding.json",
+        "tests/test_runtime.py",
         "tools/admission.mjs",
         "tools/agent-context.mjs",
         "tools/create-component.py",
@@ -535,7 +564,7 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "d678f03cc70ce706f88f8ef6da8eb5224726369b49e7c0752c5c2f389e73d4c2",
+      "candidate_digest": "fc691d95df0b10ef0cc57ff95ad1f999ca46d277db5068d11f47cc97e2f036da",
       "reporting": "agents/hermes/reporting.json"
     }
   ],
@@ -570,8 +599,22 @@
       "agent",
       "skill"
     ],
-    "runtime_deployed": false
+    "runtime_deployed": false,
+    "runtime_deployed_scope": "enterprise_or_external_host_deployment",
+    "local_runtime_instrumented": true
   },
+  "model_runtime": {
+    "entry": "runtime/runner.py",
+    "evaluation": "runtime/evaluate.py",
+    "protocols": [
+      "chat-completions",
+      "ollama-chat",
+      "olympus-json"
+    ],
+    "live_models_verified": false,
+    "enterprise_deployed": false
+  },
+  "host_loader_scope": "local_trusted_operator_runtime_only",
   "distribution_sync": {
     "policy": "sync/POLICY.md",
     "checker": "sync/gonggong_sync.py",

@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "nike",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "skills/nike/SKILL.md",
     "entry_sha256": "23501480ca230d11c070f1fb8f3f1510ad6b7fa88cd59175058c72b3897ad6e4"
   },

@@ -2,7 +2,7 @@
   "id": "athena",
   "name": "雅典娜",
   "kind": "independent_agent",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "entry": "agents/athena/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",

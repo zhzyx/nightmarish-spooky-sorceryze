@@ -10,7 +10,7 @@
 
 # 奥林匹斯框架
 
-版本 0.8.1；冻结纲领 1.0；宙斯 0.4.1。所有 Agent，包括临时、派生和外部接入实例，均受宙斯统一控制，无例外。本索引用于发现，按任务加载相关规范。
+版本 0.9.0；冻结纲领 1.0；宙斯 0.4.1。所有 Agent，包括临时、派生和外部接入实例，均受宙斯统一控制，无例外。本索引用于发现，按任务加载相关规范。
 
 ## 当前组成
 
@@ -22,7 +22,8 @@
 | 3 个正式独立 Agent | [雅典娜](agents/athena/AGENT.md)：需求理解与文档设计；[忒弥斯](agents/themis/AGENT.md)：升级质量事件监察；[赫尔墨斯](agents/hermes/AGENT.md)：数据记录、分析与优化参考 |
 | 9 项 skill | dike、metis、themis、iris、mnemosyne、cadmus、demeter、apollo、上游 hestia |
 | 临时审查职能 | 阿斯特赖亚·框架审查：独立评价当前候选；不是第四个常设 Agent，不因命名获得权限 |
-| 15 项专项规范 | 模块、客户方案、组织、项目状态、并发、代码、场景、质量、引擎适配、企业运行、治理审查、文档设计、质量职责、数据反馈、上报；路径与加载条件见 framework-manifest.json |
+| 16 项专项规范 | 模块、客户方案、组织、项目状态、并发、代码、场景、质量、引擎适配、企业运行、治理审查、文档设计、质量职责、数据反馈、上报、跨模型运行；路径与加载条件见 framework-manifest.json |
+| 跨模型本地运行 | [运行规范](specs/model-runtime.md)、runtime/runner.py、runtime/adapters.py、runtime/evaluate.py、runtime/hermes.py；共享代码，不新增Agent/skill |
 | 共享实现与记录 | tools、contracts、templates；雅典娜兼容代码在 integrations/athena-legacy；本版审查证据在 reviews |
 
 组件版本以 framework-manifest.json 和各 Agent 元数据为准。所有组件路径相对本框架根。旧版本保留为历史来源，不把其中的 Agent、规范或批准自动并入当前清单。
@@ -41,4 +42,6 @@
 
 `python tools/verify_framework.py` 检查当前定义；`node tools/agent-context.mjs AGENT-ID HOST-MANDATE.json` 仅装配上下文。文件锁、JSON 通行证与绑定文本本身不是身份或权限安全根。
 
-真实宿主自动采集、认证、预算和状态强制控制、企业数据连接器、生产容量及数据保留／恢复仍待部署验收。当前没有自动捕获全部 Codex 或引擎事件的后台服务。设计规范不代表 Godot、自研引擎或高并发生产系统已经实现；精简入口也不代表已经证明理解效率或 token 成本改善。
+0.9提供独立于Codex的本地Python运行器：三种文本协议、签名委托、能力路由、调用预算、持久状态、受限资源读取和自动投影赫尔墨斯。配置真实模型、live代表任务证据及有效授权后，实际任务可经该入口运行，不要求GPT或OpenAI SDK；协议模拟通过不等于真实模型认证。
+
+当前没有自动捕获全部Codex或引擎事件的后台服务。运行器之外的身份认证、全局预算、企业连接器、生产并发及数据保留／恢复仍待部署验收。设计规范不代表Godot、自研引擎或高并发生产系统已实现；精简入口也不代表已证明理解效率或token成本改善。

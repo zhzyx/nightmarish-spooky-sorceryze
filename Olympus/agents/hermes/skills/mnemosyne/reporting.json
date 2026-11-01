@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "mnemosyne",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/hermes/skills/mnemosyne/SKILL.md",
     "entry_sha256": "06835cd3c2672383bf0b85844ed58db9da96140cda814d7e51701f730c6a8654"
   },

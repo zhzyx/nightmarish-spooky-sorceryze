@@ -2,7 +2,7 @@
   "id": "themis",
   "name": "忒弥斯",
   "kind": "independent_agent",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "entry": "agents/themis/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",

@@ -3,7 +3,7 @@
   "component": {
     "kind": "agent",
     "id": "hermes",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "entry": "agents/hermes/AGENT.md",
     "entry_sha256": "2cf491f24d806771adb216a2a6a28559aa4871fdbda69eb61b97d8d6c913cc6c"
   },

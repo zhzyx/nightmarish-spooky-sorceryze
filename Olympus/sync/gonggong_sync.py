@@ -72,6 +72,9 @@ def expected(source,adapters):
     m['distribution_sync']={'policy':'sync/POLICY.md','checker':'sync/gonggong_sync.py','data_reader':'sync/read_hermes.py','upstream':'gonggong','full_verification_required':True}
     m['distribution_sync']['exemptions']=[{'id':'hermes-file-data','module_root':EXEMPT,'data_root':'<target-git-root>/olympus-hermes-data','sync_behavior':'preserve_existing_module_bytes_never_touch_dataset','authority':'explicit_user_instruction_independent_git_file_data_module','reader':'extensions/hermes-files/hermes_files.py','database_required':False,'initialize_only_after_target_repository_integration':True}]
     lock=get('foundation.lock.json');lock.update(sha256=sha(out['FOUNDATION.md']),source_sha256=sha(raw['FOUNDATION.md']),authority='explicit_user_instruction_complete_upstream_sync_and_namespace_mapping',namespace_only_change=True);put('foundation.lock.json',lock);m['foundation_sha256']=lock['sha256']
+    template=get('templates/review-pass.json')
+    template['baseline'].update(foundation_sha256=lock['sha256'],foundation_version=lock['version'],zeus_version=m['zeus_version'],policy_version=m['version'])
+    put('templates/review-pass.json',template)
     for record in m['upstream_files']:record['sha256']=sha(out[record['path']])
     for s in m['skills']:s['state']='synchronized_candidate_pending_review'
     for p in list(out):

@@ -3,12 +3,150 @@
   "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
   "preserved_exemption": "extensions/hermes-files/",
   "source_files": 120,
-  "distribution_files": 109,
-  "upstream_version": "0.8.1",
+  "distribution_files": 116,
+  "upstream_version": "0.9.0",
   "checks": [
-    "{\"framework_version\": \"0.8.1\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 9, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+    "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 9, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
     "passed file-level quality ownership checks; host identity and runtime not verified"
   ],
   "python_and_node_syntax": "pass",
-  "production_admission": false
+  "production_admission": false,
+  "synchronization_validation": {
+    "version": "0.9.0",
+    "upstream_delta": {
+      "added": [
+        "reviews/adapters-revision3-results.json",
+        "reviews/adapters_probe.py",
+        "reviews/model-data-validation.json",
+        "reviews/model-integration-results.json",
+        "reviews/model-reporting-validation.json",
+        "reviews/model-runtime-review.json",
+        "reviews/model-runtime-review.md",
+        "reviews/model-semantic-review.json",
+        "reviews/model-semantic-review.md",
+        "reviews/probe.py",
+        "reviews/revision4-results.json",
+        "reviews/跨模型改造交付说明.md",
+        "runtime/adapters.py",
+        "runtime/diting.py",
+        "runtime/evaluate.py",
+        "runtime/runner.py",
+        "specs/model-runtime.md",
+        "templates/model-plan.json",
+        "tests/test_runtime.py"
+      ],
+      "removed": [
+        "reviews/component-inventory.json",
+        "reviews/data-regression.json",
+        "reviews/history-v0.8/naming-verification.json",
+        "reviews/history-v0.8/临时审查职能命名.md",
+        "reviews/kuafu-verification.json",
+        "reviews/regression-summary.json",
+        "reviews/reporting-validation.json",
+        "reviews/runtime-results.json",
+        "reviews/runtime-review.md",
+        "reviews/runtime/admission-baseline-corrected/mandate.json",
+        "reviews/runtime/admission-baseline-corrected/results.json",
+        "reviews/runtime/admission_probe.py",
+        "reviews/runtime/baseline/results.json",
+        "reviews/runtime/candidate/results.json",
+        "reviews/runtime/finalize.py",
+        "reviews/runtime/probe.py",
+        "reviews/semantic-results.json",
+        "reviews/semantic-review.md",
+        "reviews/全量复核报告.md"
+      ],
+      "changed": [
+        "GOVERNANCE.md",
+        "README.md",
+        "agents/diting/agent.json",
+        "agents/diting/reporting.json",
+        "agents/diting/skills/data-analyze/reporting.json",
+        "agents/diting/skills/data-classify/reporting.json",
+        "agents/diting/skills/data-collect/reporting.json",
+        "agents/diting/skills/data-label/reporting.json",
+        "agents/diting/skills/data-store/reporting.json",
+        "agents/kuafu/agent.json",
+        "agents/kuafu/reporting.json",
+        "agents/yanshi/agent.json",
+        "agents/yanshi/reporting.json",
+        "agents/yanshi/skills/clarify-feature/reporting.json",
+        "framework-manifest.json",
+        "provenance.json",
+        "reviews/diting-admission.json",
+        "reviews/kuafu-admission.json",
+        "reviews/release-decision.md",
+        "reviews/release.json",
+        "reviews/yanshi-admission.json",
+        "skills/gonggong-check/reporting.json",
+        "skills/kuafu/reporting.json",
+        "specs/reporting.md",
+        "templates/review-pass.json"
+      ]
+    },
+    "source_files": 120,
+    "exempt_module_unchanged": true,
+    "existing_data_unchanged": true,
+    "dataset_hashes": {
+      ".gitattributes": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+      "dataset.json": "8a92dcbd2da5030d4f87de2b31a07783fb1253a857daf64bca0e265053ed8d8d",
+      "README.md": "4391fba3197f891c14a432a3b414100f4713964e5a09def35c33ca68ca44fba2",
+      "events/olympus-workspace/integrate-olympus-20261101/olympus-workspace-integration-20261101.json": "a7efadc58ec35ddf99892ffa6ca12214b80a2791c40957ea350e1c075d978378"
+    },
+    "exempt_module_hashes": {
+      "event.schema.json": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c",
+      "event.template.json": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+      "hermes_files.py": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+      "README.md": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+    },
+    "runtime_tests": {
+      "synthetic_only": true,
+      "checks": [
+        {
+          "name": "chat-completions HTTP + actual admission + telemetry + idempotent replay",
+          "pass": true
+        },
+        {
+          "name": "ollama-chat HTTP + actual admission + telemetry + idempotent replay",
+          "pass": true
+        },
+        {
+          "name": "olympus-json HTTP + actual admission + telemetry + idempotent replay",
+          "pass": true
+        },
+        {
+          "name": "themis admitted context to local telemetry",
+          "pass": true
+        },
+        {
+          "name": "hermes admitted context to local telemetry",
+          "pass": true
+        },
+        {
+          "name": "rejected output fallback, quality/rework and once-only skill attribution",
+          "pass": true
+        },
+        {
+          "name": "bounded autonomous resource read",
+          "pass": true
+        },
+        {
+          "name": "host planned multi-step workflow",
+          "pass": true
+        },
+        {
+          "name": "changed profile rejected before network",
+          "pass": true
+        },
+        {
+          "name": "standalone CLI authorization and execution without Codex SDK",
+          "pass": true
+        }
+      ],
+      "passed": 10,
+      "real_models_tested": false
+    },
+    "runtime_test_scope": "isolated synthetic protocol/runner fixture with distribution parity hook removed only in disposable fixture; production gates unchanged",
+    "real_context_admission_rejection": true
+  }
 }

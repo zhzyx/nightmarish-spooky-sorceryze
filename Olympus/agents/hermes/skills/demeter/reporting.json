@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "demeter",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/hermes/skills/demeter/SKILL.md",
     "entry_sha256": "ca3031f0e84b06bbb3bedd0047fb9e0b51ee7133681e6e97cf18506aee9938a6"
   },

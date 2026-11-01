@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "dike",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "skills/dike/SKILL.md",
     "entry_sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
   },

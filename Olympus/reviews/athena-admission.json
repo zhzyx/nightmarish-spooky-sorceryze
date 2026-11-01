@@ -4,8 +4,8 @@
   "subject": {
     "id": "athena",
     "version_or_digest": {
-      "version": "0.3.1",
-      "candidate_digest": "51008e42c5ea6a19566ef8bbe6ef93444ff1511f7fe9ea09e5ef8e78cbd7dece",
+      "version": "0.4.0",
+      "candidate_digest": "c650bfdee91651925a4c11dc3146c863bc53be15a61af79aa25eb5089b00d147",
       "candidate_files": [
         {
           "path": "AGENTS.md",
@@ -17,11 +17,11 @@
         },
         {
           "path": "GOVERNANCE.md",
-          "sha256": "41fa149b391ea83e4b05c766f4027aa9e7a9d2d7ee493d497803e1e01fbe7014"
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
         },
         {
           "path": "README.md",
-          "sha256": "13d7784aebfa563ed55c9da1f8299817c474f7af8d6405fa575825b785404fc6"
+          "sha256": "86d29dd176457941498eddc70198b1571b825af3b8c66728be370a1eef301506"
         },
         {
           "path": "agents/athena/AGENT.md",
@@ -37,7 +37,7 @@
         },
         {
           "path": "agents/athena/agent.json",
-          "sha256": "7515513d2771fdb0e50f717c5d75421b93871116ba5fa7935845c3554d6c9ecc"
+          "sha256": "827dddadb9f5285e34730233385adff29d171fc1bc56297ca7ea3f90f6f9c60d"
         },
         {
           "path": "agents/athena/provenance.json",
@@ -65,7 +65,7 @@
         },
         {
           "path": "agents/athena/reporting.json",
-          "sha256": "837892336a021e284a1d3cbe14999ad9e8900e46d0c3c2a7bc5d928e910767ed"
+          "sha256": "18dc6305c9a4889cfefa698153684a94b4ac3a35f83f1a95dd82fe7ee53b8ad0"
         },
         {
           "path": "agents/athena/skills/metis/SKILL.md",
@@ -73,7 +73,7 @@
         },
         {
           "path": "agents/athena/skills/metis/reporting.json",
-          "sha256": "2289e830621e4fb744a1009434a59bf82b40755d2d870cee3b0b7dd3568569b4"
+          "sha256": "5e627fb750ce6a8fda025fb6eeb975bec5d0ec66b9451ee7d666c96eac2b16ac"
         },
         {
           "path": "agents/hermes/references/data-contract.md",
@@ -85,7 +85,7 @@
         },
         {
           "path": "agents/hermes/reporting.json",
-          "sha256": "f30632269969529ae44e29279a9389b291059fdc2204a7d5305225664d663771"
+          "sha256": "bfc8c66209e803fcd101348ea83f72335436318b8e083cfa1f664b07a9519db8"
         },
         {
           "path": "agents/hermes/scripts/ledger.py",
@@ -97,27 +97,27 @@
         },
         {
           "path": "agents/hermes/skills/apollo/reporting.json",
-          "sha256": "10b3ccf7b38a74a7824c39c982ae6782439fc0e8a422df442014af0686def10d"
+          "sha256": "06b280cacfd43a0d4f14287f1d4330c825a54ee80d7f1cc2e1b7186af93914b9"
         },
         {
           "path": "agents/hermes/skills/cadmus/reporting.json",
-          "sha256": "fd11662817d679ff0b57f60f41e6ed4ea56d35f06fd1f1105749ab0a718c80b7"
+          "sha256": "e103db6200f75cd05a38c50db60337ee6aa9803ef782db5db476d7393fc0043e"
         },
         {
           "path": "agents/hermes/skills/demeter/reporting.json",
-          "sha256": "6b3107414d812ee03810b0a3ceb74b7ac98dfe9d0d556b90da047bba6ac78582"
+          "sha256": "dd934f82e1a1617386cf0ee404d5d982dcd502b784fdf304a072f4fd768876bd"
         },
         {
           "path": "agents/hermes/skills/iris/reporting.json",
-          "sha256": "59929cab65a3706795ef2fc2128f2398e47e03ee2af534da9239bdc5c0c5a3cb"
+          "sha256": "41be32952a6ab334e430b91a04aa6b7d027a773bf5728bdf7a29fea740b79e6e"
         },
         {
           "path": "agents/hermes/skills/mnemosyne/reporting.json",
-          "sha256": "6ee17025736d7055a0f9d3ea7e8d45038c3cf8f0a1d32d6d07eb595597d4039c"
+          "sha256": "6fcbb9ceea9fe777db0f0b1636de1662b882ead475329bfbe91be65c5e2e1886"
         },
         {
           "path": "agents/themis/reporting.json",
-          "sha256": "86a90f851e8009353c1f384b8724dd07d0b28e4cebbdea563f8a3add7c671b9b"
+          "sha256": "2164d7bbb350d93a268dd712ff43c483b4ecd0e4d949d77296fd997213b7071c"
         },
         {
           "path": "contracts/admission-policy.json",
@@ -173,7 +173,23 @@
         },
         {
           "path": "provenance.json",
-          "sha256": "4d3bb9d841de814aceca059c514a2c6c6a839370ac501cb437af8117d57f7944"
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "c8e154853378306864abda712092e331863049493bdaac522bac5dfa19ce102e"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/hermes.py",
+          "sha256": "213a5ebc2307f533bdade786ff4c5a3b215a88013c3f0849670ce5eac78318d9"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "eaec9b5f48a2cf98df74cd7216c26dc585701b570d831d625f9dbf99b41dea0f"
         },
         {
           "path": "skills/dike/SKILL.md",
@@ -181,11 +197,11 @@
         },
         {
           "path": "skills/dike/reporting.json",
-          "sha256": "128c60c7247c473421b2ae7f1f9585ad125d41252f34e5d9544af319488a1425"
+          "sha256": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625"
         },
         {
           "path": "skills/nike/reporting.json",
-          "sha256": "20ee96354c40b707ec7dae18cbb2bb446f9f8de72f6b9ff719fcb139f16fb760"
+          "sha256": "687291a0c4fc37d9258427a1527beb14c5284c92d2e132f0a6fdfbd3e61c0aae"
         },
         {
           "path": "specs/data-feedback.md",
@@ -200,12 +216,16 @@
           "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
         },
         {
+          "path": "specs/model-runtime.md",
+          "sha256": "3e2ab1ae4532066adea154b18afaa30372524abb7e7f9ed2abc217c17c6c59b4"
+        },
+        {
           "path": "specs/quality-responsibilities.md",
           "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
         },
         {
           "path": "specs/reporting.md",
-          "sha256": "bb8c71937d64c191daf954ed207b7b9e17cb4f7969cc2f181d4263270370d803"
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
         },
         {
           "path": "sync/POLICY.md",
@@ -213,19 +233,27 @@
         },
         {
           "path": "sync/gonggong_sync.py",
-          "sha256": "cd8bc9e6d0e43a4d1865406f040375d708ed5f8e9016097e3fcb3c5c10e27f0f"
+          "sha256": "0526461cada89648b910af6884aa96e84ac0c4b6d6ee418aa95a8a965e1c6b7e"
         },
         {
           "path": "sync/names.json",
-          "sha256": "e5ba95f2116b45de4e753f1b6763a4633bcc3955d8fba8ffa34f69e4519d8bee"
+          "sha256": "5125a9698bf92c08aa66f469ff83b26624ab1c7356b82dc9b2eb7b037746eba8"
         },
         {
           "path": "sync/read_hermes.py",
           "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
         },
         {
+          "path": "templates/model-plan.json",
+          "sha256": "b3d887a00723026ff5cfe4c5b9afce745c4eef8ea56f82c11564ff95e0a3b191"
+        },
+        {
           "path": "templates/reporting-binding.json",
           "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "f2d48b37fdce4185b7348d6b78680207340ffa008286a5d8c45b025bbda7c8a0"
         },
         {
           "path": "tools/admission.mjs",

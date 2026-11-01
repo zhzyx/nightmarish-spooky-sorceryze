@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "apollo",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/hermes/skills/apollo/SKILL.md",
     "entry_sha256": "783cd1577480a8c42e9936a2a530e2b0e1e18f19c0029c12b1dcac9f5de8efe9"
   },

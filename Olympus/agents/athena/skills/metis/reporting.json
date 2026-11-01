@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "metis",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/athena/skills/metis/SKILL.md",
     "entry_sha256": "e512ae620c281cf66055489e3d77c151982ffd9e01cb06e4c27a33459cc29515"
   },

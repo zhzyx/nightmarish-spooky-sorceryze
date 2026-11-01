@@ -3,7 +3,7 @@
   "component": {
     "kind": "skill",
     "id": "iris",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/hermes/skills/iris/SKILL.md",
     "entry_sha256": "53e87de9fb8e871349ada8029be59bdecc0465d1699e3c2ac7a01faaad93bed3"
   },
