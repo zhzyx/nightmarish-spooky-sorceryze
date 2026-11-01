@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "sync-package-20261102-ariadne",
+  "tenant_id": "olympus-workspace",
+  "request_id": "sync-package-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T17:27:18.654056+00:00",
+  "source_ref": "user-request:同步共工的改动并出包;include-sinan-as-candidate",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "21c0220707f64e5cfe34e37c7807a5e1e961b0c8d0358407acad705bb7bdc217",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "framework_version": "0.9.0",
+    "upstream_file_count": 120,
+    "framework_changes": false,
+    "increment": "Ariadne 0.2.1 / 司南",
+    "increment_status": "candidate_pending_review",
+    "isolated_tests_passed": 15,
+    "existing_data_and_exemption_preserved": true,
+    "agent_snapshot_basis": "Repository AGENTS.md workspace instruction snapshot",
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host",
+    "remote_push": "not_performed"
+  },
+  "evidence_refs": [
+    "gonggong-sync-v090-20261101"
+  ],
+  "sha256": "e30b2f2e5e5699158742989af79985df68ae15af73d01aa7f86f677b40746ed3"
+}

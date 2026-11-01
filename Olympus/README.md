@@ -45,3 +45,7 @@
 0.9提供独立于Codex的本地Python运行器：三种文本协议、签名委托、能力路由、调用预算、持久状态、受限资源读取和自动投影赫尔墨斯。配置真实模型、live代表任务证据及有效授权后，实际任务可经该入口运行，不要求GPT或OpenAI SDK；协议模拟通过不等于真实模型认证。
 
 当前没有自动捕获全部Codex或引擎事件的后台服务。运行器之外的身份认证、全局预算、企业连接器、生产并发及数据保留／恢复仍待部署验收。设计规范不代表Godot、自研引擎或高并发生产系统已实现；精简入口也不代表已证明理解效率或token成本改善。
+
+## 阿里阿德涅（司南）已登记模块同步
+
+共工主线 v0.9.0 与已登记在另一来源树的司南 0.2.1 合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-sinan-history.zip；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/registry.json`；默认没有真实账本或源 CLI。

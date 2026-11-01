@@ -5,7 +5,7 @@
     "id": "themis",
     "version_or_digest": {
       "version": "0.4.0",
-      "candidate_digest": "a1c12484daff3c8143addf19d49e5f93852e8de05dae5faa685fb47f9490a70f",
+      "candidate_digest": "d3f4126e80a50cf7a1954f0950d282635c0c8cb755dc938f487f203d347e2056",
       "candidate_files": [
         {
           "path": "AGENTS.md",
@@ -21,7 +21,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "86d29dd176457941498eddc70198b1571b825af3b8c66728be370a1eef301506"
+          "sha256": "b4c445c92c3939b21e53c9569a40d696c72116cf46afab313cc2431407c2c576"
         },
         {
           "path": "agents/athena/reporting.json",
@@ -213,19 +213,23 @@
         },
         {
           "path": "sync/POLICY.md",
-          "sha256": "047fde315362cc58f0f8524214d23d9f41e471becc979fee591bfd81d6a9b67f"
+          "sha256": "8a47f95b2ee9272bc2e5e7180e27449479f6777d915e4e36008cbfd762dc9738"
         },
         {
           "path": "sync/gonggong_sync.py",
-          "sha256": "0526461cada89648b910af6884aa96e84ac0c4b6d6ee418aa95a8a965e1c6b7e"
+          "sha256": "8b3ff90700cfb4e6f15de309df84fd4589fecc31d44c9a00852a8c3f46bf5df4"
         },
         {
           "path": "sync/names.json",
-          "sha256": "5125a9698bf92c08aa66f469ff83b26624ab1c7356b82dc9b2eb7b037746eba8"
+          "sha256": "fe4c95ff0b90bb672ba83161be34430b305d097e7ab91b36db18999557a844d0"
         },
         {
           "path": "sync/read_hermes.py",
           "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "02486318f209ec71b0a7eff24c1e9d1b05ac6b3109a38827668505c359ff3cba"
         },
         {
           "path": "templates/model-plan.json",

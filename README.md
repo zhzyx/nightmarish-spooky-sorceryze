@@ -8,6 +8,9 @@
 | `olympus-hermes-data/` | 需求生产数据，独立命名，必须随需求产出合入 Git |
 | `olympus-workspace.json` | 工作区约定与入口 |
 | `tools/verify_workspace.py` | 全量同步检查与文件数据 Git 检查 |
+| `Olympus/modules/ariadne/` | 已同步共工登记的司南 0.2.1 模块，Olympus 名称为阿里阿德涅 |
+
+2026-11-02 出包：保留共工 v0.9.0 主线，合并另一来源树中已正式登记的司南 0.2.1；当前 3 个 Agent、10 个 skill。模块登记、实现证据与来源均保留，15 项隔离测试通过。模块已进入 Olympus 清单；改名副本准入仍待审，未部署真实工单服务，不新增同步豁免。
 
 Python 3.10+、Node.js、Git 可用于本地验证；赫尔墨斯文件模式无需数据库。仓库初始化数据后，新需求按 `Olympus/extensions/hermes-files/README.md` 生成真实事件。禁止将生产数据放入会随上游重建的 `Olympus/` 目录。
 
@@ -17,6 +20,8 @@ Python 3.10+、Node.js、Git 可用于本地验证；赫尔墨斯文件模式无
 
 ```powershell
 $env:GONGGONG_FRAMEWORK_SOURCE = 'PATH/TO/CURRENT_FRAMEWORK.json'
+$env:GONGGONG_SINAN_FRAMEWORK_SOURCE = 'PATH/TO/FRAMEWORK-WITH-REGISTERED-SINAN'
+$env:GONGGONG_SINAN_IMPLEMENTATION_SOURCE = 'PATH/TO/GONGGONG-WORKORDERS'
 python tools/verify_workspace.py --require-committed
 python Olympus/extensions/hermes-files/hermes_files.py analyze --repo . --tenant olympus-workspace
 ```

@@ -1,0 +1,10 @@
+{
+  "template": false,
+  "status": "pending_distribution_review",
+  "source_registration": "source-sinan-history.zip",
+  "subject": {
+    "id": "ariadne",
+    "version": "0.2.1"
+  },
+  "approval": null
+}

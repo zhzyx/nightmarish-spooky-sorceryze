@@ -142,6 +142,14 @@
       "conditional_references": [
         "specs/reporting.md"
       ]
+    },
+    {
+      "path": "specs/work-order-management.md",
+      "title": "阿里阿德涅｜奥林匹斯统一工单管理规范",
+      "load_when": "各类任务总协调、跨业务依赖与交接时",
+      "conditional_references": [
+        "specs/project-state.md"
+      ]
     }
   ],
   "never_bulk_load": [
@@ -313,6 +321,15 @@
       "state": "synchronized_candidate_pending_review",
       "version": "0.3.0",
       "reporting": "agents/hermes/skills/apollo/reporting.json"
+    },
+    {
+      "name": "ariadne",
+      "path": "skills/ariadne/SKILL.md",
+      "state": "synchronized_candidate_pending_review",
+      "admission_pass": "reviews/ariadne-admission.json",
+      "display_name": "阿里阿德涅",
+      "version": "0.2.1",
+      "reporting": "skills/ariadne/reporting.json"
     }
   ],
   "agents": [
@@ -325,7 +342,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "c650bfdee91651925a4c11dc3146c863bc53be15a61af79aa25eb5089b00d147",
+      "candidate_digest": "923fa2a2b0313522b628011c2e3cbbd6b0d749d5b4fbebef15ed5a04e75b54dd",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -388,6 +405,7 @@
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
         "tests/test_runtime.py",
@@ -411,7 +429,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "a1c12484daff3c8143addf19d49e5f93852e8de05dae5faa685fb47f9490a70f",
+      "candidate_digest": "d3f4126e80a50cf7a1954f0950d282635c0c8cb755dc938f487f203d347e2056",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -471,6 +489,7 @@
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
         "tests/test_runtime.py",
@@ -551,6 +570,7 @@
         "sync/gonggong_sync.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
         "tests/test_runtime.py",
@@ -564,7 +584,7 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "fc691d95df0b10ef0cc57ff95ad1f999ca46d277db5068d11f47cc97e2f036da",
+      "candidate_digest": "427cddf848a7e00f071f944285acae2b650c3ee01c7af4c53090bac960bca576",
       "reporting": "agents/hermes/reporting.json"
     }
   ],
@@ -615,6 +635,19 @@
     "enterprise_deployed": false
   },
   "host_loader_scope": "local_trusted_operator_runtime_only",
+  "modules": [
+    {
+      "id": "ariadne",
+      "name": "阿里阿德涅",
+      "version": "0.2.1",
+      "kind": "task_management_and_coordination",
+      "layer": "olympus_platform",
+      "manifest": "modules/ariadne/module.json",
+      "governance_root": "zeus",
+      "state": "source_registered_distribution_pending_review",
+      "admission_pass": "reviews/ariadne-module-admission.json"
+    }
+  ],
   "distribution_sync": {
     "policy": "sync/POLICY.md",
     "checker": "sync/gonggong_sync.py",

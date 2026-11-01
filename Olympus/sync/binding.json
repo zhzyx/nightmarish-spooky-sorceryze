@@ -1,4 +1,8 @@
 {
   "source": "UNCONFIGURED_SET_GONGGONG_FRAMEWORK_SOURCE",
-  "purpose": "configure_actual_upstream_via_GONGGONG_FRAMEWORK_SOURCE_not_authority"
+  "sinan_source": {
+    "framework": "UNCONFIGURED_SET_GONGGONG_SINAN_FRAMEWORK_SOURCE",
+    "implementation": "UNCONFIGURED_SET_GONGGONG_SINAN_IMPLEMENTATION_SOURCE"
+  },
+  "purpose": "local_upstream_locator_not_authority"
 }
