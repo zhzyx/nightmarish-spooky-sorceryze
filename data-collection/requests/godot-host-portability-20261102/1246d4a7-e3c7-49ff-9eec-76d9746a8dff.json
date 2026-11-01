@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "godot-host-portability-20261102",
+  "collected_at": "2026-11-01T21:20:35.232585+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-completion.json",
+      "sha256": "67185475f857bb93a315a3134a0efb6e57740a57fb8de34fe158d36084e8f872",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-completion",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-final-review.json",
+      "sha256": "5330a28e7f9d9603673a70deec0465330218ed56dba6cd04db4cf30cc4937131",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-final-review",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-git-publication.json",
+      "sha256": "a8a2899116b8dff3521500398f24a8ea21a43f6113320c1d4ff884b1a8ee2a50",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-git-publication",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-request.json",
+      "sha256": "8f239d25046e652a72253ddea5853a4ade90b1d9e42a4f218fc4daa57efe95fc",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-review-handoff.json",
+      "sha256": "de4b87a91d0665ab8b9a65cc2d790558789697ec6418588fc9d1193f6f838b83",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-review-handoff",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-runtime-validation.json",
+      "sha256": "2feddae5aedd70ccc1853dd3cbb152839edf07c35a4e8b922ec3cca9a8016450",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-runtime-validation",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/godot-host-portability-20261102-verification.json",
+      "sha256": "cbf679b01f68f44c220b355bd423e77106893b0b3b3d28767056d374b02c995b",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-host-portability-20261102-verification",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-host-portability-20261102/host-context-476936e798be4ee59b7436311d2e32ea.json",
+      "sha256": "b3644850d527ceff5f878653cbd738c979dc66f310771c7a6d153e6bd2ed53ba",
+      "tenant_id": "olympus-workspace",
+      "event_id": "host-context-476936e798be4ee59b7436311d2e32ea",
+      "origin": "olympus-host-adapter"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

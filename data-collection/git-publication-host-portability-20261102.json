@@ -1,0 +1,19 @@
+{
+  "commit": "ea8b02bc14f62eda5fd828f23e9fc2850d80c687",
+  "tree": "a04d6c43bb62c594deea82b88e5e5a6154bb5109",
+  "parent": "8bdc1667e3c0fd223be3f87c540bb1467161ff02",
+  "remote_branch": "main",
+  "remote_commit_verified": true,
+  "method": "github_git_data_api_exact_objects_non_force",
+  "published_at": "2026-11-01T21:19:50.178966+00:00",
+  "schema_version": 1,
+  "request_id": "godot-host-portability-20261102",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "engine_installation": "project/godot/bin",
+  "original_installation": "project/godot/versions/godot-4.7.2",
+  "runtime_installation": "project/runtime",
+  "binaries_committed": false,
+  "source_originals_committed": false,
+  "definition_admission": "approved_exact_candidates",
+  "provider_model_verified": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-host-portability-20261102-git-publication",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-host-portability-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T21:20:34.939495+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:main",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "subject_commit": "ea8b02bc14f62eda5fd828f23e9fc2850d80c687",
+    "evidence": "data-collection/git-publication-host-portability-20261102.json",
+    "evidence_sha256": "8f41504031b0973ce691d19cdcf4ea2e2ecaac8176df3c8acd59833f9ce7c13e",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-host-portability-20261102-runtime-validation"
+  ],
+  "sha256": "2ce8f3bf8d18c5965a21cd67c2166d1e0cd5f04b67dba0f3cb10be87f3986e48"
+}
