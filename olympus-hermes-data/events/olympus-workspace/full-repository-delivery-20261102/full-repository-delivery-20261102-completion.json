@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "full-repository-delivery-20261102-completion",
+  "tenant_id": "olympus-workspace",
+  "request_id": "full-repository-delivery-20261102",
+  "kind": "request_end",
+  "occurred_at": "2026-11-01T22:16:08.372824+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue:5",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "status": "complete",
+    "source_published": true,
+    "complete_release_published": true,
+    "all_completed_open_issues_closed": true,
+    "scope": "Olympus and Godot; external GongGong source excluded; simulated model flow only.",
+    "publication_receipt_commit": "Recorded by the following Git commit; final HEAD read-back performed after commit.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "full-repository-delivery-20261102-issue-completion"
+  ],
+  "sha256": "f6bc48eaad1695f75e4969d9daf96f324709f660896280d15a8dc23b24b9016a"
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "request_id": "full-repository-delivery-20261102",
+  "checked_at": "2026-11-01T22:16:08.071408+00:00",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "completed_issues": [
+    {
+      "number": 1,
+      "title": "工单 Issue 化与需求及谛听采集目录",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-01T22:15:39Z",
+      "labels": [
+        "type:development"
+      ],
+      "body_sha256": "338aa28bd4992494ea07a4c04fb21f6ad199114379945db07ac7d3bea68821ca"
+    },
+    {
+      "number": 2,
+      "title": "Godot AI 聊天接入当前 Olympus：原生代码与可运行交付",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-01T22:15:43Z",
+      "labels": [
+        "type:development"
+      ],
+      "body_sha256": "ab8d80944a28de604ac4106f239c18297ba2b591ec6e0f10a89b367ab454543a"
+    },
+    {
+      "number": 5,
+      "title": "完整发布本地引擎工作区并清理已完成 Issue",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/5",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-01T22:15:48Z",
+      "labels": [
+        "type:maintenance"
+      ],
+      "body_sha256": "847a7db9aee127b67afe0629926cc3b18df7ce5d712819f30eec52b6db30670b"
+    }
+  ],
+  "remaining_open_issues": [],
+  "scope_change": "Real provider validation explicitly replaced by user-authorized simulated flow acceptance; not claimed as done."
+}

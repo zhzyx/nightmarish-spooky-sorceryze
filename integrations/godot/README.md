@@ -43,7 +43,7 @@ python tests/editor/run_olympus_chat_gate.py --godot bin/godot.windows.editor.x8
 python tests/editor/test_olympus_distribution.py
 ```
 
-accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。它不是生产批准；真实框架测试当前验证的是正确阻断。合成数据均位于临时仓库，不写入生产事件目录。
+accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。它不是生产批准；admitted 使用真实已批准框架验证成功链，rejected 验证阻断。合成数据均位于临时仓库，不写入生产事件目录。
 
 源码根的 `bin/` 接受匹配源码提交的 Windows x64 预编译包。构建脚本会重新生成被 Git 忽略的 `.gen.*` 文件；不再提交生成代码与构建缓存。C# 示例另需 .NET 版 Godot 与已安装 .NET SDK，本次验证的运行示例是 `samples/olympus-workbench/`。
 
@@ -66,3 +66,5 @@ accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。�
 该入口汇总正式框架诊断、单元/原生回归、安装位置和 8 种聊天场景，检查真实 Hermes 数据未被测试改动。模型服务仅为本机 HTTP 夹具；`admitted` 场景使用真实已批准 Olympus 定义。成功只表示流程验收通过，报告明确标记未验收外部模型供应商。
 
 `verification.json` 是初次独立目录接入的历史证据，保持原字节供旧事件引用；其中源码路径与状态不作为当前版本的验证结论。当前需求及验收见 `design-docs/godot-olympus-chat-20261102.md`。
+
+包含已编译编辑器、标准运行时和全部源码的完整下载见 [发布说明](../../distribution/README.md)。当前发布固定既有已批准来源的字节版本；解压后配置有效共工来源，不能将正在改写的新上游自动视为已批准。

@@ -2,6 +2,10 @@
 
 源码、框架、业务内容、文档和真实任务数据在当前 Git 仓库。仓库 Releases 提供完整工作区 ZIP，额外包含定制编辑器、标准 Python/Node/Git 和原始 Godot 4.7.2 回退安装。逐文件清单与归属在包内 `bundle-manifest.json`；包摘要与下载链接记录在本目录的发布索引。
 
+当前发布：[2026-11-02 完整 Windows 工作区](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/olympus-windows-x64-20261102) · [下载 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/olympus-windows-x64-20261102/olympus-windows-x64-20261102.zip) · [发布索引](releases/olympus-windows-x64-20261102.json) · [解包验收](verification-full-package-20261102.json)。ZIP 为 346,102,303 字节，SHA256 为 `e2602af05e17be6328410b0c5d97f96b820acf44e7ea21b2bcf48dc19dfdae3b`。
+
+包内源码固定为 `6a817ff0e6b5bc8f2621985ec8707792abe125bb`；发布后的索引、工单关闭回执和文档澄清随后提交到 main，不改变已经验收的可执行内容。
+
 1. 下载发布索引指定的 ZIP，核对 SHA256，解压到新的目录。
 2. 执行 `tools/initialize_downloaded_workspace.ps1`，为源码 ZIP 创建本地 Git 快照；已有 Git 检出会保留。源码原提交与树记录在清单中，ZIP 不复制 `.git` 历史、账户或凭据。
 3. 运行 `tools/launch_olympus_editor.ps1`，默认启动可运行的 `samples/olympus-workbench`。

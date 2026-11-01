@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "request_id": "full-repository-delivery-20261102",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "release_id": 430891012,
+  "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/olympus-windows-x64-20261102",
+  "tag": "olympus-windows-x64-20261102",
+  "published_at": "2026-11-01T22:15:19Z",
+  "source_commit": "6a817ff0e6b5bc8f2621985ec8707792abe125bb",
+  "source_tree": "052073e736731bb7c428e15ec49fd03ef9a69bdc",
+  "archive_files": 18309,
+  "assets": [
+    {
+      "id": 699669701,
+      "name": "olympus-windows-x64-20261102.manifest.json",
+      "size": 4716430,
+      "digest": "sha256:7c11dcc90ef8f14fa714b98b4a0f98259c8ca0288493f76e6363a165c7f3e2d1",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/olympus-windows-x64-20261102/olympus-windows-x64-20261102.manifest.json"
+    },
+    {
+      "id": 699669704,
+      "name": "olympus-windows-x64-20261102.zip",
+      "size": 346102303,
+      "digest": "sha256:e2602af05e17be6328410b0c5d97f96b820acf44e7ea21b2bcf48dc19dfdae3b",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/olympus-windows-x64-20261102/olympus-windows-x64-20261102.zip"
+    }
+  ],
+  "server_digest_matches_local": true,
+  "engine_sha256": "b8bc69c8b6fd035b4b6217836b8798e6948dee0ef0864a252402170c01618fef",
+  "model_validation": "simulated_only",
+  "requires_valid_external_gonggong_source": true,
+  "source_body_bundled": false,
+  "verification": "distribution/verification-full-package-20261102.json",
+  "publication_evidence_commit_follows_source_commit": true
+}
