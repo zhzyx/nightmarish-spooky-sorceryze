@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "verification": "simulated_model_end_to_end",
+  "started_at": "2026-11-01T21:31:07.580185+00:00",
+  "external_model_service_tested": false,
+  "model_transport": "loopback HTTP fixture only",
+  "production_model_credentials_used": false,
+  "editor": {
+    "path": "project/godot/bin/godot.windows.editor.x86_64.console.exe",
+    "sha256": "5d4c93efbe415225a77ca54e8c66fff6983f6212eef69f2c52f0b762cc0780dd"
+  },
+  "engine": {
+    "path": "project/godot/bin/godot.windows.editor.x86_64.exe",
+    "sha256": "6bacd4b9df99d472c6869775d32123bc5acc9fed947f3982184f972dba0c9410"
+  },
+  "checks": [
+    {
+      "name": "doctor",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "2d53367f1ec8313545211fc9a4065254d02f6a33c42dfde72fc490ab6af70457",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blocking_checks": [],
+      "elapsed_seconds": 1.629
+    },
+    {
+      "name": "bridge_unit",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "159cd1c0b7894d61121e2e5cd8d0fb6fd0e3aed05579119713f798cc282c7099",
+      "tests_run": 16,
+      "elapsed_seconds": 0.425
+    },
+    {
+      "name": "distribution",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a742e35956aaab0724495d9bfb232f34201d351f65cf6d21f80abfe66d6fd94b",
+      "tests_run": 4,
+      "elapsed_seconds": 6.42
+    },
+    {
+      "name": "native_ai_chat",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "c5ffd97a7b133af1d09d6c9c6a5e4617900063f5b9e69cb45fa0ec13ce950db7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_cases": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 107,
+        "passed": 107,
+        "failed": 0
+      },
+      "elapsed_seconds": 1.09
+    },
+    {
+      "name": "installed_location",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "1f858397561c386deb736dd10b1617cf747b060f42616528cf30fb936135bba0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 2.568
+    },
+    {
+      "name": "native_admitted",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "64450a09ed07d94e98eb595b0405fecb75d580c5988bf5ca5ca9151c73d74f03",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "admitted",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 6.068
+    },
+    {
+      "name": "native_accepted",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "0f46c6b17958b12e1a5ecf9806d99b589b5b2fa0045313d47c44df1ddfa94242",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "accepted",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 5.371
+    },
+    {
+      "name": "native_rejected",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "5b088040eb1a26dead49e787e5acd05a72304f6d17a5607cd032553035ba92a4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 4.152
+    },
+    {
+      "name": "native_tool",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "ad111360a6b2d0c2d87cc8cf3d72f155dd6c5b5b48c6aa631796960c6bdcb3f3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "tool",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 2,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 6.467
+    },
+    {
+      "name": "native_cancel",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "13d64c34b62eb3eed9f2a7d0e7abd0f9599bd07d8333fdcc09dc83d9fc61e9bd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 7.713
+    },
+    {
+      "name": "native_recovery",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "790ac3373ce8867da120eee86b9f0c746aaa69407794dfc083c1ec7647cbb67e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "recovery",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 5.187
+    },
+    {
+      "name": "native_recovery_rejected",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "ab5588fd2cb3b9f51024ac16123976d45f1c0162e7fd8f46accf223790c126de",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "recovery_rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 4.148
+    },
+    {
+      "name": "native_recovery_cancel",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "529fa552f41c1d884983e79e2fd2de01b66c0e1aefd8a2773391734ad1ebac44",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "recovery_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 11.431
+    }
+  ],
+  "limitations": [
+    "Successful model replies are simulated, not provider certification.",
+    "The admitted scenario uses real approved Olympus definitions and actual upstream checks; other positive transport scenarios use isolated context fixtures."
+  ],
+  "production_dataset_unchanged": true,
+  "completed_at": "2026-11-01T21:32:10.330596+00:00",
+  "ok": true,
+  "request_id": "godot-simulated-flow-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/4",
+  "runner": {
+    "path": "tools/verify_olympus_flow.py",
+    "sha256": "69da7a24f9243a60fc81807d6d981aa2cc23ec58b5a254e0fb8b7f7133386674"
+  },
+  "independent_review": {
+    "evaluator_id": "/root/review_chat_gate",
+    "independence": "independent_subagent_review",
+    "result": "no_blocking_issue_found",
+    "scope": "Orchestrator correctness, dataset output boundary, Python assertion availability, real test counts, engine identity and simulated-versus-production separation",
+    "full_suite_executed_by": "codex-root",
+    "reviewer_repeated_full_suite": false
+  },
+  "dataset_comparison_scope": "Before and after the test suite only. Actual user-task verification events are recorded afterward; temporary fixture events are never imported."
+}

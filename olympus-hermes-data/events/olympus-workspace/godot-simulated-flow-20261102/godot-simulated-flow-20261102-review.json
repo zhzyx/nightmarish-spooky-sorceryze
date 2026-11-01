@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-simulated-flow-20261102-review",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-simulated-flow-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T21:32:52.817829+00:00",
+  "source_ref": "codex-desktop:user-request",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "independent_evaluator": "/root/review_chat_gate",
+    "reviewed_runner_sha256": "69da7a24f9243a60fc81807d6d981aa2cc23ec58b5a254e0fb8b7f7133386674",
+    "status": "no_blocking_issue_found",
+    "real_model_provider_certification": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-simulated-flow-20261102-verification"
+  ],
+  "sha256": "3dfbd79ab892e85759cf37e7e269f4e9f36c05f4bcfac96b3bd0e75a88c17949"
+}

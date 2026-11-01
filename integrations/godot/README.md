@@ -57,4 +57,12 @@ accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。�
 
 本机已在 `project/runtime/` 部署标准 Python、Node 和 Git；启动脚本可直接运行。完整迁移复验使用仅含系统目录的 PATH，正式 doctor 无阻断、原生安装探测及聊天链通过，见 `verification-host-runtime-20261102.json`。运行时安装方法见 `project/godot/README.md`。
 
+## 一次运行模拟模型流程验收
+
+```powershell
+./project/runtime/python/python.exe tools/verify_olympus_flow.py --out .godot-integration-local/simulated-flow.json
+```
+
+该入口汇总正式框架诊断、单元/原生回归、安装位置和 8 种聊天场景，检查真实 Hermes 数据未被测试改动。模型服务仅为本机 HTTP 夹具；`admitted` 场景使用真实已批准 Olympus 定义。成功只表示流程验收通过，报告明确标记未验收外部模型供应商。
+
 `verification.json` 是初次独立目录接入的历史证据，保持原字节供旧事件引用；其中源码路径与状态不作为当前版本的验证结论。当前需求及验收见 `design-docs/godot-olympus-chat-20261102.md`。

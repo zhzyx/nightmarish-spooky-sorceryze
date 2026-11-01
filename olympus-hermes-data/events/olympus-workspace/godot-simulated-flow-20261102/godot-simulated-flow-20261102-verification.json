@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-simulated-flow-20261102-verification",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-simulated-flow-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-01T21:32:52.729968+00:00",
+  "source_ref": "codex-desktop:user-request",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "status": "passed",
+    "evidence": "integrations/godot/verification-simulated-flow-20261102.json",
+    "evidence_sha256": "8a876d0acc738b7c5d9068eaf1354a6d7d6137f488b5793a7ebdf1d563c3e173",
+    "test_groups_passed": 13,
+    "external_model_service_tested": false,
+    "fixture_events_imported": false,
+    "production_dataset_unchanged_during_tests": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-simulated-flow-20261102-request"
+  ],
+  "sha256": "c03223b257d25ae5a0816b0a05d12368e13f7b811280da780d6fadc233f98037"
+}
