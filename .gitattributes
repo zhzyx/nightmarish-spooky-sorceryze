@@ -6,3 +6,4 @@
 *.txt text eol=lf
 *.zip binary
 Olympus/** -text whitespace=cr-at-eol
+integrations/godot/*.patch -whitespace
