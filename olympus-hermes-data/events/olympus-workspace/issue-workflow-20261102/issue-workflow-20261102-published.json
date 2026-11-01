@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-workflow-20261102-published",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-workflow-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T19:02:43.311776+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Verified GitHub main publication, eight type labels and actual Issue #1",
+    "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90",
+    "remote_publication": "verified",
+    "evidence": "data-collection/github-issue-1-20261102.json",
+    "evidence_sha256": "0743f431f7a55b41bd12fc31706b04a3df2da0ee42acbc23275c472bf956b1f1",
+    "framework_activation": false,
+    "diting_ingestion_confirmed": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host"
+  },
+  "evidence_refs": [
+    "issue-workflow-20261102-remote-created"
+  ],
+  "sha256": "e1055412df598aabc72a3146b557c9730fd2d7caadacabd3b17d428c779aff8b"
+}

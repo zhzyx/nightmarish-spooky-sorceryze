@@ -9,9 +9,23 @@
       "origin_framework": "olympus",
       "access": "read_only",
       "reader": "Olympus/extensions/hermes-files/hermes_files.py",
-      "command": ["analyze", "--repo", ".", "--tenant", "olympus-workspace"],
+      "command": [
+        "analyze",
+        "--repo",
+        ".",
+        "--tenant",
+        "olympus-workspace"
+      ],
       "preserve_original_identity": true
+    },
+    {
+      "id": "github-issue-1",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+      "snapshot": "data-collection/github-issue-1-20261102.json",
+      "access": "read_only",
+      "origin_framework": "github",
+      "coverage": "one_issue_only"
     }
   ],
-  "remote_issue_collection": "not_connected"
+  "remote_issue_collection": "manual_verified_snapshot"
 }

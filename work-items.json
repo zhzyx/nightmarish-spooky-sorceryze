@@ -10,8 +10,9 @@
   "collection_root": "data-collection",
   "canonical_events_root": "olympus-hermes-data",
   "adapter": "customizations/components/issue-workorders/work_items.py",
-  "remote_configuration_state": "labels_and_issue_live_templates_prepared",
+  "remote_configuration_state": "published_verified",
   "ariadne_source_registered": false,
   "agent_activation": false,
-  "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1"
+  "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+  "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90"
 }
