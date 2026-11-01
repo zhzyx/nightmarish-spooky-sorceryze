@@ -1,0 +1,274 @@
+/**************************************************************************/
+/*  test_ai_chat_tools.cpp                                                */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
+
+#include "tests/test_macros.h"
+
+TEST_FORCE_LINK(test_ai_chat_tools)
+
+#ifdef TOOLS_ENABLED
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
+#include "core/io/json.h"
+#include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/ai_chat_tools.h"
+
+namespace TestAIChatTools {
+
+Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat") {
+	Error error = OK;
+	Ref<DirAccess> directory = DirAccess::create_temp(p_prefix, false, &error);
+	CHECK(error == OK);
+	return directory;
+}
+
+TEST_CASE("[AIChat] Script path normalization") {
+	String path;
+	CHECK(AIChatTools::normalize_script_path("res://scripts/player.gd", path));
+	CHECK(path == "res://scripts/player.gd");
+	CHECK(AIChatTools::normalize_script_path("scripts\\Player.cs", path));
+	CHECK(path == "res://scripts/Player.cs");
+	CHECK(AIChatTools::normalize_script_path(String::utf8("scripts/角色.gd"), path));
+}
+
+TEST_CASE("[AIChat] Absolute, hidden and engine source paths are supported") {
+	for (const char *value : { "../outside.cpp", "res://.godot/config.txt", "res://scripts/.hidden.h", "C:/Engine/editor/editor_node.cpp", "//server/share/config.json", "res://scene.tscn" }) {
+		String path;
+		CHECK_MESSAGE(AIChatTools::normalize_script_path(value, path), value);
+	}
+}
+
+TEST_CASE("[AIChat] Reject invalid device and non-file paths") {
+	const char *invalid[] = {
+		"user://file.gd", "res://scripts/file.gd:stream", "res://scripts/CON.gd", "res://scripts/LPT1.gd",
+		"res://scripts/folder./file.gd", "res://scripts/folder /file.gd", "res://scripts/file?.gd",
+		"//?/C:/file.gd", "//./device", "res://scripts/file.gd\n", "res://", ""
+	};
+	for (const char *value : invalid) {
+		String path;
+		CHECK_MESSAGE(!AIChatTools::normalize_script_path(value, path), value);
+		CHECK(path.is_empty());
+	}
+}
+
+TEST_CASE("[AIChat] Resolve requires existing parents and rejects directory targets") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String directory = root->get_current_dir();
+	String absolute;
+	String error;
+	CHECK(AIChatTools::resolve_script_path("res://new.gd", directory, absolute, error));
+	CHECK(absolute == directory.path_join("new.gd"));
+	CHECK_FALSE(AIChatTools::resolve_script_path("res://missing/new.gd", directory, absolute, error));
+	REQUIRE(root->make_dir("folder.gd") == OK);
+	CHECK_FALSE(AIChatTools::resolve_script_path("res://folder.gd", directory, absolute, error));
+}
+
+TEST_CASE("[AIChat] Approved writes detect disk changes and file creation conflicts") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String path = root->get_current_dir().path_join("script.gd");
+	String error;
+	String content;
+	const String before = "extends Node\n";
+	const String after = "extends Node\nvar value = 1\n";
+	REQUIRE(AIChatTools::write_script(path, "", before, false, error));
+	CHECK_FALSE(AIChatTools::write_script(path, "", after, false, error));
+	CHECK_FALSE(AIChatTools::write_script(path, "stale", after, true, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == before);
+	REQUIRE(AIChatTools::write_script(path, before, after, true, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == after);
+	REQUIRE(AIChatTools::write_script(path, after, before, true, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == before);
+}
+
+TEST_CASE("[AIChat] Oversized replacements are refused without creating a file") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String path = root->get_current_dir().path_join("script.gd");
+	String error;
+	CHECK_FALSE(AIChatTools::write_script(path, "", String("x").repeat(AIChatTools::MAX_SCRIPT_BYTES + 1), false, error));
+	CHECK_FALSE(FileAccess::exists(path));
+}
+
+TEST_CASE("[AIChat] UTF-8 BOM survives replacement and undo") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String path = root->get_current_dir().path_join("script.cs");
+	const String bom = String::chr(0xfeff);
+	const String before = bom + "class Example {}\r\n";
+	String error;
+	String content;
+	REQUIRE(AIChatTools::write_script(path, "", before, false, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == before);
+	REQUIRE(AIChatTools::write_script(path, before, "class Changed {}\r\n", true, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == bom + "class Changed {}\r\n");
+	REQUIRE(AIChatTools::write_script(path, content, before, true, error));
+	REQUIRE(AIChatTools::read_script(path, content, error));
+	CHECK(content == before);
+}
+
+TEST_CASE("[AIChat] Invalid UTF-8 is refused before replacement") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String path = root->get_current_dir().path_join("script.gd");
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE);
+	REQUIRE(file.is_valid());
+	const uint8_t invalid[] = { 0xff, 0xfe, 0xff };
+	REQUIRE(file->store_buffer(invalid, sizeof(invalid)));
+	file->close();
+	String error;
+	String content;
+	ERR_PRINT_OFF;
+	CHECK_FALSE(AIChatTools::read_script(path, content, error));
+	CHECK_FALSE(AIChatTools::write_script(path, "", "extends Node\n", true, error));
+	ERR_PRINT_ON;
+	file = FileAccess::open(path, FileAccess::READ);
+	REQUIRE(file.is_valid());
+	uint8_t saved[sizeof(invalid)] = {};
+	REQUIRE(file->get_buffer(saved, sizeof(saved)) == sizeof(saved));
+	for (unsigned int i = 0; i < sizeof(saved); i++) {
+		CHECK(saved[i] == invalid[i]);
+	}
+}
+
+TEST_CASE("[AIChat] Linked directories are accessible where supported") {
+	Ref<DirAccess> root = make_temporary_directory();
+	Ref<DirAccess> outside = make_temporary_directory("godot_ai_chat_outside");
+	REQUIRE(root.is_valid());
+	REQUIRE(outside.is_valid());
+	const String link = root->get_current_dir().path_join("linked");
+	if (root->create_link(outside->get_current_dir(), link) == OK) {
+		String absolute;
+		String error;
+		CHECK(AIChatTools::resolve_script_path("res://linked/script.gd", root->get_current_dir(), absolute, error));
+		CHECK(root->remove(link) == OK);
+	}
+}
+
+Dictionary make_resume_journal(const String &p_content = "task") {
+	Dictionary function;
+	function["name"] = "Bash";
+	function["arguments"] = "{\"command\":\"godot-host-action build_engine\"}";
+	Dictionary call;
+	call["id"] = "pending_build";
+	call["type"] = "function";
+	call["function"] = function;
+	Array calls;
+	calls.push_back(call);
+	Dictionary user;
+	user["role"] = "user";
+	user["content"] = p_content;
+	Dictionary assistant;
+	assistant["role"] = "assistant";
+	assistant["content"] = "";
+	assistant["tool_calls"] = calls;
+	Array messages;
+	messages.push_back(user);
+	messages.push_back(assistant);
+	Dictionary restart;
+	restart["from_executable"] = "old.exe";
+	restart["to_executable"] = "new.exe";
+	restart["token"] = "abc12345";
+	restart["attempt"] = 1;
+	restart["tool_call_id"] = "pending_build";
+	Dictionary journal;
+	journal["version"] = AIChatResume::VERSION;
+	journal["agent"] = 0;
+	journal["tool_rounds"] = 12;
+	journal["tool_index"] = 0;
+	journal["model"] = "test";
+	journal["cli_model"] = "test";
+	journal["backend"] = 1;
+	journal["messages"] = messages;
+	journal["tool_calls"] = calls;
+	journal["restart"] = restart;
+	return journal;
+}
+
+TEST_CASE("[AIChat] Resume journal legacy JSON and compact encoding remain compatible") {
+	const Dictionary journal = make_resume_journal(String::utf8("保留用户约束\n"));
+	Dictionary restored;
+	REQUIRE(AIChatResume::decode_journal(JSON::stringify(journal, "\t"), restored));
+	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+	String body;
+	Dictionary stats;
+	REQUIRE(AIChatResume::encode_journal(journal, body, stats) == OK);
+	CHECK(stats["encoding"] == Variant("json"));
+	CHECK(body == JSON::stringify(journal));
+	REQUIRE(AIChatResume::decode_journal(body, restored));
+	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+}
+
+TEST_CASE("[AIChat] Resume journal oversized history is losslessly compressed with exact pending tools") {
+	const Dictionary journal = make_resume_journal(String("x").repeat(AIChatResume::MAX_JOURNAL_BYTES + 1));
+	String body;
+	Dictionary stats;
+	REQUIRE(AIChatResume::encode_journal(journal, body, stats) == OK);
+	CHECK(stats["encoding"] == Variant("gzip-base64"));
+	CHECK(int64_t(stats["uncompressed_bytes"]) > int64_t(AIChatResume::MAX_JOURNAL_BYTES));
+	CHECK(body.utf8().length() < int64_t(AIChatResume::MAX_JOURNAL_BYTES));
+	Dictionary restored;
+	REQUIRE(AIChatResume::decode_journal(body, restored));
+	CHECK(JSON::stringify(restored) == JSON::stringify(journal));
+
+	Dictionary envelope = JSON::parse_string(body);
+	envelope["uncompressed_bytes"] = int64_t(AIChatResume::MAX_UNCOMPRESSED_JOURNAL_BYTES + 1);
+	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(envelope), restored));
+	envelope = JSON::parse_string(body);
+	envelope["sha256"] = String("0").repeat(64);
+	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(envelope), restored));
+	envelope = JSON::parse_string(body);
+	envelope["payload"] = "!!!!";
+	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(envelope), restored));
+	envelope = JSON::parse_string(body);
+	envelope["storage_version"] = 2;
+	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(envelope), restored));
+}
+
+TEST_CASE("[AIChat] Resume journal invalid data never produces a partial record") {
+	Dictionary journal = make_resume_journal();
+	journal["tool_index"] = 2;
+	String body = "stale";
+	Dictionary stats;
+	CHECK(AIChatResume::encode_journal(journal, body, stats) == ERR_INVALID_DATA);
+	CHECK(body.is_empty());
+	CHECK(stats["stage"] == Variant("validation"));
+	Dictionary restored;
+	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(journal), restored));
+	CHECK_FALSE(AIChatResume::decode_journal("[]", restored));
+}
+
+} // namespace TestAIChatTools
+#endif // TOOLS_ENABLED

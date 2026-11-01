@@ -1,0 +1,186 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const test = require('node:test');
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const { spawn } = require('node:child_process');
+const { once } = require('node:events');
+const { createInterface } = require('node:readline');
+
+const root = path.resolve(__dirname, '../..');
+const definitions = [{ type: 'function', function: { name: 'read_file', description: 'Read a file through Godot', parameters: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } } }];
+
+async function bridge(t, url, agentId) {
+    const directory = fs.mkdtempSync(path.join(root, 'tests/editor/acp-test-'));
+    const child = spawn(process.execPath, [path.join(root, 'tools/codebuddy_cli/godot_bridge.js'), 'session', path.join(__dirname, 'mock_codebuddy_cli.js')], { cwd: root, env: { ...process.env, AI_CHAT_TEST_URL: url, GODOT_ACP_LOG_DIRECTORY: path.join(directory, 'logs') }, stdio: ['pipe', 'pipe', 'pipe'] });
+    const closed = once(child, 'close');
+    let stderr = '';
+    child.stderr.on('data', chunk => { stderr += chunk; });
+    const lines = createInterface({ input: child.stdout })[Symbol.asyncIterator]();
+    let number = 0;
+    t.after(async () => {
+        child.stdin.end();
+        await closed;
+        fs.rmSync(directory, { recursive: true, force: true });
+    });
+    const submit = async (messages, rounds = 0, model = 'mock-model', legacyEncoding = false, expectError = false) => {
+        const file = path.join(directory, ++number + '.json');
+        let body = JSON.stringify({ messages, model, agent_id: agentId, available_tools: definitions, tool_definitions: definitions, tool_context: { permission_enabled: true, tool_rounds: rounds, max_tool_rounds: null } });
+        if (legacyEncoding) body = body.replace(/\\u001b/g, '\x1b').replace(/\\u000b/g, '\\v');
+        fs.writeFileSync(file, body);
+        child.stdin.write(JSON.stringify({ path: file }) + '\n');
+        for (;;) {
+            const next = await lines.next();
+            assert(!next.done, stderr);
+            const response = JSON.parse(next.value);
+            if (response.error && expectError) return response;
+            assert(!response.error, JSON.stringify(response));
+            if (response.choices) { assert(!expectError, 'Oversized output was accepted'); return response; }
+            assert(['progress', 'command_result'].includes(response.event), JSON.stringify(response));
+        }
+    };
+    submit.closed = closed;
+    submit.trace = () => fs.readdirSync(path.join(directory, 'logs')).flatMap(file => fs.readFileSync(path.join(directory, 'logs', file), 'utf8').trim().split('\n').map(line => JSON.parse(line)));
+    return submit;
+}
+
+test('Local restore notices survive ACP bootstrap without general system messages or undone turns', () => {
+    const { promptBlocks } = require('../../tools/codebuddy_cli/godot_acp');
+    const notice = { role: 'system', godot_snapshot_restore: true, content: 'The user restored all recorded text files. Reread before editing.' };
+    const blocks = promptBlocks({
+        messages: [
+            { role: 'system', content: 'PRIVATE_GENERAL_INSTRUCTIONS' },
+            { role: 'user', content: 'case:snapshot_seed' },
+            { role: 'assistant', content: 'SNAPSHOT_SEED_OK' },
+            notice,
+            { role: 'user', content: 'case:snapshot_follow' },
+        ],
+        tool_context: { permission_enabled: true },
+    }, true);
+    const history = JSON.parse(blocks.find(block => block.resource?.uri === 'godot://conversation/recovery').resource.text);
+    assert.deepEqual(history.at(-1), notice);
+    assert.equal(history.length, 3);
+    assert.equal(blocks[0].text, 'case:snapshot_follow');
+    assert(!JSON.stringify(blocks).includes('PRIVATE_GENERAL_INSTRUCTIONS'));
+    assert(!JSON.stringify(blocks).includes('case:snapshot_multi'));
+});
+
+test('ACP tasks process more than 64 MiB across tool yields and keep the session alive', { timeout: 30000 }, async t => {
+    const submit = await bridge(t, '', 'large_protocol_agent');
+    const proposal = await submit([{ role: 'user', content: 'case:protocol_flood' }]);
+    const call = proposal.choices[0].message.tool_calls[0];
+    assert.equal(call.function.name, 'read_file');
+    const completed = await submit([proposal.choices[0].message, { role: 'tool', tool_call_id: call.id, content: 'FLOOD_READ_OK', godot_file_success: true }], 1);
+    assert.equal(completed.choices[0].message.content, 'PROTOCOL_FLOOD_OK');
+    const next = await submit([completed.choices[0].message, { role: 'user', content: 'case:protocol_flood_next' }]);
+    assert.equal(next.choices[0].message.content, 'PROTOCOL_NEXT_OK');
+    assert.equal(next.transport.session_id, completed.transport.session_id);
+    const records = submit.trace();
+    const final = records.find(item => item.event === 'host_completion_sent' && item.request === 1);
+    assert(final.stdout_bytes > 64 * 1024 * 1024, 'Traffic must exceed both the former cumulative cap and the new live-buffer cap');
+    assert(final.content_bytes < 1024);
+    assert(!records.some(item => item.event === 'request_failed'));
+    assert.equal(records.filter(item => item.event === 'model_prompt_sent').length, 2, 'Tool continuation must not resubmit a user task');
+    assert(!JSON.stringify(records).includes('PRIVATE_PROTOCOL_PAYLOAD'));
+});
+
+for (const scenario of ['oversized_rpc', 'unterminated_rpc', 'body_flood']) {
+    test('ACP retains safety limits and stops the child for ' + scenario, { timeout: 30000 }, async t => {
+        const submit = await bridge(t, '', 'limit_agent');
+        const response = await submit([{ role: 'user', content: 'case:' + scenario }], 0, 'mock-model', false, true);
+        assert.equal(response.error.code, 'OUTPUT_LIMIT');
+        const [code] = await submit.closed;
+        assert.equal(code, 1, 'Bridge must stop after the safety violation');
+        assert(submit.trace().some(item => item.event === 'cli_closed'), 'CLI child must be reaped');
+        const failure = submit.trace().find(item => item.event === 'request_failed');
+        assert.equal(failure.code, 'OUTPUT_LIMIT');
+        if (scenario === 'body_flood') assert(failure.content_bytes > 2 * 1024 * 1024);
+        else assert.equal(failure.content_bytes, 0);
+    });
+}
+
+test('Restarted ACP sessions continue from a host result without re-submitting the original task', { timeout: 10000 }, async t => {
+    const submit = await bridge(t, '', 'resumed_agent');
+    const call = { id: 'completed-build', type: 'function', function: { name: 'build_engine', arguments: '{}' } };
+    const response = await submit([{ role: 'user', content: 'case:original_task' }, { role: 'assistant', content: '', tool_calls: [call] }, { role: 'tool', tool_call_id: call.id, content: JSON.stringify({ ok: true, restarted: true }) }], 4);
+    assert.equal(response.choices[0].message.content, 'HOST_ACTION_RESUMED_OK');
+    assert.equal(response.transport.mode, 'bootstrap');
+    assert.equal(response.transport.message_count, 3);
+});
+
+test('Legacy controls survive file results, recovery and subsequent messages without poisoning an agent', { timeout: 20000 }, async t => {
+    const ansi = '\x1b[90mfirst_line\x1b[0m\v';
+    const server = http.createServer(async (request, response) => {
+        let text = '';
+        for await (const chunk of request) text += chunk;
+        const messages = JSON.parse(text).messages.filter(message => message.role !== 'system');
+        const user = messages.filter(message => message.role === 'user').at(-1).content;
+        const last = messages.at(-1);
+        let message;
+        if (user === 'case:read_controls' && last.role !== 'tool') {
+            message = { role: 'assistant', content: '', tool_calls: [{ id: 'control-read', type: 'function', function: { name: 'read_file', arguments: JSON.stringify({ path: path.join(root, 'file.txt') }) } }] };
+        } else {
+            assert(messages.some(message => message.role === 'tool' && message.content === ansi), 'Recovery must retain the exact tool text');
+            message = { role: 'assistant', content: user };
+        }
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ choices: [{ message }] }));
+    });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const url = `http://127.0.0.1:${server.address().port}`;
+    const submit = await bridge(t, url, 'affected_agent');
+    const user = { role: 'user', content: 'case:read_controls' };
+    const proposal = await submit([user]);
+    const assistant = proposal.choices[0].message;
+    const result = { role: 'tool', tool_call_id: assistant.tool_calls[0].id, content: ansi, godot_file_success: true };
+    const completed = await submit([assistant, result], 1, 'mock-model', true);
+    assert.equal(completed.choices[0].message.content, user.content);
+    const restarted = await bridge(t, url, 'affected_agent');
+    const recovered = await restarted([user, assistant, result, completed.choices[0].message, { role: 'user', content: 'case:recovered' }], 0, 'mock-model', true);
+    assert.equal(recovered.choices[0].message.content, 'case:recovered');
+    const next = await restarted([recovered.choices[0].message, { role: 'user', content: 'case:next' }]);
+    assert.equal(next.choices[0].message.content, 'case:next');
+    assert.equal(next.transport.session_id, recovered.transport.session_id);
+});
+
+test('ACP sessions keep exact user text, native tools and per-agent memory', { timeout: 20000 }, async t => {
+    const seen = [];
+    const server = http.createServer(async (request, response) => {
+        let text = '';
+        for await (const chunk of request) text += chunk;
+        const body = JSON.parse(text);
+        seen.push(body);
+        const messages = body.messages.filter(message => message.role !== 'system');
+        const user = messages.filter(message => message.role === 'user').at(-1).content;
+        const result = messages.at(-1);
+        let message;
+        if (user === 'case:read' && result.role !== 'tool') message = { role: 'assistant', content: '', tool_calls: [{ id: 'native-read', type: 'function', function: { name: 'read_file', arguments: JSON.stringify({ path: path.join(root, 'file.txt') }) } }] };
+        else message = { role: 'assistant', content: user === 'case:read' ? 'READ:' + result.content : messages.filter(item => item.role === 'user').map(item => item.content).join('|') };
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ choices: [{ message }] }));
+    });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const url = `http://127.0.0.1:${server.address().port}`;
+    const a = await bridge(t, url, 'agent_a');
+    const b = await bridge(t, url, 'agent_b');
+    const first = await a([{ role: 'user', content: 'case:A_SECRET' }]);
+    const other = await b([{ role: 'user', content: 'case:B_SECRET' }]);
+    assert.notEqual(first.transport.session_id, other.transport.session_id);
+    assert.equal(other.choices[0].message.content, 'case:B_SECRET');
+    const next = await a([{ role: 'assistant', content: first.choices[0].message.content }, { role: 'user', content: 'case:A_NEXT' }], 0, 'mock-alternative');
+    assert.equal(next.transport.session_id, first.transport.session_id);
+    assert.equal(next.choices[0].message.content, 'case:A_SECRET|case:A_NEXT');
+    const proposal = await a([{ role: 'user', content: 'case:read' }], 0, 'mock-alternative');
+    const call = proposal.choices[0].message.tool_calls[0];
+    const completed = await a([{ role: 'assistant', content: '', tool_calls: [call] }, { role: 'tool', tool_call_id: call.id, content: 'APPROVED_RESULT', godot_file_success: true }], 1, 'mock-alternative');
+    assert.equal(completed.transport.session_id, first.transport.session_id);
+    assert.equal(completed.choices[0].message.content, 'READ:APPROVED_RESULT');
+    assert.equal(completed.transport.transmitted_bytes, 0, 'Tool results must not become another ACP user prompt');
+    assert.equal(seen.at(-1).cli_transport.new_users, 0);
+    assert.equal(seen.at(-1).messages.filter(message => message.role === 'user').length, 3);
+    assert(seen.every(body => body.messages.filter(message => message.role === 'user').every(message => message.content.startsWith('case:'))));
+});

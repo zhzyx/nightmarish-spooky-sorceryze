@@ -1,0 +1,378 @@
+"""Build a side-by-side editor, publishing progress for the running editor.
+
+No editor is killed or overwritten. Restart is handled by the editor's normal
+save/exit workflow, not by this worker. Only a checked artifact is marked ready.
+"""
+
+import argparse
+import base64
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import secrets
+import subprocess
+import sys
+import tempfile
+import time
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def write_status(path, **data):
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    temporary.replace(path)
+
+
+# No plausible build runs this long, so an older lock cannot be trusted even when
+# its recorded identifier happens to match a live, unrelated process.
+LOCK_MAX_AGE = 12 * 3600
+
+
+def process_is_running(pid):
+    """Report whether a process is alive, without ever signalling it."""
+    if not isinstance(pid, int) or pid <= 0:
+        return False
+    if os.name != "nt":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:  # Alive, but owned by somebody else.
+            return True
+        return True
+    # On Windows os.kill() terminates the target even for signal 0, so the process
+    # must be probed through a query-only handle instead.
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    handle = kernel32.OpenProcess(0x1000, False, pid)  # QUERY_LIMITED_INFORMATION.
+    if not handle:
+        return False
+    try:
+        code = wintypes.DWORD()
+        if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
+            return True  # Assume the owner lives rather than stealing its lock.
+        return code.value == 259  # STILL_ACTIVE.
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+def lock_owner(path):
+    """Describe the recorded lock holder, tolerating truncated or legacy files."""
+    try:
+        owner = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return owner if isinstance(owner, dict) else {}
+
+
+def lock_is_stale(path):
+    """A lock is stale once its owner died or it outlived any plausible build."""
+    owner = lock_owner(path)
+    if not process_is_running(owner.get("pid")):
+        return True
+    started = owner.get("started")
+    return not isinstance(started, (int, float)) or time.time() - started > LOCK_MAX_AGE
+
+
+def acquire_lock(path):
+    """Take the build lock, reclaiming one abandoned by a killed build.
+
+    A bare exclusive file cannot distinguish a running build from a lock left
+    behind when SCons was killed, which otherwise blocks every later build until
+    somebody deletes the file by hand.
+    """
+    for reclaimed in (False, True):
+        try:
+            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+        except FileExistsError:
+            if reclaimed or not lock_is_stale(path):
+                return False
+            try:
+                path.unlink()
+            except OSError:
+                return False
+            continue
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump({"pid": os.getpid(), "started": time.time()}, handle)
+        return True
+    return False
+
+
+def build_options(current, extra):
+    # Preserve the running editor's platform, architecture, dev and Mono flags.
+    parts = current.name.split(".")
+    if len(parts) < 4 or parts[0] != "godot" or parts[2] != "editor":
+        raise ValueError("The current executable must be a source-built Godot editor")
+    platform = parts[1]
+    if platform != "windows":
+        raise ValueError("Side-by-side self-update currently supports Windows editors")
+    arch = next((p for p in parts if p in {"x86_64", "x86_32", "arm64", "arm32"}), None)
+    if not arch:
+        raise ValueError("Cannot identify the current editor architecture")
+    options = dict(platform=platform, target="editor", arch=arch,
+                   dev_build="yes" if "dev" in parts else "no",
+                   precision="double" if "double" in parts else "single",
+                   module_mono_enabled="yes" if "mono" in parts else "no")
+    previous = current.with_suffix(current.suffix + ".build.json")
+    if previous.is_file():
+        saved = json.loads(previous.read_text(encoding="utf-8"))
+        if not isinstance(saved, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in saved.items()):
+            raise ValueError("Invalid build configuration snapshot")
+        protected = {"platform", "target", "arch", "dev_build", "precision", "module_mono_enabled", "extra_suffix", "ninja"}
+        extra = [f"{k}={v}" for k, v in saved.items() if k not in protected] + extra
+    for item in extra:
+        key, separator, value = item.partition("=")
+        if not separator or not re.fullmatch(r"[a-zA-Z_][a-zA-Z_0-9]*", key):
+            raise ValueError("Additional SCons options must be key=value")
+        if key in {"platform", "target", "arch", "dev_build", "precision", "module_mono_enabled",
+                   "extra_suffix", "ninja", "compiledb", "vsproj", "object_prefix"}:
+            raise ValueError("Cannot override protected self-update option: " + key)
+        options[key] = value
+    # Two reusable output slots keep subsequent updates incremental. Neither slot
+    # may overwrite the running editor. SCons itself reports other output locks.
+    slot = "self_update_b" if "self_update_a" in parts else "self_update_a"
+    options["extra_suffix"] = slot
+    options["ninja"] = "no"
+    return options
+
+
+def write_resume_fixture(project, current, artifact, storage_case="legacy"):
+    """Arm the startup check with a restart handoff the new editor must answer.
+
+    A version check only proves the process starts. The AI dock is what has to
+    keep working, because a broken dock cannot report its own breakage and would
+    otherwise be promoted and then be unable to roll itself back.
+    """
+    token = secrets.token_hex(12)
+    settings = project / ".godot/editor"
+    settings.mkdir(parents=True, exist_ok=True)
+    journal = {
+        "version": 1,
+        "agent": 0,
+        "tool_rounds": 0,
+        "tool_index": 0,
+        "model": "",
+        "cli_model": "",
+        "backend": 0,
+        # Acknowledge and stop: the check must not continue somebody's agent loop.
+        "smoke_check": True,
+        "messages": [],
+        "tool_calls": [{"id": "startup_check", "type": "function",
+                        "function": {"name": "build_engine", "arguments": "{}"}}],
+        "restart": {
+            "tool_call_id": "startup_check",
+            "tool_name": "build_engine",
+            "from_executable": str(current),
+            "to_executable": str(artifact),
+            "token": token,
+            "attempt": 1,
+        },
+    }
+    # Each case must earn a fresh acknowledgement, never reuse a previous one.
+    (settings / "ai_chat_restart_ack.json").unlink(missing_ok=True)
+    if storage_case != "legacy":
+        # Exercise the real reader beyond the old 16 MiB cap, including UTF-8.
+        journal["messages"] = [{"role": "user", "content": "snapshot 保留约束\n" * (1024 * 1024)}]
+        raw = json.dumps(journal, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        if not 16 * 1024 * 1024 < len(raw) <= 64 * 1024 * 1024:
+            raise RuntimeError("Compressed resume fixture does not exercise the size boundary")
+        journal = {
+            "storage": "gzip-base64", "storage_version": 1,
+            "uncompressed_bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "payload": base64.b64encode(gzip.compress(raw, mtime=0)).decode("ascii"),
+        }
+        if storage_case == "oversized_declared":
+            journal["uncompressed_bytes"] = 64 * 1024 * 1024 + 1
+        elif storage_case == "corrupt_digest":
+            journal["sha256"] = "0" * 64
+        elif storage_case == "wrong_length":
+            journal["uncompressed_bytes"] += 1
+        elif storage_case != "compressed":
+            raise ValueError("Unknown resume fixture storage case: " + storage_case)
+    (settings / "ai_chat_resume.json").write_text(json.dumps(journal, ensure_ascii=False), encoding="utf-8")
+    return token
+
+
+def resume_ack_error(project, token, artifact):
+    """Describe why the startup check is not acceptable, or nothing if it is."""
+    ack = project / ".godot/editor/ai_chat_restart_ack.json"
+    if not ack.is_file():
+        return "The new editor started but its AI dock never acknowledged the restart handoff"
+    try:
+        value = json.loads(ack.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as error:
+        return f"The new editor wrote an unreadable restart acknowledgement: {error}"
+    if not isinstance(value, dict) or value.get("token") != token or value.get("dock_ready") is not True:
+        return "The new editor wrote a restart acknowledgement for a different handoff"
+    if Path(value.get("executable", "")).name != artifact.name:
+        return "The restart acknowledgement names a different executable"
+    if (project / ".godot/editor/ai_chat_resume.json").is_file():
+        return "The new editor did not consume the restart journal, so it would replay on every start"
+    return ""
+
+
+def artifact_path(options):
+    name = "godot.windows.editor"
+    if options["dev_build"] == "yes":
+        name += ".dev"
+    if options["precision"] == "double":
+        name += ".double"
+    name += "." + options["arch"]
+    if options.get("threads") == "no":
+        name += ".nothreads"
+    name += "." + options["extra_suffix"]
+    if options["module_mono_enabled"] == "yes":
+        name += ".mono"
+    return ROOT / "bin" / (name + ".exe")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--current", type=Path, required=True)
+    parser.add_argument("--status", type=Path, required=True)
+    parser.add_argument("--log", type=Path, required=True)
+    parser.add_argument("--cancel", type=Path, required=True)
+    parser.add_argument("--scons-arg", action="append", default=[])
+    args = parser.parse_args(argv)
+    status = args.status.resolve()
+    log_path = args.log.resolve()
+    if not all(p.parent.is_dir() for p in (status, log_path, args.cancel)):
+        parser.error("Status, log and cancel parent directories must already exist")
+    # An exclusive lock prevents two agents/editors from building into the same slot.
+    lock = ROOT / "bin" / "editor_self_build.lock"
+    if not acquire_lock(lock):
+        owner = lock_owner(lock).get("pid")
+        held = f" (process {owner})" if isinstance(owner, int) else ""
+        write_status(status, stage="failed", percent=0, error=f"Another self-build owns {lock}{held}", exit_code=1)
+        return 1
+    try:
+        options = build_options(args.current, args.scons_arg)
+        artifact = artifact_path(options)
+        if artifact.resolve() == args.current.resolve():
+            raise ValueError("Refusing to overwrite the running editor")
+        env = os.environ.copy()
+        # Empty MSYSTEM is required; merely unsetting it is not enough in Git Bash.
+        env["MSYSTEM"] = ""
+        env["PYTHONUNBUFFERED"] = "1"
+        env["GODOT_BUILD_PROGRESS_FILE"] = str(status)
+        dotnet = ROOT / ".dotnet"
+        if dotnet.is_dir():
+            env["DOTNET_ROOT"] = str(dotnet)
+            env["DOTNET_ROOT_X64"] = str(dotnet)
+            env["PATH"] = str(dotnet) + os.pathsep + env.get("PATH", "")
+        command = [sys.executable, "-m", "SCons", *[f"{key}={value}" for key, value in options.items()]]
+        write_status(status, stage="preparing", percent=0, log=str(log_path))
+        # A monitor supplies cooperative cancellation without orphaning SCons.
+        import threading
+        cancelled = threading.Event()
+        finished = threading.Event()
+
+        def watch_cancel():
+            while not finished.wait(0.25):
+                if args.cancel.exists():
+                    cancelled.set()
+                    break
+
+        threading.Thread(target=watch_cancel, daemon=True).start()
+        # Popen polling below uses an Event, rather than blocking editor frames.
+        def step(cmd, timeout=3600):
+            log.write(("\nCOMMAND: " + subprocess.list2cmdline(cmd) + "\n").encode("utf-8"))
+            log.flush()
+            child = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            def capture_log():
+                for line in child.stdout:
+                    try:
+                        text = line.decode("utf-8")
+                    except UnicodeDecodeError:
+                        text = line.decode("mbcs" if os.name == "nt" else "utf-8", errors="replace")
+                    log.write(text.encode("utf-8"))
+
+            reader = threading.Thread(target=capture_log)
+            reader.start()
+            deadline = time.monotonic() + timeout
+            try:
+                while child.poll() is None:
+                    if cancelled.wait(0.25):
+                        raise InterruptedError("Build cancelled; current editor unchanged")
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("Build/check timed out; current editor unchanged")
+                return child.returncode
+            finally:
+                if child.poll() is None:
+                    if os.name == "nt":
+                        subprocess.run(["taskkill", "/PID", str(child.pid), "/T", "/F"],
+                                       stdout=log, stderr=subprocess.STDOUT, check=False)
+                    else:
+                        child.kill()
+                    child.wait()
+                reader.join()
+                child.stdout.close()
+
+        with log_path.open("wb", buffering=0) as log:
+            try:
+                env["GODOT_BUILD_COUNT_ONLY"] = "1"
+                code = step([*command, "--dry-run"])
+                if code:
+                    raise RuntimeError(f"SCons preparation failed (exit {code}); see {log_path}")
+                counted = json.loads(status.read_text(encoding="utf-8"))
+                total = counted.get("total", 0)
+                if counted.get("stage") != "counted" or total <= 0:
+                    raise RuntimeError("SCons did not publish a build node count")
+                env["GODOT_BUILD_COUNT_ONLY"] = "0"
+                env["GODOT_BUILD_PROGRESS_TOTAL"] = str(total)
+                write_status(status, stage="building", percent=0, total=total, estimated=True)
+                code = step(command)
+                if code:
+                    raise RuntimeError(f"SCons build failed (exit {code}); see {log_path}")
+                if not artifact.is_file():
+                    raise RuntimeError("SCons exited successfully but the expected editor is missing")
+                write_status(status, stage="checking", percent=99, executable=str(artifact))
+                # Validate both the executable and a real, isolated editor startup.
+                check_env = env.copy()
+                check_env.pop("GODOT_BUILD_PROGRESS_FILE", None)
+                env = check_env
+                code = step([str(artifact), "--headless", "--version"], timeout=60)
+                if code:
+                    raise RuntimeError(f"New editor version check failed (exit {code})")
+                with tempfile.TemporaryDirectory(prefix="self_update_check_", dir=ROOT / "bin") as directory:
+                    project = Path(directory)
+                    (project / "project.godot").write_text('config_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding="utf-8")
+                    for storage_case in ("legacy", "compressed", "oversized_declared", "corrupt_digest", "wrong_length"):
+                        token = write_resume_fixture(project, args.current, artifact, storage_case)
+                        # A first start in a fresh project pays for the initial scan.
+                        code = step([str(artifact), "--headless", "--editor", "--path", str(project), "--quit-after", "6"], timeout=240)
+                        if code:
+                            raise RuntimeError(f"New editor startup failed for {storage_case} (exit {code})")
+                        if storage_case in {"legacy", "compressed"}:
+                            unacceptable = resume_ack_error(project, token, artifact)
+                            if unacceptable:
+                                raise RuntimeError(f"Resume check {storage_case}: {unacceptable}")
+                        elif (project / ".godot/editor/ai_chat_restart_ack.json").exists() or (project / ".godot/editor/ai_chat_resume.json").exists():
+                            raise RuntimeError(f"Invalid resume check {storage_case} was acknowledged or retained for replay")
+                        log.write(f"Resume startup check passed: {storage_case}\n".encode())
+                if cancelled.is_set():
+                    raise InterruptedError("Build cancelled; current editor unchanged")
+                artifact.with_suffix(artifact.suffix + ".build.json").write_text(json.dumps(options, ensure_ascii=False), encoding="utf-8")
+                write_status(status, stage="ready", percent=100, executable=str(artifact),
+                             exit_code=0, log=str(log_path), configuration=options)
+                return 0
+            finally:
+                finished.set()
+    except Exception as error:
+        write_status(status, stage="cancelled" if isinstance(error, InterruptedError) else "failed",
+                     percent=0, exit_code=1, error=str(error), log=str(log_path))
+        print(error, file=sys.stderr)
+        return 1
+    finally:
+        lock.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
