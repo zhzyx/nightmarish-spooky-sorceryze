@@ -7,3 +7,5 @@
 *.zip binary
 Olympus/** -text whitespace=cr-at-eol
 integrations/godot/*.patch -whitespace
+# Review evidence is bound by byte-level SHA256 in immutable events.
+customizations/components/issue-workorders/review.json -text

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "issue-workflow-20261102",
+  "collected_at": "2026-11-01T18:53:44.829290+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-workflow-20261102/issue-workflow-20261102-local-delivery.json",
+      "sha256": "78cfb25e8581178d9563cde062f71047074c0c41fec680980e44f00917c20e4e",
+      "tenant_id": "olympus-workspace",
+      "event_id": "issue-workflow-20261102-local-delivery",
+      "origin": "codex-local-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

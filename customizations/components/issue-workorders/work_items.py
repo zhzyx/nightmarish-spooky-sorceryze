@@ -1,0 +1,148 @@
+"""GitHub Issue work orders and read-only Diting collection manifests."""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+import uuid
+
+ROOT = Path(__file__).resolve().parents[3]
+
+
+def read(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def gh(*args):
+    result = subprocess.run(["gh", *args], capture_output=True, text=True,
+                            encoding="utf-8", timeout=120)
+    if result.returncode:
+        raise ValueError(result.stderr.strip() or "GitHub command failed")
+    return result.stdout.strip()
+
+
+def config(root):
+    value = read(root / "work-items.json")
+    if not re.fullmatch(r"[\w.-]+/[\w.-]+", value["repository"]):
+        raise ValueError("Invalid GitHub repository")
+    labels = read(root / ".github/labels.json")
+    names = [item["name"] for item in labels]
+    if len(set(names)) != len(names) or not all(re.fullmatch(r"type:[a-z-]+", x) for x in names):
+        raise ValueError("Invalid or duplicate task labels")
+    return value, labels
+
+
+def labels(root, apply=False):
+    settings, definitions = config(root)
+    if not apply:
+        return {"state": "planned", "repository": settings["repository"], "labels": definitions}
+    pages = json.loads(gh("api", "repos/" + settings["repository"] + "/labels?per_page=100", "--paginate", "--slurp"))
+    existing = {item["name"] for page in pages for item in page}
+    # Preserve pre-existing label colors and descriptions.
+    for label in definitions:
+        if label["name"] in existing:
+            continue
+        gh("label", "create", label["name"], "--repo", settings["repository"],
+           "--color", label["color"], "--description", label["description"])
+    return {"state": "labels_ensured", "count": len(definitions)}
+
+
+def issue(root, document, title, category, request_id, apply=False):
+    settings, definitions = config(root)
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
+        raise ValueError("Invalid stable request ID")
+    label = "type:" + category
+    if label not in {x["name"] for x in definitions}:
+        raise ValueError("Unknown task category")
+    doc = (root / document).resolve()
+    doc.relative_to((root / "design-docs").resolve())
+    if doc.suffix != ".md" or not doc.is_file():
+        raise ValueError("A Markdown requirement in design-docs is required")
+    marker = "<!-- olympus-request:" + request_id + " -->"
+    body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
+    plan = {"state": "planned", "repository": settings["repository"], "title": title,
+            "labels": [label], "request_id": request_id, "body": body}
+    if not apply:
+        return plan
+    # Query all pages and exact marker, including closed issues, to avoid recreating a request.
+    pages = json.loads(gh("api", "repos/" + settings["repository"] + "/issues?state=all&per_page=100", "--paginate", "--slurp"))
+    matches = [item for page in pages for item in page if "pull_request" not in item and marker in (item.get("body") or "")]
+    if len(matches) > 1:
+        raise ValueError("Duplicate remote request identity; resolve before continuing")
+    if matches:
+        return {"state": "existing", "url": matches[0]["html_url"]}
+    with tempfile.TemporaryDirectory() as temporary:
+        path = Path(temporary) / "issue.md"
+        path.write_text(body, encoding="utf-8")
+        url = gh("issue", "create", "--repo", settings["repository"], "--title", title,
+                 "--label", label, "--body-file", str(path))
+    return {"state": "created", "url": url}
+
+
+def collect(root, request_id):
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
+        raise ValueError("Invalid request ID")
+    command = [sys.executable, str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+               "validate", "--repo", str(root)]
+    check = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=120)
+    if check.returncode:
+        raise ValueError("Hermes validation failed; collection not published")
+    events = []
+    for path in sorted((root / "olympus-hermes-data/events").rglob("*.json")):
+        raw = path.read_bytes()
+        value = json.loads(raw)
+        if value["request_id"] == request_id:
+            events.append({"source": path.relative_to(root).as_posix(),
+                           "sha256": hashlib.sha256(raw).hexdigest(),
+                           "tenant_id": value["tenant_id"], "event_id": value["event_id"],
+                           "origin": value["agent"]["origin"]})
+    if not events:
+        raise ValueError("No actual events for request; refusing empty success")
+    result = {"schema_version": 1, "kind": "source_index", "request_id": request_id,
+              "collected_at": datetime.now(timezone.utc).isoformat(),
+              "collector": "olympus-local-file-indexer", "intended_reader": "diting",
+              "diting_ingestion_confirmed": False, "events": events,
+              "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"}
+    directory = root / "data-collection/requests" / request_id
+    directory.mkdir(parents=True, exist_ok=True)
+    destination = directory / (str(uuid.uuid4()) + ".json")
+    with destination.open("x", encoding="utf-8", newline="\n") as stream:
+        json.dump(result, stream, ensure_ascii=False, indent=2)
+        stream.write("\n")
+    return {"state": "collected_file_index", "path": destination.relative_to(root).as_posix(), "events": len(events)}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", type=Path, default=ROOT)
+    sub = parser.add_subparsers(dest="command", required=True)
+    label = sub.add_parser("labels")
+    label.add_argument("--apply", action="store_true")
+    create = sub.add_parser("issue")
+    create.add_argument("--document", required=True)
+    create.add_argument("--title", required=True)
+    create.add_argument("--type", required=True)
+    create.add_argument("--request-id", required=True)
+    create.add_argument("--apply", action="store_true")
+    collection = sub.add_parser("collect")
+    collection.add_argument("--request-id", required=True)
+    args = parser.parse_args()
+    root = args.repo.resolve()
+    if args.command == "labels":
+        result = labels(root, args.apply)
+    elif args.command == "issue":
+        result = issue(root, args.document, args.title, args.type, args.request_id, args.apply)
+    else:
+        result = collect(root, args.request_id)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
+        sys.exit(str(error))

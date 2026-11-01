@@ -7,6 +7,9 @@
 | `Olympus/` | 框架、Agent、skill、契约与同步工具 |
 | `olympus-hermes-data/` | 需求生产数据，独立命名，必须随需求产出合入 Git |
 | `olympus-workspace.json` | 工作区约定与入口 |
+| `work-items.json` / `.github/ISSUE_TEMPLATE/` | GitHub Issue 工单约定及按任务类别预设标签的表单 |
+| `design-docs/` | Markdown 需求与设计文档，引用实际 Issue |
+| `data-collection/` | 谛听采集交接目录，保留真实事件来源与摘要 |
 | `tools/verify_workspace.py` | 全量同步检查与文件数据 Git 检查 |
 | `Olympus/modules/ariadne/` | 已同步共工登记的司南 0.2.1 模块，Olympus 名称为阿里阿德涅 |
 

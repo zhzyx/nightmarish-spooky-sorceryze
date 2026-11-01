@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "intended_reader": "diting",
+  "ingestion_confirmed": false,
+  "sources": [
+    {
+      "id": "olympus-hermes-files",
+      "path": "olympus-hermes-data",
+      "origin_framework": "olympus",
+      "access": "read_only",
+      "reader": "Olympus/extensions/hermes-files/hermes_files.py",
+      "command": ["analyze", "--repo", ".", "--tenant", "olympus-workspace"],
+      "preserve_original_identity": true
+    }
+  ],
+  "remote_issue_collection": "not_connected"
+}

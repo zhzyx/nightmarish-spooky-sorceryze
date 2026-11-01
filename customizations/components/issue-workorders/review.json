@@ -1,0 +1,73 @@
+{
+  "template": false,
+  "permit_id": null,
+  "status": "pending_independent_review",
+  "event": "issue-workflow-20261102",
+  "phase": "local_delivery",
+  "subject": {
+    "id": "issue-workorders",
+    "version_or_digest": {
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "customizations/components/issue-workorders/README.md",
+          "sha256": "2825b4780e879de824994fe4de17d7c9d74f2742c6e10c6000918bef7c76ff9f"
+        },
+        {
+          "path": "customizations/components/issue-workorders/test_work_items.py",
+          "sha256": "56fb1b5bc3e2de46a3ccb5c907def39c19d516396d19edc1fcc4e4f0ba5c7add"
+        },
+        {
+          "path": "customizations/components/issue-workorders/work_items.py",
+          "sha256": "c7c39b068b6e0f5e24c9e2f40ba8e0f83d9ba097dbd785ce41e8bc9f301547a3"
+        }
+      ]
+    },
+    "scope": [
+      "local Issue adapter",
+      "Markdown requirements",
+      "Diting source indexes"
+    ],
+    "agent_governance_refs": [
+      "Olympus/FOUNDATION.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "olympus_framework": "Shared framework unchanged; host customization only",
+    "zeus": {
+      "purpose": "User requested Issue work orders and separate docs/collection directories",
+      "truth": "Local validation distinguished from remote publication and ingestion",
+      "economy": "Reuse GitHub Issues and existing Hermes events",
+      "authority": "No Agent activation or upstream modification",
+      "adaptation": "Isolated registered host adapter",
+      "continuity": "Keep prior events, identities and existing registry entries"
+    },
+    "concision": {
+      "status": "unknown",
+      "entry_characters": null,
+      "rationale": null
+    },
+    "applicable_validation": {
+      "adapter_tests_passed": 9,
+      "customization_registry": "valid",
+      "remote_labels": "not_created",
+      "remote_issue": "not_created",
+      "diting_ingestion": "unconfirmed"
+    },
+    "evidence_refs": [],
+    "evaluator_id": "codex-root",
+    "independence": "self_review_not_independent_approval",
+    "unresolved": [
+      "GitHub plugin not connected and gh unavailable",
+      "Publish templates and create labels/Issue after authenticated connection",
+      "No Ariadne GitHub source or automatic dispatch registered"
+    ]
+  },
+  "approval": null
+}

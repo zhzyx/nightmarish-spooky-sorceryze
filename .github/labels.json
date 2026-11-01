@@ -1,0 +1,10 @@
+[
+  {"name":"type:requirement","color":"5319E7","description":"需求分析与范围定义"},
+  {"name":"type:design","color":"D876E3","description":"游戏、产品或技术设计"},
+  {"name":"type:development","color":"1D76DB","description":"功能开发与引擎集成"},
+  {"name":"type:bug","color":"D73A4A","description":"缺陷修复"},
+  {"name":"type:test","color":"0E8A16","description":"测试与质量验证"},
+  {"name":"type:research","color":"0075CA","description":"研究、调研与试验"},
+  {"name":"type:documentation","color":"0052CC","description":"文档维护"},
+  {"name":"type:maintenance","color":"FBCA04","description":"维护、运维及其他事务"}
+]

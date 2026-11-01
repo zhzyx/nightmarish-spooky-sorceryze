@@ -1,5 +1,7 @@
 # Olympus 工作区约定
 
+工程工单使用 `work-items.json` 指定仓库的 GitHub Issue；任务类别使用唯一 `type:*` 标签，定义见 `.github/labels.json`。需求文档以 Markdown 放入 `design-docs/` 并与 Issue 互链。谛听采集交接放入 `data-collection/`，保留原始来源；真实事件继续写入 `olympus-hermes-data/`。未发布草稿不当作远程工单，采集索引不当作谛听已消费回执。此工程定制不改写共工共同框架或绕过准入。
+
 本 Git 仓库是奥林匹斯工作区；框架根是 `Olympus/`。按 `Olympus/AGENTS.md` 和实际职责加载规则，不全量灌入框架上下文。框架生产验证先核对有效共工上游；没有上游或准入时，不声称 Agent 已启用。
 
 需求产出包括代码/文档及 `olympus-hermes-data/` 内的真实文件事件。独立文件模式的入口是 `Olympus/extensions/hermes-files/hermes_files.py`，记录与分析无需数据库或上游在线。根据实际授权与事件记录，不将模板、测试数据或估算用量写成生产事实。

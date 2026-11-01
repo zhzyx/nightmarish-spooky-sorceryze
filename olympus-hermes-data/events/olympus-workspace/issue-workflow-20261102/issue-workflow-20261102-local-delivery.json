@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-workflow-20261102-local-delivery",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-workflow-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T18:53:44.527859+00:00",
+  "source_ref": "user-request:issue-workorders-category-labels-md-requirements-diting-collection",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Created 8 category Issue forms, local adapter, Markdown requirements and Diting collection directory",
+    "tests_passed": 9,
+    "remote_publication": "pending_connection",
+    "remote_issue_url": null,
+    "diting_ingestion_confirmed": false,
+    "framework_modified": false,
+    "evidence": "customizations/components/issue-workorders/review.json",
+    "evidence_sha256": "77643157b1a8ce049b03f321ea8fe0b5d4de7fb7bee2f4240ab9b6755ddb4d05",
+    "agent_snapshot_basis": "Repository AGENTS.md workspace instruction snapshot",
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host"
+  },
+  "evidence_refs": [],
+  "sha256": "2a5ece7af00cb69859bc99ebb561c4ad5ccee03e52dd6e67a53b4df8f9cb2c58"
+}

@@ -1,0 +1,66 @@
+{
+  "name": "功能开发与引擎集成",
+  "description": "创建功能开发与引擎集成工单",
+  "labels": [
+    "type:development"
+  ],
+  "body": [
+    {
+      "type": "input",
+      "id": "request-id",
+      "attributes": {
+        "label": "稳定需求 ID",
+        "description": "如 issue-workflow-20261102；一个需求只建一张主工单"
+      },
+      "validations": {
+        "required": true
+      }
+    },
+    {
+      "type": "input",
+      "id": "design-doc",
+      "attributes": {
+        "label": "需求文档",
+        "description": "design-docs/ 下的 .md 路径或仓库链接"
+      },
+      "validations": {
+        "required": true
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "scope",
+      "attributes": {
+        "label": "目标与范围"
+      },
+      "validations": {
+        "required": true
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "acceptance",
+      "attributes": {
+        "label": "验收标准"
+      },
+      "validations": {
+        "required": true
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "dependencies",
+      "attributes": {
+        "label": "依赖、责任人与阻塞"
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "evidence",
+      "attributes": {
+        "label": "验证与采集证据",
+        "description": "链接实际产物、olympus-hermes-data 事件和 data-collection 来源索引；未知留空"
+      }
+    }
+  ]
+}
