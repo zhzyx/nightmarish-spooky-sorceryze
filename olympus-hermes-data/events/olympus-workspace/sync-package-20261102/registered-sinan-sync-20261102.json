@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "registered-sinan-sync-20261102",
+  "tenant_id": "olympus-workspace",
+  "request_id": "sync-package-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-01T17:31:25.096891+00:00",
+  "source_ref": "user-request:司南当前已经加入，同步改动并出包",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "21c0220707f64e5cfe34e37c7807a5e1e961b0c8d0358407acad705bb7bdc217",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "module": "ariadne",
+    "source": "司南 0.2.1 registered in Gonggong",
+    "base": "0.9.0",
+    "result": "registered_module_synced_into_Olympus",
+    "tests_passed": 15,
+    "source_registration_is_not_distribution_runtime_approval": true,
+    "snapshot_basis": "Repository AGENTS.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host"
+  },
+  "evidence_refs": [
+    "sync-package-20261102-ariadne"
+  ],
+  "supersedes": "sync-package-20261102-ariadne",
+  "sha256": "0eb531c94f8a376df7907cfc2f6d764804296512d0c22bd622d0c03f41770235"
+}

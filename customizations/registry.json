@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "owner": "olympus",
+  "components": [
+    {
+      "id": "hermes-file-data",
+      "version": "1.0.0",
+      "path": "Olympus/extensions/hermes-files",
+      "ownership": "olympus_customization",
+      "placement": "legacy_preserved",
+      "framework_dependency": "File event format v1; independent Python/Git tools; no database or live upstream dependency",
+      "validation": "releases/2026-11-02/verification.json records preservation; prior isolated tests covered Git and event invariants; no claim of production event coverage",
+      "rollback": "Keep existing immutable data and module snapshots; restore compatible reader before resuming writes; do not delete records"
+    },
+    {
+      "id": "issue-workorders",
+      "version": "1.0.0",
+      "path": "customizations/components/issue-workorders",
+      "ownership": "olympus_customization",
+      "framework_dependency": "Olympus 0.9.0 file event v1; no framework Agent or Ariadne dispatch invocation",
+      "validation": "python customizations/components/issue-workorders/test_work_items.py; remote publication pending authenticated connection",
+      "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "full_parity": true,
+  "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+  "preserved_exemption": "extensions/hermes-files/",
+  "source_files": 120,
+  "distribution_files": 128,
+  "upstream_version": "0.9.0",
+  "checks": [
+    "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+    "passed file-level quality ownership checks; host identity and runtime not verified"
+  ],
+  "python_and_node_syntax": "pass",
+  "production_admission": false
+}

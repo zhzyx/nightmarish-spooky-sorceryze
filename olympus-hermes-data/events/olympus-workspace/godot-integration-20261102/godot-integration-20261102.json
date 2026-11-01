@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-integration-20261102",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-integration-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T18:43:20.214085+00:00",
+  "source_ref": "user-request:compare-merge-olympus-and-existing-godot-confirmed-scope",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "21c0220707f64e5cfe34e37c7807a5e1e961b0c8d0358407acad705bb7bdc217",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "observation": "Native Olympus page installed and built; actual editor status/data checks passed",
+    "evidence": "integrations/godot/verification.json",
+    "evidence_sha256": "587472eaae195081abf47ec955237391d18924ecf94410e7cefd3d74632619b6",
+    "agent_snapshot_basis": "Repository AGENTS.md workspace instruction snapshot",
+    "upstream_parity": false,
+    "agent_execution_enabled": false,
+    "framework_modified": false,
+    "existing_test_failures_before_and_after": 2,
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not supplied by host",
+    "remote_push": "not_performed"
+  },
+  "evidence_refs": [],
+  "sha256": "ec970e8409f570dff5d306e1433ddc4538d4f03443cb6ef9b833266259dc601a"
+}

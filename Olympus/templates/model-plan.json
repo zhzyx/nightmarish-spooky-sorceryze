@@ -1,0 +1,12 @@
+{
+  "task": {
+    "id": "replace-with-unique-task-id", "tenant_id": "replace-tenant", "project_id": "replace-project", "agent_id": "athena",
+    "outcome": "整理已确认需求", "authority_ref": "replace-with-actual-delegation", "retention": "replace-with-authorized-retention",
+    "mode": "single", "validation_only": true,
+    "work_items": [{"id":"replace-feature","kind":"feature","relation":"designs","certainty":"confirmed"}],
+    "input": "替换为已授权的需求材料", "resources": {},
+    "steps": [{"id":"summarize","kind":"requirements-summary","instruction":"整理已有事实，保留未知，不增加未经确认的需求。","output":"text","skill":"metis","references":["agents/athena/references/understanding.md"]}]
+  },
+  "profiles": [],
+  "limits": {"max_calls": 3,"max_output_tokens": 1024}
+}

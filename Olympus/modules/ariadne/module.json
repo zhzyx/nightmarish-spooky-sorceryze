@@ -1,0 +1,92 @@
+{
+  "id": "ariadne",
+  "name": "阿里阿德涅",
+  "version": "0.2.1",
+  "kind": "task_management_and_coordination",
+  "layer": "olympus_platform",
+  "scope": "all_task_types_in_authorized_registered_sources",
+  "state": "source_registered_distribution_pending_review",
+  "path_base": "framework_root",
+  "specification": "specs/work-order-management.md",
+  "skill": "skills/ariadne/SKILL.md",
+  "runtime_binding": "skills/ariadne/runtime-ref.json",
+  "implementation_admission": "reviews/ariadne-admission.json",
+  "module_admission": "reviews/ariadne-module-admission.json",
+  "governance": {
+    "root": "zeus",
+    "foundation": "FOUNDATION.md",
+    "policy": "GOVERNANCE.md",
+    "review_entry": "skills/dike/SKILL.md",
+    "dedicated_agents": [],
+    "execution_rule": "Use existing host-registered Zeus-governed agents with valid task mandates; this module neither creates agents nor grants authority",
+    "delegation_rule": "Any later delegation or agent creation follows the shared organization and admission rules",
+    "revocation": "Host revokes affected mandates and disables module invocation; preserve source records and label history"
+  },
+  "ownership": {
+    "accountable_role": "host_delegated_task_coordinator",
+    "assigned_instance": null,
+    "business_delivery": "respective_task_owner",
+    "escalated_quality": "themis",
+    "reserved_user_decisions": "actual_user_or_authorized_decision_owner"
+  },
+  "inputs": {
+    "registry": "sources[{id,root}], dependencies[{ticket,requires,kind}], coordination[{ticket,...}]",
+    "label_change": "ticket key and {type?,tags?,assessment?,actor,reason}",
+    "command_preparation": "source alias, supported source operation and argument array",
+    "authority": "actual host mandate and filesystem permissions"
+  },
+  "outputs": {
+    "board": "items, sourceSnapshots, diagnostics and ready keys",
+    "labels": "audited local coordination updates; no source status mutation",
+    "handoff": "executable and argv with fresh-check requirements; execution=not_executed"
+  },
+  "dependencies": {
+    "required": [
+      "specs/project-state.md",
+      "specs/work-order-management.md",
+      "skills/ariadne/runtime-ref.json"
+    ],
+    "conditional": {
+      "quality_escalation": "skills/nike/SKILL.md",
+      "prepare": "existing Zeus source CLI"
+    },
+    "optional_enhancements": [
+      "additional source adapters",
+      "host scheduling"
+    ],
+    "external_replacement": "Adapters must preserve source identity, evidence, authority and dependency semantics; direct external connectors are not implemented"
+  },
+  "access": {
+    "read": [
+      "registered source ledgers",
+      "their referenced local evidence",
+      "coordination configuration"
+    ],
+    "write": [
+      "coordination labels and label_history in the designated registry"
+    ],
+    "source_ledger_write": false,
+    "remote_write": false,
+    "automatic_dispatch": false,
+    "budget": "Bound by current host mandate; no standing spend or execution budget"
+  },
+  "runtime": {
+    "environment": "Node.js with local filesystem; verified on Node 24 Windows",
+    "current_adapter": "existing local Zeus ledger and CLI",
+    "host_loader_implemented": false,
+    "coverage": "registered and readable sources only",
+    "compatibility": "Existing IDs, source states and ariadne entry remain valid; task types extensible; Feature references optional"
+  },
+  "cancel_and_resume": {
+    "reads": "Stop and regenerate from fresh source snapshots",
+    "labels": "Use the shared registry lock and atomic replace; restore classification through audited label changes; after interruption verify no live writer before recovering a stale lock",
+    "source_work": "Cancellation and recovery are delegated to source-supported operations and host mandates; unsupported transitions are not simulated"
+  },
+  "acceptance": [
+    "match implementation admission file hashes",
+    "preserve frozen shared foundation",
+    "resolve registered entry and runtime bindings",
+    "preserve single authoritative source ledger",
+    "differentiate definition admission from production deployment"
+  ]
+}

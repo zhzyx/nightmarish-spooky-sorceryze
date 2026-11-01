@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Olympus Hermes immutable file event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "tenant_id", "request_id", "kind", "occurred_at", "source_ref", "agent", "payload", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "event_id": {"$ref": "#/$defs/id"},
+    "tenant_id": {"$ref": "#/$defs/id"},
+    "request_id": {"$ref": "#/$defs/id"},
+    "kind": {"enum": ["request", "step", "message", "direction_error", "correction", "quality_issue", "rework", "handoff", "coverage", "request_end", "analysis"]},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "source_ref": {"type": "string", "minLength": 1},
+    "agent": {"type": "object", "additionalProperties": false, "required": ["id", "version", "definition_sha256", "origin"], "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "definition_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "origin": {"type": "string", "minLength": 1}}},
+    "payload": {"type": "object"},
+    "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "supersedes": {"$ref": "#/$defs/id"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$"}}
+}

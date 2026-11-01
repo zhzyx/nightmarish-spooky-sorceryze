@@ -1,0 +1,57 @@
+{
+  "scope": "Godot native Olympus workspace and shared Hermes file data adapter",
+  "status": "integrated_and_built_agent_activation_blocked",
+  "files": {
+    "integrations/godot/engine.patch": "5edb6f0bee7276ce5e559dd799d0cbe9b8168ef0e2549d551bc4e510b35d58f8",
+    "integrations/godot/install.py": "0e7e4ee2e917d1a823deea728c544968ce2177332172cf2877a7d97000b711e4",
+    "integrations/godot/olympus_bridge.py": "0dbf225a0aa7c18be9a13b649de40bc9c6138975799c9f08c8606a3723ae891a",
+    "integrations/godot/olympus_panel.cpp": "f6bbaefec2b0cc178a4d1422ab89d3b608f9cebd5a4050212afb9ae950ddf8b8",
+    "integrations/godot/olympus_panel.h": "c2f36499e7b25278604ef3fe2e25bd12b6b4498c687ccf994b20bb7b6da6242e",
+    "integrations/godot/README.md": "2b6a6ba63e28c5858514b917d373bba759a753fced0bcfefafdaa1cf1b950a04",
+    "integrations/godot/smoke.gd": "9a660eea95a7270498e0897c103aaa67511a07887647832451bea1395c52fa25",
+    "integrations/godot/test_bridge.py": "170e9de84aacf638f1bffb61ee61aced5c133c4e513f00a3990dee833235bf98"
+  },
+  "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+  "engine_hook_before_sha256": "b7db86ca63df0cdff02085b0b68d9f6e62a47e58f6e6b3b240ef03682ea40cfe",
+  "engine_hook_after_sha256": "2144136550761e2fa468f1bde9e850a646e17bf32be51aa96746812fc5c6b49b",
+  "editor_sha256": "1659f495590a2d79fcdc2de342f247b13d08361a7912c20e154219ae222e97ee",
+  "validation": {
+    "build": "passed",
+    "python_tests": {
+      "passed": 5
+    },
+    "native_page_status_and_data_validation": "OLYMPUS_EDITOR_INTEGRATION_OK",
+    "smoke_shutdown_resource_warnings": true,
+    "existing_ai_chat_tests_before": {
+      "passed": 10,
+      "failed": 2,
+      "assertions_passed": 104,
+      "assertions_failed": 3
+    },
+    "existing_ai_chat_tests_after": {
+      "passed": 10,
+      "failed": 2,
+      "assertions_passed": 104,
+      "assertions_failed": 3
+    },
+    "existing_test_failure": "Resume JSON equality compares integer originals with parsed floating-point values",
+    "upstream_check_and_rebuild": "blocked: Missing Sinan source: modules/sinan/module.json",
+    "upstream_observed_sinan_version": "0.3.1",
+    "distribution_ariadne_version": "0.2.1"
+  },
+  "review": {
+    "evaluator": "codex-root",
+    "independence": "self_review_not_independent_approval",
+    "purpose": "Preserve existing Godot changes and integrate shared framework/data entry",
+    "truth": "Tests, source hashes and unresolved blockers recorded separately",
+    "economy": "Reuse existing AI workspace, framework validators and Hermes CLI",
+    "authority": "No framework Agent activation or changed governance",
+    "adaptation": "Host adapter outside synchronized framework",
+    "continuity": "Original source and editor backed up; existing framework/data not replaced"
+  },
+  "approval": null,
+  "agent_execution_enabled": false,
+  "framework_modified": false,
+  "local_backups": ".godot-integration-local/",
+  "remote_push": "not_performed"
+}

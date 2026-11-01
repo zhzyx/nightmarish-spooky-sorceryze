@@ -1,4 +1,5 @@
 name: Bug report
+labels: ["type:bug"]
 description: Report a bug in Godot
 
 body:

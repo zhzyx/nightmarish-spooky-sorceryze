@@ -1,0 +1,21 @@
+{
+  "request_id": "issue-workflow-20261102",
+  "phase": "remote_labels_and_issue_created",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+  "category_label": "type:development",
+  "required_labels": 8,
+  "remote_base_commit": "fd4beb8493cd8b8eb0c88920c026d509a04f86f7",
+  "local_base_commit": "e5f5c60",
+  "merge_strategy": "preserve_both_histories_no_force_push",
+  "framework_changed": false,
+  "agent_activation": false,
+  "template_publication": "pending_push",
+  "adapter_tests_passed": 9,
+  "review": "self-review is not independent Agent admission",
+  "godot_legacy_bug_template": "preserved_with_type_bug_label",
+  "files": {
+    "customizations/components/issue-workorders/test_work_items.py": "99661f97c2f1642136400f0851e074d741b3bf7535878c3d860880bb895d2d21",
+    "customizations/components/issue-workorders/work_items.py": "c7c39b068b6e0f5e24c9e2f40ba8e0f83d9ba097dbd785ce41e8bc9f301547a3"
+  }
+}

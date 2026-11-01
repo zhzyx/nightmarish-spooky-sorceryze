@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "responsibilities": [
+    {
+      "id": "public_quality_policy",
+      "owner": "delegated_governance"
+    },
+    {
+      "id": "feature_standard_mapping",
+      "owner": "feature_owner"
+    },
+    {
+      "id": "local_self_check_and_repair",
+      "owner": "business_executor"
+    },
+    {
+      "id": "check_and_regression_verdict",
+      "owner": "assigned_validator"
+    },
+    {
+      "id": "professional_acceptance",
+      "owner": "professional_acceptor"
+    },
+    {
+      "id": "quality_event_impact_disposition_followup",
+      "owner": "themis"
+    },
+    {
+      "id": "risk_and_delivery_acceptance",
+      "owner": "authorized_acceptor"
+    },
+    {
+      "id": "identity_and_state_commit",
+      "owner": "host"
+    }
+  ],
+  "themis_owns": [
+    "quality_event_impact_disposition_followup"
+  ],
+  "themis_must_not_own": [
+    "public_quality_policy",
+    "local_self_check_and_repair",
+    "check_and_regression_verdict",
+    "professional_acceptance",
+    "risk_and_delivery_acceptance",
+    "identity_and_state_commit"
+  ],
+  "same_check_requires_single_id_and_owner": true,
+  "event_closure_is_delivery_acceptance": false,
+  "event_repairer_must_differ_from_independent_validator": true,
+  "check_identity_fields": [
+    "subject_manifest",
+    "criterion_id",
+    "method_and_config",
+    "environment",
+    "dependency_snapshot",
+    "policy_version"
+  ]
+}

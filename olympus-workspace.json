@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "Olympus",
+  "repository": "https://github.com/zhzyx/nightmarish-spooky-sorceryze",
+  "framework_root": "Olympus",
+  "data_root": "olympus-hermes-data",
+  "data_module": "Olympus/extensions/hermes-files",
+  "upstream_source_environment": "GONGGONG_FRAMEWORK_SOURCE",
+  "framework_version_source": "Olympus/framework-manifest.json",
+  "sync_exemptions": [
+    "Olympus/extensions/hermes-files/",
+    "olympus-hermes-data/"
+  ],
+  "data_artifacts_required_in_git": true,
+  "database_required_for_file_data": false,
+  "runtime_sync_daemon_deployed": false,
+  "registered_modules": [
+    {
+      "id": "ariadne",
+      "version": "0.2.1",
+      "manifest": "Olympus/modules/ariadne/module.json"
+    }
+  ],
+  "module_source_environments": [
+    "GONGGONG_SINAN_FRAMEWORK_SOURCE",
+    "GONGGONG_SINAN_IMPLEMENTATION_SOURCE"
+  ]
+}

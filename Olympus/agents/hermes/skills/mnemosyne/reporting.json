@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "component": {
+    "kind": "skill",
+    "id": "mnemosyne",
+    "version": "0.3.0",
+    "entry": "agents/hermes/skills/mnemosyne/SKILL.md",
+    "entry_sha256": "06835cd3c2672383bf0b85844ed58db9da96140cda814d7e51701f730c6a8654"
+  },
+  "required": true,
+  "policy": "contracts/hermes-reporting.json",
+  "policy_id": "hermes-reporting-1",
+  "reporter": "tools/hermes-report.py",
+  "events": [
+    "request",
+    "step",
+    "message",
+    "direction_error",
+    "correction",
+    "quality_issue",
+    "rework",
+    "handoff",
+    "coverage",
+    "request_end"
+  ],
+  "runtime_binding": "host_required",
+  "runtime_connected": false,
+  "dependencies": {
+    "contracts/hermes-reporting.json": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f",
+    "tools/reporting.mjs": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659",
+    "tools/hermes-report.py": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84",
+    "agents/hermes/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+    "agents/hermes/scripts/telemetry.py": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa",
+    "agents/hermes/references/data-contract.md": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5",
+    "agents/hermes/references/telemetry.md": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+  }
+}

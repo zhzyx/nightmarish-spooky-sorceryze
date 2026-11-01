@@ -21,3 +21,8 @@ misc/msvs/* eol=crlf
 *.png binary
 *.ttf binary
 *.tza binary
+
+# Olympus workspace integration
+Olympus/** -text whitespace=cr-at-eol
+integrations/godot/*.patch -whitespace
+customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol

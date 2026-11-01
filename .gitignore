@@ -396,3 +396,13 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 *.generated.props
+
+# Olympus workspace integration
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+.olympus-local.json
+.godot-integration-local/

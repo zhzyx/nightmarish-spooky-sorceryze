@@ -1,0 +1,12 @@
+{
+  "package": "zeus",
+  "version": "0.4.1",
+  "core": "core.md",
+  "agent": "agents/zeus.md",
+  "on_demand_skill": "skills/hestia/SKILL.md",
+  "instruction_language": "en",
+  "message_format": "JSON",
+  "organization": "instantiate task-specific functions; no fixed department roster",
+  "authority": "existing host and delegated governance; template does not grant tools or delegation",
+  "display_name": "宙斯 · Zeus"
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "provider": "github_issues",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "identity": "repository_full_name#issue_number",
+  "status_authority": "remote_issue",
+  "category_labels": ".github/labels.json",
+  "category_rule": "exactly_one_type_label",
+  "requirements_root": "design-docs",
+  "collection_root": "data-collection",
+  "canonical_events_root": "olympus-hermes-data",
+  "adapter": "customizations/components/issue-workorders/work_items.py",
+  "remote_configuration_state": "labels_and_issue_live_templates_prepared",
+  "ariadne_source_registered": false,
+  "agent_activation": false,
+  "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1"
+}

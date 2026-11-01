@@ -1,0 +1,8 @@
+{
+  "path_base": "framework_root",
+  "framework_root": ".",
+  "coordinator": "modules/ariadne/coordinator.mjs",
+  "default_registry": "modules/ariadne/registry.json",
+  "mode": "source_read_only_with_local_labels_and_command_preparation",
+  "external_ledger_format": ".yuanheng/state.json"
+}

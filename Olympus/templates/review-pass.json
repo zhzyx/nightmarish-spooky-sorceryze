@@ -1,0 +1,50 @@
+{
+  "template": true,
+  "permit_id": null,
+  "status": "pending_approval",
+  "event": null,
+  "phase": null,
+  "subject": {
+    "id": null,
+    "version_or_digest": null,
+    "scope": [],
+    "agent_governance_refs": []
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "olympus_framework": "unknown",
+    "zeus": {
+      "purpose": "unknown",
+      "truth": "unknown",
+      "economy": "unknown",
+      "authority": "unknown",
+      "adaptation": "unknown",
+      "continuity": "unknown"
+    },
+    "concision": {
+      "status": "unknown",
+      "entry_characters": null,
+      "rationale": null
+    },
+    "applicable_validation": "unknown",
+    "evidence_refs": [],
+    "evaluator_id": null,
+    "independence": "undetermined",
+    "unresolved": []
+  },
+  "approval": {
+    "approver_id": null,
+    "authority_ref": null,
+    "decision_evidence_ref": null,
+    "approved_at": null,
+    "valid_until_or_task_end": null,
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

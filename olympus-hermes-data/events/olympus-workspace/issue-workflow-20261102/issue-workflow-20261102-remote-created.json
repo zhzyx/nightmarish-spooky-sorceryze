@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-workflow-20261102-remote-created",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-workflow-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-01T19:00:43.450299+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Authenticated CLI created 8 labels and Issue #1; templates prepared for non-force publication",
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+    "labels_count": 8,
+    "template_publication": "pending_push",
+    "evidence": "data-collection/issue-publication-20261102.json",
+    "evidence_sha256": "11636eb5f834375003ad0413bb10565f93591ab85619e5e8e1846afad9a35b4c",
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host"
+  },
+  "evidence_refs": [
+    "issue-workflow-20261102-local-delivery"
+  ],
+  "sha256": "8c1ea7e325eef962f423d4696f63542e34d597149a635be0a310a52210f5a843"
+}

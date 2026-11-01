@@ -1,0 +1,13 @@
+{
+  "foundation": "FOUNDATION.md",
+  "version": "1.0",
+  "state": "frozen",
+  "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+  "frozen_on": "2026-11-01",
+  "authority": "explicit_user_instruction_complete_upstream_sync_and_namespace_mapping",
+  "invariant": "All Olympus agents must always remain under Zeus control, without exception.",
+  "future_module_changes_may_modify_foundation": false,
+  "trusted_host_enforcement_implemented": false,
+  "source_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+  "namespace_only_change": true
+}
