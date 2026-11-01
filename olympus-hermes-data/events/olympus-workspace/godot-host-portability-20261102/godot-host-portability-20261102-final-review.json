@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-host-portability-20261102-final-review",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-host-portability-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-01T21:12:20.550125+00:00",
+  "source_ref": "codex-desktop:independent-review-handoff",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "evidence": "integrations/godot/verification-host-portability-final-20261102.json",
+    "evidence_sha256": "4cf6388035f0d7c96b4c5445ee785138e22856df595695340049025b40fb1af3",
+    "independent_evaluator": "/root/review_chat_gate",
+    "bridge_tests_passed": 14,
+    "production_provider_tested": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-host-portability-20261102-review-handoff"
+  ],
+  "sha256": "2dcddb915e91b278e7f65be6a256d4021c59b54dba9880e676d013b541ffb9ed"
+}

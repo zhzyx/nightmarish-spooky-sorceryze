@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "decision": "approved",
+  "approver_id": "user:current-conversation",
+  "question_ref": "call_e2781a0999394b18a1444e79916edb2f",
+  "question": "是否批准独立复审通过的 Olympus 0.4.0 三个本地定义候选：Athena 15750fcb…b83a、Themis c41a33bd…8b1e、Hermes f2abe107…24cf（完整摘要见准入审查文档）？仅批准这些精确候选的本地定义发布，运行权限仍由各宿主控制。",
+  "answer": "批准这三个最终候选",
+  "subjects": {
+    "athena": "15750fcb9afeacf9ee5ee706caa291770344bda8e95b4411c603fd0966d0b83a",
+    "themis": "c41a33bd6d51ceb58cddc42f60583769f3726bf0f0d5945c9e11cee63cf08b1e",
+    "hermes": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf"
+  },
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "recorded_at": "2026-11-01T21:08:17.784005+00:00"
+}

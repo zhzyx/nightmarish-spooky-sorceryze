@@ -20,8 +20,9 @@ class DistributionTests(unittest.TestCase):
         # Synthetic permit only in an isolated checkout; never modifies a real approval.
         with tempfile.TemporaryDirectory(dir=ROOT / '.godot-integration-local', prefix='admission-fixture-') as temporary:
             isolated=Path(temporary)/'Olympus'
-            shutil.copytree(FRAMEWORK,isolated,ignore=shutil.ignore_patterns('__pycache__'))
-            wanted=sync['inventory'](FRAMEWORK)
+            binding=json.loads((FRAMEWORK/'sync/binding.json').read_text(encoding='utf-8'))
+            sync['build'](FRAMEWORK/binding['source'], isolated)
+            wanted=sync['inventory'](isolated)
             manifest=json.loads(wanted['framework-manifest.json'])
             agent=manifest['agents'][0]
             policy=json.loads(wanted['contracts/admission-policy.json'])
@@ -57,14 +58,19 @@ class DistributionTests(unittest.TestCase):
         result = sync['check'](FRAMEWORK, candidate_source=True)
         self.assertTrue(result['full_parity'])
         self.assertFalse(result['source_admission_verified'])
-        manifest = json.loads((FRAMEWORK / 'framework-manifest.json').read_text(encoding='utf-8'))
-        for agent in manifest['agents']:
-            permit = json.loads((FRAMEWORK / agent['admission_pass']).read_text(encoding='utf-8'))
-            self.assertIsNone(permit['approval'])
-            self.assertEqual(permit['status'], 'pending_independent_review')
-        process = subprocess.run([sys.executable, str(FRAMEWORK / 'tools/verify_framework.py')],
-                                 capture_output=True, encoding='utf-8')
-        self.assertNotEqual(process.returncode, 0)
+        # A new distribution must never inherit live source/local approval.
+        with tempfile.TemporaryDirectory(dir=ROOT / '.godot-integration-local', prefix='pending-test-') as temporary:
+            isolated=Path(temporary)/'Olympus'
+            binding=json.loads((FRAMEWORK/'sync/binding.json').read_text(encoding='utf-8'))
+            sync['build'](FRAMEWORK/binding['source'], isolated)
+            manifest = json.loads((isolated / 'framework-manifest.json').read_text(encoding='utf-8'))
+            for agent in manifest['agents']:
+                permit = json.loads((isolated / agent['admission_pass']).read_text(encoding='utf-8'))
+                self.assertIsNone(permit['approval'])
+                self.assertEqual(permit['status'], 'pending_independent_review')
+            process = subprocess.run([sys.executable, str(isolated / 'tools/verify_framework.py')],
+                                     capture_output=True, encoding='utf-8')
+            self.assertNotEqual(process.returncode, 0)
 
     def test_relocation_and_full_source_drift(self):
         binding = json.loads((FRAMEWORK / 'sync/binding.json').read_text(encoding='utf-8'))

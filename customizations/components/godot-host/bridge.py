@@ -6,6 +6,8 @@ from pathlib import Path
 import subprocess
 import sys
 import hashlib
+import re
+import shutil
 import tempfile
 import uuid
 import time
@@ -89,6 +91,16 @@ def enqueue(root, event):
 
 def host_environment(root):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", OLYMPUS_PYTHON=sys.executable)
+    node = env.get('OLYMPUS_NODE')
+    if not node and (root / 'project/runtime/node/node.exe').is_file():
+        node = str(root / 'project/runtime/node/node.exe')
+        env['OLYMPUS_NODE'] = node
+    if node and Path(node).is_file():
+        # Framework subprocesses also invoke `node`; honor the host's runtime choice.
+        env['PATH'] = str(Path(node).resolve().parent) + os.pathsep + env.get('PATH', '')
+    git = env.get('OLYMPUS_GIT') or root / 'project/runtime/git/cmd/git.exe'
+    if Path(git).is_file():
+        env['PATH'] = str(Path(git).resolve().parent) + os.pathsep + env.get('PATH', '')
     config = root / ".olympus-local.json"
     if config.is_file():
         local = json.loads(config.read_text(encoding="utf-8-sig"))
@@ -98,12 +110,32 @@ def host_environment(root):
     return env
 
 
+def request_identity(request):
+    # Legacy Godot callers remain supported; protocol v1 requires explicit identity.
+    if 'protocol_version' not in request and 'host' not in request:
+        return {'id': 'godot-editor', 'kind': 'engine'}, request.get('agent_id', 'athena')
+    if type(request.get('protocol_version')) is not int or request['protocol_version'] != 1:
+        raise ValueError('Unsupported host protocol version')
+    host = request.get('host')
+    if not isinstance(host, dict) or host.get('kind') not in ('engine', 'ide', 'cli', 'production-tool'):
+        raise ValueError('Missing host descriptor or unsupported host kind')
+    agent_id = request.get('agent_id')
+    if any(not isinstance(v, str) or not re.fullmatch(r'[a-z0-9][a-z0-9_.-]{0,95}', v)
+           for v in (host.get('id'), agent_id)):
+        raise ValueError('Invalid host or agent identity')
+    return {'id': host['id'], 'kind': host['kind']}, agent_id
+
+
 def chat(root, request, tenant):
     """Load framework context; never fall back to a model when checks reject it."""
     root = root.resolve()
     framework = root / "Olympus"
     manifest = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
-    agent = next(a for a in manifest["agents"] if a["id"] == "athena")
+    host, agent_id = request_identity(request)
+    matches = [a for a in manifest["agents"] if a["id"] == agent_id]
+    if len(matches) != 1:
+        raise ValueError("Agent is not uniquely registered: " + agent_id)
+    agent = matches[0]
     for field in ("request_id", "outcome", "authority_ref", "project"):
         if not isinstance(request.get(field), str) or not request[field].strip():
             raise ValueError("Missing host request: " + field)
@@ -111,33 +143,33 @@ def chat(root, request, tenant):
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
     flush(root)  # An earlier failed delivery blocks the next model/tool round.
-    binding = {'tenant_id': tenant, 'request_ref': request['request_id'], 'source_ref': 'godot-editor:ai-chat',
-               'agent_snapshot_ref': 'athena@' + agent['version'] + '#' + agent['candidate_digest'],
+    binding = {'tenant_id': tenant, 'request_ref': request['request_id'], 'source_ref': host['id'] + ':ai-chat',
+               'agent_snapshot_ref': agent_id + '@' + agent['version'] + '#' + agent['candidate_digest'],
                'outbox_path': '.olympus-outbox/chat', 'sink_ref': 'olympus-hermes-data',
                'path_base': 'workspace_root', 'authority_ref': request['authority_ref'],
-               'agent': {'id': 'athena', 'version': agent['version'], 'origin': 'olympus-framework',
+               'agent': {'id': agent_id, 'version': agent['version'], 'origin': 'olympus-framework',
                          'definition_sha256': hashlib.sha256((framework / agent['entry']).read_bytes()).hexdigest()}}
     mandate = {"feature_id": request["request_id"], "outcome": request["outcome"],
-               "authority_ref": request["authority_ref"], "host": "godot-editor",
+               "authority_ref": request["authority_ref"], "host": host["id"], "host_descriptor": host, "project": request["project"],
                "tool_permission": {k: request[k] for k in permission_fields}, 'reporting': binding}
     env = host_environment(root)
     with tempfile.TemporaryDirectory() as temporary:
         mandate_file = Path(temporary) / "mandate.json"
         mandate_file.write_text(json.dumps(mandate, ensure_ascii=False), encoding="utf-8")
         try:
-            process = subprocess.run([env.get("OLYMPUS_NODE", "node"), str(framework / "tools/agent-context.mjs"), "athena", str(mandate_file)],
+            process = subprocess.run([env.get("OLYMPUS_NODE", "node"), str(framework / "tools/agent-context.mjs"), agent_id, str(mandate_file)],
                                      cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
             ok = process.returncode == 0 and bool(process.stdout.strip())
             result = {"ok": ok, "agent_execution_enabled": False, "context": process.stdout if ok else "",
                       "error": "" if ok else process.stderr.strip() or "Framework returned no context"}
         except (OSError, subprocess.TimeoutExpired) as error:
             result = {"ok": False, "agent_execution_enabled": False, "context": "", "error": str(error)}
-        event = {"schema_version": 1, "event_id": "godot-context-" + uuid.uuid4().hex,
+        event = {"schema_version": 1, "event_id": "host-context-" + uuid.uuid4().hex,
                  "tenant_id": tenant, "request_id": request["request_id"], "kind": "step",
-                 "occurred_at": datetime.now(timezone.utc).isoformat(), "source_ref": "godot-editor:chat-context-loader",
-                 "agent": {"id": "godot-olympus-host", "version": "1.0.0",
-                           "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "origin": "godot-host-adapter"},
-                 "payload": {"framework_version": manifest["version"], "requested_agent": "athena",
+                 "occurred_at": datetime.now(timezone.utc).isoformat(), "source_ref": host["id"] + ":chat-context-loader",
+                 "agent": {"id": "olympus-host-adapter", "version": "1.1.0",
+                           "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "origin": "olympus-host-adapter"},
+                 "payload": {"framework_version": manifest["version"], "requested_agent": agent_id, "host": host,
                              "candidate_digest": agent["candidate_digest"], "context_accepted": result["ok"],
                              "outcome_sha256": hashlib.sha256(request["outcome"].encode()).hexdigest(),
                              "input_tokens": None, "output_tokens": None, "reason": "Not measured; context assembly is not model execution"},
@@ -147,6 +179,8 @@ def chat(root, request, tenant):
             result['receipt'] = flush(root)
         except (OSError, ValueError, subprocess.TimeoutExpired) as error:
             return {'ok': False, 'agent_execution_enabled': False, 'error': str(error)}
+        result['context_ready'] = result['ok']
+        result['model_execution_started'] = False
         if result['ok']:
             result['reporting'] = binding
             result['admission_scope'] = 'context_checked; model execution and reporting are host responsibilities'
@@ -164,6 +198,34 @@ def run(command, cwd):
         return {"ok": False, "error": str(error)}
 
 
+def diagnose(root):
+    framework = root / 'Olympus'
+    env = host_environment(root)
+    node = env.get('OLYMPUS_NODE', 'node')
+    checks = {'node_available': {'ok': shutil.which(node, path=env.get('PATH')) is not None}}
+    checks['git_available'] = {'ok': shutil.which('git', path=env.get('PATH')) is not None}
+    checks['candidate_integrity'] = run([sys.executable, str(framework / 'tools/verify_framework.py'), '--candidate'], root)
+    checks['formal_framework_admission'] = run([sys.executable, str(framework / 'tools/verify_framework.py')], root)
+    manifest = json.loads((framework / 'framework-manifest.json').read_text(encoding='utf-8'))
+    for agent in manifest['agents']:
+        checks['local_admission:' + agent['id']] = run([node, str(framework / 'tools/admission.mjs'), str(framework), agent['id']], root)
+    checks['hermes_data'] = run([sys.executable, str(framework / 'extensions/hermes-files/hermes_files.py'), 'validate', '--repo', str(root)], root)
+    return {'ok': all(c['ok'] for c in checks.values()), 'checks': checks,
+            'blocking_checks': [name for name, check in checks.items() if not check['ok']],
+            'model_execution_started': False, 'host_authority_authenticated': False,
+            'note': 'Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Hermes receipt.'}
+
+
+def admission_record_status(framework, agent):
+    try:
+        value = json.loads((framework / agent['admission_pass']).read_text(encoding='utf-8'))
+        return value['status'] if isinstance(value.get('status'), str) else 'invalid'
+    except (FileNotFoundError, KeyError):
+        return 'missing'
+    except (OSError, ValueError, TypeError, AttributeError):
+        return 'invalid_or_unavailable'
+
+
 def execute(workspace, action, tenant):
     root = Path(workspace).resolve()
     framework = root / "Olympus"
@@ -171,11 +233,15 @@ def execute(workspace, action, tenant):
     result = {"action": action, "framework_version": manifest["version"],
               "agent_execution_enabled": False,
               "admission": "Requires independent admission and authenticated host authority",
-              "agents": [{"id": a["id"], "state": a["state"]} for a in manifest["agents"]]}
+              "agents": [{"id": a["id"], "distribution_state": a["state"],
+                          "admission_record_status": admission_record_status(framework, a)}
+                         for a in manifest["agents"]]}
     hermes = str(framework / "extensions/hermes-files/hermes_files.py")
     if action == "status":
         result.update(ok=True, framework_status=manifest["status"],
                       data_available=(root / "olympus-hermes-data/dataset.json").is_file())
+    elif action == "doctor":
+        result.update(diagnose(root))
     elif action == "check":
         result.update(run([sys.executable, str(framework / "tools/verify_framework.py"), "--candidate"], root))
     elif action == "validate":
@@ -189,7 +255,7 @@ def execute(workspace, action, tenant):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["status", "check", "validate", "analyze", "chat", "flush"])
+    parser.add_argument("action", choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush"])
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--tenant", default="olympus-workspace")
     parser.add_argument("--out", type=Path)

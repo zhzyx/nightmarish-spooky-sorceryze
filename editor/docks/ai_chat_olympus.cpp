@@ -100,7 +100,7 @@ bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, co
 		return true;
 	}
 	List<String> arguments;
-	for (const String &arg : { _engine_root().path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root }) {
+	for (const String &arg : { olympus_report_root.path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root }) {
 		arguments.push_back(arg);
 	}
 	String output;
@@ -153,7 +153,7 @@ void AIChatDock::_end_olympus(const String &p_status) {
 	}
 	olympus_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("olympus-receipt-" + itos(OS::get_singleton()->get_process_id()) + ".json");
 	List<String> arguments;
-	for (const String &arg : { _engine_root().path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root, String("--out"), olympus_receipt_path }) {
+	for (const String &arg : { olympus_report_root.path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root, String("--out"), olympus_receipt_path }) {
 		arguments.push_back(arg);
 	}
 	ProcessID pid = 0;
@@ -194,7 +194,7 @@ void AIChatDock::_begin_olympus_context() {
 	const String python = EDITOR_GET("olympus/python");
 	olympus_report_root = root;
 	olympus_report_python = python;
-	const String bridge = _engine_root().path_join("tools/olympus_bridge.py");
+	const String bridge = olympus_report_root.path_join("tools/olympus_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"Olympus 未配置：请在 Olympus 页设置工作区和 Python。聊天不会绕过框架发送。");
 		_set_busy(false);
@@ -209,6 +209,12 @@ void AIChatDock::_begin_olympus_context() {
 		}
 	}
 	Dictionary input;
+	Dictionary host;
+	host["id"] = "godot-editor";
+	host["kind"] = "engine";
+	input["protocol_version"] = 1;
+	input["host"] = host;
+	input["agent_id"] = "athena";
 	input["request_id"] = "godot-" + snapshot_id;
 	input["outcome"] = outcome;
 	input["authority_ref"] = "godot-editor:user-chat:" + conversation_id;

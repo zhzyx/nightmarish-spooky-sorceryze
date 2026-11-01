@@ -1,11 +1,11 @@
 {
   "template": false,
-  "status": "pending_independent_review",
+  "status": "approved",
   "subject": {
     "id": "hermes",
     "version_or_digest": {
       "version": "0.4.0",
-      "candidate_digest": "16f57ed5dc9cdb831bd57e0ca8ac3ac315355015f3fcd1532c59414e1e4eae3a",
+      "candidate_digest": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf",
       "candidate_files": [
         {
           "path": "AGENTS.md",
@@ -177,7 +177,7 @@
         },
         {
           "path": "source-evidence.json",
-          "sha256": "be09dd5e6e5d11a34489ee792365694d341454064bd195d8cb9304495f75d882"
+          "sha256": "1d94e7b92d83c0ef78d40e0f4068164410d86a1bcfc1fe70107e031539c6502a"
         },
         {
           "path": "specs/data-feedback.md",
@@ -276,8 +276,53 @@
           "sha256": "098fd20bc054152267c6616ed872da4d287949f0503a9555009dcc0336bedb58"
         }
       ]
-    }
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ]
   },
-  "approval": null,
-  "reason": "Upstream approval preserved as historical evidence; independent admission must bind this candidate."
+  "approval": {
+    "approver_id": "user:current-conversation",
+    "authority_ref": "explicit-user-decision:call_e2781a0999394b18a1444e79916edb2f",
+    "decision_evidence_ref": "reviews/local-admission/user-decision-20261102.json",
+    "approved_at": "2026-11-01T21:08:17.784005+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "expires_at": null,
+    "revocation_ref": null,
+    "superseded_by": null
+  },
+  "permit_id": "OLYMPUS-090-20261102-HERMES",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "olympus_framework": "pass",
+    "zeus": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 825,
+      "rationale": "Entries unchanged; shared governance loaded by references; source evidence and derived digests only."
+    },
+    "applicable_validation": "pass",
+    "evaluator_id": "/root/review_upstream",
+    "independence": "independent_subagent_review",
+    "evidence_refs": [
+      "reviews/local-admission/independent-review-20261102.json"
+    ],
+    "unresolved": [
+      "Actual model credentials, host authority and production business outcome require host verification; definition release is not model execution."
+    ]
+  }
 }

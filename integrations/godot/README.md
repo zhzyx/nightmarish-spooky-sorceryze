@@ -21,10 +21,11 @@
 
 ```powershell
 ./tools/build_olympus_editor.ps1 -Python PATH/TO/python.exe
+./tools/install_olympus_editor.ps1
 ./tools/launch_olympus_editor.ps1 -Python PATH/TO/python.exe -Node PATH/TO/node.exe
 ```
 
-二进制位于忽略的 `bin/`；预编译包应解压到对应源码检出的 `bin/`，不提交编译缓存。启动后在 Agents 配置 HTTP 模型 endpoint、model 和凭据，或自行配置已安装的兼容 CLI。仓库不捆绑第三方账号登录状态和 CLI 私有依赖，默认使用 HTTP 配置入口。
+构建输出位于忽略的 `bin/`，安装脚本部署至 `project/godot/bin/` 并生成相对路径与 SHA256 清单。原独立安装保存在 `project/godot/versions/godot-4.7.2/`，不包含 Olympus 定制面板。源码和脚本入 Git，二进制与缓存不入 Git。启动后在 Agents 配置 HTTP 模型 endpoint、model 和凭据，或自行配置已安装的兼容 CLI。仓库不捆绑第三方账号登录状态和 CLI 私有依赖，默认使用 HTTP 配置入口。
 
 Olympus 页设置工作区、Python 和租户，点击任一检查按钮保存设置。上游位置可通过环境变量或本机 `.olympus-local.json` 绑定；示例文件在仓库根。没有有效上游、定义准入或文件数据回执时，聊天明确拒绝发送，不能回退为未受框架管理的模型聊天。
 
@@ -47,5 +48,13 @@ accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。�
 源码根的 `bin/` 接受匹配源码提交的 Windows x64 预编译包。构建脚本会重新生成被 Git 忽略的 `.gen.*` 文件；不再提交生成代码与构建缓存。C# 示例另需 .NET 版 Godot 与已安装 .NET SDK，本次验证的运行示例是 `samples/olympus-workbench/`。
 
 框架候选通过 `Olympus/sync/gonggong_sync.py prepare` 在新目录生成，全量核对来源。正式 `build`、`check` 和聊天上下文入口仍要求上游正式准入；候选验证不能解锁聊天。来源索引为 `Olympus/source-evidence.json`，原件留在外部上游，不随本仓库复制。源码移动后按示例配置上游相对位置即可重新核验。
+
+当前源与三个 Olympus 本地定义均已获用户对精确摘要的批准，正式校验通过。manifest 中的 `synchronized_candidate_pending_independent_admission` 是确定性分发时的生成状态，不能覆盖后来独立批准；桥接状态单列 `admission_record_status`，每次聊天仍以实际验证结果决定是否加载。
+
+安装后的验证可将上述 `--godot` 参数改为 `project/godot/bin/godot.windows.editor.x86_64.console.exe`。新增 `run_olympus_install_probe.py` 检查无环境覆盖、隔离设置和无关 cwd 下的路径发现；`run_olympus_chat_gate.py --mode admitted` 使用真实已批准框架和本机模型传输夹具，验证完整准入与回执。实际供应商服务及凭据仍须另行配置，不把本机回包称为生产模型验收。
+
+跨 IDE / CLI / 生产工具协议见 `customizations/components/godot-host/HOST_PROTOCOL.md`。`doctor` 诊断正式准入；`status` 展示记录；候选 `check` 不授权模型执行。
+
+本机已在 `project/runtime/` 部署标准 Python、Node 和 Git；启动脚本可直接运行。完整迁移复验使用仅含系统目录的 PATH，正式 doctor 无阻断、原生安装探测及聊天链通过，见 `verification-host-runtime-20261102.json`。运行时安装方法见 `project/godot/README.md`。
 
 `verification.json` 是初次独立目录接入的历史证据，保持原字节供旧事件引用；其中源码路径与状态不作为当前版本的验证结论。当前需求及验收见 `design-docs/godot-olympus-chat-20261102.md`。

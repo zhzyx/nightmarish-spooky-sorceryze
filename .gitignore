@@ -407,3 +407,7 @@ __pycache__/
 .olympus-local.json
 .godot-integration-local/
 .olympus-outbox/
+/project/godot/bin/
+/project/godot/versions/
+/project/godot/installed.local.json
+/project/runtime/

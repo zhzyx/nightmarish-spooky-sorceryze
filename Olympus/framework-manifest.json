@@ -343,7 +343,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "d824fe0ac121d04835d1cc7f29f95a2509b034b2ec43bdc111d238b369b153fc",
+      "candidate_digest": "15750fcb9afeacf9ee5ee706caa291770344bda8e95b4411c603fd0966d0b83a",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -431,7 +431,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "7d1a0adb2ce5cfe02076f28a7c7810ea94cd57e1bae4dd960df90c803ea93797",
+      "candidate_digest": "c41a33bd6d51ceb58cddc42f60583769f3726bf0f0d5945c9e11cee63cf08b1e",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -588,7 +588,7 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "16f57ed5dc9cdb831bd57e0ca8ac3ac315355015f3fcd1532c59414e1e4eae3a",
+      "candidate_digest": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf",
       "reporting": "agents/hermes/reporting.json"
     }
   ],

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "host-context-476936e798be4ee59b7436311d2e32ea",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-host-portability-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-01T21:10:50.066588+00:00",
+  "source_ref": "codex-desktop:chat-context-loader",
+  "agent": {
+    "id": "olympus-host-adapter",
+    "version": "1.1.0",
+    "definition_sha256": "07878a37fe6dff972dab1fb89bd7170caffa86a640d643036f3a651d7be9c946",
+    "origin": "olympus-host-adapter"
+  },
+  "payload": {
+    "framework_version": "0.9.0",
+    "requested_agent": "athena",
+    "host": {
+      "id": "codex-desktop",
+      "kind": "ide"
+    },
+    "candidate_digest": "15750fcb9afeacf9ee5ee706caa291770344bda8e95b4411c603fd0966d0b83a",
+    "context_accepted": true,
+    "outcome_sha256": "58bbbaf838b7e69dabcabeffe46bd8026c886cc79aae04d5627cc98241e301df",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Not measured; context assembly is not model execution"
+  },
+  "evidence_refs": [],
+  "sha256": "1d349b0361eb9ca2708c8e622e4cf74f633d598d8f2534ad7573cd96f5a31ffe"
+}

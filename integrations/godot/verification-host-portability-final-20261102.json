@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-host-portability-20261102",
+  "verified_at": "2026-11-01T21:12:20.548995+00:00",
+  "scope": "Godot installation relocation and Olympus host protocol; not external model service certification",
+  "installation": {
+    "source_root": "../..",
+    "default_editor": "bin/godot.windows.editor.x86_64.exe",
+    "files": [
+      {
+        "sha256": "5cccff61284782ebca002b95837a26f33773b825fb4dbaa304c606b085446894",
+        "bytes": 159972864,
+        "path": "bin/godot.windows.editor.x86_64.exe"
+      },
+      {
+        "sha256": "5330d75a2ac9d74c50a17fe499b567d0d7cc21e949992c7865c5b102f17ce63e",
+        "bytes": 301056,
+        "path": "bin/godot.windows.editor.x86_64.console.exe"
+      }
+    ],
+    "path_base": "installation_directory",
+    "workspace": "../..",
+    "schema_version": 1
+  },
+  "original_installation_migration": {
+    "schema_version": 1,
+    "path_base": "installation_directory",
+    "files": [
+      {
+        "sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+        "path": "versions/godot-4.7.2/Godot_v4.7.2-stable_win64_console.exe",
+        "bytes": 198152
+      },
+      {
+        "sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+        "path": "versions/godot-4.7.2/Godot_v4.7.2-stable_win64.exe",
+        "bytes": 180858888
+      }
+    ],
+    "verified": true
+  },
+  "source_and_definition_admission": {
+    "formal_check": "pass",
+    "doctor_ok": true,
+    "blocking_checks": [],
+    "decision_refs": [
+      "Olympus/reviews/local-admission/user-decision-20261102.json"
+    ],
+    "source_originals_in_git": false
+  },
+  "tests": {
+    "bridge_unit": {
+      "passed": 14
+    },
+    "native_ai_chat": {
+      "cases_passed": 12,
+      "assertions_passed": 107
+    },
+    "distribution": {
+      "passed": 4
+    },
+    "installed_path_probe": "pass; no environment workspace override, isolated editor settings, unrelated cwd, exact CLI default path",
+    "sample_project": "pass",
+    "native_scenarios": [
+      {
+        "native_page": true,
+        "mode": "accepted",
+        "real_framework_called": false,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "rejected",
+        "real_framework_called": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "cancel",
+        "real_framework_called": false,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "tool",
+        "real_framework_called": false,
+        "receipt_verified": true,
+        "model_requests": 2,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "recovery",
+        "real_framework_called": false,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "recovery_rejected",
+        "real_framework_called": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "recovery_cancel",
+        "real_framework_called": false,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      {
+        "native_page": true,
+        "mode": "admitted",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      }
+    ]
+  },
+  "actual_workspace_context": {
+    "context_ready": true,
+    "model_execution_started": false,
+    "receipt_state": "recorded_file",
+    "context_sha256": "5a16a7c0e0abbb54b72811f2a02d6ae27c8d52905b531eab7978c809c72256dc",
+    "host": "codex-desktop"
+  },
+  "independent_review": {
+    "host_reviewer": "/root/review_chat_gate",
+    "framework_reviewer": "/root/review_upstream",
+    "definition_approval": "explicit_user_decisions",
+    "model_provider_verified": false,
+    "final_host_review": "No remaining blocking implementation issue; 14 tests independently passed; exact path probe and admitted isolation confirmed."
+  },
+  "files": {
+    "customizations/components/godot-host/bridge.py": "0d78c619d04a8a36c8b17fa3f2361f7b8c59df28a57c5fd439d3f105a43bfc41",
+    "customizations/components/godot-host/test_bridge.py": "4b1548a3c25518ee2e9cc86f9f4038b1e7df18f53e081560040abb64419bd37d",
+    "customizations/components/godot-host/HOST_PROTOCOL.md": "5b271bf7ae7da1c74a748f02fac537493580332906608d3ff1d2a440532fb45d",
+    "editor/docks/ai_chat_dock.cpp": "e283545cbd8a9d9d538f23821f0385a032a9cfc833ad50c9a0fb3ffb26fa1d62",
+    "editor/docks/ai_chat_olympus.cpp": "ceda4e3f08fc9ba3b3ceb0c8cd399dfcb0160ca983f5334cf5de04fbe164479f",
+    "editor/docks/olympus_panel.cpp": "a0ad557bc4aa56cf2a19f65fd247812fcf00b5ddba7469e17ffa87d7a4f8d007",
+    "editor/docks/olympus_host_paths.h": "d52ee595651e9006799e1f6f16e1d60f2c99d767fbb58aea78d1bfc1a90a157b",
+    "tools/launch_olympus_editor.ps1": "96817999668a0a19578b8b85f9d48ba0b5c569aac38178ce5fb63c0b56617caf",
+    "tools/install_olympus_editor.ps1": "6ce5e5856a912f5292cd17882470bca6b433f9b908c346c20ef1ff3915419834",
+    "tests/editor/run_olympus_install_probe.py": "5cf0d0844752098649e98e70130c122d3c561d6f963c04b249773cf7d2f1136a",
+    "tests/editor/olympus_install_probe.gd": "6c8f01207b92422fe838b785b74e633bda542fcd5a7517e56cafd8cecb0162be",
+    "tests/editor/run_olympus_chat_gate.py": "90ce06e72fe7e82d9cef0de52eacb1d605dead986afb4890c528a1470fee3d45",
+    "tests/editor/test_olympus_distribution.py": "7211f04b8ba40f19ea2cc6831c30624fd376b95df2f9c4ec1b3065df8d55a241"
+  },
+  "limitations": [
+    "No external model provider request: no credentials supplied to this task.",
+    "Windows build retains pre-existing compiler warnings; no zero-warning claim.",
+    "Runtime binaries are local, ignored; repository contains sources, build/install scripts and runnable sample.",
+    "No cross-IDE host identity certification; shared protocol tested with engine, IDE, CLI and production-tool identities."
+  ],
+  "previous_verification": {
+    "path": "integrations/godot/verification-host-portability-20261102.json",
+    "sha256": "817114f2f341b1406b5defc1d22852d891d1d441bf54da38c47b0e765eae031a",
+    "reason": "Final review found malformed permit status must not prevent doctor/data checks; fixed and independently retested."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-host-portability-20261102-request",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-host-portability-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-01T21:10:49.288429+00:00",
+  "source_ref": "codex-desktop:user-request",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "scope": "Migrate installed engine to project/godot, repair native Olympus integration, enable multi-host protocol, diagnose production gates and sync Git.",
+    "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/3",
+    "requirement": "design-docs/godot-host-portability-20261102.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "7bb470ba02e9e09179aee06687e909c49ccb6faf8e81152c5e1073791cd8ac02"
+}

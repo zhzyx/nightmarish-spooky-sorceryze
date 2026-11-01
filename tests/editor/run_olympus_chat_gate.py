@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--godot',type=Path,required=True)
-    parser.add_argument('--mode',choices=['rejected','accepted','cancel','tool','recovery','recovery_rejected','recovery_cancel'],default='rejected')
+    parser.add_argument('--mode',choices=['rejected','accepted','admitted','cancel','tool','recovery','recovery_rejected','recovery_cancel'],default='rejected')
     args=parser.parse_args()
     requests=[]
     class Handler(http.server.BaseHTTPRequestHandler):
@@ -42,12 +42,19 @@ def main():
             root=Path(temporary)
             shutil.copytree(ROOT/'Olympus',root/'Olympus',ignore=shutil.ignore_patterns('__pycache__'))
             shutil.copytree(ROOT/'customizations/components/godot-host',root/'customizations/components/godot-host',ignore=shutil.ignore_patterns('__pycache__'))
+            (root/'tools').mkdir()
+            shutil.copyfile(ROOT/'tools/olympus_bridge.py', root/'tools/olympus_bridge.py')
             if args.mode in ('accepted','cancel','tool','recovery','recovery_cancel'):
                 # Transport fixture only, never an Olympus admission or production framework.
                 delay=2000 if args.mode in ('cancel','recovery_cancel') else 0
                 (root/'Olympus/tools/agent-context.mjs').write_text(f'setTimeout(()=>process.stdout.write("ISOLATED_FRAMEWORK_CONTEXT_FIXTURE"),{delay});',encoding='utf-8')
             # A deliberately absent upstream, never a production approval fixture.
             (root/'.olympus-local.json').write_text(json.dumps({'GONGGONG_FRAMEWORK_SOURCE':str(root/'missing-source')}),encoding='utf-8')
+            if args.mode == 'admitted':
+                # Real approved definitions and real source verification, isolated model transport/data.
+                source_binding=json.loads((ROOT/'Olympus/sync/binding.json').read_text(encoding='utf-8'))
+                source=(ROOT/'Olympus'/source_binding['source']).resolve()
+                (root/'.olympus-local.json').write_text(json.dumps({'GONGGONG_FRAMEWORK_SOURCE':str(source)}),encoding='utf-8')
             subprocess.run(['git','init','--quiet',str(root)],check=True)
             subprocess.run(['git','-C',str(root),'add','Olympus'],check=True,capture_output=True)
             subprocess.run(['git','-C',str(root),'-c','user.name=Isolated Test','-c','user.email=test@example.invalid','-c','commit.gpgsign=false','commit','--quiet','-m','Isolated framework fixture'],check=True)
@@ -68,19 +75,24 @@ def main():
                 (journal_dir/'ai_chat_resume.json').write_text(json.dumps(journal),encoding='utf-8')
             env=dict(os.environ,OLYMPUS_TEST_WORKSPACE=str(root),OLYMPUS_PYTHON=sys.executable,
                      OLYMPUS_WORKSPACE=str(root),
-                     OLYMPUS_TEST_MODE=args.mode,
+                     OLYMPUS_TEST_MODE='accepted' if args.mode=='admitted' else args.mode,
                      OLYMPUS_TEST_ENDPOINT=f'http://127.0.0.1:{server.server_port}/v1/chat/completions')
             # Isolate user settings, so tests cannot change real accounts or projects.
             for name in ('APPDATA','LOCALAPPDATA','XDG_CONFIG_HOME','XDG_DATA_HOME'):
                 env[name]=str(root/name)
                 (root/name).mkdir()
             result=subprocess.run([str(args.godot.resolve()),'--headless','--editor','--path',str(project),'--script','res://gate.gd'],capture_output=True,text=True,encoding='utf-8',errors='replace',env=env,timeout=75)
-            marker={'rejected':'OLYMPUS_CHAT_FAIL_CLOSED_OK','recovery_rejected':'OLYMPUS_CHAT_FAIL_CLOSED_OK','recovery':'OLYMPUS_CHAT_RECOVERY_OK','recovery_cancel':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','accepted':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','tool':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','cancel':'OLYMPUS_CHAT_CANCEL_OK'}[args.mode]
+            marker={'rejected':'OLYMPUS_CHAT_FAIL_CLOSED_OK','recovery_rejected':'OLYMPUS_CHAT_FAIL_CLOSED_OK','recovery':'OLYMPUS_CHAT_RECOVERY_OK','recovery_cancel':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','admitted':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','accepted':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','tool':'OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK','cancel':'OLYMPUS_CHAT_CANCEL_OK'}[args.mode]
             if result.returncode or marker not in result.stdout:
                 print(result.stdout[-5000:]); print(result.stderr[-5000:]); return 1
-            if args.mode in ('accepted','tool','recovery_cancel'):
+            if args.mode in ('accepted','admitted','tool','recovery_cancel'):
                 assert len(requests)==(2 if args.mode=='tool' else 1)
-                assert 'ISOLATED_FRAMEWORK_CONTEXT_FIXTURE' in requests[0]['messages'][0]['content']
+                if args.mode == 'admitted':
+                    assert 'ISOLATED_FRAMEWORK_CONTEXT_FIXTURE' not in requests[0]['messages'][0]['content']
+                    assert 'athena' in requests[0]['messages'][0]['content'].lower()
+                    assert 'zeus' in requests[0]['messages'][0]['content'].lower()
+                else:
+                    assert 'ISOLATED_FRAMEWORK_CONTEXT_FIXTURE' in requests[0]['messages'][0]['content']
             else:
                 assert not requests, 'Rejected/cancelled chat reached the model endpoint'
             events=[json.loads(p.read_text(encoding='utf-8')) for p in (root/'olympus-hermes-data/events').rglob('*.json')]
@@ -96,13 +108,13 @@ def main():
                 assert ending['payload']['status']==('cancelled' if args.mode=='cancel' else 'paused' if args.mode=='recovery' else 'completed')
                 assert ending['agent']['id']=='athena'
                 assert any(e['kind']=='request' for e in events)
-                if args.mode in ('accepted','tool'):
+                if args.mode in ('accepted','admitted','tool'):
                     assert any(e.get('supersedes') for e in events)
                 if args.mode=='tool':
                     assert len([e for e in events if e['payload'].get('context_accepted')])==2
                     assert any(e['payload'].get('phase')=='tool-1-0' and e.get('supersedes') for e in events)
             assert not list((root/'.olympus-outbox/chat').glob('*.json'))
-            print(json.dumps({'native_page':True,'mode':args.mode,'real_framework_called':args.mode in ('rejected','recovery_rejected'),'receipt_verified':True,'model_requests':len(requests),'production_data_written':False}))
+            print(json.dumps({'native_page':True,'mode':args.mode,'real_framework_called':args.mode in ('admitted','rejected','recovery_rejected'),'model_transport_fixture':True,'receipt_verified':True,'model_requests':len(requests),'production_data_written':False}))
             return 0
     finally:
         server.shutdown()

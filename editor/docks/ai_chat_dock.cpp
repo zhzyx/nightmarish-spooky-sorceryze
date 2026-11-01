@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "ai_chat_dock.h"
+#include "olympus_host_paths.h"
 #include "olympus_panel.h"
 
 #include "ai_chat_resume.h"
@@ -3285,7 +3286,7 @@ void AIChatDock::_poll_cli() {
 }
 
 String AIChatDock::_engine_root() const {
-	const String repository = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir();
+	const String repository = OlympusHostPaths::find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
 	if (FileAccess::exists(repository.path_join("SConstruct"))) {
 		return repository;
 	}
@@ -4077,7 +4078,8 @@ AIChatDock::AIChatDock() {
 		}
 	}
 #endif
-	const String cli_directory = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir().path_join("tools/codebuddy_cli");
+	const String source_root = OlympusHostPaths::find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
+	const String cli_directory = source_root.path_join("tools/codebuddy_cli");
 	EDITOR_DEF("ai_chat/cli_node", node_path);
 	EDITOR_DEF("ai_chat/cli_bridge", cli_directory.path_join("godot_bridge.js"));
 	EDITOR_DEF("ai_chat/cli_entry", cli_directory.path_join("node_modules/@tencent-ai/codebuddy-code/bin/codebuddy"));

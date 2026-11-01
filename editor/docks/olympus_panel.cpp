@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "olympus_panel.h"
+#include "olympus_host_paths.h"
 
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
@@ -45,18 +46,18 @@
 
 OlympusPanel::OlympusPanel() {
     set_name("OlympusPage");
-    String workspace_default = OS::get_singleton()->get_environment("OLYMPUS_WORKSPACE");
-    if (workspace_default.is_empty()) {
-        workspace_default = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir();
-        if (!FileAccess::exists(workspace_default.path_join("olympus-workspace.json"))) {
-            const String sibling = workspace_default.get_base_dir().path_join("Olympus");
-            if (FileAccess::exists(sibling.path_join("olympus-workspace.json"))) {
-                workspace_default = sibling;
-            }
-        }
-    }
+    const String workspace_default = OlympusHostPaths::workspace();
     EDITOR_DEF("olympus/workspace", workspace_default);
-    EDITOR_DEF("olympus/python", OS::get_singleton()->get_environment("OLYMPUS_PYTHON"));
+    String python_default = OS::get_singleton()->get_environment("OLYMPUS_PYTHON");
+    if (python_default.is_empty() && FileAccess::exists(workspace_default.path_join("project/runtime/python/python.exe"))) {
+        python_default = workspace_default.path_join("project/runtime/python/python.exe");
+    }
+    EDITOR_DEF("olympus/python", python_default);
+    const String saved_python = EDITOR_GET("olympus/python");
+    const bool explicit_runtime = !OS::get_singleton()->get_environment("OLYMPUS_PYTHON").is_empty();
+    if (!python_default.is_empty() && (explicit_runtime || saved_python.is_empty() || !FileAccess::exists(saved_python))) {
+        EditorSettings::get_singleton()->set("olympus/python", python_default);
+    }
     EDITOR_DEF("olympus/tenant", "olympus-workspace");
     Label *notice = memnew(Label);
     notice->set_text(U"Olympus · 框架与赫尔墨斯数据\n接入检查不代表 Agent 已获准启用。配置保存于本机编辑器设置。");
@@ -74,9 +75,9 @@ OlympusPanel::OlympusPanel() {
     tenant->set_placeholder(U"数据租户");
     tenant->set_text(EDITOR_GET("olympus/tenant"));
     add_child(tenant);
-    const char *actions[] = {"status", "check", "validate", "analyze"};
-    const String labels[] = {U"读取框架状态", U"核对上游及候选完整性", U"校验赫尔墨斯数据", U"分析当前租户记录"};
-    for (int i = 0; i < 4; i++) {
+    const char *actions[] = {"status", "doctor", "check", "validate", "analyze"};
+    const String labels[] = {U"读取框架状态", U"诊断生产聊天阻断原因", U"核对上游及候选完整性", U"校验赫尔墨斯数据", U"分析当前租户记录"};
+    for (int i = 0; i < 5; i++) {
         Button *button = memnew(Button);
         button->set_text(labels[i]);
         button->connect("pressed", callable_mp(this, &OlympusPanel::run_action).bind(String(actions[i])));
@@ -97,7 +98,7 @@ void OlympusPanel::run_action(const String &p_action) {
     if (worker >= 0) {
         return;
     }
-    const String script = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir().path_join("tools/olympus_bridge.py");
+    const String script = workspace->get_text().path_join("tools/olympus_bridge.py");
     if (workspace->get_text().is_empty() || python->get_text().is_empty() || !FileAccess::exists(script)) {
         output->set_text(U"请填写工作区、Python 路径，并确认引擎 tools/olympus_bridge.py 已安装。");
         return;
