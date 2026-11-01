@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-workflow-20261102-repository-finalization",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-workflow-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T19:37:53.352065+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "User authorized final repository integration; validated three existing untracked customization files for commit and push",
+    "checks": [
+      "registry_validation",
+      "proposal_does_not_approve",
+      "export_preserves_bound_bytes",
+      "duplicate_proposal_rejected",
+      "stale_export_rejected",
+      "traversal_rejected",
+      "tampered_proposal_rejected"
+    ],
+    "files_sha256_lf_normalized": {
+      "customizations/AGENTS.md": "700fececa290c829ca68d1aaddc2f6d70f8b942dccd4bb1597806ee277d24920",
+      "customizations/README.md": "3351de5265755a5b9006669e5f3ebcc63f46e3c724f58e30c8476fdc9de83d2d",
+      "tools/customization_feedback.py": "0a0e4b05acb7ae52cb999bb486215e550f30df77c7516e162993a80e156ba124"
+    },
+    "foundation_unchanged": true,
+    "framework_activation": false,
+    "review_independence": "self_review_not_independent_admission",
+    "input_tokens": null,
+    "output_tokens": null,
+    "missing_usage_reason": "Not provided by host"
+  },
+  "evidence_refs": [
+    "issue-workflow-20261102-published"
+  ],
+  "sha256": "b1b056eb7c0c7ecef51d75592da3ae3f69f73a832124bb7351c9d3f3e57dcf33"
+}
