@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "godot-simulated-flow-20261102",
+  "collected_at": "2026-11-01T21:34:17.131239+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-simulated-flow-20261102/godot-simulated-flow-20261102-completion.json",
+      "sha256": "71b8fc4dfdcae48d06e7ad6d33cbe377515598d8097cb59b7c1adec114ed649a",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-simulated-flow-20261102-completion",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-simulated-flow-20261102/godot-simulated-flow-20261102-git-publication.json",
+      "sha256": "0c485cafb282b3d50ae84acc9fb9a1425b13ff685bb48e58e28bedd012e38b1f",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-simulated-flow-20261102-git-publication",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-simulated-flow-20261102/godot-simulated-flow-20261102-request.json",
+      "sha256": "382edad0c13a7f1b3ef5e6a2b044a12a35cb1ff0a70573a1270f58e9168f1287",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-simulated-flow-20261102-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-simulated-flow-20261102/godot-simulated-flow-20261102-review.json",
+      "sha256": "1eed797d37185f06bf34b279ef0c5bb0b34d4ff142880443c0d13ae37fb79266",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-simulated-flow-20261102-review",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-simulated-flow-20261102/godot-simulated-flow-20261102-verification.json",
+      "sha256": "fb7efc13e5fe4031d6a3736eae1452a30d2b07fa5bc9e15fec1b6981dbb1621b",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-simulated-flow-20261102-verification",
+      "origin": "codex-local-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-simulated-flow-20261102-git-publication",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-simulated-flow-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-01T21:34:16.834230+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:main",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "subject_commit": "84acc12364482686970f26cd3689b9e21a4d0ebd",
+    "evidence": "data-collection/git-publication-simulated-flow-20261102.json",
+    "evidence_sha256": "463b8cb48985796ad7617ce91f6660725e4f232e7174cc20d5e786aaaab56402",
+    "external_model_service_tested": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "godot-simulated-flow-20261102-review"
+  ],
+  "sha256": "85a9f87ccaa4099429be6677d9e65629c6c769636afb96741518658249214f21"
+}

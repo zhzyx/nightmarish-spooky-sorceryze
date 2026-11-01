@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source": "github-api",
+  "collected_at": "2026-11-01T21:34:14.632817+00:00",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "issue": {
+    "number": 3,
+    "title": "修复 Godot 安装迁移与 Olympus 跨宿主接入",
+    "state": "closed",
+    "state_reason": "completed",
+    "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/3",
+    "body": "<!-- olympus-request:godot-host-portability-20261102 -->\n\n需求文档：`design-docs/godot-host-portability-20261102.md`\n\n# 引擎迁移与跨宿主接入\n\n需求标识：`godot-host-portability-20261102`。工单使用 GitHub Issue，唯一类别标签为 `type:bug`。\n\n用户确认把本地引擎安装迁入本仓库 `project/godot`，保留现有源码结构，修复生产 AI 聊天不可启用的原因，并使 Olympus 可适配不同 IDE 和生产工具。继承已有独立审查授权，最终准入批准仍由用户作出。共工框架本体不在本仓库提交范围内。\n\n## 布局与行为\n\n原独立 Godot 安装移动至 `project/godot/versions/godot-4.7.2`，迁移前后逐文件 SHA256 校验；Olympus 定制引擎编译并安装到 `project/godot/bin`。源码保留在仓库根，框架唯一根为 `Olympus/`。安装脚本生成相对路径清单，二进制、构建缓存及机器配置不进入源码 Git。仓库保留完整可构建源码、安装/启动脚本和可运行示例。\n\n编辑器根据可执行文件祖先目录发现工作区，不依赖旧安装深度或当前目录；Olympus 面板和聊天从所选工作区调用同一桥接入口。启动器默认使用新安装位置。跨宿主协议明确 host 身份归属、Agent、真实任务与权限状态，共享正式上下文加载及赫尔墨斯回执；不能通过 host 改名越过准入。\n\n新增 doctor 诊断分别报告 Node、候选完整性、正式上游与框架准入、三个本地 Agent 通行证、赫尔墨斯文件数据。`check` 仍仅候选检查；`context_ready` 仅代表上下文及回执成功，不冒充模型执行。\n\n## 生产阻断的真实根因\n\n上游 yanshi 的只读参考路径和 kuafu 的质量来源路径已迁为相对路径，旧批准摘要未随真实新批准更新。独立审查确认仅这两份文件变化，原件与 6 份质量模板均校验通过。正式加载仍正确报 `Admission subject mismatch`。本地 Athena、Themis、Hermes 的通行证均待批准。\n\n没有发现共享框架依赖特定 IDE/聊天 ID 的准入白名单；原 Godot 适配层硬编码 Godot/Athena 已泛化为宿主协议。历史审查者标识属于真实证据，保留原貌。\n\n## 验收与边界\n\n验证迁移摘要、安装路径发现、示例运行、原生聊天回归、上下文拒绝时零模型请求、取消与恢复、跨宿主/替代注册 Agent、未知身份拒绝及真实数据校验。成功路径使用隔离传输夹具；不把夹具批准或模型回包写成生产事实。\n\n正式生产启用需先批准上游两个精确候选，再按完整同步重建 Olympus 并独立复核最终摘要，最后批准本地准入。源批准证据变化会使本地摘要变化，不用旧摘要替代最终对象。实现提交和 Git 同步不表示已获得这些批准。\n\n\n## 实施与验证结果\n\n已提交并同步 `ea8b02bc14f62eda5fd828f23e9fc2850d80c687`。原安装已迁入 project/godot/versions/godot-4.7.2；定制引擎和标准运行时位于 project/godot/bin 与 project/runtime。Python/Node/Git 脱离 IDE 环境运行验证通过。\n\n源两个候选及 Olympus 三个候选已获用户对精确摘要的批准，正式校验通过。宿主协议支持 engine/ide/cli/production-tool，未绕过准入。16 项桥接测试、4 项分发测试、12 项原生测试（107 断言）、安装位置及 8 种聊天场景验证通过。真实框架成功链使用本机模型夹具；真实供应商服务未验收，需引擎内配置用户模型凭据。\n\n最终证据：`integrations/godot/verification-host-runtime-20261102.json`。保留工单开放，等待真实模型服务配置与验收；代码迁移与准入修复已完成。\n\n\n## 本轮最终结论\n\n用户已将剩余验收范围明确调整为“仅虚假调试即可”“重点是跑通流程然后提交”。模拟全流程验收已通过并发布：`84acc12364482686970f26cd3689b9e21a4d0ebd`，证据见 Issue #4 和 `integrations/godot/verification-simulated-flow-20261102.json`。按修订后的范围完成工单；不宣称真实供应商服务已验收。\n",
+    "updated_at": "2026-11-01T21:34:13Z",
+    "closed_at": "2026-11-01T21:34:13Z"
+  },
+  "labels": [
+    "type:bug"
+  ]
+}
