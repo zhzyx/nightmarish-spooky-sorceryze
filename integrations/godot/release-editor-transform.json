@@ -1,0 +1,285 @@
+{
+  "method": "reviewed_equal_length_readonly_diagnostic_prefix_v1",
+  "input_sha256": "6bacd4b9df99d472c6869775d32123bc5acc9fed947f3982184f972dba0c9410",
+  "output_sha256": "b8bc69c8b6fd035b4b6217836b8798e6948dee0ef0864a252402170c01618fef",
+  "bytes": 159974400,
+  "prefix_bytes": 16,
+  "relative_prefix": "././././././././",
+  "paths": [
+    {
+      "offset": 104735488,
+      "source_file": "platform/windows/winrt_defines.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112126320,
+      "source_file": "modules/gdscript/gdscript_function.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112145304,
+      "source_file": "modules/gdscript/gdscript_parser.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112195824,
+      "source_file": "modules/gdscript/gdscript_parser.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112198592,
+      "source_file": "modules/gdscript/language_server/gdscript_workspace.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112220336,
+      "source_file": "modules/gdscript/editor/gdscript_editor_language.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112233992,
+      "source_file": "modules/gdscript/gdscript.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112270168,
+      "source_file": "modules/gdscript/gdscript_byte_codegen.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112701832,
+      "source_file": "modules/godot_physics_2d/godot_shape_2d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112702080,
+      "source_file": "modules/godot_physics_2d/godot_collision_object_2d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112702488,
+      "source_file": "modules/godot_physics_2d/godot_body_2d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112736144,
+      "source_file": "modules/godot_physics_3d/godot_collision_object_3d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112736408,
+      "source_file": "modules/godot_physics_3d/godot_body_3d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112774832,
+      "source_file": "modules/godot_physics_3d/joints/godot_jacobian_entry_3d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112882176,
+      "source_file": "modules/jolt_physics/objects/jolt_area_3d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 112896640,
+      "source_file": "modules/jolt_physics/shapes/jolt_custom_motion_shape.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113037888,
+      "source_file": "modules/jsonrpc/jsonrpc.compat.inc",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113042360,
+      "source_file": "modules/jsonrpc/tests/test_jsonrpc.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113140096,
+      "source_file": "modules/mbedtls/tests/test_crypto_mbedtls.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113143288,
+      "source_file": "modules/mbedtls/crypto_mbedtls.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113269072,
+      "source_file": "thirdparty/mbedtls/library/ssl_misc.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 113540696,
+      "source_file": "modules/noise/noise.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 114736208,
+      "source_file": "modules/websocket/packet_buffer.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 114753480,
+      "source_file": "modules/zip/tests/test_zip.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 114986872,
+      "source_file": "drivers/gles3/rasterizer_canvas_gles3.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 114995880,
+      "source_file": "drivers/gles3/storage/light_storage.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 116878248,
+      "source_file": "editor/import/3d/resource_importer_scene.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 116918920,
+      "source_file": "editor/gui/editor_file_dialog.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 116922280,
+      "source_file": "editor/inspector/editor_inspector.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 137402568,
+      "source_file": "scene/main/node.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 138794280,
+      "source_file": "scene/resources/3d/skin.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 139100824,
+      "source_file": "scene/animation/animation_tree.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 139952448,
+      "source_file": "scene/3d/spline_ik_3d.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 140183040,
+      "source_file": "servers/rendering/rendering_device.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 140360376,
+      "source_file": "servers/rendering/rendering_server.compat.inc",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 140659920,
+      "source_file": "servers/rendering/renderer_rd/renderer_compositor_rd.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 140684544,
+      "source_file": "servers/audio/audio_server.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 140810568,
+      "source_file": "servers/rendering/rendering_server_default.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141025648,
+      "source_file": "servers/rendering/rendering_device_binds.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141034048,
+      "source_file": "servers/physics_2d/physics_server_2d_wrap_mt.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141038328,
+      "source_file": "servers/physics_3d/physics_server_3d_wrap_mt.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141253776,
+      "source_file": "servers/rendering/renderer_rd/uniform_set_cache_rd.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141308672,
+      "source_file": "servers/rendering/renderer_rd/storage_rd/light_storage.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141377672,
+      "source_file": "servers/rendering/dummy/storage/mesh_storage.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 141414064,
+      "source_file": "servers/audio/effects/audio_effect_spectrum_analyzer.compat.inc",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142107728,
+      "source_file": "core/object/object.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142176024,
+      "source_file": "core/variant/variant_op.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142439416,
+      "source_file": "core/math/vector3.h",
+      "preceded_by_nul": false
+    },
+    {
+      "offset": 142439456,
+      "source_file": "core/math/aabb.h",
+      "preceded_by_nul": false
+    },
+    {
+      "offset": 142548752,
+      "source_file": "core/math/rect2.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142584312,
+      "source_file": "core/string/fuzzy_search.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142603280,
+      "source_file": "core/variant/variant_construct.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 142649824,
+      "source_file": "core/math/dynamic_bvh.h",
+      "preceded_by_nul": true
+    },
+    {
+      "offset": 143032568,
+      "source_file": "core/object/script_language_extension.h",
+      "preceded_by_nul": true
+    }
+  ],
+  "executable_section_sha256": {
+    ".text": "3e48a67b917f6516d5bdfcc47c138bb4323ff1f9282193ce82bb9af7f53075e0"
+  },
+  "all_other_bytes_unchanged": true,
+  "signed_input": false
+}

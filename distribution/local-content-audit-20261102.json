@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "scope": "active repository sources and current installed deliverables",
+  "source_tracked_files": 15854,
+  "ignored_groups": {
+    ".godot-integration-local": {
+      "files": 2794,
+      "bytes": 361891379,
+      "examples": [
+        ".godot-integration-local/actual-host-request.json",
+        ".godot-integration-local/actual-host-result.json",
+        ".godot-integration-local/approve_olympus.py",
+        ".godot-integration-local/approve_source.py"
+      ]
+    },
+    ".olympus-local.json": {
+      "files": 1,
+      "bytes": 75,
+      "examples": [
+        ".olympus-local.json"
+      ]
+    },
+    ".olympus-outbox": {
+      "files": 1,
+      "bytes": 1,
+      "examples": [
+        ".olympus-outbox/chat/.flush.lock"
+      ]
+    },
+    "bin": {
+      "files": 3,
+      "bytes": 231829449,
+      "examples": [
+        "bin/godot.windows.editor.x86_64.console.exe",
+        "bin/godot.windows.editor.x86_64.exe",
+        "bin/olympus-godot-windows-x64-candidate-20261102.zip"
+      ]
+    },
+    "core": {
+      "files": 14,
+      "bytes": 2073453,
+      "examples": [
+        "core/authors.gen.h",
+        "core/disabled_classes.gen.h",
+        "core/donors.gen.h",
+        "core/extension/ext_wrappers.gen.h"
+      ]
+    },
+    "customizations": {
+      "files": 3,
+      "bytes": 44811,
+      "examples": [
+        "customizations/components/godot-host/__pycache__/bridge.cpython-312.pyc",
+        "customizations/components/godot-host/__pycache__/test_bridge.cpython-312.pyc",
+        "customizations/components/issue-workorders/__pycache__/work_items.cpython-312.pyc"
+      ]
+    },
+    "drivers": {
+      "files": 14,
+      "bytes": 458037,
+      "examples": [
+        "drivers/gles3/shaders/canvas.glsl.gen.h",
+        "drivers/gles3/shaders/canvas_occlusion.glsl.gen.h",
+        "drivers/gles3/shaders/canvas_sdf.glsl.gen.h",
+        "drivers/gles3/shaders/effects/copy.glsl.gen.h"
+      ]
+    },
+    "editor": {
+      "files": 13,
+      "bytes": 118645361,
+      "examples": [
+        "editor/doc/doc_data_class_path.gen.h",
+        "editor/doc/doc_data_compressed.gen.h",
+        "editor/export/register_exporters.gen.cpp",
+        "editor/themes/builtin_fonts.gen.h"
+      ]
+    },
+    "integrations": {
+      "files": 1,
+      "bytes": 4732,
+      "examples": [
+        "integrations/godot/__pycache__/olympus_bridge.cpython-312.pyc"
+      ]
+    },
+    "main": {
+      "files": 2,
+      "bytes": 87260,
+      "examples": [
+        "main/app_icon.gen.h",
+        "main/splash.gen.h"
+      ]
+    },
+    "modules": {
+      "files": 12,
+      "bytes": 186294,
+      "examples": [
+        "modules/betsy/alpha_stitch.glsl.gen.h",
+        "modules/betsy/bc1.glsl.gen.h",
+        "modules/betsy/bc4.glsl.gen.h",
+        "modules/betsy/bc6h.glsl.gen.h"
+      ]
+    },
+    "platform": {
+      "files": 15,
+      "bytes": 49595,
+      "examples": [
+        "platform/android/export/logo_svg.gen.h",
+        "platform/android/export/run_icon_svg.gen.h",
+        "platform/ios/export/logo_svg.gen.h",
+        "platform/ios/export/run_icon_svg.gen.h"
+      ]
+    },
+    "project": {
+      "files": 2585,
+      "bytes": 610317791,
+      "examples": [
+        "project/godot/bin/godot.windows.editor.x86_64.console.exe",
+        "project/godot/bin/godot.windows.editor.x86_64.exe",
+        "project/godot/installed.local.json",
+        "project/godot/versions/godot-4.7.2/Godot_v4.7.2-stable_win64.exe"
+      ]
+    },
+    "scene": {
+      "files": 2,
+      "bytes": 325746,
+      "examples": [
+        "scene/theme/default_font.gen.h",
+        "scene/theme/default_theme_icons.gen.h"
+      ]
+    },
+    "servers": {
+      "files": 101,
+      "bytes": 3218188,
+      "examples": [
+        "servers/rendering/renderer_rd/effects/smaa_area_tex.gen.h",
+        "servers/rendering/renderer_rd/effects/smaa_search_tex.gen.h",
+        "servers/rendering/renderer_rd/shaders/area_lights_inc.glsl.gen.h",
+        "servers/rendering/renderer_rd/shaders/bicubic_filter_inc.glsl.gen.h"
+      ]
+    },
+    "tests": {
+      "files": 2,
+      "bytes": 25667,
+      "examples": [
+        "tests/editor/__pycache__/run_olympus_chat_gate.cpython-312.pyc",
+        "tests/editor/__pycache__/test_olympus_distribution.cpython-312.pyc"
+      ]
+    },
+    "thirdparty": {
+      "files": 1,
+      "bytes": 18354308,
+      "examples": [
+        "thirdparty/icu4c/icudata.gen.h"
+      ]
+    },
+    "tools": {
+      "files": 2,
+      "bytes": 13206,
+      "examples": [
+        "tools/__pycache__/customization_feedback.cpython-312.pyc",
+        "tools/__pycache__/olympus_bridge.cpython-312.pyc"
+      ]
+    }
+  },
+  "delivery_decisions": {
+    "source": "All tracked source, framework, documentation, samples, tests and actual records in Git and release source snapshot",
+    "project/godot/bin": "Reviewed release derivative and identical console, included in full Release ZIP",
+    "project/godot/versions/godot-4.7.2": "Original executables included unchanged",
+    "project/runtime": "Only exact files from installed inventory, excluding generated bytecode",
+    "bin": "Superseded duplicate build outputs; current installed editor is delivered instead",
+    "generated_native_files": "Regenerated by build; not independent source",
+    "local_configuration": "Not distributed; recipient binds actual approved upstream and credentials",
+    "temporary_workspace": "Drafts, caches and upstream originals are not repository deliverables"
+  }
+}

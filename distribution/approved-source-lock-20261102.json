@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "request_id": "full-repository-delivery-20261102",
+  "verified_at": "2026-11-01T22:01:00.291811+00:00",
+  "source_evidence": "Olympus/source-evidence.json",
+  "source_evidence_sha256": "1d94e7b92d83c0ef78d40e0f4068164410d86a1bcfc1fe70107e031539c6502a",
+  "framework_files": 140,
+  "registered_evidence_files": 12,
+  "exact_byte_and_file_set_match": true,
+  "source_inventory_sha256": "fc12e8b57d87b17ee4b027f648af42492fd8d74dd552f3b48f8847c1965e7d64",
+  "formal_parity": {
+    "full_parity": true,
+    "source_integrity_verified": true,
+    "source_admission_verified": true,
+    "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+    "preserved_exemption": "extensions/hermes-files/",
+    "source_files": 140,
+    "distribution_files": 128,
+    "upstream_version": "0.9.0"
+  },
+  "recovery": {
+    "unchanged_files": 135,
+    "archive_exact_match": [
+      "specs/code-collaboration.md"
+    ],
+    "deterministic_reverse_mapping_exact_match": [
+      "modules/sinan/refresh.mjs",
+      "specs/work-order-management.md"
+    ],
+    "prior_field_restoration_and_serialization_exact_match": [
+      "framework-manifest.json",
+      "modules/sinan/module.json"
+    ],
+    "acceptance_rule": "Only bytes matching previously committed SHA256 were accepted; restored copies are not represented as continuously retained originals."
+  },
+  "independent_reviewer": "/root/review_upstream",
+  "live_upstream_changed_by_other_work": true,
+  "live_upstream_modified_by_this_task": false,
+  "private_locator": "GONGGONG_FRAMEWORK_SOURCE",
+  "private_source_bundled": false,
+  "new_agent_approval_inferred": false,
+  "scope": "Previously approved exact version only; newer live upstream is not this release."
+}

@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "input_sha256": "6bacd4b9df99d472c6869775d32123bc5acc9fed947f3982184f972dba0c9410",
+  "source_prefix_sha256": "95e9cb7845d85bac5b37d3eaf3db871a46afca5e8091d7b806a42ec3455cff4d",
+  "paths": [
+    {
+      "offset": 104735488,
+      "suffix_sha256": "136020f7dae6deca254a747bfac256851e11e2d0796aacdd8d59428c7857a3a5",
+      "source_file": "platform/windows/winrt_defines.h",
+      "source_sha256": "2e53138c87d0206d4b3afb92f931d9f5c94ca64f867517587aaa063a231d2ed6"
+    },
+    {
+      "offset": 112126320,
+      "suffix_sha256": "b49570a9e3b3554942e388f619d354a9863b1d05c1e464dbe454a6ce7bf48d1a",
+      "source_file": "modules/gdscript/gdscript_function.h",
+      "source_sha256": "5d0f77e9669e2906abe05228c05389a5cf795bf6a29006066e205199c23f77fd"
+    },
+    {
+      "offset": 112145304,
+      "suffix_sha256": "567ae0403e4e2edc30d5d6fd87f73236526515c36004bbdbec11cd403fbffe65",
+      "source_file": "modules/gdscript/gdscript_parser.h",
+      "source_sha256": "a7982dd23cb4330650d11df546fd8f4530b90adbbdbd35f77be0d21542e3a468"
+    },
+    {
+      "offset": 112195824,
+      "suffix_sha256": "f55bd6586d1fdf08f5278c99d131eb83b73a4f3c24c44df321d96c7094f2f058",
+      "source_file": "modules/gdscript/gdscript_parser.h",
+      "source_sha256": "a7982dd23cb4330650d11df546fd8f4530b90adbbdbd35f77be0d21542e3a468"
+    },
+    {
+      "offset": 112198592,
+      "suffix_sha256": "54aa3eb835d84149d9bba4e2467ae5206d7eac12320173d3847a0e105cee7094",
+      "source_file": "modules/gdscript/language_server/gdscript_workspace.h",
+      "source_sha256": "51e2d27edbce1623dc16ba00a4f51963d72f96883e9645396f1e5e005a63bc3c"
+    },
+    {
+      "offset": 112220336,
+      "suffix_sha256": "a2fb72a95c89c7b57efe1aa1e99998f16ab061e0f2a6ae1e9b80231fc9bc06d4",
+      "source_file": "modules/gdscript/editor/gdscript_editor_language.h",
+      "source_sha256": "0bd4483becd7f4ad8d3a2bec3aadbb45d880c1d34c040f0b691a78677d6df951"
+    },
+    {
+      "offset": 112233992,
+      "suffix_sha256": "1bff2a350d759277479a4a367bc9f38b0abc97bc692d0abe4bbdefc80e8defc4",
+      "source_file": "modules/gdscript/gdscript.h",
+      "source_sha256": "539628b4900b1d0b4be33178f875cc70be491e7def7a0dff1fa26db760ba5c7b"
+    },
+    {
+      "offset": 112270168,
+      "suffix_sha256": "1dd75f022bb5832aa96185d3b6cfeed0816124aa5006be5fff50d947b5bf157f",
+      "source_file": "modules/gdscript/gdscript_byte_codegen.h",
+      "source_sha256": "a9c8d4a7833be57b3b96fc0a1493ae003e8593a2879173cc2fc0eaf633c5e617"
+    },
+    {
+      "offset": 112701832,
+      "suffix_sha256": "f8ee6b4cfa5e47b08237423aac31c88fcea8001399d42145cabcb803d7283bf7",
+      "source_file": "modules/godot_physics_2d/godot_shape_2d.h",
+      "source_sha256": "da21fdfb9d71289938741e406f1a8017724122ab4899e7f522fd5e7c2dcbe31f"
+    },
+    {
+      "offset": 112702080,
+      "suffix_sha256": "cf78cee2513d4a7f635f05334c1249504605b65d8c75ff632bfdaf651747d533",
+      "source_file": "modules/godot_physics_2d/godot_collision_object_2d.h",
+      "source_sha256": "649e7a49bde724430178fcb6248d5a963944a4208d6a706ce3ec913d89ce8111"
+    },
+    {
+      "offset": 112702488,
+      "suffix_sha256": "31f06c2ada551c1ae88d6ad15354131e298fcc8b1285ccb85f299cf1cbfcc6e7",
+      "source_file": "modules/godot_physics_2d/godot_body_2d.h",
+      "source_sha256": "d2b725f1579b648e1a7613f86e4a1210e944596dd561b373e2d0325a6a6fd408"
+    },
+    {
+      "offset": 112736144,
+      "suffix_sha256": "821edd75a023fa05b36891ff89e971893fa1154187d68380faeb1f8e6593ad1a",
+      "source_file": "modules/godot_physics_3d/godot_collision_object_3d.h",
+      "source_sha256": "dc0fafea48a774cc60f1266f8639a7722952359e16186180b6f6117e7dec62b5"
+    },
+    {
+      "offset": 112736408,
+      "suffix_sha256": "c28d9e4c88eef9756a6ba243e4a1ad1c4f98dc2abb7e18d66e0bcc2405453e83",
+      "source_file": "modules/godot_physics_3d/godot_body_3d.h",
+      "source_sha256": "89905899b677acd0d5ff0185ef27829a56f13e4a779f7408a354b6eb310ba5c2"
+    },
+    {
+      "offset": 112774832,
+      "suffix_sha256": "7e97bc9810de9d3998cd304cf75496513ff8a13d9d386876be3f0a4df1098041",
+      "source_file": "modules/godot_physics_3d/joints/godot_jacobian_entry_3d.h",
+      "source_sha256": "2ab79deaefcbabd85c31a1c9e914da3fd71d4f6f88fc5831d78ece8f8c026196"
+    },
+    {
+      "offset": 112882176,
+      "suffix_sha256": "890b137753c4fb2b49e357aa436d8906e03332872e27cad84e0becff7c2acba3",
+      "source_file": "modules/jolt_physics/objects/jolt_area_3d.h",
+      "source_sha256": "d387b5c418311ed1c984aa073ee0890a9d78b15a6ee2ebe5a8eee37c417feecf"
+    },
+    {
+      "offset": 112896640,
+      "suffix_sha256": "046a4d19aab27fc5034d0944e10c2c325eb16173535e75584f2ab42f86ffc413",
+      "source_file": "modules/jolt_physics/shapes/jolt_custom_motion_shape.h",
+      "source_sha256": "3df97887a509750a194435f4c951260fd754286e2c5330929bc640e17a125cbc"
+    },
+    {
+      "offset": 113037888,
+      "suffix_sha256": "5c2c71b730cb59eac7449ac66414ef592512cb5f12e9dad808f686fac245374d",
+      "source_file": "modules/jsonrpc/jsonrpc.compat.inc",
+      "source_sha256": "f2829e2c7838862173e68d73f1f045faa386b7063c69db8cc2b2e2e29de77bf3"
+    },
+    {
+      "offset": 113042360,
+      "suffix_sha256": "4f4dbea8b6e86738690c4fc9fd58b3b33e9ef782ed85c9838a7d5c78a484f571",
+      "source_file": "modules/jsonrpc/tests/test_jsonrpc.h",
+      "source_sha256": "190435090fda035a512949ecb3171201b105dcff4c9a9405fd20e7fa46f30a27"
+    },
+    {
+      "offset": 113140096,
+      "suffix_sha256": "f14cb8207086fb567f2b1f93694e9e8eabf0541c760de74d65a0e01679beb11c",
+      "source_file": "modules/mbedtls/tests/test_crypto_mbedtls.h",
+      "source_sha256": "347d3c7f0aa409f368ae7f12e652687ac43b37d2aaa3fed5ae0374ea4fdb510b"
+    },
+    {
+      "offset": 113143288,
+      "suffix_sha256": "170d52651526d3ddf121c9604a9108e34d5594d39363f0d8829b0998753d1447",
+      "source_file": "modules/mbedtls/crypto_mbedtls.h",
+      "source_sha256": "fa204b288433b8b46d9c0ba1c581b9936e0f0e8a43ae53fbd82664a1adef5e8e"
+    },
+    {
+      "offset": 113269072,
+      "suffix_sha256": "40161a056c5151305ccc58a40a1d19940975b02357abc3de9797eb2ff25464a6",
+      "source_file": "thirdparty/mbedtls/library/ssl_misc.h",
+      "source_sha256": "110c563a7b9f02a792d86d707f3471f02c5ae0048189b4816ec58edb23d6e5cf"
+    },
+    {
+      "offset": 113540696,
+      "suffix_sha256": "837f92795c73b9cc6338dad3d03d269be96893e5f2ea14d16bb8ae809461df96",
+      "source_file": "modules/noise/noise.h",
+      "source_sha256": "7ecd3047bf7a687e3889915a6a4d848f61f15baffa2e05b8d35a22ebca05d46f"
+    },
+    {
+      "offset": 114736208,
+      "suffix_sha256": "a33f8f329c7b3e9410c0a336e48096c277f4b6b5b58c8db167ba40b6447da41b",
+      "source_file": "modules/websocket/packet_buffer.h",
+      "source_sha256": "1eb0040c5b0355337bda9e3cfeed9afae58798420cbc1c16849c0f86a747ecf9"
+    },
+    {
+      "offset": 114753480,
+      "suffix_sha256": "06c685f5b754ea795654296e28c9b2efcf85b8d874fc353652f3d60f6af65401",
+      "source_file": "modules/zip/tests/test_zip.h",
+      "source_sha256": "002a8c164096fd272527417b1d4b96937d6c1093b480dc6f68ba45249e2e70e7"
+    },
+    {
+      "offset": 114986872,
+      "suffix_sha256": "666053dad7bebae00c312d0c22e4a0fc9205f1177b5d937fed014a96d0167e95",
+      "source_file": "drivers/gles3/rasterizer_canvas_gles3.h",
+      "source_sha256": "c2c2709b133b9e8d2ac17f9535e7df4fd48083afbe16807fa08b2136832aa6fb"
+    },
+    {
+      "offset": 114995880,
+      "suffix_sha256": "4d2daf290841dc156c520717fea8ac7a41ecc01605cf4b972bb575953ef811c7",
+      "source_file": "drivers/gles3/storage/light_storage.h",
+      "source_sha256": "ef39e46b477ec8e6a11024acf26d90f74ac2013777d06e6a7a81210107c654ef"
+    },
+    {
+      "offset": 116878248,
+      "suffix_sha256": "173d4905f3cfe1e39769dfab9b3cc68c6f7c9ac82ce354d4ff38966237548bf5",
+      "source_file": "editor/import/3d/resource_importer_scene.h",
+      "source_sha256": "0c036d2c0c37d7d8e60877fd8872c4476cfa04d5424ad84fb0e3ac82779117b9"
+    },
+    {
+      "offset": 116918920,
+      "suffix_sha256": "c3837650ff6116ca650796f9c483895606642678b5a52b30c17d491f27b44973",
+      "source_file": "editor/gui/editor_file_dialog.h",
+      "source_sha256": "b2f7680262e66aac6b27da0b1feb460d4d9fcab936eff7c36ff64c21ab17540a"
+    },
+    {
+      "offset": 116922280,
+      "suffix_sha256": "0436327e6d6443df3bb873ee6551c8bff980ad1815390792a7641c769f19c146",
+      "source_file": "editor/inspector/editor_inspector.h",
+      "source_sha256": "b649cd576b9a5cdaa573ae8f9a11a8b4c4b68f34000ce1c8cad70bcc4cdfed16"
+    },
+    {
+      "offset": 137402568,
+      "suffix_sha256": "740ad4b00474329dc25c6c390a85373bcf2bbe2c286fc86e16e57380b0cce658",
+      "source_file": "scene/main/node.h",
+      "source_sha256": "4303649f80ae5c6950976a6b65caa24fd2498697a733cbb7e99125edeedd39f8"
+    },
+    {
+      "offset": 138794280,
+      "suffix_sha256": "c2aa4a1b5804adf1f252b14aed47dff799fc5aa09039b716488f4f2f08a64b7d",
+      "source_file": "scene/resources/3d/skin.h",
+      "source_sha256": "21ea480b20d351d1f7e2712c4285bd64b9f69035b4ab88e1d9106f91034a8ff9"
+    },
+    {
+      "offset": 139100824,
+      "suffix_sha256": "7dea6741c13499e62f076f48d3cedae9e9e72f42da09ae5f2b8930980648bd8c",
+      "source_file": "scene/animation/animation_tree.h",
+      "source_sha256": "87070a9f205ed0bad0f7f94e3358b2baf3e51927595170b87303964770c1971d"
+    },
+    {
+      "offset": 139952448,
+      "suffix_sha256": "798abc67203746a9feb06f818684b5f3dcf1ae69922be1c60fe9fe787b123f0b",
+      "source_file": "scene/3d/spline_ik_3d.h",
+      "source_sha256": "b3308b5c316140c81378d9457b650edb43f989be085f525b1c373e281ab88eb7"
+    },
+    {
+      "offset": 140183040,
+      "suffix_sha256": "07d96d2ad74b89984d1ced54c0032ee89ff9295b52640c917d50d337680cf884",
+      "source_file": "servers/rendering/rendering_device.h",
+      "source_sha256": "66d7dda7d9beb2a894111892957e93402b2cd113e3b99c6ebc95e6c906086a05"
+    },
+    {
+      "offset": 140360376,
+      "suffix_sha256": "fd327e555aaa9731a2ac9c8db70a7f8cd7063602859619de255f76b60ec802dd",
+      "source_file": "servers/rendering/rendering_server.compat.inc",
+      "source_sha256": "fbc2011b35fdab054cdb9c4f240cb5428a5987d7765962ce183fb058ef339b08"
+    },
+    {
+      "offset": 140659920,
+      "suffix_sha256": "3ead4b1c40a640d5ce47a994dc4b868aa62a8303475ac6bd8ecb848931d83d78",
+      "source_file": "servers/rendering/renderer_rd/renderer_compositor_rd.h",
+      "source_sha256": "bddcc77de5fc2b7519bb81d4d589b0aac10dc781084493e7f3546d6ef35db20b"
+    },
+    {
+      "offset": 140684544,
+      "suffix_sha256": "6d19eeca1b637917a7edbd2aeb140ceb9f8cead83fa2d98df7d71b590de3d6d0",
+      "source_file": "servers/audio/audio_server.h",
+      "source_sha256": "338dd7537ef781e9d9634fbb48780d01ecb99899fbc6ef8769c7199e572b2c4a"
+    },
+    {
+      "offset": 140810568,
+      "suffix_sha256": "3752ec00a2bde979ec4b103ddac104c817ec0e2eb49327fd3b043394e2d7e9a2",
+      "source_file": "servers/rendering/rendering_server_default.h",
+      "source_sha256": "e7f5bb6afae4e0f95d25e17f97dea6fe92f36b2eb12d2fd237ef9e310abd30fa"
+    },
+    {
+      "offset": 141025648,
+      "suffix_sha256": "e732bbda07a244256d197e2a128cb08ee405d565b65c5c46b3347642d6d31265",
+      "source_file": "servers/rendering/rendering_device_binds.h",
+      "source_sha256": "4a0c1e58be019d423ee6460d00ce393bd524e1315f5f7a13b5d3c9378d33976d"
+    },
+    {
+      "offset": 141034048,
+      "suffix_sha256": "5cd557bcbd7c50b2376c0a247f0519c2fa7c5d837c4aba6a8290498331dcdf40",
+      "source_file": "servers/physics_2d/physics_server_2d_wrap_mt.h",
+      "source_sha256": "9ca84572efc8c061cecfa7419bfcdb27f0d4f79550fad79a64468eae50319e25"
+    },
+    {
+      "offset": 141038328,
+      "suffix_sha256": "3008b25068162735b987169246a0e5ab3e9699c352ba049d23993dc9a974e3a5",
+      "source_file": "servers/physics_3d/physics_server_3d_wrap_mt.h",
+      "source_sha256": "a74c975f560d1a0a578fd3ed2751d84cb67179fd83ffde6a92d3fa82711c3d44"
+    },
+    {
+      "offset": 141253776,
+      "suffix_sha256": "3af703a120f6baf35538733bcf06fd1ad7de99cd093c7b2345badd05952757f4",
+      "source_file": "servers/rendering/renderer_rd/uniform_set_cache_rd.h",
+      "source_sha256": "01f4645efcc9d9d4b8b1943c49577cb0f189c0daf81faf3e6b2e58848c67f4b8"
+    },
+    {
+      "offset": 141308672,
+      "suffix_sha256": "6fabeda1720d722a1d790eee6273610084f262176f795ab1511e8aeebeb60917",
+      "source_file": "servers/rendering/renderer_rd/storage_rd/light_storage.h",
+      "source_sha256": "7baff61819e2a22deb09bd0e4bd374bb274584322e9208466eb11ed273d49689"
+    },
+    {
+      "offset": 141377672,
+      "suffix_sha256": "b1f1261b285e9ceec1cb672a589e3b5aaf72168cae20a3719df8b98f01c32005",
+      "source_file": "servers/rendering/dummy/storage/mesh_storage.h",
+      "source_sha256": "75ce4815f38e360cf1964345a135457f2dacb2e5a98454775aa2bb797f91c12e"
+    },
+    {
+      "offset": 141414064,
+      "suffix_sha256": "713bf348b78a65c8c70136e1f6ce254c3906902674b018e1a01cc2ff96c65d72",
+      "source_file": "servers/audio/effects/audio_effect_spectrum_analyzer.compat.inc",
+      "source_sha256": "4262c9b32091a07245745bf342adc556846c31308008bef48a210b70f2b2798a"
+    },
+    {
+      "offset": 142107728,
+      "suffix_sha256": "4efa487b23694655373d59936fbd6797d7f46fe7f539410118351bc6c2e5d9db",
+      "source_file": "core/object/object.h",
+      "source_sha256": "bb30b873a170f6d0ad9db53e0ab103b603f2f1e5ad7cad8a561520e0d034f435"
+    },
+    {
+      "offset": 142176024,
+      "suffix_sha256": "c1941fed0e4d180a6ec4dda634012ffb05ef8c217f844b4a4dfb4197647b322b",
+      "source_file": "core/variant/variant_op.h",
+      "source_sha256": "cb67a283e6b988f0ba6694b95cae8da2704ed82b5821092cef178a63ed333238"
+    },
+    {
+      "offset": 142439416,
+      "suffix_sha256": "1c90a3c684beeefbb938f039213c6d6c5a96f6e0ac423c5ebb384b2262699e86",
+      "source_file": "core/math/vector3.h",
+      "source_sha256": "03488c94b1041aec20bc6be53f47b5c0f7251e70d92c4076720144f7e0392b2c"
+    },
+    {
+      "offset": 142439456,
+      "suffix_sha256": "7fba66c278fde24b8a5eb38882b6dafa8a5f15e0dcee78a3082b5f5ce0e4cbc1",
+      "source_file": "core/math/aabb.h",
+      "source_sha256": "f6b6414ae099da491b1ef355d816c87ff89f626fb1736f3173ef3fcd990a96be"
+    },
+    {
+      "offset": 142548752,
+      "suffix_sha256": "b91c148bb3e47930e78d70640984ba93b0da2b23f6864ffa689209ab763c8bb0",
+      "source_file": "core/math/rect2.h",
+      "source_sha256": "69cb0a0917638b985a37e55e64c312bf445bc9b4d29c3602ef625cb28dc4c8b4"
+    },
+    {
+      "offset": 142584312,
+      "suffix_sha256": "f65aa5f0a34f481f71047eb714fcb8264de25323351c819ff21932926a1edbf0",
+      "source_file": "core/string/fuzzy_search.h",
+      "source_sha256": "296344d9872843e0974feb8f82f0f521090dbc2842ce901ca4e16e8e1bea97e8"
+    },
+    {
+      "offset": 142603280,
+      "suffix_sha256": "9e18576c527256d8eb213b03b31479b8b9be32f95845f3928e76271e590ac3fe",
+      "source_file": "core/variant/variant_construct.h",
+      "source_sha256": "a15c4a1a39cf8cc697a350f8c82c8bdc767f9d772bcb2d2c2fc55218e6de8298"
+    },
+    {
+      "offset": 142649824,
+      "suffix_sha256": "36a78c9a16dbb1f9cecf96d21fbdf4f96a86967104cafe4956ad1d880710b426",
+      "source_file": "core/math/dynamic_bvh.h",
+      "source_sha256": "579acd290b834273b2b87a588655cff15c767e453dd3f93ee53cdafff22f6aa0"
+    },
+    {
+      "offset": 143032568,
+      "suffix_sha256": "e775b811087a58343e49f210e18e9f4d0000ec3ed5181935b404219a200ac155",
+      "source_file": "core/object/script_language_extension.h",
+      "source_sha256": "ed8578cdb8fa4f62ad43cf49f44e5b12c6a3f0272d07a364e306506c5503b18d"
+    }
+  ]
+}

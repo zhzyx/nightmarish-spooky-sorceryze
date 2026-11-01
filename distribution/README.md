@@ -1,0 +1,16 @@
+# 完整 Windows 工作区交付
+
+源码、框架、业务内容、文档和真实任务数据在当前 Git 仓库。仓库 Releases 提供完整工作区 ZIP，额外包含定制编辑器、标准 Python/Node/Git 和原始 Godot 4.7.2 回退安装。逐文件清单与归属在包内 `bundle-manifest.json`；包摘要与下载链接记录在本目录的发布索引。
+
+1. 下载发布索引指定的 ZIP，核对 SHA256，解压到新的目录。
+2. 执行 `tools/initialize_downloaded_workspace.ps1`，为源码 ZIP 创建本地 Git 快照；已有 Git 检出会保留。源码原提交与树记录在清单中，ZIP 不复制 `.git` 历史、账户或凭据。
+3. 运行 `tools/launch_olympus_editor.ps1`，默认启动可运行的 `samples/olympus-workbench`。
+4. Olympus 正式调用仍需配置有效的共工来源，示例见根目录 `.olympus-local.example.json`。上游本体不包含在当前发布。模型验收范围按用户指示为模拟服务；不捆绑模型账户。
+
+`project/godot/bin` 是定制引擎；`project/godot/versions/godot-4.7.2` 是未修改原版；`project/runtime` 是校验过的运行时。C# 示例源码已包含，运行另需 .NET 版 Godot 和 SDK，本包默认编辑器不是 .NET 版。
+
+定制编辑器是明确标识的发布派生版本：仅在精确偏移白名单中，将只读诊断字符串的本机源路径前缀等长替换为有效相对前缀。没有重新编译或改动执行节；原件与派生产物分别记录摘要，回归测试针对派生版本。策略与工具位于 `integrations/godot/release-editor-path-policy.json` 和 `tools/prepare_release_editor.py`。
+
+构建生成代码、重复旧构建、缓存、本机配置和临时测试目录不构成第二套交付源。全部当前源码均由 Git 跟踪，可根据构建入口重新生成。运行时保留原有许可证，Node 完整版本许可证在 `distribution/notices/`；Godot 版权与许可证见仓库根文件及引擎内版权信息，Git 的许可证与依赖许可证位于运行时目录。
+
+发行出处：Python 3.12.14、[Node 24.22.1](https://nodejs.org/en/download/archive/v24.22.1)、[Git for Windows 2.53.0(3)](https://github.com/git-for-windows/git/releases/tag/v2.53.0.windows.3)。Git 对应源码位于同一上游发布标签；所有第三方运行时按原始内容分发，路径清理仅作用于本项目无签名的定制引擎。

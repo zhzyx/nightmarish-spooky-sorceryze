@@ -1,0 +1,123 @@
+{
+  "request_id": "full-repository-delivery-20261102",
+  "engine_sha256": "b8bc69c8b6fd035b4b6217836b8798e6948dee0ef0864a252402170c01618fef",
+  "native_tests": {
+    "cases_passed": 12,
+    "assertions_passed": 107,
+    "log_sha256": "c5ffd97a7b133af1d09d6c9c6a5e4617900063f5b9e69cb45fa0ec13ce950db7"
+  },
+  "chat_scenarios": [
+    {
+      "mode": "admitted",
+      "result": {
+        "native_page": true,
+        "mode": "admitted",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "log_sha256": "445207c813ae51f834820215e838e2316682aa193cea8741d535926b64662a0d"
+    },
+    {
+      "mode": "accepted",
+      "result": {
+        "native_page": true,
+        "mode": "accepted",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "log_sha256": "bc950193831324e7417d5063adc3ee6f8b0c3e57cac7bc70b062eae376b13fb6"
+    },
+    {
+      "mode": "rejected",
+      "result": {
+        "native_page": true,
+        "mode": "rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "log_sha256": "ce81f7815ff996c4b389715f4cd21327bad9c3c0da43218517dc66989d836d31"
+    },
+    {
+      "mode": "tool",
+      "result": {
+        "native_page": true,
+        "mode": "tool",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 2,
+        "production_data_written": false
+      },
+      "log_sha256": "9a7ef5d127a64f89eae84f2bd0ec354f5c66cfc2579bb5f7637357ad7c3ca5a5"
+    },
+    {
+      "mode": "cancel",
+      "result": {
+        "native_page": true,
+        "mode": "cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "log_sha256": "393c4bab534f3ff325cc01669f54b9ac53ce46059d412967ab0429b04b158572"
+    },
+    {
+      "mode": "recovery",
+      "result": {
+        "native_page": true,
+        "mode": "recovery",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "log_sha256": "3567bf25384be02c128d838b1a4b27adb3bdec6af3157b6e509d44c00eb76da8"
+    },
+    {
+      "mode": "recovery_rejected",
+      "result": {
+        "native_page": true,
+        "mode": "recovery_rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "log_sha256": "12bc7fcab1f82d425d93b12f636d879dfac0c72a654fdf39965b206cc5e56cde"
+    },
+    {
+      "mode": "recovery_cancel",
+      "result": {
+        "native_page": true,
+        "mode": "recovery_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "log_sha256": "bd951c550d901595b6aa0711709dbfbc6d96e08a8fa555ee57fd94445d00274a"
+    }
+  ],
+  "doctor_ok": true,
+  "source_lock": "distribution/approved-source-lock-20261102.json",
+  "external_model_service_tested": false,
+  "initial_admitted_attempt": "Blocked correctly when live upstream changed; rerun passed with exact approved source snapshot.",
+  "known_limitations": [
+    "Headless editor exit may emit known RID/resource cleanup warnings.",
+    "Formal definition checks do not authenticate host execution authority."
+  ]
+}

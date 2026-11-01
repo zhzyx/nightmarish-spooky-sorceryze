@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+from olympus_test_source import active_source
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -52,8 +53,7 @@ def main():
             (root/'.olympus-local.json').write_text(json.dumps({'GONGGONG_FRAMEWORK_SOURCE':str(root/'missing-source')}),encoding='utf-8')
             if args.mode == 'admitted':
                 # Real approved definitions and real source verification, isolated model transport/data.
-                source_binding=json.loads((ROOT/'Olympus/sync/binding.json').read_text(encoding='utf-8'))
-                source=(ROOT/'Olympus'/source_binding['source']).resolve()
+                source=active_source(ROOT, ROOT/'Olympus')
                 (root/'.olympus-local.json').write_text(json.dumps({'GONGGONG_FRAMEWORK_SOURCE':str(source)}),encoding='utf-8')
             subprocess.run(['git','init','--quiet',str(root)],check=True)
             subprocess.run(['git','-C',str(root),'add','Olympus'],check=True,capture_output=True)

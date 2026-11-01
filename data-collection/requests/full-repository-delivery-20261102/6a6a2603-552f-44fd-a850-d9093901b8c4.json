@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "full-repository-delivery-20261102",
+  "collected_at": "2026-11-01T22:01:00.610005+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/full-repository-delivery-20261102/full-repository-delivery-20261102-request.json",
+      "sha256": "e45f8d0b8fe8a090e8f69e13b936714a3d9af6fef952ad861f8f9cf6c3b83ae1",
+      "tenant_id": "olympus-workspace",
+      "event_id": "full-repository-delivery-20261102-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/full-repository-delivery-20261102/full-repository-delivery-20261102-verification.json",
+      "sha256": "349c741f52c809f25cde117aece79569e0220a2052814d10554453855bdc7043",
+      "tenant_id": "olympus-workspace",
+      "event_id": "full-repository-delivery-20261102-verification",
+      "origin": "codex-local-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

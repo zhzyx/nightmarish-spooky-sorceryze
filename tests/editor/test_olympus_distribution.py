@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from olympus_test_source import active_source
 
 ROOT = Path(__file__).resolve().parents[2]
 FRAMEWORK = Path(os.environ.get('OLYMPUS_TEST_FRAMEWORK', ROOT / 'Olympus')).resolve()
@@ -16,12 +17,15 @@ sync = runpy.run_path(str(FRAMEWORK / 'sync/gonggong_sync.py'))
 
 
 class DistributionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        (ROOT / '.godot-integration-local').mkdir(exist_ok=True)
+
     def test_approved_overlay_is_validated_not_silently_ignored(self):
         # Synthetic permit only in an isolated checkout; never modifies a real approval.
         with tempfile.TemporaryDirectory(dir=ROOT / '.godot-integration-local', prefix='admission-fixture-') as temporary:
             isolated=Path(temporary)/'Olympus'
-            binding=json.loads((FRAMEWORK/'sync/binding.json').read_text(encoding='utf-8'))
-            sync['build'](FRAMEWORK/binding['source'], isolated)
+            sync['build'](active_source(ROOT, FRAMEWORK), isolated)
             wanted=sync['inventory'](isolated)
             manifest=json.loads(wanted['framework-manifest.json'])
             agent=manifest['agents'][0]
@@ -55,14 +59,13 @@ class DistributionTests(unittest.TestCase):
             with self.assertRaises(ValueError):sync['admitted_overlays'](isolated,wanted,sync['inventory'](isolated))
 
     def test_candidate_and_formal_admission_are_separate(self):
-        result = sync['check'](FRAMEWORK, candidate_source=True)
+        result = sync['check'](FRAMEWORK, source=active_source(ROOT, FRAMEWORK), candidate_source=True)
         self.assertTrue(result['full_parity'])
         self.assertFalse(result['source_admission_verified'])
         # A new distribution must never inherit live source/local approval.
         with tempfile.TemporaryDirectory(dir=ROOT / '.godot-integration-local', prefix='pending-test-') as temporary:
             isolated=Path(temporary)/'Olympus'
-            binding=json.loads((FRAMEWORK/'sync/binding.json').read_text(encoding='utf-8'))
-            sync['build'](FRAMEWORK/binding['source'], isolated)
+            sync['build'](active_source(ROOT, FRAMEWORK), isolated)
             manifest = json.loads((isolated / 'framework-manifest.json').read_text(encoding='utf-8'))
             for agent in manifest['agents']:
                 permit = json.loads((isolated / agent['admission_pass']).read_text(encoding='utf-8'))
@@ -74,7 +77,7 @@ class DistributionTests(unittest.TestCase):
 
     def test_relocation_and_full_source_drift(self):
         binding = json.loads((FRAMEWORK / 'sync/binding.json').read_text(encoding='utf-8'))
-        source = sync['source_root'](FRAMEWORK / binding['source'])
+        source = sync['source_root'](active_source(ROOT, FRAMEWORK))
         with tempfile.TemporaryDirectory(dir=ROOT / '.godot-integration-local', prefix='portable-test-') as temporary:
             base = Path(temporary)
             relocated = base / 'checkout/Olympus'

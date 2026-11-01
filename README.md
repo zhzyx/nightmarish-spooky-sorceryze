@@ -4,7 +4,7 @@
 
 本仓库包含 Godot 引擎源码、原生 AI/Olympus 页面、Olympus 框架候选及可运行示例。工单使用 GitHub Issue，类别使用 `type:*` 标签；需求文档在 `design-docs/`，谛听采集交接在 `data-collection/`，真实文件事件在 `olympus-hermes-data/`。
 
-从仓库根运行 `tools/launch_olympus_editor.ps1` 启动编译后的编辑器。构建、预编译包安装及模型配置见 [接入说明](integrations/godot/README.md)，本次验收和剩余准入条件见 [需求文档](design-docs/godot-olympus-chat-20261102.md)。AI 聊天每轮调用当前工作区的 Olympus；上游或本地准入无效时拒绝发送。当前交付为未启用候选，测试桩不代表生产模型验收。
+从仓库根运行 `tools/launch_olympus_editor.ps1` 启动编译后的编辑器。构建及模型配置见 [接入说明](integrations/godot/README.md)，包含编辑器和运行时的完整下载见 [发布说明](distribution/README.md)。AI 聊天每轮调用当前工作区的 Olympus；上游或本地准入无效时拒绝发送。当前三个本地定义的精确候选已获批准，实际运行权限仍由宿主控制；聊天流程已按用户要求使用模拟模型服务验收。
 
 交付包含 Olympus 分发内容及来源摘要索引，不包含完整 Gonggong 框架副本；Gonggong 仍是运行时核验的外部来源。下面保留 Godot 原项目说明和许可信息。
 
@@ -98,9 +98,9 @@ for more information.
 | `design-docs/` | Markdown 需求与设计文档，引用实际 Issue |
 | `data-collection/` | 谛听采集交接目录，保留真实事件来源与摘要 |
 | `tools/verify_workspace.py` | 全量同步检查与文件数据 Git 检查 |
-| `Olympus/modules/ariadne/` | 已同步共工登记的司南 0.2.1 模块，Olympus 名称为阿里阿德涅 |
+| `Olympus/modules/ariadne/` | 已同步共工登记的事件驱动司南 0.4.0 模块，Olympus 名称为阿里阿德涅 |
 
-2026-11-02 出包：保留共工 v0.9.0 主线，合并另一来源树中已正式登记的司南 0.2.1；当前 3 个 Agent、10 个 skill。模块登记、实现证据与来源均保留，15 项隔离测试通过。模块已进入 Olympus 清单；改名副本准入仍待审，未部署真实工单服务，不新增同步豁免。
+当前分发基于有效共工 0.9.0 主线，Ariadne 为事件驱动 0.4.0；3 个 Agent、10 个 skill。三个 Olympus 本地定义已获用户对精确摘要的批准，正式来源及本地准入验证通过。实际运行仍由宿主绑定权限及回执；模型流程按用户确认范围完成模拟服务验收。
 
 Python 3.10+、Node.js、Git 可用于本地验证；赫尔墨斯文件模式无需数据库。仓库初始化数据后，新需求按 `Olympus/extensions/hermes-files/README.md` 生成真实事件。禁止将生产数据放入会随上游重建的 `Olympus/` 目录。
 
@@ -110,8 +110,6 @@ Python 3.10+、Node.js、Git 可用于本地验证；赫尔墨斯文件模式无
 
 ```powershell
 $env:GONGGONG_FRAMEWORK_SOURCE = 'PATH/TO/CURRENT_FRAMEWORK.json'
-$env:GONGGONG_SINAN_FRAMEWORK_SOURCE = 'PATH/TO/FRAMEWORK-WITH-REGISTERED-SINAN'
-$env:GONGGONG_SINAN_IMPLEMENTATION_SOURCE = 'PATH/TO/GONGGONG-WORKORDERS'
 python tools/verify_workspace.py --require-committed
 python Olympus/extensions/hermes-files/hermes_files.py analyze --repo . --tenant olympus-workspace
 ```
@@ -122,4 +120,9 @@ python Olympus/extensions/hermes-files/hermes_files.py analyze --repo . --tenant
 
 从本仓库当前的 `Olympus/sync/gonggong_sync.py` 发起同步，生成新的临时框架目录，完成全量验证后按 Git 变更流程替换 `Olympus/`。不可用共工原件直接覆盖奥林匹斯目录。同步会逐字节携带现有 `extensions/hermes-files/`，遇到上游占用豁免路径时拒绝继续；不得覆盖或删除仓库根 `olympus-hermes-data/`。
 
-完整规则见 `Olympus/sync/POLICY.md`。本仓库没有常驻同步服务；框架注册仍保持待独立准入状态，本次仓库接入不伪造 Agent 批准或宿主运行授权。
+完整规则见 `Olympus/sync/POLICY.md`。本仓库没有常驻同步服务。当前本地定义批准见 `Olympus/reviews/local-admission/`；它只绑定对应候选，不替代宿主运行授权或后续来源变更复核。
+
+
+## 完整引擎交付
+
+当前源码、框架、项目、文档、测试和任务数据全部由本仓库跟踪。完整 Windows 发布包在同仓库 Releases，含定制编辑器、Python/Node/Git 运行时和原始 Godot 回退安装；下载及校验方式见 `distribution/README.md`。源码含可运行 `samples/olympus-workbench`；C# 示例另需 .NET 版引擎和 SDK。模拟模型全流程入口为 `tools/verify_olympus_flow.py`。

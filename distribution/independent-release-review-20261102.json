@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "evaluator_id": "/root/review_chat_gate",
+  "independence": "independent_subagent_review",
+  "result": "no_remaining_blocking_issue_found",
+  "scope": [
+    "Exact diagnostic-byte transformation reviewed independently; original installation unchanged.",
+    "Committed runtime/editor/fallback integrity anchors and packaging policy.",
+    "Archive hash and inventory verification and safe extraction.",
+    "Portable source locator matches host workspace resolution."
+  ],
+  "checks_executed_by_reviewer": [
+    "Modified staged editor rejected by committed digest.",
+    "Valid archive extracts and verifies.",
+    "Incorrect archive digest rejected.",
+    "Path traversal and symlink entries rejected.",
+    "Report cannot overwrite archive or extracted files.",
+    "Private locator priority and relative environment path from unrelated cwd verified."
+  ],
+  "limitations": [
+    "Full release extraction and engine execution are performed by root after this review.",
+    "External valid GongGong source remains a prerequisite; source contents are not bundled.",
+    "Executable section equality does not alone certify behavior."
+  ],
+  "files": {
+    "tools/package_workspace_release.py": "017923fbf81ebfe131276506f6318316b7c066c563ae897fe455bf3f1e41e864",
+    "tools/verify_release_bundle.py": "8e8adb3beeabafa0eb66e981941292972bb42a15fb703cc89448e1906299d38c",
+    "tools/initialize_downloaded_workspace.ps1": "a3127c0821d000719405751da5c062fe1bc4d1955c3cef78b03c98f4d6f77daa",
+    "tests/editor/olympus_test_source.py": "506308e174cdc9eb92ac61c6ecc65aa148210ca609e44a954d846aa8aa1ffab6",
+    "tests/editor/run_olympus_chat_gate.py": "2e91b016793f639ebf58d26e6098321ae0fd9717dd00ed8fbebdd6a999abb208",
+    "tests/editor/test_olympus_distribution.py": "81d50a82f692166b30abf65ffaaacaa85f2f79829593c15ab766e957aa35ae0c",
+    "distribution/deliverables.json": "92a1663ea1ef905ce212e159b9d394b714e4d3c48014d32a6369c1e6987dce3b",
+    "tools/prepare_release_editor.py": "40d96fd3ef4c1f3888f55e27cc2d418965f67802ea8bd31c057f54941c34df02",
+    "integrations/godot/release-editor-path-policy.json": "729d6e286a5c1c72fa565bc25e6265198988184c1792a15126cb4e3fd7e817d7"
+  }
+}

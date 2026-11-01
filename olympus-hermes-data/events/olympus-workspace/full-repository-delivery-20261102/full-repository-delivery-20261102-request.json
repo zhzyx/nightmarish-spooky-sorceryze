@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "full-repository-delivery-20261102-request",
+  "tenant_id": "olympus-workspace",
+  "request_id": "full-repository-delivery-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-01T22:01:00.293195+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue:5",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "instruction": "Commit all local engine and content, audit open Issues and close completed work.",
+    "issue_number": 5,
+    "model_scope": "User explicitly requested simulated debugging and flow completion.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "ca26aa76b5164043a4648b479aee1b7db8152e4b40467275736cdf62f7638344"
+}
