@@ -15,3 +15,5 @@
 验证：18 项宿主测试、37 项工单测试通过；受影响 ai_chat_olympus.cpp、olympus_panel.cpp 对象使用 MSVC 编译通过；正式 Olympus 校验为 approved_file_integrity。模拟测试位于临时目录，不写入生产数据。未执行真实模型调用、未将新二进制启用作为已验收事实。
 
 边界：未修改共工或冻结/准入包；未建立 webhook、定时扫描或 Ariadne 假来源。远程分支保护仍需管理员实际配置。本次为 #6 增量候选，独立审查、真实门禁、文件事件及 Git 提交证据按实际完成补充；不自动关闭父单。
+
+首个提交 af399d65 已通过真实工单/正式框架门禁，提交后 67 个数据文件、64 条事件与 HEAD 一致，已推送并建立 Draft PR #14。随后远程静态检查报告格式问题；使用仓库固定 ruff/clang-format、includes/copyright hooks 修正，并为测试 importlib 加入 spec/loader 守卫。55 项组件测试及变更文件完整 prek 检查再次全部通过，事实与追加纠正事件见 data-collection/issue-6-host-intake-ci-correction-20261103.json。前置治理分支尚未进入 main，PR 保持待验收。

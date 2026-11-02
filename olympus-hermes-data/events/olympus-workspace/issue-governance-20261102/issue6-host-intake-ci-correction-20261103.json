@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-host-intake-ci-correction-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:48:15.096784+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41503410004",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "e56228340d21d0476972ced3832534cb4213d2472fb84b02032bf7d56e14c081",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Fixed repository formatting, include/copyright hooks and importlib spec/loader narrowing in tests",
+    "verification": "data-collection/issue-6-host-intake-ci-correction-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue6-host-intake-request-20261103"
+  ],
+  "sha256": "1140b8fe2ba9721cd4ae4692b87743f6f74303a323e3922327650057742d4d23"
+}

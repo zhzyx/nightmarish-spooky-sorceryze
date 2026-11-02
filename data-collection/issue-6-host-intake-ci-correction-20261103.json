@@ -1,0 +1,25 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "observed_at": "2026-11-02T18:48:15.096784+00:00",
+  "prior_commit": "af399d6535507403cfe8ef01f7132213290b8ee7",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41503410004",
+  "change": "Fixed repository formatting, include/copyright hooks and importlib spec/loader narrowing in tests",
+  "verification": {
+    "python_tests": 55,
+    "result": "passed",
+    "complete_prek_changed_files": "passed",
+    "frozen_framework_hook": "passed"
+  },
+  "files": {
+    "customizations/components/godot-host/bridge.py": "9dadc91b3c110c08249892a1da37ffdca123d97148e4ce271981ffd0bed4b6ea",
+    "customizations/components/godot-host/test_bridge.py": "fba582b9f65dff7c62e363a765e5d58eb86c3fa76b9dfd56718f81677ae2b876",
+    "customizations/components/godot-host/test_issue_binding.py": "e35b76ea192c139cd4af82e91a4275b5afcf8224a38d170e966a2f914de9b9a5",
+    "customizations/components/issue-workorders/issue_gate.py": "b647b0a45c4e5cc6f7b011742b17af619f481164e8f475a665ecfaefc1e4725a",
+    "customizations/components/issue-workorders/test_host_intake.py": "098bed3d096fd1a315da15b43f6e7093eb7209682fb15e0f41bc064eb68159bb",
+    "editor/docks/ai_chat_olympus.cpp": "281a95ef7f6b0566999ad5385b2f42d48acb2e225d04146a92bcd5754c11c4fd",
+    "editor/docks/olympus_panel.cpp": "7b2c46d2d917adf7da4885dc326e3b04a8e5c561ee13c262178d7e88e33ed428",
+    "editor/docks/olympus_panel.h": "a8784c15ebbf52e33f70ba68e0c851e6a9eb442b71f4b0f8bbe704aaae3fd6e8"
+  },
+  "input_tokens": null,
+  "output_tokens": null
+}

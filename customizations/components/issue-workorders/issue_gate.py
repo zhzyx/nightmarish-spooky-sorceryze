@@ -259,8 +259,11 @@ def main():
     parser.add_argument("--intake-only", action="store_true")
     parser.add_argument("--tenant")
     args = parser.parse_args()
-    result = (intake(args.repo.resolve(), args.issue, args.request_id, args.tenant) if args.intake_only
-              else gate(args.repo.resolve(), args.issue, args.request_id))
+    result = (
+        intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
+        if args.intake_only
+        else gate(args.repo.resolve(), args.issue, args.request_id)
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
