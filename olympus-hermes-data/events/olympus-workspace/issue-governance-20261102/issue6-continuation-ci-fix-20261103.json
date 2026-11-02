@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-continuation-ci-fix-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "rework",
+  "occurred_at": "2026-11-02T21:02:36.770675+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "1b98ef0c076def292e6b461a794279bd6b2eea6ba35456a3f2f6111f37d9e6e6",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "evidence_ref": "data-collection/issue6-continuation-ci-fix-20261103.json",
+    "evidence_sha256": "8d5998d47bb704bb77a1f8138d71392c532f6fe9a6d56d0db432bdeb692ecd37",
+    "remote_ci": "pending_new_commit",
+    "merged": false,
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue6-continuation-publication-20261103"
+  ],
+  "sha256": "fd63cd953badb3a6265ebb8424bd0f2e7d6e405bb266ca43aa8cfdab297a8754"
+}

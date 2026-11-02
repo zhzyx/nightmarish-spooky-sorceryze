@@ -2,6 +2,10 @@
 
 `bridge.py` 是唯一 Python 实现；引擎通过 `tools/olympus_bridge.py` 调用。原生页面在 `editor/docks/olympus_panel.*`，发送控制在 `editor/docks/ai_chat_olympus.cpp`。
 
+开发前先创建或复用 `work-items.json` 对应仓库的真实 Issue，在 Olympus 页面填写 Issue 编号和工单中的稳定需求 ID（修改即保存到本机）。IDE/CLI/生产工具在 chat 协议中传入整数 `issue_number` 和稳定 `request_id`，不再以聊天快照生成需求 ID。每轮先回读真实 Issue，核对 origin、租户、唯一类别、唯一 in-progress/in-review 状态、需求 ID 和 workspace:olympus；失败或离线拒绝执行。工单本身不产生工具权限或 Agent 准入。创建工具仍需显式发布确认及真实权限；未建单不能先开发再补单。
+
+宿主文件事件的来源绑定真实 Issue URL；上下文尝试追加 request 事件并保留快照摘要，不采集用户原文。采集文件入库后仍未提交，交付必须把 data-collection 来源/验证/回执及 olympus-hermes-data 事件与实现一起审查、暂存、提交，再执行提交后 git-check --require-committed。不得仅提交代码、把 ignored/untracked 数据当成功，或把 Git 提交当作谛听已消费。工程规则由根 AGENTS.md 和 issue-workorders 组件承接，不改写冻结的上游框架包。
+
 每次模型请求（含工具继续轮）均调用当前工作区的 `Olympus/tools/agent-context.mjs`。它核对有效共工源、内容指纹、冻结纲领、Athena 准入和上报契约，再装配相关上下文。上下文加入 HTTP 请求的 system 内容；CLI 会话以其摘要判断是否需要重建，因此不会沿用过期框架上下文。未通过校验、缺 Python/Node、数据记录失败均不发送模型请求，没有跳过开关。
 
 用户点击发送建立当前聊天委托；工具许可取自 Godot 实际开关，框架文本不增加本地工具权限。定义准入仍由框架校验，不由发送按钮批准。当前没有可使用的已批准 Olympus Agent 通行证，生产聊天会明确报告阻断。

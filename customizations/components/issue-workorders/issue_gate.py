@@ -29,6 +29,8 @@ def check_issue(value, repository, number, request_id, types):
     if value.get("state") != "open":
         raise ValueError("Issue is not open")
     names = [v["name"] for v in value.get("labels", [])]
+    if "workspace:olympus" not in names:
+        raise ValueError("Issue must explicitly include workspace:olympus")
     categories = [x for x in names if x.startswith("type:")]
     statuses = [x for x in names if x.startswith("status:")]
     if len(categories) != 1 or categories[0] not in types:
@@ -67,6 +69,36 @@ def check_repository(root, repository):
     }
     if origin.lower() not in {v.lower() for v in allowed}:
         raise ValueError("Git origin must match the configured GitHub repository")
+
+
+def intake(root, number, request_id, tenant):
+    """Read the real work order before any host model/tool execution."""
+    if type(number) is not int or number < 1 or not re.fullmatch(REQUEST, request_id):
+        raise ValueError("Bind a real Issue number and its stable request ID before starting work")
+    settings, labels = work_items.config(root)
+    if tenant != settings.get("tenant_id"):
+        raise ValueError("Host tenant must match work-items.json")
+    check_repository(root, settings["repository"])
+    value = json.loads(work_items.gh("api", f"repos/{settings['repository']}/issues/{number}"))
+    issue = check_issue(value, settings["repository"], number, request_id, {v["name"] for v in labels})
+    return issue
+
+
+def check_collection(root):
+    """Sources and receipts are deliverables, even when a local ignore hides them."""
+    if git(root, "diff", "HEAD", "--no-renames", "--name-only", "--diff-filter=MDT", "--", "data-collection").strip():
+        raise ValueError("Preserve collection sources and receipts; append corrections")
+    folder = root / "data-collection"
+    if folder.is_symlink() or (hasattr(folder, "is_junction") and folder.is_junction()):
+        raise ValueError("Linked collection root is not supported")
+    for path in sorted(folder.rglob("*")):
+        if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
+            raise ValueError("Linked collection paths are not supported")
+        if not path.is_file():
+            continue
+        name = path.relative_to(root).as_posix()
+        if git(root, "show", ":" + name) != path.read_bytes():
+            raise ValueError("Collection source/receipt must be staged with current bytes: " + name)
 
 
 def snapshot(root):
@@ -185,6 +217,7 @@ def gate(root, number, request_id):
         "Hermes Git history check",
     )
     check_history(root)
+    check_collection(root)
     events = []
     request_source_found = False
     issue_sources = {issue["url"], f"github:{repository}:issue:{number}"}
@@ -223,8 +256,15 @@ def main():
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--issue", type=int, required=True)
     parser.add_argument("--request-id", required=True)
+    parser.add_argument("--intake-only", action="store_true")
+    parser.add_argument("--tenant")
     args = parser.parse_args()
-    print(json.dumps(gate(args.repo.resolve(), args.issue, args.request_id), ensure_ascii=False, indent=2))
+    result = (
+        intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
+        if args.intake_only
+        else gate(args.repo.resolve(), args.issue, args.request_id)
+    )
+    print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

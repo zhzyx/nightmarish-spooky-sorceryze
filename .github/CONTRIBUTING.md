@@ -1,6 +1,9 @@
 # Olympus 仓库协作入口
 
+
 本约定适用于本仓库的所有贡献者：人工、IDE/CLI/引擎宿主、Agent、外部协作者；覆盖需求、设计、开发、缺陷、研究、测试、文档、维护及资产。技术细节沿用根目录 CONTRIBUTING.md 的 Godot 指南；本仓库分支及治理以本入口为准。
+
+宿主开发必须在模型/工具执行前回读同仓库真实 Issue，校验稳定需求 ID、租户、类别、有效执行状态和 workspace:olympus；查询失败即停止。Godot Olympus 页面填写 Issue 编号和稳定 ID，其他宿主使用 issue-workorders 的 intake-only 契约。data-collection 中的真实来源、证据和回执与 olympus-hermes-data 文件事件均为本次需求必须提交的产物；代码提交不能替代数据交付。提交前检查 index，提交后检查 HEAD；禁止删除原始采集历史，纠正追加记录。
 
 1. 先查本仓库已有 Issue；复用同一需求，关联在途工作，禁止重复派发。新内容先创建 Issue，明确原始需求、目标、范围、验收、依赖、责任人和稳定需求 ID。缺授权或目标待判断，不把建议/Issue 本身当执行授权。
 2. 加载 `Olympus/AGENTS.md` 与职责相关入口；框架审查复用 Dike/Zeus，实际身份权限由宿主决定。已有有效源保持绑定；上游升级另建候选并完整同步，禁止修改旧批准以跳过检查。冻结框架和 Hermes 原件规则继续生效。

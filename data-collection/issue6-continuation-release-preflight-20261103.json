@@ -1,0 +1,16 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T20:47:44.294837+00:00",
+  "base_commit": "628ff28ab817311560114c8a01d44f36b46cb28b",
+  "branch": "codex/issue6-host-intake-release-20261103",
+  "intake_cli": "passed_real_github_read",
+  "issue_tests_passed": 39,
+  "host_tests_passed": 18,
+  "framework_mode": "approved_file_integrity",
+  "independent_review": "data-collection/issue6-continuation-independent-review-20261103.json",
+  "evidence_preservation": "Scoped .gitattributes -text retains immutable original bytes; no historical sources changed",
+  "publication": "pending",
+  "new_engine_acceptance": "not_run",
+  "input_tokens": null,
+  "output_tokens": null
+}

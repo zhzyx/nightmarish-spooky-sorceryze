@@ -1,0 +1,31 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T20:41:37.201876+00:00",
+  "reviewer": "codex-subagent:review_issue6",
+  "independent": true,
+  "scope": [
+    "Issue binding",
+    "workspace enforcement",
+    "collection originals protection",
+    "Godot settings transmission"
+  ],
+  "finding": "Committed collection originals could be rewritten and restaged",
+  "resolution": "Reject HEAD modifications, deletions and type changes with --no-renames --diff-filter=MDT",
+  "review_result": "No remaining clear code blockers within reviewed scope",
+  "reviewer_verification": "test_host_intake.py: 3 tests passed",
+  "root_verification": {
+    "issue_tests": 39,
+    "host_tests": 18
+  },
+  "limitations": [
+    "Real intake CLI fails because gh executable is unavailable",
+    "Full precommit Issue gate and new engine binary acceptance remain unverified",
+    "Candidate remains uncommitted"
+  ],
+  "files_sha256": {
+    "customizations/components/issue-workorders/issue_gate.py": "b22e161c39161af380b3eaae38f105b405313299b173eba181d0e5adfa45a780",
+    "customizations/components/issue-workorders/test_host_intake.py": "59adc987ad5d64f19f4ee9a5d87b4a6698f22d17a638d3b297fdfe17fb29573c",
+    "customizations/components/issue-workorders/test_issue_gate.py": "7de92224814de0da98a4f402a9c124478778950c0afa9819da074b6b6ba24f69",
+    "customizations/components/godot-host/bridge.py": "551d1a8d939cb04fe99f21e5822d6bf970fdcbe23457a2381e589f958a135fde"
+  }
+}
