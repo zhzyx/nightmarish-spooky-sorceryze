@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-8-local-install",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-receipt-ui-blocking-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T17:22:38.917916+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/8",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Installed tested editor b660895656799c034df412a1591bae3a35a4e215b47f035eacae35c48ec9a61d to project/godot after exact backup. Post-framework-switch installed location, doctor and five HTTP fixture scenarios passed; admitted calls real approved Olympus, 0.017257s max frame gap with 0.4s injected flush. Sample exit 0, empty stderr. Existing Release unchanged; no real provider/CLI calls or synthetic production records.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimates",
+    "evidence": "data-collection/issue-8-local-installation-20261103.json",
+    "evidence_sha256": "0a6b549a376c50e340998f5c591acd0953e5a1b3477ea5f3ba09acef420eca74"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-8-request"
+  ],
+  "sha256": "190f21a9c6344db7d73c0e9f6c781f02b24d975b841eed4dfdfc982df9f6071f"
+}

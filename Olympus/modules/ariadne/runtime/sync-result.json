@@ -1,0 +1,37 @@
+{
+  "event": {
+    "type": "decision.recorded",
+    "reference": "work/issue-scope-20261103/authority.json"
+  },
+  "updated": true,
+  "document": "progress.md",
+  "documents": [
+    {
+      "path": "progress.md",
+      "status": "synced"
+    }
+  ],
+  "sourceGaps": [],
+  "externalAuthorityActions": [
+    {
+      "action": "Verify external Issue/release status and read back any authorized transition at authoritative service",
+      "status": "not_executed"
+    },
+    {
+      "action": "Verify actual reporting binding and delivered/consumed receipts",
+      "status": "not_executed"
+    }
+  ],
+  "localWriteFailures": [],
+  "execution": "not_dispatched",
+  "reporting": "host_binding_and_receipt_required",
+  "path_base": "registry_directory",
+  "ready": [],
+  "sourcesRead": 0,
+  "sourcesRegistered": 0,
+  "scope": "registered_sources_only",
+  "sourceSnapshots": [],
+  "diagnostics": [],
+  "localDocumentsSynced": true,
+  "authorityReconciliation": "not_performed"
+}

@@ -151,6 +151,15 @@
         "specs/project-state.md",
         "specs/reporting.md"
       ]
+    },
+    {
+      "path": "specs/delivery.md",
+      "title": "奥林匹斯交付与版本核验",
+      "load_when": "版本库合入、发布、可运行交付或共享依赖变更时",
+      "conditional_references": [
+        "specs/code-collaboration.md",
+        "specs/work-order-management.md"
+      ]
     }
   ],
   "never_bulk_load": [
@@ -330,7 +339,7 @@
       "path": "skills/ariadne/SKILL.md",
       "reporting": "skills/ariadne/reporting.json",
       "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne/event-change-review.json"
+      "admission_pass": "reviews/ariadne/workflow-optimization-review.json"
     }
   ],
   "agents": [
@@ -343,7 +352,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "15750fcb9afeacf9ee5ee706caa291770344bda8e95b4411c603fd0966d0b83a",
+      "candidate_digest": "c22520b3a20e24a8fad23d8ff6696e6c4b3bacd73e6e0bf53c6256c7b72eb35d",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -431,7 +440,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "c41a33bd6d51ceb58cddc42f60583769f3726bf0f0d5945c9e11cee63cf08b1e",
+      "candidate_digest": "fdc392c5845ce48269debd5a7cee5766d03425d39cef841249b5a0dc6bcff8b8",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -588,7 +597,7 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf",
+      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d",
       "reporting": "agents/hermes/reporting.json"
     }
   ],
@@ -643,13 +652,21 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",
       "admission_pass": "reviews/ariadne-module-admission.json"
     }
   ],
+  "delivery_verification": {
+    "specification": "specs/delivery.md",
+    "checker": "tools/check_delivery.py",
+    "template": "templates/delivery.json",
+    "review": "reviews/ariadne/workflow-optimization-review.json",
+    "invocation": "on_actual_delivery_or_dependency_event",
+    "grants_authority": false
+  },
   "distribution_sync": {
     "policy": "sync/POLICY.md",
     "checker": "sync/gonggong_sync.py",

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "standalone-runtime-20261103-validation",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T17:13:15.662524+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Isolated full rebuild and 10 regression tests plus 4 independent negative probes passed; adapter patch application checked. Current production package unchanged, exact candidate approval pending. GitHub create returned403 and comment was denied by automatic approval review.",
+    "verification": "data-collection/standalone-runtime-verification-20261103.json",
+    "independent_review": "data-collection/standalone-runtime-independent-review-20261103.json",
+    "production_admission": false,
+    "deployed": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied",
+    "snapshot_basis": "Workspace AGENTS.md instruction snapshot; not a hidden host definition"
+  },
+  "evidence_refs": [
+    "standalone-runtime-20261103-request"
+  ],
+  "sha256": "d2a2c0b228a41b95783045688db110c57a3017b1df846cd38fddad7064b3a62e"
+}

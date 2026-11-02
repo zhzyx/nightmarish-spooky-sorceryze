@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "issue": 8,
+  "stage": "local_installation_verification",
+  "started_at": "2026-11-02T17:19:11.790737+00:00",
+  "installed_engine_sha256": "b660895656799c034df412a1591bae3a35a4e215b47f035eacae35c48ec9a61d",
+  "installed_console_sha256": "f6f0461024ac760b353c33400426b750cac9a94f67834db2e2bd0d89abf2b53d",
+  "installation_manifest_sha256": "6d5c8906691c1d36cef9ea2f723888d0df87a3d0a5332a0d8099dcaaf1a7487e",
+  "framework_manifest_sha256": "68031d3b180e94a41ac0932f994d99852fd74f4c6002d10069fbf833bbb90414",
+  "model_scope": "loopback HTTP fixtures only; no real provider; no CLI calls",
+  "checks": [
+    {
+      "name": "installed_location",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "1f858397561c386deb736dd10b1617cf747b060f42616528cf30fb936135bba0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "doctor",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "bf16d6cd609b590304cfc1aa853ac825de0ec7948610a5519174cde272a63d2a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blocking_checks": [],
+      "agent_admission_records": [
+        {
+          "id": "athena",
+          "distribution_state": "synchronized_candidate_pending_independent_admission",
+          "admission_record_status": "approved"
+        },
+        {
+          "id": "themis",
+          "distribution_state": "synchronized_candidate_pending_independent_admission",
+          "admission_record_status": "approved"
+        },
+        {
+          "id": "hermes",
+          "distribution_state": "synchronized_candidate_pending_independent_admission",
+          "admission_record_status": "approved"
+        }
+      ]
+    },
+    {
+      "name": "admitted",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "6c50b22fbb03de28902d30d10c2388fc91a6ebb300db1a207f50dcb6653c2e36",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observations": [
+        {
+          "max_frame_gap_seconds": 0.017257,
+          "injected_flush_delay_seconds": 0.4
+        },
+        {
+          "native_page": true,
+          "mode": "admitted",
+          "real_framework_called": true,
+          "model_transport_fixture": true,
+          "receipt_verified": true,
+          "model_requests": 1,
+          "production_data_written": false
+        }
+      ]
+    },
+    {
+      "name": "receipt_cancel",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "c59b3dc8ef3168b2ab92838570cd1d3eddc5c045af80646e1d2173e8af6a2324",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observations": [
+        {
+          "max_frame_gap_seconds": 0.026629,
+          "injected_flush_delay_seconds": 0.4
+        },
+        {
+          "native_page": true,
+          "mode": "receipt_cancel",
+          "real_framework_called": false,
+          "model_transport_fixture": true,
+          "receipt_verified": true,
+          "model_requests": 0,
+          "production_data_written": false
+        }
+      ]
+    },
+    {
+      "name": "receipt_failure",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "ded0ef2037505cbf9d0874e1f505627c0fda08977290ac1dc9a36715d9303ce5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observations": [
+        {
+          "max_frame_gap_seconds": 0.016301,
+          "injected_flush_delay_seconds": 0.4
+        },
+        {
+          "mode": "receipt_failure",
+          "model_requests": 0,
+          "pending_preserved": true,
+          "production_data_written": false
+        }
+      ]
+    },
+    {
+      "name": "receipt_retry",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "13fd98d17143cb0552279d89204f8f526afd29ec2ad98ea35ab7c8634e0c474f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observations": [
+        {
+          "max_frame_gap_seconds": 0.026385,
+          "injected_flush_delay_seconds": 0.4
+        },
+        {
+          "native_page": true,
+          "mode": "receipt_retry",
+          "real_framework_called": false,
+          "model_transport_fixture": true,
+          "receipt_verified": true,
+          "model_requests": 1,
+          "production_data_written": false
+        }
+      ]
+    },
+    {
+      "name": "recovery_receipt_failure",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_sha256": "68b13ab6dc0087aca477b00a9dee860af6a511e17b3af041266bd4f465163c20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observations": [
+        {
+          "max_frame_gap_seconds": 0.020695,
+          "injected_flush_delay_seconds": 0.4
+        },
+        {
+          "native_page": true,
+          "mode": "recovery_receipt_failure",
+          "real_framework_called": false,
+          "model_transport_fixture": true,
+          "receipt_verified": true,
+          "model_requests": 0,
+          "production_data_written": false
+        }
+      ]
+    }
+  ],
+  "completed_at": "2026-11-02T17:19:55.901325+00:00",
+  "ok": true,
+  "request_id": "godot-receipt-ui-blocking-20261102",
+  "executor": "/root/async_receipts",
+  "installation_directory": "project/godot",
+  "installation_script": "tools/install_olympus_editor.ps1",
+  "installation_script_sha256": "6ce5e5856a912f5292cd17882470bca6b433f9b908c346c20ef1ff3915419834",
+  "installation_manifest": {
+    "path_base": "installation_directory",
+    "files": [
+      {
+        "sha256": "b660895656799c034df412a1591bae3a35a4e215b47f035eacae35c48ec9a61d",
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "bytes": 165966848
+      },
+      {
+        "sha256": "f6f0461024ac760b353c33400426b750cac9a94f67834db2e2bd0d89abf2b53d",
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "bytes": 301056
+      }
+    ],
+    "workspace": "../..",
+    "source_root": "../..",
+    "schema_version": 1,
+    "default_editor": "bin/godot.windows.editor.x86_64.exe"
+  },
+  "backup": {
+    "path": ".godot-integration-local/issue8-install-backup-20261103",
+    "storage": "local ignored rollback copy; not Git delivery",
+    "files": [
+      {
+        "sha256": "6bacd4b9df99d472c6869775d32123bc5acc9fed947f3982184f972dba0c9410",
+        "bytes": 159974400,
+        "path": "bin/godot.windows.editor.x86_64.exe"
+      },
+      {
+        "sha256": "5d4c93efbe415225a77ca54e8c66fff6983f6212eef69f2c52f0b762cc0780dd",
+        "bytes": 301056,
+        "path": "bin/godot.windows.editor.x86_64.console.exe"
+      }
+    ],
+    "manifest_sha256": "e6fc22bc24233d7965aafcfd5b5f740c63b69bd2b6b2c54b48a15f76fcdf8ade",
+    "all_file_hashes_verified": true
+  },
+  "sample": {
+    "sample": "samples/olympus-workbench",
+    "environment": "normal host permissions with isolated settings",
+    "exit_code": 0,
+    "ok": true,
+    "stdout_sha256": "3bba60e72c47ccbd8825ff83146b3eccaa81d6fc16c0de417c7249b85b1dc642",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_model_calls": false
+  },
+  "compiled_candidate_evidence": "data-collection/issue-8-async-verification-20261103.json",
+  "compiled_candidate_evidence_sha256": "dae399982f6795f5d0205463206e6a1e6cf7ebf78ebfbbc0a6e57f0ec7c4fb52",
+  "independent_review": "data-collection/issue-8-9-independent-review-20261103.json",
+  "independent_review_sha256": "82433648a3feb5d901007f14d6ccbc6ce8c5a16a5a1633314d7812793372a205",
+  "reviewed_engine_sources_match": true,
+  "local_installation_updated": true,
+  "github_release_updated": false,
+  "existing_release_tag": "olympus-windows-x64-20261102",
+  "release_hash_policy_changed": false,
+  "external_provider_tested": false,
+  "cli_modified_or_tested": false,
+  "production_events_written_by_this_agent": false,
+  "isolated_test_event_scope": "Temporary fixture repositories only; root task will separately record actual installation evidence.",
+  "limitations": [
+    "Local installation is distinct from a newly published Release.",
+    "Doctor checks definition approval and source integrity; it does not authenticate arbitrary future host authority.",
+    "The admitted scenario used the actual current approved framework with loopback model transport; other receipt scenarios used isolated context fixtures."
+  ]
+}

@@ -136,10 +136,12 @@ def expected(source,adapters,sinan_source):
         # Existing Yuanheng ledgers keep their original on-disk format.
         for p in ['modules/ariadne/coordinator.mjs','modules/ariadne/refresh.mjs']:
             out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
+        p='modules/ariadne/test/refresh.test.mjs'
+        if p in out:out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
     else:
         raise ValueError('Current self-contained event-driven Sinan module required; archived timer distribution is no longer supported')
     append('skills/ariadne/SKILL.md','\nThe framework root is ../.. relative to this skill. runtime-ref.json paths are framework-root relative. Use the shared Hermes reporting.json; the file-data exemption remains available. External source ledger format .yuanheng/state.json is preserved. No live sources or CLI are bound by default.\n')
-    profile=get('skills/dike/reporting.json');profile['component']={'kind':'skill','id':'ariadne','version':module['version'],'entry':'skills/ariadne/SKILL.md','entry_sha256':sha(out['skills/ariadne/SKILL.md'])};put('skills/ariadne/reporting.json',profile)
+    profile=get('skills/dike/reporting.json');profile['component']={'kind':'skill','id':'ariadne','version':next(s['version'] for s in m['skills'] if s['name']=='ariadne'),'entry':'skills/ariadne/SKILL.md','entry_sha256':sha(out['skills/ariadne/SKILL.md'])};put('skills/ariadne/reporting.json',profile)
     for p in ['reviews/ariadne-admission.json','reviews/ariadne-module-admission.json']:
         put(p,{'template':False,'status':'pending_distribution_review','source_registration':'source-evidence.json','subject':{'id':'ariadne','version':module['version']},'approval':None})
     # Name mapping makes both source admission names distinct through their original paths.

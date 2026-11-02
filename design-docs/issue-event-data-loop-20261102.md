@@ -39,3 +39,9 @@ $env:OLYMPUS_GH = '<本机 gh 可执行文件>'
 此入口不注册 Ariadne 文件账本源，不启动 webhook 服务，不自造 GitHub 事件 ID，也不修改 Agent 准入。11 项隔离测试涵盖身份/工作区拒绝、依赖映射、重放顶层身份与宿主摘要篡改、已有回执摘要不符、未知类别与错租户、失败重试、并发锁、进程崩溃锁释放和原子发布失败；模拟测试文件不进入生产数据。真实 GitHub 事件演示与共享 `analyze` 读取须由主任务实际执行并另附回执，本段不将尚未执行的验证记为完成。
 
 重放前将 envelope 顶层事件 ID、租户、需求、宿主和定义摘要与确定性身份核对；已有回执的 envelope SHA256 必须先匹配才允许调用 record。CLI 租户必须与 work-items.json 的 tenant_id 一致，类别必须属于 .github/labels.json；绑定冲突一律拒绝，不覆盖历史。
+
+## 2026-11-03 实际事件验收
+
+当前宿主已显式处理本工单的真实 GitHub 事件 `34930471933`（添加 `status:in-progress`），首次调用取得 `recorded_file` 回执，重复调用返回幂等成功。来源与回执在 `data-collection/issue-events/4e45ac85a254e7cf12b7d3cc7263500d5e1b5827c7fb065b6b7c284851e0ed53/`，已随 `b439d032` 提交。共享 Hermes analyze 实际读取当时的 46 条事件，读取证据见 `data-collection/issue-9-explicit-event-read-20261103.json`；消费者为当前 Codex 宿主，未知用量仍为 null。
+
+因此 Olympus 单次事件记录、重放及共享分析路径已贯通。本父单仍为处理中：共工侧来源适配与代表任务未由本工作区完成，Ariadne GitHub 来源注册仍为 false；不将手工单次调用或来源索引当作自动派发、谛听 Agent 消费或双工作区全部完成。

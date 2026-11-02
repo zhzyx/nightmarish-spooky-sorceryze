@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-11-cli-deferred",
+  "tenant_id": "olympus-workspace",
+  "request_id": "restore-repository-ci-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T17:20:00.930300+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/11",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "User explicitly deferred CLI fixes to another contributor. Reverted this task uncommitted CLI spelling and lockfile spelling-exclusion changes; retained original merged main CLI bytes. Executable Git mode fix remains staged. Remote static run 41486751907 passed prior ignore/format/type checks but failed executable mode and CLI codespell; no CI bypass or issue closure.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimates"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-11-request"
+  ],
+  "sha256": "5ce8028a2135f1d777ec1df943a2c067edf535fc231f0a1ded91f63ed8878ccf"
+}

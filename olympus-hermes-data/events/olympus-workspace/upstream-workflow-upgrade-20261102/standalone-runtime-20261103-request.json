@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "standalone-runtime-20261103-request",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-02T17:11:54.131069+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "instruction": "现在olympus框架下还对gonggong框架有依赖，导致运行报错。根据之前的描述，olympus应该具备独立运行能力。马上进行定位及修复",
+    "snapshot_basis": "definition_sha256 is the actual workspace AGENTS.md instruction snapshot, not a hidden host model definition or Olympus Agent admission",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "76958a5094fea4686d1c1b376f13428a1801bbb62591f7b63de02c9ae07a31a4"
+}

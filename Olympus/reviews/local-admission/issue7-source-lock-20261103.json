@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-02T17:03:40.486805+00:00",
+  "path_base": "repository_root",
+  "snapshot": ".godot-integration-local/issue7-20261103/approved-source",
+  "source": "../GongGong/framework",
+  "candidate": ".godot-integration-local/issue7-20261103/final/Olympus",
+  "source_evidence_sha256": "87a204f945d23fd23e8e6df9bce81e84ed0013c7df782100a615da821cc51fd7",
+  "candidate_manifest_sha256": "68031d3b180e94a41ac0932f994d99852fd74f4c6002d10069fbf833bbb90414",
+  "source_manifest_sha256": "5459700c9bb1590561865cba28514f22781e74210fe56942fab811c9327f3046",
+  "source_files": 148,
+  "registered_evidence_files": 16,
+  "exact_byte_and_file_set_match": true,
+  "inventory_sha256": "9e6db60f771a342b91da038c446d360d6122f338491a864e90437596fa56f4e7",
+  "external_evidence": {
+    "work/delivery-gate/validation.json": "7c4c801bda3ba09cdb08141293a12f17b577302b65668288829b5f99c79a8408",
+    "work/sinan-event-sync/test-output.txt": "7c92e1159558d932766cfb224b0cbb1afa5115e5f0124fbb5e55281e040e3188",
+    "work/workflow-independent/candidate-hashes.json": "c21216b5655ffe9caf3eb068270b9633c4ba86f0ebe6ace466c2e728591d98cd",
+    "work/workflow-independent/report.md": "254ba01414a67b4874a1f837be7105a1e843281d6e2bd746b1bc6380501a13f8",
+    "work/workflow-optimization/authority.json": "913e24269369e3db4c3ee42761c0f5413ffbbd59df24628a6d44d2889de0f824"
+  },
+  "pointer": {
+    "copied_from_actual_source": true,
+    "sha256": "a81308b66fa6509a47a91585a6a4f2cec04d163a6ba482025310e094d9fd3ce8"
+  },
+  "agents": [
+    {
+      "id": "athena",
+      "version": "0.4.0",
+      "candidate_digest": "c22520b3a20e24a8fad23d8ff6696e6c4b3bacd73e6e0bf53c6256c7b72eb35d"
+    },
+    {
+      "id": "themis",
+      "version": "0.4.0",
+      "candidate_digest": "fdc392c5845ce48269debd5a7cee5766d03425d39cef841249b5a0dc6bcff8b8"
+    },
+    {
+      "id": "hermes",
+      "version": "0.4.0",
+      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d"
+    }
+  ],
+  "approval_decision_ref_provided_by_parent": "call_2952cd1771324fd99b23a4543f259fb1",
+  "approval_records_created": false,
+  "active_binding_changed": false,
+  "active_olympus_changed": false,
+  "live_source_changed": false,
+  "scope": "Exact already reviewed candidate source; immutable task copy, not authorization for future source changes",
+  "formal_validation": {
+    "source_verify": {
+      "exit_code": 0,
+      "mode": "approved_file_integrity",
+      "host_authority_authenticated": false
+    },
+    "candidate_sync_check": {
+      "exit_code": 0,
+      "full_parity": true,
+      "source_integrity_verified": true,
+      "source_admission_verified": true,
+      "source_files": 148,
+      "distribution_files": 135
+    },
+    "commands": [
+      "python .godot-integration-local/issue7-20261103/approved-source/framework/tools/verify_framework.py",
+      "python .godot-integration-local/issue7-20261103/final/Olympus/sync/gonggong_sync.py check --root .godot-integration-local/issue7-20261103/final/Olympus --source .godot-integration-local/issue7-20261103/approved-source/CURRENT_FRAMEWORK.json"
+    ]
+  }
+}

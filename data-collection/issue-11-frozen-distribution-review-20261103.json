@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewer": "codex-root",
+  "implementation_author": "/root/review_chat_gate",
+  "reviewed_at": "2026-11-02T17:24:54.688630+00:00",
+  "scope": "offline snapshot integrity CI integration; not upstream authentication or Agent permission",
+  "result": "pass",
+  "tests": {
+    "total": 11,
+    "passed": 10,
+    "skipped": 1,
+    "skip_reason": "Windows real symlink permission unavailable; reparse branch separately covered"
+  },
+  "actual_snapshot": {
+    "frozen_files": 136,
+    "python_syntax": 19,
+    "javascript_syntax": 11,
+    "json_syntax": 51
+  },
+  "reviewed_boundaries": [
+    "exact path and byte set",
+    "unsafe path and links rejected",
+    "candidate and permit records compared",
+    "parse-only source checks",
+    "Hermes exemption still checked",
+    "only frozen mirror style/type/file-format hooks replaced",
+    "CLI fixes left to independent contributor"
+  ],
+  "sha256": {
+    "tools/check_olympus_distribution.py": "638c89b63d265b7b9298d36428b4ee16512582284d7b9f491b637c33cb685ca9",
+    "tests/editor/test_frozen_olympus_distribution.py": "0b4aa19189995c2be6b61f2d5aa3a91b59da30610a35cd7640d2c6f7cbfaea41",
+    "integrations/olympus/frozen-distribution.json": "c8098bbe62b7b34b5195e7795dc74150b9f9e6b00aaf55cce8bf301d454c6e23"
+  },
+  "limitations": [
+    "Registration is a reviewable checksum list, not a signature or authority proof.",
+    "Full all-files upstream codespell still has two historical differences; no blanket exclusion."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "completed_at": "2026-11-02T17:19:16.951268+00:00",
+  "issue": 7,
+  "path_base": "repository_root",
+  "user_decision_ref": "call_2952cd1771324fd99b23a4543f259fb1",
+  "user_answer": "批准这三个候选并在复核通过后切换",
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "source_snapshot": ".godot-integration-local/issue7-20261103/approved-source",
+  "installed_framework": "Olympus",
+  "backup": ".godot-integration-local/issue7-20261103/backup-before-switch",
+  "formal_verification": {
+    "isolated_approved_candidate": "approved_file_integrity",
+    "installed_framework": "approved_file_integrity",
+    "full_parity": true,
+    "source_admission_verified": true,
+    "source_files": 148,
+    "distribution_files": 135,
+    "reporting_profiles": 13,
+    "runtime_connected": false,
+    "host_authority_authenticated": false
+  },
+  "agents": [
+    {
+      "id": "athena",
+      "version": "0.4.0",
+      "candidate_digest": "c22520b3a20e24a8fad23d8ff6696e6c4b3bacd73e6e0bf53c6256c7b72eb35d"
+    },
+    {
+      "id": "themis",
+      "version": "0.4.0",
+      "candidate_digest": "fdc392c5845ce48269debd5a7cee5766d03425d39cef841249b5a0dc6bcff8b8"
+    },
+    {
+      "id": "hermes",
+      "version": "0.4.0",
+      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d"
+    }
+  ],
+  "fingerprints": {
+    "framework-manifest.json": "68031d3b180e94a41ac0932f994d99852fd74f4c6002d10069fbf833bbb90414",
+    "source-evidence.json": "87a204f945d23fd23e8e6df9bce81e84ed0013c7df782100a615da821cc51fd7",
+    "sync/binding.json": "91347373df3f7c098d5cd2232a23ac00a63ecac860404519fc9f100c6eb5913e",
+    "sync/gonggong_sync.py": "9d6a84d1247bd60d007927658fea97fc98eb5209a7fef46fba564e7248a93684",
+    "reviews/athena-admission.json": "25a3dae59715523d091434b9cec3a21372c525ba919331ac042d45285d2ebd44",
+    "reviews/themis-admission.json": "227027f40c9674dab8dc7859cfee44b475a0d123407eb1d6ed7d3edb7d9fe807",
+    "reviews/hermes-admission.json": "447cb1349e3957795b7d94437f04c676125327560d3e890032a61cfc1bdac971",
+    "reviews/local-admission/issue7-user-decision-20261103.json": "2a37b888db406d3774e652013a5c3af21bc94327f0b1f46e0741edf366eb6709",
+    "reviews/local-admission/issue7-independent-review-20261103.json": "158266e43a36c63a3d906f2cb0155f48d6063d5e333b65262b0aaf628839e931",
+    "reviews/local-admission/issue7-source-lock-20261103.json": "99fe154b64b8b494200fd65fe11c35ca25c55858a053b1eb8a8ad8b8bdd7882a"
+  },
+  "design_doc_sha256": "02f8629c823e139d2cf9ab34c170882ebbc4f4358bb28cf791566b3db53d1c26",
+  "preservation": {
+    "old_framework_backup_exact": true,
+    "hermes_extension_exact": true,
+    "hermes_root_data_exact_at_post_switch_check": true,
+    "hermes_data_inventory_sha256": "668566f3655ad7ede41289b2c4b37f73fa5e55af71202e11eb1bb2875cf721d5"
+  },
+  "mutation_scope": {
+    "active_olympus": "exact approved candidate plus validated admission records and relative locator",
+    "private_locator_updated": true,
+    "global_upstream_modified": false,
+    "git_index_modified": false,
+    "git_commit_created": false,
+    "hermes_event_written": false,
+    "standalone_files_touched": false
+  }
+}

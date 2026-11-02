@@ -1,0 +1,83 @@
+{
+  "synthetic_only": true,
+  "production_admission": false,
+  "checks": [
+    {
+      "name": "candidate_without_source",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "update_without_source_rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "pending_admission_rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "changed_file_rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "extra_file_rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "missing_file_rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "synthetic_formal_validation_without_source",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "node_context_without_source",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "rewritten_lock_rejected_by_candidate",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "rewritten_lock_rejected_by_context",
+      "passed": true,
+      "exit_code": 1
+    }
+  ],
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "candidate_agents": {
+    "athena": "d5b42a1874d969448324f984b359a51d03bd2f46ae289fc11bd06fcb5a973885",
+    "themis": "d2f3fc5c9fa7bb5e44a05a0e038fb4ce6911e03e67fe0aee87642559479901bc",
+    "hermes": "7bd90acd78b4d6e67c05bec6978c0b8ffc1dd7e0159ace6e792a5b8fb2cbbce8"
+  },
+  "build": {
+    "full_parity": true,
+    "source_integrity_verified": true,
+    "source_admission_verified": true,
+    "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+    "preserved_exemption": "extensions/hermes-files/",
+    "source_files": 140,
+    "distribution_files": 130,
+    "upstream_version": "0.9.0",
+    "checks": [
+      "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+      "passed file-level quality ownership checks; host identity and runtime not verified"
+    ],
+    "python_and_node_syntax": "pass",
+    "production_admission": false
+  },
+  "patch_sha256": "b0b145749c729744ebbe796a7ba3e32811443298ebf093385013b8af5f5790ce",
+  "checked_at": "2026-11-02T17:10:54.471059+00:00",
+  "deployed": false,
+  "remote_write": "blocked: GitHub integration HTTP 403; no CLI or git credential available"
+}

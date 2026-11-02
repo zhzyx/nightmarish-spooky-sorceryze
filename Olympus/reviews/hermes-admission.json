@@ -5,7 +5,7 @@
     "id": "hermes",
     "version_or_digest": {
       "version": "0.4.0",
-      "candidate_digest": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf",
+      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d",
       "candidate_files": [
         {
           "path": "AGENTS.md",
@@ -177,7 +177,7 @@
         },
         {
           "path": "source-evidence.json",
-          "sha256": "1d94e7b92d83c0ef78d40e0f4068164410d86a1bcfc1fe70107e031539c6502a"
+          "sha256": "87a204f945d23fd23e8e6df9bce81e84ed0013c7df782100a615da821cc51fd7"
         },
         {
           "path": "specs/data-feedback.md",
@@ -213,7 +213,7 @@
         },
         {
           "path": "sync/gonggong_sync.py",
-          "sha256": "27fab91718e3315c024fcf6c898d095bdc6e1b6447dbff563eab7c508f966a0c"
+          "sha256": "9d6a84d1247bd60d007927658fea97fc98eb5209a7fef46fba564e7248a93684"
         },
         {
           "path": "sync/names.json",
@@ -279,19 +279,25 @@
     },
     "scope": [
       "local_agent_definition_only"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "upstream/zeus/core.md"
     ]
   },
   "approval": {
     "approver_id": "user:current-conversation",
-    "authority_ref": "explicit-user-decision:call_e2781a0999394b18a1444e79916edb2f",
-    "decision_evidence_ref": "reviews/local-admission/user-decision-20261102.json",
-    "approved_at": "2026-11-01T21:08:17.784005+00:00",
+    "authority_ref": "explicit-user-decision:call_2952cd1771324fd99b23a4543f259fb1",
+    "decision_evidence_ref": "reviews/local-admission/issue7-user-decision-20261103.json",
+    "approved_at": "2026-11-02T17:15:34.916888+00:00",
+    "time_basis": "approval_record_created_after_explicit_user_decision",
     "valid_until_or_task_end": "bound_candidate_only",
     "expires_at": null,
     "revocation_ref": null,
     "superseded_by": null
   },
-  "permit_id": "OLYMPUS-090-20261102-HERMES",
+  "permit_id": "OLYMPUS-ISSUE7-20261103-HERMES",
   "event": "agent_definition_change",
   "phase": "local_definition_release",
   "baseline": {
@@ -313,16 +319,18 @@
     "concision": {
       "status": "pass",
       "entry_characters": 825,
-      "rationale": "Entries unchanged; shared governance loaded by references; source evidence and derived digests only."
+      "rationale": "Agent entries and permission boundaries unchanged; approved compatibility adapter and complete bound source reviewed independently."
     },
     "applicable_validation": "pass",
     "evaluator_id": "/root/review_upstream",
     "independence": "independent_subagent_review",
     "evidence_refs": [
-      "reviews/local-admission/independent-review-20261102.json"
+      "reviews/local-admission/issue7-independent-review-20261103.json",
+      "reviews/local-admission/issue7-source-lock-20261103.json"
     ],
     "unresolved": [
-      "Actual model credentials, host authority and production business outcome require host verification; definition release is not model execution."
+      "Definition release does not authenticate host/model/tool authority or certify actual model, remote Issue updates or collection consumption.",
+      "Ariadne local module remains disabled/pending distribution review; three Agent approvals do not grant automatic dispatch authority."
     ]
   }
 }
