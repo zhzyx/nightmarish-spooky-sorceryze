@@ -1,0 +1,29 @@
+{
+  "dataset_id": "0cf3f384-55ed-4bd9-9fbd-0358e98aca28",
+  "tenant": "olympus-workspace",
+  "snapshot_sha256": "38abc60a5ace098811d42a1829af62f49158df30c03d1b3b1c82fcb809c276ec",
+  "git_state": "not_fully_committed",
+  "coverage": "unknown",
+  "events": 46,
+  "current_events": 45,
+  "by_kind": {
+    "request": 13,
+    "request_end": 3,
+    "step": 13,
+    "handoff": 13,
+    "analysis": 2,
+    "correction": 1
+  },
+  "usage_totals": "not_inferred_from_event_counts",
+  "schema_version": 1,
+  "issue": 9,
+  "consumer": "codex-root",
+  "consumed_at": "2026-11-02T16:43:53.739973+00:00",
+  "source": "Olympus/extensions/hermes-files/hermes_files.py analyze",
+  "source_output_sha256": "c23de01c074a5951833065bd261daff84bac16098bd4a61821c46406dd7025fc",
+  "github_event_id": 34930471933,
+  "intake_recorded": true,
+  "replay_idempotent": true,
+  "diting_agent_consumption_claimed": false,
+  "ariadne_dispatch_enabled": false
+}

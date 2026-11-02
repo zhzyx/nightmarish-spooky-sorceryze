@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "issue-event-data-loop-20261102",
+  "collected_at": "2026-11-02T16:54:06.373928+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-event-data-loop-20261102/advance-issues-20261103-9-request.json",
+      "sha256": "8f54cf8f808ac80b811c32d452354a8d73bd7aefaf0ffe29fd1cd1ab5b525724",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-9-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-event-data-loop-20261102/advance-issues-20261103-9-validation.json",
+      "sha256": "2e21be50045961dd542a403ffb6a848c3dab09212d2b182824323cab1515f359",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-9-validation",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-event-data-loop-20261102/github-4e45ac85a254e7cf12b7d3cc7263500d5e1b5827c7fb065b6b7c284851e0ed53.json",
+      "sha256": "538d57a36a5d279321f6bd907c4bcb4427159fd082a006ce387c37a5fc95dcd8",
+      "tenant_id": "olympus-workspace",
+      "event_id": "github-4e45ac85a254e7cf12b7d3cc7263500d5e1b5827c7fb065b6b7c284851e0ed53",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-event-data-loop-20261102/issue-event-data-loop-20261102-progress.json",
+      "sha256": "c4cda7cdca469496ce09d93c62aecb7c952cdf8eaeea0eb08caf02dc855a9121",
+      "tenant_id": "olympus-workspace",
+      "event_id": "issue-event-data-loop-20261102-progress",
+      "origin": "codex-host-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/issue-event-data-loop-20261102/issue-event-data-loop-20261102-registered.json",
+      "sha256": "689dd2d66a94aba2e9170ac23f6aa09ec8b885259ba9ae413d0b17a8ff8d6f2c",
+      "tenant_id": "olympus-workspace",
+      "event_id": "issue-event-data-loop-20261102-registered",
+      "origin": "codex-host-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

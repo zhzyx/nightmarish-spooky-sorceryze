@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "evaluator_id": "/root/review_upstream",
+  "script": "misc/scripts/gitignore_check.sh",
+  "script_sha256": "6cc02167d211989dcdc292ff691ce68b970b51ebb566b534a56878d87795a868",
+  "scope": "isolated Git fixtures and current tracked-file validation; no script modifications",
+  "shell_version": "GNU bash, version 5.2.37(1)-release (x86_64-pc-msys)",
+  "newline_fixture": "Windows Git excludes newline names from its index. Only ls-files enumeration is injected as NUL data; actual check-ignore and awk process it. No native Windows newline worktree support claimed.",
+  "setup_corrections": "Initial newline index fixture was invalid because git update-index silently discarded the name. A quoting issue in the first injected-enumeration harness was corrected; final raw-shell prefixes are used.",
+  "cases": [
+    {
+      "case": "no_ignore_match",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    },
+    {
+      "case": "tracked_ignored_file",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "pass": true,
+      "stdout": ".gitignore validation...\nerror.log\n",
+      "stderr": ""
+    },
+    {
+      "case": "explicit_negation",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    },
+    {
+      "case": "space_path",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "pass": true,
+      "stdout": ".gitignore validation...\nspace name.log\n",
+      "stderr": ""
+    },
+    {
+      "case": "newline_ignored_NUL_stream",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "pass": true,
+      "stdout": ".gitignore validation...\nline\nbreak.log\n",
+      "stderr": ""
+    },
+    {
+      "case": "newline_unignored_NUL_stream",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    },
+    {
+      "case": "ls_files_failure_propagates",
+      "expected_exit": 42,
+      "actual_exit": 42,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    },
+    {
+      "case": "check_ignore_failure_propagates",
+      "expected_exit": 43,
+      "actual_exit": 43,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    },
+    {
+      "case": "real_nonrepository_git_error",
+      "expected_exit": 128,
+      "actual_exit": 128,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+    },
+    {
+      "case": "current_repository_all_tracked",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "pass": true,
+      "stdout": ".gitignore validation...\n",
+      "stderr": ""
+    }
+  ],
+  "all_passed": true,
+  "findings": []
+}

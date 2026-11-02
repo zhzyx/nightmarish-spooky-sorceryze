@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "restore-repository-ci-20261102",
+  "collected_at": "2026-11-02T16:54:06.601237+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/restore-repository-ci-20261102/advance-issues-20261103-11-request.json",
+      "sha256": "148eba852542cbf18a9ea5ecda58d411dc1a7fb210c302a4bfc4466a79898b53",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-11-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/restore-repository-ci-20261102/advance-issues-20261103-11-validation.json",
+      "sha256": "1712510d3b21c8426c0d6d535846c4e8de63fc8c36242b1ea931cd6308712db5",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-11-validation",
+      "origin": "codex-local-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

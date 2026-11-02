@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-9-validation",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T16:54:06.148778+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Real GitHub event intake recorded once, replay idempotent; explicit Hermes analysis read46 events. Olympus side only; no Ariadne dispatch or Diting agent consumption claimed.",
+    "evidence": "data-collection/issue-9-explicit-event-read-20261103.json",
+    "evidence_sha256": "f0c6b9ddf99843e449aca3e688dd7f6958dd6727bb2f616fb6f76c7ca70ee1ef",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-9-request"
+  ],
+  "sha256": "3a0df3d8ce4023d58a3d9c5b6a355c16a58e774ae5445c99c243df426e75aa8a"
+}

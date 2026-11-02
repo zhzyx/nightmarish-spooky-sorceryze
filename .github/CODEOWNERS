@@ -523,3 +523,18 @@
 
 /thirdparty/                                  @godotengine/buildsystem
 /thirdparty/jolt_physics/                     @godotengine/buildsystem @godotengine/jolt-physics
+
+# Olympus workspace additions are maintained by this repository's owner.
+/Olympus/                                     @zhzyx
+/customizations/                              @zhzyx @godotengine/buildsystem
+/data-collection/                             @zhzyx
+/design-docs/                                 @zhzyx
+/distribution/                                @zhzyx
+/integrations/                                @zhzyx
+/olympus-hermes-data/                          @zhzyx
+/project/                                     @zhzyx
+/releases/                                    @zhzyx
+/samples/                                     @zhzyx
+/tools/                                       @zhzyx @godotengine/buildsystem
+/tests/editor/                                @godotengine/tests @godotengine/editor
+/tests/editor/*.py                            @godotengine/tests @godotengine/editor @godotengine/buildsystem

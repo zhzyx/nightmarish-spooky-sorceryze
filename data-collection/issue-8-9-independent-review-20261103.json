@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "evaluator_id": "/root/review_chat_gate",
+  "independence": "independent_subagent_review",
+  "issues": [
+    8,
+    9
+  ],
+  "result": "no_blocking_issues_after_fixes",
+  "reviewed": [
+    "Receipt continuation generation guards and busy checks, stop/late receipt, reflush ordering, recovery journal retention.",
+    "Issue event top-level identity, known labels, workspace tenant, receipt digest, OS process lock and atomic publication."
+  ],
+  "independent_tests": {
+    "issue_event_tests": 11
+  },
+  "root_followup_tests": {
+    "all_issue_component_tests": 35
+  },
+  "model_validation": "simulated_only",
+  "final_format_changes": "ruff import/format, clang-format/include normalization and codespell; final copyright hook added one space to filename comment, no executable-code change.",
+  "files": {
+    "customizations/components/issue-workorders/issue_events.py": "e65739066824c188064b03c83ab0e7e6d68357ceb4fd3b10ab46ec406019be34",
+    "customizations/components/issue-workorders/test_issue_events.py": "dc4d50b4c74c3fa8e85db472b30446126881304829d133866de81bd9245eac50",
+    "editor/docks/ai_chat_dock.cpp": "5061af122c843250ecd0ea0519e6f3e3062758005c233084ed624d94e6becc60",
+    "editor/docks/ai_chat_dock.h": "aec61eff9840b465240d3a48239331200fbc11b41ca717bc5362151f319b08e3",
+    "editor/docks/ai_chat_olympus.cpp": "43799e8bd24840da13cfd84b1a335c7cfa15a5b558fe01575b7b945221a4d175",
+    "tests/editor/run_olympus_chat_gate.py": "b760c1e3709d1f975a180423e8b3eb6ac3cf520500e48b07161e43a8e0bf544e",
+    "tests/editor/olympus_chat_gate.gd": "724833fdef097f501de609841b69df42acb11f779678be438044586db1cda50c"
+  },
+  "production_authority_granted": false
+}

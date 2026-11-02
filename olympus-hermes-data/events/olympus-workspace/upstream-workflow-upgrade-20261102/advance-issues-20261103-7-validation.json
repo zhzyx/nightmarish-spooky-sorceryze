@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-7-validation",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T16:54:06.606238+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "New exact candidate rebuilt and independently reviewed; approval requested, not received; old source and active framework preserved.",
+    "evidence": "data-collection/issue-7-independent-review-20261103.json",
+    "evidence_sha256": "158266e43a36c63a3d906f2cb0155f48d6063d5e333b65262b0aaf628839e931",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-7-request"
+  ],
+  "sha256": "9b541540f668f1830793e5679e84a4289397c7d8e899501111d813769c106284"
+}

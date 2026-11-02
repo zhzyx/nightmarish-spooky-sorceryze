@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-9-request",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-02T16:30:03.423540+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "instruction": "推进当前工作区内的所有issue",
+    "issue": 9,
+    "scope": "Current Olympus workspace; preserve approvals, original evidence and per-Issue acceptance.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "0db6d1c119bceb374e8bb137b2816bd3e214d5d55a549357b54057c5b6107979"
+}

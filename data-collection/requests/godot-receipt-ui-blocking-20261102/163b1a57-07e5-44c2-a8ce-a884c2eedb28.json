@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "godot-receipt-ui-blocking-20261102",
+  "collected_at": "2026-11-02T16:54:06.142778+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-receipt-ui-blocking-20261102/advance-issues-20261103-8-request.json",
+      "sha256": "facb5f91724975c0ebb555ed8351ec8ac58374558d18c7c8ebe26548e71dd762",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-8-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-receipt-ui-blocking-20261102/advance-issues-20261103-8-validation.json",
+      "sha256": "5e2565d36f375ac6fb665c4c8d024bd9c91a631cd5c2a4dbbec9d83f0596f65a",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-8-validation",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-receipt-ui-blocking-20261102/godot-receipt-ui-blocking-20261102-progress.json",
+      "sha256": "2efba949dfc14b9eda33b255c74a799d84662740ad6868e3c9eeb0642b2250cb",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-receipt-ui-blocking-20261102-progress",
+      "origin": "codex-host-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-receipt-ui-blocking-20261102/godot-receipt-ui-blocking-20261102-registered.json",
+      "sha256": "10d8c5be3a67f7300e029d031c55bf97b1e8b9a2891074aae24deb481f03ef6d",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-receipt-ui-blocking-20261102-registered",
+      "origin": "codex-host-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}

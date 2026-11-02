@@ -1,3 +1,11 @@
 # Generated Godot API sources directories
-GodotSharp/Generated
-GodotSharpEditor/Generated
+# Delivered API source snapshots are inputs to the checked-in C# projects.
+# Keep source and MSBuild includes, without admitting build output (Issue #11).
+GodotSharp/Generated/**
+GodotSharpEditor/Generated/**
+!GodotSharp/Generated/**/
+!GodotSharpEditor/Generated/**/
+!GodotSharp/Generated/**/*.cs
+!GodotSharp/Generated/**/*.props
+!GodotSharpEditor/Generated/**/*.cs
+!GodotSharpEditor/Generated/**/*.props

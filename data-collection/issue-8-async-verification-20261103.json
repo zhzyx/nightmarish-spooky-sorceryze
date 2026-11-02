@@ -1,0 +1,311 @@
+{
+  "schema_version": 1,
+  "issue": 8,
+  "executor": "/root/async_receipts",
+  "model_scope": "loopback fixtures only",
+  "production_installation_replaced": false,
+  "original_engine_max_frame_gap_seconds": 1.687262,
+  "injected_receipt_delay_seconds": 0.4,
+  "frame_gap_limit_seconds": 0.35,
+  "compiled_engine_sha256": "b660895656799c034df412a1591bae3a35a4e215b47f035eacae35c48ec9a61d",
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "5061af122c843250ecd0ea0519e6f3e3062758005c233084ed624d94e6becc60",
+    "editor/docks/ai_chat_dock.h": "aec61eff9840b465240d3a48239331200fbc11b41ca717bc5362151f319b08e3",
+    "editor/docks/ai_chat_olympus.cpp": "43799e8bd24840da13cfd84b1a335c7cfa15a5b558fe01575b7b945221a4d175",
+    "tests/editor/run_olympus_chat_gate.py": "b760c1e3709d1f975a180423e8b3eb6ac3cf520500e48b07161e43a8e0bf544e",
+    "tests/editor/olympus_chat_gate.gd": "724833fdef097f501de609841b69df42acb11f779678be438044586db1cda50c"
+  },
+  "build": {
+    "result": "passed",
+    "elapsed_seconds": 12.41,
+    "log_sha256": "a64cd988d335da2dda7badada64d5d3a6c9d3b796af7654af7fa4b21862164f8",
+    "input_comparison": "All three compiled inputs exactly match final workspace bytes; normalized hashes are also retained.",
+    "changes_since_representative_rerun": "Only one space in file-name comment on line 2 of ai_chat_olympus.cpp; other two source files are unchanged. No executable tokens changed.",
+    "final_cpp_inputs_exact_match": true
+  },
+  "native": {
+    "cases_passed": 12,
+    "assertions_passed": 107,
+    "log_sha256": "c5ffd97a7b133af1d09d6c9c6a5e4617900063f5b9e69cb45fa0ec13ce950db7"
+  },
+  "scenarios": [
+    {
+      "mode": "accepted",
+      "result": {
+        "native_page": true,
+        "mode": "accepted",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.015169,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "e7e3dea43c51ad26f5b901362c33095df21442728fdf860be74ea63ce89ca4ca",
+      "tested_engine_sha256": "7f7e063a802e874d8b685203e8ffe26ccef340c7d0ec98a1c74a64a7f97a45c2",
+      "verification_basis": "Rerun using final frozen compiled source and final harness.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "receipt_cancel",
+      "result": {
+        "native_page": true,
+        "mode": "receipt_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.013038,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "013f244f4f173b84b06a313d740bda4da71859fab2dd633ea037506e1a73778d",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "receipt_failure",
+      "result": {
+        "mode": "receipt_failure",
+        "model_requests": 0,
+        "pending_preserved": true,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.014197,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "36acbb3c8c306a8a200a76cb9b784dc7f2792a30ab805ddf7af1a38c228bd7a6",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "receipt_retry",
+      "result": {
+        "native_page": true,
+        "mode": "receipt_retry",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.0144,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "f1b7231925ac5c024be66b109bb05c505b5b141f80a7dfebc7e6487c6ad82212",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "tool",
+      "result": {
+        "native_page": true,
+        "mode": "tool",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 2,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.015096,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "c2ad644dc30224347789130da42591ca516a405a3dc21249e07b961de11d1686",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "recovery",
+      "result": {
+        "native_page": true,
+        "mode": "recovery",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.019123,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "7d510b14bf6c5293ed10493ecd0125b57548339b2931ee8f37e0ccd657951f66",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "recovery_cancel",
+      "result": {
+        "native_page": true,
+        "mode": "recovery_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.016736,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "cbe37e337966a0b5b5c42e4f09fafd3353c7f400f1b766a70b71975efd0ac978",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "recovery_rejected",
+      "result": {
+        "native_page": true,
+        "mode": "recovery_rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": null,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "b7e4e5a1fc0b9950bbf260e6472e9ffc6c2ce0902c0d7c6c1dfdc1384acae8ae",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "cancel",
+      "result": {
+        "native_page": true,
+        "mode": "cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.01428,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "9af8af84f2da050d85d8b33c19b0a0b7b8d678115c1b57c5e4e0bad10bac8a75",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "rejected",
+      "result": {
+        "native_page": true,
+        "mode": "rejected",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.01107,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "d16de010817e73ce46456fdd94db4e18bdf6b30426da693b0bb98a70c5ad99d0",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "admitted",
+      "result": {
+        "native_page": true,
+        "mode": "admitted",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.01524,
+      "timing_note": "Null means no measurable frame interval before fast rejection; not zero latency.",
+      "log_sha256": "f9ac9b83a986b3039c0489fd821fcb03b8c494f0e4cd99045a7daf054cda3ef8",
+      "tested_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+      "verification_basis": "Earlier full behavioral matrix; reused after formatting/include normalization, with final native and representative regression rerun.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    },
+    {
+      "mode": "recovery_receipt_failure",
+      "result": {
+        "native_page": true,
+        "mode": "recovery_receipt_failure",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "max_frame_gap_seconds": 0.019594,
+      "journal_preserved": true,
+      "no_result_restored_event": true,
+      "log_sha256": "6b9865f2dddbab91d43e7a183f58d605c12ad36920e6c77d0de50640852a6703",
+      "tested_engine_sha256": "7f7e063a802e874d8b685203e8ffe26ccef340c7d0ec98a1c74a64a7f97a45c2",
+      "verification_basis": "Rerun using final frozen compiled source and final harness.",
+      "copyright_padding_reuse": "Reused without rerunning because final edit only changes comment padding and line endings; native 12/107 rerun on final binary."
+    }
+  ],
+  "independent_review": {
+    "result": "pass",
+    "evidence": "data-collection/issue-8-9-independent-review-20261103.json"
+  },
+  "remote_ci": "not_run_by_this_agent",
+  "prior_candidate": {
+    "compiled_engine_sha256": "059496a1af8d46402e0138ac39e2c3b9de51b100da06300edbdc11eb58179108",
+    "source_files": {
+      "editor/docks/ai_chat_dock.cpp": "f2fad301b47224af981bd56cf9385f00c36aca3ca615197ede4e8916801cbd70",
+      "editor/docks/ai_chat_dock.h": "9f397911cadd91537ebbabe474835a8d6b94424cafd5725847736764fb325db8",
+      "editor/docks/ai_chat_olympus.cpp": "3071703a888722631b86cbb0a41e92a2e272c5d546c8f37e43f9e9fe7b03bd92",
+      "tests/editor/run_olympus_chat_gate.py": "f9d3e4d58f26036ca0d9d50d4f3a17e5227711f5a109a30f9c51ca1bfda6c42e",
+      "tests/editor/olympus_chat_gate.gd": "724833fdef097f501de609841b69df42acb11f779678be438044586db1cda50c"
+    },
+    "build": {
+      "result": "passed",
+      "elapsed_seconds": 56.1,
+      "first_attempt": "Failed due to missing zstandard; installed only into ignored build dependency directory then rebuilt.",
+      "source_parity_files": 8266,
+      "source_parity_exception": "custom.py one comment differs; parsed Python AST identical.",
+      "log_sha256": "6e5743ac84efc0c69db71a1118828f1c8619fe082aa4357437c22c08c6dd9728"
+    },
+    "native": {
+      "cases_passed": 12,
+      "assertions_passed": 107,
+      "log_sha256": "c5ffd97a7b133af1d09d6c9c6a5e4617900063f5b9e69cb45fa0ec13ce950db7"
+    }
+  },
+  "test_interruption": "One attempted final scenario invocation saw the CI tool temporarily stash the harness to HEAD and failed argument parsing. No editor scenario ran in that attempt. After restoration, all three compiled input digests matched exactly; the two final scenarios were rerun successfully.",
+  "before_copyright_padding": {
+    "compiled_engine_sha256": "7f7e063a802e874d8b685203e8ffe26ccef340c7d0ec98a1c74a64a7f97a45c2",
+    "source_files": {
+      "editor/docks/ai_chat_dock.cpp": "5061af122c843250ecd0ea0519e6f3e3062758005c233084ed624d94e6becc60",
+      "editor/docks/ai_chat_dock.h": "aec61eff9840b465240d3a48239331200fbc11b41ca717bc5362151f319b08e3",
+      "editor/docks/ai_chat_olympus.cpp": "9fd06b7bd5b2774052099429f2da865a80c5d9a62058c2e11ad9a48e52dbb031",
+      "tests/editor/run_olympus_chat_gate.py": "b760c1e3709d1f975a180423e8b3eb6ac3cf520500e48b07161e43a8e0bf544e",
+      "tests/editor/olympus_chat_gate.gd": "724833fdef097f501de609841b69df42acb11f779678be438044586db1cda50c"
+    },
+    "build": {
+      "result": "passed",
+      "elapsed_seconds": 16.79,
+      "final_cpp_inputs_exact_match": true,
+      "log_sha256": "bd1a515b6e25c349c1da50ab036f05614cea3dd6c664fe482ee601b46fd47ff5",
+      "changes_since_full_matrix": "clang-format, include paths/order and codespell comment spelling; no intentional behavior change."
+    },
+    "native": {
+      "cases_passed": 12,
+      "assertions_passed": 107,
+      "log_sha256": "c5ffd97a7b133af1d09d6c9c6a5e4617900063f5b9e69cb45fa0ec13ce950db7"
+    }
+  },
+  "source_files_lf": {
+    "editor/docks/ai_chat_dock.cpp": "5061af122c843250ecd0ea0519e6f3e3062758005c233084ed624d94e6becc60",
+    "editor/docks/ai_chat_dock.h": "aec61eff9840b465240d3a48239331200fbc11b41ca717bc5362151f319b08e3",
+    "editor/docks/ai_chat_olympus.cpp": "43799e8bd24840da13cfd84b1a335c7cfa15a5b558fe01575b7b945221a4d175",
+    "tests/editor/run_olympus_chat_gate.py": "b760c1e3709d1f975a180423e8b3eb6ac3cf520500e48b07161e43a8e0bf544e",
+    "tests/editor/olympus_chat_gate.gd": "724833fdef097f501de609841b69df42acb11f779678be438044586db1cda50c"
+  },
+  "compiled_input_files": {
+    "editor/docks/ai_chat_dock.cpp": "5061af122c843250ecd0ea0519e6f3e3062758005c233084ed624d94e6becc60",
+    "editor/docks/ai_chat_dock.h": "aec61eff9840b465240d3a48239331200fbc11b41ca717bc5362151f319b08e3",
+    "editor/docks/ai_chat_olympus.cpp": "43799e8bd24840da13cfd84b1a335c7cfa15a5b558fe01575b7b945221a4d175"
+  },
+  "source_digest_note": "source_files records raw working-tree bytes; source_files_lf records normalized source identity suitable for text-normalized Git; compiled_input_files records actual build-directory bytes."
+}

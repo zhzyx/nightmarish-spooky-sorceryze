@@ -416,3 +416,14 @@ __pycache__/
 !/distribution/releases/
 /distribution/releases/*
 !/distribution/releases/*.json
+
+# Deliberate repository inputs and historical delivery evidence (Issue #11).
+!/custom.py
+!/cpp.hint
+!/samples/pong_csharp_debug/NuGet.Config
+!/samples/pong_csharp_debug/Pong with C#.sln
+!/releases/
+/releases/*
+!/releases/2026-11-02/
+/releases/2026-11-02/*
+!/releases/2026-11-02/verification.json

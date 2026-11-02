@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  ai_chat_olympus.cpp                                                  */
+/*  ai_chat_olympus.cpp                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,21 +28,20 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "ai_chat_dock.h"
-#include "ai_chat_resume.h"
-
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
 #include "core/os/time.h"
+#include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/ai_chat_resume.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
 #include "scene/main/timer.h"
 
-bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, const String &p_status, bool p_flush) {
+bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, const String &p_status) {
 	if (olympus_reporting.is_empty()) {
 		return false;
 	}
@@ -96,23 +95,16 @@ bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, co
 		}
 	}
 	set_meta("olympus_reporting", "queued");
-	if (!p_flush) {
-		return true;
-	}
-	List<String> arguments;
-	for (const String &arg : { olympus_report_root.path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root }) {
-		arguments.push_back(arg);
-	}
-	String output;
-	int exit_code = -1;
-	const Error error = OS::get_singleton()->execute(olympus_report_python, arguments, &output, &exit_code, true);
-	if (error != OK || exit_code != 0) {
-		set_meta("olympus_reporting", "pending_retry");
-		_append(TTR("Error"), U"Olympus 文件回执失败；事件保留在 outbox，下一次发送会先重试，尚未记为已交付。");
-		return false;
-	}
-	set_meta("olympus_reporting", "recorded_file");
 	return true;
+}
+
+void AIChatDock::_flush_olympus(const Callable &p_continuation) {
+	olympus_receipt_continuation = p_continuation;
+	olympus_continuation_generation = session_generation;
+	olympus_receipt_reflush = olympus_receipt_pid >= 0;
+	if (!olympus_receipt_reflush) {
+		_start_olympus_flush();
+	}
 }
 
 void AIChatDock::_poll_olympus_receipt() {
@@ -121,18 +113,39 @@ void AIChatDock::_poll_olympus_receipt() {
 	}
 	olympus_receipt_timer->stop();
 	olympus_receipt_pid = -1;
-	Variant parsed = JSON::parse_string(FileAccess::get_file_as_string(olympus_receipt_path));
-	DirAccess::remove_absolute(olympus_receipt_path);
+	Variant parsed;
+	if (FileAccess::exists(olympus_receipt_path)) {
+		parsed = JSON::parse_string(FileAccess::get_file_as_string(olympus_receipt_path));
+		DirAccess::remove_absolute(olympus_receipt_path);
+	}
 	Dictionary result;
 	if (parsed.get_type() == Variant::DICTIONARY) {
 		result = parsed;
 	}
-	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
-	if (olympus_receipt_generation == session_generation) {
-		set_meta("olympus_reporting", ok ? "recorded_file" : "pending_retry");
+	Callable continuation = olympus_receipt_continuation;
+	olympus_receipt_continuation = Callable();
+	const bool current = busy && olympus_continuation_generation == session_generation;
+	if (olympus_receipt_reflush) {
+		olympus_receipt_reflush = false;
+		// A previous flush cannot acknowledge envelopes queued after it started.
+		// Terminal envelopes also require a fresh flush, but never resume work.
+		_flush_olympus(current ? continuation : Callable());
+		return;
 	}
+	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	if (olympus_receipt_generation != session_generation) {
+		return;
+	}
+	set_meta("olympus_reporting", ok ? "recorded_file" : "pending_retry");
 	if (!ok) {
-		_append(TTR("Error"), U"Olympus 结束事件暂未获得文件回执，已保留队列，下次发送前重试。");
+		_append(TTR("Error"), U"Olympus 文件回执失败，队列已保留，后续模型及工具执行已阻止。");
+		if (current && continuation.is_valid()) {
+			_set_busy(false);
+		}
+		return;
+	}
+	if (current && continuation.is_valid()) {
+		continuation.call();
 	}
 }
 
@@ -141,17 +154,20 @@ void AIChatDock::_end_olympus(const String &p_status) {
 		return;
 	}
 	for (const Variant &phase : olympus_running_steps.keys()) {
-		_record_olympus("step", phase, p_status == "completed" ? "succeeded" : p_status, false);
+		_record_olympus("step", phase, p_status == "completed" ? "succeeded" : p_status);
 	}
-	_record_olympus("coverage", "native_chat_messages_and_tools", "metadata_only_usage_unavailable", false);
-	_record_olympus("request_end", "chat", p_status, false);
+	_record_olympus("coverage", "native_chat_messages_and_tools", "metadata_only_usage_unavailable");
+	_record_olympus("request_end", "chat", p_status);
 	olympus_reporting.clear();
 	olympus_running_steps.clear();
-	// Execution has already stopped. Terminal delivery must never hold up Stop.
+	_flush_olympus(Callable());
+}
+
+void AIChatDock::_start_olympus_flush() {
 	if (olympus_receipt_pid >= 0) {
-		return; // Retained envelopes are retried by the next context preflight.
+		return;
 	}
-	olympus_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("olympus-receipt-" + itos(OS::get_singleton()->get_process_id()) + ".json");
+	olympus_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("olympus-receipt-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
 	List<String> arguments;
 	for (const String &arg : { olympus_report_root.path_join("tools/olympus_bridge.py"), String("flush"), String("--workspace"), olympus_report_root, String("--out"), olympus_receipt_path }) {
 		arguments.push_back(arg);
@@ -159,6 +175,10 @@ void AIChatDock::_end_olympus(const String &p_status) {
 	ProcessID pid = 0;
 	if (OS::get_singleton()->create_process(olympus_report_python, arguments, &pid) != OK) {
 		set_meta("olympus_reporting", "pending_retry");
+		if (olympus_receipt_continuation.is_valid()) {
+			olympus_receipt_continuation = Callable();
+			_set_busy(false);
+		}
 		return;
 	}
 	olympus_receipt_pid = pid;
@@ -303,20 +323,7 @@ void AIChatDock::_poll_olympus_context() {
 			_set_busy(false);
 			return;
 		}
-		const int previous_tool = tool_index;
 		_finish_tool(olympus_recovered_result);
-		if (tool_index == previous_tool) {
-			return; // Durable restart journal is still available for a later attempt.
-		}
-		_record_olympus("step", "restart_result_recovery", "result_restored");
-		olympus_recovered_result = String();
-		AIChatResume::clear_journal();
-		AIChatResume::clear_report();
-		_queue_history_save();
-		if (!olympus_recovery_can_send) {
-			_end_olympus("paused");
-			_set_busy(false);
-		}
 		return;
 	}
 	olympus_resume = true;
