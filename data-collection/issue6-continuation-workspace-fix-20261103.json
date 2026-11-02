@@ -1,0 +1,15 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T20:40:38.237745+00:00",
+  "change": "Require workspace:olympus in shared check_issue for both intake and commit gate",
+  "regression": "Missing workspace rejects full gate before framework execution",
+  "issue_tests_passed": 38,
+  "host_tests_passed": 18,
+  "intake_only": {
+    "exit_code": 1,
+    "error": "WinError 2: gh executable unavailable"
+  },
+  "git_delivery": "not_committed",
+  "concurrency": "Other workspace changes observed; do not stage unrelated work",
+  "independent_review": "pending"
+}

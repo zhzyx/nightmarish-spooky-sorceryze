@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "request_id": "issue-governance-20261102",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "observed_at": "2026-11-02 20:39:05 UTC",
+  "remote_issue": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+    "title": "Issue 驱动协作：所有贡献者统一经过 Olympus、状态标签与合入检查",
+    "issue_number": 6,
+    "body": "<!-- olympus-request:issue-governance-20261102 -->\r\n\r\n<!-- olympus-progress:advance-20261103 -->\r\n\r\n## 2026-11-03 实际推进\r\n\r\n贡献者入口、唯一类别/状态标签、本地正式框架/Hermes门禁和PR关联检查已随 [PR #10](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/10) 提交至 `9cbe33c8`。35项组件测试通过；提交前真实Issue门禁通过，提交后58条事件/61个文件与HEAD完全一致。\r\n\r\n远程合并仍依赖 #11 的最终CI；本单保持待验收，不把已推送分支当作默认分支已经上线。服务器分支保护仍未配置，当前账号无admin；这与已实现的仓库工作流分开记录。\r\n\r\n<!-- /olympus-progress:advance-20261103 -->\r\n\r\n用户明确要求：后续内容创建基于 Issue；Olympus 与引擎优化均建单跟进；在仓库工作的人工、Agent、外部贡献者必须遵守 Olympus。\r\n\r\n范围：本仓库 Olympus/Godot 的代码、文档、测试、工具和生产内容；复用 Olympus/AGENTS.md、Dike/Zeus 与 Hermes，不复制框架。共工上游保持原治理。工作流只由真实事件触发，禁止定时扫描。\r\n\r\n当前执行责任：本次 Codex 主任务；技术实现为工程层 issue-workorders 定制。GitHub Issue 为状态权威，不伪造 Ariadne 已接通。\r\n\r\n交付与验收：\r\n- [ ] 唯一 type 标签与唯一 status 标签（待判断/计划/处理中/阻塞/待验收/完成），保留非流程标签。\r\n- [ ] 所有贡献者入口、PR 模板和验收资料绑定同仓库真实 Issue；新工作先建单，已有需求去重。\r\n- [ ] 变更清单、目标候选、框架验证、Hermes 实际记录及独立验收关联；缺证不宣称完成。\r\n- [ ] 事件触发检查拒绝无 Issue、错误状态、过期候选和缺失采集证据；不运行不可信 PR 代码。\r\n- [ ] 受影响测试与独立审查通过，记录本地/远程门禁启用区别。\r\n\r\n本 Issue 不自动批准新 Agent、真实模型付费调用或修改远程分支保护。实现后依证据转待验收，远程发布及强制保护的实际状态分别报告。\r\n\r\n<!-- olympus-progress:20261102-issue-governance -->\r\n\r\n## 本轮实际进度\r\n\r\n实现候选已提交 [PR #10](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/10)，精确提交 `b65fa95fdcb047257ff0ce1bf1d849d1ca22d86f`，tree `8882b1785a48449872f067f19e5f34a7a9c6abf9`。\r\n\r\n24项行为测试、独立绕过探针及16类别/状态组合通过；实际Issue回读与Olympus正式模式校验通过，内容摘要 `6ab0d26eced8d8ac940b4b694360f3684df3a8f8204471373db4bfaa132b3dd4`。提交后Hermes检查为 committed：40条记录、43个数据文件。\r\n\r\n已补全贡献者入口、状态标签、PR模板、本地框架/采集门禁及只读可信PR关联工作流。修复历史事件删除/重写、错租户/错Issue、表单ID重复建单漏洞；生产框架和旧绑定没有改动。\r\n\r\n[独立审查](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/b65fa95fdcb047257ff0ce1bf1d849d1ca22d86f/data-collection/issue-governance-independent-review.json) · [协作入口候选](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/b65fa95fdcb047257ff0ce1bf1d849d1ca22d86f/.github/CONTRIBUTING.md)\r\n\r\n**尚未启用到默认分支**：远程静态CI因既有1,126个被忽略却已跟踪文件失败，依赖新 Issue #11；没有强行合入。默认main实际 protected=false，当前账号admin=false，服务器不可绕过的required检查仍需仓库管理员设置。不可把本地验证、已创建PR或规则文档当成全局强制完成。\r\n\r\n<!-- /olympus-progress:20261102-issue-governance -->\r\n\r\n\r\n<!-- scope-decision:dual-workspace-20261103 -->\r\n\r\n## 用户范围澄清（2026-11-03）\r\n\r\n用户明确：两个工作区都用 Issue 跟踪，各自遵循所属框架。共工入口落实见 #12；共工仍使用共工/元衡、司南与谛听，Olympus 使用自身框架与对应协调/采集入口。工作区标签仅区分范围，不授予执行权限。\r\n\r\n本单 #6 的实现仍为 Olympus/Godot 仓库门禁，不把 Olympus gate 直接套到没有同构 Git 布局的共工工作区；共工工作区的独立跟踪约定由关联单落实。\r\n",
+    "state": "open",
+    "user": {
+      "login": "Sail-Li",
+      "name": "Sail-Li",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/350401007?v=4",
+      "id": 350401007
+    },
+    "assignees": null,
+    "labels": [
+      {
+        "name": "type:maintenance",
+        "color": "FBCA04",
+        "description": "维护、运维及其他事务"
+      },
+      {
+        "name": "status:in-review",
+        "color": "FBCA04",
+        "description": "待验收：有候选与验证证据"
+      },
+      {
+        "name": "workspace:olympus",
+        "color": "5319E7",
+        "description": "Olympus/Godot工作区；遵循Olympus自身框架"
+      }
+    ],
+    "milestone": null,
+    "state_reason": null,
+    "comments": 5,
+    "created_at": "2026-11-02T09:35:50Z",
+    "updated_at": "2026-11-02T19:00:12Z",
+    "closed_at": null,
+    "display_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+    "display_title": "Issue 驱动协作：所有贡献者统一经过 Olympus、状态标签与合入检查"
+  },
+  "merged_pr": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/10",
+    "merged": true,
+    "merge_commit_sha": "628ff28ab817311560114c8a01d44f36b46cb28b",
+    "head_sha": "c3296b452183bdf8361ff5b9d1450d11e592ba12",
+    "merged_at": "2026-11-02T20:17:53Z"
+  },
+  "verification": {
+    "issue_workorders": {
+      "tests": 37,
+      "result": "passed"
+    },
+    "godot_host": {
+      "tests": 18,
+      "result": "passed"
+    },
+    "framework": {
+      "mode": "approved_file_integrity",
+      "foundation_unchanged": true,
+      "host_authority_authenticated": false
+    },
+    "hermes": {
+      "records": 64,
+      "valid": true
+    },
+    "includes": "passed",
+    "diff_check": "passed",
+    "chat_cpp_format": "passed"
+  },
+  "limitations": [
+    "GitHub CLI unavailable in this session; trusted intake CLI and full precommit Issue gate have not passed in this session.",
+    "Independent review pending.",
+    "No new engine binary or real model execution tested.",
+    "Working tree candidate remains uncommitted; remote merge applies only to PR #10."
+  ]
+}

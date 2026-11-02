@@ -126,6 +126,20 @@ def request_identity(request):
     return {'id': host['id'], 'kind': host['kind']}, agent_id
 
 
+def issue_binding(root, request, tenant):
+    number = request.get('issue_number')
+    request_id = request.get('request_id')
+    if type(number) is not int or number < 1 or not isinstance(request_id, str) or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', request_id):
+        raise ValueError('Before development, create/reuse a real Issue and bind issue_number and stable request_id')
+    process = subprocess.run([sys.executable, str(root / 'customizations/components/issue-workorders/issue_gate.py'),
+                              '--repo', str(root), '--issue', str(number), '--request-id', request_id,
+                              '--tenant', tenant, '--intake-only'], cwd=root, env=host_environment(root),
+                             capture_output=True, text=True, encoding='utf-8', timeout=120)
+    if process.returncode:
+        raise ValueError('Issue intake rejected; verify GitHub access, repository, tenant, workspace label, active status and stable request ID')
+    return json.loads(process.stdout)
+
+
 def chat(root, request, tenant):
     """Load framework context; never fall back to a model when checks reject it."""
     root = root.resolve()
@@ -142,14 +156,21 @@ def chat(root, request, tenant):
     permission_fields = ("tools_enabled", "file_changes_require_approval", "execution_requires_approval")
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
+    issue = issue_binding(root, request, tenant)
     flush(root)  # An earlier failed delivery blocks the next model/tool round.
-    binding = {'tenant_id': tenant, 'request_ref': request['request_id'], 'source_ref': host['id'] + ':ai-chat',
+    binding = {'tenant_id': tenant, 'request_ref': request['request_id'], 'source_ref': issue['url'],
                'agent_snapshot_ref': agent_id + '@' + agent['version'] + '#' + agent['candidate_digest'],
                'outbox_path': '.olympus-outbox/chat', 'sink_ref': 'olympus-hermes-data',
                'path_base': 'workspace_root', 'authority_ref': request['authority_ref'],
                'agent': {'id': agent_id, 'version': agent['version'], 'origin': 'olympus-framework',
                          'definition_sha256': hashlib.sha256((framework / agent['entry']).read_bytes()).hexdigest()}}
     mandate = {"feature_id": request["request_id"], "outcome": request["outcome"],
+               "issue": issue,
+               "delivery_requirements": {
+                   "required_git_deliverables": ["implementation", "design-docs", "data-collection sources, evidence and receipts", "olympus-hermes-data real events"],
+                   "before_commit": "Review and sanitize actual sources, stage current bytes together, run the trusted Issue gate on final content",
+                   "after_commit": "Run Hermes git-check --require-committed against HEAD; record push and merge separately",
+                   "preserve_originals": "Append corrections; do not submit credentials, local absolute source paths, caches or synthetic production facts"},
                "authority_ref": request["authority_ref"], "host": host["id"], "host_descriptor": host, "project": request["project"],
                "tool_permission": {k: request[k] for k in permission_fields}, 'reporting': binding}
     env = host_environment(root)
@@ -165,11 +186,11 @@ def chat(root, request, tenant):
         except (OSError, subprocess.TimeoutExpired) as error:
             result = {"ok": False, "agent_execution_enabled": False, "context": "", "error": str(error)}
         event = {"schema_version": 1, "event_id": "host-context-" + uuid.uuid4().hex,
-                 "tenant_id": tenant, "request_id": request["request_id"], "kind": "step",
-                 "occurred_at": datetime.now(timezone.utc).isoformat(), "source_ref": host["id"] + ":chat-context-loader",
+                 "tenant_id": tenant, "request_id": request["request_id"], "kind": "request",
+                 "occurred_at": datetime.now(timezone.utc).isoformat(), "source_ref": issue['url'],
                  "agent": {"id": "olympus-host-adapter", "version": "1.1.0",
                            "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "origin": "olympus-host-adapter"},
-                 "payload": {"framework_version": manifest["version"], "requested_agent": agent_id, "host": host,
+                 "payload": {"framework_version": manifest["version"], "requested_agent": agent_id, "host": host, "issue": issue,
                              "candidate_digest": agent["candidate_digest"], "context_accepted": result["ok"],
                              "outcome_sha256": hashlib.sha256(request["outcome"].encode()).hexdigest(),
                              "input_tokens": None, "output_tokens": None, "reason": "Not measured; context assembly is not model execution"},

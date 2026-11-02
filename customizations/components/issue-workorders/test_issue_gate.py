@@ -17,7 +17,7 @@ class GateTests(unittest.TestCase):
             "number": 6,
             "html_url": "https://github.com/test/repo/issues/6",
             "state": "open",
-            "labels": [{"name": "type:development"}, {"name": "status:in-progress"}],
+            "labels": [{"name": "type:development"}, {"name": "status:in-progress"}, {"name": "workspace:olympus"}],
             "body": "<!-- olympus-request:req-6 -->",
             "updated_at": "2026-11-02T01:00:00Z",
         }
@@ -55,6 +55,14 @@ class GateTests(unittest.TestCase):
         ):
             with self.subTest(names=names), self.assertRaises(ValueError):
                 self.check({**self.issue, "labels": [{"name": n} for n in names]})
+
+    def test_commit_gate_rejects_missing_workspace_before_framework_execution(self):
+        self.setup_gate()
+        self.issue["labels"] = [v for v in self.issue["labels"] if v["name"] != "workspace:olympus"]
+        with patch.object(gate.work_items, "gh", return_value=json.dumps(self.issue)), patch.object(gate, "validate_command") as run:
+            with self.assertRaisesRegex(ValueError, "workspace:olympus"):
+                gate.gate(self.root, 6, "req-6")
+            run.assert_not_called()
 
     def setup_gate(self, events=True):
         if events:
