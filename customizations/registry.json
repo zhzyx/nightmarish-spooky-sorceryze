@@ -14,11 +14,11 @@
     },
     {
       "id": "issue-workorders",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "path": "customizations/components/issue-workorders",
       "ownership": "olympus_customization",
       "framework_dependency": "Olympus formal validation with actual host-bound source; shared Hermes file event v1; GitHub remains issue authority; Ariadne source not yet registered",
-      "validation": "Issue #6: local gate and event-only PR linkage; exact verification and independent review in data-collection/issue-governance-verification.json",
+      "validation": "Issue #6: local gate and event-only PR linkage in data-collection/issue-governance-verification.json; Issue #15: execution-policy scenario review in data-collection/execution-efficiency-review-20261103.json; no measured token/cost savings claimed",
       "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files"
     },
     {
