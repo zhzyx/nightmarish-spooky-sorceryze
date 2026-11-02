@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-ci-include-fix-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:37:10.807802+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Static CI for 2808b481 requires repository-root include path for scheduler header. Applied repository validate_includes.py; repeated include validation and clang-format pass. Target header unchanged; full CI pending.",
+    "sources": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41501801704/job/125470883457"
+    ],
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "260f00d1069de4281b44f54b0dfb998f5fc1cb2a14ef54c390e71fbc62ec312f"
+}

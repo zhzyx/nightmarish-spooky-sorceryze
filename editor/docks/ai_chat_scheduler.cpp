@@ -28,10 +28,9 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "ai_chat_dock.h"
-
 #include "core/object/callable_mp.h"
 #include "core/os/time.h"
+#include "editor/docks/ai_chat_dock.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"

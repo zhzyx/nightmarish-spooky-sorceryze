@@ -52,3 +52,5 @@ Git 合并必须等待对应CI通过；当前不能将本地切换等同于默�
 后续Linux正式编译还定位到resume中的两处const String&从字面量列表临时构造（range-loop-construct），以及scheduler的title局部变量遮蔽；改为值变量及task_title。scheduler随项目clang-format规范化，行为不变。Windows clang编译通过后，既有[OS] Execute单测失败，当前已安装引擎同样可复现：`cmd`的`/C`被额外加引号导致退出1。现有Windows参数编码改为只在需要时加引号，仍保留空白、空参数、内嵌引号、反斜杠及shell元字符的原处理；增加带输出管道的退出码7回归。参考：[Microsoft CRT参数解析](https://learn.microsoft.com/en-us/cpp/c-language/parsing-c-command-line-arguments?view=vs-2019)、[cmd解析](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd)。这属于合并前真实CI阻塞修复，不降低检查门槛。
 
 上述后续修复经codex-subagent:review_standalone独立只读审查通过：resume仅两处临时引用改值；scheduler归一变量名后经相同clang-format与HEAD完全一致；六脚本只有模式变更；Windows简单参数免引号，复杂参数原逻辑保留。独立Windows子进程24种参数往返及cmd退出0/7探针通过（helper等价转写，不冒充新引擎二进制验收）。最终新二进制测试及远程CI仍待完成。
+
+2808b481提交的静态检查发现scheduler引用同目录但不同名头文件时需使用仓库根路径。按validate_includes.py修正为editor/docks/ai_chat_dock.h，解析目标不变；重复运行引用检查及clang-format通过。新提交继续等待完整CI。
