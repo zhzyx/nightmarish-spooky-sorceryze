@@ -1,0 +1,23 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T20:50:02.157445+00:00",
+  "implementation_commit": "0241194c0ddd3c609a9fd692b054f1f0f326734a",
+  "verified_remote_ref": "refs/heads/codex/issue6-host-intake-release-20261103",
+  "remote_commit": "0241194c0ddd3c609a9fd692b054f1f0f326734a",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/16",
+  "pr_state": "open",
+  "merged": false,
+  "precommit_gate": "local_checks_passed",
+  "precommit_content_sha256": "38513c2d8f43a59ca642e6bbc2c083512ccb6802dc63a276ef366ea576c7e13b",
+  "postcommit_hermes": {
+    "git_state": "committed",
+    "files": 72,
+    "records": 69
+  },
+  "publication_method": "git push and official GitHub CLI; plugin PR create returned integration 403",
+  "verification_reuse": "Only delivery evidence and documentation added after implementation checks; behavior inputs unchanged",
+  "ci_acceptance": "pending",
+  "new_engine_acceptance": "not_run",
+  "input_tokens": null,
+  "output_tokens": null
+}
