@@ -1,0 +1,32 @@
+{
+  "dataset_id": "0cf3f384-55ed-4bd9-9fbd-0358e98aca28",
+  "origin": "olympus",
+  "tenant": "olympus-workspace",
+  "consumer_compatibility": [
+    "hermes",
+    "gonggong"
+  ],
+  "snapshot_sha256": "62026d9d4e060a57f1b0ead35a9c8294f6807cd29afc697211270ff4ee3e58fd",
+  "git_state": "not_fully_committed",
+  "coverage": "Existing events of olympus-workspace only; no all-runtime or automatic-subscription claim",
+  "events": 36,
+  "current_events": 35,
+  "by_kind": {
+    "request_end": 3,
+    "step": 10,
+    "handoff": 13,
+    "request": 8,
+    "correction": 1
+  },
+  "superseded_event_ids": [
+    "sync-package-20261102-ariadne"
+  ],
+  "usage_totals": "not_inferred_from_event_counts",
+  "reader": "Olympus/extensions/hermes-files/hermes_files.py analyze",
+  "reader_sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+  "consumer": "codex-root",
+  "consumed_at": "2026-11-02T09:43:00.116545+00:00",
+  "purpose": "Issue #9: actual read for authorized gap audit",
+  "diting_agent_invoked": false,
+  "framework_ingestion_confirmed": false
+}

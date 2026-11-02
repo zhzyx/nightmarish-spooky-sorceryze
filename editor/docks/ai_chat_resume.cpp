@@ -234,7 +234,7 @@ bool AIChatResume::journal_valid(const Dictionary &p_journal) {
 		return false;
 	}
 	const Dictionary restart = p_journal["restart"];
-	for (const String &key : { "from_executable", "to_executable", "token" }) {
+	for (const String key : { "from_executable", "to_executable", "token" }) {
 		if (restart.get(key, Variant()).get_type() != Variant::STRING || String(restart[key]).is_empty()) {
 			return false;
 		}
@@ -242,7 +242,7 @@ bool AIChatResume::journal_valid(const Dictionary &p_journal) {
 	if (!token_valid(restart["token"]) || !whole_number(restart.get("attempt", Variant()), 1, MAX_RESTART_ATTEMPTS)) {
 		return false;
 	}
-	for (const String &key : { "tool_call_id", "tool_name", "log" }) {
+	for (const String key : { "tool_call_id", "tool_name", "log" }) {
 		if (restart.has(key) && restart[key].get_type() != Variant::STRING) {
 			return false;
 		}

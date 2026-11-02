@@ -1,18 +1,20 @@
-<!--
-Please target the `master` branch. We will take care of backporting relevant fixes to older versions.
+Olympus-Issue: #
+Olympus-Request:
 
-Before submitting, please read our checklist for contributors:
-https://contributing.godotengine.org/en/latest/development/engine/introduction.html#checklist-for-new-contributors
+## 问题与目标
 
-Use of AI must be disclosed and should include a description of how it was used.
--->
+说明具体触发、用户需求与本次验收范围；关联本仓库真实 Issue，避免自动关闭尚未验收的工单。
 
-## What problem(s) does this PR solve?
+## 改动与候选
 
-- Closes #
+说明变更文件/模块、候选提交或内容摘要、固定来源、依赖与回退方式。
 
-## Additional information
+## 验证与数据
 
-<!--
-Provide additional information and explanation of your PR, including areas that you are uncertain of or require special attention from reviewers. For examples, please read our pull request guidelines: https://contributing.godotengine.org/en/latest/development/contribution_rules.html#explain-your-contributions
--->
+- 本地 Issue 门禁结果及精确候选：
+- 适用业务测试与必要独立审查：
+- Hermes 实际事件、数据索引及 Git 状态：
+- 未验证项、阻塞、用户保留决策与交付状态：
+- AI/Agent 使用及实际执行责任：
+
+提交到本仓库实际默认分支。遵守 `.github/CONTRIBUTING.md` 与 `Olympus/AGENTS.md`；关联检查通过不等于质量验收、准入批准或数据已消费。

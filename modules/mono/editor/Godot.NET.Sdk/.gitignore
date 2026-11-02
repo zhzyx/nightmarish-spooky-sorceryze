@@ -1,2 +1,4 @@
 # Generated sources directories
-Godot.SourceGenerators/Generated
+# Retain the delivered version constant; other generated output stays ignored.
+Godot.SourceGenerators/Generated/*
+!Godot.SourceGenerators/Generated/Common.Constants.cs

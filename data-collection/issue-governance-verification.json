@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "path_base": "repository_root",
+  "candidate_scope": "Engineering issue-workorders customization, contribution entry, PR association and actual Issue evidence; no production framework files modified",
+  "tests": {
+    "issue_gate": 14,
+    "work_items": 10,
+    "result": "passed"
+  },
+  "independent_review": "data-collection/issue-governance-independent-review.json",
+  "upstream_candidate": "data-collection/issue-7-candidate-review-20261102.json",
+  "implementation_files": {
+    "customizations/components/issue-workorders/issue_gate.py": "7dda5e810b9b17c71da8fc453fb295006a401d0ad3bc80fdd82115bf754388c0",
+    "customizations/components/issue-workorders/work_items.py": "24550bbe1c1437b48b388cb942d6e283be71fe912f67b572ce578e93e4e2b9cc",
+    "customizations/components/issue-workorders/test_issue_gate.py": "d1bf6f1ba7dbf58ca9f13667dc8b2cb087bbf38426de4ebfc58b848ee7520dab",
+    "customizations/components/issue-workorders/test_work_items.py": "38a140d1f0ff5875fe1e82c2c7c4d5882ed720f4318bfd4648281d245e7ac3e3",
+    "customizations/components/issue-workorders/README.md": "c3fe24e656be0c411bc2342b10d658922bd693a32f45eb7481a847ece11a78f5",
+    ".github/workflows/olympus-issue-gate.yml": "494b844e9fc4ff78880ba91715c6b2406fa9275e897529083a7e9753a6941094",
+    ".github/CONTRIBUTING.md": "ce8f6c3039f72f57a08b54a4933b4670520db20f159e8b7128f8ab6b58a15909",
+    "work-items.json": "913e6c22615aab788d2f942ddacc84cf52b6a0d72262da3a3b17ed4d78f954cc"
+  },
+  "final_gate": "Run after all staged changes; actual receipt is stored outside this candidate to avoid a self-referential digest and reported to Issue #6. This file does not claim final gate completion.",
+  "production_framework_changed": false,
+  "branch_protection_enforced": false,
+  "ariadne_github_source_registered": false,
+  "model_execution_started": false,
+  "token_usage": null,
+  "form_type_status_combinations": 16
+}

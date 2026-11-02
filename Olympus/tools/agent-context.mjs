@@ -9,7 +9,7 @@ const ownRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 export function buildContext(root,id,mandate){
   root=fs.realpathSync(root);
-  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/gonggong_sync.py'),'check','--root',root], {stdio:'pipe'});
+  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/local_runtime.py'),'--root',root], {stdio:'pipe'});
   const read=p=>JSON.parse(fs.readFileSync(local(root,p),'utf8'));
   const registry=read('framework-manifest.json');
   const matches=registry.agents.filter(a=>a.id===id);

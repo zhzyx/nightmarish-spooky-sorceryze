@@ -1,5 +1,14 @@
 name: 🔗 GHA
-on: [push, pull_request, merge_group, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+    inputs:
+      full_platforms:
+        description: Build all platforms instead of Windows PC only
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}|${{ github.ref_name }}
@@ -13,12 +22,12 @@ jobs:
     name: 📊 Static checks
     uses: ./.github/workflows/static_checks.yml
 
-  # Second stage: Run all the builds and some of the tests.
+  # Second stage: Windows PC by default; other platforms are explicitly opt-in.
 
   android-build:
     name: 🤖 Android
     needs: static-checks
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/android_builds.yml
     secrets:
       SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
@@ -26,13 +35,13 @@ jobs:
   ios-build:
     name: 🍏 iOS
     needs: static-checks
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/ios_builds.yml
 
   linux-build:
     name: 🐧 Linux
     needs: static-checks
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/linux_builds.yml
     with:
       changed-files: ${{ needs.static-checks.outputs.changed-files }}
@@ -40,7 +49,7 @@ jobs:
   macos-build:
     name: 🍎 macOS
     needs: static-checks
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/macos_builds.yml
 
   windows-build:
@@ -52,5 +61,5 @@ jobs:
   web-build:
     name: 🌐 Web
     needs: static-checks
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/web_builds.yml

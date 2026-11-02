@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-ci-runtime-compat-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:31:36.649126+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Additional remote failures: GCC rejects two const String& range variables bound from literal lists and scheduler title shadows member; switched to values and renamed local. Windows clang compilation passed but existing OS Execute test failed, reproduced with installed binary. Always quoting /C caused cmd to fail; simple nonempty arguments now omit unnecessary quotes while whitespace/quotes/shell-metacharacters retain prior CRT escaping. Added pipe/nonzero exit regression. Local modified objects compile with werror=yes; actual new full CI pending.",
+    "sources": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41496576118/job/125454047121",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41496576118/job/125454046892"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied; no new full-build success inferred"
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "25f29e5402e97faa9a72163832a538b79476c9133b74a048625a9e2b9c9b8d90"
+}

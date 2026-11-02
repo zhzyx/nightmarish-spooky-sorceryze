@@ -1,6 +1,6 @@
 # Local SCons configuration, picked up automatically by SConstruct and therefore
 # shared by manual builds, the in-editor "build and update engine" button and any
-# agent-driven build. Untracked by git (see .gitignore).
+# agent-driven build. This fork tracks the configuration as a build input.
 
 # The prebuilt ANGLE static libraries shipped by godot-angle-static are compiled
 # with a newer MSVC toolset than the ones installed here (14.38 and 14.44). They

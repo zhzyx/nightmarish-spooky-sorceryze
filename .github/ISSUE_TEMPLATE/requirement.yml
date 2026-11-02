@@ -2,7 +2,8 @@
   "name": "需求分析与范围定义",
   "description": "创建需求分析与范围定义工单",
   "labels": [
-    "type:requirement"
+    "type:requirement",
+    "status:needs-decision"
   ],
   "body": [
     {

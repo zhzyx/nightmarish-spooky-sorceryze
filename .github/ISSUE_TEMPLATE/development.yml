@@ -2,7 +2,8 @@
   "name": "功能开发与引擎集成",
   "description": "创建功能开发与引擎集成工单",
   "labels": [
-    "type:development"
+    "type:development",
+    "status:needs-decision"
   ],
   "body": [
     {

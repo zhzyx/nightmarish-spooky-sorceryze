@@ -24,7 +24,12 @@ misc/msvs/* eol=crlf
 
 # Olympus workspace integration
 Olympus/** -text whitespace=cr-at-eol
+# Preserve the reviewed upstream module's trailing blank line; the frozen snapshot hook checks exact bytes.
+Olympus/modules/ariadne/refresh.mjs whitespace=cr-at-eol,-blank-at-eof
 integrations/godot/*.patch -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
 integrations/godot/verification*.json -text whitespace=cr-at-eol
 distribution/notices/* -text -whitespace
+
+# Preserve the exact host definition snapshot referenced by immutable task events.
+data-collection/issue-governance-host.json -text whitespace=cr-at-eol

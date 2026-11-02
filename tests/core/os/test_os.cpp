@@ -185,6 +185,13 @@ TEST_CASE("[OS] Execute") {
 	CHECK_MESSAGE(
 			exit_code == 0,
 			"Running the command `cmd /C \"dir > NUL\"` returns a zero (successful) exit code.");
+	arguments.clear();
+	arguments.push_back("/C");
+	arguments.push_back("exit /B 7");
+	String output;
+	const Error pipe_err = OS::get_singleton()->execute("cmd", arguments, &output, &exit_code, true);
+	CHECK_MESSAGE(pipe_err == OK, "A shell command with captured output starts successfully.");
+	CHECK_MESSAGE(exit_code == 7, "A nonzero shell exit code is preserved with captured output.");
 #else
 	List<String> arguments;
 	arguments.push_back("-c");

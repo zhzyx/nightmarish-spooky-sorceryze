@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-7-approved-switch",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T17:20:31.240552+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "User explicitly approved exact three candidates via call_2952cd1771324fd99b23a4543f259fb1. Independent reviewer rechecked 148-file locked source and 135-file distribution, recorded real decision/permits, and switched active Olympus after formal validation. Installed formal validation and full parity passed. Backup, Hermes extension and dataset preservation verified. Runtime/model/tool authority unchanged; standalone runtime alternative is not applied.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimates",
+    "evidence": "data-collection/issue-7-switch-20261103.json",
+    "evidence_sha256": "02b211f322a0a0a6b8a603e2157afd680f68c6cd3e4ecc26c475290df4090661"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-7-request"
+  ],
+  "sha256": "b733e4a9d5787b0d1eb2cea617287b6f008be39371446401cb2fd33d4a0c63d1"
+}

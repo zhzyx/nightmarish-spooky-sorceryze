@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "advance-issues-20261103-7-evidence-format",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T16:56:21.703074+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Normalize review-report copy to repository LF; parsed JSON equal. Original independent report remains locally archived. This corrects the prior artifact byte digest, not its review conclusions.",
+    "evidence": "data-collection/issue-7-independent-review-20261103.json",
+    "evidence_sha256": "cece4db5ef6164ab7cbf218854451785670d62c0442b141669540f2e137f349f",
+    "original_report_sha256": "158266e43a36c63a3d906f2cb0155f48d6063d5e333b65262b0aaf628839e931",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "advance-issues-20261103-7-validation"
+  ],
+  "supersedes": "advance-issues-20261103-7-validation",
+  "sha256": "fe97535fe6ff707daec063103b02cf3cdf22460285b6a9176787c86f1cbc99e0"
+}

@@ -1,0 +1,760 @@
+--- a/Olympus/sync/gonggong_sync.py
++++ b/Olympus/sync/gonggong_sync.py
+@@ -1,233 +1,236 @@
+-"""Deterministic, complete Gonggong -> Olympus distribution rebuild and drift check."""
+-from pathlib import Path, PureWindowsPath
+-import argparse,ast,hashlib,json,os,subprocess,sys
+-ADAPTERS=['sync/gonggong_sync.py','sync/read_hermes.py','sync/POLICY.md','sync/names.json','sync/sinan_source.py']
+-REPORTS={'sync/verification.json'}
+-EXEMPT='extensions/hermes-files/'
+-def adapters_at(root):
+-    result={p:(root/p).read_bytes() for p in ADAPTERS}
+-    extension=inventory(root/EXEMPT)
+-    if not {'README.md','hermes_files.py','event.schema.json'}<=extension.keys():raise ValueError('Independent Hermes file module missing')
+-    result.update({EXEMPT+p:b for p,b in extension.items()})
+-    return result
+-def encoded(v):return (json.dumps(v,ensure_ascii=False,indent=2)+'\n').encode()
+-def sha(b):return hashlib.sha256(b).hexdigest()
+-
+-def locations(root, binding):
+-    """Locators are relative to this framework, never the caller's working directory."""
+-    if any(Path(v).is_absolute() or PureWindowsPath(v).drive for v in binding.values()):
+-        raise ValueError('Committed upstream bindings must be relative paths')
+-    return {k:str((root/v).resolve()) for k,v in binding.items()}
+-
+-def verify_source(src,candidate=False):
+-    r=subprocess.run([sys.executable,str(src/'tools/verify_framework.py')]+(['--candidate'] if candidate else []),capture_output=True,text=True,encoding='utf-8',
+-                     env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONUTF8='1',PYTHONIOENCODING='utf-8'))
+-    if r.returncode:raise ValueError('Upstream integrity/admission rejected: '+r.stderr)
+-
+-def admitted_overlays(root,wanted,actual):
+-    """Only real bound permits and their declared local evidence may differ."""
+-    allowed=set()
+-    if actual.get('framework-manifest.json')!=wanted['framework-manifest.json']:return allowed
+-    for agent in json.loads(wanted['framework-manifest.json'])['agents']:
+-        permit=agent['admission_pass']
+-        if actual.get(permit)==wanted[permit]:continue
+-        record=json.loads(actual.get(permit,b'{}'))
+-        if record.get('status')!='approved':raise ValueError('Local admission overlay is not approved')
+-        refs=[*record.get('review',{}).get('evidence_refs',[]),record.get('approval',{}).get('decision_evidence_ref','')]
+-        for ref in refs:
+-            if not isinstance(ref,str) or not ref.startswith('reviews/local-admission/') or '..' in ref.split('/') or '\\' in ref or ref not in actual:
+-                raise ValueError('Admission evidence must be present under reviews/local-admission')
+-        result=subprocess.run([os.environ.get('OLYMPUS_NODE','node'),str(root/'tools/admission.mjs'),str(root),agent['id']],capture_output=True,text=True,encoding='utf-8')
+-        if result.returncode:raise ValueError('Local admission overlay rejected: '+result.stderr.strip())
+-        allowed.add(permit);allowed.update(refs)
+-    return allowed
+-def inventory(root):
+-    result={}
+-    def failed(error):raise error
+-    for base,dirs,files in os.walk(root,followlinks=False,onerror=failed):
+-        dirs[:]=sorted(d for d in dirs if d not in {'.git','__pycache__'})
+-        for name in dirs+files:
+-            p=Path(base)/name
+-            if p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()):raise ValueError('Linked source/target forbidden: '+str(p))
+-        for name in sorted(files):
+-            if name.endswith('.pyc'):continue
+-            p=Path(base)/name;result[p.relative_to(root).as_posix()]=p.read_bytes()
+-    return result
+-def source_root(source):
+-    p=Path(source).resolve()
+-    if p.is_file():
+-        pointer=json.loads(p.read_text(encoding='utf-8'));r=(p.parent/pointer['root']).resolve()
+-        r.relative_to(p.parent)
+-        p=r
+-    if not (p/'framework-manifest.json').is_file():raise ValueError('Upstream unavailable')
+-    return p
+-def expected(source,adapters,sinan_source):
+-    raw=inventory(source);pairs=json.loads(adapters['sync/names.json'])
+-    original_raw=dict(raw)
+-    base_hashes={p:sha(b) for p,b in raw.items()}
+-    namespace={};exec(compile(adapters['sync/sinan_source.py'],'sinan_source.py','exec'),namespace)
+-    evidence=namespace['merge'](raw,sinan_source)
+-    def tr(s):
+-        for a,b in pairs:s=s.replace(a,b)
+-        return s
+-    out={}
+-    for p,b in raw.items():
+-        if p.startswith('reviews/'):continue
+-        target=tr(p)
+-        if target in out or target.startswith('sync/') or target.startswith(EXEMPT):raise ValueError('Mapping/adapter/exemption collision: '+target)
+-        try:out[target]=tr(b.decode('utf-8').replace('\r\n','\n')).encode()
+-        except UnicodeDecodeError:out[target]=b
+-    out.update(adapters)
+-    def get(p):return json.loads(out[p])
+-    def put(p,v):out[p]=encoded(v)
+-    def append(p,s):out[p]+=s.encode()
+-    # Explicit portable distribution metadata; original historical bytes stay upstream.
+-    provenance=get('domains/quality/provenance.json')
+-    provenance['source']='domains/quality'
+-    provenance['path_base']='gonggong_framework_root'
+-    provenance['evidence_index']='source-evidence.json'
+-    for item in provenance['templates']:item['source']=item['target']
+-    put('domains/quality/provenance.json',provenance)
+-    p='agents/athena/references/adaptation.md'
+-    import re
+-    out[p]=re.sub(r'[A-Za-z]:[/\\]WorkFlow[/\\]mattpocock-skills','external-references/mattpocock-skills（历史参考标识，未随包分发，不是运行依赖）',out[p].decode()).encode()
+-    put('source-evidence.json',{'schema_version':1,'kind':'source_integrity_index_not_approval_or_offline_snapshot',
+-        'path_base':'source_namespace_root','originals':'Retained in the configured live upstream; never rewritten or bundled.',
+-        'module_review_limitations':json.loads(raw[next(m['admission_pass'] for m in json.loads(raw['framework-manifest.json'])['modules'] if m['id']=='sinan')])['review'].get('unresolved',[]),
+-        'framework':{p:sha(b) for p,b in sorted(original_raw.items())},
+-        'registered_module':{p:sha(b) for p,b in sorted(evidence.items())}})
+-    # Explicitly enumerated distribution adapter hooks, never silent arbitrary patches.
+-    def patch(p,old,new):
+-        s=out[p].decode()
+-        if s.count(old)!=1:raise ValueError('Upstream hook changed; adapter review required: '+p)
+-        out[p]=s.replace(old,new).encode()
+-    patch('tools/verify_framework.py','def verify(root,candidate=False):','def verify(root,candidate=False):\n    __import__("runpy").run_path(str(root/"sync/gonggong_sync.py"))["check"](root,candidate_source=candidate)')
+-    patch('tools/agent-context.mjs',"import fs from 'node:fs';","import fs from 'node:fs';\nimport {execFileSync} from 'node:child_process';")
+-    patch('tools/agent-context.mjs','  root=fs.realpathSync(root);',"  root=fs.realpathSync(root);\n  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/gonggong_sync.py'),'check','--root',root], {stdio:'pipe'});")
+-    append('AGENTS.md','\n上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。启用前须重新全量核对有效共工源；发现偏差或缺源不得执行。\n')
+-    for p in ['specs/data-feedback.md','specs/reporting.md','agents/hermes/references/optimization.md','agents/hermes/references/storage.md']:
+-        append(p,'\n共工可按框架根 sync/POLICY.md 只读使用赫尔墨斯数据优化；用户已持续授权有效共工更新的完整同步。此前“单独指令”要求仍适用于自行提出和实施框架修改，不阻断已批准上游同步。数据读取工具为 sync/read_hermes.py，历史快照不改写。\n')
+-        append(p,'\n用户明确豁免：无数据库时使用独立 extensions/hermes-files 模块，在目标 Git 仓库的 olympus-hermes-data 记录需求产出并随需求合入。该模块和数据不受共工同步覆盖；赫尔墨斯与共工使用同一文件分析入口。尚无目标仓库时只交付规则与工具，不创建生产数据。文件状态不冒充 SQLite 回执。\n')
+-    append('agents/hermes/AGENT.md','\n文件数据模式：按 extensions/hermes-files/README.md（框架根相对路径）记录、校验并检查 Git 合入。该模式独立运行，不依赖数据库；数据目录位于目标仓库根，严禁随框架同步覆盖。\n')
+-    append('AGENTS.md','\n明确豁免：extensions/hermes-files 及目标 Git 仓库中的 olympus-hermes-data 独立维护，不由共工覆盖。需求交付须包含文件数据及 Git 合入检查；仅豁免此模块，其他框架继续全量同步。\n')
+-    out['README.md']=('# 奥林匹斯：共工的同步分发框架\n\n共工为唯一上游；除名称映射及明确的分发接入外，不允许框架行为偏差。赫尔墨斯数据可由共工只读用于优化。详见 [同步与数据共享规则](sync/POLICY.md)。\n\n本包为同步后候选，尚需独立准入；原批准原件保留于真实上游，摘要索引见 source-evidence.json。不存在后台自动部署服务。运行数据须存放在包外。\n\n').encode()+out['README.md']
+-    out['README.md']=('# 独立豁免：赫尔墨斯文件数据源\n\n[规则与命令](extensions/hermes-files/README.md)：无数据库记录需求数据，目标 Git 仓库内独立命名为 olympus-hermes-data，作为需求产出合入。模块与数据均不被共工同步覆盖；待合入目标仓库后再创建真实数据目录。\n\n').encode()+out['README.md']
+-    # Keep distinct skill identity where original Agent and skill shared one name.
+-    p='skills/nike/reporting.json';v=get(p);v['component']['id']='nike';put(p,v)
+-    out['skills/nike/SKILL.md']=out['skills/nike/SKILL.md'].decode().replace('忒弥斯','尼刻').replace('Themis','Nike').encode()
+-    m=get('framework-manifest.json');m['status']='synchronized_candidate_pending_independent_admission'
+-    # Registered upstream module, namespace-adapted locally; no fabricated approval.
+-    module=get('modules/ariadne/module.json');module['state']='source_registered_distribution_pending_review';module['path_base']='framework_root'
+-    module['runtime']['host']='Requires separate current host binding; upstream host authority is not inherited'
+-    module['runtime']['enabled']=False
+-    if 'implementation_source' in module:
+-        module['implementation_source']['path']='modules/sinan/coordinator.mjs'
+-        module['implementation_source']['path_base']='gonggong_framework_root'
+-        module['implementation_source']['evidence_index']='source-evidence.json'
+-    put('modules/ariadne/module.json',module)
+-    for item in m['modules']:
+-        if item['id']=='ariadne':item['state']=module['state']
+-    if 'modules/ariadne/refresh.mjs' in out:
+-        runtime=get('skills/ariadne/runtime-ref.json')
+-        runtime['framework_pointer']='CURRENT_FRAMEWORK.json'
+-        runtime['enabled']=False
+-        put('skills/ariadne/runtime-ref.json',runtime)
+-        put('CURRENT_FRAMEWORK.json',{'path_base':'this_file_directory','root':'.','manifest':'framework-manifest.json','status':'candidate_pending_admission'})
+-        # Existing Yuanheng ledgers keep their original on-disk format.
+-        for p in ['modules/ariadne/coordinator.mjs','modules/ariadne/refresh.mjs']:
+-            out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
+-        p='modules/ariadne/test/refresh.test.mjs'
+-        if p in out:out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
+-    else:
+-        raise ValueError('Current self-contained event-driven Sinan module required; archived timer distribution is no longer supported')
+-    append('skills/ariadne/SKILL.md','\nThe framework root is ../.. relative to this skill. runtime-ref.json paths are framework-root relative. Use the shared Hermes reporting.json; the file-data exemption remains available. External source ledger format .yuanheng/state.json is preserved. No live sources or CLI are bound by default.\n')
+-    profile=get('skills/dike/reporting.json');profile['component']={'kind':'skill','id':'ariadne','version':next(s['version'] for s in m['skills'] if s['name']=='ariadne'),'entry':'skills/ariadne/SKILL.md','entry_sha256':sha(out['skills/ariadne/SKILL.md'])};put('skills/ariadne/reporting.json',profile)
+-    for p in ['reviews/ariadne-admission.json','reviews/ariadne-module-admission.json']:
+-        put(p,{'template':False,'status':'pending_distribution_review','source_registration':'source-evidence.json','subject':{'id':'ariadne','version':module['version']},'approval':None})
+-    # Name mapping makes both source admission names distinct through their original paths.
+-    module['module_admission']='reviews/ariadne-module-admission.json';module['implementation_admission']='reviews/ariadne-admission.json';put('modules/ariadne/module.json',module)
+-    for item in m['modules']:
+-        if item['id']=='ariadne':item['admission_pass']=module['module_admission']
+-    append('README.md','\n## 阿里阿德涅（司南）已登记模块同步\n\n共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。\n')
+-    append('specs/module-system.md','\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-evidence.json。\n')
+-    m['distribution_sync']={'policy':'sync/POLICY.md','checker':'sync/gonggong_sync.py','data_reader':'sync/read_hermes.py','upstream':'gonggong','full_verification_required':True}
+-    m['distribution_sync']['exemptions']=[{'id':'hermes-file-data','module_root':EXEMPT,'data_root':'<target-git-root>/olympus-hermes-data','sync_behavior':'preserve_existing_module_bytes_never_touch_dataset','authority':'explicit_user_instruction_independent_git_file_data_module','reader':'extensions/hermes-files/hermes_files.py','database_required':False,'initialize_only_after_target_repository_integration':True}]
+-    lock=get('foundation.lock.json');lock.update(sha256=sha(out['FOUNDATION.md']),source_sha256=sha(raw['FOUNDATION.md']),authority='explicit_user_instruction_complete_upstream_sync_and_namespace_mapping',namespace_only_change=True);put('foundation.lock.json',lock);m['foundation_sha256']=lock['sha256']
+-    template=get('templates/review-pass.json')
+-    template['baseline'].update(foundation_sha256=lock['sha256'],foundation_version=lock['version'],zeus_version=m['zeus_version'],policy_version=m['version'])
+-    put('templates/review-pass.json',template)
+-    for record in m['upstream_files']:record['sha256']=sha(out[record['path']])
+-    for s in m['skills']:s['state']='synchronized_candidate_pending_review'
+-    for p in list(out):
+-        if not p.endswith('.json'):continue
+-        v=get(p)
+-        if isinstance(v,dict) and 'component' in v and 'dependencies' in v and 'entry_sha256' in v['component']:
+-            v['component']['entry_sha256']=sha(out[v['component']['entry']])
+-            for dep in v['dependencies']:v['dependencies'][dep]=sha(out[dep])
+-            put(p,v)
+-    for a in m['agents']:
+-        a['state']='synchronized_candidate_pending_independent_admission'
+-        a['candidate_files']=sorted(set(a['candidate_files']+list(adapters)+['source-evidence.json']))
+-        records=[{'path':p,'sha256':sha(out[p])} for p in a['candidate_files']]
+-        a['candidate_digest']=sha(''.join(x['path']+'\0'+x['sha256']+'\n' for x in records).encode())
+-        put(a['admission_pass'],{'template':False,'status':'pending_independent_review','subject':{'id':a['id'],'version_or_digest':{'version':a['version'],'candidate_digest':a['candidate_digest'],'candidate_files':records}},'approval':None,'reason':'Upstream approval preserved as historical evidence; independent admission must bind this candidate.'})
+-    put('framework-manifest.json',m)
+-    put('sync/state.json',{'upstream_version':json.loads(raw['framework-manifest.json'])['version'],'source_files':base_hashes,'sinan_registered_source_files':{p:sha(b) for p,b in sorted(evidence.items())},'adapter_files':{p:sha(b) for p,b in adapters.items()},'scope':'active_framework_plus_registered_sinan_module','admission':'pending_independent_review'})
+-    return out
+-def check(root,source=None,candidate_source=False):
+-    root=Path(root).resolve();binding=json.loads((root/'sync/binding.json').read_text(encoding='utf-8'))
+-    if binding.get('path_base')!='olympus_framework_root':raise ValueError('Unknown upstream binding path base; rebuild required')
+-    locations(root,{'source':binding['source']})
+-    location=source or os.environ.get('GONGGONG_FRAMEWORK_SOURCE') or str(root/binding['source'])
+-    src=source_root(location);before=inventory(src)
+-    verify_source(src,candidate_source)
+-    adapters=adapters_at(root)
+-    module_sources=locations(root,binding['sinan_source'])
+-    module_sources['framework']=str(src)
+-    wanted=expected(src,adapters,module_sources);actual=inventory(root)
+-    ignored=REPORTS|{'sync/binding.json'}|admitted_overlays(root,wanted,actual)
+-    differences=sorted(p for p in set(actual)|set(wanted) if p not in ignored and actual.get(p)!=wanted.get(p))
+-    if differences:raise ValueError('Framework drift; full sync required: '+', '.join(differences[:20]))
+-    if before!=inventory(src):raise ValueError('Upstream changed during verification')
+-    if wanted!=expected(src,adapters,module_sources):raise ValueError('Registered module source changed during verification')
+-    return {'full_parity':True,'source_integrity_verified':True,'source_admission_verified':not candidate_source,'parity_scope':'shared_framework_excluding_explicit_hermes_file_exemption','preserved_exemption':EXEMPT,'source_files':len(before),'distribution_files':len(wanted),'upstream_version':json.loads(before['framework-manifest.json'])['version']}
+-def build(source,out,prepare=False):
+-    src=source_root(source);dest=Path(out).resolve()
+-    if dest.exists() or dest==src or src in dest.parents:raise ValueError('Build destination must be a new directory outside source')
+-    env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONUTF8='1',PYTHONIOENCODING='utf-8')
+-    verify_source(src,prepare)
+-    adapter_root=Path(__file__).resolve().parents[1]
+-    adapters=adapters_at(adapter_root);binding=json.loads((adapter_root/'sync/binding.json').read_text(encoding='utf-8'))
+-    module_sources=locations(adapter_root,binding['sinan_source'])
+-    for key,envkey in [('framework','GONGGONG_SINAN_FRAMEWORK_SOURCE'),('implementation','GONGGONG_SINAN_IMPLEMENTATION_SOURCE')]:
+-        if os.environ.get(envkey):module_sources[key]=str(Path(os.environ[envkey]).resolve())
+-    module_sources={'framework':str(src)}
+-    content=expected(src,adapters,module_sources)
+-    dest.mkdir(parents=True)
+-    for p,b in content.items():f=dest/p;f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes(b)
+-    (dest/'sync/binding.json').write_bytes(encoded({'path_base':'olympus_framework_root','source':Path(os.path.relpath(Path(source).resolve(),dest)).as_posix(),
+-        'sinan_source':{k:Path(os.path.relpath(v,dest)).as_posix() for k,v in module_sources.items()},'purpose':'local_upstream_locator_not_authority'}))
+-    result=check(dest,source,candidate_source=prepare)
+-    checks=[]
+-    for command in [[sys.executable,str(dest/'tools/verify_framework.py'),'--candidate'],[sys.executable,str(dest/'tools/check_quality_ownership.py')]]:
+-        r=subprocess.run(command,capture_output=True,text=True,encoding='utf-8',env=env)
+-        if r.returncode:raise ValueError('Full verification failed: '+r.stderr)
+-        checks.append(r.stdout.strip())
+-    for p in dest.rglob('*.py'):ast.parse(p.read_text(encoding='utf-8'),filename=str(p))
+-    for p in dest.rglob('*.mjs'):
+-        r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True,encoding='utf-8',env=env)
+-        if r.returncode:raise ValueError(r.stderr)
+-    result.update(checks=checks,python_and_node_syntax='pass',production_admission=False)
+-    if prepare:
+-        try:verify_source(src)
+-        except ValueError as error:result['formal_source_validation_error']=str(error).replace(str(src),'gonggong-framework')
+-        else:result['formal_source_validation_error']=None
+-    (dest/'sync/verification.json').write_bytes(encoded(result));return result
+-if __name__=='__main__':
+-    p=argparse.ArgumentParser();sub=p.add_subparsers(dest='command',required=True)
+-    for mode in ['build','prepare']:
+-        b=sub.add_parser(mode);b.add_argument('--source',required=True);b.add_argument('--out',required=True)
+-    c=sub.add_parser('check');c.add_argument('--source');c.add_argument('--root',default=str(Path(__file__).resolve().parents[1]))
+-    a=p.parse_args()
+-    try:print(json.dumps(build(a.source,a.out,prepare=a.command=='prepare') if a.command in ('build','prepare') else check(a.root,a.source),ensure_ascii=False))
+-    except (ValueError,OSError,KeyError,TypeError) as e:p.exit(1,str(e)+'\n')
++"""Deterministic, complete Gonggong -> Olympus distribution rebuild and drift check."""
++from pathlib import Path, PureWindowsPath
++import argparse,ast,hashlib,json,os,subprocess,sys
++ADAPTERS=['sync/gonggong_sync.py','sync/read_hermes.py','sync/POLICY.md','sync/names.json','sync/sinan_source.py','sync/local_runtime.py']
++REPORTS={'sync/verification.json'}
++EXEMPT='extensions/hermes-files/'
++def adapters_at(root):
++    result={p:(root/p).read_bytes() for p in ADAPTERS}
++    extension=inventory(root/EXEMPT)
++    if not {'README.md','hermes_files.py','event.schema.json'}<=extension.keys():raise ValueError('Independent Hermes file module missing')
++    result.update({EXEMPT+p:b for p,b in extension.items()})
++    return result
++def encoded(v):return (json.dumps(v,ensure_ascii=False,indent=2)+'\n').encode()
++def sha(b):return hashlib.sha256(b).hexdigest()
++
++def locations(root, binding):
++    """Locators are relative to this framework, never the caller's working directory."""
++    if any(Path(v).is_absolute() or PureWindowsPath(v).drive for v in binding.values()):
++        raise ValueError('Committed upstream bindings must be relative paths')
++    return {k:str((root/v).resolve()) for k,v in binding.items()}
++
++def verify_source(src,candidate=False):
++    r=subprocess.run([sys.executable,str(src/'tools/verify_framework.py')]+(['--candidate'] if candidate else []),capture_output=True,text=True,encoding='utf-8',
++                     env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONUTF8='1',PYTHONIOENCODING='utf-8'))
++    if r.returncode:raise ValueError('Upstream integrity/admission rejected: '+r.stderr)
++
++def admitted_overlays(root,wanted,actual):
++    """Only real bound permits and their declared local evidence may differ."""
++    allowed=set()
++    if actual.get('framework-manifest.json')!=wanted['framework-manifest.json']:return allowed
++    for agent in json.loads(wanted['framework-manifest.json'])['agents']:
++        permit=agent['admission_pass']
++        if actual.get(permit)==wanted[permit]:continue
++        record=json.loads(actual.get(permit,b'{}'))
++        if record.get('status')!='approved':raise ValueError('Local admission overlay is not approved')
++        refs=[*record.get('review',{}).get('evidence_refs',[]),record.get('approval',{}).get('decision_evidence_ref','')]
++        for ref in refs:
++            if not isinstance(ref,str) or not ref.startswith('reviews/local-admission/') or '..' in ref.split('/') or '\\' in ref or ref not in actual:
++                raise ValueError('Admission evidence must be present under reviews/local-admission')
++        result=subprocess.run([os.environ.get('OLYMPUS_NODE','node'),str(root/'tools/admission.mjs'),str(root),agent['id']],capture_output=True,text=True,encoding='utf-8')
++        if result.returncode:raise ValueError('Local admission overlay rejected: '+result.stderr.strip())
++        allowed.add(permit);allowed.update(refs)
++    return allowed
++def inventory(root):
++    result={}
++    def failed(error):raise error
++    for base,dirs,files in os.walk(root,followlinks=False,onerror=failed):
++        dirs[:]=sorted(d for d in dirs if d not in {'.git','__pycache__'})
++        for name in dirs+files:
++            p=Path(base)/name
++            if p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()):raise ValueError('Linked source/target forbidden: '+str(p))
++        for name in sorted(files):
++            if name.endswith('.pyc'):continue
++            p=Path(base)/name;result[p.relative_to(root).as_posix()]=p.read_bytes()
++    return result
++def source_root(source):
++    p=Path(source).resolve()
++    if p.is_file():
++        pointer=json.loads(p.read_text(encoding='utf-8'));r=(p.parent/pointer['root']).resolve()
++        r.relative_to(p.parent)
++        p=r
++    if not (p/'framework-manifest.json').is_file():raise ValueError('Upstream unavailable')
++    return p
++def expected(source,adapters,sinan_source):
++    raw=inventory(source);pairs=json.loads(adapters['sync/names.json'])
++    original_raw=dict(raw)
++    base_hashes={p:sha(b) for p,b in raw.items()}
++    namespace={};exec(compile(adapters['sync/sinan_source.py'],'sinan_source.py','exec'),namespace)
++    evidence=namespace['merge'](raw,sinan_source)
++    def tr(s):
++        for a,b in pairs:s=s.replace(a,b)
++        return s
++    out={}
++    for p,b in raw.items():
++        if p.startswith('reviews/'):continue
++        target=tr(p)
++        if target in out or target.startswith('sync/') or target.startswith(EXEMPT):raise ValueError('Mapping/adapter/exemption collision: '+target)
++        try:out[target]=tr(b.decode('utf-8').replace('\r\n','\n')).encode()
++        except UnicodeDecodeError:out[target]=b
++    out.update(adapters)
++    def get(p):return json.loads(out[p])
++    def put(p,v):out[p]=encoded(v)
++    def append(p,s):out[p]+=s.encode()
++    # Explicit portable distribution metadata; original historical bytes stay upstream.
++    provenance=get('domains/quality/provenance.json')
++    provenance['source']='domains/quality'
++    provenance['path_base']='gonggong_framework_root'
++    provenance['evidence_index']='source-evidence.json'
++    for item in provenance['templates']:item['source']=item['target']
++    put('domains/quality/provenance.json',provenance)
++    p='agents/athena/references/adaptation.md'
++    import re
++    out[p]=re.sub(r'[A-Za-z]:[/\\]WorkFlow[/\\]mattpocock-skills','external-references/mattpocock-skills（历史参考标识，未随包分发，不是运行依赖）',out[p].decode()).encode()
++    put('source-evidence.json',{'schema_version':1,'kind':'source_integrity_index_not_approval_or_offline_snapshot',
++        'path_base':'source_namespace_root','originals':'Retained in the configured live upstream; never rewritten or bundled.',
++        'module_review_limitations':json.loads(raw[next(m['admission_pass'] for m in json.loads(raw['framework-manifest.json'])['modules'] if m['id']=='sinan')])['review'].get('unresolved',[]),
++        'framework':{p:sha(b) for p,b in sorted(original_raw.items())},
++        'registered_module':{p:sha(b) for p,b in sorted(evidence.items())}})
++    # Explicitly enumerated distribution adapter hooks, never silent arbitrary patches.
++    def patch(p,old,new):
++        s=out[p].decode()
++        if s.count(old)!=1:raise ValueError('Upstream hook changed; adapter review required: '+p)
++        out[p]=s.replace(old,new).encode()
++    patch('tools/verify_framework.py','def verify(root,candidate=False):','def verify(root,candidate=False):\n    __import__("runpy").run_path(str(root/"sync/local_runtime.py"))["check"](root)')
++    patch('tools/agent-context.mjs',"import fs from 'node:fs';","import fs from 'node:fs';\nimport {execFileSync} from 'node:child_process';")
++    patch('tools/agent-context.mjs','  root=fs.realpathSync(root);',"  root=fs.realpathSync(root);\n  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/local_runtime.py'),'--root',root], {stdio:'pipe'});")
++    append('AGENTS.md','\n上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。更新时全量核验有效共工源；运行时校验本地完整包及当前候选准入，不依赖外部共工目录。\n')
++    for p in ['specs/data-feedback.md','specs/reporting.md','agents/hermes/references/optimization.md','agents/hermes/references/storage.md']:
++        append(p,'\n共工可按框架根 sync/POLICY.md 只读使用赫尔墨斯数据优化；用户已持续授权有效共工更新的完整同步。此前“单独指令”要求仍适用于自行提出和实施框架修改，不阻断已批准上游同步。数据读取工具为 sync/read_hermes.py，历史快照不改写。\n')
++        append(p,'\n用户明确豁免：无数据库时使用独立 extensions/hermes-files 模块，在目标 Git 仓库的 olympus-hermes-data 记录需求产出并随需求合入。该模块和数据不受共工同步覆盖；赫尔墨斯与共工使用同一文件分析入口。尚无目标仓库时只交付规则与工具，不创建生产数据。文件状态不冒充 SQLite 回执。\n')
++    append('agents/hermes/AGENT.md','\n文件数据模式：按 extensions/hermes-files/README.md（框架根相对路径）记录、校验并检查 Git 合入。该模式独立运行，不依赖数据库；数据目录位于目标仓库根，严禁随框架同步覆盖。\n')
++    append('AGENTS.md','\n明确豁免：extensions/hermes-files 及目标 Git 仓库中的 olympus-hermes-data 独立维护，不由共工覆盖。需求交付须包含文件数据及 Git 合入检查；仅豁免此模块，其他框架继续全量同步。\n')
++    out['README.md']=('# 奥林匹斯：共工的同步分发框架\n\n共工为唯一上游；除名称映射及明确的分发接入外，不允许框架行为偏差。赫尔墨斯数据可由共工只读用于优化。详见 [同步与数据共享规则](sync/POLICY.md)。\n\n本包为同步后候选，尚需独立准入；原批准原件保留于真实上游，摘要索引见 source-evidence.json。不存在后台自动部署服务。运行数据须存放在包外。\n\n').encode()+out['README.md']
++    out['README.md']=('# 独立豁免：赫尔墨斯文件数据源\n\n[规则与命令](extensions/hermes-files/README.md)：无数据库记录需求数据，目标 Git 仓库内独立命名为 olympus-hermes-data，作为需求产出合入。模块与数据均不被共工同步覆盖；待合入目标仓库后再创建真实数据目录。\n\n').encode()+out['README.md']
++    # Keep distinct skill identity where original Agent and skill shared one name.
++    p='skills/nike/reporting.json';v=get(p);v['component']['id']='nike';put(p,v)
++    out['skills/nike/SKILL.md']=out['skills/nike/SKILL.md'].decode().replace('忒弥斯','尼刻').replace('Themis','Nike').encode()
++    m=get('framework-manifest.json');m['status']='synchronized_candidate_pending_independent_admission'
++    # Registered upstream module, namespace-adapted locally; no fabricated approval.
++    module=get('modules/ariadne/module.json');module['state']='source_registered_distribution_pending_review';module['path_base']='framework_root'
++    module['runtime']['host']='Requires separate current host binding; upstream host authority is not inherited'
++    module['runtime']['enabled']=False
++    if 'implementation_source' in module:
++        module['implementation_source']['path']='modules/sinan/coordinator.mjs'
++        module['implementation_source']['path_base']='gonggong_framework_root'
++        module['implementation_source']['evidence_index']='source-evidence.json'
++    put('modules/ariadne/module.json',module)
++    for item in m['modules']:
++        if item['id']=='ariadne':item['state']=module['state']
++    if 'modules/ariadne/refresh.mjs' in out:
++        runtime=get('skills/ariadne/runtime-ref.json')
++        runtime['framework_pointer']='CURRENT_FRAMEWORK.json'
++        runtime['enabled']=False
++        put('skills/ariadne/runtime-ref.json',runtime)
++        put('CURRENT_FRAMEWORK.json',{'path_base':'this_file_directory','root':'.','manifest':'framework-manifest.json','status':'candidate_pending_admission'})
++        # Existing Yuanheng ledgers keep their original on-disk format.
++        for p in ['modules/ariadne/coordinator.mjs','modules/ariadne/refresh.mjs']:
++            out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
++        p='modules/ariadne/test/refresh.test.mjs'
++        if p in out:out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
++    else:
++        raise ValueError('Current self-contained event-driven Sinan module required; archived timer distribution is no longer supported')
++    append('skills/ariadne/SKILL.md','\nThe framework root is ../.. relative to this skill. runtime-ref.json paths are framework-root relative. Use the shared Hermes reporting.json; the file-data exemption remains available. External source ledger format .yuanheng/state.json is preserved. No live sources or CLI are bound by default.\n')
++    profile=get('skills/dike/reporting.json');profile['component']={'kind':'skill','id':'ariadne','version':next(s['version'] for s in m['skills'] if s['name']=='ariadne'),'entry':'skills/ariadne/SKILL.md','entry_sha256':sha(out['skills/ariadne/SKILL.md'])};put('skills/ariadne/reporting.json',profile)
++    for p in ['reviews/ariadne-admission.json','reviews/ariadne-module-admission.json']:
++        put(p,{'template':False,'status':'pending_distribution_review','source_registration':'source-evidence.json','subject':{'id':'ariadne','version':module['version']},'approval':None})
++    # Name mapping makes both source admission names distinct through their original paths.
++    module['module_admission']='reviews/ariadne-module-admission.json';module['implementation_admission']='reviews/ariadne-admission.json';put('modules/ariadne/module.json',module)
++    for item in m['modules']:
++        if item['id']=='ariadne':item['admission_pass']=module['module_admission']
++    append('README.md','\n## 阿里阿德涅（司南）已登记模块同步\n\n共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。\n')
++    append('specs/module-system.md','\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-evidence.json。\n')
++    m['distribution_sync']={'policy':'sync/POLICY.md','checker':'sync/gonggong_sync.py','data_reader':'sync/read_hermes.py','upstream':'gonggong','full_verification_required':True}
++    m['distribution_sync']['exemptions']=[{'id':'hermes-file-data','module_root':EXEMPT,'data_root':'<target-git-root>/olympus-hermes-data','sync_behavior':'preserve_existing_module_bytes_never_touch_dataset','authority':'explicit_user_instruction_independent_git_file_data_module','reader':'extensions/hermes-files/hermes_files.py','database_required':False,'initialize_only_after_target_repository_integration':True}]
++    lock=get('foundation.lock.json');lock.update(sha256=sha(out['FOUNDATION.md']),source_sha256=sha(raw['FOUNDATION.md']),authority='explicit_user_instruction_complete_upstream_sync_and_namespace_mapping',namespace_only_change=True);put('foundation.lock.json',lock);m['foundation_sha256']=lock['sha256']
++    template=get('templates/review-pass.json')
++    template['baseline'].update(foundation_sha256=lock['sha256'],foundation_version=lock['version'],zeus_version=m['zeus_version'],policy_version=m['version'])
++    put('templates/review-pass.json',template)
++    for record in m['upstream_files']:record['sha256']=sha(out[record['path']])
++    for s in m['skills']:s['state']='synchronized_candidate_pending_review'
++    for p in list(out):
++        if not p.endswith('.json'):continue
++        v=get(p)
++        if isinstance(v,dict) and 'component' in v and 'dependencies' in v and 'entry_sha256' in v['component']:
++            v['component']['entry_sha256']=sha(out[v['component']['entry']])
++            for dep in v['dependencies']:v['dependencies'][dep]=sha(out[dep])
++            put(p,v)
++    put('sync/state.json',{'upstream_version':json.loads(raw['framework-manifest.json'])['version'],'source_files':base_hashes,'sinan_registered_source_files':{p:sha(b) for p,b in sorted(evidence.items())},'adapter_files':{p:sha(b) for p,b in adapters.items()},'scope':'active_framework_plus_registered_sinan_module','admission':'pending_independent_review'})
++    for a in m['agents']:
++        a['state']='synchronized_candidate_pending_independent_admission'
++        a['candidate_files']=sorted(set(a['candidate_files']+list(adapters)+['source-evidence.json','sync/runtime-lock.json']))
++        a.pop('candidate_digest',None)
++    put('sync/runtime-lock.json',{'schema_version':1,'manifest':m,'files':{p:sha(b) for p,b in sorted(out.items()) if p!='framework-manifest.json'}})
++    for a in m['agents']:
++        records=[{'path':p,'sha256':sha(out[p])} for p in a['candidate_files']]
++        a['candidate_digest']=sha(''.join(x['path']+'\0'+x['sha256']+'\n' for x in records).encode())
++        put(a['admission_pass'],{'template':False,'status':'pending_independent_review','subject':{'id':a['id'],'version_or_digest':{'version':a['version'],'candidate_digest':a['candidate_digest'],'candidate_files':records}},'approval':None,'reason':'Independent admission must bind this candidate; previous approvals remain historical.'})
++    put('framework-manifest.json',m)
++    return out
++def check(root,source=None,candidate_source=False):
++    root=Path(root).resolve();binding=json.loads((root/'sync/binding.json').read_text(encoding='utf-8'))
++    if binding.get('path_base')!='olympus_framework_root':raise ValueError('Unknown upstream binding path base; rebuild required')
++    locations(root,{'source':binding['source']})
++    location=source or os.environ.get('GONGGONG_FRAMEWORK_SOURCE') or str(root/binding['source'])
++    src=source_root(location);before=inventory(src)
++    verify_source(src,candidate_source)
++    adapters=adapters_at(root)
++    module_sources=locations(root,binding['sinan_source'])
++    module_sources['framework']=str(src)
++    wanted=expected(src,adapters,module_sources);actual=inventory(root)
++    ignored=REPORTS|{'sync/binding.json'}|admitted_overlays(root,wanted,actual)
++    differences=sorted(p for p in set(actual)|set(wanted) if p not in ignored and actual.get(p)!=wanted.get(p))
++    if differences:raise ValueError('Framework drift; full sync required: '+', '.join(differences[:20]))
++    if before!=inventory(src):raise ValueError('Upstream changed during verification')
++    if wanted!=expected(src,adapters,module_sources):raise ValueError('Registered module source changed during verification')
++    return {'full_parity':True,'source_integrity_verified':True,'source_admission_verified':not candidate_source,'parity_scope':'shared_framework_excluding_explicit_hermes_file_exemption','preserved_exemption':EXEMPT,'source_files':len(before),'distribution_files':len(wanted),'upstream_version':json.loads(before['framework-manifest.json'])['version']}
++def build(source,out,prepare=False):
++    src=source_root(source);dest=Path(out).resolve()
++    if dest.exists() or dest==src or src in dest.parents:raise ValueError('Build destination must be a new directory outside source')
++    env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONUTF8='1',PYTHONIOENCODING='utf-8')
++    verify_source(src,prepare)
++    adapter_root=Path(__file__).resolve().parents[1]
++    adapters=adapters_at(adapter_root);binding=json.loads((adapter_root/'sync/binding.json').read_text(encoding='utf-8'))
++    module_sources=locations(adapter_root,binding['sinan_source'])
++    for key,envkey in [('framework','GONGGONG_SINAN_FRAMEWORK_SOURCE'),('implementation','GONGGONG_SINAN_IMPLEMENTATION_SOURCE')]:
++        if os.environ.get(envkey):module_sources[key]=str(Path(os.environ[envkey]).resolve())
++    module_sources={'framework':str(src)}
++    content=expected(src,adapters,module_sources)
++    dest.mkdir(parents=True)
++    for p,b in content.items():f=dest/p;f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes(b)
++    (dest/'sync/binding.json').write_bytes(encoded({'path_base':'olympus_framework_root','source':Path(os.path.relpath(Path(source).resolve(),dest)).as_posix(),
++        'sinan_source':{k:Path(os.path.relpath(v,dest)).as_posix() for k,v in module_sources.items()},'purpose':'local_upstream_locator_not_authority'}))
++    result=check(dest,source,candidate_source=prepare)
++    checks=[]
++    for command in [[sys.executable,str(dest/'tools/verify_framework.py'),'--candidate'],[sys.executable,str(dest/'tools/check_quality_ownership.py')]]:
++        r=subprocess.run(command,capture_output=True,text=True,encoding='utf-8',env=env)
++        if r.returncode:raise ValueError('Full verification failed: '+r.stderr)
++        checks.append(r.stdout.strip())
++    for p in dest.rglob('*.py'):ast.parse(p.read_text(encoding='utf-8'),filename=str(p))
++    for p in dest.rglob('*.mjs'):
++        r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True,encoding='utf-8',env=env)
++        if r.returncode:raise ValueError(r.stderr)
++    result.update(checks=checks,python_and_node_syntax='pass',production_admission=False)
++    if prepare:
++        try:verify_source(src)
++        except ValueError as error:result['formal_source_validation_error']=str(error).replace(str(src),'gonggong-framework')
++        else:result['formal_source_validation_error']=None
++    (dest/'sync/verification.json').write_bytes(encoded(result));return result
++if __name__=='__main__':
++    p=argparse.ArgumentParser();sub=p.add_subparsers(dest='command',required=True)
++    for mode in ['build','prepare']:
++        b=sub.add_parser(mode);b.add_argument('--source',required=True);b.add_argument('--out',required=True)
++    c=sub.add_parser('check');c.add_argument('--source');c.add_argument('--root',default=str(Path(__file__).resolve().parents[1]))
++    a=p.parse_args()
++    try:print(json.dumps(build(a.source,a.out,prepare=a.command=='prepare') if a.command in ('build','prepare') else check(a.root,a.source),ensure_ascii=False))
++    except (ValueError,OSError,KeyError,TypeError) as e:p.exit(1,str(e)+'\n')
+--- /dev/null
++++ b/Olympus/sync/local_runtime.py
+@@ -0,0 +1,56 @@
++"""Check the installed distribution without consulting its external build source.
++
++This is content integrity, not authentication or approval. Agent admission and
++host permissions remain separate checks. Only the full rebuild creates a lock.
++"""
++import argparse
++import hashlib
++import json
++import runpy
++from pathlib import Path
++
++
++def check(root):
++    root = Path(root).resolve()
++    inventory = runpy.run_path(str(root / 'sync/gonggong_sync.py'))['inventory']
++    actual = inventory(root)
++    lock = json.loads(actual['sync/runtime-lock.json'])
++    if lock['schema_version'] != 1:
++        raise ValueError('Unsupported runtime lock')
++    manifest = json.loads(actual['framework-manifest.json'])
++    for agent in manifest['agents']:
++        agent.pop('candidate_digest', None)
++    if manifest != lock['manifest']:
++        raise ValueError('Runtime manifest changed; full rebuild required')
++    allowed = {'sync/runtime-lock.json', 'framework-manifest.json',
++               'sync/binding.json', 'sync/verification.json'}
++    for agent in manifest['agents']:
++        permit = agent['admission_pass']
++        record = json.loads(actual[permit])
++        allowed.add(permit)
++        # Admission checks the approval, scope, subject and references later.
++        # These are the only mutable evidence paths permitted in a release.
++        refs = record.get('review', {}).get('evidence_refs', [])
++        decision = (record.get('approval') or {}).get('decision_evidence_ref')
++        for ref in [*refs, *([decision] if decision else [])]:
++            if not isinstance(ref, str) or not ref.startswith('reviews/local-admission/') or '..' in ref.split('/') or '\\' in ref or ref not in actual:
++                raise ValueError('Invalid local admission evidence')
++            allowed.add(ref)
++    wanted = lock['files']
++    differences = sorted(p for p in set(actual) | set(wanted)
++                         if p not in allowed and
++                         (p not in actual or hashlib.sha256(actual[p]).hexdigest() != wanted.get(p)))
++    if differences:
++        raise ValueError('Local distribution drift: ' + ', '.join(differences[:20]))
++    return {'local_integrity': True, 'external_source_required': False,
++            'upstream_currentness_checked': False, 'host_authority_authenticated': False}
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--root', default=str(Path(__file__).resolve().parents[1]))
++    args = parser.parse_args()
++    try:
++        print(json.dumps(check(args.root)))
++    except (ValueError, OSError, KeyError, TypeError) as error:
++        parser.exit(1, str(error) + '\n')
+--- a/Olympus/sync/sinan_source.py
++++ b/Olympus/sync/sinan_source.py
+@@ -1,48 +1,53 @@
+-"""Verify registered Sinan sources and relocate their complete bound implementation."""
+-import hashlib
+-import json
+-from datetime import datetime, timezone
+-from pathlib import Path, PureWindowsPath
+-
+-
+-def merge(raw, binding):
+-    # Current mainline includes the full event-driven module. Do not resurrect
+-    # the archived scheduler or require the previous host's implementation tree.
+-    base = json.loads(raw['framework-manifest.json'])
+-    current = next((m for m in base.get('modules', []) if m['id'] == 'sinan'), None)
+-    if current and 'modules/sinan/refresh.mjs' in raw:
+-        record = json.loads(raw[current['admission_pass']])
+-        module = json.loads(raw[current['manifest']])
+-        digest = record['subject']['version_or_digest']
+-        if record.get('template') is not False or record.get('status') != 'approved' or record['subject']['id'] != 'sinan' or current['version'] != digest['version'] or module['version'] != digest['version']:
+-            raise ValueError('Current module approval mismatch')
+-        decision, review = record['approval'], record['review']
+-        if not decision.get('approver_id') or decision.get('approver_id')==review.get('evaluator_id') or not decision.get('authority_ref') or decision.get('revocation_ref') or decision.get('superseded_by'):
+-            raise ValueError('Current module approval inactive')
+-        if review.get('independence')!='independent_subagent_review' or not review.get('evaluator_id') or any(review.get(k)!='pass' for k in ['gonggong_framework','applicable_validation']) or review.get('concision',{}).get('status')!='pass' or any(review.get('yuanheng',{}).get(k)!='pass' for k in ['purpose','truth','economy','authority','adaptation','continuity']):
+-            raise ValueError('Current module review incomplete')
+-        baseline=record['baseline'];lock=json.loads(raw['foundation.lock.json'])
+-        if baseline.get('foundation_sha256')!=lock['sha256'] or baseline.get('foundation_version')!=lock['version'] or baseline.get('policy_version')!=base['version'] or baseline.get('yuanheng_version')!=base['yuanheng_version']:
+-            raise ValueError('Current module baseline mismatch')
+-        approved=datetime.fromisoformat(decision['approved_at'].replace('Z','+00:00'))
+-        if approved.tzinfo is None or approved>datetime.now(timezone.utc) or not record['subject'].get('scope'):
+-            raise ValueError('Current module scope/time invalid')
+-        if decision.get('expires_at') and datetime.fromisoformat(decision['expires_at'].replace('Z','+00:00'))<=datetime.now(timezone.utc):
+-            raise ValueError('Current module approval expired')
+-        evidence={'registration/'+current['admission_pass']:raw[current['admission_pass']]}
+-        seen=set()
+-        for item in digest['files']:
+-            rel=item['path']
+-            if rel.casefold() in seen or rel not in raw or hashlib.sha256(raw[rel]).hexdigest()!=item['sha256']:
+-                raise ValueError('Current module evidence changed: '+rel)
+-            seen.add(rel.casefold());evidence['registration/'+rel]=raw[rel]
+-        source=Path(binding['framework']).resolve()
+-        for rel in [*review['evidence_refs'],decision['decision_evidence_ref']]:
+-            if PureWindowsPath(rel).drive or Path(rel).is_absolute():raise ValueError('Absolute evidence reference forbidden')
+-            target=source/rel
+-            boundary=source.parent/'work' if rel.startswith('../work/') else source
+-            target.resolve().relative_to(boundary.resolve())
+-            if not target.is_file() or any(p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()) for p in [target,*target.parents]):raise ValueError('Module review evidence unavailable or linked')
+-            evidence['source-package/'+target.resolve().relative_to(source.parent).as_posix()]=target.read_bytes()
+-        return evidence
+-    raise ValueError('Current self-contained event-driven Sinan module required')
++"""Verify registered Sinan sources and relocate their complete bound implementation."""
++import hashlib
++import json
++from datetime import datetime, timezone
++from pathlib import Path, PureWindowsPath
++
++
++def passed(value):
++    """Accept an explicit pass status, optionally followed by its source rationale."""
++    return value == "pass" or (isinstance(value, str) and value.startswith("pass: ") and bool(value[6:].strip()))
++
++
++def merge(raw, binding):
++    # Current mainline includes the full event-driven module. Do not resurrect
++    # the archived scheduler or require the previous host's implementation tree.
++    base = json.loads(raw['framework-manifest.json'])
++    current = next((m for m in base.get('modules', []) if m['id'] == 'sinan'), None)
++    if current and 'modules/sinan/refresh.mjs' in raw:
++        record = json.loads(raw[current['admission_pass']])
++        module = json.loads(raw[current['manifest']])
++        digest = record['subject']['version_or_digest']
++        if record.get('template') is not False or record.get('status') != 'approved' or record['subject']['id'] != 'sinan' or current['version'] != digest['version'] or module['version'] != digest['version']:
++            raise ValueError('Current module approval mismatch')
++        decision, review = record['approval'], record['review']
++        if not decision.get('approver_id') or decision.get('approver_id')==review.get('evaluator_id') or not decision.get('authority_ref') or decision.get('revocation_ref') or decision.get('superseded_by'):
++            raise ValueError('Current module approval inactive')
++        if review.get('independence')!='independent_subagent_review' or not review.get('evaluator_id') or any(review.get(k)!='pass' for k in ['gonggong_framework','applicable_validation']) or review.get('concision',{}).get('status')!='pass' or any(not passed(review.get('yuanheng',{}).get(k)) for k in ['purpose','truth','economy','authority','adaptation','continuity']):
++            raise ValueError('Current module review incomplete')
++        baseline=record['baseline'];lock=json.loads(raw['foundation.lock.json'])
++        if baseline.get('foundation_sha256')!=lock['sha256'] or baseline.get('foundation_version')!=lock['version'] or baseline.get('policy_version')!=base['version'] or baseline.get('yuanheng_version')!=base['yuanheng_version']:
++            raise ValueError('Current module baseline mismatch')
++        approved=datetime.fromisoformat(decision['approved_at'].replace('Z','+00:00'))
++        if approved.tzinfo is None or approved>datetime.now(timezone.utc) or not record['subject'].get('scope'):
++            raise ValueError('Current module scope/time invalid')
++        if decision.get('expires_at') and datetime.fromisoformat(decision['expires_at'].replace('Z','+00:00'))<=datetime.now(timezone.utc):
++            raise ValueError('Current module approval expired')
++        evidence={'registration/'+current['admission_pass']:raw[current['admission_pass']]}
++        seen=set()
++        for item in digest['files']:
++            rel=item['path']
++            if rel.casefold() in seen or rel not in raw or hashlib.sha256(raw[rel]).hexdigest()!=item['sha256']:
++                raise ValueError('Current module evidence changed: '+rel)
++            seen.add(rel.casefold());evidence['registration/'+rel]=raw[rel]
++        source=Path(binding['framework']).resolve()
++        for rel in [*review['evidence_refs'],decision['decision_evidence_ref']]:
++            if PureWindowsPath(rel).drive or Path(rel).is_absolute():raise ValueError('Absolute evidence reference forbidden')
++            target=source/rel
++            boundary=source.parent/'work' if rel.startswith('../work/') else source
++            target.resolve().relative_to(boundary.resolve())
++            if not target.is_file() or any(p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()) for p in [target,*target.parents]):raise ValueError('Module review evidence unavailable or linked')
++            evidence['source-package/'+target.resolve().relative_to(source.parent).as_posix()]=target.read_bytes()
++        return evidence
++    raise ValueError('Current self-contained event-driven Sinan module required')
+--- a/Olympus/sync/POLICY.md
++++ b/Olympus/sync/POLICY.md
+@@ -1,61 +1,61 @@
+-# 共工上游同步与赫尔墨斯数据共享
+-
+-## 当前主线内已登记模块
+-
+-当前司南 0.4.0 已包含在共工主线，奥林匹斯名称为阿里阿德涅 Ariadne。全量复制已登记的模块契约、skill、实现和运行空配置；不从历史 archive 复活定时调度、旧授权或旧注册源。历史双来源的 0.2/0.3 分发不再是当前重建来源。来源批准仍只证明原对象，不充当名称映射后候选的批准。
+-
+-每次核验读取当前主线及模块的绑定文件、原批准与独立证据。框架内引用相对 framework 根，../work 下的审查原件限定在同一 Gonggong 工作区根内，索引用 source-package 命名空间保留相对路径与原始摘要。批准中已声明的能力限制仍保留在原件，不将局部定义批准解释为全局监听或宿主授权。
+-
+-## 用户新增的独立豁免（优先适用）
+-
+-`extensions/hermes-files/` 为奥林匹斯独立文件数据模块，目标 Git 仓库根 `olympus-hermes-data/` 为专用需求产出目录。模块和数据均不得被共工同步覆盖。文件模式不需要数据库，共工和赫尔墨斯直接使用该模块的同一分析入口读取。此项是用户对“不得偏差”的明确局部豁免，其余共同框架仍全量同步。
+-
+-同步重建必须逐字节携带现有豁免模块；上游占用其路径则拒绝重建，不能替换。本地数据始终在框架包之外，不纳入源框架复制、清理或重命名。豁免模块独立版本化，文件格式、事件摘要、Git 合入检查仍须验证。待合入确定的目标 Git 仓库后再初始化数据目录；当前只交付规则与工具。详见 [文件数据源规则](../extensions/hermes-files/README.md)。
+-
+-本规则依据用户明确要求：赫尔墨斯数据可由共工读取用于优化；共工优化后，奥林匹斯必须同步所有框架更改并全量核验，不得存在框架偏差。
+-
+-## 单一上游
+-
+-共工是框架行为、治理、Agent、skill、契约及工具的唯一上游。奥林匹斯保留西方神话名称，仅允许确定性的名称映射、此目录中的同步/数据读取接入、重新计算的指纹及真实的待审记录。不得选择性挑取更新、遗漏新增或删除文件、保留本地业务分叉，或将名称以外的功能差异解释为品牌差异。版本号相同也必须按全部文件内容核验。
+-
+-共工调整仍由共工原治理链决定；本指令持续授权奥林匹斯跟随有效上游的完整同步，并不授予赫尔墨斯自行修改共工或宙斯的权限。同步共工已批准的纲领更新属于用户授权的上游同步，不属于奥林匹斯自行修改纲领。历史身份、证据和批准不改写；原批准不能充当副本新指纹的批准。
+-
+-## 同步流程与阻断
+-
+-1. 跟踪共工 `CURRENT_FRAMEWORK.json`，也可显式指定已批准的上游根目录。全量读取文件，包括审查来源；拒绝链接目录与无法读取的文件。仅忽略 `.git`、`__pycache__`、`.pyc` 运行缓存。
+-2. 在全新目录重建完整副本；新增、修改、删除通过重新生成全部文件集合同步。根据名称映射重新生成依赖指纹、冻结指纹及候选摘要。不将共工整包纳入交付；源审查原件保留在真实上游，分发包记录原始逐文件摘要索引，不伪造副本批准。
+-3. 执行 `check` 逐文件核对确定性转换结果、完整文件集合及源指纹，执行框架候选校验、代码语法检查与质量归属检查。适用的行为验证及新依赖迁移仍需按上游变更安排；这些静态检查不能替代生产验收。
+-4. 核验或独立准入未通过，不启用新版本。部署宿主在全量核验和准入后切换，保存旧包及数据恢复点。数据库/队列在框架目录之外保存，不随重建覆盖或自动迁移。
+-5. 验证工具及 Agent 上下文入口每次重新对比实际上游；缺上游、版本或内容变化、本地偏差均拒绝。重新同步并全量核验后才能解除一致性阻断。源批准、独立审查、宿主权限仍是分别成立的条件。
+-
+-```powershell
+-python sync/gonggong_sync.py build --source PATH/TO/CURRENT_FRAMEWORK.json --out PATH/TO/NEW-OLYMPUS
+-python sync/gonggong_sync.py check --root PATH/TO/OLYMPUS
+-python tools/verify_framework.py --candidate
+-```
+-
+-`sync/binding.json` 保存相对框架根的源位置（`path_base: olympus_framework_root`）；部署到另一机器时使用 `GONGGONG_FRAMEWORK_SOURCE` 指定实际源指针。Node 上下文入口可通过 `OLYMPUS_PYTHON` 指定 Python。源位置是接入配置，不是同步证据。源不可用时不回退为“已同步”。当前交付包含同步命令和入口检查，没有常驻监听器或远程发布服务；宿主必须将上游发布事件接入 build→全量验证→准入→切换流程。
+-
+-## 共工读取赫尔墨斯
+-
+-共工可通过 `read_hermes.py` 以 SQLite 只读连接读取已获访问权限的赫尔墨斯 v2 台账，用于优化分析。必须指定租户；保留原始文档、来源、历史版本、证据关系、Agent ID、定义指纹及记录摘要。名称对应关系仅供查询解释，不反写历史归属，不把源系统不同的记录按裸 ID 合并。原始敏感数据仍受实际租户/来源访问、保留和删除权限约束，命令行租户过滤不等于身份认证。
+-
+-```powershell
+-python sync/read_hermes.py --db PATH/TO/HERMES.sqlite --tenant TENANT --out PATH/TO/NEW-EXPORT.json
+-```
+-
+-读取失败、数据缺失、覆盖未知须保留事实，不能补零或宣称完整。导出保留同一事务快照及全部该租户记录和证据关系，供共工读取，不能直接当作共工自身运行事件导入或覆盖。优化建议进入共工原治理链；有效上游采纳之后，奥林匹斯完整跟随。当前没有指定真实数据源，因此不声称已读取生产数据。
+-
+-## 2026-11-02 用户明确的交付范围与可移植路径
+-
+-本仓库交付 Olympus 和 Godot，不交付整套 Gonggong。source-evidence.json 是确定性来源摘要索引，不是批准原件、签名或离线快照；它纳入候选指纹。原件不改写，保留在实际共工来源，核验时重新检查有效源批准、完整文件集合与摘要，缺源、变更、撤销均拒绝。旧源 ZIP 从当前交付树移除，既有 Git 历史不重写。
+-
+-交付文件使用相对路径且声明解析基准。历史出处以相对来源标识保留，未随包分发的历史参考明确标注为非运行依赖。运行时解析的绝对位置不写入 Git。源司南宿主配置、旧调度授权和旧写入范围不迁移；分发调度配置默认禁用，必须由当前宿主重新绑定。路径与证据存储适配不得被解释为批准新 Agent。
+-
+-## 待审来源的隔离候选准备
+-
+-`prepare --source ... --out ...` 仅在新目录准备未启用候选，要求源候选完整性及当前模块已批准范围的文件/证据验证。结果明确记录 `source_admission_verified: false`；原始来源验证错误不变成通过。此命令用于当前上游的路径迁移尚待 Agent 新准入时完成可审查的 Olympus 交付，不批准生产。
+-
+-`verify_framework.py --candidate` 可检查候选源和确定性分发完整性；正式 `build`、`check`、无 --candidate 的验证及 `agent-context.mjs` 始终校验正式源准入。没有环境变量可降低该门槛。所有 Olympus 新候选的批准保持空值。生产必须同时满足有效上游、Olympus 独立准入、真实宿主授权和事件回执。
+-
+-本地正式 Agent 准入采用受限覆盖：只有清单指定的 admission_pass 和其明确引用的 reviews/local-admission/ 证据允许区别于生成的待审记录；每次仍调用共享 admission.mjs 验证主体、完整候选摘要、基线、独立审查、真实批准引用、有效期和撤销状态。其他文件继续确定性逐字核对，证据目录的未引用额外文件也拒绝。该机制不自动批准、不改写待审记录，也不能绕过正式源准入。
++# 共工上游同步与赫尔墨斯数据共享
++
++## 当前主线内已登记模块
++
++当前司南 0.4.0 已包含在共工主线，奥林匹斯名称为阿里阿德涅 Ariadne。全量复制已登记的模块契约、skill、实现和运行空配置；不从历史 archive 复活定时调度、旧授权或旧注册源。历史双来源的 0.2/0.3 分发不再是当前重建来源。来源批准仍只证明原对象，不充当名称映射后候选的批准。
++
++每次更新核验读取当前主线及模块的绑定文件、原批准与独立证据。框架内引用相对 framework 根，../work 下的审查原件限定在同一 Gonggong 工作区根内，索引用 source-package 命名空间保留相对路径与原始摘要。批准中已声明的能力限制仍保留在原件，不将局部定义批准解释为全局监听或宿主授权。
++
++## 用户新增的独立豁免（优先适用）
++
++`extensions/hermes-files/` 为奥林匹斯独立文件数据模块，目标 Git 仓库根 `olympus-hermes-data/` 为专用需求产出目录。模块和数据均不得被共工同步覆盖。文件模式不需要数据库，共工和赫尔墨斯直接使用该模块的同一分析入口读取。此项是用户对“不得偏差”的明确局部豁免，其余共同框架仍全量同步。
++
++同步重建必须逐字节携带现有豁免模块；上游占用其路径则拒绝重建，不能替换。本地数据始终在框架包之外，不纳入源框架复制、清理或重命名。豁免模块独立版本化，文件格式、事件摘要、Git 合入检查仍须验证。待合入确定的目标 Git 仓库后再初始化数据目录；当前只交付规则与工具。详见 [文件数据源规则](../extensions/hermes-files/README.md)。
++
++本规则依据用户明确要求：赫尔墨斯数据可由共工读取用于优化；共工优化后，奥林匹斯必须同步所有框架更改并全量核验，不得存在框架偏差。
++
++## 单一上游
++
++共工是框架行为、治理、Agent、skill、契约及工具的唯一上游。奥林匹斯保留西方神话名称，仅允许确定性的名称映射、此目录中的同步/数据读取接入、重新计算的指纹及真实的待审记录。不得选择性挑取更新、遗漏新增或删除文件、保留本地业务分叉，或将名称以外的功能差异解释为品牌差异。版本号相同也必须按全部文件内容核验。
++
++共工调整仍由共工原治理链决定；本指令持续授权奥林匹斯跟随有效上游的完整同步，并不授予赫尔墨斯自行修改共工或宙斯的权限。同步共工已批准的纲领更新属于用户授权的上游同步，不属于奥林匹斯自行修改纲领。历史身份、证据和批准不改写；原批准不能充当副本新指纹的批准。
++
++## 同步流程与阻断
++
++1. 跟踪共工 `CURRENT_FRAMEWORK.json`，也可显式指定已批准的上游根目录。全量读取文件，包括审查来源；拒绝链接目录与无法读取的文件。仅忽略 `.git`、`__pycache__`、`.pyc` 运行缓存。
++2. 在全新目录重建完整副本；新增、修改、删除通过重新生成全部文件集合同步。根据名称映射重新生成依赖指纹、冻结指纹及候选摘要。不将共工整包纳入交付；源审查原件保留在真实上游，分发包记录原始逐文件摘要索引，不伪造副本批准。
++3. 执行 `check` 逐文件核对确定性转换结果、完整文件集合及源指纹，执行框架候选校验、代码语法检查与质量归属检查。适用的行为验证及新依赖迁移仍需按上游变更安排；这些静态检查不能替代生产验收。
++4. 核验或独立准入未通过，不启用新版本。部署宿主在全量核验和准入后切换，保存旧包及数据恢复点。数据库/队列在框架目录之外保存，不随重建覆盖或自动迁移。
++5. 运行校验与更新核验分离：验证工具及 Agent 上下文入口校验包内 runtime-lock.json 的完整文件集合，再核对候选指纹、准入及宿主权限；不读取外部共工位置。上游发布事件触发新目录完整重建和独立准入，不直接使已安装版本失效。离线启动不声称核对了上游最新状态。
++
++```powershell
++python sync/gonggong_sync.py build --source PATH/TO/CURRENT_FRAMEWORK.json --out PATH/TO/NEW-OLYMPUS
++python sync/gonggong_sync.py check --root PATH/TO/OLYMPUS
++python tools/verify_framework.py --candidate
++```
++
++`sync/binding.json` 保存相对框架根的源位置（`path_base: olympus_framework_root`）；执行更新核验时使用 `GONGGONG_FRAMEWORK_SOURCE` 指定实际源指针。Node 上下文入口可通过 `OLYMPUS_PYTHON` 指定 Python。源位置是接入配置，不是同步证据。更新时源不可用则阻断更新；本地完整包运行不依赖源位置。当前交付包含同步命令和入口检查，没有常驻监听器或远程发布服务；宿主必须将上游发布事件接入 build→全量验证→准入→切换流程。
++
++## 共工读取赫尔墨斯
++
++共工可通过 `read_hermes.py` 以 SQLite 只读连接读取已获访问权限的赫尔墨斯 v2 台账，用于优化分析。必须指定租户；保留原始文档、来源、历史版本、证据关系、Agent ID、定义指纹及记录摘要。名称对应关系仅供查询解释，不反写历史归属，不把源系统不同的记录按裸 ID 合并。原始敏感数据仍受实际租户/来源访问、保留和删除权限约束，命令行租户过滤不等于身份认证。
++
++```powershell
++python sync/read_hermes.py --db PATH/TO/HERMES.sqlite --tenant TENANT --out PATH/TO/NEW-EXPORT.json
++```
++
++读取失败、数据缺失、覆盖未知须保留事实，不能补零或宣称完整。导出保留同一事务快照及全部该租户记录和证据关系，供共工读取，不能直接当作共工自身运行事件导入或覆盖。优化建议进入共工原治理链；有效上游采纳之后，奥林匹斯完整跟随。当前没有指定真实数据源，因此不声称已读取生产数据。
++
++## 2026-11-02 用户明确的交付范围与可移植路径
++
++本仓库交付 Olympus 和 Godot，不交付整套 Gonggong。source-evidence.json 是确定性来源摘要索引，不是批准原件、签名或离线快照；它纳入候选指纹。原件不改写，保留在实际共工来源，更新核验时重新检查有效源批准、完整文件集合与摘要，缺源、变更、撤销均拒绝更新。旧源 ZIP 从当前交付树移除，既有 Git 历史不重写。
++
++交付文件使用相对路径且声明解析基准。历史出处以相对来源标识保留，未随包分发的历史参考明确标注为非运行依赖。运行时解析的绝对位置不写入 Git。源司南宿主配置、旧调度授权和旧写入范围不迁移；分发调度配置默认禁用，必须由当前宿主重新绑定。路径与证据存储适配不得被解释为批准新 Agent。
++
++## 待审来源的隔离候选准备
++
++`prepare --source ... --out ...` 仅在新目录准备未启用候选，要求源候选完整性及当前模块已批准范围的文件/证据验证。结果明确记录 `source_admission_verified: false`；原始来源验证错误不变成通过。此命令用于当前上游的路径迁移尚待 Agent 新准入时完成可审查的 Olympus 交付，不批准生产。
++
++`verify_framework.py --candidate` 检查本地完整性；正式验证及上下文入口继续检查本地候选准入。`build`、`check` 保留正式上游核验，`prepare` 只生成未批准候选。runtime-lock.json 由完整重建确定性生成并纳入每个 Agent 候选指纹；它不是签名或批准。生产必须满足 Olympus 精确候选独立准入、真实宿主授权和事件回执。
++
++本地正式 Agent 准入采用受限覆盖：只有清单指定的 admission_pass 和其明确引用的 reviews/local-admission/ 证据允许区别于生成的待审记录；运行准入及更新核验仍调用共享 admission.mjs 验证主体、完整候选摘要、基线、独立审查、真实批准引用、有效期和撤销状态。其他文件在运行时按本地清单核对、更新时按源确定性逐字核对，证据目录的未引用额外文件也拒绝。该机制不自动批准、不改写待审记录，也不能绕过更新时正式源准入。

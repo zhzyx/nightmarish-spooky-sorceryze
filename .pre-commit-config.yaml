@@ -59,10 +59,13 @@ repos:
         args: [--color=always]
         files: (\.py|SConstruct|SCsub)$
         types_or: [text]
+        # Reviewed byte-preserved mirror; checked by olympus-frozen-distribution.
+        exclude: ^Olympus/(?!extensions/hermes-files/)
       - id: ruff-format
         args: [--color=always]
         files: (\.py|SConstruct|SCsub)$
         types_or: [text]
+        exclude: ^Olympus/(?!extensions/hermes-files/)
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.4.0
@@ -70,6 +73,7 @@ repos:
       - id: mypy
         files: \.py$
         types_or: [text]
+        exclude: ^Olympus/(?!extensions/hermes-files/)
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
@@ -202,6 +206,7 @@ repos:
         types_or: [text]
         exclude: |
           (?x)^(
+            Olympus/(?!extensions/hermes-files/).*|
             .*\.test\.txt|
             .*\.svg|
             .*\.patch|
@@ -226,6 +231,12 @@ repos:
 # Start of downstream pre-commit hooks.
 #
 # This is still the "repo: local" scope, so new local hooks can be defined directly at this indentation:
+      - id: olympus-frozen-distribution
+        name: Olympus offline snapshot integrity and syntax
+        language: python
+        entry: python tools/check_olympus_distribution.py
+        pass_filenames: false
+        always_run: true
 #     - id: new-local-hook
 # To add external repo hooks, bring the indentation back to:
 # - repo: my-remote-hook

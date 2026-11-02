@@ -82,7 +82,16 @@ class AIChatDock : public EditorDock {
 	uint64_t olympus_receipt_generation = 0;
 	String olympus_recovered_result;
 	bool olympus_recovery_can_send = false;
-	bool _record_olympus(const String &p_kind, const String &p_phase, const String &p_status, bool p_flush = true);
+	bool _record_olympus(const String &p_kind, const String &p_phase, const String &p_status);
+	Callable olympus_receipt_continuation;
+	uint64_t olympus_continuation_generation = 0;
+	bool olympus_receipt_reflush = false;
+	void _flush_olympus(const Callable &p_continuation);
+	void _start_olympus_flush();
+	void _send_completion_after_receipt();
+	void _response_after_receipt(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
+	void _tool_after_receipt(uint64_t p_session);
+	void _finish_tool_after_receipt(const String &p_result, bool p_file_success);
 	void _poll_olympus_receipt();
 	void _end_olympus(const String &p_status);
 	void _begin_olympus_context();
@@ -111,7 +120,7 @@ class AIChatDock : public EditorDock {
 	String engine_dialog_action;
 	bool engine_restart_approved = false;
 	bool engine_restart_requested = false;
-	// A rebuild is modelled as one tool call that spans the process switch: it is
+	// A rebuild is modeled as one tool call that spans the process switch: it is
 	// issued here and its result is reported by the newly built editor.
 	String engine_tool_call_id;
 	String engine_tool_name;

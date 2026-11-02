@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-event-data-loop-20261102-progress",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "analysis",
+  "occurred_at": "2026-11-02T09:51:01.689813+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "agent": {
+    "id": "codex-root",
+    "version": "issue-governance-20261102",
+    "origin": "codex-host-task",
+    "definition_sha256": "c9b2db75231d5c1032c981fd46ff7347d53691809b3d08e2bc5081479658344d"
+  },
+  "payload": {
+    "description": "Read 36 current Hermes records through shared analyzer; collected 9 actual GitHub Issues. Reconciled stale metadata meaning; Ariadne GitHub binding remains unavailable.",
+    "read_receipt": "data-collection/issue-event-read-receipt-20261102.json",
+    "issue_snapshot": "data-collection/github-issues-snapshot-20261102.json",
+    "diting_agent_invoked": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Host usage unavailable; no estimates"
+  },
+  "evidence_refs": [
+    "issue-event-data-loop-20261102-registered"
+  ],
+  "sha256": "ed66232d3487de872eff8a0d8a751f9b2fd77804fb610e2acc896abda4accac6"
+}

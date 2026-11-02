@@ -14,5 +14,12 @@
   "ariadne_source_registered": false,
   "agent_activation": false,
   "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
-  "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90"
+  "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90",
+  "status_labels": ".github/status-labels.json",
+  "status_rule": "exactly_one_status_label",
+  "contributor_entry": ".github/CONTRIBUTING.md",
+  "invocation": "on_explicit_business_event",
+  "time_based_invocation": false,
+  "agent_activation_scope": "This Issue adapter does not activate framework Agents; actual pinned release admission is checked by current host.",
+  "tenant_id": "olympus-workspace"
 }

@@ -8,6 +8,6 @@
 
 奥林匹斯工作流内新建、更新及合入 skill／Agent 必须自带 reporting.json，按 specs/reporting.md 使用共享赫尔墨斯上报；配置、排队与实际落库分别记录。
 
-上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。启用前须重新全量核对有效共工源；发现偏差或缺源不得执行。
+上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。更新时全量核验有效共工源；运行时校验本地完整包及当前候选准入，不依赖外部共工目录。
 
 明确豁免：extensions/hermes-files 及目标 Git 仓库中的 olympus-hermes-data 独立维护，不由共工覆盖。需求交付须包含文件数据及 Git 合入检查；仅豁免此模块，其他框架继续全量同步。

@@ -1,7 +1,7 @@
 {
   "id": "ariadne",
   "name": "阿里阿德涅",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "kind": "task_management_and_coordination",
   "layer": "olympus_platform",
   "scope": "all_task_types_in_authorized_registered_sources",
@@ -34,13 +34,15 @@
     "registry": "sources[{id,root}], dependencies[{ticket,requires,kind}], coordination[{ticket,...}]",
     "label_change": "ticket key and {type?,tags?,assessment?,actor,reason}",
     "command_preparation": "source alias, supported source operation and argument array",
-    "authority": "actual host mandate and filesystem permissions"
+    "authority": "actual host mandate and filesystem permissions",
+    "document_sync": "Optional registry-relative write_root and registered documents with tickets/parent_tickets and unique ariadne markers"
   },
   "outputs": {
-    "board": "items, sourceSnapshots, diagnostics and ready keys",
+    "board": "items, sourceSnapshots, diagnostics, ready keys and proposed followUps with responsibility and Issue linkage actions",
     "labels": "audited local coordination updates; no source status mutation",
     "handoff": "executable and argv with fresh-check requirements; execution=not_executed",
-    "progress_document": "source-derived states, labels, owners, blockers, acceptance and snapshot versions"
+    "progress_document": "source-derived states, labels, owners, blockers, acceptance and snapshot versions",
+    "sync_result": "Per-document results and repair followUps; outcome=partial for isolated document errors; never remote closure or execution receipts"
   },
   "dependencies": {
     "required": [
@@ -50,7 +52,8 @@
     ],
     "conditional": {
       "quality_escalation": "skills/nike/SKILL.md",
-      "prepare": "existing Zeus source CLI"
+      "prepare": "existing Zeus source CLI",
+      "delivery": "specs/delivery.md"
     },
     "optional_enhancements": [
       "additional source adapters",
@@ -66,7 +69,9 @@
     ],
     "write": [
       "coordination labels and label_history in the designated registry",
-      "derived progress.md beside the designated registry; source state remains authoritative"
+      "derived progress.md beside the designated registry; source state remains authoritative",
+      "Explicitly registered document marker regions within canonical document_sync.write_root",
+      "sync-result.json beside the designated registry"
     ],
     "source_ledger_write": false,
     "remote_write": false,
@@ -78,7 +83,7 @@
     "current_adapter": "existing local Zeus ledger and CLI",
     "host_loader_implemented": false,
     "coverage": "registered sources only; empty by default; no global event listener",
-    "compatibility": "Existing IDs, source states and ariadne entry remain valid; task types extensible; Feature references optional",
+    "compatibility": "Document read/marker/write failures return partial instead of throwing; callers must inspect outcome and updated. Unsafe configuration and protected output violations still throw. pending_user is advisory; explicit pending_user_blocking limits affected transitions.",
     "scheduler_config": null,
     "host": "Requires separate current host binding; upstream host authority is not inherited",
     "concurrency": {
@@ -109,7 +114,7 @@
   "implementation_source": {
     "path": "modules/sinan/coordinator.mjs",
     "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55",
-    "reuse": "byte-identical coordinator only; historical bindings and timer mechanisms not imported",
+    "reuse": "Coordinator derived from original; explicit nonblocking decision and follow-up changes in 0.4.2; no historical bindings imported",
     "path_base": "gonggong_framework_root",
     "evidence_index": "source-evidence.json"
   }

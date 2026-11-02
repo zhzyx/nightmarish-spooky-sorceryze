@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-approved-switch-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T17:50:17.679682+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "User approved exact independently reviewed 0.4.2 plus standalone candidates; installed after digest verification and backup. Formal validation and engine doctor pass with unavailable external source. Explicit source parity149/137 passes. Hermes extension and data unchanged across switch.",
+    "verification": "data-collection/issue7-042-standalone-verification-20261103.json",
+    "approval": "Olympus/reviews/local-admission/issue7-042-user-decision-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied; no model call or runtime permission grant",
+    "git_committed": false,
+    "remote_merged": false
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "ce8a1aa70de243b09b794db23bfb74b71ca5157a4d1ef290d39e128a23de1092"
+}

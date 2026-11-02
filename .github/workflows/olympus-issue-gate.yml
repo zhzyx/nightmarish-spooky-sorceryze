@@ -1,0 +1,43 @@
+name: Olympus Issue association
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  issue-association:
+    runs-on: ubuntu-latest
+    steps:
+      # Trusted base workflow only. Never check out or execute PR code here.
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const pr = (await github.rest.pulls.get({owner, repo, pull_number: context.payload.pull_request.number})).data;
+            const body = pr.body || '';
+            const numbers = [...body.matchAll(/^Olympus-Issue:[ \t]*#([1-9][0-9]*)[ \t]*\r?$/gm)];
+            const requests = [...body.matchAll(/^Olympus-Request:[ \t]*([a-z0-9]+(?:-[a-z0-9]+)*)[ \t]*\r?$/gm)];
+            if (numbers.length !== 1 || requests.length !== 1) throw Error('Require one Olympus-Issue: #N and one Olympus-Request: stable-id line');
+            const issueNumber = Number(numbers[0][1]);
+            if (!Number.isSafeInteger(issueNumber)) throw Error('Invalid Issue number');
+            const issue = (await github.rest.issues.get({owner, repo, issue_number: issueNumber})).data;
+            if (issue.pull_request || issue.state !== 'open' || issue.number !== issueNumber) throw Error('Require a real open Issue in this repository');
+            const definitions = (await github.rest.repos.getContent({owner, repo, path: '.github/labels.json', ref: pr.base.sha})).data;
+            const types = new Set(JSON.parse(Buffer.from(definitions.content, 'base64').toString('utf8')).map(x => x.name));
+            const labels = issue.labels.map(x => typeof x === 'string' ? x : x.name);
+            const category = labels.filter(x => x.startsWith('type:'));
+            const status = labels.filter(x => x.startsWith('status:'));
+            if (category.length !== 1 || !types.has(category[0])) throw Error('Require exactly one known type label');
+            if (status.length !== 1 || !['status:in-progress', 'status:in-review'].includes(status[0])) throw Error('Require exactly one active status label');
+            const issueBody = issue.body || '';
+            const ids = new Set([
+              ...[...issueBody.matchAll(/<!--\s*olympus-request:([a-z0-9]+(?:-[a-z0-9]+)*)\s*-->/g)].map(x => x[1]),
+              ...[...issueBody.matchAll(/^### 稳定需求 ID\s*\n+([a-z0-9]+(?:-[a-z0-9]+)*)[ \t]*(?=\r?$)/gm)].map(x => x[1])
+            ]);
+            if (ids.size !== 1 || !ids.has(requests[0][1])) throw Error('Issue request identity must match unambiguously');
+            await core.summary.addRaw('Same-repository Issue association checked at this event. This check does not execute Olympus, authenticate admission, verify Hermes data, or accept business delivery. Run the trusted local gate on final content before commit; repository protection must separately require this check.').write();

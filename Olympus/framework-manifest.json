@@ -151,6 +151,15 @@
         "specs/project-state.md",
         "specs/reporting.md"
       ]
+    },
+    {
+      "path": "specs/delivery.md",
+      "title": "奥林匹斯交付与版本核验",
+      "load_when": "版本库合入、发布、可运行交付或共享依赖变更时",
+      "conditional_references": [
+        "specs/code-collaboration.md",
+        "specs/work-order-management.md"
+      ]
     }
   ],
   "never_bulk_load": [
@@ -330,7 +339,7 @@
       "path": "skills/ariadne/SKILL.md",
       "reporting": "skills/ariadne/reporting.json",
       "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne/event-change-review.json"
+      "admission_pass": "reviews/ariadne/nonblocking-review.json"
     }
   ],
   "agents": [
@@ -343,7 +352,6 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "15750fcb9afeacf9ee5ee706caa291770344bda8e95b4411c603fd0966d0b83a",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -405,8 +413,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -420,7 +430,8 @@
         "upstream/zeus/agents/zeus.md",
         "upstream/zeus/core.md"
       ],
-      "reporting": "agents/athena/reporting.json"
+      "reporting": "agents/athena/reporting.json",
+      "candidate_digest": "a415dbe49dd9a6b81ff1a37e6250e51ca5770649b099d9f36716f8ed4041d872"
     },
     {
       "id": "themis",
@@ -431,7 +442,6 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "c41a33bd6d51ceb58cddc42f60583769f3726bf0f0d5945c9e11cee63cf08b1e",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -490,8 +500,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -506,7 +518,8 @@
         "upstream/zeus/agents/zeus.md",
         "upstream/zeus/core.md"
       ],
-      "reporting": "agents/themis/reporting.json"
+      "reporting": "agents/themis/reporting.json",
+      "candidate_digest": "b13be5429e999f0c143b37ff94acde7f7365dd19328b5a6037ebbbb7b56422a3"
     },
     {
       "id": "hermes",
@@ -572,8 +585,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -588,8 +603,8 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "f2abe1073b7721e3d0d860e531efb9fc99d41f3d43a038ffe55bee1f3e5324cf",
-      "reporting": "agents/hermes/reporting.json"
+      "reporting": "agents/hermes/reporting.json",
+      "candidate_digest": "f61033eb4a8121a1157fb397fe7f1dff1830ecaa8bc28c4134726deeda60b779"
     }
   ],
   "quality_domain": {
@@ -643,13 +658,21 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.4.0",
+      "version": "0.4.2",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",
       "admission_pass": "reviews/ariadne-module-admission.json"
     }
   ],
+  "delivery_verification": {
+    "specification": "specs/delivery.md",
+    "checker": "tools/check_delivery.py",
+    "template": "templates/delivery.json",
+    "review": "reviews/ariadne/workflow-optimization-review.json",
+    "invocation": "on_actual_delivery_or_dependency_event",
+    "grants_authority": false
+  },
   "distribution_sync": {
     "policy": "sync/POLICY.md",
     "checker": "sync/gonggong_sync.py",

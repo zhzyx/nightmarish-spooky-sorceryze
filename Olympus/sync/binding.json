@@ -1,8 +1,8 @@
 {
   "path_base": "olympus_framework_root",
-  "source": "../../GongGong/CURRENT_FRAMEWORK.json",
+  "source": "../.godot-integration-local/issue7-042-standalone/source/CURRENT_FRAMEWORK.json",
   "sinan_source": {
-    "framework": "../../GongGong/framework"
+    "framework": "../.godot-integration-local/issue7-042-standalone/source/framework"
   },
-  "purpose": "local_upstream_locator_not_authority"
+  "purpose": "update_only_locator_not_runtime_dependency_or_authority"
 }

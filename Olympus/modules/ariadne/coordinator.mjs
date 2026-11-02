@@ -6,6 +6,7 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
 const digest=b=>crypto.createHash('sha256').update(b).digest('hex');
 const key=(ledger,id)=>`${ledger}::${id}`;
 function validateLabels(m) {
+  if(m.pending_user_blocking!==undefined&&typeof m.pending_user_blocking!=='boolean')throw Error('pending_user_blocking must be boolean');
   if(m.type!==undefined&&(typeof m.type!=='string'||!m.type.trim()||m.type!==m.type.trim()||m.type.length>80||/[\s:]/u.test(m.type)))throw Error('Type must be a nonempty identifier without whitespace or colon (max 80 characters)');
   if(m.tags!==undefined&&(!Array.isArray(m.tags)||m.tags.some(t=>typeof t!=='string'||!t.trim()||t!==t.trim()||t.includes(':')||t.length>80)))throw Error('Tags must be nonempty plain names without colon');
   if(m.assessment!==undefined) {
@@ -78,7 +79,7 @@ export function board(config,base=process.cwd()) {
     (edge.kind==='hard'?t.dependsOn:t.softDependencies).push(edge.requires);
   }
   const metadata=new Map();for(const m of config.coordination||[]){if(metadata.has(m.ticket))throw Error('Duplicate coordination record');metadata.set(m.ticket,m);if(!byKey.has(m.ticket))diagnostics.push({ticket:m.ticket,error:'Coordination target unavailable'});}
-  for(const t of items){const m=metadata.get(t.key)||{};if(m.priority!==undefined&&(!Number.isInteger(m.priority)||m.priority<0||m.priority>3))throw Error('Priority must be 0..3');t.priority=m.priority??2;t.featureRefs=m.feature_refs||[];t.coordinator=m.coordinator||null;t.decisionRef=m.decision_ref||null;t.pendingUser=m.pending_user===true;}
+  for(const t of items){const m=metadata.get(t.key)||{};if(m.priority!==undefined&&(!Number.isInteger(m.priority)||m.priority<0||m.priority>3))throw Error('Priority must be 0..3');t.priority=m.priority??2;t.featureRefs=m.feature_refs||[];t.coordinator=m.coordinator||null;t.decisionRef=m.decision_ref||null;t.pendingUser=m.pending_user===true;t.decisionBlocking=t.pendingUser&&m.pending_user_blocking===true;}
   for(const t of items){const m=metadata.get(t.key)||{};validateLabels(m);t.type=m.type??'unclassified';t.tags=[...new Set(m.tags||[])];t.assessment=m.assessment??{state:'none'};t.judgmentBlocking=t.assessment.state==='pending'&&t.assessment.blocking;}
   const visited=new Set(),active=new Set(),stack=[],cyclic=new Set();
   function visit(k){if(active.has(k)){for(const n of stack.slice(stack.indexOf(k)))cyclic.add(n);return;}if(visited.has(k))return;active.add(k);stack.push(k);for(const d of byKey.get(k)?.dependsOn||[])if(byKey.has(d))visit(d);stack.pop();active.delete(k);visited.add(k);}
@@ -87,7 +88,7 @@ export function board(config,base=process.cwd()) {
   function accepted(k,checking=new Set()) {
     if(healthMemo.has(k))return healthMemo.get(k);
     const t=byKey.get(k);if(!t||checking.has(k)||cyclic.has(k))return false;
-    checking.add(k);const valid=t.status==='done'&&t.definitionValid&&t.evidenceValid&&!t.pendingUser&&!t.judgmentBlocking&&!!t.owner&&t.dependsOn.every(d=>accepted(d,checking));checking.delete(k);healthMemo.set(k,valid);return valid;
+    checking.add(k);const valid=t.status==='done'&&t.definitionValid&&t.evidenceValid&&!t.decisionBlocking&&!t.judgmentBlocking&&!!t.owner&&t.dependsOn.every(d=>accepted(d,checking));checking.delete(k);healthMemo.set(k,valid);return valid;
   }
   for(const t of items) {
     t.dependsOn=[...new Set(t.dependsOn)];
@@ -97,7 +98,7 @@ export function board(config,base=process.cwd()) {
     if(t.judgmentBlocking)t.problems.push('pending_judgment');
     if(!t.owner)t.problems.push('owner_unassigned');
     // Unassigned work remains a coordination candidate, but not an execution authorization.
-    t.dispatchCandidate=t.status==='open'&&t.problems.every(p=>p==='owner_unassigned');
+    t.dispatchCandidate=t.status==='open'&&t.problems.every(p=>p==='owner_unassigned'||(p==='pending_user_decision'&&!t.decisionBlocking));
     t.coordinationState=t.dispatchCandidate?'dispatch_candidate':t.status==='running'&&t.execution==='pending_host'?'delegated_pending_host':t.problems.length?'needs_coordination':t.status;
     t.acceptanceValid=accepted(t.key);
     const progress=t.status==='running'&&t.execution==='pending_host'?'awaiting_host':({open:'planned',running:'processing',review:'review',blocked:'blocked',done:'done'}[t.status]||'unknown');
@@ -106,7 +107,19 @@ export function board(config,base=process.cwd()) {
     if(t.pendingUser)t.labels.push('decision:user');
     if(t.problems.length)t.labels.push('attention:required');
   }
-  return {scope:'registered_sources_only',sourcesRegistered:(config.sources||[]).length,sourcesRead:ledgers.size,sourceSnapshots,diagnostics,items,ready:items.filter(t=>t.dispatchCandidate).sort((a,b)=>a.priority-b.priority||String(a.created||'').localeCompare(String(b.created||''))||a.key.localeCompare(b.key)).map(t=>t.key)};
+  // Derived handoffs are not executed assignments or new authoritative tickets.
+  const followUps=items.flatMap(t=>[...new Set([...t.problems,...(t.assessment.state==='pending'?['pending_judgment']:[]),...(t.status==='blocked'?['source_blocked']:[])])].map(problem=>({
+    key:`${t.key}::${problem}`,ticket:t.key,problem,
+    owner:problem==='pending_judgment'?t.assessment.owner:(t.coordinator||t.owner||'host_task_coordinator'),
+    decisionOwner:problem==='pending_user_decision'?'user':null,
+    issue:(metadata.get(t.key)||{}).issue_ref||null,
+    issueAction:'Find or create linked Issue at work-items.json authority; read back before marking linked',
+    status:'proposed',execution:'not_dispatched',
+    nextAction:'Investigate or repair within mandate; isolate affected operation and continue independent authorized work',
+    resumeOn:'Actual evidence, decision, dependency, execution event or user request; no timer'
+  })));
+  for(const d of diagnostics)followUps.push({key:`source:${d.source||d.ticket}`,problem:d.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',issueAction:'Link source repair Issue',nextAction:'Repair source visibility; continue readable independent sources'});
+  return {followUps,scope:'registered_sources_only' ,sourcesRegistered:(config.sources||[]).length,sourcesRead:ledgers.size,sourceSnapshots,diagnostics,items,ready:items.filter(t=>t.dispatchCandidate).sort((a,b)=>a.priority-b.priority||String(a.created||'').localeCompare(String(b.created||''))||a.key.localeCompare(b.key)).map(t=>t.key)};
 }
 
 export function prepare(config,snapshot,sourceId,command,args=[]) {
@@ -118,7 +131,7 @@ export function prepare(config,snapshot,sourceId,command,args=[]) {
     const t=snapshot.items.find(t=>t.source===sourceId&&t.id===args[0]);if(!t)throw Error('Unknown ticket');
     let rejectReview=false;
     if(command==='review'){if(!args[1])throw Error('Review JSON is required');const r=read(path.resolve(args[1]));if(!['pass','fail'].includes(r.verdict))throw Error('Review verdict must be pass or fail');rejectReview=r.verdict==='fail';}
-    if(!rejectReview&&t.problems.some(p=>p!=='owner_unassigned'))throw Error('Resolve coordination constraints before preparing this transition');
+    if(!rejectReview&&t.problems.some(p=>p!=='owner_unassigned'&&!(p==='pending_user_decision'&&!t.decisionBlocking)))throw Error('Resolve coordination constraints before preparing this transition');
     if(command==='start'&&!t.dispatchCandidate)throw Error('Ticket is not a dispatch candidate');
   }
   if(!config.adapter_cli||!fs.existsSync(config.adapter_cli))throw Error('Real source CLI is required');

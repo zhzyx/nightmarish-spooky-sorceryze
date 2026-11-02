@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "collected_at": "2026-11-02T16:54:06.826797+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/upstream-workflow-upgrade-20261102/advance-issues-20261103-7-request.json",
+      "sha256": "e79632a60440542f3735a9d703b0caf9e5a1f67802347a76feb24cb7b43b98c0",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-7-request",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/upstream-workflow-upgrade-20261102/advance-issues-20261103-7-validation.json",
+      "sha256": "f4a920d791ceda138360a5b261aecfc5521730e98877cec96393ebb516207160",
+      "tenant_id": "olympus-workspace",
+      "event_id": "advance-issues-20261103-7-validation",
+      "origin": "codex-local-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/upstream-workflow-upgrade-20261102/upstream-workflow-upgrade-20261102-progress.json",
+      "sha256": "450ee78f04381e5414388665b799da71c8febc9489045784051113df8bbe4763",
+      "tenant_id": "olympus-workspace",
+      "event_id": "upstream-workflow-upgrade-20261102-progress",
+      "origin": "codex-host-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/upstream-workflow-upgrade-20261102/upstream-workflow-upgrade-20261102-registered.json",
+      "sha256": "dc5f44f338340a23287259575b40fff6e412c767f514277c4d23a0044d10381b",
+      "tenant_id": "olympus-workspace",
+      "event_id": "upstream-workflow-upgrade-20261102-registered",
+      "origin": "codex-host-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}
