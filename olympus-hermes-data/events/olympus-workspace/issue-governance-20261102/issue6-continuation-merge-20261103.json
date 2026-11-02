@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-continuation-merge-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-02T21:04:39.767185+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "1b98ef0c076def292e6b461a794279bd6b2eea6ba35456a3f2f6111f37d9e6e6",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "evidence_ref": "data-collection/issue6-continuation-merge-20261103.json",
+    "evidence_sha256": "b49f507afae1a557b0c152126c87f0117e848530eee4425bd3f47a9d5c152677",
+    "merge_commit": "0e2fe845e884fdd1683f1a8e9ceb1bcffc06f72f",
+    "merged": true,
+    "windows_builds": "IN_PROGRESS",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue6-continuation-ci-fix-20261103"
+  ],
+  "sha256": "225ca340832fa8266c699806f9731c809a8a7fd2acd3a88f80f0fdf817112d23"
+}

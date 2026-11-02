@@ -35,3 +35,5 @@
 实现提交 `0241194c0ddd3c609a9fd692b054f1f0f326734a` 已推送并与远程分支精确回读一致；[PR #16](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/16) 已发布，仍开放待验收，未合入 main。完整提交门禁通过，提交后 Hermes 检查为 committed：69 事件／72 数据文件。[远程发布证据](../data-collection/issue6-continuation-publication-20261103.json)与对应真实事件追加交付。后续仅新增这批发布证据，复用未变实现的行为与独立审查结果，重跑最终提交门禁及提交后数据检查。
 
 用户要求立即合入后，实际读取PR静态失败并完成格式、测试模块spec/loader类型保护、同一头文件规范路径修复；57项回归和mypy通过。独立复核确认生产逻辑一致，头文件目标一致。仅两份已记录摘要的历史证据原件排除换行格式化，原件保护门禁继续运行。[CI修复证据](../data-collection/issue6-continuation-ci-fix-20261103.json)。以新提交远程检查为准，尚不宣称合入。
+
+PR #16 已按用户立即合入授权普通合并至 main，提交 `0e2fe845e884fdd1683f1a8e9ceb1bcffc06f72f`。远程回读及候选祖先校验通过，合入后 Hermes 检查71事件／74数据文件均 committed。随后回读远程静态与Issue关联已成功，Windows构建仍在运行；工单保持待验收。[实际合入回执](../data-collection/issue6-continuation-merge-20261103.json)及文件事件随此证据补交，历史记录不改写。

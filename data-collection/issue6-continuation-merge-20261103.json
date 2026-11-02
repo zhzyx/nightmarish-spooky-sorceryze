@@ -1,0 +1,26 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T21:04:39.767185+00:00",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/16",
+  "state": "MERGED",
+  "head_commit": "df03887786c13a822551751f11fe565376fef6b5",
+  "merge_commit": "0e2fe845e884fdd1683f1a8e9ceb1bcffc06f72f",
+  "merged_at": "2026-11-02T21:03:36Z",
+  "remote_main_verified": true,
+  "candidate_is_ancestor": true,
+  "postmerge_hermes": {
+    "git_state": "committed",
+    "records": 71,
+    "files": 74
+  },
+  "remote_checks": {
+    "static": "SUCCESS",
+    "issue_association": "SUCCESS",
+    "windows_builds": "IN_PROGRESS"
+  },
+  "merge_method": "ordinary merge with exact head match; no admin bypass",
+  "user_authorization": "Immediately merge",
+  "issue_state": "in-review; business acceptance not completed",
+  "input_tokens": null,
+  "output_tokens": null
+}
