@@ -1,0 +1,38 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "observed_at": "2026-11-02T18:40:06.201533+00:00",
+  "user_request": "将以上遗漏补充进入框架内。同时，宿主在使用框架开发时，数据采集部分也需要视为需要提交的内容。修改并同步更新进git",
+  "tests": {
+    "host_adapter": 18,
+    "issue_workorders": 37,
+    "result": "passed"
+  },
+  "cpp_objects": {
+    "ai_chat_olympus": "compiled",
+    "olympus_panel": "compiled",
+    "toolchain": "MSVC 14.5, Windows SDK 10.0.26100.0",
+    "full_binary_release_verified": false
+  },
+  "formal_framework_mode": "approved_file_integrity",
+  "files": {
+    "AGENTS.md": "e56228340d21d0476972ced3832534cb4213d2472fb84b02032bf7d56e14c081",
+    ".github/CONTRIBUTING.md": "c0cddfbf63aefed516fc32400579a8f4ebd526247db02bf26bbf211f69da2b86",
+    "customizations/components/godot-host/bridge.py": "551d1a8d939cb04fe99f21e5822d6bf970fdcbe23457a2381e589f958a135fde",
+    "customizations/components/godot-host/test_bridge.py": "18d8474bca440b5a830f7131f3d8e0bb50447f2a998890ef99a1f030da85727c",
+    "customizations/components/godot-host/test_issue_binding.py": "22c2b48aa48160b7898f1e0d275a684919912cf7e8ac0a6e93311ca8ab7aea99",
+    "customizations/components/godot-host/README.md": "ffd447ba959b87ae7bd51b2876ee05cc2127e003290b4eb319de31d07a84688f",
+    "customizations/components/issue-workorders/issue_gate.py": "25f66684199521a1d1c23d385abd416850cb1a53bc9d62f0e33daeaef8524568",
+    "customizations/components/issue-workorders/test_host_intake.py": "28ec3ebe6ccccc4d4477ad03c4813b4185c4a69b921a9a71185d05201dfb5ef2",
+    "customizations/components/issue-workorders/README.md": "bfd64d3e2234b16f7627cee16ad4006e882f2c844fb22e14f14150f474a6fba6",
+    "editor/docks/ai_chat_olympus.cpp": "281a95ef7f6b0566999ad5385b2f42d48acb2e225d04146a92bcd5754c11c4fd",
+    "editor/docks/olympus_panel.cpp": "671514c66ff097186fc71d3f4aedb890022ab2370ab9ad4726e07a974c78691f",
+    "editor/docks/olympus_panel.h": "3a4a9fadd1a23d5f02684e80b61b79177b233516c12cc95dc052bb215de94c77",
+    "design-docs/issue-6-host-intake-delivery-20261103.md": "9dd693d27740c13a14b5fd9452a63750feb21a7589948d6a94ce1bf33a9b14ee"
+  },
+  "github_update": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6#issuecomment-6585237345",
+  "ariadne_source_registered": false,
+  "server_protection_enabled_by_this_task": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "independent_review": "data-collection/issue-6-host-intake-review-20261103.json"
+}

@@ -1,5 +1,9 @@
 # GitHub Issue 工单适配
 
+宿主开发入口使用同一脚本的 `--intake-only --tenant <配置租户>` 模式，仍需提供 `--repo`、`--issue`、`--request-id`。此模式只回读真实工单并验证仓库 origin、稳定 ID、类别、有效状态、租户及 workspace:olympus，不执行模型、不代替正式框架准入。没有 Issue 时先显式创建/复用；聊天入口拒绝绕过，不以本地预览替代发布。
+
+data-collection 内的真实来源与回执也是交付内容：本地提交门禁逐文件比较 index 当前字节，拒绝未跟踪、被忽略、未暂存或删除的采集原件。缓存、凭据和本机绝对源路径不得放入交付目录；纠正追加记录。Hermes 仍按既有规则校验并在提交后核对 HEAD。服务器 required check、分支保护及 Ariadne 事件来源仍需各自真实启用，入口校验不冒充这些能力。
+
 适用 Olympus 工程层；共工共同框架、Ariadne 源状态和准入不变。本文路径均相对仓库根。工作区配置为 `work-items.json`，类别定义为 `.github/labels.json`，七种状态另列 `.github/status-labels.json`。每个类别表单携带唯一 `type:*` 和默认 `status:needs-decision`；开始生产前明确范围、授权及依赖并转为 `status:in-progress`，待验收时为 `status:in-review`。
 
 Git 本身不提供 Issue，本工程采用现有 GitHub 远程仓库的 Issue。Issue 状态是权威；本地文档、创建计划和数据索引不是另一套工单账本。所有远程操作需要实际 GitHub 权限；已验证本机现有 GitHub CLI 登录及仓库写权限；若 `gh` 不在 PATH，将实际 CLI 的 bin 目录加入本机会话 PATH。账号凭据不进入仓库。GitHub 插件状态不影响已验证的本机 CLI 通道。

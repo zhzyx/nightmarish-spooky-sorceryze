@@ -26,12 +26,17 @@ class ChatGateTests(unittest.TestCase):
                         "authority_ref": "isolated-test", "project": "fixture",
                         "tools_enabled": False, "file_changes_require_approval": True,
                         "execution_requires_approval": True}
+        self.issue_patch = patch.object(bridge, 'issue_binding', return_value={'url': 'https://github.com/test/repo/issues/6'})
+        self.issue_patch.start()
+        self.addCleanup(self.issue_patch.stop)
 
     def process(self, ok, receipt_ok=True):
         def run(command, **kwargs):
             if command[1].endswith('agent-context.mjs'):
                 mandate = json.loads(Path(command[-1]).read_text())
                 self.assertFalse(mandate['tool_permission']['tools_enabled'])
+                self.assertEqual(mandate['issue']['url'], 'https://github.com/test/repo/issues/6')
+                self.assertIn('data-collection sources, evidence and receipts', mandate['delivery_requirements']['required_git_deliverables'])
                 self.assertEqual(kwargs['env']['OLYMPUS_PYTHON'], bridge.sys.executable)
                 return types.SimpleNamespace(returncode=0 if ok else 1, stdout="FRAMEWORK" if ok else "", stderr="admission blocked")
             event = json.loads(Path(command[-1]).read_text())
@@ -73,7 +78,7 @@ class ChatGateTests(unittest.TestCase):
                 result = bridge.chat(self.root, request, 'test')
             self.assertTrue(result['context_ready'])
             self.assertFalse(result['model_execution_started'])
-            self.assertEqual(result['reporting']['source_ref'], 'sample-' + kind + ':ai-chat')
+            self.assertEqual(result['reporting']['source_ref'], 'https://github.com/test/repo/issues/6')
             self.assertEqual(run.call_args_list[0].args[0][-2], 'athena')
 
     def test_registered_alternate_agent_is_not_rewritten_to_athena(self):

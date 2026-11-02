@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-host-intake-request-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-02T18:40:06.289639+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "e56228340d21d0476972ced3832534cb4213d2472fb84b02032bf7d56e14c081",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "instruction": "将以上遗漏补充进入框架内。同时，宿主在使用框架开发时，数据采集部分也需要视为需要提交的内容。修改并同步更新进git",
+    "implementation": "Host preflight real Issue binding and collection index checks",
+    "evidence": "data-collection/issue-6-host-intake-verification-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null,
+    "production_model_called": false
+  },
+  "evidence_refs": [],
+  "sha256": "23fbc4d82b5308a1280b83415fd576c85136bf87d9b0c6be43550a382fc41349"
+}

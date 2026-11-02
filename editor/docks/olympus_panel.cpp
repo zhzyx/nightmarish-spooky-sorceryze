@@ -59,6 +59,8 @@ OlympusPanel::OlympusPanel() {
         EditorSettings::get_singleton()->set("olympus/python", python_default);
     }
     EDITOR_DEF("olympus/tenant", "olympus-workspace");
+    EDITOR_DEF("olympus/issue_number", "");
+    EDITOR_DEF("olympus/request_id", "");
     Label *notice = memnew(Label);
     notice->set_text(U"Olympus · 框架与赫尔墨斯数据\n接入检查不代表 Agent 已获准启用。配置保存于本机编辑器设置。");
     notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
@@ -75,6 +77,16 @@ OlympusPanel::OlympusPanel() {
     tenant->set_placeholder(U"数据租户");
     tenant->set_text(EDITOR_GET("olympus/tenant"));
     add_child(tenant);
+    issue_number = memnew(LineEdit);
+    issue_number->set_placeholder(U"开发工单 Issue 编号（先创建或复用真实工单）");
+    issue_number->set_text(EDITOR_GET("olympus/issue_number"));
+    add_child(issue_number);
+    request_id = memnew(LineEdit);
+    request_id->set_placeholder(U"工单中的稳定需求 ID");
+    request_id->set_text(EDITOR_GET("olympus/request_id"));
+    add_child(request_id);
+    issue_number->connect("text_changed", callable_mp(this, &OlympusPanel::save_issue_binding));
+    request_id->connect("text_changed", callable_mp(this, &OlympusPanel::save_issue_binding));
     const char *actions[] = {"status", "doctor", "check", "validate", "analyze"};
     const String labels[] = {U"读取框架状态", U"诊断生产聊天阻断原因", U"核对上游及候选完整性", U"校验赫尔墨斯数据", U"分析当前租户记录"};
     for (int i = 0; i < 5; i++) {
@@ -92,6 +104,12 @@ OlympusPanel::OlympusPanel() {
     timer->set_wait_time(0.25);
     timer->connect("timeout", callable_mp(this, &OlympusPanel::poll));
     add_child(timer);
+}
+
+void OlympusPanel::save_issue_binding(const String &p_text) {
+    EditorSettings::get_singleton()->set("olympus/issue_number", issue_number->get_text().strip_edges());
+    EditorSettings::get_singleton()->set("olympus/request_id", request_id->get_text().strip_edges());
+    EditorSettings::save();
 }
 
 void OlympusPanel::run_action(const String &p_action) {
