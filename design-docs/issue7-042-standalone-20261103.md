@@ -46,3 +46,9 @@ Git 合并必须等待对应CI通过；当前不能将本地切换等同于默�
 实际读取 [Linux编译失败](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41491433061/job/125435518075)，确认 `editor/docks/ai_chat_dock.cpp` 10处及 `ai_chat_olympus.cpp` 1处局部声明遮蔽成员，触发`-Werror=shadow`。关联既有CI工单 #11；作为本次合并必要修复，仅改局部变量名及对应使用，不改编译检查或CLI脚本。
 
 `codex-subagent:review_standalone` 独立只读审查确认：词法归一化后两文件与修复前HEAD完全一致，字符串、序列化键、成员访问和行为不变，所有引用改名完整。clang-format --dry-run --Werror通过；实际编译结果仍等待对应CI。不影响已批准框架文件或候选摘要。
+
+后续CI中Android arm32/arm64编译通过，但生成模板因gradlew无Git可执行位退出126；缓存清理脚本也报Permission denied。已核对工作流直接调用路径，恢复gradlew、purge_cache.py、check_ci_log.py、validate_extension_api.sh、build_assemblies.py、run_compatibility_test.py六文件100755模式；Git blob与原HEAD逐字一致，均有有效shebang。不关闭或替换检查，后续以新提交CI为准。另两个改名C++文件在本地以werror=yes编译通过（缺少本地驱动依赖，单对象检查使用accesskit=no/d3d12=no；未安装新引擎）。
+
+后续Linux正式编译还定位到resume中的两处const String&从字面量列表临时构造（range-loop-construct），以及scheduler的title局部变量遮蔽；改为值变量及task_title。scheduler随项目clang-format规范化，行为不变。Windows clang编译通过后，既有[OS] Execute单测失败，当前已安装引擎同样可复现：`cmd`的`/C`被额外加引号导致退出1。现有Windows参数编码改为只在需要时加引号，仍保留空白、空参数、内嵌引号、反斜杠及shell元字符的原处理；增加带输出管道的退出码7回归。参考：[Microsoft CRT参数解析](https://learn.microsoft.com/en-us/cpp/c-language/parsing-c-command-line-arguments?view=vs-2019)、[cmd解析](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd)。这属于合并前真实CI阻塞修复，不降低检查门槛。
+
+上述后续修复经codex-subagent:review_standalone独立只读审查通过：resume仅两处临时引用改值；scheduler归一变量名后经相同clang-format与HEAD完全一致；六脚本只有模式变更；Windows简单参数免引号，复杂参数原逻辑保留。独立Windows子进程24种参数往返及cmd退出0/7探针通过（helper等价转写，不冒充新引擎二进制验收）。最终新二进制测试及远程CI仍待完成。

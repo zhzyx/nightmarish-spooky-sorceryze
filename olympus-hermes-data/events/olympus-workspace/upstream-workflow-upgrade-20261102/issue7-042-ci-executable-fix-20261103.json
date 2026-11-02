@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-ci-executable-fix-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:24:46.607128+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Android arm32/arm64 compilation passed, then generate-template failed exit126: gradlew Permission denied. Cache purge also Permission denied. Restored 100755 on six existing shebang scripts directly invoked by current workflows; Git blob equality proves zero content changes. Related Issue11.",
+    "paths": [
+      "platform/android/java/gradlew",
+      "misc/scripts/purge_cache.py",
+      "misc/scripts/check_ci_log.py",
+      "modules/mono/build_scripts/build_assemblies.py",
+      "misc/scripts/validate_extension_api.sh",
+      "tests/compatibility_test/run_compatibility_test.py"
+    ],
+    "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41496576118/job/125454046772",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied; remote end-to-end result still pending"
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "5289ab9cd2aa3c3f69af99a0f720bef2cd4a92090e0014d6b96300bcb0be6f37"
+}

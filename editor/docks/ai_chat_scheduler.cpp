@@ -78,24 +78,36 @@ bool valid_task(const Dictionary &p_task) {
 }
 
 String run_status(const String &p_state) {
-	if (p_state == "waiting") return U"等待空闲";
-	if (p_state == "running") return U"执行中";
-	if (p_state == "completed") return U"已完成";
-	if (p_state == "failed") return U"失败／已停止";
+	if (p_state == "waiting") {
+		return U"等待空闲";
+	}
+	if (p_state == "running") {
+		return U"执行中";
+	}
+	if (p_state == "completed") {
+		return U"已完成";
+	}
+	if (p_state == "failed") {
+		return U"失败／已停止";
+	}
 	return U"重启中断，未自动重跑";
 }
-}
+} //namespace
 
 int AIChatDock::_schedule_index(int p_id) const {
 	for (int i = 0; i < schedule_tasks.size(); i++) {
-		if (int(Dictionary(schedule_tasks[i])["id"]) == p_id) return i;
+		if (int(Dictionary(schedule_tasks[i])["id"]) == p_id) {
+			return i;
+		}
 	}
 	return -1;
 }
 
 int AIChatDock::_agent_index(int p_id) const {
 	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
-		if (int(agent_tabs->get_tab_metadata(i)) == p_id) return i;
+		if (int(agent_tabs->get_tab_metadata(i)) == p_id) {
+			return i;
+		}
 	}
 	return -1;
 }
@@ -107,7 +119,9 @@ int AIChatDock::_manual_agent_count() const {
 bool AIChatDock::_schedule_outstanding(int p_id) const {
 	for (const KeyValue<int, Dictionary> &entry : scheduled_agents) {
 		const String state = entry.value["state"];
-		if (int(entry.value["schedule_id"]) == p_id && (state == "waiting" || state == "running")) return true;
+		if (int(entry.value["schedule_id"]) == p_id && (state == "waiting" || state == "running")) {
+			return true;
+		}
 	}
 	return false;
 }
@@ -212,7 +226,9 @@ void AIChatDock::_build_scheduler_ui(Control *p_page) {
 	period->add_child(schedule_frequency);
 	schedule_unit = memnew(OptionButton);
 	schedule_unit->set_name("ScheduledTaskUnit");
-	for (const char32_t *unit : UNITS) schedule_unit->add_item(unit);
+	for (const char32_t *unit : UNITS) {
+		schedule_unit->add_item(unit);
+	}
 	period->add_child(schedule_unit);
 	schedule_validation = memnew(Label);
 	schedule_validation->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
@@ -235,13 +251,19 @@ void AIChatDock::_load_schedules(const Dictionary &p_data) {
 	if (tasks.get_type() == Variant::ARRAY && Array(tasks).size() <= 32) {
 		const int64_t now = int64_t(Time::get_singleton()->get_unix_time_from_system());
 		for (const Variant &value : Array(tasks)) {
-			if (value.get_type() != Variant::DICTIONARY || !valid_task(value)) continue;
+			if (value.get_type() != Variant::DICTIONARY || !valid_task(value)) {
+				continue;
+			}
 			Dictionary task = Dictionary(value).duplicate(true);
 			const int id = task["id"];
-			if (_schedule_index(id) >= 0) continue;
+			if (_schedule_index(id) >= 0) {
+				continue;
+			}
 			next_schedule = MAX(next_schedule, id + 1);
 			// Offline ticks never accumulate and never replay interrupted operations.
-			if (int64_t(task["next_due"]) <= now) task["next_due"] = now + period_seconds(task);
+			if (int64_t(task["next_due"]) <= now) {
+				task["next_due"] = now + period_seconds(task);
+			}
 			schedule_tasks.push_back(task);
 		}
 	}
@@ -249,22 +271,36 @@ void AIChatDock::_load_schedules(const Dictionary &p_data) {
 	for (const Variant &value : agents) {
 		const Dictionary agent = value;
 		const Variant run_value = agent.get("scheduled_run", Variant());
-		if (run_value.get_type() != Variant::DICTIONARY) continue;
+		if (run_value.get_type() != Variant::DICTIONARY) {
+			continue;
+		}
 		Dictionary run = Dictionary(run_value).duplicate(true);
 		const Variant owner = run.get("schedule_id", Variant());
 		const Variant state = run.get("state", Variant());
-		if (!owner.is_num() || _schedule_index(int(owner)) < 0 || state.get_type() != Variant::STRING) continue;
+		if (!owner.is_num() || _schedule_index(int(owner)) < 0 || state.get_type() != Variant::STRING) {
+			continue;
+		}
 		const int id = agent["id"];
 		const int index = _agent_index(id);
-		if (index < 0 || scheduled_agents.size() >= 128) continue;
+		if (index < 0 || scheduled_agents.size() >= 128) {
+			continue;
+		}
 		const String status = state;
-		if (status != "waiting" && status != "running" && status != "completed" && status != "failed" && status != "interrupted") continue;
-		if (status == "waiting" || status == "running") run["state"] = "interrupted";
+		if (status != "waiting" && status != "running" && status != "completed" && status != "failed" && status != "interrupted") {
+			continue;
+		}
+		if (status == "waiting" || status == "running") {
+			run["state"] = "interrupted";
+		}
 		scheduled_agents.insert(id, run);
 		agent_tabs->set_tab_hidden(index, true);
 	}
-	if (!schedule_tasks.is_empty()) selected_schedule = Dictionary(schedule_tasks[0])["id"];
-	if (scheduled_agents.has(active_agent)) selected_schedule = scheduled_agents[active_agent]["schedule_id"];
+	if (!schedule_tasks.is_empty()) {
+		selected_schedule = Dictionary(schedule_tasks[0])["id"];
+	}
+	if (scheduled_agents.has(active_agent)) {
+		selected_schedule = scheduled_agents[active_agent]["schedule_id"];
+	}
 	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 		const int id = agent_tabs->get_tab_metadata(i);
 		if (!scheduled_agents.has(id)) {
@@ -277,14 +313,18 @@ void AIChatDock::_load_schedules(const Dictionary &p_data) {
 }
 
 void AIChatDock::_refresh_schedules() {
-	if (!schedule_picker) return;
+	if (!schedule_picker) {
+		return;
+	}
 	schedule_ui_updating = true;
 	schedule_picker->clear();
 	for (int i = 0; i < schedule_tasks.size(); i++) {
 		const Dictionary task = schedule_tasks[i];
 		schedule_picker->add_item(String(task["title"]) + (bool(task["enabled"]) ? U" · 已启用" : U" · 已暂停"));
 		schedule_picker->set_item_metadata(i, task["id"]);
-		if (int(task["id"]) == selected_schedule) schedule_picker->select(i);
+		if (int(task["id"]) == selected_schedule) {
+			schedule_picker->select(i);
+		}
 	}
 	const int index = _schedule_index(selected_schedule);
 	schedule_enabled->set_disabled(index < 0);
@@ -306,18 +346,24 @@ void AIChatDock::_refresh_schedules() {
 }
 
 void AIChatDock::_refresh_schedule_agents() {
-	if (!timer_agent_tabs) return;
+	if (!timer_agent_tabs) {
+		return;
+	}
 	timer_agent_tabs->set_block_signals(true);
 	timer_agent_tabs->clear_tabs();
 	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 		const int id = agent_tabs->get_tab_metadata(i);
-		if (!scheduled_agents.has(id) || int(scheduled_agents[id]["schedule_id"]) != selected_schedule) continue;
+		if (!scheduled_agents.has(id) || int(scheduled_agents[id]["schedule_id"]) != selected_schedule) {
+			continue;
+		}
 		const Dictionary run = scheduled_agents[id];
 		const int index = timer_agent_tabs->get_tab_count();
 		timer_agent_tabs->add_tab(agent_tabs->get_tab_title(i));
 		timer_agent_tabs->set_tab_metadata(index, id);
 		timer_agent_tabs->set_tab_tooltip(index, run_status(run["state"]));
-		if (id == active_agent) timer_agent_tabs->set_current_tab(index);
+		if (id == active_agent) {
+			timer_agent_tabs->set_current_tab(index);
+		}
 	}
 	timer_agent_tabs->set_block_signals(false);
 	const bool showing = scheduled_agents.has(active_agent) && int(scheduled_agents[active_agent]["schedule_id"]) == selected_schedule;
@@ -330,27 +376,35 @@ void AIChatDock::_refresh_schedule_agents() {
 }
 
 void AIChatDock::_route_chat_layout() {
-	if (!chat_layout || !timer_chat_host) return;
+	if (!chat_layout || !timer_chat_host) {
+		return;
+	}
 	const bool scheduled = scheduled_agents.has(active_agent);
 	manual_schedule_notice->set_visible(scheduled);
 	if (scheduled) {
 		manual_schedule_notice->set_text(_agent_title(active_agent) + U" 正在定时器页执行／显示。任务结束后可切回普通 Agent；执行中仍可切页查看，普通会话草稿不会被使用。");
 	}
 	VBoxContainer *target = scheduled ? timer_chat_host : agents_page;
-	if (chat_layout->get_parent() != target) chat_layout->reparent(target);
+	if (chat_layout->get_parent() != target) {
+		chat_layout->reparent(target);
+	}
 	chat_layout->set_visible(!scheduled || int(scheduled_agents[active_agent]["schedule_id"]) == selected_schedule);
 }
 
 void AIChatDock::_workspace_selected(int p_index) {
 	if (p_index == 0 && scheduled_agents.has(active_agent) && !busy && !models_loading && engine_build_pid < 0) {
 		const int index = _agent_index(last_manual_agent);
-		if (index >= 0) _agent_selected(index);
+		if (index >= 0) {
+			_agent_selected(index);
+		}
 	}
 	_route_chat_layout();
 }
 
 void AIChatDock::_schedule_selected(int p_index) {
-	if (schedule_ui_updating || p_index < 0 || p_index >= schedule_picker->get_item_count()) return;
+	if (schedule_ui_updating || p_index < 0 || p_index >= schedule_picker->get_item_count()) {
+		return;
+	}
 	selected_schedule = schedule_picker->get_item_metadata(p_index);
 	_refresh_schedules();
 }
@@ -361,7 +415,9 @@ void AIChatDock::_edit_schedule(bool p_new) {
 		return;
 	}
 	const int index = _schedule_index(selected_schedule);
-	if (!p_new && index < 0) return;
+	if (!p_new && index < 0) {
+		return;
+	}
 	editing_schedule = p_new ? -1 : selected_schedule;
 	const Dictionary task = p_new ? Dictionary() : Dictionary(schedule_tasks[index]);
 	schedule_title->set_text(task.get("title", ""));
@@ -374,12 +430,18 @@ void AIChatDock::_edit_schedule(bool p_new) {
 }
 
 void AIChatDock::_validate_schedule() {
-	const String title = schedule_title->get_text().strip_edges();
-	bool valid = !title.is_empty() && title.length() <= 48 && !schedule_prompt->get_text().strip_edges().is_empty() && schedule_prompt->get_text().utf8().length() <= 256 * 1024;
-	for (int i = 0; i < title.length(); i++) if (title[i] < 32 || title[i] == 127) valid = false;
+	const String task_title = schedule_title->get_text().strip_edges();
+	bool valid = !task_title.is_empty() && task_title.length() <= 48 && !schedule_prompt->get_text().strip_edges().is_empty() && schedule_prompt->get_text().utf8().length() <= 256 * 1024;
+	for (int i = 0; i < task_title.length(); i++) {
+		if (task_title[i] < 32 || task_title[i] == 127) {
+			valid = false;
+		}
+	}
 	for (const Variant &value : schedule_tasks) {
 		const Dictionary task = value;
-		if (int(task["id"]) != editing_schedule && String(task["title"]) == title) valid = false;
+		if (int(task["id"]) != editing_schedule && String(task["title"]) == task_title) {
+			valid = false;
+		}
 	}
 	schedule_dialog->get_ok_button()->set_disabled(!valid);
 	schedule_validation->set_text(valid ? U"保存后从一个完整周期开始计时；使用当前连接方式和模型。不会修改已创建 Agent 的指令。" : U"请输入唯一主题和任务指令（正文最多 256 KiB）。");
@@ -387,12 +449,18 @@ void AIChatDock::_validate_schedule() {
 
 void AIChatDock::_save_schedule() {
 	_validate_schedule();
-	if (schedule_dialog->get_ok_button()->is_disabled() || !history_writable) return;
+	if (schedule_dialog->get_ok_button()->is_disabled() || !history_writable) {
+		return;
+	}
 	int index = _schedule_index(editing_schedule);
-	if (editing_schedule >= 0 && index < 0) return;
+	if (editing_schedule >= 0 && index < 0) {
+		return;
+	}
 	Dictionary task = index >= 0 ? Dictionary(schedule_tasks[index]).duplicate(true) : Dictionary();
 	if (index < 0) {
-		if (schedule_tasks.size() >= 32 || next_schedule >= INT32_MAX - 1) return;
+		if (schedule_tasks.size() >= 32 || next_schedule >= INT32_MAX - 1) {
+			return;
+		}
 		task["id"] = next_schedule++;
 		task["sequence"] = 0;
 		task["enabled"] = true;
@@ -405,7 +473,11 @@ void AIChatDock::_save_schedule() {
 	task["model"] = model->get_text();
 	task["cli_model"] = cli_model->get_text();
 	task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
-	if (index < 0) schedule_tasks.push_back(task); else schedule_tasks[index] = task;
+	if (index < 0) {
+		schedule_tasks.push_back(task);
+	} else {
+		schedule_tasks[index] = task;
+	}
 	selected_schedule = task["id"];
 	schedule_dialog->hide();
 	_refresh_schedules();
@@ -413,7 +485,9 @@ void AIChatDock::_save_schedule() {
 }
 
 void AIChatDock::_delete_schedule_requested() {
-	if (_schedule_index(selected_schedule) < 0) return;
+	if (_schedule_index(selected_schedule) < 0) {
+		return;
+	}
 	deleting_schedule = selected_schedule;
 	schedule_delete_dialog->set_text(U"删除该周期任务及其全部执行 Agent 和聊天？执行中的任务会停止，已应用的文件修改不会撤销。此操作不可恢复。");
 	schedule_delete_dialog->popup_centered();
@@ -421,10 +495,14 @@ void AIChatDock::_delete_schedule_requested() {
 
 void AIChatDock::_delete_schedule() {
 	const int index = _schedule_index(deleting_schedule);
-	if (index < 0) return;
+	if (index < 0) {
+		return;
+	}
 	Vector<int> remove;
 	for (const KeyValue<int, Dictionary> &entry : scheduled_agents) {
-		if (int(entry.value["schedule_id"]) == deleting_schedule) remove.push_back(entry.key);
+		if (int(entry.value["schedule_id"]) == deleting_schedule) {
+			remove.push_back(entry.key);
+		}
 	}
 	// Removing the active run last keeps the surviving manual session selected.
 	for (int id : remove) {
@@ -445,18 +523,26 @@ void AIChatDock::_delete_schedule() {
 }
 
 void AIChatDock::_enable_schedule(bool p_enabled) {
-	if (schedule_ui_updating) return;
+	if (schedule_ui_updating) {
+		return;
+	}
 	const int index = _schedule_index(selected_schedule);
-	if (index < 0) return;
+	if (index < 0) {
+		return;
+	}
 	Dictionary task = schedule_tasks[index];
 	task["enabled"] = p_enabled;
 	task.erase("notice");
-	if (p_enabled) task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
+	if (p_enabled) {
+		task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
+	}
 	if (!p_enabled) {
 		for (KeyValue<int, Dictionary> &entry : scheduled_agents) {
 			if (int(entry.value["schedule_id"]) == selected_schedule && String(entry.value["state"]) == "waiting") {
 				entry.value["state"] = "failed";
-				if (agent_sessions.has(entry.key)) agent_sessions[entry.key].queue_paused = true;
+				if (agent_sessions.has(entry.key)) {
+					agent_sessions[entry.key].queue_paused = true;
+				}
 			}
 		}
 	}
@@ -466,7 +552,9 @@ void AIChatDock::_enable_schedule(bool p_enabled) {
 
 void AIChatDock::_run_schedule_now() {
 	const int index = _schedule_index(selected_schedule);
-	if (index < 0) return;
+	if (index < 0) {
+		return;
+	}
 	_enqueue_schedule(index);
 	_refresh_schedules();
 	_scheduler_dispatch();
@@ -474,7 +562,9 @@ void AIChatDock::_run_schedule_now() {
 
 bool AIChatDock::_enqueue_schedule(int p_index) {
 	Dictionary task = schedule_tasks[p_index];
-	if (_schedule_outstanding(task["id"])) return false;
+	if (_schedule_outstanding(task["id"])) {
+		return false;
+	}
 	if (!history_writable || scheduled_agents.size() >= 128 || agent_tabs->get_tab_count() >= 256 || next_agent >= INT32_MAX - 1 || int(task["sequence"]) >= INT32_MAX - 1) {
 		task["enabled"] = false;
 		task["notice"] = U"\n定时任务已暂停：历史无法保存，或执行历史已达上限（128 个定时 Agent）。请删除不再需要的执行 Agent 后重新启用。";
@@ -513,12 +603,16 @@ bool AIChatDock::_enqueue_schedule(int p_index) {
 }
 
 void AIChatDock::_scheduler_tick() {
-	if (!history_loaded || history_restoring || !history_writable || engine_restart_requested) return;
+	if (!history_loaded || history_restoring || !history_writable || engine_restart_requested) {
+		return;
+	}
 	const int64_t now = int64_t(Time::get_singleton()->get_unix_time_from_system());
 	bool changed = false;
 	for (int i = 0; i < schedule_tasks.size(); i++) {
 		Dictionary task = schedule_tasks[i];
-		if (!bool(task["enabled"]) || now < int64_t(task["next_due"])) continue;
+		if (!bool(task["enabled"]) || now < int64_t(task["next_due"])) {
+			continue;
+		}
 		const int64_t period = period_seconds(task);
 		const int64_t due = task["next_due"];
 		task["next_due"] = due + ((now - due) / period + 1) * period;
@@ -533,17 +627,25 @@ void AIChatDock::_scheduler_tick() {
 }
 
 void AIChatDock::_scheduler_dispatch() {
-	if (!is_inside_tree() || !history_loaded || history_restoring || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || (!queue_paused && !queued_messages.is_empty())) return;
+	if (!is_inside_tree() || !history_loaded || history_restoring || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || (!queue_paused && !queued_messages.is_empty())) {
+		return;
+	}
 	// Stable Agent creation order is the scheduler's FIFO, not HashMap order.
 	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 		const int id = agent_tabs->get_tab_metadata(i);
-		if (!scheduled_agents.has(id) || String(scheduled_agents[id]["state"]) != "waiting") continue;
+		if (!scheduled_agents.has(id) || String(scheduled_agents[id]["state"]) != "waiting") {
+			continue;
+		}
 		selected_schedule = scheduled_agents[id]["schedule_id"];
 		_agent_selected(i);
-		if (active_agent != id) return;
+		if (active_agent != id) {
+			return;
+		}
 		scheduled_agents[id]["state"] = "running";
 		_dispatch_queued_message(id);
-		if (!busy) scheduled_agents[id]["state"] = "failed";
+		if (!busy) {
+			scheduled_agents[id]["state"] = "failed";
+		}
 		_refresh_schedules();
 		_queue_history_save();
 		return;
@@ -551,7 +653,9 @@ void AIChatDock::_scheduler_dispatch() {
 }
 
 void AIChatDock::_scheduler_finished() {
-	if (!is_inside_tree() || history_restoring) return;
+	if (!is_inside_tree() || history_restoring) {
+		return;
+	}
 	// Completed periodic Agents retain history, not idle CLI subprocesses.
 	if (!busy && scheduled_agents.has(active_agent) && queued_messages.is_empty()) {
 		_cancel_cli();
@@ -563,22 +667,32 @@ void AIChatDock::_scheduler_finished() {
 	_refresh_schedules();
 	if (!busy && !models_loading && engine_build_pid < 0 && workspace_pages->get_current_tab() == 0 && scheduled_agents.has(active_agent)) {
 		const int index = _agent_index(last_manual_agent);
-		if (index >= 0) _agent_selected(index);
+		if (index >= 0) {
+			_agent_selected(index);
+		}
 	}
 	_scheduler_dispatch();
 }
 
 void AIChatDock::_timer_agent_selected(int p_index) {
-	if (p_index < 0 || p_index >= timer_agent_tabs->get_tab_count()) return;
+	if (p_index < 0 || p_index >= timer_agent_tabs->get_tab_count()) {
+		return;
+	}
 	const int index = _agent_index(timer_agent_tabs->get_tab_metadata(p_index));
-	if (index >= 0) _agent_selected(index);
+	if (index >= 0) {
+		_agent_selected(index);
+	}
 	_refresh_schedule_agents();
 }
 
 void AIChatDock::_timer_agent_close(int p_index) {
-	if (p_index < 0 || p_index >= timer_agent_tabs->get_tab_count()) return;
+	if (p_index < 0 || p_index >= timer_agent_tabs->get_tab_count()) {
+		return;
+	}
 	const int index = _agent_index(timer_agent_tabs->get_tab_metadata(p_index));
-	if (index >= 0) _agent_close_requested(index);
+	if (index >= 0) {
+		_agent_close_requested(index);
+	}
 }
 
 void AIChatDock::_scheduled_agent_removed(int p_id) {

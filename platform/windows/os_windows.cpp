@@ -1016,6 +1016,16 @@ String OS_Windows::_quote_command_line_argument(const String &p_text) const {
 	// CreateProcessW receives one command line, not an argv array. Encode each
 	// argument using the Windows CRT rules, including empty arguments, embedded
 	// quotes and trailing backslashes. This does not invoke a shell.
+	// Simple arguments need no quotes. In particular, cmd interprets a quoted
+	// /C switch differently. Keep shell metacharacters quoted as before.
+	const String quote_characters = "\"&|<>^()%!";
+	bool needs_quotes = p_text.is_empty();
+	for (int i = 0; i < p_text.length() && !needs_quotes; i++) {
+		needs_quotes = p_text[i] <= ' ' || quote_characters.contains_char(p_text[i]);
+	}
+	if (!needs_quotes) {
+		return p_text;
+	}
 	String quoted = "\"";
 	int backslashes = 0;
 	for (int i = 0; i < p_text.length(); i++) {
@@ -2552,11 +2562,13 @@ void print_raw_input_diagnostics(const char *p_phase, uint64_t p_time_msec, uint
 	const DWORD saved_error = GetLastError();
 	DisplayServer *display = DisplayServer::get_singleton();
 	record_raw_input_diagnostics(vformat("[raw_input_diag] phase=%s t_ms=%d loop_gap_us=%d pump_us=%d user=%d gdi=%d queue_flags=0x%x raw_pending=%d probe_result=%d probe_bytes=%d probe_error=%d raw_removed_total=%d raw_peeked_total=%d device_changes_total=%d focused_window=%d mouse_mode=%d",
-			p_phase, p_time_msec, p_loop_gap_usec, p_pump_usec, p_sample.user_objects, p_sample.gdi_objects, p_sample.queue_flags, int(bool(p_sample.queue_flags & QS_RAWINPUT)), p_sample.query_result, p_sample.query_bytes, p_sample.query_error,
-			p_sample.raw_removed, p_sample.raw_peeked, p_sample.device_changes, display->get_focused_window(), int(display->mouse_get_mode())), p_output);
+										 p_phase, p_time_msec, p_loop_gap_usec, p_pump_usec, p_sample.user_objects, p_sample.gdi_objects, p_sample.queue_flags, int(bool(p_sample.queue_flags & QS_RAWINPUT)), p_sample.query_result, p_sample.query_bytes, p_sample.query_error,
+										 p_sample.raw_removed, p_sample.raw_peeked, p_sample.device_changes, display->get_focused_window(), int(display->mouse_get_mode())),
+			p_output);
 	const RawInputReadDiagnostics &read = p_sample.production;
 	record_raw_input_diagnostics(vformat("[raw_input_diag] production t_ms=%d phase=%s buffer_queries=%d buffer_reads=%d packets_read=%d query_failures=%d read_failures=%d empty_reads=%d consecutive_failures=%d last_read_result=%d last_capacity=%d last_required=%d last_failure_error=%d last_failure_ms=%d data_queries=%d data_reads=%d data_failures=%d",
-			p_time_msec, p_phase, read.buffer_queries, read.buffer_reads, read.packets_read, read.query_failures, read.read_failures, read.empty_reads, read.consecutive_failures, read.last_read_result, read.last_capacity, read.last_required, read.last_failure_error, read.last_failure_msec, read.data_queries, read.data_reads, read.data_failures), false);
+										 p_time_msec, p_phase, read.buffer_queries, read.buffer_reads, read.packets_read, read.query_failures, read.read_failures, read.empty_reads, read.consecutive_failures, read.last_read_result, read.last_capacity, read.last_required, read.last_failure_error, read.last_failure_msec, read.data_queries, read.data_reads, read.data_failures),
+			false);
 	SetLastError(saved_error);
 }
 
@@ -2838,14 +2850,18 @@ void OS_Windows::run() {
 			const RawInputDiagnosticSample after = sample_raw_input_diagnostics();
 			const int64_t user_delta = diagnostic_first_sample ? 0 : int64_t(after.user_objects) - previous_user_objects;
 			diagnostic_user_peak = MAX(diagnostic_user_peak, MAX(before.user_objects, after.user_objects));
-			const int pressure_level = after.user_objects >= 9500 ? 4 : after.user_objects >= 8192 ? 3 : after.user_objects >= 4096 ? 2 : after.user_objects >= 1024 ? 1 : 0;
+			const int pressure_level = after.user_objects >= 9500 ? 4 : after.user_objects >= 8192 ? 3
+					: after.user_objects >= 4096												   ? 2
+					: after.user_objects >= 1024												   ? 1
+																								   : 0;
 			if (diagnostic_print_before || after.user_objects >= 1024 || after.query_result == UINT(-1) || pump_end - pump_start >= 100000 || user_delta >= 256) {
 				if (!diagnostic_print_before) {
 					print_raw_input_diagnostics("before_events", loop_time / 1000, loop_gap, 0, before);
 				}
 				print_raw_input_diagnostics("after_events", pump_end / 1000, loop_gap, pump_end - pump_start, after);
 				record_raw_input_diagnostics(vformat("[raw_input_diag] trend t_ms=%d user_delta=%d sample_interval_us=%d user_peak=%d pressure_level=%d foreground_removed=%d background_removed=%d window_failures=%d",
-						pump_end / 1000, user_delta, diagnostic_first_sample ? uint64_t(0) : loop_time - previous_loop_sample, diagnostic_user_peak, pressure_level, diagnostic_foreground_removed, diagnostic_background_removed, diagnostic_window_failures), pressure_level > previous_pressure_level || user_delta >= 256);
+													 pump_end / 1000, user_delta, diagnostic_first_sample ? uint64_t(0) : loop_time - previous_loop_sample, diagnostic_user_peak, pressure_level, diagnostic_foreground_removed, diagnostic_background_removed, diagnostic_window_failures),
+						pressure_level > previous_pressure_level || user_delta >= 256);
 				last_diagnostic_print = loop_time;
 			}
 			if (loop_time - last_diagnostic_registration >= 60000000 || pressure_level > previous_pressure_level) {
