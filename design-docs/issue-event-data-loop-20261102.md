@@ -45,3 +45,9 @@ $env:OLYMPUS_GH = '<本机 gh 可执行文件>'
 当前宿主已显式处理本工单的真实 GitHub 事件 `34930471933`（添加 `status:in-progress`），首次调用取得 `recorded_file` 回执，重复调用返回幂等成功。来源与回执在 `data-collection/issue-events/4e45ac85a254e7cf12b7d3cc7263500d5e1b5827c7fb065b6b7c284851e0ed53/`，已随 `b439d032` 提交。共享 Hermes analyze 实际读取当时的 46 条事件，读取证据见 `data-collection/issue-9-explicit-event-read-20261103.json`；消费者为当前 Codex 宿主，未知用量仍为 null。
 
 因此 Olympus 单次事件记录、重放及共享分析路径已贯通。本父单仍为处理中：共工侧来源适配与代表任务未由本工作区完成，Ariadne GitHub 来源注册仍为 false；不将手工单次调用或来源索引当作自动派发、谛听 Agent 消费或双工作区全部完成。
+
+## 本轮显式合入与状态核销
+
+用户要求合入本地内容并推进全部开放工单。本轮范围为回读远程真实状态、交付 #15 策略、核销已有验收的 #8/#11/#15，以及保留 #9 的外部接入缺口。最小验证为现有精确CI/独立证据映射、真实Issue和正式框架/Hermes门禁及提交后HEAD检查；未改引擎，不重新构建。
+
+PR #17 已合入，#8/#11/#15 已按现有证据 completed 关闭。旧PR #14 的缺失Issue继续执行路径与当前契约冲突，以PR #16替代并关闭，保留历史分支。#6 的宿主代码已合入，但新Windows候选检查与实际启用验收仍须按真实结果处理，不自动关闭。#9 仍缺双工作区真实来源/宿主绑定与共工侧代表回执；已向用户请求实际接收宿主信息，未注册假来源。原始远程快照见 data-collection/workspace-final-issues-20261103.json 与 workspace-final-prs-20261103.json。

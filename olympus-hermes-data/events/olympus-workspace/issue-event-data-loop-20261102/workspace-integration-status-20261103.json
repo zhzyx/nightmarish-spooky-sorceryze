@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "event_id": "workspace-integration-status-20261103",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T21:09:17.4654176+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "payload": {
+    "description": "Explicit user-triggered repository reconciliation: merged PR17 after exact static and Issue checks; closed completed Issues8,11,15 against merged verification evidence. Closed superseded PR14 because advisory Issue failures conflict with current required intake. Issue6 pending exact Windows checks and enablement evidence; Issue9 lacks actual dual-workspace host/source binding. No time automation or fake Agent activation.",
+    "source_files": [
+      "data-collection/workspace-final-issues-20261103.json",
+      "data-collection/workspace-final-prs-20261103.json",
+      "data-collection/issue10-final-ci-20261103.json",
+      "data-collection/issue15-merge-final-20261103.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "Host usage/cost account not supplied."
+  },
+  "evidence_refs": [],
+  "sha256": "f37ed88aa98597dd1ad6c2fc03e9aaa303c95b0f1759716032e166299f80e808"
+}
