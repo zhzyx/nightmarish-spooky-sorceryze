@@ -28,3 +28,6 @@ integrations/godot/*.patch -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
 integrations/godot/verification*.json -text whitespace=cr-at-eol
 distribution/notices/* -text -whitespace
+
+# Preserve the exact host definition snapshot referenced by immutable task events.
+data-collection/issue-governance-host.json -text whitespace=cr-at-eol

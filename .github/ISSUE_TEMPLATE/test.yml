@@ -2,7 +2,8 @@
   "name": "测试与质量验证",
   "description": "创建测试与质量验证工单",
   "labels": [
-    "type:test"
+    "type:test",
+    "status:needs-decision"
   ],
   "body": [
     {

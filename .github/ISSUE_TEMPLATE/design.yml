@@ -2,7 +2,8 @@
   "name": "游戏、产品或技术设计",
   "description": "创建游戏、产品或技术设计工单",
   "labels": [
-    "type:design"
+    "type:design",
+    "status:needs-decision"
   ],
   "body": [
     {

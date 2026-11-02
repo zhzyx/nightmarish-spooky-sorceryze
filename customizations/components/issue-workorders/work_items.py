@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,15 +14,22 @@ import uuid
 ROOT = Path(__file__).resolve().parents[3]
 
 
+def request_ids(body):
+    pattern = r'[a-z0-9]+(?:-[a-z0-9]+)*'
+    markers = re.findall(r'<!--\s*olympus-request:(' + pattern + r')\s*-->', body or '')
+    fields = re.findall(r'^### 稳定需求 ID\s*\n+(' + pattern + r')[ \t]*(?=\r?$)', body or '', re.M)
+    return set(markers + fields)
+
+
 def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def gh(*args):
-    result = subprocess.run(["gh", *args], capture_output=True, text=True,
+    result = subprocess.run([os.environ.get('OLYMPUS_GH', 'gh'), *args], capture_output=True, text=True,
                             encoding="utf-8", timeout=120)
     if result.returncode:
-        raise ValueError(result.stderr.strip() or "GitHub command failed")
+        raise ValueError("GitHub command failed; check local gh login and repository access")
     return result.stdout.strip()
 
 
@@ -38,6 +46,11 @@ def config(root):
 
 def labels(root, apply=False):
     settings, definitions = config(root)
+    statuses = read(root / '.github/status-labels.json')
+    expected = {'status:' + v for v in ('needs-decision', 'planned', 'in-progress', 'blocked', 'in-review', 'done', 'cancelled')}
+    if len(statuses) != len(expected) or {v['name'] for v in statuses} != expected:
+        raise ValueError('Invalid status label definitions')
+    definitions = definitions + statuses
     if not apply:
         return {"state": "planned", "repository": settings["repository"], "labels": definitions}
     pages = json.loads(gh("api", "repos/" + settings["repository"] + "/labels?per_page=100", "--paginate", "--slurp"))
@@ -65,12 +78,14 @@ def issue(root, document, title, category, request_id, apply=False):
     marker = "<!-- olympus-request:" + request_id + " -->"
     body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
     plan = {"state": "planned", "repository": settings["repository"], "title": title,
-            "labels": [label], "request_id": request_id, "body": body}
+            "labels": [label, 'status:needs-decision'], "request_id": request_id, "body": body}
     if not apply:
         return plan
     # Query all pages and exact marker, including closed issues, to avoid recreating a request.
     pages = json.loads(gh("api", "repos/" + settings["repository"] + "/issues?state=all&per_page=100", "--paginate", "--slurp"))
-    matches = [item for page in pages for item in page if "pull_request" not in item and marker in (item.get("body") or "")]
+    matches = [item for page in pages for item in page if "pull_request" not in item and request_id in request_ids(item.get('body'))]
+    if any(request_ids(item.get('body')) != {request_id} for item in matches):
+        raise ValueError('Ambiguous remote request identity; resolve before continuing')
     if len(matches) > 1:
         raise ValueError("Duplicate remote request identity; resolve before continuing")
     if matches:
@@ -79,14 +94,14 @@ def issue(root, document, title, category, request_id, apply=False):
         path = Path(temporary) / "issue.md"
         path.write_text(body, encoding="utf-8")
         url = gh("issue", "create", "--repo", settings["repository"], "--title", title,
-                 "--label", label, "--body-file", str(path))
+                 "--label", label, '--label', 'status:needs-decision', "--body-file", str(path))
     return {"state": "created", "url": url}
 
 
 def collect(root, request_id):
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
         raise ValueError("Invalid request ID")
-    command = [sys.executable, str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+    command = [sys.executable, '-X', 'utf8', str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
                "validate", "--repo", str(root)]
     check = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=120)
     if check.returncode:

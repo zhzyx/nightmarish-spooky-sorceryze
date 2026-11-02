@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "source": "../GongGong/CURRENT_FRAMEWORK.json",
+  "old_source": ".godot-integration-local/source-recovery-agent/framework",
+  "old_source_regression_candidate": "../GongGong/work/issue-governance/upstream-compat-old-v4/Olympus",
+  "changes": [
+    "Reporting component version uses manifest skill version",
+    "Only optional refresh test fixture conditional; mandatory coordinator/refresh indexing unchanged"
+  ],
+  "checks": {
+    "active_source_build": {
+      "full_parity": true,
+      "source_integrity_verified": true,
+      "source_admission_verified": true,
+      "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+      "preserved_exemption": "extensions/hermes-files/",
+      "source_files": 148,
+      "distribution_files": 135,
+      "upstream_version": "0.9.0",
+      "checks": [
+        "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+        "passed file-level quality ownership checks; host identity and runtime not verified"
+      ],
+      "python_and_node_syntax": "pass",
+      "production_admission": false
+    },
+    "old_approved_source_full_build": {
+      "full_parity": true,
+      "source_integrity_verified": true,
+      "source_admission_verified": true,
+      "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+      "preserved_exemption": "extensions/hermes-files/",
+      "source_files": 140,
+      "distribution_files": 128,
+      "upstream_version": "0.9.0",
+      "checks": [
+        "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",
+        "passed file-level quality ownership checks; host identity and runtime not verified"
+      ],
+      "python_and_node_syntax": "pass",
+      "production_admission": false
+    },
+    "old_module_version": "0.4.0",
+    "old_optional_fixture_absent": true,
+    "current_module_version": "0.4.1",
+    "both_skill_profile_versions": "0.4.0",
+    "hermes_bytes_preserved": true
+  },
+  "reused_validation": {
+    "evidence": "data-collection/issue-7-reused-validation-20261102.json",
+    "refresh_tests": {
+      "pass": 9,
+      "fail": 0
+    },
+    "delivery_tests": {
+      "pass": 14,
+      "fail": 0
+    },
+    "byte_identity": [
+      {
+        "path": "modules/ariadne/coordinator.mjs",
+        "sha256": "a407ac13095b1ea56e3d8a915407b82666e9aa4c4431373e25d625aef55b00bb"
+      },
+      {
+        "path": "modules/ariadne/refresh.mjs",
+        "sha256": "b5676e858156fc11517b6b4ee63ef8ae263fcecb3f631010afce421e7939e287"
+      },
+      {
+        "path": "modules/ariadne/test/refresh.test.mjs",
+        "sha256": "370167fd68a7f9a54b66433a2ebc22698b3a400008d16f7ad35dba85c864591f"
+      },
+      {
+        "path": "tools/check_delivery.py",
+        "sha256": "e8973d3931371caf22983252aff9157b90a8260a6dafaf8e7b2870ab4ec2ac21"
+      },
+      {
+        "path": "tests/test_delivery.py",
+        "sha256": "7d191d055cfd4849bd53df52ad2a8b5fb7f6d9fb881858cf8fc0b4ceb63c3a39"
+      },
+      {
+        "path": "templates/delivery.json",
+        "sha256": "ba1ad796f443457c647627794514d246b25a586431708fe32097a4dd1b22da54"
+      },
+      {
+        "path": "specs/delivery.md",
+        "sha256": "dcab4d22d046d83f27ffcd73100d419fca1f4e4601f528e9013250560995c73a"
+      }
+    ]
+  },
+  "agents": [
+    {
+      "id": "athena",
+      "version": "0.4.0",
+      "candidate_digest": "8489381514ff52ac06b22ec412c4cdc738ebe95bd751a1efe3938bc2970f24d7"
+    },
+    {
+      "id": "themis",
+      "version": "0.4.0",
+      "candidate_digest": "6cfea9efd9c999985fb30c1322e696fe86abfa236ba486a7ea1c9dee35f5ddfa"
+    },
+    {
+      "id": "hermes",
+      "version": "0.4.0",
+      "candidate_digest": "0b58c1339fae7961d05d7ea0bcf3550be0f919aa60c9294aaaa1c5035e8001a3"
+    }
+  ],
+  "review": {
+    "v3_independent_review": "Root identified optional fixture regression; fixed in v4",
+    "v4_independent_review": "Root independently inspected final compatibility patch, checked all candidate fingerprints and pending approvals, and confirmed validation-byte reuse. No production approval granted.",
+    "author": "issue_gap_audit",
+    "approval": null
+  },
+  "production_admission": false,
+  "scope": "Isolated source candidate only; production release/binding and old approvals unchanged",
+  "external_candidate": {
+    "path_base": "repository_root",
+    "path": "../GongGong/work/issue-governance/upstream-candidate-v4/Olympus",
+    "role": "isolated_unapproved_candidate_not_runtime_binding"
+  },
+  "patch": "design-docs/patches/issue-7-upstream-sync-compatibility.patch"
+}

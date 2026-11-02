@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-receipt-ui-blocking-20261102-registered",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-receipt-ui-blocking-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-02T09:35:56Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/8",
+  "agent": {
+    "id": "codex-root",
+    "version": "issue-governance-20261102",
+    "definition_sha256": "c9b2db75231d5c1032c981fd46ff7347d53691809b3d08e2bc5081479658344d",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Godot 聊天回执异步化：消除模型与工具边界的 UI 同步等待",
+    "user_authority_ref": "data-collection/issue-governance-host.json",
+    "issue_id": 6159932185,
+    "remote_issue_created_and_read_back": true,
+    "state_at_receipt": "open",
+    "labels_at_receipt": [
+      "type:bug",
+      "status:planned"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not available; no estimates."
+  },
+  "evidence_refs": [],
+  "sha256": "da48a28332c56427e3d8dbba112f822626839ab7cc08e0be416f6d4e55e31bf6"
+}

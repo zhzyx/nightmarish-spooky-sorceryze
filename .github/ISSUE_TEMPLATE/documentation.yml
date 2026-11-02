@@ -2,7 +2,8 @@
   "name": "文档维护",
   "description": "创建文档维护工单",
   "labels": [
-    "type:documentation"
+    "type:documentation",
+    "status:needs-decision"
   ],
   "body": [
     {

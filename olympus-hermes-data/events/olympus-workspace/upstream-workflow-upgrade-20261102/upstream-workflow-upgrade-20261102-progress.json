@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "upstream-workflow-upgrade-20261102-progress",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T09:51:01.496348+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "issue-governance-20261102",
+    "origin": "codex-host-task",
+    "definition_sha256": "c9b2db75231d5c1032c981fd46ff7347d53691809b3d08e2bc5081479658344d"
+  },
+  "payload": {
+    "description": "Built isolated upgraded framework candidate and repaired two synchronization defects; independently reviewed compatibility, current and old source builds passed.",
+    "verification": "data-collection/issue-7-candidate-review-20261102.json",
+    "production_admission": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Host usage unavailable; no estimates"
+  },
+  "evidence_refs": [
+    "upstream-workflow-upgrade-20261102-registered"
+  ],
+  "sha256": "fbd37752bf0de4dae782978a6fb9c9c5751238db908ae5e1508368c08e795cb1"
+}

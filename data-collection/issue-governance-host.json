@@ -1,0 +1,24 @@
+{
+  "id": "codex-root",
+  "version": "issue-governance-20261102",
+  "origin": "codex-host-task",
+  "governance": [
+    "AGENTS.md",
+    "Olympus/AGENTS.md",
+    "Olympus/skills/dike/SKILL.md"
+  ],
+  "path_base": "repository_root",
+  "authority": "本次用户明确要求后续内容基于 Issue，建立并跟进 Olympus/引擎优化，所有贡献者经过 Olympus，查缺补漏。",
+  "scope": [
+    "Issue registration and evidence-based progress",
+    "repository contributor workflow and local check",
+    "isolated upstream compatibility candidate",
+    "read existing authorized Hermes file evidence"
+  ],
+  "exclusions": [
+    "new Agent production admission",
+    "model paid calls",
+    "timed automation",
+    "remote branch administrator authority"
+  ]
+}

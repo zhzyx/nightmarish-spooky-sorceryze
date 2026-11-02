@@ -19,6 +19,7 @@ class WorkItemTests(unittest.TestCase):
         (self.root / 'design-docs').mkdir()
         (self.root / 'work-items.json').write_text('{"repository":"test/repo"}')
         (self.root / '.github/labels.json').write_text('[{"name":"type:design","color":"123456","description":"design"}]')
+        (self.root / '.github/status-labels.json').write_text(json.dumps([{'name':'status:'+v,'color':'123456','description':v} for v in ('needs-decision','planned','in-progress','blocked','in-review','done','cancelled')]))
         (self.root / 'design-docs/req.md').write_text('# Actual requirement\n')
 
     def create(self, apply=False, document='design-docs/req.md'):
@@ -50,8 +51,15 @@ class WorkItemTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.create(True)
 
+    def test_existing_form_issue_reused(self):
+        response = [[{'state':'open','body':'### 稳定需求 ID\n\nreq-1\n','html_url':'https://github.com/test/repo/issues/1'}]]
+        with patch.object(module, 'gh', return_value=json.dumps(response)) as gh:
+            self.assertEqual(self.create(True)['state'], 'existing')
+        self.assertEqual(gh.call_count, 1)
+
     def test_existing_label_not_overwritten(self):
-        with patch.object(module,'gh',return_value='[[{"name":"type:design"}]]') as gh:
+        existing = [{'name': 'type:design'}] + module.read(self.root / '.github/status-labels.json')
+        with patch.object(module,'gh',return_value=json.dumps([existing])) as gh:
             module.labels(self.root,True)
         self.assertEqual(gh.call_count,1)
 
@@ -78,7 +86,8 @@ class WorkItemTests(unittest.TestCase):
         _, labels = module.config(module.ROOT)
         forms = [json.loads((module.ROOT/'.github/ISSUE_TEMPLATE'/ (label['name'].split(':')[1]+'.yml')).read_text(encoding='utf-8')) for label in labels]
         self.assertEqual({x['name'] for x in labels},{f['labels'][0] for f in forms})
-        self.assertTrue(all(len(f['labels'])==1 for f in forms))
+        self.assertTrue(all(len([v for v in f['labels'] if v.startswith('type:')]) == 1 for f in forms))
+        self.assertTrue(all([v for v in f['labels'] if v.startswith('status:')] == ['status:needs-decision'] for f in forms))
 
 
 if __name__=='__main__':

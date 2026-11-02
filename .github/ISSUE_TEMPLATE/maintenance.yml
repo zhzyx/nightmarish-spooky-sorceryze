@@ -2,7 +2,8 @@
   "name": "维护、运维及其他事务",
   "description": "创建维护、运维及其他事务工单",
   "labels": [
-    "type:maintenance"
+    "type:maintenance",
+    "status:needs-decision"
   ],
   "body": [
     {

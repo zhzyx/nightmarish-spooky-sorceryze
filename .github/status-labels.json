@@ -1,0 +1,37 @@
+[
+  {
+    "name": "status:needs-decision",
+    "color": "D876E3",
+    "description": "待判断"
+  },
+  {
+    "name": "status:planned",
+    "color": "C5DEF5",
+    "description": "计划中"
+  },
+  {
+    "name": "status:in-progress",
+    "color": "1D76DB",
+    "description": "处理中"
+  },
+  {
+    "name": "status:blocked",
+    "color": "B60205",
+    "description": "阻塞"
+  },
+  {
+    "name": "status:in-review",
+    "color": "FBCA04",
+    "description": "待验收"
+  },
+  {
+    "name": "status:done",
+    "color": "0E8A16",
+    "description": "验收完成"
+  },
+  {
+    "name": "status:cancelled",
+    "color": "BFDADC",
+    "description": "明确取消，非验收通过"
+  }
+]

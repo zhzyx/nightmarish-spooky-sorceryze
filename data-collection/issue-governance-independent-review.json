@@ -1,0 +1,169 @@
+{
+  "status": "pass_with_stated_limits",
+  "evaluator": "independent issue_gate_review agent",
+  "authority_granted": false,
+  "baseline": "Existing approved Olympus release and current task governance; production framework unchanged.",
+  "findings_fixed": [
+    "Same request_id from unrelated tenant/Issue accepted",
+    "Staged history deletion accepted",
+    "Staged history rewrite accepted after recomputing checksum",
+    "Issue creation ignored form-based stable IDs"
+  ],
+  "probes": {
+    "boundary": "Synthetic isolated Git fixture. Remote gh and formal framework response mocked; actual Git index/worktree/history/snapshot and Hermes load/git_check used. No production events emitted.",
+    "earlier_successful_assertions": [
+      "wrong tenant only rejected",
+      "same tenant wrong Issue source rejected",
+      "step without request rejected",
+      "valid staged request accepted",
+      "legacy exact github source accepted",
+      "staged history deletion rejected"
+    ],
+    "final_results": [
+      {
+        "probe": "staged_history_rewrite",
+        "observed": "Hermes history must remain immutable; append correction events"
+      },
+      {
+        "probe": "partial_staging",
+        "observed": "Git check failed: diff"
+      }
+    ]
+  },
+  "workflow_review": {
+    "trusted_base_inline_github_script": true,
+    "pinned_action_commit": true,
+    "read_only_permissions": true,
+    "no_checkout_or_pr_code_execution": true,
+    "no_time_trigger": true
+  },
+  "limits": [
+    "Does not authenticate production authority or business event narrative",
+    "Required branch protection not enabled; current actor lacks admin",
+    "Issue-only changes do not refresh PR check; documented fresh premerge review required",
+    "Ariadne source not bound; automatic coordination not claimed",
+    "Final production framework validation and remote publication remain root responsibility"
+  ],
+  "reviewed_files": {
+    "customizations/components/issue-workorders/issue_gate.py": "7dda5e810b9b17c71da8fc453fb295006a401d0ad3bc80fdd82115bf754388c0",
+    "customizations/components/issue-workorders/work_items.py": "24550bbe1c1437b48b388cb942d6e283be71fe912f67b572ce578e93e4e2b9cc",
+    "customizations/components/issue-workorders/test_issue_gate.py": "7f2bfbf9eb0194985bb3b734b5e646c7c09b5720f183f6ce66ff19e7f7e98ded",
+    "customizations/components/issue-workorders/test_work_items.py": "38a140d1f0ff5875fe1e82c2c7c4d5882ed720f4318bfd4648281d245e7ac3e3",
+    "customizations/components/issue-workorders/README.md": "0a65e124f83854cdaa92f671f06408b3a590dcaeee5997968d8bc82f28e0ccb3",
+    ".github/workflows/olympus-issue-gate.yml": "494b844e9fc4ff78880ba91715c6b2406fa9275e897529083a7e9753a6941094",
+    ".github/CONTRIBUTING.md": "ce8f6c3039f72f57a08b54a4933b4670520db20f159e8b7128f8ab6b58a15909",
+    "work-items.json": "b75afc7fcd7a41b51059cf74138c0f68b2f6d78f6f460c863cd3ae45bfd82f6d"
+  },
+  "tests": {
+    "implementation_unit_tests": {
+      "run": 24,
+      "passed": 24
+    },
+    "independent_all_type_active_status_pairs": 16,
+    "json_form_checks": [
+      "bug.yml",
+      "design.yml",
+      "development.yml",
+      "documentation.yml",
+      "maintenance.yml",
+      "requirement.yml",
+      "research.yml",
+      "test.yml"
+    ],
+    "bug_report_form": "Manually inspected required ID + type:bug + status:needs-decision"
+  },
+  "rule_review": {
+    "purpose": "Addresses Issue association without claiming business acceptance",
+    "truth": "Synthetic probes separated from production facts; gaps explicit",
+    "economy": "Reuses existing framework and Hermes validators",
+    "authority": "No approval granted; current admin/Ariadne gaps retained",
+    "adaptation": "Concrete bypasses corrected and independently reprobed",
+    "continuity": "Historical event immutability checked; frozen framework untouched"
+  },
+  "configuration_delta_review": {
+    "compared_from": "prior candidate configuration",
+    "compared_to": "work-items.json",
+    "changes": [
+      "tenant_id=olympus-workspace",
+      "agent_activation_scope explicitly distinguishes adapter from host-verified framework Agent admission"
+    ],
+    "result": "consistent with corrected gate and stated authority boundary"
+  },
+  "pr_template_delta_review": "Supervising agent reports removal of trailing whitespace only; no independent behavioral claim.",
+  "path_base": "repository_root",
+  "delivered_files": {
+    "customizations/components/issue-workorders/issue_gate.py": "7dda5e810b9b17c71da8fc453fb295006a401d0ad3bc80fdd82115bf754388c0",
+    "customizations/components/issue-workorders/work_items.py": "24550bbe1c1437b48b388cb942d6e283be71fe912f67b572ce578e93e4e2b9cc",
+    "customizations/components/issue-workorders/test_issue_gate.py": "d1bf6f1ba7dbf58ca9f13667dc8b2cb087bbf38426de4ebfc58b848ee7520dab",
+    "customizations/components/issue-workorders/test_work_items.py": "38a140d1f0ff5875fe1e82c2c7c4d5882ed720f4318bfd4648281d245e7ac3e3",
+    "customizations/components/issue-workorders/README.md": "c3fe24e656be0c411bc2342b10d658922bd693a32f45eb7481a847ece11a78f5",
+    ".github/workflows/olympus-issue-gate.yml": "494b844e9fc4ff78880ba91715c6b2406fa9275e897529083a7e9753a6941094",
+    ".github/CONTRIBUTING.md": "ce8f6c3039f72f57a08b54a4933b4670520db20f159e8b7128f8ab6b58a15909",
+    "work-items.json": "913e6c22615aab788d2f942ddacc84cf52b6a0d72262da3a3b17ed4d78f954cc"
+  },
+  "delivery_normalization": {
+    "rule": "Only CRLF to LF, following existing repository attributes; root checked exact replacement. Original independent hashes retained.",
+    "files": {
+      "customizations/components/issue-workorders/README.md": {
+        "reviewed_bytes_sha256": "0a65e124f83854cdaa92f671f06408b3a590dcaeee5997968d8bc82f28e0ccb3",
+        "delivery_lf_sha256": "c3fe24e656be0c411bc2342b10d658922bd693a32f45eb7481a847ece11a78f5"
+      },
+      "customizations/components/issue-workorders/test_issue_gate.py": {
+        "reviewed_bytes_sha256": "7f2bfbf9eb0194985bb3b734b5e646c7c09b5720f183f6ce66ff19e7f7e98ded",
+        "delivery_lf_sha256": "d1bf6f1ba7dbf58ca9f13667dc8b2cb087bbf38426de4ebfc58b848ee7520dab"
+      },
+      "customizations/registry.json": {
+        "reviewed_bytes_sha256": "a7e255aa5c33e78d7c190464a6a509d08476c7742bb3a6bf38dc3b17562d545b",
+        "delivery_lf_sha256": "ce4f9912ccc66a47ff1afe556646515ad1ab329c0a46eb1ca1194a4860d4e0ab"
+      },
+      "data-collection/github-issues-snapshot-20261102.json": {
+        "reviewed_bytes_sha256": "ee5b261dcc5d10776a74ed6a10b9debf4409d9cd0174248fd7cfc122361ec11f",
+        "delivery_lf_sha256": "9bfd66a8a75560bc4be12ca4fe3715dbcaf72de7d2a7797fa125160beaaac076"
+      },
+      "data-collection/issue-7-reused-validation-20261102.json": {
+        "reviewed_bytes_sha256": "b65576d8d2ae838ec5b3cad48a125df444d9cbc1fa7e66f0ebb8bbfdcb3eff5e",
+        "delivery_lf_sha256": "ba3f42c414aa65d34bf4888f054b93c0e914e0c172d08b717a11f313c1de4bf7"
+      },
+      "data-collection/issue-event-read-receipt-20261102.json": {
+        "reviewed_bytes_sha256": "be44b2b86c92746ef189437cc5930ba163ccd6bcf84938821b9b0ee2d8e18df4",
+        "delivery_lf_sha256": "da2115063c09423fef2494ff3db755dd8c03af1d4b6505761af7d12a59444322"
+      },
+      "data-collection/issue-governance-audit-20261102.json": {
+        "reviewed_bytes_sha256": "a0911aafdbce37ae80deef1529a46a8c387837c78313a921f6ce03c559f7e455",
+        "delivery_lf_sha256": "7c5cfb107947ff896a1acea5583d1baad7325772ca0cd16101b701a8a92d7f14"
+      },
+      "data-collection/sources.json": {
+        "reviewed_bytes_sha256": "3900734ca98751158fd0fb59c99cfde6443a799efe6e7b1b69823f168aacfaa3",
+        "delivery_lf_sha256": "881fa3ba954288dbeab7ee05aa1080e84af822bd7cf95c237e6d3a985739bd05"
+      },
+      "design-docs/godot-receipt-ui-blocking-20261102.md": {
+        "reviewed_bytes_sha256": "131ebe829b67f55b0cc3eca7d63298c5ab04a0774d6c93caa81ea14990e369a8",
+        "delivery_lf_sha256": "c3eae526e580d49e3fbaff247f6c56220e0ec46c5d30b222d8f7535c9c2657ba"
+      },
+      "design-docs/issue-event-data-loop-20261102.md": {
+        "reviewed_bytes_sha256": "6b4f55f5162926d99b9e5694f1dfcc937d6d9bad4dc1386c8aaf07a37b4dfd43",
+        "delivery_lf_sha256": "43929073d26f752864d64d9bafc3313302355d5edbd0081b5f6138ed15710a0e"
+      },
+      "design-docs/issue-governance-20261102.md": {
+        "reviewed_bytes_sha256": "14e489d609d044035e34aa4bbe9fe5f25ef28e4865a95554332a74aa93cbccd3",
+        "delivery_lf_sha256": "216cbb6a4aaf0a415d9ada49c2b86c45e0de5b86ac6b93759f01daa953ade6c4"
+      },
+      "design-docs/patches/issue-7-upstream-sync-compatibility.patch": {
+        "reviewed_bytes_sha256": "0d375dc85f3a79cd70ec601540fd7ee0283c1d22fc6d04660b11501ae1fa4351",
+        "delivery_lf_sha256": "4599e007ef28ec0bfdec787ee81f029d689d95f8a2f05fe5b03300fe1433e025"
+      },
+      "design-docs/upstream-workflow-upgrade-20261102.md": {
+        "reviewed_bytes_sha256": "67f6107f43a1a1f1fb79ff93a0a07a8e4e9ab92ddaa2c3e43a534f4b0a744485",
+        "delivery_lf_sha256": "6411139fd2177740d54c3b9616ab2279107532f6aafb129ce8bcf65d7b18a84b"
+      },
+      "olympus-workspace.json": {
+        "reviewed_bytes_sha256": "02ce8aba9d504bd01638e7e0dc5fcb7527c1a0bac8e69f64aab10e5cc3befaf3",
+        "delivery_lf_sha256": "ba39efcc7b2611bdfa2f9f143eaa9402870fe80e82276c78cbdbf4225855569c"
+      },
+      "work-items.json": {
+        "reviewed_bytes_sha256": "b75afc7fcd7a41b51059cf74138c0f68b2f6d78f6f460c863cd3ae45bfd82f6d",
+        "delivery_lf_sha256": "913e6c22615aab788d2f942ddacc84cf52b6a0d72262da3a3b17ed4d78f954cc"
+      }
+    }
+  }
+}

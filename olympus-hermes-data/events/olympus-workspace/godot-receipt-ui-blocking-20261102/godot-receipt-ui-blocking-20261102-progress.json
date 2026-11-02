@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-receipt-ui-blocking-20261102-progress",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-receipt-ui-blocking-20261102",
+  "kind": "analysis",
+  "occurred_at": "2026-11-02T09:51:01.592812+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/8",
+  "agent": {
+    "id": "codex-root",
+    "version": "issue-governance-20261102",
+    "origin": "codex-host-task",
+    "definition_sha256": "c9b2db75231d5c1032c981fd46ff7347d53691809b3d08e2bc5081479658344d"
+  },
+  "payload": {
+    "description": "Located remaining synchronous OS::execute in _record_olympus; existing async flush retained; no engine code change or performance improvement claimed.",
+    "evidence": "editor/docks/ai_chat_olympus.cpp",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Host usage unavailable; no estimates"
+  },
+  "evidence_refs": [
+    "godot-receipt-ui-blocking-20261102-registered"
+  ],
+  "sha256": "8ada826e97dd7c838d681a6a1908ef764160a2dc7b6a454e1847aa2329dd1210"
+}

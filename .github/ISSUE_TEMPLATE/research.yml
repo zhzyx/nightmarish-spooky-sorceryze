@@ -2,7 +2,8 @@
   "name": "研究、调研与试验",
   "description": "创建研究、调研与试验工单",
   "labels": [
-    "type:research"
+    "type:research",
+    "status:needs-decision"
   ],
   "body": [
     {

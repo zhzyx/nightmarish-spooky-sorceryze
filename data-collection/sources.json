@@ -34,7 +34,79 @@
       "origin_framework": "github",
       "coverage": "one_issue_only",
       "validation_artifact": "integrations/godot/verification-20261102.json"
+    },
+    {
+      "id": "github-issue-9",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 9,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-8",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/8",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 8,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-7",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 7,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-6",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 6,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-5",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/5",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 5,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-4",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/4",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 4,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
+    },
+    {
+      "id": "github-issue-3",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/3",
+      "snapshot": "data-collection/github-issues-snapshot-20261102.json",
+      "snapshot_issue_number": 3,
+      "access": "read_only",
+      "origin_framework": "github",
+      "observed_at": "2026-11-02T09:48:13.311117+00:00",
+      "coverage": "this Issue at this observation, not a live subscription"
     }
   ],
-  "remote_issue_collection": "manual_verified_snapshot"
+  "remote_issue_collection": "explicit_event_authenticated_paginated_snapshot",
+  "path_base": "repository_root",
+  "explicit_read_receipt": "data-collection/issue-event-read-receipt-20261102.json"
 }

@@ -2,7 +2,8 @@
   "name": "缺陷修复",
   "description": "创建缺陷修复工单",
   "labels": [
-    "type:bug"
+    "type:bug",
+    "status:needs-decision"
   ],
   "body": [
     {

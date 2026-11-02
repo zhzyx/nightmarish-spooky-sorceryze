@@ -24,5 +24,6 @@
   "module_source_environments": [],
   "runtime_entry": "tools/olympus_bridge.py",
   "editor_launch": "tools/launch_olympus_editor.ps1",
-  "admission_state": "candidate_pending_upstream_and_local_admission"
+  "admission_state": "requires_current_host_validation",
+  "admission_evidence": "data-collection/issue-governance-audit-20261102.json"
 }
