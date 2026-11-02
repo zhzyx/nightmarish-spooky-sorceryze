@@ -5,11 +5,11 @@
     "id": "hermes",
     "version_or_digest": {
       "version": "0.4.0",
-      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d",
+      "candidate_digest": "f61033eb4a8121a1157fb397fe7f1dff1830ecaa8bc28c4134726deeda60b779",
       "candidate_files": [
         {
           "path": "AGENTS.md",
-          "sha256": "717947f0b87e9ef6e51abfbe4e44bf4e822b4c321a04ca58587879dee73676e3"
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
         },
         {
           "path": "FOUNDATION.md",
@@ -177,7 +177,7 @@
         },
         {
           "path": "source-evidence.json",
-          "sha256": "87a204f945d23fd23e8e6df9bce81e84ed0013c7df782100a615da821cc51fd7"
+          "sha256": "7c065e4abf46856b992f7c8e0332ba4b9171bfe06813a609d5f78656d1606f63"
         },
         {
           "path": "specs/data-feedback.md",
@@ -209,11 +209,15 @@
         },
         {
           "path": "sync/POLICY.md",
-          "sha256": "582305ccfba3915260e15701b2e254d217190e8f1ae9b7983e61aa7e638b78f9"
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
         },
         {
           "path": "sync/gonggong_sync.py",
-          "sha256": "9d6a84d1247bd60d007927658fea97fc98eb5209a7fef46fba564e7248a93684"
+          "sha256": "86d94067b423f02326e038220aa0d9bc7911410f0e80ccbf13a7cf54e950656a"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
         },
         {
           "path": "sync/names.json",
@@ -224,8 +228,12 @@
           "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
         },
         {
+          "path": "sync/runtime-lock.json",
+          "sha256": "48cc9af02cd52fa46d9d414474e1708d4bd65c0eeb9602b2c2885490363dcd9c"
+        },
+        {
           "path": "sync/sinan_source.py",
-          "sha256": "991407d3269af72b77494a490b519105824bb982208bd675d38e1c440b80351b"
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
         },
         {
           "path": "templates/model-plan.json",
@@ -245,7 +253,7 @@
         },
         {
           "path": "tools/agent-context.mjs",
-          "sha256": "5a333e6c5967e7510647c49829f6947380cc3b6dd02d00a8fb712ed039165716"
+          "sha256": "16d2738be09d575e54bb2f2cf67493b3018732c094ebf22ddc13975b82b59604"
         },
         {
           "path": "tools/create-component.py",
@@ -261,7 +269,7 @@
         },
         {
           "path": "tools/verify_framework.py",
-          "sha256": "a0ae2b24fa678da5ed050391c03895b9c030f34a03be94e949565fe1625f9242"
+          "sha256": "06c224a355e6e7c4d500e499b01c08b26ec51c28ad04e2d628555221f97d9182"
         },
         {
           "path": "upstream/zeus/agents/zeus.md",
@@ -279,35 +287,32 @@
     },
     "scope": [
       "local_agent_definition_only"
-    ],
-    "agent_governance_refs": [
-      "FOUNDATION.md",
-      "GOVERNANCE.md",
-      "upstream/zeus/core.md"
     ]
   },
   "approval": {
     "approver_id": "user:current-conversation",
-    "authority_ref": "explicit-user-decision:call_2952cd1771324fd99b23a4543f259fb1",
-    "decision_evidence_ref": "reviews/local-admission/issue7-user-decision-20261103.json",
-    "approved_at": "2026-11-02T17:15:34.916888+00:00",
-    "time_basis": "approval_record_created_after_explicit_user_decision",
+    "authority_ref": "explicit-user-decision:call_d952ec18fec94b1a96adfc0304b594c4",
+    "decision_evidence_ref": "reviews/local-admission/issue7-042-user-decision-20261103.json",
+    "approved_at": "2026-11-02T17:48:58.424639+00:00",
     "valid_until_or_task_end": "bound_candidate_only",
     "expires_at": null,
     "revocation_ref": null,
     "superseded_by": null
   },
-  "permit_id": "OLYMPUS-ISSUE7-20261103-HERMES",
+  "permit_id": "OLYMPUS-042-STANDALONE-20261103-hermes",
   "event": "agent_definition_change",
   "phase": "local_definition_release",
   "baseline": {
-    "foundation_version": "1.0",
     "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
-    "zeus_version": "0.4.1",
-    "policy_version": "0.9.0"
+    "foundation_version": "1.0",
+    "policy_version": "0.9.0",
+    "zeus_version": "0.4.1"
   },
   "review": {
     "olympus_framework": "pass",
+    "applicable_validation": "pass",
+    "evaluator_id": "codex-subagent:review_standalone",
+    "independence": "independent_subagent_review",
     "zeus": {
       "purpose": "pass",
       "truth": "pass",
@@ -318,19 +323,15 @@
     },
     "concision": {
       "status": "pass",
-      "entry_characters": 825,
-      "rationale": "Agent entries and permission boundaries unchanged; approved compatibility adapter and complete bound source reviewed independently."
+      "evidence": "Runtime adapter remains the previously reviewed 56-line helper; passed() adds a narrowly scoped two-line status normalization; no new skill or agent entry."
     },
-    "applicable_validation": "pass",
-    "evaluator_id": "/root/review_upstream",
-    "independence": "independent_subagent_review",
     "evidence_refs": [
-      "reviews/local-admission/issue7-independent-review-20261103.json",
-      "reviews/local-admission/issue7-source-lock-20261103.json"
+      "reviews/local-admission/issue7-042-independent-review-20261103.json"
     ],
     "unresolved": [
-      "Definition release does not authenticate host/model/tool authority or certify actual model, remote Issue updates or collection consumption.",
-      "Ariadne local module remains disabled/pending distribution review; three Agent approvals do not grant automatic dispatch authority."
+      "Current host permissions and precise candidate production approval remain separate from independent review.",
+      "Local offline startup cannot detect remote revocation or new upstream changes without an actual update event.",
+      "No real model provider was called; admission-positive test cases use temporary synthetic permits only."
     ]
   }
 }

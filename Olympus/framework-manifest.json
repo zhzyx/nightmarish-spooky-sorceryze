@@ -339,7 +339,7 @@
       "path": "skills/ariadne/SKILL.md",
       "reporting": "skills/ariadne/reporting.json",
       "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne/workflow-optimization-review.json"
+      "admission_pass": "reviews/ariadne/nonblocking-review.json"
     }
   ],
   "agents": [
@@ -352,7 +352,6 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "c22520b3a20e24a8fad23d8ff6696e6c4b3bacd73e6e0bf53c6256c7b72eb35d",
       "admission_pass": "reviews/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
@@ -414,8 +413,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -429,7 +430,8 @@
         "upstream/zeus/agents/zeus.md",
         "upstream/zeus/core.md"
       ],
-      "reporting": "agents/athena/reporting.json"
+      "reporting": "agents/athena/reporting.json",
+      "candidate_digest": "a415dbe49dd9a6b81ff1a37e6250e51ca5770649b099d9f36716f8ed4041d872"
     },
     {
       "id": "themis",
@@ -440,7 +442,6 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "candidate_digest": "fdc392c5845ce48269debd5a7cee5766d03425d39cef841249b5a0dc6bcff8b8",
       "admission_pass": "reviews/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
@@ -499,8 +500,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -515,7 +518,8 @@
         "upstream/zeus/agents/zeus.md",
         "upstream/zeus/core.md"
       ],
-      "reporting": "agents/themis/reporting.json"
+      "reporting": "agents/themis/reporting.json",
+      "candidate_digest": "b13be5429e999f0c143b37ff94acde7f7365dd19328b5a6037ebbbb7b56422a3"
     },
     {
       "id": "hermes",
@@ -581,8 +585,10 @@
         "specs/reporting.md",
         "sync/POLICY.md",
         "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
         "sync/names.json",
         "sync/read_hermes.py",
+        "sync/runtime-lock.json",
         "sync/sinan_source.py",
         "templates/model-plan.json",
         "templates/reporting-binding.json",
@@ -597,8 +603,8 @@
         "upstream/zeus/core.md",
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
-      "candidate_digest": "54c8acf59079e1c616f97f0e58f61b02f923913618bb0f9b88499238b7e9503d",
-      "reporting": "agents/hermes/reporting.json"
+      "reporting": "agents/hermes/reporting.json",
+      "candidate_digest": "f61033eb4a8121a1157fb397fe7f1dff1830ecaa8bc28c4134726deeda60b779"
     }
   ],
   "quality_domain": {
@@ -652,7 +658,7 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",

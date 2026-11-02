@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-sync-request-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-02T17:47:12.782985+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "instruction": "同步共工框架的调整，并合并到git仓库",
+    "scope": "Full 0.4.2 upstream sync and rebase existing standalone runtime repair; retain current release until exact candidate admission",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied",
+    "snapshot_basis": "Existing actual workspace instruction snapshot; not host model authentication"
+  },
+  "evidence_refs": [],
+  "sha256": "de252e27ec09f2e11d39593ae13b21a47a3ef33d2b37b9af2fd387e0f0bc1da1"
+}

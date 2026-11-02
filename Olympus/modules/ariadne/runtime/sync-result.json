@@ -1,7 +1,7 @@
 {
   "event": {
-    "type": "decision.recorded",
-    "reference": "work/issue-scope-20261103/authority.json"
+    "type": "source.changed",
+    "reference": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/13"
   },
   "updated": true,
   "document": "progress.md",
@@ -26,12 +26,14 @@
   "execution": "not_dispatched",
   "reporting": "host_binding_and_receipt_required",
   "path_base": "registry_directory",
+  "followUps": [],
   "ready": [],
   "sourcesRead": 0,
   "sourcesRegistered": 0,
   "scope": "registered_sources_only",
   "sourceSnapshots": [],
   "diagnostics": [],
+  "outcome": "synced",
   "localDocumentsSynced": true,
   "authorityReconciliation": "not_performed"
 }

@@ -1,2 +1,3 @@
 # Preserve the byte-exact CRLF removal hunks for the existing Olympus package.
 standalone-runtime-20261103.patch -text -whitespace
+issue7-042-standalone-20261103.patch -text -whitespace

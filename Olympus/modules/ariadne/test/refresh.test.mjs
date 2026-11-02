@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {refresh} from '../refresh.mjs';
+import {board,prepare} from '../coordinator.mjs';
 const workspace=fileURLToPath(new URL('../../../../',import.meta.url));
 const fixtures=path.join(workspace,'work','ariadne-event-sync');
 fs.mkdirSync(fixtures,{recursive:true});
@@ -23,6 +24,35 @@ function fixture(t) {
   const save=()=>{fs.writeFileSync(ledger,JSON.stringify(state));fs.writeFileSync(registry,JSON.stringify(config));};save();
   return {root,registry,document,ledger,state,config,save};
 }
+
+test('pending user decision is attention; explicit operation restriction stays local',t=>{
+  const f=fixture(t);f.config.coordination[0].pending_user=true;f.save();
+  let b=board(f.config,f.root);
+  assert.ok(b.ready.includes('ledger::child'));
+  assert.ok(b.items[0].labels.includes('decision:user'));
+  assert.equal(b.followUps[0].execution,'not_dispatched');
+  assert.equal(b.followUps[0].decisionOwner,'user');
+  assert.equal(b.followUps[0].issue,null);
+  f.config.adapter_cli=process.argv[1];
+  assert.equal(prepare(f.config,b,'source','start',['child']).execution,'not_executed');
+  f.config.coordination[0].pending_user_blocking=true;
+  b=board(f.config,f.root);
+  assert.ok(!b.ready.includes('ledger::child'));assert.ok(b.ready.includes('ledger::parent'));
+  assert.throws(()=>prepare(f.config,b,'source','start',['child']),/constraints/);
+  assert.equal(prepare(f.config,b,'source','record',['child']).execution,'not_executed');
+});
+
+test('blocked and judgment tasks retain repair handoffs; hard dependents remain excluded',t=>{
+  const f=fixture(t);
+  f.config.coordination[0].assessment={state:'pending',owner:'quality-owner',reason:'Check evidence',blocking:true};
+  f.state.tasks[1].dependsOn=['child'];f.save();
+  let b=board(f.config,f.root);
+  assert.equal(b.ready.length,0);assert.equal(b.followUps.find(x=>x.problem==='pending_judgment').owner,'quality-owner');
+  assert.ok(b.followUps.some(x=>x.problem==='waiting_dependency:ledger::child'));
+  f.state.tasks[0].status='blocked';delete f.config.coordination[0].assessment;f.save();
+  b=board(f.config,f.root);assert.ok(b.followUps.some(x=>x.problem==='source_blocked'));
+  assert.deepEqual(b.followUps,board(f.config,f.root).followUps);
+});
 test('source planned -> processing -> accepted; preserves prose, parent and ledger; replay stable',t=>{
   const f=fixture(t);
   for(const [status,label] of [['open','planned'],['running','processing'],['done','done']]) {
@@ -50,12 +80,21 @@ test('unavailable sources and unknown ticket stay explicit',t=>{
   assert.equal(r.updated,true);assert.equal(r.sourceGaps.length,2);assert.match(fs.readFileSync(f.document,'utf8'),/unknown::ticket 来源未知/);
   assert.equal(r.externalAuthorityActions.every(a=>a.status==='not_executed'),true);
 });
-test('preflight refuses missing marker without writing any view',t=>{
+test('missing marker isolates one document and preserves other views',t=>{
   const f=fixture(t);fs.writeFileSync(f.document,'user-owned content');
-  assert.throws(()=>refresh(f.registry,'user.requested','manual'),/marker/);
-  assert.equal(fs.existsSync(path.join(f.root,'progress.md')),false);assert.equal(fs.readFileSync(f.document,'utf8'),'user-owned content');
+  assert.equal(refresh(f.registry,'user.requested','manual').outcome,'partial');
+  assert.equal(fs.existsSync(path.join(f.root,'progress.md')),true);assert.equal(fs.readFileSync(f.document,'utf8'),'user-owned content');
   const r=JSON.parse(fs.readFileSync(path.join(f.root,'sync-result.json'),'utf8'));
-  assert.equal(r.localDocumentsSynced,false);assert.equal(r.localWriteFailures[0].stage,'preflight');assert.ok(r.documents.every(d=>d.status==='not_synced'));
+  assert.equal(r.localDocumentsSynced,false);assert.equal(r.localWriteFailures[0].stage,'document_preflight');assert.deepEqual(r.documents.map(d=>d.status),['synced','not_synced']);
+});
+
+test('missing document directory does not stop existing independent documents',t=>{
+  const f=fixture(t);
+  f.config.document_sync.documents.unshift({path:'docs/missing/a.md',tickets:['ledger::child']});f.save();
+  const r=refresh(f.registry,'ticket.changed','missing-parent');
+  assert.equal(r.outcome,'partial');
+  assert.deepEqual(r.documents.map(d=>d.status),['synced','not_synced','synced']);
+  assert.equal(fs.existsSync(path.join(f.root,'docs','missing')),false);
 });
 test('explicit boundary and protected output checks',t=>{
   const f=fixture(t);const original=fs.readFileSync(f.ledger,'utf8');
@@ -88,17 +127,19 @@ test('concurrent invocation lock refuses before mutation',t=>{
   assert.throws(()=>refresh(f.registry,'ticket.changed','busy'),/EEXIST/);assert.equal(fs.existsSync(path.join(f.root,'progress.md')),false);assert.equal(fs.readFileSync(path.join(f.root,'progress.lock'),'utf8'),'held');
 });
 
-test('single-file write failure records partial completion and leaves later docs untouched',t=>{
+test('single-file write failure records partial completion and continues later docs',t=>{
   const f=fixture(t), second=path.join(f.root,'docs','delivery.md');
   fs.writeFileSync(second,'delivery\n<!-- ariadne:begin -->\nold\n<!-- ariadne:end -->\n');
   f.config.document_sync.documents.push({path:'docs/delivery.md',tickets:['ledger::child']});f.save();
   const original=fs.readFileSync(second,'utf8'), rename=fs.renameSync;
   try {
     fs.renameSync=(from,to)=>{if(to===f.document)throw Error('simulated local write failure');return rename(from,to);};
-    assert.throws(()=>refresh(f.registry,'release.completed','release-receipt'),/simulated local write failure/);
+    assert.equal(refresh(f.registry,'release.completed','release-receipt').outcome,'partial');
   } finally {fs.renameSync=rename;}
   const r=JSON.parse(fs.readFileSync(path.join(f.root,'sync-result.json'),'utf8'));
-  assert.deepEqual(r.documents.map(d=>d.status),['synced','not_synced','not_synced']);assert.equal(r.updated,false);
-  assert.equal(r.localWriteFailures[0].path,'docs/requirement.md');assert.equal(fs.readFileSync(second,'utf8'),original);
+  assert.deepEqual(r.documents.map(d=>d.status),['synced','not_synced','synced']);assert.equal(r.updated,false);
+  assert.equal(r.localWriteFailures[0].path,'docs/requirement.md');assert.notEqual(fs.readFileSync(second,'utf8'),original);
+  assert.ok(r.followUps.some(x=>x.key==='document:docs/requirement.md'));
+  assert.equal(refresh(f.registry,'user.requested','repair').updated,true);
   assert.equal(fs.existsSync(path.join(f.root,'progress.lock')),false);
 });

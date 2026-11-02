@@ -4,8 +4,8 @@
   "source_admission_verified": true,
   "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
   "preserved_exemption": "extensions/hermes-files/",
-  "source_files": 148,
-  "distribution_files": 135,
+  "source_files": 149,
+  "distribution_files": 137,
   "upstream_version": "0.9.0",
   "checks": [
     "{\"framework_version\": \"0.9.0\", \"agents\": [\"athena\", \"themis\", \"hermes\"], \"skills_including_upstream\": 10, \"foundation_unchanged\": true, \"mode\": \"candidate\", \"host_authority_authenticated\": false}",

@@ -5,6 +5,11 @@ from datetime import datetime, timezone
 from pathlib import Path, PureWindowsPath
 
 
+def passed(value):
+    """Accept an explicit pass status, optionally followed by its source rationale."""
+    return value == "pass" or (isinstance(value, str) and value.startswith("pass: ") and bool(value[6:].strip()))
+
+
 def merge(raw, binding):
     # Current mainline includes the full event-driven module. Do not resurrect
     # the archived scheduler or require the previous host's implementation tree.
@@ -19,7 +24,7 @@ def merge(raw, binding):
         decision, review = record['approval'], record['review']
         if not decision.get('approver_id') or decision.get('approver_id')==review.get('evaluator_id') or not decision.get('authority_ref') or decision.get('revocation_ref') or decision.get('superseded_by'):
             raise ValueError('Current module approval inactive')
-        if review.get('independence')!='independent_subagent_review' or not review.get('evaluator_id') or any(review.get(k)!='pass' for k in ['gonggong_framework','applicable_validation']) or review.get('concision',{}).get('status')!='pass' or any(review.get('yuanheng',{}).get(k)!='pass' for k in ['purpose','truth','economy','authority','adaptation','continuity']):
+        if review.get('independence')!='independent_subagent_review' or not review.get('evaluator_id') or any(review.get(k)!='pass' for k in ['gonggong_framework','applicable_validation']) or review.get('concision',{}).get('status')!='pass' or any(not passed(review.get('yuanheng',{}).get(k)) for k in ['purpose','truth','economy','authority','adaptation','continuity']):
             raise ValueError('Current module review incomplete')
         baseline=record['baseline'];lock=json.loads(raw['foundation.lock.json'])
         if baseline.get('foundation_sha256')!=lock['sha256'] or baseline.get('foundation_version')!=lock['version'] or baseline.get('policy_version')!=base['version'] or baseline.get('yuanheng_version')!=base['yuanheng_version']:

@@ -1,7 +1,7 @@
 """Deterministic, complete Gonggong -> Olympus distribution rebuild and drift check."""
 from pathlib import Path, PureWindowsPath
 import argparse,ast,hashlib,json,os,subprocess,sys
-ADAPTERS=['sync/gonggong_sync.py','sync/read_hermes.py','sync/POLICY.md','sync/names.json','sync/sinan_source.py']
+ADAPTERS=['sync/gonggong_sync.py','sync/read_hermes.py','sync/POLICY.md','sync/names.json','sync/sinan_source.py','sync/local_runtime.py']
 REPORTS={'sync/verification.json'}
 EXEMPT='extensions/hermes-files/'
 def adapters_at(root):
@@ -101,10 +101,10 @@ def expected(source,adapters,sinan_source):
         s=out[p].decode()
         if s.count(old)!=1:raise ValueError('Upstream hook changed; adapter review required: '+p)
         out[p]=s.replace(old,new).encode()
-    patch('tools/verify_framework.py','def verify(root,candidate=False):','def verify(root,candidate=False):\n    __import__("runpy").run_path(str(root/"sync/gonggong_sync.py"))["check"](root,candidate_source=candidate)')
+    patch('tools/verify_framework.py','def verify(root,candidate=False):','def verify(root,candidate=False):\n    __import__("runpy").run_path(str(root/"sync/local_runtime.py"))["check"](root)')
     patch('tools/agent-context.mjs',"import fs from 'node:fs';","import fs from 'node:fs';\nimport {execFileSync} from 'node:child_process';")
-    patch('tools/agent-context.mjs','  root=fs.realpathSync(root);',"  root=fs.realpathSync(root);\n  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/gonggong_sync.py'),'check','--root',root], {stdio:'pipe'});")
-    append('AGENTS.md','\n上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。启用前须重新全量核对有效共工源；发现偏差或缺源不得执行。\n')
+    patch('tools/agent-context.mjs','  root=fs.realpathSync(root);',"  root=fs.realpathSync(root);\n  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/local_runtime.py'),'--root',root], {stdio:'pipe'});")
+    append('AGENTS.md','\n上游强制同步和赫尔墨斯数据共享以 sync/POLICY.md 为准。更新时全量核验有效共工源；运行时校验本地完整包及当前候选准入，不依赖外部共工目录。\n')
     for p in ['specs/data-feedback.md','specs/reporting.md','agents/hermes/references/optimization.md','agents/hermes/references/storage.md']:
         append(p,'\n共工可按框架根 sync/POLICY.md 只读使用赫尔墨斯数据优化；用户已持续授权有效共工更新的完整同步。此前“单独指令”要求仍适用于自行提出和实施框架修改，不阻断已批准上游同步。数据读取工具为 sync/read_hermes.py，历史快照不改写。\n')
         append(p,'\n用户明确豁免：无数据库时使用独立 extensions/hermes-files 模块，在目标 Git 仓库的 olympus-hermes-data 记录需求产出并随需求合入。该模块和数据不受共工同步覆盖；赫尔墨斯与共工使用同一文件分析入口。尚无目标仓库时只交付规则与工具，不创建生产数据。文件状态不冒充 SQLite 回执。\n')
@@ -165,14 +165,17 @@ def expected(source,adapters,sinan_source):
             v['component']['entry_sha256']=sha(out[v['component']['entry']])
             for dep in v['dependencies']:v['dependencies'][dep]=sha(out[dep])
             put(p,v)
+    put('sync/state.json',{'upstream_version':json.loads(raw['framework-manifest.json'])['version'],'source_files':base_hashes,'sinan_registered_source_files':{p:sha(b) for p,b in sorted(evidence.items())},'adapter_files':{p:sha(b) for p,b in adapters.items()},'scope':'active_framework_plus_registered_sinan_module','admission':'pending_independent_review'})
     for a in m['agents']:
         a['state']='synchronized_candidate_pending_independent_admission'
-        a['candidate_files']=sorted(set(a['candidate_files']+list(adapters)+['source-evidence.json']))
+        a['candidate_files']=sorted(set(a['candidate_files']+list(adapters)+['source-evidence.json','sync/runtime-lock.json']))
+        a.pop('candidate_digest',None)
+    put('sync/runtime-lock.json',{'schema_version':1,'manifest':m,'files':{p:sha(b) for p,b in sorted(out.items()) if p!='framework-manifest.json'}})
+    for a in m['agents']:
         records=[{'path':p,'sha256':sha(out[p])} for p in a['candidate_files']]
         a['candidate_digest']=sha(''.join(x['path']+'\0'+x['sha256']+'\n' for x in records).encode())
-        put(a['admission_pass'],{'template':False,'status':'pending_independent_review','subject':{'id':a['id'],'version_or_digest':{'version':a['version'],'candidate_digest':a['candidate_digest'],'candidate_files':records}},'approval':None,'reason':'Upstream approval preserved as historical evidence; independent admission must bind this candidate.'})
+        put(a['admission_pass'],{'template':False,'status':'pending_independent_review','subject':{'id':a['id'],'version_or_digest':{'version':a['version'],'candidate_digest':a['candidate_digest'],'candidate_files':records}},'approval':None,'reason':'Independent admission must bind this candidate; previous approvals remain historical.'})
     put('framework-manifest.json',m)
-    put('sync/state.json',{'upstream_version':json.loads(raw['framework-manifest.json'])['version'],'source_files':base_hashes,'sinan_registered_source_files':{p:sha(b) for p,b in sorted(evidence.items())},'adapter_files':{p:sha(b) for p,b in adapters.items()},'scope':'active_framework_plus_registered_sinan_module','admission':'pending_independent_review'})
     return out
 def check(root,source=None,candidate_source=False):
     root=Path(root).resolve();binding=json.loads((root/'sync/binding.json').read_text(encoding='utf-8'))

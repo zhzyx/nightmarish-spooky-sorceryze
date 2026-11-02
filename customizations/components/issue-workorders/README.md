@@ -30,7 +30,7 @@ python customizations/components/issue-workorders/work_items.py collect --reques
 python customizations/components/issue-workorders/issue_gate.py --repo . --issue 6 --request-id issue-governance-20261102
 ```
 
-本地门禁查询 `work-items.json` 对应仓库的真实开放 Issue，要求 origin 同仓库、唯一已知类别、唯一 `in-progress` 或 `in-review` 状态，稳定需求 ID 支持 `<!-- olympus-request:ID -->` 或 Issue 表单的 `### 稳定需求 ID` 字段，歧义拒绝。它直接执行 `Olympus/tools/verify_framework.py` 正式模式（无 `--candidate`）与现有 Hermes `validate`、提交前 `git-check`，拒绝历史事件删除或改写，并检查该需求已有真实文件事件且已被 Git 跟踪。`work-items.json` 必须显式绑定 `tenant_id`；只选取该租户和需求的事件，且至少一个 `kind=request` 事件的 `source_ref` 必须精确等于 Issue URL 或 `github:owner/repo:issue:N`。继承宿主 `GONGGONG_FRAMEWORK_SOURCE`，或读取 `.olympus-local.json` 中相对仓库根的同名绑定；不会自动切换到活动共工目录。缺源、准入失败、采集缺失或未暂存修改均阻断。
+本地门禁查询 `work-items.json` 对应仓库的真实开放 Issue，要求 origin 同仓库、唯一已知类别、唯一 `in-progress` 或 `in-review` 状态，稳定需求 ID 支持 `<!-- olympus-request:ID -->` 或 Issue 表单的 `### 稳定需求 ID` 字段，歧义拒绝。它直接执行 `Olympus/tools/verify_framework.py` 正式模式（无 `--candidate`）与现有 Hermes `validate`、提交前 `git-check`，拒绝历史事件删除或改写，并检查该需求已有真实文件事件且已被 Git 跟踪。`work-items.json` 必须显式绑定 `tenant_id`；只选取该租户和需求的事件，且至少一个 `kind=request` 事件的 `source_ref` 必须精确等于 Issue URL 或 `github:owner/repo:issue:N`。正式框架校验使用已安装包内完整性清单和精确准入，不访问外部共工。仍继承宿主 `GONGGONG_FRAMEWORK_SOURCE` 或 `.olympus-local.json` 的同名更新定位；该定位只用于显式同步更新，不是运行依赖。准入失败、采集缺失或未暂存修改均阻断；缺少上游只阻断更新核验。
 
 输出摘要绑定当前 HEAD、index 与 tracked/nonignored 文件内容，检查前后内容和 Issue 状态须一致。每次修改后重跑；提交时复核 Git 内容，提交后另运行 Hermes `git-check --require-committed`。此摘要不是签名、准入通行证、消费回执或可跨版本复用的成功证明；工具核验事件结构、摘要和关联；静态 tenant/source/actor 字段及 SHA256 不能认证操作者身份或证明事件叙述真实，也不替代宿主独立权限或业务验收。纠正已有事件时追加新事件及 supersedes，保留历史原件。
 

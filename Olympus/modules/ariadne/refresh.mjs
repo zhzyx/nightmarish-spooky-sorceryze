@@ -17,7 +17,11 @@ function noLinks(target) {
 }
 function safeTarget(target, root, protectedFiles) {
   noLinks(target);
-  const parent=fs.realpathSync(path.dirname(target));
+  // A missing document directory is a local I/O gap, not permission to create it.
+  // Canonicalize its nearest existing ancestor while retaining lexical containment.
+  let ancestor=path.dirname(target);
+  while(!fs.existsSync(ancestor)&&path.dirname(ancestor)!==ancestor)ancestor=path.dirname(ancestor);
+  const parent=fs.realpathSync(ancestor);
   if(!within(root,parent)||!within(root,target))throw Error('Target outside canonical write boundary: '+target);
   if(target.split(path.sep).some(p=>['.yuanheng','.git'].includes(p.toLowerCase())))throw Error('Protected ledger or repository path');
   for(const file of protectedFiles) {
@@ -37,7 +41,7 @@ function atomicWrite(target, content) {
 }
 function nextStep(t,parent) {
   if(parent)return '待核验整体目标、验收与外部权威状态并对账；子项完成不自动关闭父项';
-  if(t.problems.length)return '处理阻塞/缺口后由原权威入口核验';
+  if(t.problems.length)return '关联问题 Issue 并交责任方调查/修复；继续无关授权工作，仅限制受影响操作';
   return ({open:'由宿主核验授权与容量后派发',running:'等待真实执行回执',review:'由有权验收者核验成果',blocked:'由责任人解除阻塞',done:'核对交付、外部权威回读与采集回执'}[t.status]||'核验未知源状态');
 }
 function render(snapshot, type, reference, tickets, parents=[]) {
@@ -52,7 +56,9 @@ function render(snapshot, type, reference, tickets, parents=[]) {
   const ready=snapshot.ready.filter(k=>items.some(t=>t.key===k));
   lines.push('','就绪候选（实际派发前仍需宿主核验权限、容量、依赖及回执）：',...ready.map(k=>'- '+escape(k)));
   if(!ready.length)lines.push('无；本次处理结束，不安排时间唤醒。');
-  lines.push('','来源版本：',...snapshot.sourceSnapshots.map(s=>`- ${escape(s.source)}：${escape(s.ledgerId)}，事件游标 ${s.eventCursor}，SHA256 ${s.sha256}`));
+  const followUps=snapshot.followUps.filter(f=>!tickets||tickets.includes(f.ticket));
+  if(followUps.length)lines.push('','问题处理候选（宿主关联真实 Issue 并核验授权后派发）：',...followUps.map(f=>'- '+escape(`${f.key} | ${f.owner} | ${f.nextAction}`)));
+  lines.push('','来源版本：' ,...snapshot.sourceSnapshots.map(s=>`- ${escape(s.source)}：${escape(s.ledgerId)}，事件游标 ${s.eventCursor}，SHA256 ${s.sha256}`));
   if(snapshot.diagnostics.length)lines.push('','读取缺口：',...snapshot.diagnostics.map(d=>'- '+escape(JSON.stringify(d))));
   lines.push('','此文档是来源视图，不改变源状态，不代表实际派发、外部 Issue 关闭或赫尔墨斯落库成功。');
   return lines.join('\n');
@@ -77,7 +83,7 @@ export function refresh(registryFile, type, reference) {
   let failed;
   try {
     const snapshot=board(config,base);
-    Object.assign(result,{ready:snapshot.ready,sourcesRead:snapshot.sourcesRead,sourcesRegistered:snapshot.sourcesRegistered,scope:'registered_sources_only',sourceSnapshots:snapshot.sourceSnapshots.map(({root,...s})=>s),diagnostics:snapshot.diagnostics,sourceGaps:[...snapshot.diagnostics]});
+    Object.assign(result,{followUps:snapshot.followUps,ready:snapshot.ready,sourcesRead:snapshot.sourcesRead,sourcesRegistered:snapshot.sourcesRegistered,scope:'registered_sources_only',sourceSnapshots:snapshot.sourceSnapshots.map(({root,...s})=>s),diagnostics:snapshot.diagnostics,sourceGaps:[...snapshot.diagnostics]});
     const sync=config.document_sync;
     const documents=sync?.documents??[];
     result.documents=[{path:'progress.md',status:'not_synced'},...(Array.isArray(documents)?documents:[]).map(d=>({path:d.path,status:'not_synced'}))];
@@ -93,8 +99,13 @@ export function refresh(registryFile, type, reference) {
       const target=safeTarget(path.resolve(base,d.path),root,protectedFiles);
       const identity=process.platform==='win32'?target.toLowerCase():target;
       if(targets.has(identity))throw Error('Duplicate or reserved document path');targets.add(identity);
-      const original=fs.readFileSync(target,'utf8');
-      writes.push({target,content:replaceRegion(original,render(snapshot,type,reference,d.tickets,d.parent_tickets)),original,root,entry:result.documents[index+1]});
+      try {
+        const original=fs.readFileSync(target,'utf8');
+        writes.push({target,content:replaceRegion(original,render(snapshot,type,reference,d.tickets,d.parent_tickets)),original,root,entry:result.documents[index+1]});
+      } catch(e) {
+        result.documents[index+1].reason=e.message;
+        result.localWriteFailures.push({path:d.path,stage:'document_preflight',error:e.message});
+      }
       for(const ticket of d.tickets)if(!snapshot.items.some(t=>t.key===ticket)&&!result.sourceGaps.some(g=>g.ticket===ticket))result.sourceGaps.push({ticket,error:'Registered document ticket unavailable'});
       for(const ticket of d.parent_tickets||[])if(!result.externalAuthorityActions.some(a=>a.ticket===ticket))result.externalAuthorityActions.push({ticket,action:'Verify overall goal and acceptance; reconcile parent at authoritative source',status:'not_executed'});
     }
@@ -105,9 +116,11 @@ export function refresh(registryFile, type, reference) {
         safeTarget(w.target,w.root,protectedFiles);
         if(w.original!==undefined&&fs.readFileSync(w.target,'utf8')!==w.original)throw Error('Document changed since preflight');
         atomicWrite(w.target,w.content);w.entry.status='synced';
-      }catch(e){w.entry.reason=e.message;result.localWriteFailures.push({path:w.entry.path,error:e.message});failed=e;break;}
+      }catch(e){w.entry.reason=e.message;result.localWriteFailures.push({path:w.entry.path,error:e.message});/* Continue independent document writes; preserve the failed entry. */}
     }
+    for(const failure of result.localWriteFailures)result.followUps.push({key:`document:${failure.path}`,problem:failure.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',issueAction:'Link document repair Issue',nextAction:'Repair this document and replay on actual event; other documents continue'});
     result.updated=result.documents.every(d=>d.status==='synced');
+    result.outcome=result.updated?'synced':'partial';
   }catch(e){failed=e;result.localWriteFailures.push({stage:'preflight',error:e.message});}
   finally {
     try {

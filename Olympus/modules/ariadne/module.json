@@ -1,7 +1,7 @@
 {
   "id": "ariadne",
   "name": "阿里阿德涅",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "kind": "task_management_and_coordination",
   "layer": "olympus_platform",
   "scope": "all_task_types_in_authorized_registered_sources",
@@ -38,11 +38,11 @@
     "document_sync": "Optional registry-relative write_root and registered documents with tickets/parent_tickets and unique ariadne markers"
   },
   "outputs": {
-    "board": "items, sourceSnapshots, diagnostics and ready keys",
+    "board": "items, sourceSnapshots, diagnostics, ready keys and proposed followUps with responsibility and Issue linkage actions",
     "labels": "audited local coordination updates; no source status mutation",
     "handoff": "executable and argv with fresh-check requirements; execution=not_executed",
     "progress_document": "source-derived states, labels, owners, blockers, acceptance and snapshot versions",
-    "sync_result": "Per-document status, source gaps, pending authoritative actions and local write failures; never proof of remote closure or reporting consumption"
+    "sync_result": "Per-document results and repair followUps; outcome=partial for isolated document errors; never remote closure or execution receipts"
   },
   "dependencies": {
     "required": [
@@ -83,7 +83,7 @@
     "current_adapter": "existing local Zeus ledger and CLI",
     "host_loader_implemented": false,
     "coverage": "registered sources only; empty by default; no global event listener",
-    "compatibility": "Original refresh API/CLI and authoritative ledger semantics retained; explicit document sync optional; no time-based invocation",
+    "compatibility": "Document read/marker/write failures return partial instead of throwing; callers must inspect outcome and updated. Unsafe configuration and protected output violations still throw. pending_user is advisory; explicit pending_user_blocking limits affected transitions.",
     "scheduler_config": null,
     "host": "Requires separate current host binding; upstream host authority is not inherited",
     "concurrency": {
@@ -114,7 +114,7 @@
   "implementation_source": {
     "path": "modules/sinan/coordinator.mjs",
     "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55",
-    "reuse": "byte-identical coordinator only; historical bindings and timer mechanisms not imported",
+    "reuse": "Coordinator derived from original; explicit nonblocking decision and follow-up changes in 0.4.2; no historical bindings imported",
     "path_base": "gonggong_framework_root",
     "evidence_index": "source-evidence.json"
   }
