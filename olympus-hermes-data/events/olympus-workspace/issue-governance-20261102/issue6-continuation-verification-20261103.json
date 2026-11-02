@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-continuation-verification-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-02T20:39:14.716052+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "e56228340d21d0476972ced3832534cb4213d2472fb84b02032bf7d56e14c081",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "evidence_ref": "data-collection/issue6-continuation-verification-20261103.json",
+    "evidence_sha256": "be133f67656588e09536e589fc59ab50ee1508872e95251a39602fd1bb2f79fc",
+    "issue_tests_passed": 37,
+    "host_tests_passed": 18,
+    "framework_mode": "approved_file_integrity",
+    "hermes_records_before_event": 64,
+    "pr10_merge_commit": "628ff28ab817311560114c8a01d44f36b46cb28b",
+    "full_issue_gate": "not_run_gh_unavailable",
+    "candidate_committed": false,
+    "independent_review": "pending",
+    "agent_execution_enabled": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "649e9bf07bb9ba11b4822416b1cdae1841d0bdc40887bf43d1de1309094ace8f"
+}

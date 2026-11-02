@@ -235,7 +235,8 @@ void AIChatDock::_begin_olympus_context() {
 	context_input["protocol_version"] = 1;
 	context_input["host"] = host;
 	context_input["agent_id"] = "athena";
-	context_input["request_id"] = "godot-" + snapshot_id;
+	context_input["issue_number"] = int64_t(String(EDITOR_GET("olympus/issue_number")).to_int());
+	context_input["request_id"] = String(EDITOR_GET("olympus/request_id")).strip_edges();
 	context_input["outcome"] = outcome;
 	context_input["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
 	context_input["project"] = ProjectSettings::get_singleton()->get_resource_path();

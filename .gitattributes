@@ -33,3 +33,6 @@ distribution/notices/* -text -whitespace
 
 # Preserve the exact host definition snapshot referenced by immutable task events.
 data-collection/issue-governance-host.json -text whitespace=cr-at-eol
+
+# Preserve immutable Issue #6 continuation evidence bytes and referenced hashes.
+data-collection/issue6-continuation-*.json -text whitespace=cr-at-eol
