@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  olympus_panel.h                                                      */
+/*  olympus_panel.h                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -37,19 +37,19 @@ class TextEdit;
 class Timer;
 
 class OlympusPanel : public VBoxContainer {
-    LineEdit *workspace = nullptr;
-    LineEdit *python = nullptr;
-    LineEdit *tenant = nullptr;
-    LineEdit *issue_number = nullptr;
-    LineEdit *request_id = nullptr;
-    TextEdit *output = nullptr;
-    Timer *timer = nullptr;
-    int64_t worker = -1;
-    String result_path;
-    void run_action(const String &p_action);
-    void poll();
-    void save_issue_binding(const String &p_text);
+	LineEdit *workspace = nullptr;
+	LineEdit *python = nullptr;
+	LineEdit *tenant = nullptr;
+	LineEdit *issue_number = nullptr;
+	LineEdit *request_id = nullptr;
+	TextEdit *output = nullptr;
+	Timer *timer = nullptr;
+	int64_t worker = -1;
+	String result_path;
+	void run_action(const String &p_action);
+	void poll();
+	void save_issue_binding(const String &p_text);
 
 public:
-    OlympusPanel();
+	OlympusPanel();
 };

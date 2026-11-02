@@ -59,7 +59,10 @@ class GateTests(unittest.TestCase):
     def test_commit_gate_rejects_missing_workspace_before_framework_execution(self):
         self.setup_gate()
         self.issue["labels"] = [v for v in self.issue["labels"] if v["name"] != "workspace:olympus"]
-        with patch.object(gate.work_items, "gh", return_value=json.dumps(self.issue)), patch.object(gate, "validate_command") as run:
+        with (
+            patch.object(gate.work_items, "gh", return_value=json.dumps(self.issue)),
+            patch.object(gate, "validate_command") as run,
+        ):
             with self.assertRaisesRegex(ValueError, "workspace:olympus"):
                 gate.gate(self.root, 6, "req-6")
             run.assert_not_called()

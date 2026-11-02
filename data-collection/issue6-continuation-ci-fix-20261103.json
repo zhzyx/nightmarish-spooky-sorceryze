@@ -1,0 +1,25 @@
+{
+  "request_id": "issue-governance-20261102",
+  "observed_at": "2026-11-02T21:02:36.770675+00:00",
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41522860154/job/125543012948",
+  "fixes": [
+    "Apply clang-format and ruff to affected files",
+    "Assert test module spec and loader before loading",
+    "Normalize olympus_host_paths include to repository-root path, same target",
+    "Preserve two immutable original evidence files with exact file-format exclusions; historical collection protection remains active"
+  ],
+  "verification": {
+    "host_tests": 18,
+    "issue_tests": 39,
+    "mypy": "passed, six files",
+    "ruff": "passed",
+    "clang_format": "passed",
+    "includes": "passed",
+    "copyright_headers": "passed",
+    "file_format": "passed except two preserved original sources"
+  },
+  "independent_reviewer": "codex-subagent:review_issue6",
+  "independent_findings": "Python AST same apart from import ordering and test-loader assertions; C++ header tokens same; include path targets same file; regex matches only two originals",
+  "remote_ci": "pending_new_commit",
+  "merged": false
+}
