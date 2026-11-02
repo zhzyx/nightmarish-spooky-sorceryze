@@ -1,0 +1,33 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "observed_at": "2026-11-02T18:58:48.421449+00:00",
+  "user_instruction": "不符不能阻断",
+  "behavior": "Issue metadata mismatch, missing binding and lookup failure are advisory; continue with needs-reconciliation and honest host source. Missing ID uses pending-issue identity. Association switch closes old observed steps under old request then appends correction.",
+  "verification": {
+    "host_tests": 20,
+    "issue_tests": 37,
+    "result": "passed",
+    "affected_cpp_object": "compiled",
+    "changed_file_prek": "passed"
+  },
+  "independent_review": {
+    "reviewer": "/root/review_issue_intake",
+    "result": "Direct and indirect Issue-only blocking resolved; no new authority granted",
+    "method": "Independent 57 tests and code review; compiler evidence supplied by primary task"
+  },
+  "source_update": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6#issuecomment-6585675013",
+  "files": {
+    "AGENTS.md": "2302798d50cbb474832d868540429b87b9702d341b3be15a20d89c9b1b1ca798",
+    ".github/CONTRIBUTING.md": "900a22b30dddb13c3ecf0c4db02c793dae5d474cc68f3a159179f92c061b594b",
+    "customizations/components/godot-host/bridge.py": "d7cac4c4a4ec89b56870ffc8f4aa2d0a996ec146704fcbbc0a71d3e9f8758a3e",
+    "customizations/components/godot-host/test_bridge.py": "d9e65c28ae56587e07229765f735f90dac56dc2bae9754a6126cfa633c55f04a",
+    "customizations/components/godot-host/test_issue_binding.py": "858094b77ecbd6bd4943bf532f765f6c39c51b540918a6c58dcf2b8fb361a4e2",
+    "customizations/components/godot-host/README.md": "d178755e62117009ca1de1ef8dec940a7234ccdcc657830b46665bce54d3a29c",
+    "customizations/components/issue-workorders/README.md": "82567795e405d8a7961834e3fe17289f84a8e928097d23e13eb8456b29932123",
+    "editor/docks/ai_chat_olympus.cpp": "d5153cdba4ba1ff2f74f451230cc70b921cced3939b09e8f93e8ea86693abb57",
+    "design-docs/issue-6-host-intake-delivery-20261103.md": "c0771cd4be8935691a4c771a4c272ba5b7b28e6c9be05ce8a236378556936c6d"
+  },
+  "input_tokens": null,
+  "output_tokens": null,
+  "production_model_called": false
+}

@@ -12,7 +12,13 @@ spec.loader.exec_module(bridge)
 
 
 class BindingTests(unittest.TestCase):
-    def test_missing_binding_never_launches(self):
+    def test_network_failure_is_advisory(self):
+        with patch.object(bridge.subprocess, "run", side_effect=OSError("unavailable")):
+            result = bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")
+        self.assertEqual(result["state"], "needs-reconciliation")
+        self.assertIsNone(result["url"])
+
+    def test_missing_binding_warns_without_remote_launch(self):
         for value in (
             {},
             {"request_id": "req-6"},
@@ -20,8 +26,9 @@ class BindingTests(unittest.TestCase):
             {"request_id": "../escape", "issue_number": 6},
         ):
             with patch.object(bridge.subprocess, "run") as run:
-                with self.assertRaises(ValueError):
-                    bridge.issue_binding(Path("."), value, "test")
+                result = bridge.issue_binding(Path("."), value, "test")
+                self.assertEqual(result["state"], "needs-reconciliation")
+                self.assertIsNone(result["url"])
                 run.assert_not_called()
 
     def test_rejection_and_success_use_real_intake_command(self):
@@ -32,8 +39,8 @@ class BindingTests(unittest.TestCase):
                 return_value=types.SimpleNamespace(returncode=code, stdout=json.dumps({"number": 6})),
             ) as run:
                 if code:
-                    with self.assertRaises(ValueError):
-                        bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")
+                    result = bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")
+                    self.assertEqual(result["state"], "needs-reconciliation")
                 else:
                     self.assertEqual(
                         bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")["number"], 6

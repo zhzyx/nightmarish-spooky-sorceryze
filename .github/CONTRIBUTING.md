@@ -1,5 +1,7 @@
 # Olympus 仓库协作入口
 
+2026-11-03 用户修正（优先于下文此前的入口拒绝描述）：Issue 缺失、不符或暂时无法回读均只提示并记为 needs-reconciliation，继续开发。稳定需求 ID 缺失时使用明确标识为 pending-issue 的临时事件身份；事件保留宿主真实来源，不能伪称已经验证的 Issue。宿主 mandate 提供待协调状态，跟进创建/复用/纠正关联并追加回执。此修正只改变开始开发时的 Issue 处理；正式框架准入、权限、采集持久化及提交验收规则继续适用。
+
 本约定适用于本仓库的所有贡献者：人工、IDE/CLI/引擎宿主、Agent、外部协作者；覆盖需求、设计、开发、缺陷、研究、测试、文档、维护及资产。技术细节沿用根目录 CONTRIBUTING.md 的 Godot 指南；本仓库分支及治理以本入口为准。
 
 宿主开发必须在模型/工具执行前回读同仓库真实 Issue，校验稳定需求 ID、租户、类别、有效执行状态和 workspace:olympus；查询失败即停止。Godot Olympus 页面填写 Issue 编号和稳定 ID，其他宿主使用 issue-workorders 的 intake-only 契约。data-collection 中的真实来源、证据和回执与 olympus-hermes-data 文件事件均为本次需求必须提交的产物；代码提交不能替代数据交付。提交前检查 index，提交后检查 HEAD；禁止删除原始采集历史，纠正追加记录。

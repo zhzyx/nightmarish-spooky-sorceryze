@@ -1,5 +1,7 @@
 # Godot Olympus 宿主适配器
 
+2026-11-03 用户修正（优先于下文此前的入口拒绝描述）：Issue 缺失、不符或暂时无法回读均只提示并记为 needs-reconciliation，继续开发。稳定需求 ID 缺失时使用明确标识为 pending-issue 的临时事件身份；事件保留宿主真实来源，不能伪称已经验证的 Issue。宿主 mandate 提供待协调状态，跟进创建/复用/纠正关联并追加回执。此修正只改变开始开发时的 Issue 处理；正式框架准入、权限、采集持久化及提交验收规则继续适用。
+
 `bridge.py` 是唯一 Python 实现；引擎通过 `tools/olympus_bridge.py` 调用。原生页面在 `editor/docks/olympus_panel.*`，发送控制在 `editor/docks/ai_chat_olympus.cpp`。
 
 开发前先创建或复用 `work-items.json` 对应仓库的真实 Issue，在 Olympus 页面填写 Issue 编号和工单中的稳定需求 ID（修改即保存到本机）。IDE/CLI/生产工具在 chat 协议中传入整数 `issue_number` 和稳定 `request_id`，不再以聊天快照生成需求 ID。每轮先回读真实 Issue，核对 origin、租户、唯一类别、唯一 in-progress/in-review 状态、需求 ID 和 workspace:olympus；失败或离线拒绝执行。工单本身不产生工具权限或 Agent 准入。创建工具仍需显式发布确认及真实权限；未建单不能先开发再补单。

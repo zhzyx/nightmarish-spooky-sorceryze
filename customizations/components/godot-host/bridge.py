@@ -146,7 +146,7 @@ def request_identity(request):
     return {"id": host["id"], "kind": host["kind"]}, agent_id
 
 
-def issue_binding(root, request, tenant):
+def checked_issue_binding(root, request, tenant):
     number = request.get("issue_number")
     request_id = request.get("request_id")
     if (
@@ -184,6 +184,20 @@ def issue_binding(root, request, tenant):
     return json.loads(process.stdout)
 
 
+def issue_binding(root, request, tenant):
+    """An Issue mismatch is advisory; it must not prevent host development."""
+    try:
+        value = checked_issue_binding(root, request, tenant)
+        return {**value, "state": "verified"}
+    except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired):
+        return {
+            "state": "needs-reconciliation",
+            "url": None,
+            "warning": "Issue 关联缺失、不符或暂时无法核实；本轮继续，请创建/复用真实工单并纠正关联。",
+            "next_action": "Reconcile the real Issue association and retain a correction receipt; never present an unverified Issue URL as verified",
+        }
+
+
 def chat(root, request, tenant):
     """Load framework context; never fall back to a model when checks reject it."""
     root = root.resolve()
@@ -194,6 +208,12 @@ def chat(root, request, tenant):
     if len(matches) != 1:
         raise ValueError("Agent is not uniquely registered: " + agent_id)
     agent = matches[0]
+    request = dict(request)
+    if not isinstance(request.get("request_id"), str) or not re.fullmatch(
+        r"[a-z0-9]+(?:-[a-z0-9]+)*", request["request_id"]
+    ):
+        identity = json.dumps([host, tenant, request.get("authority_ref"), request.get("outcome")], sort_keys=True)
+        request["request_id"] = "pending-issue-" + hashlib.sha256(identity.encode()).hexdigest()[:32]
     for field in ("request_id", "outcome", "authority_ref", "project"):
         if not isinstance(request.get(field), str) or not request[field].strip():
             raise ValueError("Missing host request: " + field)
@@ -201,11 +221,12 @@ def chat(root, request, tenant):
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
     issue = issue_binding(root, request, tenant)
+    source_ref = issue.get("url") or host["id"] + ":ai-chat:issue-unverified"
     flush(root)  # An earlier failed delivery blocks the next model/tool round.
     binding = {
         "tenant_id": tenant,
         "request_ref": request["request_id"],
-        "source_ref": issue["url"],
+        "source_ref": source_ref,
         "agent_snapshot_ref": agent_id + "@" + agent["version"] + "#" + agent["candidate_digest"],
         "outbox_path": ".olympus-outbox/chat",
         "sink_ref": "olympus-hermes-data",
@@ -276,7 +297,7 @@ def chat(root, request, tenant):
             "request_id": request["request_id"],
             "kind": "request",
             "occurred_at": datetime.now(timezone.utc).isoformat(),
-            "source_ref": issue["url"],
+            "source_ref": source_ref,
             "agent": {
                 "id": "olympus-host-adapter",
                 "version": "1.1.0",
@@ -304,6 +325,8 @@ def chat(root, request, tenant):
             return {"ok": False, "agent_execution_enabled": False, "error": str(error)}
         result["context_ready"] = result["ok"]
         result["model_execution_started"] = False
+        result["issue_intake"] = issue
+        result["warning"] = issue.get("warning", "")
         if result["ok"]:
             result["reporting"] = binding
             result["admission_scope"] = "context_checked; model execution and reporting are host responsibilities"

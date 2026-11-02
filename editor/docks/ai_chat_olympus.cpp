@@ -293,9 +293,34 @@ void AIChatDock::_poll_olympus_context() {
 	}
 	const bool cancelled = !busy || olympus_generation != session_generation;
 	if (!olympus_reporting.is_empty() && result.get("reporting", Variant()).get_type() == Variant::DICTIONARY && olympus_reporting != Dictionary(result["reporting"])) {
-		_append(TTR("Error"), U"Olympus 本轮框架或上报绑定已变化，请结束本轮并重新发送。");
-		_set_busy(false);
-		return;
+		Dictionary previous_identity = olympus_reporting.duplicate();
+		Dictionary next_identity = Dictionary(result["reporting"]).duplicate();
+		// Issue reconciliation can change request/source; framework and host bindings remain pinned.
+		previous_identity.erase("request_ref");
+		previous_identity.erase("source_ref");
+		next_identity.erase("request_ref");
+		next_identity.erase("source_ref");
+		if (previous_identity != next_identity) {
+			_append(TTR("Error"), U"Olympus 本轮框架或上报绑定已变化，请结束本轮并重新发送。");
+			_set_busy(false);
+			return;
+		}
+		if (!cancelled) {
+			if (olympus_reporting.get("request_ref", "") != Dictionary(result["reporting"]).get("request_ref", "")) {
+				// Finish old observations under their original request before switching association.
+				for (const Variant &phase : olympus_running_steps.keys()) {
+					if (!_record_olympus("step", phase, "association_changed")) {
+						_set_busy(false);
+						return;
+					}
+				}
+			}
+			olympus_reporting = result["reporting"];
+			if (!_record_olympus("correction", "issue_association_changed", "updated")) {
+				_set_busy(false);
+				return;
+			}
+		}
 	}
 	if (result.get("reporting", Variant()).get_type() == Variant::DICTIONARY && olympus_reporting.is_empty()) {
 		olympus_reporting = result["reporting"];
@@ -318,6 +343,10 @@ void AIChatDock::_poll_olympus_context() {
 		return;
 	}
 	olympus_context = result["context"];
+	const String issue_warning = result.get("warning", "");
+	if (!issue_warning.is_empty()) {
+		_append(TTR("Notice"), issue_warning);
+	}
 	set_meta("olympus_status", "context_ready");
 	if (!olympus_recovered_result.is_empty()) {
 		if (!_record_olympus("step", "restart_result_recovery", "running")) {

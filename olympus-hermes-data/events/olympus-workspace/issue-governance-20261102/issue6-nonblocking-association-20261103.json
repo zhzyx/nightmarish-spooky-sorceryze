@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-nonblocking-association-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:58:48.421449+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "2302798d50cbb474832d868540429b87b9702d341b3be15a20d89c9b1b1ca798",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "instruction": "不符不能阻断",
+    "behavior": "Issue metadata mismatch, missing binding and lookup failure are advisory; continue with needs-reconciliation and honest host source. Missing ID uses pending-issue identity. Association switch closes old observed steps under old request then appends correction.",
+    "verification": "data-collection/issue-6-nonblocking-association-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue6-host-intake-request-20261103"
+  ],
+  "sha256": "1808db4c7a9f4dc3cd46107b6b450712f69d3d227190356361a07353da36985b"
+}

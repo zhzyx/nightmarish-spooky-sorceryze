@@ -45,7 +45,7 @@ class ChatGateTests(unittest.TestCase):
     def process(self, ok, receipt_ok=True):
         def run(command, **kwargs):
             if command[1].endswith("agent-context.mjs"):
-                mandate = json.loads(Path(command[-1]).read_text())
+                mandate = json.loads(Path(command[-1]).read_text(encoding="utf-8"))
                 self.assertFalse(mandate["tool_permission"]["tools_enabled"])
                 self.assertEqual(mandate["issue"]["url"], "https://github.com/test/repo/issues/6")
                 self.assertIn(
@@ -56,7 +56,7 @@ class ChatGateTests(unittest.TestCase):
                 return types.SimpleNamespace(
                     returncode=0 if ok else 1, stdout="FRAMEWORK" if ok else "", stderr="admission blocked"
                 )
-            event = json.loads(Path(command[-1]).read_text())
+            event = json.loads(Path(command[-1]).read_text(encoding="utf-8"))
             self.assertNotIn(self.request["outcome"], json.dumps(event))
             self.assertEqual(event["payload"]["context_accepted"], ok)
             return types.SimpleNamespace(
@@ -71,6 +71,29 @@ class ChatGateTests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["context"], "FRAMEWORK")
         self.assertEqual(run.call_count, 2)
+
+    def test_issue_mismatch_continues_with_honest_source_and_pending_identity(self):
+        pending = {"state": "needs-reconciliation", "url": None, "warning": "Issue 待补齐"}
+
+        def run(command, **kwargs):
+            if command[1].endswith("agent-context.mjs"):
+                mandate = json.loads(Path(command[-1]).read_text(encoding="utf-8"))
+                self.assertEqual(mandate["issue"]["state"], "needs-reconciliation")
+                self.assertTrue(mandate["feature_id"].startswith("pending-issue-"))
+                return types.SimpleNamespace(returncode=0, stdout="FRAMEWORK", stderr="")
+            event = json.loads(Path(command[-1]).read_text(encoding="utf-8"))
+            self.assertEqual(event["source_ref"], "godot-editor:ai-chat:issue-unverified")
+            self.assertEqual(event["payload"]["issue"]["state"], "needs-reconciliation")
+            return types.SimpleNamespace(returncode=0, stdout='{"state":"recorded_file"}', stderr="")
+
+        with (
+            patch.object(bridge, "issue_binding", return_value=pending),
+            patch.object(bridge.subprocess, "run", side_effect=run),
+        ):
+            result = bridge.chat(self.root, dict(self.request, request_id=""), "test")
+        self.assertTrue(result["context_ready"])
+        self.assertEqual(result["warning"], pending["warning"])
+        self.assertEqual(result["reporting"]["source_ref"], "godot-editor:ai-chat:issue-unverified")
 
     def test_admission_failure_cannot_send_context(self):
         with patch.object(bridge.subprocess, "run", side_effect=self.process(False)):
