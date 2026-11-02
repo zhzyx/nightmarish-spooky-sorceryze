@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/15",
+  "request_id": "execution-efficiency-20261103",
+  "origin": "current_user_conversation_and_prior_verified_delivery",
+  "user_instruction": "将优化整合进框架的合适模块。",
+  "created_at": "2026-11-02T20:29:33.902574+00:00",
+  "observations": [
+    "Prior work expanded to all-platform CI before user limited scope to PC.",
+    "Several commits corrected CI prerequisites, causing additional runs.",
+    "Repeated unchanged CI queries and progress reports consumed context.",
+    "Isolation began after concurrent working-tree edits appeared."
+  ],
+  "sources": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/10",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41502748056",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41508348942",
+    "design-docs/issue7-042-standalone-20261103.md"
+  ],
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "measured_savings": null,
+  "unknown_reason": "No complete host usage/cost account or controlled before/after measurement supplied.",
+  "acceptance_scenarios": [
+    "Documentation-only work selects static/content checks without default engine builds.",
+    "Unrelated failures in a mixed PR trigger scope/dependency review rather than silent expansion.",
+    "PC target does not automatically imply every desktop OS/compiler/template.",
+    "Evidence reuse requires matching affected inputs/configuration; required exact-commit checks remain mandatory.",
+    "Whole-run cancellation accounts for completed evidence, cache and remaining work.",
+    "Unchanged waits produce no new queries/events; higher-priority host progress requirements use existing status.",
+    "Concurrent work is isolated before edits and excludes other tasks changes.",
+    "Unknown costs stay null; completion ends unnecessary checks without abandoning unresolved commitments."
+  ],
+  "validation_kind": "manual_policy_scenarios_plus_static_integrity_checks",
+  "automation_enforcement_implemented": false,
+  "effectiveness_measured": false
+}

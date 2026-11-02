@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "event_id": "execution-efficiency-20261103-validation",
+  "request_id": "execution-efficiency-20261103",
+  "kind": "step",
+  "occurred_at": "2026-11-02T20:36:11.068484+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/15",
+  "payload": {
+    "description": "Integrated host execution policy in issue-workorders 1.2.0 and entry references. Independent review passed eight policy scenarios; local links, JSON, formatting, ownership, registry and unchanged frozen package checks passed. No engine builds; no measured savings or automatic enforcement claimed.",
+    "source_files": [
+      "data-collection/execution-efficiency-20261103.json",
+      "data-collection/execution-efficiency-review-20261103.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "Host usage/cost account not supplied."
+  },
+  "evidence_refs": [
+    "execution-efficiency-20261103-request"
+  ],
+  "sha256": "0564dc47ed61e8662f4e51a1a840ff6a57404b4d67d52f69da9c08b957096824"
+}

@@ -4,6 +4,8 @@
 
 本 Git 仓库是奥林匹斯工作区；框架根是 `Olympus/`。按 `Olympus/AGENTS.md` 和实际职责加载规则，不全量灌入框架上下文。框架更新时全量核对有效共工上游；运行时校验已安装本地包及精确候选准入，不依赖外部共工目录。没有准入或真实宿主权限时，不声称 Agent 已启用。
 
+工程任务开始时按需加载 [执行范围与验证成本](customizations/components/issue-workorders/execution-policy.md)，固定本次产物和最小验证范围；范围变化时回查，其他阶段复用同一有效记录。
+
 需求产出包括代码/文档及 `olympus-hermes-data/` 内的真实文件事件。独立文件模式的入口是 `Olympus/extensions/hermes-files/hermes_files.py`，记录与分析无需数据库或上游在线。根据实际授权与事件记录，不将模板、测试数据或估算用量写成生产事实。
 
 用户明确豁免 `Olympus/extensions/hermes-files/` 及根目录 `olympus-hermes-data/`，共工同步不能覆盖或清理它们。所有其他框架内容遵循确定性名称映射和全量同步。同步应从当前 Olympus 同步工具开始，在新目录重建和校验后交付 Git 变更。

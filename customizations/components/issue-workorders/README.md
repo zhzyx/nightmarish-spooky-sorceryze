@@ -1,5 +1,7 @@
 # GitHub Issue 工单适配
 
+宿主执行约束见 [执行范围与验证成本](execution-policy.md)：任务入口固定边界，交付阶段按变更选择验证，等待阶段合并真实状态事件，效果沿用 Hermes 记录。它是本组件的流程约定，不改变共享 Agent 定义或声称已实现自动预算控制。
+
 适用 Olympus 工程层；共工共同框架、Ariadne 源状态和准入不变。本文路径均相对仓库根。工作区配置为 `work-items.json`，类别定义为 `.github/labels.json`，七种状态另列 `.github/status-labels.json`。每个类别表单携带唯一 `type:*` 和默认 `status:needs-decision`；开始生产前明确范围、授权及依赖并转为 `status:in-progress`，待验收时为 `status:in-review`。
 
 Git 本身不提供 Issue，本工程采用现有 GitHub 远程仓库的 Issue。Issue 状态是权威；本地文档、创建计划和数据索引不是另一套工单账本。所有远程操作需要实际 GitHub 权限；已验证本机现有 GitHub CLI 登录及仓库写权限；若 `gh` 不在 PATH，将实际 CLI 的 bin 目录加入本机会话 PATH。账号凭据不进入仓库。GitHub 插件状态不影响已验证的本机 CLI 通道。
