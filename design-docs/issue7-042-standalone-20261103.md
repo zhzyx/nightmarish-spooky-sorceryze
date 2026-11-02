@@ -40,3 +40,9 @@
 已备份旧包及本机绑定至忽略目录 `.godot-integration-local/issue7-042-standalone/backup-before-switch`，完成活动包替换；Hermes扩展和根事件目录在切换前后逐字一致。显式把上游环境变量设为不存在路径后，活动框架正式验证仍通过；显式更新check则对锁定149文件源通过。工程镜像索引更新并校验137个非豁免文件，Python20/JS11/JSON51语法通过。运行仍受当前宿主权限与实际事件回执约束。
 
 Git 合并必须等待对应CI通过；当前不能将本地切换等同于默认分支已经合入。
+
+## 合并前既有编译阻塞修复
+
+实际读取 [Linux编译失败](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41491433061/job/125435518075)，确认 `editor/docks/ai_chat_dock.cpp` 10处及 `ai_chat_olympus.cpp` 1处局部声明遮蔽成员，触发`-Werror=shadow`。关联既有CI工单 #11；作为本次合并必要修复，仅改局部变量名及对应使用，不改编译检查或CLI脚本。
+
+`codex-subagent:review_standalone` 独立只读审查确认：词法归一化后两文件与修复前HEAD完全一致，字符串、序列化键、成员访问和行为不变，所有引用改名完整。clang-format --dry-run --Werror通过；实际编译结果仍等待对应CI。不影响已批准框架文件或候选摘要。

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-042-ci-shadow-fix-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T18:00:37.641043+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "Remote Linux compilation failed on 11 local variables shadowing AIChatDock members. Renamed locals only in ai_chat_dock.cpp and ai_chat_olympus.cpp; independent reviewer confirmed lexical equivalence after normalization, unchanged strings/keys/member accesses, no missed uses. clang-format dry-run passes; compiler outcome awaits CI. Related existing Issue11.",
+    "independent_evaluator": "codex-subagent:review_standalone",
+    "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41491433061/job/125435518075",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Host usage not supplied; no compiler pass inferred from review"
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "5abc7613bd76f8ddefdc42e801c9a0cd7df073744c105467aae11027695310ff"
+}

@@ -228,20 +228,20 @@ void AIChatDock::_begin_olympus_context() {
 			break;
 		}
 	}
-	Dictionary input;
+	Dictionary context_input;
 	Dictionary host;
 	host["id"] = "godot-editor";
 	host["kind"] = "engine";
-	input["protocol_version"] = 1;
-	input["host"] = host;
-	input["agent_id"] = "athena";
-	input["request_id"] = "godot-" + snapshot_id;
-	input["outcome"] = outcome;
-	input["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
-	input["project"] = ProjectSettings::get_singleton()->get_resource_path();
-	input["tools_enabled"] = allow_tools->is_pressed();
-	input["file_changes_require_approval"] = !auto_apply_file_changes->is_pressed();
-	input["execution_requires_approval"] = !auto_execute_commands->is_pressed();
+	context_input["protocol_version"] = 1;
+	context_input["host"] = host;
+	context_input["agent_id"] = "athena";
+	context_input["request_id"] = "godot-" + snapshot_id;
+	context_input["outcome"] = outcome;
+	context_input["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
+	context_input["project"] = ProjectSettings::get_singleton()->get_resource_path();
+	context_input["tools_enabled"] = allow_tools->is_pressed();
+	context_input["file_changes_require_approval"] = !auto_apply_file_changes->is_pressed();
+	context_input["execution_requires_approval"] = !auto_execute_commands->is_pressed();
 	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("olympus-chat-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
 	olympus_input_path = prefix + ".request.json";
 	olympus_output_path = prefix + ".result.json";
@@ -251,7 +251,7 @@ void AIChatDock::_begin_olympus_context() {
 		_set_busy(false);
 		return;
 	}
-	file->store_string(JSON::stringify(input));
+	file->store_string(JSON::stringify(context_input));
 	file.unref();
 	List<String> args;
 	for (const String &argument : { bridge, String("chat"), String("--workspace"), root, String("--tenant"), String(EDITOR_GET("olympus/tenant")), String("--request"), olympus_input_path, String("--out"), olympus_output_path }) {

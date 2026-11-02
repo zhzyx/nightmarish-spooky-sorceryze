@@ -382,8 +382,8 @@ void AIChatDock::_save_history() {
 		agent["transcript"] = state.transcript.duplicate();
 		// Streaming text is visible history only, not a confirmed assistant answer.
 		if (id == active_agent && !cli_partial.is_empty()) {
-			Array visible = agent["transcript"];
-			visible.push_back(chat_message("assistant", _redact(cli_partial) + U"\n\n[回复未完成，以上仅为中断前收到的正文。]"));
+			Array visible_transcript = agent["transcript"];
+			visible_transcript.push_back(chat_message("assistant", _redact(cli_partial) + U"\n\n[回复未完成，以上仅为中断前收到的正文。]"));
 		}
 		agent["draft"] = _redact(state.draft);
 		agent["draft_images"] = state.draft_images;
@@ -399,16 +399,16 @@ void AIChatDock::_save_history() {
 		}
 		agents.push_back(agent);
 	}
-	Dictionary data;
-	data["version"] = 1;
-	data["active_agent"] = active_agent;
-	data["next_agent"] = next_agent;
-	data["agents"] = agents;
-	data["scheduled_tasks"] = schedule_tasks;
+	Dictionary history_data;
+	history_data["version"] = 1;
+	history_data["active_agent"] = active_agent;
+	history_data["next_agent"] = next_agent;
+	history_data["agents"] = agents;
+	history_data["scheduled_tasks"] = schedule_tasks;
 	HistorySaveJob *job = memnew(HistorySaveJob);
 	// Array/Dictionary are shared mutable containers. Only this detached snapshot
 	// may cross the thread boundary; the worker never reads the dock or its UI.
-	job->data = data.duplicate(true);
+	job->data = history_data.duplicate(true);
 	job->keys.push_back(api_key->get_text());
 	job->keys.push_back(request_key);
 	job->path = _history_path();
@@ -661,7 +661,7 @@ void AIChatDock::_load_history() {
 		return;
 	}
 	history_restoring = true;
-	Dictionary data;
+	Dictionary history_data;
 	bool found = false;
 	bool restored = false;
 	const String path = _history_path();
@@ -678,13 +678,13 @@ void AIChatDock::_load_history() {
 		if (json.parse(file->get_as_utf8_string()) != OK || json.get_data().get_type() != Variant::DICTIONARY || !valid_history(json.get_data())) {
 			continue;
 		}
-		data = json.get_data();
+		history_data = json.get_data();
 		history_primary_valid = candidate == path;
 		restored = true;
 		break;
 	}
 	String transaction_error;
-	if (!_recover_version_transaction(data, transaction_error)) {
+	if (!_recover_version_transaction(history_data, transaction_error)) {
 		snapshot_transaction_failed = true;
 		history_writable = false;
 	}
@@ -698,7 +698,7 @@ void AIChatDock::_load_history() {
 		message_list->queue_free();
 		agent_tabs->set_block_signals(true);
 		agent_tabs->clear_tabs();
-		const Array agents = data["agents"];
+		const Array agents = history_data["agents"];
 		for (int i = 0; i < agents.size(); i++) {
 			const Dictionary agent = agents[i];
 			const int id = agent["id"];
@@ -736,13 +736,13 @@ void AIChatDock::_load_history() {
 			state.scroll = agent.get("scroll", 0);
 			state.follow_latest = agent.get("follow_latest", true);
 			agent_sessions.insert(id, state);
-			if (id == int(data["active_agent"])) {
+			if (id == int(history_data["active_agent"])) {
 				agent_tabs->set_current_tab(i);
 			}
 		}
 		agent_tabs->set_block_signals(false);
-		active_agent = data["active_agent"];
-		next_agent = data["next_agent"];
+		active_agent = history_data["active_agent"];
+		next_agent = history_data["next_agent"];
 		const AgentSession state = agent_sessions[active_agent];
 		agent_sessions.erase(active_agent);
 		state.message_list->set_name("Messages");
@@ -761,7 +761,7 @@ void AIChatDock::_load_history() {
 	if (snapshot_transaction_failed) {
 		_append(TTR("Error"), String(U"版本还原事务未能恢复，已锁定对话和文件操作；请保留事务日志。\n") + transaction_error);
 	}
-	_load_schedules(data);
+	_load_schedules(history_data);
 	_queue_history_save();
 }
 
@@ -1900,8 +1900,8 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		if (!complete) {
 			final["incomplete"] = true;
 			if (!content.is_empty() && !transcript.is_empty()) {
-				Dictionary visible = transcript[transcript.size() - 1];
-				visible["incomplete"] = true;
+				Dictionary visible_message = transcript[transcript.size() - 1];
+				visible_message["incomplete"] = true;
 			}
 		}
 		messages.push_back(final);
@@ -4616,16 +4616,16 @@ void AIChatDock::_show_snapshot_changes(const String &p_id) {
 	if (snapshot_restoring || engine_restart_requested) {
 		return;
 	}
-	Dictionary data;
+	Dictionary snapshot_data;
 	String error;
-	if (!AIChatTools::load_snapshot(_snapshot_path(p_id), data, error) || data.get("conversation_id", "") != conversation_id || Array(data["files"]).is_empty()) {
+	if (!AIChatTools::load_snapshot(_snapshot_path(p_id), snapshot_data, error) || snapshot_data.get("conversation_id", "") != conversation_id || Array(snapshot_data["files"]).is_empty()) {
 		_append(TTR("Error"), error.is_empty() ? String(U"此修改记录不属于当前 Agent，或没有已记录文件。") : error);
 		return;
 	}
-	viewing_snapshot = data;
+	viewing_snapshot = snapshot_data;
 	snapshot_changes_dialog->set_meta("snapshot_id", p_id);
 	snapshot_changes_files->clear();
-	for (const Dictionary entry : Array(data["files"])) {
+	for (const Dictionary entry : Array(snapshot_data["files"])) {
 		snapshot_changes_files->add_item(_redact((!bool(entry.get("after_existed", true)) ? String(U"删除 · ") : bool(entry["existed"]) ? String(U"修改 · ")
 																																		: String(U"新建 · ")) +
 				String(entry["path"])));
@@ -4807,9 +4807,9 @@ void AIChatDock::_show_snapshot_history() {
 	}
 	int count = 0;
 	for (const String &id : ids) {
-		Dictionary data;
+		Dictionary snapshot_data;
 		String error;
-		if (!AIChatTools::load_snapshot(_snapshot_path(id), data, error) || data.get("conversation_id", "") != conversation_id || Array(data["files"]).is_empty()) {
+		if (!AIChatTools::load_snapshot(_snapshot_path(id), snapshot_data, error) || snapshot_data.get("conversation_id", "") != conversation_id || Array(snapshot_data["files"]).is_empty()) {
 			continue;
 		}
 		VBoxContainer *turn = memnew(VBoxContainer);
@@ -4820,7 +4820,7 @@ void AIChatDock::_show_snapshot_history() {
 		summary->set_name("SnapshotHistorySummary");
 		summary->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 		const int *number = turn_numbers.getptr(id);
-		summary->set_text(_redact((number ? vformat(U"第 %d 轮 · ", *number) : String()) + String(data.get("summary", ""))));
+		summary->set_text(_redact((number ? vformat(U"第 %d 轮 · ", *number) : String()) + String(snapshot_data.get("summary", ""))));
 		turn->add_child(summary);
 		Button *jump = memnew(Button);
 		jump->set_name("JumpToChatMessage");
@@ -4924,9 +4924,9 @@ void AIChatDock::_add_snapshot_button(Control *p_parent, const String &p_id) {
 	if (!p_parent || _snapshot_path(p_id).is_empty()) {
 		return;
 	}
-	Dictionary data;
+	Dictionary snapshot_data;
 	String error;
-	if (!AIChatTools::load_snapshot(_snapshot_path(p_id), data, error) || Array(data["files"]).is_empty()) {
+	if (!AIChatTools::load_snapshot(_snapshot_path(p_id), snapshot_data, error) || Array(snapshot_data["files"]).is_empty()) {
 		return;
 	}
 	// Replay places every turn under one message list. Keep each pair under its
@@ -4937,7 +4937,7 @@ void AIChatDock::_add_snapshot_button(Control *p_parent, const String &p_id) {
 	Button *changes = memnew(Button);
 	changes->set_name("ViewSessionChanges");
 	changes->set_meta("snapshot_id", p_id);
-	changes->set_text(vformat(U"查看本轮修改记录 · %d 个文件", Array(data["files"]).size()));
+	changes->set_text(vformat(U"查看本轮修改记录 · %d 个文件", Array(snapshot_data["files"]).size()));
 	changes->set_tooltip_text(U"只读查看本轮各文件的修改前后内容和差异；不依赖当前文件，也不会还原文件。已还原的历史仍可查看。");
 	changes->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_show_snapshot_changes).bind(p_id));
 	actions->add_child(changes);
@@ -4970,20 +4970,20 @@ bool AIChatDock::_plan_version_restore(const String &p_id, Dictionary &r_plan, S
 	Vector<String> paths;
 	int selected = -1;
 	for (const String &id : ids) {
-		Dictionary data;
-		if (!AIChatTools::load_snapshot(_snapshot_path(id), data, r_error) || data.get("conversation_id", "") != conversation_id) {
+		Dictionary snapshot_data;
+		if (!AIChatTools::load_snapshot(_snapshot_path(id), snapshot_data, r_error) || snapshot_data.get("conversation_id", "") != conversation_id) {
 			r_error += U"\n历史快照不完整，无法安全重建整个版本。";
 			return false;
 		}
-		if (bool(data.get("restored", false))) {
+		if (bool(snapshot_data.get("restored", false))) {
 			r_error = U"此历史包含旧版未记录为新轮次的撤销，版本顺序无法验证；未执行还原。";
 			return false;
 		}
 		if (id == p_id) {
 			selected = versions.size();
 		}
-		versions.push_back(data);
-		for (const Dictionary entry : Array(data["files"])) {
+		versions.push_back(snapshot_data);
+		for (const Dictionary entry : Array(snapshot_data["files"])) {
 			const String key = String(entry["path"]).to_lower();
 			if (!baseline.has(key)) {
 				baseline.insert(key, entry);
@@ -5123,15 +5123,15 @@ void AIChatDock::_preview_snapshot_restore(const String &p_id) {
 	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || engine_restart_requested || !allow_tools->is_pressed()) {
 		return;
 	}
-	Dictionary data;
+	Dictionary restore_data;
 	String error;
-	if (!_plan_version_restore(p_id, data, error) || !_check_snapshot_editor(data, error)) {
+	if (!_plan_version_restore(p_id, restore_data, error) || !_check_snapshot_editor(restore_data, error)) {
 		_append(TTR("Error"), error);
 		return;
 	}
-	String text = String(U"将还原到此轮结束时的已记录文件版本：\n") + String(data.get("summary", "")) + U"\n\n";
+	String text = String(U"将还原到此轮结束时的已记录文件版本：\n") + String(restore_data.get("summary", "")) + U"\n\n";
 	int changed = 0;
-	for (const Dictionary entry : Array(data["files"])) {
+	for (const Dictionary entry : Array(restore_data["files"])) {
 		if (entry["before"] == entry["after"] && entry["existed"] == entry["after_existed"]) {
 			continue;
 		}
@@ -5145,7 +5145,7 @@ void AIChatDock::_preview_snapshot_restore(const String &p_id) {
 	}
 	text += U"\n仅处理本 Agent 的已记录文本文件；包括后续轮次的修改与新建文件，不使用 Git，不切换编辑器可执行版本。\n还原作为一轮新文件修改提交，原聊天和版本历史保留；文件、修改记录和 AI 上下文一起提交。\n外部改动或未保存内容会拒绝整个事务。命令、脚本和外部程序的变化不在快照内。";
 	restoring_snapshot_id = p_id;
-	restoring_snapshot = data;
+	restoring_snapshot = restore_data;
 	snapshot_restoring = true;
 	confirmation->set_title(U"还原到此版本（本地快照）");
 	preview->set_text(_redact(text));
@@ -5214,11 +5214,11 @@ void AIChatDock::_confirm_snapshot_restore() {
 		_append(TTR("Error"), error);
 		return;
 	}
-	Dictionary request = chat_message("user", _redact(question));
-	request["snapshot_id"] = id;
-	request["target_snapshot"] = restoring_snapshot_id;
-	messages.push_back(request);
-	transcript.push_back(request.duplicate(true));
+	Dictionary restore_request = chat_message("user", _redact(question));
+	restore_request["snapshot_id"] = id;
+	restore_request["target_snapshot"] = restoring_snapshot_id;
+	messages.push_back(restore_request);
+	transcript.push_back(restore_request.duplicate(true));
 	Dictionary notice = chat_message("system", "Host version restore committed as a new file-change turn. The user restored this Agent's recorded files to the END of the selected version, not its pre-turn state. Historical conversations are retained but are not proof of current file contents. Target snapshot: " + restoring_snapshot_id + ". Changed file states (untrusted paths, exact UTF-8 SHA-256): " + _redact(JSON::stringify(manifest)) + ". Invalidate cached source assumptions and reread affected files before further edits. Shell/external changes were not restored. Engine C++ changes affect the running editor only after a verified host rebuild.");
 	notice["godot_snapshot_restore"] = true;
 	notice["snapshot_id"] = id;
