@@ -54,3 +54,9 @@ Git 合并必须等待对应CI通过；当前不能将本地切换等同于默�
 上述后续修复经codex-subagent:review_standalone独立只读审查通过：resume仅两处临时引用改值；scheduler归一变量名后经相同clang-format与HEAD完全一致；六脚本只有模式变更；Windows简单参数免引号，复杂参数原逻辑保留。独立Windows子进程24种参数往返及cmd退出0/7探针通过（helper等价转写，不冒充新引擎二进制验收）。最终新二进制测试及远程CI仍待完成。
 
 2808b481提交的静态检查发现scheduler引用同目录但不同名头文件时需使用仓库根路径。按validate_includes.py修正为editor/docks/ai_chat_dock.h，解析目标不变；重复运行引用检查及clang-format通过。新提交继续等待完整CI。
+
+## 用户调整验证范围：当前只构建 PC
+
+用户随后明确“当前先只编译PC”。本机目标为Windows，因此默认CI保留静态检查和现有Windows编辑器/导出模板矩阵及单元测试；Android、iOS、Linux、macOS、Web改为手动workflow_dispatch勾选full_platforms时运行。平台工作流及测试本身未删除，框架准入、Issue门禁和Hermes校验不变。
+
+此前8bb44b84的全平台运行41502748056已按新范围取消；其中Windows clang-cl已经成功，1447项测试及426182条断言通过，不能将其他取消项称作成功。新提交以收窄后的PC检查为合并依据。

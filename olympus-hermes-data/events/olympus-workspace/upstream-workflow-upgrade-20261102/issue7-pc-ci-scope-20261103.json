@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue7-pc-ci-scope-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "upstream-workflow-upgrade-20261102",
+  "kind": "correction",
+  "occurred_at": "2026-11-02T19:13:19.883346+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/7",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "f730d58aa5840e34c4ed8cdbea238a6bd41adccbdcdf22971b1b1e913ce8f633",
+    "origin": "codex-host-task"
+  },
+  "payload": {
+    "description": "User explicitly requested PC-only builds for now. Default CI now retains static checks and the existing Windows editor/template matrix and tests; all other platforms require manual full_platforms opt-in. Cancelled prior all-platform run 41502748056. Its Windows clang-cl job passed 1447 tests and 426182 assertions; cancelled jobs are not successes. Final PC CI pending.",
+    "user_instruction": "为什么要编译全平台，当前先只编译PC就好了呀。。",
+    "sources": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41502748056"
+    ],
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue7-042-sync-request-20261103"
+  ],
+  "sha256": "8ed747c0caf9dd8f3b5548f3280a6408e1fd6c0360a4d648769fd83b2bf37d59"
+}
