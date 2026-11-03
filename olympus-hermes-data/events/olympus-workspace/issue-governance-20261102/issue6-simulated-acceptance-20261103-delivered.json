@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-simulated-acceptance-20261103-delivered",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "handoff",
+  "occurred_at": "2026-11-03T06:53:46.541982+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "1b98ef0c076def292e6b461a794279bd6b2eea6ba35456a3f2f6111f37d9e6e6",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Verified acceptance evidence published and merged via PR20; remote main contains exact accepted commit and postmerge Hermes committed check passed.",
+    "publication": {
+      "head_commit": "e577a8cf26cb6342ae5b18a3d519e23082e90051",
+      "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/20",
+      "remote_head_verified": true
+    },
+    "merge": {
+      "commit": "d6b0ab40838eca9bfbec95781fdc074b6386b02c",
+      "merged_at": "2026-11-03T06:52:43Z",
+      "main_contains_acceptance": true
+    },
+    "evidence_file": "data-collection/issue6-simulated-merge-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue6-simulated-acceptance-20261103-passed"
+  ],
+  "sha256": "06d9c609f6c77cbb98b6aa1128e74c471c41dc4e5f5ef510c75d3bb4b855b45c"
+}
