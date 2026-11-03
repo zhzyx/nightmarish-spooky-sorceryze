@@ -213,7 +213,7 @@ bool AIChatResume::journal_valid(const Dictionary &p_journal) {
 		return false;
 	}
 	const Variant backend = p_journal.get("backend", Variant());
-	if (!backend.is_num() || (double(backend) != 0 && double(backend) != 1)) {
+	if (!backend.is_num() || (double(backend) < 0 || double(backend) > 3 || Math::floor(double(backend)) != double(backend))) {
 		return false;
 	}
 	if (p_journal.has("smoke_check") && p_journal["smoke_check"].get_type() != Variant::BOOL) {

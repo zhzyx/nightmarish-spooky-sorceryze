@@ -224,6 +224,10 @@ class AIChatDock : public EditorDock {
 	String current_activity;
 	uint64_t activity_started = 0;
 	OptionButton *backend = nullptr;
+	VBoxContainer *codex_settings = nullptr;
+	LineEdit *codex_entry = nullptr;
+	LineEdit *codex_model = nullptr;
+	void _start_codex(const Array &p_messages);
 	LineEdit *cli_node = nullptr;
 	LineEdit *cli_bridge = nullptr;
 	LineEdit *cli_entry = nullptr;
@@ -344,6 +348,7 @@ class AIChatDock : public EditorDock {
 		bool queue_paused = false;
 		String model;
 		String cli_model;
+		String codex_model;
 		int backend = 1;
 		int scroll = 0;
 		bool follow_latest = true;
