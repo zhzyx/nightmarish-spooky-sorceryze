@@ -557,7 +557,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	issue_guide_action = p_action;
 	issue_guide_run_generation = issue_guide_generation;
 	issue_guide_state = p_action == "issue-draft" ? "drafting" : p_action == "issue-create" ? "creating"
-																						   : "starting";
+																							: "starting";
 	if (!issue_guide_timer) {
 		issue_guide_timer = memnew(Timer);
 		issue_guide_timer->set_wait_time(0.1);
@@ -566,7 +566,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	}
 	issue_guide_timer->start();
 	_append(TTR("Editor"), p_action == "issue-draft" ? String(U"正在生成需求文档并预览 Issue…") : p_action == "issue-create" ? String(U"正在 GitHub 创建 Issue…")
-																														  : String(U"正在更新工单状态…"));
+																															 : String(U"正在更新工单状态…"));
 }
 
 void AIChatDock::_poll_issue_guide() {

@@ -112,7 +112,7 @@ class IssueGuideTests(unittest.TestCase):
         tool.parent.mkdir()
         log = self.root / "gh-calls.txt"
         tool.write_text(
-            "#!/bin/sh\necho \"$@\" >> " + str(log) + "\n[ -f " + str(self.root / "logged-in") + " ]\n",
+            '#!/bin/sh\necho "$@" >> ' + str(log) + "\n[ -f " + str(self.root / "logged-in") + " ]\n",
             encoding="utf-8",
         )
         tool.chmod(0o755)

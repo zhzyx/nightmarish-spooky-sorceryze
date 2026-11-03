@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "collected_at": "2026-11-03T15:21:12.349977+00:00",
+  "collector": "olympus-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-chat-issue-guide-20261103/godot-chat-issue-guide-20261103-gh-login-validation.json",
+      "sha256": "d204f9df059ca969169fd2380b6055eeefc936215f88b1f2c5d9a4eef052ed62",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-chat-issue-guide-20261103-gh-login-validation",
+      "origin": "codebuddy-ide-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-chat-issue-guide-20261103/godot-chat-issue-guide-20261103-pr-format.json",
+      "sha256": "cec3f622cf66e998641600d21ef187b34589669c57b1e8763e64209ccfba4b29",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-chat-issue-guide-20261103-pr-format",
+      "origin": "codebuddy-ide-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-chat-issue-guide-20261103/godot-chat-issue-guide-20261103-request.json",
+      "sha256": "146b884027d5609bd8cd7f2bfc2dc93f4ffde3bc400fee1a02add841207466c1",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-chat-issue-guide-20261103-request",
+      "origin": "codebuddy-ide-task"
+    },
+    {
+      "source": "olympus-hermes-data/events/olympus-workspace/godot-chat-issue-guide-20261103/godot-chat-issue-guide-20261103-validation.json",
+      "sha256": "0b02e94fdc64468a60ebd60d081ec8c37e0a36534b00df3d1233fbd0d84612c9",
+      "tenant_id": "olympus-workspace",
+      "event_id": "godot-chat-issue-guide-20261103-validation",
+      "origin": "codebuddy-ide-task"
+    }
+  ],
+  "scope": "Validated local Hermes events for this request; not a remote Issue snapshot"
+}
