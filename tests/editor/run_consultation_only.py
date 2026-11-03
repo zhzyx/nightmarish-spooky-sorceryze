@@ -4,12 +4,12 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -50,12 +50,38 @@ def main():
                     if prompt == "CLI_MUST_NOT_START":
                         content = "CONSULTATION_QUEUE_OK"
                     elif not results:
-                        attacks = ["write_file", "write_script", "run_command", "build_engine", "restart_engine", "rollback_engine", "run_test", "check_script"]
+                        attacks = [
+                            "write_file",
+                            "write_script",
+                            "run_command",
+                            "build_engine",
+                            "restart_engine",
+                            "rollback_engine",
+                            "run_test",
+                            "check_script",
+                        ]
                         for i, name in enumerate(attacks):
-                            calls.append({"id": str(i), "type": "function", "function": {"name": name, "arguments": json.dumps({"path": str(target), "content": "MUTATED", "command": "exit 99"})}})
+                            calls.append({
+                                "id": str(i),
+                                "type": "function",
+                                "function": {
+                                    "name": name,
+                                    "arguments": json.dumps({
+                                        "path": str(target),
+                                        "content": "MUTATED",
+                                        "command": "exit 99",
+                                    }),
+                                },
+                            })
                     elif len(results) == 8:
                         assert all("Consultation only permits read tools" in m["content"] for m in results)
-                        calls = [{"id": "read", "type": "function", "function": {"name": "read_file", "arguments": json.dumps({"path": str(target)})}}]
+                        calls = [
+                            {
+                                "id": "read",
+                                "type": "function",
+                                "function": {"name": "read_file", "arguments": json.dumps({"path": str(target)})},
+                            }
+                        ]
                     else:
                         assert len(results) == 9 and "CONSULTATION_SENTINEL" in results[-1]["content"]
                         content = "CONSULTATION_READ_OK"
@@ -74,14 +100,32 @@ def main():
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         threading.Thread(target=server.serve_forever, daemon=True).start()
-        env = dict(os.environ, OLYMPUS_TEST_WORKSPACE=str(root / "absent-workspace"), OLYMPUS_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions")
+        env = dict(
+            os.environ,
+            OLYMPUS_TEST_WORKSPACE=str(root / "absent-workspace"),
+            OLYMPUS_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+        )
         for key in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(key, None)
         for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
             env[key] = str(root / key)
             (root / key).mkdir()
         try:
-            result = subprocess.run([str(args.godot.resolve()), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"], cwd=root, env=env, capture_output=True, timeout=180)
+            result = subprocess.run(
+                [
+                    str(args.godot.resolve()),
+                    "--headless",
+                    "--editor",
+                    "--path",
+                    str(project),
+                    "--script",
+                    "res://gate.gd",
+                ],
+                cwd=root,
+                env=env,
+                capture_output=True,
+                timeout=180,
+            )
         finally:
             server.shutdown()
             server.server_close()
@@ -92,9 +136,26 @@ def main():
         assert not failures, failures
         assert len(observed) == 4, observed
         assert target.read_text() == "CONSULTATION_SENTINEL"
-        assert not list(root.rglob("ai_chat_resume.json")), "Consultation must not create a replayable development journal"
+        assert not list(root.rglob("ai_chat_resume.json")), (
+            "Consultation must not create a replayable development journal"
+        )
         assert not (root / "absent-workspace").exists()
-        args.out.write_text(json.dumps({"ok": True, "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(), "requests": observed, "denied_tools": 8, "read_result": "verified", "issue_calls": 0, "fixture_events_imported": False}, indent=2) + "\n", encoding="utf-8")
+        args.out.write_text(
+            json.dumps(
+                {
+                    "ok": True,
+                    "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
+                    "requests": observed,
+                    "denied_tools": 8,
+                    "read_result": "verified",
+                    "issue_monitoring": "No configured workspace/host; no workspace created; code path reviewed. Not a global API spy.",
+                    "fixture_events_imported": False,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
 
 
 if __name__ == "__main__":

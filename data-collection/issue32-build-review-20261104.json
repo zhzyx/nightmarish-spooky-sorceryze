@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/32",
+  "request_id": "issue-20261104-002257",
+  "observed_at": "2026-11-03T17:33:59.739103+00:00",
+  "candidate": "a7fe1b00616915a60d8a923ded43a1d273286ee5",
+  "build": {
+    "run": 41681730192,
+    "job": 126076856594,
+    "scope": "Windows MSVC editor only",
+    "compilation": "success",
+    "unit_tests": "success"
+  },
+  "static": {
+    "run": 41681737432,
+    "result": "failed only Python fixture ruff import sorting and formatting",
+    "repair": "ruff check --fix and ruff format applied; local checks now pass",
+    "cpp_changed": false
+  },
+  "independent_review": {
+    "reviewer": "independent Codex subtask consultation_review",
+    "result": "code_review_pass",
+    "scope": "three C++ files and native fixture",
+    "findings_fixed": [
+      "old Issue guide retained across consultation",
+      "pending development recovery could run before consultation"
+    ],
+    "limits": "No native result yet; no live supplier acceptance"
+  },
+  "network": {
+    "gate_first_attempt": "hung GitHub Issue request stopped after exact PID ownership check; bounded real retry passed",
+    "artifact": "gh downloads stalled; direct no-credential artifact transfer in progress; native CI path added to reuse successful build without recompilation"
+  },
+  "native_acceptance": "pending",
+  "input_tokens": null,
+  "output_tokens": null
+}
