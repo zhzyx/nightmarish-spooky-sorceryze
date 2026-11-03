@@ -476,13 +476,13 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 			issue_guide_state = "title";
 		}
 	} else if (issue_guide_state == "title") {
-		const String title = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["title_suggestion"]) : text;
-		if (title.contains("\n") || title.contains("\r") || title.length() > AIChatIssueGuide::MAX_TITLE) {
+		const String issue_title = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["title_suggestion"]) : text;
+		if (issue_title.contains("\n") || issue_title.contains("\r") || issue_title.length() > AIChatIssueGuide::MAX_TITLE) {
 			_append(TTR("Error"), U"标题需为单行，且不超过 120 字。");
 		} else {
-			issue_guide_fields["title"] = title;
+			issue_guide_fields["title"] = issue_title;
 			const String stamp = Time::get_singleton()->get_datetime_string_from_system().replace("-", "").replace(":", "").replace("T", "-");
-			issue_guide_fields["request_id_suggestion"] = AIChatIssueGuide::suggest_request_id(title, stamp);
+			issue_guide_fields["request_id_suggestion"] = AIChatIssueGuide::suggest_request_id(issue_title, stamp);
 			issue_guide_state = "request_id";
 		}
 	} else if (issue_guide_state == "request_id") {
