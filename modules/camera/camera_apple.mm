@@ -480,9 +480,12 @@ void CameraApple::update_feeds() {
 	}
 #else // APPLE_EMBEDDED_ENABLED
 	AVCaptureDeviceDiscoverySession *session;
+#if defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
 	if (@available(macOS 14.0, *)) {
 		session = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:[NSArray arrayWithObjects:AVCaptureDeviceTypeExternal, AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeContinuityCamera, nil] mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
-	} else {
+	} else
+#endif
+	{
 #if MAC_OS_X_VERSION_MIN_REQUIRED < 140000
 		session = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:[NSArray arrayWithObjects:AVCaptureDeviceTypeExternalUnknown, AVCaptureDeviceTypeBuiltInWideAngleCamera, nil] mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
 #endif
