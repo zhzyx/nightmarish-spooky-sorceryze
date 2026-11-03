@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/35",
+  "request_id": "core-agents-olympus-sync-20261104",
+  "observed_at": "2026-11-03T17:25:41.467282+00:00",
+  "stage": "local_definition_admission",
+  "review": {
+    "path": "Olympus/reviews/local-admission/issue35-independent-review.json",
+    "sha256": "3616fb58d576d410581fa97af8795823c78578561cf7ee2adc18200377c5042e",
+    "status": "pass",
+    "evaluator": "/root/issue35_independent_review",
+    "approval": false
+  },
+  "decision": {
+    "path": "Olympus/reviews/local-admission/issue35-user-decision.json",
+    "sha256": "f9a28488dbd5cfc11ace288e89614827da4d739adaaa7c3daba295787a6cd950",
+    "scope": "local_agent_definition_only"
+  },
+  "permits": {
+    "athena": {
+      "version": "0.4.0",
+      "candidate_digest": "bb6ffdae035826f3fa103b57a7849fe76c1836691d8a7b4d29c3f0047dd58e40",
+      "path": "Olympus/reviews/core-agent-generalization/athena-admission.json",
+      "sha256": "9ecb3b7991eda1c3dcf72ce46db2bf22c418701c8317bba362d5c63a23b81c7b"
+    },
+    "themis": {
+      "version": "0.4.0",
+      "candidate_digest": "d48aa328cad2fcf46c7a2396c91a89e22ba9b9ba9429fba78503b018614b141e",
+      "path": "Olympus/reviews/core-agent-generalization/themis-admission.json",
+      "sha256": "31389eb29e10d6f66e6d60a515dc8bf60cbab8e6fb7456998b5d1d2a7ce84e54"
+    },
+    "hermes": {
+      "version": "0.4.0",
+      "candidate_digest": "355a3867975ad80e03071b742530cfcb7341b4015391bde2ba106e143af9934d",
+      "path": "Olympus/reviews/core-agent-generalization/hermes-admission.json",
+      "sha256": "21cd857bd705daa1b394db4fa3bcfe6c2cd632fae7ecc04d550885b3fd5a61e7"
+    },
+    "harmonia": {
+      "version": "0.3.0",
+      "candidate_digest": "01b54c6e3651d72208ad438b0a21af5ed4282a6d7d3a8bef3f392b62f5d188c5",
+      "path": "Olympus/reviews/harmonia-general-0.3.0.json",
+      "sha256": "e8606c59738d9572d87371b6821d55654f4a7707d6d7f251d98bd5fdc8559624"
+    },
+    "ariadne": {
+      "version": "0.1.0",
+      "candidate_digest": "5685db2e36b3b234be6c6eaf8a054afa1ac20c52e0637aabdd4aae3c36632b38",
+      "path": "Olympus/reviews/ariadne-agent-0.1.0.json",
+      "sha256": "5f0a4b655c6ef304f490cfb5834504ea2d2493e9c76a75f2ea7965072d398eee"
+    }
+  },
+  "checks": {
+    "formal_framework_mode": "approved_file_integrity",
+    "frozen_source_parity": true,
+    "ariadne_node_tests": "16 passed",
+    "framework_python_tests": "19 passed",
+    "offline_snapshot_files": 164,
+    "offline_snapshot_sha256": "8d2d56adba57803e6ecc49bade13e817df58c07fbbf320963adaba3c36b14b8a"
+  },
+  "host_authority_authenticated": false,
+  "issue_tracking_enabled": false,
+  "remote_push": false,
+  "diting_consumption_confirmed": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

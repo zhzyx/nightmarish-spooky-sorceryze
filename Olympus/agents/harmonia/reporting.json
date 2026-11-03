@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "harmonia",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "entry": "agents/harmonia/AGENT.md",
-    "entry_sha256": "f9571df0d1ab99b39440968ae8b19036406362b5e470423d765b19dbfb4e43bc"
+    "entry_sha256": "8766582e96f9ce3840dfac57ac5785301e992df5e4a9521bad6d1839ac041dae"
   },
   "required": true,
   "policy": "contracts/hermes-reporting.json",

@@ -40,3 +40,7 @@ data-collection/issue6-continuation-*.json -text whitespace=cr-at-eol
 # Preserve Issue #27 frozen-source and admission evidence exactly as observed.
 data-collection/issue27-*.json -text whitespace=cr-at-eol
 data-collection/issue27-previous-local-admission/*.json -text whitespace=cr-at-eol
+
+# Preserve Issue #35 frozen source, review history, and evidence bytes.
+data-collection/issue35-*.json -text whitespace=cr-at-eol
+data-collection/issue35-previous-local-admission/** -text whitespace=cr-at-eol

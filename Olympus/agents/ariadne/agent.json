@@ -1,0 +1,24 @@
+{
+  "id": "ariadne",
+  "name": "阿里阿德涅",
+  "kind": "independent_agent",
+  "version": "0.1.0",
+  "entry": "agents/ariadne/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "zeus",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/zeus/agents/zeus.md",
+  "review_skill": "skills/dike/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/dike/SKILL.md",
+    "skills/ariadne/SKILL.md"
+  ],
+  "admission_pass": "reviews/ariadne-agent-0.1.0.json",
+  "host_required_for_execution": true,
+  "scope": "authorized_cross_domain_task_coordination_dependencies_dispatch_and_reconciliation",
+  "reporting": "agents/ariadne/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json",
+  "layer": "core"
+}

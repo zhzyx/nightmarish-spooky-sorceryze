@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {board} from './coordinator.mjs';
+import {board,followUpTracking} from './coordinator.mjs';
 
 const types = new Set(['request.created','ticket.changed','dependency.changed','decision.recorded','execution.finished','execution.failed','user.requested','scope.changed','release.completed','source.changed','report.delivered']);
 const BEGIN = '<!-- ariadne:begin -->', END = '<!-- ariadne:end -->';
@@ -41,7 +41,7 @@ function atomicWrite(target, content) {
 }
 function nextStep(t,parent) {
   if(parent)return '待核验整体目标、验收与外部权威状态并对账；子项完成不自动关闭父项';
-  if(t.problems.length)return '关联问题 Issue 并交责任方调查/修复；继续无关授权工作，仅限制受影响操作';
+  if(t.problems.length)return '关联适用来源的工单并交责任方调查/修复；继续无关授权工作，仅限制受影响操作';
   return ({open:'由宿主核验授权与容量后派发',running:'等待真实执行回执',review:'由有权验收者核验成果',blocked:'由责任人解除阻塞',done:'核对交付、外部权威回读与采集回执'}[t.status]||'核验未知源状态');
 }
 function render(snapshot, type, reference, tickets, parents=[]) {
@@ -57,10 +57,10 @@ function render(snapshot, type, reference, tickets, parents=[]) {
   lines.push('','就绪候选（实际派发前仍需宿主核验权限、容量、依赖及回执）：',...ready.map(k=>'- '+escape(k)));
   if(!ready.length)lines.push('无；本次处理结束，不安排时间唤醒。');
   const followUps=snapshot.followUps.filter(f=>!tickets||tickets.includes(f.ticket));
-  if(followUps.length)lines.push('','问题处理候选（宿主关联真实 Issue 并核验授权后派发）：',...followUps.map(f=>'- '+escape(`${f.key} | ${f.owner} | ${f.nextAction}`)));
+  if(followUps.length)lines.push('','问题处理候选（宿主关联适用来源工单并核验授权后派发）：',...followUps.map(f=>'- '+escape(`${f.key} | ${f.owner} | ${f.nextAction}`)));
   lines.push('','来源版本：' ,...snapshot.sourceSnapshots.map(s=>`- ${escape(s.source)}：${escape(s.ledgerId)}，事件游标 ${s.eventCursor}，SHA256 ${s.sha256}`));
   if(snapshot.diagnostics.length)lines.push('','读取缺口：',...snapshot.diagnostics.map(d=>'- '+escape(JSON.stringify(d))));
-  lines.push('','此文档是来源视图，不改变源状态，不代表实际派发、外部 Issue 关闭或赫尔墨斯落库成功。');
+  lines.push('','此文档是来源视图，不改变源状态，不代表实际派发、权威工单关闭或赫尔墨斯落库成功。');
   return lines.join('\n');
 }
 function replaceRegion(text, body) {
@@ -109,7 +109,7 @@ export function refresh(registryFile, type, reference) {
       for(const ticket of d.tickets)if(!snapshot.items.some(t=>t.key===ticket)&&!result.sourceGaps.some(g=>g.ticket===ticket))result.sourceGaps.push({ticket,error:'Registered document ticket unavailable'});
       for(const ticket of d.parent_tickets||[])if(!result.externalAuthorityActions.some(a=>a.ticket===ticket))result.externalAuthorityActions.push({ticket,action:'Verify overall goal and acceptance; reconcile parent at authoritative source',status:'not_executed'});
     }
-    result.externalAuthorityActions.push({action:'Verify external Issue/release status and read back any authorized transition at authoritative service',status:'not_executed'},{action:'Verify actual reporting binding and delivered/consumed receipts',status:'not_executed'});
+    result.externalAuthorityActions.push({action:config.issue_tracking?.enabled?'Verify bound Git Issue/release status and read back any authorized transition':'Verify task acceptance and delivery at the bound authoritative source',status:'not_executed'},{action:'Verify actual reporting binding and delivered/consumed receipts',status:'not_executed'});
     // All documents are checked before the first write. A multi-file transaction is deliberately not claimed.
     for(const w of writes) {
       try {
@@ -118,7 +118,7 @@ export function refresh(registryFile, type, reference) {
         atomicWrite(w.target,w.content);w.entry.status='synced';
       }catch(e){w.entry.reason=e.message;result.localWriteFailures.push({path:w.entry.path,error:e.message});/* Continue independent document writes; preserve the failed entry. */}
     }
-    for(const failure of result.localWriteFailures)result.followUps.push({key:`document:${failure.path}`,problem:failure.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',issueAction:'Link document repair Issue',nextAction:'Repair this document and replay on actual event; other documents continue'});
+    for(const failure of result.localWriteFailures)result.followUps.push({key:`document:${failure.path}`,problem:failure.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',...followUpTracking(config),nextAction:'Repair this document and replay on actual event; other documents continue'});
     result.updated=result.documents.every(d=>d.status==='synced');
     result.outcome=result.updated?'synced':'partial';
   }catch(e){failed=e;result.localWriteFailures.push({stage:'preflight',error:e.message});}

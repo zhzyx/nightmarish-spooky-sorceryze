@@ -160,6 +160,11 @@
         "specs/code-collaboration.md",
         "specs/work-order-management.md"
       ]
+    },
+    {
+      "path": "specs/core-agent-adaptation.md",
+      "title": "核心 Agent 与接入适配",
+      "load_when": "调整核心职责与接入边界时"
     }
   ],
   "never_bulk_load": [
@@ -339,7 +344,7 @@
       "path": "skills/ariadne/SKILL.md",
       "reporting": "skills/ariadne/reporting.json",
       "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne/nonblocking-review.json"
+      "admission_pass": "reviews/ariadne/core-agent-support-0.5.0.json"
     }
   ],
   "agents": [
@@ -352,7 +357,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/athena-admission.json",
+      "admission_pass": "reviews/core-agent-generalization/athena-admission.json",
       "business_module": "document_design",
       "candidate_files": [
         "AGENTS.md",
@@ -431,7 +436,7 @@
         "upstream/zeus/core.md"
       ],
       "reporting": "agents/athena/reporting.json",
-      "candidate_digest": "3a4a75769d62354d7562bdbb859bc390ef0382b35a7fa952f95b8f7cc1b42cbb"
+      "candidate_digest": "bb6ffdae035826f3fa103b57a7849fe76c1836691d8a7b4d29c3f0047dd58e40"
     },
     {
       "id": "themis",
@@ -442,7 +447,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/themis-admission.json",
+      "admission_pass": "reviews/core-agent-generalization/themis-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
       "candidate_files": [
@@ -519,7 +524,7 @@
         "upstream/zeus/core.md"
       ],
       "reporting": "agents/themis/reporting.json",
-      "candidate_digest": "8f1d9f4e8adcb58d38e87e07932fbef25e1d434b9b2d7c42f78587f0b4d17c0b"
+      "candidate_digest": "d48aa328cad2fcf46c7a2396c91a89e22ba9b9ba9429fba78503b018614b141e"
     },
     {
       "id": "hermes",
@@ -528,7 +533,7 @@
       "version": "0.4.0",
       "entry": "agents/hermes/AGENT.md",
       "governance_root": "zeus",
-      "admission_pass": "reviews/hermes-admission.json",
+      "admission_pass": "reviews/core-agent-generalization/hermes-admission.json",
       "manifest": "agents/hermes/agent.json",
       "state": "synchronized_candidate_pending_independent_admission",
       "business_module": "data_feedback",
@@ -604,26 +609,27 @@
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
       "reporting": "agents/hermes/reporting.json",
-      "candidate_digest": "15b0663cbd62efc1abf00570d1edaa37fd780edb7fa66f66886362d80a4b6180"
+      "candidate_digest": "355a3867975ad80e03071b742530cfcb7341b4015391bde2ba106e143af9934d"
     },
     {
       "id": "harmonia",
       "name": "哈耳摩尼亚",
       "kind": "independent_agent",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "entry": "agents/harmonia/AGENT.md",
       "manifest": "agents/harmonia/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/harmonia-admission.json",
-      "business_module": "git_local_collaboration",
+      "admission_pass": "reviews/harmonia-general-0.3.0.json",
       "candidate_files": [
         "AGENTS.md",
         "FOUNDATION.md",
         "GOVERNANCE.md",
         "agents/harmonia/AGENT.md",
         "agents/harmonia/agent.json",
+        "agents/harmonia/references/concurrent-changes.md",
         "agents/harmonia/references/concurrent-issue.md",
+        "agents/harmonia/references/git-workflow.md",
         "agents/harmonia/references/p4v.md",
         "agents/harmonia/references/workflow.md",
         "agents/harmonia/reporting.json",
@@ -641,6 +647,7 @@
         "skills/ariadne/SKILL.md",
         "skills/dike/SKILL.md",
         "source-evidence.json",
+        "specs/core-agent-adaptation.md",
         "specs/governance-review.md",
         "specs/reporting.md",
         "specs/work-order-management.md",
@@ -657,7 +664,69 @@
         "upstream/zeus/core.md"
       ],
       "reporting": "agents/harmonia/reporting.json",
-      "candidate_digest": "15d5b235a200caab9cde26eaca5448bd61dc81d8ebd957e47478bf487fc063fd"
+      "layer": "core",
+      "core_capability": "change_collaboration",
+      "candidate_digest": "01b54c6e3651d72208ad438b0a21af5ed4282a6d7d3a8bef3f392b62f5d188c5"
+    },
+    {
+      "id": "ariadne",
+      "kind": "independent_agent",
+      "candidate_files": [
+        "AGENTS.md",
+        "FOUNDATION.md",
+        "GOVERNANCE.md",
+        "agents/ariadne/AGENT.md",
+        "agents/ariadne/agent.json",
+        "agents/ariadne/references/README.md",
+        "agents/ariadne/references/adapters.md",
+        "agents/ariadne/reporting.json",
+        "agents/hermes/references/data-contract.md",
+        "agents/hermes/references/telemetry.md",
+        "agents/hermes/scripts/ledger.py",
+        "agents/hermes/scripts/telemetry.py",
+        "contracts/admission-policy.json",
+        "contracts/hermes-reporting.json",
+        "extensions/hermes-files/README.md",
+        "extensions/hermes-files/event.schema.json",
+        "extensions/hermes-files/event.template.json",
+        "extensions/hermes-files/hermes_files.py",
+        "foundation.lock.json",
+        "modules/ariadne/coordinator.mjs",
+        "modules/ariadne/module.json",
+        "modules/ariadne/refresh.mjs",
+        "modules/ariadne/test/generic-tracking.test.mjs",
+        "modules/ariadne/test/refresh.test.mjs",
+        "skills/ariadne/SKILL.md",
+        "skills/ariadne/runtime-ref.json",
+        "skills/dike/SKILL.md",
+        "source-evidence.json",
+        "specs/core-agent-adaptation.md",
+        "specs/governance-review.md",
+        "specs/reporting.md",
+        "specs/work-order-management.md",
+        "sync/POLICY.md",
+        "sync/gonggong_sync.py",
+        "sync/local_runtime.py",
+        "sync/names.json",
+        "sync/read_hermes.py",
+        "sync/runtime-lock.json",
+        "sync/sinan_source.py",
+        "tools/hermes-report.py",
+        "tools/reporting.mjs",
+        "upstream/zeus/agents/zeus.md",
+        "upstream/zeus/core.md"
+      ],
+      "name": "阿里阿德涅",
+      "version": "0.1.0",
+      "entry": "agents/ariadne/AGENT.md",
+      "manifest": "agents/ariadne/agent.json",
+      "governance_root": "zeus",
+      "state": "synchronized_candidate_pending_independent_admission",
+      "admission_pass": "reviews/ariadne-agent-0.1.0.json",
+      "reporting": "agents/ariadne/reporting.json",
+      "layer": "core",
+      "core_capability": "task_coordination",
+      "candidate_digest": "5685db2e36b3b234be6c6eaf8a054afa1ac20c52e0637aabdd4aae3c36632b38"
     }
   ],
   "quality_domain": {
@@ -711,11 +780,13 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.4.2",
+      "version": "0.5.0",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",
-      "admission_pass": "reviews/ariadne-module-admission.json"
+      "admission_pass": "reviews/ariadne-module-admission.json",
+      "role": "core_agent_implementation_support",
+      "agent_ref": "agents/ariadne/agent.json"
     }
   ],
   "delivery_verification": {

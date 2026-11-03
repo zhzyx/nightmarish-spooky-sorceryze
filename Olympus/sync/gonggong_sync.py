@@ -146,10 +146,9 @@ def expected(source,adapters,sinan_source):
         put('skills/ariadne/runtime-ref.json',runtime)
         put('CURRENT_FRAMEWORK.json',{'path_base':'this_file_directory','root':'.','manifest':'framework-manifest.json','status':'candidate_pending_admission'})
         # Existing Yuanheng ledgers keep their original on-disk format.
-        for p in ['modules/ariadne/coordinator.mjs','modules/ariadne/refresh.mjs']:
-            out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
-        p='modules/ariadne/test/refresh.test.mjs'
-        if p in out:out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
+        for p in sorted(out):
+            if p.startswith('modules/ariadne/') and p.endswith('.mjs'):
+                out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
     else:
         raise ValueError('Current self-contained event-driven Sinan module required; archived timer distribution is no longer supported')
     append('skills/ariadne/SKILL.md','\nThe framework root is ../.. relative to this skill. runtime-ref.json paths are framework-root relative. Use the shared Hermes reporting.json; the file-data exemption remains available. External source ledger format .yuanheng/state.json is preserved. No live sources or CLI are bound by default.\n')
@@ -161,7 +160,8 @@ def expected(source,adapters,sinan_source):
     for item in m['modules']:
         if item['id']=='ariadne':item['admission_pass']=module['module_admission']
     append('README.md',f'\n## 阿里阿德涅（司南）已登记模块同步\n\n共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 {len(m["agents"])} 个正式 Agent、{len(m["skills"])} 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。\n')
-    append('specs/module-system.md','\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-evidence.json。\n')
+    agent_note='独立核心 Agent 见 agents/ariadne' if any(a['id']=='ariadne' for a in m['agents']) else '此模块不新增 Agent'
+    append('specs/module-system.md',f'\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发；{agent_note}。源登记证据保留在 source-evidence.json。\n')
     m['distribution_sync']={'policy':'sync/POLICY.md','checker':'sync/gonggong_sync.py','data_reader':'sync/read_hermes.py','upstream':'gonggong','full_verification_required':True}
     m['distribution_sync']['exemptions']=[{'id':'hermes-file-data','module_root':EXEMPT,'data_root':'<target-git-root>/olympus-hermes-data','sync_behavior':'preserve_existing_module_bytes_never_touch_dataset','authority':'explicit_user_instruction_independent_git_file_data_module','reader':'extensions/hermes-files/hermes_files.py','database_required':False,'initialize_only_after_target_repository_integration':True}]
     lock=get('foundation.lock.json');lock.update(sha256=sha(out['FOUNDATION.md']),source_sha256=sha(raw['FOUNDATION.md']),authority='explicit_user_instruction_complete_upstream_sync_and_namespace_mapping',namespace_only_change=True);put('foundation.lock.json',lock);m['foundation_sha256']=lock['sha256']

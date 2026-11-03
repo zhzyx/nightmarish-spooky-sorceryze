@@ -38,7 +38,21 @@ export function labelRegistry(file,ticket,change) {
   } finally {if(fs.existsSync(tmp))fs.unlinkSync(tmp);fs.closeSync(fd);fs.unlinkSync(lock);}
 }
 
+export function followUpTracking(config, metadata={}) {
+  const selected=config.issue_tracking;
+  if(selected!==undefined && (!selected || typeof selected!=='object' || Array.isArray(selected) || typeof selected.enabled!=='boolean'))throw Error('issue_tracking requires explicit enabled boolean');
+  const enabled=selected?.enabled===true;
+  if(enabled && (selected.provider!=='git-issue' || typeof selected.authority_ref!=='string' || !selected.authority_ref.trim()))throw Error('Git Issue handoff requires provider and authority reference');
+  return {
+    issue:metadata.issue_ref||null,
+    issueAction:enabled?'Find or create linked Issue through the bound git-issue integration; verify authority and read back before marking linked':null,
+    workItemAction:'Link the problem at the task authoritative source; preserve evidence, responsibility and recovery event',
+    tracking:enabled?'git-issue':'source_work_item'
+  };
+}
+
 export function board(config,base=process.cwd()) {
+  followUpTracking(config);
   const items=[], diagnostics=[], sourceSnapshots=[], ledgers=new Set(), aliases=new Set();
   for(const source of config.sources||[]) {
     if(!source.id||aliases.has(source.id))throw Error('Source aliases must be unique and nonempty');
@@ -112,13 +126,12 @@ export function board(config,base=process.cwd()) {
     key:`${t.key}::${problem}`,ticket:t.key,problem,
     owner:problem==='pending_judgment'?t.assessment.owner:(t.coordinator||t.owner||'host_task_coordinator'),
     decisionOwner:problem==='pending_user_decision'?'user':null,
-    issue:(metadata.get(t.key)||{}).issue_ref||null,
-    issueAction:'Find or create linked Issue at work-items.json authority; read back before marking linked',
+    ...followUpTracking(config,metadata.get(t.key)||{}),
     status:'proposed',execution:'not_dispatched',
     nextAction:'Investigate or repair within mandate; isolate affected operation and continue independent authorized work',
     resumeOn:'Actual evidence, decision, dependency, execution event or user request; no timer'
   })));
-  for(const d of diagnostics)followUps.push({key:`source:${d.source||d.ticket}`,problem:d.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',issueAction:'Link source repair Issue',nextAction:'Repair source visibility; continue readable independent sources'});
+  for(const d of diagnostics)followUps.push({key:`source:${d.source||d.ticket}`,problem:d.error,owner:'host_task_coordinator',status:'proposed',execution:'not_dispatched',...followUpTracking(config),nextAction:'Repair source visibility; continue readable independent sources'});
   return {followUps,scope:'registered_sources_only' ,sourcesRegistered:(config.sources||[]).length,sourcesRead:ledgers.size,sourceSnapshots,diagnostics,items,ready:items.filter(t=>t.dispatchCandidate).sort((a,b)=>a.priority-b.priority||String(a.created||'').localeCompare(String(b.created||''))||a.key.localeCompare(b.key)).map(t=>t.key)};
 }
 
