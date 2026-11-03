@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "request_id": "issue-event-data-loop-20261102",
+  "observed_at": "2026-11-03T17:39:35.832063+00:00",
+  "trigger": "PR #26 static CI ruff-format failure after rebase",
+  "repair": "Apply repository Ruff formatter to two changed Python files; no behavior change",
+  "inputs": {
+    "customizations/components/issue-workorders/work_items.py": "2c736fee6a1435aa04cb83c33294521e24e4ca070440b4aa94762a85931d271b",
+    "customizations/components/issue-workorders/test_issue_events.py": "66332b1e63c52230298443a5b0822ba9344873e294bc55d045d3f626076c2661"
+  },
+  "checks": {
+    "issue_component_unittest": "41 passed",
+    "framework_verify": "approved_file_integrity",
+    "ruff_format": "2 files formatted",
+    "git_diff_check": "pass"
+  },
+  "host_git_account": "Sail-Li",
+  "gonggong_source_registered": false,
+  "ariadne_source_registered": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "request_id": "issue-event-data-loop-20261102",
+  "scope": "Olympus issue-workorders Git workflow intake submodule; future Gonggong adapter contract only",
+  "observed_at": "2026-11-03T15:08:12.332156+00:00",
+  "platform": "Windows",
+  "tool": "D:/Olympus/project/runtime/python/python.exe",
+  "checks": {
+    "issue_component_unittest": {
+      "result": "passed",
+      "tests": 37
+    },
+    "git_diff_check": {
+      "result": "passed"
+    }
+  },
+  "inputs": {
+    "customizations/components/issue-workorders/work_items.py": "acf59f1b05d20b9b7831fb636184166cd7c1ef2d24f58c67b035b68e9cb4e7a2",
+    "customizations/components/issue-workorders/issue_events.py": "36b26e34b3760344f23fba31822bbc2503074bf3298a1301578338ed8e44a50f",
+    "customizations/components/issue-workorders/git-workflow.md": "e0559fdd5f1076964e2bb347d691edc23abf4330a351da1aa9aaa5c6b0943c0a"
+  },
+  "host_git_account": "Sail-Li",
+  "host_git_account_source": "authenticated gh api user readback",
+  "remote_issue_state": "status:in-progress at precommit preparation; final status will be read back",
+  "git_commit": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate",
+  "gonggong_source_registered": false,
+  "ariadne_source_registered": false
+}

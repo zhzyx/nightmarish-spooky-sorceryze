@@ -107,6 +107,10 @@ def issue(root, document, title, category, request_id, apply=False):
     }
     if not apply:
         return plan
+    account = json.loads(gh("api", "user")).get("login")
+    if not isinstance(account, str) or not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", account):
+        raise ValueError("Authenticated GitHub account login is required")
+    body += "\n\n<!-- olympus-host-git:" + account + " -->\n"
     # Query all pages and exact marker, including closed issues, to avoid recreating a request.
     pages = json.loads(
         gh("api", "repos/" + settings["repository"] + "/issues?state=all&per_page=100", "--paginate", "--slurp")
@@ -122,7 +126,14 @@ def issue(root, document, title, category, request_id, apply=False):
     if len(matches) > 1:
         raise ValueError("Duplicate remote request identity; resolve before continuing")
     if matches:
-        return {"state": "existing", "url": matches[0]["html_url"]}
+        existing = matches[0]
+        owners = re.findall(r"<!--\s*olympus-host-git:([A-Za-z0-9-]+)\s*-->", existing.get("body") or "")
+        return {
+            "state": "existing",
+            "url": existing["html_url"],
+            "host_git_account": owners[0] if len(set(owners)) == 1 else None,
+            "host_identity_verified": False,
+        }
     with tempfile.TemporaryDirectory() as temporary:
         path = Path(temporary) / "issue.md"
         path.write_text(body, encoding="utf-8")
@@ -143,7 +154,7 @@ def issue(root, document, title, category, request_id, apply=False):
             "--body-file",
             str(path),
         )
-    return {"state": "created", "url": url}
+    return {"state": "created", "url": url, "host_git_account": account, "host_identity_verified": True}
 
 
 def collect(root, request_id):

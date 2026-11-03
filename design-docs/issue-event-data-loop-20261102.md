@@ -2,6 +2,10 @@
 
 工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9
 
+## 2026-11-03 本轮范围与验证
+
+用户明确本轮不向对应宿主提交，先分析 blocked 原因并修复工单框架；后续 Issue 标明宿主 GitHub 账号，并让并发更新在工单事件记录中有可认定的修订标记。本轮改动限定 Olympus 的 Issue 创建适配器、表单和显式事件采集，不改上游 Ariadne 分发包、共工工作区或已部署宿主。使用内置 Python 在 Windows 验证 Issue 组件隔离测试与 `git diff --check`；停止条件是身份字段、冲突拒绝及事件修订证据可本地验证。真实 GitHub 并发写入的原子仲裁、共工司南接入与 Agent 启用仍需其所属来源及独立准入，不能由此轮本地记录宣称完成。
+
 <!-- olympus-request:issue-event-data-loop-20261102 -->
 
 缺口证据：work-items.json 的 ariadne_source_registered=false；Olympus/modules/ariadne/runtime/registry.json 的 sources 为空；data-collection/sources.json 只索引 #1/#2 且 ingestion_confirmed=false；部分工作区/组件元数据仍写候选待审，与后续精确准入及发布证据不同步。
@@ -55,3 +59,7 @@ PR #17 已合入，#8/#11/#15 已按现有证据 completed 关闭。旧PR #14 �
 ## 2026-11-03 跨贡献者采集缺口
 
 用户报告其他贡献者基于共工生产的内容未被当前仓库采集提交。本次范围限 Olympus 仓库 PR 交付入口：校验 `workspace:olympus`；PR 带有该需求的成功 Hermes 文件事件时，要求同时带有同一稳定需求 ID 和 Issue 身份的 `data-collection` JSON。没有成功记录时发出明确警告并允许提交，覆盖状态保持未知，不补造事件。目标平台为 GitHub Actions 的可信基础分支工作流，最小验证为脚本语法与缺失、错需求、匹配文件三个场景。此检查只核对 PR 文件的存在和绑定，不执行贡献者代码，也不证明事件内容真实、共工侧谛听已消费或直推已被服务器阻止。历史缺失事件保留未知，需原执行者提供真实来源后追加。完整强制执行仍依赖管理员把检查设为 required 并保护默认分支；共工工作区使用其自身采集入口，不将其数据伪装为 Olympus 事件。本地 `issue_gate.py` 在其他在途修改范围内，当前未调整其对首次无事件需求的阻断行为。
+
+## Git 接入子模块 PR 验收
+
+子模块 PR #26 重放到 #35 合并后的 main，41 项 issue-workorders 测试、正式框架校验、真实 #9 门禁与提交后 Hermes 检查通过。首次静态 CI 提示两份 Python 文件需要 Ruff 格式化；已按仓库配置修复，追加证据见 `data-collection/issue9-git-workflow-ci-20261104.json` 和 Hermes 事件。此 PR 只交付宿主 Git 接入子模块，#9 的共工真实来源绑定与 Ariadne 自动消费继续等待实际后续交付。

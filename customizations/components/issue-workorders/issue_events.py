@@ -103,11 +103,19 @@ def mapping(issue, request_id, allowed_types):
     dependencies = sorted(
         set(int(n) for n in re.findall(r"<!--\s*olympus-depends-on:#([1-9][0-9]*)\s*-->", issue.get("body") or ""))
     )
+    body = issue.get("body") or ""
+    host_markers = re.findall(r"<!--\s*olympus-host-git:([A-Za-z0-9-]+)\s*-->", body)
+    host_fields = re.findall(r"^### 宿主 GitHub 账号\s*\n+([A-Za-z0-9-]+)[ \t]*(?=\r?$)", body, re.M)
+    host_accounts = set(host_markers + host_fields)
+    if len(host_accounts) > 1:
+        raise ValueError("Conflicting host GitHub account identities")
     return {
         "lifecycle": issue["state"],
         "category": types[0],
         "status": statuses[0],
         "assignees": sorted(a["login"] for a in issue["assignees"]),
+        "host_git_account": next(iter(host_accounts), None),
+        "host_account_source": "issue_body_claim_unverified" if host_accounts else "legacy_issue_unknown",
         "dependencies": dependencies,
         "dependency_coverage": "explicit_markers_only",
         "decision_required": statuses[0] == "status:needs-decision",
@@ -156,6 +164,13 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
                 "binding": binding,
                 "mapping": state,
                 "remote_event": {name: event.get(name) for name in ("id", "node_id", "event", "created_at")},
+                "remote_event_actor_login": (event.get("actor") or {}).get("login"),
+                "revision_marker": {
+                    "key": key,
+                    "issue_updated_at": issue["updated_at"],
+                    "issue_body_sha256": hashlib.sha256((issue.get("body") or "").encode()).hexdigest(),
+                    "recognition": "observed_event_and_current_issue_snapshot; no_atomic_remote_update_claim",
+                },
                 "issue_updated_at": issue["updated_at"],
                 "issue_body_sha256": hashlib.sha256((issue.get("body") or "").encode()).hexdigest(),
                 "observed_at": datetime.now(timezone.utc).isoformat(),

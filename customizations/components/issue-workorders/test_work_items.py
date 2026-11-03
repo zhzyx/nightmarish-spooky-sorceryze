@@ -57,13 +57,13 @@ class WorkItemTests(unittest.TestCase):
                 }
             ]
         ]
-        with patch.object(module, "gh", return_value=json.dumps(response)) as gh:
+        with patch.object(module, "gh", side_effect=[json.dumps({"login": "test-host"}), json.dumps(response)]) as gh:
             self.assertEqual(self.create(True)["state"], "existing")
-        self.assertEqual(gh.call_count, 1)
+        self.assertEqual(gh.call_count, 2)
 
     def test_duplicate_remote_identity_rejected(self):
         response = [[{"body": "<!-- olympus-request:req-1 -->"}] * 2]
-        with patch.object(module, "gh", return_value=json.dumps(response)):
+        with patch.object(module, "gh", side_effect=[json.dumps({"login": "test-host"}), json.dumps(response)]):
             with self.assertRaises(ValueError):
                 self.create(True)
 
@@ -77,9 +77,9 @@ class WorkItemTests(unittest.TestCase):
                 }
             ]
         ]
-        with patch.object(module, "gh", return_value=json.dumps(response)) as gh:
+        with patch.object(module, "gh", side_effect=[json.dumps({"login": "test-host"}), json.dumps(response)]) as gh:
             self.assertEqual(self.create(True)["state"], "existing")
-        self.assertEqual(gh.call_count, 1)
+        self.assertEqual(gh.call_count, 2)
 
     def test_existing_label_not_overwritten(self):
         existing = [{"name": "type:design"}] + module.read(self.root / ".github/status-labels.json")
@@ -90,10 +90,13 @@ class WorkItemTests(unittest.TestCase):
     def test_create_uses_exact_body_file(self):
         def fake(*args):
             if args[0] == "api":
+                if args[1] == "user":
+                    return '{"login":"test-host"}'
                 return "[[]]"
             self.assertEqual(args[:2], ("issue", "create"))
             body = Path(args[args.index("--body-file") + 1]).read_text(encoding="utf-8")
             self.assertIn("<!-- olympus-request:req-1 -->", body)
+            self.assertIn("<!-- olympus-host-git:test-host -->", body)
             self.assertIn("# Actual requirement", body)
             labels = [args[i + 1] for i, v in enumerate(args) if v == "--label"]
             self.assertEqual(labels, ["type:design", "status:needs-decision", "workspace:olympus"])
