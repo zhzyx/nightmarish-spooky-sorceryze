@@ -49,6 +49,8 @@ def inventory(root: Path) -> dict[str, bytes]:
 
     def walk(folder: Path) -> None:
         for path in sorted(folder.iterdir()):
+            if path.name == "__pycache__" or path.suffix == ".pyc":
+                continue
             name = safe_name(path.relative_to(root).as_posix())
             require(name.casefold() not in names, f"Case-colliding path: {name}")
             names.add(name.casefold())
@@ -88,8 +90,10 @@ def candidate_checks(files: dict[str, bytes]) -> None:
     agents = manifest["agents"]
     require(isinstance(agents, list) and bool(agents), "Empty Agent set")
     ids = [agent["id"] for agent in agents]
-    require(all(isinstance(agent_id, str) and agent_id for agent_id in ids) and len(ids) == len(set(ids)),
-            "Invalid Agent set")
+    require(
+        all(isinstance(agent_id, str) and agent_id for agent_id in ids) and len(ids) == len(set(ids)),
+        "Invalid Agent set",
+    )
     for agent in agents:
         paths = agent["candidate_files"]
         require(isinstance(paths, list) and paths == sorted(set(paths)) and bool(paths), "Invalid candidate file list")

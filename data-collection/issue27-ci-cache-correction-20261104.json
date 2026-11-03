@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "observed_at": "2026-11-03T17:01:19.672773+00:00",
+  "trigger": "PR #34 second CI failure after prior repair",
+  "cause": "Offline frozen registration still pinned three-Agent prior snapshot; candidate checker hard-coded three Agent IDs; design document required file_format normalization; local cache artifacts were also mistakenly pinned",
+  "repair": {
+    "registration_files": 155,
+    "registration_sha256": "14003cd0aa602f7e27889e3f91117e52a76f1a93c28447971bffec6d93702a07",
+    "checker_sha256": "21ef98404c0a6c352c2abb3821990bc5a7f8f889626b9656bec615b64b4d1ba0",
+    "agent_ids": [
+      "athena",
+      "themis",
+      "hermes",
+      "harmonia"
+    ]
+  },
+  "checks": {
+    "offline_snapshot": "pass",
+    "offline_checker_tests": "10 passed, 1 skipped",
+    "file_format": "pass on changed files",
+    "cache_exclusion": "Python bytecode ignored by snapshot inventory; clean tracked file count verified"
+  },
+  "scope": "repository CI registration and generic candidate checker; no generated framework bytes changed",
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate",
+  "supersedes_evidence": "data-collection/issue27-ci-repair-20261104.json"
+}
