@@ -227,6 +227,18 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(self.work.issue.call_count, 1)
         self.assertEqual(self.adapter.call.call_count, 1)
 
+    def test_definite_github_rejection_can_resume_after_permission_repair(self):
+        error = ValueError("GitHub rejected create")
+        error.http_status = 403
+        self.work.issue.side_effect = error
+        with self.assertRaisesRegex(ValueError, "GitHub rejected"):
+            self.invoke()
+        self.work.issue.side_effect = None
+        self.request["retry_authorized"] = True
+        self.assertTrue(self.invoke()["ready"])
+        self.assertEqual(self.adapter.call.call_count, 1)
+        self.assertEqual(self.work.issue.call_count, 2)
+
     def test_cancelled_before_start_does_not_call_model_or_create(self):
         self.request["_cancel_path"] = str(self.root / "removed-request.json")
         with self.assertRaisesRegex(ValueError, "cancelled"):

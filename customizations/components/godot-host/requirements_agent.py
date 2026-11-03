@@ -367,7 +367,15 @@ def _intake(root, request, bridge):
         else:
             saved["phase"] = "publication_attempted"
             save(journal, saved)
-            created = work.issue(root, document, design["title"], design["category"], request_id, True)
+            try:
+                created = work.issue(root, document, design["title"], design["category"], request_id, True)
+            except ValueError as error:
+                # A definite GitHub rejection cannot have created an Issue. Retain the
+                # proposal so a repaired login/permission can retry without model cost.
+                if getattr(error, "http_status", None) in {400, 401, 403, 404, 405, 410, 422}:
+                    saved.update(phase="proposal_ready", publication_rejected=error.http_status)
+                    save(journal, saved)
+                raise
             saved.update(phase="proposal_ready", publication=created)
             save(journal, saved)
         match = re.fullmatch(

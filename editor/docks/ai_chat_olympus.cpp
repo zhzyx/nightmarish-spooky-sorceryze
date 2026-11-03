@@ -42,6 +42,7 @@
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/line_edit.h"
+#include "scene/gui/option_button.h"
 #include "scene/main/timer.h"
 
 bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, const String &p_status) {
