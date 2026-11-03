@@ -36,3 +36,12 @@ Godot、IDE、命令行和其他生产工具共享 `tools/olympus_bridge.py`，�
 gh 查找顺序：`OLYMPUS_GH`，`PATH`，再依次是 `~/.local/bin/gh`、`/opt/homebrew/bin/gh`、`/usr/local/bin/gh`（GUI 启动的宿主通常没有用户 shell 的 PATH）。
 
 找到 gh 后，三个动作都会先执行只读的 `gh auth status --hostname github.com`。`issue-draft` 返回 `gh_authenticated` 和 `gh_login_command`；`issue-create`/`issue-start` 在未登录时返回 `error:"gh_unauthenticated"` 和 `login_command`（`<gh> auth login --hostname github.com --git-protocol https --web`），不调用 API、不创建或修改 Issue。登录需要交互，宿主只展示命令，由用户在终端完成；登录后回复 `确认`/`开始` 重试。
+
+
+## 常规会话需求入口（当前约定）
+
+`issue-agent` 是普通用户轮次的默认入口；旧三个手工动作仅保留兼容用途，不作为正常会话绕过 Athena/Metis 的入口。请求含 outcome、conversation_id（会话+真实用户轮次）、已有 issue_number/request_id、当前HTTP endpoint/model或CodeBuddy CLI模型/入口；APIKey 必须通过私有 stdin JSON 行发送，不允许写到 --request 文件。
+
+前置阶段只验证环境及仓库访问、装配已批准 Athena+Metis 上下文并生成结构化需求，不运行生产工具。Agent 输出 decision/title/category/goal/scope/acceptance/questions，宿主不相信输出自带的身份或权限。真正未知写 questions；工单可先以 needs-decision 跟踪，已具备行动条件的用户需求按本次自动流程授权转 in-progress。返回 ready 后仍须原正常 chat intake 回读仓库、租户、类别、状态、工作区标签和准入。
+
+失败保留原需求和尝试；修复后明确重试。模型结果未知不自动重复付费调用；发布结果未知只查询原稳定ID，未发现唯一单据则保持待对账。取消不撤销已提交远端请求，只停止本地后续步骤和迟到绑定。需求阶段 journal 与正式Hermes回执分开，真实Issue创建后将真实需求调用/用量绑定并投递；夹具数据不得导入生产。

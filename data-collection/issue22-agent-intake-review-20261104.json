@@ -1,0 +1,25 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "previous_candidate": "8d6698c31a92e8800359f4a397b009ebd2acd9de",
+  "independent_reviewer": "Codex subtask review_standalone under existing Dike responsibility; not authenticated production Agent activation",
+  "review": "passed core code and incremental followup/permission recovery reviews",
+  "failed_ci": {
+    "run_id": 41669767744,
+    "reason": "OptionButton incomplete type in added current-backend selection",
+    "fix": "Explicit scene/gui/option_button.h include",
+    "scope": "Single Windows MSVC editor only"
+  },
+  "delta_checks": {
+    "requirements": 18,
+    "issue_workorders": 39,
+    "windows_affected_object": "passed MSVC werror=yes 2026-11-04 local; 1.56s SCons build phase"
+  },
+  "http_recovery": "Definite GitHub 400/401/403/404/405/410/422 rejections preserve proposal and permit repaired retry; timeouts and unknown outcomes reconcile only",
+  "native_acceptance": "pending rebuilt single Windows editor",
+  "usage": {
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null
+  }
+}

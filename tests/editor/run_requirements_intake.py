@@ -1,0 +1,267 @@
+"""Native Athena intake acceptance with isolated GitHub/model fixtures; no real services."""
+
+import argparse
+import hashlib
+import http.server
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+GH_FIXTURE = """import json,sys,re,os
+from pathlib import Path
+r=Path(os.environ['OLYMPUS_TEST_WORKSPACE'])
+op=Path(__file__).name
+args=sys.argv[1:]
+repo=json.loads((r/'work-items.json').read_text())['repository']
+db=r/'fake-issues.json'
+issues=json.loads(db.read_text()) if db.exists() else []
+if op=='auth': raise SystemExit(1 if (r/'gh_disabled').exists() else 0)
+if op=='api':
+ path=args[0]
+ if path=='repos/'+repo: value={'full_name':repo,'permissions':{'push':True}}
+ elif '/issues?' in path: value=[issues] if '--slurp' in args else issues
+ elif '/comments' in path: value=[[]]
+ else: value=next(x for x in issues if x['number']==int(path.split('/')[-1]))
+ print(json.dumps(value));raise SystemExit(0)
+if args[0]=='create':
+ body=Path(args[args.index('--body-file')+1]).read_text(encoding='utf-8')
+ labels=[{'name':args[i+1]} for i in range(len(args)) if args[i]=='--label']
+ number=8001+len(issues)
+ issue={'number':number,'state':'open','body':body,'labels':labels,'title':args[args.index('--title')+1],
+        'html_url':'https://github.com/'+repo+'/issues/'+str(number),'updated_at':'2026-11-03T00:00:00Z'}
+ issues.append(issue);db.write_text(json.dumps(issues),encoding='utf-8');print(issue['html_url'])
+elif args[0]=='edit':
+ issue=next(x for x in issues if x['number']==int(args[1]))
+ issue['labels']=[x for x in issue['labels'] if not x['name'].startswith('status:')]+[{'name':'status:in-progress'}]
+ db.write_text(json.dumps(issues),encoding='utf-8')
+elif args[0]=='comment': pass
+else: raise SystemExit('unsupported fixture command')
+"""
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--godot", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    requests = []
+    normal = 0
+    with tempfile.TemporaryDirectory(prefix="requirements-native-") as folder:
+        root = Path(folder)
+        shutil.copytree(ROOT / "Olympus", root / "Olympus", ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(ROOT / "customizations", root / "customizations", ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(ROOT / ".github", root / ".github")
+        (root / "tools").mkdir()
+        shutil.copyfile(ROOT / "tools/olympus_bridge.py", root / "tools/olympus_bridge.py")
+        shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
+        for name in ["auth", "api", "issue"]:
+            (root / name).write_text(GH_FIXTURE, encoding="utf-8")
+
+        def run(cmd):
+            return subprocess.run(cmd, cwd=root, check=True, capture_output=True)
+
+        run(["git", "init", "--quiet"])
+        run(["git", "config", "core.autocrlf", "false"])
+        run(["git", "remote", "add", "origin", "https://github.com/zhzyx/nightmarish-spooky-sorceryze.git"])
+        run(["git", "add", "."])
+        run([
+            "git",
+            "-c",
+            "user.name=Native Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--quiet",
+            "-m",
+            "Isolated original framework",
+        ])
+        run([
+            sys.executable,
+            str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+            "init",
+            "--repo",
+            str(root),
+        ])
+        project = root / "project"
+        project.mkdir()
+        # The editor changes cwd to the opened project before invoking Python.
+        for name in ["auth", "api", "issue"]:
+            (project / name).write_text(GH_FIXTURE, encoding="utf-8")
+        (project / "project.godot").write_text(
+            '[application]\nconfig/name="Requirements intake fixture"\n', encoding="utf-8"
+        )
+        shutil.copyfile(ROOT / "tests/editor/requirements_intake.gd", project / "gate.gd")
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                nonlocal normal
+                data = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                requirements = "Requirements intake only" in data["messages"][0]["content"]
+                requests.append({"requirements": requirements})
+                if requirements:
+                    value = json.loads(data["messages"][-1]["content"])
+                    text = value["request"]
+                    existing = value["existing_issue"]
+                    assert "metis" in data["messages"][0]["content"]
+                    assert "ISOLATED_FRAMEWORK_CONTEXT_FIXTURE" not in data["messages"][0]["content"]
+                    if "Cancel pending" in text:
+                        (root / "model_waiting").touch()
+                        time.sleep(1.5)
+                    if "API failure" in text and not (root / "api_fixed").exists():
+                        self.send_response(503)
+                        self.end_headers()
+                        return
+                    decision = (
+                        "continue"
+                        if existing and ("Refine" in text or ("second feature" in text and existing["number"] == 8002))
+                        else "new"
+                    )
+                    body = json.dumps({
+                        "decision": decision,
+                        "title": text,
+                        "category": "development",
+                        "goal": text,
+                        "scope": ["One requested change"],
+                        "acceptance": ["Observable requested result"],
+                        "questions": [],
+                    })
+                else:
+                    normal += 1
+                    body = "INTAKE_WORK_REPLY_" + str(normal)
+                result = json.dumps({
+                    "choices": [{"message": {"role": "assistant", "content": body}, "finish_reason": "stop"}]
+                }).encode()
+                try:
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(result)))
+                    self.end_headers()
+                    self.wfile.write(result)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+
+            def log_message(self, *unused):
+                pass
+
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        env = dict(
+            os.environ,
+            OLYMPUS_WORKSPACE=str(root),
+            OLYMPUS_TEST_WORKSPACE=str(root),
+            OLYMPUS_PYTHON=sys.executable,
+            OLYMPUS_GH=sys.executable,
+            OLYMPUS_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+            GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
+        )
+        for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
+            env.pop(name, None)
+        for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
+            env[name] = str(root / name)
+            (root / name).mkdir()
+        try:
+            result = subprocess.run(
+                [
+                    str(args.godot.resolve()),
+                    "--headless",
+                    "--editor",
+                    "--path",
+                    str(project),
+                    "--script",
+                    "res://gate.gd",
+                ],
+                cwd=root,
+                env=env,
+                capture_output=True,
+                timeout=240,
+            )
+        finally:
+            server.shutdown()
+            server.server_close()
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.with_suffix(".stdout.log").write_bytes(result.stdout)
+        args.out.with_suffix(".stderr.log").write_bytes(result.stderr)
+        args.out.with_suffix(".debug.json").write_text(
+            json.dumps(
+                {
+                    "requests": requests,
+                    "journals": [
+                        json.loads(p.read_text(encoding="utf-8"))
+                        for p in (root / ".olympus-outbox/requirements").glob("*.json")
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        assert result.returncode == 0 and b"REQUIREMENTS_AGENT_NATIVE_OK" in result.stdout, result.stdout[-3500:]
+        issues = json.loads((root / "fake-issues.json").read_text())
+        assert len(issues) == 4, issues
+        assert normal == 6 and sum(x["requirements"] for x in requests) == 8, requests
+        events = [
+            json.loads(p.read_text(encoding="utf-8")) for p in (root / "olympus-hermes-data/events").rglob("*.json")
+        ]
+        for p in (root / ".olympus-outbox").rglob("*.json"):
+            assert "intake-unit-session-secret" not in p.read_text(encoding="utf-8")
+        assert not list((root / ".olympus-outbox/chat").glob("*.json"))
+        run(["git", "add", "."])
+        run([
+            "git",
+            "-c",
+            "user.name=Native Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--quiet",
+            "-m",
+            "Isolated actual fixture receipts",
+        ])
+        receipt = json.loads(
+            run([
+                sys.executable,
+                str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+                "git-check",
+                "--repo",
+                str(root),
+                "--require-committed",
+            ]).stdout
+        )
+        report = {
+            "ok": True,
+            "native_page": True,
+            "actual_athena_admission": True,
+            "model_and_github": "isolated loopback/CLI fixtures only",
+            "requirements_calls": 8,
+            "development_calls": 6,
+            "issues_created": 4,
+            "events": len(events),
+            "git_check": receipt,
+            "cases": [
+                "new requirement",
+                "followup reuses Issue",
+                "new requirement while bound",
+                "same text new turn still classified",
+                "cancel before publication",
+                "model API repair then explicit retry",
+                "GitHub auth repair before model call",
+            ],
+            "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
+            "fixture_events_imported": False,
+        }
+        args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps(report))
+
+
+if __name__ == "__main__":
+    main()

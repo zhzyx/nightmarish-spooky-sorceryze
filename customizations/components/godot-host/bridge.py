@@ -114,8 +114,21 @@ def find_gh(env):
     found = shutil.which("gh", path=env.get("PATH"))
     if found:
         return found
-    for candidate in (Path.home() / ".local/bin/gh", Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")):
+    try:
+        home = Path.home()
+    except RuntimeError:
+        home = None
+    candidates = [Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")]
+    if home is not None:
+        candidates.insert(0, home / ".local/bin/gh")
+    for candidate in candidates:
         if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    candidates = [Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "GitHub CLI/gh.exe"]
+    if home is not None:
+        candidates += sorted((home / "Documents/Codex/tools/github-cli").glob("*/bin/gh.exe"), reverse=True)
+    for candidate in candidates:
+        if candidate.is_file():
             return str(candidate)
     return None
 
@@ -595,7 +608,35 @@ def issue_start(root, request):
     }
 
 
-GUIDE_ACTIONS = {"issue-draft": issue_draft, "issue-create": issue_create, "issue-start": issue_start}
+def issue_agent(root, request):
+    from types import SimpleNamespace
+
+    spec = importlib.util.spec_from_file_location(
+        "olympus_requirements", Path(__file__).with_name("requirements_agent.py")
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("Requirements Agent adapter unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    api = SimpleNamespace(
+        work_items_module=work_items_module,
+        gh_state=gh_state,
+        login_command=login_command,
+        host_environment=host_environment,
+        issue_start=issue_start,
+        enqueue=enqueue,
+        flush=flush,
+        outbox_lock=outbox_lock,
+    )
+    return module.intake(root, request, api)
+
+
+GUIDE_ACTIONS = {
+    "issue-draft": issue_draft,
+    "issue-create": issue_create,
+    "issue-start": issue_start,
+    "issue-agent": issue_agent,
+}
 
 
 def execute(workspace, action, tenant):
@@ -657,6 +698,13 @@ def main():
             request = json.loads(args.request.read_text(encoding="utf-8"))
             if not isinstance(request, dict):
                 raise ValueError("Issue guide request must be an object")
+            if args.action == "issue-agent":
+                sys.stdin.reconfigure(encoding="utf-8")
+                credentials = json.loads(sys.stdin.readline(8192))
+                if set(credentials) != {"api_key"} or not isinstance(credentials["api_key"], str):
+                    raise ValueError("Requirements credentials must use the private stdin pipe")
+                request["_private_api_key"] = credentials["api_key"]
+                request["_cancel_path"] = str(args.request)
             result = GUIDE_ACTIONS[args.action](Path(args.workspace).resolve(), request)
         elif args.action == "flush":
             result = flush(Path(args.workspace))

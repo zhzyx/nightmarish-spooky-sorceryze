@@ -26,12 +26,19 @@ def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+class GitHubCommandError(ValueError):
+    def __init__(self, status=None):
+        self.http_status = status
+        super().__init__("GitHub command failed; check local gh login and repository access")
+
+
 def gh(*args):
     result = subprocess.run(
         [os.environ.get("OLYMPUS_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
     )
     if result.returncode:
-        raise ValueError("GitHub command failed; check local gh login and repository access")
+        match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
+        raise GitHubCommandError(int(match[1]) if match else None)
     return result.stdout.strip()
 
 

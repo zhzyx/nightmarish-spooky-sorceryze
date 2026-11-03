@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue22-agent-intake-scope-correction-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "kind": "correction",
+  "occurred_at": "2026-11-03T15:43:56.641527+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "8b1ec92662ee278110bce9312f4b3bc174aabdf471c4d16140e3a497e10e6b4c",
+    "origin": "codex-host-task-instruction-snapshot"
+  },
+  "supersedes": "issue22-agent-intake-scope-20261103",
+  "payload": {
+    "description": "The prior scope event incorrectly inherited the other CodeBuddy host actor from the existing request. Actual recorder is this Codex task. Scope facts remain unchanged; original retained and superseded. Actor snapshot is bounded instruction metadata, not authenticated full host identity.",
+    "source_file": "data-collection/issue22-agent-intake-scope-20261103.json",
+    "actor_snapshot": "data-collection/issue22-agent-intake-actor-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue22-agent-intake-scope-20261103"
+  ],
+  "sha256": "07404e636a7cbd37d7999d139ac54b2d6f9743795d94d01a8a45a011c8490ce5"
+}

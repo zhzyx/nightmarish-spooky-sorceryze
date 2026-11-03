@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue22-agent-intake-source-validation-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "kind": "step",
+  "occurred_at": "2026-11-03T15:56:46.715828+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "8b1ec92662ee278110bce9312f4b3bc174aabdf471c4d16140e3a497e10e6b4c",
+    "origin": "codex-host-task-instruction-snapshot"
+  },
+  "payload": {
+    "phase": "source_validation",
+    "source_file": "data-collection/issue22-agent-intake-source-validation-20261103.json",
+    "description": "Source regressions passed; one Windows editor native acceptance pending. Synthetic tests are not production events.",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue22-agent-intake-scope-correction-20261103"
+  ],
+  "sha256": "60d303da79c98a1ff51841a467f6ccba91ec4a18d622c2693c6907d25f23dfd8"
+}

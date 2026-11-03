@@ -41,6 +41,8 @@
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/option_button.h"
 #include "scene/main/timer.h"
 
 bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, const String &p_status) {
@@ -218,6 +220,14 @@ void AIChatDock::_begin_olympus_context() {
 	olympus_report_python = python;
 	const String bridge = olympus_report_root.path_join("tools/olympus_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
+		for (int i = messages.size() - 1; i >= 0; i--) {
+			Dictionary message = messages[i];
+			if (String(message.get("role", "")) == "user") {
+				issue_guide_outcome = message.get("content", "");
+				break;
+			}
+		}
+		issue_guide_state = "agent_error";
 		_append(TTR("Error"), U"Olympus 未配置：请在 Olympus 页设置工作区和 Python。聊天不会绕过框架发送。");
 		_set_busy(false);
 		return;
@@ -229,6 +239,12 @@ void AIChatDock::_begin_olympus_context() {
 			outcome = message.get("content", "");
 			break;
 		}
+	}
+	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, EDITOR_GET("olympus/issue_number"), EDITOR_GET("olympus/request_id"));
+	if (tool_rounds == 0 && olympus_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && issue_agent_checked != requirement_key) {
+		_cancel_issue_guide(String());
+		_begin_issue_agent(outcome);
+		return;
 	}
 	const int64_t bound_issue = String(EDITOR_GET("olympus/issue_number")).to_int();
 	const String bound_request = String(EDITOR_GET("olympus/request_id")).strip_edges();
@@ -390,6 +406,28 @@ bool AIChatDock::_start_issue_guide() {
 	return true;
 }
 
+void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool p_clarifying) {
+	issue_guide_outcome = p_outcome;
+	issue_guide_state = "agent_pending";
+	_set_busy(false);
+	Dictionary input_request;
+	input_request["outcome"] = p_outcome;
+	input_request["conversation_id"] = conversation_id + ":" + snapshot_id;
+	issue_guide_fields["initial_issue"] = EDITOR_GET("olympus/issue_number");
+	issue_guide_fields["initial_request"] = EDITOR_GET("olympus/request_id");
+	input_request["issue_number"] = int64_t(String(EDITOR_GET("olympus/issue_number")).to_int());
+	input_request["request_id"] = String(EDITOR_GET("olympus/request_id"));
+	input_request["endpoint"] = endpoint->get_text().strip_edges();
+	input_request["model"] = model->get_text().strip_edges();
+	input_request["backend"] = backend->get_selected() == 1 ? "codebuddy" : "http";
+	input_request["cli_node"] = cli_node->get_text().strip_edges();
+	input_request["cli_entry"] = cli_entry->get_text().strip_edges();
+	input_request["cli_model"] = cli_model->get_text().strip_edges();
+	input_request["retry_authorized"] = p_retry;
+	input_request["clarifying"] = p_clarifying;
+	_issue_guide_run("issue-agent", input_request);
+}
+
 void AIChatDock::_issue_guide_prompt() {
 	String text;
 	if (issue_guide_state == "choose") {
@@ -442,6 +480,18 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		_append(TTR("Editor"), U"工单引导正在处理上一步，请稍候；回复 `取消` 可放弃。");
 		return;
 	}
+	if (issue_guide_state == "agent_questions") {
+		_begin_issue_agent(issue_guide_outcome + "\n用户补充：" + p_text, false, true);
+		return;
+	}
+	if (issue_guide_state == "agent_error") {
+		if (AIChatIssueGuide::is_retry(p_text)) {
+			_begin_issue_agent(issue_guide_outcome, true);
+		} else {
+			_append(TTR("Editor"), U"请先修复 Olympus 页的环境、需求 Agent 的 HTTP/CLI 模型配置或 GitHub 访问，再回复“重试”；工单尚未完成绑定，不会进入开发执行。");
+		}
+		return;
+	}
 	if (issue_guide_state == "retrying") {
 		issue_guide_state = "await_status"; // The retry ended before reaching intake.
 	}
@@ -476,13 +526,13 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 			issue_guide_state = "title";
 		}
 	} else if (issue_guide_state == "title") {
-		const String issue_title = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["title_suggestion"]) : text;
-		if (issue_title.contains("\n") || issue_title.contains("\r") || issue_title.length() > AIChatIssueGuide::MAX_TITLE) {
+		const String guide_title = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["title_suggestion"]) : text;
+		if (guide_title.contains("\n") || guide_title.contains("\r") || guide_title.length() > AIChatIssueGuide::MAX_TITLE) {
 			_append(TTR("Error"), U"标题需为单行，且不超过 120 字。");
 		} else {
-			issue_guide_fields["title"] = issue_title;
+			issue_guide_fields["title"] = guide_title;
 			const String stamp = Time::get_singleton()->get_datetime_string_from_system().replace("-", "").replace(":", "").replace("T", "-");
-			issue_guide_fields["request_id_suggestion"] = AIChatIssueGuide::suggest_request_id(issue_title, stamp);
+			issue_guide_fields["request_id_suggestion"] = AIChatIssueGuide::suggest_request_id(guide_title, stamp);
 			issue_guide_state = "request_id";
 		}
 	} else if (issue_guide_state == "request_id") {
@@ -526,6 +576,9 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 }
 
 void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_request) {
+	if (p_action == "issue-agent") {
+		issue_guide_state = "agent_error"; // All early configuration/start failures remain retryable.
+	}
 	const String root = EDITOR_GET("olympus/workspace");
 	const String python = EDITOR_GET("olympus/python");
 	const String bridge = root.path_join("tools/olympus_bridge.py");
@@ -548,7 +601,26 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		args.push_back(argument);
 	}
 	ProcessID pid = 0;
-	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+	Error process_error = OK;
+	if (p_action == "issue-agent") {
+		Dictionary process = OS::get_singleton()->execute_with_pipe(python, args, false);
+		pid = int64_t(process.get("pid", 0));
+		Ref<FileAccess> pipe = process.get("stdio", Variant());
+		if (pid <= 0 || pipe.is_null()) {
+			process_error = ERR_CANT_FORK;
+		} else {
+			Dictionary credentials;
+			credentials["api_key"] = api_key->get_text().strip_edges();
+			pipe->store_string(JSON::stringify(credentials) + "\n");
+			pipe->flush();
+		}
+	} else {
+		process_error = OS::get_singleton()->create_process(python, args, &pid);
+	}
+	if (process_error != OK) {
+		if (pid > 0) {
+			OS::get_singleton()->kill(pid);
+		}
 		_clear_issue_guide_files();
 		_append(TTR("Error"), U"无法启动 Olympus 桥接，请检查 Python 路径。");
 		return;
@@ -589,6 +661,39 @@ void AIChatDock::_poll_issue_guide() {
 	}
 	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
 	const String error = result.get("error", U"桥接进程没有返回有效结果。");
+	if (issue_guide_action == "issue-agent") {
+		if (issue_guide_fields.get("initial_issue", Variant()) != EDITOR_GET("olympus/issue_number") || issue_guide_fields.get("initial_request", Variant()) != EDITOR_GET("olympus/request_id")) {
+			issue_guide_state = "agent_error";
+			_append(TTR("Editor"), U"处理期间工单绑定已改变，旧结果不会覆盖新绑定。请回复“重试”按当前绑定核对。");
+			return;
+		}
+		if (!ok) {
+			issue_guide_state = "agent_error";
+			_append(TTR("Error"), String(U"Athena 需求建单尚未完成，开发执行仍暂停。请先修复环境、模型 API 或 GitHub 权限，再回复“重试”。已发送的远程请求可能已生效，重试会按稳定需求 ID 对账。\n") + error);
+			if (error == "gh_unauthenticated") {
+				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));
+			}
+			return;
+		}
+		_issue_guide_bind(int64_t(result.get("issue_number", 0)), String(result.get("request_id", "")));
+		_append(TTR("Editor"), String(U"Athena / Metis 已整理需求并关联真实工单：") + String(result.get("url", "")));
+		if (!bool(result.get("ready", false))) {
+			issue_guide_state = "agent_questions";
+			for (const Variant &question : Array(result.get("questions", Array()))) {
+				_append(U"Athena", question);
+			}
+			return;
+		}
+		if (last_user_content(messages) != issue_guide_outcome) {
+			Dictionary clarified;
+			clarified["role"] = "user";
+			clarified["content"] = issue_guide_outcome;
+			messages.push_back(clarified);
+		}
+		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), EDITOR_GET("olympus/issue_number"), EDITOR_GET("olympus/request_id"));
+		_issue_guide_retry();
+		return;
+	}
 	issue_guide_state = guide_state_before(issue_guide_action);
 	if (issue_guide_action == "issue-draft") {
 		if (!ok) {
@@ -643,6 +748,9 @@ void AIChatDock::_clear_issue_guide_files() {
 
 void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 	const bool active = !issue_guide_state.is_empty() || issue_guide_pid >= 0;
+	if (issue_guide_action == "issue-agent" && issue_guide_pid >= 0) {
+		_append(TTR("Editor"), U"已取消本地需求流程。已发送的远程请求无法撤回；再次处理相同需求时会先核对原请求，不会直接重复建单。");
+	}
 	issue_guide_generation++;
 	if (issue_guide_pid >= 0) {
 		if (OS::get_singleton()->is_process_running(issue_guide_pid)) {

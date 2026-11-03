@@ -42,6 +42,10 @@ public:
 	static constexpr int MAX_REQUEST_ID = 80;
 	static constexpr int MAX_TITLE = 120;
 
+	static String requirement_key(const String &p_conversation, const String &p_turn, const String &p_outcome, const String &p_issue, const String &p_request) {
+		return p_conversation + ":" + p_turn + ":" + p_outcome.sha256_text() + ":" + p_issue + ":" + p_request;
+	}
+
 	static bool is_request_id(const String &p_id) {
 		if (p_id.is_empty() || p_id.length() > MAX_REQUEST_ID || p_id.begins_with("-") || p_id.ends_with("-") || p_id.contains("--")) {
 			return false;

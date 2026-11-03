@@ -3,7 +3,7 @@
 宿主执行约束见 [执行范围与验证成本](execution-policy.md)：任务入口固定边界，交付阶段按变更选择验证，等待阶段合并真实状态事件，效果沿用 Hermes 记录。它是本组件的流程约定，不改变共享 Agent 定义或声称已实现自动预算控制。
 
 
-宿主开发入口使用同一脚本的 `--intake-only --tenant <配置租户>` 模式，仍需提供 `--repo`、`--issue`、`--request-id`。此模式只回读真实工单并验证仓库 origin、稳定 ID、类别、有效状态、租户及 workspace:olympus，不执行模型、不代替正式框架准入。没有 Issue 时先显式创建/复用；聊天入口拒绝绕过，不以本地预览替代发布。
+宿主开发入口使用同一脚本的 `--intake-only --tenant <配置租户>` 模式，仍需提供 `--repo`、`--issue`、`--request-id`。此模式只回读真实工单并验证仓库 origin、稳定 ID、类别、有效状态、租户及 workspace:olympus，不执行模型、不代替正式框架准入。没有 Issue 时先经已授权需求入口创建/复用；聊天入口拒绝绕过，不以本地预览替代发布。
 
 data-collection 内的真实来源与回执也是交付内容：本地提交门禁逐文件比较 index 当前字节，拒绝未跟踪、被忽略、未暂存或删除的采集原件。缓存、凭据和本机绝对源路径不得放入交付目录；纠正追加记录。Hermes 仍按既有规则校验并在提交后核对 HEAD。服务器 required check、分支保护及 Ariadne 事件来源仍需各自真实启用，入口校验不冒充这些能力。
 
@@ -53,3 +53,5 @@ Olympus-Request: issue-governance-20261102
 回退：停止调用该适配器，保留既有 Issue、文档、事件和采集索引；不要删除远程标签或历史数据。恢复旧入口不能消除已经创建的 Issue。
 
 接口依据：[GitHub Issue 表单](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)、[gh issue create](https://cli.github.com/manual/gh_issue_create)、[gh label create](https://cli.github.com/manual/gh_label_create)。
+
+普通引擎会话复用现有 Athena／Metis 自动整理需求并建单，受限需求阶段与开发门禁分开，见 [宿主协议](../godot-host/HOST_PROTOCOL.md)。工单适配器不因此授予模型、工具或设计定版权限。
