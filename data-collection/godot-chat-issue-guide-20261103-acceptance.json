@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "appends": "data-collection/godot-chat-issue-guide-20261103-merge.json",
+  "user_instructions": ["完成"],
+  "acceptance": {
+    "decision": "accepted_by_user",
+    "basis": "After being told that closing #22 requires acceptance, the workspace user replied '完成'. This is recorded as the user's acceptance decision, not as an independent review.",
+    "delivered_on_main": {
+      "implementation_merge": "adab2727af501ece729977ac88157023e9ddc407 (PR #23)",
+      "merge_receipt": "41fb0c08 (PR #29)"
+    },
+    "evidence_relied_on": [
+      "data-collection/godot-chat-issue-guide-20261103.json",
+      "data-collection/godot-chat-issue-guide-20261103-gh-login.json",
+      "data-collection/godot-chat-issue-guide-20261103-pr-format.json",
+      "data-collection/godot-chat-issue-guide-20261103-msvc-shadow.json",
+      "data-collection/godot-chat-issue-guide-20261103-merge.json"
+    ],
+    "accepted_with_known_gaps": [
+      "The in-editor guide was not exercised against the real GitHub account; editor scenarios used gh, context and model fixtures.",
+      "Direct reuse, intake rejection after binding, the no-gh message and agent-switch/late-result cancellation were not run as editor scenarios.",
+      "A logged-in gh without repository write permission still reports a generic gh failure.",
+      "No visible GitHub login entry on the Olympus page; the user chose not to add it now.",
+      "No independent review was performed.",
+      "Diting has not confirmed consumption."
+    ]
+  },
+  "planned_issue_update": "After this record is merged: set status:done (removing status:in-progress) and close Issue #22 as completed. The Issue remains the state authority; the comment on #22 records the actual change.",
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}
