@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "event_id": "godot-chat-issue-guide-20261103-pr-format",
+  "kind": "step",
+  "occurred_at": "2026-11-03T15:21:11+00:00",
+  "payload": {
+    "description": "Pushed the branch and opened PR #23 against main (Refs #22, not merged). CI issue-association passed; static checks failed only on clang-format and ruff-format for two files. Applied the pinned formatters (whitespace-only C++ alignment, Python quote style); format checks and the affected Python tests pass locally. Earlier build and scenario evidence is reused.",
+    "source_files": [
+      "data-collection/godot-chat-issue-guide-20261103-pr-format.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+  },
+  "evidence_refs": [
+    "godot-chat-issue-guide-20261103-gh-login-validation"
+  ],
+  "sha256": "98f13803c1f38c2caa8e87d197a7fe6a381e6737c5644c62bcbae74440f8e617"
+}
