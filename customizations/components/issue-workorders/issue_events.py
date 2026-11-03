@@ -1,4 +1,4 @@
-"""Explicit, single-event GitHub intake for the Olympus workspace; no scheduler."""
+"""Explicit, single-event GitHub intake for the GongGong workspace; no scheduler."""
 
 import argparse
 import hashlib
@@ -83,8 +83,8 @@ def remote_event(repository, number, event_id):
 
 def mapping(issue, request_id, allowed_types):
     labels = [item["name"] for item in issue["labels"]]
-    if "workspace:olympus" not in labels:
-        raise ValueError("This intake only handles explicitly labeled Olympus work")
+    if "workspace:gonggong" not in labels:
+        raise ValueError("This intake only handles explicitly labeled GongGong work")
     if request_ids(issue.get("body")) != {request_id}:
         raise ValueError("Remote request identity is missing or ambiguous")
     types = [label for label in labels if label.startswith("type:")]
@@ -101,10 +101,10 @@ def mapping(issue, request_id, allowed_types):
     # Only explicit machine-readable relations are dependencies. Ordinary #links
     # in prose are references, never an instruction to dispatch or close work.
     dependencies = sorted(
-        set(int(n) for n in re.findall(r"<!--\s*olympus-depends-on:#([1-9][0-9]*)\s*-->", issue.get("body") or ""))
+        set(int(n) for n in re.findall(r"<!--\s*gonggong-depends-on:#([1-9][0-9]*)\s*-->", issue.get("body") or ""))
     )
     body = issue.get("body") or ""
-    host_markers = re.findall(r"<!--\s*olympus-host-git:([A-Za-z0-9-]+)\s*-->", body)
+    host_markers = re.findall(r"<!--\s*gonggong-host-git:([A-Za-z0-9-]+)\s*-->", body)
     host_fields = re.findall(r"^### 宿主 GitHub 账号\s*\n+([A-Za-z0-9-]+)[ \t]*(?=\r?$)", body, re.M)
     host_accounts = set(host_markers + host_fields)
     if len(host_accounts) > 1:
@@ -121,7 +121,7 @@ def mapping(issue, request_id, allowed_types):
         "decision_required": statuses[0] == "status:needs-decision",
         "coordination": "associate_only_no_dispatch",
         "parent_auto_close": False,
-        "processed_workspace": "olympus",
+        "processed_workspace": "gonggong",
         "other_workspace_processed": False,
     }
 
@@ -148,7 +148,7 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
     folder = root / "data-collection/issue-events" / key
     folder.resolve().relative_to(root)
     binding = {"host_id": host_id, "tenant_id": tenant, "request_id": request_id, "definition_sha256": definition_hash}
-    lock = root / ".olympus-outbox/issue-events" / (key + ".lock")
+    lock = root / ".gonggong-outbox/issue-events" / (key + ".lock")
     lock.resolve().relative_to(root)
     with event_lock(lock):
         envelope_path = folder / "envelope.json"
@@ -178,7 +178,7 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
                 "input_tokens": None,
                 "output_tokens": None,
                 "usage_reason": "Not measured",
-                "ariadne_source_registered": False,
+                "sinan_source_registered": False,
                 "diting_consumption_confirmed": False,
                 "host_authority_authenticated": False,
             }
@@ -224,7 +224,7 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
             "remote_identity": identity,
             "envelope_sha256": hashlib.sha256(envelope_path.read_bytes()).hexdigest(),
             "state": "recorded_file",
-            "hermes_event_id": envelope["event_id"],
+            "diting_event_id": envelope["event_id"],
             "git_committed": False,
             "diting_consumption_confirmed": False,
             "coordination": "associate_only_no_dispatch",
@@ -237,7 +237,7 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
                 sys.executable,
                 "-X",
                 "utf8",
-                str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+                str(root / "framework/extensions/diting-files/diting_files.py"),
                 "record",
                 "--repo",
                 str(root),
@@ -250,7 +250,7 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
             timeout=120,
         )
         if result.returncode:
-            raise ValueError("Hermes record failed; retained envelope permits explicit retry")
+            raise ValueError("Diting record failed; retained envelope permits explicit retry")
         receipt = json.loads(result.stdout)
         if receipt.get("state") != "recorded_file":
             raise ValueError("Expected an actual file receipt")

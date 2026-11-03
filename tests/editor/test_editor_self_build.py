@@ -1,13 +1,14 @@
 import importlib.util
 import json
 import os
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("editor_self_build", ROOT / "tools/editor_self_build.py")
+assert spec is not None and spec.loader is not None
 worker = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(worker)
 
@@ -34,17 +35,25 @@ class SelfBuildTests(unittest.TestCase):
     def test_snapshot_preserves_toolchain_options(self):
         with tempfile.TemporaryDirectory() as directory:
             current = Path(directory) / "godot.windows.editor.dev.x86_64.self_update_a.mono.exe"
-            current.with_suffix(".exe.build.json").write_text(json.dumps({"msvc_version": "14.3", "extra_suffix": "old", "module_mono_enabled": "yes"}))
+            current.with_suffix(".exe.build.json").write_text(
+                json.dumps({"msvc_version": "14.3", "extra_suffix": "old", "module_mono_enabled": "yes"})
+            )
             options = worker.build_options(current, [])
             self.assertEqual(options["msvc_version"], "14.3")
             self.assertEqual(options["extra_suffix"], "self_update_b")
 
     def test_scons_progress_is_available_without_a_terminal(self):
-        import methods
         import SCons.Script
+
+        import methods
+
         callbacks = []
         progress = []
-        with tempfile.TemporaryDirectory() as directory, patch("atexit.register", callbacks.append), patch.object(SCons.Script, "Progress", progress.append):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch("atexit.register", callbacks.append),
+            patch.object(SCons.Script, "Progress", progress.append),
+        ):
             path = Path(directory) / "status.json"
             env = {"ninja": False, "progress": False}
             with patch.dict(os.environ, {"GODOT_BUILD_PROGRESS_FILE": str(path), "GODOT_BUILD_COUNT_ONLY": "1"}):
@@ -55,7 +64,14 @@ class SelfBuildTests(unittest.TestCase):
                 self.assertEqual(json.loads(path.read_text())["total"], 10)
             callbacks.clear()
             progress.clear()
-            with patch.dict(os.environ, {"GODOT_BUILD_PROGRESS_FILE": str(path), "GODOT_BUILD_COUNT_ONLY": "0", "GODOT_BUILD_PROGRESS_TOTAL": "10"}):
+            with patch.dict(
+                os.environ,
+                {
+                    "GODOT_BUILD_PROGRESS_FILE": str(path),
+                    "GODOT_BUILD_COUNT_ONLY": "0",
+                    "GODOT_BUILD_PROGRESS_TOTAL": "10",
+                },
+            ):
                 methods.show_progress(env)
                 progress[0]("first.cpp")
                 self.assertEqual(json.loads(path.read_text())["percent"], 9)
@@ -68,6 +84,7 @@ class SelfBuildTests(unittest.TestCase):
         import base64
         import gzip
         import hashlib
+
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory)
             token = worker.write_resume_fixture(project, project / "old.exe", project / "new.exe", "compressed")
@@ -104,6 +121,7 @@ class SelfBuildTests(unittest.TestCase):
 
                 def __init__(self, command, **kwargs):
                     import io
+
                     self.stdout = io.BytesIO()
                     calls.append(command)
                     if "--dry-run" in command:
@@ -116,7 +134,16 @@ class SelfBuildTests(unittest.TestCase):
                     return self.returncode
 
             with patch.object(worker, "ROOT", root), patch.object(worker.subprocess, "Popen", Child):
-                code = worker.main(["--current", str(current), "--status", str(status), "--log", str(log), "--cancel", str(root / "cancel")])
+                code = worker.main([
+                    "--current",
+                    str(current),
+                    "--status",
+                    str(status),
+                    "--log",
+                    str(log),
+                    "--cancel",
+                    str(root / "cancel"),
+                ])
             self.assertEqual(code, 1)
             result = json.loads(status.read_text())
             self.assertEqual(result["stage"], "failed")
@@ -128,5 +155,6 @@ class SelfBuildTests(unittest.TestCase):
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, str(ROOT))
     unittest.main()

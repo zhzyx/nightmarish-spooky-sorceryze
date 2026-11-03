@@ -8,10 +8,10 @@
   "category_rule": "exactly_one_type_label",
   "requirements_root": "design-docs",
   "collection_root": "data-collection",
-  "canonical_events_root": "olympus-hermes-data",
+  "canonical_events_root": "gonggong-diting-data",
   "adapter": "customizations/components/issue-workorders/work_items.py",
   "remote_configuration_state": "published_verified",
-  "ariadne_source_registered": false,
+  "sinan_source_registered": false,
   "agent_activation": false,
   "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
   "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90",
@@ -21,5 +21,5 @@
   "invocation": "on_explicit_business_event",
   "time_based_invocation": false,
   "agent_activation_scope": "This Issue adapter does not activate framework Agents; actual pinned release admission is checked by current host.",
-  "tenant_id": "olympus-workspace"
+  "tenant_id": "gonggong-workspace"
 }

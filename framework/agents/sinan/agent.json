@@ -1,0 +1,25 @@
+{
+  "id": "sinan",
+  "name": "司南",
+  "kind": "independent_agent",
+  "version": "0.1.1",
+  "entry": "agents/sinan/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "yuanheng",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/yuanheng/agents/yuanheng.md",
+  "review_skill": "skills/gonggong-check/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/gonggong-check/SKILL.md",
+    "skills/work-order-coordination/SKILL.md"
+  ],
+  "admission_pass": "reviews/unification-43/sinan-final-admission.json",
+  "host_required_for_execution": true,
+  "scope": "authorized_cross_domain_task_coordination_dependencies_dispatch_and_reconciliation",
+  "reporting": "agents/sinan/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json",
+  "layer": "core",
+  "state": "pending_approval"
+}

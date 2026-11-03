@@ -1,0 +1,101 @@
+{
+  "synthetic_only": true,
+  "checks": [
+    {
+      "case": "full request event chain",
+      "result": "pass"
+    },
+    {
+      "case": "idempotent ingestion",
+      "result": "pass"
+    },
+    {
+      "case": "messages distinct from dialogue rounds",
+      "result": "pass"
+    },
+    {
+      "case": "separate issue and corrective action counts",
+      "result": "pass"
+    },
+    {
+      "case": "unknown not zero and cached/reasoning not double counted",
+      "result": "pass"
+    },
+    {
+      "case": "equivalent formula separated from real tokens",
+      "result": "pass"
+    },
+    {
+      "case": "request wall time separate from step time",
+      "result": "pass"
+    },
+    {
+      "case": "multi-work associations do not multiply sums",
+      "result": "pass"
+    },
+    {
+      "case": "tenant scoped queries",
+      "result": "pass"
+    },
+    {
+      "case": "mandatory work annotation",
+      "result": "pass"
+    },
+    {
+      "case": "framework optimization rejected",
+      "result": "pass"
+    },
+    {
+      "case": "governance Agent disguised as child optimization rejected",
+      "result": "pass"
+    },
+    {
+      "case": "framework reference with handoff accepted",
+      "result": "pass"
+    },
+    {
+      "case": "same usage key not charged twice",
+      "result": "pass"
+    },
+    {
+      "case": "negative usage rejected",
+      "result": "pass"
+    },
+    {
+      "case": "atomic rollback with invalid second row",
+      "result": "pass"
+    },
+    {
+      "case": "step correction preserves historical messages and issues",
+      "result": "pass"
+    },
+    {
+      "case": "correction replaces prior usage in sums",
+      "result": "pass"
+    },
+    {
+      "case": "step versions query and group by stable step key",
+      "result": "pass"
+    },
+    {
+      "case": "explicit step key filter agrees with original record reference",
+      "result": "pass"
+    },
+    {
+      "case": "derived evidence stale but correction fact retained",
+      "result": "pass"
+    },
+    {
+      "case": "CLI indexed stats JSON",
+      "result": "pass"
+    },
+    {
+      "case": "v1 migration preserves source and marks gaps",
+      "result": "pass"
+    },
+    {
+      "case": "unmapped history excluded from new metrics",
+      "result": "pass"
+    }
+  ]
+}

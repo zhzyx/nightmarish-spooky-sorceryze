@@ -1,0 +1,94 @@
+{
+  "template": false,
+  "permit_id": "GG-OPTIONAL-GIT-ISSUE-0.1.0",
+  "status": "approved",
+  "event": "user_requested_optional_module_issue24",
+  "phase": "local_optional_utility_definition",
+  "subject": {
+    "id": "git-issue",
+    "version_or_digest": {
+      "version": "0.1.0",
+      "files": [
+        {
+          "path": "modules/git-issue/issue_create.py",
+          "sha256": "26afc0e5c2ba8458fdb3411e271782ad0f86b92d512629c7804329e9b625550b"
+        },
+        {
+          "path": "modules/git-issue/module.json",
+          "sha256": "5bd246af81c6b82f38814acf069face4e063ffe9174c5255cd5a152f51122313"
+        },
+        {
+          "path": "modules/git-issue/README.md",
+          "sha256": "7fc0845f92d8c8c2c9022f080615aa0fd4654a0d78c643b61f8dc9301a70e71d"
+        },
+        {
+          "path": "modules/git-issue/reporting.json",
+          "sha256": "4d4a92e94b377498138c09e5ac0c284b2aa7ea5f7821ce629e332ac7e080d7a8"
+        },
+        {
+          "path": "modules/git-issue/settings.example.json",
+          "sha256": "3da64bd2168a460eb919783bb399f4bb9603671ec875effee3a60f434f509325"
+        },
+        {
+          "path": "modules/git-issue/test_issue_create.py",
+          "sha256": "444926dcea3a3eb0a5eea8202d413f380c5b434fdcdcf3b2fb83fd757a8eafd3"
+        },
+        {
+          "path": "modules/optional.json",
+          "sha256": "b8185e80d68f812c61268945a790d4bbced8ca407e34bd3e11c0dd1159fd77d0"
+        }
+      ]
+    },
+    "scope": [
+      "Optional local module, default disabled; no new Agent or automatic future create authorization"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/module-system.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "rationale": "Existing host, reporter and coordinator reused"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "../work/issue-create-24/review/review.json",
+      "../work/issue-create-24/collaboration.json"
+    ],
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "No global cross-host atomic creation guarantee",
+      "Live representative used existing Issue; create branch tested with fake transport"
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "../work/issue-create-24/authority.json",
+    "decision_evidence_ref": "../work/issue-create-24/authority.json",
+    "approved_at": "2026-11-03T15:14:56.649098+00:00",
+    "valid_until_or_task_end": "This requested local module only; future write operations require host authority",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  },
+  "path_base": "framework_root"
+}

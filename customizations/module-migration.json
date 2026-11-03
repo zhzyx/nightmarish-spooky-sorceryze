@@ -1,0 +1,803 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-unification-20261104",
+  "baseline_commit": "8bdb8c02ebbbfdcc40dcda95dfc4a5b89d1eaf18",
+  "historical_records_immutable": true,
+  "module_inventory_not_automatic_activation": true,
+  "modules": [
+    {
+      "id": "git",
+      "name": "Git 接入",
+      "old_components": [
+        "issue-workorders",
+        "git-issue"
+      ],
+      "new_components": [
+        "issue-workorders",
+        "git-issue"
+      ],
+      "roots": [
+        "customizations/components/issue-workorders/",
+        "Olympus/modules/git-issue/"
+      ],
+      "capabilities": [
+        "需求查重与建单",
+        "真实Issue回读门禁",
+        "Git账号与贡献身份",
+        "事件跟踪",
+        "提交前采集检查",
+        "PR关联CI"
+      ],
+      "status": "preserved_candidate_regression_passed",
+      "path_base": "repository_root",
+      "file_mapping": [
+        {
+          "old": "Olympus/modules/git-issue/README.md",
+          "new": "framework/modules/git-issue/README.md",
+          "old_git_sha256": "c42749836e7b6bc7a90794a2a27302d8ba5b54ccdd4efe05bc217ce3f41ac8b2",
+          "new_sha256": "ab13ff1768b63162ea9602e909d80634740155c5d1ab268b3a5f35c8e9a26f5f",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/modules/git-issue/issue_create.py",
+          "new": "framework/modules/git-issue/issue_create.py",
+          "old_git_sha256": "72b3b4ab2c1b4b17e1a942bc2eda75791c79378e657c76eafc2b1ec1129ad032",
+          "new_sha256": "26afc0e5c2ba8458fdb3411e271782ad0f86b92d512629c7804329e9b625550b",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/modules/git-issue/module.json",
+          "new": "framework/modules/git-issue/module.json",
+          "old_git_sha256": "f8ffb4b6b94d88d5f3c4ae34a9b72977e0b2e6ff468f3e8aba03d2c8395b563a",
+          "new_sha256": "00da75892905fb14fb7291a664d27bd63c5d5762ead6fa3955e25262cd4691c4",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/modules/git-issue/reporting.json",
+          "new": "framework/modules/git-issue/reporting.json",
+          "old_git_sha256": "9724beaa31620e6ae470cef7c5c4d446f5eb1f30ddc173e44203512ceb675f66",
+          "new_sha256": "4d4a92e94b377498138c09e5ac0c284b2aa7ea5f7821ce629e332ac7e080d7a8",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/modules/git-issue/settings.example.json",
+          "new": "framework/modules/git-issue/settings.example.json",
+          "old_git_sha256": "3da64bd2168a460eb919783bb399f4bb9603671ec875effee3a60f434f509325",
+          "new_sha256": "3da64bd2168a460eb919783bb399f4bb9603671ec875effee3a60f434f509325",
+          "disposition": "preserved"
+        },
+        {
+          "old": "Olympus/modules/git-issue/test_issue_create.py",
+          "new": "framework/modules/git-issue/test_issue_create.py",
+          "old_git_sha256": "6bff8821191337ebdda10fcfc77497e985b832ba8834b209cac47c56488df6ee",
+          "new_sha256": "444926dcea3a3eb0a5eea8202d413f380c5b434fdcdcf3b2fb83fd757a8eafd3",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/README.md",
+          "new": "customizations/components/issue-workorders/README.md",
+          "old_git_sha256": "edb2e1a8b012df9a1adc51dcd9abf2712696f810907318e41b715489e45cc9a4",
+          "new_sha256": "4cfb75834fdbb5bcaf865545d3a4697bf963600cd35dff4f80aa5ecdf2001c6f",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/execution-policy.md",
+          "new": "customizations/components/issue-workorders/execution-policy.md",
+          "old_git_sha256": "9f3c17942e8cb594c94ef3fa355d5ad19a3a3fdb539083926738f976d00e1d9b",
+          "new_sha256": "8103f90fb344db02f03f6888c901f306fe3f51b0ab6b6ce0a3e9955517e5f2ee",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/git-workflow.md",
+          "new": "customizations/components/issue-workorders/git-workflow.md",
+          "old_git_sha256": "e0559fdd5f1076964e2bb347d691edc23abf4330a351da1aa9aaa5c6b0943c0a",
+          "new_sha256": "cacda3ff0e17fc78ec8f87de90c7a264f54119277e22f72488ec6e88355b52b5",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/issue_events.py",
+          "new": "customizations/components/issue-workorders/issue_events.py",
+          "old_git_sha256": "36b26e34b3760344f23fba31822bbc2503074bf3298a1301578338ed8e44a50f",
+          "new_sha256": "4a10cdb14fc8d4326d89f9981aad50bfb5242a9d8f4e1ff4de84778d4604829f",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/issue_gate.py",
+          "new": "customizations/components/issue-workorders/issue_gate.py",
+          "old_git_sha256": "be70702d7b7f747975d574253cf95989d6a006e325542ccd33eb2176a4c2db48",
+          "new_sha256": "4b2db39d0b6aeaf336a351b943011a83695c433ba59de71cd6fe9d7595d270f3",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/review.json",
+          "new": "customizations/components/issue-workorders/review.json",
+          "old_git_sha256": "77643157b1a8ce049b03f321ea8fe0b5d4de7fb7bee2f4240ab9b6755ddb4d05",
+          "new_sha256": "77643157b1a8ce049b03f321ea8fe0b5d4de7fb7bee2f4240ab9b6755ddb4d05",
+          "disposition": "preserved"
+        },
+        {
+          "old": "customizations/components/issue-workorders/test_host_intake.py",
+          "new": "customizations/components/issue-workorders/test_host_intake.py",
+          "old_git_sha256": "bec5b0fa8d924cb6b1ac18d11c6eed3b63b80908718b18ecbb413faf1b129cf5",
+          "new_sha256": "f33c25682b8aa058ef9b87c27d35cfbc6b1b13c1112efebc7410337b6351e902",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/test_issue_events.py",
+          "new": "customizations/components/issue-workorders/test_issue_events.py",
+          "old_git_sha256": "66332b1e63c52230298443a5b0822ba9344873e294bc55d045d3f626076c2661",
+          "new_sha256": "00746540453e5d4b112730220831719af7a9587234c1992d6bb875b1f806d11b",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/test_issue_gate.py",
+          "new": "customizations/components/issue-workorders/test_issue_gate.py",
+          "old_git_sha256": "9a6a9a5d479fc71eae625fecd4e153d9b97f5b2e72c6f89331b4afb13060d5e7",
+          "new_sha256": "4611a0f137d707296ebd609424bf0d7a77b199ecb6331fae2ab41713b8e7e2fa",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/test_work_items.py",
+          "new": "customizations/components/issue-workorders/test_work_items.py",
+          "old_git_sha256": "b6342edb045c740b079e4eb6a5d33834bad13e4856c91fc7daac200099f20f24",
+          "new_sha256": "29bbbb470f73b375ace56978a9c9ac9e55cee4bc0522171e1cdcfabc88e851d4",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/issue-workorders/work_items.py",
+          "new": "customizations/components/issue-workorders/work_items.py",
+          "old_git_sha256": "2c736fee6a1435aa04cb83c33294521e24e4ca070440b4aa94762a85931d271b",
+          "new_sha256": "fa14aa6bad617528fa8e2d47540f6d1e9f26523ddc5c9359ccfe2abc0a220229",
+          "disposition": "adapted_to_single_framework"
+        }
+      ]
+    },
+    {
+      "id": "godot",
+      "name": "Godot 接入",
+      "old_components": [
+        "godot-host"
+      ],
+      "new_components": [
+        "godot-host"
+      ],
+      "roots": [
+        "customizations/components/godot-host/",
+        "integrations/godot/",
+        "tests/editor/",
+        "samples/olympus-workbench/",
+        "tools/codebuddy_cli/",
+        "editor/docks/ai_chat",
+        "editor/docks/olympus_",
+        "project/godot/",
+        "tools/build_olympus",
+        "tools/install_olympus",
+        "tools/launch_olympus",
+        "tools/launch_latest_editor",
+        "tools/install_editor_shortcut",
+        "tools/editor_restart_watchdog",
+        "tools/olympus_bridge",
+        "tools/verify_olympus_flow",
+        "tools/test_olympus_standalone"
+      ],
+      "capabilities": [
+        "原生共工面板与聊天",
+        "受限需求整理与自动建单",
+        "咨询只读权限",
+        "HTTP与CLI传输",
+        "取消与恢复",
+        "工具多轮",
+        "引擎构建/重启/回退",
+        "便携安装与启动"
+      ],
+      "status": "native_simulated_and_cli_acceptance_passed",
+      "path_base": "repository_root",
+      "file_mapping": [
+        {
+          "old": "customizations/components/godot-host/HOST_PROTOCOL.md",
+          "new": "customizations/components/godot-host/HOST_PROTOCOL.md",
+          "old_git_sha256": "cdddb447b8f438fb70210034af8c5a00dde73a2006d491b382fd36dc57661611",
+          "new_sha256": "76dc3a2d1f9e04f10aa688d664ced6e0ea9847e9abfc2eee3282c2ec8b3e6e5b",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/README.md",
+          "new": "customizations/components/godot-host/README.md",
+          "old_git_sha256": "44b9c2488c4d501247e6d9bad0b04a9e0e703bfea294a563590b57c45cc1685f",
+          "new_sha256": "83a7bb48c99b358c64b5d11567e20520268d14f82e641556d2f39867e74de42e",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/bridge.py",
+          "new": "customizations/components/godot-host/bridge.py",
+          "old_git_sha256": "8aa61049941c27cae215ab5836cc9bb1ffc743184ec6df6d89856be09efb6455",
+          "new_sha256": "108ac6c7ac9c32f6677c20fcf35d9b553d02986aff01d4a56ca88fdb1765ba1c",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/requirements_agent.py",
+          "new": "customizations/components/godot-host/requirements_agent.py",
+          "old_git_sha256": "22da3cbc6c8285e90d1536826fc5a0fdab8e4a033027a46657edb7c7a34a4504",
+          "new_sha256": "e2f4d89befd4b5e401b404d6aae44ecfd9539ce7d8c9f0fa1c08a8c0ee238865",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/test_bridge.py",
+          "new": "customizations/components/godot-host/test_bridge.py",
+          "old_git_sha256": "fba582b9f65dff7c62e363a765e5d58eb86c3fa76b9dfd56718f81677ae2b876",
+          "new_sha256": "e84fb530742d6a5e43d8d660b6409fa7bb8e7ae696aef28e11ec77a8a6e00809",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/test_issue_binding.py",
+          "new": "customizations/components/godot-host/test_issue_binding.py",
+          "old_git_sha256": "e35b76ea192c139cd4af82e91a4275b5afcf8224a38d170e966a2f914de9b9a5",
+          "new_sha256": "e35b76ea192c139cd4af82e91a4275b5afcf8224a38d170e966a2f914de9b9a5",
+          "disposition": "preserved"
+        },
+        {
+          "old": "customizations/components/godot-host/test_issue_guide.py",
+          "new": "customizations/components/godot-host/test_issue_guide.py",
+          "old_git_sha256": "41bad779897acf3685d30939c02dc589e15f1a37bd18101b57e30bb0ae6cdb83",
+          "new_sha256": "02778ba7b141f07becc36250225eb9a77dbc11838bd337fc2f00c7aa9e4b2de9",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "customizations/components/godot-host/test_requirements_agent.py",
+          "new": "customizations/components/godot-host/test_requirements_agent.py",
+          "old_git_sha256": "0cd94a35d968cbfb71092a81af047caa891d0a0b63a6c5559b7518bbfc68d43f",
+          "new_sha256": "f8dba277c0b3143631c66986c5adc7209b03222f7375ea44b09d4192448e2e8c",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/ai_chat_cli_login.h",
+          "new": "editor/docks/ai_chat_cli_login.h",
+          "old_git_sha256": "1ccefe381ce36bbf7dd3ab8a6c23b6e51140d520f963095291abaae8c6bcc0bc",
+          "new_sha256": "1ccefe381ce36bbf7dd3ab8a6c23b6e51140d520f963095291abaae8c6bcc0bc",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_dock.cpp",
+          "new": "editor/docks/ai_chat_dock.cpp",
+          "old_git_sha256": "cb8977d6fa968ae91ba61c0db469ec9a930433fedd08f8810ff654a7bf1b4610",
+          "new_sha256": "90dbcb75cad3bc93349f57eab70530476d0af205c3866243edb963b85798a0b7",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/ai_chat_dock.h",
+          "new": "editor/docks/ai_chat_dock.h",
+          "old_git_sha256": "f1b24a2cacf37d399d9fff9a0c00db08473f6fa5fdf94847d1d87d700cbed63c",
+          "new_sha256": "ee555f0123033f831fa318cd1818e8a313c6a508c879e73daa16e43cf5dbaad4",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/ai_chat_issue_guide.h",
+          "new": "editor/docks/ai_chat_issue_guide.h",
+          "old_git_sha256": "78bce731d353b4380a33bca73aa99330d1576730e0cb78e1032aa95f723ff1b8",
+          "new_sha256": "78bce731d353b4380a33bca73aa99330d1576730e0cb78e1032aa95f723ff1b8",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_olympus.cpp",
+          "new": "editor/docks/ai_chat_gonggong.cpp",
+          "old_git_sha256": "25858ce1bb7848886a60537facfcf1db3ffd973cc259dd90a73e6a453cfab76d",
+          "new_sha256": "dfb6f8035148a49332cffe002890ce8c669c94855c5c84dc905f29e6a64c9aea",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/ai_chat_resume.cpp",
+          "new": "editor/docks/ai_chat_resume.cpp",
+          "old_git_sha256": "d8e8a7f86142c4fe3dd011b9022e012603d05d9f0415fa6277fbc505ba5630ba",
+          "new_sha256": "d8e8a7f86142c4fe3dd011b9022e012603d05d9f0415fa6277fbc505ba5630ba",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_resume.h",
+          "new": "editor/docks/ai_chat_resume.h",
+          "old_git_sha256": "2204124e3a526f52ed87d6128a52e485d9433be02d9520844c757df0ce38cbc7",
+          "new_sha256": "2204124e3a526f52ed87d6128a52e485d9433be02d9520844c757df0ce38cbc7",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_scheduler.cpp",
+          "new": "editor/docks/ai_chat_scheduler.cpp",
+          "old_git_sha256": "71b431b23a6483e4c5b1e5373979ae8533a7e5798daa6afff5fd94a7e26fd49e",
+          "new_sha256": "71b431b23a6483e4c5b1e5373979ae8533a7e5798daa6afff5fd94a7e26fd49e",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_tools.cpp",
+          "new": "editor/docks/ai_chat_tools.cpp",
+          "old_git_sha256": "2105c2f47060376c745238aabbb8c87abb24763d012b0391cb5ae422ceecda36",
+          "new_sha256": "2105c2f47060376c745238aabbb8c87abb24763d012b0391cb5ae422ceecda36",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/ai_chat_tools.h",
+          "new": "editor/docks/ai_chat_tools.h",
+          "old_git_sha256": "65cdeafad830bc04a326abfceeb8489209652db06156f06de5342672665dbf18",
+          "new_sha256": "65cdeafad830bc04a326abfceeb8489209652db06156f06de5342672665dbf18",
+          "disposition": "preserved"
+        },
+        {
+          "old": "editor/docks/olympus_host_paths.h",
+          "new": "editor/docks/gonggong_host_paths.h",
+          "old_git_sha256": "d52ee595651e9006799e1f6f16e1d60f2c99d767fbb58aea78d1bfc1a90a157b",
+          "new_sha256": "cf2a1f5d992c540cbe5b1898fd37e54cf5dd0641d2eca6033d591fe3e016ee9a",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/olympus_panel.cpp",
+          "new": "editor/docks/gonggong_panel.cpp",
+          "old_git_sha256": "793074f13b8656a0784a50fe4b30addc2785050a6ce18231a0c253099814040d",
+          "new_sha256": "da10f4e3432f07a73837d52b80a6a129233acb42e34df1d68da0234f47b3a2aa",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "editor/docks/olympus_panel.h",
+          "new": "editor/docks/gonggong_panel.h",
+          "old_git_sha256": "7ed2547e5e5bb93e7f6b73f5f9a419d2b3a015b1d5b27f1f98156fad4672b150",
+          "new_sha256": "b00d7abb228d57ef73d14b3dedea266b7a6bcf2e1d3e7a6d5087d6d7fd5df247",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "integrations/godot/README.md",
+          "new": "integrations/godot/README.md",
+          "old_git_sha256": "d2e7d85035d9bcbf061a3cf77058a32a62ec96f8f6bdec20d669591e3a8abc5c",
+          "new_sha256": "11aebd550ce0e8a46333b29ce4131d3b7061d3144ab1529a2f983ed24de2014e",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "integrations/godot/release-editor-path-policy.json",
+          "new": "integrations/godot/release-editor-path-policy.json",
+          "old_git_sha256": "729d6e286a5c1c72fa565bc25e6265198988184c1792a15126cb4e3fd7e817d7",
+          "new_sha256": "729d6e286a5c1c72fa565bc25e6265198988184c1792a15126cb4e3fd7e817d7",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/release-editor-transform.json",
+          "new": "integrations/godot/release-editor-transform.json",
+          "old_git_sha256": "df4a060f4430fecfb14de0f789d71f030db817029c6b84bf635c2e9eed207c3c",
+          "new_sha256": "df4a060f4430fecfb14de0f789d71f030db817029c6b84bf635c2e9eed207c3c",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-20261102.json",
+          "new": "integrations/godot/verification-20261102.json",
+          "old_git_sha256": "f0b7dd4f43447b0a8017d742d935b421a678808ed84ae8b6f1de11a2359e58d0",
+          "new_sha256": "f0b7dd4f43447b0a8017d742d935b421a678808ed84ae8b6f1de11a2359e58d0",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-git-20261102.json",
+          "new": "integrations/godot/verification-git-20261102.json",
+          "old_git_sha256": "2b55f5b4526ab72fae047396b726855fc8af85b1cc58b4e4b07017462578f6ae",
+          "new_sha256": "2b55f5b4526ab72fae047396b726855fc8af85b1cc58b4e4b07017462578f6ae",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-host-portability-20261102.json",
+          "new": "integrations/godot/verification-host-portability-20261102.json",
+          "old_git_sha256": "817114f2f341b1406b5defc1d22852d891d1d441bf54da38c47b0e765eae031a",
+          "new_sha256": "817114f2f341b1406b5defc1d22852d891d1d441bf54da38c47b0e765eae031a",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-host-portability-final-20261102.json",
+          "new": "integrations/godot/verification-host-portability-final-20261102.json",
+          "old_git_sha256": "4cf6388035f0d7c96b4c5445ee785138e22856df595695340049025b40fb1af3",
+          "new_sha256": "4cf6388035f0d7c96b4c5445ee785138e22856df595695340049025b40fb1af3",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-host-runtime-20261102.json",
+          "new": "integrations/godot/verification-host-runtime-20261102.json",
+          "old_git_sha256": "82ec70fe9f3ae7edc0cad3fe30239daafe9ad53a65e15b61c8a22d8e3da5ced1",
+          "new_sha256": "82ec70fe9f3ae7edc0cad3fe30239daafe9ad53a65e15b61c8a22d8e3da5ced1",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-release-editor-20261102.json",
+          "new": "integrations/godot/verification-release-editor-20261102.json",
+          "old_git_sha256": "f098ae193be91a0109b80b07f746fd351cec63ab223b20976816b9f56933b214",
+          "new_sha256": "f098ae193be91a0109b80b07f746fd351cec63ab223b20976816b9f56933b214",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification-simulated-flow-20261102.json",
+          "new": "integrations/godot/verification-simulated-flow-20261102.json",
+          "old_git_sha256": "8a876d0acc738b7c5d9068eaf1354a6d7d6137f488b5793a7ebdf1d563c3e173",
+          "new_sha256": "8a876d0acc738b7c5d9068eaf1354a6d7d6137f488b5793a7ebdf1d563c3e173",
+          "disposition": "preserved"
+        },
+        {
+          "old": "integrations/godot/verification.json",
+          "new": "integrations/godot/verification.json",
+          "old_git_sha256": "9cae305e6c4a735fd7545f0b0d6b11e431f9bb289ebbca5cf0ac10116e60944b",
+          "new_sha256": "9cae305e6c4a735fd7545f0b0d6b11e431f9bb289ebbca5cf0ac10116e60944b",
+          "disposition": "preserved"
+        },
+        {
+          "old": "project/godot/README.md",
+          "new": "project/godot/README.md",
+          "old_git_sha256": "b46d47668da7604c35659de18504b8c77fab09c4f5ee0d597feff94d4a4ab3a5",
+          "new_sha256": "d2bcda7fe941bdea23e80f16329a535836301629f4ae30e9116a65fe5a19e90e",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "samples/olympus-workbench/main.tscn",
+          "new": "samples/gonggong-workbench/main.tscn",
+          "old_git_sha256": "036a943a02deea29b0d32f1a55f59280cece95779f3c2146a0b47bc9418be2a9",
+          "new_sha256": "f69e33572b6398eedf394227cb33a09ef09a38078bfdbaa0464b83d649575d6c",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "samples/olympus-workbench/project.godot",
+          "new": "samples/gonggong-workbench/project.godot",
+          "old_git_sha256": "c7a735b919e1ba33c0cca34a3b84fc6d41d7da710245cc9f95156010745da80b",
+          "new_sha256": "b64a80f9c451d3bd042c37098618f8c5c8dd21355d71b3d791c42ef7f7556a9c",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/acp-test-J5Xnnp/1.json",
+          "new": "tests/editor/acp-test-J5Xnnp/1.json",
+          "old_git_sha256": "724d47c061fa162a5c52e01cfb74badb59c900110b396bc63d22dfc5895bed93",
+          "new_sha256": "724d47c061fa162a5c52e01cfb74badb59c900110b396bc63d22dfc5895bed93",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/acp-test-ZS5qqq/1.json",
+          "new": "tests/editor/acp-test-ZS5qqq/1.json",
+          "old_git_sha256": "9ba9541f4b9b2ce99ad89c3b97971fcf19c0e68c414c917a4cd402bbdd234a59",
+          "new_sha256": "9ba9541f4b9b2ce99ad89c3b97971fcf19c0e68c414c917a4cd402bbdd234a59",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/ai_chat_images.gd",
+          "new": "tests/editor/ai_chat_images.gd",
+          "old_git_sha256": "866347a1fb7926f084045ce6a20189cd27a840cb499c16b725e8c1773d2304b6",
+          "new_sha256": "866347a1fb7926f084045ce6a20189cd27a840cb499c16b725e8c1773d2304b6",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/ai_chat_integration.gd",
+          "new": "tests/editor/ai_chat_integration.gd",
+          "old_git_sha256": "8c04c00843fe1f7126da93f2df1957724526e35679dbfb04d18e83e1cee09416",
+          "new_sha256": "8c04c00843fe1f7126da93f2df1957724526e35679dbfb04d18e83e1cee09416",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/ai_chat_native_files.gd",
+          "new": "tests/editor/ai_chat_native_files.gd",
+          "old_git_sha256": "610fbc5c2d7f420f4ed9040bb45271d297a6c4c2f20939f8dc573b80ee23c96d",
+          "new_sha256": "610fbc5c2d7f420f4ed9040bb45271d297a6c4c2f20939f8dc573b80ee23c96d",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/consultation_only.gd",
+          "new": "tests/editor/consultation_only.gd",
+          "old_git_sha256": "4ad443b38370ea3c2ae423884270c32158eaabe3bb6d205a83a22e3e203e162d",
+          "new_sha256": "7259593b4cb2a49f9b2451a55aec964e725393348bba6b537ad2db90cd1e9dfc",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/mock_codebuddy_cli.js",
+          "new": "tests/editor/mock_codebuddy_cli.js",
+          "old_git_sha256": "7dc9d607cc432023394eaf060d45724b58d8efc1ffc56c22b37a57daecd8921f",
+          "new_sha256": "7dc9d607cc432023394eaf060d45724b58d8efc1ffc56c22b37a57daecd8921f",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/olympus_chat_gate.gd",
+          "new": "tests/editor/gonggong_chat_gate.gd",
+          "old_git_sha256": "182372d652ec1e87973834046921b33749ff71cb89ee2a3c54f59db5697c6eae",
+          "new_sha256": "e8e1e815b72db434d51603ec51569355631304d3611f73fda3d76c303e2cfc8a",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/olympus_install_probe.gd",
+          "new": "tests/editor/gonggong_install_probe.gd",
+          "old_git_sha256": "1435769ffcb646cf59c3469cc79742c8415ba1e51fb650e17c0c443de7793789",
+          "new_sha256": "fa4f0fca94c1130ae47c05e0ca432eb5c185015fea900ae00fd50ca97b1a745a",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/olympus_test_source.py",
+          "new": "customizations/components/godot-host/workspace_paths.py",
+          "disposition": "obsolete_external_source_helper_replaced_by_current_pointer"
+        },
+        {
+          "old": "tests/editor/probe_codebuddy_account.js",
+          "new": "tests/editor/probe_codebuddy_account.js",
+          "old_git_sha256": "8820e9947a08d9a339e54aba9395947a8b6cd096906bb537b015b0b8c67f597c",
+          "new_sha256": "8820e9947a08d9a339e54aba9395947a8b6cd096906bb537b015b0b8c67f597c",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/probe_codebuddy_godot.gd",
+          "new": "tests/editor/probe_codebuddy_godot.gd",
+          "old_git_sha256": "7ddf2e193bfe515b5c8527a0686de345a6b6a259b46055a7bba4b84986e059c7",
+          "new_sha256": "7ddf2e193bfe515b5c8527a0686de345a6b6a259b46055a7bba4b84986e059c7",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/requirements_intake.gd",
+          "new": "tests/editor/requirements_intake.gd",
+          "old_git_sha256": "849cb322b254c09ce2e8dd6931e1cf77419480bf2e259f2f61c4d1be4aa3a5fa",
+          "new_sha256": "11de3c9990390295786fa129abb532f26604a1bfcb06e2439f377100bfec8dd2",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/run_ai_chat_integration.py",
+          "new": "tests/editor/run_ai_chat_integration.py",
+          "old_git_sha256": "4747130f8f3ff4e3851b1a5b63dd2f8e395a703228904c62d6fa242ed76c104b",
+          "new_sha256": "4747130f8f3ff4e3851b1a5b63dd2f8e395a703228904c62d6fa242ed76c104b",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/run_codebuddy_godot_probe.py",
+          "new": "tests/editor/run_codebuddy_godot_probe.py",
+          "old_git_sha256": "619707990721ecf635977f7ad84cd8403afb30c1c1e339b1cee0d40e2d32eac9",
+          "new_sha256": "619707990721ecf635977f7ad84cd8403afb30c1c1e339b1cee0d40e2d32eac9",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/run_consultation_only.py",
+          "new": "tests/editor/run_consultation_only.py",
+          "old_git_sha256": "71a2df69e692023095a3062a972e749fb7f054eb9683c6db8ce610166b646cfb",
+          "new_sha256": "aa74879721633e73d531235177b7cba4c76a8d163d1d84bb92f369bacb7ca4d6",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/run_editor_self_update.py",
+          "new": "tests/editor/run_editor_self_update.py",
+          "old_git_sha256": "015e1a44e06e67b96b72c8e78ec8790188f78d54e6891d64fb45e7b019945260",
+          "new_sha256": "015e1a44e06e67b96b72c8e78ec8790188f78d54e6891d64fb45e7b019945260",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/run_olympus_chat_gate.py",
+          "new": "tests/editor/run_gonggong_chat_gate.py",
+          "old_git_sha256": "daa1688afd9344abf1a2435a6e93ba8508e486bb72d457e80a0195d7786c1597",
+          "new_sha256": "428232c5122d8d6b52974d1962ed562856dac724796ed501f01922109c287f39",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/run_olympus_install_probe.py",
+          "new": "tests/editor/run_gonggong_install_probe.py",
+          "old_git_sha256": "a0d92dacc39b25fd609276cdbb0f867ab3907aba0cf76537b5cee4ca2fd84fb9",
+          "new_sha256": "8e17f23b4d9378bbc7e05fd00bc95869af44e4e14df25c24ae7ef6d9333493f5",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/run_requirements_intake.py",
+          "new": "tests/editor/run_requirements_intake.py",
+          "old_git_sha256": "8b98c53f8db2191902d1934e8c5ee1c7f3e306320e3a9b9ac3590e4a15279fcb",
+          "new_sha256": "79107515a0b16a50a3e198477b22b5326784e23d613be55a6347e2943753555e",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/test_ai_chat_tools.cpp",
+          "new": "tests/editor/test_ai_chat_tools.cpp",
+          "old_git_sha256": "52e54cdf3f1a7ede2d28fb37446bdacd6e7a43e23d10f0456a64020574bbf14d",
+          "new_sha256": "52e54cdf3f1a7ede2d28fb37446bdacd6e7a43e23d10f0456a64020574bbf14d",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/test_codebuddy_acp.js",
+          "new": "tests/editor/test_codebuddy_acp.js",
+          "old_git_sha256": "40c16a0036e70a3b266f2b612ab1a4726a4559c774c33d832656dec8b0e2fd17",
+          "new_sha256": "40c16a0036e70a3b266f2b612ab1a4726a4559c774c33d832656dec8b0e2fd17",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/test_codebuddy_bridge.js",
+          "new": "tests/editor/test_codebuddy_bridge.js",
+          "old_git_sha256": "67c101f044c30507c8fc5e4dbcd5f7179c361a567b69c2990db9cfad2dd36b44",
+          "new_sha256": "67c101f044c30507c8fc5e4dbcd5f7179c361a567b69c2990db9cfad2dd36b44",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/test_codebuddy_terminal.js",
+          "new": "tests/editor/test_codebuddy_terminal.js",
+          "old_git_sha256": "b48e422c5a1f8d11b0dbc6ff1ab26fa21a6659348bbb6d8738d05467107d7c0b",
+          "new_sha256": "b48e422c5a1f8d11b0dbc6ff1ab26fa21a6659348bbb6d8738d05467107d7c0b",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/test_editor_restart_watchdog.py",
+          "new": "tests/editor/test_editor_restart_watchdog.py",
+          "old_git_sha256": "4c2748fb7a95f8dec2a901bb966ac496ff2c567b94710e6f2a87d76a09db10fc",
+          "new_sha256": "4c2748fb7a95f8dec2a901bb966ac496ff2c567b94710e6f2a87d76a09db10fc",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tests/editor/test_editor_self_build.py",
+          "new": "tests/editor/test_editor_self_build.py",
+          "old_git_sha256": "fd5c64d7736ffc85212ec4f83c1f21fe6d9af49b94cc380624ea94dd3e626f97",
+          "new_sha256": "d1fe18d6220253f4aa1c221f7781c8cfe70a25233f9038e973525c74f1468d1b",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/test_frozen_olympus_distribution.py",
+          "new": "tests/editor/test_frozen_gonggong_distribution.py",
+          "old_git_sha256": "9af2048c310c1b6cb804705ce5e893ec9389a4d71a90bca53d0a87295527f125",
+          "new_sha256": "90267557769f6ca9ac3407382f4c0278a7a99ca7bcd2cc655c11a1261b3a0eed",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tests/editor/test_olympus_distribution.py",
+          "new": "tests/editor/test_gonggong_distribution.py",
+          "old_git_sha256": "81d50a82f692166b30abf65ffaaacaa85f2f79829593c15ab766e957aa35ae0c",
+          "new_sha256": "15ebafba0f56c30ec912ceac0adce5165bcee0353c70adac6d78990a2be9254f",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/build_olympus_editor.ps1",
+          "new": "tools/build_gonggong_editor.ps1",
+          "old_git_sha256": "0c5aa55b936de12593f0e66a7ddeb7374ae10a559314a89b6abce5c7d5c730ee",
+          "new_sha256": "0c5aa55b936de12593f0e66a7ddeb7374ae10a559314a89b6abce5c7d5c730ee",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/codebuddy_cli/.gitignore",
+          "new": "tools/codebuddy_cli/.gitignore",
+          "old_git_sha256": "6fbdc21a8e85979b3d30403e1776aea4d4acc4c0282dcadc20c0905cb6ab60e9",
+          "new_sha256": "6fbdc21a8e85979b3d30403e1776aea4d4acc4c0282dcadc20c0905cb6ab60e9",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/codebuddy_cli/godot_acp.js",
+          "new": "tools/codebuddy_cli/godot_acp.js",
+          "old_git_sha256": "8f76a42acace2d40f34d75377b88c4da6114b870841a15ca606cff1b00adce69",
+          "new_sha256": "8f76a42acace2d40f34d75377b88c4da6114b870841a15ca606cff1b00adce69",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/codebuddy_cli/godot_bridge.js",
+          "new": "tools/codebuddy_cli/godot_bridge.js",
+          "old_git_sha256": "b60d1d0db6dfc8b392cf71236ff7e9a0f76c66008c3b6989a227e9571ef4a13a",
+          "new_sha256": "b60d1d0db6dfc8b392cf71236ff7e9a0f76c66008c3b6989a227e9571ef4a13a",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/codebuddy_cli/godot_terminal.js",
+          "new": "tools/codebuddy_cli/godot_terminal.js",
+          "old_git_sha256": "c9e8921a489080ad16774d37a1a8515f2bcbb554adba2b9a567d9e1f52512800",
+          "new_sha256": "6ed7f1f337c30cd2cf722c483f25acdb4cefb5a465fabac567465831a41aad86",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/codebuddy_cli/package-lock.json",
+          "new": "tools/codebuddy_cli/package-lock.json",
+          "old_git_sha256": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda",
+          "new_sha256": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/codebuddy_cli/package.json",
+          "new": "tools/codebuddy_cli/package.json",
+          "old_git_sha256": "7b7d8f86ce13d866cfd2569aba9a5b0b5abc1c2aa9647347b90eff0b035c926e",
+          "new_sha256": "7b7d8f86ce13d866cfd2569aba9a5b0b5abc1c2aa9647347b90eff0b035c926e",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/editor_restart_watchdog.py",
+          "new": "tools/editor_restart_watchdog.py",
+          "old_git_sha256": "9d019c434ad405fab4a33f2deddd58ed339598121c5704c3912d73c309f42335",
+          "new_sha256": "9d019c434ad405fab4a33f2deddd58ed339598121c5704c3912d73c309f42335",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/install_editor_shortcut.ps1",
+          "new": "tools/install_editor_shortcut.ps1",
+          "old_git_sha256": "9a6a4516c1a1d5835b15ac80cef17ed1227caa3b9f4f4eb8a39285f704bedb8f",
+          "new_sha256": "9a6a4516c1a1d5835b15ac80cef17ed1227caa3b9f4f4eb8a39285f704bedb8f",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/install_olympus_editor.ps1",
+          "new": "tools/install_gonggong_editor.ps1",
+          "old_git_sha256": "6ce5e5856a912f5292cd17882470bca6b433f9b908c346c20ef1ff3915419834",
+          "new_sha256": "6ce5e5856a912f5292cd17882470bca6b433f9b908c346c20ef1ff3915419834",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/install_olympus_runtimes.py",
+          "new": "tools/install_gonggong_runtimes.py",
+          "old_git_sha256": "903c092a98d6b9bab146d233355e0cc06a5ee09a4a6cd879cb4166a71f70063f",
+          "new_sha256": "8f8150c5a4fbfbd78f87a9911b0fed8349b4042fa82da09f6b6c905e5938d0cb",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/launch_latest_editor.ps1",
+          "new": "tools/launch_latest_editor.ps1",
+          "old_git_sha256": "60994a0f76625f926be8b3116ef99c8a8796b1363e38d8c41f8260c71614c176",
+          "new_sha256": "60994a0f76625f926be8b3116ef99c8a8796b1363e38d8c41f8260c71614c176",
+          "disposition": "preserved"
+        },
+        {
+          "old": "tools/launch_olympus_editor.ps1",
+          "new": "tools/launch_gonggong_editor.ps1",
+          "old_git_sha256": "54c1d6bda80203085915c865927bc8bf1810ce53ee69f3556fd21c36d59cf181",
+          "new_sha256": "3198a1bb7d2019e2184a6c897e319c688561cb10d7dfc3c4c6f3b8d4b4da6b45",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/olympus_bridge.py",
+          "new": "tools/gonggong_bridge.py",
+          "old_git_sha256": "f352d5eeada99eb7e332f4006c8d1d21d725bbda8fa76e3f58247f60b7e78979",
+          "new_sha256": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/test_olympus_standalone.py",
+          "new": "tools/test_gonggong_standalone.py",
+          "old_git_sha256": "5b3b9f3c2635b33194abe265fd6b0ebd9bf25c8942b15dfb23d470cb9276a9a2",
+          "new_sha256": "8ae1fa64e0a27091999eb7b6fe1b730b033c42dc2d94346ca2d41bf1ae32f280",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "tools/verify_olympus_flow.py",
+          "new": "tools/verify_gonggong_flow.py",
+          "old_git_sha256": "69da7a24f9243a60fc81807d6d981aa2cc23ec58b5a254e0fb8b7f7133386674",
+          "new_sha256": "c132bccbcdc0e1060e023b047d3714a13ef19d3a452f005f3f3411bd85c0de89",
+          "disposition": "adapted_to_single_framework"
+        }
+      ]
+    },
+    {
+      "id": "diting-file-data",
+      "name": "谛听文件采集",
+      "old_components": [
+        "hermes-file-data"
+      ],
+      "new_components": [
+        "diting-file-data"
+      ],
+      "roots": [
+        "Olympus/extensions/hermes-files/"
+      ],
+      "capabilities": [
+        "不可变文件事件",
+        "幂等写入",
+        "历史只读聚合",
+        "同身份冲突拒绝",
+        "租户隔离",
+        "Git提交核验"
+      ],
+      "status": "migration_regression_passed",
+      "path_base": "repository_root",
+      "file_mapping": [
+        {
+          "old": "Olympus/extensions/hermes-files/README.md",
+          "new": "framework/extensions/diting-files/README.md",
+          "old_git_sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb",
+          "new_sha256": "a5d16a275a9096e1b3f09b8c62ae555d83d7d55a1693af1a8a9c3e3720472dc2",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/extensions/hermes-files/event.schema.json",
+          "new": "framework/extensions/diting-files/event.schema.json",
+          "old_git_sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c",
+          "new_sha256": "22fe532e3cd17be7a73c66b9f0689965412e0c50a938988c7d4bda6b6bff1aae",
+          "disposition": "adapted_to_single_framework"
+        },
+        {
+          "old": "Olympus/extensions/hermes-files/event.template.json",
+          "new": "framework/extensions/diting-files/event.template.json",
+          "old_git_sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+          "new_sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+          "disposition": "preserved"
+        },
+        {
+          "old": "Olympus/extensions/hermes-files/hermes_files.py",
+          "new": "framework/extensions/diting-files/diting_files.py",
+          "old_git_sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+          "new_sha256": "9ce6d9d23fe5323ee8d0b0526391f4cac49bfb879f58b55138358e546b99051a",
+          "disposition": "adapted_to_single_framework"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "authority": "user:current-conversation",
+  "decision": "approved",
+  "question_ref": "call_ca5fe1f6f9014da3a02e3f31d7f90de7",
+  "question": "是否批准审查文档中的两项上游路径迁移候选，仅用于本地 Agent 定义发布：yanshi 0.4.0（40be54c7…be072）、kuafu 0.4.0（25375f3d…dc42）？批准后我会保留旧证据，更新源通行证、重建并独立复核 Olympus，再提交最终本地摘要供你批准；共工框架不进入本 Git。",
+  "answer": "批准这两项已审候选",
+  "subjects": {
+    "yanshi": "40be54c79d3575138990ca111ef2589f0128d6f13c3015fa0acdd9454b0be072",
+    "kuafu": "25375f3d48ac908e71e4197c9e8be7b3e8bb2126ca73b1951ca50094bc81dc42"
+  },
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "recorded_at": "2026-11-01T21:04:28.417595+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "path_base": "framework_root",
+  "source": "current_user_message_2026-11-04_Asia-Shanghai",
+  "user_words": "批准",
+  "exact_request": "work/request-intake-20261104/approval-request-v2.json",
+  "manifest_sha256": "25a88d01b2449a6bc3d625678e33076625cde7ec14347834b534f5cc4aee75f3",
+  "sinan_agent_digest": "79caa0ed5acd0810c35c3c804195209af93dfae17f001a68995e51f113910138",
+  "sinan_support_module_version": "0.5.1",
+  "sinan_support_module_sha256": "2cd5b446c4acd2520f506320b68acabb86cada91cd3c799a2a25e3890d2ad3ff",
+  "scope": "local Gonggong definition release only; host and Olympus admission remain separate"
+}

@@ -19,14 +19,17 @@ class ChatGateTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        (self.root / "Olympus").mkdir()
-        (self.root / "Olympus/framework-manifest.json").write_text(
+        (self.root / "CURRENT_FRAMEWORK.json").write_text(
+            json.dumps({"path_base": "this_file_directory", "root": "framework", "manifest": "framework-manifest.json"})
+        )
+        (self.root / "framework").mkdir()
+        (self.root / "framework/framework-manifest.json").write_text(
             json.dumps({
                 "version": "test",
-                "agents": [{"id": "athena", "version": "test", "entry": "entry.md", "candidate_digest": "test"}],
+                "agents": [{"id": "yanshi", "version": "test", "entry": "entry.md", "candidate_digest": "test"}],
             })
         )
-        (self.root / "Olympus/entry.md").write_text("Fixture only")
+        (self.root / "framework/entry.md").write_text("Fixture only")
         self.request = {
             "request_id": "fixture",
             "outcome": "private fixture prompt",
@@ -52,7 +55,7 @@ class ChatGateTests(unittest.TestCase):
                     "data-collection sources, evidence and receipts",
                     mandate["delivery_requirements"]["required_git_deliverables"],
                 )
-                self.assertEqual(kwargs["env"]["OLYMPUS_PYTHON"], bridge.sys.executable)
+                self.assertEqual(kwargs["env"]["GONGGONG_PYTHON"], bridge.sys.executable)
                 return types.SimpleNamespace(
                     returncode=0 if ok else 1, stdout="FRAMEWORK" if ok else "", stderr="admission blocked"
                 )
@@ -94,31 +97,31 @@ class ChatGateTests(unittest.TestCase):
     def test_multiple_host_kinds_use_same_loader_and_real_agent_binding(self):
         for kind in ("engine", "ide", "cli", "production-tool"):
             request = dict(
-                self.request, protocol_version=1, host={"id": "sample-" + kind, "kind": kind}, agent_id="athena"
+                self.request, protocol_version=1, host={"id": "sample-" + kind, "kind": kind}, agent_id="yanshi"
             )
             with patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run:
                 result = bridge.chat(self.root, request, "test")
             self.assertTrue(result["context_ready"])
             self.assertFalse(result["model_execution_started"])
             self.assertEqual(result["reporting"]["source_ref"], "https://github.com/test/repo/issues/6")
-            self.assertEqual(run.call_args_list[0].args[0][-2], "athena")
+            self.assertEqual(run.call_args_list[0].args[0][-2], "yanshi")
 
-    def test_registered_alternate_agent_is_not_rewritten_to_athena(self):
-        manifest = self.root / "Olympus/framework-manifest.json"
+    def test_registered_alternate_agent_is_not_rewritten_to_yanshi(self):
+        manifest = self.root / "framework/framework-manifest.json"
         data = json.loads(manifest.read_text())
-        data["agents"][0]["id"] = "themis"
+        data["agents"][0]["id"] = "kuafu"
         manifest.write_text(json.dumps(data))
-        request = dict(self.request, protocol_version=1, host={"id": "example-cli", "kind": "cli"}, agent_id="themis")
+        request = dict(self.request, protocol_version=1, host={"id": "example-cli", "kind": "cli"}, agent_id="kuafu")
         with patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run:
             result = bridge.chat(self.root, request, "test")
-        self.assertEqual(run.call_args_list[0].args[0][-2], "themis")
-        self.assertEqual(result["reporting"]["agent"]["id"], "themis")
+        self.assertEqual(run.call_args_list[0].args[0][-2], "kuafu")
+        self.assertEqual(result["reporting"]["agent"]["id"], "kuafu")
 
     def test_invalid_identity_never_launches_loader(self):
         for changes in (
             {"protocol_version": 2},
             {"protocol_version": 1},
-            {"protocol_version": 1, "host": {"id": "../escape", "kind": "ide"}, "agent_id": "athena"},
+            {"protocol_version": 1, "host": {"id": "../escape", "kind": "ide"}, "agent_id": "yanshi"},
             {"protocol_version": 1, "host": {"id": "ide", "kind": "ide"}, "agent_id": "unknown"},
         ):
             with patch.object(bridge.subprocess, "run") as run:
@@ -127,24 +130,29 @@ class ChatGateTests(unittest.TestCase):
             run.assert_not_called()
 
     def test_other_host_cannot_bypass_admission(self):
-        request = dict(self.request, protocol_version=1, host={"id": "different-ide", "kind": "ide"}, agent_id="athena")
+        request = dict(self.request, protocol_version=1, host={"id": "different-ide", "kind": "ide"}, agent_id="yanshi")
         with patch.object(bridge.subprocess, "run", side_effect=self.process(False)):
             result = bridge.chat(self.root, request, "test")
         self.assertFalse(result["ok"])
         self.assertEqual(result["context"], "")
 
     def test_local_upstream_locator_does_not_grant_admission(self):
-        (self.root / ".olympus-local.json").write_text(
+        (self.root / ".gonggong-local.json").write_text(
             json.dumps({"GONGGONG_FRAMEWORK_SOURCE": "fixture-source", "force_approved": True})
         )
         env = bridge.host_environment(self.root)
-        self.assertEqual(env["GONGGONG_FRAMEWORK_SOURCE"], str(self.root / "fixture-source"))
+        self.assertFalse("GONGGONG_FRAMEWORK_SOURCE" in env)
         self.assertNotIn("force_approved", env)
+
+    def test_inherited_external_source_binding_is_removed(self):
+        with patch.dict(bridge.os.environ, {"GONGGONG_FRAMEWORK_SOURCE": "Z:/missing-retired-source"}):
+            env = bridge.host_environment(self.root)
+        self.assertFalse("GONGGONG_FRAMEWORK_SOURCE" in env)
 
     def test_configured_node_is_available_to_framework_subprocesses(self):
         node = self.root / "node.exe"
         node.touch()
-        with patch.dict(bridge.os.environ, {"OLYMPUS_NODE": str(node), "PATH": ""}):
+        with patch.dict(bridge.os.environ, {"GONGGONG_NODE": str(node), "PATH": ""}):
             env = bridge.host_environment(self.root)
         self.assertEqual(env["PATH"].split(bridge.os.pathsep)[0], str(self.root.resolve()))
 
@@ -154,7 +162,7 @@ class ChatGateTests(unittest.TestCase):
         node.touch()
         with patch.dict(bridge.os.environ, {"PATH": ""}, clear=True):
             env = bridge.host_environment(self.root)
-        self.assertEqual(env["OLYMPUS_NODE"], str(node))
+        self.assertEqual(env["GONGGONG_NODE"], str(node))
         self.assertEqual(env["PATH"].split(bridge.os.pathsep)[0], str(node.parent))
 
     def test_workspace_git_is_available_without_ide_path(self):
@@ -167,26 +175,26 @@ class ChatGateTests(unittest.TestCase):
 
     def test_doctor_reports_admission_failure_without_enabling_execution(self):
         def check(command, _root):
-            failed = command[-1].endswith("verify_framework.py") or command[-1] == "athena"
+            failed = command[-1].endswith("verify_framework.py") or command[-1] == "yanshi"
             return {"ok": not failed, "exit_code": 1 if failed else 0, "stderr": "admission blocked" if failed else ""}
 
         with patch.object(bridge, "run", side_effect=check), patch.object(bridge.shutil, "which", return_value="node"):
             result = bridge.diagnose(self.root)
         self.assertFalse(result["ok"])
-        self.assertEqual(result["blocking_checks"], ["formal_framework_admission", "local_admission:athena"])
+        self.assertEqual(result["blocking_checks"], ["formal_framework_admission", "local_admission:yanshi"])
         self.assertFalse(result["model_execution_started"])
         self.assertFalse(result["host_authority_authenticated"])
 
     def test_broken_permit_does_not_prevent_diagnostics_or_data_validation(self):
-        path = self.root / "Olympus/framework-manifest.json"
+        path = self.root / "framework/framework-manifest.json"
         manifest = json.loads(path.read_text())
         manifest["agents"][0].update(state="candidate", admission_pass="broken.json")
         path.write_text(json.dumps(manifest))
         for raw, expected in ((None, "missing"), ("{", "invalid_or_unavailable")):
             if raw is not None:
-                (self.root / "Olympus/broken.json").write_text(raw)
+                (self.root / "framework/broken.json").write_text(raw)
             with patch.object(
-                bridge, "diagnose", return_value={"ok": False, "blocking_checks": ["local_admission:athena"]}
+                bridge, "diagnose", return_value={"ok": False, "blocking_checks": ["local_admission:yanshi"]}
             ) as diagnose:
                 result = bridge.execute(self.root, "doctor", "test")
             diagnose.assert_called_once()
@@ -199,7 +207,7 @@ class ChatGateTests(unittest.TestCase):
     def test_failed_receipt_is_retried_without_duplicate_identity(self):
         with patch.object(bridge.subprocess, "run", side_effect=self.process(True, False)):
             self.assertFalse(bridge.chat(self.root, self.request, "test")["ok"])
-        pending = list((self.root / ".olympus-outbox/chat").glob("*.json"))
+        pending = list((self.root / ".gonggong-outbox/chat").glob("*.json"))
         self.assertEqual(len(pending), 1)
         original = pending[0].read_bytes()
         with patch.object(bridge.subprocess, "run", side_effect=self.process(True)):

@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 def request_ids(body):
     pattern = r"[a-z0-9]+(?:-[a-z0-9]+)*"
-    markers = re.findall(r"<!--\s*olympus-request:(" + pattern + r")\s*-->", body or "")
+    markers = re.findall(r"<!--\s*(?:gonggong|olympus)-request:(" + pattern + r")\s*-->", body or "")
     fields = re.findall(r"^### 稳定需求 ID\s*\n+(" + pattern + r")[ \t]*(?=\r?$)", body or "", re.M)
     return set(markers + fields)
 
@@ -34,7 +34,7 @@ class GitHubCommandError(ValueError):
 
 def gh(*args):
     result = subprocess.run(
-        [os.environ.get("OLYMPUS_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
+        [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
     )
     if result.returncode:
         match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
@@ -95,13 +95,13 @@ def issue(root, document, title, category, request_id, apply=False):
     doc.relative_to((root / "design-docs").resolve())
     if doc.suffix != ".md" or not doc.is_file():
         raise ValueError("A Markdown requirement in design-docs is required")
-    marker = "<!-- olympus-request:" + request_id + " -->"
+    marker = "<!-- gonggong-request:" + request_id + " -->"
     body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
     plan = {
         "state": "planned",
         "repository": settings["repository"],
         "title": title,
-        "labels": [label, "status:needs-decision", "workspace:olympus"],
+        "labels": [label, "status:needs-decision", "workspace:gonggong"],
         "request_id": request_id,
         "body": body,
     }
@@ -110,7 +110,7 @@ def issue(root, document, title, category, request_id, apply=False):
     account = json.loads(gh("api", "user")).get("login")
     if not isinstance(account, str) or not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", account):
         raise ValueError("Authenticated GitHub account login is required")
-    body += "\n\n<!-- olympus-host-git:" + account + " -->\n"
+    body += "\n\n<!-- gonggong-host-git:" + account + " -->\n"
     # Query all pages and exact marker, including closed issues, to avoid recreating a request.
     pages = json.loads(
         gh("api", "repos/" + settings["repository"] + "/issues?state=all&per_page=100", "--paginate", "--slurp")
@@ -127,7 +127,7 @@ def issue(root, document, title, category, request_id, apply=False):
         raise ValueError("Duplicate remote request identity; resolve before continuing")
     if matches:
         existing = matches[0]
-        owners = re.findall(r"<!--\s*olympus-host-git:([A-Za-z0-9-]+)\s*-->", existing.get("body") or "")
+        owners = re.findall(r"<!--\s*gonggong-host-git:([A-Za-z0-9-]+)\s*-->", existing.get("body") or "")
         return {
             "state": "existing",
             "url": existing["html_url"],
@@ -148,9 +148,9 @@ def issue(root, document, title, category, request_id, apply=False):
             label,
             "--label",
             "status:needs-decision",
-            # Host intake only accepts explicitly labeled Olympus work.
+            # Host intake only accepts explicitly labeled GongGong work.
             "--label",
-            "workspace:olympus",
+            "workspace:gonggong",
             "--body-file",
             str(path),
         )
@@ -164,16 +164,16 @@ def collect(root, request_id):
         sys.executable,
         "-X",
         "utf8",
-        str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+        str(root / "framework/extensions/diting-files/diting_files.py"),
         "validate",
         "--repo",
         str(root),
     ]
     check = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=120)
     if check.returncode:
-        raise ValueError("Hermes validation failed; collection not published")
+        raise ValueError("Diting validation failed; collection not published")
     events = []
-    for path in sorted((root / "olympus-hermes-data/events").rglob("*.json")):
+    for path in sorted((root / "gonggong-diting-data/events").rglob("*.json")):
         raw = path.read_bytes()
         value = json.loads(raw)
         if value["request_id"] == request_id:
@@ -191,11 +191,11 @@ def collect(root, request_id):
         "kind": "source_index",
         "request_id": request_id,
         "collected_at": datetime.now(timezone.utc).isoformat(),
-        "collector": "olympus-local-file-indexer",
+        "collector": "gonggong-local-file-indexer",
         "intended_reader": "diting",
         "diting_ingestion_confirmed": False,
         "events": events,
-        "scope": "Validated local Hermes events for this request; not a remote Issue snapshot",
+        "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
     }
     directory = root / "data-collection/requests" / request_id
     directory.mkdir(parents=True, exist_ok=True)

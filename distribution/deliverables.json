@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "editor": {
-    "bin/godot.windows.editor.x86_64.exe": "b8bc69c8b6fd035b4b6217836b8798e6948dee0ef0864a252402170c01618fef",
-    "bin/godot.windows.editor.x86_64.console.exe": "5d4c93efbe415225a77ca54e8c66fff6983f6212eef69f2c52f0b762cc0780dd"
+    "bin/godot.windows.editor.x86_64.console.exe": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+    "bin/godot.windows.editor.x86_64.exe": "acadd07bf4f9abc3e0ac9cceeb02059f807231e20e895a2236d0597ba82ac011"
   },
   "fallback": {
     "Godot_v4.7.2-stable_win64.exe": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
     "Godot_v4.7.2-stable_win64_console.exe": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643"
   },
-  "runtime_inventory_sha256": "14f726748fec7e5c6b07fc1429c8af1c95067094ae987e4e4e51217b8cb490bf",
-  "editor_transform_report": "integrations/godot/release-editor-transform.json",
-  "model_validation": "simulated_only"
+  "runtime_inventory_sha256": "1ed1b6331d25902427ad9609b9b4a90f35c4e78ae22f61ebdac6d27bc6941d50",
+  "editor_transform_report": "integrations/godot/gonggong-release-editor-transform.json",
+  "model_validation": "simulated_only",
+  "cli_inventory_sha256": "1db56a6bbbfc08c9c79e980c6b10618656a6593874e198e29f4673035bac9c7b",
+  "build_source_commit": "c31a4cb54b6b7a89c7c6909d06192170115db68f"
 }

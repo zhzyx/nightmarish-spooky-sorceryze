@@ -1,0 +1,16 @@
+{
+  "request_id": "gonggong-unification-20261104",
+  "issue_number": 43,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43",
+  "event_id": "gonggong-unification-20261104-release-candidate",
+  "source_commit": "e8750af5119130eb0aa5ca901acbfdc36cade383",
+  "verification": "integrations/godot/gonggong-verification.json",
+  "independent_review": "integrations/godot/gonggong-independent-release-review.json",
+  "configuration_is_not_execution_authority": true,
+  "next": [
+    "clean_bundle_acceptance",
+    "main_merge",
+    "workspace_switch",
+    "release_readback"
+  ]
+}

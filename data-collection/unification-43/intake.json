@@ -1,0 +1,10 @@
+{
+  "request_id": "gonggong-unification-20261104",
+  "issue_number": 43,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43",
+  "state": "isolated_candidate",
+  "source_commit": "8bdb8c02ebbbfdcc40dcda95dfc4a5b89d1eaf18",
+  "observed_at": "2026-11-03T20:10:59.546868+00:00",
+  "host_collection": "actual request and command receipts delivered to shared Diting; no global coverage or token claim",
+  "private_receipts_not_rewritten": true
+}

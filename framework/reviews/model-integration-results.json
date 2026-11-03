@@ -1,0 +1,47 @@
+{
+  "synthetic_only": true,
+  "checks": [
+    {
+      "name": "chat-completions HTTP + actual admission + telemetry + idempotent replay",
+      "pass": true
+    },
+    {
+      "name": "ollama-chat HTTP + actual admission + telemetry + idempotent replay",
+      "pass": true
+    },
+    {
+      "name": "gonggong-json HTTP + actual admission + telemetry + idempotent replay",
+      "pass": true
+    },
+    {
+      "name": "kuafu admitted context to local telemetry",
+      "pass": true
+    },
+    {
+      "name": "diting admitted context to local telemetry",
+      "pass": true
+    },
+    {
+      "name": "rejected output fallback, quality/rework and once-only skill attribution",
+      "pass": true
+    },
+    {
+      "name": "bounded autonomous resource read",
+      "pass": true
+    },
+    {
+      "name": "host planned multi-step workflow",
+      "pass": true
+    },
+    {
+      "name": "changed profile rejected before network",
+      "pass": true
+    },
+    {
+      "name": "standalone CLI authorization and execution without Codex SDK",
+      "pass": true
+    }
+  ],
+  "passed": 10,
+  "real_models_tested": false
+}

@@ -1,0 +1,11 @@
+{
+  "path_base": "project_root",
+  "original_task": "work/heqi-concurrency-25/authority.json",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25",
+  "user_request": "同一个issue可能多人并发提交，agent需差异比对与冲突解决；验证后推送到Olympus进行框架更新。",
+  "concurrent_user_clarification": {
+    "thread": "01a1a20f-bc5a-7df3-b588-0b2b34cf4142",
+    "quote": "关联issue，是基于框架接入git的前提下才需要进行的子模块内容，和共工框架基础的部分不相关。"
+  },
+  "scope": "Merge both authorized local definitions, refresh exact admission, preserve validated 0.2.0 runtime as historical evidence, hand off effective source to Olympus under its rules"
+}

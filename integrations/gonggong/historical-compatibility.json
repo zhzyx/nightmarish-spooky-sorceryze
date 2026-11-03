@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "active_aliases": false,
+  "entries": [
+    {
+      "path": "archive/olympus-retired-20261104/",
+      "purpose": "byte-preserved retired framework and approvals; never current admission"
+    },
+    {
+      "path": "olympus-hermes-data/",
+      "purpose": "immutable historical tenant event source; no new normal writes"
+    },
+    {
+      "path": "framework/extensions/diting-files/diting_files.py",
+      "purpose": "explicit read-only historical dataset adapter and cross-source conflict protection"
+    },
+    {
+      "path": "customizations/components/issue-workorders/work_items.py",
+      "purpose": "parse existing historical request markers without rewriting Issue bodies"
+    },
+    {
+      "path": "customizations/components/issue-workorders/issue_gate.py",
+      "purpose": "protect historical events against modification or deletion"
+    },
+    {
+      "path": ".github/workflows/gonggong-issue-gate.yml",
+      "purpose": "read historical request marker only; current PR fields use GongGong"
+    },
+    {
+      "path": "customizations/components/issue-workorders/review.json",
+      "purpose": "unchanged historical review evidence"
+    },
+    {
+      "path": "framework/reviews/",
+      "purpose": "retain prior evidence as history; current manifests reference separately approved candidates"
+    },
+    {
+      "path": "distribution/",
+      "purpose": "dated old release links and immutable evidence; current index identifies new release"
+    },
+    {
+      "path": "integrations/godot/verification.json",
+      "purpose": "historical acceptance report; current report is gonggong-verification.json"
+    },
+    {
+      "path": "design-docs/",
+      "purpose": "prior requirement and approval evidence retained; current migration tracked separately"
+    },
+    {
+      "path": "data-collection/",
+      "purpose": "prior observed events and receipt evidence retained"
+    },
+    {
+      "path": "releases/",
+      "purpose": "existing release evidence unchanged"
+    },
+    {
+      "path": "customizations/module-migration.json",
+      "purpose": "old-to-new file identities and exact source hashes"
+    },
+    {
+      "path": "integrations/gonggong/test_migration.py",
+      "purpose": "synthetic historical compatibility tests"
+    }
+  ]
+}

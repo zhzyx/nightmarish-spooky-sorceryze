@@ -1,0 +1,14 @@
+{
+  "source": "explicit user response in current Codex chat",
+  "observed_at": "2026-11-03T20:24:10.815436+00:00",
+  "question_scope": "Approve five exact candidates for local Agent definition release; actual host permissions and delivery acceptance separate",
+  "answer": "批准这五个精确候选的本地定义发布",
+  "subjects": {
+    "yanshi": "750061f390b05b9ce21ad22264115f1e0ec724235bdc14ac160016f84a8a4763",
+    "kuafu": "baf867dad0e50d734e3ae9d756f032674c91520c818a0315b9bab48db7ddb10a",
+    "diting": "77233fd9af63852e3beb34d5b5cef3d54d33bcd187e19fc20f0d766b37323768",
+    "heqi": "6f10ba216707673aa4a6706bdfae62b81b5955d1532516aa84fb19b7ad4cb6cb",
+    "sinan": "eaf1e100dbb71ba9b9e39fc8018c5a9122f8e1946e5e2d5dc73c30cbcfbedda5"
+  },
+  "runtime_authority_granted": false
+}

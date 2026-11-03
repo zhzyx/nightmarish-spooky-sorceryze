@@ -35,14 +35,14 @@ func _run():
 	assert(not check.button_pressed)
 	assert(check.get_index() + 1 == dock.find_child("Send", true, false).get_index())
 	var settings = EditorInterface.get_editor_settings()
-	settings.set_setting("olympus/workspace", OS.get_environment("OLYMPUS_TEST_WORKSPACE"))
-	settings.set_setting("olympus/python", "missing-python")
-	settings.set_setting("olympus/issue_number", "")
-	settings.set_setting("olympus/request_id", "")
+	settings.set_setting("gonggong/workspace", OS.get_environment("GONGGONG_TEST_WORKSPACE"))
+	settings.set_setting("gonggong/python", "missing-python")
+	settings.set_setting("gonggong/issue_number", "")
+	settings.set_setting("gonggong/request_id", "")
 	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("OLYMPUS_TEST_ENDPOINT")
+	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
 	dock.find_child("APIModel", true, false).text = "fixture"
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
 		dock.find_child(name, true, false).button_pressed = true

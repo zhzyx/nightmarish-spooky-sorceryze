@@ -1,0 +1,207 @@
+{
+  "template": false,
+  "permit_id": "GG-CORE-GENERALIZATION-SINAN-0.1.0",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.1.0",
+      "candidate_digest": "2e6b1a88d14a14eebdac9ea477dd812ec30d88bf2ee505084768f9dcb0282b85",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/sinan/AGENT.md",
+          "sha256": "db5626f7d3189cae052e1a522f46201d029612c949ada3f7c34915ad8bd52e67"
+        },
+        {
+          "path": "agents/sinan/agent.json",
+          "sha256": "1fab6d0e5c7e71d3b2fef79ab8caf9f245d8c3044138b53d2ed844b597bba7ca"
+        },
+        {
+          "path": "agents/sinan/references/README.md",
+          "sha256": "6bb1a6f82c038115b20cb8b4c91b1392d4566fdfcfc953fbe6b519ba92daa5a1"
+        },
+        {
+          "path": "agents/sinan/references/adapters.md",
+          "sha256": "2adfd5bcda3ef5aceb7c35f73bec40c774fb0b49014b6247efb8d918e7c74e9c"
+        },
+        {
+          "path": "agents/sinan/reporting.json",
+          "sha256": "a8df16eef7080dcbb89c0c2d4a21998558f3c2b4a99b218f167220ba7fffd2b3"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "4a5cfc927944cb0f7cf6b14d292df8b542ad976c2a4e79bb0e36e4cd506f691e"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+        },
+        {
+          "path": "modules/sinan/test/generic-tracking.test.mjs",
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "a4a81cc0d039b6229255b9a6643f22958e452c5d87b460ee99eb91883a62a358"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "54ce9acbb25cc864cb2819782581725037f74a31be2e193d35472c33931c2fe3"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "6c5d59de2337f90481bb719baaac07d9b2041df5d774b0f32bb614fca6c310d1"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "0b75ba578d0e15d2b879fed3ee57abc041f6a4a298480b419d620bfa959b3abc"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/core-agent-adaptation.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "reason": "Short generic Agent entry points; separate generic workflow and optional Git references; no duplicated coordination ledger or always-loaded backend instructions",
+      "entry_characters": {
+        "yanshi": 893,
+        "kuafu": 898,
+        "diting": 713,
+        "heqi": 896,
+        "sinan": 797
+      }
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/core-agent-generalization/independent-review.json",
+      "reviews/core-agent-generalization/scenarios.json",
+      "reviews/core-agent-generalization/validation-delta.json",
+      "reviews/core-agent-generalization/evidence-index.json"
+    ],
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Definition review and memory-only tool behavior checks are not live Sinan/Heqi runtime admission or actual non-Git production integration.",
+      "All five new candidate approvals remain pending; Sinan tool 0.5.0 approval file is not yet present and must be created with actual authorization before enabling/delivering this version.",
+      "issue_tracking validates selector shape only. Nonempty authority_ref does not prove permission; the host must authenticate each actual operation.",
+      "Malformed selected registry configuration rejects that call; host must retain the failure record and continue other safe work rather than silently converting it to authorization.",
+      "Current executable source adapter remains local Yuanheng; generic definitions do not implement every document/engine/service backend.",
+      "Frozen Heqi 0.2.1/Olympus #27 delivery is separate and remains unaffected; later switch requires fresh consumer acceptance and receipts.",
+      "Prior historical Git/runtime evidence is not relabeled as Heqi0.3.0 or Sinan0.1.0 execution.",
+      "Review findings and handoff go to parent/author shared reporting; no reviewer delivery receipt is fabricated."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "reviews/core-agent-generalization/user-authority.md",
+    "decision_evidence_ref": "reviews/core-agent-generalization/user-authority.md",
+    "approved_at": "2026-11-03T16:09:56.742117+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null,
+    "limits": "User explicitly requested general core Sinan/Heqi definitions and decoupling. Bound local definitions and coordination utility only; not standing runtime, Git or other-worker workspace permission."
+  },
+  "path_base": "framework_root"
+}

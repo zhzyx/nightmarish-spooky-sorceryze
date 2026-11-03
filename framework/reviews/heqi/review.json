@@ -1,0 +1,160 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25",
+  "evaluator": "/root/review_nonblocking",
+  "independence": "independent_subagent_review",
+  "status": "pass",
+  "approval": false,
+  "path_base": "candidate_framework_root",
+  "candidate_digest": "833e70a22de80eff948f30aacc38f1936df5a4d002ece50dd360d72e901c4147",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+    },
+    {
+      "path": "FOUNDATION.md",
+      "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+    },
+    {
+      "path": "agents/diting/references/data-contract.md",
+      "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+    },
+    {
+      "path": "agents/diting/references/telemetry.md",
+      "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+    },
+    {
+      "path": "agents/diting/scripts/ledger.py",
+      "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+    },
+    {
+      "path": "agents/diting/scripts/telemetry.py",
+      "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+    },
+    {
+      "path": "agents/heqi/AGENT.md",
+      "sha256": "f01b5fc2ffc2cf1388d55939fa5fc41725b21230f85fb04f49061554bf8fff85"
+    },
+    {
+      "path": "agents/heqi/agent.json",
+      "sha256": "a2f2bf5f4a090633f89b2b65d08b577ec726ef3d341af6a0a9d11aa8172c6222"
+    },
+    {
+      "path": "agents/heqi/references/p4v.md",
+      "sha256": "0b86bec918a01c117a1589543fc15f5ed9039a1696160c4247f688f14c19a12b"
+    },
+    {
+      "path": "agents/heqi/references/workflow.md",
+      "sha256": "74d22adb331e082f9f0db69638d252bbdda6c7107e7919c4a468d013cee67b69"
+    },
+    {
+      "path": "agents/heqi/reporting.json",
+      "sha256": "e75a60dc66c8861d260719099c2402dde4db285131e01ffc9c9ec959f0c0ffcc"
+    },
+    {
+      "path": "contracts/admission-policy.json",
+      "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+    },
+    {
+      "path": "contracts/diting-reporting.json",
+      "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+    },
+    {
+      "path": "foundation.lock.json",
+      "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+    },
+    {
+      "path": "skills/gonggong-check/SKILL.md",
+      "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+    },
+    {
+      "path": "skills/work-order-coordination/SKILL.md",
+      "sha256": "a4a81cc0d039b6229255b9a6643f22958e452c5d87b460ee99eb91883a62a358"
+    },
+    {
+      "path": "specs/governance-review.md",
+      "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+    },
+    {
+      "path": "specs/reporting.md",
+      "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+    },
+    {
+      "path": "tools/diting-report.py",
+      "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+    },
+    {
+      "path": "tools/reporting.mjs",
+      "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+    },
+    {
+      "path": "upstream/yuanheng/agents/yuanheng.md",
+      "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+    },
+    {
+      "path": "upstream/yuanheng/core.md",
+      "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+    }
+  ],
+  "framework_review": "pass",
+  "yuanheng": {
+    "purpose": "pass: account-scoped local collaboration addresses explicit user request",
+    "truth": "pass: authenticated service account distinguished from author/claimed identity; claim differs from real lock; reasoning scenarios not called execution",
+    "economy": "pass: reuses Sinan/Git/shared Diting and borrows concepts without installing P4 or a second task ledger",
+    "authority": "pass: host-controlled local roots and mandates; remote coworkers untouched; actual remote auth channel must match worker identity",
+    "adaptation": "pass: eight independent scenario walkthroughs and identity-channel improvement",
+    "continuity": "pass: frozen foundation/upstream unchanged; exact candidate/metadata/reporting fingerprints verified; future task grants remain separate"
+  },
+  "concision": {
+    "status": "pass",
+    "entry_characters": 960,
+    "reason": "Entry covers responsibility, trigger and prohibitions; detailed workflow/P4 references loaded on demand"
+  },
+  "validation": {
+    "scenario_walkthroughs": 8,
+    "scenario_result": "reasoned_pass",
+    "scenario_evidence": "../work/heqi-25/review/scenarios.json",
+    "real_git_execution": false,
+    "heqi_runtime_execution": false,
+    "metadata_and_reporting": "IDs/version/entry fingerprint/shared dependencies/runtime-disconnected verified",
+    "complete_fingerprint": "all candidate files and composite digest independently matched"
+  },
+  "resolved_findings": [
+    {
+      "problem": "API login alone does not attest SSH/HTTPS Git-operation identity",
+      "resolution": "Workflow now requires remote/repository/actual authentication-channel binding and sanitized evidence, with local-only progress if unknown"
+    }
+  ],
+  "official_sources": [
+    {
+      "url": "https://help.perforce.com/helix-core/server-apps/p4v/current/Content/P4V/files.submit.html",
+      "verified": "pending changelist groups file actions"
+    },
+    {
+      "url": "https://help.perforce.com/helix-core/server-apps/p4v/2026.1/Content/P4V/using.offline.html",
+      "verified": "reconcile selectively adds local changes to changelist"
+    },
+    {
+      "url": "https://help.perforce.com/helix-core/server-apps/p4v/current/Content/P4V/files.shelve.html",
+      "verified": "shared shelf is distinct from submitted history"
+    },
+    {
+      "url": "https://help.perforce.com/helix-core/server-apps/p4v/current/Content/P4V/advanced_files.p4merge.html",
+      "verified": "common-base three-way comparison"
+    },
+    {
+      "url": "https://help.perforce.com/helix-core/server-apps/cmdref/current/Content/P4Guide/resolve.lock.exclusive.html",
+      "verified": "p4 lock restricts submit while +l restricts simultaneous opens"
+    }
+  ],
+  "limitations": [
+    "This is definition review and reasoned scenarios, not deployed filesystem enforcement, actual conflict repair, lock service validation or Agent runtime test.",
+    "Runtime admission requires host mandate, actual reporting binding and representative receipt; runtime_connected remains false.",
+    "Git native locks and all-worker activity visibility are not provided by Issue claims.",
+    "Review findings and handoff are available for parent shared Diting capture; no separate fabricated consumption or duplicate usage claim."
+  ]
+}

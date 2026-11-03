@@ -1,0 +1,112 @@
+{
+  "template": false,
+  "permit_id": "SINAN-PARALLEL-01a19840-967a-7db3-95d9-2d013a6f145e",
+  "status": "approved",
+  "event": "scheduler_concurrency_improvement",
+  "phase": "local_host_scheduler_activation",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.3.1",
+      "files": [
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "3b56984b740896d0037d30ac0afdf51dbcfee4f37eda4b9f845c5bc95f06d1fe"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "7f3ee51e47551cb6869e95e62dfa128f3976e5e6ac17380da8706221eedea71c"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "8ff88ea11d9c40050e4661b9cb8a89f04918c2bb78bc7c72e57d99b8c17db0e5"
+        },
+        {
+          "path": "skills/work-order-coordination/reporting.json",
+          "sha256": "46ec5dadf66dfb75cb9ddaee83967b07ae6b93ba8762fef0da27683cf885e1a5"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "eb8a12e2f4083bf65eb34eeb7066453a9135253bc7ca711d93e7a61485ac6044"
+        }
+      ],
+      "implementation_files": [
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/coordinator.mjs",
+          "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55"
+        },
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/dispatch.mjs",
+          "sha256": "2bd94d3b040ed3770fb364bf6da54d8d75dfd445f9cd9ea80ee6c8ae39dea4c9"
+        },
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/report-scheduler.py",
+          "sha256": "3c3fefb158430e2403e61465b422fc0ccd2b51be94ac54214ad52696bf09f824"
+        },
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/test/coordinator.test.mjs",
+          "sha256": "b5318f92abf1dae1d10ea253bd0f933decb0eb26ff7b2a4cbca844070220f109"
+        },
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/test/dispatch.test.mjs",
+          "sha256": "f1633a1a0d5756aaf937ff9dde9e6bf31c12024abc6e39a4ff342637bd74e85e"
+        },
+        {
+          "path": "../archive/quality-workorders/gonggong-workorders/调度与Agent职责.md",
+          "sha256": "1f54b4f5ad651b32113778f63070d62b9b4703c8b8236c2940ed143b54d467a8"
+        }
+      ]
+    },
+    "scope": [
+      "Current Gonggong module/Skill definition and Codex host scheduling of future authorized Gonggong construction/maintenance tasks",
+      "Existing source CLI writes and actual subagent dispatch under per-task host mandates",
+      "No autonomous expansion of goals, permissions, frozen principles or unrelated projects"
+    ],
+    "agent_governance_refs": [
+      "GOVERNANCE.md",
+      "specs/agent-organization.md",
+      "modules/sinan/module.json"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 1876,
+      "rationale": "Unchanged Skill; shared references retained; execution and review budgets separated, minimal child context required"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/sinan/parallel-review.md"
+    ],
+    "evaluator_id": "/root/parallel_dispatch_validation",
+    "independence": "independent_subagent_review",
+    "unresolved": []
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_Codex_chat",
+    "authority_ref": "Current user instruction requires concurrency; prior automatic scheduling scope remains unchanged",
+    "decision_evidence_ref": "reviews/sinan/parallel-authorization.json",
+    "approved_at": "2026-11-01T17:55:32.000Z",
+    "valid_until_or_task_end": "Bound definition and local host schedule; each real task retains mandate and current framework checks",
+    "expires_at": null,
+    "revocation_ref": null,
+    "superseded_by": null
+  },
+  "implementation_path_base": "framework_root",
+  "path_representation": "Historical approval record with relocated implementation references; approval and hashes unchanged. Does not approve current modified bindings or reactivate scheduling."
+}

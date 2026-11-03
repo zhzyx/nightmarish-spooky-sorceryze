@@ -1,0 +1,101 @@
+{
+  "template": false,
+  "permit_id": "SINAN-EVENT-DRIVEN-LOCAL-0.4.0",
+  "status": "approved",
+  "event": "module_skill_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.4.0",
+      "files": [
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "e2a5273b7c46fcdf439fe503a31b0c7791b3584d8f0e08bf5c360185beb72391"
+        },
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "9d2092162647e9be0be38fdec76c5eef333537e2df40b23f8d9387160a74c612"
+        },
+        {
+          "path": "modules/sinan/runtime/registry.json",
+          "sha256": "73d9e96bc2b1dd2ae6b0e17ed9835aef76d7e7a810ddad90fba38dcd07b882c7"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "a4a81cc0d039b6229255b9a6643f22958e452c5d87b460ee99eb91883a62a358"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "54ce9acbb25cc864cb2819782581725037f74a31be2e193d35472c33931c2fe3"
+        },
+        {
+          "path": "skills/work-order-coordination/reporting.json",
+          "sha256": "a0d83339fc0a31680d5823b08a578097d697b9b77b46e30da7b2da2b9a0605a4"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "9a4e95545b184e35c3d51e8a3b0f1bc44e8598ffecd03c3c9a08d5b72ac8682f"
+        }
+      ]
+    },
+    "scope": [
+      "Event-driven coordination method and local progress-document refresh under the current user request",
+      "No time-based invocation; no automatic capture of inaccessible events",
+      "Every source write, dispatch and data collection retains actual host authorization and reporting binding requirements"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/work-order-management.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 2164,
+      "rationale": "Replaced timer-based entry with event workflow; reused coordinator and shared governance/reporting without a new agent or background service."
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "../work/sinan-events-review/independent-review.md",
+      "../work/sinan-events-review/results.json"
+    ],
+    "evaluator_id": "/root/relative_path_review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "No globally connected event listener or default registered business source.",
+      "Real business invocations require shared Diting host binding and actual receipt; isolated behavior tests are not production telemetry.",
+      "Skill quick_validate.py cannot run because PyYAML is absent; frontmatter manually checked and framework reporting integrity validated."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "current explicit user instructions recorded in reviews/sinan/event-change-authority.json",
+    "decision_evidence_ref": "reviews/sinan/event-change-authority.json",
+    "approved_at": "2026-11-01T20:17:54.437145+00:00",
+    "valid_until_or_task_end": "Bound local module and Skill definition only; each business call retains its own source and host authority",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

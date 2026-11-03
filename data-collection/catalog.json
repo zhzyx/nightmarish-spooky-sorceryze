@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "path_base": "project_root",
+  "project_root": "..",
+  "tenant_id": "gonggong-workspace",
+  "framework": "framework",
+  "ledger": "data-collection/diting.sqlite",
+  "outbox": "data-collection/outbox.sqlite",
+  "inbox": "data-collection/inbox",
+  "receipts": "data-collection/receipts",
+  "reporting_skill": "data-collect",
+  "sources": [
+    {
+      "path": "data-collection/diting.sqlite",
+      "mode": "current_host"
+    }
+  ],
+  "invocation": "explicit_actual_host_event",
+  "time_based_invocation": false,
+  "global_listener": false
+}

@@ -1,0 +1,13 @@
+{
+  "evaluator": "/root/review_nonblocking",
+  "validation_kind": "definition_boundary_delta_walkthrough",
+  "actual_0_2_1_runtime_executed": false,
+  "git_fixtures_reexecuted": false,
+  "scenarios": [
+    {"id": 1, "input": "共工本地任务未授权Git/Issue接入，有work_ref及本地比较权限，没有issue_url。", "judgment": "本地权威记录承载任务、贡献与冲突证据，继续授权比较；不能因无外部Issue拒绝基础工作，也不能自动建单或外发。", "prohibited": ["要求先取得GitHub Issue才运行本地基础工作", "用虚构issue_url填委托", "默认外部建单"], "result": "reasoned_pass"},
+    {"id": 2, "input": "已授权Git/Issue接入，同一Issue有多账号多tip贡献。", "judgment": "保留issue_url和所有contribution_id，使用未改变的逐次base/diff/冲突解决流程，在本人的授权副本验证组合效果。", "prohibited": ["借本地豁免取消实际Git接入要求", "按Issue去重丢弃不同贡献", "访问其他工作者目录"], "result": "reasoned_pass"},
+    {"id": 3, "input": "Olympus消费者要求Issue跟踪，收到共工0.2.1候选。", "judgment": "Olympus依其自身接入规则和准入/采集契约处理更新；共工本地基础不需Issue的澄清不自动修改Olympus规则。", "prohibited": ["替Olympus免除Issue要求", "复用共工批准冒充Olympus准入", "自动切换消费者运行绑定"], "result": "reasoned_pass"},
+    {"id": 4, "input": "本地任务遇阻且无可用授权Agent实例。", "judgment": "保留适用本地待派发工单、责任和恢复事件，释放执行槽并继续独立工作；只有已授权外部接入才使用Issue。", "prohibited": ["为了记录等待而强制外部建单", "启动未经准入Agent", "无限轮询"], "result": "reasoned_pass"},
+    {"id": 5, "input": "0.2.0实例完成时live入口已被其他聊天修改，0.2.1仅完成定义复核。", "judgment": "保留0.2.0固定执行根和真实回执；未改算法段可引用其历史行为证据，同时明确0.2.1没有新运行实例。新版另绑定自身精确指纹和执行授权。", "prohibited": ["用新profile回填旧实例", "把0.2.0运行说成0.2.1已运行", "重写历史批准或吞掉并发变更"], "result": "reasoned_pass"}
+  ]
+}

@@ -7,7 +7,7 @@ const { randomUUID } = require('node:crypto');
 
 function bashExecutable(env = process.env, platform = process.platform) {
     if (platform !== 'win32') return '/bin/bash';
-    const candidates = [env.CODEBUDDY_GIT_BASH_PATH, path.join(env.ProgramFiles || 'C:/Program Files', 'Git/bin/bash.exe'), path.join(env.LOCALAPPDATA || '', 'Programs/Git/bin/bash.exe')];
+    const candidates = [env.CODEBUDDY_GIT_BASH_PATH, path.resolve(__dirname, "../../project/runtime/git-bash/bin/bash.exe"), path.join(env.ProgramFiles || 'C:/Program Files', 'Git/bin/bash.exe'), path.join(env.LOCALAPPDATA || '', 'Programs/Git/bin/bash.exe')];
     for (const directory of (env.PATH || '').split(path.delimiter)) {
         if (/git[\\/]cmd$/i.test(directory)) candidates.push(path.resolve(directory, '../bin/bash.exe'));
     }

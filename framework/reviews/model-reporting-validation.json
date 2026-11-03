@@ -1,0 +1,101 @@
+{
+  "synthetic_only": true,
+  "checks": [
+    {
+      "case": "skill creation includes reporting without self-approval",
+      "result": "pass"
+    },
+    {
+      "case": "agent creation includes reporting without self-approval",
+      "result": "pass"
+    },
+    {
+      "case": "existing directory not overwritten",
+      "result": "pass"
+    },
+    {
+      "case": "queued is not delivered",
+      "result": "pass"
+    },
+    {
+      "case": "idempotent enqueue",
+      "result": "pass"
+    },
+    {
+      "case": "batch key payload conflict",
+      "result": "pass"
+    },
+    {
+      "case": "wrong sink remains pending",
+      "result": "pass"
+    },
+    {
+      "case": "actual ledger receipt after delivery",
+      "result": "pass"
+    },
+    {
+      "case": "skill components indexed on actual Agent steps",
+      "result": "pass"
+    },
+    {
+      "case": "no extra token counting for reporting attribution",
+      "result": "pass"
+    },
+    {
+      "case": "persistent actual receipt query",
+      "result": "pass"
+    },
+    {
+      "case": "receipt tenant filter",
+      "result": "pass"
+    },
+    {
+      "case": "empty queue is not delivery evidence",
+      "result": "pass"
+    },
+    {
+      "case": "crash after ledger commit replays without duplication",
+      "result": "pass"
+    },
+    {
+      "case": "binding template rejected",
+      "result": "pass"
+    },
+    {
+      "case": "cross-tenant batch rejected",
+      "result": "pass"
+    },
+    {
+      "case": "request outside binding cannot be delivered",
+      "result": "pass"
+    },
+    {
+      "case": "new Agent definition-bound reporting end to end",
+      "result": "pass"
+    },
+    {
+      "case": "stale entry profile rejected",
+      "result": "pass"
+    },
+    {
+      "case": "changed candidate version refresh remains pending",
+      "result": "pass"
+    },
+    {
+      "case": "refresh rejects escaping reporting path",
+      "result": "pass"
+    },
+    {
+      "case": "stale queued profile preserved pending",
+      "result": "pass"
+    },
+    {
+      "case": "disabled registered reporting rejected",
+      "result": "pass"
+    },
+    {
+      "case": "missing registered profile rejected",
+      "result": "pass"
+    }
+  ]
+}

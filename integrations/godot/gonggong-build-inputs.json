@@ -1,0 +1,37 @@
+{
+  "build_source_commit": "c31a4cb54b6b7a89c7c6909d06192170115db68f",
+  "compiled_subtree_objects": {
+    "core": "1c9baf5e468025daa15035c81cc8cdaa876119c6",
+    "drivers": "43056120fd00cc063f044c66f9bdc89158fba2be",
+    "editor": "721636766a4f4b4e1cd2740a42aeb53cfbc20bfe",
+    "main": "ce5dc5af1d220e0efe5b5635f01372ba55add017",
+    "modules": "b2471ba7f15d249188490d00f901f9ca09435170",
+    "platform": "2dbb5a5bda2b841095474b7af9448817085440bd",
+    "scene": "c0089bffe7f3c40d11e53f0575d2ffce123fe632",
+    "servers": "b325e71e18cfa8aa3372d33f8e225ad49772c311",
+    "thirdparty": "d2e1a2005a615c92d1b150382d3f76ea72f8cd8a",
+    "tests": "e488c7506bd4d85c893b4a4ad27e34113522775b"
+  },
+  "arguments": [
+    "platform=windows",
+    "target=editor",
+    "arch=x86_64",
+    "tests=yes",
+    "accesskit=no",
+    "d3d12=no",
+    "angle=no",
+    "-j8"
+  ],
+  "toolchain": {
+    "msvc": "14.5",
+    "windows_sdk": "10.0.26100.0",
+    "scons": "4.11.1"
+  },
+  "build_log_sha256": "c516dc2695015c7048948c1457f8094d24716307e366ea07f0321ebbebcc05b7",
+  "output": {
+    "bin/godot.windows.editor.x86_64.console.exe": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+    "bin/godot.windows.editor.x86_64.exe": "acadd07bf4f9abc3e0ac9cceeb02059f807231e20e895a2236d0597ba82ac011"
+  },
+  "transform_report": "integrations/godot/gonggong-release-editor-transform.json",
+  "external_engine_directory_modified": false
+}

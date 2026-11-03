@@ -3,6 +3,8 @@ default_language_version:
 
 exclude: |
   (?x)^(
+    archive/olympus-retired-20261104/.*|
+    framework/.*|
     .*thirdparty/.*|
     .*-(dll|dylib|so)_wrap\.[ch]|
     platform/android/java/editor/src/main/java/com/android/.*|
@@ -59,13 +61,13 @@ repos:
         args: [--color=always]
         files: (\.py|SConstruct|SCsub)$
         types_or: [text]
-        # Reviewed byte-preserved mirror; checked by olympus-frozen-distribution.
-        exclude: ^Olympus/(?!extensions/hermes-files/)
+        # Reviewed byte-preserved mirror; checked by gonggong-frozen-distribution.
+        exclude: ^framework/
       - id: ruff-format
         args: [--color=always]
         files: (\.py|SConstruct|SCsub)$
         types_or: [text]
-        exclude: ^Olympus/(?!extensions/hermes-files/)
+        exclude: ^framework/
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.4.0
@@ -73,7 +75,7 @@ repos:
       - id: mypy
         files: \.py$
         types_or: [text]
-        exclude: ^Olympus/(?!extensions/hermes-files/)
+        exclude: ^framework/
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
@@ -206,7 +208,7 @@ repos:
         types_or: [text]
         exclude: |
           (?x)^(
-            Olympus/(?!extensions/hermes-files/).*|
+            framework/.*|
             data-collection/issue6-continuation-(workspace-fix|independent-review)-20261103\.json|
             data-collection/issue27-.*\.json|
             data-collection/issue35-.*\.json|
@@ -234,10 +236,10 @@ repos:
 # Start of downstream pre-commit hooks.
 #
 # This is still the "repo: local" scope, so new local hooks can be defined directly at this indentation:
-      - id: olympus-frozen-distribution
-        name: Olympus offline snapshot integrity and syntax
+      - id: gonggong-frozen-distribution
+        name: GongGong offline snapshot integrity and syntax
         language: python
-        entry: python tools/check_olympus_distribution.py
+        entry: python tools/check_gonggong_distribution.py
         pass_filenames: false
         always_run: true
 #     - id: new-local-hook

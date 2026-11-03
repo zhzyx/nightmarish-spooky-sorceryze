@@ -22,10 +22,10 @@ misc/msvs/* eol=crlf
 *.ttf binary
 *.tza binary
 
-# Olympus workspace integration
-Olympus/** -text whitespace=cr-at-eol
+# GongGong workspace integration
+framework/** -text whitespace=cr-at-eol
 # Preserve the reviewed upstream module's trailing blank line; the frozen snapshot hook checks exact bytes.
-Olympus/modules/ariadne/refresh.mjs whitespace=cr-at-eol,-blank-at-eof
+framework/modules/sinan/refresh.mjs whitespace=cr-at-eol,-blank-at-eof
 integrations/godot/*.patch -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
 integrations/godot/verification*.json -text whitespace=cr-at-eol
@@ -44,3 +44,5 @@ data-collection/issue27-previous-local-admission/*.json -text whitespace=cr-at-e
 # Preserve Issue #35 frozen source, review history, and evidence bytes.
 data-collection/issue35-*.json -text whitespace=cr-at-eol
 data-collection/issue35-previous-local-admission/** -text whitespace=cr-at-eol
+
+archive/olympus-retired-20261104/** -text -whitespace

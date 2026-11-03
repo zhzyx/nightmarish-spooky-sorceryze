@@ -1,0 +1,8 @@
+{
+  "source": "actual user instructions in current chat",
+  "instructions": [
+    "司南的自动化可以暂时停用，不代表司南要停用",
+    "司南的派发时机应该在有需要时进行处理，而不是定时扫描谁需要派出工单，工单进度变更等情景都需要司南进行任务进度更新和文档更新。定时扫描和其他基于时间调用的机制需要废止。"
+  ],
+  "scope": "Restore on-demand Sinan coordination and replace time-driven invocation with actual task events. No new general runtime permissions."
+}

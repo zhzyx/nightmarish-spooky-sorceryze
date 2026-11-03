@@ -1,0 +1,15 @@
+{
+  "evaluator": "/root/review_nonblocking",
+  "validation_kind": "independent_definition_walkthrough_and_memory_only_tool_probe",
+  "agent_runtime_executed": false,
+  "remote_operations_executed": false,
+  "scenarios": [
+    {"id": 1, "input": "没有Git账号、Issue或仓库的本地设计任务，提供真实worker_ref、work_ref、文件摘要、读写范围与验收。", "judgment": "司南关联本地权威任务并协调，合契按内容摘要比较已授权贡献，在独立候选保留双方效果；不要求Git字段或自动建Issue。", "prohibited": ["凭聊天数量伪造工作者身份", "无Git则拒绝全部任务", "默认对外建单"], "result": "reasoned_pass"},
+    {"id": 2, "input": "两份本地文档可读，但共同基准未知且目标取舍未确认。", "judgment": "仍可做已知内容对照并说明归属限制；暂停需要替换/选择的动作，准备证据与选项，继续其他授权比较。", "prohibited": ["伪造三方比较", "以时间新旧判定正确版本", "扩大写权限"], "result": "reasoned_pass"},
+    {"id": 3, "input": "registry没有issue_tracking或明确enabled=false，但留有历史issue_ref。", "judgment": "保留历史引用，返回tracking=source_work_item、issueAction=null及通用workItemAction；任务、源缺口和文档修复使用同一条件。", "prohibited": ["历史Issue引用自动激活外部建单", "把所有工单类型限定成GitHub"], "result": "reasoned_and_memory_probe_pass"},
+    {"id": 4, "input": "issue_tracking.enabled=true，provider=git-issue，authority_ref为非空引用。", "judgment": "仅输出待宿主核权的Git交接建议，保持not_dispatched；配置不认证权限，实际外部调用仍需宿主权限、版本检查和回读。", "prohibited": ["把字符串authority_ref当真实批准", "工具直接启动Agent或写GitHub", "声称配置即采集送达"], "result": "reasoned_and_memory_probe_pass"},
+    {"id": 5, "input": "issue_tracking结构不合法或enabled=true但provider/authority_ref缺失。", "judgment": "拒绝此无效登记调用，在宿主记录错误与修复责任；不输出可执行的外部操作。其他合法任务由宿主继续，不自动修补成已授权配置。", "prohibited": ["以truthy字符串开启Git", "填虚构authority_ref冒充权限", "静默发送外部请求"], "result": "memory_probe_pass_seven_invalid_inputs"},
+    {"id": 6, "input": "Olympus已绑定Git，同Issue多账号贡献且文本冲突可按验收解决。", "judgment": "按需加载Git适配；保持一账号一工作者、实际认证通道核验、多贡献/逐次基准、授权本地实际修复及组合验收规则；保留非强推与回读要求。", "prohibited": ["通用化移除Git任务自身约束", "进入其他工作者目录", "merge成功直接关闭整单"], "result": "reasoned_pass_existing_git_logic_reviewed_without_rerun"},
+    {"id": 7, "input": "五个Agent候选尚未取得精确新批准，原三Agent仅共享README和批准引用变化。", "judgment": "新定义及共享变化各绑定自身候选指纹与独立证据，历史批准原件保留；定义、启用、真实任务执行和采集回执分别核验。", "prohibited": ["旧批准自动覆盖新指纹", "新司南pending模板覆盖旧同名批准", "review通过冒充运行验收"], "result": "reasoned_pass_subject_to_exact_final_fingerprint"}
+  ]
+}

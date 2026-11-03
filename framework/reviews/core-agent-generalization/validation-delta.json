@@ -1,0 +1,31 @@
+{
+  "path_base": "task_directory",
+  "status": "passed",
+  "candidate_agents": {
+    "yanshi": "0e751d77e4137a18c1394c1b96190ee09216fc75a7d40dfb04e5309303e3abdc",
+    "kuafu": "a2cce672f5edba24a672e06b3c7a7d4d66c8a8e82b7a44a0a9fe196728af90f0",
+    "diting": "f7e9ee054b81310ad4716ca2585028f29978d4db783185af59fb3a044f1f21c2",
+    "heqi": "a9dc9a398e99e65d71b19284da32fead7589d2dfe00dc54f8abae82c341f126b",
+    "sinan": "2e6b1a88d14a14eebdac9ea477dd812ec30d88bf2ee505084768f9dcb0282b85"
+  },
+  "previous_validation": "validation.json",
+  "previous_validation_sha256": "992702ac0673d154b68860f1e02dafd72510ed5d8134d48b66e4ec8d91efb19b",
+  "delta": "Restore historical Sinan 0.3.1 permit byte-for-byte and use separate Sinan Agent 0.1.0 admission path; no tool/Agent instruction changes",
+  "historical_permit_sha256": "adf968a007a8f89c53972e1e4ac92497aac625e187bf02cea6c328379c364da2",
+  "candidate_check": {
+    "framework_version": "0.9.0",
+    "agents": [
+      "yanshi",
+      "kuafu",
+      "diting",
+      "heqi",
+      "sinan"
+    ],
+    "skills_including_upstream": 10,
+    "foundation_unchanged": true,
+    "mode": "candidate",
+    "host_authority_authenticated": false
+  },
+  "test_reuse": "16 passed tests and non-Git host fixture from validation.json; only admission path metadata changed",
+  "admission": "pending_independent_review"
+}

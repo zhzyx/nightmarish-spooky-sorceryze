@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "evaluator_id": "/root/review_upstream",
+  "independence": "independent_subagent_review",
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "subjects": {
+    "yanshi": "40be54c79d3575138990ca111ef2589f0128d6f13c3015fa0acdd9454b0be072",
+    "kuafu": "25375f3d48ac908e71e4197c9e8be7b3e8bb2126ca73b1951ca50094bc81dc42"
+  },
+  "result": "pass",
+  "evidence": {
+    "full_file_lists": "unchanged; only yanshi adaptation.md and kuafu provenance.json changed",
+    "archive_originals": "match old approval hashes",
+    "quality_templates": {
+      "count": 6,
+      "source_and_target_hashes": "match"
+    },
+    "candidate_integrity": "pass",
+    "quality_ownership": "pass",
+    "diting_formal_admission": "pass",
+    "agent_entries": "unchanged"
+  },
+  "limitations": [
+    "No real model evaluation or host authority authentication.",
+    "Review covers this path-migration delta; prior unchanged reviewed definition retained."
+  ]
+}

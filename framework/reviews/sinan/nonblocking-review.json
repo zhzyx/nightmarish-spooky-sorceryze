@@ -1,0 +1,94 @@
+{
+  "template": false,
+  "permit_id": "GG-SINAN-LOCAL-ISSUE-BOUNDARY-20261103",
+  "status": "approved",
+  "event": "explicit_user_local_vs_git_issue_scope_and_approved_agent_registry_update",
+  "phase": "local_utility_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.4.2",
+      "files": [
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "9795fd380cbac6f71dc339bd0695929c8546079b8c1e33efb31e20bf2018d166"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "1f22a6ebb83c89f96e4a09abfac0c5f73e324da1c6cf653edd1b8e9b9dac2b4a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "6d943f0072ff89974cab2c89415da54fb07e171c3e79d8e83073bc753d8568a9"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "15bd0546eabe6484bb2263993a200312718f2c15d1a6901b5c36db42fa2fab3e"
+        },
+        {
+          "path": "framework-manifest.json",
+          "sha256": "19a12c4a46b3110fd38784b221879f00e1c6509c00796341170883aaf5a7c875"
+        }
+      ]
+    },
+    "scope": [
+      "Existing executable utility and authorized local-vs-external Issue documentation; registry with Heqi 0.2.1; no standing model or remote service authority"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/work-order-management.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "rationale": "Only applicability documentation and already reviewed registry alignment; executable code unchanged"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/heqi-integration/module-review.json",
+      "reviews/heqi-integration/review.json"
+    ],
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Sinan unchanged followUps.issueAction strings still mention finding/creating Issue. These are proposed handoff hints, not authorization; consumers must apply new spec condition and use local authority when Git intake is not authorized.",
+      "Current approval pointers require fresh actual scope authorization and exact hash receipts; this review does not turn copied old approvals into new permission.",
+      "Original approvals must be archived byte-for-byte before replacement; their recorded hashes allow that check.",
+      "Olympus #27 consumer must ingest the frozen candidate under its own governance; unrelated later genericization is outside this reviewed snapshot.",
+      "No new runtime validation or remote service mutation was performed by reviewer."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_users_in_authorized_local_and_handoff_chats",
+    "authority_ref": "reviews/heqi-integration/user-authority.json",
+    "decision_evidence_ref": "reviews/heqi-integration/user-authority.json",
+    "approved_at": "2026-11-03T15:52:39.614125+00:00",
+    "valid_until_or_task_end": "This exact reviewed local definition and user-requested Olympus source handoff only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  },
+  "path_base": "framework_root",
+  "previous_approval_archive": "reviews/sinan/nonblocking-before-local-boundary.json"
+}

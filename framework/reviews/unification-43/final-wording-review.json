@@ -1,0 +1,33 @@
+{
+  "reviewer": "codex_subagent_/root/migration_review",
+  "scope": "Only core-agent-adaptation wording correction and own admission-path change",
+  "subjects": [
+    {
+      "id": "heqi",
+      "version": "0.3.1",
+      "candidate_digest": "45a902a243eb3a294bc3ecf6503b8ac9d199859c5d090ea4783da8a7898550c1"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.1",
+      "candidate_digest": "cc33afad0e1e26bc1d13ce17fe8a18dd2963175bd7c2c223805d2cbadbc349d8"
+    }
+  ],
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass",
+    "truth": "pass",
+    "economy": "pass",
+    "authority": "pass",
+    "adaptation": "pass",
+    "continuity": "pass"
+  },
+  "concision": "pass",
+  "applicable_validation": "pass",
+  "verified_changes_per_agent": [
+    "agent.json admission_pass",
+    "specs/core-agent-adaptation.md"
+  ],
+  "other_three_candidates_unchanged": true,
+  "approval_granted": false
+}

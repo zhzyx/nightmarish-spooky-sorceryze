@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: no Git repository or Issue binding: tasks, source failures and document repair stay local
+ok 1 - no Git repository or Issue binding: tasks, source failures and document repair stay local
+  ---
+  duration_ms: 10.9014
+  type: 'test'
+  ...
+# Subtest: explicit Git integration retains Issue handoffs for tasks, source gaps and document repairs
+ok 2 - explicit Git integration retains Issue handoffs for tasks, source gaps and document repairs
+  ---
+  duration_ms: 4.8577
+  type: 'test'
+  ...
+# Subtest: historic Issue references and disabled integrations do not activate remote handoffs
+ok 3 - historic Issue references and disabled integrations do not activate remote handoffs
+  ---
+  duration_ms: 0.1125
+  type: 'test'
+  ...
+# Subtest: malformed or incomplete bindings fail before suggesting Git operations
+ok 4 - malformed or incomplete bindings fail before suggesting Git operations
+  ---
+  duration_ms: 0.3299
+  type: 'test'
+  ...
+# Subtest: pending user decision is attention; explicit operation restriction stays local
+ok 5 - pending user decision is attention; explicit operation restriction stays local
+  ---
+  duration_ms: 8.7846
+  type: 'test'
+  ...
+# Subtest: blocked and judgment tasks retain repair handoffs; hard dependents remain excluded
+ok 6 - blocked and judgment tasks retain repair handoffs; hard dependents remain excluded
+  ---
+  duration_ms: 6.6553
+  type: 'test'
+  ...
+# Subtest: source planned -> processing -> accepted; preserves prose, parent and ledger; replay stable
+ok 7 - source planned -> processing -> accepted; preserves prose, parent and ledger; replay stable
+  ---
+  duration_ms: 19.4436
+  type: 'test'
+  ...
+# Subtest: unavailable sources and unknown ticket stay explicit
+ok 8 - unavailable sources and unknown ticket stay explicit
+  ---
+  duration_ms: 8.7173
+  type: 'test'
+  ...
+# Subtest: missing marker isolates one document and preserves other views
+ok 9 - missing marker isolates one document and preserves other views
+  ---
+  duration_ms: 4.159
+  type: 'test'
+  ...
+# Subtest: missing document directory does not stop existing independent documents
+ok 10 - missing document directory does not stop existing independent documents
+  ---
+  duration_ms: 7.3574
+  type: 'test'
+  ...
+# Subtest: explicit boundary and protected output checks
+ok 11 - explicit boundary and protected output checks
+  ---
+  duration_ms: 10.7859
+  type: 'test'
+  ...
+# Subtest: duplicate registration is rejected before any writes
+ok 12 - duplicate registration is rejected before any writes
+  ---
+  duration_ms: 3.3331
+  type: 'test'
+  ...
+# Subtest: source hardlink and junction cannot be used as outputs
+ok 13 - source hardlink and junction cannot be used as outputs
+  ---
+  duration_ms: 5.1001
+  type: 'test'
+  ...
+# Subtest: legacy API and new actual events work; timer and missing source reference rejected
+ok 14 - legacy API and new actual events work; timer and missing source reference rejected
+  ---
+  duration_ms: 9.2524
+  type: 'test'
+  ...
+# Subtest: concurrent invocation lock refuses before mutation
+ok 15 - concurrent invocation lock refuses before mutation
+  ---
+  duration_ms: 1.9825
+  type: 'test'
+  ...
+# Subtest: single-file write failure records partial completion and continues later docs
+ok 16 - single-file write failure records partial completion and continues later docs
+  ---
+  duration_ms: 11.3811
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 161.6

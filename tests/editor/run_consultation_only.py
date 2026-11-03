@@ -102,8 +102,8 @@ def main():
         threading.Thread(target=server.serve_forever, daemon=True).start()
         env = dict(
             os.environ,
-            OLYMPUS_TEST_WORKSPACE=str(root / "absent-workspace"),
-            OLYMPUS_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+            GONGGONG_TEST_WORKSPACE=str(root / "absent-workspace"),
+            GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
         )
         for key in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(key, None)

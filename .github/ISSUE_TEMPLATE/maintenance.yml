@@ -71,7 +71,7 @@
       "id": "evidence",
       "attributes": {
         "label": "验证与采集证据",
-        "description": "链接实际产物、olympus-hermes-data 事件和 data-collection 来源索引；未知留空"
+        "description": "链接实际产物、gonggong-diting-data 事件和 data-collection 来源索引；未知留空"
       }
     }
   ]

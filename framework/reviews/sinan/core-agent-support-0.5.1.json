@@ -1,0 +1,110 @@
+{
+  "template": false,
+  "permit_id": "GG-REQUEST-INTAKE-SINAN-SUPPORT-0.5.1",
+  "status": "approved",
+  "event": "user_requested_core_agent_generalization",
+  "phase": "local_core_coordination_utility_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.5.1",
+      "files": [
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "2cd5b446c4acd2520f506320b68acabb86cada91cd3c799a2a25e3890d2ad3ff"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "modules/sinan/test/generic-tracking.test.mjs",
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "d8a438058aa09978cba645dc05a3d56daab782e40786a0e6b2c440e7a34b1825"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "6c5d59de2337f90481bb719baaac07d9b2041df5d774b0f32bb614fca6c310d1"
+        },
+        {
+          "path": "framework-manifest.json",
+          "sha256": "25a88d01b2449a6bc3d625678e33076625cde7ec14347834b534f5cc4aee75f3"
+        }
+      ]
+    },
+    "scope": [
+      "Local core coordination tools with conditional Git handoff; no external operations or automatic dispatch authority"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/core-agent-adaptation.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.1"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "reason": "Short generic Agent entry points; separate generic workflow and optional Git references; no duplicated coordination ledger or always-loaded backend instructions",
+      "entry_characters": {
+        "yanshi": 893,
+        "kuafu": 898,
+        "diting": 713,
+        "heqi": 896,
+        "sinan": 797
+      }
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/request-intake-0.9.1/independent-review-v4.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/independent_review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Definition review and memory-only tool behavior checks are not live Sinan/Heqi runtime admission or actual non-Git production integration.",
+      "All five new candidate approvals remain pending; Sinan tool 0.5.0 approval file is not yet present and must be created with actual authorization before enabling/delivering this version.",
+      "issue_tracking validates selector shape only. Nonempty authority_ref does not prove permission; the host must authenticate each actual operation.",
+      "Malformed selected registry configuration rejects that call; host must retain the failure record and continue other safe work rather than silently converting it to authorization.",
+      "Current executable source adapter remains local Yuanheng; generic definitions do not implement every document/engine/service backend.",
+      "Frozen Heqi 0.2.1/Olympus #27 delivery is separate and remains unaffected; later switch requires fresh consumer acceptance and receipts.",
+      "Prior historical Git/runtime evidence is not relabeled as Heqi0.3.0 or Sinan0.1.0 execution.",
+      "Review findings and handoff go to parent/author shared reporting; no reviewer delivery receipt is fabricated."
+    ]
+  },
+  "approval": {
+    "approver_id": "user_current_chat",
+    "authority_ref": "user:current_chat:2026-11-04:revised_exact_sinan_support",
+    "decision_evidence_ref": "reviews/request-intake-0.9.1/user-approval-v2.json",
+    "approved_at": "2026-11-03T19:16:09Z",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  },
+  "path_base": "framework_root"
+}

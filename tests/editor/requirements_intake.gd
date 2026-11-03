@@ -13,7 +13,7 @@ func _contains(dock, text: String) -> bool:
 func _wait_reply(dock, number: int) -> bool:
 	for attempt in range(900):
 		await create_timer(0.1).timeout
-		if _contains(dock, "INTAKE_WORK_REPLY_" + str(number)) and dock.get_meta("olympus_reporting", "") == "recorded_file":
+		if _contains(dock, "INTAKE_WORK_REPLY_" + str(number)) and dock.get_meta("gonggong_reporting", "") == "recorded_file":
 			return true
 		if attempt == 150 or (number == 1 and _contains(dock, "尚未完成")):
 			for label in dock.find_children("*", "RichTextLabel", true, false):
@@ -32,16 +32,16 @@ func _run():
 	if dock == null:
 		quit(1)
 		return
-	var folder := OS.get_environment("OLYMPUS_TEST_WORKSPACE")
+	var folder := OS.get_environment("GONGGONG_TEST_WORKSPACE")
 	var settings = EditorInterface.get_editor_settings()
-	settings.set_setting("olympus/workspace", folder)
-	settings.set_setting("olympus/python", OS.get_environment("OLYMPUS_PYTHON"))
-	settings.set_setting("olympus/issue_number", "")
-	settings.set_setting("olympus/request_id", "")
+	settings.set_setting("gonggong/workspace", folder)
+	settings.set_setting("gonggong/python", OS.get_environment("GONGGONG_PYTHON"))
+	settings.set_setting("gonggong/issue_number", "")
+	settings.set_setting("gonggong/request_id", "")
 	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("OLYMPUS_TEST_ENDPOINT")
+	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
 	dock.find_child("APIModel", true, false).text = "fixture"
 	dock.find_child("APIKey", true, false).text = "intake-unit-session-secret"
 	var prompts = ["Create first feature button", "Refine current feature", "Create second feature label", "Create second feature label"]
@@ -57,7 +57,7 @@ func _run():
 			break
 	_send(dock, "取消")
 	await create_timer(2).timeout
-	if dock.get_meta("olympus_status", "") != "issue_guide_cancelled":
+	if dock.get_meta("gonggong_status", "") != "issue_guide_cancelled":
 		push_error("Cancelled intake did not remain cancelled")
 		quit(1)
 		return

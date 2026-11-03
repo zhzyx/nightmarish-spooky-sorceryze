@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "component": {
+    "kind": "agent",
+    "id": "kuafu",
+    "version": "0.4.0",
+    "entry": "agents/kuafu/AGENT.md",
+    "entry_sha256": "070861e09a33489edce74b4cff3a2b7caffb5c08f1d817a9146646e373722814"
+  },
+  "required": true,
+  "policy": "contracts/diting-reporting.json",
+  "policy_id": "diting-reporting-1",
+  "reporter": "tools/diting-report.py",
+  "events": [
+    "request",
+    "step",
+    "message",
+    "direction_error",
+    "correction",
+    "quality_issue",
+    "rework",
+    "handoff",
+    "coverage",
+    "request_end"
+  ],
+  "runtime_binding": "host_required",
+  "runtime_connected": false,
+  "dependencies": {
+    "contracts/diting-reporting.json": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd",
+    "tools/reporting.mjs": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501",
+    "tools/diting-report.py": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b",
+    "agents/diting/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+    "agents/diting/scripts/telemetry.py": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a",
+    "agents/diting/references/data-contract.md": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525",
+    "agents/diting/references/telemetry.md": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+  }
+}

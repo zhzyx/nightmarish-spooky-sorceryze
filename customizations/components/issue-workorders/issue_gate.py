@@ -29,8 +29,8 @@ def check_issue(value, repository, number, request_id, types):
     if value.get("state") != "open":
         raise ValueError("Issue is not open")
     names = [v["name"] for v in value.get("labels", [])]
-    if "workspace:olympus" not in names:
-        raise ValueError("Issue must explicitly include workspace:olympus")
+    if "workspace:gonggong" not in names:
+        raise ValueError("Issue must explicitly include workspace:gonggong")
     categories = [x for x in names if x.startswith("type:")]
     statuses = [x for x in names if x.startswith("status:")]
     if len(categories) != 1 or categories[0] not in types:
@@ -126,26 +126,28 @@ def snapshot(root):
 
 
 def environment(root):
-    env = os.environ.copy()
-    source = env.get("GONGGONG_FRAMEWORK_SOURCE")
-    if not source:
-        local = root / ".olympus-local.json"
-        if local.exists():
-            source = work_items.read(local).get("GONGGONG_FRAMEWORK_SOURCE")
-    if source:
-        env["GONGGONG_FRAMEWORK_SOURCE"] = str((root / source).resolve())
-    return env
+    return os.environ.copy()
 
 
 def check_history(root):
-    paths = git(root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", "olympus-hermes-data/events")
+    paths = git(
+        root,
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "-z",
+        "HEAD",
+        "--",
+        "gonggong-diting-data/events",
+        "olympus-hermes-data/events",
+    )
     for raw in paths.split(b"\0"):
         if not raw:
             continue
         name = os.fsdecode(raw)
         path = root / name
         if not path.is_file() or path.read_bytes() != git(root, "show", "HEAD:" + name):
-            raise ValueError("Hermes history must remain immutable; append correction events")
+            raise ValueError("Diting history must remain immutable; append correction events")
 
 
 def validate_command(command, root, env, name):
@@ -181,47 +183,47 @@ def gate(root, number, request_id):
     before = snapshot(root)
     env = environment(root)
     framework = validate_command(
-        [sys.executable, "-X", "utf8", str(root / "Olympus/tools/verify_framework.py")],
+        [sys.executable, "-X", "utf8", str(root / "framework/tools/verify_framework.py")],
         root,
         env,
-        "Formal Olympus verification",
+        "Formal GongGong verification",
     )
     if framework.get("mode") != "approved_file_integrity":
-        raise ValueError("Formal Olympus verification required; candidate mode is insufficient")
+        raise ValueError("Formal GongGong verification required; candidate mode is insufficient")
     validate_command(
         [
             sys.executable,
             "-X",
             "utf8",
-            str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+            str(root / "framework/extensions/diting-files/diting_files.py"),
             "validate",
             "--repo",
             str(root),
         ],
         root,
         env,
-        "Hermes validation",
+        "Diting validation",
     )
     validate_command(
         [
             sys.executable,
             "-X",
             "utf8",
-            str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+            str(root / "framework/extensions/diting-files/diting_files.py"),
             "git-check",
             "--repo",
             str(root),
         ],
         root,
         env,
-        "Hermes Git history check",
+        "Diting Git history check",
     )
     check_history(root)
     check_collection(root)
     events = []
     request_source_found = False
     issue_sources = {issue["url"], f"github:{repository}:issue:{number}"}
-    for path in sorted((root / "olympus-hermes-data/events").rglob("*.json")):
+    for path in sorted((root / "gonggong-diting-data/events").rglob("*.json")):
         raw = path.read_bytes()
         value = json.loads(raw)
         if value.get("request_id") == request_id and value.get("tenant_id") == tenant:
@@ -230,7 +232,7 @@ def gate(root, number, request_id):
             if value.get("kind") == "request" and value.get("source_ref") in issue_sources:
                 request_source_found = True
     if not events:
-        raise ValueError("No actual Hermes events for this request")
+        raise ValueError("No actual Diting events for this request")
     if not request_source_found:
         raise ValueError("No same-tenant request event with exact Issue source")
     if snapshot(root) != before or fetch() != issue:

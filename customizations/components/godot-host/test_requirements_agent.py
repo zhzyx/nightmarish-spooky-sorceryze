@@ -27,15 +27,18 @@ class RequirementsTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
+        (self.root / "CURRENT_FRAMEWORK.json").write_text(
+            json.dumps({"path_base": "this_file_directory", "root": "framework", "manifest": "framework-manifest.json"})
+        )
         for name in [
             "framework-manifest.json",
-            "agents/athena/AGENT.md",
-            "agents/athena/skills/metis/SKILL.md",
-            "agents/athena/references/understanding.md",
+            "agents/yanshi/AGENT.md",
+            "agents/yanshi/skills/clarify-feature/SKILL.md",
+            "agents/yanshi/references/understanding.md",
         ]:
-            dest = self.root / "Olympus" / name
+            dest = self.root / "framework" / name
             dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / "Olympus" / name, dest)
+            shutil.copyfile(ROOT / "framework" / name, dest)
         subprocess.run(["git", "init", "--quiet", str(self.root)], check=True)
         subprocess.run(
             ["git", "-C", str(self.root), "remote", "add", "origin", "https://github.com/org/repo.git"], check=True
@@ -58,7 +61,7 @@ class RequirementsTests(unittest.TestCase):
                 }
             )
         )
-        self.existing = {"number": 17, "state": "open", "body": "<!-- olympus-request:bound-req -->"}
+        self.existing = {"number": 17, "state": "open", "body": "<!-- gonggong-request:bound-req -->"}
         self.comments = []
 
         def gh(*args):
@@ -74,7 +77,7 @@ class RequirementsTests(unittest.TestCase):
         self.work = SimpleNamespace(
             config=lambda root: ({"repository": "org/repo", "tenant_id": "test"}, [{"name": "type:requirement"}]),
             gh=gh,
-            request_ids=lambda body: set(re.findall(r"olympus-request:([a-z0-9-]+)", body)),
+            request_ids=lambda body: set(re.findall(r"gonggong-request:([a-z0-9-]+)", body)),
             issue=Mock(return_value={"url": "https://github.com/org/repo/issues/18"}),
         )
         self.bridge = SimpleNamespace(
@@ -99,7 +102,7 @@ class RequirementsTests(unittest.TestCase):
 
         def run(args, **kwargs):
             if any(str(a).endswith("agent-context.mjs") for a in args):
-                self.assertEqual(args[-2], "athena")
+                self.assertEqual(args[-2], "yanshi")
                 mandate = json.loads(Path(args[-1]).read_text(encoding="utf-8"))
                 self.assertFalse(mandate["tools_enabled"])
                 self.assertFalse(mandate["production_execution_authorized"])
@@ -113,11 +116,11 @@ class RequirementsTests(unittest.TestCase):
     def invoke(self):
         return module.intake(self.root, self.request, self.bridge)
 
-    def test_new_uses_athena_metis_and_model_derived_content(self):
+    def test_new_uses_yanshi_clarify_feature_and_model_derived_content(self):
         result = self.invoke()
         self.assertTrue(result["ready"])
         context = self.adapter.call.call_args.args[1][0]["content"]
-        self.assertIn("metis", context)
+        self.assertIn("clarify-feature", context)
         self.assertIn("Requirements intake only", context)
         body = next((self.root / "design-docs").glob("*.md")).read_text(encoding="utf-8")
         self.assertIn("减少按钮延迟", body)
@@ -176,7 +179,7 @@ class RequirementsTests(unittest.TestCase):
             "usage": {},
         }
         self.assertTrue(self.invoke()["ready"])
-        self.assertEqual(len(list((self.root / ".olympus-outbox/requirements").glob("*attempt*"))), 1)
+        self.assertEqual(len(list((self.root / ".gonggong-outbox/requirements").glob("*attempt*"))), 1)
 
     def test_provider_text_cannot_inject_authority_or_credentials(self):
         self.design["approval"] = "approved"
@@ -208,7 +211,7 @@ class RequirementsTests(unittest.TestCase):
 
     def test_cached_schema_is_revalidated(self):
         self.invoke()
-        p = next((self.root / ".olympus-outbox/requirements").glob("*.json"))
+        p = next((self.root / ".gonggong-outbox/requirements").glob("*.json"))
         v = json.loads(p.read_text(encoding="utf-8"))
         v["proposal"]["approval"] = "forged"
         p.write_text(json.dumps(v), encoding="utf-8")
@@ -247,10 +250,10 @@ class RequirementsTests(unittest.TestCase):
         self.work.issue.assert_not_called()
 
     def test_credentials_never_enter_journal_document_or_context(self):
-        with patch.dict(os.environ, {"OLYMPUS_REQUIREMENTS_KEY": "unit-secret-value"}):
+        with patch.dict(os.environ, {"GONGGONG_REQUIREMENTS_KEY": "unit-secret-value"}):
             self.invoke()
-            self.assertEqual(self.adapter.call.call_args.args[0]["api_key_env"], "OLYMPUS_REQUIREMENTS_KEY")
-        for folder in [".olympus-outbox/requirements", "design-docs"]:
+            self.assertEqual(self.adapter.call.call_args.args[0]["api_key_env"], "GONGGONG_REQUIREMENTS_KEY")
+        for folder in [".gonggong-outbox/requirements", "design-docs"]:
             for p in (self.root / folder).glob("*"):
                 self.assertNotIn("unit-secret-value", p.read_text(encoding="utf-8"))
         self.assertNotIn("unit-secret-value", repr(self.adapter.call.call_args.args[1]))
@@ -309,7 +312,7 @@ class RequirementsTests(unittest.TestCase):
                 payload = json.loads(Path(args[-1]).read_text(encoding="utf-8"))
                 self.assertEqual(payload["available_tools"], [])
                 self.assertFalse(payload["tool_context"]["permission_enabled"])
-                self.assertEqual(payload["agent_id"], "athena")
+                self.assertEqual(payload["agent_id"], "yanshi")
                 return subprocess.CompletedProcess(
                     args,
                     0,
