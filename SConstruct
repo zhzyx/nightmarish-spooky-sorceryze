@@ -252,6 +252,13 @@ opts.Add(
     )
 )
 opts.Add(BoolVariable("tests", "Build the unit tests", False))
+opts.Add(
+    BoolVariable(
+        "allow_unsupported_apple_clang",
+        "Allow experimental builds below the minimum Apple Clang version (unsupported)",
+        False,
+    )
+)
 opts.Add(BoolVariable("fast_unsafe", "Enable unsafe options for faster incremental builds", False))
 opts.Add(BoolVariable("ninja", "Use the ninja backend for faster rebuilds", False))
 opts.Add(BoolVariable("ninja_auto_run", "Run ninja automatically after generating the ninja file", True))
@@ -765,10 +772,17 @@ elif methods.using_clang(env):
     # in https://en.wikipedia.org/wiki/Xcode#Toolchain_versions
     if methods.is_apple_clang(env):
         if cc_version_major < 16:
-            print_error(
-                f"Detected Apple Clang version {cc_version_major} while Godot requires Apple Clang 16 (Xcode 16) or newer."
-            )
-            Exit(255)
+            if env["allow_unsupported_apple_clang"]:
+                print_warning(
+                    f"Experimental unsupported build with Apple Clang {cc_version_major}; "
+                    "the supported minimum remains Apple Clang 16 (Xcode 16). "
+                    "Compilation or runtime compatibility may fail."
+                )
+            else:
+                print_error(
+                    f"Detected Apple Clang version {cc_version_major} while Godot requires Apple Clang 16 (Xcode 16) or newer."
+                )
+                Exit(255)
     else:
         if cc_version_major < 9:
             print_error(

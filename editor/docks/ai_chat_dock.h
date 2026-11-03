@@ -238,6 +238,7 @@ class AIChatDock : public EditorDock {
 	LineEdit *cli_entry = nullptr;
 	LineEdit *cli_model = nullptr;
 	Button *cli_login = nullptr;
+	Label *cli_login_status = nullptr;
 	VBoxContainer *http_settings = nullptr;
 	VBoxContainer *cli_settings = nullptr;
 	OptionButton *model_picker = nullptr;

@@ -36,6 +36,8 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
+#include "core/os/os.h"
+#include "editor/docks/ai_chat_cli_login.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_tools.h"
 
@@ -47,6 +49,70 @@ Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat"
 	CHECK(error == OK);
 	return directory;
 }
+
+TEST_CASE("[AIChat] CLI login shell quoting preserves literal paths") {
+	CHECK(AIChatCLILogin::shell_quote("/tmp/Node runtime/node") == "'/tmp/Node runtime/node'");
+	CHECK(AIChatCLILogin::shell_quote("/tmp/user's CLI") == "'/tmp/user'\\''s CLI'");
+	CHECK(AIChatCLILogin::shell_quote("/tmp/$HOME; `id` $(id)") == "'/tmp/$HOME; `id` $(id)'");
+	const String script = AIChatCLILogin::macos_script("/tmp/node", "/tmp/bridge.js", "/tmp/cli");
+	CHECK(script.begins_with("#!/bin/sh\n"));
+	CHECK(script.contains("'/tmp/node' '/tmp/bridge.js' login '/tmp/cli'\nstatus=$?\n"));
+	CHECK(script.contains("trap '/bin/rm -f -- \"$0\"' 0"));
+	CHECK(script.contains("exit \"$status\""));
+}
+
+#ifdef UNIX_ENABLED
+TEST_CASE("[AIChat] CLI login script is written at its final executable path") {
+	Ref<DirAccess> root = make_temporary_directory("godot_cli_login_write");
+	REQUIRE(root.is_valid());
+	const String directory = root->get_current_dir();
+	const String path = directory.path_join("login.command");
+	REQUIRE(AIChatCLILogin::write_macos_script(path, "/tmp/node", "/tmp/bridge.js", "/tmp/cli") == OK);
+	CHECK(FileAccess::exists(path));
+	CHECK((uint32_t(FileAccess::get_unix_permissions(path)) & 0777) == 0700);
+	CHECK(FileAccess::get_file_as_string(path) == AIChatCLILogin::macos_script("/tmp/node", "/tmp/bridge.js", "/tmp/cli"));
+	root->list_dir_begin();
+	int entries = 0;
+	for (String name = root->get_next(); !name.is_empty(); name = root->get_next()) {
+		if (name != "." && name != "..") {
+			entries++;
+			CHECK_MESSAGE(name == "login.command", name);
+		}
+	}
+	root->list_dir_end();
+	CHECK(entries == 1);
+	CHECK(AIChatCLILogin::write_macos_script(directory.path_join("missing/login.command"), "/tmp/node", "/tmp/bridge.js", "/tmp/cli") != OK);
+}
+
+TEST_CASE("[AIChat] CLI login script preserves arguments, exit status and cleans up") {
+	Ref<DirAccess> root = make_temporary_directory("godot_cli_login_test");
+	REQUIRE(root.is_valid());
+	const String directory = root->get_current_dir();
+	const String bridge = directory.path_join("bridge ' $HOME; `id` $(id).sh");
+	const String entry = directory.path_join(String::utf8("CLI 入口 '$HOME; `id` $(id)"));
+	const String result_path = directory.path_join("arguments.txt");
+	const String command_path = directory.path_join("login.command");
+	for (int expected_status : { 0, 7 }) {
+		Ref<FileAccess> mock = FileAccess::open(bridge, FileAccess::WRITE);
+		REQUIRE(mock.is_valid());
+		REQUIRE(mock->store_string("printf '%s\\n' \"$@\" > " + AIChatCLILogin::shell_quote(result_path) + "\nexit " + itos(expected_status) + "\n"));
+		mock.unref();
+		Ref<FileAccess> command = FileAccess::open(command_path, FileAccess::WRITE);
+		REQUIRE(command.is_valid());
+		REQUIRE(command->store_string(AIChatCLILogin::macos_script("/bin/sh", bridge, entry)));
+		command.unref();
+		REQUIRE(FileAccess::set_unix_permissions(command_path, 0700) == OK);
+		List<String> arguments;
+		arguments.push_back("-c");
+		arguments.push_back(AIChatCLILogin::shell_quote(command_path) + " </dev/null >/dev/null 2>&1");
+		int exit_code = -1;
+		REQUIRE(OS::get_singleton()->execute("/bin/sh", arguments, nullptr, &exit_code) == OK);
+		CHECK(exit_code == expected_status);
+		CHECK(FileAccess::get_file_as_string(result_path) == "login\n" + entry + "\n");
+		CHECK_FALSE(FileAccess::exists(command_path));
+	}
+}
+#endif
 
 TEST_CASE("[AIChat] Script path normalization") {
 	String path;

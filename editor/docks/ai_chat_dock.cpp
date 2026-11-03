@@ -39,6 +39,7 @@
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
 #include "core/os/time.h"
+#include "editor/docks/ai_chat_cli_login.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/olympus_host_paths.h"
@@ -2930,18 +2931,66 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 }
 
 void AIChatDock::_login_cli() {
-	if (busy || !_validate_cli()) {
-		_append(TTR("Error"), TTR("Set existing absolute Node, bridge and CLI entry paths before logging in."));
+	auto report = [this](bool p_ok, const String &p_text) {
+		cli_login_status->set_text(p_text);
+		cli_login_status->add_theme_color_override("font_color", get_theme_color(p_ok ? SNAME("success_color") : SNAME("error_color"), SNAME("Editor")));
+		cli_login_status->show();
+		_append(p_ok ? TTR("Editor") : TTR("Error"), p_text);
+	};
+	if (busy) {
+		report(false, U"当前请求仍在进行，请等待完成或停止后再登录。");
 		return;
 	}
+	if (!_validate_cli()) {
+		const LineEdit *fields[] = { cli_node, cli_bridge, cli_entry };
+		const String names[] = { U"Node.js 可执行文件", U"Godot 对话桥接脚本", U"CodeBuddy CLI 入口" };
+		String problems;
+		for (int i = 0; i < 3; i++) {
+			const String path = fields[i]->get_text().strip_edges();
+			if (!path.is_absolute_path() || !FileAccess::exists(path)) {
+				problems += "\n- " + names[i] + U"：" + (path.is_empty() ? String(U"未设置") : path);
+			}
+		}
+		report(false, String(U"无法登录：以下路径为空或文件不存在，请填写绝对路径。") + problems);
+		return;
+	}
+	EditorSettings::get_singleton()->set_setting("ai_chat/cli_node", cli_node->get_text().strip_edges());
+	EditorSettings::get_singleton()->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
+	EditorSettings::get_singleton()->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
 	_cancel_cli();
 	set_process(process_id >= 0);
 	List<String> arguments;
+#ifdef MACOS_ENABLED
+	const String node_path = cli_node->get_text().strip_edges();
+	if ((uint32_t(FileAccess::get_unix_permissions(node_path)) & 0111) == 0) {
+		report(false, U"无法登录：Node.js 文件没有执行权限。");
+		return;
+	}
+	const String command_path = OS::get_singleton()->get_temp_path().path_join("godot-codebuddy-login-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".command");
+	Error error = AIChatCLILogin::write_macos_script(command_path, node_path, cli_bridge->get_text().strip_edges(), cli_entry->get_text().strip_edges());
+	if (error != OK) {
+		report(false, String(U"无法生成登录终端脚本，请检查临时目录权限：") + OS::get_singleton()->get_temp_path());
+		return;
+	}
+	arguments.push_back("-a");
+	arguments.push_back("Terminal");
+	arguments.push_back(command_path);
+	String output;
+	int exit_code = -1;
+	error = OS::get_singleton()->execute("/usr/bin/open", arguments, &output, &exit_code, true);
+	if (error != OK || exit_code != 0) {
+		DirAccess::remove_absolute(command_path);
+		report(false, String(U"无法打开“终端”进行登录") + (output.strip_edges().is_empty() ? String(U"。") : String(U"：") + output.strip_edges()));
+		return;
+	}
+	report(true, U"已在“终端”中启动 CodeBuddy 登录，请在终端和浏览器中完成认证；已登录时可在终端输入 /login 切换账号。Godot 不会读取或复制登录令牌。");
+#else
 	arguments.push_back(cli_bridge->get_text().strip_edges());
 	arguments.push_back("login");
 	arguments.push_back(cli_entry->get_text().strip_edges());
 	Error error = OS::get_singleton()->create_process(cli_node->get_text().strip_edges(), arguments, nullptr, true);
-	_append(error == OK ? TTR("Editor") : TTR("Error"), error == OK ? TTR("CLI login opened in a separate terminal. Choose the same CodeBuddy site/account and complete browser authentication. If already logged in, use /login to switch accounts. Godot does not read or copy your login token.") : TTR("Could not open the CodeBuddy login terminal."));
+	report(error == OK, error == OK ? TTR("CLI login opened in a separate terminal. Choose the same CodeBuddy site/account and complete browser authentication. If already logged in, use /login to switch accounts. Godot does not read or copy your login token.") : TTR("Could not open the CodeBuddy login terminal."));
+#endif
 }
 
 void AIChatDock::_start_cli(const Array &p_messages) {
@@ -4316,6 +4365,12 @@ AIChatDock::AIChatDock() {
 	cli_login->set_text(U"登录 / 切换 CodeBuddy 账号");
 	cli_login->connect("pressed", callable_mp(this, &AIChatDock::_login_cli));
 	cli_settings->add_child(cli_login);
+	cli_login_status = memnew(Label);
+	cli_login_status->set_name("CLILoginStatus");
+	cli_login_status->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	cli_login_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
+	cli_login_status->hide();
+	cli_settings->add_child(cli_login_status);
 	allow_tools = memnew(CheckBox);
 	allow_tools->set_name("AllowTools");
 	allow_tools->set_text(U"允许源码搜索、文件操作与构建");
