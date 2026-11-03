@@ -2,7 +2,7 @@
 
 共工唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/。仓库包含完整当前框架、Godot 源码、Git/Godot 接入、示例及采集工具。已取消 Olympus 派生框架和外部共工同步依赖，历史原件保留用于追溯。
 
-使用 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/launch_gonggong_editor.ps1` 启动编辑器（仅对该进程允许脚本，不修改系统策略）。接入见 integrations/godot/README.md；完整 Windows 包和逐文件摘要见 [发布页面](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104)。五个当前 Agent 定义均绑定本次独立审查及用户批准，宿主仍须核验具体操作授权。
+使用 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/launch_gonggong_editor.ps1` 启动编辑器（仅对该进程允许脚本，不修改系统策略）。接入见 integrations/godot/README.md；完整 Windows 包和逐文件摘要见 [发布页面](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2)。五个当前 Agent 定义均绑定本次独立审查及用户批准，宿主仍须核验具体操作授权。
 
 当前事件写入 gonggong-diting-data/；历史 olympus-hermes-data/ 只读，来源与回执放 data-collection/。工单使用 GitHub Issue。模型验证范围为模拟服务，不包含模型账号。
 

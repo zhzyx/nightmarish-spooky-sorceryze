@@ -88,6 +88,58 @@ class IntakeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             gate.check_collection(self.root)
 
+    def test_host_private_state_is_ignored_but_never_staged(self):
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit",
+                "-q",
+                "--allow-empty",
+                "-m",
+                "Fixture",
+            ],
+            check=True,
+        )
+        (self.root / ".gitignore").write_text(
+            "/data-collection/*.local.json\n/data-collection/*.sqlite*\n"
+            "/data-collection/inbox/\n/data-collection/outbox/\n/data-collection/receipts/\n"
+        )
+        for name in [
+            "diting.sqlite",
+            "diting.sqlite-wal",
+            "session.local.json",
+            "inbox/event.json",
+            "outbox/pending.json",
+            "receipts/consumed.json",
+        ]:
+            path = self.root / "data-collection" / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("private host state")
+        gate.check_collection(self.root)
+        # Merely ignoring an arbitrary business receipt still does not waive delivery.
+        (self.root / "data-collection/hidden.json").write_text("{}")
+        with (self.root / ".gitignore").open("a") as stream:
+            stream.write("/data-collection/hidden.json\n")
+        with self.assertRaises(ValueError):
+            gate.check_collection(self.root)
+        (self.root / "data-collection/hidden.json").unlink()
+        subprocess.run(["git", "-C", str(self.root), "add", "-f", "data-collection/session.local.json"], check=True)
+        with self.assertRaisesRegex(ValueError, "Host-private"):
+            gate.check_collection(self.root)
+        subprocess.run(
+            ["git", "-C", str(self.root), "rm", "--cached", "data-collection/session.local.json"], check=True
+        )
+        (self.root / ".gitignore").unlink()
+        with self.assertRaises(ValueError):
+            gate.check_collection(self.root)
+
     def test_committed_collection_original_cannot_be_rewritten_even_when_staged(self):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         folder = self.root / "data-collection"

@@ -14,7 +14,7 @@
   "sinan_source_registered": false,
   "agent_activation": false,
   "initial_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1",
-  "publication_commit": "66e21559cfc9d2d079081cae6a1912fb300fba90",
+  "publication_commit": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f",
   "status_labels": ".github/status-labels.json",
   "status_rule": "exactly_one_status_label",
   "contributor_entry": ".github/CONTRIBUTING.md",

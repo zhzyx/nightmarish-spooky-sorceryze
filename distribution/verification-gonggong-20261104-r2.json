@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "source_commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+  "source_tree": "3a317a7ffb809b733f47223e5105df8dcec47b05",
+  "model_validation": "simulated_only",
+  "production_model_service_tested": false,
+  "clean_extraction": {
+    "archive_sha256": "5aa217e7d47ca86e94163110a627fae1ffab717f2e4b0a06d5d7d952f45bfb9a",
+    "files_verified": 38655,
+    "source_commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+    "source_tree": "3a317a7ffb809b733f47223e5105df8dcec47b05",
+    "all_files_match": true,
+    "extracted_to_new_directory": true
+  },
+  "clean_acceptance": {
+    "ok": true,
+    "checks": [
+      {
+        "name": "git_adapter",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "framework",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "launch_probe",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "initialize",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "full_flow",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "cli",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "requirements",
+        "exit_code": 0,
+        "ok": true
+      }
+    ],
+    "cwd": "unrelated_windows_temp",
+    "external_framework": "absent",
+    "runtime": "bundled_only",
+    "model": "simulated_only"
+  },
+  "native_flow_checks": {
+    "passed": 13,
+    "failed": 0,
+    "report": "integrations/godot/gonggong-verification.json"
+  },
+  "cli_tests": {
+    "passed": 52,
+    "failed": 0
+  },
+  "requirements_scenarios": {
+    "passed": 7,
+    "report": "integrations/godot/gonggong-requirements-verification.json"
+  },
+  "consultation": "integrations/godot/gonggong-consultation-verification.json",
+  "sinan_tests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "local_build_restart_tests": {
+    "passed": 17,
+    "failed": 0
+  },
+  "primary_workspace_chat": {
+    "ok": true,
+    "checks": [
+      {
+        "mode": "admitted",
+        "passed": true
+      },
+      {
+        "mode": "tool",
+        "passed": true
+      },
+      {
+        "mode": "recovery",
+        "passed": true
+      }
+    ],
+    "actual_main_workspace": true,
+    "old_active_framework_present": false,
+    "model_validation": "simulated_only"
+  },
+  "formal_admission": "exact_user_approved_candidates_verified",
+  "frozen_originals": "unchanged",
+  "module_preservation": "customizations/module-migration.json",
+  "historical_compatibility": "Historical evidence and events unchanged; tenants preserved; deduplication and cross-tenant rejection verified.",
+  "local_workspace": {
+    "active_root": "D:/GongGong",
+    "framework": "framework",
+    "registered_worktrees_verified": 17,
+    "other_task_branches_merged": false,
+    "prior_workspaces": "Archived under archive/local-recovery-20261104; not active entries.",
+    "old_olympus_root": "OS-held directory shell with RETIRED.txt only",
+    "unused_initial_clone": "archived",
+    "temporary_directories_removed": 7,
+    "external_godot_master_modified": false
+  },
+  "publication_readback": {
+    "assets_verified": 4,
+    "downloaded_manifest_exact_match": true,
+    "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2",
+    "first_source_integration_commit": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f",
+    "corrected_source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/45"
+  },
+  "evidence_sha256": {
+    "r2-clean-acceptance.json": "bb1e21e87a0cab1c2dda94346cb8bf889d71fb9d25e2809251ebc5332a14b6cb",
+    "r2-clean-flow.json": "06ca8529e18d8e1786a06497497614d503fb16f49cc312688e5b782d6098fe5c",
+    "r2-clean-cli.log": "fd0fcb8b5019b79532f1835f6bab4d860e03150b2decee8fd98ada285b5130dc",
+    "r2-clean-requirements.json": "14b4b5b5e29a100656efc7dbfeb063a94e419c9eb6367f60891c0b03d44d281b",
+    "r2-clean-git_adapter.log": "4215289d2abf1ebf24c471517873b01db9c7602985f0dfe5b54b007521a30bd2",
+    "r2-build-input-equivalence.json": "dfca47161377dea392b90ec3de38e98fe875d793e4b7af5f2bccdf1ecfd09908",
+    "r2-source-gate.json": "fc8b000eb20c74721b4bd4dea5bd5335ed26fcddd3bc865e835a356039e6e7cc",
+    "r2-published-delivery-gate.json": "a7cfe9b32ebb5f037479cf4661ea5926c575d3a0122f2af66ad815d8534a6c86",
+    "temporary-cleanup-final.json": "3a7ec27b2d1c874eeb80d5d59ddac1f90963b2e0d5e1265b16cf45d1a95e91a9"
+  },
+  "git_adapter_tests": {
+    "passed": 42,
+    "failed": 0,
+    "private_state_boundary": "Ignored and untracked host-private files stay local; arbitrary ignored business evidence still requires staging."
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/45",
+  "independent_gate_review": "distribution/reviews/gonggong-git-host-boundary-r2.json",
+  "unchanged_feature_evidence": {
+    "source": "distribution/verification-gonggong-20261104.json",
+    "scope": "Sinan 16 tests, local build/restart 17 tests, original primary-directory native acceptance; corresponding implementation and editor bytes unchanged. r2 separately reran clean native, CLI, requirements and Git acceptance."
+  }
+}

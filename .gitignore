@@ -445,3 +445,6 @@ __pycache__/
 /archive/yuanheng/
 /data-collection/*.local.json
 /data-collection/receipts/
+
+# Local build tooling; not another framework or release input.
+/project/build-support/

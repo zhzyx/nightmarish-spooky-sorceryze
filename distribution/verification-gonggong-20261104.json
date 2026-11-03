@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "source_commit": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+  "source_tree": "c38aa4986e03f79a51ffea5f0a6e219a90abe58f",
+  "model_validation": "simulated_only",
+  "production_model_service_tested": false,
+  "clean_extraction": {
+    "archive_sha256": "f5830942ecf3f9063cafc94d3bb75ab66e1766504e766e021623c24304a705d5",
+    "files_verified": 38653,
+    "source_commit": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+    "source_tree": "c38aa4986e03f79a51ffea5f0a6e219a90abe58f",
+    "all_files_match": true,
+    "extracted_to_new_directory": true
+  },
+  "clean_acceptance": {
+    "ok": true,
+    "checks": [
+      {
+        "name": "framework",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "launch_probe",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "initialize",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "full_flow",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "cli",
+        "exit_code": 0,
+        "ok": true
+      },
+      {
+        "name": "requirements",
+        "exit_code": 0,
+        "ok": true
+      }
+    ],
+    "cwd": "unrelated_windows_temp",
+    "external_framework": "absent",
+    "runtime": "bundled_only",
+    "model": "simulated_only"
+  },
+  "native_flow_checks": {
+    "passed": 13,
+    "failed": 0,
+    "report": "integrations/godot/gonggong-verification.json"
+  },
+  "cli_tests": {
+    "passed": 52,
+    "failed": 0
+  },
+  "requirements_scenarios": {
+    "passed": 7,
+    "report": "integrations/godot/gonggong-requirements-verification.json"
+  },
+  "consultation": "integrations/godot/gonggong-consultation-verification.json",
+  "sinan_tests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "local_build_restart_tests": {
+    "passed": 17,
+    "failed": 0
+  },
+  "primary_workspace_chat": {
+    "ok": true,
+    "checks": [
+      {
+        "mode": "admitted",
+        "passed": true
+      },
+      {
+        "mode": "tool",
+        "passed": true
+      },
+      {
+        "mode": "recovery",
+        "passed": true
+      }
+    ],
+    "actual_main_workspace": true,
+    "old_active_framework_present": false,
+    "model_validation": "simulated_only"
+  },
+  "formal_admission": "exact_user_approved_candidates_verified",
+  "frozen_originals": "unchanged",
+  "module_preservation": "customizations/module-migration.json",
+  "historical_compatibility": "Historical evidence and events unchanged; tenants preserved; deduplication and cross-tenant rejection verified.",
+  "local_workspace": {
+    "active_root": "D:/GongGong",
+    "framework": "framework",
+    "registered_worktrees_verified": 17,
+    "other_task_branches_merged": false,
+    "prior_workspaces": "Archived under archive/local-recovery-20261104; not active entries.",
+    "old_olympus_root": "OS-held directory shell with RETIRED.txt only",
+    "unused_initial_clone": "archived",
+    "temporary_directories_removed": 6,
+    "external_godot_master_modified": false
+  },
+  "publication_readback": {
+    "assets_verified": 4,
+    "downloaded_manifest_exact_match": true,
+    "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104",
+    "source_integration_commit": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f"
+  },
+  "evidence_sha256": {
+    "final-clean-acceptance.json": "40d4b31eae4291b53b8680c6748580207100215e169c5480c6eabbaaf5ea1f31",
+    "final-clean-flow.json": "5832641875568cacab940830ae25d6ab8b836fbc8e01a8904dddf30ae056190f",
+    "final-clean-cli.log": "db32e8e8ca12b830f4e42edd0f08746eee698acedefab52c364e62843aa3c33f",
+    "final-clean-requirements.json": "14b4b5b5e29a100656efc7dbfeb063a94e419c9eb6367f60891c0b03d44d281b",
+    "main-chat-acceptance.json": "86b741a06a6edd61ae18d1707cc177cab8aa344a0f7a29c6e4a1eace9beb6b97",
+    "main-build-restart-tests.log": "d45080249fd0fda067f90e9e658b5916a86e8aca1c62c73237e47b84c22efd46",
+    "sinan-regression.log": "56540bb0f6f59854084166a12b4a547606ecdee2323a5e2970642fdc8ee9f43b",
+    "worktree-preservation-final.json": "988d5f8b20e6e57d758a2bcbaa02d5e451f2a829d9b96cbd8de0840dd968dc5c"
+  }
+}

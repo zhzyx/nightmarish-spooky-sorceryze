@@ -8,15 +8,16 @@
       "path": "framework/extensions/diting-files",
       "ownership": "gonggong_customization",
       "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
-      "validation": "Current evidence: data-collection/unification-43; historical reports do not approve this candidate",
+      "validation": "distribution/verification-gonggong-20261104-r2.json",
       "rollback": "Keep existing immutable data and module snapshots; restore compatible reader before resuming writes; do not delete records",
-      "state": "unified_candidate_pending_validation",
+      "state": "validated_on_demand",
       "reporting": {
         "shared": "framework/agents/diting/reporting.json",
         "file_adapter": "framework/extensions/diting-files/diting_files.py",
         "data_root": "gonggong-diting-data",
         "historical_read_only": "olympus-hermes-data",
-        "runtime_connected": false
+        "runtime_connected": true,
+        "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
       },
       "display_name": "谛听文件采集"
     },
@@ -26,15 +27,16 @@
       "path": "customizations/components/issue-workorders",
       "ownership": "gonggong_customization",
       "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
-      "validation": "Current evidence: data-collection/unification-43; historical reports do not approve this candidate",
+      "validation": "distribution/verification-gonggong-20261104-r2.json",
       "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files",
-      "state": "unified_candidate_pending_validation",
+      "state": "validated_on_demand",
       "reporting": {
         "shared": "framework/agents/diting/reporting.json",
         "file_adapter": "framework/extensions/diting-files/diting_files.py",
         "data_root": "gonggong-diting-data",
         "historical_read_only": "olympus-hermes-data",
-        "runtime_connected": false
+        "runtime_connected": true,
+        "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
       },
       "display_name": "Git 接入工单"
     },
@@ -44,15 +46,16 @@
       "path": "customizations/components/godot-host",
       "ownership": "gonggong_customization",
       "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
-      "validation": "Current evidence: data-collection/unification-43; historical reports do not approve this candidate",
+      "validation": "distribution/verification-gonggong-20261104-r2.json",
       "rollback": "Restore matching source and verified binary; retain events; never remove framework checks to enable chat",
-      "state": "unified_candidate_pending_validation",
+      "state": "validated_on_demand",
       "reporting": {
         "shared": "framework/agents/diting/reporting.json",
         "file_adapter": "framework/extensions/diting-files/diting_files.py",
         "data_root": "gonggong-diting-data",
         "historical_read_only": "olympus-hermes-data",
-        "runtime_connected": false
+        "runtime_connected": true,
+        "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
       },
       "display_name": "Godot 接入宿主"
     }

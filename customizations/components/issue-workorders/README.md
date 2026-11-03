@@ -5,7 +5,7 @@
 
 宿主开发入口使用同一脚本的 `--intake-only --tenant <配置租户>` 模式，仍需提供 `--repo`、`--issue`、`--request-id`。此模式只回读真实工单并验证仓库 origin、稳定 ID、类别、有效状态、租户及 workspace:gonggong，不执行模型、不代替正式框架准入。没有 Issue 时先经已授权需求入口创建/复用；聊天入口拒绝绕过，不以本地预览替代发布。
 
-data-collection 内的真实来源与回执也是交付内容：本地提交门禁逐文件比较 index 当前字节，拒绝未跟踪、被忽略、未暂存或删除的采集原件。缓存、凭据和本机绝对源路径不得放入交付目录；纠正追加记录。Diting 仍按既有规则校验并在提交后核对 HEAD。服务器 required check、分支保护及 Sinan 事件来源仍需各自真实启用，入口校验不冒充这些能力。
+data-collection 内公开的业务来源与交付回执也是交付内容：本地提交门禁逐文件比较 index 当前字节，拒绝未跟踪、被忽略、未暂存或删除的采集原件。宿主私有 inbox/、outbox/、receipts/ 及采集根目录 *.local.json、SQLite 和标准旁文件必须保持忽略且未跟踪，强制暂存会被拒绝；公开交付证据放在其他明确路径。任意业务证据不因被忽略而豁免。缓存、凭据和本机绝对源路径不得发布；纠正追加记录。Diting 仍按既有规则校验并在提交后核对 HEAD。服务器 required check、分支保护及 Sinan 事件来源仍需各自真实启用，入口校验不冒充这些能力。
 Git 工作流接入子模块见 [git-workflow.md](git-workflow.md)。新建工单记录当前认证的 GitHub login；显式事件记录事件操作者与 Issue 修订标记，供并发更新核对。共工后续需在自身框架中实现相应来源适配和回读，本组件不修改 Sinan 分发包。
 
 适用 GongGong 工程层；共工共同框架、Sinan 源状态和准入不变。本文路径均相对仓库根。工作区配置为 `work-items.json`，类别定义为 `.github/labels.json`，七种状态另列 `.github/status-labels.json`。每个类别表单携带唯一 `type:*` 和默认 `status:needs-decision`；开始生产前明确范围、授权及依赖并转为 `status:in-progress`，待验收时为 `status:in-review`。

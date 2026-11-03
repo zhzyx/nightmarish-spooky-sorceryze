@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-unification-20261104",
+  "issue_number": 43,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43",
+  "tenant_id": "gonggong-workspace",
+  "change": {
+    "status": "host_collection_boundary_fixed",
+    "git_adapter_tests_passed": 42,
+    "test_report_sha256": "2a8a7a442c3f40496ac04288609bd547a344a17b65bc5b5ca23b3930a3115a1a",
+    "scope": "Private host state must stay ignored and untracked; business evidence remains required in Git.",
+    "usage": null
+  },
+  "release_followup": "A corrected full package will preserve the original release and reuse byte-identical verified editor binaries."
+}

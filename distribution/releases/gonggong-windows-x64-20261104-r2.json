@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "tag": "gonggong-windows-x64-20261104-r2",
+  "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2",
+  "published_at": "2026-11-03T22:14:27Z",
+  "source_commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+  "source_tree": "3a317a7ffb809b733f47223e5105df8dcec47b05",
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/45",
+  "first_source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/44",
+  "build_source_commit": "c31a4cb54b6b7a89c7c6909d06192170115db68f",
+  "build_inputs": "integrations/godot/gonggong-build-inputs.json",
+  "editor_transformation": "integrations/godot/gonggong-release-editor-transform.json",
+  "verification": "distribution/verification-gonggong-20261104-r2.json",
+  "model_validation": "simulated_only",
+  "files_verified": 38655,
+  "assets": [
+    {
+      "name": "godot.windows.editor.x86_64.console.exe",
+      "bytes": 301056,
+      "sha256": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/godot.windows.editor.x86_64.console.exe",
+      "server_asset_id": "RA_kwDOVegMdc4qKAhq"
+    },
+    {
+      "name": "godot.windows.editor.x86_64.exe",
+      "bytes": 166079488,
+      "sha256": "acadd07bf4f9abc3e0ac9cceeb02059f807231e20e895a2236d0597ba82ac011",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/godot.windows.editor.x86_64.exe",
+      "server_asset_id": "RA_kwDOVegMdc4qKAhw"
+    },
+    {
+      "name": "gonggong-windows-x64-20261104-r2.manifest.json",
+      "bytes": 10175918,
+      "sha256": "3fcb90a6288b4a05c0f31dfc60fbf0c9425c5dfa9701f977a532daae218f4e30",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/gonggong-windows-x64-20261104-r2.manifest.json",
+      "server_asset_id": "RA_kwDOVegMdc4qKAhm"
+    },
+    {
+      "name": "gonggong-windows-x64-20261104-r2.zip",
+      "bytes": 620771350,
+      "sha256": "5aa217e7d47ca86e94163110a627fae1ffab717f2e4b0a06d5d7d952f45bfb9a",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/gonggong-windows-x64-20261104-r2.zip",
+      "server_asset_id": "RA_kwDOVegMdc4qKAhv"
+    }
+  ],
+  "supersedes": "gonggong-windows-x64-20261104",
+  "change": "Fix Git gate handling of private host collection state; verified editor, framework definitions and runtime dependency versions unchanged.",
+  "metadata_update_boundary": "Final publication indexes and receipts are committed after the fixed package source; the archive and executable bytes remain immutable."
+}
