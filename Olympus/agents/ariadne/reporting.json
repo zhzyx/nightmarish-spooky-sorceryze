@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "ariadne",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "entry": "agents/ariadne/AGENT.md",
-    "entry_sha256": "78fefc3934b331d01ced3e6539e77ff46a38187dfaec49a6b621708fa2f6a421"
+    "entry_sha256": "39a03ce6d86a8b2c4f4a1d26eae34a1dd0651a4ab7aa3ebd6b58250d3abea7bd"
   },
   "required": true,
   "policy": "contracts/hermes-reporting.json",

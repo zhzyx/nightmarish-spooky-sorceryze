@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "framework-intake-sync-20261104",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/41",
+  "candidate_framework_version": "0.9.1",
+  "candidate_manifest_sha256": "8df9f5872b8419b47e55f7a7138ed32341595dc42651314dc3ada70af0a94c0a",
+  "source_sync": {
+    "full_parity": true,
+    "source_integrity_verified": true,
+    "source_admission_verified": true,
+    "source_files": 227,
+    "distribution_files": 164,
+    "preserved_exemption": "Olympus/extensions/hermes-files/"
+  },
+  "target_definition": {
+    "formal_verify_framework": "passed; host authority not authenticated",
+    "quality_ownership": "passed; host identity and runtime not verified",
+    "independent_review": "passed for candidate mapping; exact local target approval separately recorded",
+    "ariadne_generic_tracking": "4 passed",
+    "ariadne_coordinator_and_refresh": "byte-identical to origin/main baseline",
+    "hermes_exemption": "four files byte-identical to origin/main baseline"
+  },
+  "unchanged_host_regression": {
+    "issue_workorders": "41 run, 6 errors before business assertions due Windows hardlink EPERM; 35 passed",
+    "godot_host": "48 run, 2 errors in existing issue guide GH fixture returning a list for api user; 46 passed",
+    "candidate_changed_host_code": false,
+    "limitations": "These suites are not fully passing on this host. No engine build or live Godot chat execution was performed."
+  },
+  "runtime_model_called": false,
+  "live_auto_intake_verified": false,
+  "usage_tokens": null,
+  "usage_reason": "Host did not supply model usage measurements",
+  "git_commit": null,
+  "remote_push": null,
+  "merge": null
+}

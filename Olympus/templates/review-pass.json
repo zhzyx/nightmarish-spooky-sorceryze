@@ -14,7 +14,7 @@
     "foundation_version": "1.0",
     "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
     "zeus_version": "0.4.1",
-    "policy_version": "0.9.0"
+    "policy_version": "0.9.1"
   },
   "review": {
     "olympus_framework": "unknown",

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue41-framework-sync-request-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "framework-intake-sync-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-03T19:27:29.7065383+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/41",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "557473dca9e6095c438e797f76e9dbfb30d1d8701e86b50c7d987c9f37c3ef64",
+    "origin": "workspace-AGENTS.md-rule-snapshot-not-model-definition"
+  },
+  "payload": {
+    "description": "User approved merge of GongGong 0.9.1 framework synchronization into Olympus with old-content compatibility review",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate",
+    "candidate_manifest_sha256": "8df9f5872b8419b47e55f7a7138ed32341595dc42651314dc3ada70af0a94c0a"
+  },
+  "evidence_refs": [],
+  "sha256": "070220c03fe7660b51553f8f2f1a97003aae0eb229212e2cb2727143b396bf07"
+}

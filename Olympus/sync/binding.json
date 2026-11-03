@@ -1,8 +1,8 @@
 {
   "path_base": "olympus_framework_root",
-  "source": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework",
+  "source": "../../GongGong/CURRENT_FRAMEWORK.json",
   "sinan_source": {
-    "framework": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework"
+    "framework": "../../GongGong/framework"
   },
   "purpose": "local_upstream_locator_not_authority"
 }

@@ -14,7 +14,7 @@
   "supporting_skills": [
     "skills/nike/SKILL.md"
   ],
-  "admission_pass": "reviews/core-agent-generalization/themis-admission.json",
+  "admission_pass": "reviews/request-intake-0.9.1-themis.json",
   "host_required_for_execution": true,
   "scope": "escalated_quality_event_oversight_only",
   "reporting": "agents/themis/reporting.json",

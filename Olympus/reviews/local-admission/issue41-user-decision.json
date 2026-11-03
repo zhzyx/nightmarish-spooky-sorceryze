@@ -1,0 +1,8 @@
+{
+  "path_base": "olympus_framework_root",
+  "source": "user_message_2026-11-04_Asia-Shanghai",
+  "user_words": "合入",
+  "exact_request": "Olympus target approval list manifest SHA 8df9f5872b8419b47e55f7a7138ed32341595dc42651314dc3ada70af0a94c0a",
+  "scope": "exact local Olympus definition candidate and authorized merge; runtime host authority remains separate",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/41"
+}

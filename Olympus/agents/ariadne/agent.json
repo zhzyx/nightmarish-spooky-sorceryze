@@ -2,7 +2,7 @@
   "id": "ariadne",
   "name": "阿里阿德涅",
   "kind": "independent_agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entry": "agents/ariadne/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -15,7 +15,7 @@
     "skills/dike/SKILL.md",
     "skills/ariadne/SKILL.md"
   ],
-  "admission_pass": "reviews/ariadne-agent-0.1.0.json",
+  "admission_pass": "reviews/request-intake-0.9.1-ariadne.json",
   "host_required_for_execution": true,
   "scope": "authorized_cross_domain_task_coordination_dependencies_dispatch_and_reconciliation",
   "reporting": "agents/ariadne/reporting.json",

@@ -1,6 +1,6 @@
 # 阿里阿德涅工单进度
 
-触发：scope.changed；来源：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25
+触发：execution.finished；来源：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25
 
 覆盖：已登记来源 0 个，成功读取 0 个。未登记来源未知。
 
@@ -14,4 +14,4 @@
 
 来源版本：
 
-此文档是来源视图，不改变源状态，不代表实际派发、外部 Issue 关闭或赫尔墨斯落库成功。
+此文档是来源视图，不改变源状态，不代表实际派发、权威工单关闭或赫尔墨斯落库成功。

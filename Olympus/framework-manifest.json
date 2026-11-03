@@ -1,6 +1,6 @@
 {
   "package": "olympus-framework-design",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "status": "synchronized_candidate_pending_independent_admission",
   "host_loader_implemented": true,
   "discovery_index": "README.md",
@@ -339,12 +339,12 @@
     },
     {
       "name": "ariadne",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "display_name": "阿里阿德涅",
       "path": "skills/ariadne/SKILL.md",
       "reporting": "skills/ariadne/reporting.json",
       "state": "synchronized_candidate_pending_review",
-      "admission_pass": "reviews/ariadne/core-agent-support-0.5.0.json"
+      "admission_pass": "reviews/request-intake-0.9.1-ariadne.json"
     }
   ],
   "agents": [
@@ -357,7 +357,7 @@
       "manifest": "agents/athena/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/core-agent-generalization/athena-admission.json",
+      "admission_pass": "reviews/request-intake-0.9.1-athena.json",
       "business_module": "document_design",
       "candidate_files": [
         "AGENTS.md",
@@ -436,7 +436,7 @@
         "upstream/zeus/core.md"
       ],
       "reporting": "agents/athena/reporting.json",
-      "candidate_digest": "bb6ffdae035826f3fa103b57a7849fe76c1836691d8a7b4d29c3f0047dd58e40"
+      "candidate_digest": "65840a8af3db2e86c7ad87b031e88f7a1440d7b00ea752aed9839314478d5e14"
     },
     {
       "id": "themis",
@@ -447,7 +447,7 @@
       "manifest": "agents/themis/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/core-agent-generalization/themis-admission.json",
+      "admission_pass": "reviews/request-intake-0.9.1-themis.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
       "candidate_files": [
@@ -524,7 +524,7 @@
         "upstream/zeus/core.md"
       ],
       "reporting": "agents/themis/reporting.json",
-      "candidate_digest": "d48aa328cad2fcf46c7a2396c91a89e22ba9b9ba9429fba78503b018614b141e"
+      "candidate_digest": "9e8d3fcbdeed2049443f2e4114918fb7045cba0895865d676f36d1e16ae2951d"
     },
     {
       "id": "hermes",
@@ -533,7 +533,7 @@
       "version": "0.4.0",
       "entry": "agents/hermes/AGENT.md",
       "governance_root": "zeus",
-      "admission_pass": "reviews/core-agent-generalization/hermes-admission.json",
+      "admission_pass": "reviews/request-intake-0.9.1-hermes.json",
       "manifest": "agents/hermes/agent.json",
       "state": "synchronized_candidate_pending_independent_admission",
       "business_module": "data_feedback",
@@ -609,18 +609,18 @@
         "upstream/zeus/skills/hestia/SKILL.md"
       ],
       "reporting": "agents/hermes/reporting.json",
-      "candidate_digest": "355a3867975ad80e03071b742530cfcb7341b4015391bde2ba106e143af9934d"
+      "candidate_digest": "ced4bd371bc4522e5ccc45e17cf04ab80d32cb886928bc7bb21c20feac9b8824"
     },
     {
       "id": "harmonia",
       "name": "哈耳摩尼亚",
       "kind": "independent_agent",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "entry": "agents/harmonia/AGENT.md",
       "manifest": "agents/harmonia/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/harmonia-general-0.3.0.json",
+      "admission_pass": "reviews/request-intake-0.9.1-harmonia.json",
       "candidate_files": [
         "AGENTS.md",
         "FOUNDATION.md",
@@ -666,7 +666,7 @@
       "reporting": "agents/harmonia/reporting.json",
       "layer": "core",
       "core_capability": "change_collaboration",
-      "candidate_digest": "01b54c6e3651d72208ad438b0a21af5ed4282a6d7d3a8bef3f392b62f5d188c5"
+      "candidate_digest": "04d06e8f98a4ed363565b649cff04ae87f88cb473e8067c28006236b48503264"
     },
     {
       "id": "ariadne",
@@ -717,16 +717,16 @@
         "upstream/zeus/core.md"
       ],
       "name": "阿里阿德涅",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "entry": "agents/ariadne/AGENT.md",
       "manifest": "agents/ariadne/agent.json",
       "governance_root": "zeus",
       "state": "synchronized_candidate_pending_independent_admission",
-      "admission_pass": "reviews/ariadne-agent-0.1.0.json",
+      "admission_pass": "reviews/request-intake-0.9.1-ariadne.json",
       "reporting": "agents/ariadne/reporting.json",
       "layer": "core",
       "core_capability": "task_coordination",
-      "candidate_digest": "5685db2e36b3b234be6c6eaf8a054afa1ac20c52e0637aabdd4aae3c36632b38"
+      "candidate_digest": "6ac566bfea434b1fcd688864f0604be95ab092782d200e44dd7e340736bf72b6"
     }
   ],
   "quality_domain": {
@@ -780,7 +780,7 @@
     {
       "id": "ariadne",
       "name": "阿里阿德涅",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "manifest": "modules/ariadne/module.json",
       "governance_root": "zeus",
       "state": "source_registered_distribution_pending_review",

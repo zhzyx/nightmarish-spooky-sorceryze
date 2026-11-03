@@ -1,0 +1,8 @@
+{
+  "path_base": "olympus_framework_root",
+  "module": "ariadne-support",
+  "version": "0.5.1",
+  "module_sha256": "a4a8611e420dbd2860cedb492ecf55d7b64d55e6c51ece30a6a4ce0af494bd12",
+  "decision_ref": "reviews/local-admission/issue41-user-decision.json",
+  "scope": "definition available under host mandate; this record does not activate the module or alter the generated pending module pass"
+}
