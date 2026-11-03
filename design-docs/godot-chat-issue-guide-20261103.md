@@ -114,3 +114,10 @@
 证据：[原生验收](../data-collection/issue22-agent-intake-native-20261104.json)、[独立审查与编译修复](../data-collection/issue22-agent-intake-review-20261104.json)。GitHub 和模型传输为隔离夹具，未调用真实供应商或向真实仓库创建测试单；临时事件未导入生产。保留既有无界面退出 RID/ObjectDB 清理诊断，未扩大修复范围。
 
 初次编译因 OptionButton 头文件缺失失败，补齐后单对象和单编辑器 CI 通过；首次原生运行因夹具错误假设编辑器工作目录而失败，仅修正夹具后复用同一产物通过。未重建其他平台。
+
+
+### 自动建单交付回执（2026-11-04）
+
+[PR #30](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/30) 已合入，提交 `aa3d5ac89291a0ef35793cb644e7a4317a42d700` 经远程 main 回读确认。本机 Windows 编辑器及三个匹配运行文件已安装，版本、摘要、启动入口、宿主状态与现有 gh 登录检查通过；相关原文件已备份，其他在途修改保留。源码候选位于隔离检出，不将主工作树的既有未提交修改当作干净交付。
+
+最终独立证据复核通过，限制沿用原生验收报告。真实安装与合入来源：[交付回执](../data-collection/issue22-agent-intake-delivery-20261104.json)。文档/夹具变更和并发治理/证据合入未改变已验证引擎与运行输入，因此复用 `f8eb7812` 单 Windows 构建及原生行为证据，最终文档提交静态检查通过。

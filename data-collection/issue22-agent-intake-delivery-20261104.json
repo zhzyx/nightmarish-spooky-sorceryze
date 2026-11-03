@@ -1,0 +1,56 @@
+{
+  "installation": "updated",
+  "source_candidate": "f8eb7812a413bf570019eb32343f69f8f32024b6",
+  "source_checkout_head": "2ed9c397b95e6011c1963fe26ea8d42c84ff3a65",
+  "editor_version": "4.8.beta.gh.f8eb7812a",
+  "editor_sha256": "3b861ffdf105cc105f1e5036fd393fa15530fcf0beefa135867946367d015f5d",
+  "host_adapters": [
+    {
+      "workspace_path": "customizations/components/godot-host/bridge.py",
+      "sha256": "8aa61049941c27cae215ab5836cc9bb1ffc743184ec6df6d89856be09efb6455"
+    },
+    {
+      "workspace_path": "customizations/components/godot-host/requirements_agent.py",
+      "sha256": "22da3cbc6c8285e90d1536826fc5a0fdab8e4a033027a46657edb7c7a34a4504"
+    },
+    {
+      "workspace_path": "customizations/components/issue-workorders/work_items.py",
+      "sha256": "1594e630940f0754f3247b3b7d531b9ae8151847768747989cc1837618b047ea"
+    }
+  ],
+  "previous_runtime_logic": "Matched previously released be278eca after excluding import order; original bytes and executable preserved in local backup",
+  "other_primary_changes": "preserved; no reset, stash or broad overlay",
+  "bridge_status_ok": true,
+  "github_cli_found": true,
+  "github_cli_auth_error": null,
+  "production_model_called": false,
+  "real_editor_issue_created": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "request_id": "godot-chat-issue-guide-20261103",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "implementation_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/30",
+  "implementation_head": "2ed9c397b95e6011c1963fe26ea8d42c84ff3a65",
+  "implementation_merge": "aa3d5ac89291a0ef35793cb644e7a4317a42d700",
+  "implementation_merged_at": "2026-11-03T16:26:10Z",
+  "remote_merge_verified": true,
+  "merge_in_origin_main": true,
+  "independent_final_evidence_review": "passed; existing Dike responsibility subtask, no production identity claim",
+  "launch_probe": "passed; installed editor and portable Python/Node selected",
+  "final_static": {
+    "run_id": 41673810042,
+    "conclusion": "success",
+    "head": "2ed9c397b95e6011c1963fe26ea8d42c84ff3a65"
+  },
+  "build_evidence_reuse": "Post-f8eb7812 changes only documentation, records and fixture diagnostics/cwd repair; concurrent main additions only governance/evidence, no runtime or engine compile inputs changed",
+  "redundant_merge_ci": {
+    "run_id": 41674180963,
+    "cause": "Default merge message did not include skip ci and launched aggregate GHA after manual scoped validation",
+    "action": "Cancel then force-cancel requested for this exact run only; non-Windows platforms skipped. Receipt PR will use explicit skip-ci merge subject.",
+    "terminal_state": {
+      "conclusion": "cancelled",
+      "status": "completed"
+    }
+  },
+  "git_evidence": "Native acceptance, review and source facts already committed and pushed; this source records actual installation and verified implementation merge; no fixture production events imported"
+}
