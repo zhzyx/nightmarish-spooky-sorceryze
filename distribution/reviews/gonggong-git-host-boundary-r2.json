@@ -1,0 +1,14 @@
+{
+  "reviewer": "/root/migration_review",
+  "independent": true,
+  "scope": "host-private collection Git boundary fix",
+  "outcome": "passed",
+  "tests_passed": 42,
+  "framework_changed": false,
+  "files": {
+    "customizations/components/issue-workorders/issue_gate.py": "0a05f704b0cfc3bc20e265b33cb3b176d921accd95dd4bf55929828482bc5f9c",
+    "customizations/components/issue-workorders/test_host_intake.py": "6176d156a42f557eb46edccb02f999d1be29e9b6382bdeea7c78d7732623e69d"
+  },
+  "source_commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+  "observation": "Reviewer independently reran 42 tests and checked explicit private paths, ignored business evidence rejection, index rejection, immutable history and link boundaries."
+}

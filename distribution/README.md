@@ -4,6 +4,8 @@
 
 [发布页面及摘要清单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2) · [下载完整 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/gonggong-windows-x64-20261104-r2.zip)。清单绑定源码提交、构建输入、可执行文件和逐文件摘要；旧发布继续保留。
 
+[当前发布索引](releases/gonggong-windows-x64-20261104-r2.json) · [最终验收记录](verification-gonggong-20261104-r2.json)。索引与收尾回执在发布后合入 main，不改变固定下载包。
+
 1. 下载后按发布页面的 SHA256 核验，再解压到新的目录。
 2. 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/initialize_downloaded_workspace.ps1`，建立包内源码快照；已有仓库保留。完整 Git 历史保存在原远端仓库，ZIP 不含账号或 `.git`。
 3. 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/launch_gonggong_editor.ps1`，启动共工示例与编辑器。此参数只作用于该启动进程。

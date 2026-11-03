@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-unification-20261104",
+  "issue": 43,
+  "tenant_id": "gonggong-workspace",
+  "source_commit": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+  "main_source_merge": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f",
+  "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104",
+  "assets": [
+    {
+      "name": "godot.windows.editor.x86_64.console.exe",
+      "bytes": 301056,
+      "sha256": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/godot.windows.editor.x86_64.console.exe",
+      "server_asset_id": "RA_kwDOVegMdc4qJeK0"
+    },
+    {
+      "name": "godot.windows.editor.x86_64.exe",
+      "bytes": 166079488,
+      "sha256": "acadd07bf4f9abc3e0ac9cceeb02059f807231e20e895a2236d0597ba82ac011",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/godot.windows.editor.x86_64.exe",
+      "server_asset_id": "RA_kwDOVegMdc4qJeK3"
+    },
+    {
+      "name": "gonggong-windows-x64-20261104.manifest.json",
+      "bytes": 10175304,
+      "sha256": "274c4a7ee31f959e9b9898337f3d5a7e9f617892cdab52a67f63319d37877e1d",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/gonggong-windows-x64-20261104.manifest.json",
+      "server_asset_id": "RA_kwDOVegMdc4qJeK1"
+    },
+    {
+      "name": "gonggong-windows-x64-20261104.zip",
+      "bytes": 620768879,
+      "sha256": "f5830942ecf3f9063cafc94d3bb75ab66e1766504e766e021623c24304a705d5",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/gonggong-windows-x64-20261104.zip",
+      "server_asset_id": "RA_kwDOVegMdc4qJeK_"
+    }
+  ],
+  "verification": "distribution/verification-gonggong-20261104.json",
+  "main_reconciliation": "pending_followup_pr",
+  "model_validation": "simulated_only",
+  "usage": null,
+  "issue_number": 43,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43"
+}

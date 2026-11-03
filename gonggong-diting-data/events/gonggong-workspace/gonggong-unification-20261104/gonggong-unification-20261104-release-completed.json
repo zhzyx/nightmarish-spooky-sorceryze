@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-unification-20261104-release-completed",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-unification-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-03T21:54:48.539917+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43",
+  "agent": {
+    "id": "codex-root-unification-43",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "09c04d469e649a4cb11d9cc50803d298c7f8f96829431ff1cb4ee68b221e9799"
+  },
+  "payload": {
+    "status": "released_and_workspace_switched",
+    "source_commit": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+    "source_merge_commit": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f",
+    "release_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104",
+    "verification": "distribution/verification-gonggong-20261104.json",
+    "final_metadata_pr": "pending",
+    "model_validation": "simulated_only",
+    "usage": null
+  },
+  "evidence_refs": [
+    "gonggong-unification-20261104-request"
+  ],
+  "sha256": "81b32f9a130bd170ce7a5b06f3c85ea14e6a3ae078d23a219fcccecbfbfa5851"
+}
