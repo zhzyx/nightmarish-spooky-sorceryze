@@ -141,8 +141,13 @@ class ChatGateTests(unittest.TestCase):
             json.dumps({"GONGGONG_FRAMEWORK_SOURCE": "fixture-source", "force_approved": True})
         )
         env = bridge.host_environment(self.root)
-        self.assertNotIn("GONGGONG_FRAMEWORK_SOURCE", env)
+        self.assertFalse("GONGGONG_FRAMEWORK_SOURCE" in env)
         self.assertNotIn("force_approved", env)
+
+    def test_inherited_external_source_binding_is_removed(self):
+        with patch.dict(bridge.os.environ, {"GONGGONG_FRAMEWORK_SOURCE": "Z:/missing-retired-source"}):
+            env = bridge.host_environment(self.root)
+        self.assertFalse("GONGGONG_FRAMEWORK_SOURCE" in env)
 
     def test_configured_node_is_available_to_framework_subprocesses(self):
         node = self.root / "node.exe"

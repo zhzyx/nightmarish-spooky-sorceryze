@@ -435,3 +435,13 @@ __pycache__/
 /data-collection/*.sqlite*
 /data-collection/inbox/
 /data-collection/outbox/
+
+# Preserved host archives and local collection bindings
+/archive/local-recovery-*/
+/archive/framework-releases/
+/archive/production-workflow/
+/archive/quality-workorders/
+/archive/yanshi-design/
+/archive/yuanheng/
+/data-collection/*.local.json
+/data-collection/receipts/

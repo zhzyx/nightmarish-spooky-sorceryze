@@ -190,7 +190,7 @@
         "引擎构建/重启/回退",
         "便携安装与启动"
       ],
-      "status": "python_regression_passed_native_acceptance_pending",
+      "status": "native_simulated_and_cli_acceptance_passed",
       "path_base": "repository_root",
       "file_mapping": [
         {
@@ -211,7 +211,7 @@
           "old": "customizations/components/godot-host/bridge.py",
           "new": "customizations/components/godot-host/bridge.py",
           "old_git_sha256": "8aa61049941c27cae215ab5836cc9bb1ffc743184ec6df6d89856be09efb6455",
-          "new_sha256": "a5a5f5ac16fc0ef8044445bcd16ecd5bfe8a03a8027ce23d0390fb35320c45f9",
+          "new_sha256": "108ac6c7ac9c32f6677c20fcf35d9b553d02986aff01d4a56ca88fdb1765ba1c",
           "disposition": "adapted_to_single_framework"
         },
         {
@@ -225,7 +225,7 @@
           "old": "customizations/components/godot-host/test_bridge.py",
           "new": "customizations/components/godot-host/test_bridge.py",
           "old_git_sha256": "fba582b9f65dff7c62e363a765e5d58eb86c3fa76b9dfd56718f81677ae2b876",
-          "new_sha256": "11aa2829137a2a08e1eb46c48a2230db318f25775d34792308b79936d26f871b",
+          "new_sha256": "e84fb530742d6a5e43d8d660b6409fa7bb8e7ae696aef28e11ec77a8a6e00809",
           "disposition": "adapted_to_single_framework"
         },
         {

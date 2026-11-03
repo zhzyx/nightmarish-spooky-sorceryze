@@ -1,16 +1,27 @@
-# 共工 Windows 交付
+# 共工 Windows 完整交付
 
-统一迁移候选正在验收，尚未发布新的共工下载包。新包包含完整 framework/、Godot 源码、共工编辑器、示例和既有标准运行时；不需要外部框架源。模型验收使用模拟服务。
+本包包含唯一当前 `framework/`、Godot 源码、共工 Windows x64 编辑器、Git/Godot/CLI/采集子模块、示例、Python/Node/Git、固定版本 CLI 依赖和同版本 Git Bash，以及原始 Godot 4.7.2 回退安装。无需外部共工来源；不含本机凭据。模型验收仅使用模拟服务。
 
-既有发布在下方按历史原名保留，其说明和摘要仅适用于原包，不代表当前共工候选。新包完成构建、精确准入、解包和远端回读后才更新当前入口。
+[发布页面及摘要清单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104) · [下载完整 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/gonggong-windows-x64-20261104.zip)。清单绑定源码提交、构建输入、可执行文件和逐文件摘要；旧发布继续保留。
+
+1. 下载后按发布页面的 SHA256 核验，再解压到新的目录。
+2. 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/initialize_downloaded_workspace.ps1`，建立包内源码快照；已有仓库保留。完整 Git 历史保存在原远端仓库，ZIP 不含账号或 `.git`。
+3. 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/launch_gonggong_editor.ps1`，启动共工示例与编辑器。此参数只作用于该启动进程。
+4. GitHub 操作使用用户自行登录的 GitHub CLI；模型服务使用用户自己的配置。新数据写入 `gonggong-diting-data/`，历史来源只读。
+
+独立复核已验证所有原有子模块实现、52 项 CLI 测试及二进制仅修改只读诊断路径。最终包验收及远端回读证据在发布索引中；模拟服务结果不代表真实模型供应商验收。C# 示例需要额外 .NET 版 Godot 与 SDK，本包不扩展该范围。
 
 ---
+
+以下为不可改写的旧发布说明，仅适用于各自历史包。
+
+
 
 # 完整 Windows 工作区交付
 
 源码、框架、业务内容、文档和真实任务数据在当前 Git 仓库。仓库 Releases 提供完整工作区 ZIP，额外包含定制编辑器、标准 Python/Node/Git 和原始 Godot 4.7.2 回退安装。逐文件清单与归属在包内 `bundle-manifest.json`；包摘要与下载链接记录在本目录的发布索引。
 
-当前发布：[2026-11-02 完整 Windows 工作区](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/olympus-windows-x64-20261102) · [下载 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/olympus-windows-x64-20261102/olympus-windows-x64-20261102.zip) · [发布索引](releases/olympus-windows-x64-20261102.json) · [解包验收](verification-full-package-20261102.json)。ZIP 为 346,102,303 字节，SHA256 为 `e2602af05e17be6328410b0c5d97f96b820acf44e7ea21b2bcf48dc19dfdae3b`。
+历史发布：[2026-11-02 完整 Windows 工作区](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/olympus-windows-x64-20261102) · [下载 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/olympus-windows-x64-20261102/olympus-windows-x64-20261102.zip) · [发布索引](releases/olympus-windows-x64-20261102.json) · [解包验收](verification-full-package-20261102.json)。ZIP 为 346,102,303 字节，SHA256 为 `e2602af05e17be6328410b0c5d97f96b820acf44e7ea21b2bcf48dc19dfdae3b`。
 
 包内源码固定为 `6a817ff0e6b5bc8f2621985ec8707792abe125bb`；发布后的索引、工单关闭回执和文档澄清随后提交到 main，不改变已经验收的可执行内容。
 

@@ -144,6 +144,8 @@ def find_gh(env):
 
 def host_environment(root):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", GONGGONG_PYTHON=sys.executable)
+    # A retired external source locator must not propagate to child processes.
+    env.pop("GONGGONG_FRAMEWORK_SOURCE", None)
     gh = find_gh(env)
     if gh:
         env["GONGGONG_GH"] = gh
