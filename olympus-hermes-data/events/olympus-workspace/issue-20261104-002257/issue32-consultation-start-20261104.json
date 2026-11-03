@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "issue32-consultation-start-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-20261104-002257",
+  "kind": "request",
+  "occurred_at": "2026-11-03T17:06:17.142334+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/32",
+  "agent": {
+    "id": "codex-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "557473dca9e6095c438e797f76e9dbfb30d1d8701e86b50c7d987c9f37c3ef64",
+    "origin": "codex-desktop-subtask"
+  },
+  "payload": {
+    "description": "User authorized all tasks in parallel; Issue #32 actual intake-only passed",
+    "evidence": "data-collection/issue32-consultation-start-20261104.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "1d2042959b2c2aa3b4f86ec4aed4134869d329128536633b8493a44f29348498"
+}
