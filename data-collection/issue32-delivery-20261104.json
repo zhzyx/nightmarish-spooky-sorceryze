@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/32",
+  "request_id": "issue-20261104-002257",
+  "observed_at": "2026-11-03T17:45:42.680096+00:00",
+  "implementation_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/36",
+  "implementation_head": "13145c087573d30838d122d1e5f45a16ddc2a495",
+  "merge_commit": "7c37c92afe60f9b69883fa1416632e58cd460e1b",
+  "merged_at": "2026-11-03T17:44:45Z",
+  "remote_merge_verified": true,
+  "merge_in_origin_main": true,
+  "final_static": {
+    "run": 41686847095,
+    "head": "13145c087573d30838d122d1e5f45a16ddc2a495",
+    "conclusion": "success"
+  },
+  "source_gate_content_sha256": "47a3be080f989551bfd2efc9fb025d20162e52d2cc944fa3939dd45ffd06581a",
+  "source_postcommit_git_check": {
+    "records": 104,
+    "files": 107,
+    "state": "committed"
+  },
+  "independent_final_review": "pass: no changes to C++, critical build paths, native fixtures, Windows workflow or host interfaces relative to native-tested candidate; framework main integration covered by real gate",
+  "evidence_reuse": {
+    "build_run": 41681730192,
+    "native_run": 41685815159,
+    "reason": "unchanged build/runtime inputs; not rerun on final integration SHA"
+  },
+  "installation": "not performed or verified; no claim that the running local editor contains this feature",
+  "limits": [
+    "API-only consultation; native CLI explicitly refused",
+    "Loopback model and headless native regression; no live supplier or display inspection",
+    "RID/ObjectDB shutdown leakage retained in native evidence; no long-term stability claim"
+  ],
+  "receipt_scope": "One final implementation-delivery receipt; receipt PR remote merge is verified by GitHub readback/Issue update, without recursive receipt PRs",
+  "input_tokens": null,
+  "output_tokens": null
+}
