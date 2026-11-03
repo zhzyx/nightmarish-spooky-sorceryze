@@ -37,3 +37,10 @@
 用户要求立即合入后，实际读取PR静态失败并完成格式、测试模块spec/loader类型保护、同一头文件规范路径修复；57项回归和mypy通过。独立复核确认生产逻辑一致，头文件目标一致。仅两份已记录摘要的历史证据原件排除换行格式化，原件保护门禁继续运行。[CI修复证据](../data-collection/issue6-continuation-ci-fix-20261103.json)。以新提交远程检查为准，尚不宣称合入。
 
 PR #16 已按用户立即合入授权普通合并至 main，提交 `0e2fe845e884fdd1683f1a8e9ceb1bcffc06f72f`。远程回读及候选祖先校验通过，合入后 Hermes 检查71事件／74数据文件均 committed。随后回读远程静态与Issue关联已成功，Windows构建仍在运行；工单保持待验收。[实际合入回执](../data-collection/issue6-continuation-merge-20261103.json)及文件事件随此证据补交，历史记录不改写。
+
+
+## 用户授权的模拟模型最终验收
+
+用户明确要求使用模拟模型，通过后自动验收并关闭。已复用PR #16对应CI run41524800849的windows-editor产物，档案摘要与GitHub记录一致；真实Windows原生页面六项场景通过，真实Issue与正式框架未替换。正确绑定及工具轮回执分别8/15条，在临时仓库通过require-committed；正式数据中只补交本次验收事实，不导入夹具事件。安装了同一摘要的编辑器，复用未变console启动器，隔离设置与异地cwd安装探针通过。
+
+[实际验收报告](../data-collection/issue6-simulated-acceptance-20261103.json)与[脱敏过程源码](../data-collection/issue6-simulated-procedure-20261103.md)随交付提交。独立审查通过六场景；退出时RID清理提示、长期稳定性、真实供应商调用和管理员分支保护不属于本次已通过声明。现有账号admin=false、main未保护，不能声称服务器不可绕过保障已启用。合入本次证据后按用户授权关闭工单，历史待验收文字作为当时记录保留。

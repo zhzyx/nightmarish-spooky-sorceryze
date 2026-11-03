@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-simulated-acceptance-20261103-passed",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-03T06:47:48.689750+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "1b98ef0c076def292e6b461a794279bd6b2eea6ba35456a3f2f6111f37d9e6e6",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "Six native host cases passed; verified CI executable installed and installation probe passed. Evidence and sanitized procedure retained; no real model service or synthetic production events.",
+    "evidence_file": "data-collection/issue6-simulated-acceptance-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null,
+    "unknown_reason": "Host usage not supplied; no estimated savings or inference usage."
+  },
+  "evidence_refs": [
+    "issue6-simulated-acceptance-20261103-request"
+  ],
+  "sha256": "e5d4dc8eeb95c1df1bd5f3fe1e2faa3eb5e6c19fd312244340eb68e6e208e5cc"
+}

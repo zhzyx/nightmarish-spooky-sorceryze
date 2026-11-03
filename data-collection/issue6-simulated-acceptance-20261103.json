@@ -1,0 +1,135 @@
+{
+  "started_at": "2026-11-03T06:45:00.996290+00:00",
+  "issue": 6,
+  "ci_run": 41524800849,
+  "artifact": 13178384007,
+  "real_model_calls": false,
+  "cases": [
+    {
+      "mode": "missing",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 0,
+      "events": 0,
+      "intake": null
+    },
+    {
+      "mode": "mismatch",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 0,
+      "events": 0,
+      "intake": {
+        "rejected_reason": "stable request ID does not match"
+      }
+    },
+    {
+      "mode": "closed",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 0,
+      "events": 0,
+      "intake": {
+        "rejected_reason": "Issue is not open"
+      }
+    },
+    {
+      "mode": "accepted",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 1,
+      "events": 8,
+      "intake": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+        "number": 6,
+        "type": "type:maintenance",
+        "status": "status:in-review",
+        "updated_at": "2026-11-02T21:05:42Z"
+      },
+      "hermes_git_check": {
+        "git_state": "committed",
+        "files": 11,
+        "records": 8,
+        "remote_merge_verified": false
+      },
+      "real_issue_admission_and_receipts": true
+    },
+    {
+      "mode": "tool",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 2,
+      "events": 15,
+      "intake": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+        "number": 6,
+        "type": "type:maintenance",
+        "status": "status:in-review",
+        "updated_at": "2026-11-02T21:05:42Z"
+      },
+      "tool_result": {
+        "limit": 500,
+        "paths": [
+          "res://gate.gd"
+        ],
+        "possibly_truncated": false
+      },
+      "hermes_git_check": {
+        "git_state": "committed",
+        "files": 18,
+        "records": 15,
+        "remote_merge_verified": false
+      },
+      "real_issue_admission_and_receipts": true
+    },
+    {
+      "mode": "offline",
+      "passed": true,
+      "native_page": true,
+      "model_requests": 0,
+      "events": 0,
+      "intake": {
+        "rejected_reason": "WinError 2"
+      }
+    }
+  ],
+  "binary_sha256": {
+    "godot.windows.editor.x86_64.exe": "41ab5512ab64eff7d2263099bb41629d5830032adbbe6fc6ce3ab4ecf8e0ebd4"
+  },
+  "reused_checks_from": "2026-11-03T06:44:34.857004+00:00",
+  "production_dataset_unchanged": true,
+  "ok": true,
+  "completed_at": "2026-11-03T06:45:05.153522+00:00",
+  "pull_request_head": "df03887786c13a822551751f11fe565376fef6b5",
+  "archive_sha256": "05df8b349d30b0041126963f8a8e2a6aa36747902c8cf57e883f60633531d9a0",
+  "installed_binary_version": "4.8.beta.gh-16.228e4717e",
+  "installed_main_sha256": "41ab5512ab64eff7d2263099bb41629d5830032adbbe6fc6ce3ab4ecf8e0ebd4",
+  "installation_probe": {
+    "passed": true,
+    "isolated_settings": true,
+    "unrelated_cwd": true,
+    "workspace_override": false,
+    "console_launcher": "Previously installed unchanged launcher reused; main executable replaced with verified CI artifact."
+  },
+  "scope": "Native editor instantiated headless; real approved Olympus and real GitHub intake; loopback model response only; test events remain in temporary repositories.",
+  "limitations": [
+    "No real provider or paid inference certification.",
+    "Existing exit-time RID leak diagnostics were observed; exit cleanup and long-running stability are not accepted by these cases.",
+    "main is not protected and this account is not admin; server enforcement is outside this authorized simulated acceptance.",
+    "Production dataset comparison covers the clean acceptance worktree; fixtures and editor settings were isolated."
+  ],
+  "input_tokens": null,
+  "output_tokens": null,
+  "independent_review": {
+    "reviewer": "codex-subagent:review_standalone",
+    "status": "pass",
+    "method": "Read-only harness/report/log review; no repeated engine runs",
+    "findings_resolved": [
+      "Specific negative intake reasons asserted",
+      "Tool-result message and successful structure verified",
+      "Original GH configuration retained without copying credentials"
+    ],
+    "binary_digest_checked": true,
+    "scope": "six simulated native host cases; installation probe separately executed by root"
+  }
+}

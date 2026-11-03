@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue6-simulated-acceptance-20261103-request",
+  "tenant_id": "olympus-workspace",
+  "request_id": "issue-governance-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-03T06:47:48.586235+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/6",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "1b98ef0c076def292e6b461a794279bd6b2eea6ba35456a3f2f6111f37d9e6e6",
+    "origin": "codex-local-task"
+  },
+  "payload": {
+    "description": "User explicitly authorized loopback simulated-model native acceptance and automatic closure after passing.",
+    "evidence_file": "data-collection/issue6-simulated-acceptance-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null,
+    "unknown_reason": "Host usage not supplied; no estimated savings or inference usage."
+  },
+  "evidence_refs": [],
+  "sha256": "febd0577306f7275e7a018465521b66b558318f3089b5d73cf506b7596b7c30e"
+}
