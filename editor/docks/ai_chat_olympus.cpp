@@ -417,6 +417,8 @@ void AIChatDock::_issue_guide_prompt() {
 				String(issue_guide_fields["document"]), String(issue_guide_fields["repository"]), String(issue_guide_fields["title"]), String(U"、").join(labels));
 		if (!bool(issue_guide_fields.get("gh_available", false))) {
 			text += U"\n\n注意：本机未找到 GitHub CLI（gh），确认后会给出可在其他环境执行的创建命令。";
+		} else if (!bool(issue_guide_fields.get("gh_authenticated", false))) {
+			text += "\n\n" + AIChatIssueGuide::gh_login_text(issue_guide_fields.get("gh_login_command", ""), U"确认");
 		}
 	} else if (issue_guide_state == "await_status") {
 		text = vformat(U"已绑定工单 #%d（`%s`）。门禁要求工单为 `status:in-progress` 或 `status:in-review`，且带 `workspace:olympus` 标签；新工单默认为 `status:needs-decision`，是否开工需人工决定。\n\n"
@@ -592,7 +594,7 @@ void AIChatDock::_poll_issue_guide() {
 		if (!ok) {
 			_append(TTR("Error"), String(U"需求文档生成失败：") + error);
 		} else {
-			for (const String &key : { String("document"), String("repository"), String("labels"), String("gh_available") }) {
+			for (const String &key : { String("document"), String("repository"), String("labels"), String("gh_available"), String("gh_authenticated"), String("gh_login_command") }) {
 				issue_guide_fields[key] = result.get(key, Variant());
 			}
 			issue_guide_state = "confirm";
@@ -608,6 +610,10 @@ void AIChatDock::_poll_issue_guide() {
 			_issue_guide_prompt();
 		} else if (error == "gh_unavailable") {
 			_append(TTR("Error"), String(U"本机未找到 GitHub CLI（gh），未创建远程 Issue。可在有仓库写权限的环境中于工作区根目录执行：\n\n```\n") + String(result.get("command", "")) + "\n```\n\n" + vformat(U"创建后回复 `#编号 %s` 绑定；或安装并登录 gh 后回复 `确认` 重试。", String(issue_guide_fields["request_id"])));
+		} else if (error == "gh_unauthenticated") {
+			issue_guide_fields["gh_authenticated"] = false;
+			issue_guide_fields["gh_login_command"] = result.get("login_command", "");
+			_append(TTR("Error"), String(U"未创建远程 Issue。") + AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"确认") + vformat(U"\n\n也可在其他已登录环境于工作区根目录执行下列命令，创建后回复 `#编号 %s` 绑定：\n\n```\n", String(issue_guide_fields["request_id"])) + String(result.get("command", "")) + "\n```");
 		} else {
 			_append(TTR("Error"), String(U"创建 Issue 失败，未绑定：") + error);
 			_issue_guide_prompt();
@@ -616,6 +622,8 @@ void AIChatDock::_poll_issue_guide() {
 		if (ok) {
 			_append(TTR("Editor"), vformat(U"工单 #%d 状态为 `%s`。", int64_t(issue_guide_fields.get("issue_number", 0)), String(result.get("status", ""))));
 			_issue_guide_retry();
+		} else if (error == "gh_unauthenticated") {
+			_append(TTR("Error"), String(U"未更新工单状态。") + AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"开始") + U"\n\n也可在 GitHub 网页上修改状态后回复 `已更新`。");
 		} else {
 			_append(TTR("Error"), String(U"更新工单状态失败：") + (error == "gh_unavailable" ? String(U"本机未找到 GitHub CLI（gh），请在 GitHub 上修改后回复 `已更新`。") : error));
 			_issue_guide_prompt();

@@ -24,7 +24,14 @@ state = json.loads(state_path.read_text()) if state_path.exists() else {"issues"
 args = sys.argv[1:]
 state["calls"].append(args)
 out = ""
-if args[:1] == ["api"] and "/issues?" in args[1]:
+if args[:2] == ["auth", "status"]:
+    # Logged-out until the scene writes the flag (stands in for an interactive `gh auth login`).
+    logged_in = Path(__file__).with_name("gh-logged-in").exists()
+    state_path.write_text(json.dumps(state))
+    if not logged_in:
+        sys.stderr.write("You are not logged into any GitHub hosts.\n")
+    sys.exit(0 if logged_in else 1)
+elif args[:1] == ["api"] and "/issues?" in args[1]:
     out = json.dumps([list(state["issues"].values())])
 elif args[:1] == ["api"]:
     issue = state["issues"].get(args[1].rsplit("/", 1)[1])
@@ -63,7 +70,7 @@ def write_executable(path, source):
     path.chmod(0o755)
 
 
-def prepare_issue_guide(root):
+def prepare_issue_guide(root, logged_in=True):
     shutil.copytree(
         ROOT / "customizations/components/issue-workorders",
         root / "customizations/components/issue-workorders",
@@ -78,6 +85,8 @@ def prepare_issue_guide(root):
     fixtures = root / "fixtures"
     fixtures.mkdir()
     write_executable(fixtures / "gh", FAKE_GH)
+    if logged_in:
+        (fixtures / "gh-logged-in").write_text("fixture", encoding="utf-8")
     # Context transport fixture only: no node runtime here, never an Olympus admission.
     write_executable(fixtures / "node", 'import sys\nsys.stdout.write("ISOLATED_FRAMEWORK_CONTEXT_FIXTURE")\n')
     return fixtures
@@ -105,6 +114,7 @@ def main():
             "recovery_cancel",
             "issue_guide",
             "issue_guide_cancel",
+            "issue_guide_login",
         ],
         default="rejected",
     )
@@ -209,7 +219,7 @@ def main():
                 )
             subprocess.run(["git", "init", "--quiet", str(root)], check=True)
             guided = args.mode.startswith("issue_guide")
-            fixtures = prepare_issue_guide(root) if guided else None
+            fixtures = prepare_issue_guide(root, args.mode != "issue_guide_login") if guided else None
             if guided:
                 subprocess.run(
                     ["git", "-C", str(root), "remote", "add", "origin", "https://github.com/test/repo.git"], check=True
@@ -343,6 +353,7 @@ def main():
                 "cancel": "OLYMPUS_CHAT_CANCEL_OK",
                 "issue_guide": "OLYMPUS_CHAT_ISSUE_GUIDE_OK",
                 "issue_guide_cancel": "OLYMPUS_CHAT_ISSUE_GUIDE_CANCEL_OK",
+                "issue_guide_login": "OLYMPUS_CHAT_ISSUE_GUIDE_OK",
             }[args.mode]
             if result.returncode or marker not in result.stdout:
                 print(result.stdout[-5000:])
@@ -460,6 +471,12 @@ def check_issue_guide(root, mode, requests):
             "workspace:olympus",
         ]
         assert any(c[:3] == ["issue", "edit", "42"] for c in state["calls"]), "Explicit start did not update status"
+        if mode == "issue_guide_login":
+            names = [c[:2] for c in state["calls"]]
+            # Logged-out draft and confirm made only read-only auth checks before any API/create call.
+            logged_out = names[: next(i for i, n in enumerate(names) if n[0] == "api")]
+            assert len(logged_out) >= 2 and all(n == ["auth", "status"] for n in logged_out), names
+            assert names.count(["issue", "create"]) == 1 and len(state["issues"]) == 1, names
         assert events and {e["request_id"] for e in events} == {"guide-e2e-1"}
         assert {e["source_ref"] for e in events} == {"https://github.com/test/repo/issues/42"}
         ending = [e for e in events if e["kind"] == "request_end"]

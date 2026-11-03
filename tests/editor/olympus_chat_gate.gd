@@ -50,10 +50,21 @@ func _run_issue_guide(dock, mode):
 		["1", "新建工单 2/3"],
 		["默认", "新建工单 3/3"],
 		["guide-e2e-1", "已生成需求文档"],
-		["确认", "Issue #42"],
-		["开始", "OLYMPUS_FIXTURE_REPLY"],
 	]
+	if mode == "issue_guide_login":
+		# gh is installed but logged out: the guide must explain login and create nothing.
+		steps.append(["确认", "未创建远程 Issue"])
+	steps.append(["确认", "Issue #42"])
+	steps.append(["开始", "OLYMPUS_FIXTURE_REPLY"])
 	for step in steps:
+		if mode == "issue_guide_login" and step[1] == "Issue #42":
+			if not _shown(dock, "尚未登录 github.com") or not _shown(dock, "auth login --hostname github.com"):
+				push_error("Logged-out gh did not show login guidance")
+				return false
+			# Stands in for the user finishing `gh auth login` in a terminal.
+			var flag = FileAccess.open(OS.get_environment("OLYMPUS_TEST_WORKSPACE").path_join("fixtures/gh-logged-in"), FileAccess.WRITE)
+			flag.store_string("fixture")
+			flag.close()
 		_reply(dock, step[0])
 		if not await _wait_shown(dock, step[1], 40.0):
 			return false

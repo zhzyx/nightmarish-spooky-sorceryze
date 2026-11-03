@@ -38,8 +38,12 @@ class IssueGuideTests(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def gh_environment(self, gh):
-        return patch.object(bridge, "host_environment", return_value={"OLYMPUS_GH": gh} if gh else {})
+    def gh_environment(self, gh, authenticated=True):
+        environment = patch.object(bridge, "host_environment", return_value={"OLYMPUS_GH": gh} if gh else {})
+        login = patch.object(bridge, "gh_authenticated", return_value=authenticated)
+        login.start()
+        self.addCleanup(login.stop)
+        return environment
 
     def test_draft_writes_document_and_previews_without_remote_calls(self):
         with patch.object(self.module, "gh") as gh, self.gh_environment(None):
@@ -85,6 +89,44 @@ class IssueGuideTests(unittest.TestCase):
         self.assertEqual(result["error"], "gh_unavailable")
         self.assertIn("--request-id guide-req-1 --apply", result["command"])
         self.assertIn("'Guide title'", result["command"])
+
+    def test_unauthenticated_gh_guides_login_without_remote_side_effect(self):
+        with self.gh_environment("/fake/gh", authenticated=False):
+            draft = bridge.issue_draft(self.root, self.request)
+            with patch.object(self.module, "gh") as gh:
+                created = bridge.issue_create(self.root, self.request)
+                started = bridge.issue_start(self.root, {"issue_number": 42, "request_id": "guide-req-1"})
+        gh.assert_not_called()
+        self.assertEqual((draft["gh_available"], draft["gh_authenticated"]), (True, False))
+        login = "/fake/gh auth login --hostname github.com --git-protocol https --web"
+        self.assertEqual(draft["gh_login_command"], login)
+        expected = (False, "gh_unauthenticated", login)
+        self.assertEqual((created["ok"], created["error"], created["login_command"]), expected)
+        self.assertIn("--request-id guide-req-1 --apply", created["command"])
+        self.assertFalse(created["remote_created"])
+        self.assertEqual((started["ok"], started["error"], started["login_command"]), expected)
+        self.assertFalse(started["remote_changed"])
+
+    def test_auth_status_is_read_only_and_failure_means_unauthenticated(self):
+        tool = self.root / "bin/gh"
+        tool.parent.mkdir()
+        log = self.root / "gh-calls.txt"
+        tool.write_text(
+            "#!/bin/sh\necho \"$@\" >> " + str(log) + "\n[ -f " + str(self.root / "logged-in") + " ]\n",
+            encoding="utf-8",
+        )
+        tool.chmod(0o755)
+        self.assertFalse(bridge.gh_authenticated(str(tool), {}))
+        (self.root / "logged-in").write_text("", encoding="utf-8")
+        self.assertTrue(bridge.gh_authenticated(str(tool), {}))
+        self.assertFalse(bridge.gh_authenticated(str(self.root / "missing"), {}))
+        self.assertEqual(log.read_text(encoding="utf-8").splitlines(), ["auth status --hostname github.com"] * 2)
+
+    def test_login_command_quotes_gh_path(self):
+        self.assertEqual(
+            bridge.login_command("/Users/a b/gh"),
+            "'/Users/a b/gh' auth login --hostname github.com --git-protocol https --web",
+        )
 
     def test_create_uses_adapter_with_workspace_label(self):
         calls = []

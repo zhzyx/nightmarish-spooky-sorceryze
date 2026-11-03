@@ -27,6 +27,7 @@
 - 新建 Issue 时附加 `workspace:olympus` 标签，否则 `issue_gate.intake` 必然拒绝。
 - 创建后状态仍为 `status:needs-decision`，是否开工由人工决定，引导不会自动修改。引导展示 Issue 链接和待办：用户在会话里明确回复 `开始`，才经桥接把待判断/计划中改为 `status:in-progress`（其他状态需到 GitHub 人工处理）；回复 `已更新` 表示已在 GitHub 改好，直接重试入口校验。
 - 本机缺少 `gh` 或没有权限时，引导给出需求文档路径和可复制的创建命令，停在该步。不得声称已创建。
+- 找到 `gh` 但未登录 github.com 时（只读 `gh auth status` 失败），预览和失败提示都给出可复制的 `gh auth login --hostname github.com --git-protocol https --web` 命令，说明账号需有仓库写权限；登录由用户在终端完成，编辑器不代为执行。登录后回复 `确认`（创建）或 `开始`（改状态）重试。
 - 引导期间可随时取消；取消后会话回到普通状态，不残留半绑定的设置。
 
 非目标：
@@ -54,6 +55,7 @@
 - [ ] 复用分支：输入有效 `#编号 需求ID` 后写入设置，并用原始消息重走入口。校验被拒时展示具体原因，并停留在引导中。（解析已有原生单测；绑定后重走入口的路径已在新建分支中实测；“直接复用”和“校验被拒后停留在引导”未单独做场景实测。）
 - [x] 新建分支：生成 `design-docs/<需求ID>.md`（已存在则拒绝），给出预览；确认后通过模拟 `gh` 创建，带 `type:*`、`status:needs-decision`、`workspace:olympus`。
 - [ ] 无 `gh` 时给出命令并停留，不报创建成功。（桥接返回 `gh_unavailable` 加命令已有单测；编辑器内的提示文案未做场景实测。）
+- [x] 有 `gh` 但未登录时，会话内给出登录命令并停留，不调用 API、不创建或修改 Issue；登录后回复 `确认` 可继续。（`--mode issue_guide_login` 场景实测，见下文。）
 - [ ] 引导中取消、会话切换、迟到的子进程结果都不会恢复旧请求，也不会写入设置。（取消已做场景实测：零模型请求、零 GitHub 调用、零事件；会话切换和迟到结果靠代次计数保护，未做场景实测。）
 - [ ] 桥接单测覆盖新动作；原生 AIChat 测试覆盖引导状态机；受影响的现有测试通过。（桥接 9 项新单测；原生测试覆盖纯解析逻辑，状态机由编辑器场景覆盖；`run_olympus_chat_gate.py` 中 Issue #6 之前的旧模式本次未运行，见下文。）
 
@@ -74,3 +76,13 @@
   - 两个场景都用隔离的 `HOME`、模拟 `gh` 和模拟上下文输出（本机没有 node），没有触达真实仓库或真实框架准入。
 - 未覆盖：`run_olympus_chat_gate.py` 的其余模式仍断言 Issue #6 之前的事件来源 `godot-editor:chat-context-loader`，且未绑定工单，本次未运行也未修复；Windows 及其他平台未构建；真实 GitHub 上的引导创建未在编辑器内执行（Issue #22 本身由命令行 `work_items.py issue --apply` 创建）。
 - 用量：token、费用均未计量，记为 null。
+
+### 追加：gh 登录引导（2026-11-03）
+
+证据源：[data-collection/godot-chat-issue-guide-20261103-gh-login.json](../data-collection/godot-chat-issue-guide-20261103-gh-login.json)。
+
+- `bridge.py` 新增 `gh_authenticated`（只读 `gh auth status --hostname github.com`）、`login_command`、`gh_state`；三个动作在未登录时返回 `gh_unauthenticated` 和登录命令，无远程副作用。适配器版本 1.2.0 → 1.2.1。
+- `AIChatIssueGuide::gh_login_text` 生成会话提示；`ai_chat_olympus.cpp` 在预览、创建失败、改状态失败三处展示。
+- 增量构建 `tests=yes -j8` 成功（1 分 05 秒）；原生 `*AIChat*` 18 项、199 条断言通过（新增 1 项）；Python `godot-host` 30 项（新增 3 项）、`issue-workorders` 39 项通过（`TMPDIR=/private/tmp`）。
+- 编辑器场景：新增 `--mode issue_guide_login` 通过。模拟 gh 在场景写入登录标记前 `auth status` 返回 1：首次 `确认` 只产生只读的 `auth status` 调用并显示登录命令，写入标记后再次 `确认` 才创建 #42；全程 1 次模型请求、8 条事件，最大帧间隔 0.223 秒。`issue_guide`（最大帧间隔 0.079 秒）和 `issue_guide_cancel` 复跑通过。
+- 本机真实 `gh auth status` 退出码为 0（已登录）；未在编辑器内用真实账号走创建流程。

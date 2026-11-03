@@ -34,3 +34,5 @@ Godot、IDE、命令行和其他生产工具共享 `tools/olympus_bridge.py`，�
 - `issue-start`：`{issue_number,request_id}`。仅在用户于会话中明确回复开工时调用；校验仓库、开放状态、需求 ID 与 `workspace:olympus` 后，把 `status:needs-decision`/`status:planned` 改为 `status:in-progress`。其他状态需在 GitHub 上人工决定。
 
 gh 查找顺序：`OLYMPUS_GH`，`PATH`，再依次是 `~/.local/bin/gh`、`/opt/homebrew/bin/gh`、`/usr/local/bin/gh`（GUI 启动的宿主通常没有用户 shell 的 PATH）。
+
+找到 gh 后，三个动作都会先执行只读的 `gh auth status --hostname github.com`。`issue-draft` 返回 `gh_authenticated` 和 `gh_login_command`；`issue-create`/`issue-start` 在未登录时返回 `error:"gh_unauthenticated"` 和 `login_command`（`<gh> auth login --hostname github.com --git-protocol https --web`），不调用 API、不创建或修改 Issue。登录需要交互，宿主只展示命令，由用户在终端完成；登录后回复 `确认`/`开始` 重试。

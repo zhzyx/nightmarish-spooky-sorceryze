@@ -360,6 +360,16 @@ TEST_CASE("[AIChat] Issue guide parses bindings and only guides missing local bi
 	CHECK_FALSE(AIChatIssueGuide::is_binding_error("Issue intake rejected; verify GitHub access"));
 }
 
+TEST_CASE("[AIChat] Issue guide explains gh login without running it") {
+	const String text = AIChatIssueGuide::gh_login_text("/x/gh auth login --hostname github.com --git-protocol https --web", U"确认");
+	CHECK(text.contains("```\n/x/gh auth login --hostname github.com --git-protocol https --web\n```"));
+	CHECK(text.contains(U"尚未登录 github.com"));
+	CHECK(text.contains(U"回复 `确认` 重试"));
+	const String bare = AIChatIssueGuide::gh_login_text("", "");
+	CHECK_FALSE(bare.contains("```"));
+	CHECK_FALSE(bare.contains(U"重试"));
+}
+
 TEST_CASE("[AIChat] Issue guide suggests stable fields and resolves categories") {
 	CHECK(AIChatIssueGuide::suggest_title(U"\n  # 修复 Godot 聊天阻塞\n第二行") == U"修复 Godot 聊天阻塞");
 	CHECK(AIChatIssueGuide::suggest_title("   ") == U"Godot 编辑器会话需求");

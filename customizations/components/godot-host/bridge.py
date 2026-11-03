@@ -298,7 +298,7 @@ def chat(root, request, tenant):
             "source_ref": issue["url"],
             "agent": {
                 "id": "olympus-host-adapter",
-                "version": "1.2.0",
+                "version": "1.2.1",
                 "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 "origin": "olympus-host-adapter",
             },
@@ -466,11 +466,37 @@ def create_command(fields):
     )
 
 
-def use_gh(root):
-    gh = host_environment(root).get("OLYMPUS_GH")
-    if gh:
-        os.environ["OLYMPUS_GH"] = gh
-    return gh
+def gh_authenticated(gh, env):
+    """Read-only `gh auth status`; logging in stays an interactive user action in a terminal."""
+    try:
+        result = subprocess.run(
+            [gh, "auth", "status", "--hostname", "github.com"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
+def login_command(gh):
+    return shlex.join([gh, "auth", "login", "--hostname", "github.com", "--git-protocol", "https", "--web"])
+
+
+def gh_state(root):
+    """Return (gh, error); error is gh_unavailable or gh_unauthenticated, never a remote side effect."""
+    env = host_environment(root)
+    gh = env.get("OLYMPUS_GH")
+    if not gh:
+        return None, "gh_unavailable"
+    os.environ["OLYMPUS_GH"] = gh
+    if not gh_authenticated(gh, env):
+        return gh, "gh_unauthenticated"
+    return gh, None
 
 
 def issue_draft(root, request):
@@ -490,6 +516,7 @@ def issue_draft(root, request):
             stream.write(content)
         state = "document_created"
     plan = module.issue(root, fields["document"], fields["title"], fields["category"], fields["request_id"], False)
+    gh, gh_error = gh_state(root)
     return {
         "ok": True,
         "state": state,
@@ -498,15 +525,24 @@ def issue_draft(root, request):
         "title": plan["title"],
         "labels": plan["labels"],
         "request_id": fields["request_id"],
-        "gh_available": bool(host_environment(root).get("OLYMPUS_GH")),
+        "gh_available": gh is not None,
+        "gh_authenticated": gh_error is None,
+        "gh_login_command": login_command(gh) if gh else "",
         "remote_created": False,
     }
 
 
 def issue_create(root, request):
     module, settings, fields = guide_fields(root, request)
-    if not use_gh(root):
-        return {"ok": False, "error": "gh_unavailable", "command": create_command(fields), "remote_created": False}
+    gh, gh_error = gh_state(root)
+    if gh_error:
+        return {
+            "ok": False,
+            "error": gh_error,
+            "command": create_command(fields),
+            "login_command": login_command(gh) if gh else "",
+            "remote_created": False,
+        }
     result = module.issue(root, fields["document"], fields["title"], fields["category"], fields["request_id"], True)
     issue_url = r"https://github\.com/" + re.escape(settings["repository"]) + r"/issues/([0-9]+)"
     match = re.fullmatch(issue_url, result["url"])
@@ -524,8 +560,14 @@ def issue_start(root, request):
         raise ValueError("Bind a real Issue number and its stable request ID first")
     module = work_items_module(root)
     settings, _ = module.config(root)
-    if not use_gh(root):
-        return {"ok": False, "error": "gh_unavailable", "remote_changed": False}
+    gh, gh_error = gh_state(root)
+    if gh_error:
+        return {
+            "ok": False,
+            "error": gh_error,
+            "login_command": login_command(gh) if gh else "",
+            "remote_changed": False,
+        }
     repository = settings["repository"]
     value = json.loads(module.gh("api", f"repos/{repository}/issues/{number}"))
     if value.get("number") != number or "pull_request" in value or value.get("state") != "open":

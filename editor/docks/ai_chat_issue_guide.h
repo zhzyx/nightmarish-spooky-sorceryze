@@ -33,6 +33,7 @@
 #include "core/string/ustring.h"
 #include "core/variant/array.h"
 #include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 
 // Pure parsing for the in-conversation Issue guide. The guide never reaches a
 // model or tool; it only helps bind a real Issue before the normal intake runs.
@@ -206,5 +207,18 @@ public:
 	static bool is_retry(const String &p_text) {
 		static const char32_t *const words[] = { U"已更新", U"已修改", U"重试", U"继续", U"retry", U"done", nullptr };
 		return is_word(p_text, words);
+	}
+
+	// Login stays interactive in the user's terminal; the editor only explains it.
+	static String gh_login_text(const String &p_login_command, const String &p_retry_reply) {
+		String text = U"GitHub CLI（gh）已找到，但尚未登录 github.com，编辑器没有调用远程接口。请在终端执行以下命令，按提示在浏览器完成授权（账号需对本仓库有写权限）：";
+		if (!p_login_command.is_empty()) {
+			text += "\n\n```\n" + p_login_command + "\n```";
+		}
+		text += U"\n\n可用 `gh auth status` 确认已登录。";
+		if (!p_retry_reply.is_empty()) {
+			text += vformat(U"登录后回复 `%s` 重试。", p_retry_reply);
+		}
+		return text;
 	}
 };

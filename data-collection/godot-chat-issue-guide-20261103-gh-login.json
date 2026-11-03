@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "appends": "data-collection/godot-chat-issue-guide-20261103.json",
+  "user_instructions": [
+    "引擎里有gh么？我在引擎内脱离codebuddy 如何建立issue？",
+    "引擎里引导用户打开gh登录这条有了么？",
+    "现在做"
+  ],
+  "baseline": {
+    "branch": "codex/godot-chat-issue-guide-20261103",
+    "head_before_commit": "219ef049ed58e34bd7563a69e3691dcbc95e7557",
+    "gap_found": "Before this change the guide only checked that a gh executable exists; a logged-out gh failed at create time with the generic 'GitHub command failed; check local gh login and repository access' and no login guidance.",
+    "unrelated_uncommitted_files_not_staged": [
+      "samples/olympus-workbench/project.godot",
+      "samples/olympus-workbench/.godot/"
+    ]
+  },
+  "change": {
+    "bridge": "gh_authenticated runs read-only 'gh auth status --hostname github.com'; issue-draft returns gh_authenticated and gh_login_command; issue-create and issue-start return error gh_unauthenticated with login_command and make no API, create or edit call. Adapter version 1.2.0 -> 1.2.1.",
+    "editor": "AIChatIssueGuide::gh_login_text shows the copyable '<gh> auth login --hostname github.com --git-protocol https --web' command in the draft preview, the create failure and the start failure; the guide stays in place and '确认' or '开始' retries.",
+    "not_done_by_design": "The editor never runs gh auth login itself; login is interactive and stays in the user's terminal."
+  },
+  "environment": {
+    "os": "macOS 13.7.8 x86_64",
+    "compiler": "Apple Clang 14 (experimental via allow_unsupported_apple_clang=yes)",
+    "python": "python3.12",
+    "gh": "gh 2.103.3 at ~/.local/bin/gh",
+    "real_gh_auth_status_exit_code": 0
+  },
+  "file_sha256": {
+    "editor/docks/ai_chat_issue_guide.h": "3e11eeaa89b68831b6aaf0d40b91240218f4441d98e0855f6269b38483cd6067",
+    "editor/docks/ai_chat_olympus.cpp": "ffd35ad5cdac832602ece585bf61e00dc7b5b0d524f1cdd664ae7bb36658200e",
+    "customizations/components/godot-host/bridge.py": "f6336665cef105a0a9f28b693fc0cc5efa8a9ed15be52d16c60b56230b8a2b5b",
+    "customizations/components/godot-host/test_issue_guide.py": "28c11c2b39832a392bcf5b78cb000b575677dadae763018914e20f07fdd726c6",
+    "customizations/components/godot-host/HOST_PROTOCOL.md": "033606e21dd8d043543e86e8fa8d1c9a8977810b6ef34abca1c71b102dab5465",
+    "tests/editor/test_ai_chat_tools.cpp": "1f8678fbf756f861b9309fe8cf9122b67121377db733cd45fb9e60531cee4640",
+    "tests/editor/olympus_chat_gate.gd": "182372d652ec1e87973834046921b33749ff71cb89ee2a3c54f59db5697c6eae",
+    "tests/editor/run_olympus_chat_gate.py": "daa1688afd9344abf1a2435a6e93ba8508e486bb72d457e80a0195d7786c1597",
+    "bin/godot.macos.editor.x86_64 (local build, not committed)": "c07909485e0a7dee2ad22f67f01694e2c924452cd25bda5bcff2385cfb4ca561"
+  },
+  "validation": [
+    {
+      "check": "scons platform=macos target=editor tests=yes allow_unsupported_apple_clang=yes use_volk=yes accesskit=no -j8",
+      "result": "passed",
+      "elapsed": "00:01:05"
+    },
+    {
+      "check": "godot --headless --test --test-case=*AIChat*",
+      "result": "passed",
+      "test_cases": 18,
+      "assertions": 199,
+      "new_cases": ["[AIChat] Issue guide explains gh login without running it"]
+    },
+    {
+      "check": "python -m unittest in customizations/components/godot-host (TMPDIR=/private/tmp)",
+      "result": "passed",
+      "tests": 30,
+      "new_tests": 3
+    },
+    {
+      "check": "python -m unittest in customizations/components/issue-workorders (TMPDIR=/private/tmp)",
+      "result": "passed",
+      "tests": 39
+    },
+    {
+      "check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide_login --max-frame-gap 1.0",
+      "result": "passed",
+      "flow": "unbound send -> 新建 -> 1 -> 默认 -> guide-e2e-1 -> preview shows login guidance -> 确认 while logged out shows login command, nothing created -> scene writes the fixture login flag -> 确认 creates #42 -> 开始 -> original message completes one model turn",
+      "github_fixture_calls": ["auth status", "auth status", "auth status", "api issues?state=all", "issue create", "auth status", "api issues/42", "issue edit", "api issues/42"],
+      "model_requests": 1,
+      "hermes_events": 8,
+      "max_frame_gap_seconds": 0.223041
+    },
+    {
+      "check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide --max-frame-gap 1.0",
+      "result": "passed",
+      "model_requests": 1,
+      "hermes_events": 8,
+      "max_frame_gap_seconds": 0.079316
+    },
+    {
+      "check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide_cancel",
+      "result": "passed",
+      "model_requests": 0,
+      "github_calls": 0,
+      "hermes_events": 0,
+      "note": "Run without --max-frame-gap as before: the cancel scene ends before frame gaps are sampled."
+    }
+  ],
+  "fixtures": "Isolated HOME, fake gh whose auth status fails until a flag file exists, fake node context output, loopback model fixture; no real repository, no real framework admission.",
+  "not_covered": [
+    "The in-editor guide, including the login prompt, was not used against the real GitHub account or repository.",
+    "A gh that is logged in but lacks repository write permission still reports the generic gh command failure.",
+    "No Windows or other platform build."
+  ],
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}
