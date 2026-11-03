@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "native_page": true,
+  "actual_athena_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 8,
+  "development_calls": 6,
+  "issues_created": 4,
+  "events": 54,
+  "git_check": {
+    "git_state": "committed",
+    "files": 57,
+    "records": 54,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call"
+  ],
+  "editor_sha256": "3b861ffdf105cc105f1e5036fd393fa15530fcf0beefa135867946367d015f5d",
+  "fixture_events_imported": false,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "source_candidate": "f8eb7812a413bf570019eb32343f69f8f32024b6",
+  "workflow_run": 41670962258,
+  "static_workflow_run": 41670971135,
+  "artifact_id": 13248481694,
+  "artifact_zip_sha256": "2899b5a699d65818d6eb9ba1f3b9017cad4d148b01db9826520a3e7c5faca012",
+  "platform": "Windows x86_64 MSVC editor only",
+  "native_version": "4.8.beta.gh.f8eb7812a",
+  "validation_limitations": [
+    "HTTP model and GitHub transport are isolated fixtures; no real provider/GitHub creation exercised in the editor",
+    "Headless editor exit retains RID/ObjectDB cleanup diagnostics; scene assertions and process passed"
+  ],
+  "fixture_repair": "Initial fixture assumed editor cwd stayed at workspace root; editor changes to project cwd. Fixture command files now exist in both locations and use explicit test workspace. No binary change required.",
+  "usage": {
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null
+  },
+  "tested_runtime_sources": {
+    "customizations/components/godot-host/bridge.py": "8aa61049941c27cae215ab5836cc9bb1ffc743184ec6df6d89856be09efb6455",
+    "customizations/components/godot-host/requirements_agent.py": "22da3cbc6c8285e90d1536826fc5a0fdab8e4a033027a46657edb7c7a34a4504",
+    "customizations/components/issue-workorders/work_items.py": "1594e630940f0754f3247b3b7d531b9ae8151847768747989cc1837618b047ea",
+    "tests/editor/requirements_intake.gd": "849cb322b254c09ce2e8dd6931e1cf77419480bf2e259f2f61c4d1be4aa3a5fa",
+    "tests/editor/run_requirements_intake.py": "8b98c53f8db2191902d1934e8c5ee1c7f3e306320e3a9b9ac3590e4a15279fcb"
+  }
+}

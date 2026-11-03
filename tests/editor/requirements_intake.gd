@@ -15,6 +15,11 @@ func _wait_reply(dock, number: int) -> bool:
 		await create_timer(0.1).timeout
 		if _contains(dock, "INTAKE_WORK_REPLY_" + str(number)) and dock.get_meta("olympus_reporting", "") == "recorded_file":
 			return true
+		if attempt == 150 or (number == 1 and _contains(dock, "尚未完成")):
+			for label in dock.find_children("*", "RichTextLabel", true, false):
+				print("NATIVE_INTAKE_DIAGNOSTIC ", label.get_parsed_text())
+			if number == 1 and _contains(dock, "尚未完成"):
+				return false
 	push_error("Missing native intake completion " + str(number))
 	return false
 

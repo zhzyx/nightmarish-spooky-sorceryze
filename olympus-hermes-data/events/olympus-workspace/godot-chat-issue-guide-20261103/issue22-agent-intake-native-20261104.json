@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-version-not-reported",
+    "definition_sha256": "8b1ec92662ee278110bce9312f4b3bc174aabdf471c4d16140e3a497e10e6b4c",
+    "origin": "codex-host-task-instruction-snapshot"
+  },
+  "event_id": "issue22-agent-intake-native-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-03T16:19:14.491314+00:00",
+  "payload": {
+    "source_file": "data-collection/issue22-agent-intake-native-20261104.json",
+    "phase": "native_simulated_acceptance_passed",
+    "fixture_events_imported": false,
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [
+    "issue22-agent-intake-review-20261104"
+  ],
+  "sha256": "1779aca92ffea8be5a268c6aa09673c594b2f948b56525d3f80474e3632ed491"
+}

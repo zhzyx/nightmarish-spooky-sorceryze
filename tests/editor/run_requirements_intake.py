@@ -14,9 +14,9 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-GH_FIXTURE = """import json,sys,re
+GH_FIXTURE = """import json,sys,re,os
 from pathlib import Path
-r=Path(__file__).parent
+r=Path(os.environ['OLYMPUS_TEST_WORKSPACE'])
 op=Path(__file__).name
 args=sys.argv[1:]
 repo=json.loads((r/'work-items.json').read_text())['repository']
@@ -93,6 +93,9 @@ def main():
         ])
         project = root / "project"
         project.mkdir()
+        # The editor changes cwd to the opened project before invoking Python.
+        for name in ["auth", "api", "issue"]:
+            (project / name).write_text(GH_FIXTURE, encoding="utf-8")
         (project / "project.godot").write_text(
             '[application]\nconfig/name="Requirements intake fixture"\n', encoding="utf-8"
         )
@@ -187,6 +190,19 @@ def main():
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.with_suffix(".stdout.log").write_bytes(result.stdout)
         args.out.with_suffix(".stderr.log").write_bytes(result.stderr)
+        args.out.with_suffix(".debug.json").write_text(
+            json.dumps(
+                {
+                    "requests": requests,
+                    "journals": [
+                        json.loads(p.read_text(encoding="utf-8"))
+                        for p in (root / ".olympus-outbox/requirements").glob("*.json")
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
         assert result.returncode == 0 and b"REQUIREMENTS_AGENT_NATIVE_OK" in result.stdout, result.stdout[-3500:]
         issues = json.loads((root / "fake-issues.json").read_text())
         assert len(issues) == 4, issues

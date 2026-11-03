@@ -27,7 +27,7 @@
       "path": "customizations/components/godot-host",
       "ownership": "olympus_customization",
       "framework_dependency": "Olympus tools/agent-context.mjs and Hermes file event v1; valid upstream and independent admission required; Issue guide actions reuse issue-workorders and gh",
-      "validation": "See integrations/godot/verification-simulated-flow-20261102.json and verification-release-editor-20261102.json; pinned release formal admission passed at last host audit; actual runtime authorization remains host-specific. Issue #22 in-conversation Issue guide and gh login guidance: data-collection/godot-chat-issue-guide-20261103.json (macOS local build, GitHub and context transport fixtures only). Issue #22 Athena/Metis intake: Python regressions and Windows object compile recorded separately; native candidate validation pending.",
+      "validation": "See integrations/godot/verification-simulated-flow-20261102.json and verification-release-editor-20261102.json; pinned release formal admission passed at last host audit; actual runtime authorization remains host-specific. Issue #22 in-conversation Issue guide and gh login guidance: data-collection/godot-chat-issue-guide-20261103.json (macOS local build, GitHub and context transport fixtures only). Issue #22 Athena/Metis intake: Python regressions and Windows object compile recorded separately; Windows MSVC candidate f8eb7812 passed CI and seven native simulated intake scenarios; see data-collection/issue22-agent-intake-native-20261104.json. No real provider or editor GitHub-create acceptance inferred.",
       "rollback": "Restore matching source and verified binary; retain events; never remove framework checks to enable chat"
     }
   ]
