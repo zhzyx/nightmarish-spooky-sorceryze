@@ -1,0 +1,24 @@
+{
+  "reviewer": "codex_subagent_/root/migration_review",
+  "independence": "independent_read_only_review",
+  "build_source_commit": "c31a4cb54b6b7a89c7c6909d06192170115db68f",
+  "cli_tests": {
+    "passed": 52,
+    "failed": 0,
+    "bash_override_removed": true
+  },
+  "submodule_implementation_loss_detected": false,
+  "pe_transformation": {
+    "passed": true,
+    "modified_ranges": 54,
+    "bytes_per_range": 41,
+    "only_read_only_non_executable_rdata": true,
+    "executable_sections_unchanged": true,
+    "all_other_bytes_unchanged": true,
+    "all_source_paths_match_build_commit": true
+  },
+  "limits": [
+    "Final ZIP extraction and remote publication require separate evidence",
+    "No real model provider acceptance"
+  ]
+}

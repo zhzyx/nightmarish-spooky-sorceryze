@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "verification": "simulated_model_end_to_end",
+  "started_at": "2026-11-03T20:53:37.072132+00:00",
+  "external_model_service_tested": false,
+  "model_transport": "loopback HTTP fixture only",
+  "production_model_credentials_used": false,
+  "editor": {
+    "path": "project/godot/bin/godot.windows.editor.x86_64.console.exe",
+    "sha256": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59"
+  },
+  "engine": {
+    "path": "project/godot/bin/godot.windows.editor.x86_64.exe",
+    "sha256": "acadd07bf4f9abc3e0ac9cceeb02059f807231e20e895a2236d0597ba82ac011"
+  },
+  "checks": [
+    {
+      "name": "doctor",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "531c1ce0a3d497e2f35b18f86db548dd9e8edb87a63d0b009c4e287ff4de469b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blocking_checks": [],
+      "elapsed_seconds": 1.959
+    },
+    {
+      "name": "bridge_unit",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "573a444e9f8ba40af23c4b9aa57bf5bacff9f0af9032fbf83317c9e3bb3bd2ae",
+      "tests_run": 16,
+      "elapsed_seconds": 0.716
+    },
+    {
+      "name": "distribution",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bdbccc5e445ad556cc0a2bd2c598bac689c20877399e46fcb50c462cda146fae",
+      "tests_run": 4,
+      "elapsed_seconds": 3.757
+    },
+    {
+      "name": "native_ai_chat",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "77db885213dc609de47d02338f868eb1acbf63fd623294fa6ed1f295e46b6346",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_cases": {
+        "total": 17,
+        "passed": 17,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 171,
+        "passed": 171,
+        "failed": 0
+      },
+      "elapsed_seconds": 1.503
+    },
+    {
+      "name": "installed_location",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "1f858397561c386deb736dd10b1617cf747b060f42616528cf30fb936135bba0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 3.005
+    },
+    {
+      "name": "native_admitted",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "924a17468cb12d21930dd996f4963ad6febd862caf898f6a3879b5e4c459b088",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "admitted",
+        "real_framework_called": true,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 8.907
+    },
+    {
+      "name": "native_accepted",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "d0fd8875a6a21201663183cea2ee88325a3b5bea6e322c3cb2d83c8f40854e49",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "accepted",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 8.245
+    },
+    {
+      "name": "native_rejected",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "4c578f00b10df1bcd207c20f77c8a280dc576875cad37d7abe5d3f8722fcbeb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "mode": "rejected",
+        "model_requests": 0,
+        "invalid_local_package_rejected": true,
+        "synthetic_only": true
+      },
+      "elapsed_seconds": 5.716
+    },
+    {
+      "name": "native_tool",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "f79b5b5faf0cdd7fa236db394b14bfa587502ddf7f958de968aa211920392b1e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "tool",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 2,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 10.093
+    },
+    {
+      "name": "native_cancel",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "a64c65bdc2cfc2705f2170f4a5b68415dc24312e35082b9d0402cb0c23b7cf12",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "mode": "cancel",
+        "phase": "before_context_ready",
+        "model_requests": 0,
+        "context_receipt_required": false,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 9.239
+    },
+    {
+      "name": "native_recovery",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "b810014a2476b2710c3a448e7398ec3df1a8f7238f76238612fbee104490cfba",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "recovery",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 6.72
+    },
+    {
+      "name": "native_recovery_rejected",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "69892f7e7f3d6d129d42cad7172a7ea62ca20f35f8fa5a6f371e6b2a73ca01ff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "mode": "recovery_rejected",
+        "model_requests": 0,
+        "invalid_local_package_rejected": true,
+        "synthetic_only": true
+      },
+      "elapsed_seconds": 5.712
+    },
+    {
+      "name": "native_recovery_cancel",
+      "ok": true,
+      "exit_code": 0,
+      "stdout_sha256": "07734268d1237d8d5dfbf47abb6d64436a3c393a74c0255a98d32d1cabb5ee08",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed": {
+        "native_page": true,
+        "mode": "recovery_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      },
+      "elapsed_seconds": 16.034
+    }
+  ],
+  "limitations": [
+    "Successful model replies are simulated, not provider certification.",
+    "The admitted scenario uses real approved GongGong definitions and local package checks; other positive transport scenarios use isolated context fixtures."
+  ],
+  "production_dataset_unchanged": true,
+  "completed_at": "2026-11-03T20:54:58.761864+00:00",
+  "ok": true
+}
