@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "event_id": "godot-chat-issue-guide-20261103-merge",
+  "kind": "step",
+  "occurred_at": "2026-11-03T15:54:29+00:00",
+  "payload": {
+    "description": "With user authorization, PR #23 was merged into main as merge commit adab2727 (pinned head 9fcef31a) after all CI checks passed, including both Windows MSVC editor builds. Issue #22 stays open and in-progress pending business acceptance.",
+    "source_files": [
+      "data-collection/godot-chat-issue-guide-20261103-merge.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+  },
+  "evidence_refs": [
+    "godot-chat-issue-guide-20261103-msvc-shadow"
+  ],
+  "sha256": "a890bdce3f904b6b688d62a16ab3a08957909a1815c91a552404f56fa6fdbf6c"
+}
