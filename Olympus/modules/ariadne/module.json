@@ -1,9 +1,9 @@
 {
   "id": "ariadne",
   "name": "阿里阿德涅",
-  "version": "0.4.2",
-  "kind": "task_management_and_coordination",
-  "layer": "olympus_platform",
+  "version": "0.5.0",
+  "kind": "core_agent_support",
+  "layer": "olympus_core",
   "scope": "all_task_types_in_authorized_registered_sources",
   "state": "source_registered_distribution_pending_review",
   "path_base": "framework_root",
@@ -17,8 +17,10 @@
     "foundation": "FOUNDATION.md",
     "policy": "GOVERNANCE.md",
     "review_entry": "skills/dike/SKILL.md",
-    "dedicated_agents": [],
-    "execution_rule": "Use existing host-registered Zeus-governed agents with valid task mandates; this module neither creates agents nor grants authority",
+    "dedicated_agents": [
+      "ariadne"
+    ],
+    "execution_rule": "Core Ariadne Agent uses these tools under actual host mandates; tools neither instantiate Agents nor grant authority",
     "delegation_rule": "Any later delegation or agent creation follows the shared organization and admission rules",
     "revocation": "Host revokes affected mandates and disables module invocation; preserve source records and label history",
     "reporting": "skills/ariadne/reporting.json"
@@ -35,10 +37,11 @@
     "label_change": "ticket key and {type?,tags?,assessment?,actor,reason}",
     "command_preparation": "source alias, supported source operation and argument array",
     "authority": "actual host mandate and filesystem permissions",
-    "document_sync": "Optional registry-relative write_root and registered documents with tickets/parent_tickets and unique ariadne markers"
+    "document_sync": "Optional registry-relative write_root and registered documents with tickets/parent_tickets and unique ariadne markers",
+    "issue_tracking": "Optional {enabled:boolean,provider:git-issue,authority_ref}; absence or enabled:false means source-work-item handoff, not external Issue creation"
   },
   "outputs": {
-    "board": "items, sourceSnapshots, diagnostics, ready keys and proposed followUps with responsibility and Issue linkage actions",
+    "board": "items, sourceSnapshots, diagnostics, ready keys and proposed source-work-item followUps; Git Issue actions only with explicit issue_tracking binding",
     "labels": "audited local coordination updates; no source status mutation",
     "handoff": "executable and argv with fresh-check requirements; execution=not_executed",
     "progress_document": "source-derived states, labels, owners, blockers, acceptance and snapshot versions",
@@ -83,7 +86,7 @@
     "current_adapter": "existing local Zeus ledger and CLI",
     "host_loader_implemented": false,
     "coverage": "registered sources only; empty by default; no global event listener",
-    "compatibility": "Document read/marker/write failures return partial instead of throwing; callers must inspect outcome and updated. Unsafe configuration and protected output violations still throw. pending_user is advisory; explicit pending_user_blocking limits affected transitions.",
+    "compatibility": "Document read/marker/write failures return partial instead of throwing; callers must inspect outcome and updated. Unsafe configuration and protected output violations still throw. pending_user is advisory; explicit pending_user_blocking limits affected transitions. Default Issue actions are now null; hosts requiring Git must explicitly bind issue_tracking and continue to authenticate operations. Existing issue_ref is historical linkage, not activation.",
     "scheduler_config": null,
     "host": "Requires separate current host binding; upstream host authority is not inherited",
     "concurrency": {
@@ -117,5 +120,6 @@
     "reuse": "Coordinator derived from original; explicit nonblocking decision and follow-up changes in 0.4.2; no historical bindings imported",
     "path_base": "gonggong_framework_root",
     "evidence_index": "source-evidence.json"
-  }
+  },
+  "owner_agent": "ariadne"
 }

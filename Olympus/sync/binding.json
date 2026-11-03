@@ -1,8 +1,8 @@
 {
   "path_base": "olympus_framework_root",
-  "source": "../../../../GongGong/work/heqi-integration-25/frozen-v1/framework",
+  "source": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework",
   "sinan_source": {
-    "framework": "../../../../GongGong/work/heqi-integration-25/frozen-v1/framework"
+    "framework": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework"
   },
   "purpose": "local_upstream_locator_not_authority"
 }

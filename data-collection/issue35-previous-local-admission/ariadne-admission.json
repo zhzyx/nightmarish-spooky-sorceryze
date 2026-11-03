@@ -1,0 +1,10 @@
+{
+  "template": false,
+  "status": "pending_distribution_review",
+  "source_registration": "source-evidence.json",
+  "subject": {
+    "id": "ariadne",
+    "version": "0.4.2"
+  },
+  "approval": null
+}
