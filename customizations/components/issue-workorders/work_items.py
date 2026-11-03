@@ -128,9 +128,12 @@ def issue(root, document, title, category, request_id, apply=False):
     if matches:
         existing = matches[0]
         owners = re.findall(r"<!--\s*olympus-host-git:([A-Za-z0-9-]+)\s*-->", existing.get("body") or "")
-        return {"state": "existing", "url": existing["html_url"],
-                "host_git_account": owners[0] if len(set(owners)) == 1 else None,
-                "host_identity_verified": False}
+        return {
+            "state": "existing",
+            "url": existing["html_url"],
+            "host_git_account": owners[0] if len(set(owners)) == 1 else None,
+            "host_identity_verified": False,
+        }
     with tempfile.TemporaryDirectory() as temporary:
         path = Path(temporary) / "issue.md"
         path.write_text(body, encoding="utf-8")
@@ -151,8 +154,7 @@ def issue(root, document, title, category, request_id, apply=False):
             "--body-file",
             str(path),
         )
-    return {"state": "created", "url": url, "host_git_account": account,
-            "host_identity_verified": True}
+    return {"state": "created", "url": url, "host_git_account": account, "host_identity_verified": True}
 
 
 def collect(root, request_id):

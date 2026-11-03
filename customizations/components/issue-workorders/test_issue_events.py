@@ -55,7 +55,10 @@ class EventIntakeTests(unittest.TestCase):
     def test_event_envelope_records_revision_and_actor(self):
         self.event["actor"] = {"login": "alice"}
         completed = subprocess.CompletedProcess([], 0, '{"state":"recorded_file"}', "")
-        with patch.object(events, "remote_event", return_value=(self.event, self.issue)), patch.object(events.subprocess, "run", return_value=completed):
+        with (
+            patch.object(events, "remote_event", return_value=(self.event, self.issue)),
+            patch.object(events.subprocess, "run", return_value=completed),
+        ):
             result = self.invoke()
         envelope = json.loads((self.root / result["receipt"].replace("receipt.json", "envelope.json")).read_text())
         payload = envelope["payload"]
