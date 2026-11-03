@@ -106,6 +106,11 @@ OlympusPanel::OlympusPanel() {
 	add_child(timer);
 }
 
+void OlympusPanel::reload_issue_binding() {
+	issue_number->set_text(EDITOR_GET("olympus/issue_number"));
+	request_id->set_text(EDITOR_GET("olympus/request_id"));
+}
+
 void OlympusPanel::save_issue_binding(const String &p_text) {
 	EditorSettings::get_singleton()->set("olympus/issue_number", issue_number->get_text().strip_edges());
 	EditorSettings::get_singleton()->set("olympus/request_id", request_id->get_text().strip_edges());

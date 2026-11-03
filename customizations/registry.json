@@ -14,20 +14,20 @@
     },
     {
       "id": "issue-workorders",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "path": "customizations/components/issue-workorders",
       "ownership": "olympus_customization",
       "framework_dependency": "Olympus formal validation with actual host-bound source; shared Hermes file event v1; GitHub remains issue authority; Ariadne source not yet registered",
-      "validation": "Issue #6: local gate and event-only PR linkage in data-collection/issue-governance-verification.json; Issue #15: execution-policy scenario review in data-collection/execution-efficiency-review-20261103.json; no measured token/cost savings claimed",
+      "validation": "Issue #6: local gate and event-only PR linkage in data-collection/issue-governance-verification.json; Issue #15: execution-policy scenario review in data-collection/execution-efficiency-review-20261103.json; Issue #22: created Issues carry workspace:olympus, see data-collection/godot-chat-issue-guide-20261103.json; no measured token/cost savings claimed",
       "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files"
     },
     {
       "id": "godot-host",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "path": "customizations/components/godot-host",
       "ownership": "olympus_customization",
-      "framework_dependency": "Olympus tools/agent-context.mjs and Hermes file event v1; valid upstream and independent admission required",
-      "validation": "See integrations/godot/verification-simulated-flow-20261102.json and verification-release-editor-20261102.json; pinned release formal admission passed at last host audit; actual runtime authorization remains host-specific.",
+      "framework_dependency": "Olympus tools/agent-context.mjs and Hermes file event v1; valid upstream and independent admission required; Issue guide actions reuse issue-workorders and gh",
+      "validation": "See integrations/godot/verification-simulated-flow-20261102.json and verification-release-editor-20261102.json; pinned release formal admission passed at last host audit; actual runtime authorization remains host-specific. Issue #22 in-conversation Issue guide: data-collection/godot-chat-issue-guide-20261103.json (macOS local build, GitHub and context transport fixtures only).",
       "rollback": "Restore matching source and verified binary; retain events; never remove framework checks to enable chat"
     }
   ]

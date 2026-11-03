@@ -15,6 +15,73 @@ from olympus_test_source import active_source
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# GitHub CLI fixture for the Issue guide: isolated state file, never a real repository.
+FAKE_GH = r"""
+import json, sys
+from pathlib import Path
+state_path = Path(__file__).with_name("gh-state.json")
+state = json.loads(state_path.read_text()) if state_path.exists() else {"issues": {}, "calls": []}
+args = sys.argv[1:]
+state["calls"].append(args)
+out = ""
+if args[:1] == ["api"] and "/issues?" in args[1]:
+    out = json.dumps([list(state["issues"].values())])
+elif args[:1] == ["api"]:
+    issue = state["issues"].get(args[1].rsplit("/", 1)[1])
+    if issue is None:
+        state_path.write_text(json.dumps(state))
+        sys.exit(1)
+    out = json.dumps(issue)
+elif args[:2] == ["issue", "create"]:
+    number = str(42 + len(state["issues"]))
+    state["issues"][number] = {
+        "number": int(number),
+        "html_url": "https://github.com/test/repo/issues/" + number,
+        "state": "open",
+        "title": args[args.index("--title") + 1],
+        "body": Path(args[args.index("--body-file") + 1]).read_text(encoding="utf-8"),
+        "labels": [{"name": args[i + 1]} for i, v in enumerate(args) if v == "--label"],
+        "updated_at": "2026-11-03T00:00:00Z",
+    }
+    out = state["issues"][number]["html_url"]
+elif args[:2] == ["issue", "edit"]:
+    issue = state["issues"][args[2]]
+    names = [label["name"] for label in issue["labels"]]
+    if "--remove-label" in args:
+        names.remove(args[args.index("--remove-label") + 1])
+    names.append(args[args.index("--add-label") + 1])
+    issue["labels"] = [{"name": n} for n in names]
+else:
+    sys.exit(2)
+state_path.write_text(json.dumps(state))
+print(out)
+"""
+
+
+def write_executable(path, source):
+    path.write_text("#!" + sys.executable + "\n" + source, encoding="utf-8")
+    path.chmod(0o755)
+
+
+def prepare_issue_guide(root):
+    shutil.copytree(
+        ROOT / "customizations/components/issue-workorders",
+        root / "customizations/components/issue-workorders",
+        ignore=shutil.ignore_patterns("__pycache__"),
+    )
+    (root / ".github").mkdir()
+    for name in ("labels.json", "status-labels.json"):
+        shutil.copyfile(ROOT / ".github" / name, root / ".github" / name)
+    (root / "work-items.json").write_text(
+        json.dumps({"repository": "test/repo", "tenant_id": "olympus-workspace"}), encoding="utf-8"
+    )
+    fixtures = root / "fixtures"
+    fixtures.mkdir()
+    write_executable(fixtures / "gh", FAKE_GH)
+    # Context transport fixture only: no node runtime here, never an Olympus admission.
+    write_executable(fixtures / "node", 'import sys\nsys.stdout.write("ISOLATED_FRAMEWORK_CONTEXT_FIXTURE")\n')
+    return fixtures
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -36,6 +103,8 @@ def main():
             "recovery",
             "recovery_rejected",
             "recovery_cancel",
+            "issue_guide",
+            "issue_guide_cancel",
         ],
         default="rejected",
     )
@@ -139,6 +208,12 @@ def main():
                     json.dumps({"GONGGONG_FRAMEWORK_SOURCE": str(source)}), encoding="utf-8"
                 )
             subprocess.run(["git", "init", "--quiet", str(root)], check=True)
+            guided = args.mode.startswith("issue_guide")
+            fixtures = prepare_issue_guide(root) if guided else None
+            if guided:
+                subprocess.run(
+                    ["git", "-C", str(root), "remote", "add", "origin", "https://github.com/test/repo.git"], check=True
+                )
             subprocess.run(["git", "-C", str(root), "add", "Olympus"], check=True, capture_output=True)
             subprocess.run(
                 [
@@ -218,6 +293,12 @@ def main():
             for name in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"):
                 env[name] = str(root / name)
                 (root / name).mkdir()
+            if guided:
+                # macOS editor settings live under HOME; the guide writes the Issue binding there.
+                env["HOME"] = str(root / "home")
+                (root / "home").mkdir()
+                env["OLYMPUS_GH"] = str(fixtures / "gh")
+                env["OLYMPUS_NODE"] = str(fixtures / "node")
             result = subprocess.run(
                 [
                     str(args.godot.resolve()),
@@ -233,7 +314,7 @@ def main():
                 encoding="utf-8",
                 errors="replace",
                 env=env,
-                timeout=75,
+                timeout=150 if guided else 75,
             )
             gaps = [
                 float(line.split("=", 1)[1])
@@ -260,11 +341,15 @@ def main():
                 "accepted": "OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK",
                 "tool": "OLYMPUS_CHAT_FIXTURE_ACCEPTED_OK",
                 "cancel": "OLYMPUS_CHAT_CANCEL_OK",
+                "issue_guide": "OLYMPUS_CHAT_ISSUE_GUIDE_OK",
+                "issue_guide_cancel": "OLYMPUS_CHAT_ISSUE_GUIDE_CANCEL_OK",
             }[args.mode]
             if result.returncode or marker not in result.stdout:
                 print(result.stdout[-5000:])
                 print(result.stderr[-5000:])
                 return 1
+            if guided:
+                return check_issue_guide(root, args.mode, requests)
             if args.mode in ("accepted", "admitted", "tool", "recovery_cancel", "receipt_retry"):
                 assert len(requests) == (2 if args.mode == "tool" else 1)
                 if args.mode == "admitted":
@@ -347,6 +432,53 @@ def main():
     finally:
         server.shutdown()
         server.server_close()
+
+
+def check_issue_guide(root, mode, requests):
+    state_path = root / "fixtures/gh-state.json"
+    state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {"issues": {}, "calls": []}
+    events = [json.loads(p.read_text(encoding="utf-8")) for p in (root / "olympus-hermes-data/events").rglob("*.json")]
+    if mode == "issue_guide_cancel":
+        assert not requests, "Cancelled guide reached the model endpoint"
+        assert not state["calls"], "Cancelled guide called GitHub"
+        assert not (root / "design-docs").exists()
+        assert not events, "Unbound guide must not write Hermes events"
+    else:
+        assert len(requests) == 1, "Exactly one model request, only after the Issue binding passed intake"
+        assert "ISOLATED_FRAMEWORK_CONTEXT_FIXTURE" in requests[0]["messages"][0]["content"]
+        users = [m.get("content") for m in requests[0]["messages"] if m.get("role") == "user"]
+        assert users == ["Isolated Olympus gate validation"], users
+        guide_replies = ("新建", "默认", "guide-e2e-1", "确认", "开始")
+        assert not any(m.get("content") in guide_replies for m in requests[0]["messages"]), "Guide reply leaked"
+        document = (root / "design-docs/guide-e2e-1.md").read_text(encoding="utf-8")
+        assert "<!-- olympus-request:guide-e2e-1 -->" in document
+        assert "> Isolated Olympus gate validation" in document
+        issue = state["issues"]["42"]
+        assert sorted(label["name"] for label in issue["labels"]) == [
+            "status:in-progress",
+            "type:requirement",
+            "workspace:olympus",
+        ]
+        assert any(c[:3] == ["issue", "edit", "42"] for c in state["calls"]), "Explicit start did not update status"
+        assert events and {e["request_id"] for e in events} == {"guide-e2e-1"}
+        assert {e["source_ref"] for e in events} == {"https://github.com/test/repo/issues/42"}
+        ending = [e for e in events if e["kind"] == "request_end"]
+        assert [e["payload"]["status"] for e in ending] == ["completed"]
+        assert "Isolated Olympus gate validation" not in json.dumps(events)
+        assert not list((root / ".olympus-outbox/chat").glob("*.json"))
+    print(
+        json.dumps({
+            "native_page": True,
+            "mode": mode,
+            "model_requests": len(requests),
+            "github_fixture_calls": [c[:2] for c in state["calls"]],
+            "hermes_events": len(events),
+            "model_transport_fixture": True,
+            "context_transport_fixture": True,
+            "production_data_written": False,
+        })
+    )
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "event_id": "godot-chat-issue-guide-20261103-validation",
+  "kind": "step",
+  "occurred_at": "2026-11-03T13:34:47+00:00",
+  "payload": {
+    "description": "Implemented the in-conversation Issue guide (host-local, no model/tool calls), bridge issue-draft/issue-create/issue-start actions and the workspace:olympus label on created Issues. macOS incremental builds passed; AIChat native tests 17/194 passed; Python godot-host 27 and issue-workorders 39 passed; editor scenarios issue_guide and issue_guide_cancel passed with isolated HOME and gh/context/model fixtures. Gaps are listed in the source file.",
+    "source_files": [
+      "data-collection/godot-chat-issue-guide-20261103.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+  },
+  "evidence_refs": [
+    "godot-chat-issue-guide-20261103-request"
+  ],
+  "sha256": "8a319e96cc26052fd8c4c880ffc8aeb2f0d4eb5b6876f4b98db777e341eac1f9"
+}
