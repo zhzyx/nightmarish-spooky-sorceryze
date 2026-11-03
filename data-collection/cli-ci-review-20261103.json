@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/11",
+  "request_id": "restore-repository-ci-20261102",
+  "reviewer": "/root/cli_review",
+  "independent": true,
+  "verdict": "passed_scoped_review",
+  "files_sha256": {
+    "tools/codebuddy_cli/godot_acp.js": "8f76a42acace2d40f34d75377b88c4da6114b870841a15ca606cff1b00adce69",
+    "pyproject.toml": "367f39020b1c417bc202eb7545aaa45701f71c7286451feb703542e8c24d10e9"
+  },
+  "findings": [],
+  "observations": [
+    "Recovery prompt spelling only; no control flow or permission change",
+    "Exact generated CLI lockfile exclusion matches existing Web lockfile practice",
+    "CLI lockfile unchanged relative to HEAD; source files remain checked"
+  ],
+  "tests_independently_rerun": false,
+  "limitations": ["Terminal suite not validated", "Remote CI and Issue gate remain incomplete", "Not a release admission or remote completion receipt"]
+}

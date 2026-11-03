@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue39-cli-lint-validation-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "codebuddy-cli-lint-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-03T18:07:46.241615+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/39",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "557473dca9e6095c438e797f76e9dbfb30d1d8701e86b50c7d987c9f37c3ef64",
+    "origin": "workspace-AGENTS.md-rule-snapshot-not-model-definition"
+  },
+  "payload": {
+    "description": "Exact two-file CLI lint candidate retains earlier independent review hashes; 43 focused tests, codespell, file format and formal framework checks passed.",
+    "evidence": "data-collection/issue39-cli-lint-validation-20261104.json",
+    "evidence_sha256": "1871c1737d7246d393e6b34ee24ceb049be0b9171d71e75f5e5c5bc1898c4749",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "issue39-cli-lint-request-20261104"
+  ],
+  "sha256": "d558d9075ae622cda831c827ce6934116a68c87071d1ef4b489b66de15ed981f"
+}
