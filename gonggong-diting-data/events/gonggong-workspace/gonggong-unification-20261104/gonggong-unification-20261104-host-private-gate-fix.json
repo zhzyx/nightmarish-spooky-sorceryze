@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-unification-20261104-host-private-gate-fix",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-unification-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-03T21:59:53.891404+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/43",
+  "agent": {
+    "id": "codex-root-unification-43",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "09c04d469e649a4cb11d9cc50803d298c7f8f96829431ff1cb4ee68b221e9799"
+  },
+  "payload": {
+    "status": "host_collection_boundary_fixed",
+    "git_adapter_tests_passed": 42,
+    "test_report_sha256": "2a8a7a442c3f40496ac04288609bd547a344a17b65bc5b5ca23b3930a3115a1a",
+    "scope": "Private host state must stay ignored and untracked; business evidence remains required in Git.",
+    "usage": null
+  },
+  "evidence_refs": [
+    "gonggong-unification-20261104-request"
+  ],
+  "sha256": "ae1596c47d7eab3408f425d7c3108bcfe9c83f9fc55190d45218d3e2d19062e1"
+}

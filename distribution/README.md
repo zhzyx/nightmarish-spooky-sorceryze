@@ -2,7 +2,7 @@
 
 本包包含唯一当前 `framework/`、Godot 源码、共工 Windows x64 编辑器、Git/Godot/CLI/采集子模块、示例、Python/Node/Git、固定版本 CLI 依赖和同版本 Git Bash，以及原始 Godot 4.7.2 回退安装。无需外部共工来源；不含本机凭据。模型验收仅使用模拟服务。
 
-[发布页面及摘要清单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104) · [下载完整 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104/gonggong-windows-x64-20261104.zip)。清单绑定源码提交、构建输入、可执行文件和逐文件摘要；旧发布继续保留。
+[发布页面及摘要清单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2) · [下载完整 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/gonggong-windows-x64-20261104-r2.zip)。清单绑定源码提交、构建输入、可执行文件和逐文件摘要；旧发布继续保留。
 
 1. 下载后按发布页面的 SHA256 核验，再解压到新的目录。
 2. 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/initialize_downloaded_workspace.ps1`，建立包内源码快照；已有仓库保留。完整 Git 历史保存在原远端仓库，ZIP 不含账号或 `.git`。

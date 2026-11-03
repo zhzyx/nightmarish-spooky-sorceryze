@@ -77,8 +77,8 @@
           "old": "customizations/components/issue-workorders/README.md",
           "new": "customizations/components/issue-workorders/README.md",
           "old_git_sha256": "edb2e1a8b012df9a1adc51dcd9abf2712696f810907318e41b715489e45cc9a4",
-          "new_sha256": "4cfb75834fdbb5bcaf865545d3a4697bf963600cd35dff4f80aa5ecdf2001c6f",
-          "disposition": "adapted_to_single_framework"
+          "new_sha256": "77406ee4aa724cfa75f7deccfcd87f642bf32bcf913c374b53c4acef0ee9942b",
+          "disposition": "adapted_to_single_framework_with_private_host_state_boundary"
         },
         {
           "old": "customizations/components/issue-workorders/execution-policy.md",
@@ -105,8 +105,8 @@
           "old": "customizations/components/issue-workorders/issue_gate.py",
           "new": "customizations/components/issue-workorders/issue_gate.py",
           "old_git_sha256": "be70702d7b7f747975d574253cf95989d6a006e325542ccd33eb2176a4c2db48",
-          "new_sha256": "4b2db39d0b6aeaf336a351b943011a83695c433ba59de71cd6fe9d7595d270f3",
-          "disposition": "adapted_to_single_framework"
+          "new_sha256": "0a05f704b0cfc3bc20e265b33cb3b176d921accd95dd4bf55929828482bc5f9c",
+          "disposition": "adapted_to_single_framework_with_private_host_state_boundary"
         },
         {
           "old": "customizations/components/issue-workorders/review.json",
@@ -119,8 +119,8 @@
           "old": "customizations/components/issue-workorders/test_host_intake.py",
           "new": "customizations/components/issue-workorders/test_host_intake.py",
           "old_git_sha256": "bec5b0fa8d924cb6b1ac18d11c6eed3b63b80908718b18ecbb413faf1b129cf5",
-          "new_sha256": "f33c25682b8aa058ef9b87c27d35cfbc6b1b13c1112efebc7410337b6351e902",
-          "disposition": "adapted_to_single_framework"
+          "new_sha256": "6176d156a42f557eb46edccb02f999d1be29e9b6382bdeea7c78d7732623e69d",
+          "disposition": "adapted_to_single_framework_with_private_host_state_boundary"
         },
         {
           "old": "customizations/components/issue-workorders/test_issue_events.py",

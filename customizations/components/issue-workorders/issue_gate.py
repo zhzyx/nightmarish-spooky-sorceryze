@@ -97,6 +97,20 @@ def check_collection(root):
         if not path.is_file():
             continue
         name = path.relative_to(root).as_posix()
+        relative = path.relative_to(folder)
+        # Raw host state is private; only explicit source/evidence files are deliverables.
+        private = relative.parts[0] in {"inbox", "outbox", "receipts"} or (
+            len(relative.parts) == 1
+            and (
+                relative.name.endswith(".local.json")
+                or re.fullmatch(r".+\.sqlite(?:-wal|-shm|-journal)?", relative.name)
+            )
+        )
+        if private:
+            if git(root, "ls-files", "--", name).strip():
+                raise ValueError("Host-private collection state must not enter Git: " + name)
+            git(root, "check-ignore", "-q", "--", name)
+            continue
         if git(root, "show", ":" + name) != path.read_bytes():
             raise ValueError("Collection source/receipt must be staged with current bytes: " + name)
 
