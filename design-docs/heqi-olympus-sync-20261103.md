@@ -1,6 +1,6 @@
 # 同步共工合契 0.2.0 到 Olympus
 
-工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27  
+工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27
 稳定需求 ID：`heqi-olympus-sync-20261103`。上游需求为共工 Issue #25；该单只覆盖 Olympus 分发候选与准入，不修改共工源或 #22 聊天引导。
 
 ## 本轮边界
@@ -24,3 +24,7 @@ Windows 本地验证：Git Issue 模块 8 项、Ariadne 12 项、框架 Python 1
 ## 独立审查后的本地定义准入
 
 另一审查实例未参与 Olympus 映射适配，完成四 Agent 精确候选、全量 parity、runtime lock、reporting 与豁免的独立复核，原件为 `Olympus/reviews/local-admission/issue27-independent-review.json` 和 `issue27-review-scenarios.json`。复核是 pass 而非批准。随后依据用户“验证好了之后推送到 Olympus 框架更新”的条件性授权，仅为 `athena`、`themis`、`hermes`、`harmonia` 四个精确摘要签发本地定义许可；决定依据与四份许可同在 `Olympus/reviews/`。正式 `verify_framework.py` 已返回 `approved_file_integrity`，合契准入检查和冻结源 parity 均通过，见 `data-collection/issue27-admission-20261104.json` 及追加 Hermes 事件。原先的 pending 观察记录保留，不改写历史。宿主运行授权、可选 Git Issue 模块启用、远端提交/合入和谛听消费仍分别待证。
+
+## PR 静态检查修复
+
+PR #34 的 CI 指出仓库级离线登记仍固定为旧三 Agent 快照，文档还需要统一格式。已将非豁免 Olympus 文件重新逐字节登记，并让校验器按当前 manifest 校验非空且唯一的 Agent 集合；生成框架与四份准入文件未变。对应来源、修复摘要与本地复验见 `data-collection/issue27-ci-repair-20261104.json` 和追加 Hermes 事件。
