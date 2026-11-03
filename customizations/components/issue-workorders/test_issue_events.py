@@ -43,6 +43,26 @@ class EventIntakeTests(unittest.TestCase):
         self.assertEqual(mapped["coordination"], "associate_only_no_dispatch")
         self.assertFalse(mapped["parent_auto_close"])
 
+    def test_host_account_claim_and_conflict(self):
+        self.issue["body"] += "\n<!-- olympus-host-git:alice -->"
+        mapped = events.mapping(self.issue, "test-request", {"type:development"})
+        self.assertEqual(mapped["host_git_account"], "alice")
+        self.assertEqual(mapped["host_account_source"], "issue_body_claim_unverified")
+        self.issue["body"] += "\n<!-- olympus-host-git:bob -->"
+        with self.assertRaises(ValueError):
+            events.mapping(self.issue, "test-request", {"type:development"})
+
+    def test_event_envelope_records_revision_and_actor(self):
+        self.event["actor"] = {"login": "alice"}
+        completed = subprocess.CompletedProcess([], 0, '{"state":"recorded_file"}', "")
+        with patch.object(events, "remote_event", return_value=(self.event, self.issue)), patch.object(events.subprocess, "run", return_value=completed):
+            result = self.invoke()
+        envelope = json.loads((self.root / result["receipt"].replace("receipt.json", "envelope.json")).read_text())
+        payload = envelope["payload"]
+        self.assertEqual(payload["remote_event_actor_login"], "alice")
+        self.assertEqual(payload["revision_marker"]["issue_updated_at"], self.issue["updated_at"])
+        self.assertEqual(payload["revision_marker"]["key"], events.digest(payload["remote_identity"]))
+
     def test_reject_other_workspace_and_ambiguous_status_or_request(self):
         for change in ("workspace", "status", "request"):
             with self.subTest(change=change):

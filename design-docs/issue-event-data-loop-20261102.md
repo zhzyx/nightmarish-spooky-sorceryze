@@ -2,6 +2,10 @@
 
 工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9
 
+## 2026-11-03 本轮范围与验证
+
+用户明确本轮不向对应宿主提交，先分析 blocked 原因并修复工单框架；后续 Issue 标明宿主 GitHub 账号，并让并发更新在工单事件记录中有可认定的修订标记。本轮改动限定 Olympus 的 Issue 创建适配器、表单和显式事件采集，不改上游 Ariadne 分发包、共工工作区或已部署宿主。使用内置 Python 在 Windows 验证 Issue 组件隔离测试与 `git diff --check`；停止条件是身份字段、冲突拒绝及事件修订证据可本地验证。真实 GitHub 并发写入的原子仲裁、共工司南接入与 Agent 启用仍需其所属来源及独立准入，不能由此轮本地记录宣称完成。
+
 <!-- olympus-request:issue-event-data-loop-20261102 -->
 
 缺口证据：work-items.json 的 ariadne_source_registered=false；Olympus/modules/ariadne/runtime/registry.json 的 sources 为空；data-collection/sources.json 只索引 #1/#2 且 ingestion_confirmed=false；部分工作区/组件元数据仍写候选待审，与后续精确准入及发布证据不同步。

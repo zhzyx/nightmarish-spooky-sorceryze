@@ -19,6 +19,17 @@
     },
     {
       "type": "input",
+      "id": "host-git-account",
+      "attributes": {
+        "label": "宿主 GitHub 账号",
+        "description": "填写实际创建或接收此工单的 GitHub login；宿主需回读认证身份，不能仅凭此字段授权"
+      },
+      "validations": {
+        "required": true
+      }
+    },
+    {
+      "type": "input",
       "id": "design-doc",
       "attributes": {
         "label": "需求文档",
