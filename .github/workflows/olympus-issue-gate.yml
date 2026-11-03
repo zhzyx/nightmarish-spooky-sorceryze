@@ -32,6 +32,7 @@ jobs:
             const labels = issue.labels.map(x => typeof x === 'string' ? x : x.name);
             const category = labels.filter(x => x.startsWith('type:'));
             const status = labels.filter(x => x.startsWith('status:'));
+            if (!labels.includes('workspace:olympus')) throw Error('Require workspace:olympus');
             if (category.length !== 1 || !types.has(category[0])) throw Error('Require exactly one known type label');
             if (status.length !== 1 || !['status:in-progress', 'status:in-review'].includes(status[0])) throw Error('Require exactly one active status label');
             const issueBody = issue.body || '';
@@ -40,4 +41,26 @@ jobs:
               ...[...issueBody.matchAll(/^### 稳定需求 ID\s*\n+([a-z0-9]+(?:-[a-z0-9]+)*)[ \t]*(?=\r?$)/gm)].map(x => x[1])
             ]);
             if (ids.size !== 1 || !ids.has(requests[0][1])) throw Error('Issue request identity must match unambiguously');
-            await core.summary.addRaw('Same-repository Issue association checked at this event. This check does not execute Olympus, authenticate admission, verify Hermes data, or accept business delivery. Run the trusted local gate on final content before commit; repository protection must separately require this check.').write();
+            const requestId = requests[0][1];
+            const files = await github.paginate(github.rest.pulls.listFiles, {owner, repo, pull_number: pr.number, per_page: 100});
+            const changed = files.filter(f => f.status !== 'removed');
+            const events = changed.filter(f => f.filename.startsWith('olympus-hermes-data/events/olympus-workspace/') && f.filename.endsWith('.json'));
+            const collection = changed.filter(f => f.filename.startsWith('data-collection/') && f.filename.endsWith('.json'));
+            async function jsonFromPr(file) {
+              const response = await github.rest.git.getBlob({owner, repo, file_sha: file.sha});
+              if (response.data.encoding !== 'base64') throw Error('Expected JSON blob in PR: ' + file.filename);
+              return JSON.parse(Buffer.from(response.data.content, 'base64').toString('utf8'));
+            }
+            let matchingEvent = false;
+            for (const file of events) {
+              const event = await jsonFromPr(file);
+              if (event.tenant_id === 'olympus-workspace' && event.request_id === requestId) matchingEvent = true;
+            }
+            let matchingCollection = false;
+            for (const file of collection) {
+              const evidence = await jsonFromPr(file);
+              if (evidence.request_id === requestId && (evidence.issue === issue.html_url || evidence.issue_url === issue.html_url || evidence.issue_number === issueNumber)) matchingCollection = true;
+            }
+            if (matchingEvent && !matchingCollection) throw Error('Recorded Hermes event must be delivered with matching data-collection evidence');
+            if (!matchingEvent) core.warning('No successful Hermes event for this request was included in this PR; collection coverage remains unknown, but submission is allowed.');
+            await core.summary.addRaw(`Issue association checked. Matching Hermes event in PR: ${matchingEvent}; matching collection evidence in PR: ${matchingCollection}. Missing recording does not block this check. This does not execute PR code, authenticate admission, validate Hermes contents, or confirm Diting consumption.`).write();
