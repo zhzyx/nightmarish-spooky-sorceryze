@@ -1,0 +1,187 @@
+{
+  "template": false,
+  "permit_id": "unification-43-sinan",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.1.1",
+      "candidate_digest": "eaf1e100dbb71ba9b9e39fc8018c5a9122f8e1946e5e2d5dc73c30cbcfbedda5",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/sinan/AGENT.md",
+          "sha256": "fdf02ac81147dc270765df883bbce5537a603fd622e214f46b1aa73e346fb11a"
+        },
+        {
+          "path": "agents/sinan/agent.json",
+          "sha256": "e5943e8c83bf69723c700971405b23459e2565015a6c24bbe0478bff012ed6b8"
+        },
+        {
+          "path": "agents/sinan/references/README.md",
+          "sha256": "6bb1a6f82c038115b20cb8b4c91b1392d4566fdfcfc953fbe6b519ba92daa5a1"
+        },
+        {
+          "path": "agents/sinan/references/adapters.md",
+          "sha256": "0cbac523a79753bf4a883bb3ab7c8ed0481cd75df5aa0e84c28a6e182b409bf0"
+        },
+        {
+          "path": "agents/sinan/reporting.json",
+          "sha256": "8965278977b778f1506d5b893578d0bd96c91f6743c8aa303b3bb5e85d5cd868"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "2cd5b446c4acd2520f506320b68acabb86cada91cd3c799a2a25e3890d2ad3ff"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+        },
+        {
+          "path": "modules/sinan/test/generic-tracking.test.mjs",
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "987e4b1ea8dc41fe77388da74917f553148ba34f3be261cd7d95cb0473e4b1b4"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "54ce9acbb25cc864cb2819782581725037f74a31be2e193d35472c33931c2fe3"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "61108130dc916f24a89808f2709d551f783e4e35df4d360ac2005f1582370166"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "d4a26afc1e02920f40835d9c88e39039923ba19e59e61bbb5ea0eaf315021091"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/package_integrity.py",
+          "sha256": "5b89506e4bd9d27757117520c90b39e8e1686eade37d14b614fa1d18a5b2f343"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": []
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.2"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 869,
+      "rationale": "Responsibilities, triggers and essential constraints retained; implementation details remain on-demand"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/unification-43/independent-review.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/migration_review",
+    "independence": "independent_subagent_review",
+    "unresolved": []
+  },
+  "approval": {
+    "approver_id": "user",
+    "authority_ref": "explicit user approval in current chat",
+    "decision_evidence_ref": "reviews/unification-43/user-decision.json",
+    "approved_at": "2026-11-03T20:24:10.815436+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "expires_at": null,
+    "revocation_ref": null,
+    "superseded_by": null
+  }
+}

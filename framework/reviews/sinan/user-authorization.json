@@ -1,0 +1,15 @@
+{
+  "thread_id": "01a193a0-43c0-7dd3-99e6-ec6b157cc4f0",
+  "turn_id": "01a19828-45c8-78f3-ab75-3d4c9f8ddcbc",
+  "started_at": "2026-11-01T17:28:58.000Z",
+  "messages": [
+    {
+      "id": "01a19828-460c-7f61-884e-2bbcc35b8864",
+      "text": "启动自动调度，划分好agent之间只能\n"
+    },
+    {
+      "id": "01a1982b-adac-7e41-81b1-71a637bd57ae",
+      "text": "<send_user_message_question_reply>\n[{\"questionItemId\":\"[\\\"request_user_input_async\\\",\\\"call_1c68af39f2364f81ae30c3d5240843e0\\\",0]\",\"question\":\"首批自动调度要接管哪些任务？目前司南登记的工单来源为空；需要明确范围，才能给 Agent 派发真实工作。\",\"answer\":\"未来将会发生的和共工体系建设和维护的任务都要处理\"}]\n</send_user_message_question_reply>\n"
+    }
+  ]
+}

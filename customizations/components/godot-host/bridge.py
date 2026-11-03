@@ -17,6 +17,15 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
+_paths_spec = importlib.util.spec_from_file_location(
+    "gonggong_workspace_paths", Path(__file__).with_name("workspace_paths.py")
+)
+if _paths_spec is None or _paths_spec.loader is None:
+    raise ImportError("Cannot load workspace path resolver")
+_paths_module = importlib.util.module_from_spec(_paths_spec)
+_paths_spec.loader.exec_module(_paths_module)
+framework_root = _paths_module.framework_root
+
 
 @contextmanager
 def outbox_lock(folder, deadline):
@@ -41,7 +50,7 @@ def outbox_lock(folder, deadline):
                 break
             except OSError:
                 if time.monotonic() >= deadline:
-                    raise ValueError("Hermes delivery busy; envelopes retained")
+                    raise ValueError("Diting delivery busy; envelopes retained")
                 time.sleep(0.05)
         try:
             yield
@@ -56,25 +65,25 @@ def outbox_lock(folder, deadline):
 def flush(root):
     root = Path(root).resolve()
     deadline = time.monotonic() + 15
-    with outbox_lock(root / ".olympus-outbox/chat", deadline):
+    with outbox_lock(root / ".gonggong-outbox/chat", deadline):
         return flush_locked(root, deadline)
 
 
 def flush_locked(root, deadline):
     """Idempotent durable file outbox. Only delete an envelope after a real receipt."""
     root = Path(root).resolve()
-    outbox = root / ".olympus-outbox/chat"
+    outbox = root / ".gonggong-outbox/chat"
     receipts = []
     for pending in sorted(outbox.glob("*.json")):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            raise ValueError("Hermes flush time budget reached; remaining envelopes retained")
+            raise ValueError("Diting flush time budget reached; remaining envelopes retained")
         if pending.is_symlink():
             raise ValueError("Linked outbox entry is not allowed")
         recorded = subprocess.run(
             [
                 sys.executable,
-                str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+                str(root / "framework/extensions/diting-files/diting_files.py"),
                 "record",
                 "--repo",
                 str(root),
@@ -88,14 +97,14 @@ def flush_locked(root, deadline):
             env=host_environment(root),
         )
         if recorded.returncode:
-            raise ValueError("Hermes receipt failed; envelope retained: " + recorded.stderr.strip())
+            raise ValueError("Diting receipt failed; envelope retained: " + recorded.stderr.strip())
         receipts.append(json.loads(recorded.stdout))
         pending.unlink(missing_ok=True)
     return {"ok": True, "state": "recorded_file", "receipts": receipts, "git_committed": False}
 
 
 def enqueue(root, event):
-    outbox = root / ".olympus-outbox/chat"
+    outbox = root / ".gonggong-outbox/chat"
     outbox.mkdir(parents=True, exist_ok=True)
     pending = outbox / (event["event_id"] + ".json")
     temporary = pending.with_suffix(".tmp")
@@ -108,7 +117,7 @@ def enqueue(root, event):
 
 def find_gh(env):
     """GUI-launched hosts often lack the user's shell PATH; never guess beyond fixed install locations."""
-    configured = env.get("OLYMPUS_GH")
+    configured = env.get("GONGGONG_GH")
     if configured:
         return configured if Path(configured).is_file() else None
     found = shutil.which("gh", path=env.get("PATH"))
@@ -134,37 +143,27 @@ def find_gh(env):
 
 
 def host_environment(root):
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", OLYMPUS_PYTHON=sys.executable)
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", GONGGONG_PYTHON=sys.executable)
     gh = find_gh(env)
     if gh:
-        env["OLYMPUS_GH"] = gh
-    node = env.get("OLYMPUS_NODE")
+        env["GONGGONG_GH"] = gh
+    node = env.get("GONGGONG_NODE")
     if not node and (root / "project/runtime/node/node.exe").is_file():
         node = str(root / "project/runtime/node/node.exe")
-        env["OLYMPUS_NODE"] = node
+        env["GONGGONG_NODE"] = node
     if node and Path(node).is_file():
         # Framework subprocesses also invoke `node`; honor the host's runtime choice.
         env["PATH"] = str(Path(node).resolve().parent) + os.pathsep + env.get("PATH", "")
-    git = env.get("OLYMPUS_GIT") or root / "project/runtime/git/cmd/git.exe"
+    git = env.get("GONGGONG_GIT") or root / "project/runtime/git/cmd/git.exe"
     if Path(git).is_file():
         env["PATH"] = str(Path(git).resolve().parent) + os.pathsep + env.get("PATH", "")
-    config = root / ".olympus-local.json"
-    if config.is_file():
-        local = json.loads(config.read_text(encoding="utf-8-sig"))
-        for name in (
-            "GONGGONG_FRAMEWORK_SOURCE",
-            "GONGGONG_SINAN_FRAMEWORK_SOURCE",
-            "GONGGONG_SINAN_IMPLEMENTATION_SOURCE",
-        ):
-            if name in local:
-                env[name] = str((root / local[name]).resolve())
     return env
 
 
 def request_identity(request):
     # Legacy Godot callers remain supported; protocol v1 requires explicit identity.
     if "protocol_version" not in request and "host" not in request:
-        return {"id": "godot-editor", "kind": "engine"}, request.get("agent_id", "athena")
+        return {"id": "godot-editor", "kind": "engine"}, request.get("agent_id", "yanshi")
     if type(request.get("protocol_version")) is not int or request["protocol_version"] != 1:
         raise ValueError("Unsupported host protocol version")
     host = request.get("host")
@@ -219,7 +218,7 @@ def issue_binding(root, request, tenant):
 def chat(root, request, tenant):
     """Load framework context; never fall back to a model when checks reject it."""
     root = root.resolve()
-    framework = root / "Olympus"
+    framework = framework_root(root)
     manifest = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
     host, agent_id = request_identity(request)
     matches = [a for a in manifest["agents"] if a["id"] == agent_id]
@@ -239,14 +238,14 @@ def chat(root, request, tenant):
         "request_ref": request["request_id"],
         "source_ref": issue["url"],
         "agent_snapshot_ref": agent_id + "@" + agent["version"] + "#" + agent["candidate_digest"],
-        "outbox_path": ".olympus-outbox/chat",
-        "sink_ref": "olympus-hermes-data",
+        "outbox_path": ".gonggong-outbox/chat",
+        "sink_ref": "gonggong-diting-data",
         "path_base": "workspace_root",
         "authority_ref": request["authority_ref"],
         "agent": {
             "id": agent_id,
             "version": agent["version"],
-            "origin": "olympus-framework",
+            "origin": "gonggong-framework",
             "definition_sha256": hashlib.sha256((framework / agent["entry"]).read_bytes()).hexdigest(),
         },
     }
@@ -259,10 +258,10 @@ def chat(root, request, tenant):
                 "implementation",
                 "design-docs",
                 "data-collection sources, evidence and receipts",
-                "olympus-hermes-data real events",
+                "gonggong-diting-data real events",
             ],
             "before_commit": "Review and sanitize actual sources, stage current bytes together, run the trusted Issue gate on final content",
-            "after_commit": "Run Hermes git-check --require-committed against HEAD; record push and merge separately",
+            "after_commit": "Run Diting git-check --require-committed against HEAD; record push and merge separately",
             "preserve_originals": "Append corrections; do not submit credentials, local absolute source paths, caches or synthetic production facts",
         },
         "authority_ref": request["authority_ref"],
@@ -279,7 +278,7 @@ def chat(root, request, tenant):
         try:
             process = subprocess.run(
                 [
-                    env.get("OLYMPUS_NODE", "node"),
+                    env.get("GONGGONG_NODE", "node"),
                     str(framework / "tools/agent-context.mjs"),
                     agent_id,
                     str(mandate_file),
@@ -310,10 +309,10 @@ def chat(root, request, tenant):
             "occurred_at": datetime.now(timezone.utc).isoformat(),
             "source_ref": issue["url"],
             "agent": {
-                "id": "olympus-host-adapter",
+                "id": "gonggong-host-adapter",
                 "version": "1.2.1",
                 "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                "origin": "olympus-host-adapter",
+                "origin": "gonggong-host-adapter",
             },
             "payload": {
                 "framework_version": manifest["version"],
@@ -365,9 +364,9 @@ def run(command, cwd):
 
 
 def diagnose(root):
-    framework = root / "Olympus"
+    framework = framework_root(root)
     env = host_environment(root)
-    node = env.get("OLYMPUS_NODE", "node")
+    node = env.get("GONGGONG_NODE", "node")
     checks = {"node_available": {"ok": shutil.which(node, path=env.get("PATH")) is not None}}
     checks["git_available"] = {"ok": shutil.which("git", path=env.get("PATH")) is not None}
     checks["candidate_integrity"] = run(
@@ -379,8 +378,8 @@ def diagnose(root):
         checks["local_admission:" + agent["id"]] = run(
             [node, str(framework / "tools/admission.mjs"), str(framework), agent["id"]], root
         )
-    checks["hermes_data"] = run(
-        [sys.executable, str(framework / "extensions/hermes-files/hermes_files.py"), "validate", "--repo", str(root)],
+    checks["diting_data"] = run(
+        [sys.executable, str(framework / "extensions/diting-files/diting_files.py"), "validate", "--repo", str(root)],
         root,
     )
     return {
@@ -389,7 +388,7 @@ def diagnose(root):
         "blocking_checks": [name for name, check in checks.items() if not check["ok"]],
         "model_execution_started": False,
         "host_authority_authenticated": False,
-        "note": "Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Hermes receipt.",
+        "note": "Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Diting receipt.",
     }
 
 
@@ -410,7 +409,7 @@ ACTIVE_STATUSES = ("status:in-progress", "status:in-review")
 
 def work_items_module(root):
     path = root / "customizations/components/issue-workorders/work_items.py"
-    spec = importlib.util.spec_from_file_location("olympus_work_items", path)
+    spec = importlib.util.spec_from_file_location("gonggong_work_items", path)
     if spec is None or spec.loader is None:
         raise ValueError("Issue work-order adapter is unavailable")
     module = importlib.util.module_from_spec(spec)
@@ -443,7 +442,7 @@ def requirement_document(fields):
     quoted = "\n".join("> " + line if line else ">" for line in fields["outcome"].splitlines())
     return (
         f"# {fields['title']}\n\n"
-        f"<!-- olympus-request:{fields['request_id']} -->\n\n"
+        f"<!-- gonggong-request:{fields['request_id']} -->\n\n"
         f"- 需求 ID：`{fields['request_id']}`\n"
         "- Issue：由 Godot 编辑器会话内工单引导创建，链接见远程 Issue\n"
         f"- 类别：`type:{fields['category']}`\n"
@@ -503,10 +502,10 @@ def login_command(gh):
 def gh_state(root):
     """Return (gh, error); error is gh_unavailable or gh_unauthenticated, never a remote side effect."""
     env = host_environment(root)
-    gh = env.get("OLYMPUS_GH")
+    gh = env.get("GONGGONG_GH")
     if not gh:
         return None, "gh_unavailable"
-    os.environ["OLYMPUS_GH"] = gh
+    os.environ["GONGGONG_GH"] = gh
     if not gh_authenticated(gh, env):
         return gh, "gh_unauthenticated"
     return gh, None
@@ -588,8 +587,8 @@ def issue_start(root, request):
     if module.request_ids(value.get("body")) != {request_id}:
         raise ValueError("Issue stable request ID does not match unambiguously")
     names = [item["name"] for item in value.get("labels", [])]
-    if "workspace:olympus" not in names:
-        raise ValueError("Issue must explicitly include workspace:olympus")
+    if "workspace:gonggong" not in names:
+        raise ValueError("Issue must explicitly include workspace:gonggong")
     statuses = [name for name in names if name.startswith("status:")]
     if len(statuses) == 1 and statuses[0] in ACTIVE_STATUSES:
         return {"ok": True, "state": "already_active", "status": statuses[0], "remote_changed": False}
@@ -612,7 +611,7 @@ def issue_agent(root, request):
     from types import SimpleNamespace
 
     spec = importlib.util.spec_from_file_location(
-        "olympus_requirements", Path(__file__).with_name("requirements_agent.py")
+        "gonggong_requirements", Path(__file__).with_name("requirements_agent.py")
     )
     if spec is None or spec.loader is None:
         raise ValueError("Requirements Agent adapter unavailable")
@@ -641,7 +640,7 @@ GUIDE_ACTIONS = {
 
 def execute(workspace, action, tenant):
     root = Path(workspace).resolve()
-    framework = root / "Olympus"
+    framework = framework_root(root)
     manifest = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
     result = {
         "action": action,
@@ -657,21 +656,21 @@ def execute(workspace, action, tenant):
             for a in manifest["agents"]
         ],
     }
-    hermes = str(framework / "extensions/hermes-files/hermes_files.py")
+    diting = str(framework / "extensions/diting-files/diting_files.py")
     if action == "status":
         result.update(
             ok=True,
             framework_status=manifest["status"],
-            data_available=(root / "olympus-hermes-data/dataset.json").is_file(),
+            data_available=(root / "gonggong-diting-data/dataset.json").is_file(),
         )
     elif action == "doctor":
         result.update(diagnose(root))
     elif action == "check":
         result.update(run([sys.executable, str(framework / "tools/verify_framework.py"), "--candidate"], root))
     elif action == "validate":
-        result.update(run([sys.executable, hermes, "validate", "--repo", str(root)], root))
+        result.update(run([sys.executable, diting, "validate", "--repo", str(root)], root))
     elif action == "analyze":
-        result.update(run([sys.executable, hermes, "analyze", "--repo", str(root), "--tenant", tenant], root))
+        result.update(run([sys.executable, diting, "analyze", "--repo", str(root), "--tenant", tenant], root))
     else:
         raise ValueError("Unsupported action")
     return result
@@ -683,7 +682,7 @@ def main():
         "action", choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush", *GUIDE_ACTIONS]
     )
     parser.add_argument("--workspace", required=True)
-    parser.add_argument("--tenant", default="olympus-workspace")
+    parser.add_argument("--tenant", default="gonggong-workspace")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--request", type=Path)
     args = parser.parse_args()

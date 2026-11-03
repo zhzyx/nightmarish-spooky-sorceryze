@@ -40,7 +40,7 @@ class IssueGuideTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def gh_environment(self, gh, authenticated=True):
-        environment = patch.object(bridge, "host_environment", return_value={"OLYMPUS_GH": gh} if gh else {})
+        environment = patch.object(bridge, "host_environment", return_value={"GONGGONG_GH": gh} if gh else {})
         login = patch.object(bridge, "gh_authenticated", return_value=authenticated)
         login.start()
         self.addCleanup(login.stop)
@@ -53,9 +53,9 @@ class IssueGuideTests(unittest.TestCase):
         self.assertEqual(result["document"], "design-docs/guide-req-1.md")
         self.assertFalse(result["remote_created"])
         self.assertFalse(result["gh_available"])
-        self.assertEqual(result["labels"], ["type:development", "status:needs-decision", "workspace:olympus"])
+        self.assertEqual(result["labels"], ["type:development", "status:needs-decision", "workspace:gonggong"])
         text = (self.root / result["document"]).read_text(encoding="utf-8")
-        self.assertIn("<!-- olympus-request:guide-req-1 -->", text)
+        self.assertIn("<!-- gonggong-request:guide-req-1 -->", text)
         self.assertIn("> First line\n>\n> Second line", text)
         self.assertEqual(self.module.request_ids(text), {"guide-req-1"})
 
@@ -133,6 +133,8 @@ class IssueGuideTests(unittest.TestCase):
 
         def fake(*args):
             calls.append(args)
+            if args == ("api", "user"):
+                return '{"login":"fixture-worker"}'
             if args[0] == "api":
                 return "[[]]"
             return "https://github.com/test/repo/issues/42"
@@ -144,13 +146,21 @@ class IssueGuideTests(unittest.TestCase):
         self.assertEqual((result["ok"], result["state"], result["number"]), (True, "created", 42))
         create = calls[-1]
         labels = [create[i + 1] for i, v in enumerate(create) if v == "--label"]
-        self.assertEqual(labels, ["type:development", "status:needs-decision", "workspace:olympus"])
+        self.assertEqual(labels, ["type:development", "status:needs-decision", "workspace:gonggong"])
 
     def test_create_rejects_foreign_issue_url(self):
         with self.gh_environment("/fake/gh"):
             bridge.issue_draft(self.root, self.request)
             with patch.object(
-                self.module, "gh", side_effect=lambda *a: "[[]]" if a[0] == "api" else "https://github.com/x/y/issues/1"
+                self.module,
+                "gh",
+                side_effect=lambda *a: (
+                    '{"login":"fixture-worker"}'
+                    if a == ("api", "user")
+                    else "[[]]"
+                    if a[0] == "api"
+                    else "https://github.com/x/y/issues/1"
+                ),
             ):
                 with self.assertRaises(ValueError):
                     bridge.issue_create(self.root, self.request)
@@ -159,7 +169,7 @@ class IssueGuideTests(unittest.TestCase):
         value = {
             "number": 42,
             "state": "open",
-            "body": "<!-- olympus-request:guide-req-1 -->",
+            "body": "<!-- gonggong-request:guide-req-1 -->",
             "labels": [{"name": n} for n in labels],
         }
         value.update(values)
@@ -168,7 +178,7 @@ class IssueGuideTests(unittest.TestCase):
     def test_start_moves_unstarted_issue_to_in_progress(self):
         calls = []
 
-        unstarted = ["type:development", "status:needs-decision", "workspace:olympus"]
+        unstarted = ["type:development", "status:needs-decision", "workspace:gonggong"]
 
         def fake(*args):
             calls.append(args)
@@ -194,13 +204,17 @@ class IssueGuideTests(unittest.TestCase):
 
     def test_start_leaves_active_issue_and_refuses_decided_or_foreign_issue(self):
         cases = (
-            (["type:development", "status:in-review", "workspace:olympus"], {}, "already_active"),
-            (["type:development", "status:blocked", "workspace:olympus"], {}, None),
-            (["type:development", "status:done", "workspace:olympus"], {}, None),
+            (["type:development", "status:in-review", "workspace:gonggong"], {}, "already_active"),
+            (["type:development", "status:blocked", "workspace:gonggong"], {}, None),
+            (["type:development", "status:done", "workspace:gonggong"], {}, None),
             (["type:development", "status:needs-decision"], {}, None),
-            (["type:development", "status:planned", "workspace:olympus"], {"state": "closed"}, None),
-            (["type:development", "status:planned", "workspace:olympus"], {"body": "<!-- olympus-request:x -->"}, None),
-            (["type:development", "status:planned", "workspace:olympus"], {"pull_request": {}}, None),
+            (["type:development", "status:planned", "workspace:gonggong"], {"state": "closed"}, None),
+            (
+                ["type:development", "status:planned", "workspace:gonggong"],
+                {"body": "<!-- gonggong-request:x -->"},
+                None,
+            ),
+            (["type:development", "status:planned", "workspace:gonggong"], {"pull_request": {}}, None),
         )
         for labels, values, expected in cases:
             calls = []
@@ -223,12 +237,12 @@ class IssueGuideTests(unittest.TestCase):
 
     def test_gh_discovery_prefers_configuration_then_path(self):
         missing = str(self.root / "missing-gh")
-        self.assertIsNone(bridge.find_gh({"OLYMPUS_GH": missing}))
+        self.assertIsNone(bridge.find_gh({"GONGGONG_GH": missing}))
         tool = self.root / "bin" / ("gh.exe" if os.name == "nt" else "gh")
         tool.parent.mkdir()
         tool.write_text("#!/bin/sh\n", encoding="utf-8")
         tool.chmod(0o755)
-        self.assertEqual(bridge.find_gh({"OLYMPUS_GH": str(tool)}), str(tool))
+        self.assertEqual(bridge.find_gh({"GONGGONG_GH": str(tool)}), str(tool))
         self.assertEqual(Path(bridge.find_gh({"PATH": str(tool.parent)})), tool)
 
 

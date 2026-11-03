@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "path_base": "this_file_directory",
+  "reviewer": "codex_subagent_/root/independent_review",
+  "independence": "independent_subagent_review; candidate not modified by reviewer",
+  "authority": "technical review only; not an admission or user approval",
+  "candidate": {
+    "root": "framework",
+    "version": "0.9.1",
+    "manifest_sha256": "25a88d01b2449a6bc3d625678e33076625cde7ec14347834b534f5cc4aee75f3",
+    "sinan_agent_digest": "79caa0ed5acd0810c35c3c804195209af93dfae17f001a68995e51f113910138",
+    "sinan_support_version": "0.5.1",
+    "sinan_support_module_sha256": "2cd5b446c4acd2520f506320b68acabb86cada91cd3c799a2a25e3890d2ad3ff"
+  },
+  "outcome": "technical_delta_pass_admission_and_request_update_required",
+  "delta_review": "Compared with the active 0.9.0 package, coordinator.mjs, refresh.mjs, both Sinan tests and runtime-ref.json retain identical SHA256. Sinan support module metadata changes version and admission path; no new implementation or dispatcher behavior is introduced. Earlier normative intake review remains valid for its unchanged text, subject to the final exact candidate digest and the scope limit below.",
+  "old_content_compatibility": "Existing source ledger semantics, command preparation, runtime entry and registered-source coverage remain unchanged at byte level. Current 0.9.0 release remains active and its verified files are preserved. This supports static compatibility only; it does not prove external host bindings or live automatic intake.",
+  "module_admission": {
+    "applicability": "required: old core-agent-support-0.5.0 pass binds version, exact file hashes and 0.9.0 baseline, so it cannot approve 0.5.1 / 0.9.1",
+    "new_path": "framework/reviews/sinan/core-agent-support-0.5.1.json",
+    "exists": false,
+    "required_evidence": "independent review, exact module/specification and manifest hashes, Yuanheng assessment, authorized user decision and source content compatibility check",
+    "status": "pending"
+  },
+  "verification": {
+    "candidate_integrity": "pass: verify_framework.py --candidate; does not validate admission",
+    "active_pointer": "CURRENT_FRAMEWORK.json points to 0.9.0 after rollback",
+    "old_module_code_equal": true
+  },
+  "blocking_before_release": [
+    "production-queue.json and approval-request.json still bind manifest SHA e40a2653...76f525, not this final SHA, and omit the Sinan support module as a subject.",
+    "The user's earlier exact approval and its decision evidence bind the old six-subject request. They do not cover this revised module/version/manifest; obtain an exact updated user decision.",
+    "Create a valid 0.5.1 module admission at the pinned path and re-run all formal agent, skill, module and delivery checks before switching.",
+    "Do not claim a live request-to-work-item pipeline or Olympus acceptance from this local definition review."
+  ],
+  "release_assessment": "Technically suitable for a revised exact admission request; not yet eligible for production switch. After the listed exact approvals and formal checks, local re-release is supportable without changing implementation code.",
+  "approval": null,
+  "evidence_refs": [
+    "framework/framework-manifest.json",
+    "framework/modules/sinan/module.json",
+    "framework/reviews/sinan/core-agent-support-0.5.0.json",
+    "framework/tools/admission.mjs",
+    "production-queue.json",
+    "approval-request.json",
+    "independent-review-v3.json"
+  ]
+}

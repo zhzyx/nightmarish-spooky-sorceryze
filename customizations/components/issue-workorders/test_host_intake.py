@@ -17,8 +17,8 @@ class IntakeTests(unittest.TestCase):
             "number": 6,
             "html_url": "https://github.com/test/repo/issues/6",
             "state": "open",
-            "body": "<!-- olympus-request:req-6 -->",
-            "labels": [{"name": n} for n in ("type:development", "status:in-progress", "workspace:olympus")],
+            "body": "<!-- gonggong-request:req-6 -->",
+            "labels": [{"name": n} for n in ("type:development", "status:in-progress", "workspace:gonggong")],
         }
 
     def intake(self, value=None, number=6, tenant="test"):
@@ -38,9 +38,9 @@ class IntakeTests(unittest.TestCase):
         for change in (
             {"state": "closed"},
             {"pull_request": {}},
-            {"body": "<!-- olympus-request:other -->"},
+            {"body": "<!-- gonggong-request:other -->"},
             {"labels": self.issue["labels"][:-1]},
-            {"labels": [{"name": "type:development"}, {"name": "status:planned"}, {"name": "workspace:olympus"}]},
+            {"labels": [{"name": "type:development"}, {"name": "status:planned"}, {"name": "workspace:gonggong"}]},
         ):
             with self.assertRaises(ValueError):
                 self.intake(dict(self.issue, **change))

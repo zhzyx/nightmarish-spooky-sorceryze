@@ -1,0 +1,61 @@
+{
+  "template": false,
+  "permit_id": "GG-REQUEST-INTAKE-0.9.1-HEQI",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "heqi",
+    "version_or_digest": {
+      "version": "0.3.1",
+      "candidate_digest": "ca449cf05af3fb32591c3d68aa50f649b6ae18613e5669fba3d4d685e1360a3d"
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": [
+      "GOVERNANCE.md",
+      "specs/governance-review.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.1"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": null,
+      "rationale": "Independent exact candidate review in evidence refs"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/request-intake-0.9.1/independent-review-v2.json",
+      "reviews/request-intake-0.9.1/independent-review-v3.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/independent_review",
+    "independence": "independent_subagent_review",
+    "unresolved": []
+  },
+  "approval": {
+    "approver_id": "user_current_chat",
+    "authority_ref": "user:current_chat:2026-11-04:exact_0.9.1_candidate",
+    "decision_evidence_ref": "reviews/request-intake-0.9.1/user-approval.json",
+    "approved_at": "2026-11-03T18:48:34Z",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

@@ -17,8 +17,8 @@ class GateTests(unittest.TestCase):
             "number": 6,
             "html_url": "https://github.com/test/repo/issues/6",
             "state": "open",
-            "labels": [{"name": "type:development"}, {"name": "status:in-progress"}, {"name": "workspace:olympus"}],
-            "body": "<!-- olympus-request:req-6 -->",
+            "labels": [{"name": "type:development"}, {"name": "status:in-progress"}, {"name": "workspace:gonggong"}],
+            "body": "<!-- gonggong-request:req-6 -->",
             "updated_at": "2026-11-02T01:00:00Z",
         }
 
@@ -36,8 +36,8 @@ class GateTests(unittest.TestCase):
             {"html_url": "https://github.com/other/repo/issues/6"},
             {"pull_request": {}},
             {"state": "closed"},
-            {"body": "<!-- olympus-request:req-7 -->"},
-            {"body": "<!-- olympus-request:req-6 -->\n<!-- olympus-request:req-7 -->"},
+            {"body": "<!-- gonggong-request:req-7 -->"},
+            {"body": "<!-- gonggong-request:req-6 -->\n<!-- gonggong-request:req-7 -->"},
         ):
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                 self.check({**self.issue, **mutation})
@@ -58,18 +58,18 @@ class GateTests(unittest.TestCase):
 
     def test_commit_gate_rejects_missing_workspace_before_framework_execution(self):
         self.setup_gate()
-        self.issue["labels"] = [v for v in self.issue["labels"] if v["name"] != "workspace:olympus"]
+        self.issue["labels"] = [v for v in self.issue["labels"] if v["name"] != "workspace:gonggong"]
         with (
             patch.object(gate.work_items, "gh", return_value=json.dumps(self.issue)),
             patch.object(gate, "validate_command") as run,
         ):
-            with self.assertRaisesRegex(ValueError, "workspace:olympus"):
+            with self.assertRaisesRegex(ValueError, "workspace:gonggong"):
                 gate.gate(self.root, 6, "req-6")
             run.assert_not_called()
 
     def setup_gate(self, events=True):
         if events:
-            directory = self.root / "olympus-hermes-data/events/local/req-6"
+            directory = self.root / "gonggong-diting-data/events/local/req-6"
             directory.mkdir(parents=True)
             (directory / "event.json").write_text(
                 json.dumps({
@@ -110,15 +110,15 @@ class GateTests(unittest.TestCase):
     def test_missing_collection_fails(self):
         self.setup_gate(events=False)
         with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]):
-            with self.assertRaisesRegex(ValueError, "No actual Hermes events"):
+            with self.assertRaisesRegex(ValueError, "No actual Diting events"):
                 gate.gate(self.root, 6, "req-6")
 
-    def test_formal_or_hermes_failure_fails(self):
+    def test_formal_or_diting_failure_fails(self):
         self.setup_gate()
         for outcome in (
             [ValueError("formal failure")],
             [{"mode": "candidate"}],
-            [{"mode": "approved_file_integrity"}, ValueError("Hermes failure")],
+            [{"mode": "approved_file_integrity"}, ValueError("Diting failure")],
             [{"mode": "approved_file_integrity"}, {}, ValueError("deleted history")],
         ):
             with self.subTest(outcome=outcome), patch.object(gate, "validate_command", side_effect=outcome):
@@ -147,7 +147,7 @@ class GateTests(unittest.TestCase):
 
     def test_tenant_kind_and_exact_source_binding(self):
         self.setup_gate()
-        path = self.root / "olympus-hermes-data/events/local/req-6/event.json"
+        path = self.root / "gonggong-diting-data/events/local/req-6/event.json"
         original = json.loads(path.read_text())
         for mutation in (
             {"tenant_id": "other"},
@@ -167,7 +167,7 @@ class GateTests(unittest.TestCase):
             self.assertEqual(gate.gate(self.root, 6, "req-6")["state"], "local_checks_passed")
 
     def test_history_cannot_be_rewritten(self):
-        path = self.root / "olympus-hermes-data/events/local/old/event.json"
+        path = self.root / "gonggong-diting-data/events/local/old/event.json"
         path.parent.mkdir(parents=True)
         path.write_bytes(b"changed")
         name = path.relative_to(self.root).as_posix().encode()
@@ -197,17 +197,10 @@ class GateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "origin must match"):
                 gate.check_repository(self.root, "test/repo")
 
-    def test_source_resolves_relative_to_repo(self):
-        (self.root / ".olympus-local.json").write_text('{"GONGGONG_FRAMEWORK_SOURCE":"approved/framework"}')
+    def test_retired_source_locator_is_not_loaded(self):
+        (self.root / ".gonggong-local.json").write_text('{"GONGGONG_FRAMEWORK_SOURCE":"absent"}')
         with patch.dict(os.environ, {}, clear=True):
-            self.assertEqual(
-                gate.environment(self.root)["GONGGONG_FRAMEWORK_SOURCE"],
-                str((self.root / "approved/framework").resolve()),
-            )
-        with patch.dict(os.environ, {"GONGGONG_FRAMEWORK_SOURCE": "host/framework"}, clear=True):
-            self.assertEqual(
-                gate.environment(self.root)["GONGGONG_FRAMEWORK_SOURCE"], str((self.root / "host/framework").resolve())
-            )
+            self.assertNotIn("GONGGONG_FRAMEWORK_SOURCE", gate.environment(self.root))
 
 
 if __name__ == "__main__":

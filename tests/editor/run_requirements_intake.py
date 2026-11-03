@@ -1,4 +1,4 @@
-"""Native Athena intake acceptance with isolated GitHub/model fixtures; no real services."""
+"""Native Yanshi intake acceptance with isolated GitHub/model fixtures; no real services."""
 
 import argparse
 import hashlib
@@ -16,16 +16,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 GH_FIXTURE = """import json,sys,re,os
 from pathlib import Path
-r=Path(os.environ['OLYMPUS_TEST_WORKSPACE'])
+r=Path(os.environ['GONGGONG_TEST_WORKSPACE'])
 op=Path(__file__).name
 args=sys.argv[1:]
+with (r/'fake-gh-calls.log').open('a',encoding='utf-8') as log: log.write(json.dumps([op,args])+chr(10))
 repo=json.loads((r/'work-items.json').read_text())['repository']
 db=r/'fake-issues.json'
 issues=json.loads(db.read_text()) if db.exists() else []
 if op=='auth': raise SystemExit(1 if (r/'gh_disabled').exists() else 0)
 if op=='api':
  path=args[0]
- if path=='repos/'+repo: value={'full_name':repo,'permissions':{'push':True}}
+ if path=='user': value={'login':'fixture-worker','id':123}
+ elif path=='repos/'+repo: value={'full_name':repo,'permissions':{'push':True}}
  elif '/issues?' in path: value=[issues] if '--slurp' in args else issues
  elif '/comments' in path: value=[[]]
  else: value=next(x for x in issues if x['number']==int(path.split('/')[-1]))
@@ -55,11 +57,12 @@ def main():
     normal = 0
     with tempfile.TemporaryDirectory(prefix="requirements-native-") as folder:
         root = Path(folder)
-        shutil.copytree(ROOT / "Olympus", root / "Olympus", ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copyfile(ROOT / "CURRENT_FRAMEWORK.json", root / "CURRENT_FRAMEWORK.json")
         shutil.copytree(ROOT / "customizations", root / "customizations", ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copytree(ROOT / ".github", root / ".github")
         (root / "tools").mkdir()
-        shutil.copyfile(ROOT / "tools/olympus_bridge.py", root / "tools/olympus_bridge.py")
+        shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
         shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
         for name in ["auth", "api", "issue"]:
             (root / name).write_text(GH_FIXTURE, encoding="utf-8")
@@ -86,7 +89,7 @@ def main():
         ])
         run([
             sys.executable,
-            str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+            str(root / "framework/extensions/diting-files/diting_files.py"),
             "init",
             "--repo",
             str(root),
@@ -111,7 +114,7 @@ def main():
                     value = json.loads(data["messages"][-1]["content"])
                     text = value["request"]
                     existing = value["existing_issue"]
-                    assert "metis" in data["messages"][0]["content"]
+                    assert "clarify-feature" in data["messages"][0]["content"]
                     assert "ISOLATED_FRAMEWORK_CONTEXT_FIXTURE" not in data["messages"][0]["content"]
                     if "Cancel pending" in text:
                         (root / "model_waiting").touch()
@@ -156,11 +159,11 @@ def main():
         threading.Thread(target=server.serve_forever, daemon=True).start()
         env = dict(
             os.environ,
-            OLYMPUS_WORKSPACE=str(root),
-            OLYMPUS_TEST_WORKSPACE=str(root),
-            OLYMPUS_PYTHON=sys.executable,
-            OLYMPUS_GH=sys.executable,
-            OLYMPUS_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+            GONGGONG_WORKSPACE=str(root),
+            GONGGONG_TEST_WORKSPACE=str(root),
+            GONGGONG_PYTHON=sys.executable,
+            GONGGONG_GH=sys.executable,
+            GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
@@ -196,7 +199,7 @@ def main():
                     "requests": requests,
                     "journals": [
                         json.loads(p.read_text(encoding="utf-8"))
-                        for p in (root / ".olympus-outbox/requirements").glob("*.json")
+                        for p in (root / ".gonggong-outbox/requirements").glob("*.json")
                     ],
                 },
                 ensure_ascii=False,
@@ -208,11 +211,11 @@ def main():
         assert len(issues) == 4, issues
         assert normal == 6 and sum(x["requirements"] for x in requests) == 8, requests
         events = [
-            json.loads(p.read_text(encoding="utf-8")) for p in (root / "olympus-hermes-data/events").rglob("*.json")
+            json.loads(p.read_text(encoding="utf-8")) for p in (root / "gonggong-diting-data/events").rglob("*.json")
         ]
-        for p in (root / ".olympus-outbox").rglob("*.json"):
+        for p in (root / ".gonggong-outbox").rglob("*.json"):
             assert "intake-unit-session-secret" not in p.read_text(encoding="utf-8")
-        assert not list((root / ".olympus-outbox/chat").glob("*.json"))
+        assert not list((root / ".gonggong-outbox/chat").glob("*.json"))
         run(["git", "add", "."])
         run([
             "git",
@@ -230,7 +233,7 @@ def main():
         receipt = json.loads(
             run([
                 sys.executable,
-                str(root / "Olympus/extensions/hermes-files/hermes_files.py"),
+                str(root / "framework/extensions/diting-files/diting_files.py"),
                 "git-check",
                 "--repo",
                 str(root),
@@ -240,7 +243,7 @@ def main():
         report = {
             "ok": True,
             "native_page": True,
-            "actual_athena_admission": True,
+            "actual_yanshi_admission": True,
             "model_and_github": "isolated loopback/CLI fixtures only",
             "requirements_calls": 8,
             "development_calls": 6,

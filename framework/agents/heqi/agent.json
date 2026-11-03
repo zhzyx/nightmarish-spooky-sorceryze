@@ -1,0 +1,25 @@
+{
+  "id": "heqi",
+  "name": "合契",
+  "kind": "independent_agent",
+  "version": "0.3.1",
+  "entry": "agents/heqi/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "yuanheng",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/yuanheng/agents/yuanheng.md",
+  "review_skill": "skills/gonggong-check/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/gonggong-check/SKILL.md",
+    "skills/work-order-coordination/SKILL.md"
+  ],
+  "admission_pass": "reviews/unification-43/heqi-final-admission.json",
+  "host_required_for_execution": true,
+  "scope": "authorized_multi_worker_change_comparison_conflict_resolution_and_handoffs",
+  "reporting": "agents/heqi/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json",
+  "layer": "core",
+  "state": "pending_approval"
+}

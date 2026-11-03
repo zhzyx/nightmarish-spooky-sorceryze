@@ -1,0 +1,23 @@
+{
+  "id": "kuafu",
+  "name": "夸父",
+  "kind": "independent_agent",
+  "version": "0.4.0",
+  "entry": "agents/kuafu/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "yuanheng",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/yuanheng/agents/yuanheng.md",
+  "review_skill": "skills/gonggong-check/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/kuafu/SKILL.md"
+  ],
+  "admission_pass": "reviews/unification-43/kuafu-admission.json",
+  "host_required_for_execution": true,
+  "scope": "escalated_quality_event_oversight_only",
+  "reporting": "agents/kuafu/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json",
+  "state": "pending_approval"
+}

@@ -1,5 +1,5 @@
-Olympus-Issue: #
-Olympus-Request:
+GongGong-Issue: #
+GongGong-Request:
 
 ## 问题与目标
 
@@ -15,8 +15,8 @@ Olympus-Request:
 
 - 本地 Issue 门禁结果及精确候选：
 - 适用业务测试与必要独立审查：
-- Hermes 实际事件、数据索引及 Git 状态：
+- Diting 实际事件、数据索引及 Git 状态：
 - 未验证项、阻塞、用户保留决策与交付状态：
 - AI/Agent 使用及实际执行责任：
 
-提交到本仓库实际默认分支。遵守 `.github/CONTRIBUTING.md` 与 `Olympus/AGENTS.md`；关联检查通过不等于质量验收、准入批准或数据已消费。
+提交到本仓库实际默认分支。遵守 `.github/CONTRIBUTING.md` 与 `framework/AGENTS.md`；关联检查通过不等于质量验收、准入批准或数据已消费。

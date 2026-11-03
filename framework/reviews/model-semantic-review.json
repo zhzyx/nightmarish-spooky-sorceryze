@@ -1,0 +1,273 @@
+{
+  "review_id": "gonggong-model-semantic-review-2026-11-01",
+  "created_at": "2026-11-01T06:41:57.133567+00:00",
+  "evaluator_id": "/root/xiezhi_review",
+  "display_name": "獬豸·框架审查",
+  "function_kind": "temporary_independent_review",
+  "governance_root": "yuanheng",
+  "candidate_root": "outputs\\gonggong-v0.9",
+  "scope": "local_model_runtime_semantics_not_live_model_certification",
+  "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_SEMANTICS",
+  "approval_granted": false,
+  "independence": "independent_read_only_reviewer",
+  "yuanheng": {
+    "purpose": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "三种执行模式适配单步、宿主计划和受限资源检索；产物是候选，业务验收仍由原责任链负责，接口通不能证明需求已满足。"
+    },
+    "truth": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "协议、模型能力和生产部署分开声明；synthetic只能validation_only，live标签由操作员负责真实性；只证明样本集、未认证真实模型效果。上下文字节不是token窗口；max_calls不是总token或金额预算。"
+    },
+    "economy": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "四个共享runtime实现，不复制模型专属Agent或skill；现有三Agent/九skill入口复用，按步骤按需加载方法，不按模型建立固定编制。"
+    },
+    "authority": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "冻结纲领及元衡核心始终入上下文；HMAC委托绑定计划/状态目录/框架指纹/有效期；工具仅宿主资源map读取，模型JSON不是执行权限。密钥及文件ACL由可信操作员控制，非企业IAM。"
+    },
+    "adaptation": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "同一任务类别只能路由至有评测依据且可容纳当前上下文的profile；无效输出受总调用额度，未知HTTP结果转对账，不自动加权限或降低验收。"
+    },
+    "continuity": {
+      "status": "PASS_LOCAL_DEFINITION_AND_RUNTIME_CONTRACT",
+      "evidence": "框架/模型配置或证据变化需重新准入；恢复保留原预算和历史，完成重放不调用模型；冻结上游不变，共工/元衡反馈仍为reference。"
+    }
+  },
+  "findings": [
+    {
+      "id": "MSEM-001",
+      "severity": "low",
+      "location": "specs/model-runtime.md:上下文、能力和路由",
+      "problem": "“每步显式选择一个登记skill”与实现及plan字段的可选skill不一致",
+      "recommended_change": "改为“每步可按需选择一个登记skill及相关引用”",
+      "status": "resolved_in_final_candidate",
+      "resolution": "最终model-runtime说明改为“每步可按需选择一个登记skill”，与可选字段和实现一致。"
+    },
+    {
+      "id": "MSEM-002",
+      "severity": "medium",
+      "location": "runtime/diting.py terminal selection; runtime/runner.py completion/recover",
+      "problem": "completed journal已写但投影失败后recover cancel：最早completed仍可投影request_end completed，同时jobs cancelled",
+      "recommended_change": "让完成事件与取消恢复的最终状态保持一致并保留可追溯原事件；由运行独立审查实测此故障路径",
+      "status": "resolved_in_final_candidate",
+      "resolution": "_recover先检查已持久completed/cancelled；completed仅允许retry补交并收束completed，cancel仅补交cancel不能resume。代码路径复查通过；独立运行报告MODEL-05含持久终态中断恢复验证。"
+    },
+    {
+      "id": "MSEM-003",
+      "severity": "low",
+      "location": "README.md; GOVERNANCE.md",
+      "problem": "旧全未部署描述与新本地执行约束不一致；“实际任务可运行”须标明真实模型/评测/授权前提",
+      "recommended_change": "区分本地运行器已实现、模拟验证、真实模型效果待验收、企业宿主未部署",
+      "status": "resolved_in_final_candidate",
+      "resolution": "README明确配置真实模型、live代表任务证据及有效授权之后才能跑实际任务；GOVERNANCE区分本地签名/额度/状态控制与尚未部署的企业IAM/全局资源/分布式控制。"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "MS01",
+      "stimulus": "更换为不支持原生system角色的协议模型",
+      "contract_trace": "转角色标签文本且明确不等同原生隔离；元衡和纲领保留，不能截断。",
+      "evidence_ref": "runtime/adapters.py; specs/model-runtime.md",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS02",
+      "stimulus": "模型无法输出合法信封",
+      "contract_trace": "保留失败记录，转已评测候选且计入同一额度，无合格者needs_attention。",
+      "evidence_ref": "runtime/runner.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS03",
+      "stimulus": "模型输出shell或未授权tool",
+      "contract_trace": "只接受授权lookup_resource；候选被拒绝，不执行模型生成代码。",
+      "evidence_ref": "runtime/runner.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS04",
+      "stimulus": "profile仅有synthetic证据却是正常业务任务",
+      "contract_trace": "validate_plan拒绝，必须validation_only。此机制不认证人工把scope标live的真实性。",
+      "evidence_ref": "runtime/runner.py; runtime/evaluate.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS05",
+      "stimulus": "模型响应超时/HTTP错误，可能已经消费",
+      "contract_trace": "TransportUnknown转needs_reconciliation，操作员核对后retry/cancel，已用调用预算不重置。",
+      "evidence_ref": "runtime/adapters.py; runtime/runner.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS06",
+      "stimulus": "供应商缺usage或cache/reasoning是总量子集",
+      "contract_trace": "unknown保持unavailable不填0，子集不重复累加；不宣称跨模型通用价值换算。",
+      "evidence_ref": "runtime/adapters.py; runtime/diting.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS07",
+      "stimulus": "用户要求无条件把完成JSON当游戏交付成功",
+      "contract_trace": "runtime完成仅candidate_requires_business_validation，夸父不代签业务测试，谛听不批准。",
+      "evidence_ref": "runtime/runner.py; specs/model-runtime.md",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS08",
+      "stimulus": "外部Codex对话发生纠偏，但不经本运行器",
+      "contract_trace": "coverage明示只覆盖运行器，外部对话/语义纠偏不推断；需宿主提交真实事件。",
+      "evidence_ref": "runtime/diting.py; specs/model-runtime.md",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS09",
+      "stimulus": "上下文超模型声明字节限额",
+      "contract_trace": "跳过候选或转人工，不截断核心治理；不把字节值称为实际模型token窗口。",
+      "evidence_ref": "runtime/runner.py; specs/model-runtime.md",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS10",
+      "stimulus": "任务完成后相同授权重放",
+      "contract_trace": "任务/授权摘要一致则返回持久结果，不再次调用或重复计量；真实回执与任务状态应一致。",
+      "evidence_ref": "runtime/runner.py; runtime/diting.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS11",
+      "stimulus": "任务过期或改状态目录绕调用额度",
+      "contract_trace": "签名/有效期/状态位置检查拒绝；不同目录的总预算仍由外部宿主治理。",
+      "evidence_ref": "runtime/runner.py",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    },
+    {
+      "id": "MS12",
+      "stimulus": "跨模型新增常设角色或绕过谛听框架修改边界",
+      "contract_trace": "本方案仅共享运行代码，3正式Agent不变；框架/元衡数据仍仅reference，不能由模型自采纳。",
+      "evidence_ref": "README.md; specs/model-runtime.md",
+      "execution": "independent_code_and_contract_trace_not_live_model_test"
+    }
+  ],
+  "limitations": [
+    "无真实服务配置、真实模型代表任务或业务效果验收，本报告不认证任何实际模型。",
+    "HMAC执行边界依赖操作员保管密钥和本地目录ACL，不是企业IAM、恶意本机进程沙箱或全局预算。",
+    "当前仅文本、非流式、JSON信封和宿主资源map读取，不认证多模态/原生工具/引擎写操作。",
+    "谛听自动记录范围仅此运行器；外部会话/语义纠偏/业务质量不自动推断。",
+    "运行功能和故障恢复的执行证据由另一独立运行审查负责；本审查不重复签发其测试结论。"
+  ],
+  "source_fingerprints": [
+    {
+      "path": "FOUNDATION.md",
+      "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+    },
+    {
+      "path": "foundation.lock.json",
+      "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+    },
+    {
+      "path": "README.md",
+      "sha256": "9bdf61593add19290c38171e4d0b42b74321c8305e023ce2f401f915d9a07a9a"
+    },
+    {
+      "path": "specs/governance-review.md",
+      "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+    },
+    {
+      "path": "specs/model-runtime.md",
+      "sha256": "4a3185481db202ce1ca6b2f12c3c91427d6d0230c5b922f94c000203ecfd5c9a"
+    },
+    {
+      "path": "specs/reporting.md",
+      "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+    },
+    {
+      "path": "skills/gonggong-check/SKILL.md",
+      "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+    },
+    {
+      "path": "upstream/yuanheng/core.md",
+      "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+    },
+    {
+      "path": "upstream/yuanheng/agents/yuanheng.md",
+      "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+    },
+    {
+      "path": "runtime/runner.py",
+      "sha256": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e"
+    },
+    {
+      "path": "runtime/adapters.py",
+      "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f"
+    },
+    {
+      "path": "runtime/evaluate.py",
+      "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+    },
+    {
+      "path": "runtime/diting.py",
+      "sha256": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+    },
+    {
+      "path": "templates/model-plan.json",
+      "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+    },
+    {
+      "path": "tools/agent-context.mjs",
+      "sha256": "e22a0a86463d150483e767c864907cc71741c79838cccd7d15757cd8168289f5"
+    },
+    {
+      "path": "agents/yanshi/agent.json",
+      "sha256": "243f0888da73fded77eb854633600670a95d5c5b65751de5e501f3a902b521bb"
+    }
+  ],
+  "final_candidate": {
+    "manifest_sha256": "25d0b069d116af1eaa236f7564e596c0c9fa41f8fddaa5d9d91aa3eab3ac268d",
+    "runtime_sha256": {
+      "runtime/runner.py": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e",
+      "runtime/adapters.py": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f",
+      "runtime/evaluate.py": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3",
+      "runtime/diting.py": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+    },
+    "agent_candidate_digests": {
+      "yanshi": "c40fe243a82ce1d850514919fa4da32644d17f3efae22e14026cba7d0d4f2f58",
+      "kuafu": "a5b184a3a1b652cf8b302fb9b97886a760620c79c64f376722cc1e2df5d5041c",
+      "diting": "ac953d822107a1f13c7aa18e8cb582ca5bc5ffd1fcfb5151eb7fa2ce20df0f07"
+    },
+    "framework_version": "0.9.0",
+    "reviewed_at": "2026-11-01T06:44:38.192985+00:00",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "foundation_and_upstream_unchanged": true,
+    "agent_and_skill_entries_unchanged": true,
+    "entry_count": 12,
+    "live_model_certified": false,
+    "approval_granted": false
+  },
+  "runtime_evidence_reference": {
+    "path": "work/model-runtime-review.md",
+    "sha256": "5e059c3da917d31de4e2694ad4ea818b15296067ffc54d7af1db268f982d7fa2",
+    "relationship": "Independent runtime reviewer owns test verdicts; this semantic review references MODEL-05 closure without repeating execution."
+  },
+  "renewal_review": "renew仅同一可信操作员签发；后继grant绑定前任digest，recover比较除期限/继承链接外完整payload；终态恢复不重置调用预算，框架变化不能借续期接纳。",
+  "metadata_recheck": {
+    "previous_manifest_sha256": "7c54d4e8a85306e39283cfd9c4863575cc2e6b70f1426eb994ac0c757bdce0d6",
+    "final_manifest_sha256": "25d0b069d116af1eaa236f7564e596c0c9fa41f8fddaa5d9d91aa3eab3ac268d",
+    "checked_at": "2026-11-01T06:46:15.446430+00:00",
+    "status": "PASS",
+    "changes": [
+      "host_loader_implemented=true; scope=local_trusted_operator_runtime_only",
+      "reporting.runtime_deployed=false; scope=enterprise_or_external_host_deployment",
+      "reporting.local_runtime_instrumented=true"
+    ],
+    "reviewed_files_unchanged": true,
+    "agent_candidate_digests_unchanged": true,
+    "rationale": "Metadata distinguishes implemented local trusted-operator loader and instrumented call chain from undeployed enterprise/external hosts, consistent with README and reviewed runtime. No unrelated test repeated."
+  }
+}

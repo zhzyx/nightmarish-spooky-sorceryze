@@ -1,0 +1,10 @@
+{
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "scope": ["local_agent_definition_only"],
+  "validity": "bound_candidate_only",
+  "review_status": "pass",
+  "review_independence": "independent_subagent_review",
+  "yuanheng_principles": ["purpose", "truth", "economy", "authority", "adaptation", "continuity"],
+  "runtime_authority_granted": false
+}

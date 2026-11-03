@@ -1,0 +1,429 @@
+{
+  "reviewer": "xiezhi_runtime_review",
+  "display_role": "獬豸·框架审查（临时独立运行验证职能，受元衡控制）",
+  "status": "pass_local_synthetic_runtime_review",
+  "not_an_approval": true,
+  "candidate_bindings": {
+    "manifest_sha256": "25d0b069d116af1eaa236f7564e596c0c9fa41f8fddaa5d9d91aa3eab3ac268d",
+    "files": {
+      "runtime/runner.py": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e",
+      "runtime/adapters.py": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f",
+      "runtime/diting.py": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+    },
+    "agents": [
+      {
+        "id": "yanshi",
+        "version": "0.4.0",
+        "candidate_digest": "c40fe243a82ce1d850514919fa4da32644d17f3efae22e14026cba7d0d4f2f58"
+      },
+      {
+        "id": "kuafu",
+        "version": "0.4.0",
+        "candidate_digest": "a5b184a3a1b652cf8b302fb9b97886a760620c79c64f376722cc1e2df5d5041c"
+      },
+      {
+        "id": "diting",
+        "version": "0.4.0",
+        "candidate_digest": "ac953d822107a1f13c7aa18e8cb582ca5bc5ffd1fcfb5151eb7fa2ce20df0f07"
+      }
+    ]
+  },
+  "tested_code_unchanged": true,
+  "tests": {
+    "runtime": {
+      "source": "../archive/framework-releases/gonggong-v0.9",
+      "scope": "local synthetic tests; admission context seam stubbed explicitly; no real network or model",
+      "isolated_origin_patch_for_deeper_tests": false,
+      "tests": [
+        {
+          "name": "unmodified projection accepts registered Agent",
+          "pass": true,
+          "detail": "completed"
+        },
+        {
+          "name": "valid result commits with real Diting receipt",
+          "pass": true,
+          "detail": "completed"
+        },
+        {
+          "name": "completed replay does not call provider",
+          "pass": true,
+          "detail": [
+            true,
+            2
+          ]
+        },
+        {
+          "name": "second task same tenant state can execute",
+          "pass": true,
+          "detail": "completed"
+        },
+        {
+          "name": "completed request termination projected",
+          "pass": true,
+          "detail": 2
+        },
+        {
+          "name": "tampered grant denied",
+          "pass": true,
+          "detail": "ValueError: Invalid host grant signature"
+        },
+        {
+          "name": "different state denied",
+          "pass": true,
+          "detail": "ValueError: State directory differs from authorized budget ledger"
+        },
+        {
+          "name": "expired grant denied",
+          "pass": true,
+          "detail": "ValueError: Host grant expired"
+        },
+        {
+          "name": "synthetic capability cannot authorize production",
+          "pass": true,
+          "detail": "ValueError: Synthetic model evaluation cannot authorize production"
+        },
+        {
+          "name": "only evaluated task capability routes",
+          "pass": true,
+          "detail": [
+            "completed",
+            [
+              "right"
+            ]
+          ]
+        },
+        {
+          "name": "unknown dispatch stops without auto fallback",
+          "pass": true,
+          "detail": [
+            "needs_reconciliation",
+            5
+          ]
+        },
+        {
+          "name": "unknown replay blocked before explicit decision",
+          "pass": true,
+          "detail": "ValueError: Job requires explicit reconciliation; status=needs_reconciliation"
+        },
+        {
+          "name": "operator retry retains call budget",
+          "pass": true,
+          "detail": [
+            false,
+            2
+          ]
+        },
+        {
+          "name": "bad output rejected",
+          "pass": true,
+          "detail": "needs_attention"
+        },
+        {
+          "name": "bad output quality evidence projected",
+          "pass": true,
+          "detail": 1
+        },
+        {
+          "name": "authorized lookup only returns host resource",
+          "pass": true,
+          "detail": [
+            "completed",
+            "{\"tool_result\":\"synthetic untrusted reference\",\"untrusted_data\":true}"
+          ]
+        },
+        {
+          "name": "unauthorized tool rejected",
+          "pass": true,
+          "detail": "needs_attention"
+        },
+        {
+          "name": "autonomous tool loop budget bounded",
+          "pass": true,
+          "detail": [
+            "needs_attention",
+            12
+          ]
+        },
+        {
+          "name": "received crash recovery retains measured usage",
+          "pass": true,
+          "detail": [
+            {
+              "status": "ready",
+              "budget_reset": false
+            },
+            {
+              "status": "completed",
+              "result": {
+                "outputs": {
+                  "s1": "synthetic candidate"
+                },
+                "acceptance": "candidate_requires_business_validation",
+                "calls": 2,
+                "diting_submission_id": "dd2dfc1a0c7bb55256c4a9cc28ec811c1283c9b776db4a25ea94917d112310f2"
+              }
+            },
+            20
+          ]
+        },
+        {
+          "name": "operator cancellation projected",
+          "pass": true,
+          "detail": [
+            "cancelled",
+            [
+              "cancelled"
+            ]
+          ]
+        },
+        {
+          "name": "worker lock rejects a second worker",
+          "pass": true,
+          "detail": "PermissionError: [Errno 13] Permission denied"
+        },
+        {
+          "name": "registered skill steps meter exactly once",
+          "pass": true,
+          "detail": [
+            "completed",
+            1,
+            "clarify-feature"
+          ]
+        },
+        {
+          "name": "rejected output fallback records one rework",
+          "pass": true,
+          "detail": [
+            "completed",
+            1,
+            1
+          ]
+        },
+        {
+          "name": "renewal cannot increase original budget",
+          "pass": true,
+          "detail": "ValueError: Renewal cannot change task, capabilities, framework or budget"
+        },
+        {
+          "name": "same-scope authorized renewal can recover old job",
+          "pass": true,
+          "detail": "ready"
+        },
+        {
+          "name": "cancel cannot contradict durable completion",
+          "pass": true,
+          "detail": "cancel rejected after durable completion"
+        },
+        {
+          "name": "durable completion recovery makes no new call",
+          "pass": true,
+          "detail": [
+            "completed",
+            20
+          ]
+        },
+        {
+          "name": "durable cancellation cannot resume after delivery failure",
+          "pass": true,
+          "detail": "ValueError: Cancellation already durable; retry cancellation delivery, cannot resume"
+        },
+        {
+          "name": "durable cancellation retries delivery consistently",
+          "pass": true,
+          "detail": [
+            "cancelled",
+            [
+              "cancelled"
+            ]
+          ]
+        }
+      ],
+      "sha256": {
+        "framework-manifest.json": "e3323abcab1780e2f6b8c1ac3ab142ed22cc390c32ae5a58789a7b6e9682e8c9",
+        "runtime/runner.py": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e",
+        "runtime/adapters.py": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f",
+        "runtime/diting.py": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+      }
+    },
+    "adapters": {
+      "scope": "synthetic urllib opener; zero network calls",
+      "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f",
+      "tests": [
+        {
+          "name": "chat normalization",
+          "pass": true,
+          "detail": {
+            "input_tokens": 10,
+            "output_tokens": 5,
+            "cache_read_input_tokens": 2,
+            "reasoning_output_tokens": 1
+          }
+        },
+        {
+          "name": "chat output cap parameter",
+          "pass": true,
+          "detail": 23
+        },
+        {
+          "name": "ollama normalization",
+          "pass": true,
+          "detail": "stop"
+        },
+        {
+          "name": "custom normalization",
+          "pass": true,
+          "detail": {
+            "input_tokens": 10,
+            "output_tokens": 5
+          }
+        },
+        {
+          "name": "systemless profile preserves tagged instructions",
+          "pass": true,
+          "detail": [
+            {
+              "text": "synthetic",
+              "finish_reason": "stop",
+              "usage": {},
+              "provider_request_id": "unavailable"
+            },
+            [
+              {
+                "content": "system:\nbound\n\nuser:\ninput",
+                "role": "user"
+              }
+            ]
+          ]
+        },
+        {
+          "name": "nonlocal HTTP denied",
+          "pass": true,
+          "detail": "HTTPS required outside loopback"
+        },
+        {
+          "name": "URL credential denied",
+          "pass": true,
+          "detail": "Endpoint must not embed credentials, query or fragment"
+        },
+        {
+          "name": "negative usage classified unknown",
+          "pass": true,
+          "detail": "Malformed provider response; usage and completion require reconciliation"
+        },
+        {
+          "name": "bad nested message classified unknown",
+          "pass": true,
+          "detail": "Malformed provider response; usage and completion require reconciliation"
+        },
+        {
+          "name": "bad nested usage classified unknown",
+          "pass": true,
+          "detail": "Malformed provider response; usage and completion require reconciliation"
+        },
+        {
+          "name": "impossible token subset classified unknown before projection",
+          "pass": true,
+          "detail": "Malformed provider response; usage and completion require reconciliation"
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "MODEL-01",
+      "title": "Repeated tasks collided on Agent snapshot logical identity",
+      "evidence": "baseline: second task same tenant state can execute",
+      "fix": "Stable snapshot identifier, reuse immutable existing snapshot",
+      "status": "fixed_independently_retested"
+    },
+    {
+      "id": "MODEL-02",
+      "title": "Rejected model output was absent from quality evidence",
+      "evidence": "baseline: bad output quality evidence projected",
+      "fix": "Durable validation outcome, quality_issue and later rework projections",
+      "status": "fixed_independently_retested"
+    },
+    {
+      "id": "MODEL-03",
+      "title": "Malformed nested responses escaped normalization; impossible usage poisoned projection",
+      "evidence": "adapters-baseline: AttributeError for message/usage list, subset accepted",
+      "fix": "Normalize malformed payload as TransportUnknown and reject inconsistent token subsets",
+      "status": "fixed_independently_retested"
+    },
+    {
+      "id": "MODEL-04",
+      "title": "Crash after persisted response silently omitted already measured usage",
+      "evidence": "revision2: measured input 10 instead of 20 after received crash and retry",
+      "fix": "validation_interrupted records unresolved response and retains measured consumption",
+      "status": "fixed_independently_retested"
+    },
+    {
+      "id": "MODEL-05",
+      "title": "Cancellation was not projected and terminal log/job status could contradict",
+      "evidence": "revision2: no cancelled request_end; revision3: ledger completed vs job cancelled",
+      "fix": "Durable termination projected; already completed/cancelled terminals only permit consistent delivery recovery",
+      "status": "fixed_independently_retested"
+    },
+    {
+      "id": "MODEL-06",
+      "title": "Expired grants could not be renewed for existing job reconciliation",
+      "evidence": "revision3: same-scope replacement grant rejected as Unknown authorized job",
+      "fix": "Signed renewal binds predecessor digest and compares complete scope excluding expiry/link; budget preserved",
+      "status": "fixed_independently_retested"
+    }
+  ],
+  "limits": [
+    "No real remote service, paid model invocation or model capability evaluation was performed.",
+    "Runner context admission was explicitly stubbed to isolate new runtime; real definition admission integration must be verified separately.",
+    "Actual reporter/outbox/SQLite executed; all data and host credentials were isolated synthetic fixtures.",
+    "Adapter tests replaced urllib opener with a synthetic transport, so TLS/proxy/network behavior is not claimed.",
+    "Local correctness and worker serialization do not establish enterprise concurrency or IAM assurance.",
+    "No claim that all Codex/engine conversations are automatically observed."
+  ],
+  "frozen_candidate_verified": true,
+  "independent_final_integrity": {
+    "framework_version": "0.9.0",
+    "agents": [
+      "yanshi",
+      "kuafu",
+      "diting"
+    ],
+    "skills_including_upstream": 9,
+    "foundation_unchanged": true,
+    "mode": "candidate",
+    "host_authority_authenticated": false
+  },
+  "independent_final_fingerprints": [
+    {
+      "id": "yanshi",
+      "matches": true,
+      "candidate_digest": "c40fe243a82ce1d850514919fa4da32644d17f3efae22e14026cba7d0d4f2f58"
+    },
+    {
+      "id": "kuafu",
+      "matches": true,
+      "candidate_digest": "a5b184a3a1b652cf8b302fb9b97886a760620c79c64f376722cc1e2df5d5041c"
+    },
+    {
+      "id": "diting",
+      "matches": true,
+      "candidate_digest": "ac953d822107a1f13c7aa18e8cb582ca5bc5ffd1fcfb5151eb7fa2ce20df0f07"
+    }
+  ],
+  "separate_author_evidence": {
+    "path": "work/model-integration-results.json",
+    "observed_result": "10/10 synthetic HTTP/CLI/admitted context checks",
+    "independently_executed_by_this_reviewer": false,
+    "real_models_tested": false
+  },
+  "metadata_delta_review": {
+    "previous_manifest_sha256": "7c54d4e8a85306e39283cfd9c4863575cc2e6b70f1426eb994ac0c757bdce0d6",
+    "new_manifest_sha256": "25d0b069d116af1eaa236f7564e596c0c9fa41f8fddaa5d9d91aa3eab3ac268d",
+    "reverse_delta_reproduces_previous_manifest_hash": true,
+    "code_and_three_agent_digests_unchanged": true,
+    "scope": "Only capability/deployment metadata corrected; local trusted runtime distinguished from enterprise/external deployment; prior runtime tests remain applicable."
+  },
+  "source_path_base": "framework_root",
+  "path_representation": "relative archive reference; historical results unchanged, not current runtime evidence"
+}

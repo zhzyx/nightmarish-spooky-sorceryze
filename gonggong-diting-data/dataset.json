@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "dataset_id": "5094b7ca-057c-4370-831b-10b6a30ae081",
+  "origin_framework": "gonggong",
+  "name": "gonggong-diting-data",
+  "storage": "immutable_event_json",
+  "created_at": "2026-11-03T20:10:59.546868+00:00",
+  "initialization": "authorized_isolated_migration_candidate",
+  "agent_execution_authorized": false
+}

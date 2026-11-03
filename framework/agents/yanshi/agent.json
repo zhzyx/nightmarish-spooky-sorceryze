@@ -1,0 +1,23 @@
+{
+  "id": "yanshi",
+  "name": "偃师",
+  "kind": "independent_agent",
+  "version": "0.4.0",
+  "entry": "agents/yanshi/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "yuanheng",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/yuanheng/agents/yuanheng.md",
+  "review_skill": "skills/gonggong-check/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "agents/yanshi/skills/clarify-feature/SKILL.md"
+  ],
+  "admission_pass": "reviews/unification-43/yanshi-admission.json",
+  "host_required_for_execution": true,
+  "scope": "single_feature_document_design",
+  "reporting": "agents/yanshi/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json",
+  "state": "pending_approval"
+}

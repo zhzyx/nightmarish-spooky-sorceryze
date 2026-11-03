@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "path_base": "framework",
+  "stage": "candidate",
+  "delivery_kind": "runnable",
+  "model_mode": "real",
+  "candidate": {"repository": "FILL_RELATIVE_REPOSITORY_ROOT", "commit": "FILL_FULL_COMMIT", "tree": "FILL_FULL_TREE"},
+  "dependencies": [
+    {"path": "FILL_RELATIVE_DEPENDENCY_FILE", "sha256": "FILL_SHA256", "version": "FILL_VERSION", "affects": ["FILL_ARTIFACT_OR_CONSUMER"]}
+  ],
+  "artifacts": [
+    {"id": "source", "role": "source", "path": "FILL_RELATIVE_SOURCE_FILE", "sha256": "FILL_SHA256", "candidate_path": "FILL_REPO_RELATIVE_FILE", "distribution": "FILL_RECIPIENT_LOCATION_AND_METHOD"},
+    {"id": "application", "role": "runnable", "path": "FILL_RELATIVE_PACKAGE", "sha256": "FILL_SHA256", "distribution": "FILL_RECIPIENT_LOCATION_AND_METHOD"}
+  ],
+  "validation": {
+    "build": {"path": "FILL_BUILD_REPORT_JSON", "sha256": "FILL_SHA256"},
+    "install": {"path": "FILL_INSTALL_REPORT_JSON", "sha256": "FILL_SHA256"},
+    "start": {"path": "FILL_START_REPORT_JSON", "sha256": "FILL_SHA256"},
+    "business": {"path": "FILL_BUSINESS_REPORT_JSON", "sha256": "FILL_SHA256"},
+    "model": {"path": "FILL_MODEL_REPORT_JSON", "sha256": "FILL_SHA256"}
+  },
+  "collection": {
+    "state": "configured",
+    "configured": {"path": "FILL_CONFIGURED_REPORT_JSON", "sha256": "FILL_SHA256"}
+  },
+  "publication": null,
+  "evidence_contract": {
+    "note": "Template is pending input, never approval. All reference paths resolve against framework, except candidate_path against candidate repository. Explicit ../ references may bind external local files. Do not migrate bindings automatically.",
+    "common_report_fields": {"kind": "FILL_VALIDATION_NAME_OR_collection.STATE_OR_publication", "status": "passed", "candidate": "COPY_EXACT_CANDIDATE_OBJECT", "inputs_sha256": "USE_--inputs-digest_OUTPUT"},
+    "model_report_extra": {"model_mode": "real OR simulated"},
+    "collection_report_extra": "configured: binding {path,sha256} to existing reporting binding; queued: batch_id; delivered: same batch_id and receiver receipt_id; consumed: same batch_id/receipt_id and consumer",
+    "publication_report_extra": "remote and receipt_id; required only for stage=published; existing common candidate/input binding still required",
+    "source_delivery": "Use delivery_kind=source, at least one source artifact, and validation.source report; omit runtime validations only when runtime is outside agreed scope.",
+    "boundary": "Hash and metadata checks do not authenticate a receipt, run tests, verify a service, authorize activation, or create another ledger. Reference existing reporting evidence; host must establish authenticity. Dependencies pin observed file bytes; declared version labels alone are not authenticated. Runnable provenance is a supplied build report, not a reproducible build performed by this checker."
+  }
+}

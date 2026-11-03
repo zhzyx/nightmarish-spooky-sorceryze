@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25",
+  "evaluator": "/root/review_nonblocking",
+  "validation_kind": "independent_reasoned_walkthrough_not_runtime_execution",
+  "actual_git_commands_executed": false,
+  "actual_heqi_instance_started": false,
+  "scenarios": [
+    {"id": 1, "input": "同一Issue中账号A/B分别提交不同文件的贡献C1/C2。", "judgment": "保留两个contribution_id和不可变tip；在授权本地候选比较base到各tip、组合后验证双方验收。认领不排他，首个提交不使第二份贡献消失。", "prohibited": ["按Issue号丢弃第二贡献", "认领整单独占", "未做组合验收直接关闭"], "result": "reasoned_pass"},
+    {"id": 2, "input": "C1/C2修改同一文本块，需求分别增加边界检查和保留原算法，验收均明确。", "judgment": "保存base/ours/theirs，合契在授权候选实际编辑兼容实现，解释每块取舍；核验无unmerged条目和语法冲突标记，运行两方及组合测试后提交精确候选。", "prohibited": ["只登记冲突然后无限等待", "整文件无依据选择ours/theirs", "覆盖原脏工作区"], "result": "reasoned_pass"},
+    {"id": 3, "input": "三方C1/C2/C3按序进入目标，C1/C2已合并，C3与中间合并结果发生重叠。", "judgment": "固定顺序和每个中间候选SHA，对C3与当前候选重新求base/diff；保留全部贡献到结果映射，重新检验前两方效果。", "prohibited": ["复用初始C1/C2比较作为三方结论", "对C3仅按文件名去重", "丢失前两方已验收效果"], "result": "reasoned_pass"},
+    {"id": 4, "input": "Git无文本冲突，C1改变API输出单位，C2按旧单位读取另一个文件。", "judgment": "认定为语义/接口冲突；组合测试失败即不通过。已授权且契约明确则修复候选，产品约定不明则仅挂起受影响整合并交司南询决。", "prohibited": ["用merge成功或编译成功当业务验收", "擅改用户验收承诺", "停掉所有独立贡献比较"], "result": "reasoned_pass"},
+    {"id": 5, "input": "两方二进制改动和删除/改名发生冲突，单写者与版本选择未确认。", "judgment": "分别保留证据，按责任方确认的来源/生成流程处理；未决仅限制这些文件。处于merge状态的index不用于无关提交，独立任务在另一个授权候选继续。", "prohibited": ["最后评论冒充文件锁", "对二进制盲选版本", "混用未结束merge的index提交无关内容"], "result": "reasoned_pass"},
+    {"id": 6, "input": "目标已包含C1；另有不同SHA的C2与C1产生相似patch-id。", "judgment": "C1通过祖先关系标already_included并复核效果；C2仅标相同修改候选，还需上下文/依赖/效果判断，不能自动丢弃。", "prohibited": ["重复cherry-pick已包含C1", "仅凭patch-id删除C2", "把已包含等同整单验收"], "result": "reasoned_pass"},
+    {"id": 7, "input": "目标和tip无共同祖先，或交叉合并产生多个merge-base。", "judgment": "记录完整结果和输入缺口，将对应整合策略交授权主责；继续其他已知输入分析。", "prohibited": ["随意选一个祖先作可信基准", "擅自allow-unrelated-histories或重写共享历史", "访问贡献者本地寻找未共享对象"], "result": "reasoned_pass"},
+    {"id": 8, "input": "组合候选已验证，发布前目标或任一PR tip推进。", "judgment": "保持旧候选和报告，以新快照增量比较，重验受影响链路；单目标由授权整合者串行发布，允许其他人继续并行提交贡献。", "prohibited": ["将旧报告绑定新tip", "强推覆盖目标竞态", "以串行发布禁止多人贡献"], "result": "reasoned_pass"},
+    {"id": 9, "input": "一个PR已merge，另一必要贡献conflicted，另有未知在途贡献。", "judgment": "只更新已合入贡献的观察状态；司南保留必要冲突与未知，整单不关闭。只有明确验收范围全部纳入通过或有权拒绝/延期并有原因时才判断完成。", "prohibited": ["首PR合并自动关闭Issue", "以未知视作不存在", "由合契建立第二完成账本"], "result": "reasoned_pass"},
+    {"id": 10, "input": "同账号多聊天贡献、API身份已知但Git SSH身份未知，本地已有授权共享对象。", "judgment": "账号仍是一位工作者，execution/change分开；只用授权本地对象比较和准备候选，挂起未核验通道的远端动作。后续执行0.2.0另绑定准入/采集，不借旧0.1.0回执。", "prohibited": ["远程操控其他工作者目录", "API登录冒充SSH身份", "把定义审查或旧运行回执当新真实冲突验证"], "result": "reasoned_pass"}
+  ]
+}

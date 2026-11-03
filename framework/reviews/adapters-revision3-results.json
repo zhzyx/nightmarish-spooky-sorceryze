@@ -1,0 +1,82 @@
+{
+  "scope": "synthetic urllib opener; zero network calls",
+  "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f",
+  "tests": [
+    {
+      "name": "chat normalization",
+      "pass": true,
+      "detail": {
+        "input_tokens": 10,
+        "output_tokens": 5,
+        "cache_read_input_tokens": 2,
+        "reasoning_output_tokens": 1
+      }
+    },
+    {
+      "name": "chat output cap parameter",
+      "pass": true,
+      "detail": 23
+    },
+    {
+      "name": "ollama normalization",
+      "pass": true,
+      "detail": "stop"
+    },
+    {
+      "name": "custom normalization",
+      "pass": true,
+      "detail": {
+        "input_tokens": 10,
+        "output_tokens": 5
+      }
+    },
+    {
+      "name": "systemless profile preserves tagged instructions",
+      "pass": true,
+      "detail": [
+        {
+          "text": "synthetic",
+          "finish_reason": "stop",
+          "usage": {},
+          "provider_request_id": "unavailable"
+        },
+        [
+          {
+            "content": "system:\nbound\n\nuser:\ninput",
+            "role": "user"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "nonlocal HTTP denied",
+      "pass": true,
+      "detail": "HTTPS required outside loopback"
+    },
+    {
+      "name": "URL credential denied",
+      "pass": true,
+      "detail": "Endpoint must not embed credentials, query or fragment"
+    },
+    {
+      "name": "negative usage classified unknown",
+      "pass": true,
+      "detail": "Malformed provider response; usage and completion require reconciliation"
+    },
+    {
+      "name": "bad nested message classified unknown",
+      "pass": true,
+      "detail": "Malformed provider response; usage and completion require reconciliation"
+    },
+    {
+      "name": "bad nested usage classified unknown",
+      "pass": true,
+      "detail": "Malformed provider response; usage and completion require reconciliation"
+    },
+    {
+      "name": "impossible token subset classified unknown before projection",
+      "pass": true,
+      "detail": "Malformed provider response; usage and completion require reconciliation"
+    }
+  ]
+}

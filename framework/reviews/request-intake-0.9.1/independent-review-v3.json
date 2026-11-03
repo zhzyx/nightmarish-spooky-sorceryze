@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "path_base": "this_file_directory",
+  "reviewer": "codex_subagent_/root/independent_review",
+  "independence": "independent_subagent_review; reviewer did not author or mutate candidate",
+  "authority": "technical review only; no admission or user approval issued",
+  "candidate": {
+    "root": "framework",
+    "version": "0.9.1",
+    "manifest_sha256": "e40a26539b3b2bb2a8a9d20b2d36e6ce1755d4374b58f4d57b167bc06676f525"
+  },
+  "outcome": "pass_for_exact_metadata_and_normative_contract_with_request_correction",
+  "delta_review": "Only admission_pass paths in the five agent metadata files and manifest, changed skill admission_pass path, and derived candidate digests/manifest SHA changed since v2. The request intake normative text and implementation code are unchanged. Prior v2 technical findings remain applicable to this exact candidate through this delta review.",
+  "checks": {
+    "candidate_integrity": "pass: verify_framework.py --candidate",
+    "reporting": "pass: 15 configured profiles; runtime_connected false",
+    "queue": "pass: manifest SHA and all five agent candidate digests match production-queue.json",
+    "approval_request": "digest and version fields match the current candidate, including changed skill entry SHA; decision remains null",
+    "pass_paths": "five agent metadata/manifest paths match; target review files do not yet exist, as expected before admission",
+    "prior_review": "v2 remains valid for normative semantics but is bound to the previous manifest SHA; v3 supplies the exact-delta review"
+  },
+  "request_correction": "approval-request.json independent_review still points to independent-review-v2.json. Update it to independent-review-v3.json before presenting the final exact candidate for decision; keep v2 as prior evidence.",
+  "remaining_before_release": [
+    "Create authentic review/admission records at the pinned paths for all five agents and the changed skill, matching the exact current digests and 0.9.1 baseline.",
+    "Run formal non-candidate admission and delivery checks; do not switch on candidate-mode verification alone.",
+    "Do not claim live automatic work order creation without an actual bound host/source readback.",
+    "Synchronize Olympus only after a valid Gonggong release and separate target acceptance."
+  ],
+  "approval": null,
+  "evidence_refs": [
+    "framework/framework-manifest.json",
+    "framework/agents/sinan/agent.json",
+    "framework/agents/heqi/agent.json",
+    "framework/skills/work-order-coordination/SKILL.md",
+    "production-queue.json",
+    "approval-request.json",
+    "independent-review-v2.json"
+  ]
+}

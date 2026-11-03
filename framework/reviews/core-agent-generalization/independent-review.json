@@ -1,0 +1,1250 @@
+{
+  "work_ref": "work/core-agents-generalization-20261103/scope.md",
+  "evaluator": "/root/review_nonblocking",
+  "independence": "independent_subagent_review",
+  "status": "pass",
+  "approval": false,
+  "path_base": "candidate_framework_root",
+  "candidate_manifest": {
+    "path": "../candidate.json",
+    "sha256": "2bd446da768ac55f54988e3b31cb9193e8ae972db97425cb0f53a2a29aca3cef"
+  },
+  "agents": {
+    "yanshi": {
+      "version": "0.4.0",
+      "candidate_digest": "0e751d77e4137a18c1394c1b96190ee09216fc75a7d40dfb04e5309303e3abdc",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0bcccb567f492fa3bdd049986982a2465511425e874e7856a9001c840453cfce"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/reporting.json",
+          "sha256": "2a30314883fe1e2bc1cd2e53b496f2a42ab3b0d0cd0a545bdcc7bd11546fb02f"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/reporting.json",
+          "sha256": "fe9e2f01c6ff81eba13a142130fd7a5a814bc4d685293dcb879254f7d842a59b"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/reporting.json",
+          "sha256": "cbe0386d52363471c4bd18890ae5bcebd053a3c2fa4bf0d4703167752d8e129f"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/reporting.json",
+          "sha256": "b669133d750ffd34aa266119ef0d4003664f699b612b4059cd42cbad1248b612"
+        },
+        {
+          "path": "agents/diting/skills/data-label/reporting.json",
+          "sha256": "d410c92c8945cead191626aaca23fd6a797434eda4e7e6d6daa14e27cd916335"
+        },
+        {
+          "path": "agents/diting/skills/data-store/reporting.json",
+          "sha256": "226329fefcbfa0e84c17c01fbffadd9f6f89ed2fa5fb12557bbefac59a07d6ee"
+        },
+        {
+          "path": "agents/kuafu/reporting.json",
+          "sha256": "7ad35e730fc6d07089e42420febd5f40259d6354866322d8aa458637b5c49da6"
+        },
+        {
+          "path": "agents/yanshi/AGENT.md",
+          "sha256": "c25853878cce237fcfb5af44064c0ee8cdfdf66179e0da1281dd8539f83cd497"
+        },
+        {
+          "path": "agents/yanshi/README.md",
+          "sha256": "8444a8ae689852fb1d5b062fd5d529b17e13aceb57a8bc70dc3a0b06de58a4c2"
+        },
+        {
+          "path": "agents/yanshi/THIRD_PARTY_LICENSE.txt",
+          "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+        },
+        {
+          "path": "agents/yanshi/agent.json",
+          "sha256": "20852566304424f4f062044c3faaff986adb0ea7e59221fae46b919e956fd1ea"
+        },
+        {
+          "path": "agents/yanshi/provenance.json",
+          "sha256": "243c160a1eaf08c9447ff3a75d446714327ed4a45729b37061c1e3d1ad626891"
+        },
+        {
+          "path": "agents/yanshi/references/adaptation.md",
+          "sha256": "66e8d33c01d5fc225f3fbb71254825a01b5a0bdcbb412325f830a7738b861831"
+        },
+        {
+          "path": "agents/yanshi/references/design.md",
+          "sha256": "41bac9fca51ae3f68b510d28b2d0721972f1288fed391f7664c5b10bc102a46b"
+        },
+        {
+          "path": "agents/yanshi/references/tools.md",
+          "sha256": "ff3a3ee665b9ea06bcd52f7e984aa94d49195964aed54abfd780d98d26d858e3"
+        },
+        {
+          "path": "agents/yanshi/references/understanding.md",
+          "sha256": "ea42515070eda3e8fb91602924d97333716cb7117ec98b8656f561723243332b"
+        },
+        {
+          "path": "agents/yanshi/references/workflow.md",
+          "sha256": "4f26fb69a252e5b82d064d2a0b78c5b7142c32b88b1f364615a569e2e26786b0"
+        },
+        {
+          "path": "agents/yanshi/reporting.json",
+          "sha256": "58af84ec0974649c7c2cb1122854cb0df35a42738ee61bd4e4d6d18497b1cc48"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/SKILL.md",
+          "sha256": "ee2d741fce76fab223bbe2337ae71c8068a97a448c3ef4e302c94f9af554a3b1"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/reporting.json",
+          "sha256": "16e3c25d785e27315d393b3a576f9e335cb083bcd6b6821d9336259194055557"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "integrations/yanshi-legacy/feature-memory.mjs",
+          "sha256": "2ab591dd48e7c5ea07c6429498df1524d0c9903352ebdd8f9b172751603a7381"
+        },
+        {
+          "path": "integrations/yanshi-legacy/runtime/cli.mjs",
+          "sha256": "5f69d325b5f1672219377b9ef5b1ee4ec4a5aa8a66ee51fa0b1c3e1aafae4e24"
+        },
+        {
+          "path": "integrations/yanshi-legacy/runtime/src/catalog.mjs",
+          "sha256": "ab4939972a6249b9eec96e2d2dc58bca53e49ba66f4fa8170857c7a301c22238"
+        },
+        {
+          "path": "integrations/yanshi-legacy/runtime/src/production.mjs",
+          "sha256": "5fe9f9eacf34e758a32110068ac1984574f3d26be72a606798fbaccb6914d618"
+        },
+        {
+          "path": "integrations/yanshi-legacy/yanshi.mjs",
+          "sha256": "377e426967089691a79e32bc9337ae43ed7acf859cb0af0750215be52e15a5e2"
+        },
+        {
+          "path": "integrations/yuanheng-organize-reporting.json",
+          "sha256": "055fa10785cdd2dbc7572984d8abfd431b03a400381cec85a8ff32b173756ab8"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f"
+        },
+        {
+          "path": "runtime/diting.py",
+          "sha256": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/gonggong-check/reporting.json",
+          "sha256": "f95edf65d62092174a8c90fe2e0b1d8698ab1cf43540f10a86143c0c912e7958"
+        },
+        {
+          "path": "skills/kuafu/reporting.json",
+          "sha256": "5bc989a9d7a435b8e2cdba8a81cbaa88bc6e19c2eced7fbc15751bcae7a9f2b2"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "096ac76f76cf118edd403185117572c70706b41e0a3764ef82570251d2837f02"
+        },
+        {
+          "path": "specs/document-design.md",
+          "sha256": "d2e235957fd9907d2a673e2a0210b8321da32f995d0c19d919d1bf249fb3373c"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "4a3185481db202ce1ca6b2f12c3c91427d6d0230c5b922f94c000203ecfd5c9a"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "96793bc046a4c12c18e375db3c61a2acc57edbb60399e954d8b818c22de1787d"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "e37b73254be49db65bf338e485a9b8bc22c704dcfab8ec3b261a5b3df1cd0c8f"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "e22a0a86463d150483e767c864907cc71741c79838cccd7d15757cd8168289f5"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "2d8d3b73ee345ecbbd2155b70bfeacc81107ed1c6f0d3808e71c1bcc12d3f8d1"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ],
+      "entry_characters": 893,
+      "admission_path": "reviews/core-agent-generalization/yanshi-admission.json",
+      "admission_status": "pending_approval"
+    },
+    "kuafu": {
+      "version": "0.4.0",
+      "candidate_digest": "a2cce672f5edba24a672e06b3c7a7d4d66c8a8e82b7a44a0a9fe196728af90f0",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0bcccb567f492fa3bdd049986982a2465511425e874e7856a9001c840453cfce"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/reporting.json",
+          "sha256": "2a30314883fe1e2bc1cd2e53b496f2a42ab3b0d0cd0a545bdcc7bd11546fb02f"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/reporting.json",
+          "sha256": "fe9e2f01c6ff81eba13a142130fd7a5a814bc4d685293dcb879254f7d842a59b"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/reporting.json",
+          "sha256": "cbe0386d52363471c4bd18890ae5bcebd053a3c2fa4bf0d4703167752d8e129f"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/reporting.json",
+          "sha256": "b669133d750ffd34aa266119ef0d4003664f699b612b4059cd42cbad1248b612"
+        },
+        {
+          "path": "agents/diting/skills/data-label/reporting.json",
+          "sha256": "d410c92c8945cead191626aaca23fd6a797434eda4e7e6d6daa14e27cd916335"
+        },
+        {
+          "path": "agents/diting/skills/data-store/reporting.json",
+          "sha256": "226329fefcbfa0e84c17c01fbffadd9f6f89ed2fa5fb12557bbefac59a07d6ee"
+        },
+        {
+          "path": "agents/kuafu/AGENT.md",
+          "sha256": "070861e09a33489edce74b4cff3a2b7caffb5c08f1d817a9146646e373722814"
+        },
+        {
+          "path": "agents/kuafu/agent.json",
+          "sha256": "e17cadb0b439684e9c62e0016d879644c83ab07d4c67f00eff9b965ff85e1e51"
+        },
+        {
+          "path": "agents/kuafu/reporting.json",
+          "sha256": "7ad35e730fc6d07089e42420febd5f40259d6354866322d8aa458637b5c49da6"
+        },
+        {
+          "path": "agents/yanshi/reporting.json",
+          "sha256": "58af84ec0974649c7c2cb1122854cb0df35a42738ee61bd4e4d6d18497b1cc48"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/reporting.json",
+          "sha256": "16e3c25d785e27315d393b3a576f9e335cb083bcd6b6821d9336259194055557"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "domains/quality/provenance.json",
+          "sha256": "22f031d7da8efae72b7f99c6bcb0b0543c319ccddcde8860cd2b1be61e3d27e7"
+        },
+        {
+          "path": "domains/quality/quality-policy.json",
+          "sha256": "0e1bf17af53010da5982fcfd2ae2eb472e5ac7a6e5eb1401614e8d30afd2c128"
+        },
+        {
+          "path": "domains/quality/responsibility-map.json",
+          "sha256": "5286ac565feb60fb016e89b09cd8a23ef8884a1bac7804f783823575dc3aa4f6"
+        },
+        {
+          "path": "domains/quality/templates/Feature质量看板.md",
+          "sha256": "9764c582ae636b22132a8e525f9ceada65241bdd0e8d50d86fdd32684d7e526b"
+        },
+        {
+          "path": "domains/quality/templates/例外与风险接受.md",
+          "sha256": "75fa9dfb4d2d873ce578c196099f79a1f45b309503f13c8ccd11b99c016a6b94"
+        },
+        {
+          "path": "domains/quality/templates/检查与验收记录.md",
+          "sha256": "536174846580e11c705fd961652205f8c053577979a79eecc7e013d098f6aa36"
+        },
+        {
+          "path": "domains/quality/templates/缺陷工单.md",
+          "sha256": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0"
+        },
+        {
+          "path": "domains/quality/templates/质量事件与决策记录.md",
+          "sha256": "68a2e7b828134d6088c7edef87da9e71b05e21d07cc8b4583092bf561642a7e5"
+        },
+        {
+          "path": "domains/quality/templates/质量约定.md",
+          "sha256": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "integrations/yuanheng-organize-reporting.json",
+          "sha256": "055fa10785cdd2dbc7572984d8abfd431b03a400381cec85a8ff32b173756ab8"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f"
+        },
+        {
+          "path": "runtime/diting.py",
+          "sha256": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/gonggong-check/reporting.json",
+          "sha256": "f95edf65d62092174a8c90fe2e0b1d8698ab1cf43540f10a86143c0c912e7958"
+        },
+        {
+          "path": "skills/kuafu/SKILL.md",
+          "sha256": "bbc8651308ef5fe820446b20d7240d1c2021d571c3feeb855e7abcee37be7b25"
+        },
+        {
+          "path": "skills/kuafu/reporting.json",
+          "sha256": "5bc989a9d7a435b8e2cdba8a81cbaa88bc6e19c2eced7fbc15751bcae7a9f2b2"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "096ac76f76cf118edd403185117572c70706b41e0a3764ef82570251d2837f02"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "4a3185481db202ce1ca6b2f12c3c91427d6d0230c5b922f94c000203ecfd5c9a"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "96793bc046a4c12c18e375db3c61a2acc57edbb60399e954d8b818c22de1787d"
+        },
+        {
+          "path": "specs/quality.md",
+          "sha256": "7ac8e148b954f218ea11eb8391ab0ad87b1b9f068cadf852976cb78c46dd4798"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "e37b73254be49db65bf338e485a9b8bc22c704dcfab8ec3b261a5b3df1cd0c8f"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "e22a0a86463d150483e767c864907cc71741c79838cccd7d15757cd8168289f5"
+        },
+        {
+          "path": "tools/check_quality_ownership.py",
+          "sha256": "45508af6d1c0206e1a18159d1f7458853096fb45c2975156e9ebfd8b0c94e2d6"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "2d8d3b73ee345ecbbd2155b70bfeacc81107ed1c6f0d3808e71c1bcc12d3f8d1"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ],
+      "entry_characters": 898,
+      "admission_path": "reviews/core-agent-generalization/kuafu-admission.json",
+      "admission_status": "pending_approval"
+    },
+    "diting": {
+      "version": "0.4.0",
+      "candidate_digest": "f7e9ee054b81310ad4716ca2585028f29978d4db783185af59fb3a044f1f21c2",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0bcccb567f492fa3bdd049986982a2465511425e874e7856a9001c840453cfce"
+        },
+        {
+          "path": "agents/diting/AGENT.md",
+          "sha256": "4bb3c1986c594b7228313620c4b3cca1642052fcc1966b40c4c95a70e7c3c77e"
+        },
+        {
+          "path": "agents/diting/agent.json",
+          "sha256": "b3d909429faf6b37594fe4f241bb91513b4430a7e838218fc40abd535dae104e"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/optimization.md",
+          "sha256": "3f809d28b03679ecad2bb306ef45eb43400c00360458e05812205a0946cdce45"
+        },
+        {
+          "path": "agents/diting/references/storage.md",
+          "sha256": "7e927b2c29cd76c31ff6e280266a2164d355cfec047637f339378e6036ff047d"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/reporting.json",
+          "sha256": "2a30314883fe1e2bc1cd2e53b496f2a42ab3b0d0cd0a545bdcc7bd11546fb02f"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/SKILL.md",
+          "sha256": "870c4abd2c8409615a89a46e49cc34c86449d598799095d5d4f4ca31568a3b7b"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/reporting.json",
+          "sha256": "fe9e2f01c6ff81eba13a142130fd7a5a814bc4d685293dcb879254f7d842a59b"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/SKILL.md",
+          "sha256": "edeab4b188c54a01bd3289c6b2bfc2dae9ad976534e2c384a0dffa1fafe7f30b"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/reporting.json",
+          "sha256": "cbe0386d52363471c4bd18890ae5bcebd053a3c2fa4bf0d4703167752d8e129f"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/SKILL.md",
+          "sha256": "2088e8ba5f6df90ebc1702554b3f5f6e5910fbf6df67f99431b9cf113d0a784b"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/reporting.json",
+          "sha256": "b669133d750ffd34aa266119ef0d4003664f699b612b4059cd42cbad1248b612"
+        },
+        {
+          "path": "agents/diting/skills/data-label/SKILL.md",
+          "sha256": "dfab5bfc22e6b1aae1c2578f3bcea8d8f6cc68759f57954c80b6181cd8daf639"
+        },
+        {
+          "path": "agents/diting/skills/data-label/reporting.json",
+          "sha256": "d410c92c8945cead191626aaca23fd6a797434eda4e7e6d6daa14e27cd916335"
+        },
+        {
+          "path": "agents/diting/skills/data-store/SKILL.md",
+          "sha256": "214f05565c06921cc95dab3c403f205677f4fb80e07aed429711507bb4983336"
+        },
+        {
+          "path": "agents/diting/skills/data-store/reporting.json",
+          "sha256": "226329fefcbfa0e84c17c01fbffadd9f6f89ed2fa5fb12557bbefac59a07d6ee"
+        },
+        {
+          "path": "agents/kuafu/reporting.json",
+          "sha256": "7ad35e730fc6d07089e42420febd5f40259d6354866322d8aa458637b5c49da6"
+        },
+        {
+          "path": "agents/yanshi/reporting.json",
+          "sha256": "58af84ec0974649c7c2cb1122854cb0df35a42738ee61bd4e4d6d18497b1cc48"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/reporting.json",
+          "sha256": "16e3c25d785e27315d393b3a576f9e335cb083bcd6b6821d9336259194055557"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "integrations/yuanheng-organize-reporting.json",
+          "sha256": "055fa10785cdd2dbc7572984d8abfd431b03a400381cec85a8ff32b173756ab8"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "8cf98e7004e9f0595c1e81de679aed5a7d1f69825154f866b51375b15255732f"
+        },
+        {
+          "path": "runtime/diting.py",
+          "sha256": "17706f947f1d860d76ec81b07116bc93924ff7dd7054665f06ef7f6de170b0da"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "b486dd8475b1365fc9dcfe4f3691804db994aa784e64ebc37901ffd09aeff51e"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/gonggong-check/reporting.json",
+          "sha256": "f95edf65d62092174a8c90fe2e0b1d8698ab1cf43540f10a86143c0c912e7958"
+        },
+        {
+          "path": "skills/kuafu/reporting.json",
+          "sha256": "5bc989a9d7a435b8e2cdba8a81cbaa88bc6e19c2eced7fbc15751bcae7a9f2b2"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "096ac76f76cf118edd403185117572c70706b41e0a3764ef82570251d2837f02"
+        },
+        {
+          "path": "specs/enterprise-operations.md",
+          "sha256": "f86df03088a53b81961fbec203e1500d97c0023ad0a6d10f7d35917d203dabd0"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "4a3185481db202ce1ca6b2f12c3c91427d6d0230c5b922f94c000203ecfd5c9a"
+        },
+        {
+          "path": "specs/project-state.md",
+          "sha256": "0f3c39bf5217893f04cea8f9295ea797d53f7a7154cc1f9da2fcf85c103f4f60"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "96793bc046a4c12c18e375db3c61a2acc57edbb60399e954d8b818c22de1787d"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "e37b73254be49db65bf338e485a9b8bc22c704dcfab8ec3b261a5b3df1cd0c8f"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "e22a0a86463d150483e767c864907cc71741c79838cccd7d15757cd8168289f5"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "2d8d3b73ee345ecbbd2155b70bfeacc81107ed1c6f0d3808e71c1bcc12d3f8d1"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        },
+        {
+          "path": "upstream/yuanheng/skills/yuanheng-organize/SKILL.md",
+          "sha256": "f05238997f7f1d44e5430c033764de86a46f64fabf2bd9cdc9b2ee70ce6e8c6c"
+        }
+      ],
+      "entry_characters": 713,
+      "admission_path": "reviews/core-agent-generalization/diting-admission.json",
+      "admission_status": "pending_approval"
+    },
+    "heqi": {
+      "version": "0.3.0",
+      "candidate_digest": "a9dc9a398e99e65d71b19284da32fead7589d2dfe00dc54f8abae82c341f126b",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/heqi/AGENT.md",
+          "sha256": "2730c30ed90f43571487345145d0f42547017737ac4765fedc84be2fa42ac08c"
+        },
+        {
+          "path": "agents/heqi/agent.json",
+          "sha256": "ebd94afec6bf0f7e0d706c35286f4137832f606ea3459a17c4cce5af2fa9c87a"
+        },
+        {
+          "path": "agents/heqi/references/concurrent-changes.md",
+          "sha256": "70308af72cfe6936a23572ccf0e607703ce38529dd67f3f937cc043315364983"
+        },
+        {
+          "path": "agents/heqi/references/concurrent-issue.md",
+          "sha256": "faeedd91783ad439e206097571d938d99391fcd8064b6ac4fe7003aaba7cb06b"
+        },
+        {
+          "path": "agents/heqi/references/git-workflow.md",
+          "sha256": "ee2c7fc2a9b124db4a2161cd0edc0bba9b5d2663903bbc961b6c403f78c40385"
+        },
+        {
+          "path": "agents/heqi/references/p4v.md",
+          "sha256": "0b86bec918a01c117a1589543fc15f5ed9039a1696160c4247f688f14c19a12b"
+        },
+        {
+          "path": "agents/heqi/references/workflow.md",
+          "sha256": "6c38d4eec8810b197713d43b233403d608f71e6530c2aa0eeeffcd3d6a3a94b5"
+        },
+        {
+          "path": "agents/heqi/reporting.json",
+          "sha256": "47279116b1ad87139415779cbe1f890a0cea446d60fde74e841e2245d689359c"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "a4a81cc0d039b6229255b9a6643f22958e452c5d87b460ee99eb91883a62a358"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "6c5d59de2337f90481bb719baaac07d9b2041df5d774b0f32bb614fca6c310d1"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "0b75ba578d0e15d2b879fed3ee57abc041f6a4a298480b419d620bfa959b3abc"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ],
+      "entry_characters": 896,
+      "admission_path": "reviews/heqi-general-0.3.0.json",
+      "admission_status": "pending_approval"
+    },
+    "sinan": {
+      "version": "0.1.0",
+      "candidate_digest": "2e6b1a88d14a14eebdac9ea477dd812ec30d88bf2ee505084768f9dcb0282b85",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/sinan/AGENT.md",
+          "sha256": "db5626f7d3189cae052e1a522f46201d029612c949ada3f7c34915ad8bd52e67"
+        },
+        {
+          "path": "agents/sinan/agent.json",
+          "sha256": "1fab6d0e5c7e71d3b2fef79ab8caf9f245d8c3044138b53d2ed844b597bba7ca"
+        },
+        {
+          "path": "agents/sinan/references/README.md",
+          "sha256": "6bb1a6f82c038115b20cb8b4c91b1392d4566fdfcfc953fbe6b519ba92daa5a1"
+        },
+        {
+          "path": "agents/sinan/references/adapters.md",
+          "sha256": "2adfd5bcda3ef5aceb7c35f73bec40c774fb0b49014b6247efb8d918e7c74e9c"
+        },
+        {
+          "path": "agents/sinan/reporting.json",
+          "sha256": "a8df16eef7080dcbb89c0c2d4a21998558f3c2b4a99b218f167220ba7fffd2b3"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "4a5cfc927944cb0f7cf6b14d292df8b542ad976c2a4e79bb0e36e4cd506f691e"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+        },
+        {
+          "path": "modules/sinan/test/generic-tracking.test.mjs",
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "a4a81cc0d039b6229255b9a6643f22958e452c5d87b460ee99eb91883a62a358"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "54ce9acbb25cc864cb2819782581725037f74a31be2e193d35472c33931c2fe3"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "6c5d59de2337f90481bb719baaac07d9b2041df5d774b0f32bb614fca6c310d1"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "0b75ba578d0e15d2b879fed3ee57abc041f6a4a298480b419d620bfa959b3abc"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ],
+      "entry_characters": 797,
+      "admission_path": "reviews/sinan-agent-0.1.0.json",
+      "admission_status": "pending_approval"
+    }
+  },
+  "changed_files": [
+    {
+      "path": "README.md",
+      "before": "9bdf61593add19290c38171e4d0b42b74321c8305e023ce2f401f915d9a07a9a",
+      "sha256": "0bcccb567f492fa3bdd049986982a2465511425e874e7856a9001c840453cfce"
+    },
+    {
+      "path": "agents/diting/agent.json",
+      "before": "21d34e8dd7eeb698a166a78382af04f06bb4b18d30afcb633353300460618eeb",
+      "sha256": "b3d909429faf6b37594fe4f241bb91513b4430a7e838218fc40abd535dae104e"
+    },
+    {
+      "path": "agents/heqi/AGENT.md",
+      "before": "9ae407524d8d12dccc92fc84b84c1db0ae94a48cd3f3f7b7736df629091d8a03",
+      "sha256": "2730c30ed90f43571487345145d0f42547017737ac4765fedc84be2fa42ac08c"
+    },
+    {
+      "path": "agents/heqi/agent.json",
+      "before": "a6f434b9855a2ad5b8706dff4e1d98f134f2849883b2899a9b61047f72db2987",
+      "sha256": "ebd94afec6bf0f7e0d706c35286f4137832f606ea3459a17c4cce5af2fa9c87a"
+    },
+    {
+      "path": "agents/heqi/references/concurrent-changes.md",
+      "before": null,
+      "sha256": "70308af72cfe6936a23572ccf0e607703ce38529dd67f3f937cc043315364983"
+    },
+    {
+      "path": "agents/heqi/references/concurrent-issue.md",
+      "before": "9a8199b5b7082440a340abe6fa5c3a1ce577517ac4009d31cd4676e4296b110b",
+      "sha256": "faeedd91783ad439e206097571d938d99391fcd8064b6ac4fe7003aaba7cb06b"
+    },
+    {
+      "path": "agents/heqi/references/git-workflow.md",
+      "before": null,
+      "sha256": "ee2c7fc2a9b124db4a2161cd0edc0bba9b5d2663903bbc961b6c403f78c40385"
+    },
+    {
+      "path": "agents/heqi/references/workflow.md",
+      "before": "da14b4ec9f5a37aa1caa19ebc47de900e514ede9a0cf9050ad2bee1887c92960",
+      "sha256": "6c38d4eec8810b197713d43b233403d608f71e6530c2aa0eeeffcd3d6a3a94b5"
+    },
+    {
+      "path": "agents/heqi/reporting.json",
+      "before": "a421b7d833a57816edf434c80f4eccf48598ee4d3ae9e1a858cd5b0096dbec29",
+      "sha256": "47279116b1ad87139415779cbe1f890a0cea446d60fde74e841e2245d689359c"
+    },
+    {
+      "path": "agents/kuafu/agent.json",
+      "before": "175686c2bb3cd43e8e19a444e9a83a3d88f1968ed50c53c26c31b97cd76b7cd1",
+      "sha256": "e17cadb0b439684e9c62e0016d879644c83ab07d4c67f00eff9b965ff85e1e51"
+    },
+    {
+      "path": "agents/sinan/AGENT.md",
+      "before": null,
+      "sha256": "db5626f7d3189cae052e1a522f46201d029612c949ada3f7c34915ad8bd52e67"
+    },
+    {
+      "path": "agents/sinan/agent.json",
+      "before": null,
+      "sha256": "1fab6d0e5c7e71d3b2fef79ab8caf9f245d8c3044138b53d2ed844b597bba7ca"
+    },
+    {
+      "path": "agents/sinan/references/README.md",
+      "before": null,
+      "sha256": "6bb1a6f82c038115b20cb8b4c91b1392d4566fdfcfc953fbe6b519ba92daa5a1"
+    },
+    {
+      "path": "agents/sinan/references/adapters.md",
+      "before": null,
+      "sha256": "2adfd5bcda3ef5aceb7c35f73bec40c774fb0b49014b6247efb8d918e7c74e9c"
+    },
+    {
+      "path": "agents/sinan/reporting.json",
+      "before": null,
+      "sha256": "a8df16eef7080dcbb89c0c2d4a21998558f3c2b4a99b218f167220ba7fffd2b3"
+    },
+    {
+      "path": "agents/yanshi/agent.json",
+      "before": "243f0888da73fded77eb854633600670a95d5c5b65751de5e501f3a902b521bb",
+      "sha256": "20852566304424f4f062044c3faaff986adb0ea7e59221fae46b919e956fd1ea"
+    },
+    {
+      "path": "framework-manifest.json",
+      "before": "19a12c4a46b3110fd38784b221879f00e1c6509c00796341170883aaf5a7c875",
+      "sha256": "89575d895a35eb2dd95dd1008ebf57ea63a9484b2bce57b801a6aa6298f0509c"
+    },
+    {
+      "path": "modules/sinan/coordinator.mjs",
+      "before": "9795fd380cbac6f71dc339bd0695929c8546079b8c1e33efb31e20bf2018d166",
+      "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+    },
+    {
+      "path": "modules/sinan/module.json",
+      "before": "15bd0546eabe6484bb2263993a200312718f2c15d1a6901b5c36db42fa2fab3e",
+      "sha256": "4a5cfc927944cb0f7cf6b14d292df8b542ad976c2a4e79bb0e36e4cd506f691e"
+    },
+    {
+      "path": "modules/sinan/refresh.mjs",
+      "before": "1f22a6ebb83c89f96e4a09abfac0c5f73e324da1c6cf653edd1b8e9b9dac2b4a",
+      "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+    },
+    {
+      "path": "modules/sinan/test/generic-tracking.test.mjs",
+      "before": null,
+      "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+    },
+    {
+      "path": "reviews/core-agent-generalization/diting-admission.json",
+      "before": null,
+      "sha256": "3679f1017a454b1f5f9fb351d2250bbcd0fc0be71a2d68a3b5ed4f7a1d7772c7"
+    },
+    {
+      "path": "reviews/core-agent-generalization/kuafu-admission.json",
+      "before": null,
+      "sha256": "00ad59b5fba0753c6322417078d4ca23489ab24be6dfcebd7aca5d126e20f641"
+    },
+    {
+      "path": "reviews/core-agent-generalization/yanshi-admission.json",
+      "before": null,
+      "sha256": "25034aad59ca1bd6f229e4f5783d95586e303ca9a8306cf20e49663dcf55a314"
+    },
+    {
+      "path": "reviews/heqi-general-0.3.0.json",
+      "before": null,
+      "sha256": "5cd5adef5185565e1921ffa4ba0b148df808c51b85683c6997b06fb7e785526d"
+    },
+    {
+      "path": "reviews/sinan-agent-0.1.0.json",
+      "before": null,
+      "sha256": "641ff561995f8e6df088cd5eef97b42de1b4da99e6a9b219ae0f47a79c8da731"
+    },
+    {
+      "path": "specs/core-agent-adaptation.md",
+      "before": null,
+      "sha256": "6c5d59de2337f90481bb719baaac07d9b2041df5d774b0f32bb614fca6c310d1"
+    },
+    {
+      "path": "specs/work-order-management.md",
+      "before": "6d943f0072ff89974cab2c89415da54fb07e171c3e79d8e83073bc753d8568a9",
+      "sha256": "0b75ba578d0e15d2b879fed3ee57abc041f6a4a298480b419d620bfa959b3abc"
+    }
+  ],
+  "modules": {
+    "sinan": {
+      "version": "0.5.0",
+      "files": [
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "before": "9795fd380cbac6f71dc339bd0695929c8546079b8c1e33efb31e20bf2018d166",
+          "sha256": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "before": "15bd0546eabe6484bb2263993a200312718f2c15d1a6901b5c36db42fa2fab3e",
+          "sha256": "4a5cfc927944cb0f7cf6b14d292df8b542ad976c2a4e79bb0e36e4cd506f691e"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "before": "1f22a6ebb83c89f96e4a09abfac0c5f73e324da1c6cf653edd1b8e9b9dac2b4a",
+          "sha256": "27b24208dd4c24b14cbc7275294e5b610d767f8273818f664231e7682e22ca29"
+        },
+        {
+          "path": "modules/sinan/test/generic-tracking.test.mjs",
+          "before": null,
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        }
+      ],
+      "admission_path": "reviews/sinan/core-agent-support-0.5.0.json",
+      "admission_file_present": false,
+      "execution_authority_granted": false
+    }
+  },
+  "framework_review": "pass",
+  "yuanheng": {
+    "purpose": "pass: Sinan and Heqi are general core Agents; no-Git goals use real worker/source/version bindings, with Git supplied as conditional adapter",
+    "truth": "pass: unknown sources/bases remain unknown; proposals/not_dispatched differ from runtime execution; config authority_ref is not authentication",
+    "economy": "pass: existing Sinan utilities and shared Diting reused; Git algorithms retained in adapters; unchanged Git fixtures not rerun",
+    "authority": "pass: worker-local read/write mandates, actual adapter permissions and independent acceptance retained; disabled or malformed selector never permits external effects",
+    "adaptation": "pass: pure-memory probes verify local/Git routing; historical approval path collision fixed by author following review",
+    "continuity": "pass: frozen/upstream and original approval bytes preserved; old three Agents only README and approval-pointer delta; exact new fingerprints required before enablement"
+  },
+  "concision": {
+    "status": "pass",
+    "reason": "Short generic Agent entry points; separate generic workflow and optional Git references; no duplicated coordination ledger or always-loaded backend instructions",
+    "entry_characters": {
+      "yanshi": 893,
+      "kuafu": 898,
+      "diting": 713,
+      "heqi": 896,
+      "sinan": 797
+    }
+  },
+  "validation": {
+    "candidate_check": "Independent verify_framework.py --candidate passed with five Agents, foundation unchanged, host_authority_authenticated=false",
+    "independent_dynamic_probe": {
+      "result": "pass",
+      "filesystem_writes": false,
+      "network_calls": false,
+      "synthetic_memory_only_source": true,
+      "checks": [
+        "Absent/disabled issue_tracking keeps issueAction=null and historical linkage passive",
+        "Seven malformed/incomplete selectors reject before suggesting Git operations",
+        "Local pending-decision task remains ready and both task/source-gap followUps stay local by default",
+        "Explicit selector yields proposed/not_dispatched Git handoff with authority/readback requirement, no real external effect"
+      ]
+    },
+    "scenario_walkthroughs": 7,
+    "scenario_evidence": "../work/core-agents-generalization-20261103/review/scenarios.json",
+    "author_suite": "Author reports 16/16 tool tests; not independently rerun because unchanged historical suites need not be repeated and review write scope excludes fixture directories",
+    "git_adapter_equivalence": "concurrent-issue from one-issue section and Git workflow from path-basis section match frozen 0.2.1 byte-equivalent text",
+    "legacy_agent_deltas": {
+      "yanshi": [
+        "README.md",
+        "agents/yanshi/agent.json"
+      ],
+      "kuafu": [
+        "README.md",
+        "agents/kuafu/agent.json"
+      ],
+      "diting": [
+        "README.md",
+        "agents/diting/agent.json"
+      ]
+    },
+    "real_agent_runtime": false,
+    "new_git_fixture_execution": false
+  },
+  "resolved_findings": [
+    {
+      "problem": "New Sinan Agent template overwrote historical reviews/sinan-admission.json",
+      "resolution": "Author restored original approved bytes and moved new pending definition to reviews/sinan-agent-0.1.0.json; new digest independently verified"
+    }
+  ],
+  "limitations": [
+    "Definition review and memory-only tool behavior checks are not live Sinan/Heqi runtime admission or actual non-Git production integration.",
+    "All five new candidate approvals remain pending; Sinan tool 0.5.0 approval file is not yet present and must be created with actual authorization before enabling/delivering this version.",
+    "issue_tracking validates selector shape only. Nonempty authority_ref does not prove permission; the host must authenticate each actual operation.",
+    "Malformed selected registry configuration rejects that call; host must retain the failure record and continue other safe work rather than silently converting it to authorization.",
+    "Current executable source adapter remains local Yuanheng; generic definitions do not implement every document/engine/service backend.",
+    "Frozen Heqi 0.2.1/Olympus #27 delivery is separate and remains unaffected; later switch requires fresh consumer acceptance and receipts.",
+    "Prior historical Git/runtime evidence is not relabeled as Heqi0.3.0 or Sinan0.1.0 execution.",
+    "Review findings and handoff go to parent/author shared reporting; no reviewer delivery receipt is fabricated."
+  ]
+}

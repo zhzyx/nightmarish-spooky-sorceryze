@@ -52,7 +52,7 @@ class WorkItemTests(unittest.TestCase):
             [
                 {
                     "state": "closed",
-                    "body": "<!-- olympus-request:req-1 -->",
+                    "body": "<!-- gonggong-request:req-1 -->",
                     "html_url": "https://github.com/test/repo/issues/1",
                 }
             ]
@@ -62,7 +62,7 @@ class WorkItemTests(unittest.TestCase):
         self.assertEqual(gh.call_count, 2)
 
     def test_duplicate_remote_identity_rejected(self):
-        response = [[{"body": "<!-- olympus-request:req-1 -->"}] * 2]
+        response = [[{"body": "<!-- gonggong-request:req-1 -->"}] * 2]
         with patch.object(module, "gh", side_effect=[json.dumps({"login": "test-host"}), json.dumps(response)]):
             with self.assertRaises(ValueError):
                 self.create(True)
@@ -95,11 +95,11 @@ class WorkItemTests(unittest.TestCase):
                 return "[[]]"
             self.assertEqual(args[:2], ("issue", "create"))
             body = Path(args[args.index("--body-file") + 1]).read_text(encoding="utf-8")
-            self.assertIn("<!-- olympus-request:req-1 -->", body)
-            self.assertIn("<!-- olympus-host-git:test-host -->", body)
+            self.assertIn("<!-- gonggong-request:req-1 -->", body)
+            self.assertIn("<!-- gonggong-host-git:test-host -->", body)
             self.assertIn("# Actual requirement", body)
             labels = [args[i + 1] for i, v in enumerate(args) if v == "--label"]
-            self.assertEqual(labels, ["type:design", "status:needs-decision", "workspace:olympus"])
+            self.assertEqual(labels, ["type:design", "status:needs-decision", "workspace:gonggong"])
             return "https://github.com/test/repo/issues/2"
 
         with patch.object(module, "gh", side_effect=fake):

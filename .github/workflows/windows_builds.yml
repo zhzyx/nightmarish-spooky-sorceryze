@@ -144,7 +144,7 @@ jobs:
           $changes = @(git diff --name-only $run.head_sha HEAD)
           if ($LASTEXITCODE -ne 0) { throw 'Cannot compare build inputs' }
           foreach ($file in $changes) {
-            if ($file -notmatch '^(data-collection/|design-docs/|olympus-hermes-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(consultation_only\.gd|run_consultation_only\.py)$)') { throw "Build input changed: $file" }
+            if ($file -notmatch '^(data-collection/|design-docs/|gonggong-diting-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(consultation_only\.gd|run_consultation_only\.py)$)') { throw "Build input changed: $file" }
           }
           New-Item -ItemType Directory -Force native-report | Out-Null
           @{ build_run = $env:BUILD_RUN; build_sha = $run.head_sha; test_sha = $env:GITHUB_SHA; allowed_nonbuild_changes = $changes } | ConvertTo-Json | Set-Content native-report/build-inputs.json

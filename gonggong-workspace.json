@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "GongGong",
+  "path_base": "this_file_directory",
+  "repository": "https://github.com/zhzyx/nightmarish-spooky-sorceryze",
+  "framework_pointer": "CURRENT_FRAMEWORK.json",
+  "framework_root": "framework",
+  "data_root": "gonggong-diting-data",
+  "historical_data_roots": [
+    "olympus-hermes-data"
+  ],
+  "data_module": "framework/extensions/diting-files",
+  "data_artifacts_required_in_git": true,
+  "runtime_entry": "tools/gonggong_bridge.py",
+  "editor_launch": "tools/launch_gonggong_editor.ps1",
+  "integration_components": [
+    "customizations/components/issue-workorders",
+    "customizations/components/godot-host"
+  ],
+  "admission_state": "candidate_pending_exact_review",
+  "integration_submodules": [
+    {
+      "id": "git",
+      "name": "Git 接入",
+      "components": [
+        "issue-workorders",
+        "git-issue"
+      ],
+      "migration": "customizations/module-migration.json"
+    },
+    {
+      "id": "godot",
+      "name": "Godot 接入",
+      "components": [
+        "godot-host"
+      ],
+      "migration": "customizations/module-migration.json"
+    },
+    {
+      "id": "diting-file-data",
+      "name": "谛听文件采集",
+      "components": [
+        "diting-file-data"
+      ],
+      "migration": "customizations/module-migration.json"
+    }
+  ]
+}

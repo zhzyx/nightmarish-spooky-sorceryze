@@ -1,0 +1,1 @@
+{"framework_version": "0.9.0", "agents": ["yanshi", "kuafu", "diting", "heqi", "sinan"], "skills_including_upstream": 10, "foundation_unchanged": true, "mode": "candidate", "host_authority_authenticated": false}

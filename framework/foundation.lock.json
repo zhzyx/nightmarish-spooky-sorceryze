@@ -1,0 +1,11 @@
+{
+  "foundation": "FOUNDATION.md",
+  "version": "1.0",
+  "state": "frozen",
+  "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+  "frozen_on": "2026-11-01",
+  "authority": "explicit_user_instruction_in_current_chat",
+  "invariant": "All Gonggong agents must always remain under Yuanheng control, without exception.",
+  "future_module_changes_may_modify_foundation": false,
+  "trusted_host_enforcement_implemented": false
+}

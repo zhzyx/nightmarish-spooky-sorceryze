@@ -1,0 +1,37 @@
+{
+  "path_base": "task_directory",
+  "status": "passed",
+  "candidate_agents": {
+    "yanshi": "0e751d77e4137a18c1394c1b96190ee09216fc75a7d40dfb04e5309303e3abdc",
+    "kuafu": "a2cce672f5edba24a672e06b3c7a7d4d66c8a8e82b7a44a0a9fe196728af90f0",
+    "diting": "f7e9ee054b81310ad4716ca2585028f29978d4db783185af59fb3a044f1f21c2",
+    "heqi": "a9dc9a398e99e65d71b19284da32fead7589d2dfe00dc54f8abae82c341f126b",
+    "sinan": "ef148b84278d6c4e599e310951eec65195fdc1b450a968b70e6c7fb9f5a72f7c"
+  },
+  "checks": [
+    {
+      "name": "definition_integrity",
+      "exit_code": 0,
+      "report": "validation/definition_integrity.txt",
+      "sha256": "696c9140d011f5065290744360f78acba5faa4307a256611c281f52a6dfe752c"
+    },
+    {
+      "name": "coordination_regression",
+      "exit_code": 0,
+      "report": "validation/coordination_regression.txt",
+      "sha256": "b4a8edae436206a2d1625b4dba0814725a7395458d4bff45c78b8bf81a70e0e0"
+    }
+  ],
+  "non_git_fixture": {
+    "path": "validation/non-git-result.json",
+    "sha256": "319fcce1a75de0911ca3b7729723d2348b1110523e6b3b55e89918f9baafd5a9"
+  },
+  "earlier_failures": [
+    "Initial candidate check correctly found shared README impact on existing Agent fingerprints; all affected candidates now explicitly await independent delta review",
+    "Initial new test found a remaining Issue footer and trailing-slash fixture cleanup mismatch; both corrected and regression passed",
+    "First Node test observer hit Windows GBK stdout encoding after command execution; no terminal receipt for that attempt; only local fixtures, no external effects; rerun uses explicit UTF-8 and a new key"
+  ],
+  "runtime_claim": "definition_and_tool_validation_only",
+  "admission": "pending_independent_review",
+  "olympus": "pending_frozen_source_handoff_and_target_verification"
+}

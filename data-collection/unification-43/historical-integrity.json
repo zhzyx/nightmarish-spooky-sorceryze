@@ -1,0 +1,10 @@
+{
+  "baseline_commit": "8bdb8c02ebbbfdcc40dcda95dfc4a5b89d1eaf18",
+  "counts": {
+    "archived_framework": 163,
+    "historical_events": 116
+  },
+  "frozen_originals_unchanged": true,
+  "missing": [],
+  "model_validation": "simulated_only"
+}

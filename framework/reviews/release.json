@@ -1,0 +1,27 @@
+{
+  "reviewed_candidate_manifest_sha256": "25d0b069d116af1eaa236f7564e596c0c9fa41f8fddaa5d9d91aa3eab3ac268d",
+  "released_manifest_sha256": "142ca91cf502c78e548188f49566e2c0d6511e477e2ab78486708750f3b3ab3c",
+  "approved_at": "2026-11-01T06:46:55.538530+00:00",
+  "delta": "Review artifacts, passes and adoption states only; reviewed dependency digests unchanged.",
+  "verification": {
+    "framework_version": "0.9.0",
+    "agents": [
+      "yanshi",
+      "kuafu",
+      "diting"
+    ],
+    "skills_including_upstream": 9,
+    "foundation_unchanged": true,
+    "mode": "approved_file_integrity",
+    "host_authority_authenticated": false
+  },
+  "three_context_loaders": "pass",
+  "entries_byte_identical": 12,
+  "runtime_tests": 29,
+  "adapter_tests": 11,
+  "http_cli_integration_checks": 10,
+  "reporting_regression": 24,
+  "data_regression": 24,
+  "real_models_tested": false,
+  "foundation_and_upstream_unchanged": true
+}

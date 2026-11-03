@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "path_base": "this_file_directory",
+  "reviewer": "codex_subagent_/root/independent_review",
+  "independence": "independent_subagent_review; reviewer did not author or mutate candidate",
+  "authority": "technical review only; host identity and approval authority not authenticated",
+  "candidate": {
+    "root": "framework",
+    "version": "0.9.1",
+    "manifest_sha256": "f7ca4a8af911080b31308101c578790542022061765c1291e78a6eece2238982"
+  },
+  "outcome": "pass_for_normative_contract_review",
+  "scope": "Review of the general request-to-authoritative-work-item contract only; no claim of live automatic creation or deployment",
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass: new requests are linked to a stable goal and authoritative work item, with clarification reusing the original",
+    "truth": "pass: proposal, source readback and actual execution are separate facts; missing receipts remain unknown",
+    "economy": "pass: existing source CLI and Sinan coordination are reused; no new mandatory GitHub dependency",
+    "authority": "pass: source writes and execution remain host authorized; Git integration is conditional",
+    "adaptation": "pass: other authoritative sources can be adapted without changing the core role",
+    "continuity": "pass: uncertain writes reconcile before retry; current 0.9.0 release remains intact"
+  },
+  "concision": {
+    "status": "pass",
+    "sinan_entry_characters": 886,
+    "sinan_entry_delta": 76,
+    "coordination_skill_characters": 2659,
+    "coordination_skill_delta": 495,
+    "rationale": "The agent adds one short trigger boundary; the skill adds one operational paragraph; detailed cases stay in the on-demand specification. Character counts are not token claims."
+  },
+  "validation": {
+    "candidate_integrity": "pass: verify_framework.py --candidate",
+    "reporting_config": "pass: 15 configured profiles; runtime_connected false",
+    "generic_tracking_tests": "pass: four cases",
+    "manifest_and_queue": "pass: exact manifest SHA and all five agent digests match production-queue.json",
+    "admission_state": "pass for pending candidate: all five agents have null admission_pass in both metadata and manifest; all are candidate_pending_review",
+    "baseline_regression": "resolved as queue gating: 0.9.1 admission now explicitly required for Yanshi, Kuafu, Diting, Heqi and Sinan plus changed coordination skill",
+    "windows_hardlink_test": "not validated: unchanged baseline and candidate both fail during hardlink fixture setup with EPERM"
+  },
+  "remaining_before_release": [
+    "This technical review is not a user or Yuanheng admission approval. Exact 0.9.1 approval records for all five agents and the changed skill remain required.",
+    "Run formal non-candidate admission checks against completed records before switching the active pointer.",
+    "Do not claim actual automatic work order creation until a real authorized host/source binding and representative readback exist.",
+    "Olympus must separately synchronize, admit, verify collection and acknowledge receipt."
+  ],
+  "approval": null,
+  "evidence_refs": [
+    "framework/framework-manifest.json",
+    "framework/specs/work-order-management.md",
+    "framework/skills/work-order-coordination/SKILL.md",
+    "framework/agents/sinan/AGENT.md",
+    "framework/tools/admission.mjs",
+    "production-queue.json",
+    "independent-review.json"
+  ]
+}

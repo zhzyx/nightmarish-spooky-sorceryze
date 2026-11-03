@@ -1,0 +1,63 @@
+{
+  "execution": "actual_host_fixture_comparison_not_admitted_agent_run",
+  "identities": "synthetic_local_workers_no_Git_login",
+  "work_ref": "local-design::service-description",
+  "issue": null,
+  "git_repository": false,
+  "contributions": [
+    {
+      "worker_ref": "fixture-author-a",
+      "execution_id": "a1",
+      "change_id": "a-change",
+      "source_revision": "e28595e6eea8b96111245f2fbb3f409ccb810835312407f8e0bdb44ccb0eb933"
+    },
+    {
+      "worker_ref": "fixture-author-b",
+      "execution_id": "b1",
+      "change_id": "b-change",
+      "source_revision": "ae6f681176a5c7b50c723f2157eeece4cc43ddb46e5b65154117d66b0be6d89d"
+    }
+  ],
+  "base_ref": "8d1a37305a77c3d9be70df3ef78a976e41225dddd1848ed9e4c9557516050223",
+  "result_ref": "e1ad39b5eb8345fa40ff939af29276062bd1b22501c41f8e2aad6a1ec1bcc6ee",
+  "acceptance": {
+    "both_independent_effects_retained": true,
+    "original_inputs_preserved": true,
+    "no_external_issue_required": true
+  },
+  "deferred": [
+    {
+      "input": "conflicting-response.md",
+      "reason": "Response-time commitment differs from the target acceptance; current host retains original commitment and records decision-owner handoff, not blanket acceptance of newest content",
+      "responsibility": "authorized_business_owner",
+      "blocks": "that contribution only"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "validation/non-git-contributions/base.md",
+      "sha256": "8d1a37305a77c3d9be70df3ef78a976e41225dddd1848ed9e4c9557516050223"
+    },
+    {
+      "path": "validation/non-git-contributions/contribution-a.md",
+      "sha256": "e28595e6eea8b96111245f2fbb3f409ccb810835312407f8e0bdb44ccb0eb933"
+    },
+    {
+      "path": "validation/non-git-contributions/contribution-b.md",
+      "sha256": "ae6f681176a5c7b50c723f2157eeece4cc43ddb46e5b65154117d66b0be6d89d"
+    },
+    {
+      "path": "validation/non-git-contributions/integrated.md",
+      "sha256": "e1ad39b5eb8345fa40ff939af29276062bd1b22501c41f8e2aad6a1ec1bcc6ee"
+    },
+    {
+      "path": "validation/non-git-contributions/conflicting-response.md",
+      "sha256": "0d2ff62e0e19e52ecd024084b4dbf8130a647fedcfbd716fa54b3aa9e8aeba61"
+    }
+  ],
+  "limitations": [
+    "Synthetic contributors; no real multi-user identity validation",
+    "Host executed the file comparison; this does not claim a new admitted Heqi model invocation",
+    "No remote publication or arbitrary backend adapter validation"
+  ]
+}

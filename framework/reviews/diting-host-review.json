@@ -1,0 +1,81 @@
+{
+  "template": false,
+  "permit_id": "GG-DITING-HOST-0.1.0",
+  "status": "approved",
+  "event": "user_requested_collection_gap_remediation_issue_9",
+  "phase": "explicit_local_host_utility",
+  "subject": {
+    "id": "diting-host",
+    "version_or_digest": {
+      "version": "0.1.0",
+      "files": [
+        {
+          "path": "tools/diting-host.py",
+          "sha256": "8d2a517f2539eaac8a1b142e72b168d379828f883ae4056defb680c8dd49decd"
+        },
+        {
+          "path": "tests/test_diting_host.py",
+          "sha256": "a8f79f542ee1195df029d2dab503ad0185893dcc8f13f71b76fc5e388328c7ce"
+        },
+        {
+          "path": "specs/host-collection.md",
+          "sha256": "76091c4a214e98c015d4a3f9b302a0a75cce66ffb32e9c4b660023f427e67300"
+        }
+      ]
+    },
+    "scope": [
+      "Explicit local event intake/query/command observation; no new Agent, global listener or expanded authority"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/reporting.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass: closes concrete event intake/read gaps within explicit host calls",
+      "truth": "pass: actual recorded/queued/delivered separate; unknown usage preserved; conflicts excluded",
+      "economy": "pass: shared reporter/ledger reused",
+      "authority": "pass: no shell escalation or inferred grants; authority file is evidence, not host authentication",
+      "adaptation": "pass: independent failure probes led to fixes",
+      "continuity": "pass: historical sources read-only, no rewrite of frozen framework or old records"
+    },
+    "concision": {
+      "status": "pass",
+      "rationale": "Existing data-collect and reporter reused; no Agent/skill entry changes"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "../work/diting-gap-9/review/review.json",
+      "../work/diting-gap-9/review/probe-result.json"
+    ],
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Explicit wrappers observe only calls that use them, not all chats/tools/providers.",
+      "File existence is not cryptographic host authority authentication; actual caller remains responsible for authorized command and collection scope.",
+      "Crash after command claim requires reconciliation; same key refuses replay to avoid duplicate effects.",
+      "Read receipt and delivered records do not prove downstream consumer processing.",
+      "Review evidence and actual findings handed to parent for shared Diting collection; no duplicate or fabricated reviewer delivery claim."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "../work/diting-gap-9/authority.json",
+    "decision_evidence_ref": "../work/diting-gap-9/authority.json",
+    "approved_at": "2026-11-02T20:34:22.900250+00:00",
+    "valid_until_or_task_end": "This requested local collection change only; per-operation host authorization remains required",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  },
+  "path_base": "framework_root"
+}

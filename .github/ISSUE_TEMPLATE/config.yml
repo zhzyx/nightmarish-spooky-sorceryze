@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: Olympus 协作与验收规则
+  - name: GongGong 协作与验收规则
     url: https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/.github/CONTRIBUTING.md
-    about: 本仓库的框架、引擎、文档与其他需求均在此建单；先查重并遵循 Olympus 入口。
+    about: 本仓库的框架、引擎、文档与其他需求均在此建单；先查重并遵循 GongGong 入口。

@@ -24,8 +24,8 @@ class EventIntakeTests(unittest.TestCase):
             "number": 9,
             "html_url": "https://github.com/test/repo/issues/9",
             "state": "open",
-            "body": "<!-- olympus-request:test-request -->\n<!-- olympus-depends-on:#6 --> see #7",
-            "labels": [{"name": n} for n in ["type:development", "status:in-progress", "workspace:olympus"]],
+            "body": "<!-- gonggong-request:test-request -->\n<!-- gonggong-depends-on:#6 --> see #7",
+            "labels": [{"name": n} for n in ["type:development", "status:in-progress", "workspace:gonggong"]],
             "assignees": [{"login": "test-owner"}],
             "updated_at": "2026-11-03T00:00:00Z",
         }
@@ -44,11 +44,11 @@ class EventIntakeTests(unittest.TestCase):
         self.assertFalse(mapped["parent_auto_close"])
 
     def test_host_account_claim_and_conflict(self):
-        self.issue["body"] += "\n<!-- olympus-host-git:alice -->"
+        self.issue["body"] += "\n<!-- gonggong-host-git:alice -->"
         mapped = events.mapping(self.issue, "test-request", {"type:development"})
         self.assertEqual(mapped["host_git_account"], "alice")
         self.assertEqual(mapped["host_account_source"], "issue_body_claim_unverified")
-        self.issue["body"] += "\n<!-- olympus-host-git:bob -->"
+        self.issue["body"] += "\n<!-- gonggong-host-git:bob -->"
         with self.assertRaises(ValueError):
             events.mapping(self.issue, "test-request", {"type:development"})
 
@@ -71,11 +71,11 @@ class EventIntakeTests(unittest.TestCase):
             with self.subTest(change=change):
                 value = copy.deepcopy(self.issue)
                 if change == "workspace":
-                    value["labels"][-1]["name"] = "workspace:gonggong"
+                    value["labels"][-1]["name"] = "workspace:unrelated"
                 elif change == "status":
                     value["labels"].append({"name": "status:done"})
                 else:
-                    value["body"] += "<!-- olympus-request:different -->"
+                    value["body"] += "<!-- gonggong-request:different -->"
                 with self.assertRaises(ValueError):
                     events.mapping(value, "test-request", {"type:development"})
 
@@ -124,7 +124,7 @@ class EventIntakeTests(unittest.TestCase):
 
     def test_existing_lock_rejects_concurrent_invocation(self):
         identity = {"repository": "test/repo", "issue": 9, "event_id": 123}
-        lock = self.root / ".olympus-outbox/issue-events" / (events.digest(identity) + ".lock")
+        lock = self.root / ".gonggong-outbox/issue-events" / (events.digest(identity) + ".lock")
         with events.event_lock(lock):
             with self.assertRaises(OSError):
                 self.invoke()

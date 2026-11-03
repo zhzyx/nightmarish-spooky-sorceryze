@@ -9,6 +9,6 @@ if (Test-Path -LiteralPath (Join-Path $workspace '.git')) { Write-Output 'Existi
 if ($LASTEXITCODE -ne 0) { throw 'Git initialization failed.' }
 & $git -C $workspace -c core.autocrlf=false add -- .
 if ($LASTEXITCODE -ne 0) { throw 'Snapshot staging failed.' }
-& $git -C $workspace -c user.name='Olympus release import' -c user.email='release-import@example.invalid' -c commit.gpgsign=false commit -m 'Import verified Olympus release snapshot'
+& $git -C $workspace -c user.name='GongGong release import' -c user.email='release-import@example.invalid' -c commit.gpgsign=false commit -m 'Import verified GongGong release snapshot'
 if ($LASTEXITCODE -ne 0) { throw 'Snapshot commit failed.' }
 Write-Output 'Release snapshot initialized. Original source commit is recorded in bundle-manifest.json.'

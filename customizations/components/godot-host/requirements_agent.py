@@ -1,4 +1,4 @@
-"""Bounded Athena/Metis intake before a development Issue exists; no production tools."""
+"""Bounded Yanshi/ClarifyFeature intake before a development Issue exists; no production tools."""
 
 import hashlib
 import importlib.util
@@ -10,6 +10,15 @@ import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+_paths_spec = importlib.util.spec_from_file_location(
+    "gonggong_workspace_paths", Path(__file__).with_name("workspace_paths.py")
+)
+if _paths_spec is None or _paths_spec.loader is None:
+    raise ImportError("Cannot load workspace path resolver")
+_paths_module = importlib.util.module_from_spec(_paths_spec)
+_paths_spec.loader.exec_module(_paths_module)
+framework_root = _paths_module.framework_root
 
 
 def load(path, name):
@@ -44,7 +53,7 @@ def proposal(value, categories):
         "acceptance",
         "questions",
     }:
-        raise ValueError("Athena must return the complete requirements schema")
+        raise ValueError("Yanshi must return the complete requirements schema")
     if value["decision"] not in {"new", "continue"} or value["category"] not in categories:
         raise ValueError("Invalid requirements decision/category")
     for key, maximum in [("title", 120), ("goal", 4000)]:
@@ -66,8 +75,10 @@ def proposal(value, categories):
 
 def complete(root, request, profile, messages, env):
     if request.get("backend") != "codebuddy":
-        return load(root / "Olympus/runtime/adapters.py", "requirements_transport").call(profile, messages, 3000)
-    node = request.get("cli_node") or env.get("OLYMPUS_NODE", "")
+        return load(framework_root(root) / "runtime/adapters.py", "requirements_transport").call(
+            profile, messages, 3000
+        )
+    node = request.get("cli_node") or env.get("GONGGONG_NODE", "")
     entry = request.get("cli_entry", "")
     bridge = root / "tools/codebuddy_cli/godot_bridge.js"
     if not all(Path(p).is_file() for p in [node, entry, str(bridge)]):
@@ -78,7 +89,7 @@ def complete(root, request, profile, messages, env):
             "messages": messages,
             "model": request.get("cli_model", ""),
             "available_tools": [],
-            "agent_id": "athena",
+            "agent_id": "yanshi",
             "tool_context": {"permission_enabled": False, "tool_rounds": 0, "max_tool_rounds": None},
         }
         payload["messages"][0]["content"] += (
@@ -110,7 +121,7 @@ def intake(root, request, bridge):
             [request.get("conversation_id"), request.get("issue_number"), request.get("outcome")], ensure_ascii=False
         ).encode()
     ).hexdigest()
-    with bridge.outbox_lock(root / ".olympus-outbox/requirements-locks" / key, time.monotonic() + 2):
+    with bridge.outbox_lock(root / ".gonggong-outbox/requirements-locks" / key, time.monotonic() + 2):
         return _intake(root, request, bridge)
 
 
@@ -159,9 +170,9 @@ def _intake(root, request, bridge):
             raise ValueError("A pull request cannot be a requirements Issue")
     digest = hashlib.sha256((conversation + "\0" + str(number) + "\0" + outcome).encode()).hexdigest()
     identity = "requirement-" + digest[:32]
-    journal = root / ".olympus-outbox/requirements" / (identity + ".json")
+    journal = root / ".gonggong-outbox/requirements" / (identity + ".json")
     journal.parent.mkdir(parents=True, exist_ok=True)
-    framework = root / "Olympus"
+    framework = framework_root(root)
     env = bridge.host_environment(root)
     mandate = {
         "feature_id": identity,
@@ -175,7 +186,7 @@ def _intake(root, request, bridge):
         path = Path(folder) / "mandate.json"
         path.write_text(json.dumps(mandate, ensure_ascii=False), encoding="utf-8")
         context = subprocess.run(
-            [env.get("OLYMPUS_NODE", "node"), str(framework / "tools/agent-context.mjs"), "athena", str(path)],
+            [env.get("GONGGONG_NODE", "node"), str(framework / "tools/agent-context.mjs"), "yanshi", str(path)],
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -183,15 +194,15 @@ def _intake(root, request, bridge):
             timeout=120,
         )
     if context.returncode:
-        raise ValueError("Athena independent admission/context validation failed")
+        raise ValueError("Yanshi independent admission/context validation failed")
     context_text = context.stdout
-    for name in ["agents/athena/skills/metis/SKILL.md", "agents/athena/references/understanding.md"]:
+    for name in ["agents/yanshi/skills/clarify-feature/SKILL.md", "agents/yanshi/references/understanding.md"]:
         context_text += "\n\n" + (framework / name).read_text(encoding="utf-8")
     categories = [x["name"].removeprefix("type:") for x in labels]
     current = next(
         a
         for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]
-        if a["id"] == "athena"
+        if a["id"] == "yanshi"
     )
     if journal.exists():
         saved = json.loads(journal.read_text(encoding="utf-8"))
@@ -222,16 +233,20 @@ def _intake(root, request, bridge):
         current = next(
             a
             for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]
-            if a["id"] == "athena"
+            if a["id"] == "yanshi"
         )
         if saved.get("candidate_digest") != current["candidate_digest"]:
             raise ValueError("Requirements candidate changed; reauthorize/regenerate the proposal")
-        if saved.get("request_sha256") != digest or saved.get("agent") != "athena" or saved.get("skill") != "metis":
+        if (
+            saved.get("request_sha256") != digest
+            or saved.get("agent") != "yanshi"
+            or saved.get("skill") != "clarify-feature"
+        ):
             raise ValueError("Requirements journal identity mismatch")
         design = proposal(saved["proposal"], categories)
     else:
         instruction = (
-            "Requirements intake only. You are the registered Athena using Metis, not a generic form filler. "
+            "Requirements intake only. You are the registered Yanshi using ClarifyFeature, not a generic form filler. "
             "Do not implement, invoke tools, grant permissions, or approve design gates. "
             "Interpret the actual user goal; preserve material unknowns in questions. "
             "New distinct requirements MUST be decision=new; follow-up to the supplied open Issue may be continue. "
@@ -247,23 +262,23 @@ def _intake(root, request, bridge):
         }
         if request.get("backend") != "codebuddy" and (not profile["endpoint"] or not profile["model"]):
             raise ValueError("Configure the requirements Agent model endpoint and model before intake")
-        previous_key = os.environ.get("OLYMPUS_REQUIREMENTS_KEY")
+        previous_key = os.environ.get("GONGGONG_REQUIREMENTS_KEY")
         private_key = (
             (request.get("_private_api_key") or previous_key) if request.get("backend") != "codebuddy" else None
         )
         if private_key:
-            profile["api_key_env"] = "OLYMPUS_REQUIREMENTS_KEY"
+            profile["api_key_env"] = "GONGGONG_REQUIREMENTS_KEY"
         saved = {
             "phase": "model_attempted",
             "request_sha256": digest,
-            "agent": "athena",
-            "skill": "metis",
+            "agent": "yanshi",
+            "skill": "clarify-feature",
             "occurred_at": datetime.now(timezone.utc).isoformat(),
         }
         save(journal, saved)
         try:
             if private_key:
-                os.environ["OLYMPUS_REQUIREMENTS_KEY"] = private_key
+                os.environ["GONGGONG_REQUIREMENTS_KEY"] = private_key
             result = complete(
                 root,
                 request,
@@ -298,16 +313,16 @@ def _intake(root, request, bridge):
             ) from None
         finally:
             if previous_key is None:
-                os.environ.pop("OLYMPUS_REQUIREMENTS_KEY", None)
+                os.environ.pop("GONGGONG_REQUIREMENTS_KEY", None)
             else:
-                os.environ["OLYMPUS_REQUIREMENTS_KEY"] = previous_key
+                os.environ["GONGGONG_REQUIREMENTS_KEY"] = previous_key
         if result["finish_reason"] != "stop":
             raise ValueError("Requirements model response incomplete; reconcile retained attempt")
         design = proposal(json.loads(result["text"]), categories)
         agent = next(
             a
             for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]
-            if a["id"] == "athena"
+            if a["id"] == "yanshi"
         )
         saved.update(
             phase="proposal_ready", proposal=design, candidate_digest=agent["candidate_digest"], usage=result["usage"]
@@ -323,7 +338,7 @@ def _intake(root, request, bridge):
         if not existing or existing.get("state") != "open" or len(work.request_ids(existing.get("body", ""))) != 1:
             saved["phase"] = "proposal_invalid"
             save(journal, saved)
-            raise ValueError("Athena continuation does not match a real open bound Issue")
+            raise ValueError("Yanshi continuation does not match a real open bound Issue")
         issue_number, request_id = number, next(iter(work.request_ids(existing.get("body", ""))))
         revision = "<!-- requirement-revision:" + digest + " -->"
         comments = json.loads(
@@ -339,7 +354,7 @@ def _intake(root, request, bridge):
                 path = Path(folder) / "revision.md"
                 path.write_text(
                     revision
-                    + "\n\nAthena / Metis 澄清更新\n\n"
+                    + "\n\nYanshi / ClarifyFeature 澄清更新\n\n"
                     + design["goal"]
                     + "\n\n验收：\n"
                     + "\n".join("- " + x for x in design["acceptance"]),
@@ -350,8 +365,8 @@ def _intake(root, request, bridge):
     else:
         request_id = identity
         document = "design-docs/" + request_id + ".md"
-        content = "# " + design["title"] + "\n\n<!-- olympus-request:" + request_id + " -->\n\n"
-        content += "需求整理：Athena / Metis；原始输入摘要：`" + digest + "`。\n\n" + design["goal"] + "\n"
+        content = "# " + design["title"] + "\n\n<!-- gonggong-request:" + request_id + " -->\n\n"
+        content += "需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + digest + "`。\n\n" + design["goal"] + "\n"
         for heading, key in [("范围", "scope"), ("验收条件", "acceptance"), ("待确认", "questions")]:
             content += "\n## " + heading + "\n\n" + "\n".join("- " + x for x in design[key]) + "\n"
         path = root / document
@@ -385,11 +400,11 @@ def _intake(root, request, bridge):
             raise ValueError("Issue creation did not return the configured repository")
         issue_number = int(match[1])
     binding = {"issue_number": issue_number, "request_id": request_id}
-    framework = root / "Olympus"
+    framework = framework_root(root)
     agent = next(
         a
         for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]
-        if a["id"] == "athena"
+        if a["id"] == "yanshi"
     )
     if "event" not in saved:
         saved["event"] = {
@@ -401,14 +416,14 @@ def _intake(root, request, bridge):
             "occurred_at": saved["occurred_at"],
             "source_ref": f"https://github.com/{settings['repository']}/issues/{issue_number}",
             "agent": {
-                "id": "athena",
+                "id": "yanshi",
                 "version": agent["version"],
-                "origin": "olympus-framework",
+                "origin": "gonggong-framework",
                 "definition_sha256": hashlib.sha256((framework / agent["entry"]).read_bytes()).hexdigest(),
             },
             "payload": {
                 "phase": "requirements_only_before_development",
-                "skill": "metis",
+                "skill": "clarify-feature",
                 "candidate_digest": saved["candidate_digest"],
                 "request_sha256": digest,
                 "usage": saved["usage"],
@@ -432,8 +447,8 @@ def _intake(root, request, bridge):
         **binding,
         "url": f"https://github.com/{settings['repository']}/issues/{issue_number}",
         "questions": design["questions"],
-        "agent": "athena",
-        "skill": "metis",
+        "agent": "yanshi",
+        "skill": "clarify-feature",
         "ready": not design["questions"],
         "decision": design["decision"],
     }

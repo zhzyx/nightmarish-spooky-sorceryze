@@ -1,0 +1,135 @@
+{
+  "status": "pass",
+  "evaluator": "/root/review_nonblocking",
+  "independence": "independent_subagent_review",
+  "approval": false,
+  "path_base": "candidate_framework_root",
+  "manifest_override": {
+    "path": "../final-manifest.json",
+    "sha256": "19a12c4a46b3110fd38784b221879f00e1c6509c00796341170883aaf5a7c875",
+    "role": "exact final registry candidate, not a deployment assertion"
+  },
+  "modules": {
+    "sinan": {
+      "version": "0.4.2",
+      "files": [
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "9795fd380cbac6f71dc339bd0695929c8546079b8c1e33efb31e20bf2018d166"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "1f22a6ebb83c89f96e4a09abfac0c5f73e324da1c6cf653edd1b8e9b9dac2b4a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "6d943f0072ff89974cab2c89415da54fb07e171c3e79d8e83073bc753d8568a9"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "15bd0546eabe6484bb2263993a200312718f2c15d1a6901b5c36db42fa2fab3e"
+        },
+        {
+          "path": "framework-manifest.json",
+          "sha256": "19a12c4a46b3110fd38784b221879f00e1c6509c00796341170883aaf5a7c875"
+        }
+      ],
+      "changed_from_fixed_0_2_0": [
+        "specs/work-order-management.md",
+        "framework-manifest.json"
+      ],
+      "original_approval": {
+        "path_base": "project_root",
+        "path": "work/heqi-concurrency-25/framework/reviews/sinan/nonblocking-review.json",
+        "sha256": "23152c6fc95453c62c654d604a92183bec585833e7402a9f4a7afaeb3184084a",
+        "status": "historical approval only; not reused as approval for updated files"
+      },
+      "scope": "Local-vs-external Issue applicability documentation and registry alignment; unchanged executable implementation"
+    },
+    "git-issue": {
+      "version": "0.1.0",
+      "files": [
+        {
+          "path": "modules/git-issue/issue_create.py",
+          "sha256": "26afc0e5c2ba8458fdb3411e271782ad0f86b92d512629c7804329e9b625550b"
+        },
+        {
+          "path": "modules/git-issue/module.json",
+          "sha256": "d6aed55afb86da5e75da8bbaaecfa0e61fc01061da97733de672447924473aac"
+        },
+        {
+          "path": "modules/git-issue/README.md",
+          "sha256": "3a6035eec10207237a9736c72e0c0c31ba99c30c5f3b7a80c2f80a4fd066d057"
+        },
+        {
+          "path": "modules/git-issue/reporting.json",
+          "sha256": "4d4a92e94b377498138c09e5ac0c284b2aa7ea5f7821ce629e332ac7e080d7a8"
+        },
+        {
+          "path": "modules/git-issue/settings.example.json",
+          "sha256": "3da64bd2168a460eb919783bb399f4bb9603671ec875effee3a60f434f509325"
+        },
+        {
+          "path": "modules/git-issue/test_issue_create.py",
+          "sha256": "444926dcea3a3eb0a5eea8202d413f380c5b434fdcdcf3b2fb83fd757a8eafd3"
+        },
+        {
+          "path": "modules/optional.json",
+          "sha256": "b8185e80d68f812c61268945a790d4bbced8ca407e34bd3e11c0dd1159fd77d0"
+        }
+      ],
+      "changed_from_fixed_0_2_0": [
+        "modules/git-issue/module.json",
+        "modules/git-issue/README.md"
+      ],
+      "original_approval": {
+        "path_base": "project_root",
+        "path": "work/heqi-concurrency-25/framework/reviews/git-issue-review.json",
+        "sha256": "74e7e7e4828b3622a199c96272587d57a84489ff2f496a5f2b5b89a43db68e8a",
+        "status": "historical approval only; not reused as approval for updated files"
+      },
+      "scope": "Local-vs-external Issue applicability documentation and registry alignment; unchanged executable implementation"
+    }
+  },
+  "yuanheng": {
+    "purpose": "pass: reconcile authorized local-vs-Git Issue applicability without losing multi-contributor behavior",
+    "truth": "pass: old approvals are recorded as historical hashes; changed definitions require fresh scope-bound approval",
+    "economy": "pass: unchanged executables/tests reuse prior independent evidence; no unnecessary reruns",
+    "authority": "pass: no optional Git module enabled, no external Issue or Olympus policy implicitly changed",
+    "adaptation": "pass: residual pending-Issue and module compatibility wording corrected during review",
+    "continuity": "pass: exact module files and final registry bound; unrelated registry entries identical to fixed prior version"
+  },
+  "concision": {
+    "status": "pass",
+    "reason": "Only scoped applicability prose/metadata and already-reviewed heqi registry delta changed; no new execution instructions or duplicate mechanisms"
+  },
+  "validation": {
+    "all_module_files_sha_verified": true,
+    "implementation_and_tests_byte_unchanged": true,
+    "final_registry_delta": "Only heqi 0.2.1 version, digest and added work-order-management dependency differ from fixed 0.2.0 registry",
+    "tests_rerun": false,
+    "reason": "No executable or test changes; this is documentation/metadata boundary reconciliation"
+  },
+  "evidence": [
+    "../work/heqi-integration-25/review/review.json",
+    "../work/heqi-integration-25/review/scenarios.json",
+    "../work/heqi-concurrency-25/validation/result.json"
+  ],
+  "resolved_findings": [
+    {
+      "problem": "git-issue module compatibility still implied mandatory external tracking while disabled",
+      "resolution": "Now limits external Issue contract to authorized Git-integrated tasks and preserves Olympus own rules"
+    }
+  ],
+  "limitations": [
+    "Sinan unchanged followUps.issueAction strings still mention finding/creating Issue. These are proposed handoff hints, not authorization; consumers must apply new spec condition and use local authority when Git intake is not authorized.",
+    "Current approval pointers require fresh actual scope authorization and exact hash receipts; this review does not turn copied old approvals into new permission.",
+    "Original approvals must be archived byte-for-byte before replacement; their recorded hashes allow that check.",
+    "Olympus #27 consumer must ingest the frozen candidate under its own governance; unrelated later genericization is outside this reviewed snapshot.",
+    "No new runtime validation or remote service mutation was performed by reviewer."
+  ]
+}

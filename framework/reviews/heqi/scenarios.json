@@ -1,0 +1,17 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25",
+  "validation_kind": "independent_reasoned_walkthrough_not_runtime_execution",
+  "evaluator": "/root/review_nonblocking",
+  "actual_git_commands_executed": false,
+  "actual_heqi_instance_started": false,
+  "scenarios": [
+    {"id": 1, "input": "同一认证账号 A 的聊天 E1/E2 在同一副本修改 f，分别声明 C1/C2；f 已有脏改动。", "judgment": "视作同一工作者的两个执行实例；记录共同基准与各自范围、保存观察证据，通过司南协调重叠部分，独立文件继续。", "prohibited": ["当作两个自然人重新派工", "覆盖另一聊天未保存内容", "对全工作区 stash/reset/add -A"], "result": "reasoned_pass"},
+    {"id": 2, "input": "账号 A 与 B 从共同基准改同一文本，B 已通过授权仓库服务共享提交。", "judgment": "A 仅在其授权本地副本读取共享提交，保存 base/ours/theirs 并准备逐块合并候选，验证语义后交审查；Issue 追加双方变更集关联。", "prohibited": ["访问 B 本地目录", "给 B 的机器下发操作命令", "整文件自动选 ours/theirs"], "result": "reasoned_pass"},
+    {"id": 3, "input": "A/B 同时在 Issue 认领不可合并二进制，没有已验证锁服务。", "judgment": "保留两个事件和版本，把单写者选择交司南主责协调；确认前挂起该二进制的写入，其他已授权工作继续。", "prohibited": ["声称最后评论取得原生锁", "替 B 解锁", "将另一人的认领静默覆盖"], "result": "reasoned_pass"},
+    {"id": 4, "input": "A 的本地暂存区包含自身 C1 与来源为 B 的无关变更。", "judgment": "记录原有 index 与工作区差异，停止当前混合提交；只在获授权且保留他人内容的隔离方案中准备 C1，重验暂存清单后提交。", "prohibited": ["提交整个 index", "未经授权 unstage/stash/revert B 的内容", "把暂存内容都归为当前账号成果"], "result": "reasoned_pass"},
+    {"id": 5, "input": "A 的候选基于 H0，远端已推进 H1，push 非快进。", "judgment": "保留自身候选；核验实际认证通道与账号后获取新基准，在自己授权副本比较/合并并重验候选，再由授权发布方提交回读证据。", "prohibited": ["强推覆盖远端", "无条件重写其他人历史", "将旧验证报告套用于新基准"], "result": "reasoned_pass"},
+    {"id": 6, "input": "并发评论均自称账号 A，其中一条的服务认证作者是 B；Issue revision 在本轮发生变化。", "judgment": "认证作者与文本声明分别记录，保留两条历史并再次回读；冲突交有效责任方裁决。API 登录回执不能代替不同 SSH/HTTPS 通道的操作身份。", "prohibited": ["信任正文或 commit author 作为认证", "把最后写入当新权限", "整段覆盖对方 Issue 正文"], "result": "reasoned_pass"},
+    {"id": 7, "input": "授权根内路径经 junction/symlink 指向另一工作者目录。", "judgment": "按规范核验真实解析路径与 repo_root，不将链接可访问性当权限；拒绝该路径的读取/写入，记录问题与恢复条件，继续不受影响内容。", "prohibited": ["通过链接读取或修改另一人目录", "自动删除对方目录或链接来消除阻碍", "扩大 read_paths/write_paths"], "result": "reasoned_pass"},
+    {"id": 8, "input": "用户尚未决定冲突中哪种产品行为生效，独立的文档整理已有授权。", "judgment": "只挂起依赖该取舍的文件或发布操作；记录待决策 Issue、决策责任和依据，准备备选方案并继续授权文档整理，在真实决定事件到达后恢复。", "prohibited": ["把沉默当批准", "擅自改变目标或验收承诺", "停止全部工作或建立定时轮询"], "result": "reasoned_pass"}
+  ]
+}

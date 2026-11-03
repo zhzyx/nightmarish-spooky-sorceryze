@@ -1,0 +1,63 @@
+{
+  "reviewer": "codex_subagent_/root/migration_review",
+  "independence": "independent_subagent_review",
+  "observed_at": "2026-11-03T20:22:41.601540+00:00",
+  "scope": "Current local definitions of five agents and migration-related shared dependencies only",
+  "subjects": [
+    {
+      "id": "yanshi",
+      "version": "0.4.0",
+      "candidate_digest": "750061f390b05b9ce21ad22264115f1e0ec724235bdc14ac160016f84a8a4763"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.4.0",
+      "candidate_digest": "baf867dad0e50d734e3ae9d756f032674c91520c818a0315b9bab48db7ddb10a"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.0",
+      "candidate_digest": "77233fd9af63852e3beb34d5b5cef3d54d33bcd187e19fc20f0d766b37323768"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.1",
+      "candidate_digest": "6f10ba216707673aa4a6706bdfae62b81b5955d1532516aa84fb19b7ad4cb6cb"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.1",
+      "candidate_digest": "eaf1e100dbb71ba9b9e39fc8018c5a9122f8e1946e5e2d5dc73c30cbcfbedda5"
+    }
+  ],
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass",
+    "truth": "pass",
+    "economy": "pass",
+    "authority": "pass",
+    "adaptation": "pass",
+    "continuity": "pass"
+  },
+  "concision": "pass",
+  "applicable_validation": "pass",
+  "findings_resolved": [
+    "Unrelated third-party and translation mutations restored",
+    "Cross-source conflicts refused before persistence; identical historical replay does not copy",
+    "Sealing refuses any approved subject before first write"
+  ],
+  "independent_tests": [
+    "Candidate validation",
+    "Offline full package inventory and syntax",
+    "git diff --check",
+    "9 standalone checks",
+    "Historical idempotence and conflict reproduction",
+    "Approved sealing rejection with zero file changes"
+  ],
+  "limits": [
+    "No production admission granted",
+    "No authentication of host authority",
+    "Windows binary, publication, directory switch are separate acceptance",
+    "No real model service or global collection coverage claimed"
+  ]
+}

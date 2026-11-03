@@ -7,7 +7,7 @@ body:
     id: request-id
     attributes:
       label: 稳定需求 ID
-      description: 本仓库 Olympus 工单的唯一需求标识，例如 godot-input-fix-20261102
+      description: 本仓库 GongGong 工单的唯一需求标识，例如 godot-input-fix-20261102
     validations:
       required: true
   - type: markdown

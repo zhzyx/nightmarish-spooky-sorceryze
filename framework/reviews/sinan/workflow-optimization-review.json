@@ -1,0 +1,111 @@
+{
+  "template": false,
+  "permit_id": "GG-WORKFLOW-OPTIMIZATION-SINAN-0.4.1",
+  "status": "approved",
+  "event": "user_requested_workflow_optimization",
+  "phase": "local_definition_and_utility_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.4.1",
+      "skill_version": "0.4.0",
+      "files": [
+        {
+          "path": "tools/check_delivery.py",
+          "sha256": "e8973d3931371caf22983252aff9157b90a8260a6dafaf8e7b2870ab4ec2ac21"
+        },
+        {
+          "path": "templates/delivery.json",
+          "sha256": "ba1ad796f443457c647627794514d246b25a586431708fe32097a4dd1b22da54"
+        },
+        {
+          "path": "tests/test_delivery.py",
+          "sha256": "1664f37a9998cbaf15329fdb3e6eb85373bf8c664757396727b199c97dcb4018"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "19d621c50707e3891b6a9f37e4581bff7b13933262d88c37cc00f7bbbe229cb0"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "ad30c7fb7387ae77751910f2ca6ae6219ee6ad1dc3b3a1ae23a945499f25a0aa"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "73781fa32ac1d526293d5b9fcaefb2c889a25f787da616f4a20e2563df57902c"
+        },
+        {
+          "path": "specs/delivery.md",
+          "sha256": "36771b8473e910e6029c275e06a5417d39940a9853ade7faae39dc2558bd6b54"
+        },
+        {
+          "path": "specs/code-collaboration.md",
+          "sha256": "c0c617dff53ff4427c2e984255ab5b7b97631d14de15d29e3821b7c598e5dd51"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "3034c48a5b670e0f2cd2ea8424eea4209b1b64929b4d2b6bd8321546d3c0d549"
+        },
+        {
+          "path": "framework-manifest.json",
+          "sha256": "5459700c9bb1590561865cba28514f22781e74210fe56942fab811c9327f3046"
+        }
+      ]
+    },
+    "scope": [
+      "Local event-driven document sync and Git delivery consistency check; no automatic remote writes or new execution authority"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/delivery.md",
+      "specs/work-order-management.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": null,
+      "rationale": "No new skill/Agent entry; reused board, reporting and admission rules; new specification is loaded only for relevant deliveries."
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "../work/workflow-independent/report.md",
+      "../work/workflow-independent/candidate-hashes.json",
+      "../work/delivery-gate/validation.json",
+      "../work/sinan-event-sync/test-output.txt"
+    ],
+    "evaluator_id": "/root/workflow_review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Checks attest local consistency, not remote identity or authenticity of supplied reports.",
+      "Document writes are atomic individually, not across files or external services.",
+      "External Issue writes and collection consumption still require actual host/connector receipts; no universal listener."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "../work/workflow-optimization/authority.json",
+    "decision_evidence_ref": "../work/workflow-optimization/authority.json",
+    "approved_at": "2026-11-01T21:50:13.451962+00:00",
+    "valid_until_or_task_end": "Bound local utility/module change; per-task host authority remains required",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

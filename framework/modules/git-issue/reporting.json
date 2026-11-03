@@ -1,0 +1,10 @@
+{
+  "path_base": "framework_root",
+  "required": true,
+  "shared_component_profile": "agents/diting/skills/data-collect/reporting.json",
+  "host_entry": "tools/diting-host.py",
+  "binding": "actual session required at --apply; never a template",
+  "events": ["before_create", "readback"],
+  "failure": "command wrapper records failures; persisted create claim requires reconciliation; repeat readback repairs delivery without duplicate create",
+  "coverage": "explicit module invocations only; usage unknown; no background listener"
+}

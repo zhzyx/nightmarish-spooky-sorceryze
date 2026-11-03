@@ -1,0 +1,94 @@
+{
+  "template": false,
+  "permit_id": "GG-SINAN-NONBLOCKING-0.4.2",
+  "status": "approved",
+  "event": "user_requested_nonblocking_optimization_issue_13",
+  "phase": "local_utility_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.4.2",
+      "files": [
+        {
+          "path": "modules/sinan/coordinator.mjs",
+          "sha256": "9795fd380cbac6f71dc339bd0695929c8546079b8c1e33efb31e20bf2018d166"
+        },
+        {
+          "path": "modules/sinan/refresh.mjs",
+          "sha256": "1f22a6ebb83c89f96e4a09abfac0c5f73e324da1c6cf653edd1b8e9b9dac2b4a"
+        },
+        {
+          "path": "modules/sinan/test/refresh.test.mjs",
+          "sha256": "d52abd652ce451b20891d33f6fed214b89d86f862184e77b730487f74ee75fe7"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "de5e648b5ec12e5b384266fc818c4ee81d0d234f1b44e601f6da9ff547079a37"
+        },
+        {
+          "path": "modules/sinan/module.json",
+          "sha256": "15bd0546eabe6484bb2263993a200312718f2c15d1a6901b5c36db42fa2fab3e"
+        },
+        {
+          "path": "framework-manifest.json",
+          "sha256": "dbf7449129fb9a791a7122072d1b0a15cd891b1c65d7f67b99e4423c75494b38"
+        }
+      ]
+    },
+    "scope": [
+      "Local coordination utility and specification changes requested in Issue #13; no new Agent, model grant or remote service activation"
+    ],
+    "agent_governance_refs": [
+      "FOUNDATION.md",
+      "GOVERNANCE.md",
+      "specs/work-order-management.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass: removes global waiting while preserving local restrictions",
+      "truth": "pass: proposed/not_dispatched and partial states remain explicit",
+      "economy": "pass: uses existing board/refresh and host dispatch",
+      "authority": "pass: original CLI and host checks retained; explicit pending_user_blocking restricts the affected task",
+      "adaptation": "pass: regression behavior and independent probe verified",
+      "continuity": "pass: existing release retained; migration and partial-response semantics documented"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": null,
+      "rationale": "No skill or Agent entry changed; shared coordination policy and existing tools reused."
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "../work/nonblocking-13/review/review.json",
+      "../work/nonblocking-13/checks.json",
+      "../work/nonblocking-13/audit.md"
+    ],
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "No remote connector or host dispatch integration implemented by this utility; Issue #9 remains separate.",
+      "pending_user default semantics changed intentionally; existing custom registries must review actual authorization before adopting; current built-in registry is empty.",
+      "partial sync now resolves API and returns exit 0; consumers must check outcome/updated, as documented.",
+      "This is independent review, not authority or a new Agent admission. Shared reporting for this review is handed to parent task; no separate duplicate usage record or fabricated receipt."
+    ]
+  },
+  "approval": {
+    "approver_id": "actual_user_in_current_chat",
+    "authority_ref": "../work/nonblocking-13/authority.json",
+    "decision_evidence_ref": "../work/nonblocking-13/authority.json",
+    "approved_at": "2026-11-02T17:22:30.122402+00:00",
+    "valid_until_or_task_end": "Only user-requested local framework optimization; source operation mandates remain separately required",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  },
+  "path_base": "framework_root"
+}

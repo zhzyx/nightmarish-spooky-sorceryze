@@ -1,0 +1,13 @@
+{
+  "path_base": "this_file_directory",
+  "original_review": "independent-review.json",
+  "original_review_context": "Review took place in isolated candidate; original review bytes retained. Resolve archived references using this index, not the installed process working directory.",
+  "reference_map": {
+    "candidate_framework_root:../candidate.json": "reviewed-candidate.json",
+    "candidate_framework_root:../work/core-agents-generalization-20261103/review/scenarios.json": "scenarios.json",
+    "task_directory:validation.json": "validation.json",
+    "task_directory:validation-delta.json": "validation-delta.json",
+    "task_directory:scope.md": "user-authority.md"
+  },
+  "reviewed_candidate_sha256": "2bd446da768ac55f54988e3b31cb9193e8ae972db97425cb0f53a2a29aca3cef"
+}

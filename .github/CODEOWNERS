@@ -524,19 +524,22 @@
 /thirdparty/                                  @godotengine/buildsystem
 /thirdparty/jolt_physics/                     @godotengine/buildsystem @godotengine/jolt-physics
 
-# Olympus workspace additions are maintained by this repository's owner.
-/Olympus/                                     @zhzyx @godotengine/buildsystem
-/Olympus/**/tests/                            @zhzyx @godotengine/buildsystem @godotengine/tests
-/Olympus/**/test/                             @zhzyx @godotengine/buildsystem @godotengine/tests
+# GongGong workspace additions are maintained by this repository's owner.
+/framework/                                     @zhzyx @godotengine/buildsystem
+/framework/**/tests/                            @zhzyx @godotengine/buildsystem @godotengine/tests
+/framework/**/test/                             @zhzyx @godotengine/buildsystem @godotengine/tests
 /customizations/                              @zhzyx @godotengine/buildsystem
 /data-collection/                             @zhzyx
 /design-docs/                                 @zhzyx
 /distribution/                                @zhzyx
 /integrations/                                @zhzyx
-/olympus-hermes-data/                          @zhzyx
+/gonggong-diting-data/                          @zhzyx
 /project/                                     @zhzyx
 /releases/                                    @zhzyx
 /samples/                                     @zhzyx
 /tools/                                       @zhzyx @godotengine/buildsystem
 /tests/editor/                                @godotengine/tests @godotengine/editor
 /tests/editor/*.py                            @godotengine/tests @godotengine/editor @godotengine/buildsystem
+
+/integrations/**/*.py @zhzyx @godotengine/buildsystem
+/olympus-hermes-data/ @zhzyx
