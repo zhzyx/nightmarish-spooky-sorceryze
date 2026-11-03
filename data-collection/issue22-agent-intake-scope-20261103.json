@@ -1,0 +1,28 @@
+{
+  "request_id": "godot-chat-issue-guide-20261103",
+  "issue": 22,
+  "recorded_at": "2026-11-03T15:37:38.389635+00:00",
+  "user_requirement": [
+    "每次有需求都需要创建对应issue",
+    "如果有本地环境或api等相关问题无法创建issue，则先解决问题再创建issue",
+    "issue的内容应该根据用户需求，走当前已有的专用的创建需求的agent进行"
+  ],
+  "requirements_role": {
+    "agent": "athena",
+    "skill": "metis",
+    "author_executor": "codex-subagent:athena_requirements",
+    "scope": "Read-only requirements synthesis under existing role; not a new production Agent definition"
+  },
+  "scope_document": "design-docs/godot-chat-issue-guide-20261103.md",
+  "base_pr": 23,
+  "base_commit": "33e794b9338a1cc182ed465b4c06a8c160178e71",
+  "checks_so_far": {
+    "host_tests": 46,
+    "issue_tests": 39,
+    "windows_object_compile": "pass; werror=yes; local accesskit/d3d12 disabled for isolated object only",
+    "native_acceptance": "pending"
+  },
+  "input_tokens": null,
+  "output_tokens": null,
+  "real_provider_tested": false
+}

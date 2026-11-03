@@ -396,5 +396,12 @@ TEST_CASE("[AIChat] Issue guide suggests stable fields and resolves categories")
 	CHECK(AIChatIssueGuide::is_retry(U"已更新"));
 }
 
+TEST_CASE("[AIChat] Requirements decisions are bound to a user turn and actual Issue") {
+	const String key = AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "22", "req");
+	CHECK(key == AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "22", "req"));
+	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-2", "add a button", "22", "req"));
+	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "24", "other"));
+}
+
 } // namespace TestAIChatTools
 #endif // TOOLS_ENABLED

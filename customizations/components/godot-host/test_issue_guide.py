@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -108,19 +109,18 @@ class IssueGuideTests(unittest.TestCase):
         self.assertFalse(started["remote_changed"])
 
     def test_auth_status_is_read_only_and_failure_means_unauthenticated(self):
-        tool = self.root / "bin/gh"
-        tool.parent.mkdir()
-        log = self.root / "gh-calls.txt"
-        tool.write_text(
-            "#!/bin/sh\necho \"$@\" >> " + str(log) + "\n[ -f " + str(self.root / "logged-in") + " ]\n",
-            encoding="utf-8",
-        )
-        tool.chmod(0o755)
-        self.assertFalse(bridge.gh_authenticated(str(tool), {}))
-        (self.root / "logged-in").write_text("", encoding="utf-8")
-        self.assertTrue(bridge.gh_authenticated(str(tool), {}))
-        self.assertFalse(bridge.gh_authenticated(str(self.root / "missing"), {}))
-        self.assertEqual(log.read_text(encoding="utf-8").splitlines(), ["auth status --hostname github.com"] * 2)
+        from types import SimpleNamespace
+
+        with patch.object(
+            bridge.subprocess,
+            "run",
+            side_effect=[SimpleNamespace(returncode=1), SimpleNamespace(returncode=0), OSError("missing")],
+        ) as run:
+            self.assertFalse(bridge.gh_authenticated("gh", {}))
+            self.assertTrue(bridge.gh_authenticated("gh", {}))
+            self.assertFalse(bridge.gh_authenticated("missing", {}))
+        self.assertEqual(run.call_args_list[0].args[0], ["gh", "auth", "status", "--hostname", "github.com"])
+        self.assertEqual(run.call_args_list[1].args[0], ["gh", "auth", "status", "--hostname", "github.com"])
 
     def test_login_command_quotes_gh_path(self):
         self.assertEqual(
@@ -224,7 +224,7 @@ class IssueGuideTests(unittest.TestCase):
     def test_gh_discovery_prefers_configuration_then_path(self):
         missing = str(self.root / "missing-gh")
         self.assertIsNone(bridge.find_gh({"OLYMPUS_GH": missing}))
-        tool = self.root / "bin/gh"
+        tool = self.root / "bin" / ("gh.exe" if os.name == "nt" else "gh")
         tool.parent.mkdir()
         tool.write_text("#!/bin/sh\n", encoding="utf-8")
         tool.chmod(0o755)

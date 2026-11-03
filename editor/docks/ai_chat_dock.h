@@ -103,6 +103,8 @@ class AIChatDock : public EditorDock {
 	// guide replies never enter `messages`, so no model or tool runs before intake.
 	OlympusPanel *olympus_panel = nullptr;
 	String issue_guide_state;
+	String issue_agent_checked;
+	void _begin_issue_agent(const String &p_outcome, bool p_retry = false, bool p_clarifying = false);
 	String issue_guide_outcome;
 	Dictionary issue_guide_fields;
 	Array issue_guide_categories;

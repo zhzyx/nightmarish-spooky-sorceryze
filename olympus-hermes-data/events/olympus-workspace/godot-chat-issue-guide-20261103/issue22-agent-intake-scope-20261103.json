@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "issue22-agent-intake-scope-20261103",
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "kind": "correction",
+  "occurred_at": "2026-11-03T15:37:38.389635+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "payload": {
+    "description": "User superseded manual Issue guide with existing Athena/Metis requirements synthesis and automatic create/bind, repair technical failures before proceeding. Source captured; native deployment not yet accepted.",
+    "source_file": "data-collection/issue22-agent-intake-scope-20261103.json",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "b58c2e4973ab5cbde3b90c49017977f1cb7733aa0721e568c9001586e7fdd724"
+}

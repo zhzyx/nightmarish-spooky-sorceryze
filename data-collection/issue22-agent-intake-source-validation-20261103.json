@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "base_commit": "33e794b9338a1cc182ed465b4c06a8c160178e71",
+  "scope": "Athena/Metis automatic requirements intake; existing HTTP or CodeBuddy transport; no production tool execution before Issue",
+  "checks": {
+    "godot_host": {
+      "passed": 47
+    },
+    "issue_workorders": {
+      "passed": 39
+    },
+    "codebuddy_bridge": {
+      "passed": 35
+    },
+    "requirements_followup_delta": {
+      "passed": 17
+    },
+    "clang_format": "passed",
+    "yaml": "passed",
+    "offline_snapshot": "passed,137 frozen files; no host authority inferred",
+    "windows_object_compile": "passed earlier for affected source; full candidate pending"
+  },
+  "native_acceptance": "pending Windows editor artifact",
+  "input_tokens": null,
+  "output_tokens": null,
+  "cost": null,
+  "dependency_repair": "Restored exact npm lock dependencies; workspace-local verified npm 10.9.2; ignored dependency directories only"
+}
