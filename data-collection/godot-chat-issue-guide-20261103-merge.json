@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "appends": "data-collection/godot-chat-issue-guide-20261103-msvc-shadow.json",
+  "user_instructions": ["合并吧", "网络是好的 你再试试"],
+  "push": {
+    "note": "The first pushes of 9fcef31a timed out because git in the IDE shell did not use the macOS system proxy (127.0.0.1:10809). The push succeeded with a one-off 'git -c http.proxy=...'; git config was not changed.",
+    "pushed_head": "9fcef31aa31fe10583a67a4969dcaa6f98257410"
+  },
+  "ci_on_merged_head": {
+    "head": "9fcef31a",
+    "passed": [
+      "issue-association",
+      "Static checks (push and pull_request)",
+      "Windows / Editor (target=editor), MSVC, both runs",
+      "Windows / Editor w/ clang-cl, both runs",
+      "Windows / Template (target=template_release), both runs",
+      "Windows / Template w/ GCC, both runs"
+    ],
+    "skipped_by_workflow": "Linux, macOS, Web, Android, iOS and visionOS jobs were skipped by the repository CI configuration",
+    "merge_state": "CLEAN"
+  },
+  "merge": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/23",
+    "method": "merge commit, pinned with --match-head-commit 9fcef31aa31fe10583a67a4969dcaa6f98257410",
+    "merge_commit": "adab2727af501ece729977ac88157023e9ddc407",
+    "base": "main",
+    "merged_at": "2026-11-03T15:53:03Z",
+    "merged_by": "kaiyunxue",
+    "verified": "origin/main == adab2727 and 9fcef31a is an ancestor of origin/main",
+    "included_out_of_scope_commit": "f2c63b0a (camera_apple build fix by the workspace user) was merged with this PR, as stated in the PR description"
+  },
+  "issue_state_after_merge": "Issue #22 remains open with status:in-progress; business acceptance has not been performed and the Issue is not closed.",
+  "not_covered": [
+    "No business acceptance; the in-editor guide was not run against the real GitHub account.",
+    "Diting has not confirmed consumption of these files."
+  ],
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}
