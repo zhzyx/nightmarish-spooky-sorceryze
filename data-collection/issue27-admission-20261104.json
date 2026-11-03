@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "observed_at": "2026-11-03T16:25:26.837666+00:00",
+  "stage": "local_definition_admission",
+  "review": {
+    "path": "Olympus/reviews/local-admission/issue27-independent-review.json",
+    "sha256": "3a891cca8f069aae4f3b8ba73083bd32b0163d48b55a90f1fd3a122816e50760",
+    "status": "pass",
+    "evaluator": "/root/review_nonblocking",
+    "approval": false
+  },
+  "decision": {
+    "path": "Olympus/reviews/local-admission/issue27-user-decision.json",
+    "sha256": "9687f4345fe57c2e3980c57ffc0ee511a9473eda2254a587c18ed9c1bc635ccb",
+    "authority": "Conditional user cross-chat instruction after validation",
+    "scope": "local_agent_definition_only"
+  },
+  "permits": {
+    "athena": {
+      "version": "0.4.0",
+      "candidate_digest": "3a4a75769d62354d7562bdbb859bc390ef0382b35a7fa952f95b8f7cc1b42cbb",
+      "path": "Olympus/reviews/athena-admission.json",
+      "sha256": "b31fd90c7401bb9cb0ed2cb53e16a0add8fc76f702a25d4e48ef8a9aa9eeb351"
+    },
+    "themis": {
+      "version": "0.4.0",
+      "candidate_digest": "8f1d9f4e8adcb58d38e87e07932fbef25e1d434b9b2d7c42f78587f0b4d17c0b",
+      "path": "Olympus/reviews/themis-admission.json",
+      "sha256": "c6c17ca9478d97d161c6d7b0cbfe5677d4ab4bfac834266b369ca2ca761d2844"
+    },
+    "hermes": {
+      "version": "0.4.0",
+      "candidate_digest": "15b0663cbd62efc1abf00570d1edaa37fd780edb7fa66f66886362d80a4b6180",
+      "path": "Olympus/reviews/hermes-admission.json",
+      "sha256": "7bac7b175de5e73227e7e224f574296f4e6e6e4d3f26351f425ecb4c41e2071e"
+    },
+    "harmonia": {
+      "version": "0.2.1",
+      "candidate_digest": "15d5b235a200caab9cde26eaca5448bd61dc81d8ebd957e47478bf487fc063fd",
+      "path": "Olympus/reviews/harmonia-admission.json",
+      "sha256": "c3ee7ba2db0fe4ea69b9429469566c0c649311ada7bd6afb8563bae059d71ae5"
+    }
+  },
+  "checks": {
+    "formal_framework_mode": "approved_file_integrity",
+    "full_frozen_source_parity": true,
+    "harmonia_admission_mjs": "pass",
+    "candidate_behavior_inputs_unchanged": true
+  },
+  "host_authority_authenticated": false,
+  "git_issue_module_enabled": false,
+  "remote_push": false,
+  "diting_consumption_confirmed": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

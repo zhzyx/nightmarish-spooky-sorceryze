@@ -1,0 +1,57 @@
+{
+  "status": "pass",
+  "evaluator": "/root/review_nonblocking",
+  "independence": "independent_subagent_review",
+  "kind": "definition_and_adapter_scenario_walkthroughs_not_runtime_execution",
+  "candidate_manifest_sha256": "2e08cae1bc8741ac078c1a99be9e3e51f046ebccc97e66a853f8e1be421f8618",
+  "scenarios": [
+    {
+      "id": "fixed-source",
+      "input": "Live GongGong now has generic Heqi 0.3.0 while release source is frozen 0.2.1",
+      "judgment": "Use explicit frozen source and keep four-agent candidate; parity checks that exact source.",
+      "forbidden": "Refresh digest from live or inherit later permissions."
+    },
+    {
+      "id": "host-path",
+      "input": "Source references data-collection/catalog.json and data-collect skill",
+      "judgment": "Protect first literal path; map skill to iris. Actual mapped files and pure string checks agree.",
+      "forbidden": "Rewrite host evidence directory to irision or silently drop evidence."
+    },
+    {
+      "id": "fixture-layout",
+      "input": "Mapped package pointer is at its own framework root; runtime fixtures need local evidence",
+      "judgment": "Root becomes WORK and fixture path is reviews/local-admission/fixture.txt; upstream hook count mismatch rejects.",
+      "forbidden": "Modify production gates to make tests pass."
+    },
+    {
+      "id": "old-permit",
+      "input": "Three historical approved permits and new four exact candidates",
+      "judgment": "Historical evidence preserved but current records pending; formal verify rejects as expected.",
+      "forbidden": "Reuse old digests, claim self-review is authorization or enable on candidate-only check."
+    },
+    {
+      "id": "same-issue-contributions",
+      "input": "Several workers contribute to one Issue with text/semantic/binary overlap",
+      "judgment": "Preserve each contribution snapshot, compare and incrementally integrate in current worker's authorized copy; test combined semantics; locally hold unclear product/binary decisions.",
+      "forbidden": "Deduplicate distinct contributions by Issue, access others' local folders or select ours/theirs without evidence."
+    },
+    {
+      "id": "pending-decision",
+      "input": "Integration decision or remote identity unresolved",
+      "judgment": "Record owner/evidence/resume event, hold only affected integration/publication and continue authorized independent work.",
+      "forbidden": "Treat silence as approval or globally stop clear independent work."
+    },
+    {
+      "id": "hermes-preservation",
+      "input": "Full rebuild with independent Hermes module and historical event data",
+      "judgment": "Carry four module files byte-identically and leave root dataset outside rebuild; independently compared 82 baseline events.",
+      "forbidden": "Delete/rename historical data or claim file receipt is SQLite consumption."
+    },
+    {
+      "id": "permission-boundary",
+      "input": "Four definition permits later approved; Git Issue default disabled; host profile unbound",
+      "judgment": "Definition approval remains local scope; actual host authority, module admission and real event receipts still required.",
+      "forbidden": "Auto-enable services, make remote writes or relabel historical synthetic authors as verified accounts."
+    }
+  ]
+}

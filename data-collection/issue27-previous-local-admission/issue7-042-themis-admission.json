@@ -1,0 +1,345 @@
+{
+  "template": false,
+  "status": "approved",
+  "subject": {
+    "id": "themis",
+    "version_or_digest": {
+      "version": "0.4.0",
+      "candidate_digest": "b13be5429e999f0c143b37ff94acde7f7365dd19328b5a6037ebbbb7b56422a3",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "README.md",
+          "sha256": "9fa69f5c3758610bac33f52a3b9aec01835e026713697fc2167ded937228b1e4"
+        },
+        {
+          "path": "agents/athena/reporting.json",
+          "sha256": "18dc6305c9a4889cfefa698153684a94b4ac3a35f83f1a95dd82fe7ee53b8ad0"
+        },
+        {
+          "path": "agents/athena/skills/metis/reporting.json",
+          "sha256": "5e627fb750ce6a8fda025fb6eeb975bec5d0ec66b9451ee7d666c96eac2b16ac"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/reporting.json",
+          "sha256": "bfc8c66209e803fcd101348ea83f72335436318b8e083cfa1f664b07a9519db8"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/reporting.json",
+          "sha256": "06b280cacfd43a0d4f14287f1d4330c825a54ee80d7f1cc2e1b7186af93914b9"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/reporting.json",
+          "sha256": "e103db6200f75cd05a38c50db60337ee6aa9803ef782db5db476d7393fc0043e"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/reporting.json",
+          "sha256": "dd934f82e1a1617386cf0ee404d5d982dcd502b784fdf304a072f4fd768876bd"
+        },
+        {
+          "path": "agents/hermes/skills/iris/reporting.json",
+          "sha256": "41be32952a6ab334e430b91a04aa6b7d027a773bf5728bdf7a29fea740b79e6e"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/reporting.json",
+          "sha256": "6fcbb9ceea9fe777db0f0b1636de1662b882ead475329bfbe91be65c5e2e1886"
+        },
+        {
+          "path": "agents/themis/AGENT.md",
+          "sha256": "fa171f6b596dd4b852a2cd0e2c5d66e54c552cee334ac700e1b764a52f4efd36"
+        },
+        {
+          "path": "agents/themis/agent.json",
+          "sha256": "6e186c1064392ac2f17f6a9975d861164c8b6f4359e205303e25c49ef96199ad"
+        },
+        {
+          "path": "agents/themis/reporting.json",
+          "sha256": "2164d7bbb350d93a268dd712ff43c483b4ecd0e4d949d77296fd997213b7071c"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "domains/quality/provenance.json",
+          "sha256": "e0f57d6b598425cd9a51fa255fd3f76b8f5bb597cc541df73911aa9c4b781c20"
+        },
+        {
+          "path": "domains/quality/quality-policy.json",
+          "sha256": "8d9e2779a59d911cb4179b1d3715517a0b2a85a4859f2b2c0a01f74660a071f5"
+        },
+        {
+          "path": "domains/quality/responsibility-map.json",
+          "sha256": "f1b96bd2beb33067e6ea4c5540c1f10ae3e7ded17fe58f787e2b23515a284bd1"
+        },
+        {
+          "path": "domains/quality/templates/Feature质量看板.md",
+          "sha256": "9764c582ae636b22132a8e525f9ceada65241bdd0e8d50d86fdd32684d7e526b"
+        },
+        {
+          "path": "domains/quality/templates/例外与风险接受.md",
+          "sha256": "75fa9dfb4d2d873ce578c196099f79a1f45b309503f13c8ccd11b99c016a6b94"
+        },
+        {
+          "path": "domains/quality/templates/检查与验收记录.md",
+          "sha256": "536174846580e11c705fd961652205f8c053577979a79eecc7e013d098f6aa36"
+        },
+        {
+          "path": "domains/quality/templates/缺陷工单.md",
+          "sha256": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0"
+        },
+        {
+          "path": "domains/quality/templates/质量事件与决策记录.md",
+          "sha256": "68a2e7b828134d6088c7edef87da9e71b05e21d07cc8b4583092bf561642a7e5"
+        },
+        {
+          "path": "domains/quality/templates/质量约定.md",
+          "sha256": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "integrations/hestia-reporting.json",
+          "sha256": "a03f43dc93f441029b9176649c428d0347dc7c4766a836a5c9858cc92adcc2d1"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "6ddba7c8e3f4c4477f490554cb47cf70411951037f1d44b0237b016ce9c02bc2"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "c8e154853378306864abda712092e331863049493bdaac522bac5dfa19ce102e"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/hermes.py",
+          "sha256": "213a5ebc2307f533bdade786ff4c5a3b215a88013c3f0849670ce5eac78318d9"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "eaec9b5f48a2cf98df74cd7216c26dc585701b570d831d625f9dbf99b41dea0f"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "skills/dike/reporting.json",
+          "sha256": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625"
+        },
+        {
+          "path": "skills/nike/SKILL.md",
+          "sha256": "23501480ca230d11c070f1fb8f3f1510ad6b7fa88cd59175058c72b3897ad6e4"
+        },
+        {
+          "path": "skills/nike/reporting.json",
+          "sha256": "687291a0c4fc37d9258427a1527beb14c5284c92d2e132f0a6fdfbd3e61c0aae"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "7c065e4abf46856b992f7c8e0332ba4b9171bfe06813a609d5f78656d1606f63"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "ed525b687bd3e322435a73f6e7aaeb0cbb04333c4718a938c8f783833a129408"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "3e2ab1ae4532066adea154b18afaa30372524abb7e7f9ed2abc217c17c6c59b4"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
+        },
+        {
+          "path": "specs/quality.md",
+          "sha256": "03a43b9ffcfe3a6f1aa00e26843665e96d5e80d38a2f7f827b13f57ef05c5855"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "86d94067b423f02326e038220aa0d9bc7911410f0e80ccbf13a7cf54e950656a"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "fe4c95ff0b90bb672ba83161be34430b305d097e7ab91b36db18999557a844d0"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "48cc9af02cd52fa46d9d414474e1708d4bd65c0eeb9602b2c2885490363dcd9c"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "b3d887a00723026ff5cfe4c5b9afce745c4eef8ea56f82c11564ff95e0a3b191"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "f2d48b37fdce4185b7348d6b78680207340ffa008286a5d8c45b025bbda7c8a0"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "693edf897a2367eda29ab3186c15ba3382f21a785f277b7944adb41325c62b30"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "16d2738be09d575e54bb2f2cf67493b3018732c094ebf22ddc13975b82b59604"
+        },
+        {
+          "path": "tools/check_quality_ownership.py",
+          "sha256": "6557df7fe940239f0dc93cd81fa260d960e1df96a1ac19423aa57ca494804ab3"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "72fec16c5960d2c5eeea87122ac0c12018597999310d507506b82ab4431d5a01"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "06c224a355e6e7c4d500e499b01c08b26ec51c28ad04e2d628555221f97d9182"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ]
+  },
+  "approval": {
+    "approver_id": "user:current-conversation",
+    "authority_ref": "explicit-user-decision:call_d952ec18fec94b1a96adfc0304b594c4",
+    "decision_evidence_ref": "reviews/local-admission/issue7-042-user-decision-20261103.json",
+    "approved_at": "2026-11-02T17:48:58.424639+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "expires_at": null,
+    "revocation_ref": null,
+    "superseded_by": null
+  },
+  "permit_id": "OLYMPUS-042-STANDALONE-20261103-themis",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "baseline": {
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "foundation_version": "1.0",
+    "policy_version": "0.9.0",
+    "zeus_version": "0.4.1"
+  },
+  "review": {
+    "olympus_framework": "pass",
+    "applicable_validation": "pass",
+    "evaluator_id": "codex-subagent:review_standalone",
+    "independence": "independent_subagent_review",
+    "zeus": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "evidence": "Runtime adapter remains the previously reviewed 56-line helper; passed() adds a narrowly scoped two-line status normalization; no new skill or agent entry."
+    },
+    "evidence_refs": [
+      "reviews/local-admission/issue7-042-independent-review-20261103.json"
+    ],
+    "unresolved": [
+      "Current host permissions and precise candidate production approval remain separate from independent review.",
+      "Local offline startup cannot detect remote revocation or new upstream changes without an actual update event.",
+      "No real model provider was called; admission-positive test cases use temporary synthetic permits only."
+    ]
+  }
+}

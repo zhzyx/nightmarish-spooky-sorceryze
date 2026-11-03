@@ -36,3 +36,7 @@ data-collection/issue-governance-host.json -text whitespace=cr-at-eol
 
 # Preserve immutable Issue #6 continuation evidence bytes and referenced hashes.
 data-collection/issue6-continuation-*.json -text whitespace=cr-at-eol
+
+# Preserve Issue #27 frozen-source and admission evidence exactly as observed.
+data-collection/issue27-*.json -text whitespace=cr-at-eol
+data-collection/issue27-previous-local-admission/*.json -text whitespace=cr-at-eol

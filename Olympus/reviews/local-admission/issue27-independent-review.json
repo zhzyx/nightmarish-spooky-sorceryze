@@ -1,0 +1,1485 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "approval": false,
+  "evaluator": "/root/review_nonblocking",
+  "evaluator_id": "/root/review_nonblocking",
+  "independence": "independent_subagent_review",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "completed_at": "2026-11-03 16:19:16 UTC",
+  "scope": [
+    "four_exact_local_agent_definitions",
+    "deterministic_shared_distribution_conversion",
+    "reporting_configuration_and_local_integrity",
+    "source_and_exemption_preservation"
+  ],
+  "path_bases": {
+    "candidate_files": "Olympus framework root in receiving worktree",
+    "repository_files": "receiving Olympus Git worktree root",
+    "source_files": "GongGong frozen-v1 package root",
+    "report_files": "this review directory"
+  },
+  "candidate": {
+    "manifest": "framework-manifest.json",
+    "manifest_sha256": "2e08cae1bc8741ac078c1a99be9e3e51f046ebccc97e66a853f8e1be421f8618",
+    "runtime_lock": "sync/runtime-lock.json",
+    "runtime_lock_sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a",
+    "candidate_record": "data-collection/issue27-sync-candidate-20261104.json",
+    "candidate_record_path_base": "repository_files",
+    "candidate_record_sha256": "0f15e5c23d403c2c1f20925ff2dd8486f15d5d06b1a84f79c28be9727a7d141c",
+    "snapshot_files": 156,
+    "unchanged_during_review": true,
+    "baseline_git_head": "be278ecaccca9917f9a953ac5696673abe0c85dd"
+  },
+  "agents": [
+    {
+      "id": "athena",
+      "version": "0.4.0",
+      "candidate_digest": "3a4a75769d62354d7562bdbb859bc390ef0382b35a7fa952f95b8f7cc1b42cbb",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "README.md",
+          "sha256": "1bc24a54b49a40e2f1f290f122d992a9573760790157d1988169e40d2eda69a5"
+        },
+        {
+          "path": "agents/athena/AGENT.md",
+          "sha256": "da95de2711bf2197907941d1402ab1ae2ee06ed4eb3b872265d13b7d7eca9119"
+        },
+        {
+          "path": "agents/athena/README.md",
+          "sha256": "03244e53e7eaabcf7379b3215b94aabfe502b4cf0390fb7a84a7c9df2148f23a"
+        },
+        {
+          "path": "agents/athena/THIRD_PARTY_LICENSE.txt",
+          "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+        },
+        {
+          "path": "agents/athena/agent.json",
+          "sha256": "827dddadb9f5285e34730233385adff29d171fc1bc56297ca7ea3f90f6f9c60d"
+        },
+        {
+          "path": "agents/athena/provenance.json",
+          "sha256": "f81b969dd7ef34d29ecb3d1705d9d4334369419d15204f8b2091afb7b2705777"
+        },
+        {
+          "path": "agents/athena/references/adaptation.md",
+          "sha256": "1d605e6023e196dbeebddd324c0559dcb9138e798db8c059371043a8da9e469f"
+        },
+        {
+          "path": "agents/athena/references/design.md",
+          "sha256": "0ad424680f407ea42ef2359ceeec103bedbf3ca94bc6b8ae9dcafd9aebf11dc3"
+        },
+        {
+          "path": "agents/athena/references/tools.md",
+          "sha256": "9c5aa69632d134928e9e73e73fc6f84f32dd552d45a369fac55a7d0bbc23cb4d"
+        },
+        {
+          "path": "agents/athena/references/understanding.md",
+          "sha256": "66cac114da71b858352a03f7796b7572980433d029b0993660fda9bb10bd844f"
+        },
+        {
+          "path": "agents/athena/references/workflow.md",
+          "sha256": "e8185378c15b712d64f0a495edba31f72ae534b18c7de024107e493b4c276366"
+        },
+        {
+          "path": "agents/athena/reporting.json",
+          "sha256": "18dc6305c9a4889cfefa698153684a94b4ac3a35f83f1a95dd82fe7ee53b8ad0"
+        },
+        {
+          "path": "agents/athena/skills/metis/SKILL.md",
+          "sha256": "e512ae620c281cf66055489e3d77c151982ffd9e01cb06e4c27a33459cc29515"
+        },
+        {
+          "path": "agents/athena/skills/metis/reporting.json",
+          "sha256": "5e627fb750ce6a8fda025fb6eeb975bec5d0ec66b9451ee7d666c96eac2b16ac"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/reporting.json",
+          "sha256": "bfc8c66209e803fcd101348ea83f72335436318b8e083cfa1f664b07a9519db8"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/reporting.json",
+          "sha256": "06b280cacfd43a0d4f14287f1d4330c825a54ee80d7f1cc2e1b7186af93914b9"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/reporting.json",
+          "sha256": "e103db6200f75cd05a38c50db60337ee6aa9803ef782db5db476d7393fc0043e"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/reporting.json",
+          "sha256": "dd934f82e1a1617386cf0ee404d5d982dcd502b784fdf304a072f4fd768876bd"
+        },
+        {
+          "path": "agents/hermes/skills/iris/reporting.json",
+          "sha256": "41be32952a6ab334e430b91a04aa6b7d027a773bf5728bdf7a29fea740b79e6e"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/reporting.json",
+          "sha256": "6fcbb9ceea9fe777db0f0b1636de1662b882ead475329bfbe91be65c5e2e1886"
+        },
+        {
+          "path": "agents/themis/reporting.json",
+          "sha256": "2164d7bbb350d93a268dd712ff43c483b4ecd0e4d949d77296fd997213b7071c"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "integrations/athena-legacy/athena.mjs",
+          "sha256": "b7be46c1fd2cc6204e0da2bdb2c6b3aabcfead0306d11514c04b3c40cdab13b8"
+        },
+        {
+          "path": "integrations/athena-legacy/feature-memory.mjs",
+          "sha256": "525a9eaf9caad1ef62b23a3736b4d4176262dbebd1645259212af0ef6a89da83"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/cli.mjs",
+          "sha256": "fd8cf1dd7f2396dbdd56ae63b23db28f0f9ba7f8377dd3e5ac12550ab0ab538d"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/src/catalog.mjs",
+          "sha256": "f8b8b26cf0498e8994b1e53c83e82b791155380f42eb309da79062b68cffe0bb"
+        },
+        {
+          "path": "integrations/athena-legacy/runtime/src/production.mjs",
+          "sha256": "776dc854594752c716756a83a709d5620d7ae750d8f532375709997748e17882"
+        },
+        {
+          "path": "integrations/hestia-reporting.json",
+          "sha256": "a03f43dc93f441029b9176649c428d0347dc7c4766a836a5c9858cc92adcc2d1"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "6ddba7c8e3f4c4477f490554cb47cf70411951037f1d44b0237b016ce9c02bc2"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "c8e154853378306864abda712092e331863049493bdaac522bac5dfa19ce102e"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/hermes.py",
+          "sha256": "213a5ebc2307f533bdade786ff4c5a3b215a88013c3f0849670ce5eac78318d9"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "eaec9b5f48a2cf98df74cd7216c26dc585701b570d831d625f9dbf99b41dea0f"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "skills/dike/reporting.json",
+          "sha256": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625"
+        },
+        {
+          "path": "skills/nike/reporting.json",
+          "sha256": "687291a0c4fc37d9258427a1527beb14c5284c92d2e132f0a6fdfbd3e61c0aae"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "da8752aa943fbf3fcd85632d43dcd0ba9920d981d36b4f3e5422aa567669d578"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "ed525b687bd3e322435a73f6e7aaeb0cbb04333c4718a938c8f783833a129408"
+        },
+        {
+          "path": "specs/document-design.md",
+          "sha256": "2bdc6425b7d31acee88e14955ded40d60d6dd25fc6f208d4d8a0c687bb958a44"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "3e2ab1ae4532066adea154b18afaa30372524abb7e7f9ed2abc217c17c6c59b4"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "b3d887a00723026ff5cfe4c5b9afce745c4eef8ea56f82c11564ff95e0a3b191"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "822415fd79d20dfe3e5dc741f0654117c8bec28d0101fefaf92b5066e30a7304"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "693edf897a2367eda29ab3186c15ba3382f21a785f277b7944adb41325c62b30"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "16d2738be09d575e54bb2f2cf67493b3018732c094ebf22ddc13975b82b59604"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "72fec16c5960d2c5eeea87122ac0c12018597999310d507506b82ab4431d5a01"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "06c224a355e6e7c4d500e499b01c08b26ec51c28ad04e2d628555221f97d9182"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ],
+      "reporting": {
+        "schema_version": 1,
+        "component": {
+          "kind": "agent",
+          "id": "athena",
+          "version": "0.4.0",
+          "entry": "agents/athena/AGENT.md",
+          "entry_sha256": "da95de2711bf2197907941d1402ab1ae2ee06ed4eb3b872265d13b7d7eca9119"
+        },
+        "required": true,
+        "policy": "contracts/hermes-reporting.json",
+        "policy_id": "hermes-reporting-1",
+        "reporter": "tools/hermes-report.py",
+        "events": [
+          "request",
+          "step",
+          "message",
+          "direction_error",
+          "correction",
+          "quality_issue",
+          "rework",
+          "handoff",
+          "coverage",
+          "request_end"
+        ],
+        "runtime_binding": "host_required",
+        "runtime_connected": false,
+        "dependencies": {
+          "contracts/hermes-reporting.json": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f",
+          "tools/reporting.mjs": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659",
+          "tools/hermes-report.py": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84",
+          "agents/hermes/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+          "agents/hermes/scripts/telemetry.py": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa",
+          "agents/hermes/references/data-contract.md": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5",
+          "agents/hermes/references/telemetry.md": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        }
+      },
+      "permit_status": "pending_independent_review",
+      "entry_characters": 873,
+      "status": "pass",
+      "approval": false,
+      "review_independence": "independent_subagent_review"
+    },
+    {
+      "id": "themis",
+      "version": "0.4.0",
+      "candidate_digest": "8f1d9f4e8adcb58d38e87e07932fbef25e1d434b9b2d7c42f78587f0b4d17c0b",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "README.md",
+          "sha256": "1bc24a54b49a40e2f1f290f122d992a9573760790157d1988169e40d2eda69a5"
+        },
+        {
+          "path": "agents/athena/reporting.json",
+          "sha256": "18dc6305c9a4889cfefa698153684a94b4ac3a35f83f1a95dd82fe7ee53b8ad0"
+        },
+        {
+          "path": "agents/athena/skills/metis/reporting.json",
+          "sha256": "5e627fb750ce6a8fda025fb6eeb975bec5d0ec66b9451ee7d666c96eac2b16ac"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/reporting.json",
+          "sha256": "bfc8c66209e803fcd101348ea83f72335436318b8e083cfa1f664b07a9519db8"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/reporting.json",
+          "sha256": "06b280cacfd43a0d4f14287f1d4330c825a54ee80d7f1cc2e1b7186af93914b9"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/reporting.json",
+          "sha256": "e103db6200f75cd05a38c50db60337ee6aa9803ef782db5db476d7393fc0043e"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/reporting.json",
+          "sha256": "dd934f82e1a1617386cf0ee404d5d982dcd502b784fdf304a072f4fd768876bd"
+        },
+        {
+          "path": "agents/hermes/skills/iris/reporting.json",
+          "sha256": "41be32952a6ab334e430b91a04aa6b7d027a773bf5728bdf7a29fea740b79e6e"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/reporting.json",
+          "sha256": "6fcbb9ceea9fe777db0f0b1636de1662b882ead475329bfbe91be65c5e2e1886"
+        },
+        {
+          "path": "agents/themis/AGENT.md",
+          "sha256": "fa171f6b596dd4b852a2cd0e2c5d66e54c552cee334ac700e1b764a52f4efd36"
+        },
+        {
+          "path": "agents/themis/agent.json",
+          "sha256": "6e186c1064392ac2f17f6a9975d861164c8b6f4359e205303e25c49ef96199ad"
+        },
+        {
+          "path": "agents/themis/reporting.json",
+          "sha256": "2164d7bbb350d93a268dd712ff43c483b4ecd0e4d949d77296fd997213b7071c"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "domains/quality/provenance.json",
+          "sha256": "e0f57d6b598425cd9a51fa255fd3f76b8f5bb597cc541df73911aa9c4b781c20"
+        },
+        {
+          "path": "domains/quality/quality-policy.json",
+          "sha256": "8d9e2779a59d911cb4179b1d3715517a0b2a85a4859f2b2c0a01f74660a071f5"
+        },
+        {
+          "path": "domains/quality/responsibility-map.json",
+          "sha256": "f1b96bd2beb33067e6ea4c5540c1f10ae3e7ded17fe58f787e2b23515a284bd1"
+        },
+        {
+          "path": "domains/quality/templates/Feature质量看板.md",
+          "sha256": "9764c582ae636b22132a8e525f9ceada65241bdd0e8d50d86fdd32684d7e526b"
+        },
+        {
+          "path": "domains/quality/templates/例外与风险接受.md",
+          "sha256": "75fa9dfb4d2d873ce578c196099f79a1f45b309503f13c8ccd11b99c016a6b94"
+        },
+        {
+          "path": "domains/quality/templates/检查与验收记录.md",
+          "sha256": "536174846580e11c705fd961652205f8c053577979a79eecc7e013d098f6aa36"
+        },
+        {
+          "path": "domains/quality/templates/缺陷工单.md",
+          "sha256": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0"
+        },
+        {
+          "path": "domains/quality/templates/质量事件与决策记录.md",
+          "sha256": "68a2e7b828134d6088c7edef87da9e71b05e21d07cc8b4583092bf561642a7e5"
+        },
+        {
+          "path": "domains/quality/templates/质量约定.md",
+          "sha256": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "integrations/hestia-reporting.json",
+          "sha256": "a03f43dc93f441029b9176649c428d0347dc7c4766a836a5c9858cc92adcc2d1"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "6ddba7c8e3f4c4477f490554cb47cf70411951037f1d44b0237b016ce9c02bc2"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "c8e154853378306864abda712092e331863049493bdaac522bac5dfa19ce102e"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/hermes.py",
+          "sha256": "213a5ebc2307f533bdade786ff4c5a3b215a88013c3f0849670ce5eac78318d9"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "eaec9b5f48a2cf98df74cd7216c26dc585701b570d831d625f9dbf99b41dea0f"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "skills/dike/reporting.json",
+          "sha256": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625"
+        },
+        {
+          "path": "skills/nike/SKILL.md",
+          "sha256": "23501480ca230d11c070f1fb8f3f1510ad6b7fa88cd59175058c72b3897ad6e4"
+        },
+        {
+          "path": "skills/nike/reporting.json",
+          "sha256": "687291a0c4fc37d9258427a1527beb14c5284c92d2e132f0a6fdfbd3e61c0aae"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "da8752aa943fbf3fcd85632d43dcd0ba9920d981d36b4f3e5422aa567669d578"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "ed525b687bd3e322435a73f6e7aaeb0cbb04333c4718a938c8f783833a129408"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "3e2ab1ae4532066adea154b18afaa30372524abb7e7f9ed2abc217c17c6c59b4"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
+        },
+        {
+          "path": "specs/quality.md",
+          "sha256": "03a43b9ffcfe3a6f1aa00e26843665e96d5e80d38a2f7f827b13f57ef05c5855"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "b3d887a00723026ff5cfe4c5b9afce745c4eef8ea56f82c11564ff95e0a3b191"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "822415fd79d20dfe3e5dc741f0654117c8bec28d0101fefaf92b5066e30a7304"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "693edf897a2367eda29ab3186c15ba3382f21a785f277b7944adb41325c62b30"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "16d2738be09d575e54bb2f2cf67493b3018732c094ebf22ddc13975b82b59604"
+        },
+        {
+          "path": "tools/check_quality_ownership.py",
+          "sha256": "6557df7fe940239f0dc93cd81fa260d960e1df96a1ac19423aa57ca494804ab3"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "72fec16c5960d2c5eeea87122ac0c12018597999310d507506b82ab4431d5a01"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "06c224a355e6e7c4d500e499b01c08b26ec51c28ad04e2d628555221f97d9182"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ],
+      "reporting": {
+        "schema_version": 1,
+        "component": {
+          "kind": "agent",
+          "id": "themis",
+          "version": "0.4.0",
+          "entry": "agents/themis/AGENT.md",
+          "entry_sha256": "fa171f6b596dd4b852a2cd0e2c5d66e54c552cee334ac700e1b764a52f4efd36"
+        },
+        "required": true,
+        "policy": "contracts/hermes-reporting.json",
+        "policy_id": "hermes-reporting-1",
+        "reporter": "tools/hermes-report.py",
+        "events": [
+          "request",
+          "step",
+          "message",
+          "direction_error",
+          "correction",
+          "quality_issue",
+          "rework",
+          "handoff",
+          "coverage",
+          "request_end"
+        ],
+        "runtime_binding": "host_required",
+        "runtime_connected": false,
+        "dependencies": {
+          "contracts/hermes-reporting.json": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f",
+          "tools/reporting.mjs": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659",
+          "tools/hermes-report.py": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84",
+          "agents/hermes/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+          "agents/hermes/scripts/telemetry.py": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa",
+          "agents/hermes/references/data-contract.md": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5",
+          "agents/hermes/references/telemetry.md": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        }
+      },
+      "permit_status": "pending_independent_review",
+      "entry_characters": 888,
+      "status": "pass",
+      "approval": false,
+      "review_independence": "independent_subagent_review"
+    },
+    {
+      "id": "hermes",
+      "version": "0.4.0",
+      "candidate_digest": "15b0663cbd62efc1abf00570d1edaa37fd780edb7fa66f66886362d80a4b6180",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "README.md",
+          "sha256": "1bc24a54b49a40e2f1f290f122d992a9573760790157d1988169e40d2eda69a5"
+        },
+        {
+          "path": "agents/athena/reporting.json",
+          "sha256": "18dc6305c9a4889cfefa698153684a94b4ac3a35f83f1a95dd82fe7ee53b8ad0"
+        },
+        {
+          "path": "agents/athena/skills/metis/reporting.json",
+          "sha256": "5e627fb750ce6a8fda025fb6eeb975bec5d0ec66b9451ee7d666c96eac2b16ac"
+        },
+        {
+          "path": "agents/hermes/AGENT.md",
+          "sha256": "2cf491f24d806771adb216a2a6a28559aa4871fdbda69eb61b97d8d6c913cc6c"
+        },
+        {
+          "path": "agents/hermes/agent.json",
+          "sha256": "d86ec002853aacef428b0c491eb9ffc57499b3446d952b3de7e813d48d637268"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/optimization.md",
+          "sha256": "344ca001996e43953160893b84e28bcca14728d9c760eb8d968e9bb4e9bcecaa"
+        },
+        {
+          "path": "agents/hermes/references/storage.md",
+          "sha256": "11f60bac2738307a82e8a09368dbcf2d8b95d15bb647c11be3894ded2937614f"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/reporting.json",
+          "sha256": "bfc8c66209e803fcd101348ea83f72335436318b8e083cfa1f664b07a9519db8"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/SKILL.md",
+          "sha256": "783cd1577480a8c42e9936a2a530e2b0e1e18f19c0029c12b1dcac9f5de8efe9"
+        },
+        {
+          "path": "agents/hermes/skills/apollo/reporting.json",
+          "sha256": "06b280cacfd43a0d4f14287f1d4330c825a54ee80d7f1cc2e1b7186af93914b9"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/SKILL.md",
+          "sha256": "e555ad11aa9e9f9b3ac776728721670f863fc3638605704ea00a7505e4adfee4"
+        },
+        {
+          "path": "agents/hermes/skills/cadmus/reporting.json",
+          "sha256": "e103db6200f75cd05a38c50db60337ee6aa9803ef782db5db476d7393fc0043e"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/SKILL.md",
+          "sha256": "ca3031f0e84b06bbb3bedd0047fb9e0b51ee7133681e6e97cf18506aee9938a6"
+        },
+        {
+          "path": "agents/hermes/skills/demeter/reporting.json",
+          "sha256": "dd934f82e1a1617386cf0ee404d5d982dcd502b784fdf304a072f4fd768876bd"
+        },
+        {
+          "path": "agents/hermes/skills/iris/SKILL.md",
+          "sha256": "53e87de9fb8e871349ada8029be59bdecc0465d1699e3c2ac7a01faaad93bed3"
+        },
+        {
+          "path": "agents/hermes/skills/iris/reporting.json",
+          "sha256": "41be32952a6ab334e430b91a04aa6b7d027a773bf5728bdf7a29fea740b79e6e"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/SKILL.md",
+          "sha256": "06835cd3c2672383bf0b85844ed58db9da96140cda814d7e51701f730c6a8654"
+        },
+        {
+          "path": "agents/hermes/skills/mnemosyne/reporting.json",
+          "sha256": "6fcbb9ceea9fe777db0f0b1636de1662b882ead475329bfbe91be65c5e2e1886"
+        },
+        {
+          "path": "agents/themis/reporting.json",
+          "sha256": "2164d7bbb350d93a268dd712ff43c483b4ecd0e4d949d77296fd997213b7071c"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "integrations/hestia-reporting.json",
+          "sha256": "a03f43dc93f441029b9176649c428d0347dc7c4766a836a5c9858cc92adcc2d1"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "6ddba7c8e3f4c4477f490554cb47cf70411951037f1d44b0237b016ce9c02bc2"
+        },
+        {
+          "path": "runtime/adapters.py",
+          "sha256": "c8e154853378306864abda712092e331863049493bdaac522bac5dfa19ce102e"
+        },
+        {
+          "path": "runtime/evaluate.py",
+          "sha256": "24b6ac2709eab4d8e120cae1b4bb5d43d9d96942b723f2498cd1a61df79862a3"
+        },
+        {
+          "path": "runtime/hermes.py",
+          "sha256": "213a5ebc2307f533bdade786ff4c5a3b215a88013c3f0849670ce5eac78318d9"
+        },
+        {
+          "path": "runtime/runner.py",
+          "sha256": "eaec9b5f48a2cf98df74cd7216c26dc585701b570d831d625f9dbf99b41dea0f"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "skills/dike/reporting.json",
+          "sha256": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625"
+        },
+        {
+          "path": "skills/nike/reporting.json",
+          "sha256": "687291a0c4fc37d9258427a1527beb14c5284c92d2e132f0a6fdfbd3e61c0aae"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "da8752aa943fbf3fcd85632d43dcd0ba9920d981d36b4f3e5422aa567669d578"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "ed525b687bd3e322435a73f6e7aaeb0cbb04333c4718a938c8f783833a129408"
+        },
+        {
+          "path": "specs/enterprise-operations.md",
+          "sha256": "dc32eca3e10e9ce7c4e9132d52346266497565e05cab792d3f5441cc89589223"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "3e2ab1ae4532066adea154b18afaa30372524abb7e7f9ed2abc217c17c6c59b4"
+        },
+        {
+          "path": "specs/project-state.md",
+          "sha256": "cb5dfb8a927d17516bd4b644bdb5d2e0eb6cebbb2a36d120e4d2d264bb55571e"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "3f52c3bb87dc2abe70504b369020f893ae180887cad3c2a29b2ff4a4ce988ab8"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "b3d887a00723026ff5cfe4c5b9afce745c4eef8ea56f82c11564ff95e0a3b191"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+        },
+        {
+          "path": "tests/test_runtime.py",
+          "sha256": "822415fd79d20dfe3e5dc741f0654117c8bec28d0101fefaf92b5066e30a7304"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "693edf897a2367eda29ab3186c15ba3382f21a785f277b7944adb41325c62b30"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "16d2738be09d575e54bb2f2cf67493b3018732c094ebf22ddc13975b82b59604"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "72fec16c5960d2c5eeea87122ac0c12018597999310d507506b82ab4431d5a01"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "06c224a355e6e7c4d500e499b01c08b26ec51c28ad04e2d628555221f97d9182"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        },
+        {
+          "path": "upstream/zeus/skills/hestia/SKILL.md",
+          "sha256": "098fd20bc054152267c6616ed872da4d287949f0503a9555009dcc0336bedb58"
+        }
+      ],
+      "reporting": {
+        "schema_version": 1,
+        "component": {
+          "kind": "agent",
+          "id": "hermes",
+          "version": "0.4.0",
+          "entry": "agents/hermes/AGENT.md",
+          "entry_sha256": "2cf491f24d806771adb216a2a6a28559aa4871fdbda69eb61b97d8d6c913cc6c"
+        },
+        "required": true,
+        "policy": "contracts/hermes-reporting.json",
+        "policy_id": "hermes-reporting-1",
+        "reporter": "tools/hermes-report.py",
+        "events": [
+          "request",
+          "step",
+          "message",
+          "direction_error",
+          "correction",
+          "quality_issue",
+          "rework",
+          "handoff",
+          "coverage",
+          "request_end"
+        ],
+        "runtime_binding": "host_required",
+        "runtime_connected": false,
+        "dependencies": {
+          "contracts/hermes-reporting.json": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f",
+          "tools/reporting.mjs": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659",
+          "tools/hermes-report.py": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84",
+          "agents/hermes/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+          "agents/hermes/scripts/telemetry.py": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa",
+          "agents/hermes/references/data-contract.md": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5",
+          "agents/hermes/references/telemetry.md": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        }
+      },
+      "permit_status": "pending_independent_review",
+      "entry_characters": 825,
+      "status": "pass",
+      "approval": false,
+      "review_independence": "independent_subagent_review"
+    },
+    {
+      "id": "harmonia",
+      "version": "0.2.1",
+      "candidate_digest": "15d5b235a200caab9cde26eaca5448bd61dc81d8ebd957e47478bf487fc063fd",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "agents/harmonia/AGENT.md",
+          "sha256": "f9571df0d1ab99b39440968ae8b19036406362b5e470423d765b19dbfb4e43bc"
+        },
+        {
+          "path": "agents/harmonia/agent.json",
+          "sha256": "23bfaa5c89b386a88d9ab0ca5f16e2f7b835f5ff2c81d4e5670635be3bc94ee6"
+        },
+        {
+          "path": "agents/harmonia/references/concurrent-issue.md",
+          "sha256": "7be0173427fa335f05d84835f7484f65dcfccb45174f918584a7a27dbddfcc45"
+        },
+        {
+          "path": "agents/harmonia/references/p4v.md",
+          "sha256": "f55e4090aad46f7c04df325bd1466c7e83e16c93f071ff2dd112822a09dfe040"
+        },
+        {
+          "path": "agents/harmonia/references/workflow.md",
+          "sha256": "ba00dce893f915c607b94898851acf34eb4f854c9c98a09dd61d4c3cd719b390"
+        },
+        {
+          "path": "agents/harmonia/reporting.json",
+          "sha256": "17e3a2648c8aebaa77f38d5e04b108b856f986e72b23e43d8d0e528fdd02025a"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "skills/ariadne/SKILL.md",
+          "sha256": "f89e784f8baca25ae714d15b01ac12cc3c0b1c94fcfbeff9ec340b7d58547ad6"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "da8752aa943fbf3fcd85632d43dcd0ba9920d981d36b4f3e5422aa567669d578"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "07cb5dc35fd8d05494ec6e106839989f7ef70e850494e201133b6068c87ac4da"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ],
+      "reporting": {
+        "schema_version": 1,
+        "component": {
+          "kind": "agent",
+          "id": "harmonia",
+          "version": "0.2.1",
+          "entry": "agents/harmonia/AGENT.md",
+          "entry_sha256": "f9571df0d1ab99b39440968ae8b19036406362b5e470423d765b19dbfb4e43bc"
+        },
+        "required": true,
+        "policy": "contracts/hermes-reporting.json",
+        "policy_id": "hermes-reporting-1",
+        "reporter": "tools/hermes-report.py",
+        "events": [
+          "request",
+          "step",
+          "message",
+          "direction_error",
+          "correction",
+          "quality_issue",
+          "rework",
+          "handoff",
+          "coverage",
+          "request_end"
+        ],
+        "runtime_binding": "host_required",
+        "runtime_connected": false,
+        "dependencies": {
+          "contracts/hermes-reporting.json": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f",
+          "tools/reporting.mjs": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659",
+          "tools/hermes-report.py": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84",
+          "agents/hermes/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
+          "agents/hermes/scripts/telemetry.py": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa",
+          "agents/hermes/references/data-contract.md": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5",
+          "agents/hermes/references/telemetry.md": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        }
+      },
+      "permit_status": "pending_independent_review",
+      "entry_characters": 1121,
+      "status": "pass",
+      "approval": false,
+      "review_independence": "independent_subagent_review"
+    }
+  ],
+  "source": {
+    "id": "gonggong-heqi-integration-25-frozen-v1",
+    "path": "work/heqi-integration-25/frozen-v1/framework",
+    "path_base": "GongGong workspace root",
+    "live_source_used": false,
+    "manifest_files_verified": 200,
+    "framework_files_verified": 182,
+    "heqi_version": "0.2.1",
+    "heqi_digest": "386d811bf881cd24ebbe87b5ed6c2f2e88bd1f4f786dedc31c5da0d165a2a553",
+    "source_admission_checked": true,
+    "source_admission_is_target_approval": false
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
+    "policy_version": "0.9.0",
+    "files": {
+      "FOUNDATION.md": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+      "foundation.lock.json": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1",
+      "AGENTS.md": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1",
+      "upstream/zeus/core.md": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29",
+      "upstream/zeus/agents/zeus.md": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689",
+      "skills/dike/SKILL.md": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a",
+      "contracts/admission-policy.json": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+    }
+  },
+  "review": {
+    "olympus_framework": "pass",
+    "zeus": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": {
+        "athena": 873,
+        "themis": 888,
+        "hermes": 825,
+        "harmonia": 1121
+      },
+      "rationale": "Agent entries keep role, trigger, authority, reporting and targeted references; long integration algorithms remain in Harmonia references. No extra permanent agent or duplicate state authority introduced."
+    },
+    "applicable_validation": "pass",
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
+    "unresolved": []
+  },
+  "zeus_evidence": {
+    "purpose": "Exact frozen 0.2.1 contribution-coordination release reaches Olympus as Harmonia; generic live 0.3.0 is deliberately outside this release.",
+    "truth": "Independent hash/parity/local checks, author-reported tests, historical 0.2.0 execution and new pending admissions remain separate evidence classes.",
+    "economy": "Existing shared Hermes, Ariadne, sync tool and local integrity mechanisms are reused; unchanged full behavior suites and Git fixtures are not repeated.",
+    "authority": "Zeus control remains in all four entries; account identity is not commit author, accessible paths are not permission, cross-worker local control is prohibited, and candidate integrity grants no runtime or remote rights.",
+    "adaptation": "Three explicit deterministic adapters protect data-collection and correct fixture layout/admission paths; exact hook counts fail on incompatible upstream changes.",
+    "continuity": "Frozen source/full mapping retained; old approvals remain recoverable at baseline, archived review/decision bytes preserved, 4 exemption files and 82 historical events unchanged; current candidate requires fresh approval."
+  },
+  "mapping": {
+    "status": "pass",
+    "heqi_to_harmonia": [
+      "heqi→harmonia",
+      "Heqi→Harmonia",
+      "HEQI→HARMONIA",
+      "合契→哈耳摩尼亚"
+    ],
+    "full_heqi_documents_checked": [
+      "agents/harmonia/AGENT.md",
+      "agents/harmonia/references/concurrent-issue.md",
+      "agents/harmonia/references/p4v.md",
+      "agents/harmonia/references/workflow.md"
+    ],
+    "new_adapters": [
+      {
+        "change": "Protect literal data-collection before data-collect→iris mapping",
+        "finding": "Preserves host evidence directory in names and content; reserved marker collisions rejected."
+      },
+      {
+        "change": "tests/test_hermes_host.py framework root",
+        "finding": "Replaces source workspace/framework lookup with package root after exact one-occurrence hook check; test adaptation only."
+      },
+      {
+        "change": "tests/test_runtime.py local evidence fixture",
+        "finding": "Moves three fixture references under reviews/local-admission and creates fixture directory; production approval validator and local_runtime remain unchanged."
+      }
+    ],
+    "additional_delta": "README Agent/skill counts derived from manifest instead of hardcoded three Agents.",
+    "files": {
+      "sync/gonggong_sync.py": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd",
+      "sync/names.json": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af",
+      "sync/local_runtime.py": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992",
+      "tests/test_hermes_host.py": "ab31cfa924b5f98d65d71bd9a4b1bae8c73c671d30b0438a50caf5b753159b00",
+      "tests/test_runtime.py": "822415fd79d20dfe3e5dc741f0654117c8bec28d0101fefaf92b5066e30a7304"
+    },
+    "full_parity": true,
+    "distribution_files": 154
+  },
+  "governance": {
+    "status": "pass",
+    "agent_control": "All four Agent definitions remain under Zeus and Dike; Harmonia does not replace business owner, reviewer or acceptance owner.",
+    "nonblocking": "Only affected file/integration/publication action pauses; safe authorized investigation, tests and independent candidates continue.",
+    "local_integrity": "runtime-lock checks package manifest/file set locally; no external source consultation required for installed integrity.",
+    "admission": "Each new pending permit binds exact candidate files/digest; formal validation rejects until separately issued real Olympus approval.",
+    "scope_required_by_policy": [
+      "local_agent_definition_only"
+    ],
+    "runtime_authority_granted": false,
+    "optional_modules": {
+      "ariadne": "Distributed but disabled, no registered sources/CLI; target module review remains separate.",
+      "git_issue": "Default disabled; source review not copied. Contract refers to reviews/git-issue-review.json, absent in this candidate. Do not enable based on this four-Agent review; target-specific admission and host binding required."
+    }
+  },
+  "reporting": {
+    "status": "pass",
+    "four_profiles": "Each component id/version/entry hash and every dependency hash independently verified; runtime_binding=host_required and runtime_connected=false.",
+    "dike_profile": "31e091c02deabdefe4f1096bfaa5c5238331a2a59cb272e2c7f6ed6e39693625",
+    "actual_runtime_or_delivery_receipt_created_by_reviewer": false,
+    "handoff": "Parent/receiving host records actual review event using authorized shared collection; no fabricated sent/consumed receipt."
+  },
+  "preservation": {
+    "hermes_exemption_files": {
+      "Olympus/extensions/hermes-files/event.schema.json": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c",
+      "Olympus/extensions/hermes-files/event.template.json": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
+      "Olympus/extensions/hermes-files/hermes_files.py": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071",
+      "Olympus/extensions/hermes-files/README.md": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+    },
+    "hermes_exemption_path_base": "repository_files",
+    "unchanged_historical_event_count": 82,
+    "baseline_git_head": "be278ecaccca9917f9a953ac5696673abe0c85dd",
+    "old_permits": [
+      {
+        "id": "athena",
+        "git_path": "Olympus/reviews/athena-admission.json",
+        "sha256": "42b4bd4aca03da41f0439c61a08b5ec131fbe3d2ffd63f88db1ec81e46ad75fa"
+      },
+      {
+        "id": "themis",
+        "git_path": "Olympus/reviews/themis-admission.json",
+        "sha256": "1a55dd0aad3d62779a4574dea3a0229b2f941647c5e584c5a2c58aad10a993e8"
+      },
+      {
+        "id": "hermes",
+        "git_path": "Olympus/reviews/hermes-admission.json",
+        "sha256": "a0c4f0ccac7946e2cd2e8c8329668015dc661908de3b727ecd6372863eac7243"
+      }
+    ],
+    "archive_finding": "data-collection/issue27-previous-local-admission contains two byte-identical prior review/decision records. Prior approved permit bodies are preserved in baseline Git, not in that directory.",
+    "submission_document_requirement": "Before submission, describe these actual preservation locations accurately or copy the three old permit bytes from baseline into data-collection. Do not overwrite pending/new permits with historical approvals."
+  },
+  "validation": {
+    "independent": [
+      {
+        "name": "sync/gonggong_sync.py check with explicit frozen source",
+        "exit_code": 0,
+        "result": {
+          "full_parity": true,
+          "source_integrity_verified": true,
+          "source_admission_verified": true,
+          "parity_scope": "shared_framework_excluding_explicit_hermes_file_exemption",
+          "preserved_exemption": "extensions/hermes-files/",
+          "source_files": 182,
+          "distribution_files": 154,
+          "upstream_version": "0.9.0"
+        }
+      },
+      {
+        "name": "tools/verify_framework.py --candidate",
+        "exit_code": 0,
+        "result": {
+          "framework_version": "0.9.0",
+          "agents": [
+            "athena",
+            "themis",
+            "hermes",
+            "harmonia"
+          ],
+          "skills_including_upstream": 10,
+          "foundation_unchanged": true,
+          "mode": "candidate",
+          "host_authority_authenticated": false
+        }
+      },
+      {
+        "name": "sync/local_runtime.py --root candidate",
+        "exit_code": 0,
+        "result": {
+          "local_integrity": true,
+          "external_source_required": false,
+          "upstream_currentness_checked": false,
+          "host_authority_authenticated": false
+        }
+      },
+      {
+        "name": "tools/verify_framework.py formal",
+        "exit_code": 1,
+        "expected": true,
+        "stderr": "Invalid admission status, event or phase",
+        "meaning": "New local permits are pending; expected admission gate, not candidate-review failure."
+      },
+      {
+        "name": "Independent sorted path/NUL/SHA/LF candidate digest, reporting hashes and pending permit file records",
+        "result": "pass"
+      },
+      {
+        "name": "Frozen source 200-file hashes, exact 4 Heqi document mapping, Hermes exemption and historical event bytes against Git HEAD",
+        "result": "pass"
+      },
+      {
+        "name": "Final 156-file package and candidate record rehash",
+        "result": "unchanged"
+      }
+    ],
+    "author_reported_not_rerun": {
+      "framework_python": 19,
+      "ariadne_node": 12,
+      "git_issue_python": 8,
+      "python_node_syntax": "pass",
+      "quality_ownership": "pass"
+    },
+    "historical_behavior": {
+      "version": "GongGong Heqi 0.2.0",
+      "evidence": "work/heqi-concurrency-25/validation/result.json",
+      "path_base": "GongGong workspace root",
+      "scope": "Previously observed actual local synthetic-author Git fixtures: independent merge preserves contributions; overlapping text resolved and tested; semantic incompatible combination detected and locally held; ancestor/drift identified. Heqi 0.2.1 algorithm unchanged review and exact target name mapping support scoped reuse.",
+      "not_claimed": [
+        "Harmonia 0.2.1 actual runtime",
+        "production multi-account authentication",
+        "new Olympus Agent activation"
+      ]
+    },
+    "scenarios": "scenarios.json",
+    "scenarios_path_base": "report_files",
+    "workspace_writes_in_target": false,
+    "git_mutations": false,
+    "remote_operations": false
+  },
+  "limitations": [
+    "This independent review is not a permit, authority authentication, production activation, commit, push or merge approval.",
+    "Receiving host must preserve this report's original bytes, supply its own real approval decision and references, and issue four permits matching current policy and these exact fingerprints; evaluator and approver must differ.",
+    "Official verification after permit issuance, actual Issue gate, collection/Git delivery checks and authorized push/readback remain receiver responsibilities.",
+    "Only fixed source 0.2.1 is reviewed; later generic source changes require a separate candidate and review.",
+    "Old source 0.2.0 behavior is reused only for unchanged algorithm semantics; no target runtime or authenticated multiple-worker exercise is claimed.",
+    "Optional Git Issue module and Ariadne distribution are not activated by four Agent definition permits; absent/pending target module admission and actual host binding remain explicit.",
+    "Archive wording must accurately distinguish two copied evidence files from three old permit bodies retained in Git, or add exact old permit copies before submission.",
+    "Installed local integrity is not proof of upstream currentness or real user identity; source index and lock are hashes, not signatures."
+  ]
+}

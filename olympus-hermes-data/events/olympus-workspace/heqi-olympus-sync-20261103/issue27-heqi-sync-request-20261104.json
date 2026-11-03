@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "heqi-olympus-sync-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codex-cross-workspace-handoff"
+  },
+  "event_id": "issue27-heqi-sync-request-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-03T16:10:18.205046+00:00",
+  "payload": {
+    "instruction": "User directed verified Gonggong Heqi result to Olympus framework sync; this event records the cross-chat handoff and fixed source, not a fresh source approval.",
+    "source_manifest": "data-collection/issue27-frozen-source.json",
+    "usage_reason": "Not supplied by host; no estimate",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "29dcca7c05ce00e2090af4701ae10626bf62dd1bf13561d15df26186077ca39c"
+}

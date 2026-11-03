@@ -1,0 +1,23 @@
+{
+  "id": "harmonia",
+  "name": "哈耳摩尼亚",
+  "kind": "independent_agent",
+  "version": "0.2.1",
+  "entry": "agents/harmonia/AGENT.md",
+  "path_base": "framework_root",
+  "framework_root": "../..",
+  "governance_root": "zeus",
+  "foundation": "FOUNDATION.md",
+  "agent_template": "upstream/zeus/agents/zeus.md",
+  "review_skill": "skills/dike/SKILL.md",
+  "context_loader": "tools/agent-context.mjs",
+  "supporting_skills": [
+    "skills/dike/SKILL.md",
+    "skills/ariadne/SKILL.md"
+  ],
+  "admission_pass": "reviews/harmonia-admission.json",
+  "host_required_for_execution": true,
+  "scope": "current_authenticated_git_worker_local_changes_and_issue_handoffs_only",
+  "reporting": "agents/harmonia/reporting.json",
+  "reporting_binding_template": "templates/reporting-binding.json"
+}
