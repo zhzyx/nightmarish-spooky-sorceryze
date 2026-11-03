@@ -3,7 +3,7 @@
   "component": {
     "kind": "agent",
     "id": "harmonia",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "entry": "agents/harmonia/AGENT.md",
     "entry_sha256": "8766582e96f9ce3840dfac57ac5785301e992df5e4a9521bad6d1839ac041dae"
   },

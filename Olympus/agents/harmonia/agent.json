@@ -2,7 +2,7 @@
   "id": "harmonia",
   "name": "哈耳摩尼亚",
   "kind": "independent_agent",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "entry": "agents/harmonia/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -15,7 +15,7 @@
     "skills/dike/SKILL.md",
     "skills/ariadne/SKILL.md"
   ],
-  "admission_pass": "reviews/harmonia-general-0.3.0.json",
+  "admission_pass": "reviews/request-intake-0.9.1-harmonia.json",
   "host_required_for_execution": true,
   "scope": "authorized_multi_worker_change_comparison_conflict_resolution_and_handoffs",
   "reporting": "agents/harmonia/reporting.json",

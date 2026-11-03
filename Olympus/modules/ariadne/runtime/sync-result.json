@@ -1,6 +1,6 @@
 {
   "event": {
-    "type": "scope.changed",
+    "type": "execution.finished",
     "reference": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25"
   },
   "updated": true,
@@ -14,7 +14,7 @@
   "sourceGaps": [],
   "externalAuthorityActions": [
     {
-      "action": "Verify external Issue/release status and read back any authorized transition at authoritative service",
+      "action": "Verify task acceptance and delivery at the bound authoritative source",
       "status": "not_executed"
     },
     {

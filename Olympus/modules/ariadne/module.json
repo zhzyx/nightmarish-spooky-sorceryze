@@ -1,7 +1,7 @@
 {
   "id": "ariadne",
   "name": "阿里阿德涅",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "kind": "core_agent_support",
   "layer": "olympus_core",
   "scope": "all_task_types_in_authorized_registered_sources",

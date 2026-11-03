@@ -18,7 +18,7 @@
     "agents/hermes/skills/demeter/SKILL.md",
     "agents/hermes/skills/apollo/SKILL.md"
   ],
-  "admission_pass": "reviews/core-agent-generalization/hermes-admission.json",
+  "admission_pass": "reviews/request-intake-0.9.1-hermes.json",
   "host_required_for_execution": true,
   "scope": "authorized_data_analysis_and_optimization_proposals_only",
   "reporting": "agents/hermes/reporting.json",
