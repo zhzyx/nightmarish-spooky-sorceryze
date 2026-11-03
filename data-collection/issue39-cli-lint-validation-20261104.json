@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/39",
+  "request_id": "codebuddy-cli-lint-20261104",
+  "observed_at": "2026-11-03T18:07:46.241615+00:00",
+  "host_git_account": "Sail-Li",
+  "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/11",
+  "source_review": {
+    "path": "data-collection/cli-ci-review-20261103.json",
+    "sha256": "f6be0b8c3de4ff4f3abbe8684c68692731dc06c27395125d666fd19b64028757",
+    "independent_verdict": "passed_scoped_review",
+    "exact_code_hashes_still_match": true
+  },
+  "scope": "CLI recovery prompt spelling and generated lockfile codespell exclusion; lockfile bytes unchanged",
+  "candidate_files": {
+    "pyproject.toml": "367f39020b1c417bc202eb7545aaa45701f71c7286451feb703542e8c24d10e9",
+    "tools/codebuddy_cli/godot_acp.js": "8f76a42acace2d40f34d75377b88c4da6114b870841a15ca606cff1b00adce69"
+  },
+  "checks": {
+    "codebuddy_bridge_acp_tests": "43 passed",
+    "codespell_2_4_2": "passed on CLI source/package files, lockfile and pyproject",
+    "repository_file_format": "passed on affected text files",
+    "formal_framework": "approved_file_integrity",
+    "hermes_validate": "passed"
+  },
+  "limitations": [
+    "Terminal suite was not rerun because this change does not alter terminal behavior.",
+    "Remote CI and merge must be recorded after publication."
+  ],
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

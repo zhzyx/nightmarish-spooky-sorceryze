@@ -26,7 +26,7 @@ function promptBlocks(input, initial, imageSupported = true) {
     const awaited = calls.find(call => call.id === last?.tool_call_id);
     if (!last || typeof last.content !== 'string' || last.role !== 'user' && !(resuming && ['build_engine', 'restart_engine', 'rollback_engine'].includes(awaited?.function?.name))) throw new Error('INVALID_REQUEST');
     const images = message => (message.images || []).map(image => ({ type: 'image', data: image.data, mimeType: image.mime_type }));
-    const blocks = resuming ? [{ type: 'text', text: 'Continue the interrupted conversation from the completed Godot host action. Read its result and verify the intended behaviour. Do not repeat the user task or rebuild the same change.' }] : last.content ? [{ type: 'text', text: last.content }] : [];
+    const blocks = resuming ? [{ type: 'text', text: 'Continue the interrupted conversation from the completed Godot host action. Read its result and verify the intended behavior. Do not repeat the user task or rebuild the same change.' }] : last.content ? [{ type: 'text', text: last.content }] : [];
     if (resuming) blocks.push({ type: 'resource', resource: { uri: 'godot://host/action-result', mimeType: 'application/json', text: JSON.stringify(last) } });
     if (initial && records.length > 1) {
         const history = records.slice(0, -1).map(message => ({ ...message, ...(message.images ? { images: message.images.map(({ data, ...metadata }) => metadata) } : {}) }));

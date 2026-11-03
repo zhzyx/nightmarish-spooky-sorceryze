@@ -1,0 +1,30 @@
+{
+  "tenant_id": "olympus-workspace",
+  "evidence_refs": [
+    "cli-ci-20261103-request"
+  ],
+  "occurred_at": "2026-11-02T17:20:58.6836226+00:00",
+  "kind": "step",
+  "request_id": "restore-repository-ci-20261102",
+  "event_id": "cli-ci-20261103-validation",
+  "payload": {
+    "framework": "Formal verify_framework passed against existing approved source; host authority not authenticated",
+    "output_tokens": null,
+    "tests_command": "node --test tests/editor/test_codebuddy_bridge.js tests/editor/test_codebuddy_acp.js",
+    "reason": "Host usage not supplied",
+    "input_tokens": null,
+    "static_checks": "codespell 2.4.2, file_format and git diff --check passed",
+    "limitations": "Terminal tests unavailable without Git Bash; GitHub issue creation/update returned 403; no supplier API calls, no remote CI or merge",
+    "description": "Fixed recovery prompt spelling and excluded only generated CLI lockfile from codespell; lockfile unchanged",
+    "tests_passed": 43
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/11",
+  "schema_version": 1,
+  "agent": {
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "id": "codex-root",
+    "origin": "codex-host-task",
+    "version": "host-version-not-reported"
+  },
+  "sha256": "3e0d08baa4c30d23deede3526b84e31619960b25212cae49a2fd85b38d85a28a"
+}

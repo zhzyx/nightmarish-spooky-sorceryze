@@ -1,0 +1,28 @@
+{
+  "tenant_id": "olympus-workspace",
+  "evidence_refs": [
+    "cli-ci-20261103-validation"
+  ],
+  "occurred_at": "2026-11-02T17:23:25.0225571+00:00",
+  "kind": "handoff",
+  "request_id": "restore-repository-ci-20261102",
+  "event_id": "cli-ci-20261103-review",
+  "payload": {
+    "git_state": "tracked_not_committed",
+    "output_tokens": null,
+    "description": "Independent scoped review by /root/cli_review passed; evidence data-collection/cli-ci-review-20261103.json",
+    "remote_issue_write": "403 Resource not accessible by integration",
+    "issue_gate": "Rejected: Explicit repository tenant_id binding required",
+    "reason": "Host usage not supplied",
+    "input_tokens": null
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/11",
+  "schema_version": 1,
+  "agent": {
+    "definition_sha256": "ed4719a9bce31b390c87b650556dd228cb25d86683b936fd5ee526bccfe3c044",
+    "id": "codex-root",
+    "origin": "codex-host-task",
+    "version": "host-version-not-reported"
+  },
+  "sha256": "3eb70ccbd41406e22c64c3a82cd49810d102eca65d6a21a1fe062d5546a4bb7a"
+}
