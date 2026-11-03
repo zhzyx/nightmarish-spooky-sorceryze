@@ -11,6 +11,10 @@ on:
         description: Validate only the Windows MSVC editor
         type: boolean
         default: false
+      consultation_build_run:
+        description: Successful Windows editor run to reuse for consultation native acceptance (no build)
+        type: string
+        default: ""
 
 # Global Settings
 env:
@@ -23,6 +27,7 @@ env:
 
 jobs:
   build-windows:
+    if: github.event_name != 'workflow_dispatch' || inputs.consultation_build_run == ''
     # Windows 10 with latest image
     runs-on: windows-latest
     name: ${{ matrix.name }}
@@ -110,3 +115,46 @@ jobs:
           ${{ matrix.bin }} --version
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
+
+  consultation-native:
+    if: github.event_name == 'workflow_dispatch' && inputs.consultation_build_run != ''
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Verify successful build and unchanged build inputs
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN: ${{ inputs.consultation_build_run }}
+        run: |
+          if ($env:BUILD_RUN -notmatch '^\d+$') { throw 'Numeric build run required' }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:BUILD_RUN" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $run.conclusion -ne 'success' -or $run.path -ne '.github/workflows/windows_builds.yml') { throw 'Successful Windows build required' }
+          $jobs = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:BUILD_RUN/jobs" | ConvertFrom-Json
+          if (-not ($jobs.jobs | Where-Object { $_.name -eq 'Editor (target=editor)' -and $_.conclusion -eq 'success' })) { throw 'Successful MSVC editor job required' }
+          $changes = @(git diff --name-only $run.head_sha HEAD)
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot compare build inputs' }
+          foreach ($file in $changes) {
+            if ($file -notmatch '^(data-collection/|design-docs/|olympus-hermes-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(consultation_only\.gd|run_consultation_only\.py)$)') { throw "Build input changed: $file" }
+          }
+          New-Item -ItemType Directory -Force native-report | Out-Null
+          @{ build_run = $env:BUILD_RUN; build_sha = $run.head_sha; test_sha = $env:GITHUB_SHA; allowed_nonbuild_changes = $changes } | ConvertTo-Json | Set-Content native-report/build-inputs.json
+          gh run download $env:BUILD_RUN --repo $env:GITHUB_REPOSITORY --name windows-editor --dir native-editor
+          if ($LASTEXITCODE -ne 0) { throw 'Artifact download failed' }
+      - name: Native consultation permission regression
+        run: python tests/editor/run_consultation_only.py --godot native-editor/godot.windows.editor.x86_64.exe --out native-report/consultation.json
+      - name: Upload native report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: consultation-native-report
+          path: native-report/*

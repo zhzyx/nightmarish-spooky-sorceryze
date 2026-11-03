@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/32",
+  "request_id": "issue-20261104-002257",
+  "observed_at": "2026-11-03T17:41:00.296830+00:00",
+  "build_run": 41681730192,
+  "build_sha": "a7fe1b00616915a60d8a923ded43a1d273286ee5",
+  "native_run": 41685815159,
+  "test_sha": "84bdcb115bcc94525024a59969a5cc5300a522a8",
+  "native_result": "success",
+  "static_run": 41685821752,
+  "static_result": "success",
+  "artifact_name": "consultation-native-report",
+  "source_reports": {
+    "build-inputs.json": {
+      "sha256": "debbf8a2a59057dbd82c7b6a02d63c43140b8cbd2553ec60452c927178389b8a",
+      "text": "{\n  \"allowed_nonbuild_changes\": [\n    \".github/workflows/windows_builds.yml\",\n    \"data-collection/issue32-build-review-20261104.json\",\n    \"design-docs/issue-20261104-002257.md\",\n    \"olympus-hermes-data/events/olympus-workspace/issue-20261104-002257/issue32-build-review-20261104.json\",\n    \"tests/editor/run_consultation_only.py\"\n  ],\n  \"build_sha\": \"a7fe1b00616915a60d8a923ded43a1d273286ee5\",\n  \"test_sha\": \"84bdcb115bcc94525024a59969a5cc5300a522a8\",\n  \"build_run\": \"41681730192\"\n}\n"
+    },
+    "consultation.json": {
+      "sha256": "b4a8df28c797bb616aeb43a11251779dcdb72487d5eb9335b0831a26585ef0bc",
+      "text": "{\n  \"ok\": true,\n  \"editor_sha256\": \"a2fe538d064b61311deef2a6876dc054ea76bf90ebb7a204b284935d20c0f845\",\n  \"requests\": [\n    {\n      \"prompt\": \"CONSULTATION_ATTACK\",\n      \"tool_results\": 0\n    },\n    {\n      \"prompt\": \"CONSULTATION_ATTACK\",\n      \"tool_results\": 8\n    },\n    {\n      \"prompt\": \"CONSULTATION_ATTACK\",\n      \"tool_results\": 9\n    },\n    {\n      \"prompt\": \"CLI_MUST_NOT_START\",\n      \"tool_results\": 0\n    }\n  ],\n  \"denied_tools\": 8,\n  \"read_result\": \"verified\",\n  \"issue_monitoring\": \"No configured workspace/host; no workspace created; code path reviewed. Not a global API spy.\",\n  \"fixture_events_imported\": false\n}\n"
+    },
+    "consultation.stderr.log": {
+      "sha256": "17ec52193232c92f0f91a39d45424f89b0ba14ea11b76e51b782ecb73e4c62d2",
+      "text": "WARNING: 5 RIDs of type \"Canvas\" were leaked.\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\nWARNING: 174 RIDs of type \"CanvasItem\" were leaked.\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\nWARNING: 745 ObjectDB instances were leaked at exit (run with `--verbose` for details).\n   at: ObjectDB::cleanup (core\\object\\object.cpp:2609)\n"
+    },
+    "consultation.stdout.log": {
+      "sha256": "39b45a39bd54544ef92b8cff92d2a0915819dcafa89398ef7cf65d0f617e9ba4",
+      "text": "Godot Engine v4.8.beta.gh.a7fe1b006 (2026-11-03 17:10:55 UTC) - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading docks...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\nCONSULTATION_NATIVE_OK\nERROR: 5 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.\nERROR: 12 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.\nERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.\nERROR: 728 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.\nERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.\nERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.\nERROR: 121 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.\n"
+    }
+  },
+  "integrated_main": "813eff14207d69a262416512b90341520137b09c",
+  "build_input_reuse": "Main merge changes framework/sync, immutable evidence and distribution checks; editor/core/scene/servers/platform/modules/thirdparty/SConstruct/SConscript/methods.py have no staged differences. The three implementation C++ inputs remain byte-identical to the tested build. Framework final gate must run on integrated candidate.",
+  "limitations": [
+    "API backend only; native CLI consultation explicitly refused",
+    "Loopback simulated model only; no live supplier acceptance",
+    "Native process exited 0 and fixture marker passed, but RID/ObjectDB leak warnings/errors occurred at editor shutdown; no long-duration stability claim",
+    "No actual global GitHub API spy; absence of Issue operations supported by host code review and unconfigured-workspace/runtime test"
+  ],
+  "input_tokens": null,
+  "output_tokens": null
+}

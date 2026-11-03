@@ -46,6 +46,9 @@
 #include "scene/main/timer.h"
 
 bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, const String &p_status) {
+	if (consultation_turn) {
+		return true;
+	}
 	if (olympus_reporting.is_empty()) {
 		return false;
 	}
@@ -103,6 +106,12 @@ bool AIChatDock::_record_olympus(const String &p_kind, const String &p_phase, co
 }
 
 void AIChatDock::_flush_olympus(const Callable &p_continuation) {
+	if (consultation_turn) {
+		if (p_continuation.is_valid()) {
+			p_continuation.call();
+		}
+		return;
+	}
 	olympus_receipt_continuation = p_continuation;
 	olympus_continuation_generation = session_generation;
 	olympus_receipt_reflush = olympus_receipt_pid >= 0;
@@ -154,6 +163,9 @@ void AIChatDock::_poll_olympus_receipt() {
 }
 
 void AIChatDock::_end_olympus(const String &p_status) {
+	if (consultation_turn) {
+		return;
+	}
 	if (olympus_reporting.is_empty()) {
 		return;
 	}

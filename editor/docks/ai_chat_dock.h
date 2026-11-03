@@ -196,6 +196,8 @@ class AIChatDock : public EditorDock {
 	uint64_t turn_started = 0;
 	int turn_steps = 0;
 	TextEdit *input = nullptr;
+	CheckBox *consultation_only = nullptr;
+	bool consultation_turn = false;
 	Button *send_button = nullptr;
 	Button *stop_button = nullptr;
 	String snapshot_id;
