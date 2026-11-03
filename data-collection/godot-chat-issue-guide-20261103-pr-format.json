@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "appends": "data-collection/godot-chat-issue-guide-20261103-gh-login.json",
+  "user_instructions": [
+    "先不用 现在的所有更改提到仓库吧",
+    "pr是什么？",
+    "自动做啊"
+  ],
+  "publication": {
+    "branch_pushed": "codex/godot-chat-issue-guide-20261103",
+    "pushed_head": "33e794b9338a1cc182ed465b4c06a8c160178e71",
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/23",
+    "base": "main",
+    "linkage": "Refs #22 (no closing keyword; acceptance pending)",
+    "merged": false
+  },
+  "ci_findings": {
+    "issue_association": "pass",
+    "static_checks_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41657802227",
+    "static_checks_result": "failure",
+    "failed_hooks": ["clang-format", "ruff-format"],
+    "other_hooks": "ruff check, mypy, codespell, validate-includes, copyright-headers, header-guards, file-format and Olympus offline snapshot integrity passed in the same run",
+    "affected": [
+      "editor/docks/ai_chat_olympus.cpp: ternary continuation alignment only (git diff -w is empty)",
+      "customizations/components/godot-host/test_issue_guide.py: string quote style only"
+    ]
+  },
+  "fix": {
+    "tools": "clang-format 22.1.5 and ruff 0.17.1, matching .pre-commit-config.yaml revs, installed in a temporary venv",
+    "file_sha256": {
+      "editor/docks/ai_chat_olympus.cpp": "9cbad6355b9139fae85d9cb5b41f93d51826c20e114cc8723d1fbf430b1d459c",
+      "customizations/components/godot-host/test_issue_guide.py": "05edffca29fe932468a1c980ffe0227df63a4303110c08db8a4d4f5fce469fdc"
+    },
+    "supersedes_hashes_in": "data-collection/godot-chat-issue-guide-20261103-gh-login.json (these two files only)"
+  },
+  "validation": [
+    {"check": "clang-format --dry-run --Werror editor/docks/ai_chat_olympus.cpp", "result": "passed"},
+    {"check": "ruff format --check customizations tests/editor/run_olympus_chat_gate.py", "result": "passed", "files": 18},
+    {"check": "python -m unittest test_issue_guide (TMPDIR=/private/tmp)", "result": "passed", "tests": 12}
+  ],
+  "evidence_reuse": "C++ change is whitespace-only, so the earlier build, native AIChat tests and editor scenarios recorded in the gh-login source are reused without rebuilding; CI static checks will rerun on the pushed fix.",
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}

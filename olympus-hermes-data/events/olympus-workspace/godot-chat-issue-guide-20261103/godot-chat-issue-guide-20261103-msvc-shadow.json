@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "event_id": "godot-chat-issue-guide-20261103-msvc-shadow",
+  "kind": "step",
+  "occurred_at": "2026-11-03T15:34:38+00:00",
+  "payload": {
+    "description": "User authorized merging PR #23; merge held because Windows MSVC editor builds failed on e11deae3 (local 'title' hides EditorDock::title, warning as error). Renamed the local to issue_title; macOS rebuild, AIChat native tests 18/199 and the issue_guide editor scenario pass. MSVC result pending CI.",
+    "source_files": [
+      "data-collection/godot-chat-issue-guide-20261103-msvc-shadow.json"
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+  },
+  "evidence_refs": [
+    "godot-chat-issue-guide-20261103-pr-format"
+  ],
+  "sha256": "7570499c8e3c0da039179c9e53b84c10012113e3d732f2a195d10ba8b4b60296"
+}

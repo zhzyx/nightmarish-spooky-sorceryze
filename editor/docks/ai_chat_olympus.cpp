@@ -35,7 +35,9 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/olympus_panel.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
@@ -228,6 +230,11 @@ void AIChatDock::_begin_olympus_context() {
 			break;
 		}
 	}
+	const int64_t bound_issue = String(EDITOR_GET("olympus/issue_number")).to_int();
+	const String bound_request = String(EDITOR_GET("olympus/request_id")).strip_edges();
+	if (!AIChatIssueGuide::is_bound(bound_issue, bound_request) && _start_issue_guide()) {
+		return;
+	}
 	Dictionary context_input;
 	Dictionary host;
 	host["id"] = "godot-editor";
@@ -312,10 +319,28 @@ void AIChatDock::_poll_olympus_context() {
 		return; // Late accepted context must never resume a cancelled request.
 	}
 	if (result.get("ok", false).get_type() != Variant::BOOL || !bool(result.get("ok", false)) || String(result.get("context", "")).is_empty() || olympus_reporting.is_empty()) {
+		const String error = result.get("error", U"校验进程没有返回有效上下文。");
+		if (issue_guide_state == "retrying") {
+			// A guided binding that intake rejects keeps the conversation in the guide.
+			set_meta("olympus_status", "issue_guide");
+			issue_guide_state = "await_status";
+			_append(TTR("Error"), String(U"Olympus 入口校验未通过：") + error);
+			_issue_guide_prompt();
+			_set_busy(false);
+			return;
+		}
+		if (AIChatIssueGuide::is_binding_error(error) && _start_issue_guide()) {
+			return;
+		}
 		set_meta("olympus_status", "blocked");
-		_append(TTR("Error"), String(U"Olympus 阻止本次发送：") + String(result.get("error", U"校验进程没有返回有效上下文。")));
+		_append(TTR("Error"), String(U"Olympus 阻止本次发送：") + error);
 		_set_busy(false);
 		return;
+	}
+	if (issue_guide_state == "retrying") {
+		issue_guide_state = String();
+		issue_guide_fields.clear();
+		issue_guide_outcome = String();
 	}
 	olympus_context = result["context"];
 	set_meta("olympus_status", "context_ready");
@@ -328,5 +353,347 @@ void AIChatDock::_poll_olympus_context() {
 		return;
 	}
 	olympus_resume = true;
+	_request_completion();
+}
+
+static String last_user_content(const Array &p_messages) {
+	for (int i = p_messages.size() - 1; i >= 0; i--) {
+		const Dictionary message = p_messages[i];
+		if (String(message.get("role", "")) == "user") {
+			return message.get("content", "");
+		}
+	}
+	return String();
+}
+
+static String guide_state_before(const String &p_action) {
+	if (p_action == "issue-draft") {
+		return "request_id";
+	}
+	return p_action == "issue-create" ? "confirm" : "await_status";
+}
+
+bool AIChatDock::_start_issue_guide() {
+	if (scheduled_agents.has(active_agent) || !olympus_recovered_result.is_empty()) {
+		return false; // Unattended and recovery turns keep the fail-closed rejection.
+	}
+	const String outcome = last_user_content(messages);
+	if (outcome.strip_edges().is_empty()) {
+		return false;
+	}
+	_cancel_issue_guide(String());
+	issue_guide_outcome = outcome;
+	issue_guide_state = "choose";
+	set_meta("olympus_status", "issue_guide");
+	_issue_guide_prompt();
+	_set_busy(false);
+	return true;
+}
+
+void AIChatDock::_issue_guide_prompt() {
+	String text;
+	if (issue_guide_state == "choose") {
+		text = U"Olympus 需要先绑定本仓库的真实工单（GitHub Issue），才会把消息交给模型。这条消息已保留，绑定后会自动继续，无需重发。\n\n"
+			   U"- 复用已有工单：回复 `#编号 需求ID`，例如 `#22 godot-chat-issue-guide-20261103`\n"
+			   U"- 新建工单：回复 `新建`\n"
+			   U"- 放弃：回复 `取消`\n\n"
+			   U"工单引导由编辑器本地处理，不调用模型或工具。";
+	} else if (issue_guide_state == "category") {
+		text = U"新建工单 1/3 · 选择类别（回复序号或名称）：";
+		for (int i = 0; i < issue_guide_categories.size(); i++) {
+			const Dictionary category = issue_guide_categories[i];
+			text += vformat(U"\n%d. `%s` %s", i + 1, String(category["name"]), String(category.get("description", "")));
+		}
+	} else if (issue_guide_state == "title") {
+		text = String(U"新建工单 2/3 · 回复 Issue 标题（单行，最长 120 字），或回复 `默认` 使用：\n\n> ") + String(issue_guide_fields["title_suggestion"]);
+	} else if (issue_guide_state == "request_id") {
+		text = String(U"新建工单 3/3 · 回复稳定需求 ID（小写字母、数字和连字符，最长 80），或回复 `默认` 使用：`") + String(issue_guide_fields["request_id_suggestion"]) + "`";
+	} else if (issue_guide_state == "confirm") {
+		PackedStringArray labels;
+		for (const Variant &label : Array(issue_guide_fields.get("labels", Array()))) {
+			labels.push_back("`" + String(label) + "`");
+		}
+		text = vformat(U"已生成需求文档 `%s`，其中包含本次消息原文，请先审查并脱敏；它需要随实现一起提交。\n\n将在 `%s` 创建 Issue：\n- 标题：%s\n- 标签：%s\n\n回复 `确认` 创建；回复 `取消` 放弃（需求文档保留在本地，可手动删除）。",
+				String(issue_guide_fields["document"]), String(issue_guide_fields["repository"]), String(issue_guide_fields["title"]), String(U"、").join(labels));
+		if (!bool(issue_guide_fields.get("gh_available", false))) {
+			text += U"\n\n注意：本机未找到 GitHub CLI（gh），确认后会给出可在其他环境执行的创建命令。";
+		} else if (!bool(issue_guide_fields.get("gh_authenticated", false))) {
+			text += "\n\n" + AIChatIssueGuide::gh_login_text(issue_guide_fields.get("gh_login_command", ""), U"确认");
+		}
+	} else if (issue_guide_state == "await_status") {
+		text = vformat(U"已绑定工单 #%d（`%s`）。门禁要求工单为 `status:in-progress` 或 `status:in-review`，且带 `workspace:olympus` 标签；新工单默认为 `status:needs-decision`，是否开工需人工决定。\n\n"
+					   U"- 确认开工：回复 `开始`，编辑器将把状态从待判断/计划中改为 `status:in-progress`，再用原消息继续\n"
+					   U"- 已在 GitHub 修改：回复 `已更新`\n"
+					   U"- 改绑其他工单：回复 `#编号 需求ID`\n"
+					   U"- 放弃：回复 `取消`",
+				int64_t(issue_guide_fields.get("issue_number", 0)), String(issue_guide_fields.get("request_id", "")));
+	}
+	if (!text.is_empty()) {
+		_append(TTR("Editor"), text);
+	}
+}
+
+void AIChatDock::_issue_guide_reply(const String &p_text) {
+	if (AIChatIssueGuide::is_cancel(p_text)) {
+		_cancel_issue_guide(U"已退出工单引导。原消息仍保留在会话里；绑定工单后再发送消息即可继续。");
+		return;
+	}
+	if (issue_guide_pid >= 0) {
+		_append(TTR("Editor"), U"工单引导正在处理上一步，请稍候；回复 `取消` 可放弃。");
+		return;
+	}
+	if (issue_guide_state == "retrying") {
+		issue_guide_state = "await_status"; // The retry ended before reaching intake.
+	}
+	int64_t number = 0;
+	String request_id;
+	if (AIChatIssueGuide::parse_binding(p_text, number, request_id)) {
+		_issue_guide_bind(number, request_id);
+		_issue_guide_retry();
+		return;
+	}
+	const String text = p_text.strip_edges();
+	if (issue_guide_state == "choose") {
+		if (AIChatIssueGuide::is_create(text)) {
+			const String labels = String(EDITOR_GET("olympus/workspace")).path_join(".github/labels.json");
+			issue_guide_categories = AIChatIssueGuide::categories_from_labels(FileAccess::exists(labels) ? JSON::parse_string(FileAccess::get_file_as_string(labels)) : Variant());
+			if (issue_guide_categories.is_empty()) {
+				_append(TTR("Error"), U"无法从工作区 `.github/labels.json` 读取任务类别，不能在此新建工单；可回复 `#编号 需求ID` 复用已有工单。");
+				return;
+			}
+			issue_guide_state = "category";
+		} else if (AIChatIssueGuide::is_reuse(text)) {
+			_append(TTR("Editor"), U"请回复 `#编号 需求ID`。需求 ID 是工单正文中 `<!-- olympus-request:… -->` 标记或“稳定需求 ID”字段的值。");
+			return;
+		}
+	} else if (issue_guide_state == "category") {
+		const String category = AIChatIssueGuide::category_from_reply(text, issue_guide_categories);
+		if (category.is_empty()) {
+			_append(TTR("Error"), U"未识别的类别。");
+		} else {
+			issue_guide_fields["category"] = category;
+			issue_guide_fields["title_suggestion"] = AIChatIssueGuide::suggest_title(issue_guide_outcome);
+			issue_guide_state = "title";
+		}
+	} else if (issue_guide_state == "title") {
+		const String issue_title = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["title_suggestion"]) : text;
+		if (issue_title.contains("\n") || issue_title.contains("\r") || issue_title.length() > AIChatIssueGuide::MAX_TITLE) {
+			_append(TTR("Error"), U"标题需为单行，且不超过 120 字。");
+		} else {
+			issue_guide_fields["title"] = issue_title;
+			const String stamp = Time::get_singleton()->get_datetime_string_from_system().replace("-", "").replace(":", "").replace("T", "-");
+			issue_guide_fields["request_id_suggestion"] = AIChatIssueGuide::suggest_request_id(issue_title, stamp);
+			issue_guide_state = "request_id";
+		}
+	} else if (issue_guide_state == "request_id") {
+		const String id = AIChatIssueGuide::is_default(text) ? String(issue_guide_fields["request_id_suggestion"]) : text;
+		if (!AIChatIssueGuide::is_request_id(id)) {
+			_append(TTR("Error"), U"需求 ID 只能包含小写字母、数字和单个连字符，且不能以连字符开头或结尾。");
+		} else {
+			issue_guide_fields["request_id"] = id;
+			Dictionary draft;
+			draft["request_id"] = id;
+			draft["title"] = issue_guide_fields["title"];
+			draft["category"] = issue_guide_fields["category"];
+			draft["outcome"] = issue_guide_outcome;
+			_issue_guide_run("issue-draft", draft);
+			return;
+		}
+	} else if (issue_guide_state == "confirm") {
+		if (AIChatIssueGuide::is_confirm(text)) {
+			Dictionary create;
+			create["request_id"] = issue_guide_fields["request_id"];
+			create["title"] = issue_guide_fields["title"];
+			create["category"] = issue_guide_fields["category"];
+			create["outcome"] = issue_guide_outcome;
+			_issue_guide_run("issue-create", create);
+			return;
+		}
+	} else if (issue_guide_state == "await_status") {
+		if (AIChatIssueGuide::is_start(text)) {
+			Dictionary start;
+			start["issue_number"] = issue_guide_fields.get("issue_number", 0);
+			start["request_id"] = issue_guide_fields.get("request_id", "");
+			_issue_guide_run("issue-start", start);
+			return;
+		}
+		if (AIChatIssueGuide::is_retry(text)) {
+			_issue_guide_retry();
+			return;
+		}
+	}
+	_issue_guide_prompt();
+}
+
+void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_request) {
+	const String root = EDITOR_GET("olympus/workspace");
+	const String python = EDITOR_GET("olympus/python");
+	const String bridge = root.path_join("tools/olympus_bridge.py");
+	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
+		_append(TTR("Error"), U"Olympus 未配置：请在 Olympus 页设置工作区和 Python。");
+		return;
+	}
+	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("olympus-issue-guide-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
+	issue_guide_input_path = prefix + ".request.json";
+	issue_guide_output_path = prefix + ".result.json";
+	Ref<FileAccess> file = FileAccess::open(issue_guide_input_path, FileAccess::WRITE);
+	if (file.is_null()) {
+		_append(TTR("Error"), U"无法保存工单引导请求。");
+		return;
+	}
+	file->store_string(JSON::stringify(p_request));
+	file.unref();
+	List<String> args;
+	for (const String &argument : { bridge, p_action, String("--workspace"), root, String("--tenant"), String(EDITOR_GET("olympus/tenant")), String("--request"), issue_guide_input_path, String("--out"), issue_guide_output_path }) {
+		args.push_back(argument);
+	}
+	ProcessID pid = 0;
+	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+		_clear_issue_guide_files();
+		_append(TTR("Error"), U"无法启动 Olympus 桥接，请检查 Python 路径。");
+		return;
+	}
+	issue_guide_pid = pid;
+	issue_guide_action = p_action;
+	issue_guide_run_generation = issue_guide_generation;
+	issue_guide_state = p_action == "issue-draft" ? "drafting" : p_action == "issue-create" ? "creating"
+																							: "starting";
+	if (!issue_guide_timer) {
+		issue_guide_timer = memnew(Timer);
+		issue_guide_timer->set_wait_time(0.1);
+		issue_guide_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_issue_guide));
+		add_child(issue_guide_timer);
+	}
+	issue_guide_timer->start();
+	_append(TTR("Editor"), p_action == "issue-draft" ? String(U"正在生成需求文档并预览 Issue…") : p_action == "issue-create" ? String(U"正在 GitHub 创建 Issue…")
+																															 : String(U"正在更新工单状态…"));
+}
+
+void AIChatDock::_poll_issue_guide() {
+	if (OS::get_singleton()->is_process_running(issue_guide_pid)) {
+		return;
+	}
+	issue_guide_timer->stop();
+	issue_guide_pid = -1;
+	Variant parsed;
+	if (FileAccess::exists(issue_guide_output_path)) {
+		parsed = JSON::parse_string(FileAccess::get_file_as_string(issue_guide_output_path));
+	}
+	_clear_issue_guide_files();
+	if (issue_guide_run_generation != issue_guide_generation || issue_guide_state.is_empty()) {
+		return; // A cancelled guide never applies a late result.
+	}
+	Dictionary result;
+	if (parsed.get_type() == Variant::DICTIONARY) {
+		result = parsed;
+	}
+	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	const String error = result.get("error", U"桥接进程没有返回有效结果。");
+	issue_guide_state = guide_state_before(issue_guide_action);
+	if (issue_guide_action == "issue-draft") {
+		if (!ok) {
+			_append(TTR("Error"), String(U"需求文档生成失败：") + error);
+		} else {
+			for (const String &key : { String("document"), String("repository"), String("labels"), String("gh_available"), String("gh_authenticated"), String("gh_login_command") }) {
+				issue_guide_fields[key] = result.get(key, Variant());
+			}
+			issue_guide_state = "confirm";
+		}
+		_issue_guide_prompt();
+	} else if (issue_guide_action == "issue-create") {
+		const int64_t number = ok ? int64_t(result.get("number", 0)) : 0;
+		if (ok && number >= 1) {
+			_issue_guide_bind(number, issue_guide_fields["request_id"]);
+			const String found = String(result.get("state", "")) == "existing" ? String(U"找到同一需求 ID 的已有") : String(U"已创建");
+			_append(TTR("Editor"), vformat(U"%s Issue #%d：%s ，并已写入 Olympus 页绑定。", found, number, String(result.get("url", ""))));
+			issue_guide_state = "await_status";
+			_issue_guide_prompt();
+		} else if (error == "gh_unavailable") {
+			_append(TTR("Error"), String(U"本机未找到 GitHub CLI（gh），未创建远程 Issue。可在有仓库写权限的环境中于工作区根目录执行：\n\n```\n") + String(result.get("command", "")) + "\n```\n\n" + vformat(U"创建后回复 `#编号 %s` 绑定；或安装并登录 gh 后回复 `确认` 重试。", String(issue_guide_fields["request_id"])));
+		} else if (error == "gh_unauthenticated") {
+			issue_guide_fields["gh_authenticated"] = false;
+			issue_guide_fields["gh_login_command"] = result.get("login_command", "");
+			_append(TTR("Error"), String(U"未创建远程 Issue。") + AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"确认") + vformat(U"\n\n也可在其他已登录环境于工作区根目录执行下列命令，创建后回复 `#编号 %s` 绑定：\n\n```\n", String(issue_guide_fields["request_id"])) + String(result.get("command", "")) + "\n```");
+		} else {
+			_append(TTR("Error"), String(U"创建 Issue 失败，未绑定：") + error);
+			_issue_guide_prompt();
+		}
+	} else {
+		if (ok) {
+			_append(TTR("Editor"), vformat(U"工单 #%d 状态为 `%s`。", int64_t(issue_guide_fields.get("issue_number", 0)), String(result.get("status", ""))));
+			_issue_guide_retry();
+		} else if (error == "gh_unauthenticated") {
+			_append(TTR("Error"), String(U"未更新工单状态。") + AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"开始") + U"\n\n也可在 GitHub 网页上修改状态后回复 `已更新`。");
+		} else {
+			_append(TTR("Error"), String(U"更新工单状态失败：") + (error == "gh_unavailable" ? String(U"本机未找到 GitHub CLI（gh），请在 GitHub 上修改后回复 `已更新`。") : error));
+			_issue_guide_prompt();
+		}
+	}
+}
+
+void AIChatDock::_clear_issue_guide_files() {
+	for (const String &path : { issue_guide_input_path, issue_guide_output_path }) {
+		if (!path.is_empty() && FileAccess::exists(path)) {
+			DirAccess::remove_absolute(path);
+		}
+	}
+	issue_guide_input_path = String();
+	issue_guide_output_path = String();
+}
+
+void AIChatDock::_cancel_issue_guide(const String &p_notice) {
+	const bool active = !issue_guide_state.is_empty() || issue_guide_pid >= 0;
+	issue_guide_generation++;
+	if (issue_guide_pid >= 0) {
+		if (OS::get_singleton()->is_process_running(issue_guide_pid)) {
+			OS::get_singleton()->kill(issue_guide_pid);
+		}
+		issue_guide_pid = -1;
+	}
+	if (issue_guide_timer) {
+		issue_guide_timer->stop();
+	}
+	_clear_issue_guide_files();
+	issue_guide_state = String();
+	issue_guide_fields.clear();
+	issue_guide_outcome = String();
+	issue_guide_categories.clear();
+	if (!active) {
+		return;
+	}
+	set_meta("olympus_status", "issue_guide_cancelled");
+	if (!p_notice.is_empty()) {
+		_append(TTR("Editor"), p_notice);
+	}
+}
+
+void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
+	EditorSettings::get_singleton()->set("olympus/issue_number", itos(p_number));
+	EditorSettings::get_singleton()->set("olympus/request_id", p_request_id);
+	EditorSettings::save();
+	if (olympus_panel) {
+		olympus_panel->reload_issue_binding();
+	}
+	issue_guide_fields["issue_number"] = p_number;
+	issue_guide_fields["request_id"] = p_request_id;
+}
+
+void AIChatDock::_issue_guide_retry() {
+	if (busy) {
+		return;
+	}
+	if (last_user_content(messages).strip_edges().is_empty()) {
+		_cancel_issue_guide(U"工单已绑定，但原消息已不在当前会话中，请重新发送。");
+		return;
+	}
+	issue_guide_state = "retrying";
+	_append(TTR("Editor"), vformat(U"已绑定工单 #%d（`%s`），正在用原消息重新进行 Olympus 入口校验。", int64_t(issue_guide_fields.get("issue_number", 0)), String(issue_guide_fields.get("request_id", ""))));
+	// Same paused turn: the original user message is still the last entry in `messages`.
+	_begin_reply();
+	turn_completed = false;
+	tool_rounds = 0;
+	turn_model_requests = 0;
+	session_generation++;
+	_set_busy(true);
 	_request_completion();
 }

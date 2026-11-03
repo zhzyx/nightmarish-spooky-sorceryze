@@ -95,6 +95,8 @@ class WorkItemTests(unittest.TestCase):
             body = Path(args[args.index("--body-file") + 1]).read_text(encoding="utf-8")
             self.assertIn("<!-- olympus-request:req-1 -->", body)
             self.assertIn("# Actual requirement", body)
+            labels = [args[i + 1] for i, v in enumerate(args) if v == "--label"]
+            self.assertEqual(labels, ["type:design", "status:needs-decision", "workspace:olympus"])
             return "https://github.com/test/repo/issues/2"
 
         with patch.object(module, "gh", side_effect=fake):

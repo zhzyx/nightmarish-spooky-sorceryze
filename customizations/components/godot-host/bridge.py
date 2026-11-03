@@ -2,9 +2,11 @@
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -104,8 +106,25 @@ def enqueue(root, event):
     temporary.replace(pending)
 
 
+def find_gh(env):
+    """GUI-launched hosts often lack the user's shell PATH; never guess beyond fixed install locations."""
+    configured = env.get("OLYMPUS_GH")
+    if configured:
+        return configured if Path(configured).is_file() else None
+    found = shutil.which("gh", path=env.get("PATH"))
+    if found:
+        return found
+    for candidate in (Path.home() / ".local/bin/gh", Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")):
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
 def host_environment(root):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", OLYMPUS_PYTHON=sys.executable)
+    gh = find_gh(env)
+    if gh:
+        env["OLYMPUS_GH"] = gh
     node = env.get("OLYMPUS_NODE")
     if not node and (root / "project/runtime/node/node.exe").is_file():
         node = str(root / "project/runtime/node/node.exe")
@@ -279,7 +298,7 @@ def chat(root, request, tenant):
             "source_ref": issue["url"],
             "agent": {
                 "id": "olympus-host-adapter",
-                "version": "1.1.0",
+                "version": "1.2.1",
                 "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 "origin": "olympus-host-adapter",
             },
@@ -371,6 +390,214 @@ def admission_record_status(framework, agent):
         return "invalid_or_unavailable"
 
 
+REQUEST_ID = r"[a-z0-9]+(?:-[a-z0-9]+)*"
+STARTABLE_STATUSES = ("status:needs-decision", "status:planned")
+ACTIVE_STATUSES = ("status:in-progress", "status:in-review")
+
+
+def work_items_module(root):
+    path = root / "customizations/components/issue-workorders/work_items.py"
+    spec = importlib.util.spec_from_file_location("olympus_work_items", path)
+    if spec is None or spec.loader is None:
+        raise ValueError("Issue work-order adapter is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def guide_fields(root, request):
+    """Host-side Issue guide input; it is not a model request and grants no execution."""
+    module = work_items_module(root)
+    settings, labels = module.config(root)
+    request_id = request.get("request_id")
+    if not isinstance(request_id, str) or len(request_id) > 80 or not re.fullmatch(REQUEST_ID, request_id):
+        raise ValueError("Invalid stable request ID")
+    fields = {"request_id": request_id}
+    for name, limit in (("title", 120), ("category", 40), ("outcome", 16000)):
+        value = request.get(name)
+        if not isinstance(value, str) or not value.strip() or len(value) > limit:
+            raise ValueError("Missing or oversized Issue guide field: " + name)
+        fields[name] = value.strip()
+    if "\n" in fields["title"] or "\r" in fields["title"]:
+        raise ValueError("Issue title must be a single line")
+    if "type:" + fields["category"] not in {item["name"] for item in labels}:
+        raise ValueError("Unknown task category")
+    fields["document"] = "design-docs/" + request_id + ".md"
+    return module, settings, fields
+
+
+def requirement_document(fields):
+    quoted = "\n".join("> " + line if line else ">" for line in fields["outcome"].splitlines())
+    return (
+        f"# {fields['title']}\n\n"
+        f"<!-- olympus-request:{fields['request_id']} -->\n\n"
+        f"- 需求 ID：`{fields['request_id']}`\n"
+        "- Issue：由 Godot 编辑器会话内工单引导创建，链接见远程 Issue\n"
+        f"- 类别：`type:{fields['category']}`\n"
+        "- 责任人：待实际指定\n\n"
+        "## 原始需求与目标\n\n"
+        "来源：Godot 编辑器 AI 聊天中因未绑定工单而暂停的用户消息，原文如下（创建远程 Issue 前已提示审查及脱敏）。\n\n"
+        f"{quoted}\n\n"
+        "## 范围与非目标\n\n待补充。\n\n"
+        "## 验收标准\n\n- [ ] 待补充可核验的交付条件\n\n"
+        "## 验证与采集证据\n\n尚未实施。引用实际文件、提交和事件，不填写估算用量。\n"
+    )
+
+
+def create_command(fields):
+    return " ".join(
+        shlex.quote(part)
+        for part in (
+            "python3",
+            "customizations/components/issue-workorders/work_items.py",
+            "--repo",
+            ".",
+            "issue",
+            "--document",
+            fields["document"],
+            "--title",
+            fields["title"],
+            "--type",
+            fields["category"],
+            "--request-id",
+            fields["request_id"],
+            "--apply",
+        )
+    )
+
+
+def gh_authenticated(gh, env):
+    """Read-only `gh auth status`; logging in stays an interactive user action in a terminal."""
+    try:
+        result = subprocess.run(
+            [gh, "auth", "status", "--hostname", "github.com"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
+def login_command(gh):
+    return shlex.join([gh, "auth", "login", "--hostname", "github.com", "--git-protocol", "https", "--web"])
+
+
+def gh_state(root):
+    """Return (gh, error); error is gh_unavailable or gh_unauthenticated, never a remote side effect."""
+    env = host_environment(root)
+    gh = env.get("OLYMPUS_GH")
+    if not gh:
+        return None, "gh_unavailable"
+    os.environ["OLYMPUS_GH"] = gh
+    if not gh_authenticated(gh, env):
+        return gh, "gh_unauthenticated"
+    return gh, None
+
+
+def issue_draft(root, request):
+    """Write the requirement Markdown and preview the Issue; no remote side effects."""
+    module, settings, fields = guide_fields(root, request)
+    path = root / fields["document"]
+    content = requirement_document(fields)
+    if path.is_symlink():
+        raise ValueError("Linked requirement document is not allowed")
+    if path.exists():
+        if path.read_text(encoding="utf-8") != content:
+            raise ValueError("Requirement document already exists with different content: " + fields["document"])
+        state = "document_existing"
+    else:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(content)
+        state = "document_created"
+    plan = module.issue(root, fields["document"], fields["title"], fields["category"], fields["request_id"], False)
+    gh, gh_error = gh_state(root)
+    return {
+        "ok": True,
+        "state": state,
+        "document": fields["document"],
+        "repository": plan["repository"],
+        "title": plan["title"],
+        "labels": plan["labels"],
+        "request_id": fields["request_id"],
+        "gh_available": gh is not None,
+        "gh_authenticated": gh_error is None,
+        "gh_login_command": login_command(gh) if gh else "",
+        "remote_created": False,
+    }
+
+
+def issue_create(root, request):
+    module, settings, fields = guide_fields(root, request)
+    gh, gh_error = gh_state(root)
+    if gh_error:
+        return {
+            "ok": False,
+            "error": gh_error,
+            "command": create_command(fields),
+            "login_command": login_command(gh) if gh else "",
+            "remote_created": False,
+        }
+    result = module.issue(root, fields["document"], fields["title"], fields["category"], fields["request_id"], True)
+    issue_url = r"https://github\.com/" + re.escape(settings["repository"]) + r"/issues/([0-9]+)"
+    match = re.fullmatch(issue_url, result["url"])
+    if not match:
+        raise ValueError("GitHub returned an unexpected Issue URL")
+    return {"ok": True, "state": result["state"], "url": result["url"], "number": int(match.group(1))}
+
+
+def issue_start(root, request):
+    """Explicit user decision in the host: move an unstarted guide Issue to in-progress."""
+    number = request.get("issue_number")
+    request_id = request.get("request_id")
+    valid_number = type(number) is int and number >= 1
+    if not valid_number or not isinstance(request_id, str) or not re.fullmatch(REQUEST_ID, request_id):
+        raise ValueError("Bind a real Issue number and its stable request ID first")
+    module = work_items_module(root)
+    settings, _ = module.config(root)
+    gh, gh_error = gh_state(root)
+    if gh_error:
+        return {
+            "ok": False,
+            "error": gh_error,
+            "login_command": login_command(gh) if gh else "",
+            "remote_changed": False,
+        }
+    repository = settings["repository"]
+    value = json.loads(module.gh("api", f"repos/{repository}/issues/{number}"))
+    if value.get("number") != number or "pull_request" in value or value.get("state") != "open":
+        raise ValueError("Issue must be an open Issue in the configured repository")
+    if module.request_ids(value.get("body")) != {request_id}:
+        raise ValueError("Issue stable request ID does not match unambiguously")
+    names = [item["name"] for item in value.get("labels", [])]
+    if "workspace:olympus" not in names:
+        raise ValueError("Issue must explicitly include workspace:olympus")
+    statuses = [name for name in names if name.startswith("status:")]
+    if len(statuses) == 1 and statuses[0] in ACTIVE_STATUSES:
+        return {"ok": True, "state": "already_active", "status": statuses[0], "remote_changed": False}
+    if len(statuses) > 1 or (statuses and statuses[0] not in STARTABLE_STATUSES):
+        raise ValueError("Issue status " + ", ".join(statuses) + " needs a decision on GitHub")
+    arguments = ["issue", "edit", str(number), "--repo", repository, "--add-label", "status:in-progress"]
+    if statuses:
+        arguments += ["--remove-label", statuses[0]]
+    module.gh(*arguments)
+    return {
+        "ok": True,
+        "state": "started",
+        "previous_status": statuses[0] if statuses else None,
+        "status": "status:in-progress",
+        "remote_changed": True,
+    }
+
+
+GUIDE_ACTIONS = {"issue-draft": issue_draft, "issue-create": issue_create, "issue-start": issue_start}
+
+
 def execute(workspace, action, tenant):
     root = Path(workspace).resolve()
     framework = root / "Olympus"
@@ -411,7 +638,9 @@ def execute(workspace, action, tenant):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush"])
+    parser.add_argument(
+        "action", choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush", *GUIDE_ACTIONS]
+    )
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--tenant", default="olympus-workspace")
     parser.add_argument("--out", type=Path)
@@ -422,6 +651,13 @@ def main():
             if args.request is None:
                 raise ValueError("chat requires --request")
             result = chat(Path(args.workspace), json.loads(args.request.read_text(encoding="utf-8")), args.tenant)
+        elif args.action in GUIDE_ACTIONS:
+            if args.request is None:
+                raise ValueError(args.action + " requires --request")
+            request = json.loads(args.request.read_text(encoding="utf-8"))
+            if not isinstance(request, dict):
+                raise ValueError("Issue guide request must be an object")
+            result = GUIDE_ACTIONS[args.action](Path(args.workspace).resolve(), request)
         elif args.action == "flush":
             result = flush(Path(args.workspace))
         else:

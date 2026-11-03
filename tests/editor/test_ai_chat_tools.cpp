@@ -38,6 +38,7 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "core/io/json.h"
 #include "core/os/os.h"
 #include "editor/docks/ai_chat_cli_login.h"
+#include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_tools.h"
 
@@ -334,6 +335,65 @@ TEST_CASE("[AIChat] Resume journal invalid data never produces a partial record"
 	Dictionary restored;
 	CHECK_FALSE(AIChatResume::decode_journal(JSON::stringify(journal), restored));
 	CHECK_FALSE(AIChatResume::decode_journal("[]", restored));
+}
+
+TEST_CASE("[AIChat] Issue guide parses bindings and only guides missing local bindings") {
+	int64_t number = 0;
+	String request_id;
+	CHECK(AIChatIssueGuide::parse_binding(" #22  godot-chat-issue-guide-20261103 ", number, request_id));
+	CHECK(number == 22);
+	CHECK(request_id == "godot-chat-issue-guide-20261103");
+	CHECK(AIChatIssueGuide::parse_binding(U"绑定 7 req-7", number, request_id));
+	CHECK(number == 7);
+	for (const String &invalid : { String("#0 req"), String("#-3 req"), String("#22"), String("22 Req"), String("22 req--x"), String("22 -req"), String("#22a req"), String("1234567890 req"), String("#22 req extra") }) {
+		number = -1;
+		CHECK_FALSE(AIChatIssueGuide::parse_binding(invalid, number, request_id));
+		CHECK(number == -1);
+	}
+	CHECK(AIChatIssueGuide::is_bound(22, "req-22"));
+	CHECK_FALSE(AIChatIssueGuide::is_bound(0, "req-22"));
+	CHECK_FALSE(AIChatIssueGuide::is_bound(22, ""));
+	CHECK_FALSE(AIChatIssueGuide::is_request_id(String("a").repeat(81)));
+	CHECK(AIChatIssueGuide::is_binding_error("Missing host request: request_id"));
+	CHECK(AIChatIssueGuide::is_binding_error("Before development, create/reuse a real Issue and bind issue_number and stable request_id"));
+	CHECK_FALSE(AIChatIssueGuide::is_binding_error("Missing host request: outcome"));
+	CHECK_FALSE(AIChatIssueGuide::is_binding_error("Issue intake rejected; verify GitHub access"));
+}
+
+TEST_CASE("[AIChat] Issue guide explains gh login without running it") {
+	const String text = AIChatIssueGuide::gh_login_text("/x/gh auth login --hostname github.com --git-protocol https --web", U"确认");
+	CHECK(text.contains("```\n/x/gh auth login --hostname github.com --git-protocol https --web\n```"));
+	CHECK(text.contains(U"尚未登录 github.com"));
+	CHECK(text.contains(U"回复 `确认` 重试"));
+	const String bare = AIChatIssueGuide::gh_login_text("", "");
+	CHECK_FALSE(bare.contains("```"));
+	CHECK_FALSE(bare.contains(U"重试"));
+}
+
+TEST_CASE("[AIChat] Issue guide suggests stable fields and resolves categories") {
+	CHECK(AIChatIssueGuide::suggest_title(U"\n  # 修复 Godot 聊天阻塞\n第二行") == U"修复 Godot 聊天阻塞");
+	CHECK(AIChatIssueGuide::suggest_title("   ") == U"Godot 编辑器会话需求");
+	CHECK(AIChatIssueGuide::suggest_title(String("x").repeat(200)).length() == AIChatIssueGuide::MAX_TITLE);
+	CHECK(AIChatIssueGuide::suggest_request_id(U"修复 Godot 聊天 Issue-Guide 阻塞", "20261103-210501") == "godot-issue-guide-20261103-210501");
+	CHECK(AIChatIssueGuide::suggest_request_id(U"纯中文标题", "20261103-210501") == "godot-chat-20261103-210501");
+	const String long_id = AIChatIssueGuide::suggest_request_id(String("abcdefghij ").repeat(12), "20261103-210501");
+	CHECK(AIChatIssueGuide::is_request_id(long_id));
+	CHECK(long_id.length() <= AIChatIssueGuide::MAX_REQUEST_ID);
+
+	Variant labels = JSON::parse_string(R"([{"name":"type:development","description":"dev"},{"name":"status:planned"},{"name":"type:bug"},{"name":"type:"},7])");
+	const Array categories = AIChatIssueGuide::categories_from_labels(labels);
+	REQUIRE(categories.size() == 2);
+	CHECK(AIChatIssueGuide::category_from_reply("1", categories) == "development");
+	CHECK(AIChatIssueGuide::category_from_reply(" Type:Bug ", categories) == "bug");
+	CHECK(AIChatIssueGuide::category_from_reply("3", categories).is_empty());
+	CHECK(AIChatIssueGuide::category_from_reply("planned", categories).is_empty());
+	CHECK(AIChatIssueGuide::categories_from_labels(Variant()).is_empty());
+
+	CHECK(AIChatIssueGuide::is_cancel(U" 取消 "));
+	CHECK(AIChatIssueGuide::is_confirm("YES"));
+	CHECK_FALSE(AIChatIssueGuide::is_confirm(U"确认一下吧"));
+	CHECK(AIChatIssueGuide::is_start(U"开始"));
+	CHECK(AIChatIssueGuide::is_retry(U"已更新"));
 }
 
 } // namespace TestAIChatTools

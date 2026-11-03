@@ -42,6 +42,7 @@ class HTTPRequest;
 class AcceptDialog;
 class Label;
 class LineEdit;
+class OlympusPanel;
 class OptionButton;
 class PanelContainer;
 class PopupMenu;
@@ -97,6 +98,30 @@ class AIChatDock : public EditorDock {
 	void _begin_olympus_context();
 	void _poll_olympus_context();
 	void _clear_olympus_files();
+
+	// Unbound work orders are resolved in the conversation by the host itself;
+	// guide replies never enter `messages`, so no model or tool runs before intake.
+	OlympusPanel *olympus_panel = nullptr;
+	String issue_guide_state;
+	String issue_guide_outcome;
+	Dictionary issue_guide_fields;
+	Array issue_guide_categories;
+	uint64_t issue_guide_generation = 0;
+	uint64_t issue_guide_run_generation = 0;
+	int64_t issue_guide_pid = -1;
+	String issue_guide_action;
+	String issue_guide_input_path;
+	String issue_guide_output_path;
+	Timer *issue_guide_timer = nullptr;
+	bool _start_issue_guide();
+	void _issue_guide_reply(const String &p_text);
+	void _issue_guide_prompt();
+	void _issue_guide_run(const String &p_action, const Dictionary &p_request);
+	void _poll_issue_guide();
+	void _clear_issue_guide_files();
+	void _cancel_issue_guide(const String &p_notice);
+	void _issue_guide_bind(int64_t p_number, const String &p_request_id);
+	void _issue_guide_retry();
 
 	Button *engine_build_button = nullptr;
 	Button *engine_restart_button = nullptr;

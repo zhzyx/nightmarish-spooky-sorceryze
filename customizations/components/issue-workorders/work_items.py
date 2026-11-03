@@ -94,7 +94,7 @@ def issue(root, document, title, category, request_id, apply=False):
         "state": "planned",
         "repository": settings["repository"],
         "title": title,
-        "labels": [label, "status:needs-decision"],
+        "labels": [label, "status:needs-decision", "workspace:olympus"],
         "request_id": request_id,
         "body": body,
     }
@@ -130,6 +130,9 @@ def issue(root, document, title, category, request_id, apply=False):
             label,
             "--label",
             "status:needs-decision",
+            # Host intake only accepts explicitly labeled Olympus work.
+            "--label",
+            "workspace:olympus",
             "--body-file",
             str(path),
         )

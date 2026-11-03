@@ -1559,6 +1559,20 @@ void AIChatDock::_send() {
 		}
 		return;
 	}
+	if (!issue_guide_state.is_empty() && !busy) {
+		// Guide replies are host-local: shown in the transcript, never sent to a model.
+		const String text = input->get_text().strip_edges();
+		if (text.is_empty() || send_button->is_disabled()) {
+			return;
+		}
+		input->set_text(String());
+		const Array attachments = draft_images;
+		draft_images.clear();
+		_append(TTR("You"), _redact(text));
+		draft_images = attachments;
+		_issue_guide_reply(text);
+		return;
+	}
 	if (send_button->is_disabled() || (input->get_text().strip_edges().is_empty() && draft_images.is_empty())) {
 		return;
 	}
@@ -2475,6 +2489,8 @@ void AIChatDock::_agent_selected(int p_index) {
 	active_agent = id;
 	request_generation++;
 	session_generation++;
+	// The guide belongs to the paused message of the conversation being left.
+	_cancel_issue_guide(String());
 	state.message_list->set_name("Messages");
 	state.message_list->reparent(chat_scroll);
 	_restore_agent(state);
@@ -2723,6 +2739,7 @@ void AIChatDock::_restore_cli_after_models() {
 }
 
 void AIChatDock::_cancel_all_agents() {
+	_cancel_issue_guide(String());
 	_cancel_cli();
 	_restore_cli_after_models();
 	_cancel_cli();
@@ -2747,6 +2764,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	set_process(process_id >= 0);
 	request_generation++;
 	session_generation++;
+	_cancel_issue_guide(String());
 	messages.clear();
 	tool_calls.clear();
 	http_settings->set_visible(p_backend == 0);
@@ -4081,6 +4099,7 @@ void AIChatDock::_stop() {
 	AIChatResume::clear_journal();
 	messages.clear();
 	tool_calls.clear();
+	_cancel_issue_guide(String());
 	_end_olympus("cancelled");
 	_set_busy(false);
 	_append(TTR("Editor"), TTR("Stopped. Conversation context was reset; approved file changes were not reverted."));
@@ -4206,7 +4225,8 @@ AIChatDock::AIChatDock() {
 	workspace_pages->add_child(timers_page);
 	workspace_pages->set_tab_title(0, "Agents");
 	workspace_pages->set_tab_title(1, U"定时器");
-	workspace_pages->add_child(memnew(OlympusPanel));
+	olympus_panel = memnew(OlympusPanel);
+	workspace_pages->add_child(olympus_panel);
 	workspace_pages->set_tab_title(2, "Olympus");
 	workspace_pages->set_current_tab(0);
 	Label *heading = memnew(Label);

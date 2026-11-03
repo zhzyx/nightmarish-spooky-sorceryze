@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "appends": "data-collection/godot-chat-issue-guide-20261103-pr-format.json",
+  "user_instructions": ["合并吧"],
+  "merge_decision": "User authorized merging PR #23. Merge was held because CI on candidate e11deae3 failed.",
+  "ci_findings": {
+    "candidate": "e11deae3",
+    "failed_checks": ["Windows / Editor (target=editor), two runs (push and pull_request)"],
+    "annotation": "editor/docks/ai_chat_olympus.cpp:479 declaration of 'title' hides class member; the following warning is treated as an error (MSVC)",
+    "cause": "Local 'title' in AIChatDock::_issue_guide_reply hides EditorDock::title.",
+    "passed": "issue-association, static checks, Windows clang-cl editor, Windows templates (MSVC and GCC)"
+  },
+  "fix": {
+    "change": "Renamed the local to issue_title; no behavior change.",
+    "file_sha256": {
+      "editor/docks/ai_chat_olympus.cpp": "2d6f72c7772da5e6b788dbf8409b34b3e3e9d58e3caddfa7b4e37de40e32d75d",
+      "bin/godot.macos.editor.x86_64 (local build, not committed)": "76408afed570a5fa39fdf855761f57614d2a384c08bbc2fda8227fe82e313cf6"
+    },
+    "shadow_scan": "Apple clang has no equivalent of MSVC C4458 for locals hiding members, so new local names in the guide code were compared against AIChatDock and its base class member declarations; only 'title' collided ('error' matched a nested struct member, not a class member)."
+  },
+  "validation": [
+    {"check": "clang-format --dry-run --Werror editor/docks/ai_chat_olympus.cpp", "result": "passed"},
+    {"check": "scons platform=macos target=editor tests=yes allow_unsupported_apple_clang=yes use_volk=yes accesskit=no -j8", "result": "passed", "elapsed": "00:00:38"},
+    {"check": "godot --headless --test --test-case=*AIChat*", "result": "passed", "test_cases": 18, "assertions": 199},
+    {"check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide", "result": "passed", "model_requests": 1, "hermes_events": 8}
+  ],
+  "not_covered": ["MSVC build is verified only by CI after this push; no local Windows toolchain."],
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}

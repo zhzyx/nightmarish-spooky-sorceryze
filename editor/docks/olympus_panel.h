@@ -52,4 +52,6 @@ class OlympusPanel : public VBoxContainer {
 
 public:
 	OlympusPanel();
+	// Reflect a binding saved elsewhere (the chat Issue guide) without re-saving it.
+	void reload_issue_binding();
 };

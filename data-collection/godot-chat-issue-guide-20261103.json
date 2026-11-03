@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "origin": "current_user_conversation_in_codebuddy_ide",
+  "user_instructions": [
+    "Olympus 阻止本次发送：Missing host request: request_id",
+    "在引擎里，如果Missing host request: request_id，就在引擎内会话里引导创建新issue。而不是阻塞会话",
+    "gh装了 再进行一下"
+  ],
+  "issue_creation": {
+    "command": "work_items.py --repo . issue --document design-docs/godot-chat-issue-guide-20261103.md --type development --request-id godot-chat-issue-guide-20261103 --apply",
+    "result_state": "created",
+    "created_at": "2026-11-03T13:08:15Z",
+    "label_edit": "gh issue edit 22 --add-label workspace:olympus,status:in-progress --remove-label status:needs-decision",
+    "intake_readback": {
+      "tool": "customizations/components/issue-workorders/issue_gate.py --intake-only",
+      "type": "type:development",
+      "status": "status:in-progress",
+      "updated_at": "2026-11-03T13:08:37Z"
+    },
+    "start_decision": "The user's request to proceed with implementing the change was treated as authorization to start; status was set by this host task, not by the new in-editor guide."
+  },
+  "baseline": {
+    "branch": "codex/godot-chat-issue-guide-20261103",
+    "branched_from": "be278eca",
+    "head_before_commit": "f2c63b0a0c7ecb52481acf958c91f3e677e857ea",
+    "unrelated_concurrent_commit": "f2c63b0a was committed by the workspace user on this branch during the task (camera_apple build fix and a local build record); it is not part of Issue #22 scope.",
+    "unrelated_uncommitted_files_not_staged": [
+      "samples/olympus-workbench/project.godot",
+      "samples/olympus-workbench/.godot/"
+    ]
+  },
+  "environment": {
+    "os": "macOS 13.7.8 x86_64",
+    "compiler": "Apple Clang 14 (experimental via allow_unsupported_apple_clang=yes; supported minimum remains Apple Clang 16)",
+    "python_for_unit_tests": "/usr/bin/python3 3.9.6",
+    "python_for_editor_scenes": "python3.12 (Hermes files require >= 3.10)",
+    "gh": "gh 2.103.3 at ~/.local/bin/gh, not on the IDE shell PATH"
+  },
+  "file_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "ec9c5d3c8abfd727f0b295077b151c6effb8f7114c4a42c1f211556226a04013",
+    "editor/docks/ai_chat_dock.h": "419ce18fc2a5bb678edb0df15d46d6e131a9fe0263a598acc6783ced9c6e148a",
+    "editor/docks/ai_chat_olympus.cpp": "cdd091335c484179af0288a84bf0d1f71387f28eed0a3b7f379ffc14b02b49f4",
+    "editor/docks/ai_chat_issue_guide.h": "f108b5ab1eb0fef29cd9eaad79932d7486cb3dd63895aceeca12678d8971455d",
+    "editor/docks/olympus_panel.cpp": "793074f13b8656a0784a50fe4b30addc2785050a6ce18231a0c253099814040d",
+    "editor/docks/olympus_panel.h": "7ed2547e5e5bb93e7f6b73f5f9a419d2b3a015b1d5b27f1f98156fad4672b150",
+    "customizations/components/godot-host/bridge.py": "e25e02e9c83321ebfe2ac05a786fff017036eef91cdc8973e7e8e2ebb3a7210e",
+    "customizations/components/godot-host/test_issue_guide.py": "f19700e29bdcb825bfb4afc5eb0741cbab6c03984f594922fb7b9def62e190f0",
+    "customizations/components/issue-workorders/work_items.py": "3451f5accd475a954f66004120410f6914a8c0b548f620872304ae14b6f56ac6",
+    "customizations/components/issue-workorders/test_work_items.py": "bd648b18b093d717f0c900bce34dfa40b8d26ff9b2b3c35a4c41986994086a93",
+    "tests/editor/test_ai_chat_tools.cpp": "886475f175fbbd6442b1c5a2668a799b4b741d7b53114a182adcf76760f940de",
+    "tests/editor/olympus_chat_gate.gd": "a6b3aa5743e0b702b3373d218fc36b6e9736d0e76ec2a81af9ecdc6b3a146a21",
+    "tests/editor/run_olympus_chat_gate.py": "930f7ed129761048fd63a156433cd39cd4c0695a0362e01a0e28840a476aba08",
+    "bin/godot.macos.editor.x86_64 (local build, not committed)": "f5d80cee2b8b0ae56895a80704a29cdec8f2e437af54c43356cdb73746998dd4"
+  },
+  "validation": [
+    {
+      "check": "scons platform=macos target=editor use_volk=yes accesskit=no allow_unsupported_apple_clang=yes -j4",
+      "result": "passed",
+      "elapsed": "00:02:37",
+      "note": "Incremental; no compiler errors or warnings in the affected files"
+    },
+    {
+      "check": "same command with tests=yes",
+      "result": "passed",
+      "elapsed": "00:01:16"
+    },
+    {
+      "check": "godot --headless --test --test-case=*AIChat*",
+      "result": "passed",
+      "test_cases": 17,
+      "assertions": 194,
+      "new_cases": [
+        "[AIChat] Issue guide parses bindings and only guides missing local bindings",
+        "[AIChat] Issue guide suggests stable fields and resolves categories"
+      ]
+    },
+    {
+      "check": "python -m unittest in customizations/components/godot-host (TMPDIR=/private/tmp)",
+      "result": "passed",
+      "tests": 27,
+      "new_tests": 9
+    },
+    {
+      "check": "python -m unittest in customizations/components/issue-workorders (TMPDIR=/private/tmp)",
+      "result": "passed",
+      "tests": 39
+    },
+    {
+      "check": "same Python suites with the default macOS TMPDIR",
+      "result": "8 pre-existing failures, identical on a clean HEAD worktree",
+      "cause": "Tests compare unresolved /var temporary paths against resolved /private/var paths; unrelated and not modified"
+    },
+    {
+      "check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide",
+      "result": "passed",
+      "flow": "unbound send -> guide -> 新建 -> category 1 -> 默认 title -> guide-e2e-1 -> draft preview -> 确认 creates #42 -> 开始 -> original message completes one model turn",
+      "model_requests": 1,
+      "guide_replies_in_model_messages": false,
+      "hermes_events": 8,
+      "event_request_ids": ["guide-e2e-1"],
+      "max_frame_gap_seconds": 0.055853,
+      "fixtures": "Isolated HOME, fake gh state file, fake node printing a context fixture, loopback model fixture; no real repository, no real framework admission"
+    },
+    {
+      "check": "tests/editor/run_olympus_chat_gate.py --mode issue_guide_cancel",
+      "result": "passed",
+      "model_requests": 0,
+      "github_calls": 0,
+      "hermes_events": 0,
+      "design_document_written": false
+    }
+  ],
+  "not_covered": [
+    "Direct reuse via '#number request-id' and an intake rejection after guided binding were not run as editor scenarios (parsing is unit tested; the bind-and-retry path is exercised by the create flow).",
+    "The dock's gh_unavailable message and the agent-switch/late-result cancellation were not run as editor scenarios.",
+    "Older run_olympus_chat_gate.py modes still assert the pre-Issue-6 source_ref godot-editor:chat-context-loader and send without a binding; they were not run or repaired here.",
+    "No Windows or other platform build; no release package update.",
+    "The in-editor guide was not used against the real GitHub repository; Issue #22 itself was created via the work_items.py CLI."
+  ],
+  "measured_input_tokens": null,
+  "measured_output_tokens": null,
+  "measured_cost": null,
+  "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task."
+}

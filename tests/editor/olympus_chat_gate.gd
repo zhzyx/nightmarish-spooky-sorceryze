@@ -15,6 +15,70 @@ func _measure_frame():
 func _initialize():
 	_run.call_deferred()
 
+func _reply(dock, text):
+	dock.find_child("ChatInput", true, false).text = text
+	dock.find_child("Send", true, false).pressed.emit()
+
+func _shown(dock, needle):
+	for label in dock.find_children("*", "RichTextLabel", true, false):
+		if needle in label.get_parsed_text():
+			return true
+	return false
+
+func _wait_shown(dock, needle, seconds = 20.0):
+	for attempt in range(int(seconds * 20)):
+		if _shown(dock, needle):
+			return true
+		await create_timer(0.05).timeout
+	push_error("Issue guide did not show: " + needle)
+	for label in dock.find_children("*", "RichTextLabel", true, false):
+		print(label.get_parsed_text())
+	return false
+
+func _run_issue_guide(dock, mode):
+	# Unbound send must stay in the conversation, without any model request.
+	if not await _wait_shown(dock, "绑定本仓库的真实工单"):
+		return false
+	if _shown(dock, "Olympus 阻止本次发送") or dock.get_meta("olympus_status", "") != "issue_guide":
+		push_error("Unbound send was blocked instead of guided")
+		return false
+	if mode == "issue_guide_cancel":
+		_reply(dock, "取消")
+		return await _wait_shown(dock, "已退出工单引导")
+	var steps = [
+		["新建", "新建工单 1/3"],
+		["1", "新建工单 2/3"],
+		["默认", "新建工单 3/3"],
+		["guide-e2e-1", "已生成需求文档"],
+	]
+	if mode == "issue_guide_login":
+		# gh is installed but logged out: the guide must explain login and create nothing.
+		steps.append(["确认", "未创建远程 Issue"])
+	steps.append(["确认", "Issue #42"])
+	steps.append(["开始", "OLYMPUS_FIXTURE_REPLY"])
+	for step in steps:
+		if mode == "issue_guide_login" and step[1] == "Issue #42":
+			if not _shown(dock, "尚未登录 github.com") or not _shown(dock, "auth login --hostname github.com"):
+				push_error("Logged-out gh did not show login guidance")
+				return false
+			# Stands in for the user finishing `gh auth login` in a terminal.
+			var flag = FileAccess.open(OS.get_environment("OLYMPUS_TEST_WORKSPACE").path_join("fixtures/gh-logged-in"), FileAccess.WRITE)
+			flag.store_string("fixture")
+			flag.close()
+		_reply(dock, step[0])
+		if not await _wait_shown(dock, step[1], 40.0):
+			return false
+	var settings = EditorInterface.get_editor_settings()
+	if str(settings.get_setting("olympus/issue_number")) != "42" or settings.get_setting("olympus/request_id") != "guide-e2e-1":
+		push_error("Guide did not persist the Issue binding")
+		return false
+	for attempt in range(200):
+		if dock.get_meta("olympus_reporting", "") == "recorded_file":
+			return true
+		await create_timer(0.05).timeout
+	push_error("Guided turn did not record its file receipt")
+	return false
+
 func _run():
 	var dock = root.find_child("AI Chat", true, false)
 	if dock == null or root.find_child("OlympusPage", true, false) == null:
@@ -34,6 +98,13 @@ func _run():
 	if not mode.begins_with("recovery"):
 		dock.find_child("ChatInput", true, false).text = "Isolated Olympus gate validation"
 		dock.find_child("Send", true, false).pressed.emit()
+	if mode.begins_with("issue_guide"):
+		var guided = await _run_issue_guide(dock, mode)
+		print("OLYMPUS_FRAME_GAP=", max_frame_gap if frame_count > 1 else -1.0)
+		if guided:
+			print("OLYMPUS_CHAT_ISSUE_GUIDE_CANCEL_OK" if mode == "issue_guide_cancel" else "OLYMPUS_CHAT_ISSUE_GUIDE_OK")
+		quit(0 if guided else 1)
+		return
 	if mode == "recovery_cancel":
 		dock.find_child("Stop", true, false).pressed.emit()
 		await create_timer(4).timeout

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tenant_id": "olympus-workspace",
+  "request_id": "godot-chat-issue-guide-20261103",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/22",
+  "agent": {
+    "id": "codebuddy-host",
+    "version": "host-version-not-reported",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codebuddy-ide-task"
+  },
+  "event_id": "godot-chat-issue-guide-20261103-request",
+  "kind": "request",
+  "occurred_at": "2026-11-03T13:08:37+00:00",
+  "payload": {
+    "description": "User asked that a missing Olympus Issue binding in the Godot chat guide the user to create or reuse an Issue inside the conversation instead of ending the turn. Issue #22 was created with work_items.py, labeled workspace:olympus, set to status:in-progress, and read back by issue_gate --intake-only.",
+    "instruction": "在引擎里，如果Missing host request: request_id，就在引擎内会话里引导创建新issue。而不是阻塞会话",
+    "actor_snapshot": "CodeBuddy IDE host task; definition_sha256 is the SHA256 of the workspace AGENTS.md governing the task. Host version and cryptographic identity are not reported.",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cost": null,
+    "unknown_reason": "The CodeBuddy host does not expose usage or cost accounting for this task.",
+    "source_files": [
+      "data-collection/godot-chat-issue-guide-20261103.json",
+      "design-docs/godot-chat-issue-guide-20261103.md"
+    ]
+  },
+  "evidence_refs": [],
+  "sha256": "4b168df482c54f51eea225caddd80cead7976e25b36f5369ad53b43b696dcbbf"
+}
