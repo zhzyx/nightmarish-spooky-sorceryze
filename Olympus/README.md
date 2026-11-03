@@ -48,4 +48,4 @@
 
 ## 阿里阿德涅（司南）已登记模块同步
 
-共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。
+共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 4 个正式 Agent、9 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。

@@ -20,14 +20,14 @@ os.environ['OLYMPUS_HOST_KEY']='isolated-test-key-not-a-production-secret'
 try:
  with tempfile.TemporaryDirectory(dir=BASE/'work',prefix='model-integration-') as tmp:
     temp=Path(tmp);root=temp/'framework';shutil.copytree(ROOT,root,ignore=shutil.ignore_patterns('__pycache__'))
-    manifest=runner.read(root/'framework-manifest.json');(root/'reviews/fixture.txt').write_text('Synthetic test only; not production approval.')
+    manifest=runner.read(root/'framework-manifest.json');(root/'reviews/local-admission').mkdir(parents=True,exist_ok=True);(root/'reviews/local-admission/fixture.txt').write_text('Synthetic test only; not production approval.')
     fp=runpy.run_path(str(root/'tools/verify_framework.py'))['fingerprint']
     for a in manifest['agents']:
         p=runner.read(root/'templates/review-pass.json');d,files=fp(root,a['candidate_files']);assert d==a['candidate_digest']
         p.update(template=False,status='approved',event='agent_definition_change',phase='local_definition_release')
         p['subject']={'id':a['id'],'version_or_digest':{'version':a['version'],'candidate_digest':d,'files':files},'scope':['local_agent_definition_only']}
-        p['review']={'olympus_framework':'pass','concision':{'status':'pass'},'applicable_validation':'pass','independence':'independent_subagent_review','evaluator_id':'synthetic-reviewer','zeus':{k:'pass' for k in ['purpose','truth','economy','authority','adaptation','continuity']},'evidence_refs':['reviews/fixture.txt']}
-        p['approval']={'approver_id':'synthetic-approver','authority_ref':'test-only','decision_evidence_ref':'reviews/fixture.txt','approved_at':runner.now(),'valid_until_or_task_end':'bound_candidate_only','expires_at':None}
+        p['review']={'olympus_framework':'pass','concision':{'status':'pass'},'applicable_validation':'pass','independence':'independent_subagent_review','evaluator_id':'synthetic-reviewer','zeus':{k:'pass' for k in ['purpose','truth','economy','authority','adaptation','continuity']},'evidence_refs':['reviews/local-admission/fixture.txt']}
+        p['approval']={'approver_id':'synthetic-approver','authority_ref':'test-only','decision_evidence_ref':'reviews/local-admission/fixture.txt','approved_at':runner.now(),'valid_until_or_task_end':'bound_candidate_only','expires_at':None}
         (root/a['admission_pass']).write_text(json.dumps(p),encoding='utf-8')
     def profile(protocol,path,ident):
         p={'id':ident,'protocol':protocol,'endpoint':f'http://127.0.0.1:{server.server_port}/{path}','model':'synthetic-'+ident,'max_context_bytes':100000,'system_role':False if path=='ollama' else True}

@@ -34,7 +34,7 @@ class FrozenDistributionTests(unittest.TestCase):
         records = [{"path": "definition.md", "sha256": gate.digest((self.framework / "definition.md").read_bytes())}]
         candidate = gate.digest("".join(r["path"] + "\0" + r["sha256"] + "\n" for r in records).encode())
         agents = []
-        for name in sorted(gate.AGENTS):
+        for name in ("athena", "hermes", "themis"):
             permit = f"reviews/{name}.json"
             agents.append({
                 "id": name,

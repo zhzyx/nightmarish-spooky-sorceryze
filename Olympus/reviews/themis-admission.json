@@ -5,7 +5,7 @@
     "id": "themis",
     "version_or_digest": {
       "version": "0.4.0",
-      "candidate_digest": "b13be5429e999f0c143b37ff94acde7f7365dd19328b5a6037ebbbb7b56422a3",
+      "candidate_digest": "8f1d9f4e8adcb58d38e87e07932fbef25e1d434b9b2d7c42f78587f0b4d17c0b",
       "candidate_files": [
         {
           "path": "AGENTS.md",
@@ -21,7 +21,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "9fa69f5c3758610bac33f52a3b9aec01835e026713697fc2167ded937228b1e4"
+          "sha256": "1bc24a54b49a40e2f1f290f122d992a9573760790157d1988169e40d2eda69a5"
         },
         {
           "path": "agents/athena/reporting.json",
@@ -189,7 +189,7 @@
         },
         {
           "path": "source-evidence.json",
-          "sha256": "7c065e4abf46856b992f7c8e0332ba4b9171bfe06813a609d5f78656d1606f63"
+          "sha256": "da8752aa943fbf3fcd85632d43dcd0ba9920d981d36b4f3e5422aa567669d578"
         },
         {
           "path": "specs/data-feedback.md",
@@ -221,7 +221,7 @@
         },
         {
           "path": "sync/gonggong_sync.py",
-          "sha256": "86d94067b423f02326e038220aa0d9bc7911410f0e80ccbf13a7cf54e950656a"
+          "sha256": "182ba5a61740a26919808126696b1a34daf7f5eb571111f9aef085af0270ddbd"
         },
         {
           "path": "sync/local_runtime.py",
@@ -229,7 +229,7 @@
         },
         {
           "path": "sync/names.json",
-          "sha256": "fe4c95ff0b90bb672ba83161be34430b305d097e7ab91b36db18999557a844d0"
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
         },
         {
           "path": "sync/read_hermes.py",
@@ -237,7 +237,7 @@
         },
         {
           "path": "sync/runtime-lock.json",
-          "sha256": "48cc9af02cd52fa46d9d414474e1708d4bd65c0eeb9602b2c2885490363dcd9c"
+          "sha256": "bab501d54afbf7669ef6a6af3e159a9d48c5712423cda9e5d7a5d65db535493a"
         },
         {
           "path": "sync/sinan_source.py",
@@ -253,7 +253,7 @@
         },
         {
           "path": "tests/test_runtime.py",
-          "sha256": "f2d48b37fdce4185b7348d6b78680207340ffa008286a5d8c45b025bbda7c8a0"
+          "sha256": "822415fd79d20dfe3e5dc741f0654117c8bec28d0101fefaf92b5066e30a7304"
         },
         {
           "path": "tools/admission.mjs",
@@ -298,29 +298,36 @@
     ]
   },
   "approval": {
-    "approver_id": "user:current-conversation",
-    "authority_ref": "explicit-user-decision:call_d952ec18fec94b1a96adfc0304b594c4",
-    "decision_evidence_ref": "reviews/local-admission/issue7-042-user-decision-20261103.json",
-    "approved_at": "2026-11-02T17:48:58.424639+00:00",
+    "approver_id": "user:cross-chat-olympus-sync-directive",
+    "authority_ref": "user-instruction:thread:01a19d3b-b45e-73d1-a856-a5d75b144712",
+    "decision_evidence_ref": "reviews/local-admission/issue27-user-decision.json",
+    "approved_at": "2026-11-03T16:24:28.990146+00:00",
     "valid_until_or_task_end": "bound_candidate_only",
     "expires_at": null,
     "revocation_ref": null,
     "superseded_by": null
   },
-  "permit_id": "OLYMPUS-042-STANDALONE-20261103-themis",
+  "reason": "Independent admission must bind this candidate; previous approvals remain historical.",
+  "permit_id": "OLYMPUS-ISSUE27-themis-20261104",
   "event": "agent_definition_change",
   "phase": "local_definition_release",
   "baseline": {
-    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
     "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
     "policy_version": "0.9.0",
-    "zeus_version": "0.4.1"
+    "files": {
+      "FOUNDATION.md": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+      "foundation.lock.json": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1",
+      "AGENTS.md": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1",
+      "upstream/zeus/core.md": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29",
+      "upstream/zeus/agents/zeus.md": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689",
+      "skills/dike/SKILL.md": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a",
+      "contracts/admission-policy.json": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+    }
   },
   "review": {
     "olympus_framework": "pass",
-    "applicable_validation": "pass",
-    "evaluator_id": "codex-subagent:review_standalone",
-    "independence": "independent_subagent_review",
     "zeus": {
       "purpose": "pass",
       "truth": "pass",
@@ -331,15 +338,23 @@
     },
     "concision": {
       "status": "pass",
-      "evidence": "Runtime adapter remains the previously reviewed 56-line helper; passed() adds a narrowly scoped two-line status normalization; no new skill or agent entry."
+      "entry_characters": {
+        "athena": 873,
+        "themis": 888,
+        "hermes": 825,
+        "harmonia": 1121
+      },
+      "rationale": "Agent entries keep role, trigger, authority, reporting and targeted references; long integration algorithms remain in Harmonia references. No extra permanent agent or duplicate state authority introduced."
     },
-    "evidence_refs": [
-      "reviews/local-admission/issue7-042-independent-review-20261103.json"
-    ],
+    "applicable_validation": "pass",
+    "evaluator_id": "/root/review_nonblocking",
+    "independence": "independent_subagent_review",
     "unresolved": [
-      "Current host permissions and precise candidate production approval remain separate from independent review.",
-      "Local offline startup cannot detect remote revocation or new upstream changes without an actual update event.",
-      "No real model provider was called; admission-positive test cases use temporary synthetic permits only."
+      "Actual host runtime mandate and optional Git Issue module activation remain separate."
+    ],
+    "evidence_refs": [
+      "reviews/local-admission/issue27-independent-review.json",
+      "reviews/local-admission/issue27-review-scenarios.json"
     ]
   }
 }

@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "scope": "local_consistency",
+  "boundary": "Local file/Git and supplied metadata consistency only; no authentication of remote identity, report authorship, execution, model service or collection behavior; not admission or release approval.",
+  "diagnostics": []
+}
