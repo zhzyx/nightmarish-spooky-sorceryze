@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/35",
+  "request_id": "core-agents-olympus-sync-20261104",
+  "observed_at": "2026-11-03T17:17:15.364728+00:00",
+  "stage": "mapped_candidate_pending_independent_review",
+  "upstream": {
+    "manifest_path": "data-collection/issue35-frozen-source.json",
+    "manifest_sha256": "6932f541460191992d669df1b04984fd7fe1288479cedd773483c0db0b2a45f6",
+    "tree_sha256": "57a71cb09424a9cf124608d2f320fb40d37c1695a0b7e7262bb56e1b5f78cf93",
+    "files_checked": 216,
+    "mismatches": [],
+    "formal_verify": "approved_file_integrity",
+    "tree_digest_recomputed": true
+  },
+  "distribution": {
+    "agents": [
+      {
+        "id": "athena",
+        "version": "0.4.0",
+        "candidate_digest": "bb6ffdae035826f3fa103b57a7849fe76c1836691d8a7b4d29c3f0047dd58e40",
+        "admission_pass": "reviews/core-agent-generalization/athena-admission.json"
+      },
+      {
+        "id": "themis",
+        "version": "0.4.0",
+        "candidate_digest": "d48aa328cad2fcf46c7a2396c91a89e22ba9b9ba9429fba78503b018614b141e",
+        "admission_pass": "reviews/core-agent-generalization/themis-admission.json"
+      },
+      {
+        "id": "hermes",
+        "version": "0.4.0",
+        "candidate_digest": "355a3867975ad80e03071b742530cfcb7341b4015391bde2ba106e143af9934d",
+        "admission_pass": "reviews/core-agent-generalization/hermes-admission.json"
+      },
+      {
+        "id": "harmonia",
+        "version": "0.3.0",
+        "candidate_digest": "01b54c6e3651d72208ad438b0a21af5ed4282a6d7d3a8bef3f392b62f5d188c5",
+        "admission_pass": "reviews/harmonia-general-0.3.0.json"
+      },
+      {
+        "id": "ariadne",
+        "version": "0.1.0",
+        "candidate_digest": "5685db2e36b3b234be6c6eaf8a054afa1ac20c52e0637aabdd4aae3c36632b38",
+        "admission_pass": "reviews/ariadne-agent-0.1.0.json"
+      }
+    ],
+    "ariadne_module_version": "0.5.0",
+    "full_parity": true,
+    "source_files": 215,
+    "distribution_files": 164,
+    "preserved_exemption": "extensions/hermes-files/",
+    "archived_prior_review_files": 9,
+    "formal_verify": "candidate",
+    "host_issue_tracking_binding_observed": false,
+    "runtime_activation": false
+  },
+  "checks": {
+    "ariadne_node_tests": "16 passed",
+    "framework_python_tests": "19 passed",
+    "quality_ownership": "passed",
+    "python_and_node_syntax": "pass"
+  },
+  "review_status": "pending_independent_review",
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

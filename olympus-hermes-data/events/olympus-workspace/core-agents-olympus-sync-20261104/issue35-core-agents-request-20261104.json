@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue35-core-agents-request-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "core-agents-olympus-sync-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-03T17:17:15.364728+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/35",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codex-issue35-worktree"
+  },
+  "payload": {
+    "instruction": "User requires Issue #35 fixed-source framework sync, commit and merge after completed #27 baseline; host Git account Sail-Li.",
+    "source_manifest": "data-collection/issue35-frozen-source.json",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "ed153281e5ab0fbfc4984eb4e3aa59b037c26e641296a9ca6ccbf7f5d850f801"
+}

@@ -1,0 +1,245 @@
+{
+  "template": false,
+  "status": "approved",
+  "subject": {
+    "id": "ariadne",
+    "version_or_digest": {
+      "version": "0.1.0",
+      "candidate_digest": "5685db2e36b3b234be6c6eaf8a054afa1ac20c52e0637aabdd4aae3c36632b38",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "596cd96087e66553e48b2c33f033078f7fd00193123551755eabe43fd14baa93"
+        },
+        {
+          "path": "agents/ariadne/AGENT.md",
+          "sha256": "78fefc3934b331d01ced3e6539e77ff46a38187dfaec49a6b621708fa2f6a421"
+        },
+        {
+          "path": "agents/ariadne/agent.json",
+          "sha256": "165ba539789cdf3ace2a7afb62662dd397edd9392cfd9d9c2b3a83789000ef95"
+        },
+        {
+          "path": "agents/ariadne/references/README.md",
+          "sha256": "1e3cb282895dd8d9cd03bd143be04be05a1452db469d24f74af1adbeeb459665"
+        },
+        {
+          "path": "agents/ariadne/references/adapters.md",
+          "sha256": "c33bb5a567f0c539054d7a4e9b8dc5a4f69e0a88fc5af96b276d1fec0d4ae76a"
+        },
+        {
+          "path": "agents/ariadne/reporting.json",
+          "sha256": "87208d8ab4d7c91ef348e30939d3c4e7bf81fe3e50148f5c7a8293467915d56c"
+        },
+        {
+          "path": "agents/hermes/references/data-contract.md",
+          "sha256": "10ad54b1dd8d9b59b733e4d5496e3a4c942ea8a5e0ebcfdcafe2d40d0108f7a5"
+        },
+        {
+          "path": "agents/hermes/references/telemetry.md",
+          "sha256": "9a3cbcaf494646819f0e1e5894aef281ad7492320215c6f1688346ab28c4508f"
+        },
+        {
+          "path": "agents/hermes/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/hermes/scripts/telemetry.py",
+          "sha256": "11c711a34aba419f95ce12b05579297b7f3150a074525b431d771a6ca0e50faa"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+        },
+        {
+          "path": "contracts/hermes-reporting.json",
+          "sha256": "6a45c579427e3142d13dc9bbfd22a04f5fa74e714cb5aabbf9b85f6dcf6c494f"
+        },
+        {
+          "path": "extensions/hermes-files/README.md",
+          "sha256": "4e3c61e8730f3f1d83627c78e34d45377aa81a2cfb42d2830039871ed4b08edb"
+        },
+        {
+          "path": "extensions/hermes-files/event.schema.json",
+          "sha256": "e9854d66086118e005357eaaf46bcf5bb5780ded9dd27a84032bedfb5d91ac1c"
+        },
+        {
+          "path": "extensions/hermes-files/event.template.json",
+          "sha256": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e"
+        },
+        {
+          "path": "extensions/hermes-files/hermes_files.py",
+          "sha256": "74b7cff2fe063c8d59cfa3256dc83ca9b87ef6bdea9b4bc11b016421a8928071"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1"
+        },
+        {
+          "path": "modules/ariadne/coordinator.mjs",
+          "sha256": "892db2a406dd322c5d2d99d07aa36683e8d33f24db8e79f07e9557f69785ddb2"
+        },
+        {
+          "path": "modules/ariadne/module.json",
+          "sha256": "8339cf43064a5c6244148c01bb4595a0840a9bdb201453c3152d644e9fbb5bc2"
+        },
+        {
+          "path": "modules/ariadne/refresh.mjs",
+          "sha256": "2b9278689743dcec41c930be3cf5fbf7feb39500325f0d3124a2097e2d78e05d"
+        },
+        {
+          "path": "modules/ariadne/test/generic-tracking.test.mjs",
+          "sha256": "d0aa7c483fed53aca71294eea608e92ec5a79a873752404273c24c6f0e23407a"
+        },
+        {
+          "path": "modules/ariadne/test/refresh.test.mjs",
+          "sha256": "bd3a016a40bffdb4e3f9e567eecfa9afb3d57239b2ec4e8ba1d3c5da8f853203"
+        },
+        {
+          "path": "skills/ariadne/SKILL.md",
+          "sha256": "f89e784f8baca25ae714d15b01ac12cc3c0b1c94fcfbeff9ec340b7d58547ad6"
+        },
+        {
+          "path": "skills/ariadne/runtime-ref.json",
+          "sha256": "f43bec76c04efb3f8d34fcbc729bf2ced329f3b72d0a0fb06dffa4e83c51238a"
+        },
+        {
+          "path": "skills/dike/SKILL.md",
+          "sha256": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a"
+        },
+        {
+          "path": "source-evidence.json",
+          "sha256": "18f4072b3e688424c58eac6e3fc8f295d6f101b3fcd4d45f841976bd078bd54d"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "e12fc4154ad0fbe44d839b0d99472f644c56bfc9d17eb0e479ab8c650186e149"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "17d30e5a634aa017127ced578e42599512dd889ec78e2cb5ea9c5794e008c968"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "9b2d878874f4a974c2b16a41c9cc198b72ad5ef8cea0551970fc2407e2940f60"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "d936bdc35cc2869652bad7cc44261716a4c9eaada7462ef1b92c2c69495ff911"
+        },
+        {
+          "path": "sync/POLICY.md",
+          "sha256": "19a52174cc40649416b06dce1f90754298dbe52bccf6af7d1e1886f2636ad583"
+        },
+        {
+          "path": "sync/gonggong_sync.py",
+          "sha256": "e4ed7199f3e731e3b5acbba6abb469572142694d98b4987ad7e395531be9c44a"
+        },
+        {
+          "path": "sync/local_runtime.py",
+          "sha256": "9be862c49bac9d9afb6bd5d5d807e679da4df81e39551b074e289437392df992"
+        },
+        {
+          "path": "sync/names.json",
+          "sha256": "e45df2f20f3290c14c12503e571207594595b220d76098e31e5290245cd445af"
+        },
+        {
+          "path": "sync/read_hermes.py",
+          "sha256": "80567189c27b3a825e4c77430cfd5e0fe0179f68850a2c8c162784a59e49a77a"
+        },
+        {
+          "path": "sync/runtime-lock.json",
+          "sha256": "b4758fa280915b60118b8abbc0ed3223d7d9687283b37708d63f869d768c7f50"
+        },
+        {
+          "path": "sync/sinan_source.py",
+          "sha256": "35dad8b9df76ad4aa26226068d8aee3902f9012e68952ab0fd9862af87de9553"
+        },
+        {
+          "path": "tools/hermes-report.py",
+          "sha256": "1e4bbe2a7c9c7738915ef688b4b98c5fdd9e6c3ca93ccbd69a257efd342a0a84"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "1391cb860e78ba6765b18172dfe3ecb78f9b30470a948a8e05ff3a1537b77659"
+        },
+        {
+          "path": "upstream/zeus/agents/zeus.md",
+          "sha256": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689"
+        },
+        {
+          "path": "upstream/zeus/core.md",
+          "sha256": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ]
+  },
+  "approval": {
+    "approver_id": "user:issue35-delivery-directive",
+    "authority_ref": "user-instruction:issue35-complete-merge-after-validation",
+    "decision_evidence_ref": "reviews/local-admission/issue35-user-decision.json",
+    "approved_at": "2026-11-03T17:24:39.281289+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "expires_at": null,
+    "revocation_ref": null,
+    "superseded_by": null
+  },
+  "reason": "Independent exact-candidate review passed; user-directed local definition sync after validation.",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "permit_id": "OLYMPUS-ISSUE35-ariadne-20261104",
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+    "zeus_version": "0.4.1",
+    "policy_version": "0.9.0",
+    "files": {
+      "FOUNDATION.md": "e79a3a3ab5c4de36573d2c4835cf0fed9d05f672da52740ef0c2527dde1c0dce",
+      "foundation.lock.json": "7248f447bc58709cad93577bdbd86909402530c0312781c4c3ca80d0c0b39de1",
+      "AGENTS.md": "a24e8f0a9515d3d6992a5fe5284d92a7a79653018eb13a418b7ac1f9ebca07d1",
+      "upstream/zeus/core.md": "b4e9c67c851f62d7f21f41e555a7bc2875af6dc5f637147c69ad44b19e628e29",
+      "upstream/zeus/agents/zeus.md": "67d467697d120a7d3a54721b9d338a4d316e71b1719a5d9928cc083bd30ad689",
+      "skills/dike/SKILL.md": "764c6b48ae910328cca61c43373c03ae712d819dbed8ff630bcf15af1fdb221a",
+      "contracts/admission-policy.json": "bd02ee9f7720db0aa8338ff958763069771e98b79c08197b2827db056cc7825a"
+    }
+  },
+  "review": {
+    "olympus_framework": "pass",
+    "zeus": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": {
+        "ariadne": 790
+      },
+      "rationale": "Entry retains purpose, authority, reporting, and targeted references; independent review found no duplicate Agent/module identity."
+    },
+    "applicable_validation": "pass",
+    "evaluator_id": "/root/issue35_independent_review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "No actual host issue_tracking registry binding observed.",
+      "Host runtime authority and Git handoff activation are separate."
+    ],
+    "evidence_refs": [
+      "reviews/local-admission/issue35-independent-review.json"
+    ]
+  }
+}

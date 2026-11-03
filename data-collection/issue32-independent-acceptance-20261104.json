@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/32",
+  "request_id": "issue-20261104-002257",
+  "observed_at": "2026-11-03T17:41:26.340899+00:00",
+  "reviewer": "independent Codex subtask consultation_review",
+  "result": "pass",
+  "scope": "API isolated loopback native evidence; code/workflow and build-input bindings reviewed",
+  "native_run": 41685815159,
+  "native_artifact": 13253149615,
+  "build_run": 41681730192,
+  "build_artifact": 13252674005,
+  "editor_sha256": "a2fe538d064b61311deef2a6876dc054ea76bf90ebb7a204b284935d20c0f845",
+  "verified": "Independent GitHub plugin readback confirms native job success and build skipped, source MSVC editor job success, correct repository and source/test SHA. Four-request result sequence and actual fixture success marker match.",
+  "limitations": [
+    "Native headless; no display inspection",
+    "CLI consultation explicitly refused",
+    "No real supplier or long-term stability acceptance",
+    "RID and 745 ObjectDB shutdown leakage retained",
+    "No global GitHub API spy"
+  ],
+  "input_tokens": null,
+  "output_tokens": null
+}

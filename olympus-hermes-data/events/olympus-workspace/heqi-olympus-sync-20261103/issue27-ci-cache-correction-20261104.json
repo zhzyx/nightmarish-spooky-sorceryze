@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue27-ci-cache-correction-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "heqi-olympus-sync-20261103",
+  "kind": "step",
+  "occurred_at": "2026-11-03T17:01:19.672773+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codex-cross-workspace-handoff"
+  },
+  "payload": {
+    "description": "Correction: previous CI repair pinned untracked local Python cache; new registration excludes bytecode and raw issue27 evidence from format normalization; offline checker passes.",
+    "evidence": "data-collection/issue27-ci-cache-correction-20261104.json",
+    "evidence_sha256": "b195a1c0b4f85db5afb8ba80af8686f5379ee85a51b8726d011c7abab53338c9",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "issue27-ci-repair-20261104"
+  ],
+  "supersedes": "issue27-ci-repair-20261104",
+  "sha256": "a85ebde7ec0a9bbc4d09fd9b4e792d11acbd1c83ac16736be1222c2434b69661"
+}

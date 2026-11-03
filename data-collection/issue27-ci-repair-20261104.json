@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "observed_at": "2026-11-03T16:55:41.663805+00:00",
+  "trigger": "PR #34 static checks failed",
+  "cause": "Offline frozen registration still pinned three-Agent prior snapshot; candidate checker hard-coded three Agent IDs; design document required file_format normalization",
+  "repair": {
+    "registration_files": 165,
+    "registration_sha256": "617a15cc9a5095dfd1cdff49af5454f7113e461d49f19752b1e1a716a1c96c89",
+    "checker_sha256": "0354efbae5bb4c514d2a43315492dfb22bfb05e0a23a3dddd31a67d503bc5011",
+    "agent_ids": [
+      "athena",
+      "themis",
+      "hermes",
+      "harmonia"
+    ]
+  },
+  "checks": {
+    "offline_snapshot": "pass",
+    "offline_checker_tests": "10 passed, 1 skipped",
+    "file_format": "pass on changed files"
+  },
+  "scope": "repository CI registration and generic candidate checker; no generated framework bytes changed",
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

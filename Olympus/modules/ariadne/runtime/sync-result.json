@@ -1,7 +1,7 @@
 {
   "event": {
-    "type": "source.changed",
-    "reference": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/13"
+    "type": "scope.changed",
+    "reference": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25"
   },
   "updated": true,
   "document": "progress.md",

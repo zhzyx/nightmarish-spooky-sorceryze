@@ -19,9 +19,9 @@
 | 冻结纲领 | [FOUNDATION.md](FOUNDATION.md)，不可修改 |
 | 宙斯共同基础 | upstream/zeus：原则、Agent 模板、组织方法及契约，原件保持不变 |
 | 治理与准入 | [GOVERNANCE.md](GOVERNANCE.md)、[奥林匹斯回查](skills/dike/SKILL.md)、[审查规范](specs/governance-review.md) |
-| 3 个正式独立 Agent | [雅典娜](agents/athena/AGENT.md)：需求理解与文档设计；[忒弥斯](agents/themis/AGENT.md)：升级质量事件监察；[赫尔墨斯](agents/hermes/AGENT.md)：数据记录、分析与优化参考 |
+| 核心独立 Agent | [雅典娜](agents/athena/AGENT.md)：需求理解与文档设计；[忒弥斯](agents/themis/AGENT.md)：升级质量事件监察；[赫尔墨斯](agents/hermes/AGENT.md)：数据记录、分析与优化参考；[阿里阿德涅](agents/ariadne/AGENT.md)：通用任务协调；[哈耳摩尼亚](agents/harmonia/AGENT.md)：通用协作与成果整合。具体准入状态以登记表与当前候选为准 |
 | 9 项 skill | dike、metis、themis、iris、mnemosyne、cadmus、demeter、apollo、上游 hestia |
-| 临时审查职能 | 阿斯特赖亚·框架审查：独立评价当前候选；不是第四个常设 Agent，不因命名获得权限 |
+| 临时审查职能 | 阿斯特赖亚·框架审查：独立评价当前候选；不因临时审查职能增加常设 Agent，不因命名获得权限 |
 | 16 项专项规范 | 模块、客户方案、组织、项目状态、并发、代码、场景、质量、引擎适配、企业运行、治理审查、文档设计、质量职责、数据反馈、上报、跨模型运行；路径与加载条件见 framework-manifest.json |
 | 跨模型本地运行 | [运行规范](specs/model-runtime.md)、runtime/runner.py、runtime/adapters.py、runtime/evaluate.py、runtime/hermes.py；共享代码，不新增Agent/skill |
 | 共享实现与记录 | tools、contracts、templates；雅典娜兼容代码在 integrations/athena-legacy；本版审查证据在 reviews |
@@ -34,7 +34,7 @@
 
 奥林匹斯生产、组件创建变更和外部合入均执行奥林匹斯回查及宙斯评价。通行证绑定对象、版本、指纹、阶段、范围、独立证据与真实批准；模板不是批准，本地定义通过不授予未来任务或生产运行权限。
 
-新组件通过 tools/create-component.py 或等价契约自带赫尔墨斯配置；共 12 份配置覆盖 3 个 Agent 和 9 项 skill。创建、配置、排队与取得落库回执分别记录，详见 [上报规范](specs/reporting.md)。赫尔墨斯对奥林匹斯／宙斯只保留 reference，调整须用户另行明确下令；其他子 Agent 优化候选仍走原授权和审查。
+新组件通过 tools/create-component.py 或等价契约自带赫尔墨斯配置；配置覆盖已登记 Agent 和 skill，数量以当前登记表与实际检查为准。创建、配置、排队与取得落库回执分别记录，详见 [上报规范](specs/reporting.md)。赫尔墨斯对奥林匹斯／宙斯只保留 reference，调整须用户另行明确下令；其他子 Agent 优化候选仍走原授权和审查。
 
 ## 已验证与待接入
 
@@ -48,4 +48,4 @@
 
 ## 阿里阿德涅（司南）已登记模块同步
 
-共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。
+共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 5 个正式 Agent、9 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。

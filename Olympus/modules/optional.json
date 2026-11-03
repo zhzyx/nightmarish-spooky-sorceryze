@@ -1,0 +1,5 @@
+{
+  "path_base": "framework_root",
+  "purpose": "discovery_only_not_activation",
+  "modules": [{"id": "git-issue", "manifest": "modules/git-issue/module.json", "default_enabled": false}]
+}

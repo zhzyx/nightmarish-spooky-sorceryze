@@ -68,8 +68,13 @@ def expected(source,adapters,sinan_source):
     namespace={};exec(compile(adapters['sync/sinan_source.py'],'sinan_source.py','exec'),namespace)
     evidence=namespace['merge'](raw,sinan_source)
     def tr(s):
+        # data-collection is the host handoff directory, not the data-collect
+        # component name. Keep its path stable in source text and filenames.
+        marker='__OLYMPUS_DATA_COLLECTION_PATH__'
+        if marker in s:raise ValueError('Reserved path marker in upstream source')
+        s=s.replace('data-collection',marker)
         for a,b in pairs:s=s.replace(a,b)
-        return s
+        return s.replace(marker,'data-collection')
     out={}
     for p,b in raw.items():
         if p.startswith('reviews/'):continue
@@ -101,6 +106,13 @@ def expected(source,adapters,sinan_source):
         s=out[p].decode()
         if s.count(old)!=1:raise ValueError('Upstream hook changed; adapter review required: '+p)
         out[p]=s.replace(old,new).encode()
+    # The distributed framework itself is the package root, unlike the source
+    # workspace where CURRENT_FRAMEWORK.json sits above framework/.
+    patch('tests/test_hermes_host.py',"WORK=next(p for p in HERE.parents if (p/'CURRENT_FRAMEWORK.json').is_file());ROOT=WORK/'framework'", "WORK=next(p for p in HERE.parents if (p/'CURRENT_FRAMEWORK.json').is_file());ROOT=WORK")
+    p='tests/test_runtime.py';s=out[p].decode()
+    if s.count('reviews/fixture.txt')!=3:raise ValueError('Runtime fixture hook changed; adapter review required')
+    out[p]=s.replace('reviews/fixture.txt','reviews/local-admission/fixture.txt').encode()
+    patch(p,"manifest=runner.read(root/'framework-manifest.json');(root/'reviews/local-admission/fixture.txt').write_text", "manifest=runner.read(root/'framework-manifest.json');(root/'reviews/local-admission').mkdir(parents=True,exist_ok=True);(root/'reviews/local-admission/fixture.txt').write_text")
     patch('tools/verify_framework.py','def verify(root,candidate=False):','def verify(root,candidate=False):\n    __import__("runpy").run_path(str(root/"sync/local_runtime.py"))["check"](root)')
     patch('tools/agent-context.mjs',"import fs from 'node:fs';","import fs from 'node:fs';\nimport {execFileSync} from 'node:child_process';")
     patch('tools/agent-context.mjs','  root=fs.realpathSync(root);',"  root=fs.realpathSync(root);\n  execFileSync(process.env.OLYMPUS_PYTHON || 'python', [path.join(root,'sync/local_runtime.py'),'--root',root], {stdio:'pipe'});")
@@ -134,10 +146,9 @@ def expected(source,adapters,sinan_source):
         put('skills/ariadne/runtime-ref.json',runtime)
         put('CURRENT_FRAMEWORK.json',{'path_base':'this_file_directory','root':'.','manifest':'framework-manifest.json','status':'candidate_pending_admission'})
         # Existing Yuanheng ledgers keep their original on-disk format.
-        for p in ['modules/ariadne/coordinator.mjs','modules/ariadne/refresh.mjs']:
-            out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
-        p='modules/ariadne/test/refresh.test.mjs'
-        if p in out:out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
+        for p in sorted(out):
+            if p.startswith('modules/ariadne/') and p.endswith('.mjs'):
+                out[p]=out[p].decode().replace('.zeus','.yuanheng').encode()
     else:
         raise ValueError('Current self-contained event-driven Sinan module required; archived timer distribution is no longer supported')
     append('skills/ariadne/SKILL.md','\nThe framework root is ../.. relative to this skill. runtime-ref.json paths are framework-root relative. Use the shared Hermes reporting.json; the file-data exemption remains available. External source ledger format .yuanheng/state.json is preserved. No live sources or CLI are bound by default.\n')
@@ -148,8 +159,9 @@ def expected(source,adapters,sinan_source):
     module['module_admission']='reviews/ariadne-module-admission.json';module['implementation_admission']='reviews/ariadne-admission.json';put('modules/ariadne/module.json',module)
     for item in m['modules']:
         if item['id']=='ariadne':item['admission_pass']=module['module_admission']
-    append('README.md','\n## 阿里阿德涅（司南）已登记模块同步\n\n共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 3 个正式 Agent、10 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。\n')
-    append('specs/module-system.md','\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发，不新增 Agent；源登记证据保留在 source-evidence.json。\n')
+    append('README.md',f'\n## 阿里阿德涅（司南）已登记模块同步\n\n共工当前主线与已登记司南模块全量合并同步；不回退主线。模块 modules/ariadne，skill skills/ariadne，共 {len(m["agents"])} 个正式 Agent、{len(m["skills"])} 个 skill。上游登记证据在 source-evidence.json；副本指纹准入仍待审。执行 `node modules/ariadne/coordinator.mjs board modules/ariadne/runtime/registry.json`；默认没有真实账本或源 CLI。\n')
+    agent_note='独立核心 Agent 见 agents/ariadne' if any(a['id']=='ariadne' for a in m['agents']) else '此模块不新增 Agent'
+    append('specs/module-system.md',f'\n已同步共工登记模块：阿里阿德涅 ariadne，契约 modules/ariadne/module.json，专项 specs/work-order-management.md，skill skills/ariadne。任务范围不限开发；{agent_note}。源登记证据保留在 source-evidence.json。\n')
     m['distribution_sync']={'policy':'sync/POLICY.md','checker':'sync/gonggong_sync.py','data_reader':'sync/read_hermes.py','upstream':'gonggong','full_verification_required':True}
     m['distribution_sync']['exemptions']=[{'id':'hermes-file-data','module_root':EXEMPT,'data_root':'<target-git-root>/olympus-hermes-data','sync_behavior':'preserve_existing_module_bytes_never_touch_dataset','authority':'explicit_user_instruction_independent_git_file_data_module','reader':'extensions/hermes-files/hermes_files.py','database_required':False,'initialize_only_after_target_repository_integration':True}]
     lock=get('foundation.lock.json');lock.update(sha256=sha(out['FOUNDATION.md']),source_sha256=sha(raw['FOUNDATION.md']),authority='explicit_user_instruction_complete_upstream_sync_and_namespace_mapping',namespace_only_change=True);put('foundation.lock.json',lock);m['foundation_sha256']=lock['sha256']

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue27-heqi-sync-admission-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "heqi-olympus-sync-20261103",
+  "kind": "step",
+  "occurred_at": "2026-11-03T16:25:48.194729+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codex-cross-workspace-handoff"
+  },
+  "payload": {
+    "description": "Independent exact-candidate review passed; four local definition permits recorded under conditional user sync directive; formal verification passed; host runtime remains unauthenticated.",
+    "evidence": "data-collection/issue27-admission-20261104.json",
+    "evidence_sha256": "0de648ff0642f9d3787b76aece0b1bcb836dff38b91b3928e086b0245d7c0c65",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "issue27-heqi-sync-candidate-20261104"
+  ],
+  "sha256": "75ba6162a3df211b1273737180d29729ee9ef164c1af1b8b70e80cd6fa084ee0"
+}

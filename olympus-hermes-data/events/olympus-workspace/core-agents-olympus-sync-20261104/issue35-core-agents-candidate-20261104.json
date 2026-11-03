@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue35-core-agents-candidate-20261104",
+  "tenant_id": "olympus-workspace",
+  "request_id": "core-agents-olympus-sync-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-03T17:17:15.364728+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/35",
+  "agent": {
+    "id": "codex-root",
+    "version": "not-reported-by-host",
+    "definition_sha256": "3d60d89ab7d95ba1dc5ce19999a7c6be297f13de237a8be7aad6bc37930e0051",
+    "origin": "codex-issue35-worktree"
+  },
+  "payload": {
+    "description": "Full mapped five-Agent candidate rebuilt from exact frozen source; representative tests pass; independent Olympus review and exact admission remain pending.",
+    "evidence": "data-collection/issue35-sync-candidate-20261104.json",
+    "evidence_sha256": "3ea4dc0be6ad2f341c946e6d3deb91de0cee7272fc403ede582d547e82b8c691",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied by host; no estimate"
+  },
+  "evidence_refs": [
+    "issue35-core-agents-request-20261104"
+  ],
+  "sha256": "4eec30b0ffbc63c74d7ba83034ba1b93f2bfe93cc0b4fc24c58ce86104a44cbc"
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "observed_at": "2026-11-03T16:09:47.697334+00:00",
+  "source": {
+    "id": "gonggong-heqi-integration-25-frozen-v1",
+    "original_manifest": "data-collection/issue27-frozen-source.json",
+    "original_manifest_sha256": "7c0b7c61c313e4ed05d35b5e66c245901f8c2369fcc7c466406de88c44c38c7d",
+    "listed_files": 200,
+    "all_listed_hashes_matched": true,
+    "framework_files": 182,
+    "formal_source_verification": "approved_file_integrity",
+    "upstream_heqi_version": "0.2.1",
+    "upstream_heqi_candidate_digest": "386d811bf881cd24ebbe87b5ed6c2f2e88bd1f4f786dedc31c5da0d165a2a553",
+    "delivery_check": "data-collection/issue27-upstream-delivery-check.json",
+    "delivery_check_sha256": "a7cfe9b32ebb5f037479cf4661ea5926c575d3a0122f2af66ad815d8534a6c86",
+    "historical_behavior": "Gonggong 0.2.0 actual local Git conflict result; 0.2.1 source review says integration algorithm unchanged; no production multi-account claim"
+  },
+  "distribution": {
+    "files": 154,
+    "parity": true,
+    "source_admission_verified": true,
+    "preserved_exemption": "Olympus/extensions/hermes-files",
+    "new_agent": "harmonia",
+    "new_agent_version": "0.2.1",
+    "new_agent_candidate_digest": "15d5b235a200caab9cde26eaca5448bd61dc81d8ebd957e47478bf487fc063fd",
+    "candidate_integrity": "pass",
+    "formal_admission": "pending_independent_review",
+    "host_activation": false
+  },
+  "checks": {
+    "framework_python_unittest": {
+      "passed": 19,
+      "synthetic_only": true,
+      "OLYMPUS_PYTHON": "bundled_project_python"
+    },
+    "ariadne_node_test": {
+      "passed": 12
+    },
+    "git_issue_unittest": {
+      "passed": 8
+    },
+    "quality_ownership": "pass",
+    "python_node_syntax": "pass"
+  },
+  "prior_local_admission": {
+    "archived_originals": "data-collection/issue27-previous-local-admission",
+    "reason": "Old exact-candidate approvals do not authorize new digest"
+  },
+  "git_commit": null,
+  "remote_push": false,
+  "diting_consumption_confirmed": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Not supplied by host; no estimate"
+}

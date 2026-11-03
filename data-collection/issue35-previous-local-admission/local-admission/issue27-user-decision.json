@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/27",
+  "request_id": "heqi-olympus-sync-20261103",
+  "decision": "approved_local_agent_definition_only",
+  "authority_source": "User instruction in Gonggong chat relayed through cross-chat coordination; exact quote: agent做完验证好了之后推送到olympus框架进行框架更新。",
+  "source_thread_id": "01a19d3b-b45e-73d1-a856-a5d75b144712",
+  "condition": "Frozen source formal validation and independent Olympus exact-candidate review passed",
+  "review_sha256": "3a891cca8f069aae4f3b8ba73083bd32b0163d48b55a90f1fd3a122816e50760",
+  "subjects": {
+    "athena": "3a4a75769d62354d7562bdbb859bc390ef0382b35a7fa952f95b8f7cc1b42cbb",
+    "themis": "8f1d9f4e8adcb58d38e87e07932fbef25e1d434b9b2d7c42f78587f0b4d17c0b",
+    "hermes": "15b0663cbd62efc1abf00570d1edaa37fd780edb7fa66f66886362d80a4b6180",
+    "harmonia": "15d5b235a200caab9cde26eaca5448bd61dc81d8ebd957e47478bf487fc063fd"
+  },
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "host_runtime_authority": false,
+  "git_issue_optional_module_enabled": false,
+  "approved_at": "2026-11-03T16:24:28.990146+00:00",
+  "decision_interpretation": "Conditional user release instruction applied only after exact independent review; this artifact does not authenticate the user or grant host mandates."
+}

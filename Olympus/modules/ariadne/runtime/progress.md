@@ -1,6 +1,6 @@
 # 阿里阿德涅工单进度
 
-触发：source.changed；来源：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/13
+触发：scope.changed；来源：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/25
 
 覆盖：已登记来源 0 个，成功读取 0 个。未登记来源未知。
 

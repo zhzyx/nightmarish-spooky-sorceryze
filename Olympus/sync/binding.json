@@ -1,8 +1,8 @@
 {
   "path_base": "olympus_framework_root",
-  "source": "../.godot-integration-local/issue7-042-standalone/source/CURRENT_FRAMEWORK.json",
+  "source": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework",
   "sinan_source": {
-    "framework": "../.godot-integration-local/issue7-042-standalone/source/framework"
+    "framework": "../../../../GongGong/work/core-agents-generalization-20261103/frozen-v1/framework"
   },
-  "purpose": "update_only_locator_not_runtime_dependency_or_authority"
+  "purpose": "local_upstream_locator_not_authority"
 }
