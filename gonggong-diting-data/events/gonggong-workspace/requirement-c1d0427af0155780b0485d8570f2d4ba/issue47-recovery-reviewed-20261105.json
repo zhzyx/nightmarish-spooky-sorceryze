@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "issue47-recovery-reviewed-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T17:38:25.935809+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "agent": {
+    "id": "codex-issue47",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "independently_reviewed_local_candidate",
+    "evidence": "data-collection/issue47-recovery-r2-20261105.json",
+    "path_base": "repository_root",
+    "actual_worker": "Codex Issue47 chat",
+    "reviewer": "independent subagent review47",
+    "finding": "Duplicate components accepted at deploy but rejected at restore; fixed and 14 tests passed",
+    "gonggong_review": "Host adapter only; frozen framework unchanged; no admission or release authority inferred",
+    "yuanheng": {
+      "purpose": "Issue47 persisted runtime pins",
+      "truth": "Local tests separated from editor restart and real model acceptance",
+      "economy": "Reuse bridge; no unrelated rebuild",
+      "authority": "Independent review; no self approval",
+      "adaptation": "Concrete review defect corrected with regression",
+      "continuity": "Original scope remains open"
+    },
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue47-recovery-verified-20261105"
+  ],
+  "supersedes": "issue47-recovery-verified-20261105",
+  "sha256": "1f53864274375fa9c7e97b2c03cefeec0491e78082e93c79e34fbbbc1b07c7c7"
+}

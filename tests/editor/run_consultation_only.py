@@ -37,7 +37,7 @@ def main():
                 try:
                     request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                     names = {x["function"]["name"] for x in request["tools"]}
-                    assert names == {"read_file", "read_script", "read_logs", "list_scripts", "list_directory"}, names
+                    assert names == {"get_editor_state", "read_file", "read_script", "read_logs", "list_scripts", "list_directory"}, names
                     messages = request["messages"]
                     assert all("consultation_only" not in m for m in messages)
                     latest = max(i for i, m in enumerate(messages) if m["role"] == "user")

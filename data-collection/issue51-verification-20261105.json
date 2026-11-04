@@ -1,0 +1,113 @@
+{
+  "issue": 51,
+  "path_base": "repository_root",
+  "baseline_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "source_sha256": {
+    ".gitignore": "da354d5f4d78fed52f44107e099acbecc44a0ac75ead04741935cba073637d64",
+    "tests/editor/ai_chat_integration.gd": "ed6622a9105efe2fede17869558e236050f73b4b69cafddf1443912ebcfc3873",
+    "tests/editor/run_editor_self_update.py": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "tests/editor/test_codebuddy_bridge.js": "d836b95bbc11af058fcb0d7ea923be62b3a8fab7bf22ed70a2640c230436502b",
+    "tests/editor/test_frozen_gonggong_distribution.py": "2e3706a1bf846853e7997ee5d763cab15459bdf555a993c0bc780db1b99d61cc",
+    "tools/check_gonggong_distribution.py": "7c22b7cd7cbf9aa3aaf5ceeb5ec6acba8973caa94f044861e6fac908dafafb75",
+    "tools/test_gonggong_standalone.py": "fa9925ab47d4d3c55d4271cf42e27ae918e50b90675892825ca9766051977f9a"
+  },
+  "dependency_lock_sha256": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda",
+  "binary": {
+    "source_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+    "sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+    "copied_from_verified_installation": true
+  },
+  "checks": {
+    "frozen_distribution": {
+      "passed": 12,
+      "skipped": 1,
+      "reason": "Windows symlink privilege"
+    },
+    "offline_snapshot_files": 243,
+    "standalone_passed": 9,
+    "bridge_passed": 35,
+    "receipt_scenarios": [
+      {
+        "mode": "receipt_retry",
+        "exit_code": 0,
+        "elapsed_seconds": 22.608,
+        "results": [
+          {
+            "max_frame_gap_seconds": 0.031758,
+            "injected_flush_delay_seconds": 2.0
+          },
+          {
+            "native_page": true,
+            "mode": "receipt_retry",
+            "real_framework_called": false,
+            "model_transport_fixture": true,
+            "receipt_verified": true,
+            "model_requests": 1,
+            "production_data_written": false
+          }
+        ]
+      },
+      {
+        "mode": "receipt_cancel",
+        "exit_code": 0,
+        "elapsed_seconds": 12.875,
+        "results": [
+          {
+            "max_frame_gap_seconds": 0.029982,
+            "injected_flush_delay_seconds": 2.0
+          },
+          {
+            "native_page": true,
+            "mode": "receipt_cancel",
+            "real_framework_called": false,
+            "model_transport_fixture": true,
+            "receipt_verified": true,
+            "model_requests": 0,
+            "production_data_written": false
+          }
+        ]
+      },
+      {
+        "mode": "recovery_receipt_failure",
+        "exit_code": 0,
+        "elapsed_seconds": 11.469,
+        "results": [
+          {
+            "max_frame_gap_seconds": 0.019858,
+            "injected_flush_delay_seconds": 2.0
+          },
+          {
+            "native_page": true,
+            "mode": "recovery_receipt_failure",
+            "real_framework_called": false,
+            "model_transport_fixture": true,
+            "receipt_verified": true,
+            "model_requests": 0,
+            "production_data_written": false
+          }
+        ]
+      }
+    ],
+    "self_update": {
+      "restart_receipt": true,
+      "overall": "partial",
+      "unresolved": "RuntimeSetup and EngineBuildApproval exclusive-child conflict; exit 0 insufficient for UI acceptance"
+    },
+    "generic_ui": "Historical page assertions updated but async intake harness still incomplete; not claimed passed"
+  },
+  "environment_failures": [
+    "Default sandbox temporary-directory permissions",
+    "Missing copied Node dependencies on initial isolated run",
+    "Sandbox loopback ACP timeout; unsandboxed final 35 tests passed"
+  ],
+  "independent_review": {
+    "reviewer": "review51 subagent",
+    "finding": "Unbounded test teardown after EOF",
+    "resolution": "2s forced termination fallback and finally cleanup",
+    "reviewed_sha256": "d836b95bbc11af058fcb0d7ea923be62b3a8fab7bf22ed70a2640c230436502b",
+    "approval": false
+  },
+  "user_reported_deadlock": "Not reproduced; exclusive-modal conflict is a concrete candidate cause requiring UI verification",
+  "issue_close_ready": false,
+  "installation_switched": false
+}

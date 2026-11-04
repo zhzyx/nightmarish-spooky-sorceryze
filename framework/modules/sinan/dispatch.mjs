@@ -164,7 +164,7 @@ export async function dispatchEvent(event, requests, host) {
       stage = 'record';
       const state = receipt.setupPending === true ? 'delegated_pending_host' : 'running';
       await host.record({assignment, event, state, sourceReceipt, receipt});
-      return {ticket: assignment.ticket, state, receipt};
+      return {ticket: assignment.ticket, key: assignment.key, state, receipt};
     } catch (error) {
       receipt ??= error.receipt;
       const result = {ticket: assignment.ticket, key: assignment.key, state: 'reconcile_required', stage, sourceReceipt, receipt, reason: String(error.message ?? error)};

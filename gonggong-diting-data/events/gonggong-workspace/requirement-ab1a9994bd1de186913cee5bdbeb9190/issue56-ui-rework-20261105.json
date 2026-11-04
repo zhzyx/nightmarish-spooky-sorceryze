@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "issue56-ui-rework-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "kind": "rework",
+  "occurred_at": "2026-11-04T18:02:56.393883+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+  "agent": {
+    "id": "codex-issue56-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "candidate6_independently_validated",
+    "path_base": "repository_root",
+    "candidate_receipt": "data-collection/issue56-ui/build-candidate6.json",
+    "native_tests": "22 cases / 254 assertions passed in isolated profile",
+    "independent_reviewer": "issue55 chat 01a1a79b-0f13-7dd3-a5e6-c973e520581c",
+    "layout_result": "Six native physical-window cases 640/960/1440 x 900 at 100%/150% passed; source and both executable hashes unchanged before/after. Long draft plus four attachments, model text, settings scroll/cancel/done, loopback send/stop, session restoration and main-screen navigation restoration covered.",
+    "rework": "Earlier candidate failed high-scale vertical clipping and host minimum width propagation. Compact menu only in narrow AI Chat; reduced idle chrome, bounded composer, compact draft thumbnails, shared bottom action row fix these cases.",
+    "unverified": [
+      "Light theme visual matrix",
+      "Actual running engine build UI",
+      "Full legacy development integration through new requirement gate",
+      "Live provider acceptance"
+    ],
+    "known_baseline_issue": "Initial parent/session title mojibake remains; two workspace tab captions fixed only.",
+    "published": false,
+    "installation_switched": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue56-ui-step-20261105"
+  ],
+  "sha256": "2a898a5168c4f001e07586c520b473c126ba74e1227369d7c075207c064b6526"
+}

@@ -14,7 +14,7 @@
   "supporting_skills": [
     "agents/yanshi/skills/clarify-feature/SKILL.md"
   ],
-  "admission_pass": "reviews/unification-43/yanshi-admission.json",
+  "admission_pass": "reviews/verification-efficiency/yanshi-admission.json",
   "host_required_for_execution": true,
   "scope": "single_feature_document_design",
   "reporting": "agents/yanshi/reporting.json",

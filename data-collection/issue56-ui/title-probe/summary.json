@@ -1,0 +1,34 @@
+{
+  "candidate": {
+    "commit": "c7b11253dc24fb330c3c88d2423f910bef7a186e",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "30872dd6a89b5b60f086a696baf99cf12f89cd534cc364ec0ed7a0afb45e3410",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+    },
+    "binary_sha256": "25934d3b41a92c184537b93ba0ebbb8296b714f8c707b48b13238fc62ccc6ca5",
+    "engine_sha256": "29e1633e26308cee06e1b82842f57dc112ec33e47ddfd15694e18a5e34e4cce0",
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "build_result": "passed",
+    "build_seconds": 22.99,
+    "candidate": "unicode-titles-on-candidate6-with-independent-evidence-merge",
+    "path_base": "repository_root",
+    "delta": "Only three default-title literals receive U prefix after c7b11253; merged independent branch does not change production code"
+  },
+  "probe_sha256": "087c862b3ce98131a30f4e7dbab41199c01d4646766d35c8e56cecbb9ac2979c",
+  "results": [
+    {
+      "stage": "seed",
+      "exit_code": 0,
+      "result_present": true
+    },
+    {
+      "stage": "restore",
+      "exit_code": 0,
+      "result_present": true
+    }
+  ],
+  "passed": true,
+  "scope": "Unicode default/new/recreate-last titles, parent caption,640x900@150% active title bounds and second-process persistence; no layout matrix rerun",
+  "mode": "native"
+}

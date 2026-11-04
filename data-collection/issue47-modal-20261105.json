@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "related_issues": [
+    49,
+    51
+  ],
+  "base_commit": "5ac78e771e70c509b17349dff64f76406a91f26e",
+  "source_sha256_lf": {
+    "editor/docks/gonggong_panel.cpp": "02786b5e008c11415a779c681a136ec0b15d66a9645089c08eeb8035b05f53a3",
+    "tests/editor/run_runtime_modal_coordination.py": "73b937a2a11ef3246d617ff97233dc3153b25ec9db3a326a3b4325888129ce04",
+    "design-docs/requirement-c1d0427af0155780b0485d8570f2d4ba.md": "0f2d0c3c3fd1ded2abff1383c10779566d891caf71bbb60d10a0db1259ba4a49"
+  },
+  "dependency": {
+    "issue": 51,
+    "commit": "43b60a8774f9d1ef70cd15c616285d09b1d07b2d",
+    "path": "tests/editor/run_editor_self_update.py",
+    "sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "consumption": "Exact committed file copied read-only to ignored bin/issue47-fixture-driver.local.py; merge Issue51 first"
+  },
+  "build": {
+    "platform": "windows",
+    "arch": "x86_64",
+    "target": "editor",
+    "compiler": "MSVC14.5 / WindowsSDK10.0.26100.0",
+    "flags": [
+      "tests=yes",
+      "accesskit=no",
+      "d3d12=no",
+      "angle=no"
+    ],
+    "elapsed_seconds": 92.39,
+    "cache": "Copied existing objects into own worktree; SCons revalidated and rebuilt there",
+    "binary_sha256": {
+      "bin/godot.windows.editor.x86_64.exe": "92054ce98e83b159ae79358d0950335a9197b5909aa569c9e6509141cba4c3fa",
+      "bin/godot.windows.editor.x86_64.console.exe": "8248ad2be4310a93c72de1b621cb569e55ce2529436e761427b2943112203f82"
+    }
+  },
+  "baseline": {
+    "ok": false,
+    "exclusive_child_conflict": true,
+    "fixture_exit_code": 0,
+    "error": null,
+    "scenario": "original-trigger",
+    "fixture_sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "coverage": "Original self-update trigger, synthetic build and isolated restart",
+    "limits": "Button action dispatch; no OS pointer QA or real runtime install in this fixture"
+  },
+  "baseline_editor_sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+  "candidate_modal": {
+    "ok": true,
+    "exclusive_child_conflict": false,
+    "fixture_exit_code": 0,
+    "error": null,
+    "scenario": "modal-coordination",
+    "fixture_sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "coverage": "Runtime rejection, picker nesting/cancel/select, build rejection/approval, synthetic build cancellation/failure and real isolated restart",
+    "limits": "Button action dispatch; no OS pointer QA or real runtime install in this fixture"
+  },
+  "native_tests": {
+    "passed": 20,
+    "assertions": 186
+  },
+  "runtime_deploy_and_original_request_resume": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": true,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 8,
+    "issues_created": 6,
+    "events": 73,
+    "git_check": {
+      "git_state": "committed",
+      "files": 76,
+      "records": 73,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "requirement submitted during intake is queued and creates its own document and Issue",
+      "followup reuses Issue",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "8248ad2be4310a93c72de1b621cb569e55ce2529436e761427b2943112203f82",
+    "fixture_events_imported": false
+  },
+  "retained_local_logs": {
+    "bin/issue47-modal-final.local.stdout.log": "aedcb91eaaea1e9f6c4125864d7872be09b25974e9b26682f06d06b89f6cfb14",
+    "bin/issue47-modal-final.local.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bin/issue47-modal-baseline-final.local.stdout.log": "3fbc0fd8616f846e2f2db97fe947e7de6c92c360ebe5d5bf97a6062c45ed14f0",
+    "bin/issue47-modal-baseline-final.local.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "local_log_note": "Full output retained locally under ignored bin; not a distributed artifact. Original Issue51 tool flow had only an excerpt; this run is independent.",
+  "ui_pointer_qa": {
+    "status": "unverified",
+    "reason": "Computer-use listed isolated windows but could not activate even after binding recovery; no effective click occurred"
+  },
+  "initial_fixture_failures": [
+    "Old main driver located actual source instead of isolated mock, failed SCons preparation; excluded as product evidence",
+    "FileDialog cancel schedules deferred hide; first assertion checked too early, fixed by awaiting frame"
+  ],
+  "authorization": "Existing confirmed callbacks unchanged; synthetic button actions and separate deployment/resume regression passed; no real model service acceptance",
+  "review": "Independent review pending; no release approval",
+  "usage": null,
+  "observed_at": "2026-11-04T18:01:12.273967+00:00"
+}

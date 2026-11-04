@@ -1,0 +1,784 @@
+{
+	"failures": [
+		"640 collapsed: clipped ModelPicker",
+		"640 collapsed: clipped ChatInput",
+		"640 collapsed: clipped Send",
+		"640 collapsed: clipped Stop",
+		"640 collapsed: clipped ChatScroll",
+		"640 collapsed: clipped AgentTabs",
+		"640 settings: clipped ModelPicker",
+		"640 settings: clipped ChatInput",
+		"640 settings: clipped Send",
+		"640 settings: clipped Stop",
+		"640 settings: clipped ChatScroll",
+		"640 settings: clipped AgentTabs",
+		"640 settings scrolled: clipped ModelPicker",
+		"640 settings scrolled: clipped ChatInput",
+		"640 settings scrolled: clipped Send",
+		"640 settings scrolled: clipped Stop",
+		"640 settings scrolled: clipped ChatScroll",
+		"640 settings scrolled: clipped AgentTabs",
+		"640 settings + attachments: clipped ModelPicker",
+		"640 settings + attachments: clipped ChatInput",
+		"640 settings + attachments: clipped Send",
+		"640 settings + attachments: clipped Stop",
+		"640 settings + attachments: clipped ChatScroll",
+		"640 settings + attachments: clipped AgentTabs",
+		"640 switched session: clipped ModelPicker",
+		"640 switched session: clipped ChatInput",
+		"640 switched session: clipped Send",
+		"640 switched session: clipped Stop",
+		"640 switched session: clipped ChatScroll",
+		"640 switched session: clipped AgentTabs",
+		"640 long response: clipped ModelPicker",
+		"640 long response: clipped ChatInput",
+		"640 long response: clipped Send",
+		"640 long response: clipped Stop",
+		"640 long response: clipped ChatScroll",
+		"640 long response: clipped AgentTabs",
+		"640 sending: clipped ModelPicker",
+		"640 sending: clipped ChatInput",
+		"640 sending: clipped Send",
+		"640 sending: clipped Stop",
+		"640 sending: clipped ChatScroll",
+		"640 sending: clipped AgentTabs"
+	],
+	"samples": [
+		{
+			"case": "640 collapsed",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						799.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						610.0,
+						101.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						946.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						946.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 settings",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						799.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						610.0,
+						101.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						946.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						946.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 settings scrolled",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						799.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						610.0,
+						101.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						946.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						946.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 settings + attachments",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						963.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						1110.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						1110.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 switched session",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						963.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						1110.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						1110.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 long response",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						799.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						610.0,
+						101.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						946.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						946.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		},
+		{
+			"case": "640 sending",
+			"controls": {
+				"AddImage": {
+					"rect": [
+						30.0,
+						740.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"rect": [
+						145.0,
+						378.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"rect": [
+						12.0,
+						196.0,
+						820.0,
+						51.0
+					],
+					"visible": [
+						628.0,
+						51.0
+					]
+				},
+				"ChatInput": {
+					"rect": [
+						30.0,
+						799.0,
+						824.0,
+						138.0
+					],
+					"visible": [
+						610.0,
+						101.0
+					]
+				},
+				"ChatScroll": {
+					"rect": [
+						12.0,
+						497.0,
+						860.0,
+						210.0
+					],
+					"visible": [
+						628.0,
+						210.0
+					]
+				},
+				"ModelPicker": {
+					"rect": [
+						472.0,
+						313.0,
+						286.0,
+						50.0
+					],
+					"visible": [
+						168.0,
+						50.0
+					]
+				},
+				"Send": {
+					"rect": [
+						153.0,
+						946.0,
+						629.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				},
+				"Stop": {
+					"rect": [
+						788.0,
+						946.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						0.0,
+						0.0
+					]
+				}
+			},
+			"window": [
+				640,
+				900
+			]
+		}
+	],
+	"scale": 1.5
+}

@@ -1,0 +1,25 @@
+{
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "issue_number": 56,
+  "related_issues": [
+    55,
+    51
+  ],
+  "path_base": "this_file_directory",
+  "origin": "Independent Issue55 reviewer handoff, original bytes preserved",
+  "independent_title_review": "independent-title-review.json",
+  "files_sha256": {
+    "summary.json": "15369beb125e0007897359372eb8d59e9ada8617bf29fc9b8eb82e4159916c85",
+    "title-restore.json": "557b2ab4af589ce5a907721ccf1fbf65fe438ca70443334dbab305b2cf6a6371",
+    "title-restore.log": "9fc744ad359e4a51b2fd80933feba35e49119c64f4ee218cb1e0fc6a00d6fde0",
+    "title-restore.png": "2d79e25ddeff53e605acb5b053d228f80f35d4564cdab37c880c42e4f6ec4772",
+    "title-seed.json": "2f91d5339b486c97a0343b232ee5a8aee48bd6d3eb0749aa53c4293d2def73c7",
+    "title-seed.log": "871b76a7a071188b636c101efa5a68b12c821f06296ca7aafa68f28d76145f14",
+    "title-seed.png": "68a4d84695cd1b66c6b9dc40cf135d0307715f6120342b534d14096ec90a7483",
+    "independent-title-review.json": "0c0214e3b78a2592cc4550b06b1537da2dc2ef81fc94b06905709b40c9d99464",
+    "titles_probe.gd": "087c862b3ce98131a30f4e7dbab41199c01d4646766d35c8e56cecbb9ac2979c",
+    "run_titles_probe.py": "788a9cce4cbd1db1041c08f1772dc019618119d9e1bd55f69cb1c757f59c63d1"
+  },
+  "candidate_receipt": "../build-title-candidate.json",
+  "layout_reuse": "The six-case matrix belongs to candidate6. Title-only candidate ran the new native seed/restore probe at 150%640x900; no full matrix rerun claimed."
+}

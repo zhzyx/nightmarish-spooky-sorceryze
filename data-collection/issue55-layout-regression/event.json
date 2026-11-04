@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "issue55-independent-regression-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-eecb7c4b90c0c55a8cde516aac5472f2",
+  "kind": "quality_issue",
+  "occurred_at": "2026-11-04T17:44:43.688268+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+  "agent": {
+    "id": "codex-issue55-independent-regression",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "a13b10203353e9d281484a82fd1f2245f5de7a103a53ea511ddc3bd538dffe4b"
+  },
+  "payload": {
+    "status": "requires_changes",
+    "path_base": "repository_root",
+    "evidence": "data-collection/issue55-layout-regression/review.json",
+    "result": "Native 100% three widths passed; 150% three widths failed visibility. AIChat 22 tests / 254 assertions passed. Implementation worker notified; Issue remains open.",
+    "usage": null,
+    "remote_merge_verified": false,
+    "delivery_approval": false
+  },
+  "evidence_refs": [
+    "issue55-ui-request-20261105"
+  ]
+}

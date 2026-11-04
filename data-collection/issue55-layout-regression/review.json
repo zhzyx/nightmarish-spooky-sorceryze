@@ -1,0 +1,59 @@
+{
+  "issue": 55,
+  "state": "requires_changes",
+  "path_base": "repository_root",
+  "reviewer": "Codex chat 01a1a79b-0f13-7dd3-a5e6-c973e520581c; independent from #56 implementation chat",
+  "source_baseline": "e776639fc84901199741b02fa6a0a98c461f118a",
+  "candidate": {
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "build_result": "passed",
+    "binary_sha256": "b47dae03a2f69a1d73e5d058cdc77394da72e4359b4ca21a8793143b5c546553",
+    "path_base": "candidate_repository_root",
+    "build_receipt": "#56 builder reported successful 20.89 second incremental build and paused cpp/h modification for independent review",
+    "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "2a0d04fc8ac8d55c2ef25693d0d82ae9c4f710402955503c60a3e4907ff311c9",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd"
+    },
+    "candidate_state": "fixed_uncommitted_source",
+    "engine_sha256": "7eb23bb17116970c0300529002e2a2b96ade1ddce16305ee7a5abdf7670799c2"
+  },
+  "static_review": {
+    "baseline_e776639f": "Signal wiring and name-based test discovery preserved; fixed settings/message/input minimum heights require dynamic viewport verification. No baseline executable was claimed tested.",
+    "integration_snapshot": "Settings moved into nonexclusive AcceptDialog; confirmed/canceled reset toggle; tools and permission callbacks unchanged; input height updates on draft and resize. Static inspection does not establish delivery approval."
+  },
+  "checks": {
+    "native_ai_chat": {
+      "cases_passed": 22,
+      "assertions_passed": 254,
+      "evidence": "data-collection/issue55-layout-regression/native-tests.log"
+    },
+    "physical_windows": "640/960/1440 x 900; editor scale asserted 1.0 and 1.5; normal editor minimum relaxed deliberately for narrow viewport stress",
+    "native_matrix": "100% all three passed; 150% all three failed; six isolated editor processes",
+    "behaviors": "Independent settings scroll and cancel/done reset; four attachment and draft restoration across conversation switches; long response wrapping; loopback send/stop all passed in native runs",
+    "exploratory_headless": "geometry/ retained as exploratory only. Initial send fixture lacked network permission and polluted later queue state. Native runs use independent processes and network execution permission; do not promote exploratory failures as isolated attachment defects."
+  },
+  "findings": [
+    {
+      "priority": 1,
+      "id": "layout-height-150",
+      "condition": "150% at physical 960x900 and 1440x900, even settings collapsed and no attachments",
+      "actual": "Input y799 h138 visible101; Send/Stop y946 h50 wholly outside 900px viewport; composer y722 h292 visible178",
+      "expected": "Input, Send and Stop stay visible; settings do not consume composer height",
+      "evidence": "data-collection/issue55-layout-regression/native/layout-1.5-960.json"
+    },
+    {
+      "priority": 1,
+      "id": "layout-width-150-640",
+      "condition": "150% at physical 640x900",
+      "actual": "ChatScroll width860 at x12; input width824 at x30; model/agent tabs clipped horizontally; Send below bottom",
+      "expected": "Narrow responsive layout bounds controls within viewport",
+      "evidence": "data-collection/issue55-layout-regression/native/layout-1.5-640.json"
+    }
+  ],
+  "test_input_correction": "data-collection/issue55-layout-regression/native/test-inputs-correction.json",
+  "visual_screenshots": null,
+  "approval_granted": false,
+  "next_event": "#56 fixes fixed source candidate and provides new build hashes; independently repeat affected 150% cases, then exact-candidate review. Issue stays open; coordinator owns merge/install.",
+  "usage": null
+}

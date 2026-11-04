@@ -1,0 +1,13 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "path_base": "repository_root",
+  "implementation_digest": "a28d9ab15f131f48414949899266af7a65a53d7aad4167caa5e2beb96389e3f1",
+  "framework_digest": "dee11998394d4eb292c4b213ddfb5c638c85779fc1f29f2ef568ddaa31e788cb",
+  "approver_id": "workspace-user",
+  "authority_ref": "codex-chat:01a1a8a3-718f-7b10-8e22-87d3f44437b7",
+  "decision": "approved_local_definition_release_and_continue_to_acceptance_merge",
+  "decision_text": "批准该集成候选，持续到验收合入",
+  "recorded_at": "2026-11-04T22:56:24.261749+00:00",
+  "runtime_acceptance_granted": false
+}

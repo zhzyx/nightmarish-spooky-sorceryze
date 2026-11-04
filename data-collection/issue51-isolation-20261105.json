@@ -1,0 +1,47 @@
+{
+  "issue": 51,
+  "path_base": "repository_root",
+  "baseline_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "files": {
+    ".gitignore": {
+      "copied_sha256": "da354d5f4d78fed52f44107e099acbecc44a0ac75ead04741935cba073637d64",
+      "historical_sha256": "da354d5f4d78fed52f44107e099acbecc44a0ac75ead04741935cba073637d64",
+      "historical_match": true
+    },
+    "tests/editor/ai_chat_integration.gd": {
+      "copied_sha256": "ed6622a9105efe2fede17869558e236050f73b4b69cafddf1443912ebcfc3873",
+      "historical_sha256": "c60111c020b4573310d4b12f0be23c0c7dc1f686a3216957c792d4c0ca5993ef",
+      "historical_match": false
+    },
+    "tests/editor/run_editor_self_update.py": {
+      "copied_sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+      "historical_sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+      "historical_match": true
+    },
+    "tests/editor/test_codebuddy_bridge.js": {
+      "copied_sha256": "485050294f3235adfd4a0ffe8a0aa13cef0c70c25dce315cbc1b2953921a236e",
+      "historical_sha256": "485050294f3235adfd4a0ffe8a0aa13cef0c70c25dce315cbc1b2953921a236e",
+      "historical_match": true
+    },
+    "tests/editor/test_frozen_gonggong_distribution.py": {
+      "copied_sha256": "2e3706a1bf846853e7997ee5d763cab15459bdf555a993c0bc780db1b99d61cc",
+      "historical_sha256": "2e3706a1bf846853e7997ee5d763cab15459bdf555a993c0bc780db1b99d61cc",
+      "historical_match": true
+    },
+    "tools/check_gonggong_distribution.py": {
+      "copied_sha256": "7c22b7cd7cbf9aa3aaf5ceeb5ec6acba8973caa94f044861e6fac908dafafb75",
+      "historical_sha256": "7c22b7cd7cbf9aa3aaf5ceeb5ec6acba8973caa94f044861e6fac908dafafb75",
+      "historical_match": true
+    },
+    "tools/test_gonggong_standalone.py": {
+      "copied_sha256": "fa9925ab47d4d3c55d4271cf42e27ae918e50b90675892825ca9766051977f9a",
+      "historical_sha256": "fa9925ab47d4d3c55d4271cf42e27ae918e50b90675892825ca9766051977f9a",
+      "historical_match": true
+    }
+  },
+  "historical_evidence": "Unchanged historical evidence, not current candidate execution; mismatched files require fresh tests",
+  "excluded": [
+    "editor/docks/ai_chat_dock.cpp (#56 owner)",
+    "samples/gonggong-workbench/project.godot (other work)"
+  ]
+}

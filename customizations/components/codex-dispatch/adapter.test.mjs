@@ -100,3 +100,31 @@ test('receipt persistence failure preserves actual worker receipt on error',asyn
     return true;
   });
 });
+
+test('queued setup requires authoritative mapping before source acknowledgement',async t=>{
+  const f=setup(t);f.requests[0].target='chat';let ack=0;
+  f.native.create_thread=async()=>({clientThreadId:'setup-1',hostId:'local'});
+  f.source.ack=async()=>{ack++;};f.source.verifySetup=async()=>false;
+  const h=f.make(),result=await h.run(event,[f.requests[0]]),r=result.results[0];
+  const receipt={...r.receipt,workerId:'ready-1',reference:'chat:ready-1',setupPending:false};
+  const ready={type:'ticket.changed',reference:'actual-setup-completed'};
+  await assert.rejects(h.completeSetup(ready,r.key,receipt),/not verified/);assert.equal(ack,0);
+  f.source.verifySetup=async(a,e,pending,final)=>pending.workerId==='setup-1'&&final.workerId==='ready-1';
+  await h.completeSetup(ready,r.key,receipt);assert.equal(ack,1);
+  const count=f.reports.length;
+  assert.equal((await h.completeSetup(ready,r.key,receipt)).state,'already_setup');
+  assert.equal(ack,1);assert.equal(f.reports.length,count);
+  await h.reconcile({type:'execution.finished',reference:'actual-chat-terminal'},r.key,receipt);
+  const terminalCount=f.reports.length;
+  assert.equal((await h.completeSetup(ready,r.key,receipt)).state,'already_reconciled');
+  assert.equal(ack,1);assert.equal(f.reports.length,terminalCount);
+});
+
+test('only explicit verified never-launched failure releases a reservation',async t=>{
+  const f=setup(t);f.source.startSource=async()=>{throw Error('stale source');};
+  const h=f.make(),result=await h.run(event,[f.requests[0]]),key=result.results[0].key;
+  assert.equal(f.calls.length,0);const failed={type:'execution.failed',reference:'verified-source-refusal'};
+  await assert.rejects(h.releaseUnstarted(failed,key),/unknown/);assert.equal(h.activeReservations().length,1);
+  f.source.verifyNeverLaunched=async()=>true;
+  await h.releaseUnstarted(failed,key);assert.equal(h.activeReservations().length,0);
+});

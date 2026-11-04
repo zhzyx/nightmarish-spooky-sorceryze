@@ -5,11 +5,18 @@ import hashlib
 import json
 import os
 import re
+import runpy
 import subprocess
 import sys
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
 import work_items
+
+BATCH_PATH = Path(__file__).resolve().parents[3] / "framework/tools/git_batch.py"
+BATCH_SOURCE = BATCH_PATH.read_bytes()
+GATE_SOURCE = Path(__file__).read_bytes()
+BATCH = runpy.run_path(str(BATCH_PATH))
 
 ACTIVE = {"status:in-progress", "status:in-review"}
 REQUEST = r"[a-z0-9]+(?:-[a-z0-9]+)*"
@@ -91,6 +98,10 @@ def check_collection(root):
     folder = root / "data-collection"
     if folder.is_symlink() or (hasattr(folder, "is_junction") and folder.is_junction()):
         raise ValueError("Linked collection root is not supported")
+    batch = BATCH
+    index = batch["objects"](root, ":", ["data-collection"])
+    tracked = batch["tracked"](root)
+    private_paths = []
     for path in sorted(folder.rglob("*")):
         if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
             raise ValueError("Linked collection paths are not supported")
@@ -107,13 +118,15 @@ def check_collection(root):
             )
         )
         if private:
-            if git(root, "ls-files", "--", name).strip():
+            if os.fsencode(name) in tracked:
                 raise ValueError("Host-private collection state must not enter Git: " + name)
-            git(root, "check-ignore", "-q", "--", name)
+            private_paths.append(os.fsencode(name))
             continue
-        if git(root, "show", ":" + name) != path.read_bytes():
+        if index.get(os.fsencode(name)) != path.read_bytes():
             raise ValueError("Collection source/receipt must be staged with current bytes: " + name)
 
+    if set(private_paths) - batch["ignored"](root, private_paths):
+        raise ValueError("Host-private collection state must remain ignored")
 
 def snapshot(root):
     """Bind HEAD, index and current tracked/nonignored content, including deletions."""
@@ -121,21 +134,29 @@ def snapshot(root):
     for args in [
         ("rev-parse", "HEAD"),
         ("ls-files", "--stage", "-z"),
-        ("diff", "--cached", "--binary", "--no-ext-diff"),
     ]:
         digest.update(git(root, *args))
     paths = set(git(root, "ls-files", "-z", "--cached", "--others", "--exclude-standard").split(b"\0")) - {b""}
-    for raw in sorted(paths):
+    def content_hash(raw):
         path = root / os.fsdecode(raw)
-        digest.update(raw + b"\0")
         if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
             raise ValueError("Linked working-tree paths are not supported by the local gate")
         if path.is_file():
-            digest.update(hashlib.sha256(path.read_bytes()).digest())
-        elif path.exists():
+            with path.open("rb") as stream:
+                content = hashlib.sha256()
+                for block in iter(lambda: stream.read(1024 * 1024), b""):
+                    content.update(block)
+                return content.digest()
+        if path.exists():
             raise ValueError("Submodules/directories require their own reviewed delivery binding")
-        else:
-            digest.update(b"DELETED")
+        return b"DELETED"
+
+    ordered = sorted(paths)
+    # Bounded parallel I/O; map preserves deterministic path order and propagates failures.
+    with ThreadPoolExecutor(max_workers=min(8, os.cpu_count() or 1)) as pool:
+        for raw, value in zip(ordered, pool.map(content_hash, ordered)):
+            digest.update(raw + b"\0")
+            digest.update(value)
     return digest.hexdigest()
 
 
@@ -144,23 +165,12 @@ def environment(root):
 
 
 def check_history(root):
-    paths = git(
-        root,
-        "ls-tree",
-        "-r",
-        "--name-only",
-        "-z",
-        "HEAD",
-        "--",
-        "gonggong-diting-data/events",
-        "olympus-hermes-data/events",
-    )
-    for raw in paths.split(b"\0"):
-        if not raw:
-            continue
+    batch = BATCH
+    head = batch["objects"](root, "HEAD", ["gonggong-diting-data/events", "olympus-hermes-data/events"])
+    for raw, original in head.items():
         name = os.fsdecode(raw)
         path = root / name
-        if not path.is_file() or path.read_bytes() != git(root, "show", "HEAD:" + name):
+        if not path.is_file() or path.read_bytes() != original:
             raise ValueError("Diting history must remain immutable; append correction events")
 
 
@@ -172,7 +182,9 @@ def validate_command(command, root, env, name):
     return json.loads(result.stdout)
 
 
-def gate(root, number, request_id):
+def gate(root, number, request_id, session=None):
+    if session is not None:
+        session.check_runtime()
     if number < 1 or not re.fullmatch(REQUEST, request_id):
         raise ValueError("Positive Issue number and stable request ID required")
     settings, labels = work_items.config(root)
@@ -204,44 +216,35 @@ def gate(root, number, request_id):
     )
     if framework.get("mode") != "approved_file_integrity":
         raise ValueError("Formal GongGong verification required; candidate mode is insufficient")
-    validate_command(
-        [
-            sys.executable,
-            "-X",
-            "utf8",
-            str(root / "framework/extensions/diting-files/diting_files.py"),
-            "validate",
-            "--repo",
-            str(root),
-        ],
-        root,
-        env,
-        "Diting validation",
-    )
-    validate_command(
-        [
-            sys.executable,
-            "-X",
-            "utf8",
-            str(root / "framework/extensions/diting-files/diting_files.py"),
-            "git-check",
-            "--repo",
-            str(root),
-        ],
-        root,
-        env,
-        "Diting Git history check",
-    )
+    if session is None:
+        validate_command(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                str(root / "framework/extensions/diting-files/diting_files.py"),
+                "git-check",
+                "--repo",
+                str(root),
+            ],
+            root,
+            env,
+            "Diting Git history check",
+        )
+    else:
+        session.check_diting(root)
     check_history(root)
     check_collection(root)
     events = []
     request_source_found = False
     issue_sources = {issue["url"], f"github:{repository}:issue:{number}"}
-    for path in sorted((root / "gonggong-diting-data/events").rglob("*.json")):
+    tracked_events = set(git(root, "ls-files", "-z", "--", "gonggong-diting-data/events").split(b"\0"))
+    for path in sorted((root / "gonggong-diting-data/events" / tenant / request_id).glob("*.json")):
         raw = path.read_bytes()
         value = json.loads(raw)
         if value.get("request_id") == request_id and value.get("tenant_id") == tenant:
-            git(root, "ls-files", "--error-unmatch", "--", path.relative_to(root).as_posix())
+            if os.fsencode(path.relative_to(root).as_posix()) not in tracked_events:
+                raise ValueError("Request event must be staged")
             events.append({"path": path.relative_to(root).as_posix(), "sha256": hashlib.sha256(raw).hexdigest()})
             if value.get("kind") == "request" and value.get("source_ref") in issue_sources:
                 request_source_found = True
@@ -267,14 +270,57 @@ def gate(root, number, request_id):
     }
 
 
+class VerificationSession:
+    """Optional explicit-request session; no background polling or disk success cache."""
+    def __init__(self):
+        self.binding = None
+        self.module = None
+        self.events = {}
+
+    def check_runtime(self):
+        if Path(__file__).read_bytes() != GATE_SOURCE or BATCH_PATH.read_bytes() != BATCH_SOURCE:
+            self.events.clear()
+            raise ValueError("Gate implementation changed; restart the verification session")
+
+    def check_diting(self, root):
+        validator = root / "framework/extensions/diting-files/diting_files.py"
+        batch = root / "framework/tools/git_batch.py"
+        binding = (str(root.resolve()), validator.read_bytes(), batch.read_bytes(), sys.version)
+        if binding != self.binding:
+            self.module = runpy.run_path(str(validator))
+            self.events.clear()
+            self.binding = binding
+        try:
+            return self.module["git_check"](root, cache=self.events)
+        except Exception:
+            self.events.clear()
+            raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, required=True)
-    parser.add_argument("--issue", type=int, required=True)
-    parser.add_argument("--request-id", required=True)
+    parser.add_argument("--issue", type=int)
+    parser.add_argument("--request-id")
+    parser.add_argument("--session", action="store_true", help="Read explicit JSON requests from stdin; reuse only exact-byte event evidence in memory")
     parser.add_argument("--intake-only", action="store_true")
     parser.add_argument("--tenant")
     args = parser.parse_args()
+    if args.session:
+        if args.intake_only or args.issue is not None or args.request_id is not None:
+            parser.error("--session takes issue/request_id from each input line")
+        session = VerificationSession()
+        for line in sys.stdin:
+            try:
+                request = json.loads(line)
+                result = gate(args.repo.resolve(), request["issue"], request["request_id"], session)
+                print(json.dumps(result, ensure_ascii=False), flush=True)
+            except Exception as error:
+                session.events.clear()
+                print(json.dumps({"state": "failed", "error": str(error)}), flush=True)
+        return
+    if args.issue is None or args.request_id is None:
+        parser.error("--issue and --request-id are required")
     result = (
         intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
         if args.intake_only

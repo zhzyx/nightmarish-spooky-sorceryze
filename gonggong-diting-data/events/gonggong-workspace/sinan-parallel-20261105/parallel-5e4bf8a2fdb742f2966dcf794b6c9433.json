@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "parallel-5e4bf8a2fdb742f2966dcf794b6c9433",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "sinan-parallel-20261105",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T23:01:30.714668+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "agent": {
+    "id": "godot-parallel-codex-host",
+    "version": "0.1.0",
+    "definition_sha256": "ab3967fa6b73266a28ee07da72a5bd11daf6825fc8469480f046b9a09124edec",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "order": 1,
+    "model": "gpt-6-luna",
+    "state": "prepared",
+    "usage": null,
+    "usage_reason": "provider usage not collected by this host",
+    "model_basis": "requested CLI model; provider routing not attested"
+  },
+  "evidence_refs": [],
+  "sha256": "d557bd7fca46929142b7b315cda78fb609ec643d1b2e558c0854a36a5b5484b3"
+}

@@ -58,6 +58,22 @@
         "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
       },
       "display_name": "Godot 接入宿主"
+    },
+    {
+      "id": "yanluo",
+      "display_name": "阎罗",
+      "version": "0.1.2",
+      "path": "customizations/components/yanluo",
+      "path_base": "repository_root",
+      "ownership": "gonggong_customization",
+      "state": "candidate_pending_review",
+      "entry": "customizations/components/yanluo/AGENT.md",
+      "reporting": {
+        "profile": "customizations/components/yanluo/reporting.json",
+        "runtime_connected": false
+      },
+      "activation": false,
+      "rollback": "Stop candidate invocation; retain original owners until an acknowledged handoff; preserve evidence"
     }
   ],
   "module_migration": "customizations/module-migration.json",

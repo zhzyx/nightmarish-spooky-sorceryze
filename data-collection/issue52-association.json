@@ -1,0 +1,12 @@
+{
+  "request_id": "ai-chat-fill-window-20261104",
+  "issue_number": 52,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/52",
+  "path_base": "workspace_root",
+  "source_commit": "c7ec23a61cbb9cd78fdfd2316fa55729574077ba",
+  "run_report": "data-collection/issue52-windows-layout.json",
+  "independent_review": "data-collection/issue52-layout-review.json",
+  "scope": "Windows supplementary acceptance only; macOS and full visual acceptance pending",
+  "publication": "pending coordinator serial integration",
+  "diting_consumption": "unknown"
+}

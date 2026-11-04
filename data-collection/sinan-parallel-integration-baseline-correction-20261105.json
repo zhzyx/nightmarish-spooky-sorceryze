@@ -1,0 +1,10 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "candidate_manifest": "data-collection/sinan-parallel-integration-candidate-20261105.json",
+  "actual_merge_parent": "d4c9a9183d38a2e4bd12ac56ef40c892b65a99bf",
+  "manifest_base_commit_meaning": "Comparison ref observed while creating file list; shared origin/main advanced independently. It was not the merge parent. Original snapshot retained.",
+  "implementation_manifest_files_verified": true,
+  "observed_origin_main": "78a47fb8daf02cc45769275f810517353d7e09e1",
+  "live_validation": "pending"
+}

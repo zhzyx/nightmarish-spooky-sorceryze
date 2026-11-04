@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "issue56-ui-step-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "kind": "step",
+  "occurred_at": "2026-11-04T17:38:11.467682+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+  "agent": {
+    "id": "codex-issue56-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "built_pending_independent_layout",
+    "build_seconds": 20.89,
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "initial_failure": "BaseButton receiver mismatch fixed before successful build",
+    "hashes": {
+      "editor/docks/ai_chat_dock.cpp": "2a0d04fc8ac8d55c2ef25693d0d82ae9c4f710402955503c60a3e4907ff311c9",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "bin/godot.windows.editor.x86_64.exe": "7eb23bb17116970c0300529002e2a2b96ade1ddce16305ee7a5abdf7670799c2"
+    },
+    "tests": "HTTP workspace/keyboard/settings lifecycle/models passed; CLI advanced options passed. Full legacy workflows fail at requirement entry; not claimed passed.",
+    "path_base": "repository_root",
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue56-ui-request-20261105"
+  ],
+  "sha256": "f449833f9fd14dea70ea4bf9e15ec821cecd56951a2027b77222323a25dab492"
+}

@@ -1,0 +1,20 @@
+{
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "issue_number": 56,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+  "path_base": "repository_root",
+  "source_screenshot": {
+    "local_path": "bin/issue56-current-expanded-local.png",
+    "sha256": "161782f1d9eac956dcbacef92df375d3faf4f3e6f50cb8b6b9abcca404dd4cfd",
+    "origin": "Coordinator capture of previous installed main, not candidate6",
+    "distribution": "local only: contains host-specific executable paths",
+    "observations": [
+      "Expanded settings displaced message/composer",
+      "Workspace Chinese captions mojibake",
+      "Flat hierarchy across title, session controls and build settings"
+    ]
+  },
+  "candidate_receipt": "data-collection/issue56-ui/build-candidate6.json",
+  "independent_review": "Issue55 separate evidence: data-collection/issue55-layout-regression/candidate6-review.json",
+  "published": false
+}

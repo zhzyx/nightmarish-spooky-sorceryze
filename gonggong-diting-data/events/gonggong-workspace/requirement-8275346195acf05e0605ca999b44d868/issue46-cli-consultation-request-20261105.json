@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue46-cli-consultation-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-8275346195acf05e0605ca999b44d868",
+  "kind": "request",
+  "occurred_at": "2026-11-04T19:49:57.2891374+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/46",
+  "agent": {
+    "id": "codex-issue46-cli",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "explicit-issue-workspace-host",
+    "version": "not-reported-by-host"
+  },
+  "payload": {
+    "usage_reason": "Not measured",
+    "host_definition": "AGENTS.md",
+    "description": "Implement Codex CLI read-only consultation under delegated Issue 46 scope; do not change CodeBuddy native execution boundary.",
+    "output_tokens": null,
+    "input_tokens": null,
+    "path_base": "repository_root",
+    "host_authority_authenticated": false
+  },
+  "evidence_refs": [],
+  "sha256": "18347dfde8499c8449d7ec604b22c9e5a9e41b9755c913196dafca8f19fd4697"
+}

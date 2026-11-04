@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue59-bounds-correction-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T19:22:59.042624+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "agent": {
+    "id": "codex-desktop-issue59",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "state": "in_progress",
+    "baseline": "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+    "path_base": "repository_root",
+    "evidence": "data-collection/issue59-bounds-source-20261105.json",
+    "finding": "Frozen state returned60175 UTF8 bytes for one20000CJK-character node; independent review also found post-serialization redaction can break budget/JSON.",
+    "usage": null,
+    "usage_unknown_reason": "Host does not expose measured token/cost usage"
+  },
+  "evidence_refs": [
+    "issue59-local-request-20261105"
+  ],
+  "sha256": "ab12a51bc518d19366bb780f8c9dfafb4c8426d1ddb89ca9217f4a6b49c3da85"
+}

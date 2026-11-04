@@ -1,0 +1,64 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "target": "Windows x86_64 editor MSVC 14.5 SDK 10.0.26100.0",
+  "flags": {
+    "accesskit": false,
+    "d3d12": false,
+    "debug_symbols": false
+  },
+  "reason": "Optional SDKs absent; fixed headless/OpenGL editor acceptance scope",
+  "build": {
+    "exit_code": 0,
+    "elapsed_seconds": 481.92,
+    "full_link": true,
+    "inputs": [
+      {
+        "path": "editor/docks/ai_chat_dock.cpp",
+        "sha256": "5f8998f802d397f9fb6995eb221af109984e59a189be237e22982953c17804d9"
+      },
+      {
+        "path": "editor/docks/ai_chat_dock.h",
+        "sha256": "de3ed505077783cdf9f7d4c499d5df2ed67b735733806c53871daa3b3308a6f1"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.cpp",
+        "sha256": "a362b909e20ba81acc71e2a641d98946fa162397acfa5976c468d49c45861d08"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.h",
+        "sha256": "9b92a5a7ae42f8ffa9e7cf015b108a7b39cbdb5041b82194efa261e82c7f91c0"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "11e426e4145c03460ff56e04186f504a6e007cf6b4eb68d0b8b820594d120a43"
+      },
+      {
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "dbce6c797513af1b6d5dc7b813db6d63e4e3497e260c9e38a25393637273825b"
+      }
+    ]
+  },
+  "startup": {
+    "native_parallel_button_and_setting": "passed",
+    "live_model_editor_path": "pending",
+    "shutdown_warnings": [
+      "Unattached debugger plugin on script quit",
+      "Headless RID/ObjectDB cleanup warnings"
+    ],
+    "scope": "Actual candidate executable start/UI checks; warnings retained, not claimed clean shutdown"
+  },
+  "tests": {
+    "related_suite": {
+      "passed": 68,
+      "failed": 0
+    },
+    "after_cli_argument_fix": {
+      "godot_passed": 8,
+      "failed": 0
+    }
+  },
+  "git_tree_binding": "To be bound to final commit and source-file hashes; binary embeds precommit HEAD 4ba3e7e9, not claimed built from a nonexistent later commit"
+}

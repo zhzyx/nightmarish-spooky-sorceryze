@@ -1,0 +1,53 @@
+{
+  "request_id": "olympus-residue-deadlock-20261104",
+  "issue": 51,
+  "path_base": "repository_root",
+  "recorded_at": "2026-11-04T07:46:11.560587+00:00",
+  "baseline_commit": "b123479a433efa96c2183aca6eea1da49781213c",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "4562a9c9324cdcb95ce367da3f894a11c4812b5b5594f5d3c0ebb467312c1e0a",
+    "tests/editor/ai_chat_integration.gd": "c60111c020b4573310d4b12f0be23c0c7dc1f686a3216957c792d4c0ca5993ef",
+    "tests/editor/run_editor_self_update.py": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "tests/editor/test_codebuddy_bridge.js": "485050294f3235adfd4a0ffe8a0aa13cef0c70c25dce315cbc1b2953921a236e",
+    "tests/editor/test_frozen_gonggong_distribution.py": "b8188cbecb9c2f0db59d19ea9f7a08db4d06378e3a5753f2790c4eec8ff0b14e",
+    "tools/test_gonggong_standalone.py": "fa9925ab47d4d3c55d4271cf42e27ae918e50b90675892825ca9766051977f9a"
+  },
+  "build": {
+    "passed": true,
+    "platform": "Windows x64",
+    "compiler": "Visual Studio 14.5",
+    "sdk": "10.0.26100.0",
+    "scons_elapsed_seconds": 421.65,
+    "native_ai_chat_tests": 17,
+    "assertions": 171,
+    "artifacts": {
+      "bin/godot.windows.editor.x86_64.exe": "9f752d355263afd97c431af06fee6a3ee90905d8eb26c08a151d6870cc54cda7",
+      "bin/godot.windows.editor.x86_64.console.exe": "963942fa8290e722b6db44af14f0de44a651ca02d5b70581942e32906a032965"
+    }
+  },
+  "new_candidate_checks": {
+    "page_titles": [
+      "Agents",
+      "定时器",
+      "共工"
+    ],
+    "page_navigation_passed": true,
+    "admitted_chat": {
+      "passed": true,
+      "real_framework_called": true,
+      "model_fixture": true,
+      "receipt_verified": true
+    },
+    "standalone_checks": 9
+  },
+  "not_passed": {
+    "legacy_generic_ui": "Page assertions pass now, then the old Enter/immediate-busy assertion fails before model requests; asynchronous requirements intake needs dedicated wait semantics.",
+    "reported_deadlock": "Not reproduced by tested receipt failure/retry/cancel/recovery scenarios; root cause not established.",
+    "all_features_certified": false
+  },
+  "installation_switched": false,
+  "committed": false,
+  "published": false,
+  "prior_evidence": "data-collection/issue51-validation-summary.json",
+  "frozen_originals_changed": false
+}

@@ -9,19 +9,19 @@ def local(root,p):
     if not f.is_file():raise ValueError('Missing file: '+p)
     return f
 
-def fingerprint(root,paths):
+def fingerprint(root,paths,hashes=None):
     if len(paths)!=len(set(paths)):raise ValueError('Duplicate candidate file')
-    records=[{'path':p,'sha256':hashlib.sha256(local(root,p).read_bytes()).hexdigest()} for p in sorted(paths)]
+    records=[{'path':p,'sha256':(hashes[p] if hashes is not None else hashlib.sha256(local(root,p).read_bytes()).hexdigest())} for p in sorted(paths)]
     return hashlib.sha256(''.join(x['path']+'\0'+x['sha256']+'\n' for x in records).encode()).hexdigest(),records
 
 def verify(root,candidate=False):
     import runpy
-    runpy.run_path(str(root/'tools/package_integrity.py'))['check'](root)
+    hashes=runpy.run_path(str(root/'tools/package_integrity.py'))['check'](root,return_inventory=True)
     read=lambda p:json.loads(local(root,p).read_text(encoding='utf-8'))
     m=read('framework-manifest.json');lock=read('foundation.lock.json')
-    if hashlib.sha256(local(root,'FOUNDATION.md').read_bytes()).hexdigest()!=lock['sha256']:raise ValueError('Frozen foundation changed')
+    if hashes['FOUNDATION.md']!=lock['sha256']:raise ValueError('Frozen foundation changed')
     for source in m['upstream_files']:
-        if hashlib.sha256(local(root,source['path']).read_bytes()).hexdigest()!=source['sha256']:raise ValueError('Upstream changed')
+        if hashes[source['path']]!=source['sha256']:raise ValueError('Upstream changed')
     ids=[a['id'] for a in m['agents']]
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate agent identity')
     actual={p.parent.name for p in (root/'agents').glob('*/agent.json')}
@@ -33,17 +33,15 @@ def verify(root,candidate=False):
         if meta['kind']!='independent_agent' or meta['governance_root']!='yuanheng' or meta['path_base']!='framework_root':raise ValueError('Invalid agent governance')
         for key in ['entry','foundation','agent_template','review_skill','context_loader']:local(root,meta[key])
         for p in meta['supporting_skills']:local(root,p)
-        digest,_=fingerprint(root,a['candidate_files'])
+        digest,_=fingerprint(root,a['candidate_files'],hashes)
         if digest!=a['candidate_digest']:raise ValueError('Candidate content changed: '+a['id'])
-        if not candidate:
-            result=subprocess.run(['node',str(local(root,'tools/admission.mjs')),str(root.resolve()),a['id']],capture_output=True,text=True,encoding='utf-8')
-            if result.returncode:raise ValueError(result.stderr.strip() or 'Admission check failed')
     skills=[s['path'] for s in m['skills']]+['upstream/yuanheng/skills/yuanheng-organize/SKILL.md']
     actual_skills={p.relative_to(root).as_posix() for p in root.rglob('SKILL.md')}
     if actual_skills!=set(skills):raise ValueError('Unexpected/missing skill entry')
     for s in skills:local(root,s)
-    report_check=subprocess.run(['node',str(local(root,'tools/reporting.mjs')),'--all',str(root.resolve())],capture_output=True,text=True,encoding='utf-8')
-    if report_check.returncode:raise ValueError(report_check.stderr.strip() or 'Reporting check failed')
+    # This is a fresh, private parent-to-child snapshot, never a disk cache or permit.
+    report_check=subprocess.run(['node',str(local(root,'tools/verify_metadata.mjs')),str(root.resolve()),'candidate' if candidate else 'formal'],input=json.dumps(hashes),capture_output=True,text=True,encoding='utf-8',timeout=120)
+    if report_check.returncode:raise ValueError(report_check.stderr.strip() or 'Metadata check failed')
     return {'framework_version':m['version'],'agents':ids,'skills_including_upstream':len(skills),'foundation_unchanged':True,'mode':'candidate' if candidate else 'approved_file_integrity','host_authority_authenticated':False}
 
 if __name__=='__main__':

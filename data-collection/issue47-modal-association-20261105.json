@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "issue_number": 47,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "correction": "Append explicit top-level Issue/request association required by the existing remote workflow; original evidence unchanged",
+  "evidence": [
+    {
+      "path": "data-collection/issue47-modal-20261105.json",
+      "git_blob_oid": "9ab3dc7a592a78573ab599d16f4ac153c10e369b",
+      "git_blob_content_sha256": "0a453d02c2901124aea5255665d3b10bf0ae614ddc888e2b7ae7c993385f1ba9",
+      "source": "staged Git blob, unchanged test report"
+    }
+  ],
+  "observed_at": "2026-11-04T18:10:30.654769+00:00",
+  "behavior_tests_rerun": false,
+  "reason": "Data association only; source/test/doc fingerprints and existing behavior results unchanged",
+  "remote_association_check": "pending actual PR CI; local predicate verified",
+  "usage": null
+}

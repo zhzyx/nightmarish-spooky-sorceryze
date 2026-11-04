@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue_number": 46,
+  "request_id": "requirement-8275346195acf05e0605ca999b44d868",
+  "base_commit": "c6445d3961f9de835b823a1529fd0a2d9f3ff478",
+  "dependency": {
+    "source_commit": "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+    "local_commit": "513317fffe6071c6803e2e86cf510a9b9ae07a47",
+    "tree": "9b3135156dc3a8f8a622ff99ea8a8d4194ebb398",
+    "issue_number": 49
+  },
+  "input_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "b9e3b9a7750f89c2c8bcdaf501b4d8174954370c98a94ea7ae82f87008ef90d9",
+    "tools/codex_cli/godot_bridge.js": "983bb7561f110e94e2a4a3bc5a39c2b74ba75b92fc9e5cd333eee4bf05123cd4",
+    "tests/editor/test_codex_bridge.js": "1915bd24875598743604721e5e34d153cafe14bfb263538ac8d1595dac5a5e5c",
+    "tests/editor/codex_consultation.gd": "1b0d63d69355e0dd5e1bf68ad34a1995149ccb19248a4e182f78a75a6a179779",
+    "tests/editor/run_codex_consultation.py": "710fb32eabd20cd5657b4cfa19c345983411d7a0c06e8c0cf41d0f879f9594fd"
+  },
+  "build": {
+    "platform": "windows",
+    "arch": "x86_64",
+    "target": "editor",
+    "tests": true,
+    "accesskit": false,
+    "d3d12": false,
+    "angle": false,
+    "exit_code": 0,
+    "editor_sha256": "2e9fc55747120a9f3c44c9d37a65163c74090cf6c3683b95d7d6c2086ca8654f",
+    "editor_path": "bin/godot.windows.editor.x86_64.exe"
+  },
+  "tests": {
+    "bridge": {
+      "exit_code": 0,
+      "passed": 7
+    },
+    "native_unit": {
+      "exit_code": 0,
+      "cases": 22,
+      "assertions": 254,
+      "settings_diagnostics": "Sandbox config directory write diagnostics present; assertions passed."
+    },
+    "codex_consultation": {
+      "exit_code": 0,
+      "report": "codex-native.json",
+      "mode_change_during_turn": true,
+      "cancel_then_consult": true,
+      "successful_read_rounds": 2
+    },
+    "api_consultation": {
+      "exit_code": 0,
+      "report": "api-native.json",
+      "denied_tools": 8,
+      "artifact": "Same final editor as Codex native report; rerun after lifecycle dependency."
+    }
+  },
+  "before_dependency": {
+    "exit_code": 1,
+    "observed": "Codex bridge exited with code 1 before a model answer; no actions executed. This log does not itself identify the root cause.",
+    "stdout_sha256": "796df40e5345fa3052c18f24573efe3549790c456f109eadfca086cd1159e6e9"
+  },
+  "sandbox_probe": {
+    "command": "codex sandbox -c sandbox_mode=\"read-only\" -c approval_policy=\"never\" -- <absolute Node executable> <local probe script>",
+    "exit_code": 0,
+    "stdout": [
+      "READ_OK",
+      "WRITE_DENIED"
+    ],
+    "sentinel_unchanged": true,
+    "accepted_write_errors": [
+      "EACCES",
+      "EPERM"
+    ],
+    "first_attempt": {
+      "exit_code": 1,
+      "outcome": "Node relative executable was not found; sandbox child never started; not counted as permission denial."
+    },
+    "model_called": false
+  },
+  "independent_review": {
+    "reviewer": "consultation_review",
+    "result": "No blocking production permission issue. Fixture now requires both read results to contain sentinel.",
+    "self_approval": false
+  },
+  "limitations": [
+    "Provider responses use offline fixtures; real provider service not exercised.",
+    "CodeBuddy CLI consultation remains rejected because equivalent enforceable native-tool permissions are unverified.",
+    "Exit RID/ObjectDB diagnostics retained; long-term cleanup not accepted."
+  ],
+  "usage": null
+}

@@ -1,0 +1,29 @@
+{
+  "status": "pass",
+  "approval": false,
+  "evaluator": "/root/review_verification",
+  "independence": "independent_subagent_review",
+  "path_base": "repository_root",
+  "files": {
+    "customizations/components/issue-workorders/issue_gate.py": "2faaea12c2acccfe5e46249ca826ebb23302cb0fa6d85949d1b80992ea19993a",
+    "framework/tools/git_batch.py": "1490b97310e051251ce0d1fb7032a5e77ff31a6e5a1f598629e02f3340662ba0",
+    "framework/extensions/diting-files/diting_files.py": "8884a690c42b08c09c0f1061082c402540417898b59fa87a7bd38250fa91cacf",
+    "framework/tools/verify_framework.py": "bac1e9b35a6bfc15628f0bd8029219ff3159bcddb9276fdb06b8a1bd62589602",
+    "framework/tools/verify_metadata.mjs": "3f9bde3ae40036ca7da85478cd831639ce1f8dfc9e00623440dea6cd47aa2647",
+    "framework/tools/reporting.mjs": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c",
+    "framework/tools/package_integrity.py": "cfe98c3888beceadb54494956cec1bc0e09711338f1226f63690ec77dc1089cd"
+  },
+  "findings_resolved": [
+    "Python 3.10 compatible chunked SHA256",
+    "Session rejects changed loaded gate/helper and requires restart",
+    "Bounded parallel snapshot preserves sorted digest inputs and error propagation; independently reviewed"
+  ],
+  "coverage": [
+    "raw Git blob and NUL path equivalence",
+    "event cache exact bytes and graph/Git revalidation",
+    "index HEAD history and source binding",
+    "fresh admission and expiry checks",
+    "frozen foundation upstream and historical approvals unchanged"
+  ],
+  "validation_basis": "Primary-agent executed tests; independent reviewer rerun blocked by temporary-directory sandbox ACL, not counted as pass"
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "issue55-ui-step-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-eecb7c4b90c0c55a8cde516aac5472f2",
+  "kind": "step",
+  "occurred_at": "2026-11-04T16:59:06.100972+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+  "agent": {
+    "id": "codex-root-issue55-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "17a9d2a8ecf1cb1fcac54b6e1fbf4075a82c787e2114dfb5ba6174c795af420b"
+  },
+  "payload": {
+    "status": "source_candidate_verified",
+    "checks": [
+      "MSVC syntax passed",
+      "existing signal connections preserved"
+    ],
+    "evidence": "data-collection/issue55-ui-updated-candidate.json",
+    "path_base": "repository_root",
+    "full_build": null,
+    "visual_acceptance": null,
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue55-ui-request-20261105"
+  ]
+}

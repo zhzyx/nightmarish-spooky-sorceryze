@@ -80,11 +80,11 @@ export class CodexDispatchHost {
   async launch(a) {
     let raw;
     if (a.target === 'agent') {
-      raw = await this.native.spawn_agent({task_name: `sinan_${hash(a.key).slice(0, 16)}`, fork_turns: 'none', model: a.model.id, message: handoff(a)});
+      raw = await this.native.spawn_agent({task_name: `sinan_${hash(a.key).slice(0, 16)}`, fork_turns: 'none', model: a.model.id, message: handoff(a)}, {assignmentKey:a.key,ticket:a.ticket});
     } else {
       const args = {title: a.outcome, prompt: handoff(a), target: this.policy.threadTarget};
       if (this.policy.explicitChatModels?.[a.ticket]) args.model = this.policy.explicitChatModels[a.ticket];
-      raw = await this.native.create_thread(args);
+      raw = await this.native.create_thread(args, {assignmentKey:a.key,ticket:a.ticket});
     }
     const value = raw?.structuredContent ?? raw;
     if (raw?.isError) throw Error('Native tool rejected launch');
@@ -109,6 +109,20 @@ export class CodexDispatchHost {
     persistNew(path.join(this.root, 'records', `${crypto.randomUUID()}.json`), value);
     await this.source.report(value);
   }
+  async completeSetup(event,key,receipt) {
+    if(event?.type!=='ticket.changed'||!nonempty(event.reference)||!/^[a-f0-9]{64}$/.test(key))throw Error('Actual setup event required');
+    return this.withLock(async()=>{
+      const a=read(path.join(this.root,'reservations',key+'.json')).assignment;
+      if(fs.existsSync(path.join(this.root,'released',key+'.json')))return {state:'already_reconciled',key};
+      const records=fs.readdirSync(path.join(this.root,'records')).filter(n=>n.endsWith('.json')).map(n=>read(path.join(this.root,'records',n)));
+      if(records.some(r=>r.assignment?.key===key&&r.state==='running_after_verified_setup'&&JSON.stringify(r.receipt)===JSON.stringify(receipt)))return {state:'already_setup',key};
+      const pending=records.find(r=>r.assignment?.key===key&&r.receipt?.setupPending===true)?.receipt;
+      if(!pending||a.target!=='chat'||receipt?.target!=='chat'||receipt.setupPending!==false||receipt.model!==a.model.id||!nonempty(receipt.workerId)||!nonempty(receipt.reference))throw Error('Pending and ready chat receipts required');
+      if(typeof this.source.verifySetup!=='function'||await this.source.verifySetup(a,event,pending,receipt)!==true)throw Error('Chat setup mapping not verified by host');
+      await this.ack(a,receipt);await this.record({assignment:a,event,receipt,state:'running_after_verified_setup'});
+      return receipt;
+    });
+  }
   async run(event, requests) {
     // Chat model overrides require an explicit user-selected model, per native tool policy.
     const prepared = requests.map(r => r.target !== 'chat' ? r : {...r,
@@ -126,6 +140,18 @@ export class CodexDispatchHost {
       await this.record({assignment: reserved.assignment, event, receipt, state: 'terminal_verified'});
       persistNew(file, {key, event, receipt, state: 'released_after_terminal_verification'});
       return {state: 'released', key};
+    });
+  }
+  async releaseUnstarted(event,key) {
+    if(event?.type!=='execution.failed'||!nonempty(event.reference)||!/^[a-f0-9]{64}$/.test(key))throw Error('Actual never-launched verification event required');
+    return this.withLock(async()=>{
+      const reserved=read(path.join(this.root,'reservations',key+'.json'));
+      if(typeof this.source.verifyNeverLaunched!=='function'||await this.source.verifyNeverLaunched(reserved.assignment,event)!==true)throw Error('Native outcome unknown; reservation retained');
+      const file=path.join(this.root,'released',key+'.json');
+      if(fs.existsSync(file))return {state:'already_reconciled',key};
+      await this.record({assignment:reserved.assignment,event,state:'never_launched_verified'});
+      persistNew(file,{key,event,state:'released_never_launched'});
+      return {state:'released',key};
     });
   }
 }

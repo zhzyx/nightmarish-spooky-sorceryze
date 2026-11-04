@@ -110,8 +110,8 @@ def build_options(current, extra):
     if len(parts) < 4 or parts[0] != "godot" or parts[2] != "editor":
         raise ValueError("The current executable must be a source-built Godot editor")
     platform = parts[1]
-    if platform != "windows":
-        raise ValueError("Side-by-side self-update currently supports Windows editors")
+    if platform not in {"windows", "macos", "linuxbsd"}:
+        raise ValueError(f"Side-by-side self-update does not support the {platform} editor")
     arch = next((p for p in parts if p in {"x86_64", "x86_32", "arm64", "arm32"}), None)
     if not arch:
         raise ValueError("Cannot identify the current editor architecture")
@@ -218,7 +218,8 @@ def resume_ack_error(project, token, artifact):
 
 
 def artifact_path(options):
-    name = "godot.windows.editor"
+    platform = options["platform"]
+    name = f"godot.{platform}.editor"
     if options["dev_build"] == "yes":
         name += ".dev"
     if options["precision"] == "double":
@@ -229,7 +230,8 @@ def artifact_path(options):
     name += "." + options["extra_suffix"]
     if options["module_mono_enabled"] == "yes":
         name += ".mono"
-    return ROOT / "bin" / (name + ".exe")
+    suffix = ".exe" if platform == "windows" else ""
+    return ROOT / "bin" / (name + suffix)
 
 
 def main(argv=None):

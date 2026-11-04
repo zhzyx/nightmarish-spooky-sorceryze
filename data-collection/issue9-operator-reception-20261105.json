@@ -1,0 +1,66 @@
+{
+  "sources": [
+    {
+      "dataset_id": "5094b7ca-057c-4370-831b-10b6a30ae081",
+      "origin": "gonggong",
+      "mode": "current"
+    },
+    {
+      "dataset_id": "0cf3f384-55ed-4bd9-9fbd-0358e98aca28",
+      "origin": "olympus",
+      "mode": "read_only_historical"
+    }
+  ],
+  "dataset_id": "5094b7ca-057c-4370-831b-10b6a30ae081",
+  "origin": "gonggong",
+  "tenant": "gonggong-workspace",
+  "consumer_compatibility": [
+    "diting",
+    "gonggong"
+  ],
+  "snapshot_sha256": "4aa6f4372b5038f05b23d242cea298d5f783d5ba75b9e051f1c795ecbe713a15",
+  "git_state": "not_fully_committed",
+  "coverage": "unknown",
+  "events": 1460,
+  "current_events": 1050,
+  "by_kind": {
+    "request": 193,
+    "step": 434,
+    "message": 413,
+    "coverage": 5,
+    "request_end": 5
+  },
+  "usage_totals": "not_inferred_from_event_counts",
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "request_id": "issue-event-data-loop-20261102",
+  "scope_decision_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9#issuecomment-6637964118",
+  "receiver_policy": "current_actual_operator",
+  "receiver_this_run": "current user, executed by authorized Codex chat",
+  "execution_context": "codex-issue9-current-operator",
+  "identity_authenticated_by_this_record": false,
+  "fixed_webhook_required": false,
+  "time_trigger_enabled": false,
+  "actual_runs": [
+    {
+      "state": "recorded_file",
+      "idempotent": false
+    },
+    {
+      "state": "recorded_file",
+      "idempotent": true
+    }
+  ],
+  "envelope": "data-collection/issue-events/a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500/envelope.json",
+  "receipt": "data-collection/issue-events/a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500/receipt.json",
+  "canonical_record": "gonggong-diting-data/events/gonggong-workspace/issue-event-data-loop-20261102/github-a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500.json",
+  "matched_event": "github-a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500",
+  "matched_record_sha256": "a231a0c31783770ddc30c1ff9e6d9536b44dcd287a65f46b88bf65c008e8efa1",
+  "analyze_output_sha256": "e32778cf041d61cf50ee746e75e0fd251c14f61d68a5e3dcbc243c394de44418",
+  "consumer": "Codex host explicitly read analyze output and matched canonical event",
+  "consumption_scope": "this exact event in actual shared analyze output; not Diting Agent or Sinan dispatch",
+  "sinan_source_registered": false,
+  "usage": null,
+  "next_work": "GitHub authoritative-source adapter and operator handoff/start/ack; no fixed-host dependency"
+}

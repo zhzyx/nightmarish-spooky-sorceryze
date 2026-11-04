@@ -1,0 +1,16 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "original_approved_manifest": "data-collection/sinan-parallel-integration-candidate-20261105.json",
+  "framework_digest": "dee11998394d4eb292c4b213ddfb5c638c85779fc1f29f2ef568ddaa31e788cb",
+  "implementation_changes_after_approval": [
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "previous_sha256": "ab3967fa6b73266a28ee07da72a5bd11daf6825fc8469480f046b9a09124edec",
+      "sha256": "0c6934d837d51d88dd80ab9dec930bd6987cb984a6f573a04f25ad9b6d03e730"
+    }
+  ],
+  "changes_review": "CLI mode fix independently reviewed; remaining additional files are tests, acceptance scope and receipts",
+  "live_native": "data-collection/sinan-parallel-native-live-20261105.json",
+  "live_godot": "data-collection/sinan-parallel-godot-live-20261105.json"
+}

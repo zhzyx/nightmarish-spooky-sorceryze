@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue58-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-a13c004f01700a4c2098850c5bfb60be",
+  "kind": "request",
+  "occurred_at": "2026-11-04T18:05:37.631795+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/58",
+  "agent": {
+    "id": "codex-issue58",
+    "version": "2026-11-05",
+    "definition_sha256": "83ce4d96648d9bb347750f09bce220a35f28155edcfcf65589c4ccce4f23b44c",
+    "origin": "host-assigned-codex-chat"
+  },
+  "payload": {
+    "scope": "AIChat left of 2D in existing main-screen tab bar; ordering only",
+    "clarification_comment_ids": [
+      6637202998,
+      6637588160,
+      6637614630
+    ],
+    "intake": "passed",
+    "baseline": "1b0a33fd5"
+  },
+  "evidence_refs": []
+}

@@ -1,0 +1,16 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "evaluator_id": "/root/integration_review",
+  "independence": "independent_subagent_review",
+  "result": "pass",
+  "file": "tools/godot_parallel/runner.mjs",
+  "sha256": "0c6934d837d51d88dd80ab9dec930bd6987cb984a6f573a04f25ad9b6d03e730",
+  "change": "CLI approval mode uses --approve-for-me workspace-write automatic review; retains all existing host/UI permission checks",
+  "cli_version": "0.166.0-alpha.5.1",
+  "local_tests": {
+    "passed": 8,
+    "failed": 0
+  },
+  "live_runtime": "pending"
+}

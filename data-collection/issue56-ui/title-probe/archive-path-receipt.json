@@ -1,0 +1,20 @@
+{
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "issue_number": 56,
+  "path_base": "this_file_directory",
+  "reason": "Preserve original CRLF diagnostic bytes under repository LF text policy without changing .gitattributes",
+  "raw_log_mapping": {
+    "title-seed.log": {
+      "archive": "title-native-logs.zip",
+      "member": "title-seed.log",
+      "sha256": "871b76a7a071188b636c101efa5a68b12c821f06296ca7aafa68f28d76145f14"
+    },
+    "title-restore.log": {
+      "archive": "title-native-logs.zip",
+      "member": "title-restore.log",
+      "sha256": "9fc744ad359e4a51b2fd80933feba35e49119c64f4ee218cb1e0fc6a00d6fde0"
+    }
+  },
+  "review_version": "Earlier handed-off independent-title-review.json retained byte-for-byte; its scripts keys resolve to colocated original scripts in this directory. Later reviewer path-only correction used a different source-folder layout; no behavioral evidence changed.",
+  "archive_sha256": "ab73830f3e89f80a0ab45b98e785f010b961fc5b24e1bc275e5c097f5fd9b789"
+}

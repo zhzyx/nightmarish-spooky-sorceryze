@@ -3,7 +3,7 @@
   "component": {
     "kind": "agent",
     "id": "sinan",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "entry": "agents/sinan/AGENT.md",
     "entry_sha256": "65c18a21a076c79e1e2c66840f12b51035cd9a22c4b13079a93568eae935e1a0"
   },
@@ -27,7 +27,7 @@
   "runtime_connected": false,
   "dependencies": {
     "contracts/diting-reporting.json": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd",
-    "tools/reporting.mjs": "728c2dfdc9f8087f6bf81b29533ac96b26225e9ddba7d70256450c7b9af2c501",
+    "tools/reporting.mjs": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c",
     "tools/diting-report.py": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b",
     "agents/diting/scripts/ledger.py": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc",
     "agents/diting/scripts/telemetry.py": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a",

@@ -11,9 +11,12 @@
 验收覆盖独立任务并发、依赖阻塞、冲突串行、容量不足、显式型号与能力缺失、模型选择理由、回执不明不重派及完成事件补位。必要检查为 Node 单元回归、现有司南回归、报告契约及框架校验；准入需绑定候选，不改写历史批准。源码候选验证后停止实现；生产启用须真实宿主接入及准入，不能以模拟测试冒充启用。
 
 <!-- sinan:begin -->
-工单：[Issue #72](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72)，已完成 intake-only 回读。
-候选位于 codex/sinan-parallel 工作副本；主工作区现有修改未合入。
-核心、Codex 适配及 Godot 独立 Codex CLI 并行通道源码候选已实现，独立审查通过；49 项回归通过，两个 C++ 翻译单元编译通过，报告桥实际取得本地文件回执。待精确候选准入、Codex 原生工具桥绑定和实际模型服务/完整编辑器链路验证；尚未提交、合入或启用。
+2026-11-05：司南0.1.3 / 支撑模块0.6.1，框架指纹 dee11998394d4eb292c4b213ddfb5c638c85779fc1f29f2ef568ddaa31e788cb 已获用户精确准入；旧批准和早期失败证据保持历史原样。
+68项相关回归通过；CLI审批模式修复后受影响8项再次通过；独立源码及参数增量审查通过。Windows x86_64 MSVC完整编辑器链接成功，原生按钮与配置入口实测通过。
+Codex原生桥实际派发两种请求型号、两个独立上下文，核验真实终态后全部预留释放。Godot实际编辑器按钮启动两个独立CLI工作副本，真实模型完成两个源码只读代表任务；退出成功仅进入review，由实际主责另验内容。
+实际证据见 data-collection/sinan-parallel-native-live-20261105.json、sinan-parallel-godot-live-20261105.json、sinan-parallel-editor-build-20261105.json 和 sinan-parallel-consumption-20261105.json，路径相对仓库根。
+CLI内部额外intake在隔离shell报告失败，未记为通过；模型启动前的外层实际宿主intake和正式框架门禁已通过。headless脚本退出存在debugger/RID清理告警，未声称无告警启动。
+来源认领仅保证同一绑定安装中遵守该入口的所有操作者互斥，不声称GitHub全局CAS。每次真实事件显式调用，无定时扫描或全局自动接管。当前等待最终Git门禁、main接收和工单对账，未将本地完成视为已合入。
 <!-- sinan:end -->
 
 ## 范围修订 2：两个宿主
@@ -25,3 +28,7 @@
 Codex 接入见 `customizations/components/codex-dispatch/README.md`：由实际宿主注入原生工具与权威来源回调，普通 Node 不能直接调用 Codex 内部工具。Godot 接入见 `tools/godot_parallel/README.md`：配置独立工作副本和模型能力目录后，通过独立 Codex CLI 进程运行；现有 HTTP/CodeBuddy UI 执行器仍串行，新增通道不操作当前编辑器。路径均相对仓库根。
 
 候选源码以 `data-collection/sinan-parallel-validation.json` 的文件摘要绑定。回归是核心32项、Codex10项、Godot7项；Godot使用真实临时Git工作副本和假CLI，证明进程并发但不证明供应商调用。MSVC仅构建两个受影响翻译单元，没有全链接或启动候选编辑器。共享报告桥真实验证事件为 `parallel-9990cf15f6564b32b29332b616ea1206`，状态 recorded_file；Git提交、远端合入及消费均未确认。原冻结纲领、元衡原件、历史批准与主工作区他人修改保持原样。
+
+## 范围修订 3：集成与真实接入验收（2026-11-05）
+用户要求持续推进到完整完成。本轮固定基线为 PR #99 回读的 main 95a6ebb23c3082063701aee6bb120ff5973a0c87，在原独立分支集成。补齐当前操作者的事件内原生工具桥、同一安装共享来源认领与回执核验，复用已合入的 #9 来源协议并注明 #90 责任边界。原生工具由真实 Codex 宿主执行，文件传递不自证身份或工具调用；本机共享锁仅串行本安装所有操作者，来源 revision 在认领及启动前回读，不声称 GitHub 全局 CAS。无轮询或新增时间任务。
+验收包括真实子 Agent 派发与回执对账、Godot 独立 CLI 模型任务、失败/未知回执恢复和重放防重派、同候选编辑器完整链接及启动。目标仍仅 Windows x86_64 MSVC；启动完整构建的理由是此前两个翻译单元证据未覆盖链接、启动及 main 集成后的头文件兼容。必要增量单测、独立审查和正式门禁通过后交付；新集成候选使用新准入记录，不改写原批准。

@@ -1,0 +1,16 @@
+{
+  "scope": "same exact-byte candidate, one uncontrolled-cache Windows measurement",
+  "results": {
+    "sequential": {
+      "seconds": 11.954658899921924,
+      "digest": "dd2b8547223c66bb9b8428f5713b1a68b18d9b3bb3d0609d2a7121e2f617b74d"
+    },
+    "parallel": {
+      "seconds": 5.574009099975228,
+      "digest": "dd2b8547223c66bb9b8428f5713b1a68b18d9b3bb3d0609d2a7121e2f617b74d"
+    }
+  },
+  "parallel_source_sha256": "2faaea12c2acccfe5e46249ca826ebb23302cb0fa6d85949d1b80992ea19993a",
+  "sequential_source": "import hashlib,os\ndef snapshot(root):\n    \"\"\"Bind HEAD, index and current tracked/nonignored content, including deletions.\"\"\"\n    digest = hashlib.sha256()\n    for args in [\n        (\"rev-parse\", \"HEAD\"),\n        (\"ls-files\", \"--stage\", \"-z\"),\n    ]:\n        digest.update(git(root, *args))\n    paths = set(git(root, \"ls-files\", \"-z\", \"--cached\", \"--others\", \"--exclude-standard\").split(b\"\\0\")) - {b\"\"}\n    for raw in sorted(paths):\n        path = root / os.fsdecode(raw)\n        digest.update(raw + b\"\\0\")\n        if path.is_symlink() or (hasattr(path, \"is_junction\") and path.is_junction()):\n            raise ValueError(\"Linked working-tree paths are not supported by the local gate\")\n        if path.is_file():\n            with path.open(\"rb\") as stream:\n                content = hashlib.sha256()\n                for block in iter(lambda: stream.read(1024 * 1024), b\"\"):\n                    content.update(block)\n                digest.update(content.digest())\n        elif path.exists():\n            raise ValueError(\"Submodules/directories require their own reviewed delivery binding\")\n        else:\n            digest.update(b\"DELETED\")\n    return digest.hexdigest()\n\n",
+  "path_base": "repository_root"
+}

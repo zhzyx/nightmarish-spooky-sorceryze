@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-ai-chat-debug-20261105-real-provider",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T17:35:55.009919+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "codex-issue49-real-chat",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "real_provider_failed_ui_pending",
+    "path_base": "repository_root",
+    "evidence": "data-collection/ai-chat-debug-20261104/real-provider-verification-20261105.json",
+    "evidence_sha256": "a8c35f9852ba471363f6d3396af216d7dcdbb77d99260f5276997fbeacd8e3ee",
+    "usage": null,
+    "independent_review": "pending",
+    "consumption_confirmed": false
+  },
+  "evidence_refs": [
+    "gonggong-ai-chat-debug-20261104-launcher-verified"
+  ],
+  "sha256": "23d2b4abdf398f39486779e86f95e776fa8fa400083425487ee9c2c13a42b988"
+}

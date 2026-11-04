@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "subject": "yanluo",
+  "version": "0.1.2",
+  "candidate_digest": "22f7b34265a413770cc7cfa851653b128b72e0fdf00ede62ade827e88142677e",
+  "candidate_manifest": "data-collection/yanluo-candidate-review.json",
+  "decision": "approved",
+  "approver": "user_in_current_chat",
+  "authority_ref": "explicit_user_message_批准_after_candidate_review",
+  "observed_at": "2026-11-04T20:56:46.535951+00:00",
+  "approved_scope": [
+    "definition",
+    "responsibility_division"
+  ],
+  "runtime_authorization": "original_user_request_all_checks_pass_then_main_status_close_corresponding_issue",
+  "does_not_claim": [
+    "host_implementation_verified",
+    "future_unrelated_tasks_authorized",
+    "remote_delivery_completed"
+  ],
+  "prior_record": "data-collection/yanluo-review-pass.json"
+}

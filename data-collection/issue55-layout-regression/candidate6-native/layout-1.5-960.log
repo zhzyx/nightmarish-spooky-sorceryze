@@ -1,0 +1,104 @@
+Godot Engine v4.8.beta.custom_build.e776639fc (2026-11-04 17:04:33 UTC) - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 5080
+
+ERROR: Parameter "current_window" is null.
+   at: ProgressDialog::_reparent_and_show (editor\gui\progress_dialog.cpp:194)
+ERROR: Parameter "current_window" is null.
+   at: ProgressDialog::_reparent_and_show (editor\gui\progress_dialog.cpp:194)
+AI_LAYOUT_RESULT {"failures":[],"samples":10,"scale":1.5}
+WARNING: 5 RIDs of type "Canvas" were leaked.
+   at: RendererCanvasCull::_free_rids (servers\rendering\renderer_canvas_cull.cpp:2735)
+WARNING: 150 RIDs of type "CanvasItem" were leaked.
+   at: RendererCanvasCull::_free_rids (servers\rendering\renderer_canvas_cull.cpp:2735)
+ERROR: Texture with GL ID of 20: leaked 20 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 37: leaked 1364 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 63: leaked 1364 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 425: leaked 131072 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 426: leaked 131072 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 427: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 428: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 429: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 430: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 431: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 432: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 433: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 435: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 439: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 440: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 449: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 450: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 451: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 452: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 453: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 454: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 455: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 456: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 457: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 458: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 459: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 460: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 461: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 462: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 463: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 464: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 465: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 466: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 467: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 468: leaked 16383 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 447: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 448: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 469: leaked 131072 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 470: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+ERROR: Texture with GL ID of 471: leaked 174762 bytes.
+   at: GLES3::Utilities::~Utilities (drivers\gles3\storage\utilities.cpp:82)
+WARNING: 651 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: ObjectDB::cleanup (core\object\object.cpp:2609)
+ERROR: 6 RID allocations of type 'struct GLES3::LightStorage::ShadowAtlas' were leaked at exit.
+ERROR: 1 RID allocations of type 'struct GLES3::ReflectionAtlas' were leaked at exit.
+ERROR: 5 RID allocations of type 'struct GLES3::RenderTarget' were leaked at exit.
+ERROR: 50 RID allocations of type 'struct GLES3::Texture' were leaked at exit.
+ERROR: 5 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.
+ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.
+ERROR: 307 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.
+ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.
+ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.
+ERROR: 19 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.

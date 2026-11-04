@@ -1,0 +1,61 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "scope": "Current operator, current bound installation; actual native tool calls",
+  "registered_source_count": 2,
+  "actual_dispatch": [
+    {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#72",
+      "key": "672c6502486de2fb353b4e9bcf0d923e941b51529759ee1a5040784faa641bb3",
+      "receipt": {
+        "workerId": "/root/sinan_1fe11b74651a9230",
+        "reference": "agent:/root/sinan_1fe11b74651a9230",
+        "target": "agent",
+        "model": "gpt-6.1-sol",
+        "requestedModel": "gpt-6.1-sol",
+        "observedModel": null,
+        "modelEvidence": "request_accepted_not_observed",
+        "setupPending": false,
+        "hostId": null
+      }
+    },
+    {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+      "key": "401a5e571262a81ae2dc49efc2d281bb491dc943ebeaedde9757da13efefe5a7",
+      "receipt": {
+        "workerId": "/root/sinan_1babc5290a6c74ca",
+        "reference": "agent:/root/sinan_1babc5290a6c74ca",
+        "target": "agent",
+        "model": "gpt-6-luna",
+        "requestedModel": "gpt-6-luna",
+        "observedModel": null,
+        "modelEvidence": "request_accepted_not_observed",
+        "setupPending": false,
+        "hostId": null
+      }
+    }
+  ],
+  "initial_resource_conflict": [
+    {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+      "reason": "resource_conflict"
+    }
+  ],
+  "correction": "Second task narrowed to independent read-only source verification in a new scope.changed event; first task not relaunched",
+  "actual_overlap_evidence": "Native list_agents observed first worker running before second real spawn_agent call; both accepted before first completion notification",
+  "terminal_verification": "Actual native completion notifications and list_agents confirmed both completed; each session used verify_worker bridge before release",
+  "verification_results": {
+    "core_adapter": {
+      "passed": 12,
+      "failed": 0
+    },
+    "github_source": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "usage": null,
+  "usage_unknown_reason": "Native tools did not expose usage or observed model identifiers",
+  "delivery": "recorded_file; Git/remote/consumption separately verified",
+  "approval": "Framework dee11998394d4eb292c4b213ddfb5c638c85779fc1f29f2ef568ddaa31e788cb approved by user"
+}

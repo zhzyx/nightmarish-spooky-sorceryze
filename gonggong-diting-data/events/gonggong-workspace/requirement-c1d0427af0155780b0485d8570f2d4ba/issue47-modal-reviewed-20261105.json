@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "event_id": "issue47-modal-reviewed-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T18:02:46.335717+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "agent": {
+    "id": "codex-issue47",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "independent_code_review_passed",
+    "reviewer": "review_modal independent subagent",
+    "evidence": "data-collection/issue47-modal-20261105.json",
+    "path_base": "repository_root",
+    "source_sha256_lf": {
+      "editor/docks/gonggong_panel.cpp": "02786b5e008c11415a779c681a136ec0b15d66a9645089c08eeb8035b05f53a3",
+      "tests/editor/run_runtime_modal_coordination.py": "73b937a2a11ef3246d617ff97233dc3153b25ec9db3a326a3b4325888129ce04",
+      "design-docs/requirement-c1d0427af0155780b0485d8570f2d4ba.md": "0f2d0c3c3fd1ded2abff1383c10779566d891caf71bbb60d10a0db1259ba4a49"
+    },
+    "review": "No unresolved actionable defect in local scope; original separate authorization callbacks retained; picker transient parent resolves to setup",
+    "yuanheng": "Purpose bounded; evidence and unknowns separated; reuse pinned fixture; authority unchanged; regression-backed adaptation; original commitments retained",
+    "remaining_unknown": [
+      "Real OS pointer/keyboard focus and stacking",
+      "Original real interactive deadlock",
+      "Whole Issue47 acceptance"
+    ],
+    "approval_granted": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue47-modal-verified-20261105"
+  ],
+  "sha256": "b9d6ad7a2e3a63f630f7bc53ad322eef0f9bbfe254ccd1c3cf4a363cb6dd14dc"
+}

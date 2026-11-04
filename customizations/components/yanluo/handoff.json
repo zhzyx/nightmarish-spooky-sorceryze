@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "state": "proposed_not_effective",
+  "request_id": "yanluo-precommit-20261105",
+  "issue": 79,
+  "path_base": "repository_root",
+  "to": "yanluo",
+  "from": {
+    "heqi": [
+      "final_precommit_gate",
+      "main_delivery_execution"
+    ],
+    "sinan": [
+      "target_issue_completion_write_and_readback"
+    ]
+  },
+  "retained": {
+    "heqi": [
+      "contribution_integration",
+      "conflict_resolution"
+    ],
+    "sinan": [
+      "dispatch",
+      "dependencies",
+      "parent_acceptance_reassessment",
+      "cross_issue_views"
+    ]
+  },
+  "effective_event": null,
+  "authority_ref": "user_request_current_chat",
+  "activation_conditions": [
+    "exact_candidate_admission",
+    "authenticated_host_port",
+    "runtime_reporting_receipt",
+    "acknowledged_inflight_handoff"
+  ],
+  "inflight_operations": "unknown; original owners retain responsibility"
+}

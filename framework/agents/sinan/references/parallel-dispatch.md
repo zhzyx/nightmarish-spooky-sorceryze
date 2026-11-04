@@ -30,3 +30,5 @@ reads/writes 必须是宿主已解析真实路径、junction/symlink 和工作�
 reserve 后任何启动、ack 或记录失败都保留占用并返回 reconcile_required；宿主按 key 查询原来源和目标，取得真实回执后才更正或释放。不得因超时重派。持久预留后的崩溃在后续真实事件中对账，不增加后台扫描。无生产宿主时只用 planDispatch 输出 not_dispatched；单元模拟不计为真实生产回执。
 
 恢复：停止调用新的 dispatchEvent，恢复原 prepare/refresh，保留来源状态、预留与回执并完成在途对账。候选准入不改变未来任务授权。
+
+当前操作者的 GitHub 原生宿主契约由接入层 `customizations/components/codex-dispatch/HOST_PROTOCOL.md`（以仓库根为基准）维护。共享安装内认领不等于 GitHub 全局 CAS；启动前回读修订和依赖，持久 launch-intent 与确定未启动释放共用来源锁。queued chat 只有真实 setup 映射核验后才 ack；真实终态核验后才释放容量。宿主私有完整参数和来源路径不进入共享采集，公开事件仅保留必要身份、摘要和实际状态。

@@ -1,0 +1,26 @@
+{
+  "baseline": {
+    "seconds": 302.6173585001379,
+    "git_processes": 4735,
+    "result": {
+      "git_state": "committed",
+      "files": 1577,
+      "records": 1456,
+      "remote_merge_verified": false
+    }
+  },
+  "optimized": {
+    "seconds": 1.5191035999450833,
+    "git_processes": 6,
+    "result": {
+      "git_state": "committed",
+      "files": 1577,
+      "records": 1456,
+      "remote_merge_verified": false
+    }
+  },
+  "scope": "One warm/cold-uncontrolled Windows run, identical committed datasets; not full gate or CI timing",
+  "token_usage": null,
+  "cost": null,
+  "head": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130"
+}

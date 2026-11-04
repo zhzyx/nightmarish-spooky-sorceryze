@@ -1,0 +1,13 @@
+{
+  "candidate_receipt": "data-collection/issue56-ui/build-candidate6.json",
+  "path_base": "repository_root",
+  "command": "bin/godot.windows.editor.x86_64.console.exe --headless --test --test-case=*AIChat*",
+  "profile": "bin/issue56-native-profile",
+  "exit_code": 0,
+  "test_cases": 22,
+  "assertions": 254,
+  "failed": 0,
+  "errors": false,
+  "scope": "Native AIChat and sub-agent cases; GUI is separately reviewed",
+  "reason": "Repeat in writable isolated profile to resolve prior sandbox configuration warnings"
+}

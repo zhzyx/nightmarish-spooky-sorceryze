@@ -50,6 +50,16 @@ test('dependencies require actual acceptance and permission is explicit',t=>{
   f.config.nativeWorkspaceWrite=false;
   assert.throws(()=>prepare(f.request,f.config),/mandate/);
 });
+
+test('primary checkout and worktree subdirectories cannot impersonate workers',t=>{
+  const f=fixture(t), primary=f.request.workspace;
+  f.request.workspace=f.config.jobs[1].worktree;
+  f.config.jobs[0].worktree=primary;
+  assert.throws(()=>prepare(f.request,f.config),/primary/);
+  const sub=path.join(f.request.workspace,'sub');fs.mkdirSync(sub);
+  f.config.jobs[0].worktree=sub;
+  assert.throws(()=>prepare(f.request,f.config),/subdirectories/);
+});
 test('model repair retries only the unstarted work order',async t=>{
   const f=fixture(t);fs.writeFileSync(f.config.codex,'console.log("fixture success")');
   f.config.jobs[0].capabilities=['vision'];

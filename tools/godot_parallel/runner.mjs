@@ -7,7 +7,10 @@ import {selectModel} from '../../framework/modules/sinan/dispatch.mjs';
 import {board} from '../../framework/modules/sinan/coordinator.mjs';
 
 const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
-const inside = (a,b) => a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep);
+const inside = (a,b) => {
+  if(process.platform==='win32'){a=a.toLowerCase();b=b.toLowerCase();}
+  return a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep);
+};
 const canonical = p => fs.realpathSync(p);
 function durable(file,value,exclusive=false) {
   const fd=fs.openSync(file,exclusive?'wx':'w',0o600);
@@ -29,6 +32,10 @@ export function prepare(request, config) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.requestId) || !Number.isInteger(request.issue) || request.issue < 1) throw Error('Invalid Issue binding');
   const source = canonical(request.workspace), seen = new Set(), ids = new Set(), roots = [];
   const common = canonical(path.resolve(source,command('git',['rev-parse','--git-common-dir'],source)));
+  const registered = command('git',['worktree','list','--porcelain'],source).split(/\r?\n/)
+    .filter(line=>line.startsWith('worktree ')).map(line=>canonical(line.slice(9)));
+  const primary = registered[0];
+  const same = (a,b) => process.platform==='win32' ? a.toLowerCase()===b.toLowerCase() : a===b;
   const accepted = acceptedDependencies(config);
   return request.workers.map(worker => {
     if (!Number.isInteger(worker.id) || worker.id < 0 || ids.has(worker.id) || !Number.isInteger(worker.order) || worker.order < 1 || seen.has(worker.order)) throw Error('Invalid or duplicate work order'); seen.add(worker.order);ids.add(worker.id);
@@ -36,8 +43,10 @@ export function prepare(request, config) {
     if (!job || typeof worker.prompt !== 'string' || !worker.prompt.trim() || !Array.isArray(job.capabilities) || !job.capabilities.length) throw Error('Each work order needs explicit capabilities and workspace');
     if(typeof job.worktree!=='string'||!path.isAbsolute(job.worktree))throw Error('Worktree must be absolute');
     const cwd = canonical(job.worktree);
+    const top = canonical(command('git',['rev-parse','--show-toplevel'],cwd));
     const commonPath = command('git',['rev-parse','--git-common-dir'],cwd);
-    if (canonical(path.resolve(cwd,commonPath)) !== common || cwd === source || roots.some(r=>inside(cwd,r))) throw Error('Distinct worktrees of the same repository required');
+    if (!same(top,cwd) || !registered.some(r=>same(r,cwd)) || same(cwd,primary) ||
+        !same(canonical(path.resolve(cwd,commonPath)),common) || same(cwd,source) || roots.some(r=>inside(cwd,r))) throw Error('Distinct registered worktrees of the same repository required; primary and subdirectories forbidden');
     roots.push(cwd);
     const model = selectModel(job.capabilities,config.models,'agent',job.model);
     if (!Array.isArray(job.dependsOn)) throw Error('Explicit dependencies required');
@@ -103,7 +112,7 @@ export async function run(request, config, output, runtime = {}) {
         const fd = fs.openSync(transcript,'wx',0o600);
         const stream = fs.createWriteStream(transcript,{fd});
         stream.on('error',()=>{record.logWriteFailed=true;});
-        const args = ['--ask-for-approval','never','exec','--json','--ephemeral','--ignore-user-config','--sandbox','workspace-write','--model',job.model.id,'-'];
+        const args = ['exec','--approve-for-me','--json','--ephemeral','--ignore-user-config','--model',job.model.id,'-'];
         const js = /\.[cm]?js$/.test(config.codex);
         launchAttempted=true;
         await new Promise((resolve,reject)=> {

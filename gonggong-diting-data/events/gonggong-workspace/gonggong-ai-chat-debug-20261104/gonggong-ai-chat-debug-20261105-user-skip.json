@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-ai-chat-debug-20261105-user-skip",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T17:52:40.748349+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "codex-issue49-real-chat",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "user_requested_commit_without_remaining_ui_acceptance",
+    "path_base": "repository_root",
+    "evidence": "design-docs/ai-chat-debug-20261104.md",
+    "evidence_sha256": "943ec7ed32daf13d262f7b177993955b01725caa866bf94841e62bec0ab772db",
+    "digest_basis": "UTF-8 LF Git blob",
+    "ui_restore": "interrupted by physical Escape; test message remains paused and consultation remains checked",
+    "service_acceptance": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "gonggong-ai-chat-debug-20261105-ui-exit-fix"
+  ],
+  "sha256": "9cda1833f9071f370b7f46094d6d6864684efec8efed141f489fbdff4412807c"
+}

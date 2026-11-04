@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "editor_sha256": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+  "requests": [
+    {
+      "prompt": "CONSULTATION_ATTACK",
+      "tool_results": 0
+    },
+    {
+      "prompt": "CONSULTATION_ATTACK",
+      "tool_results": 8
+    },
+    {
+      "prompt": "CONSULTATION_ATTACK",
+      "tool_results": 9
+    },
+    {
+      "prompt": "CLI_MUST_NOT_START",
+      "tool_results": 0
+    }
+  ],
+  "denied_tools": 8,
+  "read_result": "verified",
+  "issue_monitoring": "No configured workspace/host; no workspace created; code path reviewed. Not a global API spy.",
+  "fixture_events_imported": false
+}

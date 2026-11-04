@@ -1,0 +1,186 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "related_request_id": "yanluo-issue-9-source-host-binding-20261105",
+  "path_base": "repository_root",
+  "consumer": "codex-current-operator-host",
+  "actual_entry": "framework/extensions/diting-files/diting_files.py analyze",
+  "tenant": "gonggong-workspace",
+  "observed_total_records": 1546,
+  "selected_records_read": 34,
+  "records": [
+    {
+      "event_id": "dispatch-5cd89717f3ae47239ee1258cc64c1d45",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "b9c5e97b08fcd89dbd4b7b193898033ebb3b47387864d929c238de3fda9e9e71"
+    },
+    {
+      "event_id": "dispatch-86de1e46d0364c70833f2ee80be7fef1",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "4c2e2408a78114a6cfa2f89c73edba5a5169a2bb41ec6cecca7edcce8cd35c7d"
+    },
+    {
+      "event_id": "dispatch-89e335ed7de6427da1d31fa02a36b913",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "34d31d869a02451bb1edcf566a47185c228a8c174d6823ff16f4dad2974b3145"
+    },
+    {
+      "event_id": "dispatch-cab87c535728491a91c11f6244dc31cb",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "a13c133bc785aab36c153421cb27f1ec28e18bcb9449b0304082b935d3b3bb49"
+    },
+    {
+      "event_id": "issue90-current-operator-live-request-20261105",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "b5e7044f02be17c3245d444f71917d5802c00f4332563ba58d000c1567f8ffdb"
+    },
+    {
+      "event_id": "parallel-0bcbe04cb847404da9d6a24a1c5681e1",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "6a0117351c44ec1c8bd99591ac51b82d32c135d77e6bba64f482334510997be2"
+    },
+    {
+      "event_id": "parallel-0ec96b318691445597a1d4f7e2e93d81",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "57155148d74437545e042a8088d3d5509d9a5e057f3e66328dc9a22d204ac25f"
+    },
+    {
+      "event_id": "parallel-100357619634440b918689956788ff15",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "7dbc71c3357d0e9d628327ae90ca3e10c7b96f2622f5b9dfd0c885f8502ca2f3"
+    },
+    {
+      "event_id": "parallel-1a50f7d7bf2141d592412964003e2ebb",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "2d366946eafa85082609c9aaadaf05a2250cdf852fbd6f220be4ca638710a570"
+    },
+    {
+      "event_id": "parallel-33104cde9e244a87a22fe7c1b0a8543c",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "bc095ea56dbb8029c72d174bc3f0e072c0b2cb97456e126b612a2e0f2ec53478"
+    },
+    {
+      "event_id": "parallel-3766d55379eb4a40afa43765517f948d",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "c500c89dc8d4dea73ca1ea30f1a557e127e93336c54e78e30d1a0e1ab704ed3f"
+    },
+    {
+      "event_id": "parallel-398ff6ae6c5140988efa3bbe8fdf0560",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "50c6b44da430e7b221f5f953b81e8b539c96b8171acc549cbfe989d318789b5a"
+    },
+    {
+      "event_id": "parallel-3deb6546054d4952a0631bc201d20f6e",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "22164a62d731140f80d5276c35683fbbe917119cd633619e26915aa42ac51e8a"
+    },
+    {
+      "event_id": "parallel-521a15f27a6f4dfa85b58a677903e8a7",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "2be9948160af0b9993a11ee4b5539e2e848c6ad502539b92f9c6af9e62527e50"
+    },
+    {
+      "event_id": "parallel-54657cf13d4b4860b4253dbd2c26b9a0",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "dc0b2b43048ccc09ef348dca41fdcb8d418660462c1842f0a465f92f1e178cde"
+    },
+    {
+      "event_id": "parallel-54ffd6029b804cda855e111e1a2e4265",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "b218bcb0f3562db4585ff4b44351e5d059b8fa450bdfa2531ce6730b5f896657"
+    },
+    {
+      "event_id": "parallel-56e81d47b64f47528f1ec9100d513e8c",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "c14eb933c794d8cf8ae32b886fd84e58d5cb1b6ec6d8d06f58f3cc8d0e6baeb9"
+    },
+    {
+      "event_id": "parallel-5974dfa776e44dd2a9816bdee9435866",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "767b6a116afc9291b72bb71e42cc089075557a2dcd721d2ba2c6c4e2d64dc13e"
+    },
+    {
+      "event_id": "parallel-5cf22b273a1847eb9879fdd8c6bcc05c",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "340f589e9a47134201ac600e95d8758b0fde4109164491b2abc2c05137019b08"
+    },
+    {
+      "event_id": "parallel-5e4bf8a2fdb742f2966dcf794b6c9433",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "d557bd7fca46929142b7b315cda78fb609ec643d1b2e558c0854a36a5b5484b3"
+    },
+    {
+      "event_id": "parallel-62ed42a778594ff49160a0c52f7fb8e2",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "4ed053aa32af40f8f5d78095d4f3354e2a16d8014f2be55c9375c84956f3c00e"
+    },
+    {
+      "event_id": "parallel-6a4f11656672464eb0f2721d58f12dd1",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "86ca87e81b381db9cf851c649395d975c66b138594a468ceceee2d3747ea1dee"
+    },
+    {
+      "event_id": "parallel-72e8c87df431447fa8465d8b51376a22",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "97796fe9d13099f72dfa45d03d66f7618f5214ea1a70654b5fcdfbddb27a42a4"
+    },
+    {
+      "event_id": "parallel-7596b9e4286046fd89fd8f48295a06eb",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "9d542f8dfdb75304e8592c0153fcf78e6d126c01bcc767673506b85651f113e6"
+    },
+    {
+      "event_id": "parallel-877de1288cfe4cbe87b19d631b816654",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "e197099523e4933f1b4b6580a14212fc4166ae7bb33107840215d56a84bf8e45"
+    },
+    {
+      "event_id": "parallel-9990cf15f6564b32b29332b616ea1206",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "a87075268e3841957ac603b08948208eb5bbba75be67f0ccb6114f9c6ef98b68"
+    },
+    {
+      "event_id": "parallel-9a55f3e46f79474e8739f2b1f1164b25",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "182bc7b534ef9502f92eeffdf40a14633aa71ea44c7bcdb3c6462e87494c9caa"
+    },
+    {
+      "event_id": "parallel-b06e58f7fe854ccf9a51e38b5563281e",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "ad4c39ba332498b4595d5f64217279e74eec98fad6deb891a41d1904fc8475bf"
+    },
+    {
+      "event_id": "parallel-b9f28d8877f540e7b75d003df41e0c3e",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "b461014b33f8d1155b3155cc91c655c97abc00cc90057a4269fdf14f6e99adfd"
+    },
+    {
+      "event_id": "parallel-d89aa793b4e540e68784820495058b4d",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "3ff7a99304619c9b02845e157f5c3e6132c085eaf5da229c87f77a25265873ab"
+    },
+    {
+      "event_id": "parallel-dc55f0d5a41c4294bf4e3cdbaf81d412",
+      "request_id": "yanluo-issue-9-source-host-binding-20261105",
+      "canonical_sha256": "ea0983dd2732375e65ccd6ff72d16eba4ef8be71450a4cc60187ca16c1be3670"
+    },
+    {
+      "event_id": "parallel-e160a05b70ec429e9f8a3462df26bea0",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "9dc6646d2c2d6b0b6e43d759bc8abc3902e1258751340e1ae8a753824313bf6b"
+    },
+    {
+      "event_id": "sinan-parallel-20261105-request",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "0a4fafee7a59d1eda53190cc15020298d6cc40a0ccfc0529c203f0e5efb00339"
+    },
+    {
+      "event_id": "sinan-parallel-user-approval-20261105",
+      "request_id": "sinan-parallel-20261105",
+      "canonical_sha256": "b13088bbb3d4ab6ac14fc6f8ec26f79b0e540d0b7d4a86d96818668b312cd66c"
+    }
+  ],
+  "source_snapshot_sha256": "bba63d90d85ae708fb64ada3741f7b755cea1eb62e8859c8ea4ff954a2aad2a5",
+  "semantics": "Actual read by current authorized Codex host, not a global subscription or Diting Agent activation",
+  "usage": null,
+  "usage_unknown_reason": "Native host usage not exposed"
+}

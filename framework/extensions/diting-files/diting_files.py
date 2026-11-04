@@ -2,7 +2,8 @@
 from pathlib import Path
 from datetime import datetime,timezone
 from collections import Counter
-import argparse,hashlib,json,os,re,subprocess,sys,tempfile,uuid
+import argparse,hashlib,json,os,re,subprocess,sys,tempfile,uuid,runpy
+BATCH=runpy.run_path(str(Path(__file__).resolve().parents[2]/"tools/git_batch.py"))
 NAME='gonggong-diting-data'
 KINDS={'request','step','message','direction_error','correction','quality_issue','rework','handoff','coverage','request_end','analysis'}
 def canonical(v):return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False)
@@ -64,7 +65,7 @@ def files(data):
             if p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()):raise ValueError('Linked dataset path forbidden')
         found.extend(Path(base)/n for n in names)
     return sorted(found)
-def load(repo, historical=False):
+def load(repo, historical=False, cache=None):
     repo,data=location(repo)
     expected_name,expected_origin=NAME,'gonggong'
     if historical:
@@ -78,7 +79,16 @@ def load(repo, historical=False):
         rel=p.relative_to(data).as_posix()
         if rel in {'dataset.json','README.md','.gitattributes'}:continue
         if not rel.startswith('events/') or not rel.endswith('.json'):raise ValueError('Unexpected/uncommitted temporary data file: '+rel)
-        raw=read(p);v=event(raw)
+        # Cache only successful event validation, scoped to a live caller session.
+        # Exact bytes, never timestamps, decide reuse. Graph checks always run.
+        content=p.read_bytes(); key_path=str(p.resolve())
+        previous=cache.get(key_path) if cache is not None else None
+        if previous is not None and previous[0]==content:
+            raw,v=previous[1],previous[2]
+        else:
+            raw=json.loads(content.decode('utf-8'),object_pairs_hook=pairs,parse_constant=lambda x:(_ for _ in ()).throw(ValueError('Nonfinite JSON')))
+            v=event(raw)
+            if cache is not None:cache[key_path]=(content,raw,v)
         if 'sha256' not in raw:raise ValueError('Stored checksum required')
         expected=f"events/{v['tenant_id']}/{v['request_id']}/{v['event_id']}.json"
         key=(v['tenant_id'],v['event_id'])
@@ -130,23 +140,32 @@ def record(repo,input_path):
     target=data/'events'/v['tenant_id']/v['request_id']/(v['event_id']+'.json')
     atomic_new(target,v)
     return {'state':'recorded_file','path':str(target),'sha256':v['sha256'],'git_committed':False}
-def git_check(repo,committed=False):
-    repo,data,meta,records,allfiles=load(repo);problems=[]
-    merged_records(repo,records)
+def git_check(repo,committed=False,cache=None):
+    repo,data,meta,records,allfiles=load(repo,cache=cache);problems=[]
+    combined=dict(records)
     if (repo/'olympus-hermes-data/dataset.json').is_file():
-        _,_,_,_,historyfiles=load(repo,historical=True)
+        _,_,_,history,historyfiles=load(repo,historical=True,cache=cache)
         allfiles+=historyfiles
-    for p in allfiles:
-        rel=p.relative_to(repo).as_posix()
-        if git(repo,'check-ignore','--no-index','-q','--',rel).returncode==0:problems.append('ignored: '+rel)
-        if git(repo,'ls-files','--error-unmatch','--',rel).returncode:problems.append('untracked: '+rel)
-        if committed:
-            r=git(repo,'show','HEAD:'+rel)
-            if r.returncode or r.stdout!=p.read_bytes():problems.append('not committed current bytes: '+rel)
-    old=git(repo,'ls-tree','-r','--name-only','-z','HEAD','--',NAME,'olympus-hermes-data')
-    for path in old.stdout.split(b'\0'):
-        if path and not (repo/os.fsdecode(path)).is_file():problems.append('deleted history: '+os.fsdecode(path))
+        for key,value in history.items():
+            if key in combined and combined[key]!=value:raise ValueError('Conflicting cross-source event identity')
+            combined[key]=value
+    graph(combined)
+    names={BATCH['encoded'](p,repo):p for p in allfiles}
+    ignored=BATCH['ignored'](repo,list(names))
+    tracked=BATCH['tracked'](repo)
+    head=BATCH['objects'](repo,'HEAD',[NAME,'olympus-hermes-data'])
+    for name,p in names.items():
+        rel=os.fsdecode(name)
+        if name in ignored:problems.append('ignored: '+rel)
+        if name not in tracked:problems.append('untracked: '+rel)
+        if committed and (name not in head or head[name]!=p.read_bytes()):
+            problems.append('not committed current bytes: '+rel)
+    for name in head:
+        if not (repo/os.fsdecode(name)).is_file():problems.append('deleted history: '+os.fsdecode(name))
     if problems:raise ValueError('; '.join(problems))
+    if cache is not None:
+        present={str(p.resolve()) for p in allfiles}
+        for key in set(cache)-present:del cache[key]
     return {'git_state':'committed' if committed else 'tracked','files':len(allfiles),'records':len(records),'remote_merge_verified':False}
 def analyze(repo,tenant):
     repo,data,meta,records,allfiles=load(repo)

@@ -1,0 +1,43 @@
+{
+  "evaluator_id": "/root/integration_review",
+  "independence": "independent_subagent_review",
+  "scope": "Issue 72 incremental source and host contract review",
+  "path_base": "repository_root",
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass",
+    "truth": "pass",
+    "economy": "pass",
+    "authority": "pass",
+    "adaptation": "pass",
+    "continuity": "pass"
+  },
+  "concision": "pass",
+  "host_implementation": "pass",
+  "blocking_implementation_findings": [],
+  "review_method": "Read-only static review of changed implementation, protocol and regression assertions; no repeated test execution",
+  "approval_granted": false,
+  "live_runtime_acceptance": "not_established_by_this_review",
+  "reviewed_files": [
+    {
+      "path": "customizations/components/codex-dispatch/operator.mjs",
+      "sha256": "77f8f7d110e31862f7e1a421cb2c1d1e5201f2a804a19fa1b3d593d19b714743"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.mjs",
+      "sha256": "e610d71831cbe759c459c8e9d2f8b0fe7eef688063aba77c8574ff268584ac26"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+      "sha256": "35f830f2bb56eb0c81b0a031fe0679762999235b244db397ed58efccaae58dc0"
+    },
+    {
+      "path": "framework/modules/sinan/dispatch.mjs",
+      "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654"
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "ab3967fa6b73266a28ee07da72a5bd11daf6825fc8469480f046b9a09124edec"
+    }
+  ]
+}
