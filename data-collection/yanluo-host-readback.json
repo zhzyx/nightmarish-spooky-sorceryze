@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "observed_at": "2026-11-04T21:09:36.083807+00:00",
+  "mode": "real_read_only_github",
+  "issue": {
+    "number": 79,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/79",
+    "state": "open",
+    "labels": [
+      "type:development",
+      "status:in-progress",
+      "workspace:gonggong"
+    ],
+    "body_sha256": "5c85c333e004891ff2257c7e358afef8c6f09636970275d1975cde6a8df42030"
+  },
+  "authenticated_account": "Sail-Li",
+  "remote_main": {
+    "commit": "e7b217340281c0ce14511b7961959be72eeaa469",
+    "tree": "94172e17c2cef71a6999555f2dfad60525df64b0"
+  },
+  "source_review": {
+    "evaluator": "/root/yanluo_review",
+    "result": "reported_blockers_resolved_source_delivery_review_passed",
+    "authority_granted": false
+  },
+  "tests": {
+    "closure": 13,
+    "host_and_progress": 12,
+    "mode": "simulation_and_actual_local_os_lock"
+  },
+  "limits": [
+    "No unattended background service deployed",
+    "Standalone signed CLI host provisioning and Diting/Sinan consumption require their own real receipts; not inferred from tests"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured provider usage supplied"
+}

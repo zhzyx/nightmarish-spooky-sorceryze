@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "owner": "gonggong_host",
+  "agents": [
+    {
+      "id": "yanluo",
+      "name": "阎罗",
+      "version": "0.1.2",
+      "definition": "customizations/components/yanluo/AGENT.md",
+      "component": "customizations/components/yanluo/component.json",
+      "reporting": "customizations/components/yanluo/reporting.json",
+      "governance_root": "yuanheng",
+      "approval": "data-collection/yanluo-user-approval.json",
+      "candidate_digest": "22f7b34265a413770cc7cfa851653b128b72e0fdf00ede62ade827e88142677e",
+      "state": "approved_definition_host_authority_required",
+      "current_protocol": "customizations/components/issue-workorders/yanluo.md",
+      "invocation": "actual_handoff_or_release_or_progress_event",
+      "time_based_invocation": false,
+      "background_service_deployed": false,
+      "scope": "Current authorized host delegates precommit, main delivery, progress reconciliation and corresponding Issue closure; every task still needs actual acceptance and authority."
+    }
+  ]
+}
