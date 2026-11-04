@@ -4566,7 +4566,7 @@ AIChatDock::AIChatDock() {
 	agent_rename_dialog->register_text_enter(agent_name);
 	add_child(agent_rename_dialog);
 	// 连接方式与对话模型并排，压缩顶部占用的行数。
-	HBoxContainer *selector_row = memnew(HBoxContainer);
+	HFlowContainer *selector_row = memnew(HFlowContainer);
 	selector_row->set_name("SelectorRow");
 	layout->add_child(selector_row);
 	HBoxContainer *connection = memnew(HBoxContainer);
@@ -4583,6 +4583,9 @@ AIChatDock::AIChatDock() {
 	backend->add_item(U"GPT API（Responses）");
 	backend->set_h_size_flags(SIZE_EXPAND_FILL);
 	backend->set_custom_minimum_size(Size2(120, 0) * EDSCALE);
+	backend->set_fit_to_longest_item(false);
+	backend->set_clip_text(true);
+	backend->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
@@ -4596,6 +4599,9 @@ AIChatDock::AIChatDock() {
 	model_picker->set_name("ModelPicker");
 	model_picker->set_h_size_flags(SIZE_EXPAND_FILL);
 	model_picker->set_custom_minimum_size(Size2(160, 0) * EDSCALE);
+	model_picker->set_fit_to_longest_item(false);
+	model_picker->set_clip_text(true);
+	model_picker->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
 	refresh_models = memnew(Button);
@@ -4607,13 +4613,21 @@ AIChatDock::AIChatDock() {
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	model_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	ScrollContainer *settings_scroll = memnew(ScrollContainer);
+	settings_scroll->set_name("AdvancedSettingsScroll");
+	settings_scroll->set_custom_minimum_size(Size2(0, 200) * EDSCALE);
+	settings_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+	settings_scroll->hide();
+	layout->add_child(settings_scroll);
 	VBoxContainer *settings = memnew(VBoxContainer);
 	settings->set_name("AdvancedSettings");
+	settings->set_h_size_flags(SIZE_EXPAND_FILL);
 	settings->hide();
-	layout->add_child(settings);
+	settings_scroll->add_child(settings);
 	auto add_field = [](VBoxContainer *p_parent, const String &p_title, const char *p_name, const String &p_value) {
 		Label *label = memnew(Label);
 		label->set_text(p_title);
+		label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 		p_parent->add_child(label);
 		LineEdit *field = memnew(LineEdit);
 		field->set_name(p_name);
@@ -4699,6 +4713,7 @@ AIChatDock::AIChatDock() {
 	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", EDITOR_GET("ai_chat/build_python"));
 	Label *build_args_label = memnew(Label);
 	build_args_label->set_text(U"额外 SCons 配置（每行 key=value，保留现有依赖/工具链设置）");
+	build_args_label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	settings->add_child(build_args_label);
 	engine_build_arguments = memnew(TextEdit);
 	engine_build_arguments->set_name("EngineBuildArguments");
@@ -4707,14 +4722,13 @@ AIChatDock::AIChatDock() {
 	settings->add_child(engine_build_arguments);
 	// 模型状态与构建按钮、高级设置、快照还原并排成一行（小字体、小按钮）。
 	const int small_font_size = 12 * EDSCALE;
-	HBoxContainer *action_row = memnew(HBoxContainer);
+	HFlowContainer *action_row = memnew(HFlowContainer);
 	action_row->set_name("ActionRow");
 	layout->add_child(action_row);
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
 	action_row->add_child(model_status);
-	HBoxContainer *build_actions = memnew(HBoxContainer);
-	action_row->add_child(build_actions);
+	HFlowContainer *build_actions = action_row;
 	engine_build_button = memnew(Button);
 	engine_build_button->set_name("BuildEngine");
 	engine_build_button->set_text(U"编译并更新引擎");
@@ -4746,6 +4760,7 @@ AIChatDock::AIChatDock() {
 	settings_button->add_theme_font_size_override("font_size", small_font_size);
 	action_row->add_child(settings_button);
 	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
+	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings_scroll), &CanvasItem::set_visible));
 	// Keep the local file restore discoverable even for pre-snapshot history.
 	snapshot_history_button = memnew(Button);
 	snapshot_history_button->set_name("LocalSnapshotHistory");
@@ -4811,6 +4826,12 @@ AIChatDock::AIChatDock() {
 	engine_auto_restart->set_tooltip_text(U"同时启用自动执行命令后，AI 修改引擎 C++ 可调用宿主构建并在校验成功后自动重启续聊；无需手动点击构建或重启。构建失败不切换版本，未保存场景仍使用编辑器的保存确认。此设置会保存到编辑器设置。");
 	engine_auto_restart->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(engine_auto_restart);
+	// Long option captions must not widen the scroll viewport. Their existing
+	// tooltips retain the full permission and restart explanations.
+	for (CheckBox *option : { allow_tools, auto_apply_file_changes, auto_execute_commands, engine_auto_restart }) {
+		option->set_clip_text(true);
+		option->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	}
 	// 引擎构建进度与状态合并为一行。
 	HBoxContainer *build_row = memnew(HBoxContainer);
 	build_row->set_name("BuildRow");
@@ -4860,8 +4881,15 @@ AIChatDock::AIChatDock() {
 	message_list->set_h_size_flags(SIZE_EXPAND_FILL);
 	message_list->add_theme_constant_override("separation", 16 * EDSCALE);
 	chat_scroll->add_child(message_list);
-	HBoxContainer *image_actions = memnew(HBoxContainer);
-	layout->add_child(image_actions);
+	PanelContainer *composer_panel = memnew(PanelContainer);
+	composer_panel->set_name("ChatComposerPanel");
+	layout->add_child(composer_panel);
+	VBoxContainer *composer = memnew(VBoxContainer);
+	composer->set_name("ChatComposer");
+	composer->add_theme_constant_override("separation", 6 * EDSCALE);
+	composer_panel->add_child(composer);
+	HFlowContainer *image_actions = memnew(HFlowContainer);
+	composer->add_child(image_actions);
 	add_image = memnew(Button);
 	add_image->set_name("AddImage");
 	add_image->set_text(U"添加图片");
@@ -4876,7 +4904,7 @@ AIChatDock::AIChatDock() {
 	image_attachments = memnew(HFlowContainer);
 	image_attachments->set_name("ImageAttachments");
 	image_attachments->hide();
-	layout->add_child(image_attachments);
+	composer->add_child(image_attachments);
 	image_picker = memnew(FileDialog);
 	image_picker->set_name("AIImagePicker");
 	image_picker->set_title(U"选择要发送的图片");
@@ -4897,7 +4925,7 @@ AIChatDock::AIChatDock() {
 	message_queue = memnew(VBoxContainer);
 	message_queue->set_name("MessageQueue");
 	message_queue->hide();
-	layout->add_child(message_queue);
+	composer->add_child(message_queue);
 	queue_status = memnew(Label);
 	queue_status->set_name("MessageQueueStatus");
 	queue_status->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
@@ -4923,9 +4951,9 @@ AIChatDock::AIChatDock() {
 	input->set_placeholder(U"输入问题，或描述你希望完成的修改……（回车发送，Shift+回车换行）");
 	input->set_custom_minimum_size(Size2(0, 85) * EDSCALE);
 	input->set_line_wrapping_mode(TextEdit::LINE_WRAPPING_BOUNDARY);
-	layout->add_child(input);
+	composer->add_child(input);
 	HBoxContainer *actions = memnew(HBoxContainer);
-	layout->add_child(actions);
+	composer->add_child(actions);
 	consultation_only = memnew(CheckBox);
 	consultation_only->set_name("ConsultationOnly");
 	consultation_only->set_text(U"仅咨询");
