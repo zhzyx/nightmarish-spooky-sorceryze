@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-04T22:21:01.810331+00:00",
+  "path_base": "repository_root",
+  "request_id": "yanluo-issue-64-closure-discrepancy-20261105",
+  "user_decision": "用户在 Codex 明确指示：“#96，撤销放宽门禁相关需求。清理并关闭相关内容”。",
+  "actor": "Codex /root",
+  "before": {
+    "64": {
+      "number": 64,
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/64",
+      "title": "放宽工单门禁的 Diting 来源事件类型限制",
+      "body": "<!-- gonggong-request:issue-gate-diting-source-event-binding-20261105 -->\r\n\r\n需求文档：`design-docs/issue-gate-diting-source-event-binding-20261105.md`\r\n\r\n# 放宽工单门禁的 Diting 来源事件类型限制\r\n\r\n<!-- gonggong-request:issue-gate-diting-source-event-binding-20261105 -->\r\n\r\n本次产物：修改 `customizations/components/issue-workorders/issue_gate.py`、对应回归测试和组件说明。目标为仓库当前 Windows/Python 工具链，不涉及 Godot 构建。\r\n\r\n问题：正式提交门禁当前要求同租户、同 `request_id` 下存在 `kind=request` 且 `source_ref` 精确指向当前 Issue 的事件。真实需求事件可能以 `kind=step` 落盘，虽然请求身份、租户和 Issue 来源均正确，仍被拒绝。\r\n\r\n范围与验收：\r\n\r\n- 同租户、同 `request_id` 的任一已跟踪 Diting 事件可满足来源关联，前提是 `source_ref` 精确等于当前 Issue URL 或规范 `github:owner/repo:issue:number`。\r\n- 错租户、错 request ID、错误仓库/Issue 编号、无事件、未跟踪事件继续拒绝。\r\n- 提交者和事件作者身份不参与该来源关联判断；这不改变身份认证、权限授予或 Issue 状态校验。\r\n- 补充正反例组件回归，更新规则说明；执行正式 issue gate、独立审查和提交后 `git-check --require-committed`。\r\n\r\n停止条件：只在相关回归与正式候选门禁通过后提交；远程合并和有效发布仍由协调者串行处理。本任务不修改共工框架、冻结原件、历史事件或其他工作副本。\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        {
+          "id": 12920593189,
+          "node_id": "LA_kwDOVegMdc8AAAADAiCbJQ",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/type:maintenance",
+          "name": "type:maintenance",
+          "color": "FBCA04",
+          "default": false,
+          "description": "维护、运维及其他事务",
+          "archived_at": null,
+          "archived_by": null
+        },
+        {
+          "id": 12927004675,
+          "node_id": "LA_kwDOVegMdc8AAAADAoJwAw",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/status:in-progress",
+          "name": "status:in-progress",
+          "color": "1D76DB",
+          "default": false,
+          "description": "处理中：已认领实际执行",
+          "archived_at": null,
+          "archived_by": null
+        },
+        {
+          "id": 12931240510,
+          "node_id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/workspace:gonggong",
+          "name": "workspace:gonggong",
+          "color": "0E8A16",
+          "default": false,
+          "description": "共工统一工作区及其已接入子模块",
+          "archived_at": null,
+          "archived_by": null
+        }
+      ],
+      "updated_at": "2026-11-04T21:58:46Z",
+      "closed_at": "2026-11-04T19:36:07Z"
+    },
+    "96": {
+      "number": 96,
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96",
+      "title": "核对 #64 关闭意图与 Diting 来源门禁未合入差异",
+      "body": "<!-- gonggong-request:yanluo-issue-64-closure-discrepancy-20261105 -->\n\n# 核对 #64 关闭意图与 Diting 来源门禁未合入差异\n\n父单：#64；审查来源：#88。需求文档：`design-docs/yanluo-issue-64-closure-discrepancy-20261105.md`（路径相对仓库根）。\n\n已交付依据：#64 远端已 closed/completed（2026-11-04T19:36:07Z），标签仍 in-progress；独立审查关闭/重开事件没有关联提交。PR #81 与 #46 文档明确未包含 #64。\n已合入提交/审查基线：`3afe3b0dfc42464c554d91b84461be33aa8d2031`。\n\n剩余验收：\n\n- [ ] 确认 #64 原关闭表示撤销/停止需求，还是剩余源码应继续；保留实际决策来源。\n- [x] 如撤销，记录 not-planned 的业务决定与边界；如继续，先明确独立执行范围、必要审查和验收，再推进当前 main 上的剩余实现。\n\n边界：当前 main issue_gate.py（旧基线 3afe3b0d 第 246 行，当前 71ab6c28 仍保持同一 kind=request 语义） 仍要求 kind=request。仅建立 needs-decision 差异单，不重开 #64，不恢复其已停止候选，不把 completed 历史改写为 cancelled 或已实现。\n\n证据：customizations/components/issue-workorders/issue_gate.py（旧基线 3afe3b0d 第 246 行，当前 71ab6c28 仍保持同一 kind=request 语义）; Issue #64 timeline; PR #81; design-docs/requirement-8275346195acf05e0605ca999b44d868.md。\n\n本单由阎罗全仓审查及独立复核形成，后续由司南按真实需求事件派发；创建不等于已执行或生产启用。原 #64 维持关闭，等待决策。\n\n<!-- gonggong-host-git:Sail-Li -->\n\n## 2026-11-05 撤销决定与执行范围\n\n用户在 Codex 明确指示：“#96，撤销放宽门禁相关需求。清理并关闭相关内容”。据此撤销 #64 放宽 Diting 来源事件类型的需求，终止本单待决分支。当前 Codex 会话在独立工作树清理原需求和审查视图，追加来源及 Diting 事件，同步 #64/#96 取消状态；不恢复停止候选，不操作其他工作副本，不修改门禁源码或历史证据。验收为相关文档不再待继续/待决、保留 kind=request、Issue 回读一致；运行文档/事件与正式提交检查，不编译 Godot。\n",
+      "state": "open",
+      "state_reason": null,
+      "labels": [
+        {
+          "id": 12920593189,
+          "node_id": "LA_kwDOVegMdc8AAAADAiCbJQ",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/type:maintenance",
+          "name": "type:maintenance",
+          "color": "FBCA04",
+          "default": false,
+          "description": "维护、运维及其他事务",
+          "archived_at": null,
+          "archived_by": null
+        },
+        {
+          "id": 12927004675,
+          "node_id": "LA_kwDOVegMdc8AAAADAoJwAw",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/status:in-progress",
+          "name": "status:in-progress",
+          "color": "1D76DB",
+          "default": false,
+          "description": "处理中：已认领实际执行",
+          "archived_at": null,
+          "archived_by": null
+        },
+        {
+          "id": 12931240510,
+          "node_id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/workspace:gonggong",
+          "name": "workspace:gonggong",
+          "color": "0E8A16",
+          "default": false,
+          "description": "共工统一工作区及其已接入子模块",
+          "archived_at": null,
+          "archived_by": null
+        }
+      ],
+      "updated_at": "2026-11-04T22:19:15Z",
+      "closed_at": null
+    }
+  },
+  "issue64_readback": {
+    "number": 64,
+    "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/64",
+    "title": "放宽工单门禁的 Diting 来源事件类型限制",
+    "body": "<!-- gonggong-request:issue-gate-diting-source-event-binding-20261105 -->\r\n\r\n需求文档：`design-docs/issue-gate-diting-source-event-binding-20261105.md`\r\n\r\n# 放宽工单门禁的 Diting 来源事件类型限制\r\n\r\n<!-- gonggong-request:issue-gate-diting-source-event-binding-20261105 -->\r\n\r\n本次产物：修改 `customizations/components/issue-workorders/issue_gate.py`、对应回归测试和组件说明。目标为仓库当前 Windows/Python 工具链，不涉及 Godot 构建。\r\n\r\n问题：正式提交门禁当前要求同租户、同 `request_id` 下存在 `kind=request` 且 `source_ref` 精确指向当前 Issue 的事件。真实需求事件可能以 `kind=step` 落盘，虽然请求身份、租户和 Issue 来源均正确，仍被拒绝。\r\n\r\n范围与验收：\r\n\r\n- 同租户、同 `request_id` 的任一已跟踪 Diting 事件可满足来源关联，前提是 `source_ref` 精确等于当前 Issue URL 或规范 `github:owner/repo:issue:number`。\r\n- 错租户、错 request ID、错误仓库/Issue 编号、无事件、未跟踪事件继续拒绝。\r\n- 提交者和事件作者身份不参与该来源关联判断；这不改变身份认证、权限授予或 Issue 状态校验。\r\n- 补充正反例组件回归，更新规则说明；执行正式 issue gate、独立审查和提交后 `git-check --require-committed`。\r\n\r\n停止条件：只在相关回归与正式候选门禁通过后提交；远程合并和有效发布仍由协调者串行处理。本任务不修改共工框架、冻结原件、历史事件或其他工作副本。\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n\n## 2026-11-05 用户撤销决定（取代上文实施计划）\n\n用户在 Codex 明确指示：“#96，撤销放宽门禁相关需求。清理并关闭相关内容”。\n\n本需求撤销，按 status:cancelled / not_planned 关闭；不再实现任意事件类型替代 kind=request 的来源绑定。现有严格门禁保持，原停止候选不恢复。#96 记录意图核对和清理，原 closed/completed 是历史状态，本次取消不表示放宽功能已交付。需求归档：`design-docs/issue-gate-diting-source-event-binding-20261105.md`（相对仓库根）。\n",
+    "state": "closed",
+    "state_reason": "not_planned",
+    "labels": [
+      {
+        "id": 12920593189,
+        "node_id": "LA_kwDOVegMdc8AAAADAiCbJQ",
+        "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/type:maintenance",
+        "name": "type:maintenance",
+        "color": "FBCA04",
+        "default": false,
+        "description": "维护、运维及其他事务",
+        "archived_at": null,
+        "archived_by": null
+      },
+      {
+        "id": 12931240510,
+        "node_id": "LA_kwDOVegMdc8AAAADAsMSPg",
+        "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/workspace:gonggong",
+        "name": "workspace:gonggong",
+        "color": "0E8A16",
+        "default": false,
+        "description": "共工统一工作区及其已接入子模块",
+        "archived_at": null,
+        "archived_by": null
+      },
+      {
+        "id": 12927005314,
+        "node_id": "LA_kwDOVegMdc8AAAADAoJygg",
+        "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/labels/status:cancelled",
+        "name": "status:cancelled",
+        "color": "BFDADC",
+        "default": false,
+        "description": "取消：明确取消，不视为验收通过",
+        "archived_at": null,
+        "archived_by": null
+      }
+    ],
+    "updated_at": "2026-11-04T22:21:00Z",
+    "closed_at": "2026-11-04T19:36:07Z"
+  },
+  "issue96_closure": "pending repository delivery; close as cancelled/not_planned after remote readback",
+  "scope": "cancel #64 and resolve #96; preserve strict gate and stopped candidates; no other worktree operations",
+  "usage": null,
+  "sinan_consumed": null
+}
