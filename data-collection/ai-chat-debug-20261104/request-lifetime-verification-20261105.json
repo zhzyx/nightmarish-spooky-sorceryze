@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "related_issue": 59,
+  "path_base": "repository_root",
+  "observed_at": "2026-11-04T19:49:01.562255+00:00",
+  "base_commit": "c6445d3961f9de835b823a1529fd0a2d9f3ff478",
+  "scope": "Native Codex temporary request lifetime only; no visible UI or real provider acceptance",
+  "source_sha256_lf": {
+    "editor/docks/ai_chat_dock.cpp": "a699377afb6893493f233ec55f7e2bba5f7e22e9495b16eec34d1f286ed92f6b",
+    "tests/editor/run_codex_request_lifetime.py": "3d648d2f32cd78fc353b73ac9963a356b08d888c36d5224f22c21aeb891051a2",
+    "tests/editor/codex_request_lifetime.gd": "a91db889a08f00927da4bbdc027f2f42d3f8aaf419dd6bfa72cbd8cc7c6b4065"
+  },
+  "old_binary_provenance": {
+    "source_commit": "e5d39a90a6e04ce55d1db47d5f90e1d9feb4829d",
+    "provider": "Issue59 owner frozen build, copied read-only into this worktree",
+    "start_codex_sha256_lf": "142c0d7e4dfce0b7a60b9a25805d660fee7af8c4cace7c6cb86ee458d6777220",
+    "mapping": "_start_codex function identical in Issue59 frozen commit and this base; other Issue59 code not accepted as this candidate"
+  },
+  "baseline_reproduction": {
+    "cases": [
+      {
+        "cleanup": true,
+        "name": "success",
+        "read_error_code": "ENOENT",
+        "remaining_request_files": 0,
+        "request_missing_after_return": true
+      }
+    ],
+    "error": "request_missing_after_return",
+    "ok": true,
+    "fixture_sha256": {
+      "run_codex_request_lifetime.py": "3d648d2f32cd78fc353b73ac9963a356b08d888c36d5224f22c21aeb891051a2",
+      "codex_request_lifetime.gd": "a91db889a08f00927da4bbdc027f2f42d3f8aaf419dd6bfa72cbd8cc7c6b4065"
+    },
+    "expected_missing": true,
+    "editor_sha256": "93841e71f36ad9b872a0d28df852fba7b6824b4aedabb7f069cb95e593deef86",
+    "process_exit": 0,
+    "fixture_errors": [],
+    "real_provider": false,
+    "request_files_after_exit": 0
+  },
+  "candidate_lifetime": {
+    "cases": [
+      {
+        "cleanup": true,
+        "name": "success",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "failure",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "cancel",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "start_failure",
+        "remaining_request_files": 0,
+        "request_retained": false
+      }
+    ],
+    "error": "",
+    "ok": true,
+    "fixture_sha256": {
+      "run_codex_request_lifetime.py": "3d648d2f32cd78fc353b73ac9963a356b08d888c36d5224f22c21aeb891051a2",
+      "codex_request_lifetime.gd": "a91db889a08f00927da4bbdc027f2f42d3f8aaf419dd6bfa72cbd8cc7c6b4065"
+    },
+    "expected_missing": false,
+    "editor_sha256": "9b9f097d963389d9be0a3afd81c99133b7154a04381510349d35cb6f56ec29ae",
+    "process_exit": 0,
+    "fixture_errors": [],
+    "real_provider": false,
+    "request_files_after_exit": 0
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "compiler": "Visual Studio 14.5",
+    "sdk": "10.0.26100.0",
+    "scons": "platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "exit_code": 0,
+    "elapsed_seconds": 84.8,
+    "cache": "Copied bin objects and SCons signatures from frozen Issue59 worktree into own worktree; SCons checked current sources; no writes to source cache",
+    "editor_sha256": "9b9f097d963389d9be0a3afd81c99133b7154a04381510349d35cb6f56ec29ae",
+    "console_sha256": "49b4464da6db96683bae9ff8d52d7bbbabc3f886f99a333847062b9be64a800d",
+    "log_sha256": "cbee9c62b900ea431e9e2b9f371de74058f158a399759483a251d4b9f49cac08"
+  },
+  "native_tests": {
+    "filter": "[AIChat]*",
+    "cases_passed": 20,
+    "assertions_passed": 186,
+    "failed": 0,
+    "exit_code": 0,
+    "log_sha256": "3adc1227a390db8157571adc0e046ea046c7edfe175f16163b2024cf0d1b0b47"
+  },
+  "independent_review": {
+    "reviewer": "separate subagent /root/review_evidence",
+    "status": "no blocking findings",
+    "scope": "ownership/release paths and fixture isolation/actual native Send path; reviewer did not rerun build/tests",
+    "limitations": [
+      "Cancellation asserts request file cleanup, not separate child PID termination",
+      "Old failure now explicitly requires ENOENT; no service root-cause inference"
+    ]
+  },
+  "debug_iterations": "Pre-final fixture engine-root routing and diagnostic assertion issues corrected before final runs. Earlier scaffold runs used an empty mock CLI entry, not a real provider. Only final reports count as acceptance.",
+  "delivery": "source and isolated Windows candidate verification; no installation switch",
+  "original_real_process_exit_cause": "unknown; this offline defect does not establish causality for the earlier real service attempt",
+  "old_user_ui_and_paused_queue": "untouched",
+  "usage": null,
+  "consumption_confirmed": false
+}

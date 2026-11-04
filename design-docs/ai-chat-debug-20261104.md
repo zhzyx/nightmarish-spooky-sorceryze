@@ -31,3 +31,15 @@
 本次交付源码、Windows 原生构建及回归证据；不替换框架 Agent 或准入，不将模拟服务表述为真实 GPT 账户验收。历史发布及其他任务的在途文件保持原状。运行库点火器的完整跨平台及跨重启会话恢复不在本次 Windows 修复验收内，关联 #47 保持开放跟踪。
 
 启动入口补查：tools/launch_gonggong_editor.ps1 不再因 Python/Node 缺失提前退出，继续打开编辑器交给点火器；Probe 如实列出缺失项。新增真实 PowerShell Probe 用例通过，部署回退加启动入口共 7 项通过。补充证据见 data-collection/ai-chat-debug-20261104/launcher-verification.json。Codex 桥接复用固定本机依赖后独立 6 项全过。
+
+
+## 2026-11-05 独立请求文件生命周期修复
+
+#59 的离线 native mock 在执行工具前退出，提供了 Codex 请求临时文件可能提前删除的新线索。本轮另建工作树，固定 origin/main c6445d3961f9de835b823a1529fd0a2d9f3ff478，不混入 #59 状态边界更改；只读复用冻结参考和复制后的构建缓存。范围限编辑器 Codex 请求文件持有及成功、失败、取消、启动失败清理，并补最小离线回归。产物为源码与 Windows x64/MSVC 候选验证，不安装或切换有效编辑器，不操作旧窗口/暂停队列，不重做用户跳过的验收、不重复真实供应商请求。
+
+先核查 FileAccess keep=false 析构语义和原生离线失败，再以同一夹具验证修复；原生代码变更因此需要一次增量构建。参数 platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no。复用他树缓存仅复制到本工作树，由 SCons 检查当前输入；来源与候选摘要分开记录。验收为异步消费者能读取请求，成功/失败/取消/启动失败均清理请求文件，相关测试通过。此缺陷与此前真实 PROCESS_EXIT 的因果关系仍未知，不自动归因供应商或账号。
+
+
+生命周期复现与结果：keep=false 的 FileAccess 在 close 后仍保留文件，最后引用析构删除文件；旧版 `_start_codex` 仅有局部 Ref，函数返回后250ms的隔离消费者实际收到 ENOENT。旧二进制来自 #59 的冻结提交 e5d39a90，其 `_start_codex` 与本基线函数字节摘要一致，其他 #59 更改不作为本候选。修复在记录 cli_input_path 后立即以 cli_request_file 持有引用，复用既有释放路径。Windows 候选增量构建84.80秒成功，原生 [AIChat] 20项/186断言通过；同一最终离线夹具验证成功、失败、取消、启动失败均清理临时请求，前三种在活动期间保留请求，所有终态剩余0。取消只验证请求文件清理，未另行断言子进程PID结束。
+
+证据为 data-collection/ai-chat-debug-20261104/request-lifetime-verification-20261105.json（仓库根为路径基准，源码和证据摘要为UTF-8 LF）。生产差异及夹具经过独立只读审查，无阻断；旧版复现要求明确 ENOENT，不接受任意读错误。所有模型与Issue操作为隔离夹具；旧窗口、旧暂停队列和用户配置未触碰，未重复真实供应商请求。原真实 PROCESS_EXIT 根因仍未知，本次只证明并修复一个独立的本地生命周期缺陷。

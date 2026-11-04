@@ -3220,6 +3220,8 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 		return;
 	}
 	cli_input_path = file->get_path_absolute();
+	// Keep the temporary request alive until completion or cancellation releases it.
+	cli_request_file = file;
 	const bool stored = file->store_string(body);
 	file->flush();
 	const Error write_error = file->get_error();
