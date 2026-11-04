@@ -366,10 +366,31 @@ void AIChatDock::_queue_history_save() {
 }
 
 void AIChatDock::_draft_changed() {
+	_update_composer_height();
 	_queue_history_save();
 	// Debounce typing, but keep streaming/tool updates on the bounded save timer.
 	if (history_loaded && !history_restoring && history_writable && history_timer->is_inside_tree()) {
 		history_timer->start();
+	}
+}
+
+void AIChatDock::_update_composer_height() {
+	int max_lines = 8;
+	if (is_inside_tree() && input->get_line_height() > 0) {
+		chat_scroll->set_custom_minimum_size(Size2(0, (get_size().x < 640 * EDSCALE ? 48 : 80) * EDSCALE));
+		const real_t other_height = get_combined_minimum_size().y - input->get_custom_minimum_size().y;
+		const real_t available = get_viewport_rect().size.y - get_global_position().y - other_height - 16 * EDSCALE;
+		max_lines = CLAMP(int(available / input->get_line_height()), 3, 8);
+	}
+	const int lines = CLAMP(input->get_total_visible_line_count(), 3, max_lines);
+	input->set_custom_minimum_size(Size2(0, lines * input->get_line_height() + 16 * EDSCALE));
+}
+
+void AIChatDock::_toggle_chat_settings(bool p_visible) {
+	if (p_visible) {
+		chat_settings_dialog->popup_centered_clamped(Size2i(640, 520) * EDSCALE);
+	} else {
+		chat_settings_dialog->hide();
 	}
 }
 
@@ -924,11 +945,11 @@ VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool
 	style.instantiate();
 	const Color accent = get_theme_color("accent_color", "Editor");
 	const Color base = get_theme_color("base_color", "Editor");
-	style->set_bg_color(p_user ? base.lerp(accent, 0.18) : base.lightened(0.04));
+	style->set_bg_color(p_user ? base.lerp(accent, 0.10) : base);
 	style->set_border_color(p_error ? Color(0.9, 0.4, 0.35) : accent);
-	style->set_border_width(SIDE_LEFT, p_user ? 0 : 3 * EDSCALE);
+	style->set_border_width(SIDE_LEFT, p_user ? 0 : 1 * EDSCALE);
 	style->set_corner_radius_all(8 * EDSCALE);
-	style->set_content_margin_all(14 * EDSCALE);
+	style->set_content_margin_all(12 * EDSCALE);
 	panel->add_theme_style_override("panel", style);
 	row->add_child(panel);
 	VBoxContainer *body = memnew(VBoxContainer);
@@ -1227,7 +1248,7 @@ void AIChatDock::_render_images(Control *p_parent, const Array &p_images, bool p
 		p_parent->add_child(tile);
 		Button *thumbnail = memnew(Button);
 		thumbnail->set_name("ImageThumbnail");
-		thumbnail->set_custom_minimum_size(Size2(p_draft ? 86 : 180, p_draft ? 66 : 130) * EDSCALE);
+		thumbnail->set_custom_minimum_size(Size2(p_draft ? 64 : 180, p_draft ? 32 : 130) * EDSCALE);
 		thumbnail->set_tooltip_text(name + U" · 点击放大预览");
 		thumbnail->connect("pressed", callable_mp(this, &AIChatDock::_show_image).bind(texture, name));
 		tile->add_child(thumbnail);
@@ -3673,6 +3694,8 @@ void AIChatDock::_refresh_engine_controls() {
 	engine_build_button->set_disabled(running || chat_locked || engine_restart_armed || !allow_tools->is_pressed());
 	engine_restart_button->set_disabled(running || chat_locked || engine_restart_armed || engine_updated_executable.is_empty() || !allow_tools->is_pressed());
 	engine_cancel_button->set_disabled(!running);
+	// Keep idle build chrome from displacing the composer on scaled displays.
+	Object::cast_to<Control>(engine_build_progress->get_parent())->set_visible(running);
 	engine_python->set_editable(!running);
 	engine_build_arguments->set_editable(!running);
 	engine_auto_restart->set_disabled(running || busy || models_loading || engine_restart_armed);
@@ -4474,33 +4497,28 @@ AIChatDock::AIChatDock() {
 	VBoxContainer *layout = chat_layout;
 	layout->set_name("ChatLayout");
 	layout->set_v_size_flags(SIZE_EXPAND_FILL);
-	layout->add_theme_constant_override("separation", 10 * EDSCALE);
+	layout->add_theme_constant_override("separation", 6 * EDSCALE);
 	agents_page->add_child(layout);
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");
 	workspace_pages->add_child(timers_page);
-	workspace_pages->set_tab_title(0, "会话");
+	workspace_pages->set_tab_title(0, U"会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	workspace_pages->add_child(gonggong_panel);
-	workspace_pages->set_tab_title(2, "共工");
+	workspace_pages->set_tab_title(2, U"共工");
 	workspace_pages->set_current_tab(0);
-	Label *heading = memnew(Label);
-	heading->set_text(U"AI 对话");
-	heading->add_theme_font_size_override("font_size", 20 * EDSCALE);
-	agents_page->add_child(heading);
-	agents_page->move_child(heading, 0);
 	agent_tabs_panel = memnew(PanelContainer);
 	agent_tabs_panel->set_name("AgentTabsPanel");
 	agents_page->add_child(agent_tabs_panel);
-	agents_page->move_child(agent_tabs_panel, 1);
+	agents_page->move_child(agent_tabs_panel, 0);
 	manual_schedule_notice = memnew(Label);
 	manual_schedule_notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	manual_schedule_notice->hide();
 	agents_page->add_child(manual_schedule_notice);
-	agents_page->move_child(manual_schedule_notice, 2);
-	_build_sub_agent_ui(agents_page, 2);
+	agents_page->move_child(manual_schedule_notice, 1);
+	_build_sub_agent_ui(agents_page, 1);
 	HBoxContainer *agents = memnew(HBoxContainer);
 	agent_tabs_panel->add_child(agents);
 	agent_tabs = memnew(TabBar);
@@ -4613,12 +4631,20 @@ AIChatDock::AIChatDock() {
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	model_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	chat_settings_dialog = memnew(AcceptDialog);
+	chat_settings_dialog->set_name("ChatSettingsDialog");
+	chat_settings_dialog->set_title(U"工具与设置");
+	chat_settings_dialog->set_ok_button_text(U"完成");
+	chat_settings_dialog->set_exclusive(false);
+	add_child(chat_settings_dialog);
+	VBoxContainer *settings_layout = memnew(VBoxContainer);
+	chat_settings_dialog->add_child(settings_layout);
 	ScrollContainer *settings_scroll = memnew(ScrollContainer);
 	settings_scroll->set_name("AdvancedSettingsScroll");
-	settings_scroll->set_custom_minimum_size(Size2(0, 200) * EDSCALE);
+	settings_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
 	settings_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
 	settings_scroll->hide();
-	layout->add_child(settings_scroll);
+	settings_layout->add_child(settings_scroll);
 	VBoxContainer *settings = memnew(VBoxContainer);
 	settings->set_name("AdvancedSettings");
 	settings->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -4728,7 +4754,9 @@ AIChatDock::AIChatDock() {
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
 	action_row->add_child(model_status);
-	HFlowContainer *build_actions = action_row;
+	HFlowContainer *build_actions = memnew(HFlowContainer);
+	settings_layout->add_child(build_actions);
+	settings_layout->move_child(build_actions, 0);
 	engine_build_button = memnew(Button);
 	engine_build_button->set_name("BuildEngine");
 	engine_build_button->set_text(U"编译并更新引擎");
@@ -4746,7 +4774,7 @@ AIChatDock::AIChatDock() {
 	engine_cancel_button->set_text(U"取消编译");
 	engine_cancel_button->add_theme_font_size_override("font_size", small_font_size);
 	engine_cancel_button->connect("pressed", callable_mp(this, &AIChatDock::_cancel_engine_build));
-	build_actions->add_child(engine_cancel_button);
+	action_row->add_child(engine_cancel_button);
 	Button *build_log_button = memnew(Button);
 	build_log_button->set_name("EngineBuildLog");
 	build_log_button->set_text(U"编译日志");
@@ -4755,16 +4783,19 @@ AIChatDock::AIChatDock() {
 	build_actions->add_child(build_log_button);
 	Button *settings_button = memnew(Button);
 	settings_button->set_name("AdvancedToggle");
-	settings_button->set_text(U"高级设置");
+	settings_button->set_text(U"更多 / 设置");
 	settings_button->set_toggle_mode(true);
 	settings_button->add_theme_font_size_override("font_size", small_font_size);
 	action_row->add_child(settings_button);
 	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
 	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings_scroll), &CanvasItem::set_visible));
+	settings_button->connect("toggled", callable_mp(this, &AIChatDock::_toggle_chat_settings));
+	chat_settings_dialog->connect("canceled", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
+	chat_settings_dialog->connect("confirmed", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
 	// Keep the local file restore discoverable even for pre-snapshot history.
 	snapshot_history_button = memnew(Button);
 	snapshot_history_button->set_name("LocalSnapshotHistory");
-	snapshot_history_button->set_text(U"修改记录与还原（本地快照）");
+	snapshot_history_button->set_text(U"修改记录");
 	snapshot_history_button->add_theme_font_size_override("font_size", small_font_size);
 	snapshot_history_button->set_tooltip_text(U"查看当前会话任意一轮已记录的文件修改、修改前后内容和差异；还原到此版本会另记一轮修改，需另外确认。不依赖 Git，没有快照时不会补造旧内容。");
 	snapshot_history_button->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_show_snapshot_history));
@@ -4869,7 +4900,7 @@ AIChatDock::AIChatDock() {
 	chat_scroll = memnew(ScrollContainer);
 	chat_scroll->set_name("ChatScroll");
 	chat_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
-	chat_scroll->set_custom_minimum_size(Size2(0, 140) * EDSCALE);
+	chat_scroll->set_custom_minimum_size(Size2(0, 80) * EDSCALE);
 	chat_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
 	// "scrolling" is emitted by wheel/drag/keyboard/touch input, unlike
 	// "value_changed", which also fires when a layout update clamps the range.
@@ -4879,28 +4910,30 @@ AIChatDock::AIChatDock() {
 	message_list = memnew(VBoxContainer);
 	message_list->set_name("Messages");
 	message_list->set_h_size_flags(SIZE_EXPAND_FILL);
-	message_list->add_theme_constant_override("separation", 16 * EDSCALE);
+	message_list->add_theme_constant_override("separation", 20 * EDSCALE);
 	chat_scroll->add_child(message_list);
 	PanelContainer *composer_panel = memnew(PanelContainer);
 	composer_panel->set_name("ChatComposerPanel");
+	Ref<StyleBoxFlat> composer_style;
+	composer_style.instantiate();
+	composer_style->set_bg_color(Color(0, 0, 0, 0));
+	composer_style->set_content_margin_all(12 * EDSCALE);
+	composer_style->set_corner_radius_all(8 * EDSCALE);
+	composer_panel->add_theme_style_override("panel", composer_style);
 	layout->add_child(composer_panel);
 	VBoxContainer *composer = memnew(VBoxContainer);
 	composer->set_name("ChatComposer");
 	composer->add_theme_constant_override("separation", 6 * EDSCALE);
 	composer_panel->add_child(composer);
-	HFlowContainer *image_actions = memnew(HFlowContainer);
-	composer->add_child(image_actions);
 	add_image = memnew(Button);
 	add_image->set_name("AddImage");
 	add_image->set_text(U"添加图片");
 	add_image->set_tooltip_text(U"选择 PNG/JPEG/WebP；最多 4 张，图片会发送到所选模型服务。大图会缩放或压缩，发送前可预览。");
 	add_image->connect("pressed", callable_mp(this, &AIChatDock::_choose_images));
-	image_actions->add_child(add_image);
 	paste_image = memnew(Button);
 	paste_image->set_name("PasteImage");
 	paste_image->set_text(U"粘贴截图");
 	paste_image->connect("pressed", callable_mp(this, &AIChatDock::_paste_image));
-	image_actions->add_child(paste_image);
 	image_attachments = memnew(HFlowContainer);
 	image_attachments->set_name("ImageAttachments");
 	image_attachments->hide();
@@ -4951,9 +4984,13 @@ AIChatDock::AIChatDock() {
 	input->set_placeholder(U"输入问题，或描述你希望完成的修改……（回车发送，Shift+回车换行）");
 	input->set_custom_minimum_size(Size2(0, 85) * EDSCALE);
 	input->set_line_wrapping_mode(TextEdit::LINE_WRAPPING_BOUNDARY);
+	input->connect(SceneStringName(resized), callable_mp(this, &AIChatDock::_update_composer_height), CONNECT_DEFERRED);
+	chat_layout->connect(SNAME("minimum_size_changed"), callable_mp(this, &AIChatDock::_update_composer_height), CONNECT_DEFERRED);
 	composer->add_child(input);
 	HBoxContainer *actions = memnew(HBoxContainer);
 	composer->add_child(actions);
+	actions->add_child(add_image);
+	actions->add_child(paste_image);
 	consultation_only = memnew(CheckBox);
 	consultation_only->set_name("ConsultationOnly");
 	consultation_only->set_text(U"仅咨询");

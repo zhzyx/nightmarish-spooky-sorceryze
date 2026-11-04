@@ -1,0 +1,11 @@
+{
+  "candidate_receipt": "data-collection/issue56-ui/build-candidate6.json",
+  "path_base": "repository_root",
+  "command": "bin/godot.windows.editor.x86_64.console.exe --headless --test --test-case=*AIChat*",
+  "exit_code": 0,
+  "test_cases": 22,
+  "assertions": 254,
+  "failed": 0,
+  "scope": "Native AIChat and sub-agent unit cases, not GUI or live model service",
+  "warning": "EditorSettings::save warning observed; assertions passed"
+}

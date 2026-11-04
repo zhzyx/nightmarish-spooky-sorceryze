@@ -347,6 +347,9 @@ class AIChatDock : public EditorDock {
 	String _history_path() const;
 	void _queue_history_save();
 	void _draft_changed();
+	void _update_composer_height();
+	void _toggle_chat_settings(bool p_visible);
+	AcceptDialog *chat_settings_dialog = nullptr;
 	void _save_history();
 	static void _write_history(void *p_job);
 	void _poll_history_save();
