@@ -30,6 +30,8 @@
 
 #include "ai_chat_dock.h"
 
+#include "ai_chat_issue_guide.h"
+
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/input/input_event.h"
@@ -1592,6 +1594,14 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 }
 
 void AIChatDock::_send() {
+	if (issue_guide_pid >= 0 && !consultation_only->is_pressed() && AIChatIssueGuide::is_cancel(input->get_text())) {
+		const String text = input->get_text().strip_edges();
+		input->set_text(String());
+		_append(TTR("You"), _redact(text));
+		_issue_guide_reply(text);
+		_set_busy(false);
+		return;
+	}
 	if (consultation_only->is_pressed() && !gonggong_recovered_result.is_empty()) {
 		_append(TTR("Error"), U"仍有旧开发结果待恢复。请先按停止放弃恢复，再发送仅咨询消息；本次未恢复或执行任何操作。");
 		return;
@@ -4472,6 +4482,7 @@ AIChatDock::AIChatDock() {
 	workspace_pages->set_tab_title(0, "会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
+	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	workspace_pages->add_child(gonggong_panel);
 	workspace_pages->set_tab_title(2, "共工");
 	workspace_pages->set_current_tab(0);

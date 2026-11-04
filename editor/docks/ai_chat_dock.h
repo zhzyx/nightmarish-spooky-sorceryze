@@ -97,6 +97,7 @@ class AIChatDock : public EditorDock {
 	void _poll_gonggong_receipt();
 	void _end_gonggong(const String &p_status);
 	void _begin_gonggong_context();
+	void _environment_setup_completed();
 	void _poll_gonggong_context();
 	void _clear_gonggong_files();
 

@@ -1,0 +1,127 @@
+﻿[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)][string]$Workspace,
+    [Parameter(Mandatory=$true)][string]$Out,
+    [string]$SourceRuntime,
+    [string]$Components = 'python,node,git',
+    [string]$Rollback
+)
+$ErrorActionPreference = 'Stop'
+$root = [IO.Path]::GetFullPath($Workspace)
+$runtime = Join-Path $root 'project/runtime'
+$entries = @{python='python/python.exe'; node='node/node.exe'; git='git/cmd/git.exe'}
+$changed = @()
+$receipt = $null
+function Assert-Within([string]$Path, [string]$Base) {
+    $full = [IO.Path]::GetFullPath($Path)
+    $prefix = [IO.Path]::GetFullPath($Base).TrimEnd('\','/') + [IO.Path]::DirectorySeparatorChar
+    if (-not $full.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { throw 'Path leaves deployment boundary' }
+    $cursor = $full
+    while ($cursor) {
+        if ((Test-Path -LiteralPath $cursor) -and ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'Linked deployment paths are not supported' }
+        $parent = Split-Path -Parent $cursor
+        if (-not $parent -or $parent -eq $cursor) { break }
+        $cursor = $parent
+    }
+    return $full
+}
+function Write-Json([string]$Path, $Value) {
+    [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12), [Text.UTF8Encoding]::new($false))
+}
+function Hash([string]$Path) {
+    $stream = [IO.File]::OpenRead($Path)
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace('-','').ToLowerInvariant() }
+    finally { $stream.Dispose(); $algorithm.Dispose() }
+}
+function Probe([string]$Name, [string]$Path) {
+    if (-not $Path -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $false }
+    try {
+    if ($Name -eq 'python') { $result = & $Path -I -c 'import sys,ssl,sqlite3,json,hashlib,subprocess; assert sys.version_info >= (3,10); print(sys.version)' 2>&1 }
+    else { $result = & $Path --version 2>&1 }
+    return $LASTEXITCODE -eq 0
+    } catch { return $false }
+}
+function Restore($Records, [string]$Folder) {
+    foreach ($item in @($Records)[($Records.Count - 1)..0]) {
+        $target = Assert-Within $item.target $runtime
+        if (Test-Path -LiteralPath $target) {
+            $retained = Join-Path $Folder ($item.name + '-withdrawn-' + [guid]::NewGuid().ToString('N'))
+            Move-Item -LiteralPath $target -Destination $retained
+        }
+        if ($item.backup -and (Test-Path -LiteralPath $item.backup)) {
+            $backup = Assert-Within $item.backup (Join-Path $runtime '.gonggong-setup')
+            Move-Item -LiteralPath $backup -Destination $target
+        }
+    }
+}
+try {
+    if (-not (Test-Path -LiteralPath (Join-Path $root 'CURRENT_FRAMEWORK.json'))) { throw 'Select the GongGong workspace containing CURRENT_FRAMEWORK.json' }
+    if ($Rollback) {
+        $file = Assert-Within $Rollback (Join-Path $runtime '.gonggong-setup')
+        $prior = Get-Content -LiteralPath $file -Raw | ConvertFrom-Json
+        if ($prior.workspace -ne $root -or $prior.state -ne 'configured') { throw 'No matching active deployment to roll back' }
+        if (@($prior.changed).Count) { Restore @($prior.changed) (Split-Path -Parent $file) }
+        $prior.state = 'rolled_back'; Write-Json $file $prior
+        Write-Json $Out @{ok=$true;state='rolled_back';receipt=$file;global_environment_changed=$false}
+        exit 0
+    }
+    $selected = @($Components.Split(',') | Where-Object { $_ })
+    if ($selected.Count -eq 0 -or @($selected | Where-Object { -not $entries.ContainsKey($_) }).Count) { throw 'Choose python, node, or git' }
+    $transaction = Assert-Within (Join-Path $runtime ('.gonggong-setup/' + [guid]::NewGuid().ToString('N'))) $root
+    New-Item -ItemType Directory -Force -Path $transaction | Out-Null
+    $receipt = Join-Path $transaction 'receipt.json'
+    $paths = @{}
+    foreach ($name in @('python','node','git')) {
+        $local = Join-Path $runtime $entries[$name]
+        if (Probe $name $local) { $paths[$name] = $local; continue }
+        if (-not $SourceRuntime) {
+            $command = Get-Command ($name + '.exe') -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($command -and (Probe $name $command.Source)) { $paths[$name] = $command.Source; continue }
+        }
+        if ($name -notin $selected) { throw ('Missing unselected component: ' + $name) }
+        if (-not $SourceRuntime) { throw ('Missing ' + $name + ': choose the project/runtime directory from an extracted complete GongGong Windows package') }
+        $source = [IO.Path]::GetFullPath($SourceRuntime)
+        if ($source.TrimEnd('\','/') -eq ([IO.Path]::GetFullPath($runtime)).TrimEnd('\','/')) { throw 'The selected runtime is incomplete; choose another complete package' }
+        $manifest = Get-Content -LiteralPath (Join-Path $source 'installed.local.json') -Raw | ConvertFrom-Json
+        if ($manifest.schema_version -ne 1 -or $manifest.path_base -ne 'runtime_directory') { throw 'Unsupported source runtime manifest' }
+        $records = @($manifest.files | Where-Object { $_.path.StartsWith($name + '/') })
+        if (-not @($records | Where-Object { $_.path -eq $entries[$name] }).Count) { throw ('Source package lacks ' + $name) }
+        $stage = Join-Path $transaction ($name + '-staged')
+        New-Item -ItemType Directory -Path $stage | Out-Null
+        foreach ($record in $records) {
+            $original = Assert-Within (Join-Path $source $record.path) $source
+            if ((Hash $original) -ne $record.sha256) { throw ('Runtime checksum mismatch: ' + $record.path) }
+            $relative = $record.path.Substring($name.Length + 1)
+            $target = Assert-Within (Join-Path $stage $relative) $stage
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+            Copy-Item -LiteralPath $original -Destination $target
+            if ((Hash $target) -ne $record.sha256) { throw 'Staged runtime checksum mismatch' }
+        }
+        $binary = Join-Path $stage $entries[$name].Substring($name.Length + 1)
+        if (-not (Probe $name $binary)) { throw ('Staged component failed execution check: ' + $name) }
+        $destination = Assert-Within (Join-Path $runtime $name) $runtime
+        $backup = ''
+        if (Test-Path -LiteralPath $destination) { $backup=Join-Path $transaction ($name+'-previous'); Move-Item -LiteralPath $destination -Destination $backup }
+        $changed += @{name=$name;target=$destination;backup=$backup;source_manifest_sha256=(Hash (Join-Path $source 'installed.local.json'));files=$records}
+        Write-Json $receipt @{state='deploying';workspace=$root;changed=$changed}
+        Move-Item -LiteralPath $stage -Destination $destination
+        $paths[$name] = Join-Path $runtime $entries[$name]
+    }
+    $env:GONGGONG_PYTHON=$paths.python; $env:GONGGONG_NODE=$paths.node; $env:GONGGONG_GIT=$paths.git
+    $env:PATH=(Split-Path -Parent $paths.node)+';'+(Split-Path -Parent $paths.git)+';'+$env:PATH
+    $doctor = & $paths.python -X utf8 (Join-Path $root 'tools/gonggong_bridge.py') doctor --workspace $root 2>&1
+    if ($LASTEXITCODE -ne 0) { throw ('Runtime probes passed; framework self-check did not pass. ' + ($doctor -join "`n")) }
+    if ($receipt) { Write-Json $receipt @{state='configured';workspace=$root;changed=$changed;paths=$paths;global_environment_changed=$false} }
+    Write-Json $Out @{ok=$true;state='configured';python=$paths.python;node=$paths.node;git=$paths.git;receipt=$receipt;changed=$changed;global_environment_changed=$false;chat_verified=$false}
+} catch {
+    $failure=$_.Exception.Message
+    $rollbackState='not_needed'
+    if ($changed.Count) {
+        try { Restore $changed (Split-Path -Parent $receipt); $rollbackState='restored' }
+        catch { $rollbackState='needs_recovery'; $failure += "`nRollback: " + $_.Exception.Message }
+    }
+    if ($receipt) { Write-Json $receipt @{state='failed';workspace=$root;changed=$changed;error=$failure;rollback=$rollbackState} }
+    Write-Json $Out @{ok=$false;state='repair_environment';error=$failure;receipt=$receipt;rollback=$rollbackState;global_environment_changed=$false}
+    exit 1
+}

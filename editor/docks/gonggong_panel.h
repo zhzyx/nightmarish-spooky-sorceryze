@@ -33,6 +33,11 @@
 #include "scene/gui/box_container.h"
 
 class LineEdit;
+class Label;
+class CheckBox;
+class ConfirmationDialog;
+class FileDialog;
+class Button;
 class TextEdit;
 class Timer;
 
@@ -46,12 +51,31 @@ class GongGongPanel : public VBoxContainer {
 	Timer *timer = nullptr;
 	int64_t worker = -1;
 	String result_path;
+	ConfirmationDialog *setup_dialog = nullptr;
+	FileDialog *setup_source_dialog = nullptr;
+	LineEdit *setup_source = nullptr;
+	Label *setup_missing = nullptr;
+	CheckBox *setup_components[3] = {};
+	Button *setup_rollback = nullptr;
+	bool setup_running = false;
+	bool setup_rolling_back = false;
+	Dictionary setup_previous;
+	String setup_receipt;
+	Callable setup_completed;
+	void open_setup();
+	void start_setup();
+	void rollback_setup();
+	void run_setup(bool p_rollback);
+	void choose_setup_source(const String &p_directory);
+	void open_setup_source();
 	void run_action(const String &p_action);
 	void poll();
 	void save_issue_binding(const String &p_text);
 
 public:
 	GongGongPanel();
+	bool ensure_environment();
+	void set_setup_completed(const Callable &p_callback) { setup_completed = p_callback; }
 	// Reflect a binding saved elsewhere (the chat Issue guide) without re-saving it.
 	void reload_issue_binding();
 };

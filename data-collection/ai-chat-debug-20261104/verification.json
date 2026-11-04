@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "related_issue": 47,
+  "base_commit": "11ea5b8179c37fe536a6eb18d33b489b7777fd25",
+  "observed_at": "2026-11-04T16:29:04.915168+00:00",
+  "source_sha256_lf": {
+    "editor/docks/ai_chat_dock.cpp": "eac8bb144ea310736c72b34bb02e21bf0ce7be801d78bae935f141351e008a59",
+    "editor/docks/ai_chat_dock.h": "60f08f8c580a59d4267020c97630514756dde6fe87e4396cf9ace0ce3cdd7e33",
+    "editor/docks/ai_chat_gonggong.cpp": "d520ad089b73c3f3c3e3b89294572aa88f09cf4aaa1dcd0ef746364e8adde618",
+    "editor/docks/gonggong_panel.cpp": "e4f24f3b71f4e3f139062aece82ab2a14e97e3ef97ef6c0b2300442488b06ac2",
+    "editor/docks/gonggong_panel.h": "9a4a67c995613a4350c19d99ccff8c4379a8126a56daddd89c24b7670c6590ae",
+    "tests/editor/consultation_only.gd": "39efea743d9e340d343eb145ee1633e918c9ccd22d4081661dab6b46c68985d3",
+    "tests/editor/requirements_intake.gd": "c0e6ff25215aee689cdefb82fd204f4d19e3c095ea5c9c432319cab129a7e030",
+    "tests/editor/run_requirements_intake.py": "bc515e6723643e3a0df7d56044972103db12201fc5479f5c89ec7fb982058768",
+    "tools/configure_gonggong_runtime.ps1": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+    "tests/editor/run_runtime_setup.py": "f93d80440bbeb8604fb15ec7fd31a27db10e1656475b8a36f56449119104b0ec"
+  },
+  "native_intake": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": true,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 8,
+    "issues_created": 6,
+    "events": 73,
+    "git_check": {
+      "git_state": "committed",
+      "files": 76,
+      "records": 73,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "requirement submitted during intake is queued and creates its own document and Issue",
+      "followup reuses Issue",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "ba7ade818653ff9e34fdd70a46643f8f33a724da9159f55f95ea1e80316e92ad",
+    "fixture_events_imported": false
+  },
+  "consultation": {
+    "ok": true,
+    "editor_sha256": "ba7ade818653ff9e34fdd70a46643f8f33a724da9159f55f95ea1e80316e92ad",
+    "requests": [
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 0
+      },
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 8
+      },
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 9
+      },
+      {
+        "prompt": "CLI_MUST_NOT_START",
+        "tool_results": 0
+      }
+    ],
+    "denied_tools": 8,
+    "read_result": "verified",
+    "issue_monitoring": "No configured workspace/host; no workspace created; code path reviewed. Not a global API spy.",
+    "fixture_events_imported": false
+  },
+  "runtime_setup": {
+    "ok": true,
+    "cases": [
+      "deploy all three components with no destination Python",
+      "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+      "rollback retains recovery files",
+      "repeated rollback rejected",
+      "failed framework self-check restores pre-deployment files",
+      "tampered source rejected before execution"
+    ],
+    "source": "explicit existing package; no downloads",
+    "global_environment_modified": false
+  },
+  "native_tests": {
+    "passed": 22,
+    "assertions": 254
+  },
+  "requirements_python_tests": {
+    "passed": 22
+  },
+  "build": {
+    "platform": "windows",
+    "arch": "x86_64",
+    "target": "editor",
+    "compiler": "MSVC 14.5 / Windows SDK 10.0.26100.0",
+    "flags": [
+      "tests=yes",
+      "accesskit=no",
+      "d3d12=no",
+      "angle=no"
+    ],
+    "input_line_endings": "working Windows CRLF; source mapping above normalizes LF as Git does",
+    "isolated_objects": true
+  },
+  "historical_failures": [
+    "Installed editor consumed a second requirement during pending intake instead of queuing it.",
+    "Intermediate clarification regression exposed a narrow Chinese string literal and duplicate fixture Issue.",
+    "Consultation regression initially expected the former blocking text; updated to assert igniter prompt and actual dialog.",
+    "One intermediate consultation invocation resolved relative paths against the host catalog directory and tested another binary; its result is excluded.",
+    "Codex test first lacked copied pinned native dependency; reused existing installed dependencies.",
+    "Expanded 41-case CLI regression: 40 passed; ACP test cleanup raised Windows ENOTEMPTY after its subprocess. No product change inferred from cleanup error."
+  ],
+  "telemetry": {
+    "received_submission": "a3cec70a35cad340ff61acbe95fb9099b7fb3d5482e268ee9c6c2a03c521fecb",
+    "query": {
+      "path_base": "project_root",
+      "generated_at": "2026-11-04T16:27:53.837273+00:00",
+      "filters": {
+        "tenant": "gonggong-workspace",
+        "work": "zhzyx/nightmarish-spooky-sorceryze#49",
+        "kind": null
+      },
+      "sources": [
+        {
+          "path": "data-collection/diting.sqlite",
+          "records": 45,
+          "snapshot_sha256": "e938d8d7846fa57db69f2056e12edd7bdd57d2136d7ad2024d2c74084be463db"
+        }
+      ],
+      "source_errors": [],
+      "outcome": "read",
+      "current_counts": {
+        "feedback": 2,
+        "request": 1,
+        "step": 20
+      },
+      "coverage_note": "Only registered sources and observed facts; absent events are not proof that nothing happened",
+      "snapshot_sha256": "2bbeee432f859946ee197e86e4fc79741be63669d6400750a69c3b0e87eb12d3"
+    },
+    "coverage": "partial, observed task events only; no global listener",
+    "fixture_events_imported": false
+  },
+  "limits": [
+    "Windows local deployment; complete extracted source runtime required when not available locally",
+    "No real paid model-service acceptance",
+    "No independent review claim or Agent-definition changes",
+    "No cross-platform or cross-restart editor-settings rollback acceptance"
+  ],
+  "usage": null
+}
