@@ -103,11 +103,22 @@ def complete(root, request, profile, messages, env):
             capture_output=True,
             text=True,
             encoding="utf-8",
-            timeout=150,
+            timeout=210,
         )
     if result.returncode:
+        detail = ""
+        try:
+            envelope = json.loads(result.stdout)
+            if isinstance(envelope, dict) and isinstance(envelope.get("error"), dict):
+                detail = envelope["error"].get("message") or envelope["error"].get("code") or ""
+        except Exception:
+            pass
+        if not detail:
+            detail = (result.stderr or result.stdout or "").strip()
         raise ValueError(
-            "Requirements model API failed in CodeBuddy; repair the existing CLI login, model or native dependencies before retrying"
+            "Requirements model API failed in CodeBuddy"
+            + (": " + detail if detail else "")
+            + "; repair the CLI login, model or native dependencies before retrying"
         )
     choice = json.loads(result.stdout)["choices"][0]
     if choice["message"].get("tool_calls"):

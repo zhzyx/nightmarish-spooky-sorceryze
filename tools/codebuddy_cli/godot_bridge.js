@@ -41,7 +41,7 @@ function cliEnvironment(source = process.env) {
     return env;
 }
 
-function safeArguments(model = '') {
+function safeArguments(model = '', effort = '') {
     const args = [
         '--print', '--output-format', 'json',
         '--tools', '',
@@ -51,6 +51,7 @@ function safeArguments(model = '') {
         '--no-session-persistence', '--permission-mode', 'default',
     ];
     if (model) args.push('--model', model);
+    if (effort) args.push('--effort', effort);
     return args;
 }
 
@@ -263,6 +264,8 @@ async function main() {
     let stdout = Buffer.alloc(0);
     let stderr = Buffer.alloc(0);
     let failed = '';
+    let stdoutFd = -1;
+    let stdoutPath = '';
     const removeDirectory = () => {
         try { fs.rmSync(cwd, { recursive: true, force: true }); } catch (_) {}
     };
@@ -313,15 +316,13 @@ async function main() {
             if (input.messages.some(message => message.images?.length)) throw bridgeError('IMAGE_UNSUPPORTED');
             const instructions = 'Reply in the user language. Return only JSON matching this schema: ' + JSON.stringify(SCHEMA)
                 + '. Use only action proposals from available_tools, never native tools. Host tool_context is authoritative. Respect approval and rejection; never claim execution without a tool result.';
-            child = spawn(process.execPath, [entry, ...safeArguments(input.model), '--system-prompt', instructions], { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
-            child.stdout.on('data', data => {
-                if (stdout.length + data.length > OUTPUT_LIMIT) { failed = 'OUTPUT_LIMIT'; child.kill(); }
-                else stdout = Buffer.concat([stdout, data]);
-            });
+            stdoutPath = path.join(cwd, 'stdout.json');
+            stdoutFd = fs.openSync(stdoutPath, 'w');
+            child = spawn(process.execPath, [entry, ...safeArguments(input.model, 'medium'), '--system-prompt', instructions], { cwd, env, stdio: ['pipe', stdoutFd, 'pipe'], windowsHide: true });
             child.stderr.on('data', data => { if (stderr.length < 65536) stderr = Buffer.concat([stderr, data]).subarray(0, 65536); });
             child.stdin.on('error', () => {});
             child.stdin.end(prompt);
-            timer = setTimeout(() => { failed = 'TIMEOUT'; child.kill(); }, 120000);
+            timer = setTimeout(() => { failed = 'TIMEOUT'; child.kill(); }, 180000);
         }
         const code = await new Promise((resolve, reject) => { child.once('error', () => reject(bridgeError('PROCESS_START'))); child.once('close', resolve); });
         if (mode === 'login') { process.exitCode = code || 0; return; }
@@ -330,6 +331,14 @@ async function main() {
             if (!modelsResult) throw bridgeError('EMPTY_RESPONSE', code);
             process.stdout.write(JSON.stringify(modelsResult));
             return;
+        }
+        if (mode === 'chat' && stdoutFd >= 0) {
+            try { fs.closeSync(stdoutFd); } catch (_) {}
+            stdoutFd = -1;
+            let fileText = '';
+            try { fileText = fs.readFileSync(stdoutPath, 'utf8'); } catch (_) {}
+            if (fileText.length > OUTPUT_LIMIT) { throw bridgeError('OUTPUT_LIMIT', code); }
+            stdout = Buffer.from(fileText, 'utf8');
         }
         if (code !== 0) throw bridgeError(classifyDiagnostics(stderr.toString('utf8') + '\n' + stdout.toString('utf8')), code);
         const text = stdout.toString('utf8').trim();

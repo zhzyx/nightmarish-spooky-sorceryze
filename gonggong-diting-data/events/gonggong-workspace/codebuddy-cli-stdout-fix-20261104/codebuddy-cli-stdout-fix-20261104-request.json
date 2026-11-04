@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "codebuddy-cli-stdout-fix-20261104-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codebuddy-cli-stdout-fix-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-04T07:24:12.064797+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/50",
+  "agent": {
+    "id": "codebuddy-ide-host",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "intent": "Fix CodeBuddy CLI chat output truncated to 8 KiB on a pipe",
+    "state": "in_progress",
+    "usage": null,
+    "time_basis": "collector observation",
+    "agent_definition_basis": "sha256 of AGENTS.md at HEAD"
+  },
+  "evidence_refs": [],
+  "sha256": "8f2608d454f1b4542a11b3d0ab405f88d0167b66b283ffbdb7c83dc9b9fc8fba"
+}
