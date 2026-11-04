@@ -35,6 +35,7 @@
 #include "core/config/project_settings.h"
 #include "core/io/config_file.h"
 #include "core/io/dir_access.h"
+#include "core/io/json.h"
 #include "core/io/resource_loader.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/scene_tree_dock.h"
@@ -144,15 +145,98 @@ void AIChatEditorControl::_notification(int p_what) {
 	}
 }
 
-Dictionary AIChatEditorControl::get_state() const {
+Dictionary AIChatEditorControl::bound_state(const Dictionary &p_state, const PackedStringArray &p_secrets) {
+	Dictionary result = outcome(true);
+	result["running"] = p_state.get("running", false);
+	result["script_unsaved"] = p_state.get("script_unsaved", Variant());
+	Array truncated_fields;
+	Array redacted_fields;
+	const auto contains_secret = [&p_secrets](const String &p_text) {
+		for (const String &secret : p_secrets) {
+			if (!secret.is_empty() && p_text.contains(secret)) {
+				return true;
+			}
+		}
+		return false;
+	};
+	// Reserve space for all fixed keys, punctuation and truncation metadata.
+	// Charge the actual escaped JSON UTF-8 size, not the String character count.
+	int remaining = MAX_STATE_JSON_BYTES - 1024;
+	for (const String &field : { "scene", "main_screen", "script", "highlight" }) {
+		const Variant value = p_state.get(field, Variant());
+		result[field] = Variant();
+		if (value.get_type() == Variant::NIL) {
+			continue;
+		}
+		const String text = value;
+		if (text.length() > MAX_STATE_STRING_LENGTH) {
+			truncated_fields.push_back(field);
+			continue;
+		}
+		if (contains_secret(text)) {
+			truncated_fields.push_back(field);
+			redacted_fields.push_back(field);
+			continue;
+		}
+		const int bytes = JSON::stringify(text).utf8().length() + 1;
+		if (bytes > remaining) {
+			truncated_fields.push_back(field);
+			continue;
+		}
+		remaining -= bytes;
+		result[field] = text;
+	}
+	for (const String &field : { "selected_nodes", "unsaved_scenes" }) {
+		const Array values = p_state.get(field, Array());
+		Array accepted;
+		bool truncated = values.size() > MAX_STATE_ITEMS;
+		bool redacted = false;
+		for (int i = 0; i < MIN(values.size(), MAX_STATE_ITEMS); i++) {
+			const String text = values[i];
+			if (text.length() > MAX_STATE_STRING_LENGTH) {
+				truncated = true;
+				continue;
+			}
+			if (contains_secret(text)) {
+				truncated = true;
+				redacted = true;
+				continue;
+			}
+			const int bytes = JSON::stringify(text).utf8().length() + 1;
+			if (bytes > remaining) {
+				truncated = true;
+				continue;
+			}
+			remaining -= bytes;
+			accepted.push_back(text);
+		}
+		result[field] = accepted;
+		if (truncated) {
+			truncated_fields.push_back(field);
+		}
+		if (redacted) {
+			redacted_fields.push_back(field);
+		}
+	}
+	// Omit whole paths rather than returning prefixes that could identify another node.
+	result["truncated"] = !truncated_fields.is_empty();
+	result["truncated_fields"] = truncated_fields;
+	result["redacted_fields"] = redacted_fields;
+	return result;
+}
+
+Dictionary AIChatEditorControl::get_state(const PackedStringArray &p_secrets) const {
 	EditorInterface *editor = EditorInterface::get_singleton();
 	Dictionary result = outcome(true);
 	Node *root = editor->get_edited_scene_root();
 	result["scene"] = root ? Variant(root->get_scene_file_path()) : Variant();
 	Array selection;
 	for (Node *node : editor->get_selection()->get_full_selected_node_list()) {
-		if (root && (root == node || root->is_ancestor_of(node)) && selection.size() < 100) {
+		if (root && (root == node || root->is_ancestor_of(node))) {
 			selection.push_back(String(root->get_path_to(node)));
+			if (selection.size() > MAX_STATE_ITEMS) {
+				break;
+			}
 		}
 	}
 	result["selected_nodes"] = selection;
@@ -162,10 +246,10 @@ Dictionary AIChatEditorControl::get_state() const {
 	Ref<Resource> resource = script ? script->get_edited_resource() : Ref<Resource>();
 	result["script"] = resource.is_valid() ? Variant(resource->get_path()) : Variant();
 	result["running"] = editor->is_playing_scene();
-	result["unsaved_scenes"] = editor->get_unsaved_scenes().slice(0, 100);
+	result["unsaved_scenes"] = editor->get_unsaved_scenes().slice(0, MAX_STATE_ITEMS + 1);
 	result["script_unsaved"] = script ? Variant(script->is_unsaved()) : Variant();
 	result["highlight"] = target_id.is_empty() ? Variant() : Variant(target_id);
-	return result;
+	return bound_state(result, p_secrets);
 }
 
 Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed) {

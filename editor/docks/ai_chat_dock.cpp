@@ -2189,7 +2189,10 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	}
 	if (AIChatEditorControl::handles(name)) {
 		if (name == "get_editor_state") {
-			_finish_tool(JSON::stringify(_get_editor_control()->get_state()));
+			PackedStringArray secrets;
+			secrets.push_back(request_key);
+			secrets.push_back(api_key->get_text());
+			_finish_tool(JSON::stringify(_get_editor_control()->get_state(secrets)), false, true);
 			return;
 		}
 		Dictionary result = _get_editor_control()->execute(arguments, allow_tools->is_pressed(), consultation_turn);
@@ -2391,20 +2394,23 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	_show_confirmation();
 }
 
-void AIChatDock::_finish_tool(const String &p_result, bool p_file_success) {
+void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
 		_set_busy(false);
 		return;
 	}
-	_flush_gonggong(callable_mp(this, &AIChatDock::_finish_tool_after_receipt).bind(p_result, p_file_success));
+	_flush_gonggong(callable_mp(this, &AIChatDock::_finish_tool_after_receipt).bind(p_result, p_file_success, p_structured_state));
 }
 
-void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success) {
+void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state) {
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	const String name = function.get("name", "");
 	const bool native_file = backend->get_selected() == 1 && (name == "read_file" || name == "write_file" || name == "run_command");
-	Dictionary result = chat_message("tool", native_file && p_file_success && name == "read_file" ? p_result : _redact(p_result));
+	// State strings were redacted before bounding and JSON serialization. Replacing
+	// tokens in serialized JSON could expand it or corrupt null/true literals.
+	const bool bounded_state = p_structured_state && name == "get_editor_state";
+	Dictionary result = chat_message("tool", bounded_state || (native_file && p_file_success && name == "read_file") ? p_result : _redact(p_result));
 	result["tool_call_id"] = call["id"];
 	if (native_file) {
 		result["godot_file_success"] = p_file_success;

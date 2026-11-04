@@ -94,7 +94,7 @@ class AIChatDock : public EditorDock {
 	void _send_completion_after_receipt();
 	void _response_after_receipt(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _tool_after_receipt(uint64_t p_session);
-	void _finish_tool_after_receipt(const String &p_result, bool p_file_success);
+	void _finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state);
 	void _poll_gonggong_receipt();
 	void _end_gonggong(const String &p_status);
 	void _begin_gonggong_context();
@@ -577,7 +577,7 @@ class AIChatDock : public EditorDock {
 	void _request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _stop();
 	void _next_tool(uint64_t p_session);
-	void _finish_tool(const String &p_result, bool p_file_success = false);
+	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);
 	void _show_confirmation();
 	void _confirm_action();
 	void _reject_action();

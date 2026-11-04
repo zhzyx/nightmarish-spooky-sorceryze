@@ -36,11 +36,14 @@ CASES = {
     "permission_off": ("editor_action", {"action": "main_screen", "target": "3D"}),
 }
 
+BOUND_CASES = {"state_empty", "state_long_ascii", "state_long_cjk", "state_long_unicode", "state_count", "state_budget", "state_case_a", "state_case_b", "state_case_c"}
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", required=True, type=Path)
     parser.add_argument("--interfaces", action="store_true")
+    parser.add_argument("--bounds", action="store_true")
     args = parser.parse_args()
     results, errors, seen = {}, [], set()
 
@@ -69,7 +72,7 @@ def main():
                     results[case] = tool_results[-1]
                     message = {"role": "assistant", "content": "Checked " + case}
                 else:
-                    name, arguments = CASES[case]
+                    name, arguments = ("get_editor_state", {}) if case in BOUND_CASES else CASES[case]
                     message = {"role": "assistant", "content": "", "tool_calls": [{"id": case, "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}
                 payload = json.dumps({"choices": [{"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}]}).encode()
                 self.send_response(200)
@@ -112,6 +115,7 @@ def main():
             shutil.copyfile(Path(__file__).with_name("ai_chat_semantic.gd"), project / "test.gd")
             env = {**os.environ, "APPDATA": str(project / "appdata"), "LOCALAPPDATA": str(project / "localappdata"), "GODOT_AI_API_KEY": "", "AI_CHAT_TEST_URL": f"http://127.0.0.1:{server.server_port}/v1/chat/completions"}
             env["SEMANTIC_INTERFACES"] = "1" if args.interfaces else ""
+            env["SEMANTIC_BOUNDS"] = "1" if args.bounds else ""
             env.update(GONGGONG_TEST_WORKSPACE=temp, GONGGONG_WORKSPACE=temp, GONGGONG_PYTHON=sys.executable, GONGGONG_GH=sys.executable, GONGGONG_NODE=shutil.which("node"))
             run = subprocess.run([str(args.godot.resolve()), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"], env=env, cwd=project, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
             print(run.stdout)
@@ -120,6 +124,34 @@ def main():
             print("MOCK_ERRORS", errors)
             assert run.returncode == 0 and "AI_CHAT_SEMANTIC_OK" in run.stdout, "scene driver failed"
             assert not errors, errors
+            if args.bounds:
+                assert set(results) == BOUND_CASES | {"open_scene"}, results.keys()
+                states = {key: json.loads(results[key]) for key in BOUND_CASES}
+                for key, value in states.items():
+                    size = len(results[key].encode("utf-8"))
+                    assert size <= 16 * 1024, (key, size)
+                    assert value["ok"]
+                    assert len(value["selected_nodes"]) <= 100
+                    assert len(value["unsaved_scenes"]) <= 100
+                    print("BOUND_STATE_BYTES", key, size)
+                empty = states["state_empty"]
+                assert empty["scene"] is None and empty["script"] is None and not empty["truncated"]
+                for key in ["state_long_ascii", "state_long_cjk", "state_long_unicode"]:
+                    assert states[key]["selected_nodes"] == [] and states[key]["truncated"]
+                    assert "selected_nodes" in states[key]["truncated_fields"]
+                    assert states[key]["scene"] == "res://fixture.tscn"
+                assert len(states["state_count"]["selected_nodes"]) == 100
+                assert states["state_count"]["truncated"]
+                budget = states["state_budget"]
+                assert 0 < len(budget["selected_nodes"]) < 100 and budget["truncated"]
+                assert all(len(path) >= 1000 for path in budget["selected_nodes"]), "Paths must be retained whole"
+                for case in ["state_case_a", "state_case_b", "state_case_c"]:
+                    value = states[case]
+                    assert value["script"] is None and value["running"] is False
+                    assert value["selected_nodes"] == [], value
+                    assert "selected_nodes" in value["redacted_fields"] and value["truncated"]
+                print("SEMANTIC_MOCK_BOUNDS_OK")
+                return
             interface_cases = {"highlight_tabs", "interface_2d", "open_scene", "open_script", "select_node", "project_settings", "highlight_project", "editor_settings", "highlight_editor", "highlight_inspector", "highlight_filesystem"}
             if args.interfaces:
                 assert set(results) == interface_cases, results

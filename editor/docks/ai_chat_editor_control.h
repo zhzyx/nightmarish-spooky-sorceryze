@@ -45,13 +45,18 @@ protected:
 	void _notification(int p_what);
 
 public:
+	static constexpr int MAX_STATE_JSON_BYTES = 16 * 1024;
+	static constexpr int MAX_STATE_STRING_LENGTH = 1024;
+	static constexpr int MAX_STATE_ITEMS = 100;
+	// Internal normalization; deliberately not exposed through ClassDB.
+	static Dictionary bound_state(const Dictionary &p_state, const PackedStringArray &p_secrets = PackedStringArray());
 	static Array tool_definitions();
 	static bool handles(const String &p_name);
 	static bool valid_project_path(const String &p_path);
 	static Array target_ids();
 	static bool save_setting_snapshot(const String &p_path, const String &p_original, const String &p_target, const Variant &p_value, String &r_error);
 	Control *resolve_target(const String &p_id) const;
-	Dictionary get_state() const;
+	Dictionary get_state(const PackedStringArray &p_secrets = PackedStringArray()) const;
 	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
 	void clear_highlight();
 	AIChatEditorControl();

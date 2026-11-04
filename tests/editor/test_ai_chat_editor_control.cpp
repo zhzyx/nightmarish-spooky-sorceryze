@@ -40,6 +40,113 @@ TEST_FORCE_LINK(test_ai_chat_editor_control)
 #include "editor/docks/ai_chat_tools.h"
 
 namespace TestAIChatEditorControl {
+TEST_CASE("[AIChat] State preserves empty values and exact usable paths") {
+	Dictionary state;
+	state["main_screen"] = StringName("2D");
+	state["scene"] = Variant();
+	state["script"] = Variant();
+	Array selection;
+	selection.push_back("Parent/Child");
+	state["selected_nodes"] = selection;
+	PackedStringArray scenes;
+	scenes.push_back("res://example.tscn");
+	state["unsaved_scenes"] = scenes;
+	Dictionary result = AIChatEditorControl::bound_state(state);
+	CHECK_FALSE(bool(result["truncated"]));
+	CHECK(result["scene"].get_type() == Variant::NIL);
+	CHECK(result["script"].get_type() == Variant::NIL);
+	CHECK(result["script_unsaved"].get_type() == Variant::NIL);
+	CHECK(result["main_screen"] == Variant("2D"));
+	CHECK(Array(result["selected_nodes"])[0] == Variant("Parent/Child"));
+	CHECK(Array(result["unsaved_scenes"])[0] == Variant("res://example.tscn"));
+}
+
+TEST_CASE("[AIChat] State omits overlong paths with explicit field markers") {
+	Dictionary state;
+	const String long_path = String::utf8("界").repeat(20000);
+	for (const String &field : { "scene", "script", "main_screen", "highlight" }) {
+		state[field] = long_path;
+	}
+	Array paths;
+	paths.push_back(long_path);
+	paths.push_back("Child");
+	state["selected_nodes"] = paths;
+	state["unsaved_scenes"] = paths;
+	Dictionary result = AIChatEditorControl::bound_state(state);
+	CHECK(bool(result["truncated"]));
+	CHECK(Array(result["truncated_fields"]).size() == 6);
+	CHECK(result["scene"].get_type() == Variant::NIL);
+	CHECK(result["script"].get_type() == Variant::NIL);
+	CHECK(Array(result["selected_nodes"]).size() == 1);
+	CHECK(Array(result["selected_nodes"])[0] == Variant("Child"));
+	CHECK(Array(state["selected_nodes"]).size() == 2);
+	CHECK(JSON::stringify(result).utf8().length() <= AIChatEditorControl::MAX_STATE_JSON_BYTES);
+}
+
+TEST_CASE("[AIChat] State redaction preserves JSON structure and budget") {
+	for (const String &secret : { String("test"), String("null"), String("true") }) {
+		Dictionary state;
+		Array paths;
+		for (int i = 0; i < 14; i++) {
+			paths.push_back(secret.repeat(256));
+		}
+		paths.push_back("SafeChild");
+		state["selected_nodes"] = paths;
+		state["scene"] = "res://" + secret + ".tscn";
+		state["running"] = true;
+		PackedStringArray secrets;
+		secrets.push_back(secret);
+		Dictionary result = AIChatEditorControl::bound_state(state, secrets);
+		CHECK(result["scene"].get_type() == Variant::NIL);
+		CHECK(bool(result["running"]));
+		CHECK(Array(result["selected_nodes"]).size() == 1);
+		CHECK(Array(result["selected_nodes"])[0] == Variant("SafeChild"));
+		CHECK(Array(result["redacted_fields"]).size() == 2);
+		const String json = JSON::stringify(result);
+		CHECK(JSON::parse_string(json).get_type() == Variant::DICTIONARY);
+		CHECK(json.utf8().length() <= AIChatEditorControl::MAX_STATE_JSON_BYTES);
+	}
+}
+
+TEST_CASE("[AIChat] State bounds counts and actual escaped UTF-8 JSON bytes") {
+	// ASCII, CJK, four-byte Unicode and JSON escape expansion exercise different budgets.
+	for (const String &unit : { String("a"), String::utf8("界"), String::utf8("😀"), String("\t"), String("\\\"") }) {
+		Dictionary state;
+		const String path = unit.repeat(1024 / unit.length());
+		for (const String &field : { "scene", "script", "main_screen", "highlight" }) {
+			state[field] = path;
+		}
+		Array paths;
+		for (int i = 0; i < 105; i++) {
+			paths.push_back(path);
+		}
+		state["selected_nodes"] = paths;
+		state["unsaved_scenes"] = paths;
+		state["running"] = true;
+		state["script_unsaved"] = true;
+		Dictionary result = AIChatEditorControl::bound_state(state);
+		const String json = JSON::stringify(result);
+		CHECK(json.utf8().length() <= AIChatEditorControl::MAX_STATE_JSON_BYTES);
+		CHECK(JSON::parse_string(json).get_type() == Variant::DICTIONARY);
+		CHECK(bool(result["truncated"]));
+		CHECK(bool(result["running"]));
+		CHECK(bool(result["script_unsaved"]));
+		CHECK(Array(result["selected_nodes"]).size() <= 100);
+		CHECK(Array(result["unsaved_scenes"]).size() <= 100);
+	}
+	Dictionary state;
+	Array paths;
+	for (int i = 0; i < 101; i++) {
+		paths.push_back("Node" + itos(i));
+	}
+	state["selected_nodes"] = paths;
+	state["unsaved_scenes"] = paths;
+	Dictionary result = AIChatEditorControl::bound_state(state);
+	CHECK(Array(result["selected_nodes"]).size() == 100);
+	CHECK(Array(result["unsaved_scenes"]).size() == 100);
+	CHECK(Array(result["truncated_fields"]).size() == 2);
+}
+
 TEST_CASE("[AIChat] Semantic paths reject absolute paths and traversal") {
 	CHECK(AIChatEditorControl::valid_project_path("res://scenes/main.tscn"));
 	CHECK_FALSE(AIChatEditorControl::valid_project_path("res://../outside.tscn"));

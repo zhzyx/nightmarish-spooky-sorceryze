@@ -44,6 +44,70 @@ func _run():
 	dock.find_child("APIModel", true, false).text = "mock-semantic"
 	dock.find_child("APIKey", true, false).text = "mock-key"
 	dock.find_child("AllowTools", true, false).button_pressed = true
+	if OS.get_environment("SEMANTIC_BOUNDS") == "1":
+		if not await phase("state_empty") or not await phase("open_scene"):
+			quit(1)
+			return
+		var scene = EditorInterface.get_edited_scene_root()
+		if scene == null:
+			for label in dock.find_children("*", "RichTextLabel", true, false):
+				print(label.get_parsed_text())
+			push_error("Fixture scene did not open")
+			quit(1)
+			return
+		var child = scene.get_node("Child")
+		var selection = EditorInterface.get_selection()
+		selection.clear()
+		selection.add_node(child)
+		for pair in [["state_long_ascii", "a"], ["state_long_cjk", "界"], ["state_long_unicode", "😀"]]:
+			child.name = pair[1].repeat(20000)
+			if not await phase(pair[0]):
+				quit(1)
+				return
+		child.name = "Child"
+		selection.clear()
+		var nodes: Array[Node] = []
+		for i in range(105):
+			var node = Node.new()
+			node.name = "Node" + str(i)
+			scene.add_child(node)
+			node.owner = scene
+			nodes.append(node)
+		# Let the scene tree rebuild before establishing the intended selection.
+		await create_timer(0.2).timeout
+		selection.clear()
+		for node in nodes:
+			selection.add_node(node)
+		if selection.get_selected_nodes().size() != 105:
+			quit(1)
+			return
+		if not await phase("state_count"):
+			quit(1)
+			return
+		for i in range(nodes.size()):
+			nodes[i].name = "界".repeat(1000) + str(i)
+		await create_timer(0.2).timeout
+		selection.clear()
+		for node in nodes:
+			selection.add_node(node)
+		if not await phase("state_budget"):
+			quit(1)
+			return
+		for pair in [["test", "state_case_a"], ["null", "state_case_b"], ["true", "state_case_c"]]:
+			var key: String = pair[0]
+			selection.clear()
+			for i in range(14):
+				nodes[i].name = key.repeat(240) + str(i)
+			await create_timer(0.2).timeout
+			for i in range(14):
+				selection.add_node(nodes[i])
+			dock.find_child("APIKey", true, false).text = key
+			if not await phase(pair[1]):
+				quit(1)
+				return
+		print("AI_CHAT_SEMANTIC_OK")
+		quit(0)
+		return
 	if OS.get_environment("SEMANTIC_INTERFACES") == "1":
 		for name in ["open_scene", "open_script", "select_node", "interface_2d", "highlight_inspector", "highlight_filesystem", "highlight_tabs", "project_settings", "highlight_project", "editor_settings", "highlight_editor"]:
 			if not await phase(name):
