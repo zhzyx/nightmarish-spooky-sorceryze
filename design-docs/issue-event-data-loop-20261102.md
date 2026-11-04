@@ -63,3 +63,23 @@ PR #17 已合入，#8/#11/#15 已按现有证据 completed 关闭。旧PR #14 �
 ## Git 接入子模块 PR 验收
 
 子模块 PR #26 重放到 #35 合并后的 main，41 项 issue-workorders 测试、正式框架校验、真实 #9 门禁与提交后 Hermes 检查通过。首次静态 CI 提示两份 Python 文件需要 Ruff 格式化；已按仓库配置修复，追加证据见 `data-collection/issue9-git-workflow-ci-20261104.json` 和 Hermes 事件。此 PR 只交付宿主 Git 接入子模块，#9 的共工真实来源绑定与 Ariadne 自动消费继续等待实际后续交付。
+
+## 2026-11-05 当前共工来源对账（取代上文当前状态判断，历史保留）
+
+本轮产物为 #9 的来源证据与接入调查候选，以 `1b0a33fd5e3a579e70c46aedeb67dc3f179c2130` 为输入基线。范围限本需求文档、追加采集来源及谛听记录；Windows / Python 3.14，未改引擎，不需要编译器或引擎构建。验收是既有真实事件的 envelope / 文件回执 / 消费记录一致，以及明确当前来源缺口；停止于可审源码证据候选，不承诺已部署接收服务。本轮只负责 #9；其他聊天的代码和工作副本保持独立。
+
+现行框架已统一为共工，当前入口是 `customizations/components/issue-workorders/issue_events.py`，共享记录与分析入口是 `framework/extensions/diting-files/diting_files.py`。上文 Olympus/Hermes/Ariadne 描述仅为历史，不构成恢复其运行链、双工作区部署或旧入口的指令。`work-items.json` 的 `sinan_source_registered=false` 与实际司南 board 的 0 注册、0 读取来源一致。
+
+### 已有真实证据的复用
+
+协调宿主已显式接收 #55 的真实 renamed 事件 `35149121962`，首次与重放报告 idempotent false/true。本候选原样复制其 envelope、receipt 和当前谛听记录，保留 #55 的原需求 ID、宿主身份、时间与摘要，不归因为 #9 自产事件。路径均以仓库根解析：`data-collection/issue-events/4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984/`。本轮再次通过真实 GitHub API 核对事件 ID、类型及时间，并检查 envelope SHA256 等于回执绑定值。
+
+`data-collection/issue9-source-reconciliation-20261105.json` 提取协调宿主既有 analyze 的消费摘要并绑定原输出字节 SHA256。原输出编码为 GB18030，解析后目标记录与本候选 canonical event JSON 完全相等；原输出读取 1459 条、当前 1049 条，包含只读历史来源。这是旧输入对应的实际消费证据，不是本候选重新执行 analyze 的计数。消费者是显式调用工具的 Codex 宿主，不能称为谛听 Agent 自动消费。用量保持 null，覆盖仍 unknown。receipt 内的 git_committed=false / diting_consumption_confirmed=false 是生成时事实，追加本次对账不覆盖旧回执；提交后的 Git 核验另行交接。
+
+### 来源适配调查与缺失决定
+
+现有单次入口已按 repository + issue + event ID 幂等，映射类别、状态、assignees、显式依赖标记和需决策状态，并保留当前快照与原事件的时间边界；只关联，不派发、不关闭父单。`framework/modules/sinan/coordinator.mjs` 的 board 读取 `state.json` 的 ledgerId/tasks；prepare 调用原来源 CLI。它尚无 GitHub 来源协议，不能将 GitHub 快照伪装成元衡账本或仅填写 sources 后宣称接通。已存在的单次映射可复用；真正的司南来源适配仍需明确只读快照接口、版本校验、followUps 的稳定外部键，以及实际 start/ack 回执接口，并针对独立候选完成治理审查。
+
+解除外部阻塞需要宿主责任方给出：实际接收环境与维护责任；由哪条原生业务事件向入口传递 repository/issue/event ID；授权主体及仓库权限引用（不提交凭据）；持久化收件位置和失败后由何种真实事件触发重放；司南连接的批准候选与 start/ack 接收方。提供一个真实投递回执后，才能验证端到端代表任务与协调回读。在这些决定缺失时保留 open/blocked，不自建 webhook、不新增定时扫描，不将本次证据对账当作父单完成。下一事件是上述绑定决定及真实投递到达，或协调者合入本证据候选后回读提交。
+
+本轮验证只需来源摘要、原消费记录一致性、真实 GitHub 事件回读、司南 board、`git diff --check`、提交前正式 Issue 门禁和提交后 `git-check --require-committed`。未改组件或冻结框架，无新增准入或启用声明；必要独立审查针对本次证据与表述边界。
