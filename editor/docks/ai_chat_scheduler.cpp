@@ -112,7 +112,7 @@ int AIChatDock::_agent_index(int p_id) const {
 }
 
 int AIChatDock::_manual_agent_count() const {
-	return agent_tabs->get_tab_count() - scheduled_agents.size();
+	return agent_tabs->get_tab_count() - scheduled_agents.size() - sub_agents.size();
 }
 
 bool AIChatDock::_schedule_outstanding(int p_id) const {

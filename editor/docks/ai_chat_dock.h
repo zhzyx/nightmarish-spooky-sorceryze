@@ -39,6 +39,7 @@ class Button;
 class CheckBox;
 class ConfirmationDialog;
 class HTTPRequest;
+class HBoxContainer;
 class AcceptDialog;
 class Label;
 class LineEdit;
@@ -468,6 +469,31 @@ class AIChatDock : public EditorDock {
 	bool _schedule_outstanding(int p_id) const;
 	bool _enqueue_schedule(int p_index);
 	void _scheduled_agent_removed(int p_id);
+
+	// Child Agents are hidden in agent_tabs and shown only inside their parent's
+	// window. Only a top-level (manual, non-scheduled) Agent can own children.
+	HashMap<int, Dictionary> sub_agents;
+	Dictionary sub_agent_spawned;
+	HBoxContainer *sub_agent_bar = nullptr;
+	TabBar *sub_agent_tabs = nullptr;
+	Button *add_sub_agent = nullptr;
+	Button *spawn_sub_agents = nullptr;
+	void _build_sub_agent_ui(VBoxContainer *p_page, int p_position);
+	void _load_sub_agents(const Dictionary &p_data);
+	void _refresh_sub_agents();
+	void _sub_agent_tab_selected(int p_index);
+	void _sub_agent_tab_close(int p_index);
+	int _sub_agent_root(int p_id) const;
+	Vector<int> _sub_agent_children(int p_parent, bool p_design_only, const String &p_request_id = String()) const;
+	int _create_sub_agent(int p_parent, const String &p_title, const Dictionary &p_info, const String &p_prompt);
+	void _add_sub_agent();
+	void _spawn_sub_agents_pressed();
+	bool _spawn_work_order_agents(int p_parent, bool p_explicit);
+	bool _resume_work_order_agents(int p_parent, const String &p_request_id);
+	void _sub_agent_dispatch();
+	void _sub_agent_finished(int p_agent, bool p_completed);
+	void _sub_agent_removed(int p_id);
+	String _parent_context_result() const;
 
 	void _restore_cli_after_models();
 	AgentSession _capture_agent() const;

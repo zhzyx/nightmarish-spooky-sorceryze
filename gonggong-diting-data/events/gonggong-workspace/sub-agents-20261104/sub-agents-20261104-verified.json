@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "sub-agents-20261104-verified",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "sub-agents-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-04T07:24:12.064797+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/48",
+  "agent": {
+    "id": "codebuddy-ide-host",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "local_tests_passed",
+    "build": "scons platform=macos target=editor use_volk=yes accesskit=no allow_unsupported_apple_clang=yes [tests=yes]",
+    "native_tests": {
+      "filter": "*AIChat*",
+      "cases": 21,
+      "assertions": 270,
+      "failed": 0
+    },
+    "cli_tests": {
+      "test_codebuddy_bridge.js": 35,
+      "test_codebuddy_acp.js": 8,
+      "test_codebuddy_terminal.js": 9,
+      "failed": 0
+    },
+    "editor_observation": "rebuilt editor auto-created work-order sub-agents for #47; run stopped by user before any source change",
+    "usage": null
+  },
+  "evidence_refs": [
+    "sub-agents-20261104-request"
+  ],
+  "sha256": "8cd2f6dfa6477e0a988262cd94d47a9a0e6334c79f667596e0a887608804bd45"
+}

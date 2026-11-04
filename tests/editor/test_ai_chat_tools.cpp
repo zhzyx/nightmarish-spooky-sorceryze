@@ -40,6 +40,7 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "editor/docks/ai_chat_cli_login.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/ai_chat_sub_agents.h"
 #include "editor/docks/ai_chat_tools.h"
 
 namespace TestAIChatTools {
@@ -401,6 +402,78 @@ TEST_CASE("[AIChat] Requirements decisions are bound to a user turn and actual I
 	CHECK(key == AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "22", "req"));
 	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-2", "add a button", "22", "req"));
 	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "24", "other"));
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized design") {
+	const String document = String(U"# 标题\r\n\r\n## 设计定版确认（2026-11-04）\r\n\r\n- 确认\r\n\r\n## 生产工单（拆分）\r\n\r\n（说明行）\r\n\r\n1. 第一张\r\n   - 目标：A\r\n   - 依赖：无。\r\n\r\n2. 第二张\r\n   - 依赖：工单 1。\r\n\r\n## 验证与采集证据\r\n\r\n1. 不是工单\r\n");
+	const Dictionary parsed = AIChatSubAgents::parse_work_orders(document);
+	CHECK(bool(parsed["finalized"]));
+	const Array orders = parsed["orders"];
+	REQUIRE(orders.size() == 2);
+	const Dictionary first = orders[0];
+	CHECK(String(first["title"]) == U"第一张");
+	CHECK(String(first["body"]).contains(U"目标：A"));
+	CHECK_FALSE(String(first["body"]).contains(U"第二张"));
+	const Dictionary second = orders[1];
+	CHECK(int(second["number"]) == 2);
+	CHECK(String(second["body"]).contains(U"工单 1"));
+	CHECK_FALSE(String(second["body"]).contains(U"不是工单"));
+
+	const Dictionary draft = AIChatSubAgents::parse_work_orders(U"# 标题\n\n## 生产工单\n\n1. 未定版\n");
+	CHECK_FALSE(bool(draft["finalized"]));
+	CHECK(Array(draft["orders"]).size() == 1);
+
+	String many = U"## 设计定版确认\n## 生产工单\n";
+	for (int i = 1; i <= 20; i++) {
+		many += itos(i) + ". order\n";
+	}
+	CHECK(Array(AIChatSubAgents::parse_work_orders(many)["orders"]).size() == AIChatSubAgents::MAX_CHILDREN_PER_PARENT);
+	CHECK(Array(AIChatSubAgents::parse_work_orders(U"## 设计定版确认\n## 生产工单\n1.no space\n12345. too long\n")["orders"]).is_empty());
+
+	const String title = AIChatSubAgents::tab_title(3, String(U"一个非常非常非常非常非常非常非常非常长的工单标题\n后续"));
+	CHECK(title.begins_with(U"子3 · "));
+	CHECK_FALSE(title.contains("\n"));
+	CHECK(title.ends_with(U"…"));
+
+	const String prompt = AIChatSubAgents::work_order_prompt("Agent 1", 1, 2, first, 47, "requirement-x");
+	CHECK(prompt.contains(U"工单 1/2"));
+	CHECK(prompt.contains("Issue #47"));
+	CHECK(prompt.contains("design-docs/requirement-x.md"));
+	CHECK(prompt.contains("get_parent_context"));
+	CHECK(AIChatSubAgents::is_state("interrupted"));
+	CHECK_FALSE(AIChatSubAgents::is_state("unknown"));
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent parent context keeps recent visible records within bounds") {
+	Array transcript;
+	for (int i = 0; i < 70; i++) {
+		Dictionary record;
+		record["role"] = i % 3 == 0 ? "user" : (i % 3 == 1 ? "assistant" : "work");
+		record["content"] = vformat("message %d", i);
+		transcript.push_back(record);
+	}
+	transcript.push_back(Variant("not a record"));
+	Dictionary context = AIChatSubAgents::parent_context(transcript);
+	Array records = context["records"];
+	CHECK(records.size() == 40);
+	CHECK(bool(context["truncated"]));
+	CHECK(String(Dictionary(records[records.size() - 1])["content"]) == "message 69");
+	for (int i = 0; i < records.size(); i++) {
+		CHECK(String(Dictionary(records[i])["role"]) != "work");
+	}
+
+	Array large;
+	for (int i = 0; i < 10; i++) {
+		Dictionary record;
+		record["role"] = "assistant";
+		record["content"] = String("x").repeat(AIChatSubAgents::MAX_CONTEXT_RECORD_CHARS + 100);
+		large.push_back(record);
+	}
+	context = AIChatSubAgents::parent_context(large);
+	CHECK(int(context["bytes"]) <= AIChatSubAgents::MAX_CONTEXT_BYTES);
+	CHECK(bool(context["truncated"]));
+	CHECK(String(Dictionary(Array(context["records"])[0])["content"]).contains(U"已截断"));
+	CHECK(Array(AIChatSubAgents::parent_context(Array())["records"]).is_empty());
 }
 
 } // namespace TestAIChatTools

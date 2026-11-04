@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "sub-agents-20261104-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "sub-agents-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-04T07:24:12.064797+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/48",
+  "agent": {
+    "id": "codebuddy-ide-host",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "intent": "Embedded child Agents that implement finalized-design work orders",
+    "state": "in_progress",
+    "usage": null,
+    "time_basis": "collector observation",
+    "agent_definition_basis": "sha256 of AGENTS.md at HEAD"
+  },
+  "evidence_refs": [],
+  "sha256": "ad2888446cb516b867d3ec78c258f432fe2957499dbbded8c3a7ca3bc96aea98"
+}

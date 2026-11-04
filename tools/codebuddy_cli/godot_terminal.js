@@ -29,7 +29,7 @@ function terminalArguments(params, workspace) {
 // Reserved terminal requests are dispatched to Godot, never evaluated by a shell.
 function hostActionName(command) {
     if (!command.trim().startsWith('godot-host-action')) return null;
-    const match = /^godot-host-action (read_logs|build_engine|restart_engine|rollback_engine)$/.exec(command.trim());
+    const match = /^godot-host-action (read_logs|get_parent_context|build_engine|restart_engine|rollback_engine)$/.exec(command.trim());
     if (match) return match[1];
     throw new Error('Invalid Godot host action. Shell operators and other arguments are forbidden.');
 }
@@ -113,9 +113,9 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
                 const id = 'godot_host_terminal_' + randomUUID();
                 const status = { exitCode: result.ok ? 0 : 1, _meta: { timed_out: false, start_failed: false } };
                 const bytes = Buffer.from(JSON.stringify(result));
-                // Log snapshots are capped at 32,000 characters by Godot. Keep
-                // the JSON envelope intact even for escaped or non-ASCII logs.
-                const outputByteLimit = action === 'read_logs' ? 256 * 1024 : args.outputByteLimit;
+                // Log and parent-context snapshots are bounded by Godot. Keep
+                // the JSON envelope intact even for escaped or non-ASCII text.
+                const outputByteLimit = action === 'read_logs' || action === 'get_parent_context' ? 256 * 1024 : args.outputByteLimit;
                 const terminal = { status, exit: Promise.resolve(status), output: bytes.subarray(Math.max(0, bytes.length - outputByteLimit)), truncated: bytes.length > outputByteLimit };
                 terminals.set(id, terminal);
                 finished({ terminalId: id, exit_status: status, timed_out: false, output_truncated: terminal.truncated, output: redactOutput(terminal.output.toString('utf8'), env) });

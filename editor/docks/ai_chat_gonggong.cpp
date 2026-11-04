@@ -253,13 +253,26 @@ void AIChatDock::_begin_gonggong_context() {
 		}
 	}
 	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, EDITOR_GET("gonggong/issue_number"), EDITOR_GET("gonggong/request_id"));
-	if (tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && issue_agent_checked != requirement_key) {
+	// Scheduled and child Agents never run requirement intake or create Issues;
+	// a child inherits the real Issue its parent's finalized design was bound to.
+	if (tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key) {
 		_cancel_issue_guide(String());
 		_begin_issue_agent(outcome);
 		return;
 	}
-	const int64_t bound_issue = String(EDITOR_GET("gonggong/issue_number")).to_int();
-	const String bound_request = String(EDITOR_GET("gonggong/request_id")).strip_edges();
+	int64_t bound_issue = String(EDITOR_GET("gonggong/issue_number")).to_int();
+	String bound_request = String(EDITOR_GET("gonggong/request_id")).strip_edges();
+	String authority = "godot-editor:user-chat:" + conversation_id;
+	if (sub_agents.has(active_agent)) {
+		const Dictionary info = sub_agents[active_agent];
+		const int64_t child_issue = info.get("issue_number", 0);
+		const String child_request = info.get("request_id", "");
+		if (AIChatIssueGuide::is_bound(child_issue, child_request)) {
+			bound_issue = child_issue;
+			bound_request = child_request;
+		}
+		authority = "godot-editor:sub-agent:" + itos(int(info.get("parent", -1))) + ":" + conversation_id;
+	}
 	if (!AIChatIssueGuide::is_bound(bound_issue, bound_request) && _start_issue_guide()) {
 		return;
 	}
@@ -270,10 +283,10 @@ void AIChatDock::_begin_gonggong_context() {
 	context_input["protocol_version"] = 1;
 	context_input["host"] = host;
 	context_input["agent_id"] = "yanshi";
-	context_input["issue_number"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
-	context_input["request_id"] = String(EDITOR_GET("gonggong/request_id")).strip_edges();
+	context_input["issue_number"] = bound_issue;
+	context_input["request_id"] = bound_request;
 	context_input["outcome"] = outcome;
-	context_input["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
+	context_input["authority_ref"] = authority;
 	context_input["project"] = ProjectSettings::get_singleton()->get_resource_path();
 	context_input["tools_enabled"] = allow_tools->is_pressed();
 	context_input["file_changes_require_approval"] = !auto_apply_file_changes->is_pressed();
@@ -402,8 +415,8 @@ static String guide_state_before(const String &p_action) {
 }
 
 bool AIChatDock::_start_issue_guide() {
-	if (scheduled_agents.has(active_agent) || !gonggong_recovered_result.is_empty()) {
-		return false; // Unattended and recovery turns keep the fail-closed rejection.
+	if (scheduled_agents.has(active_agent) || sub_agents.has(active_agent) || !gonggong_recovered_result.is_empty()) {
+		return false; // Unattended, child and recovery turns keep the fail-closed rejection.
 	}
 	const String outcome = last_user_content(messages);
 	if (outcome.strip_edges().is_empty()) {
