@@ -27,17 +27,47 @@ def read(path):
 
 
 class GitHubCommandError(ValueError):
-    def __init__(self, status=None):
+    def __init__(self, status=None, reason=None):
         self.http_status = status
-        super().__init__("GitHub command failed; check local gh login and repository access")
+        super().__init__(
+            reason
+            or (
+                "GITHUB_HTTP_" + str(status) + ": check repository access and API permissions"
+                if status
+                else "GITHUB_COMMAND: check local gh login and repository access"
+            )
+        )
 
 
 def gh(*args):
-    result = subprocess.run(
-        [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
-    )
+    try:
+        result = subprocess.run(
+            [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
+        )
+    except FileNotFoundError:
+        raise GitHubCommandError(
+            reason="GITHUB_RUNTIME: gh executable missing; set GONGGONG_GH to the authenticated host CLI"
+        ) from None
+    except subprocess.TimeoutExpired:
+        raise GitHubCommandError(
+            reason="GITHUB_TIMEOUT: request exceeded 120 seconds; read remote state before retrying a write"
+        ) from None
     if result.returncode:
         match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
+        if not match and any(
+            text in (result.stderr or "").lower()
+            for text in (
+                "error connecting",
+                "connection was reset",
+                "could not resolve",
+                "network is unreachable",
+                "connection refused",
+                "i/o timeout",
+            )
+        ):
+            raise GitHubCommandError(
+                reason="GITHUB_NETWORK: connection unavailable; check host network permissions and connectivity; Issue state is unknown"
+            )
         raise GitHubCommandError(int(match[1]) if match else None)
     return result.stdout.strip()
 
@@ -182,11 +212,20 @@ def collect(root, request_id):
     check = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=120)
     if check.returncode:
         raise ValueError("Diting validation failed; collection not published")
+    settings, _ = config(root)
+    issue_sources = set()
     events = []
     for path in sorted((root / "gonggong-diting-data/events").rglob("*.json")):
         raw = path.read_bytes()
         value = json.loads(raw)
         if value["request_id"] == request_id:
+            if value.get("kind") == "request" and value.get("tenant_id") == settings.get("tenant_id"):
+                source = value.get("source_ref", "")
+                repository = re.escape(settings["repository"])
+                match = re.fullmatch(r"https://github\.com/" + repository + r"/issues/([1-9][0-9]*)", source)
+                alternate = re.fullmatch(r"github:" + repository + r":issue:([1-9][0-9]*)", source)
+                if match or alternate:
+                    issue_sources.add(int((match or alternate)[1]))
             events.append({
                 "source": path.relative_to(root).as_posix(),
                 "sha256": hashlib.sha256(raw).hexdigest(),
@@ -196,6 +235,8 @@ def collect(root, request_id):
             })
     if not events:
         raise ValueError("No actual events for request; refusing empty success")
+    if len(issue_sources) > 1:
+        raise ValueError("Ambiguous request Issue sources; collection not published")
     result = {
         "schema_version": 1,
         "kind": "source_index",
@@ -207,6 +248,9 @@ def collect(root, request_id):
         "events": events,
         "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
     }
+    if issue_sources:
+        result["issue_number"] = next(iter(issue_sources))
+        result["issue_url"] = f"https://github.com/{settings['repository']}/issues/{result['issue_number']}"
     directory = root / "data-collection/requests" / request_id
     directory.mkdir(parents=True, exist_ok=True)
     destination = directory / (str(uuid.uuid4()) + ".json")
@@ -236,7 +280,9 @@ def main():
     if args.command == "labels":
         result = labels(root, args.apply)
     elif args.command == "issue":
-        result = issue(root, args.document, args.title, args.type, args.request_id, args.apply, args.execution_authority_ref)
+        result = issue(
+            root, args.document, args.title, args.type, args.request_id, args.apply, args.execution_authority_ref
+        )
     else:
         result = collect(root, args.request_id)
     print(json.dumps(result, ensure_ascii=False, indent=2))

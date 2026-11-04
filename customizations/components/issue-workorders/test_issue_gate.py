@@ -81,9 +81,19 @@ class GateTests(unittest.TestCase):
             )
         for target, kwargs in (
             ("check_repository", {}),
-            ("git", {"side_effect": lambda root, *args: b"gonggong-diting-data/events/local/req-6/event.json\0" if args[:2] == ("ls-files", "-z") else b""}),
+            (
+                "git",
+                {
+                    "side_effect": lambda root, *args: (
+                        b"gonggong-diting-data/events/local/req-6/event.json\0"
+                        if args[:2] == ("ls-files", "-z")
+                        else b""
+                    )
+                },
+            ),
             ("check_history", {}),
             ("check_collection", {}),
+            ("check_pr_evidence", {"return_value": {"matching_event": True, "matching_collection": True}}),
             ("snapshot", {"return_value": "digest"}),
             ("environment", {"return_value": {}}),
             (
