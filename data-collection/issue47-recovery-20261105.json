@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "base_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "candidate_binding": "source_sha256_lf; final commit supplied by Git history",
+  "source_sha256_lf": {
+    "customizations/components/godot-host/environment_igniter.py": "b3703679fe1e5db2615bb3947fd3bc4bc5b3ed4312b54b220579e0adcf98c4cf",
+    "customizations/components/godot-host/test_environment_igniter.py": "4da67d42d26de22beba1aaa19a86d6c44a1065e6dab0b6d51124888be8dea07a",
+    "design-docs/requirement-c1d0427af0155780b0485d8570f2d4ba.md": "83f83f3d60a14ff82bd39912899022cf48907551d4cf7d4b543f54c409a130c5"
+  },
+  "platform": "Windows x86_64",
+  "python": "3.14",
+  "tests": {
+    "environment_igniter": {
+      "passed": 13,
+      "command": "python customizations/components/godot-host/test_environment_igniter.py"
+    },
+    "bridge": {
+      "passed": 17,
+      "command": "python -m unittest discover -s customizations/components/godot-host -p test_bridge.py"
+    }
+  },
+  "initial_test_attempt": "Sandbox temporary-directory ACL denied fixture creation; rerun with normal host temporary directory passed. No product assertion failed.",
+  "coverage": [
+    "disk restore using separately loaded module",
+    "node and git PATH retained and repeat application idempotent",
+    "changed or missing component prevents entire restore; evidence retained",
+    "malformed state skipped with explicit recovery status",
+    "legacy schema-1 paths relative to workspace root; arbitrary env_changes ignored",
+    "rollback prevents subsequent restore"
+  ],
+  "prior_evidence": {
+    "path": "data-collection/ai-chat-debug-20261104/verification.json",
+    "scope": "Existing Windows PowerShell bootstrap and same-editor-process resume; no rerun because script/C++ unchanged"
+  },
+  "limits": [
+    "No new editor build or installation",
+    "No cross-restart editor message/settings acceptance",
+    "No actual user-level deployment or macOS/Linux installation",
+    "No real model-service acceptance",
+    "No authorization certificate inferred from local manifest"
+  ],
+  "usage": null,
+  "observed_at": "2026-11-04T17:34:31.173332+00:00"
+}

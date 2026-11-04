@@ -237,6 +237,7 @@ def environment_check(root, env=None):
         "components": status,
         "locations": list(LOCATIONS),
         "state": state,
+        "recovery_status": recovery_status(root),
         "model_execution_started": False,
         "note": "Read-only environment detection; it never installs or grants permission.",
     }
@@ -250,6 +251,8 @@ def environment_deploy(root, selection, env=None):
     components = selection.get("components")
     if not isinstance(components, list) or not components:
         raise ValueError("Select at least one component to deploy")
+    if any(not isinstance(component, str) for component in components) or len(set(components)) != len(components):
+        raise ValueError("Select each component only once using its component ID")
     unknown = [component for component in components if component not in COMPONENTS]
     if unknown:
         raise ValueError("Unknown component: " + ", ".join(unknown))
@@ -285,9 +288,13 @@ def environment_deploy(root, selection, env=None):
         )
         env_changes[definition["env_key"]] = path
         if definition["prepend_path"]:
-            env_changes["PATH"] = str(Path(path).parent)
+            directories = env_changes.get("PATH", "").split(os.pathsep) if env_changes.get("PATH") else []
+            if str(Path(path).parent) not in directories:
+                directories.append(str(Path(path).parent))
+            env_changes["PATH"] = os.pathsep.join(directories)
     record = {
         "schema_version": STATE_SCHEMA,
+        "path_base": "workspace_root",
         "deployed_at": _now(),
         "location": location,
         "authorized": True,
@@ -345,16 +352,56 @@ def environment_rollback(root, env=None):
     }
 
 
-def apply_state(root, env):
-    """Make a deployed runtime visible to bridge subprocesses. Never raises."""
+def recovery_status(root):
+    """Validate persisted pins before a new bridge process restores them.
+
+    Legacy schema-1 component paths also resolve against the workspace root.
+    The manifest is local recovery evidence, not an authorization certificate.
+    """
     state = read_state(root)
     if state is None:
+        return {"ok": not state_file(root).exists(), "active": False, "env_changes": {},
+                "error": "Invalid deployment record" if state_file(root).exists() else None}
+    try:
+        if state.get("path_base", "workspace_root") != "workspace_root" or state.get("authorized") is not True:
+            raise ValueError("Invalid deployment metadata")
+        components = state.get("components")
+        if not isinstance(components, list) or not components:
+            raise ValueError("Invalid deployment components")
+        changes = {}
+        directories = []
+        seen = set()
+        for item in components:
+            if not isinstance(item, dict) or not isinstance(item.get("id"), str) or item["id"] not in COMPONENTS or item["id"] in seen:
+                raise ValueError("Invalid or duplicate deployment component")
+            seen.add(item["id"])
+            definition = COMPONENTS[item["id"]]
+            if not isinstance(item.get("path"), str) or not item["path"]:
+                raise ValueError("Invalid component path")
+            path = (Path(root).resolve() / item["path"]).resolve()
+            digest = _sha256_file(path)
+            if not _is_file_executable(path) or digest is None or digest != item.get("sha256"):
+                raise ValueError("Deployment component missing or changed: " + item["id"])
+            changes[definition["env_key"]] = str(path)
+            if definition["prepend_path"] and str(path.parent) not in directories:
+                directories.append(str(path.parent))
+        if directories:
+            changes["PATH"] = os.pathsep.join(directories)
+        return {"ok": True, "active": True, "env_changes": changes, "error": None}
+    except (OSError, ValueError, TypeError) as error:
+        return {"ok": False, "active": False, "env_changes": {}, "error": str(error)}
+
+
+def apply_state(root, env):
+    """Restore validated component pins, leaving invalid state for diagnosis."""
+    recovery = recovery_status(root)
+    if not recovery["ok"]:
         return env
-    for key, value in state.get("env_changes", {}).items():
-        if not isinstance(key, str) or not isinstance(value, str):
-            continue
+    for key, value in recovery["env_changes"].items():
         if key == "PATH":
-            env["PATH"] = value + os.pathsep + env.get("PATH", "")
+            directories = value.split(os.pathsep)
+            directories.extend(p for p in env.get("PATH", "").split(os.pathsep) if p not in directories)
+            env[key] = os.pathsep.join(directories)
         else:
             env[key] = value
     return env
