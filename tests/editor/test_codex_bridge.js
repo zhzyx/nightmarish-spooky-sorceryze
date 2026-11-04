@@ -73,7 +73,8 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"中文回复","actions":[]}' } },
                 { type: 'turn.completed', usage: {} },
             ], success: true },
-            { events: [{ type: 'turn.failed', error: { message: 'authentication required' } }], success: false },
+            { events: [{ type: 'turn.failed', error: { message: 'authentication required' } }], success: false, exitCode: 23, errorCode: 'AUTH_REQUIRED' },
+            { events: [{ type: 'error', message: 'private-token-must-not-leak' }], success: false, exitCode: 17, errorCode: 'PROCESS_EXIT' },
             { events: [{ type: 'item.completed', item: { type: 'agent_message', text: '{"content":"unfinished","actions":[]}' } }], success: false },
         ];
         for (const scenario of cases) {
@@ -82,6 +83,7 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 process.stderr.write('private-token-must-not-leak');
                 const bytes = Buffer.from(${JSON.stringify(wire)});
                 for (let i = 0; i < bytes.length; i++) process.stdout.write(bytes.subarray(i, i + 1));
+                process.exitCode = ${scenario.exitCode || 0};
             });`);
             const result = spawnSync(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request],
                 { encoding: 'utf8', timeout: 10000 });
@@ -94,6 +96,10 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
             } else {
                 assert.equal(result.status, 1);
                 assert(packet.error.code);
+                if (scenario.errorCode) {
+                    assert.equal(packet.error.code, scenario.errorCode);
+                    assert.equal(packet.error.exit_code, scenario.exitCode);
+                }
             }
         }
     } finally {

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": 49,
+  "source_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "observed_at": "2026-11-04T17:48:02.174975+00:00",
+  "visible_editor": {
+    "executed": true,
+    "backend": "Codex CLI",
+    "model": "gpt-6-astra",
+    "prompt": "仅咨询入口检查：请说明当前聊天连接是否可用。不要执行工具、修改文件或创建工单。",
+    "observed_error": "仅咨询目前支持 API 后端；请切换后继续队列。原生 CLI 不执行此请求。",
+    "queue": "one paused consultation message retained; no resume",
+    "desktop": "released to coordinator after observation",
+    "provider_request_started": false
+  },
+  "diagnosis": {
+    "cli_version": "0.166.0-alpha.5.1",
+    "help_confirms": [
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--output-schema"
+    ],
+    "original_exit_code": null,
+    "original_stderr": "not retained by bridge; cannot reconstruct",
+    "original_root_cause": "unknown",
+    "confirmed_local_defect": "JSONL error/turn.failed path discarded the available child exit code",
+    "fix": "Pass closed child exit code to bridgeError on failure event path",
+    "raw_diagnostics_exposed": false
+  },
+  "regression": {
+    "old_code": "5 passed, 1 failed: undefined !== 23",
+    "candidate": "6 passed, 0 failed; error and turn.failed fixtures preserve 17/23 and do not leak private marker",
+    "provider": "isolated fixtures only",
+    "real_request_repeated": false
+  },
+  "candidate_sha256_lf": {
+    "tools/codex_cli/godot_bridge.js": "990228ef0fde9d3bb0c3b261dc2a68743fa4cea3b0369e2f1f20979cef8cabbe",
+    "tests/editor/test_codex_bridge.js": "366c670c670484ebc8504e1468a3f7528635aecf29d9368953ca4ddb32d85831"
+  },
+  "usage": null,
+  "service_acceptance": "pending",
+  "next_event": "Review/merge diagnostic fix; only a separately authorized necessary provider retry can supply new exit diagnostics. Original cause remains unknown."
+}
