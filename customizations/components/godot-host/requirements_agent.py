@@ -8,6 +8,8 @@ import re
 import subprocess
 import tempfile
 import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -74,15 +76,96 @@ def proposal(value, categories):
 
 
 def complete(root, request, profile, messages, env):
-    if request.get("backend") != "codebuddy":
+    if request.get("backend") == "responses":
+        endpoint = (
+            profile["endpoint"].rstrip("/").removesuffix("/chat/completions").removesuffix("/responses") + "/responses"
+        )
+        url = urllib.parse.urlsplit(endpoint)
+        if (
+            url.username
+            or url.password
+            or url.query
+            or url.fragment
+            or (
+                url.scheme != "https"
+                and not (url.scheme == "http" and url.hostname in {"localhost", "127.0.0.1", "::1"})
+            )
+        ):
+            raise ValueError("Invalid Responses endpoint")
+        transport = load(framework_root(root) / "runtime/adapters.py", "requirements_transport")
+        headers = {"Content-Type": "application/json"}
+        if profile.get("api_key_env"):
+            secret = os.environ.get(profile["api_key_env"])
+            if not secret:
+                raise ValueError("Credential environment variable missing")
+            headers["Authorization"] = "Bearer " + secret
+        body = {
+            "model": profile["model"],
+            "input": messages,
+            "stream": False,
+            "store": False,
+            "max_output_tokens": 3000,
+        }
+        try:
+            http_request = urllib.request.Request(
+                endpoint, data=json.dumps(body).encode(), headers=headers, method="POST"
+            )
+            with urllib.request.build_opener(transport.NoRedirect()).open(http_request, timeout=90) as response:
+                raw = response.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError("Response exceeds limit")
+            value = json.loads(raw)
+            if value.get("status") != "completed" or any(
+                item.get("type") == "function_call" for item in value["output"]
+            ):
+                raise ValueError("Incomplete or tool-bearing requirements response")
+            text = "".join(
+                part["text"]
+                for item in value["output"]
+                if item.get("type") == "message"
+                for part in item["content"]
+                if part.get("type") == "output_text"
+            )
+            if not text:
+                raise ValueError("Empty requirements response")
+            raw_usage = value.get("usage") or {}
+            usage = {
+                "input_tokens": raw_usage.get("input_tokens"),
+                "output_tokens": raw_usage.get("output_tokens"),
+                "cache_read_input_tokens": (raw_usage.get("input_tokens_details") or {}).get("cached_tokens"),
+                "reasoning_output_tokens": (raw_usage.get("output_tokens_details") or {}).get("reasoning_tokens"),
+            }
+            if any(type(v) is not int or v < 0 for v in usage.values() if v is not None):
+                raise ValueError("Invalid usage")
+            for subset, total in [
+                ("cache_read_input_tokens", "input_tokens"),
+                ("reasoning_output_tokens", "output_tokens"),
+            ]:
+                if usage[subset] is not None and usage[total] is not None and usage[subset] > usage[total]:
+                    raise ValueError("Usage subset exceeds total")
+            return {
+                "text": text,
+                "finish_reason": "stop",
+                "usage": usage,
+                "provider_request_id": str(value.get("id", "unavailable")),
+            }
+        except Exception:
+            raise ValueError(
+                "Requirements Responses API failed; check endpoint, model and credentials before retrying"
+            ) from None
+    if request.get("backend") not in {"codebuddy", "codex"}:
         return load(framework_root(root) / "runtime/adapters.py", "requirements_transport").call(
             profile, messages, 3000
         )
     node = request.get("cli_node") or env.get("GONGGONG_NODE", "")
     entry = request.get("cli_entry", "")
-    bridge = root / "tools/codebuddy_cli/godot_bridge.js"
+    bridge = root / (
+        "tools/codex_cli/godot_bridge.js"
+        if request.get("backend") == "codex"
+        else "tools/codebuddy_cli/godot_bridge.js"
+    )
     if not all(Path(p).is_file() for p in [node, entry, str(bridge)]):
-        raise ValueError("Repair CodeBuddy Node/CLI installation before requirements intake")
+        raise ValueError("Repair Node/CLI installation before requirements intake")
     with tempfile.TemporaryDirectory() as folder:
         path = Path(folder) / "requirements.json"
         payload = {
@@ -116,7 +199,7 @@ def complete(root, request, profile, messages, env):
         if not detail:
             detail = (result.stderr or result.stdout or "").strip()
         raise ValueError(
-            "Requirements model API failed in CodeBuddy"
+            "Requirements model API failed in CLI"
             + (": " + detail if detail else "")
             + "; repair the CLI login, model or native dependencies before retrying"
         )
@@ -271,11 +354,13 @@ def _intake(root, request, bridge):
             "model": request.get("model", ""),
             "timeout_seconds": 90,
         }
-        if request.get("backend") != "codebuddy" and (not profile["endpoint"] or not profile["model"]):
+        if request.get("backend") not in {"codebuddy", "codex"} and (not profile["endpoint"] or not profile["model"]):
             raise ValueError("Configure the requirements Agent model endpoint and model before intake")
         previous_key = os.environ.get("GONGGONG_REQUIREMENTS_KEY")
         private_key = (
-            (request.get("_private_api_key") or previous_key) if request.get("backend") != "codebuddy" else None
+            (request.get("_private_api_key") or previous_key)
+            if request.get("backend") not in {"codebuddy", "codex"}
+            else None
         )
         if private_key:
             profile["api_key_env"] = "GONGGONG_REQUIREMENTS_KEY"

@@ -290,15 +290,21 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(list(self.root.glob("*.tmp")), [])
 
     def test_existing_codebuddy_transport_has_no_tools_and_needs_no_http_key(self):
+        self.check_cli_transport("codebuddy")
+
+    def test_codex_transport_has_no_tools_and_needs_no_http_key(self):
+        self.check_cli_transport("codex")
+
+    def check_cli_transport(self, backend):
         import sys
 
-        script = self.root / "tools/codebuddy_cli/godot_bridge.js"
+        script = self.root / ("tools/" + backend + "_cli/godot_bridge.js")
         script.parent.mkdir(parents=True)
         script.write_text("// transport path fixture only", encoding="utf-8")
         entry = self.root / "cli-entry.js"
         entry.write_text("// fixture only", encoding="utf-8")
         self.request.update(
-            backend="codebuddy",
+            backend=backend,
             cli_node=sys.executable,
             cli_entry=str(entry),
             cli_model="fixture",
@@ -326,6 +332,75 @@ class RequirementsTests(unittest.TestCase):
         module.subprocess.run.side_effect = transport
         self.assertTrue(self.invoke()["ready"])
         self.adapter.call.assert_not_called()
+
+
+class ResponsesTransportTests(unittest.TestCase):
+    def setUp(self):
+        self.value = {
+            "id": "resp_fixture",
+            "status": "completed",
+            "output": [{"type": "message", "content": [{"type": "output_text", "text": '{"goal":"fixture"}'}]}],
+            "usage": {
+                "input_tokens": 100,
+                "output_tokens": 20,
+                "input_tokens_details": {"cached_tokens": 40},
+                "output_tokens_details": {"reasoning_tokens": 10},
+            },
+        }
+        self.profile = {
+            "endpoint": "https://api.example.test/v1/chat/completions/",
+            "model": "fixture",
+            "api_key_env": "REQUIREMENTS_TEST_KEY",
+        }
+        self.messages = [{"role": "system", "content": "schema"}, {"role": "user", "content": "goal"}]
+
+    def complete(self, payload=None):
+        response = Mock()
+        response.__enter__ = Mock(return_value=response)
+        response.__exit__ = Mock(return_value=False)
+        response.read.return_value = json.dumps(self.value if payload is None else payload).encode()
+        opener = Mock()
+        opener.open.return_value = response
+        with (
+            patch.dict(os.environ, {"REQUIREMENTS_TEST_KEY": "synthetic-key"}),
+            patch.object(module.urllib.request, "build_opener", return_value=opener),
+        ):
+            result = module.complete(ROOT, {"backend": "responses"}, self.profile, self.messages, {})
+        return result, opener
+
+    def test_responses_endpoint_auth_and_usage(self):
+        result, opener = self.complete()
+        http_request = opener.open.call_args.args[0]
+        self.assertEqual(http_request.full_url, "https://api.example.test/v1/responses")
+        self.assertEqual(http_request.get_header("Authorization"), "Bearer synthetic-key")
+        body = json.loads(http_request.data)
+        self.assertEqual(body["input"], self.messages)
+        self.assertFalse(body["store"])
+        self.assertFalse(body["stream"])
+        self.assertNotIn("tools", body)
+        self.assertEqual(result["text"], '{"goal":"fixture"}')
+        self.assertEqual(result["usage"]["cache_read_input_tokens"], 40)
+        self.assertEqual(result["usage"]["reasoning_output_tokens"], 10)
+
+    def test_incomplete_tool_or_invalid_usage_cannot_publish_requirements(self):
+        for mutation in [
+            {"status": "incomplete"},
+            {"output": [{"type": "function_call", "name": "publish"}]},
+            {"usage": {"input_tokens": 1, "input_tokens_details": {"cached_tokens": 2}}},
+            {"output": [{"type": "message", "content": [{"type": "refusal", "refusal": "fixture"}]}]},
+        ]:
+            with (
+                self.subTest(mutation=mutation),
+                self.assertRaisesRegex(ValueError, "Requirements Responses API failed"),
+            ):
+                self.complete({**self.value, **mutation})
+
+    def test_remote_plain_http_rejected_before_sending_credentials(self):
+        self.profile["endpoint"] = "http://api.example.test/v1"
+        with patch.object(module.urllib.request, "build_opener") as opener:
+            with self.assertRaisesRegex(ValueError, "Invalid Responses endpoint"):
+                self.complete()
+            opener.assert_not_called()
 
 
 if __name__ == "__main__":
