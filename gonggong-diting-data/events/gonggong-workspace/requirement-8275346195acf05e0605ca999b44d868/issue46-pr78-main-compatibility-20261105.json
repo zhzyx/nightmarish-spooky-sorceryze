@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "issue46-pr78-main-compatibility-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-8275346195acf05e0605ca999b44d868",
+  "kind": "step",
+  "occurred_at": "2026-11-04T20:36:49.8478981+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/46",
+  "agent": {
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "version": "not-reported-by-host",
+    "origin": "explicit-issue-workspace-host",
+    "id": "codex-issue46-maincompat"
+  },
+  "payload": {
+    "usage_reason": "Not measured",
+    "before": "Direct regression INVALID_REQUEST",
+    "after": "9 bridge regressions passed",
+    "baseline": "83754370",
+    "host_definition": "AGENTS.md",
+    "input_tokens": null,
+    "issue46_source": "b9d24d72a03efbb3ebba1a8ed2e2e65e1daff1d8",
+    "description": "Integrate Issue46 on frozen PR78 main baseline. Add get_editor_state to Codex read-only consultation bridge, reject editor_action; no repeated Issue49 lifecycle patch.",
+    "output_tokens": null,
+    "path_base": "repository_root",
+    "host_authority_authenticated": false
+  },
+  "evidence_refs": [],
+  "sha256": "669f26982ae0c8e661d97b299e953ef1715dc698664589bafa97e76b755e74b9"
+}
