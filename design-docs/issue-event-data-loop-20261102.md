@@ -93,3 +93,19 @@ PR #17 已合入，#8/#11/#15 已按现有证据 completed 关闭。旧PR #14 �
 #9 转 in-progress 后产生真实事件 35158186727。当前接收责任为用户，执行上下文为 codex-issue9-current-operator；已有入口首次调用记录成功、同绑定重放幂等。接收及重放不改变历史事件 actor，也不把本聊天名称当作身份认证。来源目录为 `data-collection/issue-events/a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500/`，路径以仓库根解析。消费和责任决定见追加的 `data-collection/issue9-operator-reception-20261105.json`，不覆盖上一轮快照和旧 receipt。
 
 司南现有 registry 仍为空。下一步在本单继续实现/审查可识别 GitHub 权威来源的适配和操作交接回执；不恢复元衡伪账本或 Olympus 运行链，不因单次接收成功自动关闭父单。本节与 GitHub 新评论共同记录用户的范围决定，旧 blocked 评论保留为历史。
+
+## 2026-11-05 GitHub 来源回调候选
+
+本轮基于已发布 97ccb511，独立树实现接入层来源回调，不修改 #72 的派发器或准入原件。范围为真实 Issue 单次只读快照，以及供 #72 source 接口调用的版本重验、start/ack/terminal 委托；状态权威仍为 GitHub。Windows / Node，验证只读真实 #9 与隔离回调测试，不启动新工作者或模型。停止条件为来源接口和失败拒绝可审；生产启用须由 #72 的已准入宿主提供原子 compare-and-start 与可核验执行回执后再做代表链路。无法由 GitHub 标签或本地假回执代替该宿主能力。
+
+### 来源回调与执行宿主边界
+
+候选 `github_source.mjs` 导出 GitHubIssueSource，供 #72 的 source 回调使用，不修改旧 board/registry。构造时显式给 repository、bindings[{number,requestId}]、readIssue；inspect 只响应真实业务事件，按工单隔离读取故障，返回 GitHub 权威 URL 与版本摘要，不生成元衡 ledgerId。来源数仅表示本次显式绑定集合，不表示已安装司南 registry。
+
+无 runtime 时 ready 为空、capacity=0，revalidate=false；真实 Issue 回读不产生派发授权。runtime 由已准入宿主提供 environment、assess、authorize、compareAndStart、ack、report、verifyTerminal。assess 必须核对依赖证据及在途工作；authorize 核验实际权限、准入与范围；compareAndStart 必须原子核对源版本并跨操作者认领工单，返回绑定 key/ticket/sourceSha256 的真实 reference。GitHub read-then-label、添加评论或本地文件自报都不能替代原子认领。ack 必须保存并核验实际 worker/model/target 回执，不把排队或 setupPending 当运行；terminal 同样由实际宿主验证，不根据 closed 标签推断完成。report 复用宿主共享谛听，不新增第二份派发状态账本。
+
+本轮7项隔离测试通过，覆盖错身份/歧义、显式依赖、故障隔离、版本漂移、无宿主拒绝、错误start回执与ack未知、在途任务和terminal边界。真实#9只读结果见 `data-collection/issue9-github-source-read-20261105.json`：未绑定执行宿主、ready为空，不能宣称实际start/ack成功。唯一剩余生产接入依赖为 #72 已准入宿主提供上述权威执行回调（含原子版本认领与真实worker回执），随后才可进行端到端代表任务；接收责任仍由当前操作者承担，无需另建固定webhook。
+
+独立审查发现并修复了未知类别未拒绝与单项assess异常中断其它任务两点。最终8项测试通过，修正后真实回读摘要在 `data-collection/issue9-github-source-final-read-20261105.json`，绑定源文件SHA256；初次读取证据保留。构造另需 allowedCategories，从当前 `.github/labels.json` 注入，不接受Issue自报类别清单。
+
+#72接口已由负责聊天确认：其664a0f21是候选内容摘要而非Git提交，尚未准入，且不提供GitHub来源跨执行者版本保护或真实start/ack后端。因此本候选提供来源回调和宿主委托边界，不声称已实现这些后端。剩余生产依赖准确表述为：绑定一个已准入、具有真实跨执行者原子认领及worker回执能力的执行宿主；#72已有派发器可复用，但仅批准#72本身不自动补足该能力。
