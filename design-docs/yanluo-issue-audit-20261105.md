@@ -14,7 +14,7 @@
 
 初始 42 张 Issue（15 open / 27 closed），45 个 PR、48 个本地分支头已核对；另含审查单 #88。执行期间 main 从 3afe3b0d 推进至 71ab6c28（PR89/#85），仅影响核验/框架元数据；已快进整合新 main，正式门禁按新有效框架运行。在这些远端操作时 PR87/#84 尚未合入；随后 f6deb6cb 整合其规则，已快进并复核影响。新的 unknown/必要父级验收约束仍要求六个未完成父单保持开放；#84 已由原工作者关闭，本次只回读。未提交工作树内容不计已交付。
 
-独立复核者为 Codex /root，实际审查与远端执行为阎罗 /root/yanluo。四张完整范围工单 #55/#58/#59/#85 已 closed/completed，七张尾项/差异单 #90–#96 已创建、双向关联和回读。#52/#63 误用的 done 已改 in-review，其余业务标签保留；#64 保持既有关闭，由 #96 needs-decision 核对意图。#49 用户停止测试不重启、不记通过。
+独立复核者为 Codex /root，实际审查与远端执行为阎罗 /root/yanluo。四张完整范围工单 #55/#58/#59/#85 已 closed/completed，七张尾项/差异单 #90–#96 已创建、双向关联和回读。#52/#63 误用的 done 已改 in-review，其余业务标签保留；#64 已由用户在 #96 对应聊天明确撤销，取消决定见下方追加记录。#49 用户停止测试不重启、不记通过。
 
 计数按列明的原业务验收组；#59 原七项逐条映射、#52 原macOS四项均unknown，#9/#47 原清单与实施/局部测试进度分开，不能解释为工作量百分比；原文和历史接受范围、当前证据、未知均在 `data-collection/yanluo-issue-audit-results.json`。历史验证为复用，没有新引擎构建或供应商请求。
 
@@ -25,7 +25,7 @@
 | #83 | 0 / 0 / 5 | reuse_existing_followup |
 | #79 | 4 / 0 / 0 | retain_closed_accepted_scope |
 | #72 | 3 / 0 / 3 | retain_inflight |
-| #64 | 0 / 1 / 2 | retain_closed_needs_decision |
+| #64 | 0 / 1 / 2（原审查，未计完成） | cancelled_by_user_via_96 |
 | #63 | 3 / 1 / 2 | remaining_followup |
 | #60 | 0 / 0 / 7 | retain_inflight |
 | #59 | 7 / 0 / 0 | close_completed |
@@ -70,3 +70,7 @@
 实际写入证据 `data-collection/yanluo-issue-audit-remote.json` 原件保留；独立复核发现 #92 来源归属和 #96 引用路径问题，已同步远端更正并追加 `yanluo-issue-audit-corrections.json`。源操作已交付到 GitHub Issue 时间线，审查仓库文件在本候选发布前仍属未提交；Diting 文件落盘、Git 交付与消费分别记录。审查 #88 在自身候选经过正式门禁、提交核验、CI、main 回读后关闭，最终回执在其时间线追加。
 
 后续规则漂移：最终准备基线 `f6deb6cb75bd38b8ec3c1e71bf86d8b26cd1a06f`。#90–#96 在 71ab6c28 的真实审查事件下建立，只有正文与回执关联，未声称 GitHub 原生 sub-issue 关系；新规则不追造迁移/关闭事实。#9/#47/#52 等拆单为本次明确授权的剩余追踪，不通过把实现、编译或额外局部测试塞入原验收分母满足阈值。
+
+## 2026-11-05 #96 撤销决定追加
+
+用户明确撤销 #64 放宽门禁需求。#64 已回读为 closed/not_planned、status:cancelled；#96 清理交付后同样以取消关闭，不再作为 needs-decision 派发。门禁 kind=request 保持，未实现范围不计完成。历史审查回执不改写；来源为 `data-collection/issue96-gate-relaxation-cancellation.json`，清理文档为 `design-docs/yanluo-issue-64-closure-discrepancy-20261105.md`（均相对仓库根）。
