@@ -1,0 +1,14 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "reviewer": "codex-subagent-dispatch-review",
+  "kind": "independent_review",
+  "scope": ["tools/godot_parallel", "tests/editor/test_parallel_work_orders.mjs", "editor/docks/ai_chat_sub_agents.cpp", "editor/docks/ai_chat_dock.cpp"],
+  "path_base": "repository_root",
+  "result": "candidate_code_and_contract_pass",
+  "tests": {"passed": 7, "failed": 0},
+  "resolved": ["ordinary child Agent dispatch preserved", "shared canonical repository locks", "duplicate worker identifiers rejected", "unique batch receipt identity", "known unstarted task recovery", "historical receipt takes precedence over model or dependency availability", "actual shared reporting before prompt delivery", "durable fsync reservations"],
+  "actual_file_report_event": "parallel-9990cf15f6564b32b29332b616ea1206",
+  "limitations": ["full candidate editor linking and GUI not tested", "real provider invocation not tested", "production admission absent", "Diting consumption unknown"],
+  "approval_granted": false,
+  "usage": null
+}

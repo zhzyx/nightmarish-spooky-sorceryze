@@ -31,7 +31,9 @@
 #include "editor/docks/ai_chat_sub_agents.h"
 
 #include "core/io/file_access.h"
+#include "core/io/dir_access.h"
 #include "core/io/json.h"
+#include "core/os/os.h"
 #include "core/object/callable_mp.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
@@ -39,6 +41,7 @@
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
+#include "scene/gui/check_box.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
@@ -282,6 +285,12 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 	int resumed = 0;
 	bool pending = false;
 	for (int id : _sub_agent_children(p_parent, true, p_request_id)) {
+		if (bool(sub_agents[id].get("parallel_external", false)) && String(sub_agents[id].get("state", "")) != "waiting") {
+			const Dictionary receipt = sub_agents[id].get("parallel_receipt", Dictionary());
+			if (!String(receipt.get("state", "")).begins_with("blocked")) {
+				continue; // Only definite non-start receipts permit another dispatch.
+			}
+		}
 		const String state = sub_agents[id]["state"];
 		if (state == "failed" || state == "interrupted") {
 			sub_agents[id]["state"] = "waiting";
@@ -309,6 +318,9 @@ void AIChatDock::_sub_agent_dispatch() {
 	}
 	if (!queue_paused && !queued_messages.is_empty()) {
 		return; // The visible Agent's own queue runs first.
+	}
+	if (_dispatch_parallel_sub_agents()) {
+		return;
 	}
 	for (const KeyValue<int, Dictionary> &entry : scheduled_agents) {
 		if (String(entry.value["state"]) == "waiting") {
@@ -352,6 +364,118 @@ void AIChatDock::_sub_agent_dispatch() {
 	}
 }
 
+bool AIChatDock::_dispatch_parallel_sub_agents() {
+	const String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
+	if (config.is_empty()) {
+		return false;
+	}
+	if (sub_agent_parallel_pid >= 0) {
+		return true;
+	}
+	const String workspace = EDITOR_GET("gonggong/workspace");
+	const String request_id = EDITOR_GET("gonggong/request_id");
+	const int dispatch_parent = _sub_agent_root(active_agent);
+	Array workers;
+	for (const KeyValue<int, Dictionary> &entry : sub_agents) {
+		if (int(entry.value.get("parent", -1)) != dispatch_parent || String(entry.value.get("source", "")) != "design" || String(entry.value.get("state", "")) != "waiting" || String(entry.value.get("request_id", "")) != request_id) {
+			continue;
+		}
+		Dictionary worker;
+		worker["id"] = entry.key;
+		worker["order"] = entry.value.get("work_order", 0);
+		worker["prompt"] = vformat(U"落实 Issue #%d / %s 的生产工单 %d：%s。读取 design-docs/%s.md 获取定稿范围与验收。", int64_t(entry.value.get("issue_number", 0)), request_id, int(entry.value.get("work_order", 0)), String(entry.value.get("title", "")), request_id);
+		workers.push_back(worker);
+	}
+	if (workers.is_empty()) {
+		return false;
+	}
+	if (!allow_tools->is_pressed() || !auto_apply_file_changes->is_pressed() || !auto_execute_commands->is_pressed() || consultation_only->is_pressed()) {
+		_append(TTR("Editor"), U"并行工单未启动：需明确配置独立工作副本及原生执行授权，并开启工具、自动文件修改和自动命令。仅咨询模式不能执行。未降级为串行执行。");
+		return true;
+	}
+	const String directory = workspace.path_join("data-collection/outbox");
+	if (DirAccess::make_dir_recursive_absolute(directory) != OK) {
+		_append(TTR("Error"), U"无法持久保存并行工单派发意图，未启动。");
+		return true;
+	}
+	const String batch_id = itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec());
+	const String request_file = directory.path_join("parallel-" + request_id + "-" + batch_id + ".json");
+	sub_agent_parallel_output = directory.path_join("parallel-" + request_id + "-" + batch_id + ".result.json");
+	if (FileAccess::exists(sub_agent_parallel_output + ".running")) {
+		_append(TTR("Editor"), U"已有并行派发意图或回执，需核对原执行者与结果后继续，未重复派发。");
+		return true;
+	}
+	Dictionary dispatch_request;
+	dispatch_request["workspace"] = workspace;
+	dispatch_request["config"] = config;
+	dispatch_request["issue"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
+	dispatch_request["requestId"] = request_id;
+	dispatch_request["batchId"] = batch_id;
+	dispatch_request["workers"] = workers;
+	Ref<FileAccess> file = FileAccess::open(request_file, FileAccess::WRITE);
+	if (file.is_null()) {
+		return true;
+	}
+	file->store_string(JSON::stringify(dispatch_request));
+	file.unref();
+	List<String> args;
+	args.push_back(_engine_root().path_join("tools/godot_parallel/runner.mjs"));
+	args.push_back(request_file);
+	args.push_back(sub_agent_parallel_output);
+	if (OS::get_singleton()->create_process(cli_node->get_text().strip_edges(), args, &sub_agent_parallel_pid) != OK) {
+		sub_agent_parallel_pid = -1;
+		_append(TTR("Error"), U"并行执行器未启动；派发意图已保留，需对账。");
+		return true;
+	}
+	for (const Variant &value : workers) {
+		const int id = Dictionary(value)["id"];
+		sub_agents[id]["state"] = "pending_host";
+		sub_agents[id]["parallel_external"] = true;
+		sub_agents[id]["parallel_batch"] = batch_id;
+		sub_agents[id]["parallel_output"] = sub_agent_parallel_output;
+	}
+	_append(TTR("Editor"), U"已启动独立 Codex CLI 工单执行器。各工单在独立工作副本运行并按能力选模；不操作当前编辑器。退出成功仅进入待验收，结果与日志留在 data-collection/outbox。");
+	_queue_history_save();
+	_refresh_sub_agents();
+	return true;
+}
+
+void AIChatDock::_poll_parallel_sub_agents() {
+	if (OS::get_singleton()->is_process_running(sub_agent_parallel_pid)) {
+		return; // Observe an existing process only; no new scheduling or model call.
+	}
+	sub_agent_parallel_pid = -1;
+	Ref<FileAccess> file = FileAccess::open(sub_agent_parallel_output, FileAccess::READ);
+	Dictionary result;
+	if (file.is_valid() && file->get_length() <= MAX_DESIGN_DOCUMENT_BYTES) {
+		const Variant parsed = JSON::parse_string(file->get_as_utf8_string());
+		if (parsed.get_type() == Variant::DICTIONARY) {
+			result = parsed;
+		}
+	}
+	for (KeyValue<int, Dictionary> &entry : sub_agents) {
+		if (String(entry.value.get("parallel_output", "")) == sub_agent_parallel_output && String(entry.value.get("state", "")) == "pending_host") {
+			entry.value["state"] = "interrupted";
+		}
+	}
+	const Array receipts = result.get("workers", Array());
+	for (const Variant &value : receipts) {
+		if (value.get_type() != Variant::DICTIONARY) {
+			continue;
+		}
+		const Dictionary receipt = value;
+		const int id = receipt.get("id", -1);
+		if (sub_agents.has(id) && String(sub_agents[id].get("parallel_output", "")) == sub_agent_parallel_output && String(sub_agents[id].get("parallel_batch", "")) == String(result.get("batchId", "")) && String(sub_agents[id].get("request_id", "")) == String(result.get("requestId", ""))) {
+			const String state = receipt.get("state", "");
+			sub_agents[id]["state"] = state == "review" ? "review" : (state.begins_with("blocked") ? "waiting" : "interrupted");
+			sub_agents[id]["parallel_receipt"] = receipt;
+		}
+	}
+	_append(TTR("Editor"), vformat(U"并行执行器已结束。工单保留各自结果；待验收不自动合入，未明结果不重跑。回执：%s", sub_agent_parallel_output));
+	_queue_history_save();
+	_refresh_sub_agents();
+}
+
 void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed) {
 	if (!is_inside_tree() || history_restoring) {
 		return;
@@ -367,6 +491,12 @@ void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed) {
 }
 
 void AIChatDock::_sub_agent_removed(int p_id) {
+	if (sub_agent_parallel_pid >= 0 && sub_agents.has(p_id) && bool(sub_agents[p_id].get("parallel_external", false))) {
+		Ref<FileAccess> cancel = FileAccess::open(sub_agent_parallel_output + "." + itos(p_id) + ".cancel", FileAccess::WRITE);
+		if (cancel.is_valid()) {
+			cancel->store_string("user_closed_child");
+		}
+	}
 	sub_agents.erase(p_id);
 	_refresh_sub_agents();
 }
@@ -460,7 +590,9 @@ void AIChatDock::_load_sub_agents(const Dictionary &p_data) {
 		}
 		const String state = info["state"];
 		// Startup never replays a child Agent; the user resumes explicitly.
-		if (state == "waiting" || state == "running") {
+		const Dictionary parallel_receipt = info.get("parallel_receipt", Dictionary());
+		const bool definitely_unstarted = bool(info.get("parallel_external", false)) && String(parallel_receipt.get("state", "")).begins_with("blocked");
+		if ((state == "waiting" && !definitely_unstarted) || state == "running" || state == "pending_host") {
 			info["state"] = "interrupted";
 		}
 		sub_agents.insert(id, info);

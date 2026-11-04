@@ -1,7 +1,7 @@
 {
   "package": "gonggong-framework-design",
   "version": "0.9.2",
-  "status": "approved_local_definition_host_mandate_required",
+  "status": "candidate_pending_review",
   "host_loader_implemented": true,
   "discovery_index": "README.md",
   "foundation": "FOUNDATION.md",
@@ -639,13 +639,16 @@
         "agents/sinan/agent.json",
         "agents/sinan/references/README.md",
         "agents/sinan/references/adapters.md",
+        "agents/sinan/references/parallel-dispatch.md",
         "agents/sinan/reporting.json",
         "contracts/admission-policy.json",
         "contracts/diting-reporting.json",
         "foundation.lock.json",
         "modules/sinan/coordinator.mjs",
+        "modules/sinan/dispatch.mjs",
         "modules/sinan/module.json",
         "modules/sinan/refresh.mjs",
+        "modules/sinan/test/dispatch.test.mjs",
         "modules/sinan/test/generic-tracking.test.mjs",
         "modules/sinan/test/refresh.test.mjs",
         "skills/gonggong-check/SKILL.md",
@@ -662,16 +665,16 @@
         "upstream/yuanheng/core.md"
       ],
       "name": "司南",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "entry": "agents/sinan/AGENT.md",
       "manifest": "agents/sinan/agent.json",
       "governance_root": "yuanheng",
-      "state": "approved_local_definition_host_mandate_required",
-      "admission_pass": "reviews/unification-43/sinan-final-admission.json",
+      "state": "candidate_pending_review",
+      "admission_pass": "reviews/sinan/parallel-dispatch-0.1.2.json",
       "reporting": "agents/sinan/reporting.json",
       "layer": "core",
       "core_capability": "task_coordination",
-      "candidate_digest": "cc33afad0e1e26bc1d13ce17fe8a18dd2963175bd7c2c223805d2cbadbc349d8"
+      "candidate_digest": "1a42622ebc680660193018932f6d2c90ca55331ccb77f0897de9518b69249741"
     }
   ],
   "quality_domain": {
@@ -725,11 +728,11 @@
     {
       "id": "sinan",
       "name": "司南",
-      "version": "0.5.1",
+      "version": "0.6.0",
       "manifest": "modules/sinan/module.json",
       "governance_root": "yuanheng",
-      "state": "available_on_demand_event_driven",
-      "admission_pass": "reviews/sinan/core-agent-support-0.5.1.json",
+      "state": "candidate_pending_review",
+      "admission_pass": "reviews/sinan/parallel-dispatch-0.1.2.json",
       "role": "core_agent_implementation_support",
       "agent_ref": "agents/sinan/agent.json"
     }

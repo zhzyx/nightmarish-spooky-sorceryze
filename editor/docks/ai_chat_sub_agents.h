@@ -48,10 +48,16 @@ public:
 	static constexpr int MAX_CONTEXT_BYTES = 48 * 1024;
 
 	static bool is_state(const String &p_state) {
-		return p_state == "manual" || p_state == "waiting" || p_state == "running" || p_state == "completed" || p_state == "failed" || p_state == "interrupted";
+		return p_state == "manual" || p_state == "waiting" || p_state == "pending_host" || p_state == "running" || p_state == "review" || p_state == "completed" || p_state == "failed" || p_state == "interrupted";
 	}
 
 	static String state_text(const String &p_state) {
+		if (p_state == "pending_host") {
+			return U"已提交，等待宿主回执";
+		}
+		if (p_state == "review") {
+			return U"已执行，待验收";
+		}
 		if (p_state == "waiting") {
 			return U"等待执行";
 		}

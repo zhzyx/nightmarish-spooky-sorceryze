@@ -1,0 +1,13 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "candidate_digest": "664a0f217d117e9d5eb21e5755a1f227c43ab6e28cef444bd0b93f018cb47759",
+  "command": "issue_gate.py --repo . --issue 72 --request-id sinan-parallel-20261105",
+  "exit_code": 1,
+  "result": "Formal GongGong verification failed; run the trusted validator locally for details",
+  "direct_validator_result": "Invalid admission status, event or phase",
+  "cause": "New Sinan 0.1.2 candidate has pending_approval admission; historical approvals were not rewritten",
+  "approval_granted": false,
+  "commit_performed": false,
+  "require_committed_check": "not_applicable_until_commit",
+  "production_enabled": false
+}

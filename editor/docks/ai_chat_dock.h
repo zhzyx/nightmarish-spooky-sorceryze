@@ -501,6 +501,10 @@ class AIChatDock : public EditorDock {
 	// Child Agents are hidden in agent_tabs and shown only inside their parent's
 	// window. Only a top-level (manual, non-scheduled) Agent can own children.
 	HashMap<int, Dictionary> sub_agents;
+	int64_t sub_agent_parallel_pid = -1;
+	String sub_agent_parallel_output;
+	bool _dispatch_parallel_sub_agents();
+	void _poll_parallel_sub_agents();
 	Dictionary sub_agent_spawned;
 	HBoxContainer *sub_agent_bar = nullptr;
 	TabBar *sub_agent_tabs = nullptr;

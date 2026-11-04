@@ -1,17 +1,17 @@
 {
   "id": "sinan",
   "name": "司南",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "kind": "core_agent_support",
   "layer": "gonggong_core",
   "scope": "all_task_types_in_authorized_registered_sources",
-  "state": "available_on_demand_event_driven",
+  "state": "candidate_pending_review",
   "path_base": "shared_gonggong_framework_root",
   "specification": "specs/work-order-management.md",
   "skill": "skills/work-order-coordination/SKILL.md",
   "runtime_binding": "skills/work-order-coordination/runtime-ref.json",
-  "implementation_admission": "reviews/sinan/core-agent-support-0.5.1.json",
-  "module_admission": "reviews/sinan/core-agent-support-0.5.1.json",
+  "implementation_admission": "reviews/sinan/parallel-dispatch-0.1.2.json",
+  "module_admission": "reviews/sinan/parallel-dispatch-0.1.2.json",
   "governance": {
     "root": "yuanheng",
     "foundation": "FOUNDATION.md",
@@ -119,5 +119,12 @@
     "sha256": "ed16d55cec15c25260f0226bed705b7efe703de0b88582a77874fbee1017cc55",
     "reuse": "Coordinator derived from original; explicit nonblocking decision and follow-up changes in 0.4.2; no historical bindings imported"
   },
-  "owner_agent": "sinan"
+  "owner_agent": "sinan",
+  "parallel_dispatch": {
+    "entry": "modules/sinan/dispatch.mjs",
+    "contract": "agents/sinan/references/parallel-dispatch.md",
+    "host_binding": "required_not_connected",
+    "model_catalog": "host_current_capabilities",
+    "state": "candidate_pending_review"
+  }
 }

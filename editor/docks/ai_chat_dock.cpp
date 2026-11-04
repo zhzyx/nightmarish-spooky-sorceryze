@@ -4376,6 +4376,9 @@ void AIChatDock::_notification(int p_what) {
 	} else if (p_what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED) {
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	} else if (p_what == NOTIFICATION_PROCESS) {
+		if (sub_agent_parallel_pid >= 0) {
+			_poll_parallel_sub_agents();
+		}
 		if (cli_process_id >= 0) {
 			_poll_cli();
 		}
@@ -4383,6 +4386,10 @@ void AIChatDock::_notification(int p_what) {
 			_poll_process();
 		}
 	} else if (p_what == NOTIFICATION_EXIT_TREE) {
+		if (sub_agent_parallel_pid >= 0) {
+			OS::get_singleton()->kill(sub_agent_parallel_pid);
+			sub_agent_parallel_pid = -1;
+		}
 		schedule_timer->stop();
 		_cancel_engine_build();
 		engine_build_timer->stop();
@@ -4449,6 +4456,7 @@ AIChatDock::AIChatDock() {
 	const String source_root = GongGongHostPaths::find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
 	const String cli_directory = source_root.path_join("tools/codebuddy_cli");
 	EDITOR_DEF("ai_chat/cli_node", node_path);
+	EDITOR_DEF("ai_chat/parallel_work_orders_config", "");
 	EDITOR_DEF("ai_chat/cli_bridge", cli_directory.path_join("godot_bridge.js"));
 	EDITOR_DEF("ai_chat/cli_entry", cli_directory.path_join("node_modules/@tencent-ai/codebuddy-code/bin/codebuddy"));
 	EDITOR_DEF("ai_chat/cli_model", "");

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "sinan-parallel-20261105-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "sinan-parallel-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T19:06:31.283069+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "agent": {
+    "id": "codex-desktop-host",
+    "version": "session-20261105",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "intent": "Parallel task dispatch with capability-based model selection; user confirmed both Codex and Godot hosts",
+    "state": "in_progress",
+    "usage": null,
+    "usage_unknown_reason": "Host does not expose measured model usage for this development session",
+    "agent_definition_basis": "sha256 of workspace AGENTS.md at base HEAD; not a claim of admitted Sinan execution",
+    "candidate_base": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+    "intake": "Issue #72 read back with active status and exact request ID"
+  },
+  "evidence_refs": [],
+  "sha256": "0a4fafee7a59d1eda53190cc15020298d6cc40a0ccfc0529c203f0e5efb00339"
+}

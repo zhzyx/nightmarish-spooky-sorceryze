@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "sinan-parallel-20261105",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "agent": {
+    "id": "codex-desktop-host",
+    "version": "session-20261105",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "external-authorized-host"
+  },
+  "event_id": "sinan-parallel-user-approval-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T22:21:57.845152+00:00",
+  "payload": {
+    "state": "local_definition_approved",
+    "candidate_digest": "664a0f217d117e9d5eb21e5755a1f227c43ab6e28cef444bd0b93f018cb47759",
+    "decision_evidence_ref": "framework/reviews/sinan/parallel-dispatch-user-approval-20261105.json",
+    "runtime_connected": false,
+    "usage": null,
+    "usage_unknown_reason": "Host usage unavailable"
+  },
+  "evidence_refs": [
+    "sinan-parallel-20261105-request"
+  ],
+  "sha256": "b13088bbb3d4ab6ac14fc6f8ec26f79b0e540d0b7d4a86d96818668b312cd66c"
+}
