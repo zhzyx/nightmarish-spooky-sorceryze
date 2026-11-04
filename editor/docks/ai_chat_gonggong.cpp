@@ -444,10 +444,11 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	input_request["request_id"] = String(EDITOR_GET("gonggong/request_id"));
 	input_request["endpoint"] = endpoint->get_text().strip_edges();
 	input_request["model"] = model->get_text().strip_edges();
-	input_request["backend"] = backend->get_selected() == 1 ? "codebuddy" : "http";
+	static const char *backend_names[] = { "http", "codebuddy", "codex", "responses" };
+	input_request["backend"] = backend_names[backend->get_selected()];
 	input_request["cli_node"] = cli_node->get_text().strip_edges();
-	input_request["cli_entry"] = cli_entry->get_text().strip_edges();
-	input_request["cli_model"] = cli_model->get_text().strip_edges();
+	input_request["cli_entry"] = (backend->get_selected() == 2 ? codex_entry : cli_entry)->get_text().strip_edges();
+	input_request["cli_model"] = (backend->get_selected() == 2 ? codex_model : cli_model)->get_text().strip_edges();
 	input_request["retry_authorized"] = p_retry;
 	input_request["clarifying"] = p_clarifying;
 	_issue_guide_run("issue-agent", input_request);

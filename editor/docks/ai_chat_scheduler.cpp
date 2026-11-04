@@ -73,7 +73,7 @@ bool valid_task(const Dictionary &p_task) {
 	return int(p_task["id"]) > 0 && !title.strip_edges().is_empty() && title.length() <= 48 &&
 			!String(p_task["prompt"]).strip_edges().is_empty() && String(p_task["prompt"]).utf8().length() <= 256 * 1024 &&
 			int(p_task["frequency"]) >= 1 && int(p_task["frequency"]) <= 10000 && int(p_task["unit"]) < 4 &&
-			int(p_task["backend"]) < 2 && p_task.get("enabled", Variant()).get_type() == Variant::BOOL;
+			int(p_task["backend"]) < 4 && p_task.get("enabled", Variant()).get_type() == Variant::BOOL;
 }
 
 String run_status(const String &p_state) {
@@ -470,7 +470,7 @@ void AIChatDock::_save_schedule() {
 	task["unit"] = schedule_unit->get_selected();
 	task["backend"] = backend->get_selected();
 	task["model"] = model->get_text();
-	task["cli_model"] = cli_model->get_text();
+	task["cli_model"] = backend->get_selected() == 2 ? codex_model->get_text() : cli_model->get_text();
 	task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
 	if (index < 0) {
 		schedule_tasks.push_back(task);
@@ -576,6 +576,7 @@ bool AIChatDock::_enqueue_schedule(int p_index) {
 	AgentSession session;
 	session.model = task["model"];
 	session.cli_model = task["cli_model"];
+	session.codex_model = task["cli_model"];
 	session.backend = task["backend"];
 	session.message_list = memnew(VBoxContainer);
 	session.message_list->set_name(vformat("ArchivedMessages%d", id));

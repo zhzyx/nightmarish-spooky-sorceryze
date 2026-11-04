@@ -40,6 +40,7 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_cli_login.h"
+#include "editor/docks/ai_chat_openai.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_sub_agents.h"
 #include "editor/docks/ai_chat_tools.h"
@@ -240,7 +241,7 @@ bool valid_history(const Dictionary &p_data) {
 		const Dictionary agent = entry;
 		const Variant id = agent.get("id", Variant());
 		const Variant connection = agent.get("backend", Variant());
-		if (!id.is_num() || double(id) < 0 || double(id) >= INT32_MAX || Math::floor(double(id)) != double(id) || ids.has(int(id)) || !connection.is_num() || (double(connection) != 0 && double(connection) != 1)) {
+		if (!id.is_num() || double(id) < 0 || double(id) >= INT32_MAX || Math::floor(double(id)) != double(id) || ids.has(int(id)) || !connection.is_num() || (double(connection) < 0 || double(connection) > 3 || Math::floor(double(connection)) != double(connection))) {
 			return false;
 		}
 		ids.insert(int(id));
@@ -398,6 +399,7 @@ void AIChatDock::_save_history() {
 		agent["queue_paused"] = state.queue_paused;
 		agent["model"] = state.model;
 		agent["cli_model"] = state.cli_model;
+		agent["codex_model"] = state.codex_model;
 		agent["backend"] = state.backend;
 		agent["scroll"] = state.scroll;
 		agent["follow_latest"] = state.follow_latest;
@@ -564,6 +566,7 @@ void AIChatDock::_save_resume() {
 	journal["tool_index"] = tool_index;
 	journal["model"] = model->get_text();
 	journal["cli_model"] = cli_model->get_text();
+	journal["codex_model"] = codex_model->get_text();
 	journal["backend"] = backend->get_selected();
 	journal["snapshot_id"] = snapshot_id;
 	journal["messages"] = messages;
@@ -747,6 +750,7 @@ void AIChatDock::_load_history() {
 			state.queue_paused = !state.queued_messages.is_empty();
 			state.model = agent["model"];
 			state.cli_model = agent["cli_model"];
+			state.codex_model = agent.get("codex_model", "");
 			state.backend = agent["backend"];
 			state.scroll = agent.get("scroll", 0);
 			state.follow_latest = agent.get("follow_latest", true);
@@ -864,14 +868,16 @@ void AIChatDock::_load_resume() {
 		_append(TTR("Error"), U"续跑记录与工具批次不匹配，本次任务不会自动继续。");
 		return;
 	}
+	codex_model->set_text(journal.get("codex_model", ""));
 	backend->select(int(journal["backend"]));
-	http_settings->set_visible(backend->get_selected() == 0);
+	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
+	codex_settings->set_visible(backend->get_selected() == 2);
 	cli_settings->set_visible(backend->get_selected() == 1);
 	// Continue only on a channel that can actually send, and never from a headless
 	// verification run. The HTTP key is never stored, so without it the result is
 	// recorded and the user resumes manually.
 	const bool interactive = DisplayServer::get_singleton() && DisplayServer::get_singleton()->get_name() != "headless";
-	const bool can_send = interactive && (backend->get_selected() == 1 ? _validate_cli() : !api_key->get_text().strip_edges().is_empty());
+	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli() : !api_key->get_text().strip_edges().is_empty());
 	queue_paused = !can_send;
 	turn_completed = false;
 	session_generation++;
@@ -1434,6 +1440,8 @@ void AIChatDock::_set_busy(bool p_busy) {
 	cli_bridge->set_editable(!locked);
 	cli_entry->set_editable(!locked);
 	cli_model->set_editable(!locked);
+	codex_entry->set_editable(!locked);
+	codex_model->set_editable(!locked);
 	cli_login->set_disabled(busy || models_loading);
 	model_picker->set_disabled(busy || models_loading);
 	refresh_models->set_disabled(busy || models_loading);
@@ -1648,7 +1656,7 @@ bool AIChatDock::_start_message(const Dictionary &p_message) {
 		_cancel_issue_guide(U"已退出之前的开发工单引导，开始独立的仅咨询消息。");
 		gonggong_resume = false;
 	}
-	if (consultation_turn && backend->get_selected() != 0) {
+	if (consultation_turn && backend->get_selected() != 0 && backend->get_selected() != 3) {
 		_append(TTR("Error"), U"仅咨询目前支持 API 后端；请切换后继续队列。原生 CLI 不执行此请求。");
 		return false;
 	}
@@ -1656,7 +1664,15 @@ bool AIChatDock::_start_message(const Dictionary &p_message) {
 		return false;
 	}
 	snapshot_history_dialog->hide();
-	if (backend->get_selected() == 1) {
+	if (backend->get_selected() == 2) {
+		if (!_validate_cli()) {
+			_append(TTR("Error"), U"请配置有效的 Codex 原生可执行文件和 Node 路径，并在终端执行 codex login。");
+			return false;
+		}
+		request_key = String();
+		EditorSettings::get_singleton()->set_setting("ai_chat/codex_entry", codex_entry->get_text().strip_edges());
+		EditorSettings::get_singleton()->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
+	} else if (backend->get_selected() == 1) {
 		if (!_validate_cli()) {
 			_append(TTR("Error"), TTR("Set existing absolute Node, bridge and CodeBuddy CLI entry paths, then use CLI Login to authenticate."));
 			return false;
@@ -1818,6 +1834,10 @@ void AIChatDock::_send_completion_after_receipt() {
 				  "A file error is an execution failure, not evidence that permission is off. When permission_disabled, do not use tools and report the unchecked local tool permission. "
 				  "This current host state supersedes old assistant claims about tool availability; do not quote raw metadata in the reply.";
 	payload_messages.push_back(chat_message("system", capability));
+	if (backend->get_selected() == 2) {
+		_start_codex(payload_messages);
+		return;
+	}
 	if (backend->get_selected() == 1) {
 		_start_cli(payload_messages);
 		return;
@@ -1869,6 +1889,9 @@ void AIChatDock::_send_completion_after_receipt() {
 		payload["tools"] = permitted_tools;
 		payload["tool_choice"] = "auto";
 	}
+	if (backend->get_selected() == 3) {
+		payload = AIChatOpenAI::responses_payload(payload);
+	}
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
 		_append(TTR("Error"), U"完整请求（含工具定义）仍超过 1 MiB 安全上限，请缩短当前问题；聊天记录保留。");
@@ -1892,7 +1915,7 @@ void AIChatDock::_send_completion_after_receipt() {
 	const int port = EDITOR_GET("network/http_proxy/port");
 	request->set_http_proxy(proxy, port);
 	request->set_https_proxy(proxy, port);
-	Error error = request->request(endpoint->get_text().strip_edges(), headers, HTTPClient::METHOD_POST, body);
+	Error error = request->request(AIChatOpenAI::endpoint(endpoint->get_text().strip_edges(), backend->get_selected() == 3), headers, HTTPClient::METHOD_POST, body);
 	if (error != OK) {
 		request->queue_free();
 		request = nullptr;
@@ -1931,6 +1954,9 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		return;
 	}
 	Dictionary response = json.get_data();
+	if (backend->get_selected() == 3) {
+		response = AIChatOpenAI::chat_completion(response);
+	}
 	Variant choices_value = response.get("choices", Variant());
 	if (choices_value.get_type() != Variant::ARRAY || Array(choices_value).is_empty() || Array(choices_value)[0].get_type() != Variant::DICTIONARY) {
 		_append(TTR("Error"), TTR("The response has no valid choices array."));
@@ -2447,6 +2473,9 @@ void AIChatDock::_reject_action() {
 }
 
 bool AIChatDock::_validate_cli() const {
+	if (backend->get_selected() == 2) {
+		return codex_entry->get_text().strip_edges().is_absolute_path() && FileAccess::exists(codex_entry->get_text().strip_edges()) && FileAccess::exists(cli_node->get_text().strip_edges()) && FileAccess::exists(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+	}
 	for (LineEdit *field : { cli_node, cli_bridge, cli_entry }) {
 		const String path = field->get_text().strip_edges();
 		if (!path.is_absolute_path() || !FileAccess::exists(path)) {
@@ -2469,6 +2498,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.queue_paused = queue_paused;
 	state.model = model->get_text();
 	state.cli_model = cli_model->get_text();
+	state.codex_model = codex_model->get_text();
 	state.backend = backend->get_selected();
 	state.scroll = chat_follow_latest ? chat_scroll->get_v_scroll() : chat_scroll_position;
 	state.follow_latest = chat_follow_latest;
@@ -2513,8 +2543,10 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	image_preview->set_texture(Ref<Texture2D>());
 	model->set_text(p_session.model);
 	cli_model->set_text(p_session.cli_model);
+	codex_model->set_text(p_session.codex_model);
 	backend->select(p_session.backend);
-	http_settings->set_visible(p_session.backend == 0);
+	http_settings->set_visible(p_session.backend == 0 || p_session.backend == 3);
+	codex_settings->set_visible(p_session.backend == 2);
 	cli_settings->set_visible(p_session.backend == 1);
 	cli_process_id = p_session.cli_process_id;
 	cli_stdout = p_session.cli_stdout;
@@ -2568,6 +2600,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	} else {
 		state.model = model->get_text();
 		state.cli_model = cli_model->get_text();
+		state.codex_model = codex_model->get_text();
 		state.backend = backend->get_selected();
 		state.message_list = memnew(VBoxContainer);
 		state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -2729,6 +2762,7 @@ void AIChatDock::_close_agent() {
 		if (agent_tabs->get_tab_count() == 0) {
 			state.model = model->get_text();
 			state.cli_model = cli_model->get_text();
+			state.codex_model = codex_model->get_text();
 			state.backend = backend->get_selected();
 			state.message_list = memnew(VBoxContainer);
 			state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -2870,7 +2904,8 @@ void AIChatDock::_backend_changed(int p_backend) {
 	_cancel_issue_guide(String());
 	messages.clear();
 	tool_calls.clear();
-	http_settings->set_visible(p_backend == 0);
+	http_settings->set_visible(p_backend == 0 || p_backend == 3);
+	codex_settings->set_visible(p_backend == 2);
 	cli_settings->set_visible(p_backend == 1);
 	_sync_model_picker();
 	model_status->set_text(U"尚未获取模型列表。点击刷新；不支持枚举时可在高级设置填写模型 ID。");
@@ -2884,8 +2919,11 @@ void AIChatDock::_sync_model_picker() {
 
 void AIChatDock::_apply_models(const Array &p_models) {
 	model_catalog = p_models.duplicate();
-	const bool cli = backend->get_selected() == 1;
-	const String current = (cli ? cli_model : model)->get_text().strip_edges();
+	const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
+	const String current = (backend->get_selected() == 2 ? codex_model : cli ? cli_model
+																			 : model)
+								   ->get_text()
+								   .strip_edges();
 	model_picker->clear();
 	if (cli) {
 		model_picker->add_item(U"跟随 CLI 默认模型");
@@ -2938,9 +2976,13 @@ void AIChatDock::_model_selected(int p_index) {
 		return;
 	}
 	const String id = model_picker->get_item_metadata(p_index);
-	const bool cli = backend->get_selected() == 1;
-	(cli ? cli_model : model)->set_text(id);
-	EditorSettings::get_singleton()->set_setting(cli ? "ai_chat/cli_model" : "ai_chat/model", id);
+	const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
+	(backend->get_selected() == 2 ? codex_model : cli ? cli_model
+													  : model)
+			->set_text(id);
+	EditorSettings::get_singleton()->set_setting(backend->get_selected() == 2 ? "ai_chat/codex_model" : cli ? "ai_chat/cli_model"
+																											: "ai_chat/model",
+			id);
 	EditorSettings::save();
 }
 
@@ -2953,6 +2995,10 @@ void AIChatDock::_model_edited(const String &p_text) {
 
 void AIChatDock::_refresh_models() {
 	if (busy || models_loading) {
+		return;
+	}
+	if (backend->get_selected() == 2) {
+		model_status->set_text(U"Codex exec 不提供模型枚举；可填写模型 ID，或留空使用 CLI 默认模型。");
 		return;
 	}
 	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
@@ -2993,7 +3039,7 @@ void AIChatDock::_refresh_models() {
 	}
 	const String url = endpoint->get_text().strip_edges();
 	const bool local = url.begins_with("http://127.0.0.1:") || url.begins_with("http://localhost:") || url.begins_with("http://[::1]:");
-	if ((!url.begins_with("https://") && !local) || url.contains("@") || url.contains("\n") || url.contains("\r") || !url.ends_with("/chat/completions")) {
+	if ((!url.begins_with("https://") && !local) || url.contains("@") || url.contains("\n") || url.contains("\r") || (!url.ends_with("/chat/completions") && !url.ends_with("/responses"))) {
 		model_status->set_text(U"请先配置完整的 /chat/completions 接口；无法推导列表地址时请手动填写模型 ID。");
 		return;
 	}
@@ -3019,7 +3065,7 @@ void AIChatDock::_refresh_models() {
 	models_loading = true;
 	_set_busy(false);
 	stop_button->set_disabled(false);
-	const Error error = model_request->request(url.trim_suffix("/chat/completions") + "/models", headers);
+	const Error error = model_request->request(url.trim_suffix("/chat/completions").trim_suffix("/responses") + "/models", headers);
 	if (error != OK) {
 		_models_completed(HTTPRequest::RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray(), request_generation);
 	}
@@ -3052,6 +3098,18 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 }
 
 void AIChatDock::_login_cli() {
+	if (backend->get_selected() == 2) {
+		const String executable = codex_entry->get_text().strip_edges();
+		if (busy || models_loading || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
+			_append(TTR("Error"), U"请先填写有效的 Codex 原生可执行文件路径。");
+			return;
+		}
+		List<String> arguments;
+		arguments.push_back("login");
+		const Error error = OS::get_singleton()->create_process(executable, arguments, nullptr, true);
+		_append(error == OK ? TTR("Editor") : TTR("Error"), error == OK ? String(U"已打开 Codex 登录终端，请完成官方认证。Godot 不读取或复制登录令牌。") : String(U"无法打开 Codex 登录终端。"));
+		return;
+	}
 	auto report = [this](bool p_ok, const String &p_text) {
 		cli_login_status->set_text(p_text);
 		cli_login_status->add_theme_color_override("font_color", get_theme_color(p_ok ? SNAME("success_color") : SNAME("error_color"), SNAME("Editor")));
@@ -3112,6 +3170,62 @@ void AIChatDock::_login_cli() {
 	Error error = OS::get_singleton()->create_process(cli_node->get_text().strip_edges(), arguments, nullptr, true);
 	report(error == OK, error == OK ? TTR("CLI login opened in a separate terminal. Choose the same CodeBuddy site/account and complete browser authentication. If already logged in, use /login to switch accounts. Godot does not read or copy your login token.") : TTR("Could not open the CodeBuddy login terminal."));
 #endif
+}
+
+void AIChatDock::_start_codex(const Array &p_messages) {
+	_cancel_cli();
+	Dictionary payload;
+	payload["messages"] = p_messages;
+	payload["model"] = codex_model->get_text().strip_edges();
+	payload["available_tools"] = allow_tools->is_pressed() ? chat_tools() : Array();
+	payload["tool_context"] = tool_context(allow_tools->is_pressed(), tool_rounds, auto_apply_file_changes->is_pressed(), auto_execute_commands->is_pressed(), engine_auto_restart->is_pressed());
+	const String body = JSON::stringify(payload);
+	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
+		_append(TTR("Error"), U"Codex 请求超过 1 MiB 上限。");
+		_set_busy(false);
+		return;
+	}
+	Error error = OK;
+	Ref<FileAccess> file = FileAccess::create_temp(FileAccess::WRITE_READ, "godot_codex_request", "json", false, &error);
+	if (file.is_null() || error != OK) {
+		_append(TTR("Error"), U"无法创建 Codex 请求文件。");
+		_set_busy(false);
+		return;
+	}
+	cli_input_path = file->get_path_absolute();
+	const bool stored = file->store_string(body);
+	file->flush();
+	const Error write_error = file->get_error();
+	file->close();
+	if (!stored || write_error != OK) {
+		_release_cli_request();
+		_append(TTR("Error"), U"无法写入 Codex 请求文件。");
+		_set_busy(false);
+		return;
+	}
+	List<String> arguments;
+	arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+	arguments.push_back("chat");
+	arguments.push_back(codex_entry->get_text().strip_edges());
+	arguments.push_back(cli_input_path);
+	Dictionary process = OS::get_singleton()->execute_with_pipe(cli_node->get_text().strip_edges(), arguments, false);
+	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
+		_release_cli_request();
+		_append(TTR("Error"), U"无法启动 Codex 桥接。");
+		_set_busy(false);
+		return;
+	}
+	cli_process_id = process["pid"];
+	cli_stdout = process["stdio"];
+	cli_stderr = process["stderr"];
+	cli_started = OS::get_singleton()->get_ticks_msec();
+	cli_last_activity = cli_started;
+	cli_generation = ++request_generation;
+	cli_output.clear();
+	cli_truncated = false;
+	turn_model_requests++;
+	_set_activity(U"等待 Codex CLI 回复");
+	set_process(true);
 }
 
 void AIChatDock::_start_cli(const Array &p_messages) {
@@ -3492,6 +3606,9 @@ void AIChatDock::_poll_cli() {
 			reason += String(U" 已确认完成的操作不会因后续错误自动撤销，请核对工具记录和实际文件。");
 			reason = reason.replace("No actions were executed.", "");
 		}
+		if (backend->get_selected() == 2) {
+			reason = reason.replace("CodeBuddy", "Codex");
+		}
 		_append(TTR("Error"), reason);
 		_set_busy(false);
 		return;
@@ -3863,6 +3980,7 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 	journal["tool_index"] = tool_driven ? tool_index : 0;
 	journal["model"] = model->get_text();
 	journal["cli_model"] = cli_model->get_text();
+	journal["codex_model"] = codex_model->get_text();
 	journal["backend"] = backend->get_selected();
 	journal["snapshot_id"] = snapshot_id;
 	journal["messages"] = tool_driven ? messages : Array();
@@ -4306,6 +4424,8 @@ AIChatDock::AIChatDock() {
 	EDITOR_DEF("ai_chat/cli_bridge", cli_directory.path_join("godot_bridge.js"));
 	EDITOR_DEF("ai_chat/cli_entry", cli_directory.path_join("node_modules/@tencent-ai/codebuddy-code/bin/codebuddy"));
 	EDITOR_DEF("ai_chat/cli_model", "");
+	EDITOR_DEF("ai_chat/codex_entry", "");
+	EDITOR_DEF("ai_chat/codex_model", "");
 	// Recorded at every version switch so a bad rebuild has somewhere to go back to.
 	EDITOR_DEF("ai_chat/rollback_executable", "");
 
@@ -4423,10 +4543,12 @@ AIChatDock::AIChatDock() {
 	connection->add_child(connection_label);
 	backend = memnew(OptionButton);
 	backend->set_name("AIBackend");
-	backend->add_item(U"模型 API（HTTP）");
+	backend->add_item(U"GPT / 兼容 API（Chat Completions）");
 	backend->add_item(U"CodeBuddy 账号（CLI）");
+	backend->add_item(U"Codex 账号（CLI）");
+	backend->add_item(U"GPT API（Responses）");
 	backend->set_h_size_flags(SIZE_EXPAND_FILL);
-	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 1));
+	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
 	HBoxContainer *models = memnew(HBoxContainer);
@@ -4477,6 +4599,9 @@ AIChatDock::AIChatDock() {
 	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	api_key = add_field(http_settings, U"API 密钥（仅保留于本次会话）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
 	api_key->set_secret(true);
+	if (api_key->get_text().is_empty()) {
+		api_key->set_text(OS::get_singleton()->get_environment("OPENAI_API_KEY"));
+	}
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
 	cli_node = add_field(cli_settings, U"Node.js 可执行文件路径", "CLINode", EDITOR_GET("ai_chat/cli_node"));
@@ -4500,6 +4625,20 @@ AIChatDock::AIChatDock() {
 	cli_login_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	cli_login_status->hide();
 	cli_settings->add_child(cli_login_status);
+	codex_settings = memnew(VBoxContainer);
+	settings->add_child(codex_settings);
+	codex_entry = add_field(codex_settings, U"Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", EDITOR_GET("ai_chat/codex_entry"));
+	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EDITOR_GET("ai_chat/codex_model"));
+	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
+	Label *codex_help = memnew(Label);
+	codex_help->set_text(U"先在终端运行 codex login。需支持 --ignore-user-config 的 Codex CLI；Node 路径沿用 CodeBuddy 配置。");
+	codex_help->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	codex_settings->add_child(codex_help);
+	Button *codex_login = memnew(Button);
+	codex_login->set_name("CodexLogin");
+	codex_login->set_text(U"登录 Codex 账号");
+	codex_login->connect("pressed", callable_mp(this, &AIChatDock::_login_cli));
+	codex_settings->add_child(codex_login);
 	allow_tools = memnew(CheckBox);
 	allow_tools->set_name("AllowTools");
 	allow_tools->set_text(U"允许源码搜索、文件操作与构建");
@@ -4795,7 +4934,8 @@ AIChatDock::AIChatDock() {
 	workspace_pages->connect("tab_changed", callable_mp(this, &AIChatDock::_workspace_selected));
 	set_process(false);
 	_set_busy(false);
-	http_settings->set_visible(backend->get_selected() == 0);
+	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
+	codex_settings->set_visible(backend->get_selected() == 2);
 	cli_settings->set_visible(backend->get_selected() == 1);
 	_sync_model_picker();
 	model_status->set_text(U"尚未获取模型列表。点击刷新；不支持枚举时可在高级设置填写模型 ID。");

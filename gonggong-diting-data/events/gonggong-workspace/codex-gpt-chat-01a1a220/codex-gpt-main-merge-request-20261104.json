@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-gpt-main-merge-request-20261104",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-gpt-chat-01a1a220",
+  "kind": "request",
+  "occurred_at": "2026-11-04T15:09:20+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/53",
+  "agent": {
+    "id": "codex",
+    "version": "gpt-6.1-sol",
+    "definition_sha256": "5059583fbbb29dcefa9caa0bcd762f1a6d04ec5c2072307e3f717a4e9b6d5b2b",
+    "origin": "codex-desktop"
+  },
+  "payload": {
+    "user_request": "请合并到main",
+    "scope": "Merge existing Codex CLI and GPT Responses integration into current main; preserve unrelated local changes; include sub-agent model inheritance and requirements-intake compatibility.",
+    "definition_fingerprint_scope": "Effective Codex role sentence, reused from original integration evidence; not framework-agent activation or a complete agent-definition claim.",
+    "feature_commit": "eb840f0e7996a9ab6d4512648c6d497b5b7b28aa",
+    "integration_base": "044a6ca6",
+    "source_evidence": "data-collection/codex-gpt-merge-20261104.json",
+    "usage": null,
+    "cost": null,
+    "live_model_validation": false,
+    "diting_consumption_confirmed": false
+  },
+  "evidence_refs": [],
+  "sha256": "9535822274d81fa6689b561e38e72209726f29dc04bb195435ae11227c01e293"
+}

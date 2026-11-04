@@ -1,0 +1,66 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/53",
+  "request_id": "codex-gpt-chat-01a1a220",
+  "source": "User request in Codex chat 01a1a220-933f-7133-b0e2-88fe89102ed1: 请合并到main",
+  "integration_base": "044a6ca6e46a612ebd85a38186c5de53a0716132",
+  "feature_commit": "eb840f0e7996a9ab6d4512648c6d497b5b7b28aa",
+  "files_sha256": {
+    "customizations/components/godot-host/requirements_agent.py": "217adfd57c9d5c27df2be41b053d72bc0bf4276adfe50d3ff47228ef10d3054d",
+    "customizations/components/godot-host/test_requirements_agent.py": "c434fabbf50351d78949ed46c5b148c5654074c371f344a6122a2fc3a218ba45",
+    "editor/docks/ai_chat_dock.cpp": "b98b61b3063a5a37fe911c5a004889e3de1d08af01996bce4d2018cbd92b5164",
+    "editor/docks/ai_chat_dock.h": "c0a3c0bbdd3fdd988400c83b25bc62f1adaf4ef7d42784eac41c19c10e195caa",
+    "editor/docks/ai_chat_openai.h": "ea09b8cf4b701427842247394c5f7ec3503a22ffb340f02e4e88a3f0db22b1dc",
+    "editor/docks/ai_chat_resume.cpp": "3e17115a9a6eeb7e476cec2cca08b6818babb04056ad17f2b6bd3dfb69a370ed",
+    "editor/docks/ai_chat_scheduler.cpp": "2af2c7bfb167d69012fa056960082d0ed0b24a18cd0a0ecc9d579dc7d6e84707",
+    "editor/docks/ai_chat_sub_agents.cpp": "49af7274bbb0c95ee62a95cb9d35058d4a4bf2373847dde87bbc0ca97de84054",
+    "editor/docks/ai_chat_gonggong.cpp": "0039c635f62ca3a27c88fffb7c97ca875d708c7552d9e79aa41d83a6f01ef44a",
+    "tools/codex_cli/godot_bridge.js": "b1f1496d71a26504f2326c552b78559e51f0b9b24c5c0dad7eb20cba749d9525",
+    "tools/codebuddy_cli/godot_bridge.js": "82558b24484fac1487c856a79853b6982bf0dd23cca20041cf56247a9398ff6d",
+    "tools/codebuddy_cli/package-lock.json": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda",
+    "tests/editor/test_ai_chat_openai.cpp": "61875c7718256a6177eec4594d9c38cf8d7fe86ebb6e1f9c21ab37f875cf504b",
+    "tests/editor/test_codebuddy_bridge.js": "67c101f044c30507c8fc5e4dbcd5f7179c361a567b69c2990db9cfad2dd36b44",
+    "tests/editor/test_codex_bridge.js": "5b45c4d281be352b50808ae92cc8553577a2257bf30bfe2eb144fb69ce8d5279"
+  },
+  "actual_validation": {
+    "node_bridge_tests": {
+      "passed": 41,
+      "failed": 0,
+      "command": "node --test tests/editor/test_codebuddy_bridge.js tests/editor/test_codex_bridge.js"
+    },
+    "requirements_intake_tests": {
+      "passed": 22,
+      "failed": 0,
+      "command": "python -X utf8 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py"
+    },
+    "cpp_syntax": {
+      "passed": 6,
+      "failed": 0,
+      "compiler": "MSVC 14.50.35717, /Zs, Windows x86_64 editor dev tests=yes",
+      "files": [
+        "ai_chat_dock.cpp",
+        "ai_chat_gonggong.cpp",
+        "ai_chat_resume.cpp",
+        "ai_chat_scheduler.cpp",
+        "ai_chat_sub_agents.cpp",
+        "test_ai_chat_openai.cpp"
+      ],
+      "generated_headers": "Fallback includes from previous local build in godot-master_20261102/godot-master; not full compile/link evidence"
+    },
+    "format": {
+      "compiler": "clang-format 22.1.5",
+      "python": "Ruff 0.17.1 lint and format",
+      "status": "passed"
+    },
+    "dependency_repair": "First bridge run failed because isolated worktree lacked pinned node_modules; reused installed locked dependencies and reran all 41 successfully."
+  },
+  "reuse": "Original feature commit C++ AIChat tests were 15 passed/122 assertions; only evidence for unchanged adapter logic, not merged engine execution.",
+  "limitations": [
+    "No rebuilt or relinked merged engine",
+    "No live paid API or account calls",
+    "No independent review or framework activation claim",
+    "Diting data recorded in Git, consumption unknown"
+  ],
+  "usage": null,
+  "cost": null,
+  "remote_merge_verified": false
+}

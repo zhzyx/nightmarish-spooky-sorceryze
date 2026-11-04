@@ -28,12 +28,13 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#include "editor/docks/ai_chat_sub_agents.h"
+
 #include "core/io/file_access.h"
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
-#include "editor/docks/ai_chat_sub_agents.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
@@ -134,10 +135,12 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 		const AgentSession &parent = agent_sessions[p_parent];
 		session.model = parent.model;
 		session.cli_model = parent.cli_model;
+		session.codex_model = parent.codex_model;
 		session.backend = parent.backend;
 	} else {
 		session.model = model->get_text();
 		session.cli_model = cli_model->get_text();
+		session.codex_model = codex_model->get_text();
 		session.backend = backend->get_selected();
 	}
 	session.message_list = memnew(VBoxContainer);
