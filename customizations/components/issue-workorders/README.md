@@ -1,5 +1,15 @@
 # GitHub Issue 工单适配
 
+Windows 推荐从任务隔离工作树执行 `./tools/run_issue_gate.ps1 -Issue N -RequestId ID`；开发入口加 `-IntakeOnly`。入口探测 Python 3.11+，排除 WindowsApps 别名，复用该仓库或 Git common-dir 所属仓库的运行时，也支持 `-Python` / `GONGGONG_PYTHON` 指定已验证解释器。`-ProbeOnly` 只读输出实际解释器与仓库；不安装运行时、不修改 PATH 或权限。相对 `-Repo` 以调用 cwd 解析，默认仓库以脚本目录解析。
+
+提交门禁先按 `--base-ref`（默认已 fetch 的 `origin/main`）与 HEAD 的 merge-base 到 index 核对整个 PR 的新增/变更证据，包含此前已经提交的修改。有本需求 Diting 事件时，PR 中必须同时包含 JSON 采集证据，顶层 `request_id` 与 `issue`/`issue_url`/整数 `issue_number` 明确匹配；仅 source_ref 或已在 base 的旧证据不能满足 CI。使用 PR 的实际目标分支，不以 HEAD 伪造目标来缩小差异。CI 仍使用可信 base 脚本；本地通过不代替远端回读。
+
+`work_items.py collect --request-id ID` 从同租户 request 事件的精确本仓库 Issue 来源生成 `issue_url`/`issue_number`，多 Issue 歧义拒绝写入；不改旧记录，也不把来源索引当作远端状态认证。缺少可绑定来源时仍保留未知，不能靠填一个不相关编号满足交付。
+
+`WORKTREE_UNSTAGED` 表示工作文件与 index 不同，尚未执行框架准入；在基于已回读主线的独立工作树组装当前任务，不为通过门禁暂存别人的文件。`GIT_PERMISSION`、`GIT_LOCK`、`GITHUB_NETWORK`、`GITHUB_HTTP_*`、`*_TIMEOUT` 分别处理权限、占用、网络、API 权限及未知超时。错误不回显子进程原始输出或凭据；不能将网络不可用或工具缺失报成批准拒绝。
+
+交付分别记录 commit SHA、push 回执、精确候选 CI、main 接收和回读、Issue 状态。每条命令失败立即保留该阶段，不让后续成功覆盖退出码。push 成功但 fetch/readback 失败标记 `published_readback_pending`，恢复先按 SHA 回读远端，不重复提交/推送。已有阎罗 journal 按相同原则续接；不改写批准定义，不新增后台发布器。
+
 偃师定版后的父子工单拆分、按子项提交关闭、阎罗少量尾项结转及文档追溯，统一遵循 [Issue 生命周期](issue-lifecycle.md)。设计内使用 [拆分模板](../../../design-docs/templates/issue-breakdown.md)；原生子项关系和远端状态必须实际写入并回读。
 
 宿主执行约束见 [执行范围与验证成本](execution-policy.md)：任务入口固定边界，交付阶段按变更选择验证，等待阶段合并真实状态事件，效果沿用 Diting 记录。它是本组件的流程约定，不改变共享 Agent 定义或声称已实现自动预算控制。

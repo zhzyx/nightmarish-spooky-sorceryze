@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "gate-reliability-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gate-reliability-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T23:26:06.158450+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/106",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "125185c4a550bed209c05ded8f39f66866e632f8032074cf7702e0ea717db7f7",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "user_request": "全量推进修改：门禁与提交失败原因修复",
+    "intake": "passed",
+    "baseline": "c76f8988b928b9a38e53ff706f1d5108fcabf29f",
+    "scope": "engineering adapters and workflow guidance; no definition changes",
+    "usage": null
+  },
+  "evidence_refs": []
+}

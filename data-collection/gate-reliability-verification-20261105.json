@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "request_id": "gate-reliability-20261105",
+  "issue_number": 106,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/106",
+  "path_base": "repository_root",
+  "baseline": "c76f8988b928b9a38e53ff706f1d5108fcabf29f",
+  "inputs": {
+    "customizations/components/issue-workorders/issue_gate.py": "3212d481687cfc7ea2c7d12bf794a87338753e611bb3255109e9864a9fd2006a",
+    "customizations/components/issue-workorders/work_items.py": "30977f4c8056382a610a1a013920caf1b082589a4b1c661995417e381fe59f53",
+    "customizations/components/issue-workorders/test_issue_gate.py": "b984de5be7e6b36bfbc23fd642b4adf945406360911e1869cde9b25d7b2032ab",
+    "customizations/components/issue-workorders/test_gate_reliability.py": "6aa0344b48a8147bcbdc3dc736628298bf1a5783ff875eb694ccb216c2b4c73c",
+    "tools/run_issue_gate.ps1": "3ef35401391600bde7b69e34afe0ab475c3cc73fd3b729fce1f82a2f271893fc",
+    ".github/workflows/gonggong-issue-gate.yml": "8dfc58af39d0477facdb22b09eab80f3d828dc6ec490686fca3ea7e5f4403fdb"
+  },
+  "checks": {
+    "workorder_regressions": {
+      "passed": 66,
+      "failed": 0
+    },
+    "ci_script_contract": "actual trusted workflow script executed with shared positive/negative fixtures",
+    "ruff": "0.17.1 passed",
+    "runtime_probe": "actual repository Python 3.11+ selected",
+    "windowsapps_explicit_probe": "rejected with PYTHON_RUNTIME, exit 1",
+    "unstaged_gate": "rejected with WORKTREE_UNSTAGED, exit 1",
+    "collection": "same-tenant exact Issue binding generated, ambiguity rejected"
+  },
+  "environment_failures": [
+    "sandbox temporary Git directory permissions; rerun with permitted host channel passed",
+    "sandbox Diting atomic hardlink denied; same event recorded through permitted host channel"
+  ],
+  "review": "author diff review; no Agent/skill definition changes; no independent approval claimed",
+  "publication": "pending; final remote receipts on Issue 106",
+  "diting_consumption": null,
+  "usage": null
+}
