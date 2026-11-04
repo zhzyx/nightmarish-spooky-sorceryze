@@ -1,0 +1,151 @@
+"""Mock HTTP scene acceptance. No real model service is contacted."""
+import argparse
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+import sys
+from run_requirements_intake import GH_FIXTURE
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+CASES = {
+    "interface_2d": ("editor_action", {"action": "main_screen", "target": "2D"}),
+    "highlight_tabs": ("editor_action", {"action": "highlight", "target": "main_screen_tabs"}),
+    "open_scene": ("editor_action", {"action": "open_scene", "target": "res://fixture.tscn"}),
+    "open_script": ("editor_action", {"action": "open_script", "target": "res://fixture.gd", "line": 3, "column": 1}),
+    "select_node": ("editor_action", {"action": "select_node", "target": "Child"}),
+    "project_settings": ("editor_action", {"action": "project_settings", "target": "Display/Window"}),
+    "highlight_project": ("editor_action", {"action": "highlight", "target": "project_settings"}),
+    "editor_settings": ("editor_action", {"action": "editor_settings", "target": "interface/editor"}),
+    "highlight_editor": ("editor_action", {"action": "highlight", "target": "editor_settings"}),
+    "highlight_inspector": ("editor_action", {"action": "highlight", "target": "inspector"}),
+    "highlight_filesystem": ("editor_action", {"action": "highlight", "target": "filesystem"}),
+    "state": ("get_editor_state", {}),
+    "write": ("editor_action", {"action": "set_project_setting", "target": "display/window/size/viewport_width", "value": 777}),
+    "reject": ("editor_action", {"action": "set_project_setting", "target": "display/window/size/viewport_width", "value": 888}),
+    "invalid": ("editor_action", {"action": "open_scene", "target": "res://../outside.tscn"}),
+    "save_failure": ("editor_action", {"action": "clear_project_setting", "target": "display/window/size/viewport_width"}),
+    "switch_2d": ("editor_action", {"action": "main_screen", "target": "2D"}),
+    "highlight_scene": ("editor_action", {"action": "highlight", "target": "scene_tree"}),
+    "clear_highlight": ("editor_action", {"action": "clear_highlight"}),
+    "clear": ("editor_action", {"action": "clear_project_setting", "target": "display/window/size/viewport_width"}),
+    "consultation": ("editor_action", {"action": "main_screen", "target": "3D"}),
+    "permission_off": ("editor_action", {"action": "main_screen", "target": "3D"}),
+}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--godot", required=True, type=Path)
+    parser.add_argument("--interfaces", action="store_true")
+    args = parser.parse_args()
+    results, errors, seen = {}, [], set()
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_args):
+            pass
+
+        def do_POST(self):
+            try:
+                request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                messages = request["messages"]
+                if "Requirements intake only" in messages[0]["content"]:
+                    value = json.loads(messages[-1]["content"])
+                    response = json.dumps({"choices": [{"message": {"role": "assistant", "content": json.dumps({"decision": "continue", "title": "Semantic fixture", "category": "development", "goal": value["request"], "scope": ["isolated semantic test"], "acceptance": ["expected test behavior"], "questions": []})}, "finish_reason": "stop"}]}).encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(response)))
+                    self.end_headers()
+                    self.wfile.write(response)
+                    return
+                latest = max(i for i, msg in enumerate(messages) if msg["role"] == "user")
+                case = messages[latest]["content"]
+                seen.add(case)
+                tool_results = [m["content"] for m in messages[latest:] if m["role"] == "tool"]
+                if tool_results:
+                    results[case] = tool_results[-1]
+                    message = {"role": "assistant", "content": "Checked " + case}
+                else:
+                    name, arguments = CASES[case]
+                    message = {"role": "assistant", "content": "", "tool_calls": [{"id": case, "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}
+                payload = json.dumps({"choices": [{"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}]}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+            except Exception as exc:
+                errors.append(str(exc))
+                self.send_error(500)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        with tempfile.TemporaryDirectory(prefix="godot-semantic-") as temp:
+            workspace = Path(temp)
+            source = Path(__file__).resolve().parents[2]
+            for folder in ["framework", "customizations", ".github"]:
+                shutil.copytree(source / folder, workspace / folder, ignore=shutil.ignore_patterns("__pycache__"))
+            (workspace / "tools").mkdir()
+            shutil.copyfile(source / "tools/gonggong_bridge.py", workspace / "tools/gonggong_bridge.py")
+            shutil.copyfile(source / "CURRENT_FRAMEWORK.json", workspace / "CURRENT_FRAMEWORK.json")
+            # Isolated transport fixture: never import these receipts into production evidence.
+            (workspace / "framework/tools/agent-context.mjs").write_text('process.stdout.write("ISOLATED_FRAMEWORK_CONTEXT_FIXTURE");', encoding="utf-8")
+            (workspace / ".gonggong-local.json").write_text("{}")
+            (workspace / "work-items.json").write_text(json.dumps({"repository": "test/repo", "tenant_id": "gonggong-workspace"}))
+            (workspace / "fake-issues.json").write_text(json.dumps([{"number": 6, "state": "open", "html_url": "https://github.com/test/repo/issues/6", "body": "<!-- gonggong-request:isolated-gate -->", "labels": [{"name": n} for n in ["type:development", "status:in-progress", "workspace:gonggong"]], "updated_at": "2026-01-01T00:00:00Z"}]))
+            for command in [["init", "--quiet"], ["remote", "add", "origin", "https://github.com/test/repo.git"], ["add", "framework"], ["-c", "user.name=Isolated Test", "-c", "user.email=test@example.invalid", "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Isolated fixture"]]:
+                subprocess.run(["git", "-C", temp, *command], check=True, capture_output=True)
+            subprocess.run([sys.executable, str(workspace / "framework/extensions/diting-files/diting_files.py"), "init", "--repo", temp], check=True)
+            project = workspace / "project"
+            project.mkdir()
+            for base in [workspace, project]:
+                for name in ["auth", "api", "issue"]:
+                    (base / name).write_text(GH_FIXTURE, encoding="utf-8")
+            (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Semantic test"\n[display]\nwindow/size/viewport_width=640\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding="utf-8")
+            (project / "fixture.tscn").write_text('[gd_scene format=3]\n[node name="Root" type="Node"]\n[node name="Child" type="Node" parent="."]\n')
+            (project / "fixture.gd").write_text('extends Node\n\nfunc demo():\n\tpass\n')
+            shutil.copyfile(Path(__file__).with_name("ai_chat_semantic.gd"), project / "test.gd")
+            env = {**os.environ, "APPDATA": str(project / "appdata"), "LOCALAPPDATA": str(project / "localappdata"), "GODOT_AI_API_KEY": "", "AI_CHAT_TEST_URL": f"http://127.0.0.1:{server.server_port}/v1/chat/completions"}
+            env["SEMANTIC_INTERFACES"] = "1" if args.interfaces else ""
+            env.update(GONGGONG_TEST_WORKSPACE=temp, GONGGONG_WORKSPACE=temp, GONGGONG_PYTHON=sys.executable, GONGGONG_GH=sys.executable, GONGGONG_NODE=shutil.which("node"))
+            run = subprocess.run([str(args.godot.resolve()), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"], env=env, cwd=project, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
+            print(run.stdout)
+            print(run.stderr)
+            print("MOCK_RESULTS", json.dumps(results, ensure_ascii=False))
+            print("MOCK_ERRORS", errors)
+            assert run.returncode == 0 and "AI_CHAT_SEMANTIC_OK" in run.stdout, "scene driver failed"
+            assert not errors, errors
+            interface_cases = {"highlight_tabs", "interface_2d", "open_scene", "open_script", "select_node", "project_settings", "highlight_project", "editor_settings", "highlight_editor", "highlight_inspector", "highlight_filesystem"}
+            if args.interfaces:
+                assert set(results) == interface_cases, results
+                assert all(json.loads(value)["ok"] for value in results.values()), results
+                print("SEMANTIC_MOCK_INTERFACES_OK")
+                return
+            assert set(results) == set(CASES) - interface_cases - {"permission_off"}, results
+            assert "permission_off" in seen, seen
+            state = json.loads(results["state"])
+            assert state["ok"] and state["scene"] is None and state["script"] is None
+            written = json.loads(results["write"])
+            assert written["ok"] and written["saved"] and written["old_value"] == 640 and written["new_value"] == 777
+            assert "reject" in results["reject"].lower() or "declin" in results["reject"].lower()
+            assert json.loads(results["invalid"])["error"] == "invalid_project_path"
+            assert not json.loads(results["save_failure"])["saved"]
+            assert json.loads(results["highlight_scene"])["visible"]
+            assert json.loads(results["clear"])["saved"]
+            assert "Consultation" in results["consultation"]
+            assert "PERMISSION_OFF_REJECTED" in run.stdout
+            assert "viewport_width" not in (project / "project.godot").read_text(encoding="utf-8")
+            print("SEMANTIC_MOCK_HTTP_ACCEPTANCE_OK")
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join()
+
+
+if __name__ == "__main__":
+    main()

@@ -35,6 +35,7 @@
 #include "core/templates/safe_refcount.h"
 #include "editor/docks/editor_dock.h"
 
+class AIChatEditorControl;
 class Button;
 class CheckBox;
 class ConfirmationDialog;
@@ -365,6 +366,9 @@ class AIChatDock : public EditorDock {
 	String pending_path;
 	String pending_before;
 	String pending_after;
+	ObjectID editor_control_id;
+	AIChatEditorControl *_get_editor_control();
+	Dictionary pending_editor_action;
 	String pending_action;
 	String pending_command;
 	String pending_cwd;

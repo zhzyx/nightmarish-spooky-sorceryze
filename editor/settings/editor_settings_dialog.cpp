@@ -257,6 +257,13 @@ void EditorSettingsDialog::set_advanced_mode_enabled(bool p_enabled) {
 	advanced_switch->set_pressed(p_enabled);
 }
 
+void EditorSettingsDialog::show_general_section(const String &p_section) {
+	tabs->set_current_tab(0);
+	search_box->clear();
+	inspector->update_category_list();
+	inspector->set_current_section(p_section);
+}
+
 void EditorSettingsDialog::set_current_section(const String &p_section) {
 	inspector->set_current_section(p_section);
 }

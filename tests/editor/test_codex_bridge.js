@@ -100,3 +100,16 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
         fs.rmSync(directory, { recursive: true, force: true });
     }
 });
+
+// Semantic control uses the same host-proposal transport as existing tools.
+test('semantic actions are discoverable and disabled permissions reject them', () => {
+    const { validateInput } = require('../../tools/codebuddy_cli/godot_bridge');
+    for (const name of ['get_editor_state', 'editor_action']) {
+        const configured = { ...input, available_tools: [{ type: 'function', function: { name } }] };
+        validateInput(configured);
+        const envelope = JSON.stringify({ content: '', actions: [{ name, arguments: '{"action":"highlight","target":"scene_tree"}' }] });
+        const result = completion(envelope, configured);
+        assert.equal(result.choices[0].message.tool_calls[0].function.name, name);
+        assert.throws(() => completion(envelope, { ...configured, available_tools: [] }));
+    }
+});

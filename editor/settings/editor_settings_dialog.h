@@ -134,9 +134,11 @@ protected:
 	static void _bind_methods();
 
 public:
+	TabContainer *get_tabs() const { return tabs; }
 	void popup_edit_settings();
 	static void update_3d_navigation_preset();
 	void set_current_section(const String &p_section);
+	void show_general_section(const String &p_section);
 	void set_advanced_mode_enabled(bool p_enabled);
 	static EditorSettingsDialog *get_singleton() { return singleton; }
 

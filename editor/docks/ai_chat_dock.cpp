@@ -30,6 +30,7 @@
 
 #include "ai_chat_dock.h"
 
+#include "ai_chat_editor_control.h"
 #include "ai_chat_issue_guide.h"
 
 #include "core/config/project_settings.h"
@@ -105,7 +106,7 @@ Dictionary chat_message(const String &p_role, const String &p_content) {
 }
 
 bool consultation_read_tool(const String &p_name) {
-	return p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory";
+	return p_name == "get_editor_state" || p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory";
 }
 
 Array chat_tools() {
@@ -200,6 +201,7 @@ Array chat_tools() {
 		tool["function"] = function;
 		tools.push_back(tool);
 	}
+	tools.append_array(AIChatEditorControl::tool_definitions());
 	return tools;
 }
 
@@ -883,6 +885,7 @@ void AIChatDock::_load_resume() {
 	queue_paused = !can_send;
 	turn_completed = false;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	turn_model_requests = 0;
 	_set_busy(true);
 	_append_work(String(U"版本切换完成，继续处理中断前的工具调用：") + String(restart.get("tool_name", "build_engine")));
@@ -2184,6 +2187,28 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		_finish_tool("Error: This native channel only supports on-demand logs, files, authorized Bash commands and the editor self-update tools.");
 		return;
 	}
+	if (AIChatEditorControl::handles(name)) {
+		if (name == "get_editor_state") {
+			_finish_tool(JSON::stringify(_get_editor_control()->get_state()));
+			return;
+		}
+		Dictionary result = _get_editor_control()->execute(arguments, allow_tools->is_pressed(), consultation_turn);
+		if (result.get("confirmation_required", false)) {
+			pending_action = "editor_action";
+			pending_editor_action = arguments.duplicate(true);
+			pending_editor_action["expected_old_value"] = result["old_value"];
+			if (auto_execute_commands->is_pressed()) {
+				_confirm_action();
+			} else {
+				confirmation->set_title(TTR("Approve Project Setting Change"));
+				preview->set_text(JSON::stringify(result, "  "));
+				_show_confirmation();
+			}
+		} else {
+			_finish_tool(JSON::stringify(result));
+		}
+		return;
+	}
 	_set_activity(String(U"正在处理工具：") + name);
 	if (engine_tool) {
 		_run_engine_tool(name, arguments);
@@ -2445,6 +2470,12 @@ void AIChatDock::_confirm_action() {
 		_finish_tool("Error: Local tool permission is disabled. No action was executed.");
 		return;
 	}
+	if (pending_action == "editor_action") {
+		Dictionary result = _get_editor_control()->execute(pending_editor_action, allow_tools->is_pressed(), consultation_turn, true);
+		pending_editor_action.clear();
+		_finish_tool(JSON::stringify(result));
+		return;
+	}
 	if (pending_action == "run_command") {
 		String directory;
 		String error;
@@ -2637,6 +2668,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	active_agent = id;
 	request_generation++;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	// The guide belongs to the paused message of the conversation being left.
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
@@ -2769,6 +2801,7 @@ void AIChatDock::_close_agent() {
 		_cancel_cli();
 		request_generation++;
 		session_generation++;
+		_get_editor_control()->clear_highlight();
 		closed_messages = message_list;
 	} else {
 		AgentSession state = agent_sessions[id];
@@ -2927,6 +2960,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	set_process(process_id >= 0);
 	request_generation++;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
 	messages.clear();
@@ -4276,6 +4310,7 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
+	_get_editor_control()->clear_highlight();
 	gonggong_recovered_result = String();
 	gonggong_recovery_can_send = false;
 	if (snapshot_restoring) {
@@ -4313,6 +4348,7 @@ void AIChatDock::_stop() {
 		cli_stream_text = nullptr;
 	}
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	if (request) {
 		request->cancel_request();
 		request->queue_free();
@@ -4400,6 +4436,7 @@ void AIChatDock::_notification(int p_what) {
 		_cancel_all_agents();
 		request_generation++;
 		session_generation++;
+		_get_editor_control()->clear_highlight();
 		if (request) {
 			request->cancel_request();
 		}
@@ -4417,6 +4454,15 @@ void AIChatDock::_notification(int p_what) {
 			process_id = -1;
 		}
 	}
+}
+
+AIChatEditorControl *AIChatDock::_get_editor_control() {
+	AIChatEditorControl *control = Object::cast_to<AIChatEditorControl>(ObjectDB::get_instance(editor_control_id));
+	if (!control) {
+		control = memnew(AIChatEditorControl);
+		editor_control_id = control->get_instance_id();
+	}
+	return control;
 }
 
 AIChatDock::AIChatDock() {
@@ -5678,6 +5724,9 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	if (Object *control = ObjectDB::get_instance(editor_control_id)) {
+		memdelete(control);
+	}
 	if (gonggong_pid >= 0) {
 		OS::get_singleton()->kill(gonggong_pid);
 	}
