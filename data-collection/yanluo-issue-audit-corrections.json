@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "request_id": "yanluo-issue-audit-20261105",
+  "issue_number": 88,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/88",
+  "corrections": [
+    {
+      "number": 92,
+      "old_text": "PR #61/#78/#82 已整合工具清理、HTTP 取消和 modal 修复",
+      "new_text": "PR #61/#78/#82 已整合工具清理与 HTTP 取消；关联 #47 的 PR #67 已交付 modal 修复",
+      "before_updated_at": "2026-11-04T21:58:23Z",
+      "after_updated_at": "2026-11-04T21:59:52Z",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92#issuecomment-6643197706",
+      "body_readback_equal": true
+    },
+    {
+      "number": 96,
+      "old_text": "design-docs/ai-chat-consultation-20261105.md",
+      "new_text": "design-docs/requirement-8275346195acf05e0605ca999b44d868.md",
+      "before_updated_at": "2026-11-04T21:58:45Z",
+      "after_updated_at": "2026-11-04T21:59:57Z",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96#issuecomment-6643199155",
+      "body_readback_equal": true
+    }
+  ]
+}

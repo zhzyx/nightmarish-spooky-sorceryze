@@ -1,0 +1,657 @@
+{
+  "schema_version": 1,
+  "request_id": "yanluo-issue-audit-20261105",
+  "issue_number": 88,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/88",
+  "actor": "Sail-Li via gh, Codex Yanluo /root/yanluo",
+  "actions": [
+    {
+      "kind": "followup",
+      "parent": 9,
+      "stable_id": "yanluo-issue-9-source-host-binding-20261105",
+      "created": true,
+      "before": {
+        "number": 9,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T19:50:55Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "f9ebeeb802564ef2667f13ee85d2e0b9b93fb20b2e74599c76cb4b6b28ad3c2f"
+      },
+      "child": {
+        "number": 90,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:13Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:development",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "c18ec5ab1a05aa10de6bf02dcaa147d429a74f50469d6ea06e2129c3d9aefd18"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9#issuecomment-6643164374",
+        "id": 6643164374,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\nPR #65/#75 已交付来源读取、revision 校验与可信宿主回调契约；8 项夹具及真实 #9 来源读取不证明执行宿主已绑定。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#90，稳定 ID `yanluo-issue-9-source-host-binding-20261105`。\n\n仅当前事件驱动宿主接入；不恢复 Olympus 运行入口、不设定时扫描、不默认要求后台服务或独立 HMAC CLI。\n\n依据：customizations/components/issue-workorders/github_source.mjs；已合入提交 `48d6b51f4047151377eb61c412eedc885083401c`。审查文档 `design-docs/yanluo-issue-9-source-host-binding-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:14Z"
+      },
+      "after": {
+        "number": 9,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:14Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "f9ebeeb802564ef2667f13ee85d2e0b9b93fb20b2e74599c76cb4b6b28ad3c2f"
+      },
+      "child_readback": {
+        "number": 90,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:13Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "c18ec5ab1a05aa10de6bf02dcaa147d429a74f50469d6ea06e2129c3d9aefd18"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 47,
+      "stable_id": "yanluo-issue-47-igniter-acceptance-20261105",
+      "created": true,
+      "before": {
+        "number": 47,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:38:08Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "a2b021cc49f929cb360e5ca88e32ea5d48d95a4ec02309523090db746fcf2755"
+      },
+      "child": {
+        "number": 91,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:17Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:test",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "4fd0c057d1511a5acd89a5d566a7d52780a03b68396c04d02aa73065ab7a6823"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47#issuecomment-6643165948",
+        "id": 6643165948,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\nPR #57/#62/#67 已合入安装/恢复源码与原生 modal 协调；14 项点火器、17 项桥接及 20 项原生/186 断言等既有证据保留。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#91，稳定 ID `yanluo-issue-47-igniter-acceptance-20261105`。\n\n不重复实现已交付恢复/modal；根据实际环境逐项验收，缺平台/服务保持 unknown。\n\n依据：data-collection/issue47-recovery-r2-20261105.json; data-collection/issue47-modal-20261105.json；已合入提交 `879d20f62c1bc7ed462a6a178938e3fdb521e71c`。审查文档 `design-docs/yanluo-issue-47-igniter-acceptance-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:19Z"
+      },
+      "after": {
+        "number": 47,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:19Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "a2b021cc49f929cb360e5ca88e32ea5d48d95a4ec02309523090db746fcf2755"
+      },
+      "child_readback": {
+        "number": 91,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:17Z",
+        "closed_at": null,
+        "labels": [
+          "type:test",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "4fd0c057d1511a5acd89a5d566a7d52780a03b68396c04d02aa73065ab7a6823"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 51,
+      "stable_id": "yanluo-issue-51-deadlock-acceptance-20261105",
+      "created": true,
+      "before": {
+        "number": 51,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T19:43:29Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "6e419708fb6ec9670a3109f61e544e41777c2315e4d08cff05ee309f21baca8e"
+      },
+      "child": {
+        "number": 92,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:23Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:bug",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "4f3d5fbcbcc18bb6eea6981050e0718c037880bb574266587377be0f6862f681"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51#issuecomment-6643167639",
+        "id": 6643167639,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\nPR #61/#78/#82 已整合工具清理、HTTP 取消和 modal 修复；取消信号毫秒级回归及断线恢复已有证据，原始真实死锁尚无唯一根因证明。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#92，稳定 ID `yanluo-issue-51-deadlock-acceptance-20261105`。\n\n仅待补复现/验收及证据指向的必要修复；不重做已合入取消/modal，不在本审查中恢复用户停止的调查或构建。\n\n依据：data-collection/issue51-pr61-integration-20261105.json; data-collection/issue59-integration-validation-20261105.json；已合入提交 `e7b217340281c0ce14511b7961959be72eeaa469`。审查文档 `design-docs/yanluo-issue-51-deadlock-acceptance-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:24Z"
+      },
+      "after": {
+        "number": 51,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:24Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "6e419708fb6ec9670a3109f61e544e41777c2315e4d08cff05ee309f21baca8e"
+      },
+      "child_readback": {
+        "number": 92,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:23Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "4f3d5fbcbcc18bb6eea6981050e0718c037880bb574266587377be0f6862f681"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 52,
+      "stable_id": "yanluo-issue-52-macos-layout-acceptance-20261105",
+      "created": true,
+      "before": {
+        "number": 52,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/52",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:55:28Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "3f7f57e4a997f455182361743c0df048fed7fff9f62a3dae2db45d8d9ef35092"
+      },
+      "child": {
+        "number": 93,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/93",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:27Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:test",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "9a54f3a300e5a9a6cc20abb5e37e0fddf33797b75c7bc1eb2ab48f54e72ad889"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/52#issuecomment-6643169127",
+        "id": 6643169127,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\n全窗口实现 b9038428 已进入 main；PR #70 的 Windows 三进程补充验证及原 macOS 构建记录保留，不能替代原四项完整平台验收。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#93，稳定 ID `yanluo-issue-52-macos-layout-acceptance-20261105`。\n\n优先复用现有实现和明确匹配的构建；本次审查不编译引擎。原 #52 保持开放并纠正 done 标签，不能将 Windows 结果称为 macOS 全通过。\n\n依据：design-docs/ai-chat-fill-window-20261104.md; data-collection/issue52-windows-layout.json；已合入提交 `b9038428`。审查文档 `design-docs/yanluo-issue-52-macos-layout-acceptance-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:29Z"
+      },
+      "after": {
+        "number": 52,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/52",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:30Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-review",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "3f7f57e4a997f455182361743c0df048fed7fff9f62a3dae2db45d8d9ef35092"
+      },
+      "child_readback": {
+        "number": 93,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/93",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:27Z",
+        "closed_at": null,
+        "labels": [
+          "type:test",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "9a54f3a300e5a9a6cc20abb5e37e0fddf33797b75c7bc1eb2ab48f54e72ad889"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 56,
+      "stable_id": "yanluo-issue-56-ui-acceptance-20261105",
+      "created": true,
+      "before": {
+        "number": 56,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:51:47Z",
+        "closed_at": null,
+        "labels": [
+          "type:design",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "d9313eb8a1be6fcba3679f2c9a742a20060a50980a9e940986e8f295a17d2d22"
+      },
+      "child": {
+        "number": 94,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:34Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:test",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "b91fc773d0cbf6251ac796fe1b2e15a7f4b42679e5dfcbf2c5801d294adc6538"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56#issuecomment-6643171285",
+        "id": 6643171285,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\n用户已确认 macOS 桌面风格方案 A；PR #69 已交付布局/菜单/设置弹窗与标题修复，六组物理窗口/缩放布局及 22 项原生/254 断言、独立标题恢复验证有据。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#94，稳定 ID `yanluo-issue-56-ui-acceptance-20261105`。\n\n方案已确认，不重新索要风格选择；不把真实供应商扩大为所有布局验收的先决条件。\n\n依据：design-docs/requirement-ab1a9994bd1de186913cee5bdbeb9190.md; data-collection/issue55-layout-regression/; data-collection/issue56-ui/title-probe/；已合入提交 `dc1d676a0856315aa1674dd812c4609d12e7cd52`。审查文档 `design-docs/yanluo-issue-56-ui-acceptance-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:35Z"
+      },
+      "after": {
+        "number": 56,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:35Z",
+        "closed_at": null,
+        "labels": [
+          "type:design",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "d9313eb8a1be6fcba3679f2c9a742a20060a50980a9e940986e8f295a17d2d22"
+      },
+      "child_readback": {
+        "number": 94,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:34Z",
+        "closed_at": null,
+        "labels": [
+          "type:test",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "b91fc773d0cbf6251ac796fe1b2e15a7f4b42679e5dfcbf2c5801d294adc6538"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 63,
+      "stable_id": "yanluo-issue-63-nonwindows-artifact-20261105",
+      "created": true,
+      "before": {
+        "number": 63,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/63",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:49:57Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "c3b5aafcb9f8dac9c22bcfb8c4697b011f805de077043dd0655a0890fe275aea"
+      },
+      "child": {
+        "number": 95,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:39Z",
+        "closed_at": null,
+        "labels": [
+          "status:planned",
+          "type:bug",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "8cb1655aff285df14cd8c2a01153814a8fcbcfbad5ace417a21bfba4b8651fbe"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/63#issuecomment-6643172810",
+        "id": 6643172810,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\n平台 allowlist、产物命名与 Python venv 分支修正 c6445d3961f9 已合入；macOS 增量编译记录不证明自更新产物接收成功。\n\n原单尚未满足完整验收，保持 open；主体已交付，剩余内容由关联单推进。\n\n关联后续：#95，稳定 ID `yanluo-issue-63-nonwindows-artifact-20261105`。\n\n独立审查已执行实际 Python artifact_path probe：Windows=True、macos=False、linuxbsd=False，对照 C++ 第 4020 行 requires '.self_update_a.' 或 '.self_update_b.'。本审查不修代码、不编译；后续绑定精确候选。\n\n依据：tools/editor_self_build.py:artifact_path; editor/docks/ai_chat_dock.cpp:4020; design-docs/build-engine-macos-20261105.md；已合入提交 `c6445d3961f9de835b823a1529fd0a2d9f3ff478`。审查文档 `design-docs/yanluo-issue-63-nonwindows-artifact-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:40Z"
+      },
+      "after": {
+        "number": 63,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/63",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:41Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-review",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "c3b5aafcb9f8dac9c22bcfb8c4697b011f805de077043dd0655a0890fe275aea"
+      },
+      "child_readback": {
+        "number": 95,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:39Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "8cb1655aff285df14cd8c2a01153814a8fcbcfbad5ace417a21bfba4b8651fbe"
+      }
+    },
+    {
+      "kind": "followup",
+      "parent": 64,
+      "stable_id": "yanluo-issue-64-closure-discrepancy-20261105",
+      "created": true,
+      "before": {
+        "number": 64,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/64",
+        "state": "closed",
+        "state_reason": "completed",
+        "updated_at": "2026-11-04T19:36:07Z",
+        "closed_at": "2026-11-04T19:36:07Z",
+        "labels": [
+          "type:maintenance",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "3b5b7eaf8c186d80120b986d012766c6e5278954e828c31d5bbd63ca3a01986f"
+      },
+      "child": {
+        "number": 96,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:45Z",
+        "closed_at": null,
+        "labels": [
+          "status:needs-decision",
+          "type:maintenance",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "1531be9f11ff7634658c2f80f68466119344a278a66db8ddfbda94936db8e7e9"
+      },
+      "phase": "verified",
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/64#issuecomment-6643174817",
+        "id": 6643174817,
+        "body": "阎罗审查 #88（当前 main 71ab6c2854e36531e220e668e5a284c801be9fd8，独立复核完成）：\n\n#64 远端已 closed/completed（2026-11-04T19:36:07Z），标签仍 in-progress；独立审查关闭/重开事件没有关联提交。PR #81 与 #46 文档明确未包含 #64。\n\n关闭历史不作改写，尚需明确关闭意图。\n\n关联后续：#96，稳定 ID `yanluo-issue-64-closure-discrepancy-20261105`。\n\n当前 main issue_gate.py:246 仍要求 kind=request。仅建立 needs-decision 差异单，不重开 #64，不恢复其已停止候选，不把 completed 历史改写为 cancelled 或已实现。\n\n依据：customizations/components/issue-workorders/issue_gate.py:246; Issue #64 timeline; PR #81; design-docs/ai-chat-consultation-20261105.md；已合入提交 `3afe3b0dfc42464c554d91b84461be33aa8d2031`。审查文档 `design-docs/yanluo-issue-64-closure-discrepancy-20261105.md` 将随 #88 审查证据交付，当前未声称该文档已合入。",
+        "created_at": "2026-11-04T21:58:46Z"
+      },
+      "after": {
+        "number": 64,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/64",
+        "state": "closed",
+        "state_reason": "completed",
+        "updated_at": "2026-11-04T21:58:46Z",
+        "closed_at": "2026-11-04T19:36:07Z",
+        "labels": [
+          "type:maintenance",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "3b5b7eaf8c186d80120b986d012766c6e5278954e828c31d5bbd63ca3a01986f"
+      },
+      "child_readback": {
+        "number": 96,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:58:45Z",
+        "closed_at": null,
+        "labels": [
+          "type:maintenance",
+          "status:needs-decision",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "1531be9f11ff7634658c2f80f68466119344a278a66db8ddfbda94936db8e7e9"
+      }
+    },
+    {
+      "kind": "close",
+      "issue": 55,
+      "before": {
+        "number": 55,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:51:49Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "27ce61b329873088491a4780a628ea8e44e7a9b342623d69bbd6de0a50d2d846"
+      },
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55#issuecomment-6643175912",
+        "id": 6643175912,
+        "body": "阎罗审查 #88：完整范围经独立复核通过，更新此前草稿/未合入描述。\n\nPR #69 已合入 main（dc1d676a0856315aa1674dd812c4609d12e7cd52）。按用户确认的界面显示/布局范围：高级设置滚动、长模型名、操作换行、输入/附件分组与主屏往返已验证；candidate6 六组物理尺寸/缩放、22 项原生/254 断言通过。最终三处 Unicode 标题增量编译及独立两进程恢复/可见性通过，六组矩阵仅复用，不冒称重跑。依据 data-collection/issue55-layout-regression/ 与 issue56-ui/title-probe/。#56 的浅色主题/真实构建期间/完整开发链尾项另跟踪，不扩大本单窄范围。\n\n当前 main 已包含上述交付；复用明确对应的既有证据，本审查没有重编引擎或重新执行这些测试。按用户授权标记 done/completed 并关闭。",
+        "created_at": "2026-11-04T21:58:50Z"
+      },
+      "after": {
+        "number": 55,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+        "state": "closed",
+        "state_reason": "completed",
+        "updated_at": "2026-11-04T21:58:52Z",
+        "closed_at": "2026-11-04T21:58:51Z",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "27ce61b329873088491a4780a628ea8e44e7a9b342623d69bbd6de0a50d2d846"
+      }
+    },
+    {
+      "kind": "close",
+      "issue": 58,
+      "before": {
+        "number": 58,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/58",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T18:30:02Z",
+        "closed_at": null,
+        "labels": [
+          "type:design",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "7784008694bb2892ed83713a7fd7bbb63f38659c0eb47a97eb7856d02411b7ed"
+      },
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/58#issuecomment-6643177500",
+        "id": 6643177500,
+        "body": "阎罗审查 #88：完整范围经独立复核通过，更新此前草稿/未合入描述。\n\nPR #68 已合入 main（88478d18d62c2a3c3e008674be14b51cce3b6313）。本单最终范围为 AI Chat 主屏标签最左，不是迁移 Dock。data-collection/issue58-tab-order/main-ready.json 记录初始及两次重启位置、全部相邻标签切换、返回输入和正常保存；相关 main-screen/dock/bottom-panel 文件相对已验基线无差异。已满足当前排序范围。\n\n当前 main 已包含上述交付；复用明确对应的既有证据，本审查没有重编引擎或重新执行这些测试。按用户授权标记 done/completed 并关闭。",
+        "created_at": "2026-11-04T21:58:55Z"
+      },
+      "after": {
+        "number": 58,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/58",
+        "state": "closed",
+        "state_reason": "completed",
+        "updated_at": "2026-11-04T21:58:57Z",
+        "closed_at": "2026-11-04T21:58:56Z",
+        "labels": [
+          "type:design",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "7784008694bb2892ed83713a7fd7bbb63f38659c0eb47a97eb7856d02411b7ed"
+      }
+    },
+    {
+      "kind": "close",
+      "issue": 59,
+      "before": {
+        "number": 59,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T19:51:02Z",
+        "closed_at": null,
+        "labels": [
+          "type:development",
+          "status:in-progress",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "acc712727b622700e2cd833a5e2a9146429d0606083cc5fc10de92cf5db6b57a"
+      },
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59#issuecomment-6643179026",
+        "id": 6643179026,
+        "body": "阎罗审查 #88：完整范围经独立复核通过，更新此前草稿/未合入描述。\n\nPR #78 已合入 main（83754370c0b992d76291083b6654c076b4a1457d）。按原 source + Windows 离线 contract 范围验收：增量构建通过、28 项原生/289 断言、native Codex 完整 10 wire 且 0 HTTP fallback、结构化动作/目标返回及高亮、signal Stop 回调 12.317ms/最大帧间隔 27.916ms 并在100秒响应前清理恢复。依据 data-collection/issue59-integration-validation-20261105.json 及独立审查。真实鼠标 Stop 未执行、真实 provider 未验；用户已停止补充调查，不把这些写为通过，也不另建重复补充单。本单不交付安装包，不自动准入 #60。\n\n当前 main 已包含上述交付；复用明确对应的既有证据，本审查没有重编引擎或重新执行这些测试。按用户授权标记 done/completed 并关闭。",
+        "created_at": "2026-11-04T21:59:00Z"
+      },
+      "after": {
+        "number": 59,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+        "state": "closed",
+        "state_reason": "completed",
+        "updated_at": "2026-11-04T21:59:02Z",
+        "closed_at": "2026-11-04T21:59:01Z",
+        "labels": [
+          "type:development",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "acc712727b622700e2cd833a5e2a9146429d0606083cc5fc10de92cf5db6b57a"
+      }
+    },
+    {
+      "kind": "unknown_boundary",
+      "issue": 49,
+      "before": {
+        "number": 49,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T20:01:57Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-review",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "5f056095c4903059058581118ea1535e5f336925eeb62bbffd8197e785804c38"
+      },
+      "comment": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49#issuecomment-6643180666",
+        "id": 6643180666,
+        "body": "阎罗审查 #88：PR #57/#78/#80 的入口、requestFile 生命周期和退出诊断已合入 main；其中 PR #80 明示未关闭整单。真实 PROCESS_EXIT 因果仍未知，保持 open/in-review。用户明确“跳过这个验收吧，直接提交”的可见 UI/真实服务补充验收不重启、不记通过；本次不为未知原因或已停止测试再造重复后续单。依据 design-docs/ai-chat-debug-20261104.md；离线 ENOENT 与清理回归不能替代真实服务根因。",
+        "created_at": "2026-11-04T21:59:05Z"
+      },
+      "after": {
+        "number": 49,
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+        "state": "open",
+        "state_reason": null,
+        "updated_at": "2026-11-04T21:59:05Z",
+        "closed_at": null,
+        "labels": [
+          "type:bug",
+          "status:in-review",
+          "workspace:gonggong"
+        ],
+        "body_sha256": "5f056095c4903059058581118ea1535e5f336925eeb62bbffd8197e785804c38"
+      }
+    }
+  ],
+  "dedupe": {
+    "observed_at": "2026-11-04T21:58:12.011381+00:00",
+    "all_state_issue_count": 43,
+    "stable_ids": [
+      "yanluo-issue-9-source-host-binding-20261105",
+      "yanluo-issue-47-igniter-acceptance-20261105",
+      "yanluo-issue-51-deadlock-acceptance-20261105",
+      "yanluo-issue-52-macos-layout-acceptance-20261105",
+      "yanluo-issue-56-ui-acceptance-20261105",
+      "yanluo-issue-63-nonwindows-artifact-20261105",
+      "yanluo-issue-64-closure-discrepancy-20261105"
+    ]
+  }
+}

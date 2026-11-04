@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "issue_number": 88,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/88",
+  "request_id": "yanluo-issue-audit-20261105",
+  "actual_event": {
+    "schema_version": 1,
+    "tenant_id": "gonggong-workspace",
+    "request_id": "yanluo-issue-audit-20261105",
+    "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/88",
+    "agent": {
+      "id": "yanluo",
+      "version": "0.1.2",
+      "definition_sha256": "7b9c1df79a4a4ade270db529ac9854d1e388f565f408d26b7ee26a12fa8f7ee1",
+      "origin": "codex-host:/root/yanluo"
+    },
+    "event_id": "yanluo-audit-actions-20261105",
+    "kind": "step",
+    "occurred_at": "2026-11-04T22:05:59.377151+00:00",
+    "payload": {
+      "description": "42原Issue逐项审核，45PR和48分支头核对，独立复核后关55/58/59及交接85，建90-96，父单保持开放/64保留关闭，纠正52/63状态与92/96引用。",
+      "reviewer": "Codex /root",
+      "remote_readbacks": "data-collection/yanluo-issue-audit-remote.json; yanluo-issue-audit-corrections.json; yanluo-issue-audit-85-handoff.json",
+      "current_main": "71ab6c2854e36531e220e668e5a284c801be9fd8",
+      "no_new_engine_or_provider_tests": true,
+      "repository_delivery": "pending this candidate formal gate and publication",
+      "sinan_consumed": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "duration_ms": null,
+      "usage_unknown_reason": "No measured provider usage or complete task duration supplied"
+    },
+    "evidence_refs": [
+      "yanluo-audit-request-20261105"
+    ]
+  },
+  "receipt": {
+    "state": "recorded_file",
+    "path": "D:\\GongGong\\.worktrees\\yanluo-issue-audit\\gonggong-diting-data\\events\\gonggong-workspace\\yanluo-issue-audit-20261105\\yanluo-audit-actions-20261105.json",
+    "sha256": "98de43252bcb4b0b7f18d815b593425d6e6d3c092b2cc51d6c26df93e2278daf",
+    "git_committed": false
+  },
+  "git_delivery": "not_yet_committed_at_record_time",
+  "consumed": null
+}
