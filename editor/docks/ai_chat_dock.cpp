@@ -3935,7 +3935,8 @@ void AIChatDock::_poll_engine_build() {
 	engine_build_pid = -1;
 	const String executable = String(status.get("executable", "")).replace("\\", "/").simplify_path();
 	const String expected_dir = engine_build_root.path_join("bin").replace("\\", "/").simplify_path();
-	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && executable.get_file().begins_with("godot.windows.editor.") && (executable.contains(".self_update_a.") || executable.contains(".self_update_b.")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
+	const String artifact_file = executable.get_file();
+	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.contains(".self_update_b.")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
 		engine_updated_executable = executable;
 		engine_build_progress->set_value(100);
 		engine_build_status->set_text(U"编译与启动校验通过 · 100% · 新版本已就绪");
@@ -4694,7 +4695,11 @@ AIChatDock::AIChatDock() {
 	settings->add_child(auto_execute_commands);
 
 	const String build_root = cli_directory.get_base_dir().get_base_dir();
+#ifdef WINDOWS_ENABLED
 	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/Scripts/python.exe"));
+#else
+	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/bin/python"));
+#endif
 	EDITOR_DEF("ai_chat/build_arguments", "");
 	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", EDITOR_GET("ai_chat/build_python"));
 	Label *build_args_label = memnew(Label);
