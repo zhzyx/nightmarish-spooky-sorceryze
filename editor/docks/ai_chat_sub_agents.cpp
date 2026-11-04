@@ -64,7 +64,7 @@ void AIChatDock::_build_sub_agent_ui(VBoxContainer *p_page, int p_position) {
 	p_page->add_child(sub_agent_bar);
 	p_page->move_child(sub_agent_bar, p_position);
 	Label *label = memnew(Label);
-	label->set_text(U"子 Agent");
+	label->set_text(U"子会话");
 	sub_agent_bar->add_child(label);
 	sub_agent_tabs = memnew(TabBar);
 	sub_agent_tabs->set_name("SubAgentTabs");
@@ -74,20 +74,20 @@ void AIChatDock::_build_sub_agent_ui(VBoxContainer *p_page, int p_position) {
 	sub_agent_tabs->set_scrolling_enabled(true);
 	sub_agent_tabs->set_scroll_to_selected(true);
 	sub_agent_tabs->set_h_size_flags(SIZE_EXPAND_FILL);
-	sub_agent_tabs->set_tooltip_text(U"子 Agent 寄生在父 Agent 窗口内：第一个标签是父会话，其余为它派生的子 Agent。只有父 Agent 能新建子 Agent；子 Agent 可调用 get_parent_context 读取父会话上下文。关闭父 Agent 会一并关闭其子 Agent。");
+	sub_agent_tabs->set_tooltip_text(U"子会话寄生在父会话窗口内：第一个标签是父会话，其余为它派生的子会话。只有父会话能新建子会话；子会话可调用 get_parent_context 读取父会话上下文。关闭父会话会一并关闭其子会话。");
 	sub_agent_tabs->connect("tab_selected", callable_mp(this, &AIChatDock::_sub_agent_tab_selected));
 	sub_agent_tabs->connect("tab_close_pressed", callable_mp(this, &AIChatDock::_sub_agent_tab_close));
 	sub_agent_bar->add_child(sub_agent_tabs);
 	add_sub_agent = memnew(Button);
 	add_sub_agent->set_name("AddSubAgent");
-	add_sub_agent->set_text(U"新建子 Agent");
-	add_sub_agent->set_tooltip_text(U"在当前父 Agent 窗口内新建一个子 Agent。子 Agent 不能再派生子 Agent。");
+	add_sub_agent->set_text(U"新建子会话");
+	add_sub_agent->set_tooltip_text(U"在当前父会话窗口内新建一个子会话。子会话不能再派生子会话。");
 	add_sub_agent->connect("pressed", callable_mp(this, &AIChatDock::_add_sub_agent));
 	sub_agent_bar->add_child(add_sub_agent);
 	spawn_sub_agents = memnew(Button);
 	spawn_sub_agents->set_name("SpawnWorkOrderAgents");
 	spawn_sub_agents->set_text(U"按工单落地");
-	spawn_sub_agents->set_tooltip_text(U"读取当前绑定需求文档 design-docs/<需求ID>.md：含「设计定版确认」和「## 生产工单」编号列表时，为每张工单创建子 Agent 并按顺序执行。已创建过则继续执行未完成的工单。父 Agent 一轮结束时也会自动检测。");
+	spawn_sub_agents->set_tooltip_text(U"读取当前绑定需求文档 design-docs/<需求ID>.md：含「设计定版确认」和「## 生产工单」编号列表时，为每张工单创建子会话并按顺序执行。已创建过则继续执行未完成的工单。父会话一轮结束时也会自动检测。");
 	spawn_sub_agents->connect("pressed", callable_mp(this, &AIChatDock::_spawn_sub_agents_pressed));
 	sub_agent_bar->add_child(spawn_sub_agents);
 }
@@ -171,7 +171,7 @@ void AIChatDock::_add_sub_agent() {
 	}
 	const int parent = active_agent;
 	if (sub_agents.has(parent) || scheduled_agents.has(parent)) {
-		_append(TTR("Editor"), U"只有父 Agent 可以新建子 Agent；子 Agent 不能再派生。请切回父会话后新建。");
+		_append(TTR("Editor"), U"只有父会话可以新建子会话；子会话不能再派生。请切回父会话后新建。");
 		return;
 	}
 	Dictionary info;
@@ -180,15 +180,15 @@ void AIChatDock::_add_sub_agent() {
 	info["work_order"] = 0;
 	info["request_id"] = String(EDITOR_GET("gonggong/request_id")).strip_edges();
 	info["issue_number"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
-	const int id = _create_sub_agent(parent, vformat(U"子 Agent %d", _sub_agent_children(parent, false).size() + 1), info, String());
+	const int id = _create_sub_agent(parent, vformat(U"子会话%d", _sub_agent_children(parent, false).size() + 1), info, String());
 	if (id < 0) {
-		_append(TTR("Error"), U"无法新建子 Agent：每个父 Agent 最多 16 个、总计最多 128 个子 Agent，且聊天记录需可保存。");
+		_append(TTR("Error"), U"无法新建子会话：每个父会话最多 16 个、总计最多 128 个子会话，且聊天记录需可保存。");
 		return;
 	}
 	const String parent_title = _agent_title(parent);
 	_agent_selected(_agent_index(id));
 	if (active_agent == id) {
-		_append(TTR("Editor"), vformat(U"子 Agent 已在「%s」窗口内创建。它可调用 get_parent_context 读取父会话上下文；关闭父 Agent 时会一并关闭。", parent_title));
+		_append(TTR("Editor"), vformat(U"子会话已在「%s」窗口内创建。它可调用 get_parent_context 读取父会话上下文；关闭父会话时会一并关闭。", parent_title));
 	}
 	_refresh_sub_agents();
 }
@@ -208,7 +208,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	const String request_id = String(EDITOR_GET("gonggong/request_id")).strip_edges();
 	if (!AIChatIssueGuide::is_bound(issue, request_id)) {
 		if (p_explicit) {
-			_append(TTR("Editor"), U"尚未绑定真实 Issue 与需求 ID，无法按工单创建子 Agent。请先完成工单绑定，或手动新建子 Agent。");
+			_append(TTR("Editor"), U"尚未绑定真实 Issue 与需求 ID，无法按工单创建子会话。请先完成工单绑定，或手动新建子会话。");
 		}
 		return false;
 	}
@@ -219,7 +219,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	for (const KeyValue<int, Dictionary> &entry : sub_agents) {
 		if (String(entry.value.get("source", "")) == "design" && String(entry.value.get("request_id", "")) == request_id) {
 			if (p_explicit) {
-				_append(TTR("Editor"), vformat(U"需求 %s 的工单子 Agent 已在「%s」窗口内创建，未重复创建。", request_id, _agent_title(int(entry.value.get("parent", -1)))));
+				_append(TTR("Editor"), vformat(U"需求 %s 的工单子会话已在「%s」窗口内创建，未重复创建。", request_id, _agent_title(int(entry.value.get("parent", -1)))));
 			}
 			return false;
 		}
@@ -241,13 +241,13 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	const Array orders = parsed["orders"];
 	if (!bool(parsed["finalized"]) || orders.is_empty()) {
 		if (p_explicit) {
-			_append(TTR("Editor"), U"需求文档尚未包含「设计定版确认」小节和「## 生产工单」编号列表，未创建子 Agent。可在设计定稿后重试，或手动新建子 Agent。");
+			_append(TTR("Editor"), U"需求文档尚未包含「设计定版确认」小节和「## 生产工单」编号列表，未创建子会话。可在设计定稿后重试，或手动新建子会话。");
 		}
 		return false;
 	}
 	if (_sub_agent_children(p_parent, false).size() + orders.size() > AIChatSubAgents::MAX_CHILDREN_PER_PARENT || sub_agents.size() + orders.size() > AIChatSubAgents::MAX_CHILDREN || agent_tabs->get_tab_count() + orders.size() > 256 || !history_writable) {
 		if (p_explicit || p_parent == active_agent) {
-			_append(TTR("Error"), U"子 Agent 数量将超过上限（每个父 Agent 16 个、总计 128 个），或聊天记录无法保存；未创建。请关闭不再需要的子 Agent 后点「按工单落地」。");
+			_append(TTR("Error"), U"子会话数量将超过上限（每个父会话 16 个、总计 128 个），或聊天记录无法保存；未创建。请关闭不再需要的子会话后点「按工单落地」。");
 		}
 		return false;
 	}
@@ -269,7 +269,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	}
 	sub_agent_spawned[request_id] = true;
 	if (p_parent == active_agent) {
-		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子 Agent，将按顺序逐个落地。在上方子 Agent 标签条查看进度；前序未完成时后续会停住，可点「继续落地」。", path.get_file(), created, parent_title));
+		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子会话，将按顺序逐个落地。在上方子会话标签条查看进度；前序未完成时后续会停住，可点「继续落地」。", path.get_file(), created, parent_title));
 	}
 	_refresh_sub_agents();
 	_queue_history_save();
@@ -291,11 +291,11 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 		}
 	}
 	if (!resumed && !pending) {
-		_append(TTR("Editor"), U"该需求的工单子 Agent 均已完成，无需继续。");
+		_append(TTR("Editor"), U"该需求的工单子会话均已完成，无需继续。");
 		return false;
 	}
 	if (resumed) {
-		_append(TTR("Editor"), vformat(U"继续落地：%d 个未完成的工单子 Agent 已重新排队，按工单顺序执行。", resumed));
+		_append(TTR("Editor"), vformat(U"继续落地：%d 个未完成的工单子会话已重新排队，按工单顺序执行。", resumed));
 	}
 	_refresh_sub_agents();
 	_queue_history_save();
@@ -343,7 +343,7 @@ void AIChatDock::_sub_agent_dispatch() {
 			_dispatch_queued_message(id);
 			if (!busy) {
 				sub_agents[id]["state"] = "failed";
-				_append(TTR("Editor"), U"该工单子 Agent 未能启动，后续工单已停住。请检查连接设置后点「继续落地」。");
+				_append(TTR("Editor"), U"该工单子会话未能启动，后续工单已停住。请检查连接设置后点「继续落地」。");
 			}
 			_refresh_sub_agents();
 			_queue_history_save();
@@ -360,7 +360,7 @@ void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed) {
 		_spawn_work_order_agents(p_agent, false);
 	}
 	if (sub_agents.has(p_agent) && p_agent == active_agent && !busy && String(sub_agents[p_agent].get("source", "")) == "design" && String(sub_agents[p_agent]["state"]) == "failed") {
-		_append(TTR("Editor"), U"本工单子 Agent 未正常完成，后续工单已停住，不会跳过依赖。处理后点「继续落地」，或直接在此子 Agent 中继续对话。");
+		_append(TTR("Editor"), U"本工单子会话未正常完成，后续工单已停住，不会跳过依赖。处理后点「继续落地」，或直接在此子会话中继续对话。");
 	}
 	_refresh_sub_agents();
 	_sub_agent_dispatch();
@@ -384,7 +384,7 @@ void AIChatDock::_refresh_sub_agents() {
 	sub_agent_tabs->clear_tabs();
 	sub_agent_tabs->add_tab(String(U"父 · ") + _agent_title(root));
 	sub_agent_tabs->set_tab_metadata(0, root);
-	sub_agent_tabs->set_tab_tooltip(0, U"父 Agent 会话");
+	sub_agent_tabs->set_tab_tooltip(0, U"父会话");
 	sub_agent_tabs->set_current_tab(0);
 	for (int id : children) {
 		const Dictionary info = sub_agents[id];
@@ -402,7 +402,7 @@ void AIChatDock::_refresh_sub_agents() {
 	const bool locked = busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
 	const bool child = sub_agents.has(active_agent);
 	add_sub_agent->set_disabled(locked || child || !history_writable || children.size() >= AIChatSubAgents::MAX_CHILDREN_PER_PARENT || sub_agents.size() >= AIChatSubAgents::MAX_CHILDREN || agent_tabs->get_tab_count() >= 256);
-	add_sub_agent->set_tooltip_text(child ? U"子 Agent 不能再派生子 Agent；请切回父会话后新建。" : U"在当前父 Agent 窗口内新建一个子 Agent。子 Agent 不能再派生子 Agent。");
+	add_sub_agent->set_tooltip_text(child ? U"子会话不能再派生子会话；请切回父会话后新建。" : U"在当前父会话窗口内新建一个子会话。子会话不能再派生子会话。");
 	spawn_sub_agents->set_text(resumable ? U"继续落地" : U"按工单落地");
 	spawn_sub_agents->set_disabled(locked || scheduled);
 }

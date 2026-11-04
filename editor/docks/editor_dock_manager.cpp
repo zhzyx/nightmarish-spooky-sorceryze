@@ -500,8 +500,8 @@ void EditorDockManager::save_docks_to_config(Ref<ConfigFile> p_layout, const Str
 	}
 	p_layout->set_value(p_section, "dock_closed", closed_docks_dump);
 
-	// Distraction-free mode hides both the sides and lower docks, so skip to avoid overriding those values.
-	if (!EditorNode::get_singleton()->is_distraction_free_mode_enabled()) {
+	// Hidden docks (distraction-free mode, window-filling main screen) have no valid offsets, so skip to avoid overriding those values.
+	if (docks_visible) {
 		// Save SplitContainer offsets.
 
 		for (int i = 0; i < vsplits.size(); i++) {
@@ -540,6 +540,10 @@ void EditorDockManager::save_docks_to_config(Ref<ConfigFile> p_layout, const Str
 void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const String &p_section, bool p_first_load) {
 	Dictionary floating_docks_dump = p_layout->get_value(p_section, "dock_floating", Dictionary());
 	Array closed_docks = p_layout->get_value(p_section, "dock_closed", Array());
+
+	// Split offsets are only applied to visible docks, so they must be shown while loading.
+	EditorMainScreen *main_screen = EditorNode::get_editor_main_screen();
+	main_screen->suspend_window_fill();
 
 	bool allow_floating_docks = EditorNode::get_singleton()->is_multi_window_enabled() && (!p_first_load || EDITOR_GET("interface/multi_window/restore_windows_on_load"));
 
@@ -629,6 +633,9 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 		offsets = { p_layout->get_value(p_section, "dock_bottom_split", 0) };
 		bottom_hsplit->set_split_offsets(offsets);
 	}
+
+	// The selected tabs were restored with signals blocked.
+	main_screen->update_window_fill();
 
 	update_docks_menu();
 }

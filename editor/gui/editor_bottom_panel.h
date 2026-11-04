@@ -63,6 +63,7 @@ class EditorBottomPanel : public DockTabContainer {
 
 	int previous_tab = -1;
 	bool lock_panel_switching = false;
+	bool hidden_by_main_screen = false;
 	LocalVector<EditorDock *> bottom_docks;
 	HashMap<String, int> dock_offsets;
 
@@ -82,7 +83,7 @@ protected:
 public:
 	virtual void dock_closed(EditorDock *p_dock) override;
 	virtual void dock_focused(EditorDock *p_dock, bool p_was_visible) override;
-	virtual void update_visibility() override { show(); } // Never hide bottom panel.
+	virtual void update_visibility() override { set_visible(!hidden_by_main_screen); } // Only a window-filling main screen hides the bottom panel.
 	virtual TabStyle get_tab_style() const override;
 	virtual bool can_switch_dock() const override;
 	virtual Rect2 get_floating_dock_rect(EditorDock *p_dock) override;
@@ -97,6 +98,7 @@ public:
 	void hide_bottom_panel();
 	void toggle_last_opened_bottom_panel();
 	void set_expanded(bool p_expanded);
+	void set_hidden_by_main_screen(bool p_hidden);
 	void _theme_changed();
 	bool is_locked() const { return lock_panel_switching; }
 

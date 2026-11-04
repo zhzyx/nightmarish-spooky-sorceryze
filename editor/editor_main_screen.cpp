@@ -31,11 +31,14 @@
 #include "editor_main_screen.h"
 
 #include "core/object/callable_mp.h"
+#include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/editor_node.h"
+#include "editor/gui/editor_bottom_panel.h"
 #include "editor/plugins/editor_plugin.h"
 #include "editor/scene/3d/node_3d_editor_plugin.h"
+#include "editor/scene/editor_scene_tabs.h"
 #include "editor/script/script_editor_plugin.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
@@ -73,8 +76,30 @@ void LegacyMainScreenContainer::add_child_notify(Node *p_child) {
 }
 #endif
 
+void EditorMainScreen::_set_window_fill(bool p_fill) {
+	if (window_filled == p_fill) {
+		return;
+	}
+	window_filled = p_fill;
+	EditorNode::get_bottom_panel()->set_hidden_by_main_screen(p_fill);
+	EditorSceneTabs::get_singleton()->set_visible(!p_fill);
+	EditorDockManager::get_singleton()->set_docks_visible(!p_fill && !EditorNode::get_singleton()->is_distraction_free_mode_enabled());
+}
+
+void EditorMainScreen::suspend_window_fill() {
+	_set_window_fill(false);
+}
+
+void EditorMainScreen::update_window_fill() {
+	// Docks are added while the editor is being constructed, before the first real selection.
+	if (is_inside_tree()) {
+		_set_window_fill(Object::cast_to<AIChatDock>(get_current_tab_control()) != nullptr);
+	}
+}
+
 void EditorMainScreen::_on_tab_changed(int p_tab) {
 	EditorNode::get_singleton()->update_distraction_free_mode();
+	update_window_fill();
 
 	EditorDock *dock = get_dock(p_tab);
 	if (!dock) {
@@ -107,6 +132,15 @@ void EditorMainScreen::_notification(int p_what) {
 					break;
 				}
 			}
+			// AI Chat is the default workspace when the editor opens.
+			for (int i = 0; i < get_tab_count(); i++) {
+				EditorDock *dock = get_dock(i);
+				if (Object::cast_to<AIChatDock>(dock)) {
+					dock->make_visible();
+					break;
+				}
+			}
+			update_window_fill();
 		} break;
 	}
 }

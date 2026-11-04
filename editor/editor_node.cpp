@@ -9572,6 +9572,9 @@ EditorNode::EditorNode() {
 
 	gui_base->add_child(project_data_missing);
 
+	// AI Chat is registered first so it is the opening main-screen tab.
+	editor_dock_manager->add_dock(memnew(AIChatDock));
+
 	add_editor_plugin(memnew(CanvasItemEditorPlugin));
 	add_editor_plugin(memnew(Node3DEditorPlugin));
 	add_editor_plugin(memnew(ScriptEditorPlugin));
@@ -9591,8 +9594,6 @@ EditorNode::EditorNode() {
 	} else {
 		print_verbose("Asset Store not available (due to using Web editor, or SSL support disabled).");
 	}
-
-	editor_dock_manager->add_dock(memnew(AIChatDock));
 
 	// More visually meaningful to have this later.
 	add_editor_plugin(memnew(AnimationPlayerEditorPlugin));

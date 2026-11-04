@@ -122,9 +122,55 @@ func _phase(name: String, marker: String, reject := false) -> bool:
 		return false
 	return _check(marker in _chat_text(), "Missing response marker: " + marker)
 
+func _check_window_fill(root: Window, main_screen: Control) -> bool:
+	var bottom_panel = _find_by_name(root, "BottomPanel")
+	if not _check(bottom_panel != null and bottom_panel is Control, "Bottom panel not found"):
+		return false
+	var scene_tabs = _find_by_name(root, "SceneTabs")
+	if not _check(scene_tabs != null and scene_tabs is Control, "Scene tabs not found"):
+		return false
+
+	# The editor starts on a normal main screen (3D) with the docks visible.
+	var normal_x = main_screen.get_size().x
+	if not _check(bottom_panel.is_visible() and scene_tabs.is_visible(), "Docks must be visible before selecting AI Chat"):
+		return false
+
+	EditorInterface.set_main_screen_editor("AI Chat")
+	await create_timer(0.3).timeout
+	var fill_x = main_screen.get_size().x
+	if not _check(not bottom_panel.is_visible() and not scene_tabs.is_visible(), "Bottom panel and scene tabs must be hidden with AI Chat"):
+		return false
+	if not _check(fill_x > normal_x * 1.1, "AI Chat does not fill the window width"):
+		return false
+
+	EditorInterface.set_main_screen_editor("Script")
+	await create_timer(0.3).timeout
+	if not _check(bottom_panel.is_visible() and scene_tabs.is_visible(), "Bottom panel and scene tabs must return after switching away"):
+		return false
+	if not _check(main_screen.get_size().x < fill_x * 0.9, "Other main screens must not fill the window width"):
+		return false
+	EditorInterface.set_main_screen_editor("AI Chat")
+	await create_timer(0.3).timeout
+	if not _check(not bottom_panel.is_visible() and not scene_tabs.is_visible(), "AI Chat must hide the bottom panel and scene tabs again"):
+		return false
+	if not _check(main_screen.get_size().x >= fill_x * 0.9, "AI Chat must fill the window width again"):
+		return false
+	EditorInterface.set_main_screen_editor("3D")
+	await create_timer(0.3).timeout
+	return true
+
+func _find_by_name(node: Node, fragment: String) -> Node:
+	for child in node.get_children():
+		if String(child.name).contains(fragment):
+			return child
+		var found = _find_by_name(child, fragment)
+		if found != null:
+			return found
+	return null
+
 func _check_workspace_pages(dock: Node) -> bool:
 	var pages = dock.find_child("AIWorkspacePages", true, false) as TabContainer
-	if not _check(pages != null and pages.get_tab_count() == 2 and pages.current_tab == 0 and pages.get_tab_title(0) == "Agents" and pages.get_tab_title(1) == "定时器", "AI workspace needs exactly two fixed pages, initially Agents"):
+	if not _check(pages != null and pages.get_tab_count() == 2 and pages.current_tab == 0 and pages.get_tab_title(0) == "会话" and pages.get_tab_title(1) == "定时器", "AI workspace needs exactly two fixed pages, initially 会话"):
 		return false
 	var tabs = pages.get_tab_bar()
 	var agents_page = pages.get_tab_control(0)
@@ -786,14 +832,17 @@ func _run():
 	if not _check(dock != null, "Native AI dock was not created"):
 		quit(1)
 		return
+	var main_screen: Control = null
 	var ancestor = dock.get_parent()
-	var in_main_screen = false
 	while ancestor:
 		if ancestor is Control and ancestor.get_theme_type_variation() == "MainScreenContainer":
-			in_main_screen = true
+			main_screen = ancestor
 			break
 		ancestor = ancestor.get_parent()
-	if not _check(dock.get_default_slot() == 11 and in_main_screen, "AI Chat must be a top main-screen tab"):
+	if not _check(dock.get_default_slot() == 11 and main_screen != null, "AI Chat must be a top main-screen tab"):
+		quit(1)
+		return
+	if not await _check_window_fill(root, main_screen):
 		quit(1)
 		return
 	if not await _check_workspace_pages(dock):

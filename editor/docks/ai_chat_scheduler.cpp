@@ -338,7 +338,7 @@ void AIChatDock::_refresh_schedules() {
 		schedule_description->set_text(schedule_description->get_text() + String(task.get("notice", "")));
 		schedule_description->set_tooltip_text(task["prompt"]);
 	} else {
-		schedule_description->set_text(U"暂无任务。新增主题、任务介绍和执行频率后，每次触发都会创建独立的 主题_n Agent。");
+		schedule_description->set_text(U"暂无任务。新增主题、任务介绍和执行频率后，每次触发都会创建独立的 主题_n 会话。");
 	}
 	schedule_ui_updating = false;
 	_refresh_schedule_agents();
@@ -369,7 +369,7 @@ void AIChatDock::_refresh_schedule_agents() {
 	if (showing) {
 		schedule_notice->set_text(_agent_title(active_agent) + U" · " + run_status(scheduled_agents[active_agent]["state"]));
 	} else {
-		schedule_notice->set_text(busy ? U"当前有 Agent 执行中，结束后可切换查看；定时任务等待空闲，不打断它。" : U"在任务介绍下选择一个执行 Agent 查看对话。每次执行均有独立上下文。");
+		schedule_notice->set_text(busy ? U"当前有会话执行中，结束后可切换查看；定时任务等待空闲，不打断它。" : U"在任务介绍下选择一个执行会话查看对话。每次执行均有独立上下文。");
 	}
 	_route_chat_layout();
 }
@@ -381,7 +381,7 @@ void AIChatDock::_route_chat_layout() {
 	const bool scheduled = scheduled_agents.has(active_agent);
 	manual_schedule_notice->set_visible(scheduled);
 	if (scheduled) {
-		manual_schedule_notice->set_text(_agent_title(active_agent) + U" 正在定时器页执行／显示。任务结束后可切回普通 Agent；执行中仍可切页查看，普通会话草稿不会被使用。");
+		manual_schedule_notice->set_text(_agent_title(active_agent) + U" 正在定时器页执行／显示。任务结束后可切回普通会话；执行中仍可切页查看，普通会话草稿不会被使用。");
 	}
 	VBoxContainer *target = scheduled ? timer_chat_host : agents_page;
 	if (chat_layout->get_parent() != target) {
@@ -443,7 +443,7 @@ void AIChatDock::_validate_schedule() {
 		}
 	}
 	schedule_dialog->get_ok_button()->set_disabled(!valid);
-	schedule_validation->set_text(valid ? U"保存后从一个完整周期开始计时；使用当前连接方式和模型。不会修改已创建 Agent 的指令。" : U"请输入唯一主题和任务指令（正文最多 256 KiB）。");
+	schedule_validation->set_text(valid ? U"保存后从一个完整周期开始计时；使用当前连接方式和模型。不会修改已创建会话的指令。" : U"请输入唯一主题和任务指令（正文最多 256 KiB）。");
 }
 
 void AIChatDock::_save_schedule() {
@@ -488,7 +488,7 @@ void AIChatDock::_delete_schedule_requested() {
 		return;
 	}
 	deleting_schedule = selected_schedule;
-	schedule_delete_dialog->set_text(U"删除该周期任务及其全部执行 Agent 和聊天？执行中的任务会停止，已应用的文件修改不会撤销。此操作不可恢复。");
+	schedule_delete_dialog->set_text(U"删除该周期任务及其全部执行会话和聊天？执行中的任务会停止，已应用的文件修改不会撤销。此操作不可恢复。");
 	schedule_delete_dialog->popup_centered();
 }
 
@@ -566,7 +566,7 @@ bool AIChatDock::_enqueue_schedule(int p_index) {
 	}
 	if (!history_writable || scheduled_agents.size() >= 128 || agent_tabs->get_tab_count() >= 256 || next_agent >= INT32_MAX - 1 || int(task["sequence"]) >= INT32_MAX - 1) {
 		task["enabled"] = false;
-		task["notice"] = U"\n定时任务已暂停：历史无法保存，或执行历史已达上限（128 个定时 Agent）。请删除不再需要的执行 Agent 后重新启用。";
+		task["notice"] = U"\n定时任务已暂停：历史无法保存，或执行历史已达上限（128 个定时会话）。请删除不再需要的执行会话后重新启用。";
 		_queue_history_save();
 		return false;
 	}

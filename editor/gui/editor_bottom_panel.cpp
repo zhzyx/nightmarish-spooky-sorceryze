@@ -211,6 +211,15 @@ void EditorBottomPanel::set_expanded(bool p_expanded) {
 	expand_button->set_pressed(p_expanded);
 }
 
+void EditorBottomPanel::set_hidden_by_main_screen(bool p_hidden) {
+	hidden_by_main_screen = p_hidden;
+	if (p_hidden) {
+		// An expanded panel hides the main screen, which would leave the window empty.
+		set_expanded(false);
+	}
+	update_visibility();
+}
+
 void EditorBottomPanel::_expand_button_toggled(bool p_pressed) {
 	EditorNode::get_top_split()->set_visible(!p_pressed);
 

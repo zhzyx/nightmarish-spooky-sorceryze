@@ -767,7 +767,7 @@ void AIChatDock::_load_history() {
 		state.message_list->set_name("Messages");
 		state.message_list->reparent(chat_scroll);
 		_restore_agent(state);
-		_append(TTR("Editor"), history_primary_valid ? U"已从硬盘恢复各 Agent 的聊天与草稿，可继续对话。旧命令和审批不会自动恢复。" : U"主聊天记录无法读取，已从上一份备份恢复。旧命令和审批不会自动恢复。");
+		_append(TTR("Editor"), history_primary_valid ? U"已从硬盘恢复各会话的聊天与草稿，可继续对话。旧命令和审批不会自动恢复。" : U"主聊天记录无法读取，已从上一份备份恢复。旧命令和审批不会自动恢复。");
 		_queue_chat_scroll_update();
 	} else if (!found) {
 		_append(TTR("Editor"), U"内置 AI 对话可访问工程、引擎源码和项目外文件，无需 MCP。聊天、图片与草稿以明文自动保存到当前项目的 .godot/editor/ai_chat_history.json，重启后恢复；API 密钥不保存。文件修改和执行默认需确认，可通过两个自动操作开关持续授权。");
@@ -854,7 +854,7 @@ void AIChatDock::_load_resume() {
 		}
 	}
 	if (agent != active_agent) {
-		_append(TTR("Error"), U"发起版本切换的 Agent 标签已不存在，本次任务不会自动继续；工具结果已记录在上面。");
+		_append(TTR("Error"), U"发起版本切换的会话标签已不存在，本次任务不会自动继续；工具结果已记录在上面。");
 		return;
 	}
 	messages = journal["messages"];
@@ -1347,13 +1347,13 @@ String AIChatDock::_tool_summary(const String &p_name, const Dictionary &p_argum
 		return vformat(U"已读取文件：%s（%d 个字符）。正在交给 AI 分析。", path, p_result.length());
 	}
 	if (p_name == "write_file" || p_name == "write_script") {
-		return vformat(U"已按你的确认保存文件：%s。可从本 Agent 的本地版本记录还原到选定轮次结束时。", path);
+		return vformat(U"已按你的确认保存文件：%s。可从本会话的本地版本记录还原到选定轮次结束时。", path);
 	}
 	if (p_name == "read_logs") {
 		return vformat(U"已读取编辑器日志（%d 个字符）。正在检查错误信息。", p_result.length());
 	}
 	if (p_name == "get_parent_context") {
-		return vformat(U"已读取父 Agent 上下文（%d 个字符，只读、已脱敏）。", p_result.length());
+		return vformat(U"已读取父会话上下文（%d 个字符，只读、已脱敏）。", p_result.length());
 	}
 	JSON json;
 	if (json.parse(p_result) == OK && json.get_data().get_type() == Variant::DICTIONARY) {
@@ -1616,6 +1616,20 @@ void AIChatDock::_send() {
 		_append(TTR("You"), _redact(text));
 		draft_images = attachments;
 		_issue_guide_reply(text);
+		return;
+	}
+	if (!igniter_state.is_empty() && !busy && !consultation_only->is_pressed()) {
+		// Environment igniter replies are host-local: no model or tool runs before authorization.
+		const String text = input->get_text().strip_edges();
+		if (text.is_empty() || send_button->is_disabled()) {
+			return;
+		}
+		input->set_text(String());
+		const Array attachments = draft_images;
+		draft_images.clear();
+		_append(TTR("You"), _redact(text));
+		draft_images = attachments;
+		_igniter_reply(text);
 		return;
 	}
 	if (send_button->is_disabled() || (input->get_text().strip_edges().is_empty() && draft_images.is_empty())) {
@@ -2615,13 +2629,14 @@ void AIChatDock::_agent_selected(int p_index) {
 	session_generation++;
 	// The guide belongs to the paused message of the conversation being left.
 	_cancel_issue_guide(String());
+	_cancel_igniter(String());
 	state.message_list->set_name("Messages");
 	state.message_list->reparent(chat_scroll);
 	_restore_agent(state);
 	_refresh_schedule_agents();
 	_refresh_sub_agents();
 	if (messages.is_empty()) {
-		_append(TTR("Editor"), U"独立 agent 会话已就绪。各 Agent 的聊天和草稿会自动保存到当前项目，重启后恢复；清空只重置当前 Agent。");
+		_append(TTR("Editor"), U"独立会话已就绪。各会话的聊天和草稿会自动保存到当前项目，重启后恢复；清空只重置当前会话。");
 	}
 	_queue_history_save();
 	_save_history();
@@ -2706,7 +2721,7 @@ void AIChatDock::_agent_close_requested(int p_index) {
 	}
 	const int children = _sub_agent_children(id, false).size();
 	if (children || has_history || !state.draft.is_empty() || !state.draft_images.is_empty() || (id == active_agent && (busy || models_loading || engine_build_pid >= 0))) {
-		agent_close_confirmation->set_text(vformat(U"关闭 %s？\n该 Agent 的聊天记录和草稿将从当前会话及自动保存记录中移除，相关任务会停止。\n已应用的文件修改不会撤销；其他 Agent 不受影响。", agent_tabs->get_tab_title(p_index)) + (children ? vformat(U"\n它的 %d 个子 Agent 将一并关闭。", children) : String()));
+		agent_close_confirmation->set_text(vformat(U"关闭 %s？\n该会话的聊天记录和草稿将从当前会话及自动保存记录中移除，相关任务会停止。\n已应用的文件修改不会撤销；其他会话不受影响。", agent_tabs->get_tab_title(p_index)) + (children ? vformat(U"\n它的 %d 个子会话将一并关闭。", children) : String()));
 		agent_close_confirmation->popup_centered();
 		return;
 	}
@@ -2768,7 +2783,7 @@ void AIChatDock::_close_agent() {
 			state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
 			state.message_list->add_theme_constant_override("separation", 16 * EDSCALE);
 			active_agent = next_agent++;
-			agent_tabs->add_tab(vformat("Agent %d", active_agent + 1));
+			agent_tabs->add_tab(vformat("会话 %d", active_agent + 1));
 			agent_tabs->set_tab_metadata(0, active_agent);
 			chat_scroll->add_child(state.message_list);
 			agent_tabs->set_current_tab(0);
@@ -2796,7 +2811,7 @@ void AIChatDock::_close_agent() {
 		state.message_list->set_name("Messages");
 		_restore_agent(state);
 		if (messages.is_empty()) {
-			_append(TTR("Editor"), U"独立 Agent 会话已就绪。点击标签旁的叉号可关闭；关闭最后一个 Agent 后会自动新建空白会话。");
+			_append(TTR("Editor"), U"独立会话已就绪。点击标签旁的叉号可关闭；关闭最后一个会话后会自动新建空白会话。");
 		}
 	} else if (closed_messages) {
 		closed_messages->get_parent()->remove_child(closed_messages);
@@ -2820,7 +2835,7 @@ void AIChatDock::_add_agent() {
 		return;
 	}
 	const int index = agent_tabs->get_tab_count();
-	agent_tabs->add_tab(vformat("Agent %d", next_agent + 1));
+	agent_tabs->add_tab(vformat("会话 %d", next_agent + 1));
 	agent_tabs->set_tab_metadata(index, next_agent++);
 	agent_tabs->set_current_tab(index);
 	callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
@@ -2877,6 +2892,7 @@ void AIChatDock::_restore_cli_after_models() {
 
 void AIChatDock::_cancel_all_agents() {
 	_cancel_issue_guide(String());
+	_cancel_igniter(String());
 	_cancel_cli();
 	_restore_cli_after_models();
 	_cancel_cli();
@@ -2902,6 +2918,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	request_generation++;
 	session_generation++;
 	_cancel_issue_guide(String());
+	_cancel_igniter(String());
 	messages.clear();
 	tool_calls.clear();
 	http_settings->set_visible(p_backend == 0 || p_backend == 3);
@@ -4326,6 +4343,7 @@ void AIChatDock::_stop() {
 	messages.clear();
 	tool_calls.clear();
 	_cancel_issue_guide(String());
+	_cancel_igniter(String());
 	_end_gonggong("cancelled");
 	_set_busy(false);
 	_append(TTR("Editor"), TTR("Stopped. Conversation context was reset; approved file changes were not reverted."));
@@ -4451,7 +4469,7 @@ AIChatDock::AIChatDock() {
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");
 	workspace_pages->add_child(timers_page);
-	workspace_pages->set_tab_title(0, "Agents");
+	workspace_pages->set_tab_title(0, "会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
 	workspace_pages->add_child(gonggong_panel);
@@ -4483,9 +4501,9 @@ AIChatDock::AIChatDock() {
 	agent_tabs->set_scroll_to_selected(true);
 	agent_tabs->set_h_size_flags(SIZE_EXPAND_FILL);
 	agent_tabs->set_v_size_flags(SIZE_SHRINK_CENTER);
-	agent_tabs->add_tab("Agent 1");
+	agent_tabs->add_tab("会话 1");
 	agent_tabs->set_tab_metadata(0, 0);
-	agent_tabs->set_tooltip_text(U"点击切换 Agent，各自的上下文、工具详情和草稿互不混用。右键标签可重命名，名称会自动保存并在重启后恢复。点击标签旁的叉号可关闭 Agent，移除其聊天和草稿并停止相关任务；关闭最后一个会自动新建空白会话。聊天及图片以明文自动保存到当前项目的 .godot/editor/ai_chat_history.json，重启编辑器后恢复；.bak 保留上一份记录。删除 .godot 会删除记录，请按需另行备份。");
+	agent_tabs->set_tooltip_text(U"点击切换会话，各自的上下文、工具详情和草稿互不混用。右键标签可重命名，名称会自动保存并在重启后恢复。点击标签旁的叉号可关闭会话，移除其聊天和草稿并停止相关任务；关闭最后一个会自动新建空白会话。聊天及图片以明文自动保存到当前项目的 .godot/editor/ai_chat_history.json，重启编辑器后恢复；.bak 保留上一份记录。删除 .godot 会删除记录，请按需另行备份。");
 	agent_tabs->connect("tab_changed", callable_mp(this, &AIChatDock::_agent_selected));
 	agent_tabs->connect("tab_close_pressed", callable_mp(this, &AIChatDock::_agent_close_requested));
 	agent_tabs->connect("tab_rmb_clicked", callable_mp(this, &AIChatDock::_agent_right_clicked));
@@ -4493,8 +4511,8 @@ AIChatDock::AIChatDock() {
 	add_agent = memnew(Button);
 	add_agent->set_name("AddAgent");
 	add_agent->set_flat(true);
-	add_agent->set_tooltip_text(U"新建 Agent");
-	add_agent->set_accessibility_name(U"新建 Agent");
+	add_agent->set_tooltip_text(U"新建会话");
+	add_agent->set_accessibility_name(U"新建会话");
 	add_agent->connect("pressed", callable_mp(this, &AIChatDock::_add_agent));
 	agent_tabs->add_child(add_agent);
 	add_agent_placeholder = memnew(Control);
@@ -4508,7 +4526,7 @@ AIChatDock::AIChatDock() {
 	layout->add_child(agent_archive);
 	agent_close_confirmation = memnew(ConfirmationDialog);
 	agent_close_confirmation->set_name("AgentCloseConfirmation");
-	agent_close_confirmation->set_title(U"关闭 Agent");
+	agent_close_confirmation->set_title(U"关闭会话");
 	agent_close_confirmation->set_ok_button_text(U"关闭");
 	agent_close_confirmation->connect(SceneStringName(confirmed), callable_mp(this, &AIChatDock::_close_agent));
 	add_child(agent_close_confirmation);
@@ -4519,25 +4537,30 @@ AIChatDock::AIChatDock() {
 	add_child(agent_context_menu);
 	agent_rename_dialog = memnew(ConfirmationDialog);
 	agent_rename_dialog->set_name("AgentRenameDialog");
-	agent_rename_dialog->set_title(U"重命名 Agent");
+	agent_rename_dialog->set_title(U"重命名会话");
 	agent_rename_dialog->set_ok_button_text(U"保存");
 	agent_rename_dialog->connect(SceneStringName(confirmed), callable_mp(this, &AIChatDock::_rename_agent));
 	agent_rename_dialog->connect(SNAME("canceled"), callable_mp(this, &AIChatDock::_cancel_agent_rename));
 	VBoxContainer *rename_layout = memnew(VBoxContainer);
 	agent_rename_dialog->add_child(rename_layout);
 	Label *name_label = memnew(Label);
-	name_label->set_text(U"Agent 名称（最多 64 个字符）");
+	name_label->set_text(U"会话名称（最多 64 个字符）");
 	rename_layout->add_child(name_label);
 	agent_name = memnew(LineEdit);
 	agent_name->set_name("AgentName");
 	agent_name->set_max_length(64);
-	agent_name->set_placeholder(U"输入 Agent 名称");
+	agent_name->set_placeholder(U"输入会话名称");
 	agent_name->connect(SceneStringName(text_changed), callable_mp(this, &AIChatDock::_validate_agent_name).unbind(1));
 	rename_layout->add_child(agent_name);
 	agent_rename_dialog->register_text_enter(agent_name);
 	add_child(agent_rename_dialog);
+	// 连接方式与对话模型并排，压缩顶部占用的行数。
+	HBoxContainer *selector_row = memnew(HBoxContainer);
+	selector_row->set_name("SelectorRow");
+	layout->add_child(selector_row);
 	HBoxContainer *connection = memnew(HBoxContainer);
-	layout->add_child(connection);
+	connection->set_h_size_flags(SIZE_EXPAND_FILL);
+	selector_row->add_child(connection);
 	Label *connection_label = memnew(Label);
 	connection_label->set_text(U"连接方式");
 	connection->add_child(connection_label);
@@ -4548,17 +4571,20 @@ AIChatDock::AIChatDock() {
 	backend->add_item(U"Codex 账号（CLI）");
 	backend->add_item(U"GPT API（Responses）");
 	backend->set_h_size_flags(SIZE_EXPAND_FILL);
+	backend->set_custom_minimum_size(Size2(120, 0) * EDSCALE);
 	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
 	HBoxContainer *models = memnew(HBoxContainer);
-	layout->add_child(models);
+	models->set_h_size_flags(SIZE_EXPAND_FILL);
+	selector_row->add_child(models);
 	Label *model_label = memnew(Label);
 	model_label->set_text(U"对话模型");
 	models->add_child(model_label);
 	model_picker = memnew(OptionButton);
 	model_picker->set_name("ModelPicker");
 	model_picker->set_h_size_flags(SIZE_EXPAND_FILL);
+	model_picker->set_custom_minimum_size(Size2(160, 0) * EDSCALE);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
 	refresh_models = memnew(Button);
@@ -4568,19 +4594,12 @@ AIChatDock::AIChatDock() {
 	models->add_child(refresh_models);
 	model_status = memnew(Label);
 	model_status->set_name("ModelStatus");
-	model_status->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
-	layout->add_child(model_status);
-	Button *settings_button = memnew(Button);
-	settings_button->set_name("AdvancedToggle");
-	settings_button->set_text(U"高级设置");
-	settings_button->set_toggle_mode(true);
-	layout->add_child(settings_button);
+	model_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	VBoxContainer *settings = memnew(VBoxContainer);
 	settings->set_name("AdvancedSettings");
 	settings->hide();
 	layout->add_child(settings);
-	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
 	auto add_field = [](VBoxContainer *p_parent, const String &p_title, const char *p_name, const String &p_value) {
 		Label *label = memnew(Label);
 		label->set_text(p_title);
@@ -4651,7 +4670,7 @@ AIChatDock::AIChatDock() {
 	auto_apply_file_changes->set_name("AutoApplyFileChanges");
 	auto_apply_file_changes->set_text(U"自动应用文件修改（不弹确认框）");
 	auto_apply_file_changes->set_pressed(EDITOR_GET("ai_chat/auto_apply_file_changes"));
-	auto_apply_file_changes->set_tooltip_text(U"勾选即授权 AI 直接创建或修改本机文本文件，包括引擎源码与项目外文件，不再逐次弹出 Approve。仍检查文件冲突和未保存内容，可从本 Agent 的本地版本记录还原到选定轮次结束时。此开关不授权命令执行，需另行勾选下方“自动执行命令与脚本”。此设置会保存到编辑器设置。");
+	auto_apply_file_changes->set_tooltip_text(U"勾选即授权 AI 直接创建或修改本机文本文件，包括引擎源码与项目外文件，不再逐次弹出 Approve。仍检查文件冲突和未保存内容，可从本会话的本地版本记录还原到选定轮次结束时。此开关不授权命令执行，需另行勾选下方“自动执行命令与脚本”。此设置会保存到编辑器设置。");
 	auto_apply_file_changes->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(auto_apply_file_changes);
 	EDITOR_DEF("ai_chat/auto_execute_commands", false);
@@ -4675,38 +4694,58 @@ AIChatDock::AIChatDock() {
 	engine_build_arguments->set_custom_minimum_size(Size2(0, 65) * EDSCALE);
 	engine_build_arguments->set_text(EDITOR_GET("ai_chat/build_arguments"));
 	settings->add_child(engine_build_arguments);
+	// 模型状态与构建按钮、高级设置、快照还原并排成一行（小字体、小按钮）。
+	const int small_font_size = 12 * EDSCALE;
+	HBoxContainer *action_row = memnew(HBoxContainer);
+	action_row->set_name("ActionRow");
+	layout->add_child(action_row);
+	model_status->add_theme_font_size_override("font_size", small_font_size);
+	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
+	action_row->add_child(model_status);
 	HBoxContainer *build_actions = memnew(HBoxContainer);
-	layout->add_child(build_actions);
+	action_row->add_child(build_actions);
 	engine_build_button = memnew(Button);
 	engine_build_button->set_name("BuildEngine");
 	engine_build_button->set_text(U"编译并更新引擎");
+	engine_build_button->add_theme_font_size_override("font_size", small_font_size);
 	engine_build_button->connect("pressed", callable_mp(this, &AIChatDock::_build_engine));
 	build_actions->add_child(engine_build_button);
 	engine_restart_button = memnew(Button);
 	engine_restart_button->set_name("RestartUpdatedEngine");
 	engine_restart_button->set_text(U"重启到新版本");
+	engine_restart_button->add_theme_font_size_override("font_size", small_font_size);
 	engine_restart_button->connect("pressed", callable_mp(this, &AIChatDock::_restart_updated_engine));
 	build_actions->add_child(engine_restart_button);
 	engine_cancel_button = memnew(Button);
 	engine_cancel_button->set_name("CancelEngineBuild");
 	engine_cancel_button->set_text(U"取消编译");
+	engine_cancel_button->add_theme_font_size_override("font_size", small_font_size);
 	engine_cancel_button->connect("pressed", callable_mp(this, &AIChatDock::_cancel_engine_build));
 	build_actions->add_child(engine_cancel_button);
 	Button *build_log_button = memnew(Button);
 	build_log_button->set_name("EngineBuildLog");
 	build_log_button->set_text(U"编译日志");
+	build_log_button->add_theme_font_size_override("font_size", small_font_size);
 	build_log_button->connect("pressed", callable_mp(this, &AIChatDock::_show_engine_log));
 	build_actions->add_child(build_log_button);
+	Button *settings_button = memnew(Button);
+	settings_button->set_name("AdvancedToggle");
+	settings_button->set_text(U"高级设置");
+	settings_button->set_toggle_mode(true);
+	settings_button->add_theme_font_size_override("font_size", small_font_size);
+	action_row->add_child(settings_button);
+	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
 	// Keep the local file restore discoverable even for pre-snapshot history.
 	snapshot_history_button = memnew(Button);
 	snapshot_history_button->set_name("LocalSnapshotHistory");
 	snapshot_history_button->set_text(U"修改记录与还原（本地快照）");
-	snapshot_history_button->set_tooltip_text(U"查看当前 Agent 任意一轮已记录的文件修改、修改前后内容和差异；还原到此版本会另记一轮修改，需另外确认。不依赖 Git，没有快照时不会补造旧内容。");
+	snapshot_history_button->add_theme_font_size_override("font_size", small_font_size);
+	snapshot_history_button->set_tooltip_text(U"查看当前会话任意一轮已记录的文件修改、修改前后内容和差异；还原到此版本会另记一轮修改，需另外确认。不依赖 Git，没有快照时不会补造旧内容。");
 	snapshot_history_button->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_show_snapshot_history));
-	layout->add_child(snapshot_history_button);
+	action_row->add_child(snapshot_history_button);
 	snapshot_history_dialog = memnew(AcceptDialog);
 	snapshot_history_dialog->set_name("LocalSnapshotHistoryDialog");
-	snapshot_history_dialog->set_title(U"本 Agent 的文件修改记录（本地快照）");
+	snapshot_history_dialog->set_title(U"本会话的文件修改记录（本地快照）");
 	add_child(snapshot_history_dialog);
 	ScrollContainer *snapshot_scroll = memnew(ScrollContainer);
 	snapshot_scroll->set_custom_minimum_size(Size2(600, 320) * EDSCALE);
@@ -4761,16 +4800,21 @@ AIChatDock::AIChatDock() {
 	engine_auto_restart->set_tooltip_text(U"同时启用自动执行命令后，AI 修改引擎 C++ 可调用宿主构建并在校验成功后自动重启续聊；无需手动点击构建或重启。构建失败不切换版本，未保存场景仍使用编辑器的保存确认。此设置会保存到编辑器设置。");
 	engine_auto_restart->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(engine_auto_restart);
+	// 引擎构建进度与状态合并为一行。
+	HBoxContainer *build_row = memnew(HBoxContainer);
+	build_row->set_name("BuildRow");
+	layout->add_child(build_row);
 	engine_build_progress = memnew(ProgressBar);
 	engine_build_progress->set_name("EngineBuildProgress");
 	engine_build_progress->set_min(0);
 	engine_build_progress->set_max(100);
-	layout->add_child(engine_build_progress);
+	engine_build_progress->set_h_size_flags(SIZE_EXPAND_FILL);
+	build_row->add_child(engine_build_progress);
 	engine_build_status = memnew(Label);
 	engine_build_status->set_name("EngineBuildStatus");
-	engine_build_status->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
-	engine_build_status->set_text(U"引擎构建就绪 · 百分比按本次构建节点估算，校验通过后才到 100%");
-	layout->add_child(engine_build_status);
+	engine_build_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	engine_build_status->set_text(U"引擎构建就绪 · 校验通过后才到 100%");
+	build_row->add_child(engine_build_status);
 	engine_approval = memnew(ConfirmationDialog);
 	engine_approval->set_name("EngineBuildApproval");
 	engine_approval->set_title(U"确认编译 / 重启引擎");
@@ -4948,7 +4992,7 @@ void AIChatDock::_show_snapshot_changes(const String &p_id) {
 	Dictionary snapshot_data;
 	String error;
 	if (!AIChatTools::load_snapshot(_snapshot_path(p_id), snapshot_data, error) || snapshot_data.get("conversation_id", "") != conversation_id || Array(snapshot_data["files"]).is_empty()) {
-		_append(TTR("Error"), error.is_empty() ? String(U"此修改记录不属于当前 Agent，或没有已记录文件。") : error);
+		_append(TTR("Error"), error.is_empty() ? String(U"此修改记录不属于当前会话，或没有已记录文件。") : error);
 		return;
 	}
 	viewing_snapshot = snapshot_data;
@@ -5110,7 +5154,7 @@ void AIChatDock::_show_snapshot_history() {
 	Label *info = memnew(Label);
 	info->set_name("SnapshotHistoryInfo");
 	info->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
-	info->set_text(U"当前 Agent 各轮文件修改记录（最新在前）。可查看该轮的修改前后内容和差异，或跳转到聊天记录中对应的消息；已还原或存在后续修改的旧记录仍可查看。还原到此版本会另记一轮修改，需另外确认。命令、脚本和外部程序造成的变化不在快照内。");
+	info->set_text(U"当前会话各轮文件修改记录（最新在前）。可查看该轮的修改前后内容和差异，或跳转到聊天记录中对应的消息；已还原或存在后续修改的旧记录仍可查看。还原到此版本会另记一轮修改，需另外确认。命令、脚本和外部程序造成的变化不在快照内。");
 	snapshot_history_list->add_child(info);
 	Vector<String> ids;
 	HashSet<String> seen;
@@ -5163,7 +5207,7 @@ void AIChatDock::_show_snapshot_history() {
 	}
 	snapshot_history_dialog->set_meta("snapshot_count", count);
 	if (count == 0) {
-		info->set_text(U"当前 Agent 没有已记录文件修改的本地快照。\n\n启用本地工具后，AI 文件工具在写入前自动保存本轮原文；本轮结束后可从这里预览并确认还原到此版本。纯聊天不会产生可还原文件。\n\n旧版本没有记录快照的会话无法事后还原，不能从当前文件补造修改前的内容。命令、脚本和外部程序造成的变化也不在快照内。");
+		info->set_text(U"当前会话没有已记录文件修改的本地快照。\n\n启用本地工具后，AI 文件工具在写入前自动保存本轮原文；本轮结束后可从这里预览并确认还原到此版本。纯聊天不会产生可还原文件。\n\n旧版本没有记录快照的会话无法事后还原，不能从当前文件补造修改前的内容。命令、脚本和外部程序造成的变化也不在快照内。");
 	}
 	snapshot_history_dialog->popup_centered();
 }
@@ -5275,7 +5319,7 @@ void AIChatDock::_add_snapshot_button(Control *p_parent, const String &p_id) {
 	button->set_meta("snapshot_id", p_id);
 	button->set_meta("snapshot_restored", false);
 	button->set_text(U"还原到此版本");
-	button->set_tooltip_text(U"恢复到此轮结束时本 Agent 的已记录文件版本，包括撤回后续轮次新建的文件。还原另记为一轮文件修改，保留历史并同步 AI 上下文。先预览和单独确认；外部修改或未保存内容会阻止整个事务。不使用 Git，不切换编辑器可执行版本。");
+	button->set_tooltip_text(U"恢复到此轮结束时本会话的已记录文件版本，包括撤回后续轮次新建的文件。还原另记为一轮文件修改，保留历史并同步 AI 上下文。先预览和单独确认；外部修改或未保存内容会阻止整个事务。不使用 Git，不切换编辑器可执行版本。");
 	button->set_disabled(snapshot_transaction_failed || busy || models_loading || !allow_tools->is_pressed());
 	button->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_preview_snapshot_restore).bind(p_id));
 	actions->add_child(button);
@@ -5321,7 +5365,7 @@ bool AIChatDock::_plan_version_restore(const String &p_id, Dictionary &r_plan, S
 		}
 	}
 	if (selected < 0 || paths.size() > 64) {
-		r_error = U"目标版本不属于当前 Agent，或涉及的文件超过事务上限（64）。";
+		r_error = U"目标版本不属于当前会话，或涉及的文件超过事务上限（64）。";
 		return false;
 	}
 	HashMap<String, Dictionary> latest;
@@ -5422,7 +5466,7 @@ void AIChatDock::_rebuild_snapshot_transcript() {
 
 bool AIChatDock::_check_snapshot_editor(const Dictionary &p_snapshot, String &r_error) const {
 	if (p_snapshot.get("conversation_id", "") != conversation_id || p_snapshot.get("messages_before", Variant()).get_type() != Variant::ARRAY) {
-		r_error = U"此快照不属于当前 Agent 会话，未执行还原。";
+		r_error = U"此快照不属于当前会话，未执行还原。";
 		return false;
 	}
 	if (EditorNode::has_unsaved_changes() || (ScriptEditor::get_singleton() && !ScriptEditor::get_singleton()->get_script_container()->get_unsaved_files().is_empty())) {
@@ -5472,7 +5516,7 @@ void AIChatDock::_preview_snapshot_restore(const String &p_id) {
 		_append(TTR("Editor"), U"文件已处于此版本，没有产生新的还原或修改记录。");
 		return;
 	}
-	text += U"\n仅处理本 Agent 的已记录文本文件；包括后续轮次的修改与新建文件，不使用 Git，不切换编辑器可执行版本。\n还原作为一轮新文件修改提交，原聊天和版本历史保留；文件、修改记录和 AI 上下文一起提交。\n外部改动或未保存内容会拒绝整个事务。命令、脚本和外部程序的变化不在快照内。";
+	text += U"\n仅处理本会话的已记录文本文件；包括后续轮次的修改与新建文件，不使用 Git，不切换编辑器可执行版本。\n还原作为一轮新文件修改提交，原聊天和版本历史保留；文件、修改记录和 AI 上下文一起提交。\n外部改动或未保存内容会拒绝整个事务。命令、脚本和外部程序的变化不在快照内。";
 	restoring_snapshot_id = p_id;
 	restoring_snapshot = restore_data;
 	snapshot_restoring = true;
@@ -5552,7 +5596,7 @@ void AIChatDock::_confirm_snapshot_restore() {
 	notice["godot_snapshot_restore"] = true;
 	notice["snapshot_id"] = id;
 	messages.push_back(notice);
-	const String answer = vformat(U"已还原到此版本，%d 个文件的修改、版本记录和 Agent 上下文已同步提交。原对话保留，此次还原另记为一轮修改。未使用 Git。引擎 C++ 的运行效果仍需宿主构建更新。", changes.size());
+	const String answer = vformat(U"已还原到此版本，%d 个文件的修改、版本记录和会话上下文已同步提交。原对话保留，此次还原另记为一轮修改。未使用 Git。引擎 C++ 的运行效果仍需宿主构建更新。", changes.size());
 	messages.push_back(chat_message("assistant", answer));
 	transcript.push_back(chat_message("assistant", answer));
 	snapshot_id = id;
