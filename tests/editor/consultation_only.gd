@@ -47,9 +47,11 @@ func _run():
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
 		dock.find_child(name, true, false).button_pressed = true
 	_send(dock, "INITIAL_DEVELOPMENT_MUST_GATE")
-	if not await _wait(dock, "聊天不会绕过框架发送"):
+	if not await _wait(dock, "已触发本地配置点火器"):
 		quit(1)
 		return
+	assert(dock.find_child("GongGongRuntimeSetup", true, false).visible)
+	dock.find_child("GongGongRuntimeSetup", true, false).hide()
 	check.button_pressed = true
 	_send(dock, "CONSULTATION_ATTACK")
 	# Changing the next-message checkbox cannot upgrade the active turn.
@@ -74,10 +76,10 @@ func _run():
 		return
 	await create_timer(0.2).timeout
 	check.button_pressed = false
-	var previous_gate = _count(dock, "聊天不会绕过框架发送")
+	var previous_gate = _count(dock, "已触发本地配置点火器")
 	_send(dock, "DEVELOPMENT_MUST_GATE")
 	await create_timer(2).timeout
-	if _count(dock, "聊天不会绕过框架发送") <= previous_gate:
+	if _count(dock, "已触发本地配置点火器") <= previous_gate:
 		push_error("Development did not re-enter its gate after consultation")
 		quit(1)
 		return

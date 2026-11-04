@@ -52,6 +52,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--runtime-source", type=Path)
     args = parser.parse_args()
     requests = []
     normal = 0
@@ -63,6 +64,7 @@ def main():
         shutil.copytree(ROOT / ".github", root / ".github")
         (root / "tools").mkdir()
         shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
+        shutil.copyfile(ROOT / "tools/configure_gonggong_runtime.ps1", root / "tools/configure_gonggong_runtime.ps1")
         shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
         for name in ["auth", "api", "issue"]:
             (root / name).write_text(GH_FIXTURE, encoding="utf-8")
@@ -116,6 +118,9 @@ def main():
                     existing = value["existing_issue"]
                     assert "clarify-feature" in data["messages"][0]["content"]
                     assert "ISOLATED_FRAMEWORK_CONTEXT_FIXTURE" not in data["messages"][0]["content"]
+                    if "Create first feature" in text:
+                        (root / "first_intake_waiting").touch()
+                        time.sleep(2)
                     if "Cancel pending" in text:
                         (root / "model_waiting").touch()
                         time.sleep(1.5)
@@ -125,17 +130,24 @@ def main():
                         return
                     decision = (
                         "continue"
-                        if existing and ("Refine" in text or ("second feature" in text and existing["number"] == 8002))
+                        if existing
+                        and (
+                            "Refine" in text
+                            or ("Clarify pending" in text and "用户补充" in text)
+                            or ("second feature" in text and existing["number"] == 8003)
+                        )
                         else "new"
                     )
                     body = json.dumps({
                         "decision": decision,
-                        "title": text,
+                        "title": text.splitlines()[0],
                         "category": "development",
                         "goal": text,
                         "scope": ["One requested change"],
                         "acceptance": ["Observable requested result"],
-                        "questions": [],
+                        "questions": ["INTAKE_CLARIFICATION_REQUIRED"]
+                        if "Clarify pending" in text and "用户补充" not in text
+                        else [],
                     })
                 else:
                     normal += 1
@@ -166,6 +178,8 @@ def main():
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
+        if args.runtime_source:
+            env["GONGGONG_TEST_RUNTIME_SOURCE"] = str(args.runtime_source.resolve())
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(name, None)
         for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
@@ -208,8 +222,12 @@ def main():
         )
         assert result.returncode == 0 and b"REQUIREMENTS_AGENT_NATIVE_OK" in result.stdout, result.stdout[-3500:]
         issues = json.loads((root / "fake-issues.json").read_text())
-        assert len(issues) == 4, issues
-        assert normal == 6 and sum(x["requirements"] for x in requests) == 8, requests
+        assert len(issues) == 6, issues
+        documents = list((root / "design-docs").glob("*.md"))
+        assert len(documents) == 6, documents
+        assert any("Queued feature from requirements phase" in p.read_text(encoding="utf-8") for p in documents)
+        assert any(x["title"] == "Queued feature from requirements phase" for x in issues)
+        assert normal == 8 and sum(x["requirements"] for x in requests) == 11, requests
         events = [
             json.loads(p.read_text(encoding="utf-8")) for p in (root / "gonggong-diting-data/events").rglob("*.json")
         ]
@@ -243,21 +261,24 @@ def main():
         report = {
             "ok": True,
             "native_page": True,
+            "runtime_setup_and_resume": bool(args.runtime_source),
             "actual_yanshi_admission": True,
             "model_and_github": "isolated loopback/CLI fixtures only",
-            "requirements_calls": 8,
-            "development_calls": 6,
-            "issues_created": 4,
+            "requirements_calls": 11,
+            "development_calls": 8,
+            "issues_created": 6,
             "events": len(events),
             "git_check": receipt,
             "cases": [
                 "new requirement",
+                "requirement submitted during intake is queued and creates its own document and Issue",
                 "followup reuses Issue",
                 "new requirement while bound",
                 "same text new turn still classified",
                 "cancel before publication",
                 "model API repair then explicit retry",
                 "GitHub auth repair before model call",
+                "clarification pauses and resumes the same requirement",
             ],
             "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
             "fixture_events_imported": False,

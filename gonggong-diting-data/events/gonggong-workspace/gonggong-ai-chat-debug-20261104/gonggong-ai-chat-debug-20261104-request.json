@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-ai-chat-debug-20261104-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-04T07:34:19.684786+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "codex-root-ai-chat-debug-49",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "intent": "Actual visible Godot AI chat debugging",
+    "status": "editor_opened",
+    "editor_pid": 6480,
+    "coverage": "partial; earlier setup reads not captured",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "22b415166dae8dc9e19f4b5e5ac309461c139fb34c7d0df0f9fa644bd4a97865"
+}

@@ -43,6 +43,7 @@
 #include "scene/gui/check_box.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
+#include "scene/gui/text_edit.h"
 #include "scene/main/timer.h"
 
 bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, const String &p_status) {
@@ -218,9 +219,25 @@ void AIChatDock::_clear_gonggong_files() {
 	gonggong_output_path = String();
 }
 
+void AIChatDock::_environment_setup_completed() {
+	if (issue_guide_state != "environment_setup") {
+		return;
+	}
+	issue_guide_state = String();
+	_begin_reply();
+	_set_busy(true);
+	_request_completion();
+}
+
 void AIChatDock::_begin_gonggong_context() {
 	if (gonggong_pid >= 0) {
 		_append(TTR("Error"), U"GongGong 上一轮校验尚未结束，请稍后重试。");
+		_set_busy(false);
+		return;
+	}
+	if (gonggong_panel && !gonggong_panel->ensure_environment()) {
+		issue_guide_state = "environment_setup";
+		_append(TTR("Editor"), U"已触发本地配置点火器；原需求已保留。请在弹窗内完成本地部署，自检通过后自动继续识别需求与建单。");
 		_set_busy(false);
 		return;
 	}
@@ -434,7 +451,6 @@ bool AIChatDock::_start_issue_guide() {
 void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool p_clarifying) {
 	issue_guide_outcome = p_outcome;
 	issue_guide_state = "agent_pending";
-	_set_busy(false);
 	Dictionary input_request;
 	input_request["outcome"] = p_outcome;
 	input_request["conversation_id"] = conversation_id + ":" + snapshot_id;
@@ -506,8 +522,17 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		_append(TTR("Editor"), U"工单引导正在处理上一步，请稍候；回复 `取消` 可放弃。");
 		return;
 	}
+	if (issue_guide_state == "environment_setup") {
+		if (gonggong_panel && gonggong_panel->ensure_environment()) {
+			_environment_setup_completed();
+		} else {
+			_append(TTR("Editor"), U"原需求等待本地配置完成；补充输入保留为草稿，请先完成点火器。");
+			input->set_text(p_text);
+		}
+		return;
+	}
 	if (issue_guide_state == "agent_questions") {
-		_begin_issue_agent(issue_guide_outcome + "\n用户补充：" + p_text, false, true);
+		_begin_issue_agent(issue_guide_outcome + U"\n用户补充：" + p_text, false, true);
 		return;
 	}
 	if (issue_guide_state == "agent_error") {
@@ -610,6 +635,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区和 Python。");
+		_set_busy(false);
 		return;
 	}
 	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-issue-guide-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
@@ -618,6 +644,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	Ref<FileAccess> file = FileAccess::open(issue_guide_input_path, FileAccess::WRITE);
 	if (file.is_null()) {
 		_append(TTR("Error"), U"无法保存工单引导请求。");
+		_set_busy(false);
 		return;
 	}
 	file->store_string(JSON::stringify(p_request));
@@ -649,6 +676,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		}
 		_clear_issue_guide_files();
 		_append(TTR("Error"), U"无法启动 GongGong 桥接，请检查 Python 路径。");
+		_set_busy(false);
 		return;
 	}
 	issue_guide_pid = pid;
@@ -662,9 +690,19 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		issue_guide_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_issue_guide));
 		add_child(issue_guide_timer);
 	}
+	if (p_action == "issue-agent") {
+		// Requirements intake is part of the active turn. Keeping it busy makes
+		// subsequent submissions queue normally and keeps Stop available.
+		if (!busy) {
+			_begin_reply();
+		}
+		_set_busy(true);
+		_set_activity(U"正在识别需求、整理设计文档并关联 Issue");
+	}
 	issue_guide_timer->start();
-	_append(TTR("Editor"), p_action == "issue-draft" ? String(U"正在生成需求文档并预览 Issue…") : p_action == "issue-create" ? String(U"正在 GitHub 创建 Issue…")
-																															 : String(U"正在更新工单状态…"));
+	_append(TTR("Editor"), p_action == "issue-agent" ? String(U"正在由偃师识别需求、整理设计文档并关联 Issue…") : p_action == "issue-draft" ? String(U"正在生成需求文档并预览 Issue…")
+					: p_action == "issue-create"																							? String(U"正在 GitHub 创建 Issue…")
+																																			: String(U"正在更新工单状态…"));
 }
 
 void AIChatDock::_poll_issue_guide() {
@@ -691,6 +729,7 @@ void AIChatDock::_poll_issue_guide() {
 		if (issue_guide_fields.get("initial_issue", Variant()) != EDITOR_GET("gonggong/issue_number") || issue_guide_fields.get("initial_request", Variant()) != EDITOR_GET("gonggong/request_id")) {
 			issue_guide_state = "agent_error";
 			_append(TTR("Editor"), U"处理期间工单绑定已改变，旧结果不会覆盖新绑定。请回复“重试”按当前绑定核对。");
+			_set_busy(false);
 			return;
 		}
 		if (!ok) {
@@ -699,6 +738,7 @@ void AIChatDock::_poll_issue_guide() {
 			if (error == "gh_unauthenticated") {
 				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));
 			}
+			_set_busy(false);
 			return;
 		}
 		_issue_guide_bind(int64_t(result.get("issue_number", 0)), String(result.get("request_id", "")));
@@ -708,6 +748,7 @@ void AIChatDock::_poll_issue_guide() {
 			for (const Variant &question : Array(result.get("questions", Array()))) {
 				_append(U"Yanshi", question);
 			}
+			_set_busy(false);
 			return;
 		}
 		if (last_user_content(messages) != issue_guide_outcome) {
@@ -717,7 +758,10 @@ void AIChatDock::_poll_issue_guide() {
 			messages.push_back(clarified);
 		}
 		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), EDITOR_GET("gonggong/issue_number"), EDITOR_GET("gonggong/request_id"));
-		_issue_guide_retry();
+		// Continue the same busy turn; toggling idle here pauses already queued
+		// requirements and falsely closes the active reply before development.
+		issue_guide_state = "retrying";
+		_request_completion();
 		return;
 	}
 	issue_guide_state = guide_state_before(issue_guide_action);
