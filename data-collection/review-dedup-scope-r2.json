@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "review-dedup-scope-r2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "review-dedup-20261105",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T23:03:54.361866+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/101",
+  "agent": {
+    "id": "codex-review-dedup",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "17f2ddc93a02bbff9c3b40ad47e330eb1451e8efc6311642b2170377cabc6afa"
+  },
+  "payload": {
+    "user_clarification": "元衡和共工审查仅针对agent的生成和skill的生成，而不是所有需求都需要进行共工审查。",
+    "scope_revision": 2,
+    "production_enabled": false,
+    "usage": null,
+    "usage_unknown_reason": "Host usage unavailable"
+  },
+  "evidence_refs": [
+    "review-dedup-20261105-request"
+  ]
+}

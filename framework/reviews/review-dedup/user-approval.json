@@ -1,0 +1,38 @@
+{
+  "authority": "user-current-chat",
+  "instruction": "更新并合入，待审是等待谁审",
+  "scope": "Issue 101 reviewed scope revision 2: limit Gonggong/Yuanheng review to generated Agent/skill definitions and remove redundant review flows; submit and merge this candidate",
+  "recorded_at": "2026-11-04T23:08:18.326396+00:00",
+  "path_base": "framework_root",
+  "candidate_agents": [
+    {
+      "id": "yanshi",
+      "version": "0.4.1",
+      "candidate_digest": "db448a24a0ef61ab5f460cbcf1491b4ef28fc7ec5f41d64d63af4136924dcddc"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.4.1",
+      "candidate_digest": "b7bfa58a00ff037227e4ec32b455f86c4ed89aa931950c7be2325adc4ab7d6b2"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.1",
+      "candidate_digest": "2580769a79c1f8a44eb7b22799927cd02f4ae5fca0d6b6a373b434009c22ecd3"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.2",
+      "candidate_digest": "77447c2037128078c55979381da73327a37909c11d4d4d05b3c88d1f822c68af"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.2",
+      "candidate_digest": "78ea11c7531f1d02e57cbe421d38d7b661f681e1ea84eee0489ca5196df5e9e7"
+    }
+  ],
+  "independent_review_still_required": true,
+  "runtime_tool_authority_granted": false,
+  "source": "explicit current chat user message following concrete candidate delivery",
+  "binding_note": "Final metadata-only admission state normalization follows independent reviewer finding; instruction content unchanged from user-authorized scope revision 2."
+}

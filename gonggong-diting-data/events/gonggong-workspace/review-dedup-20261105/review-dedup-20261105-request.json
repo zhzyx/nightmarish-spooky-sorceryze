@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "review-dedup-20261105-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "review-dedup-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T22:51:48.134435+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/101",
+  "agent": {
+    "id": "codex-review-dedup",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "c7ca0537c72bb987183cd2c173f1be5e69903a4ccfde6ca3e6231a703d36e2ff"
+  },
+  "payload": {
+    "request": "核验谛听、夸父与元衡审查职责并精简重复流程",
+    "intake": "passed",
+    "candidate_only": true,
+    "usage": null,
+    "usage_unknown_reason": "Host usage unavailable",
+    "document": "design-docs/review-dedup-20261105.md"
+  },
+  "evidence_refs": [],
+  "sha256": "1ea85e7e1bbed53eeb2950822bdad318f5146975faaaa08e6d35b4650cf0941a"
+}

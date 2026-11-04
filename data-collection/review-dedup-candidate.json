@@ -1,0 +1,89 @@
+{
+  "path_base": "repository_root",
+  "base_commit": "95a6ebb23c3082063701aee6bb120ff5973a0c87",
+  "candidate_agents": [
+    {
+      "id": "yanshi",
+      "digest": "e1d8d469dd1a816890f7eea17fb03e185ecb52e7aa0776ea5de650bdfa776701"
+    },
+    {
+      "id": "kuafu",
+      "digest": "1053dd9fdc872163b96d3de2703e798fcc498b6e6bebefd3a7b35e74a82adf5e"
+    },
+    {
+      "id": "diting",
+      "digest": "a5609d9b6f6643ff14e7ebd9bd62bd229e00eff0ca2082ee71999795e7c9b92a"
+    },
+    {
+      "id": "heqi",
+      "digest": "f5c27b1192ce24846625df70c6ef1f690f11a4e60b84b454e1b96a3fd9017250"
+    },
+    {
+      "id": "sinan",
+      "digest": "5656d7449bba332b81a66b47bf6f3786da6f6ae20e6d74449a8ad6936c82d036"
+    }
+  ],
+  "changed_rules": [
+    {
+      "path": "framework/specs/governance-review.md",
+      "sha256": "6047a4ea64446c11cf1a55b077d97328636a8e7331d8daba32a6f1cdb4682930"
+    },
+    {
+      "path": "framework/specs/quality-responsibilities.md",
+      "sha256": "075ff869dfe1dcfe5272e43ce925c7a9858b608234db308cb4ddfdba224cc131"
+    },
+    {
+      "path": "framework/agents/diting/references/optimization.md",
+      "sha256": "3513ee4c26f4b083e3b21fab051a9e2bfeb61843dc490d3a2064910c44af9cc0"
+    }
+  ],
+  "validation": {
+    "framework_candidate": "passed",
+    "reporting_contract": "passed via verify_framework",
+    "quality_ownership": "passed",
+    "boundary_probes": [
+      {
+        "case": "single responsible validator",
+        "passed": true
+      },
+      {
+        "case": "shared evidence reference",
+        "passed": true
+      },
+      {
+        "case": "duplicate execution rejected",
+        "passed": true
+      },
+      {
+        "case": "Kuafu cannot issue test verdict",
+        "passed": true
+      },
+      {
+        "case": "missing evidence reference rejected",
+        "passed": true
+      },
+      {
+        "case": "targeted revalidation with cause",
+        "passed": true
+      }
+    ],
+    "frozen_and_upstream_unchanged": true,
+    "diff_check": "passed"
+  },
+  "independent_review": "pending; actual worker is author",
+  "approval": "pending",
+  "production_enabled": false,
+  "usage": null,
+  "consumed": null,
+  "formal_gate": {
+    "status": "blocked",
+    "reason": "Invalid admission status, event or phase",
+    "independent_review": "pending",
+    "approval": "pending"
+  },
+  "candidate_package_lock_sha256": "5f62dbc49150c26adc3e000acae9259d6425f7e336ef7e1411250e9c33b98950",
+  "diting_validate": {
+    "valid": true,
+    "records": 1629
+  }
+}

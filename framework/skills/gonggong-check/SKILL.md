@@ -1,7 +1,9 @@
 ---
 name: gonggong-check
-description: Review Gonggong production, skill and Agent changes or admission against the frozen charter and Yuanheng standards.
+description: Review generated Agent and skill definitions and their admission against the frozen charter and Yuanheng standards; not ordinary business requests.
 ---
+
+Apply only to generated Agent or skill definitions, including new definitions, regenerated versions and external definition admission. Ordinary use of admitted capabilities does not trigger this review. For mixed requests, review only the definition candidate; retain normal business validation and host integrity/permission checks.
 
 Use the framework root two directories above. Reuse current host-verified baseline or read FOUNDATION.md, foundation.lock.json, upstream/yuanheng/core.md and upstream/yuanheng/agents/yuanheng.md. Read specs/governance-review.md for applicable entry and release checks.
 

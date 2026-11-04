@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "sinan",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "entry": "agents/sinan/AGENT.md",
-    "entry_sha256": "fdf02ac81147dc270765df883bbce5537a603fd622e214f46b1aa73e346fb11a"
+    "entry_sha256": "4869e60c2b94676a4b0ab902dee53b483f86d34bbbae57005bebfc6a6938fbd8"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

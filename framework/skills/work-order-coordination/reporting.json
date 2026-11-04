@@ -3,9 +3,9 @@
   "component": {
     "kind": "skill",
     "id": "work-order-coordination",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "entry": "skills/work-order-coordination/SKILL.md",
-    "entry_sha256": "987e4b1ea8dc41fe77388da74917f553148ba34f3be261cd7d95cb0473e4b1b4"
+    "entry_sha256": "083fd7c054af31d2b7b9dfdc83c4eea53a5cbb4b8b42035ec39244415003d348"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",
