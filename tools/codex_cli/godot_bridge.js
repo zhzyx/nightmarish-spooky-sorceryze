@@ -127,7 +127,7 @@ async function run(entry, request) {
         const code = await closed;
         pending += decoder.end();
         if (pending) consume(pending);
-        if (failure) throw bridgeError(failure);
+        if (failure) throw bridgeError(failure, code);
         if (code !== 0) throw bridgeError(classifyDiagnostics(stderr), code);
         if (!done || !result) throw bridgeError('EMPTY_RESPONSE');
         if (Buffer.byteLength(result) > LIMIT) throw bridgeError('OUTPUT_LIMIT');
