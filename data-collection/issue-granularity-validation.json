@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "request_id": "issue-granularity-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/84",
+  "path_base": "repository_root",
+  "kind": "document_contract_review",
+  "status": "passed",
+  "independence": "author_self_review_not_approval",
+  "files": {
+    "AGENTS.md": "6831beda99f4ffaf5154992a8f86752d7370eaac18acfde186d4fec530cc7971",
+    ".github/CONTRIBUTING.md": "a7101b1d19184d4a080d889583288cb8d611cf9d57fb38080e91d93f76c73f58",
+    "customizations/components/issue-workorders/README.md": "69e3cc80809b751cd099530d1afff16f2ebd4ff28c1c9beca0a8f66c65d57cbb",
+    "customizations/components/issue-workorders/issue-lifecycle.md": "e3a47cf403e66b11a0a2edeb1a17215e42cae2bf9a846fe3348270731dd18275",
+    "design-docs/templates/requirement.md": "dece0ad79a574b1c8f066b783cfabc1088f48ff9d97bf21ad24a91d30d8cb109",
+    "design-docs/templates/issue-breakdown.md": "d359a6126f1804494f55cacc813e849ba50f2c1368717c63b65926ac29cfa327",
+    "design-docs/issue-granularity-20261105.md": "76f9530e4a0db2a55d7b05fe9d02f84419d3283766030e1b416dd2ad7c0c747d"
+  },
+  "checks": [
+    "local_markdown_links",
+    "git_diff_check",
+    "approved_framework_integrity",
+    "manual_lifecycle_scenarios_documented_in_design"
+  ],
+  "framework_mode": "approved_file_integrity",
+  "automatic_executor_tested": false,
+  "remote_lifecycle_mutations_performed": false,
+  "usage": null,
+  "usage_unknown_reason": "No measured usage available",
+  "integration_dependency": "Issue #79 adapter must adopt verified transfer closure before claiming automation"
+}

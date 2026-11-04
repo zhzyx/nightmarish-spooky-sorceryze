@@ -1,5 +1,7 @@
 # GitHub Issue 工单适配
 
+偃师定版后的父子工单拆分、按子项提交关闭、阎罗少量尾项结转及文档追溯，统一遵循 [Issue 生命周期](issue-lifecycle.md)。设计内使用 [拆分模板](../../../design-docs/templates/issue-breakdown.md)；原生子项关系和远端状态必须实际写入并回读。
+
 宿主执行约束见 [执行范围与验证成本](execution-policy.md)：任务入口固定边界，交付阶段按变更选择验证，等待阶段合并真实状态事件，效果沿用 Diting 记录。它是本组件的流程约定，不改变共享 Agent 定义或声称已实现自动预算控制。
 
 
