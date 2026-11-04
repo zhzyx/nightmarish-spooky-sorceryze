@@ -54,6 +54,12 @@ class EnvironmentIgniterTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             igniter.environment_deploy(self.root, {"components": ["rust"], "location": "project-local"})
 
+    def test_deploy_refuses_duplicate_or_malformed_components_before_writing(self):
+        for components in (["python", "python"], [None], [["node"]]):
+            with self.subTest(components=components), self.assertRaises(ValueError):
+                igniter.environment_deploy(self.root, {"components": components})
+            self.assertFalse(self.state_path().exists())
+
     def test_deploy_refuses_missing_path_without_auto_install(self):
         with patch.object(igniter, "component_status", return_value={
             "python": {"available": True, "path": "/usr/bin/python3", "sha256": None},
@@ -103,6 +109,69 @@ class EnvironmentIgniterTests(unittest.TestCase):
         self.assertFalse((self.root / "project/runtime/state/installed.json.tmp").exists())
         value = json.loads(self.state_path().read_text(encoding="utf-8"))
         self.assertEqual(value["schema_version"], 1)
+
+    def deploy_pair(self):
+        paths = {}
+        for name in ("node", "git"):
+            path = self.root / name / name
+            path.parent.mkdir()
+            path.write_bytes(name.encode())
+            os.chmod(path, 0o755)
+            paths[name] = str(path)
+        igniter.environment_deploy(self.root, {"components": list(paths), "paths": paths})
+        return paths
+
+    def test_restart_restores_both_paths_from_disk_idempotently(self):
+        paths = self.deploy_pair()
+        # A separately loaded module models a fresh bridge process with no memory.
+        restarted = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(restarted)
+        with patch("os.getcwd", return_value=str(self.root.parent)):
+            env = restarted.apply_state(self.root, {"PATH": "original"})
+        self.assertEqual(env["GONGGONG_NODE"], paths["node"])
+        self.assertEqual(env["GONGGONG_GIT"], paths["git"])
+        self.assertEqual(env["PATH"].split(os.pathsep), [str(Path(p).parent) for p in paths.values()] + ["original"])
+        self.assertEqual(restarted.apply_state(self.root, dict(env)), env)
+        self.assertEqual(igniter.read_state(self.root)["path_base"], "workspace_root")
+
+    def test_changed_component_rejects_entire_restore_and_keeps_evidence(self):
+        paths = self.deploy_pair()
+        Path(paths["node"]).write_bytes(b"changed")
+        env = {"PATH": "original"}
+        self.assertEqual(igniter.apply_state(self.root, dict(env)), env)
+        recovery = igniter.recovery_status(self.root)
+        self.assertFalse(recovery["ok"])
+        self.assertIn("node", recovery["error"])
+        self.assertTrue(self.state_path().exists())
+        Path(paths["git"]).unlink()
+        self.assertFalse(igniter.recovery_status(self.root)["ok"])
+
+    def test_malformed_state_does_not_crash_or_inject_environment(self):
+        self.state_path().parent.mkdir()
+        for value in ("{", '[]', '{"schema_version":1,"env_changes":null}',
+                      '{"schema_version":1,"authorized":true,"components":[null]}'):
+            self.state_path().write_text(value, encoding="utf-8")
+            with self.subTest(value=value):
+                self.assertEqual(igniter.apply_state(self.root, {"PATH": "original"}), {"PATH": "original"})
+                self.assertFalse(igniter.recovery_status(self.root)["ok"])
+
+    def test_legacy_state_ignores_arbitrary_environment_keys(self):
+        paths = self.deploy_pair()
+        state = igniter.read_state(self.root)
+        del state["path_base"]
+        state["env_changes"] = {"UNRELATED_KEY": "injected", "PATH": "unverified"}
+        igniter.write_state_atomic(self.root, state)
+        env = igniter.apply_state(self.root, {})
+        self.assertNotIn("UNRELATED_KEY", env)
+        self.assertEqual(env["GONGGONG_GIT"], paths["git"])
+        self.assertNotIn("unverified", env["PATH"])
+
+    def test_rollback_prevents_restore_in_new_process(self):
+        self.deploy_pair()
+        igniter.environment_rollback(self.root)
+        self.assertEqual(igniter.apply_state(self.root, {"PATH": "original"}), {"PATH": "original"})
+        self.assertTrue(igniter.recovery_status(self.root)["ok"])
+        self.assertFalse(igniter.recovery_status(self.root)["active"])
 
 
 if __name__ == "__main__":

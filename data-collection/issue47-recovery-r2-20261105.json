@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "base_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "candidate_binding": "source_sha256_lf; final commit supplied by Git history",
+  "source_sha256_lf": {
+    "customizations/components/godot-host/environment_igniter.py": "f0c5c53c56f0c1469fcecc66d82bed607f4ec65814367d1f6c21d2f26eb62da3",
+    "customizations/components/godot-host/test_environment_igniter.py": "cb538d0283c0770ccf6725951ebb95b32d8d5a29c0ddf6a77e917012f9b144fd",
+    "design-docs/requirement-c1d0427af0155780b0485d8570f2d4ba.md": "5476c50cb6c34926cc9da6d352c924b97bbfc78b9604f092e8d3b0d14264b9f0"
+  },
+  "platform": "Windows x86_64",
+  "python": "3.14",
+  "tests": {
+    "environment_igniter": {
+      "passed": 14,
+      "command": "python customizations/components/godot-host/test_environment_igniter.py"
+    },
+    "bridge": {
+      "passed": 17,
+      "command": "python -m unittest discover -s customizations/components/godot-host -p test_bridge.py"
+    }
+  },
+  "initial_test_attempt": "Sandbox temporary-directory ACL denied fixture creation; rerun with normal host temporary directory passed. No product assertion failed.",
+  "coverage": [
+    "disk restore using separately loaded module",
+    "node and git PATH retained and repeat application idempotent",
+    "changed or missing component prevents entire restore; evidence retained",
+    "malformed state skipped with explicit recovery status",
+    "legacy schema-1 paths relative to workspace root; arbitrary env_changes ignored",
+    "rollback prevents subsequent restore",
+    "duplicate and malformed component selection rejected before state write"
+  ],
+  "prior_evidence": {
+    "path": "data-collection/ai-chat-debug-20261104/verification.json",
+    "scope": "Existing Windows PowerShell bootstrap and same-editor-process resume; no rerun because script/C++ unchanged"
+  },
+  "limits": [
+    "No new editor build or installation",
+    "No cross-restart editor message/settings acceptance",
+    "No actual user-level deployment or macOS/Linux installation",
+    "No real model-service acceptance",
+    "No authorization certificate inferred from local manifest"
+  ],
+  "usage": null,
+  "observed_at": "2026-11-04T17:38:25.935809+00:00",
+  "supersedes_evidence": "data-collection/issue47-recovery-20261105.json",
+  "review": {
+    "evaluator": "independent subagent review47",
+    "status": "passed_after_fix",
+    "actual_validation": "14 igniter tests independently run and passed",
+    "finding": "Duplicate components could deploy successfully but fail restore; fixed before state write",
+    "scope": "Python source and tests; documentation limits reviewed",
+    "approval_granted": false
+  }
+}
