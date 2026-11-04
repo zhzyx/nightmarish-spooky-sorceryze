@@ -1,0 +1,45 @@
+{
+  "path_base": "repository_root",
+  "scope_revision": 2,
+  "candidate_package_lock_sha256": "d33c2ff7ed8a6b087db0b046554675cd8e5347d8d5aef44f15ba6d33c48164cb",
+  "candidate_agents": [
+    {
+      "id": "yanshi",
+      "version": "0.4.1",
+      "digest": "30745abee2681e57b6e15d39877127226645e78ac853e5e1ebfbef844f6fbb88"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.4.1",
+      "digest": "76de35e931b8cc41846e5c39abce946c9b51da104b9d9ad5b6d45714744c2af5"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.1",
+      "digest": "57428f4a3a1f561dae8bfa8ee01e194c85b58f986041c8a04f728afb391c4784"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.2",
+      "digest": "79b1b3cb2bff76a80a68e53fba73c76a5663dbf81d34b43ae46bdfb1317b5254"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.2",
+      "digest": "d286893f165c614eb65d28027b8a25806c992e1e67e1d22e5628eabd9f2a39f6"
+    }
+  ],
+  "validation": {
+    "candidate_integrity_and_reporting": "passed",
+    "quality_ownership": "passed",
+    "ordinary_business_trigger_removed": true,
+    "frozen_and_upstream_unchanged": true,
+    "diff_check": "passed"
+  },
+  "independent_review": "pending",
+  "approval": "pending",
+  "formal_gate": "not rerun; new candidate explicitly remains pending approval",
+  "supersedes_evidence_for_current_candidate": "data-collection/review-dedup-candidate.json",
+  "runtime_effect": "not deployed",
+  "usage": null
+}

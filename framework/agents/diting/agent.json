@@ -2,7 +2,7 @@
   "id": "diting",
   "name": "谛听",
   "kind": "independent_agent",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "entry": "agents/diting/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -18,10 +18,10 @@
     "agents/diting/skills/data-classify/SKILL.md",
     "agents/diting/skills/data-analyze/SKILL.md"
   ],
-  "admission_pass": "reviews/verification-efficiency/diting-admission.json",
+  "admission_pass": "reviews/review-dedup/diting-admission.json",
   "host_required_for_execution": true,
   "scope": "authorized_data_analysis_and_optimization_proposals_only",
   "reporting": "agents/diting/reporting.json",
   "reporting_binding_template": "templates/reporting-binding.json",
-  "state": "pending_approval"
+  "state": "approved_local_definition_host_mandate_required"
 }

@@ -1,0 +1,13 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "approver_id": "workspace-user",
+  "authority_ref": "codex-chat:01a1a8a3-718f-7b10-8e22-87d3f44437b7",
+  "decision_text": "批准此精确候选，继续合入收尾",
+  "recorded_at": "2026-11-04T23:33:51.285491+00:00",
+  "framework_digest": "8a1e0d28c7458c049516ee4f08ecec501bd5338f6003c5138252a296a2f27735",
+  "baseline": "c76f8988b928b9a38e53ff706f1d5108fcabf29f",
+  "scope": [
+    "local_agent_definition_only"
+  ],
+  "runtime_acceptance": "Separate actual evidence already recorded"
+}

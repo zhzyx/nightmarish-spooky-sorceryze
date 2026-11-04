@@ -2,7 +2,7 @@
   "id": "sinan",
   "name": "司南",
   "kind": "independent_agent",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "entry": "agents/sinan/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -15,7 +15,7 @@
     "skills/gonggong-check/SKILL.md",
     "skills/work-order-coordination/SKILL.md"
   ],
-  "admission_pass": "reviews/sinan/parallel-integration-0.1.3.json",
+  "admission_pass": "reviews/sinan/parallel-main-integration-0.1.4.json",
   "host_required_for_execution": true,
   "scope": "authorized_cross_domain_task_coordination_dependencies_dispatch_and_reconciliation",
   "reporting": "agents/sinan/reporting.json",

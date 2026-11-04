@@ -3,9 +3,9 @@
   "component": {
     "kind": "skill",
     "id": "gonggong-check",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "entry": "skills/gonggong-check/SKILL.md",
-    "entry_sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6"
+    "entry_sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

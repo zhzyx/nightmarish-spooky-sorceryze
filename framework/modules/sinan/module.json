@@ -10,8 +10,8 @@
   "specification": "specs/work-order-management.md",
   "skill": "skills/work-order-coordination/SKILL.md",
   "runtime_binding": "skills/work-order-coordination/runtime-ref.json",
-  "implementation_admission": "reviews/sinan/parallel-integration-0.1.3.json",
-  "module_admission": "reviews/sinan/parallel-integration-0.1.3.json",
+  "implementation_admission": "reviews/sinan/parallel-main-integration-0.1.4.json",
+  "module_admission": "reviews/sinan/parallel-main-integration-0.1.4.json",
   "governance": {
     "root": "yuanheng",
     "foundation": "FOUNDATION.md",

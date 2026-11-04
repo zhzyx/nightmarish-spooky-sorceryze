@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "path_base": "framework",
+  "stage": "candidate",
+  "delivery_kind": "source",
+  "model_mode": "none",
+  "candidate": {
+    "repository": "..",
+    "commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+    "tree": "4723c038807e353b1533592229e45f65cf5d0093"
+  },
+  "dependencies": [],
+  "artifacts": [
+    {
+      "path": "../AGENTS.md",
+      "sha256": "174fa2aa5f0350ebcbc8000a287586581cfd931c45996a853e178d0455cdc51e",
+      "id": "AGENTS.md",
+      "role": "source",
+      "candidate_path": "AGENTS.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../data-collection/review-dedup-candidate.json",
+      "sha256": "747c71842222b60291e05055f9c3567843cb622a2792e5087118edde6b3c1ddd",
+      "id": "data-collection/review-dedup-candidate.json",
+      "role": "source",
+      "candidate_path": "data-collection/review-dedup-candidate.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../data-collection/review-dedup-request.json",
+      "sha256": "57aef38d850f451e21934a9597ad935fa517ccd0ba0fa8b49267b1aec5ea4011",
+      "id": "data-collection/review-dedup-request.json",
+      "role": "source",
+      "candidate_path": "data-collection/review-dedup-request.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../data-collection/review-dedup-scope-r2-validation.json",
+      "sha256": "ae698c7c4d937d9ae62dab93201cc915ea0ee30575bce34cc82a3e01538e02fe",
+      "id": "data-collection/review-dedup-scope-r2-validation.json",
+      "role": "source",
+      "candidate_path": "data-collection/review-dedup-scope-r2-validation.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../data-collection/review-dedup-scope-r2.json",
+      "sha256": "c26d49b8b934bdddcada720867a90875d6036ff92e8a01b5d9e0ff665d7de5cd",
+      "id": "data-collection/review-dedup-scope-r2.json",
+      "role": "source",
+      "candidate_path": "data-collection/review-dedup-scope-r2.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../data-collection/review-dedup-source-changed.json",
+      "sha256": "ebf362a024f2a2acdbd0d7030dfcaccd5464f6e19b5f566e58996fc7ea0f1222",
+      "id": "data-collection/review-dedup-source-changed.json",
+      "role": "source",
+      "candidate_path": "data-collection/review-dedup-source-changed.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../design-docs/review-dedup-20261105.md",
+      "sha256": "0bff6100d10935266dc18fbd838de0bb55d3d60123b817b857a20e36e7573a30",
+      "id": "design-docs/review-dedup-20261105.md",
+      "role": "source",
+      "candidate_path": "design-docs/review-dedup-20261105.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/AGENTS.md",
+      "sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+      "id": "framework/AGENTS.md",
+      "role": "source",
+      "candidate_path": "framework/AGENTS.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/GOVERNANCE.md",
+      "sha256": "a6d2a4bd2992a8521926d5b4d03d66afb12b5081068b86d6614ae09ba7890c3a",
+      "id": "framework/GOVERNANCE.md",
+      "role": "source",
+      "candidate_path": "framework/GOVERNANCE.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/README.md",
+      "sha256": "2f9f960f57f4c395e020dedfac7c8b3866b667cf6132e7f06f6d540a2740eeda",
+      "id": "framework/README.md",
+      "role": "source",
+      "candidate_path": "framework/README.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/diting/AGENT.md",
+      "sha256": "5ea6ba8b9b9d17b9ef8d2e7c44c493e036f56b8cfce9ee10fbc53e7cb766abef",
+      "id": "framework/agents/diting/AGENT.md",
+      "role": "source",
+      "candidate_path": "framework/agents/diting/AGENT.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/diting/agent.json",
+      "sha256": "a7f023ce3e8ee2622751f620d8158f821f7ac9c2383a669e6490462f5bf58589",
+      "id": "framework/agents/diting/agent.json",
+      "role": "source",
+      "candidate_path": "framework/agents/diting/agent.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/diting/references/optimization.md",
+      "sha256": "ff411306c10388acb1181775bdee3b74d34352910a7201708519e70522968daf",
+      "id": "framework/agents/diting/references/optimization.md",
+      "role": "source",
+      "candidate_path": "framework/agents/diting/references/optimization.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/diting/reporting.json",
+      "sha256": "4354062b8bc90cf7d310794b719c860ab38c0254e53ea05ec19be7bfee04f3f2",
+      "id": "framework/agents/diting/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/agents/diting/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/heqi/AGENT.md",
+      "sha256": "9981b5c68b73a81aedf314f5110c2c5280ed9219aed3a4f7f885fa28f28f84f6",
+      "id": "framework/agents/heqi/AGENT.md",
+      "role": "source",
+      "candidate_path": "framework/agents/heqi/AGENT.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/heqi/agent.json",
+      "sha256": "858a22b977ae8d1e566106b364eb15b1e01728d41a9adbb500de98d6316ff03f",
+      "id": "framework/agents/heqi/agent.json",
+      "role": "source",
+      "candidate_path": "framework/agents/heqi/agent.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/heqi/reporting.json",
+      "sha256": "190d9384395cd52ccb5cbc1dbc6cebe3a44c7aef5c580d1bb9442ee5632e9648",
+      "id": "framework/agents/heqi/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/agents/heqi/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/kuafu/AGENT.md",
+      "sha256": "c249de9d53fcc33ee31583b8d55d41d1f11bbf0759c3c0e0ee25108d3e8babf4",
+      "id": "framework/agents/kuafu/AGENT.md",
+      "role": "source",
+      "candidate_path": "framework/agents/kuafu/AGENT.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/kuafu/agent.json",
+      "sha256": "dff5b26c700cd8247d0ded2026d25286f6a10d0fe51d652575669e703bbd2d10",
+      "id": "framework/agents/kuafu/agent.json",
+      "role": "source",
+      "candidate_path": "framework/agents/kuafu/agent.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/kuafu/reporting.json",
+      "sha256": "54049e454c569b78c014237e6461527f760eaff70bff40cc39b2f441e92a585d",
+      "id": "framework/agents/kuafu/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/agents/kuafu/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/sinan/AGENT.md",
+      "sha256": "4869e60c2b94676a4b0ab902dee53b483f86d34bbbae57005bebfc6a6938fbd8",
+      "id": "framework/agents/sinan/AGENT.md",
+      "role": "source",
+      "candidate_path": "framework/agents/sinan/AGENT.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/sinan/agent.json",
+      "sha256": "115b50494458019c5b4583620e41e1a0d7f6ffa2bcab89ab3c265eb8683b5218",
+      "id": "framework/agents/sinan/agent.json",
+      "role": "source",
+      "candidate_path": "framework/agents/sinan/agent.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/sinan/reporting.json",
+      "sha256": "9799e9305fae06d55f9c0c955ac3e1adae413fcd03a22e6fa3d23590626595de",
+      "id": "framework/agents/sinan/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/agents/sinan/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/yanshi/AGENT.md",
+      "sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+      "id": "framework/agents/yanshi/AGENT.md",
+      "role": "source",
+      "candidate_path": "framework/agents/yanshi/AGENT.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/yanshi/agent.json",
+      "sha256": "dad48a58cf5ac2bf06d9bceebd9aed58dc1876c2426c54faf40b8d622da14014",
+      "id": "framework/agents/yanshi/agent.json",
+      "role": "source",
+      "candidate_path": "framework/agents/yanshi/agent.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/agents/yanshi/reporting.json",
+      "sha256": "b3c30c0d00083c389fe5237c60be4fb556ecfb8538d08fd50f8530bd967888eb",
+      "id": "framework/agents/yanshi/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/agents/yanshi/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/framework-manifest.json",
+      "sha256": "b3e7e99009de9f3b194c534f7f13639b8fa8477846949907ff44eb32259dbc21",
+      "id": "framework/framework-manifest.json",
+      "role": "source",
+      "candidate_path": "framework/framework-manifest.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/package-lock.json",
+      "sha256": "3bf524f109db27bfa17485e23d04edc55996c809fa23273dcb12d92c70448173",
+      "id": "framework/package-lock.json",
+      "role": "source",
+      "candidate_path": "framework/package-lock.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/diting-admission.json",
+      "sha256": "7afbb672ae7d016fe127f864878904b59562a9bb61a8b56415d7d8af35066724",
+      "id": "framework/reviews/review-dedup/diting-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/diting-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/gonggong-check-skill-admission.json",
+      "sha256": "40f7e22bf84084972643a3eeebbee32afd9420f72c5ef022c27a9721fe4b1eaf",
+      "id": "framework/reviews/review-dedup/gonggong-check-skill-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/gonggong-check-skill-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/heqi-admission.json",
+      "sha256": "d517469985f9a7771ef80d904eaa8613ba9636741e4d5f7eefa2c3b925392b6c",
+      "id": "framework/reviews/review-dedup/heqi-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/heqi-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/independent-review.json",
+      "sha256": "80ff0d53480c6c3237bb1015ae06c8a6d86c303c58c3eb8ff4b209816509842e",
+      "id": "framework/reviews/review-dedup/independent-review.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/independent-review.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/kuafu-admission.json",
+      "sha256": "cdd825462d8f52e9f42c3a502b71ce7425cd3df8c6d2e43c8e9b25fb5deffcf1",
+      "id": "framework/reviews/review-dedup/kuafu-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/kuafu-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/sinan-admission.json",
+      "sha256": "eba2b7f0deb43356994b076567e819cade9e3a907f504ec5a40e148cf558b8fe",
+      "id": "framework/reviews/review-dedup/sinan-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/sinan-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/user-approval.json",
+      "sha256": "bc21d78190bbe2aebd3f5da29e4383e4eecdec7ab346a5ee6ec7d476169d81e2",
+      "id": "framework/reviews/review-dedup/user-approval.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/user-approval.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/work-order-coordination-skill-admission.json",
+      "sha256": "59aee6b1388dd0c437e5111fa269a98a971e6b75b4747fe6fc235bc19f4d9259",
+      "id": "framework/reviews/review-dedup/work-order-coordination-skill-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/work-order-coordination-skill-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/reviews/review-dedup/yanshi-admission.json",
+      "sha256": "3c7146b6feac1e5ba9ddf1f13c0ef3345a5dcfa9fafde85017f17c08fb31b073",
+      "id": "framework/reviews/review-dedup/yanshi-admission.json",
+      "role": "source",
+      "candidate_path": "framework/reviews/review-dedup/yanshi-admission.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/skills/gonggong-check/SKILL.md",
+      "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e",
+      "id": "framework/skills/gonggong-check/SKILL.md",
+      "role": "source",
+      "candidate_path": "framework/skills/gonggong-check/SKILL.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/skills/gonggong-check/reporting.json",
+      "sha256": "be8f35d89a16ce581685dd8e615138f8fdf3c60c0c697bcc419032648708051e",
+      "id": "framework/skills/gonggong-check/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/skills/gonggong-check/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/skills/work-order-coordination/SKILL.md",
+      "sha256": "083fd7c054af31d2b7b9dfdc83c4eea53a5cbb4b8b42035ec39244415003d348",
+      "id": "framework/skills/work-order-coordination/SKILL.md",
+      "role": "source",
+      "candidate_path": "framework/skills/work-order-coordination/SKILL.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/skills/work-order-coordination/reporting.json",
+      "sha256": "01196cad1ba5dd744151a4d1053043624feb784ae028c07fd0a9f3b0869955d7",
+      "id": "framework/skills/work-order-coordination/reporting.json",
+      "role": "source",
+      "candidate_path": "framework/skills/work-order-coordination/reporting.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/specs/governance-review.md",
+      "sha256": "62aa46a408857c1df1937b5952dbd7cdc84399963af103ea7097efe1cc6bf1be",
+      "id": "framework/specs/governance-review.md",
+      "role": "source",
+      "candidate_path": "framework/specs/governance-review.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/specs/module-system.md",
+      "sha256": "7db62a4debae1c3e6f0334418e55ce04cfc9c3c9a01182a682e7971cb0550826",
+      "id": "framework/specs/module-system.md",
+      "role": "source",
+      "candidate_path": "framework/specs/module-system.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../framework/specs/quality-responsibilities.md",
+      "sha256": "a6d3afc6859c8f3a24c6bf9683d8101b7525026448f69c470a2206775c6ac16f",
+      "id": "framework/specs/quality-responsibilities.md",
+      "role": "source",
+      "candidate_path": "framework/specs/quality-responsibilities.md",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-20261105-request.json",
+      "sha256": "9db8567cbc355841172b2ec313f1cf3eb310e0764c6bc5f92ac2f3fda75963aa",
+      "id": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-20261105-request.json",
+      "role": "source",
+      "candidate_path": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-20261105-request.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-scope-r2.json",
+      "sha256": "805745d2be899cd3cfee100cde1c81a52a987dc4a2d83488c054f1a33a5d1ed1",
+      "id": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-scope-r2.json",
+      "role": "source",
+      "candidate_path": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-scope-r2.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    },
+    {
+      "path": "../gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-source-changed.json",
+      "sha256": "cdb94097b99f59b8874c55fb5b1a0edda31abc88da1f08744a5b7fbcba516180",
+      "id": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-source-changed.json",
+      "role": "source",
+      "candidate_path": "gonggong-diting-data/events/gonggong-workspace/review-dedup-20261105/review-dedup-source-changed.json",
+      "distribution": "GitHub repository checkout at source commit 23f41367efa6501b72d3b5c4091ce1f11ba64668"
+    }
+  ],
+  "validation": {
+    "source": {
+      "path": "../data-collection/review-dedup-source-validation.json",
+      "sha256": "0892f9a795e6d65ea72e1ce25ba4897072bb856525e5370a18af39e8526630ff"
+    }
+  },
+  "collection": {
+    "state": "configured",
+    "configured": {
+      "path": "../data-collection/review-dedup-collection-validation.json",
+      "sha256": "abbd68998fbd8765353c0927a3a2c4fcab4378a8e5b7e7d027357a3bdb83b4dd"
+    }
+  },
+  "publication": null
+}

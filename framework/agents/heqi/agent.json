@@ -2,7 +2,7 @@
   "id": "heqi",
   "name": "合契",
   "kind": "independent_agent",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "entry": "agents/heqi/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -15,11 +15,11 @@
     "skills/gonggong-check/SKILL.md",
     "skills/work-order-coordination/SKILL.md"
   ],
-  "admission_pass": "reviews/verification-efficiency/heqi-admission.json",
+  "admission_pass": "reviews/review-dedup/heqi-admission.json",
   "host_required_for_execution": true,
   "scope": "authorized_multi_worker_change_comparison_conflict_resolution_and_handoffs",
   "reporting": "agents/heqi/reporting.json",
   "reporting_binding_template": "templates/reporting-binding.json",
   "layer": "core",
-  "state": "pending_approval"
+  "state": "approved_local_definition_host_mandate_required"
 }

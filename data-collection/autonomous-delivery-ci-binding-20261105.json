@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "request_id": "autonomous-delivery-20261105",
+  "issue_number": 100,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/100",
+  "source": "data-collection/autonomous-delivery-validation-20261105.json",
+  "path_base": "repository_root",
+  "correction": "CI requires issue_number or issue_url; original numeric issue field retained unchanged",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41928819109",
+  "implementation_changed": false
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "review-dedup-source-changed",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "review-dedup-20261105",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T23:09:48.744392+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/101",
+  "agent": {
+    "id": "codex-review-dedup",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "174fa2aa5f0350ebcbc8000a287586581cfd931c45996a853e178d0455cdc51e"
+  },
+  "payload": {
+    "event": "source.changed",
+    "consumers": [
+      "yanshi",
+      "kuafu",
+      "diting",
+      "heqi",
+      "sinan",
+      "gonggong-check",
+      "work-order-coordination"
+    ],
+    "compatibility": "Instruction-only review routing change; ordinary requests no longer trigger definition reviews; actual governance and business validation preserved",
+    "recovery": "prior main 78a47fb8; revert this scoped change through normal reviewed Git delivery without rewriting historical evidence",
+    "user_authorization": "更新并合入，待审是等待谁审",
+    "independent_reviewer": "/root/review_dedup",
+    "publication": "pending",
+    "usage": null,
+    "consumed": null
+  },
+  "evidence_refs": [
+    "review-dedup-scope-r2"
+  ],
+  "sha256": "ef972b1c59508fb89bc62638c2100c052c6d647a69d54c8e5020b7f58f1e6da8"
+}

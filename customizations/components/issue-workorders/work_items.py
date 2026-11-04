@@ -84,7 +84,15 @@ def labels(root, apply=False):
     return {"state": "labels_ensured", "count": len(definitions)}
 
 
-def issue(root, document, title, category, request_id, apply=False):
+def issue(root, document, title, category, request_id, apply=False, execution_authority_ref=None):
+    # Trace the caller's existing mandate; this is not a governance grant.
+    if execution_authority_ref is not None and (
+        not isinstance(execution_authority_ref, str)
+        or not execution_authority_ref.strip()
+        or any(ord(c) < 32 for c in execution_authority_ref)
+    ):
+        raise ValueError("Execution authority reference must be nonempty single-line text")
+    initial_status = "status:in-progress" if execution_authority_ref else "status:needs-decision"
     settings, definitions = config(root)
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
         raise ValueError("Invalid stable request ID")
@@ -97,11 +105,13 @@ def issue(root, document, title, category, request_id, apply=False):
         raise ValueError("A Markdown requirement in design-docs is required")
     marker = "<!-- gonggong-request:" + request_id + " -->"
     body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
+    if execution_authority_ref:
+        body += "\n\n执行授权来源（由调用宿主核实，不代替候选准入）：" + execution_authority_ref + "\n"
     plan = {
         "state": "planned",
         "repository": settings["repository"],
         "title": title,
-        "labels": [label, "status:needs-decision", "workspace:gonggong"],
+        "labels": [label, initial_status, "workspace:gonggong"],
         "request_id": request_id,
         "body": body,
     }
@@ -147,7 +157,7 @@ def issue(root, document, title, category, request_id, apply=False):
             "--label",
             label,
             "--label",
-            "status:needs-decision",
+            initial_status,
             # Host intake only accepts explicitly labeled GongGong work.
             "--label",
             "workspace:gonggong",
@@ -218,6 +228,7 @@ def main():
     create.add_argument("--type", required=True)
     create.add_argument("--request-id", required=True)
     create.add_argument("--apply", action="store_true")
+    create.add_argument("--execution-authority-ref", help="Existing user/host mandate verified by caller; not a grant")
     collection = sub.add_parser("collect")
     collection.add_argument("--request-id", required=True)
     args = parser.parse_args()
@@ -225,7 +236,7 @@ def main():
     if args.command == "labels":
         result = labels(root, args.apply)
     elif args.command == "issue":
-        result = issue(root, args.document, args.title, args.type, args.request_id, args.apply)
+        result = issue(root, args.document, args.title, args.type, args.request_id, args.apply, args.execution_authority_ref)
     else:
         result = collect(root, args.request_id)
     print(json.dumps(result, ensure_ascii=False, indent=2))

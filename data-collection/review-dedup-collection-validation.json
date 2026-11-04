@@ -1,0 +1,16 @@
+{
+  "kind": "collection.configured",
+  "status": "passed",
+  "candidate": {
+    "repository": "..",
+    "commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+    "tree": "4723c038807e353b1533592229e45f65cf5d0093"
+  },
+  "inputs_sha256": "efb34db85170a08c6c7c7e53fe9bb19172085683ac081cd46299e4a2fa450f5d",
+  "binding": {
+    "path": "../work-items.json",
+    "sha256": "531348ea01a799b82129ab01534d61e22d1b6514d9b969ea5888347429f4ab2d"
+  },
+  "file_events_committed": true,
+  "consumer_confirmation": null
+}

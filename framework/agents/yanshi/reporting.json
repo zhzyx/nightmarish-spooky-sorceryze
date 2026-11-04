@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "yanshi",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "entry": "agents/yanshi/AGENT.md",
-    "entry_sha256": "c25853878cce237fcfb5af44064c0ee8cdfdf66179e0da1281dd8539f83cd497"
+    "entry_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",
