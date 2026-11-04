@@ -1,0 +1,60 @@
+{
+  "template": false,
+  "permit_id": null,
+  "status": "requires_changes",
+  "event": "independent_review",
+  "phase": "candidate_review",
+  "subject": {
+    "id": "issue55-ui-integration-candidate",
+    "version_or_digest": "sha256:2a0d04fc8ac8d55c2ef25693d0d82ae9c4f710402955503c60a3e4907ff311c9",
+    "scope": [
+      "Independent UI source review and six-case native layout matrix; exact cpp/h and executable hashes in build-input.json"
+    ],
+    "agent_governance_refs": [
+      "framework/AGENTS.md",
+      "framework/specs/governance-review.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.2"
+  },
+  "review": {
+    "gonggong_framework": "Pass for test-only changes: no frozen source, framework definition, permission callback or active install changed.",
+    "yuanheng": {
+      "purpose": "User-requested independent layout regression; findings return to implementation owner.",
+      "truth": "Native results and exact hashes retained; missing screenshots remain unknown.",
+      "economy": "Reused successful incremental build and native tests; no engine rebuild.",
+      "authority": "Different chat from UI implementation; no author self-approval or publication.",
+      "adaptation": "Test fixtures isolated per process after exploratory network/queue contamination.",
+      "continuity": "All six window/scale cases retained; three failures remain open."
+    },
+    "concision": {
+      "status": "unknown",
+      "entry_characters": null,
+      "rationale": null
+    },
+    "applicable_validation": "requires_changes:150% visibility",
+    "evidence_refs": [
+      "data-collection/issue55-layout-regression/review.json"
+    ],
+    "evaluator_id": "codex-chat-01a1a79b-0f13-7dd3-a5e6-c973e520581c",
+    "independence": "independent of #56 source implementation; own test code self-checked",
+    "unresolved": [
+      "150% three physical widths clip composer; 640 also clips horizontally.",
+      "Await fixed candidate and affected-case rerun; no release approval."
+    ]
+  },
+  "approval": {
+    "approver_id": null,
+    "authority_ref": null,
+    "decision_evidence_ref": null,
+    "approved_at": null,
+    "valid_until_or_task_end": null,
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}
