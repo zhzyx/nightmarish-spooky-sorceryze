@@ -111,6 +111,8 @@ GongGongPanel::GongGongPanel() {
 	add_child(setup_rollback);
 	setup_dialog = memnew(ConfirmationDialog);
 	setup_dialog->set_name("GongGongRuntimeSetup");
+	// Keep configuration available alongside independent editor approvals.
+	setup_dialog->set_exclusive(false);
 	setup_dialog->set_title(U"共工本地配置点火器");
 	setup_dialog->set_ok_button_text(U"部署并自检，完成后继续原需求");
 	VBoxContainer *setup_fields = memnew(VBoxContainer);
@@ -141,7 +143,7 @@ GongGongPanel::GongGongPanel() {
 	setup_source_dialog->set_access(FileDialog::ACCESS_FILESYSTEM);
 	setup_source_dialog->set_file_mode(FileDialog::FILE_MODE_OPEN_DIR);
 	setup_source_dialog->connect("dir_selected", callable_mp(this, &GongGongPanel::choose_setup_source));
-	add_child(setup_source_dialog);
+	setup_dialog->add_child(setup_source_dialog);
 	setup_dialog->connect("confirmed", callable_mp(this, &GongGongPanel::start_setup));
 	add_child(setup_dialog);
 	output = memnew(TextEdit);
