@@ -170,7 +170,12 @@ func _find_by_name(node: Node, fragment: String) -> Node:
 
 func _check_workspace_pages(dock: Node) -> bool:
 	var pages = dock.find_child("AIWorkspacePages", true, false) as TabContainer
-	if not _check(pages != null and pages.get_tab_count() == 2 and pages.current_tab == 0 and pages.get_tab_title(0) == "会话" and pages.get_tab_title(1) == "定时器", "AI workspace needs exactly two fixed pages, initially 会话"):
+	if pages != null:
+		var titles: Array[String] = []
+		for index in pages.get_tab_count():
+			titles.append(pages.get_tab_title(index))
+		print("AI_WORKSPACE_PAGES=", JSON.stringify({"titles": titles, "current": pages.current_tab}))
+	if not _check(pages != null and pages.get_tab_count() == 3 and pages.current_tab == 0 and pages.get_tab_title(0) == "会话" and pages.get_tab_title(1) == "定时器" and pages.get_tab_title(2) == "共工", "AI workspace needs conversation, timer and GongGong fixed pages, initially conversation"):
 		return false
 	var tabs = pages.get_tab_bar()
 	var agents_page = pages.get_tab_control(0)
@@ -185,7 +190,7 @@ func _check_workspace_pages(dock: Node) -> bool:
 	if not _check(timers_page.visible and not agents_page.visible and chat.text == "WORKSPACE_PAGE_DRAFT" and timers_page.size.x > 0 and timers_page.size.y > 0, "Switching to the blank timer page lost the draft or layout"):
 		return false
 	tabs.tab_close_pressed.emit(1)
-	if not _check(pages.get_tab_count() == 2 and pages.current_tab == 1, "Fixed timer page was closed"):
+	if not _check(pages.get_tab_count() == 3 and pages.current_tab == 1, "Fixed timer page was closed"):
 		return false
 	pages.current_tab = 0
 	await process_frame

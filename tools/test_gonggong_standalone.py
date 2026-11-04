@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import runpy
 import shutil
 import subprocess
 import sys
@@ -32,7 +33,21 @@ def main(root):
 
         verify = [sys.executable, str(package / "tools/verify_framework.py")]
         probe("candidate_without_source", verify + ["--candidate"], True)
+        # Pending admission is a synthetic state, not an assumption about the
+        # installed package, which may already carry exact definition permits.
+        manifest = json.loads((package / "framework-manifest.json").read_text(encoding="utf-8"))
+        permit_path = package / manifest["agents"][0]["admission_pass"]
+        original_permit = permit_path.read_bytes()
+        pending = json.loads(original_permit)
+        pending["status"] = "pending"
+        permit_path.write_text(json.dumps(pending), encoding="utf-8")
+        inventory = runpy.run_path(str(package / "tools/package_integrity.py"))["inventory"]
+        lock_path = package / "package-lock.json"
+        original_lock = lock_path.read_bytes()
+        lock_path.write_text(json.dumps({"schema_version": 1, "path_base": "framework_root", "files": inventory(package)}))
         probe("pending_admission_rejected", verify, False, "Invalid admission")
+        permit_path.write_bytes(original_permit)
+        lock_path.write_bytes(original_lock)
         target = package / "README.md"
         original = target.read_bytes()
         target.write_bytes(original + b"\ntampered\n")
@@ -81,8 +96,6 @@ def main(root):
                 "expires_at": None,
             }
             (package / agent["admission_pass"]).write_text(json.dumps(permit), encoding="utf-8")
-        import runpy
-
         inventory = runpy.run_path(str(package / "tools/package_integrity.py"))["inventory"](package)
         (package / "package-lock.json").write_text(
             json.dumps({"schema_version": 1, "path_base": "framework_root", "files": inventory})
