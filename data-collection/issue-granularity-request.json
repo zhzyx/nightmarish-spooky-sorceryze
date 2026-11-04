@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-granularity-20261105-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-granularity-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T21:13:56.622927+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/84",
+  "agent": {
+    "id": "codex-issue-granularity",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "6831beda99f4ffaf5154992a8f86752d7370eaac18acfde186d4fec530cc7971"
+  },
+  "payload": {
+    "request": "Adjust design decomposition, sub-issue delivery and Yanluo remainder transfer with document provenance",
+    "scope": "Host documentation contract only; framework definitions unchanged",
+    "intake": "passed",
+    "validation_ref": "data-collection/issue-granularity-validation.json",
+    "automatic_executor_enabled": false,
+    "usage": null
+  },
+  "evidence_refs": []
+}
