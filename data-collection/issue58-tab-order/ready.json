@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "issue58-ready-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-a13c004f01700a4c2098850c5bfb60be",
+  "kind": "handoff",
+  "occurred_at": "2026-11-04T18:11:32.950243+00:00",
+  "source_ref": "data-collection/issue58-tab-order/main-ready.json",
+  "agent": {
+    "id": "codex-issue58",
+    "version": "2026-11-05",
+    "definition_sha256": "83ce4d96648d9bb347750f09bce220a35f28155edcfcf65589c4ccce4f23b44c",
+    "origin": "host-assigned-codex-chat"
+  },
+  "payload": {
+    "path_base": "repository_root",
+    "final_validation": "passed: main-ready.json; current test scripts match report hashes",
+    "files_sha256": {
+      "tests/editor/run_ai_chat_tab_order.py": "a54668094db19d849c9bee030723ad5fc0d695fb43e1b25723b65e0a19e0a611",
+      "tests/editor/ai_chat_tab_order.gd": "56dba83d005e4a4faa87511a46dc1b6920fbf21d50720def949670c60c317c51",
+      "data-collection/issue58-tab-order/main-ready.json": "64b2bcaa3566dae2527d9da2d8feb889843f81323487aad601a45565b5bb1e7c",
+      "design-docs/requirement-a13c004f01700a4c2098850c5bfb60be.md": "c679d2a196880eb41fd8b2a7dced5afce1bb298b2755cf81409aaf90fed70e37"
+    },
+    "remote_state": "not pushed or closed",
+    "candidate56": "copied candidate6 timed out, handed back; not passing evidence",
+    "superseded_runtime_scope": "main-ready is authoritative current script report; earlier runs kept as evidence",
+    "independent_review": "requested from coordinator; self-review is not approval"
+  },
+  "evidence_refs": [
+    "issue58-validation-20261105"
+  ]
+}

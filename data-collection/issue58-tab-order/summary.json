@@ -1,0 +1,50 @@
+{
+  "path_base": "repository_root",
+  "baseline": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "implementation": "existing: AIChatDock is registered before CanvasItemEditorPlugin; no engine source change",
+  "sources": {
+    "editor/editor_node.cpp": "c4004bba25c94e41b6140c65ed3ec78d6334382652aab052edb6fff627ddce5a",
+    "editor/editor_main_screen.cpp": "ba67920eb018927ed541e02b5eb1d7e17028801131b1ccd6dd4b7dd8cc27bd01",
+    "editor/docks/ai_chat_dock.cpp": "045bd5e73a84539035f3563d178edc71f522d59ec06b20d648c7e22a226236ed",
+    "editor/docks/editor_dock_manager.cpp": "8508ddb577472cdfbbc34e4fd9ca294094cc8fafb806cf1e01e6e7853cab1940",
+    "editor/docks/dock_tab_container.cpp": "c125721aa1598b9f58b005fb1bd00128e4a1e4df3b6fa5e3a3c295bc965faf46"
+  },
+  "main_binary": {
+    "sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+    "version_observed": "4.8.beta.custom_build.1b0a33fd5",
+    "provenance": "Coordinator supplied installed main; SHA independently checked before copying to isolated fixture"
+  },
+  "checks": {
+    "intake": "passed",
+    "runtime_main": "main-final.json",
+    "runtime_scope": "Headless tab geometry, all peer tab visibility/switching, AIChat input presence, normal close saved layout, two process restarts",
+    "remote_service": "not involved in sorting-only scope",
+    "initial_failed_attempts": [
+      {
+        "report": "runtime.json",
+        "meaning": "No engine launched: sandbox temp directory write failed; state running does not mean a live run"
+      },
+      {
+        "report": "candidate6-final.json",
+        "meaning": "Console wrapper timed out; not passing evidence; no remaining process found"
+      }
+    ]
+  },
+  "framework_review": {
+    "scope": "Tests, requirement clarification and evidence only; no frozen files, agents or skills modified",
+    "yuanheng": {
+      "purpose": "Preserves specific comment6637202998 and later ordering-only refinements",
+      "truth": "Records actual passes and failed harness attempts separately",
+      "economy": "Reuses existing main implementation and installed binary; no rebuild",
+      "authority": "Local isolated candidate only; no independent approval claimed",
+      "adaptation": "Adds focused persistent-layout regression",
+      "continuity": "No layout migration or feature scope expansion"
+    },
+    "independent_approval": "pending coordinator review"
+  },
+  "usage": {
+    "tokens": null,
+    "cost": null,
+    "reason": "not supplied by host"
+  }
+}
