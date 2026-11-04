@@ -1,0 +1,31 @@
+{
+  "path_base": "this_file_directory",
+  "corrects": "summary.json:test_source_sha256",
+  "reason": "Container minimum/rectangle diagnostics were added during the matrix. First four processes used the prior script; last two used additive diagnostics. Candidate source and binaries stayed fixed. Per-process hashes below replace the aggregate test hash; no run is claimed to have used another version.",
+  "runs": {
+    "layout-1.0-1440.json": {
+      "test_source_sha256": "ad80262b77d7f885639f9fda20086f57d2e0bc27dc7913e2d06d851266732c10",
+      "diagnostic_containers_included": false
+    },
+    "layout-1.0-640.json": {
+      "test_source_sha256": "ad80262b77d7f885639f9fda20086f57d2e0bc27dc7913e2d06d851266732c10",
+      "diagnostic_containers_included": false
+    },
+    "layout-1.0-960.json": {
+      "test_source_sha256": "ad80262b77d7f885639f9fda20086f57d2e0bc27dc7913e2d06d851266732c10",
+      "diagnostic_containers_included": false
+    },
+    "layout-1.5-1440.json": {
+      "test_source_sha256": "7ce21dc4419af99dfff7434e094090c950bbabec8591b025ebb120166d4a4a21",
+      "diagnostic_containers_included": true
+    },
+    "layout-1.5-640.json": {
+      "test_source_sha256": "ad80262b77d7f885639f9fda20086f57d2e0bc27dc7913e2d06d851266732c10",
+      "diagnostic_containers_included": false
+    },
+    "layout-1.5-960.json": {
+      "test_source_sha256": "7ce21dc4419af99dfff7434e094090c950bbabec8591b025ebb120166d4a4a21",
+      "diagnostic_containers_included": true
+    }
+  }
+}

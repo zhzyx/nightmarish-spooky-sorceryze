@@ -1,0 +1,67 @@
+{
+  "template": false,
+  "permit_id": null,
+  "status": "passed",
+  "event": "independent_review",
+  "phase": "candidate_review",
+  "subject": {
+    "id": "issue55-ui-integration-candidate",
+    "version_or_digest": "sha256:4e76348440a4d565e9a49be251680c6f6935f10208a74f87e2f08e65adbc24b3",
+    "scope": [
+      "Independent UI source review and six-case native layout matrix; exact cpp/h and executable hashes in build-input.json"
+    ],
+    "agent_governance_refs": [
+      "framework/AGENTS.md",
+      "framework/specs/governance-review.md"
+    ],
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "4e76348440a4d565e9a49be251680c6f6935f10208a74f87e2f08e65adbc24b3",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+    }
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.9.2"
+  },
+  "review": {
+    "gonggong_framework": "Pass for test-only changes: no frozen source, framework definition, permission callback or active install changed.",
+    "yuanheng": {
+      "purpose": "User-requested independent layout regression; findings return to implementation owner.",
+      "truth": "Six native runs passed; earlier failures retained; remaining existing issue and operation limits explicit.",
+      "economy": "Reused successful incremental build and native tests; no engine rebuild.",
+      "authority": "Different chat from UI implementation; no author self-approval or publication.",
+      "adaptation": "Test fixtures isolated per process after exploratory network/queue contamination.",
+      "continuity": "All six original physical window/scale cases retained and passed on final fixed source."
+    },
+    "concision": {
+      "status": "unknown",
+      "entry_characters": null,
+      "rationale": null
+    },
+    "applicable_validation": "passed:six native layout cases for candidate6",
+    "evidence_refs": [
+      "data-collection/issue55-layout-regression/candidate6-review.json"
+    ],
+    "evaluator_id": "codex-chat-01a1a79b-0f13-7dd3-a5e6-c973e520581c",
+    "independence": "independent of #56 source implementation; own test code self-checked",
+    "unresolved": [
+      "No real external model service tested; loopback fixture only.",
+      "No actual engine build/restart operation started within the narrow UI test; real running-build geometry remains outside this matrix.",
+      "No remote merge, install switch, delivery approval or Issue closure.",
+      "Initial conversation title contains mojibake; e776639f existing add_tab narrow Chinese literal. Sent to #56/#51, not introduced by this layout change and not claimed fixed."
+    ]
+  },
+  "approval": {
+    "approver_id": null,
+    "authority_ref": null,
+    "decision_evidence_ref": null,
+    "approved_at": null,
+    "valid_until_or_task_end": null,
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

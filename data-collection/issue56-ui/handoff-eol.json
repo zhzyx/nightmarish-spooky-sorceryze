@@ -1,0 +1,21 @@
+{
+  "path_base": "repository_root",
+  "reason": "Repository LF normalization and exact staged-byte collection gate",
+  "authorization": "Coordinator explicit handoff EOL authorization",
+  "records": [
+    {
+      "path": "data-collection/issue46-consultation-20261105.json",
+      "original_sha256": "d8541f625778005b5bd12e3a15b69f23618ef1d6a78feeb5ce6652dbe62085a8",
+      "normalized_sha256": "5d327c9667505d5a8a75a984fe68ba2cac4785524bd8378551bcbcb1508b035b",
+      "json_equal": true,
+      "recovery_copy": "bin/handoff-original-issue46-consultation-20261105.json"
+    },
+    {
+      "path": "data-collection/issue47-runtime-20261105.json",
+      "original_sha256": "980a6289b3b8223b734eb0f2c45604dd65429a8e8217aaf7b24b3c6091bd58bf",
+      "normalized_sha256": "8615565016f126e97acba589f585038716b348e801702061d6b7a1d425415b6a",
+      "json_equal": true,
+      "recovery_copy": "bin/handoff-original-issue47-runtime-20261105.json"
+    }
+  ]
+}

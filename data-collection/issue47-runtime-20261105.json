@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "cases": [
+    "deploy all three components with no destination Python",
+    "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+    "rollback retains recovery files",
+    "repeated rollback rejected",
+    "failed framework self-check restores pre-deployment files",
+    "tampered source rejected before execution",
+    "launcher permits editor ignition without Python or Node"
+  ],
+  "source": "explicit existing package; no downloads",
+  "global_environment_modified": false
+}

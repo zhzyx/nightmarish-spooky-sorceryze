@@ -1,0 +1,14 @@
+{
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "issue_number": 56,
+  "path_base": "this_file_directory",
+  "latest_review": "independent-title-review-final.json",
+  "latest_review_sha256": "09842db0772ba10a9c5837b430f8b617b4decf29d1251cd39035cfcddd593cd8",
+  "correction": "Independent reviewer corrected only source-relative script paths; actual test outputs and runtime assertions unchanged. Initial raw report retained.",
+  "source_to_imported_script_paths": {
+    "../titles_probe.gd": "titles_probe.gd",
+    "../run_titles_probe.py": "run_titles_probe.py"
+  },
+  "raw_log_paths": "See archive-path-receipt.json; original log bytes preserved as ZIP members",
+  "superseded_unverified_digest": "Reviewer-retracted d936 digest not used or verified here"
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "request_id": "requirement-eecb7c4b90c0c55a8cde516aac5472f2",
+  "issue_number": 55,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+  "path_base": "repository_root",
+  "state": "independent_layout_review_passed",
+  "evidence": "data-collection/issue55-layout-regression/candidate6-review.json",
+  "candidate_sources": "data-collection/issue55-layout-regression/build-candidate6.json",
+  "installation_verified": false,
+  "remote_merge_verified": false
+}

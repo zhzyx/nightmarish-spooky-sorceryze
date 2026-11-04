@@ -525,10 +525,17 @@ func _run():
 	if not _check(dock.find_child("AttachLogs", true, false) == null, "Automatic log attachment checkbox should be removed"):
 		quit(1)
 		return
-	for control_name in ["BuildEngine", "RestartUpdatedEngine", "CancelEngineBuild", "EngineBuildLog"]:
-		if not _check(dock.find_child(control_name, true, false).is_visible_in_tree(), "Unselected control should remain outside advanced settings: " + control_name):
+	if not _check(dock.find_child("CancelEngineBuild", true, false).is_visible_in_tree(), "Build cancellation must remain reachable outside settings"):
+		quit(1)
+		return
+	var settings_dialog = dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
+	advanced_toggle.button_pressed = true
+	for control_name in ["BuildEngine", "RestartUpdatedEngine", "EngineBuildLog"]:
+		var control = dock.find_child(control_name, true, false)
+		if not _check(settings_dialog.is_ancestor_of(control) and control.is_visible_in_tree(), "Build controls must remain reachable in tools and settings: " + control_name):
 			quit(1)
 			return
+	advanced_toggle.button_pressed = false
 	print("AI_CHAT_ADVANCED_OPTIONS_OK")
 	# Approval cases must not depend on the editor's automation defaults.
 	dock.find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)

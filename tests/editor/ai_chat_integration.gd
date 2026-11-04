@@ -123,6 +123,8 @@ func _phase(name: String, marker: String, reject := false) -> bool:
 	return _check(marker in _chat_text(), "Missing response marker: " + marker)
 
 func _check_window_fill(root: Window, main_screen: Control) -> bool:
+	EditorInterface.set_main_screen_editor("3D")
+	await create_timer(0.3).timeout
 	var bottom_panel = _find_by_name(root, "BottomPanel")
 	if not _check(bottom_panel != null and bottom_panel is Control, "Bottom panel not found"):
 		return false
@@ -170,7 +172,7 @@ func _find_by_name(node: Node, fragment: String) -> Node:
 
 func _check_workspace_pages(dock: Node) -> bool:
 	var pages = dock.find_child("AIWorkspacePages", true, false) as TabContainer
-	if not _check(pages != null and pages.get_tab_count() == 2 and pages.current_tab == 0 and pages.get_tab_title(0) == "会话" and pages.get_tab_title(1) == "定时器", "AI workspace needs exactly two fixed pages, initially 会话"):
+	if not _check(pages != null and pages.get_tab_count() == 3 and pages.current_tab == 0 and pages.get_tab_title(0) == "会话" and pages.get_tab_title(1) == "定时器" and pages.get_tab_title(2) == "共工", "AI workspace needs three fixed pages, initially 会话"):
 		return false
 	var tabs = pages.get_tab_bar()
 	var agents_page = pages.get_tab_control(0)
@@ -185,7 +187,7 @@ func _check_workspace_pages(dock: Node) -> bool:
 	if not _check(timers_page.visible and not agents_page.visible and chat.text == "WORKSPACE_PAGE_DRAFT" and timers_page.size.x > 0 and timers_page.size.y > 0, "Switching to the blank timer page lost the draft or layout"):
 		return false
 	tabs.tab_close_pressed.emit(1)
-	if not _check(pages.get_tab_count() == 2 and pages.current_tab == 1, "Fixed timer page was closed"):
+	if not _check(pages.get_tab_count() == 3 and pages.current_tab == 1, "Fixed timer page was closed"):
 		return false
 	pages.current_tab = 0
 	await process_frame
@@ -898,6 +900,22 @@ func _run():
 	if not _check(not dock.find_child("AdvancedSettings", true, false).visible, "Advanced settings should start collapsed"):
 		quit(1)
 		return
+	var settings_window = dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
+	var settings_toggle = dock.find_child("AdvancedToggle", true, false) as Button
+	if not _check(settings_window != null and settings_window.is_ancestor_of(dock.find_child("AdvancedSettings", true, false)) and not settings_window.is_ancestor_of(chat_input), "Settings must occupy a separate window without moving the composer"):
+		quit(1)
+		return
+	for close_signal in ["canceled", "confirmed"]:
+		settings_toggle.button_pressed = true
+		await process_frame
+		if not _check(settings_window.visible and dock.find_child("AdvancedSettings", true, false).visible, "Settings must reopen after closing"):
+			quit(1)
+			return
+		settings_window.emit_signal(close_signal)
+		await process_frame
+		if not _check(not settings_window.visible and not settings_toggle.button_pressed, "Closing settings must reset its toolbar toggle"):
+			quit(1)
+			return
 	var picker = dock.find_child("ModelPicker", true, false)
 	dock.find_child("RefreshModels", true, false).pressed.emit()
 	if not await _wait_idle() or not _check("已获取" in dock.find_child("ModelStatus", true, false).text, "Model enumeration failed"):
