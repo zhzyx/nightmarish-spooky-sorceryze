@@ -29,3 +29,5 @@
 最小验证覆盖旧版丢输入复现、原生需求队列/取消/重试/中文澄清、缺环境部署并恢复原需求、部署校验/失败回退/主动回退、仅咨询权限限制。精确构建及结果见 data-collection/ai-chat-debug-20261104/verification.json。模型及 GitHub 创建操作使用隔离夹具，不向生产仓库制造测试 Issue；真实生产 Issue #49/#47 单独回读。22 项需求整理 Python 测试和 22 项原生聊天测试（254 断言）通过。初次咨询回归仍断言旧阻塞文案，已更新为点火器提示及弹窗检查，并实际通过 8 项拒绝操作和只读结果验证。
 
 本次交付源码、Windows 原生构建及回归证据；不替换框架 Agent 或准入，不将模拟服务表述为真实 GPT 账户验收。历史发布及其他任务的在途文件保持原状。运行库点火器的完整跨平台及跨重启会话恢复不在本次 Windows 修复验收内，关联 #47 保持开放跟踪。
+
+启动入口补查：tools/launch_gonggong_editor.ps1 不再因 Python/Node 缺失提前退出，继续打开编辑器交给点火器；Probe 如实列出缺失项。新增真实 PowerShell Probe 用例通过，部署回退加启动入口共 7 项通过。补充证据见 data-collection/ai-chat-debug-20261104/launcher-verification.json。Codex 桥接复用固定本机依赖后独立 6 项全过。

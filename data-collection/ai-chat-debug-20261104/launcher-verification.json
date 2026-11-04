@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "related_issue": 47,
+  "native_source_commit": "5c5e00fe",
+  "runtime_tests": {
+    "ok": true,
+    "cases": [
+      "deploy all three components with no destination Python",
+      "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+      "rollback retains recovery files",
+      "repeated rollback rejected",
+      "failed framework self-check restores pre-deployment files",
+      "tampered source rejected before execution",
+      "launcher permits editor ignition without Python or Node"
+    ],
+    "source": "explicit existing package; no downloads",
+    "global_environment_modified": false
+  },
+  "codex_bridge_tests": {
+    "passed": 6,
+    "failed": 0,
+    "dependencies": "Reused pinned existing codebuddy_cli node_modules; no upgrades"
+  },
+  "files_sha256_lf": {
+    "tools/launch_gonggong_editor.ps1": "ee469af120c5ccaa80f55da01661279c9721c7d51bba11608dea9e11c1c04d9a",
+    "tests/editor/run_runtime_setup.py": "57f6e7da7a1e1dd0c89d64fd807f0df93714252c88c9c8f75dd6908dee658ce7"
+  },
+  "existing_native_verification": "data-collection/ai-chat-debug-20261104/verification.json",
+  "scope": "Launcher no longer exits before editor on missing Python/Node; native executable and deployment helper unchanged from verified candidate",
+  "usage": null
+}

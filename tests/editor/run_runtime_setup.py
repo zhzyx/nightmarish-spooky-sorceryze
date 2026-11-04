@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -88,6 +89,32 @@ def main():
         failure = run("-SourceRuntime", str(bad), success=False)
         assert "checksum mismatch" in failure["error"], failure
         cases += ["tampered source rejected before execution"]
+        launcher = root / "tools/launch_gonggong_editor.ps1"
+        shutil.copyfile(ROOT / "tools/launch_gonggong_editor.ps1", launcher)
+        editor = root / "project/godot/bin/godot.windows.editor.x86_64.exe"
+        editor.parent.mkdir(parents=True)
+        editor.write_bytes(b"probe-only; never executed")
+        probe = subprocess.run(
+            [
+                str(shell),
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "RemoteSigned",
+                "-File",
+                str(launcher),
+                "-Python",
+                str(root / "missing-python.exe"),
+                "-Node",
+                str(root / "missing-node.exe"),
+                "-Probe",
+            ],
+            capture_output=True,
+            timeout=30,
+        )
+        assert probe.returncode == 0, probe.stderr.decode(errors="replace")
+        assert b"Python" in probe.stdout and b"Node.js" in probe.stdout, probe.stdout
+        cases += ["launcher permits editor ignition without Python or Node"]
+
     args.out.write_text(
         json.dumps(
             {
