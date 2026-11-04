@@ -1680,8 +1680,8 @@ bool AIChatDock::_start_message(const Dictionary &p_message) {
 		_cancel_issue_guide(U"已退出之前的开发工单引导，开始独立的仅咨询消息。");
 		gonggong_resume = false;
 	}
-	if (consultation_turn && backend->get_selected() != 0 && backend->get_selected() != 3) {
-		_append(TTR("Error"), U"仅咨询目前支持 API 后端；请切换后继续队列。原生 CLI 不执行此请求。");
+	if (consultation_turn && backend->get_selected() == 1) {
+		_append(TTR("Error"), U"CodeBuddy 原生 CLI 不执行此请求；仅咨询支持 API 和 Codex CLI，请切换后继续队列。");
 		return false;
 	}
 	if (snapshot_restoring || snapshot_transaction_failed) {
@@ -3204,8 +3204,22 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	Dictionary payload;
 	payload["messages"] = p_messages;
 	payload["model"] = codex_model->get_text().strip_edges();
-	payload["available_tools"] = allow_tools->is_pressed() ? chat_tools() : Array();
-	payload["tool_context"] = tool_context(allow_tools->is_pressed(), tool_rounds, auto_apply_file_changes->is_pressed(), auto_execute_commands->is_pressed(), engine_auto_restart->is_pressed());
+	Array permitted_tools;
+	if (allow_tools->is_pressed()) {
+		for (const Variant &entry : chat_tools()) {
+			Dictionary tool = entry;
+			Dictionary function = tool["function"];
+			if (!consultation_turn || consultation_read_tool(function["name"])) {
+				permitted_tools.push_back(tool);
+			}
+		}
+	}
+	payload["available_tools"] = permitted_tools;
+	Dictionary context = tool_context(allow_tools->is_pressed(), tool_rounds, !consultation_turn && auto_apply_file_changes->is_pressed(), !consultation_turn && auto_execute_commands->is_pressed(), !consultation_turn && engine_auto_restart->is_pressed());
+	context["consultation_only"] = consultation_turn;
+	context["writes_allowed"] = !consultation_turn;
+	context["execution_allowed"] = !consultation_turn;
+	payload["tool_context"] = context;
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
 		_append(TTR("Error"), U"Codex 请求超过 1 MiB 上限。");
@@ -4936,7 +4950,7 @@ AIChatDock::AIChatDock() {
 	consultation_only = memnew(CheckBox);
 	consultation_only->set_name("ConsultationOnly");
 	consultation_only->set_text(U"仅咨询");
-	consultation_only->set_tooltip_text(U"仅读取和回答，不创建工单，不允许修改或执行命令；当前支持 API 后端。每条消息发送时固定模式。");
+	consultation_only->set_tooltip_text(U"仅读取和回答，不创建工单，不允许修改或执行命令；支持 API 和 Codex CLI。每条消息发送时固定模式。");
 	actions->add_child(consultation_only);
 	send_button = memnew(Button);
 	send_button->set_name("Send");

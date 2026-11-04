@@ -1,7 +1,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { argumentsFor, promptFor, completion } = require('../../tools/codex_cli/godot_bridge');
+const { argumentsFor, promptFor, completion, validateRequest } = require('../../tools/codex_cli/godot_bridge');
 const input = {
     model: '', messages: [{ role: 'user', content: '你好' }],
     available_tools: [{ type: 'function', function: { name: 'read_file' } }],
@@ -15,9 +15,24 @@ test('Codex arguments preserve default model, isolate config and disable native 
     assert(args.includes('--ephemeral'));
     assert(args.includes('read-only'));
     assert(args.includes('features.shell_tool=false'));
+    assert(args.includes('approval_policy="never"'));
     assert(args.includes('features.apply_patch_freeform=false'));
     assert(!args.some(arg => arg.includes('dangerously')));
     assert.equal(argumentsFor('custom/model', 'schema').at(-2), 'custom/model');
+});
+
+test('consultation preserves host mode and rejects write capabilities before subprocess launch', () => {
+    const consultation = { ...input, tool_context: { ...input.tool_context,
+        consultation_only: true, writes_allowed: false, execution_allowed: false } };
+    assert.equal(validateRequest(consultation).tool_context.consultation_only, true);
+    for (const name of ['write_file', 'write_script', 'run_command', 'build_engine', 'restart_engine',
+        'rollback_engine', 'run_test', 'check_script', 'get_parent_context']) {
+        const broadened = { ...consultation, available_tools: [{ type: 'function', function: { name } }] };
+        assert.throws(() => validateRequest(broadened));
+        assert.throws(() => completion(JSON.stringify({ content: '', actions: [{ name, arguments: '{}' }] }), broadened));
+    }
+    assert.throws(() => validateRequest({ ...consultation, tool_context: { ...consultation.tool_context, writes_allowed: true } }));
+    assert.equal(completion('{"content":"read","actions":[{"name":"read_file","arguments":"{}"}]}', consultation).choices[0].finish_reason, 'tool_calls');
 });
 
 test('Godot context preserves Chinese, tool results and current permissions', () => {

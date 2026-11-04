@@ -9,6 +9,19 @@ const { StringDecoder } = require('node:string_decoder');
 const { validateInput, normalizeResult, classifyDiagnostics, bridgeError, serializeError, ACTIONS } = require('../codebuddy_cli/godot_bridge');
 
 const LIMIT = 2 * 1024 * 1024;
+const READ_TOOLS = new Set(['read_file', 'read_script', 'read_logs', 'list_scripts', 'list_directory']);
+
+function validateRequest(raw) {
+    const input = validateInput(raw);
+    const context = raw.tool_context || {};
+    if (context.consultation_only !== undefined && typeof context.consultation_only !== 'boolean') throw bridgeError('INVALID_REQUEST');
+    if (context.consultation_only) {
+        if (context.writes_allowed !== false || context.execution_allowed !== false
+            || input.available_tools.some(tool => !READ_TOOLS.has(tool.function.name))) throw bridgeError('INVALID_REQUEST');
+        input.tool_context = { ...input.tool_context, consultation_only: true, writes_allowed: false, execution_allowed: false };
+    }
+    return input;
+}
 const SCHEMA = {
     type: 'object', additionalProperties: false, required: ['content', 'actions'],
     properties: {
@@ -23,7 +36,7 @@ const SCHEMA = {
 function argumentsFor(model, schema) {
     const args = ['exec', '--json', '--ephemeral', '--ignore-user-config', '--ignore-rules',
         '--skip-git-repo-check', '--sandbox', 'read-only', '--color', 'never',
-        '-c', 'features.shell_tool=false', '-c', 'features.apply_patch_freeform=false',
+        '-c', 'approval_policy="never"', '-c', 'features.shell_tool=false', '-c', 'features.apply_patch_freeform=false',
         '-c', 'web_search="disabled"', '--output-schema', schema];
     if (model) args.push('--model', model);
     args.push('-');
@@ -48,7 +61,8 @@ function completion(text, input) {
         if (!Array.isArray(envelope.actions)) throw new Error();
         const allowed = new Set(input.available_tools.map(tool => tool.function.name));
         for (const action of envelope.actions) {
-            if (!allowed.has(action.name) || typeof action.arguments !== 'string') throw new Error();
+            if (!allowed.has(action.name) || (input.tool_context?.consultation_only && !READ_TOOLS.has(action.name))
+                || typeof action.arguments !== 'string') throw new Error();
             action.arguments = JSON.parse(action.arguments);
         }
     } catch (_) { throw bridgeError('INVALID_ACTION'); }
@@ -59,7 +73,7 @@ async function run(entry, request) {
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
     if (fs.statSync(request).size > 1024 * 1024) throw bridgeError('INVALID_REQUEST');
     let input;
-    try { input = validateInput(JSON.parse(fs.readFileSync(request, 'utf8'))); }
+    try { input = validateRequest(JSON.parse(fs.readFileSync(request, 'utf8'))); }
     catch (_) { throw bridgeError('INVALID_REQUEST'); }
     if (input.messages.some(message => message.images?.length || Array.isArray(message.content))) {
         throw bridgeError('IMAGE_UNSUPPORTED');
@@ -142,7 +156,7 @@ async function run(entry, request) {
     }
 }
 
-module.exports = { argumentsFor, promptFor, completion, run, SCHEMA };
+module.exports = { argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
     if (process.argv[2] !== 'chat') {
         process.stdout.write(JSON.stringify({ error: { code: 'INVALID_REQUEST' } }));
