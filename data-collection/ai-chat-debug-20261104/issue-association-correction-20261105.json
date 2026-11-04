@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "issue_number": 49,
+  "path_base": "repository_root",
+  "kind": "association_correction",
+  "observed_at": "2026-11-04T18:06:40.873275+00:00",
+  "source_commit": "6c57a342151884f0e72fc281832930a5410f56b9",
+  "reason": "Original evidence lacks top-level request_id; second evidence also uses integer issue instead of issue_number. Append exact association required by the existing PR workflow, preserving original files.",
+  "originals": [
+    {
+      "path": "data-collection/ai-chat-debug-20261104/real-provider-verification-20261105.json",
+      "sha256": "ea54768f077e264045cd5569d910ab5af90e7ec6445731a0d4a0491d016af989",
+      "digest_basis": "Git blob UTF-8 LF"
+    },
+    {
+      "path": "data-collection/ai-chat-debug-20261104/ui-and-exit-diagnostics-20261105.json",
+      "sha256": "9030149c6ca6dc44b5f1f9142900d781779636032bffd8b0856b838fe3602c70",
+      "digest_basis": "Git blob UTF-8 LF"
+    }
+  ],
+  "event_refs": [
+    "gonggong-ai-chat-debug-20261105-real-provider",
+    "gonggong-ai-chat-debug-20261105-evidence-correction",
+    "gonggong-ai-chat-debug-20261105-ui-exit-fix",
+    "gonggong-ai-chat-debug-20261105-user-skip"
+  ],
+  "validation": {
+    "workflow": ".github/workflows/gonggong-issue-gate.yml",
+    "association_predicate": "request_id equals Issue request ID and issue equals full Issue URL",
+    "matching_collection": true,
+    "behavior_tests": "Reused six tests for unchanged code from 6c57a342; not rerun for metadata correction",
+    "service_acceptance": false,
+    "remote_ci_executed": false,
+    "consumption_confirmed": false
+  },
+  "usage": null
+}
