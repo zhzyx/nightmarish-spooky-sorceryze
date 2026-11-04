@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "reviewed_at": "2026-11-04T22:23:18.571201+00:00",
+  "request_id": "yanluo-issue-64-closure-discrepancy-20261105",
+  "reviewer": "Codex /root/yanluo",
+  "implementation_author": "Codex /root",
+  "independent_from_implementation": true,
+  "scope": "User-authorized cancellation docs/data only; no framework/Agent/skill/code changes",
+  "baseline": "d4c9a9183d38a2e4bd12ac56ef40c892b65a99bf",
+  "files": {
+    "data-collection/issue96-gate-relaxation-cancellation.json": "ad0712d05e660ccf22e75113c49bfe8d41d137d813fe8905c2b7371aad815e7b",
+    "design-docs/issue-gate-diting-source-event-binding-20261105.md": "f54907f36b92ed136910acea3b33c2e5577ebefe3b752263d069cddfbc134a35",
+    "design-docs/yanluo-issue-audit-20261105.md": "96638b40ed1b184c7ceeb97f4d749d22961ef84fbacb0bd6a768b5c952653b86",
+    "design-docs/yanluo-issue-64-closure-discrepancy-20261105.md": "6c4a3fb8b5488dfba9c9d3f997d99fb9b011f0fec15f447ecded071bad3db42e",
+    "gonggong-diting-data/events/gonggong-workspace/yanluo-issue-64-closure-discrepancy-20261105/issue96-user-cancellation-20261105.json": "7ccc03625a2aea5e3ab016475ac5dd27e93e41f66fc88af5bc8af2ed9775c930"
+  },
+  "checks": {
+    "user_cancellation_consistency": "passed",
+    "strict_kind_request_unchanged": "passed",
+    "old_collection_events_unchanged": "passed",
+    "relative_paths_and_references": "passed",
+    "diff_check": "passed",
+    "collection_index_bytes": "normalized LF for Git exact-byte collection gate after initial CRLF mismatch"
+  },
+  "decision": "passed for scoped documentation cancellation; not a framework admission grant",
+  "pending": [
+    "formal issue_gate",
+    "committed data check",
+    "exact candidate CI",
+    "remote main readback",
+    "issue96 cancelled/not_planned readback"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured provider usage supplied",
+  "sinan_consumed": null
+}
