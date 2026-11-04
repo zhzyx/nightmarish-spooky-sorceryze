@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "autonomous-delivery-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "autonomous-delivery-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T22:46:22.296444+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/100",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "170736a7b9154bb40a4aac77c35dfc73268f7d56910b4f15c5663227d1f8ce1a",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "user_request": "需求创建后自主推进到提交和全部关单，审查并减少重复确认与审查",
+    "intake": "passed",
+    "validation": "data-collection/autonomous-delivery-validation-20261105.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "24c2e9a2e609d8849294be5d49369cf14a931b480e32c12b716602b3373221e1"
+}

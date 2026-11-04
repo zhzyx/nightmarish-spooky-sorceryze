@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "issue": 100,
+  "request_id": "autonomous-delivery-20261105",
+  "path_base": "repository_root",
+  "scope": "host execution policy and authorized Issue creation",
+  "tests": {
+    "command": "python -X utf8 -m unittest discover -s customizations/components/issue-workorders -p test_work_items.py -v",
+    "passed": 13
+  },
+  "review": {
+    "kind": "author_review",
+    "independent": false,
+    "findings": [
+      "No frozen framework or agent definition changed",
+      "Authorization reference is caller-verified provenance, not a grant",
+      "Existing issues are never mutated by create retry",
+      "No polling or automatic closure of unrelated issues"
+    ]
+  },
+  "usage": null,
+  "runtime_service_deployed": false
+}

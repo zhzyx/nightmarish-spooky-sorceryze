@@ -43,6 +43,38 @@ class WorkItemTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.create(document="../outside.md")
 
+    def test_authorized_create_records_mandate_and_starts(self):
+        def fake(*args):
+            if args[:2] == ("api", "user"):
+                return '{"login":"test-host"}'
+            if args[0] == "api":
+                return "[[]]"
+            body = Path(args[args.index("--body-file") + 1]).read_text(encoding="utf-8")
+            self.assertIn("user-request-100", body)
+            self.assertIn("status:in-progress", args)
+            self.assertNotIn("status:needs-decision", args)
+            return "https://github.com/test/repo/issues/2"
+        with patch.object(module, "gh", side_effect=fake):
+            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1",
+                                  True, "user-request-100")
+        self.assertEqual(result["state"], "created")
+
+    def test_authorized_retry_does_not_mutate_existing_closed_issue(self):
+        existing = [[dict(state="closed", body="<!-- gonggong-request:req-1 -->",
+                          html_url="https://github.com/test/repo/issues/1")]]
+        with patch.object(module, "gh", side_effect=['{"login":"test-host"}', json.dumps(existing)]) as gh:
+            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1",
+                                  True, "user-request-100")
+        self.assertEqual(result["state"], "existing")
+        self.assertEqual(gh.call_count, 2)
+
+    def test_invalid_mandate_rejected_before_network(self):
+        with patch.object(module, "gh") as gh:
+            for value in ("", " ", "ref\nforged", 123):
+                with self.assertRaises(ValueError):
+                    module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1", True, value)
+        gh.assert_not_called()
+
     def test_unknown_category_rejected(self):
         with self.assertRaises(ValueError):
             module.issue(self.root, "design-docs/req.md", "Title", "unknown", "req-1")
