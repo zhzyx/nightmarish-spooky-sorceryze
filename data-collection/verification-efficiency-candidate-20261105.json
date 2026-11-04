@@ -1,0 +1,43 @@
+{
+  "request_id": "verification-efficiency-20261105",
+  "path_base": "repository_root",
+  "base_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "agent_candidates": {
+    "yanshi": {
+      "version": "0.4.0",
+      "candidate_digest": "9a6fe2b0ea866627f3ed515971452d9433dd151334f69d6a800c596df3c44d1c"
+    },
+    "kuafu": {
+      "version": "0.4.0",
+      "candidate_digest": "73a6f483dcc4e46751c2197709fc6727452e9d971f62a9968f0bff90cca7f603"
+    },
+    "diting": {
+      "version": "0.4.0",
+      "candidate_digest": "8254fe6fa8ec039e81096b1b36bba2f3abd3835a58d43d9fb1e3d1cefacf8e97"
+    },
+    "heqi": {
+      "version": "0.3.1",
+      "candidate_digest": "21738df5cea644fc025c8e5a848c49216a67db2603b9b58f5a013c00a8f4bd9b"
+    },
+    "sinan": {
+      "version": "0.1.1",
+      "candidate_digest": "4f3c7fedb65a1c4ddecdd317ee7a133c4431677a7a7e60c3e6339b87a84f74ae"
+    }
+  },
+  "implementation_files": {
+    "customizations/components/issue-workorders/issue_gate.py": "2faaea12c2acccfe5e46249ca826ebb23302cb0fa6d85949d1b80992ea19993a",
+    "customizations/components/issue-workorders/README.md": "8d97d365e03f0504b6180150573308d3225142344daa3d97e96f8f8e2c26506c",
+    "customizations/components/issue-workorders/test_issue_gate.py": "7644ccccefe9c8ff2c51115f5df29fc9770141548537c72f116daf7bc6d50426",
+    "tools/test_verification_efficiency.py": "75c4a4c96d92a9f2bffebe629f21463cc780c66c3be0077e5afa338c28049688",
+    "tools/test_framework_verification_efficiency.py": "7132c2bb53161fa93127c3016b3e15050cc5baab33aa41e1d6e0c711cad615ec",
+    "tools/benchmark_verification.py": "d6aff216d5120f20ddbd3f03bde60c6d2d5ff378954bd57b45b888e2ee88d4b4",
+    "framework/extensions/diting-files/diting_files.py": "8884a690c42b08c09c0f1061082c402540417898b59fa87a7bd38250fa91cacf",
+    "framework/tools/git_batch.py": "1490b97310e051251ce0d1fb7032a5e77ff31a6e5a1f598629e02f3340662ba0",
+    "framework/tools/verify_framework.py": "bac1e9b35a6bfc15628f0bd8029219ff3159bcddb9276fdb06b8a1bd62589602",
+    "framework/tools/verify_metadata.mjs": "3f9bde3ae40036ca7da85478cd831639ce1f8dfc9e00623440dea6cd47aa2647",
+    "framework/tools/reporting.mjs": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c",
+    "framework/tools/package_integrity.py": "cfe98c3888beceadb54494956cec1bc0e09711338f1226f63690ec77dc1089cd"
+  },
+  "scope": "Local definition admission and this isolated implementation; no runtime tool grants or unrelated worktree changes",
+  "review": "framework/reviews/verification-efficiency/independent-review.json"
+}
