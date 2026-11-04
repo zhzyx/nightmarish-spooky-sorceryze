@@ -1,0 +1,10 @@
+{
+  "kind": "agent",
+  "id": "yanluo",
+  "version": "0.1.2",
+  "entry": "AGENT.md",
+  "governance_root": "yuanheng",
+  "state": "candidate_pending_review",
+  "reporting": "reporting.json",
+  "binding_template": "reporting-binding.template.json"
+}
