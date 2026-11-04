@@ -1,0 +1,74 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "binary_sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+  "phases": [
+    {
+      "current": 0,
+      "labels": [
+        "AI Chat",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "phase": "initial",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ]
+    },
+    {
+      "current": 0,
+      "labels": [
+        "AI Chat",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "phase": "restart",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ]
+    },
+    {
+      "current": 0,
+      "labels": [
+        "AI Chat",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "phase": "second_restart",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ]
+    }
+  ],
+  "test_sha256": {
+    "run_ai_chat_tab_order.py": "6c91a512906ca94acd84e63118a65a18314804b0d645c52d614235cea099d7e5",
+    "ai_chat_tab_order.gd": "a3da1caf6af58a879564ac91ab1deddb1e3348cfadb2ab3486abaac71f152d18"
+  }
+}
