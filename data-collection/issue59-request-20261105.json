@@ -1,0 +1,38 @@
+{
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "kind": "request_source",
+  "path_base": "repository_root",
+  "actual_worker": "codex-desktop-issue59",
+  "baseline": "1b0a33fd",
+  "source_readback": "Issue open, status:in-progress, no comments, no assignee at intake; user coordinator authorized this isolated local worker",
+  "intake": "issue_gate.py --intake-only passed before implementation",
+  "scope": "Independent editor controller, AIChat tool dispatch, minimal Editor Settings accessors, tests and source delivery; no framework changes or installation switch",
+  "event_input": {
+    "schema_version": 1,
+    "event_id": "issue59-local-request-20261105",
+    "tenant_id": "gonggong-workspace",
+    "request_id": "editor-semantic-control-mvp-20261105",
+    "kind": "request",
+    "occurred_at": "2026-11-04T18:33:49.968293+00:00",
+    "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+    "agent": {
+      "id": "codex-desktop-issue59",
+      "version": "host-version-unreported",
+      "origin": "user-authorized-codex-chat",
+      "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+    },
+    "payload": {
+      "intent": "Implement Issue 59 semantic editor control MVP in isolated worktree",
+      "state": "in_progress",
+      "baseline": "1b0a33fd5",
+      "agent_definition_basis": "workspace AGENTS.md bytes; host model usage unavailable",
+      "path_base": "repository_root",
+      "usage": null,
+      "usage_unknown_reason": "Host did not provide measured usage"
+    },
+    "evidence_refs": []
+  },
+  "real_provider_validation": "not_run_no_verified_provider_entry",
+  "simulation_boundary": "Fixture Issue test/repo #6 and its reports stay in temporary directories; never imported into production ledger"
+}

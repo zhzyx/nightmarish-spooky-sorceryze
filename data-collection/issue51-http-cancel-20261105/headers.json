@@ -1,0 +1,42 @@
+{
+  "case": "headers",
+  "max_frame_gap_seconds": 0.007633,
+  "observed_server_release": true,
+  "recovery_max_frame_gap_seconds": 0.013932,
+  "recovery_received": true,
+  "server_released_at_recovery": false,
+  "server_released_at_stop_return": false,
+  "stale_response_absent": true,
+  "stop_call_seconds": 0.001496,
+  "stop_disabled_after": true,
+  "stop_trigger": "pressed_signal_callback",
+  "stop_was_enabled": true,
+  "editor_sha256": "6755d554092c187fc3662739b2287a5477c9a46ef24cc55504b3dff3e69dfe04",
+  "server_delay_seconds": 3.0,
+  "native_exit_code": 0,
+  "model_transport": "isolated loopback mock",
+  "real_provider": false,
+  "requests": [
+    {
+      "models": false,
+      "recovery": false
+    },
+    {
+      "models": false,
+      "recovery": true
+    }
+  ],
+  "errors": [],
+  "visible": false,
+  "gzip_recovery": false,
+  "fixture_sha256": {
+    "run_ai_chat_http_cancel.py": "6d6a8e4c46d336c9b8c09a989e1691cc4e8184ae6571808e23270b3607c2dc1a",
+    "ai_chat_http_cancel.gd": "7305912b347804892758561402cbaa037e8f11fce840df4991307e9899208273"
+  },
+  "max_stop_seconds": 0.25,
+  "max_allowed_frame_gap_seconds": 0.25,
+  "passed": true,
+  "request_id": "olympus-residue-deadlock-20261104",
+  "issue_number": 51,
+  "path_base": "repository_root"
+}

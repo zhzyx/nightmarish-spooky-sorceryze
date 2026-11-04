@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-http-cancel-step-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-04T19:27:53.753996+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-issue51-http-cancel",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "Measured old failure and bounded new headless cancellation; native click blocked by tool activation; original deadlock identity unknown",
+    "evidence_path": "data-collection/issue51-http-cancel-verification-20261105.json",
+    "path_base": "repository_root",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not supplied; not estimated"
+  },
+  "evidence_refs": [],
+  "sha256": "76fd4cddf0920c9e5d85a32dc50e1f6d8d453e70eca4ef105913532aa4e0c44c"
+}
