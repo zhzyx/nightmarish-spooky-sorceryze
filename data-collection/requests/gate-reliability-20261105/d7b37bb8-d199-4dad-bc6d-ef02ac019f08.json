@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "gate-reliability-20261105",
+  "collected_at": "2026-11-04T23:27:50.138385+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gate-reliability-20261105/gate-reliability-request-20261105.json",
+      "sha256": "80f6582a6423148882101dc348b4243cfa52b3cfcc7d7f9d35046b7325442119",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "gate-reliability-request-20261105",
+      "origin": "actual_codex_host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 106,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/106"
+}

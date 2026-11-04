@@ -8,8 +8,8 @@ import re
 import runpy
 import subprocess
 import sys
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import work_items
 
@@ -58,7 +58,28 @@ def check_issue(value, repository, number, request_id, types):
 def git(root, *args):
     result = subprocess.run(["git", "-C", str(root), *args], capture_output=True, timeout=120)
     if result.returncode:
-        raise ValueError("Git check failed: " + args[0])
+        if args[:2] == ("diff", "--quiet") and result.returncode == 1:
+            raise ValueError(
+                "WORKTREE_UNSTAGED: working files differ from index; stage only this task in an isolated worktree. Framework admission has not run."
+            )
+        error = result.stderr.decode("utf-8", errors="replace").lower()
+        if "permission denied" in error or "access is denied" in error:
+            raise ValueError(
+                "GIT_PERMISSION: " + args[0] + " denied; use the host-authorized execution channel, not a gate bypass"
+            )
+        if "index.lock" in error or "cannot lock ref" in error:
+            raise ValueError(
+                "GIT_LOCK: "
+                + args[0]
+                + " blocked; identify the owning operation before retrying; do not delete another worker's lock"
+            )
+        raise ValueError(
+            "GIT_COMMAND: "
+            + args[0]
+            + " failed (exit "
+            + str(result.returncode)
+            + "); inspect the trusted command locally"
+        )
     return result.stdout
 
 
@@ -128,6 +149,7 @@ def check_collection(root):
     if set(private_paths) - batch["ignored"](root, private_paths):
         raise ValueError("Host-private collection state must remain ignored")
 
+
 def snapshot(root):
     """Bind HEAD, index and current tracked/nonignored content, including deletions."""
     digest = hashlib.sha256()
@@ -137,6 +159,7 @@ def snapshot(root):
     ]:
         digest.update(git(root, *args))
     paths = set(git(root, "ls-files", "-z", "--cached", "--others", "--exclude-standard").split(b"\0")) - {b""}
+
     def content_hash(raw):
         path = root / os.fsdecode(raw)
         if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
@@ -175,14 +198,61 @@ def check_history(root):
 
 
 def validate_command(command, root, env, name):
-    result = subprocess.run(command, cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=300)
+    try:
+        result = subprocess.run(
+            command, cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=300
+        )
+    except subprocess.TimeoutExpired:
+        raise ValueError(
+            "VALIDATOR_TIMEOUT: "
+            + name
+            + " exceeded 300 seconds; verify the worktree baseline and runtime; result is unknown"
+        ) from None
     if result.returncode:
         # Do not echo subprocess output: it may contain local paths or credentials.
         raise ValueError(name + " failed; run the trusted validator locally for details")
     return json.loads(result.stdout)
 
 
-def gate(root, number, request_id, session=None):
+def check_pr_evidence(root, issue, request_id, tenant, base_ref):
+    """Mirror issue-association on the PR diff, using the candidate index bytes."""
+    base = git(root, "merge-base", "HEAD", base_ref).decode().strip()
+    names = git(root, "diff", "--cached", "--name-only", "--no-renames", "--diff-filter=ACMT", "-z", base, "--").split(
+        b"\0"
+    )
+    matching_event = False
+    matching_collection = False
+    for raw in names:
+        name = os.fsdecode(raw)
+        event = name.startswith("gonggong-diting-data/events/" + tenant + "/")
+        collection = name.startswith("data-collection/")
+        if not name.endswith(".json") or not (event or collection):
+            continue
+        try:
+            value = json.loads(git(root, "show", ":" + name))
+        except (ValueError, UnicodeError):
+            raise ValueError("PR_EVIDENCE_JSON: invalid candidate JSON at " + name) from None
+        if not isinstance(value, dict):
+            raise ValueError("PR_EVIDENCE_JSON: expected an object at " + name)
+        if value.get("request_id") != request_id:
+            continue
+        if event and value.get("tenant_id") == tenant:
+            matching_event = True
+        if collection and (
+            value.get("issue") == issue["url"]
+            or value.get("issue_url") == issue["url"]
+            or type(value.get("issue_number")) is int
+            and value["issue_number"] == issue["number"]
+        ):
+            matching_collection = True
+    if matching_event and not matching_collection:
+        raise ValueError(
+            "PR_EVIDENCE_BINDING: Recorded Diting event must be delivered with matching data-collection evidence; include request_id and issue_url/issue/issue_number in a JSON file changed in this PR"
+        )
+    return {"base_commit": base, "matching_event": matching_event, "matching_collection": matching_collection}
+
+
+def gate(root, number, request_id, session=None, base_ref="origin/main"):
     if session is not None:
         session.check_runtime()
     if number < 1 or not re.fullmatch(REQUEST, request_id):
@@ -207,6 +277,7 @@ def gate(root, number, request_id, session=None):
 
     issue = fetch()
     before = snapshot(root)
+    association = check_pr_evidence(root, issue, request_id, tenant, base_ref)
     env = environment(root)
     framework = validate_command(
         [sys.executable, "-X", "utf8", str(root / "framework/tools/verify_framework.py")],
@@ -254,12 +325,18 @@ def gate(root, number, request_id, session=None):
         raise ValueError("No same-tenant request event with exact Issue source")
     if snapshot(root) != before or fetch() != issue:
         raise ValueError("Content or Issue changed during check; rerun before commit")
+    if (
+        association.get("base_commit")
+        and git(root, "merge-base", "HEAD", base_ref).decode().strip() != association["base_commit"]
+    ):
+        raise ValueError("PR_BASE_CHANGED: target merge-base changed during verification; recheck the PR scope")
     return {
         "state": "local_checks_passed",
         "issue": issue,
         "request_id": request_id,
         "tenant_id": tenant,
         "content_sha256": before,
+        "pr_evidence": association,
         "events": events,
         "framework_mode": framework["mode"],
         "host_authority_authenticated": False,
@@ -272,6 +349,7 @@ def gate(root, number, request_id, session=None):
 
 class VerificationSession:
     """Optional explicit-request session; no background polling or disk success cache."""
+
     def __init__(self):
         self.binding = None
         self.module = None
@@ -302,9 +380,18 @@ def main():
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--issue", type=int)
     parser.add_argument("--request-id")
-    parser.add_argument("--session", action="store_true", help="Read explicit JSON requests from stdin; reuse only exact-byte event evidence in memory")
+    parser.add_argument(
+        "--session",
+        action="store_true",
+        help="Read explicit JSON requests from stdin; reuse only exact-byte event evidence in memory",
+    )
     parser.add_argument("--intake-only", action="store_true")
     parser.add_argument("--tenant")
+    parser.add_argument(
+        "--base-ref",
+        default="origin/main",
+        help="Fetched PR target; compare merge-base to candidate index, including already committed PR changes",
+    )
     args = parser.parse_args()
     if args.session:
         if args.intake_only or args.issue is not None or args.request_id is not None:
@@ -313,7 +400,7 @@ def main():
         for line in sys.stdin:
             try:
                 request = json.loads(line)
-                result = gate(args.repo.resolve(), request["issue"], request["request_id"], session)
+                result = gate(args.repo.resolve(), request["issue"], request["request_id"], session, args.base_ref)
                 print(json.dumps(result, ensure_ascii=False), flush=True)
             except Exception as error:
                 session.events.clear()
@@ -324,7 +411,7 @@ def main():
     result = (
         intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
         if args.intake_only
-        else gate(args.repo.resolve(), args.issue, args.request_id)
+        else gate(args.repo.resolve(), args.issue, args.request_id, base_ref=args.base_ref)
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
