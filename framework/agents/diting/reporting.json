@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "diting",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "entry": "agents/diting/AGENT.md",
-    "entry_sha256": "4bb3c1986c594b7228313620c4b3cca1642052fcc1966b40c4c95a70e7c3c77e"
+    "entry_sha256": "5ea6ba8b9b9d17b9ef8d2e7c44c493e036f56b8cfce9ee10fbc53e7cb766abef"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

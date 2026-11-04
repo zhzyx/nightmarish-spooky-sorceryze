@@ -1,0 +1,22 @@
+{
+  "kind": "source",
+  "status": "passed",
+  "candidate": {
+    "repository": "..",
+    "commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+    "tree": "4723c038807e353b1533592229e45f65cf5d0093"
+  },
+  "inputs_sha256": "efb34db85170a08c6c7c7e53fe9bb19172085683ac081cd46299e4a2fa450f5d",
+  "checks": {
+    "independent_review": "framework/reviews/review-dedup/independent-review.json",
+    "formal_framework": "approved_file_integrity",
+    "issue_gate_content_sha256": "12bf1537933662abeda614cf03d889623f8b069a3bfa69a59b6348ddaec0cb47",
+    "committed_data": {
+      "files": 1638,
+      "records": 1517
+    },
+    "quality_ownership": "passed",
+    "frozen_and_upstream": "unchanged"
+  },
+  "scope": "Instruction definitions and file contracts; no engine code/build; production effect not measured"
+}
