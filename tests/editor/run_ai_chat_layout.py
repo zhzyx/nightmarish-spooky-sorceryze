@@ -96,6 +96,7 @@ def main():
                            XDG_CONFIG_HOME=str(temporary / 'appdata'),
                            GODOT_AI_API_KEY='', AI_LAYOUT_SCALE=str(scale), AI_LAYOUT_RESULT=str(result),
                            AI_LAYOUT_WIDTH=str(width),
+                           AI_LAYOUT_SCREENSHOTS='1' if args.visible else '0',
                            AI_LAYOUT_ENDPOINT=f'http://127.0.0.1:{server.server_port}/v1/chat/completions')
                 command = [str(args.godot.resolve()), *([] if args.visible else ['--headless']),
                            '--editor', '--path', str(project), '--script', 'res://layout.gd']

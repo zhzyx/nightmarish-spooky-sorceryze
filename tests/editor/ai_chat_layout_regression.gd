@@ -63,6 +63,17 @@ func _sample(label: String):
 	_check(input.size.y >= 3 * input.get_line_height(), label + ": input lost three visible lines")
 	_check(_control("ChatScroll").get_global_rect().end.y <= input.get_global_rect().position.y + 2, label + ": messages overlap composer")
 	samples.append(item)
+	if OS.get_environment("AI_LAYOUT_SCREENSHOTS") == "1" and ("collapsed" in label or "attachments" in label or "long draft" in label):
+		var output := OS.get_environment("AI_LAYOUT_RESULT").get_basename() + "-" + label.replace(" ", "_")
+		var rendered := root.get_texture().get_image()
+		_check(rendered != null and not rendered.is_empty(), "Native viewport screenshot unavailable")
+		if rendered != null and not rendered.is_empty():
+			_check(rendered.save_png(output + ".png") == OK, "Cannot save native screenshot")
+		var popup := dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
+		if popup != null and popup.visible:
+			var settings_image := popup.get_texture().get_image()
+			if settings_image != null and not settings_image.is_empty():
+				_check(settings_image.save_png(output + "-settings.png") == OK, "Cannot save settings screenshot")
 
 func _text() -> String:
 	var result := ""
@@ -146,9 +157,6 @@ func _run():
 		input.text_changed.emit()
 		await _settle()
 		_sample("%d long draft" % width)
-		input.text = ""
-		input.text_changed.emit()
-		await _settle()
 		dock.find_child("AIImagePicker", true, false).files_selected.emit(paths)
 		await _settle()
 		_check(_control("ImageAttachments").find_children("ImageThumbnail", "Button", true, false).size() == 4, "Four attachment thumbnails not rendered")
@@ -192,6 +200,11 @@ func _run():
 			EditorInterface.set_main_screen_editor(screen)
 			await _settle()
 			_check(not dock.is_visible_in_tree(), "AI Chat stayed visible on " + screen)
+			var normal_menu := false
+			for menu in root.find_children("*", "MenuBar", true, false):
+				if menu.theme_type_variation == "MainMenuBar" and menu.is_visible_in_tree():
+					normal_menu = true
+			_check(normal_menu, "Full editor menu was not restored on " + screen)
 			EditorInterface.set_main_screen_editor("AI Chat")
 			await _settle()
 			_sample("%d return from %s" % [width, screen])

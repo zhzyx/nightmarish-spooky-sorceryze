@@ -1,0 +1,65 @@
+{
+  "candidate": {
+    "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "4e76348440a4d565e9a49be251680c6f6935f10208a74f87e2f08e65adbc24b3",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+    },
+    "binary_sha256": "ddfe5cbf28e799fd54ac6ec44a87d5f5f801850355c8566b2a88e16a2db83a01",
+    "engine_sha256": "4449aaa990a88a2f75ad0cab36050a7f7f0b7b1290243560501cb5a39a0b8022",
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "build_result": "passed",
+    "build_seconds": 24.23,
+    "candidate": "sixth-uncommitted",
+    "path_base": "repository_root"
+  },
+  "mode": "native",
+  "diagnostic_binary_only": false,
+  "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+  "runs": [
+    {
+      "scale": 1.0,
+      "width": 640,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    },
+    {
+      "scale": 1.0,
+      "width": 960,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    },
+    {
+      "scale": 1.0,
+      "width": 1440,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    },
+    {
+      "scale": 1.5,
+      "width": 640,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    },
+    {
+      "scale": 1.5,
+      "width": 960,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    },
+    {
+      "scale": 1.5,
+      "width": 1440,
+      "exit_code": 0,
+      "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+      "report_present": true
+    }
+  ],
+  "passed": true
+}
