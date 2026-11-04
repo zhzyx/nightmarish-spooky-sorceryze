@@ -126,6 +126,28 @@ class AIChatDock : public EditorDock {
 	void _issue_guide_bind(int64_t p_number, const String &p_request_id);
 	void _issue_guide_retry();
 
+	// Local environment igniter: python/node/git gaps become a host-local guide
+	// instead of a blocking "system blocked" reply; replies never reach a model.
+	String igniter_state;
+	String igniter_outcome;
+	Array igniter_missing;
+	Dictionary igniter_fields;
+	uint64_t igniter_generation = 0;
+	uint64_t igniter_run_generation = 0;
+	int64_t igniter_pid = -1;
+	String igniter_action;
+	String igniter_input_path;
+	String igniter_output_path;
+	Timer *igniter_timer = nullptr;
+	bool _start_igniter(const Array &p_missing);
+	void _igniter_reply(const String &p_text);
+	void _igniter_prompt();
+	void _igniter_run(const String &p_action, const Dictionary &p_request);
+	void _poll_igniter();
+	void _clear_igniter_files();
+	void _cancel_igniter(const String &p_notice);
+	void _igniter_resume();
+
 	Button *engine_build_button = nullptr;
 	Button *engine_restart_button = nullptr;
 	Button *engine_cancel_button = nullptr;

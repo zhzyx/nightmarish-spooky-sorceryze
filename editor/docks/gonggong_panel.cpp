@@ -87,9 +87,9 @@ GongGongPanel::GongGongPanel() {
 	add_child(request_id);
 	issue_number->connect("text_changed", callable_mp(this, &GongGongPanel::save_issue_binding));
 	request_id->connect("text_changed", callable_mp(this, &GongGongPanel::save_issue_binding));
-	const char *actions[] = { "status", "doctor", "check", "validate", "analyze" };
-	const String labels[] = { U"读取框架状态", U"诊断生产聊天阻断原因", U"核对上游及候选完整性", U"校验谛听数据", U"分析当前租户记录" };
-	for (int i = 0; i < 5; i++) {
+	const char *actions[] = { "status", "doctor", "check", "validate", "analyze", "environment-rollback" };
+	const String labels[] = { U"读取框架状态", U"诊断生产聊天阻断原因", U"核对上游及候选完整性", U"校验谛听数据", U"分析当前租户记录", U"回退点火器部署" };
+	for (int i = 0; i < 6; i++) {
 		Button *button = memnew(Button);
 		button->set_text(labels[i]);
 		button->connect("pressed", callable_mp(this, &GongGongPanel::run_action).bind(String(actions[i])));

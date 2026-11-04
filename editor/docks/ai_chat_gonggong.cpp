@@ -231,7 +231,7 @@ void AIChatDock::_begin_gonggong_context() {
 	gonggong_report_root = root;
 	gonggong_report_python = python;
 	const String bridge = gonggong_report_root.path_join("tools/gonggong_bridge.py");
-	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
+	if (root.is_empty() || !FileAccess::exists(bridge)) {
 		for (int i = messages.size() - 1; i >= 0; i--) {
 			Dictionary message = messages[i];
 			if (String(message.get("role", "")) == "user") {
@@ -240,7 +240,25 @@ void AIChatDock::_begin_gonggong_context() {
 			}
 		}
 		issue_guide_state = "agent_error";
-		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区和 Python。聊天不会绕过框架发送。");
+		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区，并确认引擎 tools/gonggong_bridge.py 已安装。聊天不会绕过框架发送。");
+		_set_busy(false);
+		return;
+	}
+	if (python.is_empty() || !FileAccess::exists(python)) {
+		Array missing;
+		missing.push_back("python");
+		if (_start_igniter(missing)) {
+			return; // A missing Python is an environment gap, not a framework block.
+		}
+		for (int i = messages.size() - 1; i >= 0; i--) {
+			Dictionary message = messages[i];
+			if (String(message.get("role", "")) == "user") {
+				issue_guide_outcome = message.get("content", "");
+				break;
+			}
+		}
+		issue_guide_state = "agent_error";
+		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置 Python 可执行文件路径。聊天不会绕过框架发送。");
 		_set_busy(false);
 		return;
 	}
@@ -361,6 +379,10 @@ void AIChatDock::_poll_gonggong_context() {
 	}
 	if (result.get("ok", false).get_type() != Variant::BOOL || !bool(result.get("ok", false)) || String(result.get("context", "")).is_empty() || gonggong_reporting.is_empty()) {
 		const String error = result.get("error", U"校验进程没有返回有效上下文。");
+		const Array missing = result.get("environment_missing", Array());
+		if (missing.size() > 0 && _start_igniter(missing)) {
+			return; // Environment gaps enter the local configuration igniter, not "blocked".
+		}
 		if (issue_guide_state == "retrying") {
 			// A guided binding that intake rejects keeps the conversation in the guide.
 			set_meta("gonggong_status", "issue_guide");
@@ -514,7 +536,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		if (AIChatIssueGuide::is_retry(p_text)) {
 			_begin_issue_agent(issue_guide_outcome, true);
 		} else {
-			_append(TTR("Editor"), U"请先修复 GongGong 页的环境、需求 Agent 的 HTTP/CLI 模型配置或 GitHub 访问，再回复“重试”；工单尚未完成绑定，不会进入开发执行。");
+			_append(TTR("Editor"), U"请先修复 GongGong 页的环境、需求会话的 HTTP/CLI 模型配置或 GitHub 访问，再回复“重试”；工单尚未完成绑定，不会进入开发执行。");
 		}
 		return;
 	}
@@ -822,6 +844,273 @@ void AIChatDock::_issue_guide_retry() {
 	}
 	issue_guide_state = "retrying";
 	_append(TTR("Editor"), vformat(U"已绑定工单 #%d（`%s`），正在用原消息重新进行 GongGong 入口校验。", int64_t(issue_guide_fields.get("issue_number", 0)), String(issue_guide_fields.get("request_id", ""))));
+	// Same paused turn: the original user message is still the last entry in `messages`.
+	_begin_reply();
+	turn_completed = false;
+	tool_rounds = 0;
+	turn_model_requests = 0;
+	session_generation++;
+	_set_busy(true);
+	_request_completion();
+}
+
+bool AIChatDock::_start_igniter(const Array &p_missing) {
+	if (scheduled_agents.has(active_agent) || sub_agents.has(active_agent) || !gonggong_recovered_result.is_empty()) {
+		return false; // Unattended, child and recovery turns keep the fail-closed rejection.
+	}
+	const String outcome = last_user_content(messages);
+	if (outcome.strip_edges().is_empty() || p_missing.is_empty()) {
+		return false;
+	}
+	_cancel_igniter(String());
+	igniter_outcome = outcome;
+	igniter_missing = p_missing;
+	igniter_fields.clear();
+	igniter_state = "components";
+	set_meta("gonggong_status", "igniter");
+	_igniter_prompt();
+	_set_busy(false);
+	return true;
+}
+
+void AIChatDock::_igniter_prompt() {
+	String text;
+	if (igniter_state == "components") {
+		String names;
+		for (int i = 0; i < igniter_missing.size(); i++) {
+			if (i > 0) {
+				names += U"、";
+			}
+			names += String(U"`") + String(igniter_missing[i]) + U"`";
+		}
+		text = String(U"检测到本地环境配置缺失：") + names + U"。为避免把配置问题误判为系统阻塞，已进入本地配置点火器（编辑器本地处理，不调用模型或工具）。\n\n"
+			   U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
+			   U"- 放弃：回复 `取消`\n\n"
+			   U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
+	} else if (igniter_state == "python_path") {
+		text = U"Python 未配置，点火器无法通过桥接部署它。请回复 Python 可执行文件的绝对路径（例如 `/usr/bin/python3` 或 `/opt/homebrew/bin/python3`），编辑器会把它保存为 GongGong 的 Python 路径；回复 `取消` 放弃。";
+	} else if (igniter_state == "location") {
+		text = U"选择安装位置：\n1. `project-local`（项目本地，默认）\n2. `user-level`（用户级）\n\n回复 `1`、`2` 或 `默认`；回复 `取消` 放弃。";
+	} else if (igniter_state == "confirm") {
+		String components;
+		for (const Variant &component : Array(igniter_fields.get("components", Array()))) {
+			if (!components.is_empty()) {
+				components += U"、";
+			}
+			components += String(U"`") + String(component) + U"`";
+		}
+		text = vformat(U"将部署：%s\n安装位置：%s\n\n回复 `确认` 授权执行；回复 `取消` 放弃。", components, String(igniter_fields.get("location", "project-local")));
+	}
+	if (!text.is_empty()) {
+		_append(TTR("Editor"), text);
+	}
+}
+
+void AIChatDock::_igniter_reply(const String &p_text) {
+	if (AIChatIssueGuide::is_cancel(p_text)) {
+		_cancel_igniter(U"已退出本地配置点火器。原消息仍保留；修复环境后再发送即可继续。");
+		return;
+	}
+	if (igniter_pid >= 0) {
+		_append(TTR("Editor"), U"点火器正在处理上一步，请稍候；回复 `取消` 可放弃。");
+		return;
+	}
+	const String text = p_text.strip_edges();
+	if (igniter_state == "components") {
+		Array selected;
+		if (text == U"全部" || text == "all") {
+			selected = igniter_missing;
+		} else {
+			for (const String &token : text.split(" ")) {
+				const String name = token.strip_edges();
+				if (!name.is_empty() && igniter_missing.has(name) && !selected.has(name)) {
+					selected.push_back(name);
+				}
+			}
+		}
+		if (selected.is_empty()) {
+			_append(TTR("Error"), U"未识别到可部署的组件，请从缺失项中选择。");
+			_igniter_prompt();
+			return;
+		}
+		igniter_fields["components"] = selected;
+		if (selected.has("python") && String(EDITOR_GET("gonggong/python")).strip_edges().is_empty()) {
+			igniter_state = "python_path";
+		} else {
+			igniter_state = "location";
+		}
+	} else if (igniter_state == "python_path") {
+		if (FileAccess::exists(text)) {
+			EditorSettings::get_singleton()->set("gonggong/python", text);
+			EditorSettings::get_singleton()->save();
+			Array selected = igniter_fields["components"];
+			selected.erase("python");
+			if (selected.is_empty()) {
+				_append(TTR("Editor"), U"Python 已配置，正在用原消息重新进行 GongGong 入口校验…");
+				_cancel_igniter(String());
+				_igniter_resume();
+				return;
+			}
+			igniter_fields["components"] = selected;
+			igniter_state = "location";
+		} else {
+			_append(TTR("Error"), U"路径不可用，请提供有效的 Python 可执行文件绝对路径。");
+		}
+	} else if (igniter_state == "location") {
+		String location = "project-local";
+		if (text == "2" || text == "user-level" || text == U"用户级") {
+			location = "user-level";
+		}
+		igniter_fields["location"] = location;
+		igniter_state = "confirm";
+	} else if (igniter_state == "confirm") {
+		if (AIChatIssueGuide::is_confirm(text)) {
+			Dictionary deploy;
+			deploy["components"] = igniter_fields["components"];
+			deploy["location"] = igniter_fields["location"];
+			_igniter_run("environment-deploy", deploy);
+			return;
+		}
+	}
+	_igniter_prompt();
+}
+
+void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_request) {
+	igniter_state = p_action == "environment-deploy" ? "deploying" : "checking";
+	const String root = EDITOR_GET("gonggong/workspace");
+	const String python = EDITOR_GET("gonggong/python");
+	const String bridge = root.path_join("tools/gonggong_bridge.py");
+	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
+		_append(TTR("Error"), U"无法启动点火器：工作区或 Python 未配置，请在 GongGong 页设置后再试。");
+		_cancel_igniter(String());
+		return;
+	}
+	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-igniter-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
+	igniter_input_path = prefix + ".request.json";
+	igniter_output_path = prefix + ".result.json";
+	Ref<FileAccess> file = FileAccess::open(igniter_input_path, FileAccess::WRITE);
+	if (file.is_null()) {
+		_append(TTR("Error"), U"无法保存点火器请求。");
+		_cancel_igniter(String());
+		return;
+	}
+	file->store_string(JSON::stringify(p_request));
+	file.unref();
+	List<String> args;
+	for (const String &argument : { bridge, p_action, String("--workspace"), root, String("--tenant"), String(EDITOR_GET("gonggong/tenant")), String("--request"), igniter_input_path, String("--out"), igniter_output_path }) {
+		args.push_back(argument);
+	}
+	ProcessID pid = 0;
+	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+		_clear_igniter_files();
+		_append(TTR("Error"), U"无法启动点火器，请检查 Python 路径。");
+		_cancel_igniter(String());
+		return;
+	}
+	igniter_pid = pid;
+	igniter_action = p_action;
+	igniter_run_generation = igniter_generation;
+	if (!igniter_timer) {
+		igniter_timer = memnew(Timer);
+		igniter_timer->set_wait_time(0.1);
+		igniter_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_igniter));
+		add_child(igniter_timer);
+	}
+	igniter_timer->start();
+	_append(TTR("Editor"), p_action == "environment-deploy" ? String(U"正在执行本地环境部署…") : String(U"正在重新检测本地环境…"));
+}
+
+void AIChatDock::_poll_igniter() {
+	if (OS::get_singleton()->is_process_running(igniter_pid)) {
+		return;
+	}
+	igniter_timer->stop();
+	igniter_pid = -1;
+	Variant parsed;
+	if (FileAccess::exists(igniter_output_path)) {
+		parsed = JSON::parse_string(FileAccess::get_file_as_string(igniter_output_path));
+	}
+	_clear_igniter_files();
+	if (igniter_run_generation != igniter_generation || igniter_state.is_empty()) {
+		return; // A cancelled igniter never applies a late result.
+	}
+	Dictionary result;
+	if (parsed.get_type() == Variant::DICTIONARY) {
+		result = parsed;
+	}
+	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	const String error = result.get("error", U"点火器没有返回有效结果。");
+	if (igniter_action == "environment-deploy") {
+		if (!ok) {
+			igniter_state = "components";
+			_append(TTR("Error"), String(U"本地环境部署失败：") + error);
+			_igniter_prompt();
+			return;
+		}
+		_igniter_run("environment-check", Dictionary());
+		return;
+	}
+	if (igniter_action == "environment-check") {
+		const Array missing = result.get("environment_missing", Array());
+		if (!ok || missing.size() > 0) {
+			igniter_missing = missing;
+			igniter_state = "components";
+			_append(TTR("Error"), U"部署后仍检测到环境缺失，请重新选择或检查可执行路径。");
+			_igniter_prompt();
+			return;
+		}
+		_append(TTR("Editor"), U"本地环境已就绪，正在用原消息重新进行 GongGong 入口校验…");
+		_cancel_igniter(String());
+		_igniter_resume();
+		return;
+	}
+	_cancel_igniter(String());
+}
+
+void AIChatDock::_clear_igniter_files() {
+	for (const String &path : { igniter_input_path, igniter_output_path }) {
+		if (!path.is_empty() && FileAccess::exists(path)) {
+			DirAccess::remove_absolute(path);
+		}
+	}
+	igniter_input_path = String();
+	igniter_output_path = String();
+}
+
+void AIChatDock::_cancel_igniter(const String &p_notice) {
+	const bool active = !igniter_state.is_empty() || igniter_pid >= 0;
+	igniter_generation++;
+	if (igniter_pid >= 0) {
+		if (OS::get_singleton()->is_process_running(igniter_pid)) {
+			OS::get_singleton()->kill(igniter_pid);
+		}
+		igniter_pid = -1;
+	}
+	if (igniter_timer) {
+		igniter_timer->stop();
+	}
+	_clear_igniter_files();
+	igniter_state = String();
+	igniter_outcome = String();
+	igniter_missing.clear();
+	igniter_fields.clear();
+	if (!active) {
+		return;
+	}
+	set_meta("gonggong_status", "igniter_cancelled");
+	if (!p_notice.is_empty()) {
+		_append(TTR("Editor"), p_notice);
+	}
+}
+
+void AIChatDock::_igniter_resume() {
+	if (busy) {
+		return;
+	}
+	if (last_user_content(messages).strip_edges().is_empty()) {
+		_cancel_igniter(U"环境已部署，但原消息已不在当前会话中，请重新发送。");
+		return;
+	}
 	// Same paused turn: the original user message is still the last entry in `messages`.
 	_begin_reply();
 	turn_completed = false;

@@ -26,6 +26,14 @@ _paths_module = importlib.util.module_from_spec(_paths_spec)
 _paths_spec.loader.exec_module(_paths_module)
 framework_root = _paths_module.framework_root
 
+_igniter_spec = importlib.util.spec_from_file_location(
+    "gonggong_environment_igniter", Path(__file__).with_name("environment_igniter.py")
+)
+if _igniter_spec is None or _igniter_spec.loader is None:
+    raise ImportError("Cannot load environment igniter")
+_igniter = importlib.util.module_from_spec(_igniter_spec)
+_igniter_spec.loader.exec_module(_igniter)
+
 
 @contextmanager
 def outbox_lock(folder, deadline):
@@ -146,6 +154,9 @@ def host_environment(root):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", GONGGONG_PYTHON=sys.executable)
     # A retired external source locator must not propagate to child processes.
     env.pop("GONGGONG_FRAMEWORK_SOURCE", None)
+    # A deployed local environment (the configuration igniter) is honored before
+    # the host's own runtime discovery, but never grants admission by itself.
+    env = _igniter.apply_state(root, env)
     gh = find_gh(env)
     if gh:
         env["GONGGONG_GH"] = gh
@@ -274,6 +285,7 @@ def chat(root, request, tenant):
         "reporting": binding,
     }
     env = host_environment(root)
+    environment_missing = _igniter.missing_components(root, env)
     with tempfile.TemporaryDirectory() as temporary:
         mandate_file = Path(temporary) / "mandate.json"
         mandate_file.write_text(json.dumps(mandate, ensure_ascii=False), encoding="utf-8")
@@ -302,6 +314,10 @@ def chat(root, request, tenant):
             }
         except (OSError, subprocess.TimeoutExpired) as error:
             result = {"ok": False, "agent_execution_enabled": False, "context": "", "error": str(error)}
+        if not result["ok"] and environment_missing:
+            # Environment gaps are a config problem, not a framework/admission/data
+            # block; the editor turns this marker into the configuration igniter.
+            result["environment_missing"] = environment_missing
         event = {
             "schema_version": 1,
             "event_id": "host-context-" + uuid.uuid4().hex,
@@ -368,14 +384,19 @@ def run(command, cwd):
 def diagnose(root):
     framework = framework_root(root)
     env = host_environment(root)
-    node = env.get("GONGGONG_NODE", "node")
-    checks = {"node_available": {"ok": shutil.which(node, path=env.get("PATH")) is not None}}
-    checks["git_available"] = {"ok": shutil.which("git", path=env.get("PATH")) is not None}
+    status = _igniter.component_status(root, env)
+    checks = {}
+    for component_id in ("python", "node", "git"):
+        checks[component_id + "_available"] = {
+            "ok": status[component_id]["available"],
+            "path": status[component_id]["path"],
+        }
     checks["candidate_integrity"] = run(
         [sys.executable, str(framework / "tools/verify_framework.py"), "--candidate"], root
     )
     checks["formal_framework_admission"] = run([sys.executable, str(framework / "tools/verify_framework.py")], root)
     manifest = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
+    node = env.get("GONGGONG_NODE", "node")
     for agent in manifest["agents"]:
         checks["local_admission:" + agent["id"]] = run(
             [node, str(framework / "tools/admission.mjs"), str(framework), agent["id"]], root
@@ -384,13 +405,16 @@ def diagnose(root):
         [sys.executable, str(framework / "extensions/diting-files/diting_files.py"), "validate", "--repo", str(root)],
         root,
     )
+    environment_checks = {"python_available", "node_available", "git_available"}
+    environment_missing = [component_id for component_id in ("python", "node", "git") if not status[component_id]["available"]]
     return {
         "ok": all(c["ok"] for c in checks.values()),
         "checks": checks,
-        "blocking_checks": [name for name, check in checks.items() if not check["ok"]],
+        "environment_missing": environment_missing,
+        "blocking_checks": [name for name, check in checks.items() if name not in environment_checks and not check["ok"]],
         "model_execution_started": False,
         "host_authority_authenticated": False,
-        "note": "Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Diting receipt.",
+        "note": "Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Diting receipt. Environment gaps are reported separately from framework/admission/data blocking checks.",
     }
 
 
@@ -632,6 +656,27 @@ def issue_agent(root, request):
     return module.intake(root, request, api)
 
 
+def environment_check_action(root, request):
+    return _igniter.environment_check(root, host_environment(root))
+
+
+def environment_deploy_action(root, request):
+    if not isinstance(request, dict):
+        raise ValueError("environment-deploy requires a selection object")
+    return _igniter.environment_deploy(root, request, host_environment(root))
+
+
+def environment_rollback_action(root, request):
+    return _igniter.environment_rollback(root, host_environment(root))
+
+
+ENVIRONMENT_ACTIONS = {
+    "environment-check": environment_check_action,
+    "environment-deploy": environment_deploy_action,
+    "environment-rollback": environment_rollback_action,
+}
+
+
 GUIDE_ACTIONS = {
     "issue-draft": issue_draft,
     "issue-create": issue_create,
@@ -681,7 +726,8 @@ def execute(workspace, action, tenant):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "action", choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush", *GUIDE_ACTIONS]
+        "action",
+        choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush", *GUIDE_ACTIONS, *ENVIRONMENT_ACTIONS],
     )
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--tenant", default="gonggong-workspace")
@@ -693,6 +739,11 @@ def main():
             if args.request is None:
                 raise ValueError("chat requires --request")
             result = chat(Path(args.workspace), json.loads(args.request.read_text(encoding="utf-8")), args.tenant)
+        elif args.action in ENVIRONMENT_ACTIONS:
+            request = {}
+            if args.request is not None:
+                request = json.loads(args.request.read_text(encoding="utf-8"))
+            result = ENVIRONMENT_ACTIONS[args.action](Path(args.workspace).resolve(), request)
         elif args.action in GUIDE_ACTIONS:
             if args.request is None:
                 raise ValueError(args.action + " requires --request")
