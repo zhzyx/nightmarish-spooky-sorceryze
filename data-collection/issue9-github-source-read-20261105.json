@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "observed_at": "2026-11-04T19:36:34.693Z",
+  "scope": "actual read through isolated candidate source; not installed Sinan registry",
+  "execution_host_bound": false,
+  "start_ack_actual": false,
+  "usage": null,
+  "snapshot": {
+    "sourcesRegistered": 1,
+    "sourcesRead": 1,
+    "scope": "explicit_host_bindings_only",
+    "items": [
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "title": "接通 GitHub Issue 事件协调与谛听数据交接，核销陈旧状态",
+        "status": "status:in-progress",
+        "lifecycle": "open",
+        "owner": [],
+        "dependsOn": [],
+        "dispatchCandidate": false,
+        "acceptanceValid": false,
+        "requestId": "issue-event-data-loop-20261102"
+      }
+    ],
+    "sourceSnapshots": [
+      {
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "provider": "github_issues",
+        "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "requestId": "issue-event-data-loop-20261102",
+        "sha256": "47b6d97582c48cfc16ccd22e2a5beb10d497e77c5c7283c45e8eafb4d472be7d"
+      }
+    ],
+    "followUps": [
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#9:source-assessment",
+        "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "owner": "current_operator",
+        "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "status": "proposed",
+        "execution": "not_dispatched",
+        "nextAction": "Verify dependencies, admission and execution-host binding before dispatch"
+      }
+    ],
+    "diagnostics": [],
+    "ready": []
+  },
+  "environment": {
+    "catalog": [],
+    "active": [],
+    "capacity": 0
+  }
+}
