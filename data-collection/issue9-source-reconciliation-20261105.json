@@ -1,0 +1,60 @@
+{
+  "sources": [
+    {
+      "dataset_id": "5094b7ca-057c-4370-831b-10b6a30ae081",
+      "origin": "gonggong",
+      "mode": "current"
+    },
+    {
+      "dataset_id": "0cf3f384-55ed-4bd9-9fbd-0358e98aca28",
+      "origin": "olympus",
+      "mode": "read_only_historical"
+    }
+  ],
+  "dataset_id": "5094b7ca-057c-4370-831b-10b6a30ae081",
+  "origin": "gonggong",
+  "tenant": "gonggong-workspace",
+  "consumer_compatibility": [
+    "diting",
+    "gonggong"
+  ],
+  "snapshot_sha256": "c2651211d891c036a970bb89ef95cb606515682832fb0cec84c64402c435351f",
+  "git_state": "not_fully_committed",
+  "coverage": "unknown",
+  "events": 1459,
+  "current_events": 1049,
+  "by_kind": {
+    "request": 193,
+    "step": 433,
+    "message": 413,
+    "coverage": 5,
+    "request_end": 5
+  },
+  "usage_totals": "not_inferred_from_event_counts",
+  "schema_version": 1,
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "consumer": "coordinating Codex host explicit analyze, reconciled by issue9 candidate",
+  "original_output_sha256": "82a6e18be5b9a19bea30c70c9eefca4d3077d5f9b106f3039e9980f60d3c3713",
+  "original_output_encoding": "gb18030",
+  "original_output_retention": "coordinator local output; compact extraction only",
+  "matched_event": "github-4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984",
+  "matched_record_sha256": "a052b77bc3c5a030d8f59e8e4cf6bda32739cddb2371565b3ef938996d68acd5",
+  "canonical_record": "gonggong-diting-data/events/gonggong-workspace/requirement-eecb7c4b90c0c55a8cde516aac5472f2/github-4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984.json",
+  "envelope": "data-collection/issue-events/4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984/envelope.json",
+  "receipt": "data-collection/issue-events/4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984/receipt.json",
+  "meaning": "actual analyze output contains this record; not Sinan registration or Diting Agent execution",
+  "sinan_source_registered": false,
+  "usage": null,
+  "remote_event_readback": {
+    "id": 35149121962,
+    "event": "renamed",
+    "created_at": "2026-11-04T16:19:48Z"
+  },
+  "sinan_board": {
+    "sourcesRegistered": 0,
+    "sourcesRead": 0,
+    "items": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue59-local-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T18:33:49.968293+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "agent": {
+    "id": "codex-desktop-issue59",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "intent": "Implement Issue 59 semantic editor control MVP in isolated worktree",
+    "state": "in_progress",
+    "baseline": "1b0a33fd5",
+    "agent_definition_basis": "workspace AGENTS.md bytes; host model usage unavailable",
+    "path_base": "repository_root",
+    "usage": null,
+    "usage_unknown_reason": "Host did not provide measured usage"
+  },
+  "evidence_refs": [],
+  "sha256": "2b41bd086eefec3ca7ae644cd63c1a8853ba0075faba7a49cd523c97815d1a2d"
+}

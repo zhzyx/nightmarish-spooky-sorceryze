@@ -1,0 +1,15 @@
+{
+  "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "ab2b2b17238c5c8231bda71795a6670e6f1343fa8c5024602387b776ab9371b6",
+    "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+    "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+  },
+  "binary_sha256": "9b0418ca96fa46efccf9436a3dd7af99d724e6f007f0efcaf57cb934e15b09af",
+  "engine_sha256": "a12b9a68a74a77beb793189fd7352a1d3195980bbd8452324022ef22fa9a738f",
+  "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+  "build_result": "passed",
+  "build_seconds": 24.91,
+  "candidate": "fourth-uncommitted",
+  "path_base": "repository_root"
+}

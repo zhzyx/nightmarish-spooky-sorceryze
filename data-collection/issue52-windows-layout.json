@@ -1,0 +1,181 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "binary_sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+  "phases": [
+    {
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          0
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        872.0
+      ],
+      "phase": "seed",
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    },
+    {
+      "distraction_preserved": true,
+      "expanded_panel_nonblank": true,
+      "filled_size": [
+        1592.0,
+        953.0
+      ],
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          0
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        872.0
+      ],
+      "phase": "initial",
+      "split_positions_restored": true,
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    },
+    {
+      "distraction_preserved": true,
+      "expanded_panel_nonblank": true,
+      "filled_size": [
+        1592.0,
+        953.0
+      ],
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          -270
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        645.0
+      ],
+      "phase": "restart",
+      "split_positions_restored": true,
+      "saved_order": [
+        "AIChatMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    }
+  ],
+  "test_sha256": {
+    "run_issue52_layout_validation.py": "26a621e3f9712751923b9c074305e1989b658b12fd6c80f413800d80fcef8027",
+    "issue52_layout_validation.gd": "996b91452cfdb438501efc1b8035bb6c75eb4603d41eeb6b6a092e6421839000"
+  }
+}

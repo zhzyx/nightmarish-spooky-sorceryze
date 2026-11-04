@@ -1,0 +1,31 @@
+{
+  "kind": "request_followup_source",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "path_base": "repository_root",
+  "actual_worker": "codex-desktop-issue59",
+  "baseline": "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+  "intake": {
+    "tenant": "gonggong-workspace",
+    "result": "passed",
+    "status_at_read": "status:in-review",
+    "issue_updated_at": "2026-11-04T19:04:47Z"
+  },
+  "authorization": "Coordinator followup requested visible acceptance and byte bounds; preserve frozen94b and make minimal separate followup if missing. User authorized cross-chat coordination.",
+  "review_correction": "Independent review via coordinator found serialized state redaction can expand JSON or corrupt literal tokens; structured field redaction before budgeting, no global redaction refactor.",
+  "scope": "Controller bounds, local successful-state result path in dock, corresponding native/HTTP/Codex fixture tests; no HTTP cancellation changes.",
+  "original_candidate_evidence": {
+    "path_base": "D:/GongGong",
+    "path": ".worktrees/issue59-delivery-94b0cfb534c2/additional-acceptance-20261105.json"
+  },
+  "wire_boundary": "State tool content JSON UTF-8 <=16384 bytes, including state metadata; not entire chat request.",
+  "known_limits": [
+    "Input collection can construct long NodePaths and enumerate full unsaved-scenes list before output bounding",
+    "Real provider unvalidated",
+    "Original main baseline integration unvalidated",
+    "Delayed Stop handed to issue51 independently",
+    "Script driver shutdown leaks unlocated"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Host does not expose measured token/cost usage"
+}

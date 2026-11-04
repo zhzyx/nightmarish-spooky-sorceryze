@@ -1,0 +1,50 @@
+{
+  "issue": 55,
+  "state": "independent_layout_review_passed",
+  "path_base": "repository_root",
+  "candidate": {
+    "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "4e76348440a4d565e9a49be251680c6f6935f10208a74f87e2f08e65adbc24b3",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+    },
+    "binary_sha256": "ddfe5cbf28e799fd54ac6ec44a87d5f5f801850355c8566b2a88e16a2db83a01",
+    "engine_sha256": "4449aaa990a88a2f75ad0cab36050a7f7f0b7b1290243560501cb5a39a0b8022",
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "build_result": "passed",
+    "build_seconds": 24.23,
+    "candidate": "sixth-uncommitted",
+    "path_base": "repository_root"
+  },
+  "candidate_commit_note": "Base e776639f plus exact frozen three-source hashes. Not a claim that e776639f alone contains candidate6. Coordinator must verify these bytes in the eventual implementation commit.",
+  "independence": "This chat authored only tests and evidence, not the reviewed UI implementation.",
+  "matrix": "Six native isolated editor processes; physical640/960/1440x900, actual EDSCALE1.0/1.5 asserted. All six exited0. Default editor root minimum relaxed only to expose explicitly requested stress viewports; control bounds were strictly checked without changing expected sizes.",
+  "behaviors": [
+    "Long model name remains bounded",
+    "Settings scroll independently; cancel/done reset toggle and preserve composer geometry",
+    "Long draft plus four attachments stay visible together",
+    "Conversation switch restores draft and four images",
+    "Loopback long reply, send and stop reset controls",
+    "3D/Script restore full editor menu; returning AI Chat restores layout"
+  ],
+  "source_and_binary_before_after": "All build receipt source_sha256 entries plus console wrapper and actual engine executable were verified at start/end.",
+  "test_source_sha256": "80e88ed37fdc92ec301d6fb56291715540f9047497cec9148eea0fabcc077e97",
+  "evidence": "data-collection/issue55-layout-regression/candidate6-native/summary.json",
+  "screenshots": [
+    "data-collection/issue55-layout-regression/candidate6-native/layout-1.5-640-640_settings_+_attachments.png",
+    "data-collection/issue55-layout-regression/candidate6-native/layout-1.0-1440-1440_collapsed.png",
+    "data-collection/issue55-layout-regression/candidate6-native/layout-1.5-960-960_long_draft.png"
+  ],
+  "visual_review": "Inspected narrow long-draft+four-attachment screenshot, settings viewport and wide collapsed viewport. Input/send controls visible; settings independently scroll. Settings screenshots stay local because defaults contain host-specific paths; only selected main-view screenshots included.",
+  "previous_failures": "Native candidate1, candidate2 headless and candidate4 headless failures preserved. Candidate4 input source drift prevented100%640 run; no result was claimed. Candidate6 reran all six because bottom toolbar changed all widths.",
+  "known_existing_issue": "Initial conversation title contains mojibake; e776639f existing add_tab narrow Chinese literal. Sent to #56/#51, not introduced by this layout change and not claimed fixed.",
+  "limitations": [
+    "No real external model service tested; loopback fixture only.",
+    "No actual engine build/restart operation started within the narrow UI test; real running-build geometry remains outside this matrix.",
+    "No remote merge, install switch, delivery approval or Issue closure."
+  ],
+  "native_protocol_tests": "22 cases254 assertions passed on candidate1 executable; not rerun or relabeled as candidate6 execution. Protocol/tool sources unchanged by reviewed three-source UI diff.",
+  "approval_granted": false,
+  "next_event": "Implementation owner commits exact candidate6 bytes; coordinator checks provenance, reviews and serially handles merge/install."
+}

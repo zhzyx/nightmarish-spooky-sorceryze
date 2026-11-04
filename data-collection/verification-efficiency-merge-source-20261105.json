@@ -1,0 +1,8 @@
+{
+  "request_id": "verification-efficiency-20261105",
+  "issue_number": 85,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/85",
+  "path_base": "repository_root",
+  "source": "data-collection/verification-efficiency-main-integration-20261105.json",
+  "scope": "PR source association; does not assert remote merge or ingestion"
+}

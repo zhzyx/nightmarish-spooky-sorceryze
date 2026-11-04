@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-ai-chat-debug-20261105-request-lifetime",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-04T19:49:01.562255+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "codex-issue49-request-lifetime",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "offline_lifetime_verified",
+    "path_base": "repository_root",
+    "evidence": "data-collection/ai-chat-debug-20261104/request-lifetime-verification-20261105.json",
+    "evidence_sha256": "625dd4cdc5fa2a84cdd7bd54bcdddd096990e3d00923a3a4456dbb9fdd82c1a3",
+    "digest_basis": "UTF-8 LF Git blob",
+    "real_service_acceptance": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "gonggong-ai-chat-debug-20261104-request"
+  ],
+  "sha256": "d570fb290b9f5420bd6afe4032987ad1a3875862a1d6f000b0f091bc8623daa5"
+}

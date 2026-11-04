@@ -1,0 +1,61 @@
+Godot Engine v4.8.beta.custom_build.e776639fc (2026-11-04 17:04:33 UTC) - https://godotengine.org
+
+AI_CHAT_JSON_CONTROLS_OK
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started ��Ŀ��ʼ�� (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | ����ɨ���ļ��ṹ����[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | ���ڼ���ȫ����������[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | ����У�� GDExtension����[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | ���ڴ����Զ����ؽű�����[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | ���ڳ�ʼ���������[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | ���������ļ�ɨ�衭��[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started ����ע��ȫ���࡭�� (2 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started ���ڼ��ر༭�� (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | ���ڼ��ر༭�����֡���[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | ���ڼ���ͣ����塭��[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+AI_CHAT_ADVANCED_OPTIONS_OK
+AI_CHAT_ON_DEMAND_LOG_SENTINEL LOG_TEST_PRIVATE_KEY
+���� AI �Ի��ɷ��ʹ��̡�����Դ�����Ŀ���ļ������� MCP�����졢ͼƬ��ݸ��������Զ����浽��ǰ��Ŀ�� .godot/editor/ai_chat_history.json��������ָ���API ��Կ�����档�ļ��޸ĺ�ִ��Ĭ����ȷ�ϣ���ͨ�������Զ��������س�����Ȩ��
+
+��ѡ�� CodeBuddy �˺š�������Դ�롢��д�ļ���ͨ�� Bash �����Ͳ��ԣ����� MCP���ļ��޸���ִ���Ƿ���ȷ��ȡ�����Զ��������ء�
+
+case:native_baseline
+
+�Ѵ����������õ������ԭ�����ѱ��������ڵ�������ɱ��ز����Լ�ͨ�����Զ�����ʶ�������뽨����
+
+
+ERROR: 5 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.
+ERROR: 18 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.
+ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.
+ERROR: 121 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.
+ERROR: 19 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.
+ERROR: 1 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.
+
+ERROR: Native file result missing: NATIVE_BASELINE_OK
+   at: VariantUtilityFunctions::push_error (core\variant\variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://integration.gd:24)
+       [1] _phase (res://integration.gd:68)
+       [2] _run (res://integration.gd:565)
+WARNING: 5 RIDs of type "Canvas" were leaked.
+   at: RendererCanvasCull::_free_rids (servers\rendering\renderer_canvas_cull.cpp:2735)
+WARNING: 33 RIDs of type "CanvasItem" were leaked.
+   at: RendererCanvasCull::_free_rids (servers\rendering\renderer_canvas_cull.cpp:2735)
+WARNING: 297 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: ObjectDB::cleanup (core\object\object.cpp:2609)
+
+Traceback (most recent call last):
+  File "[candidate-root]\tests\editor\run_ai_chat_integration.py", line 1028, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "[candidate-root]\tests\editor\run_ai_chat_integration.py", line 954, in main
+    assert 'AI_CHAT_NATIVE_COMMANDS_OK' in result.stdout, 'Native terminal checks did not complete'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Native terminal checks did not complete

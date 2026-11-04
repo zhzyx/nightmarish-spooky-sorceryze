@@ -35,6 +35,7 @@
 #include "core/templates/safe_refcount.h"
 #include "editor/docks/editor_dock.h"
 
+class AIChatEditorControl;
 class Button;
 class CheckBox;
 class ConfirmationDialog;
@@ -93,7 +94,7 @@ class AIChatDock : public EditorDock {
 	void _send_completion_after_receipt();
 	void _response_after_receipt(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _tool_after_receipt(uint64_t p_session);
-	void _finish_tool_after_receipt(const String &p_result, bool p_file_success);
+	void _finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state);
 	void _poll_gonggong_receipt();
 	void _end_gonggong(const String &p_status);
 	void _begin_gonggong_context();
@@ -347,6 +348,9 @@ class AIChatDock : public EditorDock {
 	String _history_path() const;
 	void _queue_history_save();
 	void _draft_changed();
+	void _update_composer_height();
+	void _toggle_chat_settings(bool p_visible);
+	AcceptDialog *chat_settings_dialog = nullptr;
 	void _save_history();
 	static void _write_history(void *p_job);
 	void _poll_history_save();
@@ -365,6 +369,9 @@ class AIChatDock : public EditorDock {
 	String pending_path;
 	String pending_before;
 	String pending_after;
+	ObjectID editor_control_id;
+	AIChatEditorControl *_get_editor_control();
+	Dictionary pending_editor_action;
 	String pending_action;
 	String pending_command;
 	String pending_cwd;
@@ -573,7 +580,7 @@ class AIChatDock : public EditorDock {
 	void _request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _stop();
 	void _next_tool(uint64_t p_session);
-	void _finish_tool(const String &p_result, bool p_file_success = false);
+	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);
 	void _show_confirmation();
 	void _confirm_action();
 	void _reject_action();

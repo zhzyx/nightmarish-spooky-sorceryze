@@ -1,0 +1,230 @@
+{
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "kind": "candidate_validation",
+  "path_base": "repository_root",
+  "baseline": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "scope": "source delivery plus local Windows x86_64 MSVC build and test evidence; no install or publication",
+  "inputs": {
+    "editor/docks/ai_chat_editor_control.cpp": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+    "editor/docks/ai_chat_editor_control.h": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+    "editor/docks/ai_chat_dock.cpp": "c412a612b5d97ec424075cea1cad490e49ab0d88ef0c85094cc44aba1f1f08b7",
+    "editor/docks/ai_chat_dock.h": "544d0155d40965a32c768cb31213daf18240afaadb19c67990d48a1b35771981",
+    "editor/settings/editor_settings_dialog.cpp": "15161624f6ab7edccc672578c686276276b9d2721d6461907b2711965427c355",
+    "editor/settings/editor_settings_dialog.h": "20b23abee2ea3d98a7ffa5f608b4cfe1cd12ff32b4e61b51bf29ee98723382f1",
+    "tests/editor/test_ai_chat_editor_control.cpp": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+    "tests/editor/test_codex_bridge.js": "8ed157bc54b5150ed891766767d9c195eaa05099f4b6173c7fcb257d4106ec9e",
+    "tests/editor/run_consultation_only.py": "b577102032bdb49037d1a4bfc4691da38e92e36bbf7da147498cd34a01b65871",
+    "tests/editor/ai_chat_semantic.gd": "0c80c8b646082ff20c85245f1c286c97784ff933503ee928cf68f83d4a90c387",
+    "tests/editor/run_ai_chat_semantic.py": "f5f986304b694c5feb6f8e10ff68cefa5075a00af02b2a10cdfa23ebf0f7f7d8",
+    "tools/codebuddy_cli/godot_bridge.js": "be69028dcafa55e142b7c8d44671b11f73f1576f72c6738671cfdadbeb096960"
+  },
+  "build": {
+    "platform": "windows",
+    "architecture": "x86_64",
+    "compiler": "MSVC 14.5 / Windows SDK 10.0.26100.0",
+    "command": "D:/GongGong/project/build-support/python/Scripts/python.exe -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8 -Q",
+    "cache": "read-only copy of issue49-intake bin/obj and .sconsign5.dblite; SCons regenerated/revalidated inputs; no other source tree modified",
+    "executables": {
+      "bin/godot.windows.editor.x86_64.exe": "c8eb6a676d9f596fe833391cf0f5c7531a37b800b1bda915f11eff80a7131768",
+      "bin/godot.windows.editor.x86_64.console.exe": "c21a17631d10f9659aee810f9e147b5d798ddfa9f2bba3e55b11234bf60a853e"
+    },
+    "final_result": "passed"
+  },
+  "tests": {
+    "native": {
+      "cases": 24,
+      "assertions": 215,
+      "result": "passed",
+      "binary": "final"
+    },
+    "codex_bridge": {
+      "cases": 7,
+      "result": "passed",
+      "mode": "simulated proposal/CLI process; no real supplier"
+    },
+    "http_scene_core": {
+      "result": "passed",
+      "mode": "simulated model + native headless editor",
+      "coverage": [
+        "null scene/script state",
+        "JSON integer width confirmation and disk/readback",
+        "rejection no retry",
+        "read-only disk failure preserves setting value/order",
+        "clear disk override and restore built-in default",
+        "2D switch",
+        "Scene Tree mouse-ignore highlight",
+        "clear highlight",
+        "consultation action refusal",
+        "disabled-tool proposal rejected"
+      ]
+    },
+    "http_scene_interfaces": {
+      "result": "passed",
+      "mode": "simulated model + native headless editor",
+      "coverage": [
+        "open scene",
+        "JSON line3 column1 actual script caret",
+        "scene-relative Child selection",
+        "visible Inspector/FileSystem/main-screen-tabs highlights",
+        "logical window resize and stop cleanup",
+        "Project Settings Display/Window",
+        "Editor Settings section",
+        "settings-window highlights"
+      ]
+    },
+    "consultation": {
+      "ok": true,
+      "editor_sha256": "65651ee4a63bc57f4a22e24fc116ea1e58c6b01ea30adc9b4e5a75e8077f2c7f",
+      "requests": [
+        {
+          "prompt": "CONSULTATION_ATTACK",
+          "tool_results": 0
+        },
+        {
+          "prompt": "CONSULTATION_ATTACK",
+          "tool_results": 8
+        },
+        {
+          "prompt": "CONSULTATION_ATTACK",
+          "tool_results": 9
+        },
+        {
+          "prompt": "CLI_MUST_NOT_START",
+          "tool_results": 0
+        }
+      ],
+      "denied_tools": 8,
+      "read_result": "verified",
+      "issue_monitoring": "No configured workspace/host; no workspace created; code path reviewed. Not a global API spy.",
+      "fixture_events_imported": false
+    },
+    "ordinary_startup": {
+      "exit_code": 0,
+      "warning": "Plugin is not attached to debugger; no claim of warning-free shutdown"
+    }
+  },
+  "evidence_reuse": {
+    "scene_and_consultation_console_sha256": "65651ee4a63bc57f4a22e24fc116ea1e58c6b01ea30adc9b4e5a75e8077f2c7f",
+    "mapping": [
+      {
+        "path": "editor/docks/ai_chat_editor_control.cpp",
+        "before": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+        "after": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+        "change": "unchanged"
+      },
+      {
+        "path": "editor/docks/ai_chat_editor_control.h",
+        "before": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+        "after": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+        "change": "unchanged"
+      },
+      {
+        "path": "editor/docks/ai_chat_dock.cpp",
+        "before": "b4149c093f6a48ffa573887721484565a021c791883de36a4ba6895fd1cfa7ca",
+        "after": "c412a612b5d97ec424075cea1cad490e49ab0d88ef0c85094cc44aba1f1f08b7",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "editor/docks/ai_chat_dock.h",
+        "before": "d23f25aab8ef1dc99a0b466dc4f989bad301c15405f65d88743a8d2261abbd47",
+        "after": "544d0155d40965a32c768cb31213daf18240afaadb19c67990d48a1b35771981",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "editor/settings/editor_settings_dialog.cpp",
+        "before": "04c5dd038ba38e2c5155162c06c72c5ec7a8a3729ba35b51e7a092fe50eb2265",
+        "after": "15161624f6ab7edccc672578c686276276b9d2721d6461907b2711965427c355",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "editor/settings/editor_settings_dialog.h",
+        "before": "c4daa7c104b4569524579172fc1d344284852558053085d70823a07d7d016fc1",
+        "after": "20b23abee2ea3d98a7ffa5f608b4cfe1cd12ff32b4e61b51bf29ee98723382f1",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "tests/editor/test_ai_chat_editor_control.cpp",
+        "before": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+        "after": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+        "change": "unchanged"
+      },
+      {
+        "path": "tests/editor/test_codex_bridge.js",
+        "before": "8d0773aa7f6369ec226496c26fc13d0cb64554af6a73f9028bdacac425432c73",
+        "after": "8ed157bc54b5150ed891766767d9c195eaa05099f4b6173c7fcb257d4106ec9e",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "tests/editor/run_consultation_only.py",
+        "before": "bc388dbec6389b4685d01c84a12783775cf29c76f1a2b37ab03548b7d2f23313",
+        "after": "b577102032bdb49037d1a4bfc4691da38e92e36bbf7da147498cd34a01b65871",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "tests/editor/ai_chat_semantic.gd",
+        "before": "cde545c7dfd3c82f8bd3e8704499a8a311cb6d4991ee709c6c3281260fb3f70b",
+        "after": "0c80c8b646082ff20c85245f1c286c97784ff933503ee928cf68f83d4a90c387",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "tests/editor/run_ai_chat_semantic.py",
+        "before": "0e93c321e3dcc503e788ac21ac80535ba0ebaeacf70b5e2e1186cc8eab5d76b6",
+        "after": "f5f986304b694c5feb6f8e10ff68cefa5075a00af02b2a10cdfa23ebf0f7f7d8",
+        "change": "CRLF_to_LF_only"
+      },
+      {
+        "path": "tools/codebuddy_cli/godot_bridge.js",
+        "before": "c6b246ce23121fbec09f9264e019f75faeffd7192762b8210475f96fbf5eb37a",
+        "after": "be69028dcafa55e142b7c8d44671b11f73f1576f72c6738671cfdadbeb096960",
+        "change": "CRLF_to_LF_only"
+      }
+    ],
+    "scope": "Only CRLF-to-LF normalization occurred after scene build; native tests and ordinary startup rerun on final executable. Scene results are reused with this explicit source equivalence, not claimed as actual final executable runs."
+  },
+  "format": {
+    "clang_format": "22.1.3 Visual Studio bundled; repository dry-run passed on affected native files",
+    "headers": "repository copyright/header scripts applied to new files",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "Real supplier model not run: no verified usable entry supplied; no credentials probed",
+    "Headless logical UI checks do not constitute visual pulse rendering acceptance",
+    "Script-driven scene exit emitted RID/ObjectDB warnings; not located",
+    "Existing write_script is compare-then-write, not cross-process atomic transaction; post-comparison concurrent edits and process-interruption recovery not verified",
+    "Save failure safe-save errors are expected in the read-only fixture",
+    "Latest line-ending normalization build overlapped own scenario process; Windows denied replacing locked executable; no tests killed; link retried after normal test completion"
+  ],
+  "measured_usage": null,
+  "usage_unknown_reason": "Host did not expose token/cost usage",
+  "logs": {
+    "issue59-build-delivery.log": {
+      "sha256": "10f63c9321b82f509b79b24bda14749993876c3651a62f9c7e3202bac2ec57aa",
+      "text": "Using Visual Studio 14.5 with Windows SDK 10.0.26100.0.\r\nBuilding for platform \"windows\", architecture \"x86_64\", target \"editor\".\r\nLinking Program bin\\godot.windows.editor.x86_64.exe ...\r\n  正在创建�\\ufffd bin\\godot.windows.editor.x86_64.lib 和�\\ufffd�象 bin\\godot.windows.editor.x86_64.exp\r\nLinking Program bin\\godot.windows.editor.x86_64.console.exe ...\r\nINFO: Time elapsed: 00:00:20.13\r\n"
+    },
+    "issue59-native-delivery.log": {
+      "sha256": "bbb306cc03d991c7e52952ea4d0884c647a3bbc8df48271e709e5ac24322f9ac",
+      "text": "[doctest] doctest version is \"2.4.12\"\r\n[doctest] run with \"--help\" for options\r\n===============================================================================\r\n[doctest] test cases:  24 |  24 passed | 0 failed | 1440 skipped\r\n[doctest] assertions: 215 | 215 passed | 0 failed |\r\n[doctest] Status: SUCCESS!\r\n"
+    },
+    "issue59-codex-delivery.log": {
+      "sha256": "c4ac1aa2defa22cbf7243720e5805bf7d6ce66823e36dc43c2c285a607ffa2ae",
+      "text": "✔ Codex arguments preserve default model, isolate config and disable native execution (1.1439ms)\r\n✔ Godot context preserves Chinese, tool results and current permissions (0.1049ms)\r\n✔ structured proposals are translated to host tool calls (0.7185ms)\r\n✔ malformed, unavailable and disabled actions never reach the host (0.3462ms)\r\n✔ ordinary chat returns a final assistant message (0.2309ms)\r\n✔ Codex subprocess handles UTF-8 JSONL, failed turns and missing completion without leaking stderr (436.0852ms)\r\n✔ semantic actions are discoverable and disabled permissions reject them (1.25ms)\r\nℹ tests 7\r\nℹ suites 0\r\nℹ pass 7\r\nℹ fail 0\r\nℹ cancelled 0\r\nℹ skipped 0\r\nℹ todo 0\r\nℹ duration_ms 443.2076\r\n"
+    },
+    "issue59-http-final.log": {
+      "sha256": "4004f7a6fa48680d26079605ad47922db94893072cf4f907ed3663e35f4bb042",
+      "text": "{\"directory\": \"D:\\\\GongGong\\\\.worktrees\\\\issue59-semantic\\\\work\\\\semantic-temp\\\\godot-semantic-n2xohcvw\\\\gonggong-diting-data\", \"created\": true, \"git_committed\": false, \"records\": 0}\r\nGodot Engine v4.8.beta.custom_build.1b0a33fd5 (2026-11-04 16:40:34 UTC) - https://godotengine.org\r\n\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started 项目初始化 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在扫描文件结构……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在加载全局类名……\u001b[39m\u001b[0m\r\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在校验 GDExtension……\u001b[39m\u001b[0m\r\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在创建自动加载脚本……\u001b[39m\u001b[0m\r\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在初始化插件……\u001b[39m\u001b[0m\r\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在启动文件扫描……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\r\n\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started 正在注册全局类…… (2 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\r\n[  33% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\r\n\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started 正在加载编辑器 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载编辑器布局……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载停靠面板……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\r\n\u001b[0m\r\nPERMISSION_OFF_REJECTED\r\nAI_CHAT_SEMANTIC_OK\r\nERROR: 4 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.\r\nERROR: 21 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.\r\nERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.\r\nERROR: 1475 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.\r\nERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.\r\nERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.\r\nERROR: 420 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.\r\n\r\nERROR: Safe save failed. This may be a permissions problem, but also may happen because you are running a paranoid antivirus. If this is the case, please switch to Windows Defender or disable the 'safe save' option in editor settings. This makes it work, but increases the risk of file corruption in a crash.\r\n   at: FileAccessWindows::_close (drivers\\windows\\file_access_windows.cpp:277)\r\n   GDScript backtrace (most recent call first):\r\n       [0] phase (res://test.gd:22)\r\nERROR: Safe save failed. This may be a permissions problem, but also may happen because you are running a paranoid antivirus. If this is the case, please switch to Windows Defender or disable the 'safe save' option in editor settings. This makes it work, but increases the risk of file corruption in a crash.\r\n   at: FileAccessWindows::_close (drivers\\windows\\file_access_windows.cpp:277)\r\n   GDScript backtrace (most recent call first):\r\n       [0] phase (res://test.gd:22)\r\nERROR: Attempting to parent and popup a dialog that already has a parent.\r\n   at: Window::_try_parent_dialog (scene\\main\\window.cpp:2382)\r\nERROR: Attempting to make child window exclusive, but the parent window already has another exclusive child. This window: /root/@EditorNode@21865/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/@VBoxContainer@38/DockVSplitCenter/@VSplitContainer@102/@VBoxContainer@103/@EditorMainScreen@166/AI Chat/AIFileApproval, parent window: /root, current exclusive child window: /root/@AcceptDialog@22539\r\n   at: Window::_set_transient_exclusive_child (scene\\main\\window.cpp:1232)\r\nWARNING: 4 RIDs of type \"Canvas\" were leaked.\r\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\r\nWARNING: 974 RIDs of type \"CanvasItem\" were leaked.\r\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\r\nWARNING: 3025 ObjectDB instances were leaked at exit (run with `--verbose` for details).\r\n   at: ObjectDB::cleanup (core\\object\\object.cpp:2609)\r\n\r\nMOCK_RESULTS {\"state\": \"{\\\"highlight\\\":null,\\\"main_screen\\\":\\\"AI Chat\\\",\\\"ok\\\":true,\\\"running\\\":false,\\\"scene\\\":null,\\\"script\\\":null,\\\"script_unsaved\\\":null,\\\"selected_nodes\\\":[],\\\"unsaved_scenes\\\":[]}\", \"write\": \"{\\\"effective_value\\\":777,\\\"new_value\\\":777,\\\"ok\\\":true,\\\"old_value\\\":640,\\\"readback_value\\\":777,\\\"saved\\\":true,\\\"target\\\":\\\"display/window/size/viewport_width\\\"}\", \"reject\": \"User rejected the action. Do not retry it without a new user request.\", \"invalid\": \"{\\\"error\\\":\\\"invalid_project_path\\\",\\\"ok\\\":false}\", \"save_failure\": \"{\\\"detail\\\":\\\"Writing failed. The original file state was restored and verified.\\\",\\\"effective_value\\\":1152,\\\"error\\\":\\\"save_failed\\\",\\\"new_value\\\":null,\\\"ok\\\":false,\\\"old_value\\\":777,\\\"saved\\\":false,\\\"target\\\":\\\"display/window/size/viewport_width\\\"}\", \"clear\": \"{\\\"effective_value\\\":1152,\\\"new_value\\\":null,\\\"ok\\\":true,\\\"old_value\\\":777,\\\"readback_value\\\":1152,\\\"saved\\\":true,\\\"target\\\":\\\"display/window/size/viewport_width\\\"}\", \"switch_2d\": \"{\\\"action\\\":\\\"main_screen\\\",\\\"ok\\\":true,\\\"target\\\":\\\"2D\\\",\\\"visible\\\":true}\", \"highlight_scene\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"scene_tree\\\",\\\"visible\\\":true}\", \"clear_highlight\": \"{\\\"action\\\":\\\"clear_highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"\\\"}\", \"consultation\": \"Error: Consultation only permits read tools. No action was executed.\"}\r\nMOCK_ERRORS []\r\nSEMANTIC_MOCK_HTTP_ACCEPTANCE_OK\r\n"
+    },
+    "issue59-interfaces-final.log": {
+      "sha256": "4997dd5265dea004dbb876f643a6e77e4e3ff973d5024045fffdb4be03738702",
+      "text": "{\"directory\": \"D:\\\\GongGong\\\\.worktrees\\\\issue59-semantic\\\\work\\\\semantic-temp\\\\godot-semantic-piwff6ui\\\\gonggong-diting-data\", \"created\": true, \"git_committed\": false, \"records\": 0}\r\nGodot Engine v4.8.beta.custom_build.1b0a33fd5 (2026-11-04 16:40:34 UTC) - https://godotengine.org\r\n\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started 项目初始化 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在扫描文件结构……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在加载全局类名……\u001b[39m\u001b[0m\r\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在校验 GDExtension……\u001b[39m\u001b[0m\r\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在创建自动加载脚本……\u001b[39m\u001b[0m\r\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在初始化插件……\u001b[39m\u001b[0m\r\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在启动文件扫描……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\r\n\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started 正在注册全局类…… (2 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\r\n[  33% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\r\n\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started 正在加载编辑器 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载编辑器布局……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载停靠面板……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\r\n\u001b[0m\r\nAI_CHAT_SEMANTIC_OK\r\nERROR: 5 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.\r\nERROR: 24 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.\r\nERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.\r\nERROR: 1645 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.\r\nERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.\r\nERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.\r\nERROR: 488 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.\r\n\r\nWARNING: 5 RIDs of type \"Canvas\" were leaked.\r\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\r\nWARNING: 1164 RIDs of type \"CanvasItem\" were leaked.\r\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\r\nWARNING: 3584 ObjectDB instances were leaked at exit (run with `--verbose` for details).\r\n   at: ObjectDB::cleanup (core\\object\\object.cpp:2609)\r\n\r\nMOCK_RESULTS {\"open_scene\": \"{\\\"action\\\":\\\"open_scene\\\",\\\"ok\\\":true,\\\"target\\\":\\\"res://fixture.tscn\\\"}\", \"open_script\": \"{\\\"action\\\":\\\"open_script\\\",\\\"ok\\\":true,\\\"target\\\":\\\"res://fixture.gd\\\"}\", \"select_node\": \"{\\\"action\\\":\\\"select_node\\\",\\\"ok\\\":true,\\\"target\\\":\\\"Child\\\"}\", \"interface_2d\": \"{\\\"action\\\":\\\"main_screen\\\",\\\"ok\\\":true,\\\"target\\\":\\\"2D\\\",\\\"visible\\\":true}\", \"highlight_inspector\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"inspector\\\",\\\"visible\\\":true}\", \"highlight_filesystem\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"filesystem\\\",\\\"visible\\\":true}\", \"highlight_tabs\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"main_screen_tabs\\\",\\\"visible\\\":true}\", \"project_settings\": \"{\\\"action\\\":\\\"project_settings\\\",\\\"ok\\\":true,\\\"target\\\":\\\"project_settings\\\",\\\"visible\\\":true}\", \"highlight_project\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"project_settings\\\",\\\"visible\\\":true}\", \"editor_settings\": \"{\\\"action\\\":\\\"editor_settings\\\",\\\"ok\\\":true,\\\"target\\\":\\\"editor_settings\\\",\\\"visible\\\":true}\", \"highlight_editor\": \"{\\\"action\\\":\\\"highlight\\\",\\\"ok\\\":true,\\\"target\\\":\\\"editor_settings\\\",\\\"visible\\\":true}\"}\r\nMOCK_ERRORS []\r\nSEMANTIC_MOCK_INTERFACES_OK\r\n"
+    },
+    "issue59-startup.log": {
+      "sha256": "95cb11ff8cedb0f012299308c7dd4f344ac150b39b7dfc5f8a7b8cf06080f779",
+      "text": "Godot Engine v4.8.beta.custom_build.1b0a33fd5 (2026-11-04 16:40:34 UTC) - https://godotengine.org\r\n\r\nERROR: Window 0 spawned at invalid position: (-319, -1257).\r\n   at: Window::_popup_base (scene\\main\\window.cpp:2367)\r\nWhile attempting to print an error, another error was printed:\r\nERROR: Condition \"p_image.is_null()\" is true.\r\n   at: RichTextLabel::add_image (scene\\gui\\rich_text_label.cpp:4565)\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started 项目初始化 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在扫描文件结构……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在加载全局类名……\u001b[39m\u001b[0m\r\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在校验 GDExtension……\u001b[39m\u001b[0m\r\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在创建自动加载脚本……\u001b[39m\u001b[0m\r\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在初始化插件……\u001b[39m\u001b[0m\r\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在启动文件扫描……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\r\n\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started 正在加载编辑器 (5 steps)\u001b[39m\u001b[0m\r\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载编辑器布局……\u001b[39m\u001b[0m\r\n[  16% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载停靠面板……\u001b[39m\u001b[0m\r\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\r\n\u001b[0m\r\nERROR: Plugin is not attached to debugger.\r\n   at: EditorDebuggerSession::is_active (editor\\debugger\\editor_debugger_plugin.cpp:102)\r\n"
+    },
+    "issue59-build-final.log": {
+      "sha256": "ecccbcae7f687c248c076af185f4ba9327e6a813bf4d9766bdf43beab879b1d7",
+      "text": "Using Visual Studio 14.5 with Windows SDK 10.0.26100.0.\r\nBuilding for platform \"windows\", architecture \"x86_64\", target \"editor\".\r\nCompiling editor\\editor_main_screen.cpp ...\r\nCompiling editor\\editor_node.cpp ...\r\nCompiling editor\\docks\\ai_chat_dock.cpp ...\r\nCompiling editor\\docks\\ai_chat_editor_control.cpp ...\r\nCompiling editor\\docks\\ai_chat_gonggong.cpp ...\r\nCompiling editor\\docks\\ai_chat_scheduler.cpp ...\r\nCompiling editor\\docks\\ai_chat_sub_agents.cpp ...\r\nCompiling editor\\docks\\filesystem_dock.cpp ...\r\nCompiling editor\\project_manager\\quick_settings_dialog.cpp ...\r\nCompiling editor\\settings\\editor_settings_dialog.cpp ...\r\nCompiling editor\\settings\\project_settings_editor.cpp ...\r\nLinking Static Library bin\\obj\\editor\\editor.windows.editor.x86_64.lib ...\r\nscons: *** [bin\\godot.windows.editor.x86_64.exe] D:\\GongGong\\.worktrees\\issue59-semantic\\bin\\godot.windows.editor.x86_64.exe: 拒绝访问。\r\nERROR: Failed to remove flaky file \"bin\\godot.windows.editor.x86_64.exe\": [WinError 5] 拒绝访问。: 'bin\\\\godot.windows.editor.x86_64.exe'\r\nINFO: Time elapsed: 00:00:24.06\r\n"
+    }
+  }
+}

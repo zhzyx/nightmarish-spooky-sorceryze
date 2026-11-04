@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "observed_at": "2026-11-04T17:35:55.009919+00:00",
+  "source_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "installed_editor": {
+    "path": "project/godot/bin/godot.windows.editor.x86_64.exe",
+    "sha256": "9c60fdc6d657fbb16b4c2635b15ca58846aa822020de7ae13e864eeec90a94a0",
+    "matches_installation_receipt": true,
+    "location_scope": "primary workspace installation, not this isolated worktree"
+  },
+  "configuration": {
+    "backend": "Codex CLI",
+    "backend_index": 2,
+    "model": "gpt-6-astra",
+    "cli_version": "0.166.0-alpha.5.1",
+    "login": "existing login reused; credentials not inspected",
+    "global_settings_changed": false
+  },
+  "bridge_sources": {
+    "tools/codex_cli/godot_bridge.js": "b1f1496d71a26504f2326c552b78559e51f0b9b24c5c0dad7eb20cba749d9525",
+    "tools/codebuddy_cli/godot_bridge.js": "82558b24484fac1487c856a79853b6982bf0dd23cca20041cf56247a9398ff6d"
+  },
+  "isolated_regression": {
+    "command": "project/runtime/node/node.exe --test tests/editor/test_codex_bridge.js",
+    "execution_root": "primary workspace; bridge/test files equal candidate baseline",
+    "passed": 6,
+    "failed": 0,
+    "actual_provider": false
+  },
+  "real_bridge": {
+    "attempts": 1,
+    "model": "gpt-6-astra",
+    "tools": [],
+    "permission_enabled": false,
+    "prompt": "这是编辑器聊天链路连通性检查。只回复：共工聊天链路已响应。不要调用工具或执行操作。",
+    "result": "failed",
+    "error_code": "PROCESS_EXIT",
+    "completion_received": false,
+    "provider_completion_verified": false,
+    "root_cause": "unknown: bridge exposes sanitized process failure only",
+    "usage": null,
+    "production_issues_created": 0
+  },
+  "visible_editor": {
+    "executed": false,
+    "reason": "Desktop remains assigned to Issue 56; coordinator directed no idle wait. Existing consultation mode rejects backend 2 before calling CLI.",
+    "source": "editor/docks/ai_chat_dock.cpp:1683",
+    "observed_ui_error": false,
+    "coverage": "Source-level boundary only; no new visible UI acceptance claimed."
+  },
+  "next_event": "Investigate sanitized CLI process failure under the existing account, then obtain serialized desktop handoff for a supported visible editor acceptance route. Do not switch user configuration or create production test Issues.",
+  "independent_review": "pending",
+  "issue_acceptance": "not_passed"
+}

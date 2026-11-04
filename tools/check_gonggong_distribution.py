@@ -16,7 +16,7 @@ import subprocess
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-EXEMPT = "extensions/diting-files/"
+DITING_EXTENSION = "extensions/diting-files/"
 REGISTRATION = "integrations/gonggong/frozen-distribution.json"
 SCOPE = "offline_registered_snapshot_consistency_only"
 
@@ -107,7 +107,7 @@ def candidate_checks(files: dict[str, bytes], require_admission=True) -> None:
         if not require_admission:
             continue
         permit_path = safe_name(agent["admission_pass"])
-        require(not permit_path.startswith(EXEMPT), "Permit cannot use the unpinned exemption")
+        require(permit_path in files, f"Missing pinned permit: {permit_path}")
         permit = parse_json(files[permit_path])
         require(permit["template"] is False and permit["status"] == "approved", "Recorded permit is not approved")
         subject = permit["subject"]
@@ -128,7 +128,7 @@ def candidate_checks(files: dict[str, bytes], require_admission=True) -> None:
         for value in [*refs, approval["decision_evidence_ref"]]:
             path = safe_name(value)
             require(
-                not path.startswith(EXEMPT) and path in files and bool(files[path]), f"Missing pinned evidence: {path}"
+                path in files and bool(files[path]), f"Missing pinned evidence: {path}"
             )
 
 
@@ -160,8 +160,8 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
     for name, data in frozen.items():
         require(digest(data) == expected[name], f"Frozen byte mismatch: {name}")
     require(
-        {EXEMPT + name for name in ("README.md", "diting_files.py", "event.schema.json")} <= files.keys(),
-        "Independent Diting extension missing",
+        {DITING_EXTENSION + name for name in ("README.md", "diting_files.py", "event.schema.json")} <= files.keys(),
+        "Pinned Diting extension missing",
     )
     candidate_checks(files, require_admission=not candidate)
     node_path = node or shutil.which("node")

@@ -63,3 +63,49 @@ PR #17 已合入，#8/#11/#15 已按现有证据 completed 关闭。旧PR #14 �
 ## Git 接入子模块 PR 验收
 
 子模块 PR #26 重放到 #35 合并后的 main，41 项 issue-workorders 测试、正式框架校验、真实 #9 门禁与提交后 Hermes 检查通过。首次静态 CI 提示两份 Python 文件需要 Ruff 格式化；已按仓库配置修复，追加证据见 `data-collection/issue9-git-workflow-ci-20261104.json` 和 Hermes 事件。此 PR 只交付宿主 Git 接入子模块，#9 的共工真实来源绑定与 Ariadne 自动消费继续等待实际后续交付。
+
+## 2026-11-05 当前共工来源对账（取代上文当前状态判断，历史保留）
+
+本轮产物为 #9 的来源证据与接入调查候选，以 `1b0a33fd5e3a579e70c46aedeb67dc3f179c2130` 为输入基线。范围限本需求文档、追加采集来源及谛听记录；Windows / Python 3.14，未改引擎，不需要编译器或引擎构建。验收是既有真实事件的 envelope / 文件回执 / 消费记录一致，以及明确当前来源缺口；停止于可审源码证据候选，不承诺已部署接收服务。本轮只负责 #9；其他聊天的代码和工作副本保持独立。
+
+现行框架已统一为共工，当前入口是 `customizations/components/issue-workorders/issue_events.py`，共享记录与分析入口是 `framework/extensions/diting-files/diting_files.py`。上文 Olympus/Hermes/Ariadne 描述仅为历史，不构成恢复其运行链、双工作区部署或旧入口的指令。`work-items.json` 的 `sinan_source_registered=false` 与实际司南 board 的 0 注册、0 读取来源一致。
+
+### 已有真实证据的复用
+
+协调宿主已显式接收 #55 的真实 renamed 事件 `35149121962`，首次与重放报告 idempotent false/true。本候选原样复制其 envelope、receipt 和当前谛听记录，保留 #55 的原需求 ID、宿主身份、时间与摘要，不归因为 #9 自产事件。路径均以仓库根解析：`data-collection/issue-events/4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984/`。本轮再次通过真实 GitHub API 核对事件 ID、类型及时间，并检查 envelope SHA256 等于回执绑定值。
+
+`data-collection/issue9-source-reconciliation-20261105.json` 提取协调宿主既有 analyze 的消费摘要并绑定原输出字节 SHA256。原输出编码为 GB18030，解析后目标记录与本候选 canonical event JSON 完全相等；原输出读取 1459 条、当前 1049 条，包含只读历史来源。这是旧输入对应的实际消费证据，不是本候选重新执行 analyze 的计数。消费者是显式调用工具的 Codex 宿主，不能称为谛听 Agent 自动消费。用量保持 null，覆盖仍 unknown。receipt 内的 git_committed=false / diting_consumption_confirmed=false 是生成时事实，追加本次对账不覆盖旧回执；提交后的 Git 核验另行交接。
+
+### 来源适配调查与缺失决定
+
+现有单次入口已按 repository + issue + event ID 幂等，映射类别、状态、assignees、显式依赖标记和需决策状态，并保留当前快照与原事件的时间边界；只关联，不派发、不关闭父单。`framework/modules/sinan/coordinator.mjs` 的 board 读取 `state.json` 的 ledgerId/tasks；prepare 调用原来源 CLI。它尚无 GitHub 来源协议，不能将 GitHub 快照伪装成元衡账本或仅填写 sources 后宣称接通。已存在的单次映射可复用；真正的司南来源适配仍需明确只读快照接口、版本校验、followUps 的稳定外部键，以及实际 start/ack 回执接口，并针对独立候选完成治理审查。
+
+解除外部阻塞需要宿主责任方给出：实际接收环境与维护责任；由哪条原生业务事件向入口传递 repository/issue/event ID；授权主体及仓库权限引用（不提交凭据）；持久化收件位置和失败后由何种真实事件触发重放；司南连接的批准候选与 start/ack 接收方。提供一个真实投递回执后，才能验证端到端代表任务与协调回读。在这些决定缺失时保留 open/blocked，不自建 webhook、不新增定时扫描，不将本次证据对账当作父单完成。下一事件是上述绑定决定及真实投递到达，或协调者合入本证据候选后回读提交。
+
+本轮验证只需来源摘要、原消费记录一致性、真实 GitHub 事件回读、司南 board、`git diff --check`、提交前正式 Issue 门禁和提交后 `git-check --require-committed`。未改组件或冻结框架，无新增准入或启用声明；必要独立审查针对本次证据与表述边界。
+
+## 2026-11-05 用户修订：当次操作者就是接收方
+
+本节替代上节关于必须先提供独立部署宿主及 webhook 通道的当前阻塞判断。用户明确当前由自己接收，后续调整均由当次实际操作者接收。因此使用当前工作区的显式单次入口，责任随实际操作交接，不要求常驻服务或固定部署环境。GitHub 身份和工具权限继续按原门禁核验，用户决定没有豁免权限、准入和数据边界。
+
+本轮补充产物为组件 README 的可执行接收契约、本次真实 #9 来源及消费证据。Windows / Python 3.14；不改运行代码或框架。依赖固定为上一候选 e30e4f93；验证采用真实事件首收/重放、真实 analyze 读取与来源摘要一致、独立审查、正式门禁和提交后检查。未覆盖的是司南 GitHub 来源协议、自动执行 start/ack、其它操作环境的事件覆盖；这些是后续适配工作，不再称为等待用户指定部署宿主。
+
+#9 转 in-progress 后产生真实事件 35158186727。当前接收责任为用户，执行上下文为 codex-issue9-current-operator；已有入口首次调用记录成功、同绑定重放幂等。接收及重放不改变历史事件 actor，也不把本聊天名称当作身份认证。来源目录为 `data-collection/issue-events/a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500/`，路径以仓库根解析。消费和责任决定见追加的 `data-collection/issue9-operator-reception-20261105.json`，不覆盖上一轮快照和旧 receipt。
+
+司南现有 registry 仍为空。下一步在本单继续实现/审查可识别 GitHub 权威来源的适配和操作交接回执；不恢复元衡伪账本或 Olympus 运行链，不因单次接收成功自动关闭父单。本节与 GitHub 新评论共同记录用户的范围决定，旧 blocked 评论保留为历史。
+
+## 2026-11-05 GitHub 来源回调候选
+
+本轮基于已发布 97ccb511，独立树实现接入层来源回调，不修改 #72 的派发器或准入原件。范围为真实 Issue 单次只读快照，以及供 #72 source 接口调用的版本重验、start/ack/terminal 委托；状态权威仍为 GitHub。Windows / Node，验证只读真实 #9 与隔离回调测试，不启动新工作者或模型。停止条件为来源接口和失败拒绝可审；生产启用须由 #72 的已准入宿主提供原子 compare-and-start 与可核验执行回执后再做代表链路。无法由 GitHub 标签或本地假回执代替该宿主能力。
+
+### 来源回调与执行宿主边界
+
+候选 `github_source.mjs` 导出 GitHubIssueSource，供 #72 的 source 回调使用，不修改旧 board/registry。构造时显式给 repository、bindings[{number,requestId}]、readIssue；inspect 只响应真实业务事件，按工单隔离读取故障，返回 GitHub 权威 URL 与版本摘要，不生成元衡 ledgerId。来源数仅表示本次显式绑定集合，不表示已安装司南 registry。
+
+无 runtime 时 ready 为空、capacity=0，revalidate=false；真实 Issue 回读不产生派发授权。runtime 由已准入宿主提供 environment、assess、authorize、compareAndStart、ack、report、verifyTerminal。assess 必须核对依赖证据及在途工作；authorize 核验实际权限、准入与范围；compareAndStart 必须原子核对源版本并跨操作者认领工单，返回绑定 key/ticket/sourceSha256 的真实 reference。GitHub read-then-label、添加评论或本地文件自报都不能替代原子认领。ack 必须保存并核验实际 worker/model/target 回执，不把排队或 setupPending 当运行；terminal 同样由实际宿主验证，不根据 closed 标签推断完成。report 复用宿主共享谛听，不新增第二份派发状态账本。
+
+本轮7项隔离测试通过，覆盖错身份/歧义、显式依赖、故障隔离、版本漂移、无宿主拒绝、错误start回执与ack未知、在途任务和terminal边界。真实#9只读结果见 `data-collection/issue9-github-source-read-20261105.json`：未绑定执行宿主、ready为空，不能宣称实际start/ack成功。唯一剩余生产接入依赖为 #72 已准入宿主提供上述权威执行回调（含原子版本认领与真实worker回执），随后才可进行端到端代表任务；接收责任仍由当前操作者承担，无需另建固定webhook。
+
+独立审查发现并修复了未知类别未拒绝与单项assess异常中断其它任务两点。最终8项测试通过，修正后真实回读摘要在 `data-collection/issue9-github-source-final-read-20261105.json`，绑定源文件SHA256；初次读取证据保留。构造另需 allowedCategories，从当前 `.github/labels.json` 注入，不接受Issue自报类别清单。
+
+#72接口已由负责聊天确认：其664a0f21是候选内容摘要而非Git提交，尚未准入，且不提供GitHub来源跨执行者版本保护或真实start/ack后端。因此本候选提供来源回调和宿主委托边界，不声称已实现这些后端。剩余生产依赖准确表述为：绑定一个已准入、具有真实跨执行者原子认领及worker回执能力的执行宿主；#72已有派发器可复用，但仅批准#72本身不自动补足该能力。

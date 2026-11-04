@@ -1,0 +1,122 @@
+{
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "kind": "independent_review_record",
+  "reviewer": "coordinator-delegated /root/review_issue59",
+  "source": "authorized coordination messages from chat 01a1a758-0852-71d1-821e-2123a46db283; final freeze review message 2026-11-05",
+  "state": "passed_limited_read_only_review_no_new_clear_defect",
+  "reviewed_findings": [
+    "JSON FLOAT vs INT prevented legitimate number arguments",
+    "Failed clear removed ProjectSettings metadata",
+    "Editor Settings navigation retained Shortcuts/search filter",
+    "ConfigFile load and compare baseline read could observe different versions"
+  ],
+  "resolution": [
+    "finite bounded exact-integer conversion and real JSON test",
+    "write disk successfully before updating any memory setting container",
+    "show_general_section selects General and clears filter",
+    "save_setting_snapshot parses the same original passed to write_script compare"
+  ],
+  "limits": [
+    "review was read-only, did not rerun build or UI",
+    "write_script comparison is not a cross-process atomic transaction",
+    "real provider not verified",
+    "RID/ObjectDB exit warnings not located",
+    "Maximum state output byte pressure not verified"
+  ],
+  "current_files": {
+    "editor/docks/ai_chat_editor_control.cpp": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+    "editor/docks/ai_chat_editor_control.h": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+    "editor/docks/ai_chat_dock.cpp": "c412a612b5d97ec424075cea1cad490e49ab0d88ef0c85094cc44aba1f1f08b7",
+    "editor/docks/ai_chat_dock.h": "544d0155d40965a32c768cb31213daf18240afaadb19c67990d48a1b35771981",
+    "tests/editor/test_ai_chat_editor_control.cpp": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+    "tools/codebuddy_cli/godot_bridge.js": "be69028dcafa55e142b7c8d44671b11f73f1576f72c6738671cfdadbeb096960",
+    "tests/editor/test_codex_bridge.js": "8ed157bc54b5150ed891766767d9c195eaa05099f4b6173c7fcb257d4106ec9e"
+  },
+  "format_mapping": [
+    {
+      "path": "editor/docks/ai_chat_editor_control.cpp",
+      "before": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+      "after": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+      "change": "unchanged"
+    },
+    {
+      "path": "editor/docks/ai_chat_editor_control.h",
+      "before": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+      "after": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+      "change": "unchanged"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "before": "b4149c093f6a48ffa573887721484565a021c791883de36a4ba6895fd1cfa7ca",
+      "after": "c412a612b5d97ec424075cea1cad490e49ab0d88ef0c85094cc44aba1f1f08b7",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "before": "d23f25aab8ef1dc99a0b466dc4f989bad301c15405f65d88743a8d2261abbd47",
+      "after": "544d0155d40965a32c768cb31213daf18240afaadb19c67990d48a1b35771981",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "editor/settings/editor_settings_dialog.cpp",
+      "before": "04c5dd038ba38e2c5155162c06c72c5ec7a8a3729ba35b51e7a092fe50eb2265",
+      "after": "15161624f6ab7edccc672578c686276276b9d2721d6461907b2711965427c355",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "editor/settings/editor_settings_dialog.h",
+      "before": "c4daa7c104b4569524579172fc1d344284852558053085d70823a07d7d016fc1",
+      "after": "20b23abee2ea3d98a7ffa5f608b4cfe1cd12ff32b4e61b51bf29ee98723382f1",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "tests/editor/test_ai_chat_editor_control.cpp",
+      "before": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+      "after": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+      "change": "unchanged"
+    },
+    {
+      "path": "tests/editor/test_codex_bridge.js",
+      "before": "8d0773aa7f6369ec226496c26fc13d0cb64554af6a73f9028bdacac425432c73",
+      "after": "8ed157bc54b5150ed891766767d9c195eaa05099f4b6173c7fcb257d4106ec9e",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "tests/editor/run_consultation_only.py",
+      "before": "bc388dbec6389b4685d01c84a12783775cf29c76f1a2b37ab03548b7d2f23313",
+      "after": "b577102032bdb49037d1a4bfc4691da38e92e36bbf7da147498cd34a01b65871",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "tests/editor/ai_chat_semantic.gd",
+      "before": "cde545c7dfd3c82f8bd3e8704499a8a311cb6d4991ee709c6c3281260fb3f70b",
+      "after": "0c80c8b646082ff20c85245f1c286c97784ff933503ee928cf68f83d4a90c387",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "tests/editor/run_ai_chat_semantic.py",
+      "before": "0e93c321e3dcc503e788ac21ac80535ba0ebaeacf70b5e2e1186cc8eab5d76b6",
+      "after": "f5f986304b694c5feb6f8e10ff68cefa5075a00af02b2a10cdfa23ebf0f7f7d8",
+      "change": "CRLF_to_LF_only"
+    },
+    {
+      "path": "tools/codebuddy_cli/godot_bridge.js",
+      "before": "c6b246ce23121fbec09f9264e019f75faeffd7192762b8210475f96fbf5eb37a",
+      "after": "be69028dcafa55e142b7c8d44671b11f73f1576f72c6738671cfdadbeb096960",
+      "change": "CRLF_to_LF_only"
+    }
+  ],
+  "approval_granted": false,
+  "reviewer_ran_tests": false,
+  "reviewed_hashes": {
+    "editor/docks/ai_chat_editor_control.cpp": "65f9a61087eb796a4a2daa000cec171f5156b41eb77944583b5c334c1623dcc5",
+    "editor/docks/ai_chat_editor_control.h": "a493270933da0d59c9c3d4ef7142cf3c493c45c82603fa39303ef1326c2aff55",
+    "editor/docks/ai_chat_dock.cpp": "b4149c093f6a48ffa573887721484565a021c791883de36a4ba6895fd1cfa7ca",
+    "editor/docks/ai_chat_dock.h": "d23f25aab8ef1dc99a0b466dc4f989bad301c15405f65d88743a8d2261abbd47",
+    "tests/editor/test_ai_chat_editor_control.cpp": "b2daccc0574e6fd19726b28288f8166eb436b0c12b11782647ccbea320901bfb",
+    "tools/codebuddy_cli/godot_bridge.js": "c6b246ce23121fbec09f9264e019f75faeffd7192762b8210475f96fbf5eb37a",
+    "tests/editor/test_codex_bridge.js": "8d0773aa7f6369ec226496c26fc13d0cb64554af6a73f9028bdacac425432c73"
+  },
+  "final_observation": "CodeBuddy native whitelist retains original restrictions and no longer advertises semantic tools; shared Codex schema retains both. Hash differences from reviewed files map to CRLF-to-LF only."
+}

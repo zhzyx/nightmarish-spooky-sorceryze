@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "issue47-recovery-association-correction-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T18:07:27.258365+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "agent": {
+    "id": "codex-review47",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "association_evidence_corrected",
+    "evidence": "data-collection/issue47-recovery-association-correction-20261105.json",
+    "path_base": "repository_root",
+    "actual_worker": "Codex review47, authorized by Issue47 author/coordinator to correct data on this isolated branch",
+    "instruction_snapshot": "AGENTS.md",
+    "instruction_snapshot_scope": "Recorded file fingerprint is context evidence, not host identity authentication or approval",
+    "ci_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41882999418",
+    "correction": "The two immutable recovery reports identify Issue47 but omit top-level request_id. This appended record associates both exact Git blobs with the confirmed stable request and Issue. Original reports and CI workflow are unchanged.",
+    "behavior_rerun": false,
+    "framework_changes": false,
+    "approval_granted": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue47-recovery-reviewed-20261105"
+  ],
+  "sha256": "4d1f5e6ecc672480afbc87b6cede06a5cb687697983440cc7175cb6edb8eaa79"
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "issue47-recovery-verified-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "kind": "step",
+  "occurred_at": "2026-11-04T17:34:31.173332+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "agent": {
+    "id": "codex-issue47",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "local_tests_passed",
+    "evidence": "data-collection/issue47-recovery-20261105.json",
+    "path_base": "repository_root",
+    "actual_worker": "Codex Issue47 chat",
+    "scope": "Persisted Python bridge pins and design status calibration",
+    "definition_note": "Repository AGENTS.md host instruction snapshot; not a framework Agent admission",
+    "independent_review": "pending",
+    "usage": null
+  },
+  "evidence_refs": [
+    "godot-event-2282-113402042"
+  ],
+  "sha256": "87c0647a305c54ffb08aa4de3b6d7587db6f2f9262b377b66149ae14478cf60c"
+}

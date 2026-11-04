@@ -1715,6 +1715,9 @@ void EditorNode::_vp_resized() {
 }
 
 void EditorNode::_viewport_resized() {
+	if (is_ready()) {
+		_update_main_menu_type();
+	}
 	Window *w = get_window();
 	if (w) {
 		was_window_windowed_last = w->get_mode() == Window::MODE_WINDOWED;
@@ -8352,6 +8355,8 @@ void EditorNode::_add_to_main_menu(const String &p_name, PopupMenu *p_menu) {
 void EditorNode::_update_main_menu_type() {
 	bool can_expand = bool(EDITOR_GET("interface/editor/appearance/expand_to_title")) && DisplayServer::get_singleton()->has_feature(DisplayServerEnums::FEATURE_EXTEND_TO_TITLE);
 	bool use_menu_button = EDITOR_GET("interface/editor/appearance/collapse_main_menu");
+	const bool compact_chat = editor_main_screen && is_inside_tree() && Object::cast_to<AIChatDock>(editor_main_screen->get_current_tab_control()) && get_viewport()->get_visible_rect().size.x < 960 * EDSCALE;
+	use_menu_button = use_menu_button || compact_chat;
 	bool global_menu = !bool(EDITOR_GET("interface/editor/appearance/use_embedded_menu")) && NativeMenu::get_singleton()->has_feature(NativeMenu::FEATURE_GLOBAL_MENU);
 	MenuType new_menu_type;
 	if (global_menu) {
@@ -8363,6 +8368,9 @@ void EditorNode::_update_main_menu_type() {
 	}
 
 	if (new_menu_type == menu_type) {
+		if (main_menu_button) {
+			main_menu_button->set_text(compact_chat ? String() : TTR("Main Menu"));
+		}
 		return; // Nothing to do.
 	}
 	menu_type = new_menu_type;
@@ -8401,7 +8409,9 @@ void EditorNode::_update_main_menu_type() {
 	// Create new menu.
 	if (new_menu_type == MENU_TYPE_COMPACT) {
 		main_menu_button = memnew(MenuButton);
-		main_menu_button->set_text(TTRC("Main Menu"));
+		main_menu_button->set_text(compact_chat ? String() : TTR("Main Menu"));
+		main_menu_button->set_tooltip_text(TTR("Main Menu"));
+		main_menu_button->set_accessibility_name(TTR("Main Menu"));
 		main_menu_button->set_theme_type_variation("MainScreenButton");
 		main_menu_button->set_focus_mode(Control::FOCUS_NONE);
 		if (is_inside_tree()) {
@@ -9075,6 +9085,7 @@ EditorNode::EditorNode() {
 	distraction_free->connect(SceneStringName(pressed), callable_mp(this, &EditorNode::_toggle_distraction_free_mode));
 
 	editor_main_screen = memnew(EditorMainScreen);
+	editor_main_screen->connect("tab_changed", callable_mp(this, &EditorNode::_update_main_menu_type).unbind(1), CONNECT_DEFERRED);
 	srt->add_child(editor_main_screen);
 	title_bar->set_center_control(editor_main_screen->get_internal_container());
 

@@ -1,0 +1,14 @@
+{
+  "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+  "build_result": "passed",
+  "binary_sha256": "b47dae03a2f69a1d73e5d058cdc77394da72e4359b4ca21a8793143b5c546553",
+  "path_base": "candidate_repository_root",
+  "build_receipt": "#56 builder reported successful 20.89 second incremental build and paused cpp/h modification for independent review",
+  "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "2a0d04fc8ac8d55c2ef25693d0d82ae9c4f710402955503c60a3e4907ff311c9",
+    "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd"
+  },
+  "candidate_state": "fixed_uncommitted_source",
+  "engine_sha256": "7eb23bb17116970c0300529002e2a2b96ade1ddce16305ee7a5abdf7670799c2"
+}

@@ -1,0 +1,26 @@
+{
+  "state": "failed",
+  "mode": "headless",
+  "binary_sha256": "ddfe5cbf28e799fd54ac6ec44a87d5f5f801850355c8566b2a88e16a2db83a01",
+  "phases": [],
+  "test_sha256": {
+    "run_ai_chat_tab_order.py": "05ba6149a2e37db97a212ddc0259246bab96c1ac5b66f650d193bff49cd94177",
+    "ai_chat_tab_order.gd": "56dba83d005e4a4faa87511a46dc1b6920fbf21d50720def949670c60c317c51"
+  },
+  "build_evidence": {
+    "commit": "e776639fc84901199741b02fa6a0a98c461f118a",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "4e76348440a4d565e9a49be251680c6f6935f10208a74f87e2f08e65adbc24b3",
+      "editor/docks/ai_chat_dock.h": "a3b9d574161b47a7ae22659bf348aea974166a9dd5de77fbd8a4948ebadbb3dd",
+      "editor/editor_node.cpp": "4ee4cc29e9d48c86000d9eb0594bb5b79377ada17dd42401f72e689d2af95a89"
+    },
+    "binary_sha256": "ddfe5cbf28e799fd54ac6ec44a87d5f5f801850355c8566b2a88e16a2db83a01",
+    "engine_sha256": "4449aaa990a88a2f75ad0cab36050a7f7f0b7b1290243560501cb5a39a0b8022",
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j8",
+    "build_result": "passed",
+    "build_seconds": 24.23,
+    "candidate": "sixth-uncommitted",
+    "path_base": "repository_root"
+  },
+  "engine_sha256": "4449aaa990a88a2f75ad0cab36050a7f7f0b7b1290243560501cb5a39a0b8022"
+}

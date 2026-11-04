@@ -1,0 +1,45 @@
+{
+  "kind": "integration_followup_source",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "path_base": "repository_root",
+  "actual_worker": "codex-desktop-issue59",
+  "coordinator_thread": "01a1a758-0852-71d1-821e-2123a46db283",
+  "baseline": "c6445d3961f9de835b823a1529fd0a2d9f3ff478",
+  "sources_in_application_order": [
+    "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+    "e5d39a90a6e04ce55d1db47d5f90e1d9feb4829d",
+    "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+    "ead6f274192a215a7fc7c14cb9a3a29bbf209a11"
+  ],
+  "intake": {
+    "tenant": "gonggong-workspace",
+    "result": "passed",
+    "issue_status": "status:in-progress",
+    "issue_updated_at": "2026-11-04T19:51:02Z"
+  },
+  "authorization": "Coordinator delegated isolated integration and minimum affected acceptance after user-authorized inter-chat coordination; preserve original candidates and root workspace.",
+  "dependency_post_gate": {
+    "commit": "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+    "path_base": "D:/GongGong/.worktrees/issue49-lifetime-delivery",
+    "path": "post-commit-git-check.json",
+    "actual_readback": {"exit_code": 0, "git_state": "committed", "files": 1579, "records": 1458},
+    "received_before_runtime_validation": true
+  },
+  "merge_conflicts": [],
+  "production_delta_from_e5": "Only baseline #63 platform build recognition, #49 request file reference retention, and #51 HTTP/model request nonthreaded polling.",
+  "new_test_scope": "Complete native Codex editor state scenarios with exclusive wire evidence; visible native Stop during100-second delayed highlight response, recovery and late-response isolation.",
+  "test_review_corrections": [
+    "Require exact10 native wire files and zero HTTP business requests; do not mix transport results.",
+    "Wait for HTTP late-response send/flush completion or disconnect, not only server delay expiration."
+  ],
+  "preserved_limits": [
+    "No real provider acceptance",
+    "No fixed input collection memory/time claim",
+    "No cross-process atomic setting save claim",
+    "No installation or effective release switch",
+    "Phase2 admission requires coordinator decision on exact candidate"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Host does not expose measured token/cost usage"
+}

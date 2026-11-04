@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue56-ui-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "kind": "request",
+  "occurred_at": "2026-11-04T17:37:41.883527+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+  "agent": {
+    "id": "codex-issue56-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "authorized_plan_a",
+    "authorization": "User confirmed plan A via coordinator handoff on 2026-11-05",
+    "scope": "AI Chat tools/settings dialog, reading area, composer and Unicode tabs; isolated candidate only",
+    "path_base": "repository_root",
+    "requirement": "design-docs/requirement-ab1a9994bd1de186913cee5bdbeb9190.md"
+  },
+  "evidence_refs": [],
+  "sha256": "ecbc7efda0f1f508d5a8b46739e844d0986e7de58a827b5f0136f6af56f7855a"
+}

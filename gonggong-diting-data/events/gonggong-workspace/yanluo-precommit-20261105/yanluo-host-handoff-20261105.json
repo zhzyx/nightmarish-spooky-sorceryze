@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "yanluo-host-handoff-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-precommit-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T21:13:12.189677+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/79",
+  "agent": {
+    "id": "yanluo",
+    "version": "0.1.2",
+    "definition_sha256": "7b9c1df79a4a4ade270db529ac9854d1e388f565f408d26b7ee26a12fa8f7ee1",
+    "origin": "codex-host:/root/yanluo"
+  },
+  "payload": {
+    "state": "running",
+    "action": "accepted_final_verification_and_delivery_handoff",
+    "from_execution": "/root",
+    "to_execution": "/root/yanluo",
+    "scope": "Issue79 source and current Codex host role integration, postmerge progress reconciliation",
+    "authority": "user original request and explicit approval, then additional progress/followup instruction",
+    "prior_evidence": "data-collection/yanluo-host-readback.json",
+    "usage": null,
+    "usage_unknown_reason": "No provider measured usage supplied",
+    "not_claimed": [
+      "standalone signed CLI host deployed",
+      "background service running",
+      "Sinan consumption confirmed"
+    ]
+  },
+  "evidence_refs": [
+    "yanluo-request-20261105"
+  ],
+  "sha256": "daf4766e6688872792b3e84eef67179c85843f0495e7c79b07a835f44e102564"
+}

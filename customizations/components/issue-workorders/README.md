@@ -68,3 +68,21 @@ Git 跟踪、忽略和 blob 内容使用 NUL 分隔路径与批量对象读取�
 session 仅在同一进程内复用成功事件的结构/摘要校验，精确字节改变会失效；仓库、Diting validator 字节或 Python 版本改变清空缓存，失败清空缓存。门禁自身或已加载 Git helper 字节改变时拒绝继续，必须重启会话。关联图、Git 当前状态、Issue 状态、框架准入和候选前后一致性始终重新核对；磁盘上的旧成功文件不被当作缓存。普通一次性 CLI 不跨进程复用证据。
 
 此节描述隔离候选能力，精确准入完成前不代表有效发布已切换。回退为使用原已批准版本；保留历史事件、测试与实测证据。
+## 当次操作者接收事件
+
+#9 的用户决定采用“谁操作，谁接收”：当次操作者负责当前需求、进度、依赖、决策、交接和完成事件的显式接收；换人后由新操作者承接，不要求固定 webhook 宿主。GitHub event actor、Issue assignee、正文宿主账号和当前接收者是不同概念，不能互相推断。下述参数标识处理上下文，不认证身份或授予权限。
+
+1. 当次操作者绑定真实 Issue、稳定 request ID、配置租户、实际宿主定义与接收上下文 ID；执行 `issue_gate.py --intake-only` 回读。业务仍 blocked 的 Issue 需先区分可执行工作与受阻动作，不能为过门禁虚报状态。
+2. 从这次明确业务操作的 GitHub 回执或按需 API 回读中取得真实 event ID，再执行单次入口。没有新事件不调用；不扫描所有工单或启用时间任务。
+3. 相同 repository / issue / event ID 在仓库中只有一个原始观察，已有接收绑定不得改归属。换人接续已接收事件时引用原 receipt，另记实际交接；不得把新 host ID 强写到原 envelope。只有新的真实事件才建立新的接收绑定。
+4. `recorded_file` 仅证明原始观察与文件回执。当前操作者按事件更新需求和进度，明确 Git 提交、实际 analyze 消费与远程回读各自结果；旧 receipt 不改写。失败保留原 envelope，由后续用户请求或真实业务事件触发同绑定重放。
+
+以下是本轮已经执行成功的精确调用示例，路径以仓库根解析，Python 使用当前环境已验证的解释器。示例参数不能用于冒充其他操作者：
+
+```powershell
+python customizations/components/issue-workorders/issue_gate.py --repo . --issue 9 --request-id issue-event-data-loop-20261102 --intake-only --tenant gonggong-workspace
+python customizations/components/issue-workorders/issue_events.py --repo . --issue 9 --event-id 35158186727 --host-id codex-issue9-current-operator --tenant gonggong-workspace --request-id issue-event-data-loop-20261102 --host-definition AGENTS.md
+python framework/extensions/diting-files/diting_files.py analyze --repo . --tenant gonggong-workspace
+```
+
+当前用户是本轮接收责任方，Codex 本聊天是授权执行上下文。首次实际调用为 idempotent=false，同绑定重放为 true。这落实单次来源接收契约，尚不表示司南 board 注册了 GitHub 来源、自动 start/ack 或全局事件覆盖。来源注册状态以实际 board 为准。

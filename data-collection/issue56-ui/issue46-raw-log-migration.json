@@ -1,0 +1,22 @@
+{
+  "issue_number": 56,
+  "origin": "Coordinator old installed-main Issue46 test, not candidate6 execution",
+  "authorization": "Explicit coordinator handoff of these two original logs",
+  "reason": "Keep raw host logs local; preserve source bytes and publish migration metadata only",
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "records": [
+    {
+      "source": "data-collection/issue46-consultation-20261105.stderr.log",
+      "sha256": "0c16c8fa28f82c8420cf308bf740f8e010ee0061c7e0017af770b451bde8b9f0",
+      "local_destination": "bin/issue46-consultation-20261105.stderr.original.log",
+      "unchanged": true
+    },
+    {
+      "source": "data-collection/issue46-consultation-20261105.stdout.log",
+      "sha256": "e5160193d0c1550120e5f1bea4299628fa1ab66c03627ffa72f258b676f484d1",
+      "local_destination": "bin/issue46-consultation-20261105.stdout.original.log",
+      "unchanged": true
+    }
+  ],
+  "path_base": "repository_root"
+}

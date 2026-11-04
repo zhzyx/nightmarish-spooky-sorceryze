@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "build-engine-macos-20261105-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "build-engine-macos-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T18:08:23.747240+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/63",
+  "agent": {
+    "id": "codebuddy-ide-host",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "intent": "Make editor build_engine side-by-side self-update work on macOS/Linux",
+    "state": "in_progress",
+    "usage": null,
+    "time_basis": "collector observation",
+    "agent_definition_basis": "sha256 of AGENTS.md at HEAD"
+  },
+  "evidence_refs": [],
+  "sha256": "a62bd8fb1579ecec73baf5c539ce876e03db95448cf3edf9ba6bb875649e361e"
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "requirement-c1d0427af0155780b0485d8570f2d4ba",
+  "issue_number": 47,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47",
+  "kind": "collection_association_correction",
+  "observed_at": "2026-11-04T18:07:27.258365+00:00",
+  "candidate_base_commit": "5ac78e771e70c509b17349dff64f76406a91f26e",
+  "trigger": {
+    "pr": 62,
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41882999418",
+    "actual_failed_check": "Recorded Diting event must be delivered with matching data-collection evidence",
+    "verification": "gh run view --log-failed readback confirmed failure; .github/workflows/gonggong-issue-gate.yml requires matching top-level request_id and Issue identity"
+  },
+  "corrects": [
+    {
+      "path": "data-collection/issue47-recovery-20261105.json",
+      "git_blob_sha256": "f738d38e2e80c9b3cbbd9723a9eb418b52a7a8d69f86ffd9568678da1fd5c6ca",
+      "git_blob_oid": "cec205f1efd0c3645073bda5818ac82b71ad0736",
+      "request_id_present": false,
+      "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47"
+    },
+    {
+      "path": "data-collection/issue47-recovery-r2-20261105.json",
+      "git_blob_sha256": "1429d082c7e168cf51cdf6e3747fba20c9bf95af5c9deb4a7a344b7859e5fc85",
+      "git_blob_oid": "4f5322a65f0b096a84c71330be14526733b0b69b",
+      "request_id_present": false,
+      "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/47"
+    }
+  ],
+  "correction": "The two immutable recovery reports identify Issue47 but omit top-level request_id. This appended record associates both exact Git blobs with the confirmed stable request and Issue. Original reports and CI workflow are unchanged.",
+  "validation_scope": "Data association only; no product code or behavior changed; reuse r2 14 igniter and 17 bridge tests for their existing source fingerprints. No behavior rerun.",
+  "delivery_scope": "Partial source delivery; Issue47 remains open. Remote CI on the corrected head, publication and approval remain separate.",
+  "actual_worker": "Codex review47, authorized by Issue47 author/coordinator to correct data on this isolated branch",
+  "usage": null
+}

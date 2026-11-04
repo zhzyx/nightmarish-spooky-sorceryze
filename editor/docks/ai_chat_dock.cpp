@@ -30,6 +30,7 @@
 
 #include "ai_chat_dock.h"
 
+#include "ai_chat_editor_control.h"
 #include "ai_chat_issue_guide.h"
 
 #include "core/config/project_settings.h"
@@ -105,7 +106,7 @@ Dictionary chat_message(const String &p_role, const String &p_content) {
 }
 
 bool consultation_read_tool(const String &p_name) {
-	return p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory";
+	return p_name == "get_editor_state" || p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory";
 }
 
 Array chat_tools() {
@@ -200,6 +201,7 @@ Array chat_tools() {
 		tool["function"] = function;
 		tools.push_back(tool);
 	}
+	tools.append_array(AIChatEditorControl::tool_definitions());
 	return tools;
 }
 
@@ -366,10 +368,31 @@ void AIChatDock::_queue_history_save() {
 }
 
 void AIChatDock::_draft_changed() {
+	_update_composer_height();
 	_queue_history_save();
 	// Debounce typing, but keep streaming/tool updates on the bounded save timer.
 	if (history_loaded && !history_restoring && history_writable && history_timer->is_inside_tree()) {
 		history_timer->start();
+	}
+}
+
+void AIChatDock::_update_composer_height() {
+	int max_lines = 8;
+	if (is_inside_tree() && input->get_line_height() > 0) {
+		chat_scroll->set_custom_minimum_size(Size2(0, (get_size().x < 640 * EDSCALE ? 48 : 80) * EDSCALE));
+		const real_t other_height = get_combined_minimum_size().y - input->get_custom_minimum_size().y;
+		const real_t available = get_viewport_rect().size.y - get_global_position().y - other_height - 16 * EDSCALE;
+		max_lines = CLAMP(int(available / input->get_line_height()), 3, 8);
+	}
+	const int lines = CLAMP(input->get_total_visible_line_count(), 3, max_lines);
+	input->set_custom_minimum_size(Size2(0, lines * input->get_line_height() + 16 * EDSCALE));
+}
+
+void AIChatDock::_toggle_chat_settings(bool p_visible) {
+	if (p_visible) {
+		chat_settings_dialog->popup_centered_clamped(Size2i(640, 520) * EDSCALE);
+	} else {
+		chat_settings_dialog->hide();
 	}
 }
 
@@ -883,6 +906,7 @@ void AIChatDock::_load_resume() {
 	queue_paused = !can_send;
 	turn_completed = false;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	turn_model_requests = 0;
 	_set_busy(true);
 	_append_work(String(U"版本切换完成，继续处理中断前的工具调用：") + String(restart.get("tool_name", "build_engine")));
@@ -924,11 +948,11 @@ VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool
 	style.instantiate();
 	const Color accent = get_theme_color("accent_color", "Editor");
 	const Color base = get_theme_color("base_color", "Editor");
-	style->set_bg_color(p_user ? base.lerp(accent, 0.18) : base.lightened(0.04));
+	style->set_bg_color(p_user ? base.lerp(accent, 0.10) : base);
 	style->set_border_color(p_error ? Color(0.9, 0.4, 0.35) : accent);
-	style->set_border_width(SIDE_LEFT, p_user ? 0 : 3 * EDSCALE);
+	style->set_border_width(SIDE_LEFT, p_user ? 0 : 1 * EDSCALE);
 	style->set_corner_radius_all(8 * EDSCALE);
-	style->set_content_margin_all(14 * EDSCALE);
+	style->set_content_margin_all(12 * EDSCALE);
 	panel->add_theme_style_override("panel", style);
 	row->add_child(panel);
 	VBoxContainer *body = memnew(VBoxContainer);
@@ -1227,7 +1251,7 @@ void AIChatDock::_render_images(Control *p_parent, const Array &p_images, bool p
 		p_parent->add_child(tile);
 		Button *thumbnail = memnew(Button);
 		thumbnail->set_name("ImageThumbnail");
-		thumbnail->set_custom_minimum_size(Size2(p_draft ? 86 : 180, p_draft ? 66 : 130) * EDSCALE);
+		thumbnail->set_custom_minimum_size(Size2(p_draft ? 64 : 180, p_draft ? 32 : 130) * EDSCALE);
 		thumbnail->set_tooltip_text(name + U" · 点击放大预览");
 		thumbnail->connect("pressed", callable_mp(this, &AIChatDock::_show_image).bind(texture, name));
 		tile->add_child(thumbnail);
@@ -1680,8 +1704,8 @@ bool AIChatDock::_start_message(const Dictionary &p_message) {
 		_cancel_issue_guide(U"已退出之前的开发工单引导，开始独立的仅咨询消息。");
 		gonggong_resume = false;
 	}
-	if (consultation_turn && backend->get_selected() != 0 && backend->get_selected() != 3) {
-		_append(TTR("Error"), U"仅咨询目前支持 API 后端；请切换后继续队列。原生 CLI 不执行此请求。");
+	if (consultation_turn && backend->get_selected() == 1) {
+		_append(TTR("Error"), U"CodeBuddy 原生 CLI 不执行此请求；仅咨询支持 API 和 Codex CLI，请切换后继续队列。");
 		return false;
 	}
 	if (snapshot_restoring || snapshot_transaction_failed) {
@@ -1929,7 +1953,8 @@ void AIChatDock::_send_completion_after_receipt() {
 	}
 	request_generation++;
 	request = memnew(HTTPRequest);
-	request->set_use_threads(true);
+	// Nonblocking polling keeps Stop from joining a worker blocked on server data.
+	request->set_use_threads(false);
 	request->set_timeout(120);
 	request->set_body_size_limit(2 * 1024 * 1024);
 	request->set_max_redirects(0);
@@ -2184,6 +2209,31 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		_finish_tool("Error: This native channel only supports on-demand logs, files, authorized Bash commands and the editor self-update tools.");
 		return;
 	}
+	if (AIChatEditorControl::handles(name)) {
+		if (name == "get_editor_state") {
+			PackedStringArray secrets;
+			secrets.push_back(request_key);
+			secrets.push_back(api_key->get_text());
+			_finish_tool(JSON::stringify(_get_editor_control()->get_state(secrets)), false, true);
+			return;
+		}
+		Dictionary result = _get_editor_control()->execute(arguments, allow_tools->is_pressed(), consultation_turn);
+		if (result.get("confirmation_required", false)) {
+			pending_action = "editor_action";
+			pending_editor_action = arguments.duplicate(true);
+			pending_editor_action["expected_old_value"] = result["old_value"];
+			if (auto_execute_commands->is_pressed()) {
+				_confirm_action();
+			} else {
+				confirmation->set_title(TTR("Approve Project Setting Change"));
+				preview->set_text(JSON::stringify(result, "  "));
+				_show_confirmation();
+			}
+		} else {
+			_finish_tool(JSON::stringify(result));
+		}
+		return;
+	}
 	_set_activity(String(U"正在处理工具：") + name);
 	if (engine_tool) {
 		_run_engine_tool(name, arguments);
@@ -2366,20 +2416,23 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	_show_confirmation();
 }
 
-void AIChatDock::_finish_tool(const String &p_result, bool p_file_success) {
+void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
 		_set_busy(false);
 		return;
 	}
-	_flush_gonggong(callable_mp(this, &AIChatDock::_finish_tool_after_receipt).bind(p_result, p_file_success));
+	_flush_gonggong(callable_mp(this, &AIChatDock::_finish_tool_after_receipt).bind(p_result, p_file_success, p_structured_state));
 }
 
-void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success) {
+void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state) {
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	const String name = function.get("name", "");
 	const bool native_file = backend->get_selected() == 1 && (name == "read_file" || name == "write_file" || name == "run_command");
-	Dictionary result = chat_message("tool", native_file && p_file_success && name == "read_file" ? p_result : _redact(p_result));
+	// State strings were redacted before bounding and JSON serialization. Replacing
+	// tokens in serialized JSON could expand it or corrupt null/true literals.
+	const bool bounded_state = p_structured_state && name == "get_editor_state";
+	Dictionary result = chat_message("tool", bounded_state || (native_file && p_file_success && name == "read_file") ? p_result : _redact(p_result));
 	result["tool_call_id"] = call["id"];
 	if (native_file) {
 		result["godot_file_success"] = p_file_success;
@@ -2443,6 +2496,12 @@ void AIChatDock::_confirm_action() {
 	}
 	if (!allow_tools->is_pressed()) {
 		_finish_tool("Error: Local tool permission is disabled. No action was executed.");
+		return;
+	}
+	if (pending_action == "editor_action") {
+		Dictionary result = _get_editor_control()->execute(pending_editor_action, allow_tools->is_pressed(), consultation_turn, true);
+		pending_editor_action.clear();
+		_finish_tool(JSON::stringify(result));
 		return;
 	}
 	if (pending_action == "run_command") {
@@ -2637,6 +2696,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	active_agent = id;
 	request_generation++;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	// The guide belongs to the paused message of the conversation being left.
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
@@ -2769,6 +2829,7 @@ void AIChatDock::_close_agent() {
 		_cancel_cli();
 		request_generation++;
 		session_generation++;
+		_get_editor_control()->clear_highlight();
 		closed_messages = message_list;
 	} else {
 		AgentSession state = agent_sessions[id];
@@ -2793,7 +2854,7 @@ void AIChatDock::_close_agent() {
 			state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
 			state.message_list->add_theme_constant_override("separation", 16 * EDSCALE);
 			active_agent = next_agent++;
-			agent_tabs->add_tab(vformat("会话 %d", active_agent + 1));
+			agent_tabs->add_tab(vformat(U"会话 %d", active_agent + 1));
 			agent_tabs->set_tab_metadata(0, active_agent);
 			chat_scroll->add_child(state.message_list);
 			agent_tabs->set_current_tab(0);
@@ -2845,7 +2906,7 @@ void AIChatDock::_add_agent() {
 		return;
 	}
 	const int index = agent_tabs->get_tab_count();
-	agent_tabs->add_tab(vformat("会话 %d", next_agent + 1));
+	agent_tabs->add_tab(vformat(U"会话 %d", next_agent + 1));
 	agent_tabs->set_tab_metadata(index, next_agent++);
 	agent_tabs->set_current_tab(index);
 	callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
@@ -2927,6 +2988,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	set_process(process_id >= 0);
 	request_generation++;
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
 	messages.clear();
@@ -3081,7 +3143,8 @@ void AIChatDock::_refresh_models() {
 		headers.push_back("Authorization: Bearer " + model_request_key);
 	}
 	model_request = memnew(HTTPRequest);
-	model_request->set_use_threads(true);
+	// Model discovery must be cancellable while the server is silent too.
+	model_request->set_use_threads(false);
 	model_request->set_timeout(30);
 	model_request->set_body_size_limit(256 * 1024);
 	model_request->set_max_redirects(0);
@@ -3204,8 +3267,22 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	Dictionary payload;
 	payload["messages"] = p_messages;
 	payload["model"] = codex_model->get_text().strip_edges();
-	payload["available_tools"] = allow_tools->is_pressed() ? chat_tools() : Array();
-	payload["tool_context"] = tool_context(allow_tools->is_pressed(), tool_rounds, auto_apply_file_changes->is_pressed(), auto_execute_commands->is_pressed(), engine_auto_restart->is_pressed());
+	Array permitted_tools;
+	if (allow_tools->is_pressed()) {
+		for (const Variant &entry : chat_tools()) {
+			Dictionary tool = entry;
+			Dictionary function = tool["function"];
+			if (!consultation_turn || consultation_read_tool(function["name"])) {
+				permitted_tools.push_back(tool);
+			}
+		}
+	}
+	payload["available_tools"] = permitted_tools;
+	Dictionary context = tool_context(allow_tools->is_pressed(), tool_rounds, !consultation_turn && auto_apply_file_changes->is_pressed(), !consultation_turn && auto_execute_commands->is_pressed(), !consultation_turn && engine_auto_restart->is_pressed());
+	context["consultation_only"] = consultation_turn;
+	context["writes_allowed"] = !consultation_turn;
+	context["execution_allowed"] = !consultation_turn;
+	payload["tool_context"] = context;
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
 		_append(TTR("Error"), U"Codex 请求超过 1 MiB 上限。");
@@ -3220,6 +3297,8 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 		return;
 	}
 	cli_input_path = file->get_path_absolute();
+	// Keep the temporary request alive until completion or cancellation releases it.
+	cli_request_file = file;
 	const bool stored = file->store_string(body);
 	file->flush();
 	const Error write_error = file->get_error();
@@ -3673,6 +3752,8 @@ void AIChatDock::_refresh_engine_controls() {
 	engine_build_button->set_disabled(running || chat_locked || engine_restart_armed || !allow_tools->is_pressed());
 	engine_restart_button->set_disabled(running || chat_locked || engine_restart_armed || engine_updated_executable.is_empty() || !allow_tools->is_pressed());
 	engine_cancel_button->set_disabled(!running);
+	// Keep idle build chrome from displacing the composer on scaled displays.
+	Object::cast_to<Control>(engine_build_progress->get_parent())->set_visible(running);
 	engine_python->set_editable(!running);
 	engine_build_arguments->set_editable(!running);
 	engine_auto_restart->set_disabled(running || busy || models_loading || engine_restart_armed);
@@ -3935,7 +4016,8 @@ void AIChatDock::_poll_engine_build() {
 	engine_build_pid = -1;
 	const String executable = String(status.get("executable", "")).replace("\\", "/").simplify_path();
 	const String expected_dir = engine_build_root.path_join("bin").replace("\\", "/").simplify_path();
-	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && executable.get_file().begins_with("godot.windows.editor.") && (executable.contains(".self_update_a.") || executable.contains(".self_update_b.")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
+	const String artifact_file = executable.get_file();
+	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.contains(".self_update_b.")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
 		engine_updated_executable = executable;
 		engine_build_progress->set_value(100);
 		engine_build_status->set_text(U"编译与启动校验通过 · 100% · 新版本已就绪");
@@ -4276,6 +4358,7 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
+	_get_editor_control()->clear_highlight();
 	gonggong_recovered_result = String();
 	gonggong_recovery_can_send = false;
 	if (snapshot_restoring) {
@@ -4313,6 +4396,7 @@ void AIChatDock::_stop() {
 		cli_stream_text = nullptr;
 	}
 	session_generation++;
+	_get_editor_control()->clear_highlight();
 	if (request) {
 		request->cancel_request();
 		request->queue_free();
@@ -4400,6 +4484,7 @@ void AIChatDock::_notification(int p_what) {
 		_cancel_all_agents();
 		request_generation++;
 		session_generation++;
+		_get_editor_control()->clear_highlight();
 		if (request) {
 			request->cancel_request();
 		}
@@ -4417,6 +4502,15 @@ void AIChatDock::_notification(int p_what) {
 			process_id = -1;
 		}
 	}
+}
+
+AIChatEditorControl *AIChatDock::_get_editor_control() {
+	AIChatEditorControl *control = Object::cast_to<AIChatEditorControl>(ObjectDB::get_instance(editor_control_id));
+	if (!control) {
+		control = memnew(AIChatEditorControl);
+		editor_control_id = control->get_instance_id();
+	}
+	return control;
 }
 
 AIChatDock::AIChatDock() {
@@ -4474,33 +4568,28 @@ AIChatDock::AIChatDock() {
 	VBoxContainer *layout = chat_layout;
 	layout->set_name("ChatLayout");
 	layout->set_v_size_flags(SIZE_EXPAND_FILL);
-	layout->add_theme_constant_override("separation", 10 * EDSCALE);
+	layout->add_theme_constant_override("separation", 6 * EDSCALE);
 	agents_page->add_child(layout);
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");
 	workspace_pages->add_child(timers_page);
-	workspace_pages->set_tab_title(0, "会话");
+	workspace_pages->set_tab_title(0, U"会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	workspace_pages->add_child(gonggong_panel);
-	workspace_pages->set_tab_title(2, "共工");
+	workspace_pages->set_tab_title(2, U"共工");
 	workspace_pages->set_current_tab(0);
-	Label *heading = memnew(Label);
-	heading->set_text(U"AI 对话");
-	heading->add_theme_font_size_override("font_size", 20 * EDSCALE);
-	agents_page->add_child(heading);
-	agents_page->move_child(heading, 0);
 	agent_tabs_panel = memnew(PanelContainer);
 	agent_tabs_panel->set_name("AgentTabsPanel");
 	agents_page->add_child(agent_tabs_panel);
-	agents_page->move_child(agent_tabs_panel, 1);
+	agents_page->move_child(agent_tabs_panel, 0);
 	manual_schedule_notice = memnew(Label);
 	manual_schedule_notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	manual_schedule_notice->hide();
 	agents_page->add_child(manual_schedule_notice);
-	agents_page->move_child(manual_schedule_notice, 2);
-	_build_sub_agent_ui(agents_page, 2);
+	agents_page->move_child(manual_schedule_notice, 1);
+	_build_sub_agent_ui(agents_page, 1);
 	HBoxContainer *agents = memnew(HBoxContainer);
 	agent_tabs_panel->add_child(agents);
 	agent_tabs = memnew(TabBar);
@@ -4512,7 +4601,7 @@ AIChatDock::AIChatDock() {
 	agent_tabs->set_scroll_to_selected(true);
 	agent_tabs->set_h_size_flags(SIZE_EXPAND_FILL);
 	agent_tabs->set_v_size_flags(SIZE_SHRINK_CENTER);
-	agent_tabs->add_tab("会话 1");
+	agent_tabs->add_tab(U"会话 1");
 	agent_tabs->set_tab_metadata(0, 0);
 	agent_tabs->set_tooltip_text(U"点击切换会话，各自的上下文、工具详情和草稿互不混用。右键标签可重命名，名称会自动保存并在重启后恢复。点击标签旁的叉号可关闭会话，移除其聊天和草稿并停止相关任务；关闭最后一个会自动新建空白会话。聊天及图片以明文自动保存到当前项目的 .godot/editor/ai_chat_history.json，重启编辑器后恢复；.bak 保留上一份记录。删除 .godot 会删除记录，请按需另行备份。");
 	agent_tabs->connect("tab_changed", callable_mp(this, &AIChatDock::_agent_selected));
@@ -4566,7 +4655,7 @@ AIChatDock::AIChatDock() {
 	agent_rename_dialog->register_text_enter(agent_name);
 	add_child(agent_rename_dialog);
 	// 连接方式与对话模型并排，压缩顶部占用的行数。
-	HBoxContainer *selector_row = memnew(HBoxContainer);
+	HFlowContainer *selector_row = memnew(HFlowContainer);
 	selector_row->set_name("SelectorRow");
 	layout->add_child(selector_row);
 	HBoxContainer *connection = memnew(HBoxContainer);
@@ -4583,6 +4672,9 @@ AIChatDock::AIChatDock() {
 	backend->add_item(U"GPT API（Responses）");
 	backend->set_h_size_flags(SIZE_EXPAND_FILL);
 	backend->set_custom_minimum_size(Size2(120, 0) * EDSCALE);
+	backend->set_fit_to_longest_item(false);
+	backend->set_clip_text(true);
+	backend->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
@@ -4596,6 +4688,9 @@ AIChatDock::AIChatDock() {
 	model_picker->set_name("ModelPicker");
 	model_picker->set_h_size_flags(SIZE_EXPAND_FILL);
 	model_picker->set_custom_minimum_size(Size2(160, 0) * EDSCALE);
+	model_picker->set_fit_to_longest_item(false);
+	model_picker->set_clip_text(true);
+	model_picker->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
 	refresh_models = memnew(Button);
@@ -4607,13 +4702,29 @@ AIChatDock::AIChatDock() {
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	model_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	chat_settings_dialog = memnew(AcceptDialog);
+	chat_settings_dialog->set_name("ChatSettingsDialog");
+	chat_settings_dialog->set_title(U"工具与设置");
+	chat_settings_dialog->set_ok_button_text(U"完成");
+	chat_settings_dialog->set_exclusive(false);
+	add_child(chat_settings_dialog);
+	VBoxContainer *settings_layout = memnew(VBoxContainer);
+	chat_settings_dialog->add_child(settings_layout);
+	ScrollContainer *settings_scroll = memnew(ScrollContainer);
+	settings_scroll->set_name("AdvancedSettingsScroll");
+	settings_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
+	settings_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+	settings_scroll->hide();
+	settings_layout->add_child(settings_scroll);
 	VBoxContainer *settings = memnew(VBoxContainer);
 	settings->set_name("AdvancedSettings");
+	settings->set_h_size_flags(SIZE_EXPAND_FILL);
 	settings->hide();
-	layout->add_child(settings);
+	settings_scroll->add_child(settings);
 	auto add_field = [](VBoxContainer *p_parent, const String &p_title, const char *p_name, const String &p_value) {
 		Label *label = memnew(Label);
 		label->set_text(p_title);
+		label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 		p_parent->add_child(label);
 		LineEdit *field = memnew(LineEdit);
 		field->set_name(p_name);
@@ -4694,11 +4805,16 @@ AIChatDock::AIChatDock() {
 	settings->add_child(auto_execute_commands);
 
 	const String build_root = cli_directory.get_base_dir().get_base_dir();
+#ifdef WINDOWS_ENABLED
 	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/Scripts/python.exe"));
+#else
+	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/bin/python"));
+#endif
 	EDITOR_DEF("ai_chat/build_arguments", "");
 	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", EDITOR_GET("ai_chat/build_python"));
 	Label *build_args_label = memnew(Label);
 	build_args_label->set_text(U"额外 SCons 配置（每行 key=value，保留现有依赖/工具链设置）");
+	build_args_label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	settings->add_child(build_args_label);
 	engine_build_arguments = memnew(TextEdit);
 	engine_build_arguments->set_name("EngineBuildArguments");
@@ -4707,14 +4823,15 @@ AIChatDock::AIChatDock() {
 	settings->add_child(engine_build_arguments);
 	// 模型状态与构建按钮、高级设置、快照还原并排成一行（小字体、小按钮）。
 	const int small_font_size = 12 * EDSCALE;
-	HBoxContainer *action_row = memnew(HBoxContainer);
+	HFlowContainer *action_row = memnew(HFlowContainer);
 	action_row->set_name("ActionRow");
 	layout->add_child(action_row);
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
 	action_row->add_child(model_status);
-	HBoxContainer *build_actions = memnew(HBoxContainer);
-	action_row->add_child(build_actions);
+	HFlowContainer *build_actions = memnew(HFlowContainer);
+	settings_layout->add_child(build_actions);
+	settings_layout->move_child(build_actions, 0);
 	engine_build_button = memnew(Button);
 	engine_build_button->set_name("BuildEngine");
 	engine_build_button->set_text(U"编译并更新引擎");
@@ -4732,7 +4849,7 @@ AIChatDock::AIChatDock() {
 	engine_cancel_button->set_text(U"取消编译");
 	engine_cancel_button->add_theme_font_size_override("font_size", small_font_size);
 	engine_cancel_button->connect("pressed", callable_mp(this, &AIChatDock::_cancel_engine_build));
-	build_actions->add_child(engine_cancel_button);
+	action_row->add_child(engine_cancel_button);
 	Button *build_log_button = memnew(Button);
 	build_log_button->set_name("EngineBuildLog");
 	build_log_button->set_text(U"编译日志");
@@ -4741,15 +4858,19 @@ AIChatDock::AIChatDock() {
 	build_actions->add_child(build_log_button);
 	Button *settings_button = memnew(Button);
 	settings_button->set_name("AdvancedToggle");
-	settings_button->set_text(U"高级设置");
+	settings_button->set_text(U"更多 / 设置");
 	settings_button->set_toggle_mode(true);
 	settings_button->add_theme_font_size_override("font_size", small_font_size);
 	action_row->add_child(settings_button);
 	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
+	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings_scroll), &CanvasItem::set_visible));
+	settings_button->connect("toggled", callable_mp(this, &AIChatDock::_toggle_chat_settings));
+	chat_settings_dialog->connect("canceled", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
+	chat_settings_dialog->connect("confirmed", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
 	// Keep the local file restore discoverable even for pre-snapshot history.
 	snapshot_history_button = memnew(Button);
 	snapshot_history_button->set_name("LocalSnapshotHistory");
-	snapshot_history_button->set_text(U"修改记录与还原（本地快照）");
+	snapshot_history_button->set_text(U"修改记录");
 	snapshot_history_button->add_theme_font_size_override("font_size", small_font_size);
 	snapshot_history_button->set_tooltip_text(U"查看当前会话任意一轮已记录的文件修改、修改前后内容和差异；还原到此版本会另记一轮修改，需另外确认。不依赖 Git，没有快照时不会补造旧内容。");
 	snapshot_history_button->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_show_snapshot_history));
@@ -4811,6 +4932,12 @@ AIChatDock::AIChatDock() {
 	engine_auto_restart->set_tooltip_text(U"同时启用自动执行命令后，AI 修改引擎 C++ 可调用宿主构建并在校验成功后自动重启续聊；无需手动点击构建或重启。构建失败不切换版本，未保存场景仍使用编辑器的保存确认。此设置会保存到编辑器设置。");
 	engine_auto_restart->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(engine_auto_restart);
+	// Long option captions must not widen the scroll viewport. Their existing
+	// tooltips retain the full permission and restart explanations.
+	for (CheckBox *option : { allow_tools, auto_apply_file_changes, auto_execute_commands, engine_auto_restart }) {
+		option->set_clip_text(true);
+		option->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	}
 	// 引擎构建进度与状态合并为一行。
 	HBoxContainer *build_row = memnew(HBoxContainer);
 	build_row->set_name("BuildRow");
@@ -4848,7 +4975,7 @@ AIChatDock::AIChatDock() {
 	chat_scroll = memnew(ScrollContainer);
 	chat_scroll->set_name("ChatScroll");
 	chat_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
-	chat_scroll->set_custom_minimum_size(Size2(0, 140) * EDSCALE);
+	chat_scroll->set_custom_minimum_size(Size2(0, 80) * EDSCALE);
 	chat_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
 	// "scrolling" is emitted by wheel/drag/keyboard/touch input, unlike
 	// "value_changed", which also fires when a layout update clamps the range.
@@ -4858,25 +4985,34 @@ AIChatDock::AIChatDock() {
 	message_list = memnew(VBoxContainer);
 	message_list->set_name("Messages");
 	message_list->set_h_size_flags(SIZE_EXPAND_FILL);
-	message_list->add_theme_constant_override("separation", 16 * EDSCALE);
+	message_list->add_theme_constant_override("separation", 20 * EDSCALE);
 	chat_scroll->add_child(message_list);
-	HBoxContainer *image_actions = memnew(HBoxContainer);
-	layout->add_child(image_actions);
+	PanelContainer *composer_panel = memnew(PanelContainer);
+	composer_panel->set_name("ChatComposerPanel");
+	Ref<StyleBoxFlat> composer_style;
+	composer_style.instantiate();
+	composer_style->set_bg_color(Color(0, 0, 0, 0));
+	composer_style->set_content_margin_all(12 * EDSCALE);
+	composer_style->set_corner_radius_all(8 * EDSCALE);
+	composer_panel->add_theme_style_override("panel", composer_style);
+	layout->add_child(composer_panel);
+	VBoxContainer *composer = memnew(VBoxContainer);
+	composer->set_name("ChatComposer");
+	composer->add_theme_constant_override("separation", 6 * EDSCALE);
+	composer_panel->add_child(composer);
 	add_image = memnew(Button);
 	add_image->set_name("AddImage");
 	add_image->set_text(U"添加图片");
 	add_image->set_tooltip_text(U"选择 PNG/JPEG/WebP；最多 4 张，图片会发送到所选模型服务。大图会缩放或压缩，发送前可预览。");
 	add_image->connect("pressed", callable_mp(this, &AIChatDock::_choose_images));
-	image_actions->add_child(add_image);
 	paste_image = memnew(Button);
 	paste_image->set_name("PasteImage");
 	paste_image->set_text(U"粘贴截图");
 	paste_image->connect("pressed", callable_mp(this, &AIChatDock::_paste_image));
-	image_actions->add_child(paste_image);
 	image_attachments = memnew(HFlowContainer);
 	image_attachments->set_name("ImageAttachments");
 	image_attachments->hide();
-	layout->add_child(image_attachments);
+	composer->add_child(image_attachments);
 	image_picker = memnew(FileDialog);
 	image_picker->set_name("AIImagePicker");
 	image_picker->set_title(U"选择要发送的图片");
@@ -4897,7 +5033,7 @@ AIChatDock::AIChatDock() {
 	message_queue = memnew(VBoxContainer);
 	message_queue->set_name("MessageQueue");
 	message_queue->hide();
-	layout->add_child(message_queue);
+	composer->add_child(message_queue);
 	queue_status = memnew(Label);
 	queue_status->set_name("MessageQueueStatus");
 	queue_status->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
@@ -4923,13 +5059,17 @@ AIChatDock::AIChatDock() {
 	input->set_placeholder(U"输入问题，或描述你希望完成的修改……（回车发送，Shift+回车换行）");
 	input->set_custom_minimum_size(Size2(0, 85) * EDSCALE);
 	input->set_line_wrapping_mode(TextEdit::LINE_WRAPPING_BOUNDARY);
-	layout->add_child(input);
+	input->connect(SceneStringName(resized), callable_mp(this, &AIChatDock::_update_composer_height), CONNECT_DEFERRED);
+	chat_layout->connect(SNAME("minimum_size_changed"), callable_mp(this, &AIChatDock::_update_composer_height), CONNECT_DEFERRED);
+	composer->add_child(input);
 	HBoxContainer *actions = memnew(HBoxContainer);
-	layout->add_child(actions);
+	composer->add_child(actions);
+	actions->add_child(add_image);
+	actions->add_child(paste_image);
 	consultation_only = memnew(CheckBox);
 	consultation_only->set_name("ConsultationOnly");
 	consultation_only->set_text(U"仅咨询");
-	consultation_only->set_tooltip_text(U"仅读取和回答，不创建工单，不允许修改或执行命令；当前支持 API 后端。每条消息发送时固定模式。");
+	consultation_only->set_tooltip_text(U"仅读取和回答，不创建工单，不允许修改或执行命令；支持 API 和 Codex CLI。每条消息发送时固定模式。");
 	actions->add_child(consultation_only);
 	send_button = memnew(Button);
 	send_button->set_name("Send");
@@ -5678,6 +5818,9 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	if (Object *control = ObjectDB::get_instance(editor_control_id)) {
+		memdelete(control);
+	}
 	if (gonggong_pid >= 0) {
 		OS::get_singleton()->kill(gonggong_pid);
 	}

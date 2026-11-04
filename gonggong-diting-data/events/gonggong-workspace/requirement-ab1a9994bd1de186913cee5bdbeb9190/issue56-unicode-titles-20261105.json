@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "issue56-unicode-titles-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-ab1a9994bd1de186913cee5bdbeb9190",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T18:31:49.616943+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+  "agent": {
+    "id": "codex-issue56-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "status": "independently_verified_pending_final_merge_commit",
+    "path_base": "repository_root",
+    "scope": "Three U prefixes on generated default conversation labels, parent captions reuse labels; existing custom/history titles not mass-rewritten",
+    "build_receipt": "data-collection/issue56-ui/build-title-candidate.json",
+    "independent_evidence": "data-collection/issue56-ui/title-probe/independent-title-review.json",
+    "independent_reviewer": "01a1a79b-0f13-7dd3-a5e6-c973e520581c",
+    "result": "Two native processes passed default/new/recreate-last, parent labels, real history persistence/restart at actual150%640x900; screenshot visually checked. All source and executable hashes stable.",
+    "retained_independent_commits": [
+      "c6a341d9da9aa98484c9d6fd0186877debb4da69",
+      "b71a401bf79fc8cdc5ead9d0fc28661903f42e05"
+    ],
+    "usage": null
+  },
+  "evidence_refs": [
+    "issue56-ui-rework-20261105"
+  ],
+  "sha256": "cf7b96bcc883b2b38dcb4b8a29783837f4b207c4e68e9910f8ba254900d0ab34"
+}
