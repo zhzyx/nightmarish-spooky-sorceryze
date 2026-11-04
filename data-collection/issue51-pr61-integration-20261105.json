@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "request_id": "olympus-residue-deadlock-20261104",
+  "issue_number": 51,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "path_base": "repository_root",
+  "scope": "Only integrate PR61 original history into frozen main; resolve two known conflicts. No new investigation or runtime rebuild.",
+  "base": "a3adb27d8a7b0c45e0cdc3f562428171ee694012",
+  "incoming": "e1570456bbe1bfe5c3f72a50bb653d24e191c397",
+  "included_original_commit": "43b60a8774f9d1ef70cd15c616285d09b1d07b2d",
+  "merge_base": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "base_contains_ui_commit": "3de42c792a405c1e41a55950d2150c87c2bf24ca",
+  "nonconflict_files": [
+    {
+      "path": ".gitignore",
+      "sha256": "da354d5f4d78fed52f44107e099acbecc44a0ac75ead04741935cba073637d64",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-association-correction-20261105.json",
+      "sha256": "1503df65f0274d8c1403775c8b2fe767fdebfb4f47fde08c9039a6a1e2101feb",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-candidate-verification.json",
+      "sha256": "bb4b0e07c238531976c63d3c7eb84be4ce6444217e8920af3eae1e628e48e587",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-consultation.json",
+      "sha256": "70616c83b2b5cd161925ab9d645929810bac0dc48755cbaf5fa6664b363fcbf0",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-extended-checks.json",
+      "sha256": "6326935c8697e67a89b75e9e4cd26547e0c8690ecb46f42e128ffc6dad57c217",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-flow-verification.json",
+      "sha256": "83d5132e4caba25128acb4001026056c8df36d5c7e6355ef1fb08c36e44af567",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-isolation-20261105.json",
+      "sha256": "e99b1c90ebf41159604b93eb1e31210f2f8788aee4faae7ec48c52ea3a5db63a",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-repository-cleanup.json",
+      "sha256": "10c9d90d25954c357fd34e238010326106b76de33027e35c7e306506ad9301c9",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-requirements.debug.json",
+      "sha256": "c6f305cbaadfa623f100115dfbc0509a77d5b70d7173158ce3fbd1dbb1ce7564",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-requirements.json",
+      "sha256": "9de77620eaa82bc66a651c6f346069978b0ed8ccb8e0429581976531e424e11c",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-validation-summary-public.json",
+      "sha256": "3e2f45a7b32b23fb0f0fc91cae20e335eabf4db314d4ccce4e6cf3582a5de428",
+      "matches_incoming": true
+    },
+    {
+      "path": "data-collection/issue51-verification-20261105.json",
+      "sha256": "062443ce7be3d1b08593b8499d83c7c2b15e978c40a1746c43c0a98ac0978593",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-association-correction-20261105.json",
+      "sha256": "b42ddaa1cd2e91d1b6eefe72c6857699da117a6b7c85cc89b95922307384d891",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-coverage-20261104.json",
+      "sha256": "76f4e28658e580a93ebf9ccbe895e938b5013581e238ccf94a77a6f556ebb93e",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-isolated-verification-20261105.json",
+      "sha256": "4331771de8b0f614c06dba0c124f38915e7534454405b68988e0b15d842f547d",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-repository-cleanup-20261104.json",
+      "sha256": "2c609d5bdd544a911e90759e686fcb59a23e58d9d726d0f7e64208c0ab617d4c",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-request-20261104.json",
+      "sha256": "e9f5852ea388abe1447d29751ac2dd34d14a14e85e841da90b30e36c8b208fe6",
+      "matches_incoming": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-step-20261104.json",
+      "sha256": "b55df5897bbd4d1ae6f714689b7788c432dbee8e8fb847befcb9dfe9832fd00c",
+      "matches_incoming": true
+    },
+    {
+      "path": "tests/editor/run_editor_self_update.py",
+      "sha256": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+      "matches_incoming": true
+    },
+    {
+      "path": "tests/editor/test_codebuddy_bridge.js",
+      "sha256": "d836b95bbc11af058fcb0d7ea923be62b3a8fab7bf22ed70a2640c230436502b",
+      "matches_incoming": true
+    },
+    {
+      "path": "tests/editor/test_frozen_gonggong_distribution.py",
+      "sha256": "2e3706a1bf846853e7997ee5d763cab15459bdf555a993c0bc780db1b99d61cc",
+      "matches_incoming": true
+    },
+    {
+      "path": "tools/check_gonggong_distribution.py",
+      "sha256": "7c22b7cd7cbf9aa3aaf5ceeb5ec6acba8973caa94f044861e6fac908dafafb75",
+      "matches_incoming": true
+    },
+    {
+      "path": "tools/test_gonggong_standalone.py",
+      "sha256": "fa9925ab47d4d3c55d4271cf42e27ae918e50b90675892825ca9766051977f9a",
+      "matches_incoming": true
+    }
+  ],
+  "conflict_resolution": {
+    "design_document": {
+      "path": "design-docs/olympus-residue-deadlock-20261104.md",
+      "sha256": "107b9176643fcea7498f97f961d5e3b2c11d5fa9312775e0ab63175fe27ef5b6",
+      "exact_base_document": true,
+      "contains_entire_incoming_prefix": true
+    },
+    "integration_fixture": {
+      "path": "tests/editor/ai_chat_integration.gd",
+      "sha256": "15bf769a75de5de71af9ba92c5af16862edb727e65a6db87962b70f2a1241dbf",
+      "workspace_pages_function_exact_incoming": true,
+      "all_other_functions_exact_base": true,
+      "preserves": [
+        "PR61 title diagnostic",
+        "three-page assertion",
+        "main separate settings window checks",
+        "main 3D layout switch"
+      ]
+    }
+  },
+  "validation": {
+    "git_diff_check": "passed",
+    "unresolved_conflicts": 0,
+    "original_evidence_bytes_preserved": true,
+    "behavior_tests_rerun": false,
+    "evidence_reuse": "PR61 source/test reports retained as historical execution for their original inputs. Exact nonconflict files match; merged UI fixture is source-reviewed only, not reported as new runtime execution.",
+    "runtime_install_changed": false,
+    "original_issue51_deadlock_complete": false,
+    "all_ci_passed": false
+  },
+  "usage": {
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Not supplied; no estimate"
+  },
+  "independent_review": {
+    "reviewer": "/root/pr61_merge_review",
+    "read_only": true,
+    "result": "no blocking findings",
+    "checks": [
+      "23 nonconflict incoming files exactly match e157 in working tree and index",
+      "design document exact base and contains complete incoming prefix",
+      "workspace-pages function exact incoming; all other fixture text exact base",
+      "18069 remaining base files retain original index mode/blob",
+      "no unresolved conflicts; cached diff check passed"
+    ],
+    "source_sha256": {
+      "design-docs/olympus-residue-deadlock-20261104.md": "107b9176643fcea7498f97f961d5e3b2c11d5fa9312775e0ab63175fe27ef5b6",
+      "tests/editor/ai_chat_integration.gd": "15bf769a75de5de71af9ba92c5af16862edb727e65a6db87962b70f2a1241dbf"
+    },
+    "behavior_tests_run": false,
+    "files_modified": false,
+    "approval": false
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-repository-cleanup-20261104",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T15:18:15.833455+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-root-issue51",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "Removed obsolete extension exemption rejection and ignored migrated project caches; 12 tests passed with 1 OS privilege skip; 243-file offline package check passed",
+    "evidence_path": "data-collection/issue51-repository-cleanup.json",
+    "path_base": "repository_root",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Usage not supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "ecba578c3604cb2e5a05a9a11148e67747bf6549ce588b484291737172b5d01e"
+}

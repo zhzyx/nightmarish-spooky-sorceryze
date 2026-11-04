@@ -161,6 +161,14 @@ def main():
         project = base / 'project'
         (engine / 'tools/codebuddy_cli').mkdir(parents=True)
         (engine / 'bin').mkdir()
+        # Current hosts locate sources from the executable before consulting CLI
+        # settings. Keep both the initial executable and source marker isolated.
+        (engine / 'SConstruct').write_text('# Isolated mock build fixture\n', encoding='utf-8')
+        source_editor = args.godot.resolve()
+        if source_editor.name.endswith('.console.exe'):
+            source_editor = source_editor.with_name(source_editor.name.replace('.console.exe', '.exe'))
+        initial = engine / 'bin/godot.windows.editor.dev.x86_64.self_update_a.mono.exe'
+        os.link(source_editor, initial)
         (project / 'addons/restart_receipt').mkdir(parents=True)
         (engine / 'tools/editor_self_build.py').write_text(MOCK, encoding='utf-8')
         (engine / 'tools/mode').write_text('fail', encoding='utf-8')
@@ -170,7 +178,7 @@ def main():
         shutil.copyfile(ROOT / 'tools/editor_restart_watchdog.py', engine / 'tools/editor_restart_watchdog.py')
         # A distinct executable proves the actual process was switched, not just reopened.
         artifact = engine / 'bin/godot.windows.editor.dev.x86_64.self_update_b.mono.exe'
-        os.link(args.godot.resolve(), artifact)
+        os.link(source_editor, artifact)
         for name in ['GodotSharp', 'D3D12Core.dll', 'd3d12SDKLayers.dll']:
             source = args.godot.resolve().parent / name
             destination = artifact.parent / name
@@ -192,7 +200,7 @@ def main():
         env['DOTNET_ROOT'] = str(ROOT / '.dotnet')
         env['DOTNET_ROOT_X64'] = str(ROOT / '.dotnet')
         env['PATH'] = str(ROOT / '.dotnet') + os.pathsep + env.get('PATH', '')
-        command = [str(args.godot.resolve()), '--headless', '--editor', '--path', str(project), '--script', 'res://integration.gd']
+        command = [str(initial), '--headless', '--editor', '--path', str(project), '--script', 'res://integration.gd']
         # Native create_instance() does not promise inherited captured pipes.
         # Watch the atomic startup receipt instead of mistaking old-process exit
         # for new-process readiness, without racing fixture cleanup against startup.

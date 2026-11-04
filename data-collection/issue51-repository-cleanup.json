@@ -1,0 +1,45 @@
+{
+  "issue": 51,
+  "path_base": "repository_root",
+  "baseline_commit": "b123479a433efa96c2183aca6eea1da49781213c",
+  "recorded_at": "2026-11-04T15:18:15.833455+00:00",
+  "files": {
+    ".gitignore": {
+      "before_sha256": "4c2ffdd36f80cb68a435d178240dd5ea0193e06a2959a94b8ddf3b01193394ee",
+      "after_sha256": "da354d5f4d78fed52f44107e099acbecc44a0ac75ead04741935cba073637d64"
+    },
+    "tools/check_gonggong_distribution.py": {
+      "before_sha256": "a950abd53b957660bfdbcc481d5f9e667fe6d6a4a81ba661d4d42972282f0470",
+      "after_sha256": "7c22b7cd7cbf9aa3aaf5ceeb5ec6acba8973caa94f044861e6fac908dafafb75"
+    },
+    "tests/editor/test_frozen_gonggong_distribution.py": {
+      "before_sha256": "b8188cbecb9c2f0db59d19ea9f7a08db4d06378e3a5753f2790c4eec8ff0b14e",
+      "after_sha256": "2e3706a1bf846853e7997ee5d763cab15459bdf555a993c0bc780db1b99d61cc"
+    }
+  },
+  "changes": [
+    "Removed obsolete unpinned Diting extension rejection; all permits/evidence still require exact registered bytes",
+    "Regression checks reject restored legacy exemption, changed/missing evidence and missing permit",
+    "Ignore generated .godot project caches without deleting local state"
+  ],
+  "checks": {
+    "snapshot_tests": {
+      "run": 13,
+      "passed": 12,
+      "skipped": 1,
+      "skip_reason": "Windows symbolic-link privilege unavailable"
+    },
+    "current_offline_package": {
+      "passed": true,
+      "files": 243
+    },
+    "diff_check": true
+  },
+  "retained": [
+    "Historical archive, data, releases and review originals",
+    "Existing Issue marker parsing and immutable event protection",
+    "Third-party/vendor/translation text unrelated to the retired framework"
+  ],
+  "framework_changed": false,
+  "commit_or_publish": false
+}

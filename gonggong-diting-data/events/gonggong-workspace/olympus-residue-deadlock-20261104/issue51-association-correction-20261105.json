@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-association-correction-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "correction",
+  "occurred_at": "2026-11-04T18:06:43.653775+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-issue51",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "Append exact Issue/request association for existing committed evidence after remote PR gate failure; history and acceptance claims unchanged",
+    "evidence_path": "data-collection/issue51-association-correction-20261105.json",
+    "path_base": "repository_root",
+    "source_commit": "43b60a8774f9d1ef70cd15c616285d09b1d07b2d",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Usage not supplied; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "c419d622456c9aed199ea74fd8593d80a63ad801ea1f60da6c08b111f1e4e9c0"
+}

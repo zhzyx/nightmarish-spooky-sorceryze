@@ -504,10 +504,30 @@ test('ACP stdout streams public text before completion and keeps diagnostics saf
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: requests === 2 ? 'NATIVE_STREAM_NEXT_OK' : 'NATIVE_STREAM_VISIBLE_OK' }, finish_reason: 'stop' }] }));
     });
-    t.after(() => { server.closeAllConnections(); server.close(); fs.rmSync(directory, { recursive: true, force: true }); });
+    let child;
+    let closed;
+    t.after(async () => {
+        try {
+            if (child) {
+                // A failed ACP request may never consume EOF. The test timeout
+                // does not bound after hooks, so force this owned child to exit.
+                const killTimer = setTimeout(() => child.kill('SIGKILL'), 2000);
+                try {
+                    child.stdin.end();
+                    await closed;
+                } finally {
+                    clearTimeout(killTimer);
+                }
+            }
+        } finally {
+            server.closeAllConnections();
+            await new Promise(resolve => server.close(resolve));
+            fs.rmSync(directory, { recursive: true, force: true });
+        }
+    });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-    const child = spawn(process.execPath, [path.resolve(__dirname, '../../tools/codebuddy_cli/godot_bridge.js'), 'session', path.join(__dirname, 'mock_codebuddy_cli.js')], { env: { ...process.env, AI_CHAT_TEST_URL: 'http://127.0.0.1:' + server.address().port, GODOT_ACP_LOG_DIRECTORY: path.join(directory, 'logs') }, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
-    t.after(() => child.kill());
+    child = spawn(process.execPath, [path.resolve(__dirname, '../../tools/codebuddy_cli/godot_bridge.js'), 'session', path.join(__dirname, 'mock_codebuddy_cli.js')], { env: { ...process.env, AI_CHAT_TEST_URL: 'http://127.0.0.1:' + server.address().port, GODOT_ACP_LOG_DIRECTORY: path.join(directory, 'logs') }, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+    closed = require('node:events').once(child, 'close');
     const packets = [];
     let raw = '';
     let pending = '';

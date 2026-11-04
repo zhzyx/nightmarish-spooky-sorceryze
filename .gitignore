@@ -398,6 +398,8 @@ $RECYCLE.BIN/
 *.generated.props
 
 # GongGong workspace integration
+# Godot-generated project cache is local state, including the migrated sample.
+**/.godot/
 __pycache__/
 *.pyc
 .venv/
