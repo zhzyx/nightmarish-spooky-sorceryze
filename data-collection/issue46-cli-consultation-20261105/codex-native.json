@@ -1,0 +1,66 @@
+{
+  "ok": true,
+  "issue_number": 46,
+  "request_id": "requirement-8275346195acf05e0605ca999b44d868",
+  "editor_sha256": "2e9fc55747120a9f3c44c9d37a65163c74090cf6c3683b95d7d6c2086ca8654f",
+  "requests": [
+    {
+      "prompt": "ATTACK",
+      "results": 0,
+      "names": [
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    },
+    {
+      "prompt": "CANCEL",
+      "results": 0,
+      "names": [
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    },
+    {
+      "prompt": "READ",
+      "results": 0,
+      "names": [
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    },
+    {
+      "prompt": "READ",
+      "results": 1,
+      "names": [
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    },
+    {
+      "prompt": "READ",
+      "results": 2,
+      "names": [
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    }
+  ],
+  "provider": "offline fixture only",
+  "issue_binding": "empty; absent workspace unchanged",
+  "sentinel_unchanged": true
+}

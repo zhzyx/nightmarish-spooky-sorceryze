@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue_number": 46,
+  "request_id": "requirement-8275346195acf05e0605ca999b44d868",
+  "baseline": "83754370c0b992d76291083b6654c076b4a1457d",
+  "source_increment": "b9d24d72a03efbb3ebba1a8ed2e2e65e1daff1d8",
+  "dependency_deduplication": {
+    "issue49_source": "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+    "baseline_already_retains_codex_request_file": true,
+    "lifecycle_patch_reapplied": false
+  },
+  "compatibility_change": "Allow get_editor_state as a Codex consultation read tool; editor_action remains rejected. Native fixture expected tool names updated; no new native execution.",
+  "direct_regression": {
+    "command": "node --test --test-name-pattern=\"consultation accepts semantic\" tests/editor/test_codex_bridge.js",
+    "before": {
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 1,
+      "observed_error": "INVALID_REQUEST in validateRequest for valid six-tool consultation payload"
+    },
+    "after": {
+      "command": "node --test tests/editor/test_codex_bridge.js",
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "editor_action_rejected_in_request_and_completion": true
+    }
+  },
+  "input_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "13075c6127a8c5fc9cd733b5c19022d4ec807e081588f49f87d5b0957c167559",
+    "tools/codex_cli/godot_bridge.js": "329176f002f16a284f50238fff913ffe4f1e6e7ec2e92e66fbc717265b56885f",
+    "tests/editor/test_codex_bridge.js": "b6fbb7fa74bc3ae3369e97c8305eca20947083de3d703aa27ac716274d40df70",
+    "tests/editor/run_codex_consultation.py": "8d5147b8bba451a9b54d9fb6cff8ac5fec0f8957403be53571782d2adaab1df0"
+  },
+  "not_executed": [
+    "Editor rebuild",
+    "Native/UI fixtures",
+    "Provider service requests",
+    "Other feature investigations"
+  ],
+  "historical_native_evidence": "data-collection/issue46-cli-consultation-20261105 records original b9d24d72 candidate only, not this main combination.",
+  "usage": null
+}
