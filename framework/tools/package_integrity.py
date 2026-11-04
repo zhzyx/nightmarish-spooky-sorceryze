@@ -11,13 +11,14 @@ def inventory(root):
             files[p.relative_to(root).as_posix()]=hashlib.sha256(p.read_bytes()).hexdigest()
     return files
 
-def check(root):
+def check(root, *, return_inventory=False):
     root=Path(root).resolve()
     lock=json.loads((root/'package-lock.json').read_text(encoding='utf-8'))
     if lock.get('schema_version')!=1 or lock.get('path_base')!='framework_root':raise ValueError('Invalid package lock')
     actual=inventory(root); expected=lock['files']
     drift=sorted(p for p in set(actual)|set(expected) if actual.get(p)!=expected.get(p))
     if drift:raise ValueError('Local package drift: '+', '.join(drift[:20]))
+    if return_inventory:return actual
     return {'local_integrity':True,'files':len(actual),'external_source_required':False,'authority_authenticated':False}
 
 if __name__=='__main__':

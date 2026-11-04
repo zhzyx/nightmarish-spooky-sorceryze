@@ -38,9 +38,9 @@ python customizations/components/issue-workorders/work_items.py collect --reques
 python customizations/components/issue-workorders/issue_gate.py --repo . --issue 6 --request-id issue-governance-20261102
 ```
 
-本地门禁查询 `work-items.json` 对应仓库的真实开放 Issue，要求 origin 同仓库、唯一已知类别、唯一 `in-progress` 或 `in-review` 状态，稳定需求 ID 支持 `<!-- gonggong-request:ID -->` 或 Issue 表单的 `### 稳定需求 ID` 字段，歧义拒绝。它直接执行 `framework/tools/verify_framework.py` 正式模式（无 `--candidate`）与现有 Diting `validate`、提交前 `git-check`，拒绝历史事件删除或改写，并检查该需求已有真实文件事件且已被 Git 跟踪。`work-items.json` 必须显式绑定 `tenant_id`；只选取该租户和需求的事件，且至少一个 `kind=request` 事件的 `source_ref` 必须精确等于 Issue URL 或 `github:owner/repo:issue:N`。正式框架校验使用已安装包内完整性清单和精确准入，不访问外部共工。无外部框架同步来源；正式校验和实际采集缺失仍阻断。
+本地门禁查询 `work-items.json` 对应仓库的真实开放 Issue，要求 origin 同仓库、唯一已知类别、唯一 `in-progress` 或 `in-review` 状态，稳定需求 ID 支持 `<!-- gonggong-request:ID -->` 或 Issue 表单的 `### 稳定需求 ID` 字段，歧义拒绝。它直接执行 `framework/tools/verify_framework.py` 正式模式（无 `--candidate`）与包含结构/摘要/关联验证的 Diting 提交前 `git-check`（不再重复运行 `validate`），拒绝历史事件删除或改写，并检查该需求已有真实文件事件且已被 Git 跟踪。`work-items.json` 必须显式绑定 `tenant_id`；只选取该租户和需求的事件，且至少一个 `kind=request` 事件的 `source_ref` 必须精确等于 Issue URL 或 `github:owner/repo:issue:N`。正式框架校验使用已安装包内完整性清单和精确准入，不访问外部共工。无外部框架同步来源；正式校验和实际采集缺失仍阻断。
 
-输出摘要绑定当前 HEAD、index 与 tracked/nonignored 文件内容，检查前后内容和 Issue 状态须一致。每次修改后重跑；提交时复核 Git 内容，提交后另运行 Diting `git-check --require-committed`。此摘要不是签名、准入通行证、消费回执或可跨版本复用的成功证明；工具核验事件结构、摘要和关联；静态 tenant/source/actor 字段及 SHA256 不能认证操作者身份或证明事件叙述真实，也不替代宿主独立权限或业务验收。纠正已有事件时追加新事件及 supersedes，保留历史原件。
+输出摘要绑定当前 HEAD、index 与 tracked/nonignored 文件内容，检查前后内容和 Issue 状态须一致。修改后重新绑定候选并回查受影响证据；提交时复核 Git 内容，提交后另运行 Diting `git-check --require-committed`。此摘要不是签名、准入通行证、消费回执或可跨版本复用的成功证明；工具核验事件结构、摘要和关联；静态 tenant/source/actor 字段及 SHA256 不能认证操作者身份或证明事件叙述真实，也不替代宿主独立权限或业务验收。纠正已有事件时追加新事件及 supersedes，保留历史原件。
 
 PR 正文必须有且仅有以下两行关联字段：
 
@@ -57,6 +57,17 @@ GongGong-Request: issue-governance-20261102
 
 普通引擎会话复用现有 Yanshi／ClarifyFeature 自动整理需求并建单，受限需求阶段与开发门禁分开，见 [宿主协议](../godot-host/HOST_PROTOCOL.md)。工单适配器不因此授予模型、工具或设计定版权限。
 
+## 核验复用与成本（Issue #85 候选）
+
+门禁仍前后核对 HEAD、index 对象及工作区精确字节；index 对象已绑定内容，不重复生成 staged binary diff。工作区字节流式哈希，不用 mtime/size 代替内容验证。整仓前后读取仍保留，不能声称已经消除全部磁盘读取。
+
+Git 跟踪、忽略和 blob 内容使用 NUL 分隔路径与批量对象读取；Git 异常、合并冲突、链接对象仍失败。Diting 一轮只加载一次当前与历史数据。框架完整性扫描的实时摘要供候选和报告检查共享；正式准入状态和有效期每次检查。
+
+通常一次门禁调用即可。宿主确有连续显式请求时，可运行 `issue_gate.py --repo . --session`，逐行通过 stdin 提交 `{"issue":85,"request_id":"verification-efficiency-20261105"}`。每行返回一个成功/失败 JSON；EOF 退出，不扫描、不轮询、不设后台任务。宿主必须检查每行 `state`，不能以进程仍存活或最后退出码代替门禁结果。
+
+session 仅在同一进程内复用成功事件的结构/摘要校验，精确字节改变会失效；仓库、Diting validator 字节或 Python 版本改变清空缓存，失败清空缓存。门禁自身或已加载 Git helper 字节改变时拒绝继续，必须重启会话。关联图、Git 当前状态、Issue 状态、框架准入和候选前后一致性始终重新核对；磁盘上的旧成功文件不被当作缓存。普通一次性 CLI 不跨进程复用证据。
+
+此节描述隔离候选能力，精确准入完成前不代表有效发布已切换。回退为使用原已批准版本；保留历史事件、测试与实测证据。
 ## 当次操作者接收事件
 
 #9 的用户决定采用“谁操作，谁接收”：当次操作者负责当前需求、进度、依赖、决策、交接和完成事件的显式接收；换人后由新操作者承接，不要求固定 webhook 宿主。GitHub event actor、Issue assignee、正文宿主账号和当前接收者是不同概念，不能互相推断。下述参数标识处理上下文，不认证身份或授予权限。
