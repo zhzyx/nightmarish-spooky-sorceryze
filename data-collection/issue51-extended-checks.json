@@ -1,0 +1,77 @@
+{
+  "scope": "local isolated fixtures; no real provider",
+  "checks": [
+    {
+      "name": "editor_units",
+      "exit_code": 0,
+      "ok": true,
+      "elapsed_seconds": 3.58
+    },
+    {
+      "name": "http",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.16
+    },
+    {
+      "name": "cli",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.14
+    },
+    {
+      "name": "queue",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.17
+    },
+    {
+      "name": "agents",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.16
+    },
+    {
+      "name": "history",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.17
+    },
+    {
+      "name": "cleanup",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.69
+    },
+    {
+      "name": "snapshots",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.11
+    },
+    {
+      "name": "images",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.66
+    },
+    {
+      "name": "schedules",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 3.16
+    },
+    {
+      "name": "history_performance",
+      "exit_code": 0,
+      "ok": true,
+      "elapsed_seconds": 15.42
+    },
+    {
+      "name": "self_update",
+      "exit_code": 1,
+      "ok": false,
+      "elapsed_seconds": 6.12
+    }
+  ]
+}

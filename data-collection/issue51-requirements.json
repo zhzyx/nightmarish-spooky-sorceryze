@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "native_page": true,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 8,
+  "development_calls": 6,
+  "issues_created": 4,
+  "events": 54,
+  "git_check": {
+    "git_state": "committed",
+    "files": 57,
+    "records": 54,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call"
+  ],
+  "editor_sha256": "e46aa012227c10df8ee31658ec4405f1ca6bad1e997ef72c81e7a2eda239fd59",
+  "fixture_events_imported": false
+}

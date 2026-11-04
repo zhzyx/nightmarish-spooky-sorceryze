@@ -86,11 +86,10 @@ class FrozenDistributionTests(unittest.TestCase):
             json.dumps({
                 "schema_version": 1,
                 "scope": gate.SCOPE,
-                "exemption": gate.EXEMPT,
+                "exemption": None,
                 "files": {
                     name: gate.digest(raw)
                     for name, raw in gate.inventory(self.framework).items()
-                    if not name.startswith(gate.EXEMPT)
                 },
             }),
             encoding="utf-8",
@@ -148,6 +147,40 @@ class FrozenDistributionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Candidate digest"):
             gate.check(self.root)
 
+    def test_old_extension_exemption_is_rejected(self):
+        target = self.root / gate.REGISTRATION
+        lock = json.loads(target.read_bytes())
+        lock["exemption"] = gate.DITING_EXTENSION
+        target.write_text(json.dumps(lock), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "Unexpected exemption"):
+            gate.check(self.root)
+
+    def test_extension_permit_and_evidence_are_pinned_like_other_files(self):
+        manifest = json.loads((self.framework / "framework-manifest.json").read_bytes())
+        agent = manifest["agents"][0]
+        permit = json.loads((self.framework / agent["admission_pass"]).read_bytes())
+        evidence = gate.DITING_EXTENSION + "review.json"
+        permit_path = gate.DITING_EXTENSION + "permit.json"
+        self.json(evidence, {"synthetic": True})
+        permit["review"]["evidence_refs"] = [evidence]
+        permit["approval"]["decision_evidence_ref"] = evidence
+        self.json(permit_path, permit)
+        agent["admission_pass"] = permit_path
+        self.json("framework-manifest.json", manifest)
+        self.pin()
+        self.assertTrue(gate.check(self.root)["ok"])
+        self.json(evidence, {"tampered": True})
+        with self.assertRaisesRegex(ValueError, "Frozen byte mismatch"):
+            gate.check(self.root)
+        (self.framework / evidence).unlink()
+        self.pin()
+        with self.assertRaisesRegex(ValueError, "Missing pinned evidence"):
+            gate.check(self.root)
+        (self.framework / permit_path).unlink()
+        self.pin()
+        with self.assertRaisesRegex(ValueError, "Missing pinned permit"):
+            gate.check(self.root)
+
     def test_permit_subject_and_evidence_mismatch_even_after_repin(self):
         target = self.framework / "reviews/yanshi.json"
         original = json.loads(target.read_bytes())
@@ -177,11 +210,15 @@ class FrozenDistributionTests(unittest.TestCase):
                 gate.check(self.root)
             self.write("parse_only.py", b"pass\n")
 
-    def test_diting_exemption_does_not_hide_bad_syntax_or_missing_extension(self):
+    def test_diting_is_pinned_and_repin_does_not_hide_bad_syntax_or_missing_extension(self):
         self.write("extensions/diting-files/diting_files.py", b"if broken\n")
+        with self.assertRaisesRegex(ValueError, "Frozen byte mismatch"):
+            gate.check(self.root)
+        self.pin()
         with self.assertRaises(SyntaxError):
             gate.check(self.root)
         (self.framework / "extensions/diting-files/diting_files.py").unlink()
+        self.pin()
         with self.assertRaisesRegex(ValueError, "extension missing"):
             gate.check(self.root)
 

@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "association_correction",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "issue_number": 51,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "path_base": "repository_root",
+  "source_commit": "43b60a8774f9d1ef70cd15c616285d09b1d07b2d",
+  "recorded_at": "2026-11-04T18:06:43.653775+00:00",
+  "reason": "Existing evidence uses issue:51 or lacks request_id; remote PR association predicate requires matching top-level request_id and supported Issue identity. Append association without rewriting historical evidence.",
+  "ci_failure": {
+    "run_id": 41882757049,
+    "job_id": 126759195373,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41882757049",
+    "error": "Recorded Diting event must be delivered with matching data-collection evidence",
+    "rule": ".github/workflows/gonggong-issue-gate.yml:62"
+  },
+  "source_evidence": [
+    {
+      "path": "data-collection/issue51-candidate-verification.json",
+      "git_blob_sha256": "bb4b0e07c238531976c63d3c7eb84be4ce6444217e8920af3eae1e628e48e587",
+      "git_blob_oid": "f51ec947a630424efbf87fc39aad88f786728984"
+    },
+    {
+      "path": "data-collection/issue51-consultation.json",
+      "git_blob_sha256": "70616c83b2b5cd161925ab9d645929810bac0dc48755cbaf5fa6664b363fcbf0",
+      "git_blob_oid": "2d07cc9d6736006b41d6c065378ff38e15f33706"
+    },
+    {
+      "path": "data-collection/issue51-extended-checks.json",
+      "git_blob_sha256": "6326935c8697e67a89b75e9e4cd26547e0c8690ecb46f42e128ffc6dad57c217",
+      "git_blob_oid": "8282b08b73ec54ceaf610e89237fb8ba75154deb"
+    },
+    {
+      "path": "data-collection/issue51-flow-verification.json",
+      "git_blob_sha256": "83d5132e4caba25128acb4001026056c8df36d5c7e6355ef1fb08c36e44af567",
+      "git_blob_oid": "37b630ad395030757bd74da758a8c9641f6f194d"
+    },
+    {
+      "path": "data-collection/issue51-isolation-20261105.json",
+      "git_blob_sha256": "e99b1c90ebf41159604b93eb1e31210f2f8788aee4faae7ec48c52ea3a5db63a",
+      "git_blob_oid": "70fac25e765b3044ab9ef04aa9300537aa013261"
+    },
+    {
+      "path": "data-collection/issue51-repository-cleanup.json",
+      "git_blob_sha256": "10c9d90d25954c357fd34e238010326106b76de33027e35c7e306506ad9301c9",
+      "git_blob_oid": "e52d79cfc3b4c7b789b27ef46e819cb19cb6071a"
+    },
+    {
+      "path": "data-collection/issue51-requirements.debug.json",
+      "git_blob_sha256": "c6f305cbaadfa623f100115dfbc0509a77d5b70d7173158ce3fbd1dbb1ce7564",
+      "git_blob_oid": "abc27ad148ccc922a92f9df1ad9997707d39fe78"
+    },
+    {
+      "path": "data-collection/issue51-requirements.json",
+      "git_blob_sha256": "9de77620eaa82bc66a651c6f346069978b0ed8ccb8e0429581976531e424e11c",
+      "git_blob_oid": "ce679393afa39f7c1b8d46655844ab86a381a92f"
+    },
+    {
+      "path": "data-collection/issue51-validation-summary-public.json",
+      "git_blob_sha256": "3e2f45a7b32b23fb0f0fc91cae20e335eabf4db314d4ccce4e6cf3582a5de428",
+      "git_blob_oid": "afdb2527a706a65a010059b238a3c9935708225b"
+    },
+    {
+      "path": "data-collection/issue51-verification-20261105.json",
+      "git_blob_sha256": "062443ce7be3d1b08593b8499d83c7c2b15e978c40a1746c43c0a98ac0978593",
+      "git_blob_oid": "df5b4c462c3acc2066dc26cd265e2e166a5f72ea"
+    }
+  ],
+  "corresponding_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-coverage-20261104.json",
+      "git_blob_sha256": "76f4e28658e580a93ebf9ccbe895e938b5013581e238ccf94a77a6f556ebb93e",
+      "git_blob_oid": "d28259b0577a1a592dde24991097b45c1bd88bdf",
+      "event_id": "issue51-coverage-20261104",
+      "request_id": "olympus-residue-deadlock-20261104",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-isolated-verification-20261105.json",
+      "git_blob_sha256": "4331771de8b0f614c06dba0c124f38915e7534454405b68988e0b15d842f547d",
+      "git_blob_oid": "972b665b3759c2e6f79b81286b503304c4f157f0",
+      "event_id": "issue51-isolated-verification-20261105",
+      "request_id": "olympus-residue-deadlock-20261104",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-repository-cleanup-20261104.json",
+      "git_blob_sha256": "2c609d5bdd544a911e90759e686fcb59a23e58d9d726d0f7e64208c0ab617d4c",
+      "git_blob_oid": "1c12f5b19c8f4effecbd9f9d8788b4a0a73ae031",
+      "event_id": "issue51-repository-cleanup-20261104",
+      "request_id": "olympus-residue-deadlock-20261104",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-request-20261104.json",
+      "git_blob_sha256": "e9f5852ea388abe1447d29751ac2dd34d14a14e85e841da90b30e36c8b208fe6",
+      "git_blob_oid": "24757d50a7c4309a3e5d1044d7d9704ec052ff6f",
+      "event_id": "issue51-request-20261104",
+      "request_id": "olympus-residue-deadlock-20261104",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/olympus-residue-deadlock-20261104/issue51-step-20261104.json",
+      "git_blob_sha256": "b55df5897bbd4d1ae6f714689b7788c432dbee8e8fb847befcb9dfe9832fd00c",
+      "git_blob_oid": "e87b5dde6322cbce7f8e8ab97b865e2c9ff39385",
+      "event_id": "issue51-step-20261104",
+      "request_id": "olympus-residue-deadlock-20261104",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51"
+    }
+  ],
+  "correction_event_id": "issue51-association-correction-20261105",
+  "boundary": {
+    "association_only": true,
+    "historical_bytes_changed": false,
+    "new_behavior_tests_executed": false,
+    "new_model_service_acceptance": false,
+    "collection_consumption_confirmed": false,
+    "issue_acceptance_complete": false,
+    "remote_ci_after_correction": "pending push and new run"
+  }
+}
