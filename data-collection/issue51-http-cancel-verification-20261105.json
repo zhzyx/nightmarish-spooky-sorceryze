@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "request_id": "olympus-residue-deadlock-20261104",
+  "issue_number": 51,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "path_base": "repository_root",
+  "baseline_commit": "c6445d3961f9de835b823a1529fd0a2d9f3ff478",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "9360e96f090e80385f0b3dd951b9a093523acc47cd8d4114848eba43be91ff0a",
+    "tests/editor/ai_chat_http_cancel.gd": "7305912b347804892758561402cbaa037e8f11fce840df4991307e9899208273",
+    "tests/editor/run_ai_chat_http_cancel.py": "6d6a8e4c46d336c9b8c09a989e1691cc4e8184ae6571808e23270b3607c2dc1a"
+  },
+  "old_executable": {
+    "commit": "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+    "sha256": "c8eb6a676d9f596fe833391cf0f5c7531a37b800b1bda915f11eff80a7131768",
+    "provenance": "Copied exact frozen Issue59 executable after SHA256 verification; original 100s visible report had no independently timed click",
+    "comparison_scope": "Generic HTTPRequest and HTTPClientTCP files identical between 94b and c644; both AIChat request setups used threaded mode. Whole commits differ outside the tested cancellation path."
+  },
+  "build": {
+    "passed": true,
+    "elapsed_seconds": 75.51,
+    "platform": "Windows x86_64 MSVC",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j 12",
+    "log_sha256": "5c3d5ae7c64fb5192ba673ae21fc4d453e2e5715ab4e089db0f41df797a3485c",
+    "cache": "Copied Issue59 object cache into this worktree; SCons evaluated current sources and rebuilt; no writes to source worktree",
+    "executable_sha256": "6755d554092c187fc3662739b2287a5477c9a46ef24cc55504b3dff3e69dfe04",
+    "console_sha256": "757ebafb2ce354dd9ddeda8c074ad2b9f1877d80ce869c51c576ef5dfec30de4"
+  },
+  "results": {
+    "old-headers": {
+      "path": "data-collection/issue51-http-cancel-20261105/old-headers.json",
+      "sha256": "eab787377008d8eead6fa843eb2d98e1b0ebb51a9d3640be73cd4d7d6ea9fd66",
+      "passed": false,
+      "stop_seconds": 2.759498,
+      "frame_gap_seconds": 2.761314,
+      "stdout_sha256": "3ec278a68a6d7bab5b7ae6c963da8ed9c673fef130103c6ddc7a5f16f43f8d83",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    },
+    "old-body": {
+      "path": "data-collection/issue51-http-cancel-20261105/old-body.json",
+      "sha256": "91423188d6b9e15671308c8e47387d171ea817d6956d1c295d902aedc190d816",
+      "passed": false,
+      "stop_seconds": 2.762997,
+      "frame_gap_seconds": 2.76533,
+      "stdout_sha256": "8ac3a499bf84997c09c7b246ccacff396a45a0ad2756982f49f13a2ad0fc384d",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    },
+    "old-models": {
+      "path": "data-collection/issue51-http-cancel-20261105/old-models.json",
+      "sha256": "9f901e055f0f06f229fd76a40716f87268cef512c416135e8456d32cfa2bb831",
+      "passed": false,
+      "stop_seconds": 2.755481,
+      "frame_gap_seconds": 2.756223,
+      "stdout_sha256": "80964a5b6401885bf1a268dbaa0bd14ce0c4467b0f5c4cb52c340aa6058f8f7e",
+      "stderr_sha256": "33191f65ff037f565e53faf61da55f3c1556f8ea4a971e737d4fca43e505f4c2"
+    },
+    "headers": {
+      "path": "data-collection/issue51-http-cancel-20261105/headers.json",
+      "sha256": "ec52656ade4447901ce9291e0ab1ddfcbc7478b85f85664f9dbb42f548917d5f",
+      "passed": true,
+      "stop_seconds": 0.001496,
+      "frame_gap_seconds": 0.007633,
+      "stdout_sha256": "fd60f6def07e2576311713bec962ca7845f274caa2b66629d9d2ab686faf776b",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    },
+    "body": {
+      "path": "data-collection/issue51-http-cancel-20261105/body.json",
+      "sha256": "8988e548388a88622d9a71916975762dec66f57bcb16de734c27546f44fbc322",
+      "passed": true,
+      "stop_seconds": 0.00197,
+      "frame_gap_seconds": 0.007834,
+      "stdout_sha256": "400b0b2961e6c3c99be5f45ef2ee9351dfd4a2db2d301951871235f250d12480",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    },
+    "models": {
+      "path": "data-collection/issue51-http-cancel-20261105/models.json",
+      "sha256": "903530e9e9c8cda988d5ff9e74a4a09e1cdb7c0f0338d3905d8f383c74611db6",
+      "passed": true,
+      "stop_seconds": 0.000503,
+      "frame_gap_seconds": 0.006906,
+      "stdout_sha256": "1832ea0862ddf73abc48af35470abeaf156a213ba66318bab362ecdad80becc8",
+      "stderr_sha256": "33191f65ff037f565e53faf61da55f3c1556f8ea4a971e737d4fca43e505f4c2"
+    },
+    "headers-gzip": {
+      "path": "data-collection/issue51-http-cancel-20261105/headers-gzip.json",
+      "sha256": "15df3319c5e0fcb23c6f5b8196fa5bc2a65d9286089edfcd1d66bc62131d5110",
+      "passed": true,
+      "stop_seconds": 0.002441,
+      "frame_gap_seconds": 0.007075,
+      "stdout_sha256": "1dff1793df1284d188fdb06b0f649a0b8d0d1e164ac5daa12e4f84b64519e51a",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    },
+    "headers-100s": {
+      "path": "data-collection/issue51-http-cancel-20261105/headers-100s.json",
+      "sha256": "9557f407621f1e4797dd4cd050f9cd808975c6adeef8ac454cc9549c39dd0ae7",
+      "passed": true,
+      "stop_seconds": 0.001757,
+      "frame_gap_seconds": 0.006325,
+      "stdout_sha256": "3e3e740fbf4b068985adfa31b42308181df2238c84e76aab878081918e87af35",
+      "stderr_sha256": "3006be112e786537cb1f2d3136d1efcc5477bdb3bd59284a403fb136d528414f"
+    }
+  },
+  "root_cause": "Threaded HTTPRequest sets HTTPClient blocking read; Stop joins worker before the worker can observe its cancellation flag. Delayed headers/body keep main thread waiting. Nonblocking per-frame requests remove that network wait join for the two AIChat callers.",
+  "native_visible": {
+    "accepted": false,
+    "delay_seconds": 100,
+    "click_executed": false,
+    "reason": "Computer-use click and one reselect/activation retry both failed: failed to activate captured window",
+    "owned_process_cleanup": "Only isolated candidate executable process terminated; sky.list_windows then returned no fixture window",
+    "driver_exit_code": 4294967295,
+    "original_issue59_visible_failure": "Reported original100s test froze until reply, with click timing estimated from11s status only; not claimed same original user deadlock"
+  },
+  "independent_review": {
+    "reviewer": "http_cancel_review independent read-only subagent",
+    "implementation": "No blocking issue in two false settings; preserve limits, timeout, proxy, redirects, generation and callbacks",
+    "test_findings": "Fixed late model overwrite and server-release/recovery observation boundaries; second review passed on final fixture hashes",
+    "test_execution_by_reviewer": false,
+    "approval": false
+  },
+  "performance_boundary": "Only loopback delayed headers/body/models and representative1MiB gzip. TLS initialization/certificates, CPU decompression/copy, pathological headers and large chunked parsing have no general per-frame budget; no universal250ms claim.",
+  "shutdown_warnings": [
+    "Canvas and CanvasItem RID leaks",
+    "ObjectDB instances leaked at test-driver exit"
+  ],
+  "real_provider": false,
+  "framework_changed": false,
+  "runtime_installation_switched": false,
+  "original_user_deadlock_same_cause": "unknown",
+  "issue_close_ready": false,
+  "collection_consumption_confirmed": false
+}

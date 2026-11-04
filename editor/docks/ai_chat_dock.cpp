@@ -1929,7 +1929,8 @@ void AIChatDock::_send_completion_after_receipt() {
 	}
 	request_generation++;
 	request = memnew(HTTPRequest);
-	request->set_use_threads(true);
+	// Nonblocking polling keeps Stop from joining a worker blocked on server data.
+	request->set_use_threads(false);
 	request->set_timeout(120);
 	request->set_body_size_limit(2 * 1024 * 1024);
 	request->set_max_redirects(0);
@@ -3081,7 +3082,8 @@ void AIChatDock::_refresh_models() {
 		headers.push_back("Authorization: Bearer " + model_request_key);
 	}
 	model_request = memnew(HTTPRequest);
-	model_request->set_use_threads(true);
+	// Model discovery must be cancellable while the server is silent too.
+	model_request->set_use_threads(false);
 	model_request->set_timeout(30);
 	model_request->set_body_size_limit(256 * 1024);
 	model_request->set_max_redirects(0);
