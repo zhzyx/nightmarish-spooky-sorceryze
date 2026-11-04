@@ -15,7 +15,7 @@
 2. 加载 `framework/AGENTS.md` 与职责相关入口；框架审查复用 GonggongCheck/Yuanheng，实际身份权限由宿主决定。已有有效源保持绑定；上游升级另建候选并完整同步，禁止修改旧批准以跳过检查。冻结框架和 Diting 原件规则继续生效。
 3. 开始实际工作时将工单置为 `status:in-progress` 并写执行责任及范围。独立任务并发，冲突文件单一写入，必要审查独立；不用额外完整历史或重复审查。开始、状态、依赖、决策、执行回执等真实事件触发一次跟进，无 cron、轮询或延时唤醒。
 4. 需求文档放 `design-docs/` 并与 Issue 互链；实际事件调用已有 Diting 文件入口写入 `gonggong-diting-data/`，来源/验证证据放 `data-collection/`。提交前执行组件 README 中的 Issue 门禁及适用业务测试。把记录、Git 提交、远程发布、谛听消费分别记账；未测用量留 null。
-5. PR 面向仓库实际默认分支，填写 `.github/PULL_REQUEST_TEMPLATE.md`，关联同仓库 Issue。提交精确候选、实际检查结果及所需独立审查；仍未验收时用 `Refs`，不要写自动关闭关键字。候选有修改时仅重验受影响部分。
+5. 本地必要验证通过后，在同次任务中自动开始正式门禁、提交、提交后核验、推送及 main 合入推进，无需用户再次催促；具体执行与真实阻塞处理见执行策略“本地验证通过即推进 main”。PR 面向 main，填写 `.github/PULL_REQUEST_TEMPLATE.md`，关联同仓库 Issue。提交精确候选、实际检查结果及所需独立审查；仍未验收时用 `Refs`，不要写自动关闭关键字。候选有修改时仅重验受影响部分。合入后取得远端回读再收尾。
 6. 只有验收与约定交付完成后才设置 `status:done` 并以 completed 关闭；取消用 `status:cancelled` 和 not_planned，不能冒充通过。父单逐项核对自己的验收，子单完成不自动关闭父单。失败保留原因、证据和下一事件，不添加定时重试。
 
 标签使用唯一 `type:*`（`.github/labels.json`）和唯一 `status:*`（`.github/status-labels.json`）。待判断 needs-decision、计划 planned、处理中 in-progress、阻塞 blocked、待验收 in-review、完成 done、取消 cancelled。GitHub open/closed 是生命周期，status 表示执行状态；bug 属于 type。状态变更保留其他类别/业务标签，不覆盖并行编辑。

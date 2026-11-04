@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "request_id": "validation-to-main-20261105",
+  "issue_number": 103,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/103",
+  "path_base": "repository_root",
+  "source": "data-collection/validation-to-main-request-20261105.json",
+  "verified_candidate": "7c7539aeb5231a81cd5dd1b2d138411ab9670264",
+  "checks": {
+    "diff_check": "passed",
+    "issue_gate": "local_checks_passed",
+    "committed_data": {"files": 1636, "records": 1515},
+    "delivery_consistency": "passed"
+  },
+  "correction": "Append explicit Issue binding required by CI; preserve original event and source",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41932429922",
+  "review": "author review; documentation only, frozen definitions unchanged",
+  "runtime_service_deployed": false,
+  "usage": null
+}
