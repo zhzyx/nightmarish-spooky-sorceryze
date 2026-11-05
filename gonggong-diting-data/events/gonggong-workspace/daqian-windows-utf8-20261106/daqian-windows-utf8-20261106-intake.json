@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-windows-utf8-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-windows-utf8-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-05T17:48:02.220607+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/156",
+  "agent": {
+    "id": "codex-daqian-current-operator",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "3e875424a568b9353157335c9281dccd426ce4fa85fd4c221b48d3eafbf61bcd"
+  },
+  "payload": {
+    "intent": "修复 Windows 大千调试工作者管道编码并核验当前源码编辑器",
+    "definition_basis": "repository-root AGENTS.md",
+    "design_document": "design-docs/daqian/windows-utf8-20261106.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "未取得实际用量"
+  },
+  "evidence_refs": [],
+  "sha256": "047dcedd473755b982074332d953155d2a021d5f15d1e1cb2c0aa6e91697204d"
+}
