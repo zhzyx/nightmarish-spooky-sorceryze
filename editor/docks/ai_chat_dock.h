@@ -278,6 +278,7 @@ class AIChatDock : public EditorDock {
 	bool _start_message(const Dictionary &p_message);
 	HTTPRequest *request = nullptr;
 	ConfirmationDialog *confirmation = nullptr;
+	ObjectID confirmation_id;
 	TextEdit *preview = nullptr;
 	Label *progress_status = nullptr;
 	Timer *progress_timer = nullptr;
@@ -586,6 +587,7 @@ class AIChatDock : public EditorDock {
 	void _next_tool(uint64_t p_session);
 	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);
 	void _show_confirmation();
+	void _restore_confirmation_parent();
 	void _confirm_action();
 	void _reject_action();
 	// The only file recovery action is the per-turn local snapshot restore.

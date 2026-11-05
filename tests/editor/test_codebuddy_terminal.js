@@ -15,6 +15,30 @@ function fixture(t, overrides = {}) {
     return { directory, manager, workspace: { project_root: directory } };
 }
 
+test('Semantic editor requests retain structured arguments and never reach the shell', async t => {
+    const { hostActionRequest } = require('../../tools/codebuddy_cli/godot_terminal');
+    assert.deepEqual(hostActionRequest('godot-host-action get_editor_state'), { name: 'get_editor_state', arguments: {} });
+    const args = { action: 'start_guidance', steps: [{ target: 'project_settings', message: '窗口配置' }] };
+    const command = 'godot-host-action editor_action ' + JSON.stringify(args);
+    let received;
+    const { manager, workspace } = fixture(t, {
+        env: {},
+        approve: () => { throw new Error('Semantic requests must not run through shell approval'); },
+        hostAction: async (name, value) => { received = value; return { ok: true, action: name, status: 'preview' }; },
+    });
+    const terminal = await manager.create({ sessionId: 'test', command }, workspace);
+    const params = { sessionId: 'test', terminalId: terminal.terminalId };
+    assert.deepEqual(received, args);
+    assert.equal((await manager.wait(params)).exitCode, 0);
+    assert.equal(JSON.parse(manager.output(params).output).status, 'preview');
+    for (const invalid of ['[]', 'null', '{}; exit 0', '{} && exit 0']) {
+        assert.throws(() => hostActionRequest('godot-host-action editor_action ' + invalid));
+    }
+    await manager.release(params);
+    const disabled = fixture(t, { validate: () => { throw new Error('permission disabled'); } });
+    await assert.rejects(disabled.manager.create({ sessionId: 'test', command }, disabled.workspace), /permission disabled/);
+});
+
 test('Terminal validates commands, cwd and unsupported args/env before approval', t => {
     const { directory, workspace } = fixture(t);
     const base = { sessionId: 'test', command: 'printf ok' };

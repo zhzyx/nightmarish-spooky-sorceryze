@@ -31,8 +31,8 @@ func manual_stop():
 	dock.find_child("Send", true, false).pressed.emit()
 	var deadline := Time.get_ticks_msec() + 30000
 	while not FileAccess.file_exists("res://server-waiting") and Time.get_ticks_msec() < deadline:
-		var dialog = dock.find_child("AIFileApproval", true, false)
-		if dialog.visible:
+		var dialog = root.find_child("AIFileApproval", true, false)
+		if dialog and dialog.visible:
 			dialog.hide()
 			dialog.confirmed.emit()
 		await process_frame
@@ -84,8 +84,8 @@ func phase(name: String, reject := false) -> bool:
 	dock.find_child("Send", true, false).pressed.emit()
 	var deadline := Time.get_ticks_msec() + 30000
 	while not dock.find_child("Stop", true, false).disabled and Time.get_ticks_msec() < deadline:
-		var dialog = dock.find_child("AIFileApproval", true, false)
-		if dialog.visible:
+		var dialog = root.find_child("AIFileApproval", true, false)
+		if dialog and dialog.visible:
 			dialog.hide()
 			if reject:
 				dialog.canceled.emit()

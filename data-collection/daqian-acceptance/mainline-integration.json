@@ -1,0 +1,116 @@
+{
+  "request_id": "daqian-acceptance-20261105",
+  "issue_number": 125,
+  "main_baseline": "67059148958e14deccceaabec02a5e2c2a88762d",
+  "integrated_changes": [
+    "#60 editor guidance",
+    "#132 collaborator PR delivery"
+  ],
+  "merge_scope": "two overlapping AI Chat source files merged without conflicts; guided workflow regression passed",
+  "mac_native": {
+    "parallel": {
+      "state": "passed",
+      "editor_sha256": "815aae8d7d1790d77ef0855c3e66a13aab75020c02fc7ce5845e4b9ae0b093a8",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "graph": {
+      "state": "passed",
+      "editor_sha256": "815aae8d7d1790d77ef0855c3e66a13aab75020c02fc7ce5845e4b9ae0b093a8",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "entry": {
+      "state": "passed",
+      "editor_sha256": "815aae8d7d1790d77ef0855c3e66a13aab75020c02fc7ce5845e4b9ae0b093a8",
+      "scenario": "entry",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "tabs": {
+      "state": "passed",
+      "mode": "headless",
+      "binary_sha256": "815aae8d7d1790d77ef0855c3e66a13aab75020c02fc7ce5845e4b9ae0b093a8",
+      "phases": [
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "initial",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        },
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "pre_daqian_layout",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        },
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "restart",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        }
+      ],
+      "test_sha256": {
+        "run_ai_chat_tab_order.py": "f688fe7d7adf7ce3b38774711f68c3dd7b971cf5a2aecd827c54022127c9b584",
+        "ai_chat_tab_order.gd": "88f988b79e64ee45291544ee7bc8cf5d86ea79dbafacfbbe1224fae7ed4f44f3"
+      }
+    }
+  },
+  "history_projection_test": "passed",
+  "windows_prior_head": "666d4018acfcfe4df8adaf1e9a57f9778a4e4271",
+  "windows_prior_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42061409656",
+  "ordinary_pr_publisher": "Sail-Li",
+  "verified_viewer_permission": "WRITE",
+  "publication_receipt": "pending"
+}

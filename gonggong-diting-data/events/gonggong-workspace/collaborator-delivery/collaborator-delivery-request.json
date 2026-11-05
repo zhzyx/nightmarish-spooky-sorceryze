@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "collaborator-delivery-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "collaborator-delivery",
+  "kind": "request",
+  "occurred_at": "2026-11-05T23:58:44.5570796+08:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/131",
+  "agent": {
+    "definition_sha256": "7589575ee09fb0aa3b603a5ebebd0f5c066528b91ab5db37a94e9ba3cfd0b199",
+    "origin": "actual_codex_host",
+    "id": "codex-primary",
+    "version": "host-session"
+  },
+  "payload": {
+    "issue_number": 131,
+    "usage": null,
+    "request": "有合入权限的协作人用自己的账号完成交付，所有当前仓库协作人均为关键可提交角色",
+    "intake": "passed"
+  },
+  "evidence_refs": [],
+  "sha256": "65901b6165f5a6fca5dda9416f483a5d83e43125bbb761a6f453efa9c0ca4da3"
+}

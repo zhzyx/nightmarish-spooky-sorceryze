@@ -45,13 +45,15 @@ def main():
     parser.add_argument("--godot", required=True, type=Path)
     parser.add_argument("--interfaces", action="store_true")
     parser.add_argument("--bounds", action="store_true")
-    parser.add_argument("--codex", action="store_true", help="Offline native Codex subprocess, requires --bounds")
+    parser.add_argument("--codex", action="store_true", help="Offline native Codex subprocess, requires --bounds or --guidance")
     parser.add_argument("--manual-stop", action="store_true", help="Visible 100-second delayed highlight response; click Stop")
     parser.add_argument("--signal-stop", action="store_true", help="Headless Stop signal callback; not a native click")
+    parser.add_argument("--guidance", action="store_true", help="Target registry, guidance state machine and restart preview")
     args = parser.parse_args()
     assert not (args.manual_stop and args.signal_stop)
     stop_case = args.manual_stop or args.signal_stop
-    assert not args.codex or args.bounds
+    assert not args.codex or args.bounds or args.guidance
+    assert not args.guidance or not (args.bounds or args.interfaces or stop_case)
     assert not stop_case or not (args.bounds or args.codex or args.interfaces)
     results, errors, seen = {}, [], set()
 
@@ -78,6 +80,8 @@ def main():
                 tool_results = [m["content"] for m in messages[latest:] if m["role"] == "tool"]
                 if tool_results:
                     results[case] = tool_results[-1]
+                    if args.guidance:
+                        (project / "last-result.json").write_text(tool_results[-1], encoding="utf-8")
                     if stop_case and case == "highlight_tabs":
                         (project / "server-waiting").write_text("waiting")
                         time.sleep(100)
@@ -86,8 +90,11 @@ def main():
                 elif stop_case and case == "recovery":
                     message = {"role": "assistant", "content": "RECOVERY_OK"}
                 else:
-                    name, arguments = ("get_editor_state", {}) if case in BOUND_CASES else CASES[case]
-                    message = {"role": "assistant", "content": "", "tool_calls": [{"id": case, "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}
+                    if args.guidance:
+                        name, arguments = "editor_action", json.loads(case)
+                    else:
+                        name, arguments = ("get_editor_state", {}) if case in BOUND_CASES else CASES[case]
+                    message = {"role": "assistant", "content": "", "tool_calls": [{"id": "guidance" if args.guidance else case, "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}
                 payload = json.dumps({"choices": [{"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}]}).encode()
                 outcome = "sent"
                 try:
@@ -145,10 +152,12 @@ def main():
             (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Semantic test"\n[display]\nwindow/size/viewport_width=640\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding="utf-8")
             (project / "fixture.tscn").write_text('[gd_scene format=3]\n[node name="Root" type="Node"]\n[node name="Child" type="Node" parent="."]\n')
             (project / "fixture.gd").write_text('extends Node\n\nfunc demo():\n\tpass\n')
-            shutil.copyfile(Path(__file__).with_name("ai_chat_semantic.gd"), project / "test.gd")
+            script = "editor_guided_workflows.gd" if args.guidance else "ai_chat_semantic.gd"
+            shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
             env = {**os.environ, "APPDATA": str(project / "appdata"), "LOCALAPPDATA": str(project / "localappdata"), "GODOT_AI_API_KEY": "", "AI_CHAT_TEST_URL": f"http://127.0.0.1:{server.server_port}/v1/chat/completions"}
             env["SEMANTIC_INTERFACES"] = "1" if args.interfaces else ""
             env["SEMANTIC_BOUNDS"] = "1" if args.bounds else ""
+            env["SEMANTIC_GUIDANCE"] = "1" if args.guidance else ""
             env["SEMANTIC_CODEX_ENTRY"] = str(workspace / "mock_codex_semantic.js") if args.codex else ""
             env["SEMANTIC_WIRE_DIR"] = str(workspace / "wire")
             env["SEMANTIC_MANUAL_STOP"] = "1" if stop_case else ""
@@ -156,12 +165,15 @@ def main():
             env.update(GONGGONG_TEST_WORKSPACE=temp, GONGGONG_WORKSPACE=temp, GONGGONG_PYTHON=sys.executable, GONGGONG_GH=sys.executable, GONGGONG_NODE=shutil.which("node"))
             display = [] if args.manual_stop else ["--headless"]
             print("SEMANTIC_PROJECT", project, flush=True)
-            run = subprocess.run([str(args.godot.resolve()), *display, "--editor", "--path", str(project), "--script", "res://test.gd"], env=env, cwd=project, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=240 if args.manual_stop else 180)
+            run = subprocess.run([str(args.godot.resolve()), *display, "--editor", "--path", str(project), "--script", "res://test.gd"], env=env, cwd=project, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300 if args.guidance else 240 if args.manual_stop else 180)
             print(run.stdout)
             print(run.stderr)
             if args.codex:
                 wire = {path.stem: json.loads(path.read_text(encoding="utf-8"))["content"] for path in (workspace / "wire").glob("*.json")}
-                assert set(wire) == BOUND_CASES | {"open_scene"}, ("Incomplete native Codex wire", sorted(wire))
+                if not args.guidance:
+                    assert set(wire) == BOUND_CASES | {"open_scene"}, ("Incomplete native Codex wire", sorted(wire))
+                else:
+                    assert wire, "Missing native Codex guidance results"
                 assert not seen and not results, ("Unexpected HTTP business fallback", seen)
                 results = wire
                 print("NATIVE_CODEX_WIRE_CASES", sorted(wire), "HTTP_BUSINESS_CASES", sorted(seen))
@@ -169,6 +181,14 @@ def main():
             print("MOCK_ERRORS", errors)
             assert run.returncode == 0 and "AI_CHAT_SEMANTIC_OK" in run.stdout, "scene driver failed"
             assert not errors, errors
+            if args.guidance:
+                shutil.copyfile(Path(__file__).with_name("editor_guided_workflows_restore.gd"), project / "restore.gd")
+                restored = subprocess.run([str(args.godot.resolve()), "--headless", "--editor", "--path", str(project), "--script", "res://restore.gd"], env=env, cwd=project, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=45)
+                print(restored.stdout)
+                print(restored.stderr)
+                assert restored.returncode == 0 and "EDITOR_GUIDED_WORKFLOWS_RESTORE_OK" in restored.stdout, "guidance restore failed"
+                print("EDITOR_GUIDED_WORKFLOWS_OK")
+                return
             if stop_case:
                 report = json.loads((project / "stop-report.json").read_text(encoding="utf-8"))
                 print("SEMANTIC_STOP_REPORT", json.dumps(report))
