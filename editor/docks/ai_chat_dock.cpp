@@ -34,6 +34,7 @@
 #include "ai_chat_issue_guide.h"
 
 #include "core/config/project_settings.h"
+#include "core/object/class_db.h"
 #include "core/crypto/crypto_core.h"
 #include "core/input/input_event.h"
 #include "core/io/dir_access.h"
@@ -1290,6 +1291,11 @@ void AIChatDock::_append(const String &p_role, const String &p_text) {
 	const bool user = p_role == TTR("You");
 	_queue_chat_scroll_update();
 	const bool ai = p_role == TTR("AI");
+	if (ai && !history_restoring && consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id) {
+		const String source = daqian_preview_source;
+		daqian_preview_source = String();
+		emit_signal("daqian_preview_received", source, _redact(p_text));
+	}
 	if (!history_restoring) {
 		Dictionary record = chat_message(user ? "user" : ai ? "assistant"
 						: p_role == TTR("Error")			? "error"
@@ -2895,6 +2901,74 @@ void AIChatDock::_close_agent() {
 	callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	_queue_history_save();
 	_save_history();
+}
+
+String AIChatDock::_work_order_binding(const String &p_field) const {
+	EditorSettings *settings = EditorSettings::get_singleton();
+	const Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
+	if (bindings.has(conversation_id)) {
+		const Dictionary entry = bindings[conversation_id];
+		return entry.get(p_field, "");
+	}
+	return settings->get_setting("gonggong/" + p_field);
+}
+
+void AIChatDock::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview"), &AIChatDock::_open_daqian_chat);
+	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
+	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
+}
+
+String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview) {
+	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || !gonggong_recovered_result.is_empty()) {
+		return U"AI 对话正在处理另一项工作，请保留草稿稍后再试。";
+	}
+	if (p_source.is_empty() || p_issue < 0 || ((p_issue == 0) != p_request.is_empty())) {
+		return U"工单绑定不完整。";
+	}
+	EditorSettings *settings = EditorSettings::get_singleton();
+	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
+	int index = -1;
+	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
+		const int id = agent_tabs->get_tab_metadata(i);
+		const AgentSession *session = agent_sessions.getptr(id);
+		const String cid = id == active_agent ? conversation_id : (session ? session->conversation_id : String());
+		const Dictionary entry = bindings.get(cid, Dictionary());
+		if (entry.get("source", "") == p_source || (p_issue > 0 && String(entry.get("request_id", "")) == p_request && String(entry.get("issue_number", "")).to_int() == p_issue)) {
+			index = i;
+			break;
+		}
+	}
+	if (index < 0) {
+		const int before = agent_tabs->get_tab_count();
+		_add_agent();
+		if (agent_tabs->get_tab_count() == before) {
+			return U"无法创建独立会话，请检查会话数量和当前工作状态。";
+		}
+		Dictionary entry;
+		entry["source"] = p_source;
+		entry["issue_number"] = p_issue > 0 ? itos(p_issue) : String();
+		entry["request_id"] = p_request;
+		bindings[conversation_id] = entry;
+		settings->set_project_metadata("daqian", "bindings", bindings);
+	} else {
+		agent_tabs->set_current_tab(index);
+	}
+	make_visible();
+	if (!p_message.is_empty()) {
+		if (!input->get_text().strip_edges().is_empty()) {
+			return U"关联会话中有未发送内容，请先处理已有草稿。";
+		}
+		daqian_preview_source = p_preview ? p_source : String();
+		daqian_preview_conversation = conversation_id;
+		consultation_only->set_pressed(p_preview);
+		input->set_text(p_message);
+		if (send_button->is_disabled()) {
+			return U"需求保留在关联对话，请配置可用模型后发送。";
+		}
+		_send();
+	}
+	return String();
 }
 
 void AIChatDock::_add_agent() {

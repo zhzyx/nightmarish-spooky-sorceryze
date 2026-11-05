@@ -52,7 +52,7 @@ def main():
                 saved = re.search(r'^dock_12="([^"\n]+)"', layout, re.M)
                 assert saved is not None, 'Normal editor exit did not save the main-screen layout'
                 sample['saved_order'] = saved.group(1).split(',')
-                assert sample['saved_order'][0] == 'AIChatMainScreen' and sample['saved_order'][1] == '2D', sample
+                assert sample['saved_order'][:3] == ['AIChatMainScreen', 'DaqianMainScreen', '2D'], sample
                 if report['phases']:
                     assert sample['labels'] == report['phases'][0]['labels'], 'Restart changed visible peer order'
                     assert sample['saved_order'] == report['phases'][0]['saved_order'], 'Restart changed saved peer order'

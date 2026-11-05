@@ -59,6 +59,7 @@
 #include "editor/debugger/script_editor_debugger.h"
 #include "editor/doc/editor_help.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/daqian_dock.h"
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/groups_dock.h"
@@ -9585,6 +9586,7 @@ EditorNode::EditorNode() {
 
 	// AI Chat is registered first so it is the opening main-screen tab.
 	editor_dock_manager->add_dock(memnew(AIChatDock));
+	editor_dock_manager->add_dock(create_daqian_dock());
 
 	add_editor_plugin(memnew(CanvasItemEditorPlugin));
 	add_editor_plugin(memnew(Node3DEditorPlugin));

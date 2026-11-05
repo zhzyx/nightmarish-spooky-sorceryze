@@ -4,6 +4,8 @@ func _initialize():
 	_run.call_deferred()
 
 func _run():
+	# A headless display can start at 64 px; test the order of visible, unscrolled tabs.
+	root.size = Vector2i(1600, 900)
 	await create_timer(1.0).timeout
 	var dock = root.find_child("AI Chat", true, false)
 	assert(dock != null, "AI Chat is missing")
@@ -13,8 +15,8 @@ func _run():
 	for index in tabs.get_tab_count():
 		labels.append(tabs.get_tab_title(index))
 	assert(tabs.get_tab_control(0) == dock, "AI Chat is not first")
-	assert(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not visually left of 2D")
-	assert(labels[1] == "2D", "AI Chat is not immediately before 2D")
+	assert(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not left of Daqian")
+	assert(labels[1] == "大千" and labels[2] == "2D", "Daqian must be between AI Chat and 2D")
 	assert(labels.find("3D") > 1 and labels.find("Script") > labels.find("3D"), "Other built-in tabs changed order")
 	for index in tabs.get_tab_count():
 		tabs.set_current_tab(index)
