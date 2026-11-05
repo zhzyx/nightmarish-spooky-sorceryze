@@ -4,8 +4,8 @@ extends RefCounted
 ## Graphs are versioned plans. Execution state and protected relations are supplied
 ## by the bound host. The editor only submits the editable part (nodes and edges).
 const KINDS := ["text", "image", "question", "task", "join"]
-const EDIT_FIELDS := ["kind", "title", "value", "model"]
-const ACTIVE := ["running", "completed", "dispatched", "reserved", "reconcile_required", "failed", "cancelled"]
+const EDIT_FIELDS := ["kind", "title", "value", "model", "caption"]
+const ACTIVE := ["running", "completed", "dispatched", "reserved", "reconcile_required", "failed", "cancelled","answered"]
 
 
 static func new_plan() -> Dictionary:
@@ -109,6 +109,6 @@ static func changes_error(before: Dictionary, draft: Dictionary, context: Dictio
 			var node: Dictionary = nodes[id]
 			if node.kind == "join" and not inputs.has(id) and id not in context.get("protected_nodes", []):
 				return "汇总节点 %s 缺少结果输入" % node.title
-			if node.kind in ["task", "text", "image"] and String(node.get("value", "")).strip_edges().is_empty() and not inputs.has(id):
+			if node.kind in ["task", "text", "image"] and String(node.get("value", "")).strip_edges().is_empty() and not inputs.has(id) and not context.get("questions",{}).has(id):
 				return "节点 %s 缺少输入" % node.title
 	return ""

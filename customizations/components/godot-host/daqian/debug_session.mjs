@@ -66,7 +66,7 @@ function wake(reason) {
       for (const [id,n] of Object.entries(graph.nodes)) {
         if (!eligible(id) || !['text','image','question'].includes(n.kind)) continue;
         if (graph.edges.some(e=>e.to===id && !accepted(e.from))) continue;
-        if (n.kind==='question') state(id,'waiting');
+        if (n.kind==='question' || n.pending_image) state(id,'waiting');
         else {data.set(id,{kind:n.kind,value:n.value});state(id,'completed');}
         advanced=true;
       }
@@ -131,8 +131,8 @@ async function handle(cmd) {
     server=fixtureEndpoint();
     await new Promise((resolve,reject)=>server.once('error',reject).listen(0,'127.0.0.1',resolve));
     wake('user.requested');
-  } else if(cmd.action==='answer' && graph?.nodes[cmd.id]?.kind==='question' && nodes.get(cmd.id)==='waiting') {
-    data.set(cmd.id,{kind:'text',value:cmd.value});state(cmd.id,'completed');wake('decision.recorded');
+  } else if(cmd.action==='answer' && (graph?.nodes[cmd.id]?.kind==='question' || graph?.nodes[cmd.id]?.pending_image) && nodes.get(cmd.id)==='waiting') {
+    data.set(cmd.id,{kind:graph.nodes[cmd.id].pending_image?'image':'text',value:cmd.value});state(cmd.id,'completed');wake('decision.recorded');
   } else if(cmd.action==='cancel' && active.has(cmd.id)) {
     state(cmd.id,'stopping');active.get(cmd.id).kill();
   } else if(cmd.action==='retry' && ['failed','cancelled','waiting'].includes(nodes.get(cmd.id)) && graph.nodes[cmd.id].kind==='task') {

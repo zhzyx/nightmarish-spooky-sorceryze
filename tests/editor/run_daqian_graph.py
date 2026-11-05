@@ -13,14 +13,15 @@ import tempfile
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
-parser.add_argument("--scenario", choices=["graph","parallel","entry"],default="graph")
+parser.add_argument("--scenario", choices=["graph","parallel","entry","inputs"],default="graph")
 args = parser.parse_args()
 scenarios = {"graph":("daqian_graph.gd","DAQIAN_GRAPH_TEST passed"),
              "parallel":("daqian_editor_parallel.gd","DAQIAN_NATIVE_PARALLEL_OK"),
-             "entry":("daqian_ai_entry.gd","DAQIAN_AI_ENTRY_OK")}
+             "entry":("daqian_ai_entry.gd","DAQIAN_AI_ENTRY_OK"),
+             "inputs":("daqian_inputs.gd","DAQIAN_NATIVE_INPUTS_OK")}
 script, marker = scenarios[args.scenario]
 env = os.environ.copy()
-if args.scenario == "parallel":
+if args.scenario in {"parallel","inputs"}:
     node = env.get("DAQIAN_TEST_NODE") or shutil.which("node")
     if not node:
         raise SystemExit("Node required for Daqian native parallel acceptance")
@@ -28,7 +29,7 @@ if args.scenario == "parallel":
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory)
-    if args.scenario in {"graph","parallel"}:
+    if args.scenario in {"graph","parallel","inputs"}:
         # The repository gate is exercised using the ordinary gh transport; no product bypass.
         fixture=project/"fixture_gh.py"
         fixture.write_text("""import json,sys,os
@@ -72,3 +73,10 @@ else: sys.exit(1)
     if not passed:
         raise SystemExit(log)
     print(report)
+
+# The existing native parallel acceptance also covers user input waking a single
+# branch. Keep both subprocess results so the CI artifact identifies each run.
+if args.scenario == "parallel":
+    inputs_report=args.report.with_name(args.report.stem+"-inputs.json")
+    subprocess.run([sys.executable,str(Path(__file__).resolve()),"--scenario","inputs",
+                    "--godot",str(binary),"--report",str(inputs_report)],check=True,env=env)

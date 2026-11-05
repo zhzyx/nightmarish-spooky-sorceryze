@@ -219,6 +219,7 @@ func _draw_board() -> void:
 	var statuses := ["全部状态", "待我处理"]
 	var owners := ["全部负责人"]
 	var rows: Array = board.get("issues", [])
+	var waiting_inputs := 0
 	pending_menu.get_popup().clear()
 	var by_url := {}
 	for index in rows.size():
@@ -239,6 +240,7 @@ func _draw_board() -> void:
 			label.modulate = Color("#edbe66")
 		card.add_child(label)
 		if item.decision:
+			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
 		detail.name = "StepDetails"
@@ -263,10 +265,10 @@ func _draw_board() -> void:
 		for dep in item.dependencies:
 			if by_url.has(dep):
 				overview.connect_node(by_url[dep], 0, by_url[item.url], 0)
-	pending_menu.text = "待办 (%d)" % pending_menu.get_popup().item_count
+	pending_menu.text = "待办 (%d)" % waiting_inputs
 	var dock := get_parent() as EditorDock
 	if dock:
-		dock.title = "大千" if pending_menu.get_popup().item_count == 0 else "大千 (%d)" % pending_menu.get_popup().item_count
+		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
 	_zoom_detail()
 	_fill_filter(status, statuses)
 	_fill_filter(owner_filter, owners)
@@ -559,12 +561,21 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 func _drop_images(paths: PackedStringArray) -> void:
 	if not is_visible_in_tree() or not editor.is_visible_in_tree() or not editor.canvas.get_global_rect().has_point(editor.canvas.get_global_mouse_position()):
 		return
+	insert_dropped_images(paths,(editor.canvas.get_local_mouse_position()+editor.canvas.scroll_offset)/editor.canvas.zoom)
+
+
+func insert_dropped_images(paths: PackedStringArray,at: Vector2) -> void:
+	if actor.is_empty() or not editor.visible:
+		return
 	for path in paths:
 		if path.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp"]:
 			var image := Image.load_from_file(path)
 			if image and not image.is_empty():
-				var at: Vector2 = (editor.canvas.get_local_mouse_position() + editor.canvas.scroll_offset) / editor.canvas.zoom
-				editor.set_image(editor.add_node("image",at),image)
+				var target: String = editor.pending_image
+				if target.is_empty() or not editor.draft.nodes.has(target):
+					target = editor.add_node("image",at)
+				editor.set_image(target,image)
+				editor.pending_image = ""
 
 
 func read_graph(id: String) -> Dictionary:
@@ -593,7 +604,7 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var result_path := stem + ".result"
 	var req_path := stem + ".request"
 	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--result",result_path,action])
-	if action == "apply":
+	if action in ["apply","answer"]:
 		var f := FileAccess.open(req_path,FileAccess.WRITE)
 		if not f:
 			return {"error":"无法保存本次提交请求"}
@@ -695,16 +706,26 @@ func _answer_question(id: String, answer: String) -> void:
 	if debug_issue == current and not debug_process.is_empty():
 		_debug_command("answer",id,answer)
 		return
-	if not chat or not editor.draft.nodes.has(id):
+	if not editor.draft.nodes.has(id):
 		return
+	var target := current
+	var response: Dictionary = await _graph_command(target,"answer",{"revision":editor.revision,"node":id,"value":answer})
+	if current != target:
+		return
+	if not response.get("ok",false):
+		notice.text = str(response.get("error","未收到答复回执，草稿已保留"))
+		return
+	editor.context = response.context
 	for item in board.get("issues",[]):
-		if item.url == current and not str(item.request).is_empty():
-			var question: Dictionary = editor.draft.nodes[id]
-			var message := "答复工单 #%s 的问题「%s」\n%s" % [item.number,question.get("value",question.title),answer]
-			var error: String = chat.open_daqian_chat(current,int(item.number),item.request,message,false)
-			notice.text = error if error else "已交给关联对话，等待共工回执"
-			return
-	notice.text = "工单尚无可验证的需求绑定，答复保留在节点上"
+		if item.url==current:
+			item.pending_count = response.context.questions.size()-response.context.answers.size()
+			item.decision = item.pending_count>0
+	_draw_board()
+	editor.answers.erase(id)
+	editor.draw_graph()
+	_save()
+	notice.text = "已按当前协作者身份记录答复 · " + id
+
 
 func _catalog_changed() -> void:
 	if not current.begins_with("https://"):
@@ -751,6 +772,12 @@ func _start_debug() -> void:
 	for id in plan.nodes:
 		if plan.nodes[id].kind == "task":
 			plan.nodes[id].model = editor.debug_models.get(id,"")
+		if editor.context.get("answers",{}).has(id):
+			plan.nodes[id].value = editor.context.answers[id].value
+			if plan.nodes[id].kind == "question":
+				plan.nodes[id].kind = "text"
+		elif editor.context.get("questions",{}).get(id,{}).get("kind","") == "image":
+			plan.nodes[id].pending_image = true
 	debug_seed = EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-loopback-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
 	var file := FileAccess.open(debug_seed,FileAccess.WRITE)
 	if not file:

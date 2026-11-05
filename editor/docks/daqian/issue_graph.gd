@@ -30,6 +30,7 @@ var add_menu: MenuButton
 var apply_button: Button
 var picker: FileDialog
 var pending_image := ""
+var clipboard_image: Callable = DisplayServer.clipboard_get_image
 var menu_at := Vector2(80, 100)
 var host_read: Callable
 var generation := 0
@@ -89,7 +90,11 @@ func _ready() -> void:
 	picker.access = FileDialog.ACCESS_FILESYSTEM
 	picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	picker.filters = PackedStringArray(["*.png,*.jpg,*.jpeg,*.webp ; 图片"])
-	picker.file_selected.connect(func(path): set_image(pending_image, Image.load_from_file(path)))
+	picker.file_selected.connect(func(path):
+		var target := pending_image
+		pending_image = ""
+		set_image(target,Image.load_from_file(path)))
+	picker.canceled.connect(func(): pending_image = "")
 	add_child(picker)
 	draw_graph()
 
@@ -99,6 +104,7 @@ func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_por
 	generation += 1
 	applying = false
 	issue_id = id
+	pending_image = ""
 	revision = snapshot.revision
 	baseline = snapshot.plan.duplicate(true)
 	draft = baseline.duplicate(true)
@@ -135,7 +141,11 @@ func _render_node(id: String, item: Dictionary) -> void:
 	view.name = id
 	view.title = item.title
 	view.tooltip_text = str(context.get("sources", {}).get(id, ""))
+	var request: Dictionary = context.get("questions",{}).get(id,{})
+	var recorded: Dictionary = context.get("answers",{}).get(id,{})
 	var tint: Color = {"text":Color("#375e72"),"image":Color("#655581"),"task":Color("#344f79"),"question":Color("#8a652b"),"join":Color("#37645e")}.get(item.kind,Color("#46515e"))
+	if not request.is_empty() and recorded.is_empty():
+		tint = Color("#8a652b")
 	for style in ["titlebar","titlebar_selected"]:
 		var original := get_theme_stylebox(style,"GraphNode")
 		if original is StyleBoxFlat:
@@ -168,20 +178,37 @@ func _render_node(id: String, item: Dictionary) -> void:
 			draft_changed.emit())
 		view.add_child(input)
 	if item.kind == "question" and (debug_active or issue_id.begins_with("https://")):
-		var answer := TextEdit.new()
-		answer.placeholder_text = "你的答复"
-		answer.text = answers.get(id,"")
-		answer.text_changed.connect(func():
-			answers[id] = answer.text
-			draft_changed.emit())
-		answer.custom_minimum_size = Vector2(215,60)
-		view.add_child(answer)
-		var send := Button.new()
-		send.text = "提交答复"
-		send.pressed.connect(func():
-			if not answer.text.strip_edges().is_empty():
-				answer_requested.emit(id,answer.text.strip_edges()))
-		view.add_child(send)
+		if not recorded.is_empty() and not debug_active:
+			view.add_child(_label("已答复 · " + str(recorded.actor)))
+		else:
+			var options: Array = request.get("options",[])
+			if not options.is_empty():
+				var choose := OptionButton.new()
+				choose.add_item("请选择")
+				for option in options:
+					choose.add_item(option)
+					if answers.get(id,"")==option:
+						choose.select(choose.item_count-1)
+				choose.item_selected.connect(func(index):
+					answers[id] = choose.get_item_text(index) if index else ""
+					draft_changed.emit())
+				view.add_child(choose)
+			else:
+				var answer := TextEdit.new()
+				answer.placeholder_text = "你的答复"
+				answer.text = answers.get(id,"")
+				answer.text_changed.connect(func():
+					answers[id] = answer.text
+					draft_changed.emit())
+				answer.custom_minimum_size = Vector2(215,60)
+				view.add_child(answer)
+			var send := Button.new()
+			send.text = "提交调试答复" if debug_active else "提交答复"
+			send.pressed.connect(func():
+				var value: String = answers.get(id,"")
+				if not value.strip_edges().is_empty():
+					answer_requested.emit(id,value))
+			view.add_child(send)
 	if item.kind == "task":
 		var models := OptionButton.new()
 		models.add_item("司南自动分配")
@@ -204,6 +231,11 @@ func _render_node(id: String, item: Dictionary) -> void:
 		configure.text = "添加供应商 API"
 		configure.pressed.connect(func(): configure_model.emit())
 		view.add_child(configure)
+		if not locked:
+			var attach := Button.new()
+			attach.text = "补充图片输入"
+			attach.pressed.connect(func(): add_image_for_task(id))
+			view.add_child(attach)
 		var choose := OptionButton.new()
 		choose.add_item("调试 · 自动分配")
 		for model in ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]:
@@ -228,7 +260,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		view.add_child(preview)
-		var encoded: String = item.get("value","")
+		var encoded: String = recorded.get("value",answers.get(id,item.get("value",""))) if not request.is_empty() else item.get("value","")
 		if not encoded.is_empty():
 			var img := Image.new()
 			if img.load_png_from_buffer(Marshalls.base64_to_raw(encoded)) == OK:
@@ -236,14 +268,32 @@ func _render_node(id: String, item: Dictionary) -> void:
 		for title in ["选择图片","粘贴截图"]:
 			var button := Button.new()
 			button.text = title
-			button.disabled = locked
+			button.disabled = locked and (request.is_empty() or not recorded.is_empty())
 			if title == "选择图片":
 				button.pressed.connect(func():
 					pending_image = id
 					picker.popup_centered_ratio(0.65))
 			else:
-				button.pressed.connect(func(): set_image(id, DisplayServer.clipboard_get_image()))
+				button.pressed.connect(func(): set_image(id,clipboard_image.call()))
 			view.add_child(button)
+		if request.get("kind") == "image":
+			view.add_child(_label(str(request.prompt).left(36)))
+			if recorded.is_empty():
+				var submit := Button.new()
+				submit.text = "提交图片"
+				submit.pressed.connect(func():
+					if not str(answers.get(id,"")).is_empty():
+						answer_requested.emit(id,answers[id]))
+				view.add_child(submit)
+		else:
+			var caption := LineEdit.new()
+			caption.placeholder_text = "图片说明（可选）"
+			caption.editable = not locked
+			caption.text = item.get("caption","")
+			caption.text_changed.connect(func(value):
+				draft.nodes[id].caption = value
+				draft_changed.emit())
+			view.add_child(caption)
 	if item.kind == "join" and not str(item.get("value", "")).is_empty():
 		var criterion := _label(item.value)
 		criterion.custom_minimum_size.x = 210
@@ -260,6 +310,23 @@ func _render_node(id: String, item: Dictionary) -> void:
 		set_debug_state(debug_states[id])
 
 
+func add_image_for_task(id: String) -> String:
+	if not draft.nodes.has(id) or draft.nodes[id].kind != "task" or context.get("states",{}).get(id,"") in rules.ACTIVE:
+		return ""
+	var task_view := canvas.get_node(NodePath(id)) as GraphNode
+	var image_id := add_node("image",task_view.position_offset - Vector2(320,0))
+	var edge := {"from":image_id,"to":id,"kind":"data"}
+	var error: String = rules.edge_error(draft,edge,context)
+	if error:
+		notice.text = error
+		return image_id
+	draft.edges.append(edge)
+	_draw_edge(edge)
+	pending_image = image_id
+	draft_changed.emit()
+	return image_id
+
+
 func set_image(id: String, image: Image) -> void:
 	if not draft.nodes.has(id) or image == null or image.is_empty():
 		notice.text = "没有可读图片"
@@ -271,7 +338,12 @@ func set_image(id: String, image: Image) -> void:
 	if bytes.size() > 8 * 1024 * 1024:
 		notice.text = "图片超过 8 MiB，请缩小后重试"
 		return
-	draft.nodes[id].value = Marshalls.raw_to_base64(bytes)
+	if context.get("questions",{}).get(id,{}).get("kind","") == "image":
+		if context.get("answers",{}).has(id):
+			return
+		answers[id] = Marshalls.raw_to_base64(bytes)
+	else:
+		draft.nodes[id].value = Marshalls.raw_to_base64(bytes)
 	canvas.get_node(NodePath(id + "/Preview")).texture = ImageTexture.create_from_image(image)
 	draft_changed.emit()
 
