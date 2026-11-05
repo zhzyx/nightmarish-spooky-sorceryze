@@ -117,7 +117,11 @@ func _ready() -> void:
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
 	_load_personal()
+	var last: String = saved.get("last_view","")
 	_show_board()
+	if not last.is_empty() and saved.get("drafts",{}).has(last):
+		var prior: Dictionary = saved.drafts[last]
+		_show_issue(last,{"revision":prior.revision,"plan":prior.baseline,"context":prior.get("context",{})})
 	_attach_chat.call_deferred()
 	_opened.call_deferred()
 
@@ -168,7 +172,10 @@ func _capture() -> void:
 		if not saved.has("drafts"):
 			saved.drafts = {}
 		saved.drafts[current] = {"revision":editor.revision, "graph":editor.draft.duplicate(true),
-			"positions":editor.positions.duplicate(true), "baseline":editor.baseline.duplicate(true)}
+			"positions":editor.positions.duplicate(true), "baseline":editor.baseline.duplicate(true),
+			"context":editor.context.duplicate(true),"zoom":editor.canvas.zoom,"scroll":editor.canvas.scroll_offset,
+			"answers":editor.answers.duplicate(),"debug_models":editor.debug_models.duplicate()}
+	saved.last_view = current
 	saved.zoom = overview.zoom
 	saved.scroll = overview.scroll_offset
 	saved.board = board
@@ -193,7 +200,7 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
-	_stop_debug()
+	_stop_debug(false)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
 
@@ -203,6 +210,7 @@ func _show_board() -> void:
 	if not current.is_empty():
 		_save()
 	current = ""
+	saved.last_view = ""
 	editor.hide()
 	actions.hide()
 	overview.show()
@@ -388,6 +396,8 @@ func _open_issue(item: Dictionary) -> void:
 	if live.has("plan"):
 		snapshot = live
 	_show_issue(item.url, snapshot)
+	if live.has("source_mode"):
+		notice.text = item.url + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
 	if live.has("error"):
 		notice.text = str(live.error) + " · 显示最近工单快照"
 
@@ -431,6 +441,10 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	if stored.has("graph"):
 		editor.draft = stored.graph
 		editor.positions = stored.positions
+		editor.answers = stored.get("answers",{})
+		editor.debug_models = stored.get("debug_models",{})
+		editor.canvas.zoom = stored.get("zoom",1.0)
+		editor.canvas.scroll_offset = stored.get("scroll",Vector2.ZERO)
 		editor.revision = stored.revision
 		editor.baseline = stored.baseline
 		editor.draw_graph()
@@ -681,7 +695,7 @@ func _debug_update() -> void:
 		_stop_debug()
 
 
-func _stop_debug() -> void:
+func _stop_debug(redraw := true) -> void:
 	if debug_process.is_empty():
 		return
 	# Closing stdin lets the host terminate its own workers and close the fixture socket.
@@ -696,5 +710,5 @@ func _stop_debug() -> void:
 	if is_instance_valid(editor):
 		editor.debug_active = false
 		editor.debug_states.clear()
-		if editor.is_inside_tree():
+		if redraw and editor.is_inside_tree():
 			editor.draw_graph()

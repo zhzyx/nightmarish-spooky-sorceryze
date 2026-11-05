@@ -20,7 +20,9 @@ var revision := ""
 var baseline := {"nodes": {}, "edges": []}
 var draft := {"nodes": {}, "edges": []}
 var context := {}
+var answers := {}
 var positions := {}
+var auto_positions := {}
 var host_apply: Callable
 var canvas: GraphEdit
 var notice: Label
@@ -53,6 +55,13 @@ func _ready() -> void:
 	apply_button.text = "应用更改"
 	apply_button.pressed.connect(apply_draft)
 	toolbar.add_child(apply_button)
+	var arrange := Button.new()
+	arrange.text = "自动排布"
+	arrange.pressed.connect(func():
+		positions.clear()
+		draw_graph()
+		draft_changed.emit())
+	toolbar.add_child(arrange)
 	notice = Label.new()
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -62,6 +71,11 @@ func _ready() -> void:
 	canvas.name = "IssueCanvas"
 	canvas.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	canvas.right_disconnects = true
+	# Let our validator explain mismatches during hover, before GraphEdit accepts a drop.
+	canvas.add_valid_connection_type(0,1)
+	canvas.add_valid_connection_type(1,0)
+	canvas.connection_drag_started.connect(_mark_targets)
+	canvas.connection_drag_ended.connect(_reset_ports)
 	canvas.zoom_min = 0.16
 	canvas.zoom_max = 3.0
 	canvas.connection_request.connect(connect_ports)
@@ -92,6 +106,8 @@ func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_por
 	host_apply = apply_port
 	host_read = read_port
 	positions = {}
+	answers = {}
+	debug_models = {}
 	if is_node_ready():
 		draw_graph()
 
@@ -119,9 +135,18 @@ func _render_node(id: String, item: Dictionary) -> void:
 	view.name = id
 	view.title = item.title
 	view.tooltip_text = str(context.get("sources", {}).get(id, ""))
+	var tint: Color = {"text":Color("#375e72"),"image":Color("#655581"),"task":Color("#344f79"),"question":Color("#8a652b"),"join":Color("#37645e")}.get(item.kind,Color("#46515e"))
+	for style in ["titlebar","titlebar_selected"]:
+		var original := get_theme_stylebox(style,"GraphNode")
+		if original is StyleBoxFlat:
+			var colored := original.duplicate() as StyleBoxFlat
+			colored.bg_color = tint.lightened(0.10) if style.ends_with("selected") else tint
+			view.add_theme_stylebox_override(style,colored)
 	view.resizable = false
-	view.position_offset = positions.get(id, Vector2(50 + (canvas.get_child_count() % 4) * 300, 120))
-	view.position_offset_changed.connect(func(): positions[id] = view.position_offset)
+	view.position_offset = positions.get(id, auto_positions.get(id,menu_at))
+	view.dragged.connect(func(_from,to):
+		positions[id] = to
+		draft_changed.emit())
 	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
 	var accepts: bool = item.kind in ["task","join"]
 	var data_row := _label("输入数据   ◉   输出数据" if accepts else "输出数据   ◉")
@@ -145,6 +170,10 @@ func _render_node(id: String, item: Dictionary) -> void:
 	if item.kind == "question" and (debug_active or issue_id.begins_with("https://")):
 		var answer := TextEdit.new()
 		answer.placeholder_text = "你的答复"
+		answer.text = answers.get(id,"")
+		answer.text_changed.connect(func():
+			answers[id] = answer.text
+			draft_changed.emit())
 		answer.custom_minimum_size = Vector2(215,60)
 		view.add_child(answer)
 		var send := Button.new()
@@ -248,6 +277,32 @@ func set_image(id: String, image: Image) -> void:
 
 
 func draw_graph() -> void:
+	auto_positions.clear()
+	var counts := {}
+	var outgoing := {}
+	var depth := {}
+	for id in draft.nodes:
+		counts[id] = 0
+		outgoing[id] = []
+		depth[id] = 0
+	for edge in draft.edges:
+		if counts.has(edge.to) and outgoing.has(edge.from):
+			counts[edge.to] += 1
+			outgoing[edge.from].append(edge.to)
+	var ready := []
+	for id in counts:
+		if counts[id] == 0:
+			ready.append(id)
+	var cursor := 0
+	while cursor < ready.size():
+		var id = ready[cursor]
+		cursor += 1
+		var level: int = depth[id]
+		for next in outgoing[id]:
+			depth[next] = maxi(depth[next],level+1)
+			counts[next] -= 1
+			if counts[next] == 0:
+				ready.append(next)
 	canvas.clear_connections()
 	for child in canvas.get_children():
 		if child is GraphNode:
@@ -255,6 +310,33 @@ func draw_graph() -> void:
 			child.queue_free()
 	for id in draft.nodes:
 		_render_node(id, draft.nodes[id])
+	var widths := {}
+	var offsets := {}
+	var last := 0
+	for id in ready:
+		var level: int = depth[id]
+		if draft.nodes[id].kind == "join" and outgoing[id].is_empty() and level == 0:
+			continue
+		last = maxi(last,level)
+	for id in ready:
+		if draft.nodes[id].kind == "join" and outgoing[id].is_empty() and depth[id] == 0:
+			depth[id] = last + 1
+		var view := canvas.get_node(NodePath(str(id))) as GraphNode
+		var level: int = depth[id]
+		widths[level] = maxf(widths.get(level,0.0),view.get_combined_minimum_size().x)
+	var left := 55.0
+	for level in range(last+2):
+		offsets[level] = left
+		left += float(widths.get(level,0.0)) + 105.0
+	var heights := {}
+	for id in ready:
+		var view := canvas.get_node(NodePath(str(id))) as GraphNode
+		var level: int = depth[id]
+		var top: float = heights.get(level,65.0)
+		auto_positions[id] = Vector2(offsets[level],top)
+		if not positions.has(id):
+			view.position_offset = auto_positions[id]
+		heights[level] = top + maxf(view.size.y,view.get_combined_minimum_size().y) + 72.0
 	for edge in draft.edges:
 		_draw_edge(edge)
 
@@ -357,5 +439,30 @@ func set_debug_state(event: Dictionary) -> void:
 	debug_states[event.id] = event
 	var view := canvas.get_node_or_null(NodePath(str(event.id) + "/DebugState")) as Label
 	if view:
-		view.text = "调试 · " + str(event.state) + " " + str(event.get("model",""))
+		var labels := {"reserved":"已预留","running":"运行中","completed":"已完成","failed":"失败","waiting":"等待输入或证据","cancelled":"已取消","stopping":"正在停止"}
+		view.text = str(labels.get(event.state,event.state)) + (" · " + str(event.model) if event.has("model") else " · 调试")
 		view.tooltip_text = str(event.get("result",event.get("reason","")))
+
+func _mark_targets(start: StringName, port: int, output: bool) -> void:
+	for child in canvas.get_children():
+		if not child is GraphNode:
+			continue
+		var view := child as GraphNode
+		var count := view.get_input_port_count() if output else view.get_output_port_count()
+		for index in count:
+			var edge := _edge(start,port,view.name,index) if output else _edge(view.name,index,start,port)
+			var legal: bool = not edge.is_empty() and rules.edge_error(draft,edge,context)=="" and context.get("states",{}).get(edge.to,"") not in rules.ACTIVE
+			var color := Color("#91e7b8") if legal else Color("#646771")
+			if output:
+				view.set_slot_color_left(view.get_input_port_slot(index),color)
+			else:
+				view.set_slot_color_right(view.get_output_port_slot(index),color)
+
+
+func _reset_ports() -> void:
+	for child in canvas.get_children():
+		if child is GraphNode:
+			child.set_slot_color_left(0,DATA)
+			child.set_slot_color_right(0,DATA)
+			child.set_slot_color_left(1,AFTER)
+			child.set_slot_color_right(1,AFTER)

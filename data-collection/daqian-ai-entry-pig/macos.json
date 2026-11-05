@@ -1,0 +1,13 @@
+{
+  "request_id": "daqian-ai-entry-pig-20261105",
+  "issue_number": 127,
+  "platform": "macOS arm64",
+  "native_editor_sha256": "eda490e0cda13f1517abde38b661b15096bb7b84c0c9f8ff8057377d573a0f36",
+  "observation": "DAQIAN_AI_ENTRY_OK title=AI Chat color=9ee9eeff icon=(32.0, 32.0)",
+  "visual": "data-collection/daqian-ai-entry-pig/macos-entry.png",
+  "path_base": "repository_root",
+  "result": "native icon, text accent, tab order and chat input checked",
+  "windows": "pending",
+  "actual_model_calls": 0,
+  "shutdown_diagnostics": "GL/RID cleanup diagnostics after the UI check"
+}

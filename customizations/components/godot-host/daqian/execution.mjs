@@ -14,6 +14,10 @@ export async function dispatchGraph(event, issue, graph, host) {
       inputs.push(await host.readOutput(issue, e.from));
     }
     if (node.kind === 'join') {
+      if (!inputs.length) {
+        await host.needsAttention(issue, id, '待取得上游结果或独立验收证据');
+        continue;
+      }
       // This is a data join. The host still validates the issue revision and its required inputs.
       await host.join(issue, id, inputs, event.reference);
       continue;

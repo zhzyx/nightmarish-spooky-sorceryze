@@ -41,7 +41,10 @@ def main():
             env = os.environ.copy()
             for key in ['APPDATA', 'LOCALAPPDATA', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME']:
                 env[key] = str(project / key.lower())
-            for phase in ['initial', 'restart', 'second_restart']:
+            for phase in ['initial', 'pre_daqian_layout', 'restart']:
+                if phase == 'pre_daqian_layout':
+                    config = project / '.godot/editor/editor_layout.cfg'
+                    config.write_text(config.read_text(encoding='utf-8').replace(',DaqianMainScreen', ''), encoding='utf-8')
                 env['AI_CHAT_ORDER_PHASE'] = phase
                 result = subprocess.run([str(binary), '--headless', '--editor', '--path', str(project), '--script', 'res://order.gd'], env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
                 assert result.returncode == 0, result.stdout + result.stderr

@@ -4518,6 +4518,10 @@ void AIChatDock::_stop() {
 }
 
 void AIChatDock::_notification(int p_what) {
+	if (p_what == NOTIFICATION_READY || p_what == NOTIFICATION_THEME_CHANGED) {
+		const bool light_text = get_theme_color(SNAME("font_color"), SNAME("Label")).get_luminance() > 0.5f;
+		set_title_color(light_text ? Color::html("#9ee9ee") : Color::html("#763a80"));
+	}
 	if (p_what == NOTIFICATION_READY) {
 		_load_history();
 		_load_resume();
@@ -4597,7 +4601,8 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 AIChatDock::AIChatDock() {
 	set_name(TTRC("AI Chat"));
 	set_layout_key("AIChatMainScreen");
-	set_icon_name("Script");
+	set_icon_name("AIChatPig");
+	set_force_show_icon(true);
 	set_available_layouts(DOCK_LAYOUT_MAIN_SCREEN);
 	set_default_slot(DOCK_SLOT_MAIN_SCREEN);
 	EDITOR_DEF("ai_chat/endpoint", "https://api.openai.com/v1/chat/completions");

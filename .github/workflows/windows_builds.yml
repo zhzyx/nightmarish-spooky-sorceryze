@@ -129,6 +129,8 @@ jobs:
           python tests/editor/run_daqian_graph.py --scenario parallel --godot ${{ matrix.bin }} --report daqian-parallel.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node tests/editor/daqian_model_harness.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_daqian_graph.py --scenario entry --godot ${{ matrix.bin }} --report daqian-entry.json
 
       - name: Upload Daqian editor results
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only

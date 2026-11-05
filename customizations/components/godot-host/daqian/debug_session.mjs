@@ -59,12 +59,24 @@ function wake(reason) {
   queue=queue.then(async()=>{
     if (closed || !graph) return;
     const event={type:reason,reference:'fixture-event-'+ ++revision};
+    // A data input can itself have execution prerequisites. Release inputs in dependency order.
+    let advanced;
+    do {
+      advanced=false;
+      for (const [id,n] of Object.entries(graph.nodes)) {
+        if (!eligible(id) || !['text','image','question'].includes(n.kind)) continue;
+        if (graph.edges.some(e=>e.to===id && !accepted(e.from))) continue;
+        if (n.kind==='question') state(id,'waiting');
+        else {data.set(id,{kind:n.kind,value:n.value});state(id,'completed');}
+        advanced=true;
+      }
+    } while(advanced);
     const host={
       isAccepted:(_issue,id)=>accepted(id),isEligible:(_issue,id)=>eligible(id),
       readOutput:(_issue,id)=>data.get(id),requiredCapabilities:()=>[],
       scoredCatalog:()=>catalog,assignment:(_issue,id)=>({ticket:id,owner:'调试 Agent '+id,outcome:graph.nodes[id].title,
         acceptance:'receive fixture result',authorityRef:'synthetic_loopback',contextRefs:[id],reads:[],writes:[]}),
-      join:(_issue,id,inputs)=>{data.set(id,{kind:'result',value:inputs.map(x=>x.value).join('\n')});state(id,'completed',{result:data.get(id).value});},
+      join:(_issue,id,inputs)=>{data.set(id,{kind:'result',value:inputs.map(x=>x.value).join('\n')});state(id,'completed',{result:data.get(id).value});wake('execution.finished');},
       needsAttention:(_issue,id,why)=>state(id,'waiting',{reason:why}),
       sinanPorts:entries=>({
         withLock:fn=>fn(),inspect:()=>({snapshot:{ready:[...entries.keys()],items:[...entries.keys()].map(key=>({key,source:'local-fixture',dispatchCandidate:true})),
@@ -118,11 +130,6 @@ async function handle(cmd) {
     python=cmd.python;
     server=fixtureEndpoint();
     await new Promise((resolve,reject)=>server.once('error',reject).listen(0,'127.0.0.1',resolve));
-    for(const [id,n] of Object.entries(graph.nodes)) {
-      if(['image','text'].includes(n.kind)) {
-        data.set(id,{kind:n.kind,value:n.value});state(id,'completed');
-      } else if(n.kind==='question') state(id,'waiting');
-    }
     wake('user.requested');
   } else if(cmd.action==='answer' && graph?.nodes[cmd.id]?.kind==='question' && nodes.get(cmd.id)==='waiting') {
     data.set(cmd.id,{kind:'text',value:cmd.value});state(cmd.id,'completed');wake('decision.recorded');
