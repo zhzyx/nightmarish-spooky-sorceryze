@@ -34,7 +34,7 @@ def main():
         report['engine_sha256'] = sha(engine)
     (ROOT / 'bin').mkdir(exist_ok=True)
     try:
-        with tempfile.TemporaryDirectory(prefix='issue58-order-', dir=ROOT / 'bin') as directory:
+        with tempfile.TemporaryDirectory(prefix='issue58-order-', dir=ROOT / 'bin', ignore_cleanup_errors=os.name == 'nt') as directory:
             project = Path(directory)
             (project / 'project.godot').write_text('config_version=5\n[application]\nconfig/name="Tab Order Regression"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding='utf-8')
             shutil.copyfile(Path(__file__).with_name('ai_chat_tab_order.gd'), project / 'order.gd')

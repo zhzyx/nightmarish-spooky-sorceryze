@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -12,7 +13,7 @@ parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 args = parser.parse_args()
 binary = args.godot.resolve()
-with tempfile.TemporaryDirectory(prefix="daqian-editor-") as directory:
+with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory)
     (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Daqian graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
     shutil.copyfile(Path(__file__).with_name("daqian_graph.gd"), project / "test.gd")
