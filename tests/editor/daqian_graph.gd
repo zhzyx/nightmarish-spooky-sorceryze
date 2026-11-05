@@ -76,5 +76,21 @@ func run() -> void:
 	var edge = graph.draft.edges[0]
 	graph.disconnect_ports(edge.from,0,edge.to,0)
 	check(graph.draft.edges.size()==3,"removed protected connection")
+	var issues := []
+	for i in range(55):
+		var url := "https://github.com/fixture/board/issues/" + str(i+1)
+		issues.append({"number":i+1,"url":url,"title":"需求 " + str(i+1),"owners":["tester"],
+			"status":"in-progress","closed":false,"request":"test","updated":"fixture","decision":i==50,
+			"dependencies":[issues[i-1].url] if i>0 else [],"plan":{"nodes":{},"edges":[]}})
+	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
+	workspace._show_board()
+	check(workspace.overview.get_connection_list().size()==54,"historical dependency chain")
+	workspace.search.text = "#50"
+	workspace._filter_board()
+	check(workspace.overview.get_node("i_50").visible and not workspace.overview.get_node("i_5").visible,"large board search")
+	workspace._locate_pending(51)
+	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
+	workspace.board = {}
+	workspace._show_board()
 	print("DAQIAN_GRAPH_TEST ", "passed" if failures.is_empty() else failures)
 	quit(0 if failures.is_empty() else 1)

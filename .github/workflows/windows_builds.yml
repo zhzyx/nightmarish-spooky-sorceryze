@@ -116,6 +116,21 @@ jobs:
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
 
+      - name: Daqian native editor graph
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        run: |
+          python tests/editor/run_daqian_graph.py --godot bin/godot.windows.editor.x86_64.console.exe --report daqian-native.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.console.exe --report daqian-tabs.json
+
+      - name: Upload Daqian editor results
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        uses: actions/upload-artifact@v7
+        with:
+          name: daqian-windows-native
+          path: daqian-*.json
+          if-no-files-found: warn
+
   consultation-native:
     if: github.event_name == 'workflow_dispatch' && inputs.consultation_build_run != ''
     runs-on: windows-latest
