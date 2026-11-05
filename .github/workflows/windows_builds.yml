@@ -119,9 +119,9 @@ jobs:
       - name: Daqian native editor graph
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         run: |
-          python tests/editor/run_daqian_graph.py --godot bin/godot.windows.editor.x86_64.console.exe --report daqian-native.json
+          python tests/editor/run_daqian_graph.py --godot ${{ matrix.bin }} --report daqian-native.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.console.exe --report daqian-tabs.json
+          python tests/editor/run_ai_chat_tab_order.py --godot ${{ matrix.bin }} --report daqian-tabs.json
 
       - name: Upload Daqian editor results
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
