@@ -1,4 +1,24 @@
-# 接通 GitHub Issue 事件协调与 Hermes 数据交接，核销陈旧状态
+# 接通 GitHub Issue 事件协调与谛听数据交接，核销陈旧状态
+
+<!-- sinan:begin -->
+## 2026-11-05 父工单整体验收对账
+
+本次按用户“完成 #9”执行，在隔离工作副本固定 main `90d0b713d75102cea5214fbe1be3119a78ec388a`。产物为父级五项验收矩阵、当前来源接入元数据、真实新事件的接收／重放及共享消费证据、main 交付与工单回读。已交付的 #72/#90 是证据输入，父单仍逐项判断，不因子单关闭自动完成。
+
+现行范围以用户“谁操作，谁接收”及统一共工工作区的决定为准；下文 Olympus/Hermes、双工作区、固定 webhook 与旧来源待绑定状态保留为历史，不恢复旧运行链。当前操作者按真实事件显式调用，状态权威是 GitHub；通用框架旧 registry 与该次宿主 bindings 分别记录。
+
+本轮只改接入配置、文档和追加证据，不生成 Agent／Skill 定义，不修改冻结原件或既有批准。平台为当前 Windows / Python / Node；复用 main 中已绑定摘要的来源回调、原生执行及 Godot 代表链路证据，不重复模型调用或引擎编译。必要检查为本次真实 Issue/事件回读、同绑定重放、来源 inspect 与相关历史证据摘要对应、共享 analyze 指定记录读取、配置及引用检查、正式门禁、提交后采集核验、精确 CI 与 main 接收。五项验收及交付对账完成后关闭本单；未知保持未知。
+
+| 原验收 | 本轮核对与证据 |
+| --- | --- |
+| 真实来源、接收宿主、事件幂等，无时间触发 | 复用既有接收契约；事件35188179845首收false、同绑定重放true，原观察摘要未变；实际操作者已回读 |
+| 类别、状态、负责人、依赖、决策、执行回执映射，不重派 | 已合入的 issue_events.mapping / GitHubIssueSource 与 #90 实跑；本次真实快照已对账，接收器13项回归通过 |
+| 事件到本地进度、执行回执及 GitHub 回读贯通，父项单独判断 | #90 原生认领/start/ack/terminal 与 #72 编辑器链路证据复用；父项业务证据矩阵与远端#90 completed/main回读完成；最终Git送达仍pending，父#9未自动关闭 |
+| 修订当前元数据并保留历史，分清配置/排队/文件/Git/消费 | work-items.json 记录显式事件宿主范围，保留旧 registry 兼容字段；本次已观察configured、queued、recorded_file；消费单列，Git/main接收仍待发布核验 |
+| 同一共享分析入口的真实授权读取，覆盖及未知用量如实记录 | framework/extensions/diting-files/diting_files.py analyze；实际读取41条选定父项及依赖记录，canonical摘要匹配；不按事件数估算用量 |
+
+验收汇总保存到 `data-collection/issue9-final-acceptance-20261105.json`；路径以仓库根为解析基准。此处候选对账不等于已发布或已关闭。
+<!-- sinan:end -->
 
 工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9
 

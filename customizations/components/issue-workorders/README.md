@@ -100,3 +100,11 @@ python framework/extensions/diting-files/diting_files.py analyze --repo . --tena
 ```
 
 当前用户是本轮接收责任方，Codex 本聊天是授权执行上下文。首次实际调用为 idempotent=false，同绑定重放为 true。这落实单次来源接收契约，尚不表示司南 board 注册了 GitHub 来源、自动 start/ack 或全局事件覆盖。来源注册状态以实际 board 为准。
+
+## 当前来源与执行接入（#9 最终对账）
+
+上段是首次接收时的历史边界。已交付的 `github_source.mjs` 与 `../codex-dispatch/operator.mjs` 现可由当次操作者按 [宿主协议](../codex-dispatch/HOST_PROTOCOL.md) 显式绑定真实 GitHub 工单、共享安装认领和原生执行回执；#90 的真实 start/ack/terminal 与消费验收已合入 main。每次运行的 bindings 才是该次已注册来源集合，来源数、可读数和在途状态取自本次 inspect，不从配置文字推断已执行。
+
+`work-items.json` 的兼容字段 `sinan_source_registered=false` 仅指通用框架旧 registry，不表示当次操作者宿主未接通；`sinan_source_binding` 显式记录当前接入入口、范围和证据。单次 `issue_events.py` 仍只接收与关联，不自行派发，因此它的布尔观测不代表整个执行宿主状态。两条入口共享真实 Issue 身份与谛听来源，不能用全局 true 替代实际绑定、准入或调用回执。
+
+接收责任随当前操作者交接；事件 actor、assignee 与接收者分别保留。旧 envelope/receipt 不更改归属；实际读取、文件送达、Git/main 接收与指定记录消费各有独立证据。无新事件不调用，不新增全局监听、定时扫描或后台服务。历史 Olympus 来源只读沿用，当前新增记录统一写入 GongGong 数据集。

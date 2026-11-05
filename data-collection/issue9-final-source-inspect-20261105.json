@@ -1,0 +1,106 @@
+{
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "source_event_id": 35188179845,
+  "source_reference": "github:zhzyx/nightmarish-spooky-sorceryze:issue:9:event:35188179845",
+  "operator": {
+    "login": "Sail-Li",
+    "authentication": "Actual gh api user and source readback; not inferred from event actor or assignee"
+  },
+  "host_entry": "customizations/components/codex-dispatch/operator.mjs",
+  "host_action": "openSession -> host.inspect (read-only current event reconciliation)",
+  "bindings": [
+    {
+      "number": 9,
+      "requestId": "issue-event-data-loop-20261102"
+    },
+    {
+      "number": 90,
+      "requestId": "yanluo-issue-9-source-host-binding-20261105"
+    }
+  ],
+  "source_snapshot": {
+    "sourcesRegistered": 2,
+    "sourcesRead": 2,
+    "scope": "explicit_host_bindings_only",
+    "items": [
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "title": "接通 GitHub Issue 事件协调与谛听数据交接，核销陈旧状态",
+        "status": "status:in-review",
+        "lifecycle": "open",
+        "owner": [],
+        "dependsOn": [],
+        "dispatchCandidate": false,
+        "acceptanceValid": false,
+        "requestId": "issue-event-data-loop-20261102"
+      },
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+        "title": "接通 GitHub 来源真实认领、执行与报告宿主回执",
+        "status": "status:done",
+        "lifecycle": "closed",
+        "owner": [],
+        "dependsOn": [],
+        "dispatchCandidate": false,
+        "acceptanceValid": false,
+        "requestId": "yanluo-issue-9-source-host-binding-20261105"
+      }
+    ],
+    "sourceSnapshots": [
+      {
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "provider": "github_issues",
+        "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "requestId": "issue-event-data-loop-20261102",
+        "sha256": "111d67068bae67675c9ec18f500871c6b73d748d9771986e1d703a4161b6cd34"
+      },
+      {
+        "source": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+        "provider": "github_issues",
+        "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+        "requestId": "yanluo-issue-9-source-host-binding-20261105",
+        "sha256": "37f0d0d04073501ce044bcaf8183e41a107b65df659fc2640da61db3de39ee6b"
+      }
+    ],
+    "followUps": [
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#9:source-assessment",
+        "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#9",
+        "owner": "current_operator",
+        "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+        "status": "proposed",
+        "execution": "not_dispatched",
+        "nextAction": "Verify dependencies, admission and execution-host binding before dispatch"
+      },
+      {
+        "key": "github:zhzyx/nightmarish-spooky-sorceryze#90:source-assessment",
+        "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#90",
+        "owner": "current_operator",
+        "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+        "status": "proposed",
+        "execution": "not_dispatched",
+        "nextAction": "Verify dependencies, admission and execution-host binding before dispatch"
+      }
+    ],
+    "diagnostics": [],
+    "ready": []
+  },
+  "execution": {
+    "capacity": 0,
+    "models_started": 0,
+    "active_tickets": [],
+    "reason": "Parent closure reconciliation only; reuse actually delivered #90 worker evidence"
+  },
+  "legacy_registry": {
+    "path": "framework/modules/sinan/runtime/registry.json",
+    "registered": 0,
+    "meaning": "Separate default Yuanheng registry, not the explicit current-host binding count"
+  },
+  "metadata": "work-items.json describes legacy registry and per-event host binding separately",
+  "usage": null,
+  "usage_unknown_reason": "Read-only host reconciliation has no measured inference usage"
+}

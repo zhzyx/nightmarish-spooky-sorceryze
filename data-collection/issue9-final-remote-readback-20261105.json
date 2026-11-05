@@ -1,0 +1,32 @@
+{
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "observed_at": "2026-11-05T00:03:23.910967+00:00",
+  "parent": {
+    "number": 9,
+    "state": "open",
+    "updated_at": "2026-11-05T00:00:54Z",
+    "labels": [
+      "type:development",
+      "status:in-review",
+      "workspace:gonggong"
+    ]
+  },
+  "child": {
+    "number": 90,
+    "state": "closed",
+    "state_reason": "completed",
+    "updated_at": "2026-11-04T23:47:06Z",
+    "closed_at": "2026-11-04T23:47:05Z",
+    "labels": [
+      "type:development",
+      "status:done",
+      "workspace:gonggong"
+    ]
+  },
+  "remote_main": "90d0b713d75102cea5214fbe1be3119a78ec388a",
+  "remote_tree": "f0032ea78eede1267fa8b7e68cbe873a35226465",
+  "parent_not_auto_closed_after_child_completion": true,
+  "host_binding_evidence": "data-collection/issue90-sinan-host-acceptance-20261105.json"
+}

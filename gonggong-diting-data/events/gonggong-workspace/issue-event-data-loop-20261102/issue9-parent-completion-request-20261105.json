@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue9-parent-completion-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "request",
+  "occurred_at": "2026-11-05T00:03:23.939452+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "agent": {
+    "id": "codex-issue9-final-operator",
+    "version": "current-host",
+    "definition_sha256": "4a10cdb14fc8d4326d89f9981aad50bfb5242a9d8f4e1ff4de84778d4604829f",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "intent": "User requested completion of Issue9; reconcile all five parent acceptance criteria after Issue90 delivery",
+    "source_event_id": 35188179845,
+    "source_main": "90d0b713d75102cea5214fbe1be3119a78ec388a",
+    "scope": "Current operator explicit events; no global listener or migration of old receipts",
+    "usage": null,
+    "usage_unknown_reason": "Native host usage unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "afed7ca7438d1b3f9c28e2ffc52cda1794580173294eb7cd01badcb00530d0a9"
+}

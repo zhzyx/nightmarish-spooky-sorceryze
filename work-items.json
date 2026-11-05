@@ -21,5 +21,24 @@
   "invocation": "on_explicit_business_event",
   "time_based_invocation": false,
   "agent_activation_scope": "This Issue adapter does not activate framework Agents; actual pinned release admission is checked by current host.",
-  "tenant_id": "gonggong-workspace"
+  "tenant_id": "gonggong-workspace",
+  "sinan_source_registered_scope": "legacy_framework_registry_only",
+  "sinan_source_binding": {
+    "state": "verified_explicit_event_host",
+    "entry": "customizations/components/codex-dispatch/operator.mjs",
+    "source_adapter": "customizations/components/issue-workorders/github_source.mjs",
+    "protocol": "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+    "path_base": "repository_root",
+    "bindings": "actual_current_operator_private_config_per_invocation",
+    "scope": "current_operator_and_one_bound_shared_installation",
+    "standing_listener": false,
+    "time_based_invocation": false,
+    "global_github_cas": false,
+    "grants_authority": false,
+    "evidence": [
+      "data-collection/issue90-sinan-host-acceptance-20261105.json",
+      "data-collection/issue9-final-acceptance-20261105.json"
+    ],
+    "historical_registry_flag": "sinan_source_registered remains false for the legacy framework registry; not an execution-host readiness flag"
+  }
 }
