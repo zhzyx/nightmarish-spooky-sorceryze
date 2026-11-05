@@ -1,0 +1,69 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "related_request_id": "yanluo-issue-9-source-host-binding-20261105",
+  "path_base": "repository_root",
+  "ui": {
+    "actual_native_button": true,
+    "child_tabs": 3,
+    "batch_id": "51148-2987033",
+    "runner_receipt_sha256": "fc13ede45a46d119bd33f2f60bbdda4f9bf033dfeb5b693e3cd99a3dc7a49970"
+  },
+  "workers": [
+    {
+      "order": 1,
+      "requested_model": "gpt-6.1-sol",
+      "observed_model": null,
+      "pid": 32100,
+      "state": "review",
+      "exit_code": 0,
+      "functional_marker": "ISSUE90_MODEL_SELECTION_OK",
+      "source_read_command_verified": true,
+      "parent_issue_and_framework_gate": "passed before model startup; reportingPrepared persisted after successful trusted validators",
+      "extra_inner_intake": "reported failure under isolated child shell; not treated as passed; outer trusted gate remains authoritative",
+      "trace_sha256": "fadfb65ed682957a9db763d97781c560932fdf3aace5de65d52f364d8ceb5f1f",
+      "provider_usage_records": [
+        {
+          "input_tokens": 109280,
+          "cached_input_tokens": 100736,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 535,
+          "reasoning_output_tokens": 0
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "requested_model": "gpt-6.1-sol",
+      "observed_model": null,
+      "pid": 87028,
+      "state": "review",
+      "exit_code": 0,
+      "functional_marker": "ISSUE90_DISPATCH_RECEIPT_OK",
+      "source_read_command_verified": true,
+      "parent_issue_and_framework_gate": "passed before model startup; reportingPrepared persisted after successful trusted validators",
+      "extra_inner_intake": "reported failure under isolated child shell; not treated as passed; outer trusted gate remains authoritative",
+      "trace_sha256": "bfa6d3bc7737cce3b286ebdfa540b7c7c81a7d9ba8da0dfd2fdfa350f55a8cf2",
+      "provider_usage_records": [
+        {
+          "input_tokens": 138502,
+          "cached_input_tokens": 125824,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 590,
+          "reasoning_output_tokens": 0
+        }
+      ]
+    }
+  ],
+  "scope": "Actual built editor -> native button -> independent Node runner -> two Codex CLI processes -> real provider -> isolated file reads -> review receipts",
+  "models": "Current Godot file-read catalog only includes the model whose file-read capability was actually verified; native host separately verified two different requested models",
+  "acceptance": "passed for declared current-operator event scope",
+  "shutdown": "Headless debugger/RID cleanup diagnostics retained; no clean-shutdown claim",
+  "historical_failures": [
+    "initial never-approval policy prevented reads",
+    "mutually exclusive CLI flags failed before provider",
+    "isolated APPDATA hid GH login configuration; fixed by GH_CONFIG_DIR",
+    "Luna CLI file-read capability not established; not selected for filesystem jobs"
+  ],
+  "remaining": "Git commit/remote publication and explicit Diting consumer readback",
+  "receipt_semantics": "review is not automatic business acceptance; current host checked markers and actual command output"
+}

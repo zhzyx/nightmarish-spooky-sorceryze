@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "yanluo-precommit-20261105",
+  "issue_number": 79,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/79",
+  "kind": "issue_association_correction",
+  "prior_sources": [
+    "data-collection/yanluo-precommit-request.json",
+    "data-collection/yanluo-execution-handoff.json",
+    "data-collection/yanluo-host-readback.json"
+  ],
+  "events": [
+    "gonggong-diting-data/events/gonggong-workspace/yanluo-precommit-20261105/yanluo-request-20261105.json",
+    "gonggong-diting-data/events/gonggong-workspace/yanluo-precommit-20261105/yanluo-host-handoff-20261105.json"
+  ],
+  "trigger": "PR86 CI run41916087565 requires explicit top-level issue_number or issue_url plus request_id",
+  "correction": "Append explicit association fields without rewriting source evidence",
+  "actor": "codex-host:/root/yanluo",
+  "does_not_claim": [
+    "Diting consumed",
+    "standalone CLI deployed"
+  ]
+}

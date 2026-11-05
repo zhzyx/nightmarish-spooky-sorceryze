@@ -1,0 +1,969 @@
+{
+  "schema_version": 1,
+  "request_id": "yanluo-issue-audit-20261105",
+  "issue_number": 88,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/88",
+  "path_base": "repository_root",
+  "main_commit": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+  "snapshot_scope": {
+    "issues": 42,
+    "prs": 45,
+    "audit_issue_separate": 88
+  },
+  "pr_containment": [
+    {
+      "pr": 87,
+      "title": "定义子 Issue 独立交付和阎罗尾项结转规则",
+      "head": "9045f5899b8c3587dfd621b43d8c5a996550bcab",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        84
+      ],
+      "head_is_latest_main_ancestor": true,
+      "later_integration": {
+        "commit": "f6deb6cb75bd38b8ec3c1e71bf86d8b26cd1a06f",
+        "mode": "non-forced main integration of original PR87 content; initial PR snapshot retained"
+      }
+    },
+    {
+      "pr": 86,
+      "title": "阎罗：提交校验、main交付及剩余工作推进",
+      "head": "1835b4d119ef3a08f49e1dfcee1b481856727a82",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T21:37:48Z",
+      "merge_commit": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        79
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 82,
+      "title": "fix: integrate cleanup evidence and layout checks into main (#51)",
+      "head": "629e6aa81cca6b37f801e144e89e613e4261267c",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:55:18Z",
+      "merge_commit": "e7b217340281c0ce14511b7961959be72eeaa469",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        51
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 81,
+      "title": "fix(ai-chat): preserve read-only semantic tools in Codex consultation (#46)",
+      "head": "534cdaf16976fb3010752c66b71e232cf64975c0",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:53:26Z",
+      "merge_commit": "f4852d42530fb7c6bdfaef7485d4b7b7d4ddb5f9",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        46
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 80,
+      "title": "fix(codex): integrate preserved CLI exit diagnostics into main (#49)",
+      "head": "5002c78f13c1c817c83cd9b9cbe6cb7b5f7ae199",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:50:00Z",
+      "merge_commit": "5a6cfb12f28c6af5c7f3b7ede70dec973ffbbccc",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        49
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 78,
+      "title": "fix(ai-chat): integrate semantic controls and verified lifecycle fixes (#59)",
+      "head": "e79128a863ecb8c794edba920f437a947885e0df",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:33:02Z",
+      "merge_commit": "83754370c0b992d76291083b6654c076b4a1457d",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        59
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 77,
+      "title": "feat(ai-chat): enforce read-only Codex consultation (#46)",
+      "head": "b9d24d72a03efbb3ebba1a8ed2e2e65e1daff1d8",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        46
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 81,
+        "evidence": "只读Codex咨询兼容增量由534cdaf1/PR81整合，非原head直接祖先"
+      }
+    },
+    {
+      "pr": 76,
+      "title": "fix(codex): retain native request file until completion (#49)",
+      "head": "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        49
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 78,
+        "evidence": "请求文件寿命由PR78共同依赖整合，PR77父513317ff为927f5e3e的等树cherry-pick"
+      }
+    },
+    {
+      "pr": 75,
+      "title": "feat: add GitHub issue source callbacks for dispatch (#9)",
+      "head": "b8f0920bdf3ba90aa2819d60e0d8ed12934a2230",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:35:44Z",
+      "merge_commit": "48d6b51f4047151377eb61c412eedc885083401c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        9
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 74,
+      "title": "fix: bound semantic editor state after structured redaction (#59)",
+      "head": "e5d39a90a6e04ce55d1db47d5f90e1d9feb4829d",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        59
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 78,
+        "evidence": "有界状态与结构化脱敏组合候选由PR78整合"
+      }
+    },
+    {
+      "pr": 73,
+      "title": "fix: keep AI Chat HTTP cancellation responsive (#51)",
+      "head": "ead6f274192a215a7fc7c14cb9a3a29bbf209a11",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        51
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 78,
+        "evidence": "HTTP非阻塞取消由PR78整合"
+      }
+    },
+    {
+      "pr": 71,
+      "title": "feat(editor): add semantic AI Chat controls and target highlighting",
+      "head": "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        59
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 78,
+        "evidence": "语义控制基础经PR74组合后PR78整合，不重复计功能"
+      }
+    },
+    {
+      "pr": 70,
+      "title": "test(editor): validate AI Chat full-window layout restoration",
+      "head": "20fe0f289312698c25b5d517612f28d543fcceb6",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:42:08Z",
+      "merge_commit": "8cdda46ae194fc5a037e4f36adca0cd3e466169c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        52
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 69,
+      "title": "fix(editor): improve responsive AI Chat layout and Unicode titles",
+      "head": "3de42c792a405c1e41a55950d2150c87c2bf24ca",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:35:07Z",
+      "merge_commit": "dc1d676a0856315aa1674dd812c4609d12e7cd52",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        55,
+        56
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 68,
+      "title": "test(editor): verify AI Chat leftmost tab persists across restarts",
+      "head": "bc9e93b2546f6f0a406f6d2b1f2b41dad6f852c1",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:37:43Z",
+      "merge_commit": "88478d18d62c2a3c3e008674be14b51cce3b6313",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        58
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 67,
+      "title": "fix(igniter): coordinate runtime setup and engine approval windows",
+      "head": "b6bc5d378cb77138b6ea80723fb04da4b30557b9",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:37:20Z",
+      "merge_commit": "879d20f62c1bc7ed462a6a178938e3fdb521e71c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        47
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 66,
+      "title": "fix(codex): preserve failed CLI exit codes",
+      "head": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        49
+      ],
+      "head_is_latest_main_ancestor": false,
+      "content_integration": {
+        "pr": 80,
+        "evidence": "CLI退出诊断由5002c78f/PR80整合"
+      }
+    },
+    {
+      "pr": 65,
+      "title": "docs: bind issue event reception to the current operator",
+      "head": "97ccb511a8608e5e796e51499bae5270677ad32d",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:35:46Z",
+      "merge_commit": "97ccb511a8608e5e796e51499bae5270677ad32d",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        9
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 62,
+      "title": "fix(igniter): validate persisted runtime recovery for issue 47",
+      "head": "ec77261a18c7c75d9b4cf4f50cd27e13fbfa9ddd",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:36:08Z",
+      "merge_commit": "a3adb27d8a7b0c45e0cdc3f562428171ee694012",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        47
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 61,
+      "title": "fix: align distribution checks and bound ACP test cleanup",
+      "head": "e1570456bbe1bfe5c3f72a50bb653d24e191c397",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T20:55:20Z",
+      "merge_commit": "629e6aa81cca6b37f801e144e89e613e4261267c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        51
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 57,
+      "title": "修复聊天需求丢失并接入本地环境点火器",
+      "head": "a8fff44dad15fba36098552214e44eaadf3614da",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T16:40:35Z",
+      "merge_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        49
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 54,
+      "title": "Merge Codex CLI and GPT Responses chat into main",
+      "head": "d2a6c0ee42171ad5a9fef0ccd5e49598b2ce2be8",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-04T15:35:25Z",
+      "merge_commit": "11ea5b8179c37fe536a6eb18d33b489b7777fd25",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        53
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 45,
+      "title": "完成共工统一交付并修复私有采集状态的 Git 门禁",
+      "head": "4a266d05ecb44c60e014b04c50a1126527d4495c",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T22:20:05Z",
+      "merge_commit": "b123479a433efa96c2183aca6eea1da49781213c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        43
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 44,
+      "title": "统一共工框架并保留 Git、Godot 与采集子模块",
+      "head": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T21:40:19Z",
+      "merge_commit": "e6b9f5c8dad827af52a346f4b0342f30d2e2312f",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        43
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 42,
+      "title": "🤖 Sync GongGong 0.9.1 intake contract into Olympus",
+      "head": "9a950b7b7e8bf233cf279912dfc01056f944401b",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T19:32:21Z",
+      "merge_commit": "8bdb8c02ebbbfdcc40dcda95dfc4a5b89d1eaf18",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        41
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 40,
+      "title": "Finish CodeBuddy CLI lint follow-up",
+      "head": "569e504360b21760311a1f32e0133cf639c6bc90",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T18:13:58Z",
+      "merge_commit": "2f1c641a75f424ee2d97eb39d403b5e6f2e2fba4",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        39
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 38,
+      "title": "Record consultation delivery receipt",
+      "head": "8fb2d10e4154bd3ca708efacbe4dd6ccbf1ba57c",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T17:49:26Z",
+      "merge_commit": "5fa40b35ffc34ba3fb92a146516775cd2ed6d667",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 37,
+      "title": "Sync general Ariadne and Harmonia definitions into Olympus",
+      "head": "dd0f3db06c8f3bcf6debca5cf1d154ac1048f807",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T17:32:16Z",
+      "merge_commit": "813eff14207d69a262416512b90341520137b09c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        35
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 36,
+      "title": "Add read-only consultation mode to editor chat",
+      "head": "13145c087573d30838d122d1e5f45a16ddc2a495",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T17:44:45Z",
+      "merge_commit": "7c37c92afe60f9b69883fa1416632e58cd460e1b",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        32
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 34,
+      "title": "Sync approved Heqi 0.2.1 into Olympus as Harmonia",
+      "head": "fb51bd9bfd64ef82545da21bc31f0ac384483967",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T17:08:36Z",
+      "merge_commit": "cab56e6f78001717bd583fb045681056e05427ee",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        27
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 33,
+      "title": "docs: 记录 Athena 自动建单合入与安装回执 [skip ci]",
+      "head": "6691a4793c55f1b42217e5bd228873b8e00f88a2",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T16:31:11Z",
+      "merge_commit": "118a3a8ca5dce000606707c029b5d6121b0105a5",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 31,
+      "title": "记录 Issue #22 用户验收",
+      "head": "0e9ada13481041e6b8f36d1292fbf14460d3f0bc",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T16:03:44Z",
+      "merge_commit": "d17f023e9387b8653f18a4b15a536eb02e394c79",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 30,
+      "title": "feat(editor): 通过 Athena/Metis 自动整理需求并创建 Issue",
+      "head": "2ed9c397b95e6011c1963fe26ea8d42c84ff3a65",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T16:26:10Z",
+      "merge_commit": "aa3d5ac89291a0ef35793cb644e7a4317a42d700",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 29,
+      "title": "补交 Issue #22 PR #23 合入回执",
+      "head": "b86a0a8d9051eaa6c694968cb9835c44add0c762",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T15:56:50Z",
+      "merge_commit": "41fb0c08be3dcc7e0f222d75caae0d21687ed57c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        22
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 28,
+      "title": "Allow delivery when collection has no successful record",
+      "head": "b795645eccf63c17182a1846c2d472079cea7974",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T16:01:24Z",
+      "merge_commit": "593edc80e9762d0fa7f12322cad24fb4d4a09199",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        9
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 26,
+      "title": "Add Issue Git workflow intake submodule",
+      "head": "609f5db0a202d1639c517577e15a74b2299f949b",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T17:57:09Z",
+      "merge_commit": "54c7796d27cc54fff586bf72a10e8609a6ca67dc",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        9
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 23,
+      "title": "feat(editor): 未绑定工单时在 AI 会话内引导建单（含 gh 登录指引）",
+      "head": "9fcef31aa31fe10583a67a4969dcaa6f98257410",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T15:53:03Z",
+      "merge_commit": "adab2727af501ece729977ac88157023e9ddc407",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        22
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 21,
+      "title": "补交 Issue #6 模拟验收合入回执",
+      "head": "f447ca046d3661c7f7ce0353597ab448e6b526ab",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T06:55:41Z",
+      "merge_commit": "7c8358970303b5aa0b8846afcfcc3a58a2d05a61",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 20,
+      "title": "完成 Issue #6 模拟模型原生宿主验收",
+      "head": "e577a8cf26cb6342ae5b18a3d519e23082e90051",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-03T06:52:43Z",
+      "merge_commit": "d6b0ab40838eca9bfbec95781fdc074b6386b02c",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 19,
+      "title": "记录工作区合入验收与工单状态核销",
+      "head": "abda07cd978dd1f51b7a3b3399ead133c8a9c25d",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-02T21:12:34Z",
+      "merge_commit": "1fcf495d96bc965cce1ecac29687e80d7441789d",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        9
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 18,
+      "title": "补交 Issue 6 默认分支合入回执",
+      "head": "8b3100c355034a4f9bfdbbcc083d01f4f22a724a",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-02T21:05:20Z",
+      "merge_commit": "4a363ea083c402fc557633b2042248ea17326210",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        6
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 17,
+      "title": "整合 Olympus 执行范围与验证成本约束",
+      "head": "bd99c0d45a921dc673e6147a18842abb1416f3b4",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-02T21:07:41Z",
+      "merge_commit": "fbf0c2e942a8eaf344c8d5c68f1a982747fd128b",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        15
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 16,
+      "title": "为宿主绑定真实 Issue 并保护采集原件",
+      "head": "df03887786c13a822551751f11fe565376fef6b5",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-02T21:03:36Z",
+      "merge_commit": "0e2fe845e884fdd1683f1a8e9ceb1bcffc06f72f",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        6
+      ],
+      "head_is_latest_main_ancestor": true
+    },
+    {
+      "pr": 14,
+      "title": "宿主 Issue 非阻断协调与采集数据 Git 交付",
+      "head": "1300793addb5ee42dcc5f7a4850f104daa7405e1",
+      "head_is_main_ancestor": false,
+      "merged_at": null,
+      "merge_commit": null,
+      "merge_is_main_ancestor": null,
+      "associated_issues": [
+        6
+      ],
+      "head_is_latest_main_ancestor": false
+    },
+    {
+      "pr": 10,
+      "title": "同步共工0.4.2、修复Olympus独立运行并集成异步聊天与Issue门禁",
+      "head": "c3296b452183bdf8361ff5b9d1450d11e592ba12",
+      "head_is_main_ancestor": true,
+      "merged_at": "2026-11-02T20:17:53Z",
+      "merge_commit": "628ff28ab817311560114c8a01d44f36b46cb28b",
+      "merge_is_main_ancestor": true,
+      "associated_issues": [
+        6
+      ],
+      "head_is_latest_main_ancestor": true
+    }
+  ],
+  "local_branch_heads": [
+    {
+      "branch": "codex/advance-open-issues-20261105",
+      "head": "3de42c792a405c1e41a55950d2150c87c2bf24ca",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/cli-fixes-20261103",
+      "head": "569e504360b21760311a1f32e0133cf639c6bc90",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/core-agents-olympus-sync",
+      "head": "dd0f3db06c8f3bcf6debca5cf1d154ac1048f807",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/execution-efficiency-20261103",
+      "head": "1fcf495d96bc965cce1ecac29687e80d7441789d",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/finalize-workspace-issues-20261103",
+      "head": "1fcf495d96bc965cce1ecac29687e80d7441789d",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/fix-requirements-intake-49",
+      "head": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/gonggong-release-reconciliation-43",
+      "head": "4a266d05ecb44c60e014b04c50a1126527d4495c",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/gonggong-unification-43",
+      "head": "6088cbc5d1dc7295bb02e1ab5a26118b8bf33f66",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/heqi-olympus-sync",
+      "head": "fb51bd9bfd64ef82545da21bc31f0ac384483967",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue-gate-source-binding-20261105",
+      "head": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue-granularity-20261105",
+      "head": "9045f5899b8c3587dfd621b43d8c5a996550bcab",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue-intake-evidence-20261103",
+      "head": "1300793addb5ee42dcc5f7a4850f104daa7405e1",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue-workflow-publish",
+      "head": "1cadfb29eeb8ba4e86cf10f3159c495880aa3682",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue22-agent-intake-20261103",
+      "head": "2ed9c397b95e6011c1963fe26ea8d42c84ff3a65",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue22-agent-intake-receipt-20261104",
+      "head": "6691a4793c55f1b42217e5bd228873b8e00f88a2",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue32-consultation",
+      "head": "13145c087573d30838d122d1e5f45a16ddc2a495",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue32-delivery-receipt",
+      "head": "8fb2d10e4154bd3ca708efacbe4dd6ccbf1ba57c",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue41-gonggong-091-sync",
+      "head": "9a950b7b7e8bf233cf279912dfc01056f944401b",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue46-cli-consultation",
+      "head": "b9d24d72a03efbb3ebba1a8ed2e2e65e1daff1d8",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue46-evidence-20261105",
+      "head": "02e1ee9c754021db9139e63f8a81c3165730dbf3",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue46-main-compat-20261105",
+      "head": "534cdaf16976fb3010752c66b71e232cf64975c0",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue47-igniter-resume",
+      "head": "ec77261a18c7c75d9b4cf4f50cd27e13fbfa9ddd",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue47-modal-coordination",
+      "head": "b6bc5d378cb77138b6ea80723fb04da4b30557b9",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue49-main-integration",
+      "head": "5002c78f13c1c817c83cd9b9cbe6cb7b5f7ae199",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue49-real-chat",
+      "head": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue49-request-lifetime",
+      "head": "927f5e3e3d2498da39d3b7aafb2e97a7f2313776",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue51-http-cancel",
+      "head": "ead6f274192a215a7fc7c14cb9a3a29bbf209a11",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue51-pr61-main-integration",
+      "head": "629e6aa81cca6b37f801e144e89e613e4261267c",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue51-residue-deadlock",
+      "head": "e1570456bbe1bfe5c3f72a50bb653d24e191c397",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue52-validation",
+      "head": "20fe0f289312698c25b5d517612f28d543fcceb6",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue55-ai-chat-layout",
+      "head": "e776639fc84901199741b02fa6a0a98c461f118a",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue55-layout-regression",
+      "head": "b71a401bf79fc8cdc5ead9d0fc28661903f42e05",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue58-tab-order",
+      "head": "bc9e93b2546f6f0a406f6d2b1f2b41dad6f852c1",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue59-integrated-acceptance",
+      "head": "e79128a863ecb8c794edba920f437a947885e0df",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue59-semantic",
+      "head": "94b0cfb534c209436b18fd724c690bcdb3e55f1f",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue59-state-bounds",
+      "head": "e5d39a90a6e04ce55d1db47d5f90e1d9feb4829d",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/issue6-host-intake-release-20261103",
+      "head": "4a363ea083c402fc557633b2042248ea17326210",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue6-simulated-acceptance-20261103",
+      "head": "f447ca046d3661c7f7ce0353597ab448e6b526ab",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue7-ci-final-20261103",
+      "head": "628ff28ab817311560114c8a01d44f36b46cb28b",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue9-collection-followup",
+      "head": "b795645eccf63c17182a1846c2d472079cea7974",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue9-git-workflow",
+      "head": "609f5db0a202d1639c517577e15a74b2299f949b",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue9-github-source-adapter",
+      "head": "b8f0920bdf3ba90aa2819d60e0d8ed12934a2230",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/issue9-source-reconciliation",
+      "head": "97ccb511a8608e5e796e51499bae5270677ad32d",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/sinan-parallel",
+      "head": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/verification-efficiency-20261105",
+      "head": "3a79ade3cb67001b8155ca85d5d0ea0a37ad7e11",
+      "is_main_ancestor": false
+    },
+    {
+      "branch": "codex/yanluo-issue-audit-20261105",
+      "head": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "codex/yanluo-precommit",
+      "head": "1835b4d119ef3a08f49e1dfcee1b481856727a82",
+      "is_main_ancestor": true
+    },
+    {
+      "branch": "main",
+      "head": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+      "is_main_ancestor": true
+    }
+  ],
+  "latest_main": "f6deb6cb75bd38b8ec3c1e71bf86d8b26cd1a06f",
+  "main_drift": {
+    "from": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+    "to": "71ab6c2854e36531e220e668e5a284c801be9fd8",
+    "prs": [
+      89
+    ],
+    "issue": 85,
+    "affected": "verification implementation and framework metadata; no Godot source or #84 rule changes; #64 still requires kind=request",
+    "action": "fast-forward isolated audit branch; reuse unaffected business evidence; formal checks use new effective main framework"
+  },
+  "concurrent_prs": [
+    {
+      "pr": 89,
+      "head": "536465e4da59d3fe3c6fc94ff21beb37dfc10fce",
+      "merge_commit": "71ab6c2854e36531e220e668e5a284c801be9fd8",
+      "head_is_latest_main_ancestor": true,
+      "merge_is_latest_main_ancestor": true,
+      "associated_issues": [
+        85
+      ]
+    }
+  ],
+  "direct_issue_commits": {
+    "63": [
+      {
+        "commit": "c6445d3961f9de835b823a1529fd0a2d9f3ff478",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "52": [
+      {
+        "commit": "b90384289e583e8e40bcfe0c4515c28c5fdc4f0e",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "50": [
+      {
+        "commit": "a1b20fc7a0161b47f22ea91d3f01a55977a2b0a3",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "48": [
+      {
+        "commit": "044a6ca6e46a612ebd85a38186c5de53a0716132",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "5": [
+      {
+        "commit": "6a817ff0e6b5bc8f2621985ec8707792abe125bb",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "4": [
+      {
+        "commit": "84acc12364482686970f26cd3689b9e21a4d0ebd",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "3": [
+      {
+        "commit": "ea8b02bc14f62eda5fd828f23e9fc2850d80c687",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      },
+      {
+        "commit": "84acc12364482686970f26cd3689b9e21a4d0ebd",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "2": [
+      {
+        "commit": "6a817ff0e6b5bc8f2621985ec8707792abe125bb",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ],
+    "1": [
+      {
+        "commit": "66e21559cfc9d2d079081cae6a1912fb300fba90",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      },
+      {
+        "commit": "6a817ff0e6b5bc8f2621985ec8707792abe125bb",
+        "is_main_ancestor": true,
+        "association": "original Issue / closing receipt / scoped direct commit"
+      }
+    ]
+  },
+  "interpretation": "Ancestry describes exact commits only. Closed/unmerged PRs can be delivered through reviewed content integration/cherry-pick; mappings are explicit. Other worktree uncommitted changes are excluded.",
+  "rule_drift": {
+    "from": "71ab6c2854e36531e220e668e5a284c801be9fd8",
+    "to": "f6deb6cb75bd38b8ec3c1e71bf86d8b26cd1a06f",
+    "source": "PR87 content merged by f6deb6cb",
+    "reviewers": [
+      "/root",
+      "/root/yanluo"
+    ],
+    "finding": "Unknown business/parent acceptance blocks tail-transfer closure. Original9/47/51/52/56/63 remain open; no extra mass closure. #90-96 were linked followups at 71ab event, not claimed native sub-issues.",
+    "relationship_state": "linked_in_bodies_and_receipts; native_subissue_relationship_not_created_or_claimed"
+  }
+}

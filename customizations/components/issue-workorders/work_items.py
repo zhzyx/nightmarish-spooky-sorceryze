@@ -27,17 +27,47 @@ def read(path):
 
 
 class GitHubCommandError(ValueError):
-    def __init__(self, status=None):
+    def __init__(self, status=None, reason=None):
         self.http_status = status
-        super().__init__("GitHub command failed; check local gh login and repository access")
+        super().__init__(
+            reason
+            or (
+                "GITHUB_HTTP_" + str(status) + ": check repository access and API permissions"
+                if status
+                else "GITHUB_COMMAND: check local gh login and repository access"
+            )
+        )
 
 
 def gh(*args):
-    result = subprocess.run(
-        [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
-    )
+    try:
+        result = subprocess.run(
+            [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
+        )
+    except FileNotFoundError:
+        raise GitHubCommandError(
+            reason="GITHUB_RUNTIME: gh executable missing; set GONGGONG_GH to the authenticated host CLI"
+        ) from None
+    except subprocess.TimeoutExpired:
+        raise GitHubCommandError(
+            reason="GITHUB_TIMEOUT: request exceeded 120 seconds; read remote state before retrying a write"
+        ) from None
     if result.returncode:
         match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
+        if not match and any(
+            text in (result.stderr or "").lower()
+            for text in (
+                "error connecting",
+                "connection was reset",
+                "could not resolve",
+                "network is unreachable",
+                "connection refused",
+                "i/o timeout",
+            )
+        ):
+            raise GitHubCommandError(
+                reason="GITHUB_NETWORK: connection unavailable; check host network permissions and connectivity; Issue state is unknown"
+            )
         raise GitHubCommandError(int(match[1]) if match else None)
     return result.stdout.strip()
 
@@ -84,7 +114,15 @@ def labels(root, apply=False):
     return {"state": "labels_ensured", "count": len(definitions)}
 
 
-def issue(root, document, title, category, request_id, apply=False):
+def issue(root, document, title, category, request_id, apply=False, execution_authority_ref=None):
+    # Trace the caller's existing mandate; this is not a governance grant.
+    if execution_authority_ref is not None and (
+        not isinstance(execution_authority_ref, str)
+        or not execution_authority_ref.strip()
+        or any(ord(c) < 32 for c in execution_authority_ref)
+    ):
+        raise ValueError("Execution authority reference must be nonempty single-line text")
+    initial_status = "status:in-progress" if execution_authority_ref else "status:needs-decision"
     settings, definitions = config(root)
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
         raise ValueError("Invalid stable request ID")
@@ -97,11 +135,13 @@ def issue(root, document, title, category, request_id, apply=False):
         raise ValueError("A Markdown requirement in design-docs is required")
     marker = "<!-- gonggong-request:" + request_id + " -->"
     body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
+    if execution_authority_ref:
+        body += "\n\n执行授权来源（由调用宿主核实，不代替候选准入）：" + execution_authority_ref + "\n"
     plan = {
         "state": "planned",
         "repository": settings["repository"],
         "title": title,
-        "labels": [label, "status:needs-decision", "workspace:gonggong"],
+        "labels": [label, initial_status, "workspace:gonggong"],
         "request_id": request_id,
         "body": body,
     }
@@ -147,7 +187,7 @@ def issue(root, document, title, category, request_id, apply=False):
             "--label",
             label,
             "--label",
-            "status:needs-decision",
+            initial_status,
             # Host intake only accepts explicitly labeled GongGong work.
             "--label",
             "workspace:gonggong",
@@ -172,11 +212,20 @@ def collect(root, request_id):
     check = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=120)
     if check.returncode:
         raise ValueError("Diting validation failed; collection not published")
+    settings, _ = config(root)
+    issue_sources = set()
     events = []
     for path in sorted((root / "gonggong-diting-data/events").rglob("*.json")):
         raw = path.read_bytes()
         value = json.loads(raw)
         if value["request_id"] == request_id:
+            if value.get("kind") == "request" and value.get("tenant_id") == settings.get("tenant_id"):
+                source = value.get("source_ref", "")
+                repository = re.escape(settings["repository"])
+                match = re.fullmatch(r"https://github\.com/" + repository + r"/issues/([1-9][0-9]*)", source)
+                alternate = re.fullmatch(r"github:" + repository + r":issue:([1-9][0-9]*)", source)
+                if match or alternate:
+                    issue_sources.add(int((match or alternate)[1]))
             events.append({
                 "source": path.relative_to(root).as_posix(),
                 "sha256": hashlib.sha256(raw).hexdigest(),
@@ -186,6 +235,8 @@ def collect(root, request_id):
             })
     if not events:
         raise ValueError("No actual events for request; refusing empty success")
+    if len(issue_sources) > 1:
+        raise ValueError("Ambiguous request Issue sources; collection not published")
     result = {
         "schema_version": 1,
         "kind": "source_index",
@@ -197,6 +248,9 @@ def collect(root, request_id):
         "events": events,
         "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
     }
+    if issue_sources:
+        result["issue_number"] = next(iter(issue_sources))
+        result["issue_url"] = f"https://github.com/{settings['repository']}/issues/{result['issue_number']}"
     directory = root / "data-collection/requests" / request_id
     directory.mkdir(parents=True, exist_ok=True)
     destination = directory / (str(uuid.uuid4()) + ".json")
@@ -218,6 +272,7 @@ def main():
     create.add_argument("--type", required=True)
     create.add_argument("--request-id", required=True)
     create.add_argument("--apply", action="store_true")
+    create.add_argument("--execution-authority-ref", help="Existing user/host mandate verified by caller; not a grant")
     collection = sub.add_parser("collect")
     collection.add_argument("--request-id", required=True)
     args = parser.parse_args()
@@ -225,7 +280,9 @@ def main():
     if args.command == "labels":
         result = labels(root, args.apply)
     elif args.command == "issue":
-        result = issue(root, args.document, args.title, args.type, args.request_id, args.apply)
+        result = issue(
+            root, args.document, args.title, args.type, args.request_id, args.apply, args.execution_authority_ref
+        )
     else:
         result = collect(root, args.request_id)
     print(json.dumps(result, ensure_ascii=False, indent=2))

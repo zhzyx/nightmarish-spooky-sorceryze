@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue90-current-operator-live-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-9-source-host-binding-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T23:15:05.574438+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "77f8f7d110e31862f7e1a421cb2c1d1e5201f2a804a19fa1b3d593d19b714743",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "intent": "Issue72 integration of necessary Issue90 source host; current operator authenticated as Sail-Li; actual intake-only passed",
+    "scope": "One bound local installation, actual native claims and receipts; no global GitHub CAS",
+    "actual_native_worker": "/root/sinan_1babc5290a6c74ca",
+    "actual_result": {
+      "source_tests_passed": 8,
+      "failed": 0
+    },
+    "usage": null,
+    "usage_unknown_reason": "native tool usage unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "b5e7044f02be17c3245d444f71917d5802c00f4332563ba58d000c1567f8ffdb"
+}

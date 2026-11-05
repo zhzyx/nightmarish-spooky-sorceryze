@@ -1,0 +1,160 @@
+{
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "baseline": "90d0b713d75102cea5214fbe1be3119a78ec388a",
+  "recorded_at": "2026-11-05T00:06:56.446977+00:00",
+  "criteria": [
+    {
+      "id": "source-host-idempotency",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "data-collection/issue9-final-reception-20261105.json",
+          "sha256": "74860c2697fcb08769e3cd57d385fd8f6c1dd0f5d86fb45f41fef4d3dbe41006"
+        },
+        {
+          "path": "data-collection/issue9-final-source-inspect-20261105.json",
+          "sha256": "00e4e2ac112299408aadd27a05f21207345d8ea12ba2275ad2fb2e1e9e631f35"
+        }
+      ],
+      "result": "Actual current operator authenticated; real event first reception and immutable same-binding replay; per-event source registration; no timed invocation"
+    },
+    {
+      "id": "mapping-and-no-duplicate-dispatch",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "data-collection/issue9-final-reception-20261105.json",
+          "sha256": "74860c2697fcb08769e3cd57d385fd8f6c1dd0f5d86fb45f41fef4d3dbe41006"
+        },
+        {
+          "path": "data-collection/sinan-parallel-native-live-20261105.json",
+          "sha256": "eb03ddf6c971b19fafa82c1156d47906659d96ddad1142a32a62668c46f4f420"
+        }
+      ],
+      "result": "Category/status/assignees/explicit dependencies/decision flag mapped; operator separate from actor/assignee; existing native worker and terminal receipts reused; no workers launched for parent reconciliation"
+    },
+    {
+      "id": "representative-chain-and-parent-judgment",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "data-collection/issue9-final-remote-readback-20261105.json",
+          "sha256": "ec6bd5ce1fe7ec54b9d2848a17c89bfc6ce41db61f69ae00e7f008643bfc14a7"
+        },
+        {
+          "path": "data-collection/issue90-sinan-host-acceptance-20261105.json",
+          "sha256": "38595e63a2977059def4cc32c77517c807c5d5c14e79344c2a0cd24444db4ab4"
+        },
+        {
+          "path": "data-collection/sinan-parallel-godot-live-20261105.json",
+          "sha256": "7a417bddbbba4a06ffd0995e38a24ff8982ff91e8970d685cbda4e8f97974761"
+        }
+      ],
+      "result": "New parent event reached local receipt and source view; delivered dependency execution/terminal and GitHub completion read back; parent remained open until its own five-criterion review"
+    },
+    {
+      "id": "current-metadata-and-separated-delivery-states",
+      "status": "pending_final_delivery",
+      "evidence": [
+        {
+          "path": "work-items.json",
+          "sha256": "05859d8af80bbfb944bbf68009d6a73a2e742f5a154a491c1302c80d1edc8a6f"
+        },
+        {
+          "path": "data-collection/issue9-final-reporting-stages-20261105.json",
+          "sha256": "3ee839234e06833a5375cf8defda08f1f48e364c33c09b546707a722af0d3f08"
+        }
+      ],
+      "result": "Legacy empty framework registry distinguished from actual host bindings; configured/queued/file-delivered observed separately; old envelopes and receipts preserved; Git/main facts verified later"
+    },
+    {
+      "id": "actual-shared-consumer-read",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "data-collection/issue9-final-consumption-20261105.json",
+          "sha256": "2bf4a952721c0cef12d887367e96483bd7840ba12bc367a032c3db46d59921f4"
+        }
+      ],
+      "result": "Shared analyze actually read 41 selected parent/dependency records with matching canonical checksums; unknown inference usage retained as null"
+    }
+  ],
+  "passed": 4,
+  "total": 5,
+  "reused_inputs": [
+    {
+      "path": "customizations/components/issue-workorders/issue_events.py",
+      "sha256": "4a10cdb14fc8d4326d89f9981aad50bfb5242a9d8f4e1ff4de84778d4604829f",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "customizations/components/issue-workorders/github_source.mjs",
+      "sha256": "ec60cf10d4a43707c6905f0d3a0fc5d349283c1798e36ba5d1df6c115623af0f",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/operator.mjs",
+      "sha256": "77f8f7d110e31862f7e1a421cb2c1d1e5201f2a804a19fa1b3d593d19b714743",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.mjs",
+      "sha256": "e610d71831cbe759c459c8e9d2f8b0fe7eef688063aba77c8574ff268584ac26",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/native-bridge.mjs",
+      "sha256": "33a656a790a6462805e18f40fc49b30da6dbefe615c4b09c165f6bd215887888",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "0c6934d837d51d88dd80ab9dec930bd6987cb984a6f573a04f25ad9b6d03e730",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "data-collection/issue90-sinan-host-acceptance-20261105.json",
+      "sha256": "38595e63a2977059def4cc32c77517c807c5d5c14e79344c2a0cd24444db4ab4",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "data-collection/sinan-parallel-native-live-20261105.json",
+      "sha256": "eb03ddf6c971b19fafa82c1156d47906659d96ddad1142a32a62668c46f4f420",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "data-collection/sinan-parallel-godot-live-20261105.json",
+      "sha256": "7a417bddbbba4a06ffd0995e38a24ff8982ff91e8970d685cbda4e8f97974761",
+      "matches_delivered_baseline": true
+    },
+    {
+      "path": "data-collection/sinan-parallel-consumption-20261105.json",
+      "sha256": "0324a175a9781c4cb623410dc032ecfe3ea292f0d5b6f598412f319fa13e155b",
+      "matches_delivered_baseline": true
+    }
+  ],
+  "new_runtime_code": false,
+  "new_agent_or_skill_definition": false,
+  "local_receiver_regression": {
+    "passed": 13,
+    "failed": 0
+  },
+  "delivery": {
+    "kind": "source_and_parent_acceptance_records",
+    "commit": "pending",
+    "remote_main": "pending"
+  },
+  "limits": [
+    "Current operator and one bound installation only",
+    "No global GitHub CAS, standing webhook or timer",
+    "No new model/engine run; previous delivered runtime evidence explicitly reused",
+    "Prior inner-shell intake/headless cleanup limitations retained in original reports"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Host inference usage unavailable; no estimate from document or event counts",
+  "observation_phase": "candidate_before_final_git_main_delivery",
+  "business_and_candidate_evidence_coverage": "pass",
+  "remaining": "Final commit/main receipt required for criterion4, then authoritative parent closure; do not count this pending as completed"
+}

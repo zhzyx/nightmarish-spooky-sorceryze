@@ -1,0 +1,39 @@
+{
+  "approved_at": "2026-11-04T21:35:43.693836+00:00",
+  "approver_id": "user-current-chat",
+  "authority": "explicit_user_reply_to_exact_candidate_question",
+  "user_reply": "批准此候选并继续提交",
+  "candidate_manifest": "data-collection/verification-efficiency-candidate-20261105.json",
+  "path_base": "repository_root",
+  "candidate_manifest_sha256": "de39f873b2a7e6537e233c4b651b8fe5a344e1ef026ece899761a9d372a442f8",
+  "agent_candidates": {
+    "yanshi": {
+      "version": "0.4.0",
+      "candidate_digest": "9a6fe2b0ea866627f3ed515971452d9433dd151334f69d6a800c596df3c44d1c"
+    },
+    "kuafu": {
+      "version": "0.4.0",
+      "candidate_digest": "73a6f483dcc4e46751c2197709fc6727452e9d971f62a9968f0bff90cca7f603"
+    },
+    "diting": {
+      "version": "0.4.0",
+      "candidate_digest": "8254fe6fa8ec039e81096b1b36bba2f3abd3835a58d43d9fb1e3d1cefacf8e97"
+    },
+    "heqi": {
+      "version": "0.3.1",
+      "candidate_digest": "21738df5cea644fc025c8e5a848c49216a67db2603b9b58f5a013c00a8f4bd9b"
+    },
+    "sinan": {
+      "version": "0.1.1",
+      "candidate_digest": "4f3c7fedb65a1c4ddecdd317ee7a133c4431677a7a7e60c3e6339b87a84f74ae"
+    }
+  },
+  "scope": [
+    "local_agent_definition_only",
+    "formal_gate",
+    "isolated_task_branch_commit"
+  ],
+  "new_runtime_permissions_granted": false,
+  "other_worktree_changes_authorized": false,
+  "remote_publication_authorized": false
+}

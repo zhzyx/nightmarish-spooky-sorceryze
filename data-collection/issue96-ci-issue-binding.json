@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "yanluo-issue-64-closure-discrepancy-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96",
+  "recorded_at": "2026-11-04T22:28:07.325077+00:00",
+  "actor": "Codex /root/yanluo",
+  "corrects": "data-collection/issue96-gate-relaxation-cancellation.json",
+  "reason": "PR #98 association CI requires top-level exact Issue identity; original nested before.96 is preserved",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/yanluo-issue-64-closure-discrepancy-20261105/issue96-user-cancellation-20261105.json",
+  "validation": {
+    "previous_candidate": "0aee146d738e67f87287fa871f16ca83ce08a27e",
+    "formal_issue_gate": "local_checks_passed",
+    "committed_data": "1634 files/1513 records passed",
+    "check_delivery": "source local consistency passed",
+    "independent_review": "data-collection/issue96-cancellation-independent-review.json",
+    "new_scope": "Append explicit Issue binding metadata only; gate code and history unchanged"
+  },
+  "usage": null,
+  "sinan_consumed": null
+}

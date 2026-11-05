@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "coverage-issue52-windows-layout-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-chat-fill-window-20261104",
+  "kind": "coverage",
+  "occurred_at": "2026-11-04T18:31:39.460382+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/52",
+  "agent": {
+    "id": "codex-host",
+    "version": "gpt-6.1-sol",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "host-workspace-instructions"
+  },
+  "payload": {
+    "status": "windows_supplement_passed_macos_pending",
+    "source_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+    "path_base": "workspace_root",
+    "files_sha256": {
+      "tests/editor/run_issue52_layout_validation.py": "3f70b7d7070c8b57270862c83ab048c9237c5c6f279995a5f19c3606e2f11193",
+      "tests/editor/issue52_layout_validation.gd": "7a795d314c7d35f5b2755c0a246e4c88a5b9fc078d27c9f59e1d9cd6ebd52509",
+      "data-collection/issue52-windows-layout.json": "9d03b2f53859bdd69ba6b20b9ce5fbe3ab4e3c87bbad4afd1a3ac535f3a28f21",
+      "design-docs/ai-chat-fill-window-20261104.md": "1fee2d1a48af728b495fca43adc7d924aff277a3843359a572d33e7a8abe8f0f"
+    },
+    "actor_snapshot_note": "Codex host acting under root AGENTS.md; not a framework Agent activation or independent approval",
+    "scope": "Windows headless only: distraction-free, expanded bottom panel, persisted Dock splits; macOS and full visual acceptance pending",
+    "usage": null
+  },
+  "evidence_refs": [
+    "request-ai-chat-fill-window-20261104"
+  ],
+  "sha256": "4d21ab982865a13411af4fe3238b45dbbaba9b508a3a9c0c487524bc2df3e5ee"
+}

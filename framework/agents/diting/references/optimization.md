@@ -4,7 +4,7 @@
 
 | 层级 | 允许产物 | 采纳责任 |
 | --- | --- | --- |
-| feature/project/module/agent | reference 或 proposed optimization，绑定实际子 Agent 与相关工作 | 有效任务授权内由既有责任方实施，沿用共工审查、元衡评价和独立验证 |
+| feature/project/module/agent | reference 或 proposed optimization，绑定实际子 Agent 与相关工作 | 有效任务授权内由既有责任方实施；仅生成 Agent／skill 定义时按 specs/governance-review.md 进行共工审查与元衡评价并共用候选记录；普通优化沿业务验证与验收 |
 | framework/yuanheng | 仅 proposed reference；可写观察、假设、证据和待验证方向 | 仅用户另行明确指令可以启动相应调整；引用该指令、范围与版本进入原治理链 |
 | unknown | 待补证 reference | 不靠分类推断授权 |
 
@@ -15,3 +15,5 @@
 子 Agent 候选写清目标快照、需求和步骤、独立事件去重、错误／纠正与质量返工链、消耗及覆盖、反例和替代解释、最小改动、对照指标、验证责任与回退。不得只减少轮次或 token 而损害理解、必要确认或质量。框架／元衡参考可以保留相同证据，但没有执行动作和自动采纳状态。
 
 历史记录保存原快照，版本升级用映射查询，不能反写旧归因。改进成效依实际结果回链既有主记录，采纳与验证状态仍取自原责任系统。
+
+质量事件的职责与交接沿用框架根 specs/quality-responsibilities.md：谛听交付证据及归因假设，夸父复用后负责升级处置，治理评价引用同一证据。分析完成不增加一轮审查或批准，谛听不替代处置者或独立验证者。

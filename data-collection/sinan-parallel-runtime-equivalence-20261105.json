@@ -1,0 +1,74 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "path_base": "repository_root",
+  "verified_input_commit": "cbb5dc54",
+  "new_main_baseline": "c76f8988b928b9a38e53ff706f1d5108fcabf29f",
+  "runtime_files": [
+    {
+      "path": "customizations/components/codex-dispatch/adapter.mjs",
+      "sha256": "e610d71831cbe759c459c8e9d2f8b0fe7eef688063aba77c8574ff268584ac26",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/operator.mjs",
+      "sha256": "77f8f7d110e31862f7e1a421cb2c1d1e5201f2a804a19fa1b3d593d19b714743",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/native-bridge.mjs",
+      "sha256": "33a656a790a6462805e18f40fc49b30da6dbefe615c4b09c165f6bd215887888",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/report.py",
+      "sha256": "7c2843529f15cecc4748e0323132e33db0091a098d99876e759c09d40d52e2a5",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "customizations/components/codex-dispatch/session.mjs",
+      "sha256": "4d3a6f346909dcc984b381a06705263b9d5f1b544ab8d61d8cfbe4a6b9e20862",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "framework/modules/sinan/dispatch.mjs",
+      "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "0c6934d837d51d88dd80ab9dec930bd6987cb984a6f573a04f25ad9b6d03e730",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "tools/godot_parallel/report.py",
+      "sha256": "4a4591040f87351b4c19a9b2c871a8635a7426fd96922fa885e7c76df3ec16c9",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "5f8998f802d397f9fb6995eb221af109984e59a189be237e22982953c17804d9",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "de3ed505077783cdf9f7d4c499d5df2ed67b735733806c53871daa3b3308a6f1",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "a362b909e20ba81acc71e2a641d98946fa162397acfa5976c468d49c45861d08",
+      "equal_verified_cbb5dc54": true
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.h",
+      "sha256": "9b92a5a7ae42f8ffa9e7cf015b108a7b39cbdb5041b82194efa261e82c7f91c0",
+      "equal_verified_cbb5dc54": true
+    }
+  ],
+  "reused_evidence": [
+    "sinan-parallel-native-live-20261105.json",
+    "sinan-parallel-godot-live-20261105.json",
+    "sinan-parallel-editor-build-20261105.json"
+  ],
+  "scope": "Runtime source equality, not admission migration; new definition fingerprint pending separate approval"
+}

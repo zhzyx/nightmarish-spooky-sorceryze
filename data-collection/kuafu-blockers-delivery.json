@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "path_base": "framework",
+  "stage": "candidate",
+  "delivery_kind": "source",
+  "model_mode": "none",
+  "candidate": {
+    "repository": "..",
+    "commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+    "tree": "d910b29a4db02d7ec3356bb6c6938924f3d00442"
+  },
+  "dependencies": [],
+  "artifacts": [
+    {
+      "id": "customizations/components/issue-workorders/README.md",
+      "role": "source",
+      "path": "../customizations/components/issue-workorders/README.md",
+      "candidate_path": "customizations/components/issue-workorders/README.md",
+      "sha256": "30342b824a22612b5f27c4d73d5395e1738ef0ab202108451d3997effd665382",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "data-collection/kuafu-blockers-approval-event.json",
+      "role": "source",
+      "path": "../data-collection/kuafu-blockers-approval-event.json",
+      "candidate_path": "data-collection/kuafu-blockers-approval-event.json",
+      "sha256": "af1a6e9f84d389a24be457bd094b88d50a040b71c00a5476f4b6befeabac7c74",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "data-collection/kuafu-blockers-release-approval.json",
+      "role": "source",
+      "path": "../data-collection/kuafu-blockers-release-approval.json",
+      "candidate_path": "data-collection/kuafu-blockers-release-approval.json",
+      "sha256": "9b44ebeba628c5ec56a5eb323d3babbe1dd0487574d703cfbdbf79743fd1d02d",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "data-collection/kuafu-blockers-request-20261105.json",
+      "role": "source",
+      "path": "../data-collection/kuafu-blockers-request-20261105.json",
+      "candidate_path": "data-collection/kuafu-blockers-request-20261105.json",
+      "sha256": "1a0fa11dc4f918e0670a46c1281ee22e43fef565277c48493871c085ef72e438",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "design-docs/kuafu-blockers-20261105.md",
+      "role": "source",
+      "path": "../design-docs/kuafu-blockers-20261105.md",
+      "candidate_path": "design-docs/kuafu-blockers-20261105.md",
+      "sha256": "e844df4e227645fc3a5a1dd944c70c723fc2fc1725027b71658a182f6d719abf",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "design-docs/kuafu-blockers-review-20261105.md",
+      "role": "source",
+      "path": "../design-docs/kuafu-blockers-review-20261105.md",
+      "candidate_path": "design-docs/kuafu-blockers-review-20261105.md",
+      "sha256": "d2fca251447a4549ae6b8513489572ad73398cd85138409cbc65cf39e3f3ac57",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/README.md",
+      "role": "source",
+      "path": "../framework/README.md",
+      "candidate_path": "framework/README.md",
+      "sha256": "8a15807c5944fb95050044be3e67e73a8fb5db42eb343590b1b4c9eec2f96fbe",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/diting/agent.json",
+      "role": "source",
+      "path": "../framework/agents/diting/agent.json",
+      "candidate_path": "framework/agents/diting/agent.json",
+      "sha256": "2e310aac9e7f2bfa6dc0b3e23e456690559943fda6fd9fa84364666fd4d73b68",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/heqi/agent.json",
+      "role": "source",
+      "path": "../framework/agents/heqi/agent.json",
+      "candidate_path": "framework/agents/heqi/agent.json",
+      "sha256": "f72398beeb961b7bdff93ce84bfb3d1572d98023ea5c4d55f1b437f8ff0d9c3a",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/kuafu/AGENT.md",
+      "role": "source",
+      "path": "../framework/agents/kuafu/AGENT.md",
+      "candidate_path": "framework/agents/kuafu/AGENT.md",
+      "sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/kuafu/agent.json",
+      "role": "source",
+      "path": "../framework/agents/kuafu/agent.json",
+      "candidate_path": "framework/agents/kuafu/agent.json",
+      "sha256": "20116daf03c3e1a661649fcba104a1c21f75b75528946718df18cb87b29d8de1",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/kuafu/reporting.json",
+      "role": "source",
+      "path": "../framework/agents/kuafu/reporting.json",
+      "candidate_path": "framework/agents/kuafu/reporting.json",
+      "sha256": "e792ba476dcbcc0b8392d698412b19f81433c7e8d2f831216170b6573f5ec18f",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/sinan/agent.json",
+      "role": "source",
+      "path": "../framework/agents/sinan/agent.json",
+      "candidate_path": "framework/agents/sinan/agent.json",
+      "sha256": "6020813f55aa6da0a9571c7806032164972e60e04c91ccab6293b1747214ab40",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/agents/yanshi/agent.json",
+      "role": "source",
+      "path": "../framework/agents/yanshi/agent.json",
+      "candidate_path": "framework/agents/yanshi/agent.json",
+      "sha256": "d0f9daddcef3c5ce08931cff9f554749656439e89a1a851f75f5466a54312635",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/domains/quality/responsibility-map.json",
+      "role": "source",
+      "path": "../framework/domains/quality/responsibility-map.json",
+      "candidate_path": "framework/domains/quality/responsibility-map.json",
+      "sha256": "d92435119af3f067347e75ebbfc4175595655486d0bd3a7ccb0649044ed3e3eb",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/domains/quality/templates/质量事件与决策记录.md",
+      "role": "source",
+      "path": "../framework/domains/quality/templates/质量事件与决策记录.md",
+      "candidate_path": "framework/domains/quality/templates/质量事件与决策记录.md",
+      "sha256": "4430332ba795be35be3ff924703408f8cdbf136ceba7c40df88fd7e01b581a50",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/framework-manifest.json",
+      "role": "source",
+      "path": "../framework/framework-manifest.json",
+      "candidate_path": "framework/framework-manifest.json",
+      "sha256": "85a70e8f054803f1b1bfa79e198e0331640fe9d6262165d99d523c2bcdab347e",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/package-lock.json",
+      "role": "source",
+      "path": "../framework/package-lock.json",
+      "candidate_path": "framework/package-lock.json",
+      "sha256": "335fa2f1acc5ee38c5707b314b21fe8cb6b19238e8fb10d82a9deedcdb5c8237",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/diting-admission.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/diting-admission.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/diting-admission.json",
+      "sha256": "e972c140964be73de538c8f39d5b1f21a3a9621be693bae6f3b84c6a4ffe390e",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/heqi-admission.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/heqi-admission.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/heqi-admission.json",
+      "sha256": "dae3084f98e8698072bb44aac121c08d0b8df8d159dbd21b5503f1c2bf63a09c",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/independent-review.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/independent-review.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/independent-review.json",
+      "sha256": "756e5c975bc3353a7ed9d591c170f44593b21b71454112ab6e1461799f1db91d",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/kuafu-admission.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/kuafu-admission.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/kuafu-admission.json",
+      "sha256": "d0a4e10737dd58d7613f4a82fb17e4269aaba6a67b79f1281d440d99e14daa83",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/sinan-admission.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/sinan-admission.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/sinan-admission.json",
+      "sha256": "e52b5518f8ca400bb90b84aa322fec9a8ed290b895d9168ed86da92ef9d54a1b",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/user-approval.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/user-approval.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/user-approval.json",
+      "sha256": "9378e338e8da35bbceeedcfb324708bafd809a5986bb7096699e8b286405f60e",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/reviews/kuafu-blockers/yanshi-admission.json",
+      "role": "source",
+      "path": "../framework/reviews/kuafu-blockers/yanshi-admission.json",
+      "candidate_path": "framework/reviews/kuafu-blockers/yanshi-admission.json",
+      "sha256": "9e4ccb26a58db8533876f08286414d7815fdfb2f803190f80f36b38a334b0b9e",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/skills/kuafu/SKILL.md",
+      "role": "source",
+      "path": "../framework/skills/kuafu/SKILL.md",
+      "candidate_path": "framework/skills/kuafu/SKILL.md",
+      "sha256": "a3834ced0f541e823568e585ec55c9256c74721a5af8ab3267279607d1e6d966",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/skills/kuafu/reporting.json",
+      "role": "source",
+      "path": "../framework/skills/kuafu/reporting.json",
+      "candidate_path": "framework/skills/kuafu/reporting.json",
+      "sha256": "d5d961eae6cbfb076ee28696e361ffd3e9f8346a3673d1893b1a60fae75c3a9a",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/specs/data-feedback.md",
+      "role": "source",
+      "path": "../framework/specs/data-feedback.md",
+      "candidate_path": "framework/specs/data-feedback.md",
+      "sha256": "3652e7b5bfbd2857625735ab368ec92365192f7c648b588f5f5ed43e7adda050",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/specs/governance-review.md",
+      "role": "source",
+      "path": "../framework/specs/governance-review.md",
+      "candidate_path": "framework/specs/governance-review.md",
+      "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/specs/quality-responsibilities.md",
+      "role": "source",
+      "path": "../framework/specs/quality-responsibilities.md",
+      "candidate_path": "framework/specs/quality-responsibilities.md",
+      "sha256": "2d3876305a740d3dc6d2aebcf414895c62dbede46aed3337bbdda5eef3640905",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/specs/quality.md",
+      "role": "source",
+      "path": "../framework/specs/quality.md",
+      "candidate_path": "framework/specs/quality.md",
+      "sha256": "7abb98b64036f3556e71129009e1c78a3b020e896cf04614753f597496af352b",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "framework/specs/work-order-management.md",
+      "role": "source",
+      "path": "../framework/specs/work-order-management.md",
+      "candidate_path": "framework/specs/work-order-management.md",
+      "sha256": "4da69e8c83ffa93043f2c50def2cbbfafe3e0e45482b6d6f0da23f55066edd14",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-approval-20261105.json",
+      "role": "source",
+      "path": "../gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-approval-20261105.json",
+      "candidate_path": "gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-approval-20261105.json",
+      "sha256": "07cde9809a4e1511843780148e88e93006787764386a892a1dfecf6f7f485869",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    },
+    {
+      "id": "gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-request-20261105.json",
+      "role": "source",
+      "path": "../gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-request-20261105.json",
+      "candidate_path": "gonggong-diting-data/events/gonggong-workspace/kuafu-blockers-20261105/kuafu-blockers-request-20261105.json",
+      "sha256": "ad0eafeb4edc68066d5a8a0700feb1059d7ceb5e4199545166dc0145f80335a5",
+      "distribution": "GitHub repository checkout at d1afc3c0df4171586c278ffd0810210c08668b31"
+    }
+  ],
+  "validation": {
+    "source": {
+      "path": "../data-collection/kuafu-blockers-source-validation.json",
+      "sha256": "e3768374aafa42dc76859f6326923e750d25766b243aa85d4eda54a6ae91c83d"
+    }
+  },
+  "collection": {
+    "state": "configured",
+    "configured": {
+      "path": "../data-collection/kuafu-blockers-collection-validation.json",
+      "sha256": "6c0c0c2f757da0cf9e5ed132fd5cee41780cb44520fdc517bc109d04c48f40c7"
+    }
+  },
+  "publication": null
+}

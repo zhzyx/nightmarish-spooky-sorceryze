@@ -1,0 +1,43 @@
+{
+  "issue": 55,
+  "request_id": "requirement-eecb7c4b90c0c55a8cde516aac5472f2",
+  "recorded_at": "2026-11-04T16:26:19.409215+00:00",
+  "path_base": "repository_root",
+  "baseline_commit": "b123479a433efa96c2183aca6eea1da49781213c",
+  "source_sha256": "9c548fda93c155a01f61e2463b24193572072faa52e3f9f7f9210268ae7b8c5f",
+  "checks": {
+    "msvc_syntax": "passed",
+    "compiler": "MSVC 14.51.36231",
+    "mode": "/Zs /std:c++17 /permissive- /utf-8 /Zc:__cplusplus",
+    "defines": [
+      "WINDOWS_ENABLED",
+      "TOOLS_ENABLED",
+      "DEBUG_ENABLED",
+      "TYPED_METHOD_BIND",
+      "NOMINMAX"
+    ],
+    "include_roots": [
+      ".",
+      "D:/GongGong",
+      "D:/GongGong/platform/windows"
+    ],
+    "generated_header_fallback": "Existing main workspace generated headers; syntax validation only",
+    "diff_check": "passed",
+    "existing_signal_connections_preserved": true
+  },
+  "full_build": null,
+  "visual_acceptance": null,
+  "pending_reason": "SCons unavailable in discovered Python environments; candidate executable not built or visually inspected",
+  "committed": false,
+  "published": false,
+  "installation_switched": false,
+  "reporting": {
+    "configured": true,
+    "queued": false,
+    "delivered": false,
+    "consumed": false,
+    "reason": "No authenticated reporter host binding supplied"
+  },
+  "usage": null,
+  "usage_reason": "Host usage not supplied"
+}

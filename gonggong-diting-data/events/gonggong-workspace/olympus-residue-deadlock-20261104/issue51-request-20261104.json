@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-request-20261104",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "request",
+  "occurred_at": "2026-11-04T07:42:44.953468+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-root-issue51",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "User requested Olympus residue cleanup and current chain audit",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Usage not supplied; no estimate",
+    "production_admission": false,
+    "evidence_path": "data-collection/issue51-validation-summary.json",
+    "path_base": "repository_root"
+  },
+  "evidence_refs": [],
+  "sha256": "d42933a8c51fcdb4c75c29b5a100caa0dbf182ab88664d3cb1bad0c02bddd8bc"
+}

@@ -1,0 +1,35 @@
+{
+  "request_id": "verification-efficiency-20261105",
+  "issue": 85,
+  "path_base": "repository_root",
+  "tests": [
+    {
+      "command": "tools/test_verification_efficiency.py -v",
+      "passed": 11
+    },
+    {
+      "command": "tools/test_framework_verification_efficiency.py -v",
+      "passed": 4
+    },
+    {
+      "command": "unittest discover -s customizations/components/issue-workorders -p test_issue_gate.py -v",
+      "passed": 15
+    },
+    {
+      "command": "unittest discover -s customizations/components/issue-workorders -p test_host_intake.py -v",
+      "passed": 4
+    }
+  ],
+  "candidate_framework": "passed",
+  "formal_framework": "correctly_rejected_pending_approval",
+  "benchmark": "data-collection/verification-efficiency-benchmark-20261105.json",
+  "independent_review": "framework/reviews/verification-efficiency/independent-review.json",
+  "runtime_activated": false,
+  "git_committed": false,
+  "remote_published": false,
+  "token_usage": null,
+  "cost": null,
+  "snapshot_benchmark": "data-collection/verification-efficiency-snapshot-20261105.json",
+  "offline_distribution": "passed: 251 files, 24 Python, 13 JavaScript, 128 JSON",
+  "formal_gate": "executed; rejected pending exact candidate admission"
+}

@@ -1,0 +1,41 @@
+{
+  "user_statement": "批准发布启用",
+  "authority": "explicit_user_current_chat",
+  "recorded_at": "2026-11-05T00:35:01.922481+00:00",
+  "scope": "Reviewed Kuafu blocker definition and necessary current-main integration; local definitions, no new runtime privilege",
+  "reviewed_before_approval": {
+    "yanshi": "a4a9a4288c4ba47b967fadcb0fa154a3ff3123ad3f1fa8f9d025e77a228edf43",
+    "kuafu": "369b4eeabedf10b7f9aa79f2a73c506bbf393101854077b1f218563fc10184e0",
+    "diting": "f59911d5714cd988ad03d834359a278aaaa2f3981663260d8f5dab0bbd126913",
+    "heqi": "a6df5004f88ca1283855c9a5b5baa64f84fb460df77619d7954130f5fb0e8ee0",
+    "sinan": "5a80f1c4bb455561aa95f00d48b4c4c2b2b3c3835edb0f4d802067ef6b3208d0"
+  },
+  "integration_base": "5d199ee80be59739d8fc5e5cdc286486a20dda51",
+  "admitted_subjects": [
+    {
+      "id": "yanshi",
+      "version": "0.4.1",
+      "candidate_digest": "93e3844ee3eafd6cf032d71e68536e2484c2505aa3e58f88107dcba6e6cb6283"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.5.0",
+      "candidate_digest": "820d6cdc2a3fb4422c174a9ed329c0bc917227d5a052c47d98726c1d8b5832ac"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.1",
+      "candidate_digest": "f578a7a5b6f7aea1f0c7df3d618c347cbf8cca760b3499c87bf9520ba5366fb6"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.2",
+      "candidate_digest": "fbbfea6faeb5c560d433d4a1f680c30cc9f291a72daa1e73aea26a48be16e4a9"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.4",
+      "candidate_digest": "7ad67a941a60c41cc75287deca0d9127af11ed968fc9cf238df0a143cfe45b61"
+    }
+  ]
+}

@@ -1,0 +1,2596 @@
+{
+	"failures": [
+		"960 settings + attachments: clipped Send",
+		"960 settings + attachments: clipped Stop",
+		"960 settings + attachments: clipped ChatComposerPanel",
+		"960 switched session: clipped Send",
+		"960 switched session: clipped Stop",
+		"960 switched session: clipped ChatComposerPanel"
+	],
+	"samples": [
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						770.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						822.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						836.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						888.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 collapsed",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						561.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						160.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"rect": [
+						12.0,
+						543.0,
+						936.0,
+						292.0
+					],
+					"visible": [
+						936.0,
+						292.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						620.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						172.0
+					],
+					"visible": [
+						936.0,
+						172.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						767.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						50.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						767.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						50.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						770.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						822.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						836.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						888.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 settings",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						561.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						160.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"rect": [
+						12.0,
+						543.0,
+						936.0,
+						292.0
+					],
+					"visible": [
+						936.0,
+						292.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						620.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						172.0
+					],
+					"visible": [
+						936.0,
+						172.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						767.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						50.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						767.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						50.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						770.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						822.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						836.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						888.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 settings scrolled",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						561.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						160.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"rect": [
+						12.0,
+						543.0,
+						936.0,
+						292.0
+					],
+					"visible": [
+						936.0,
+						292.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						620.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						172.0
+					],
+					"visible": [
+						936.0,
+						172.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						767.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						50.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						767.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						50.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						934.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						934.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						1000.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						1000.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 settings + attachments",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						509.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						160.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						456.0
+					],
+					"rect": [
+						12.0,
+						491.0,
+						936.0,
+						456.0
+					],
+					"visible": [
+						936.0,
+						409.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						732.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						120.0
+					],
+					"visible": [
+						936.0,
+						120.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						879.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						21.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						879.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						21.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						456.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						934.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						934.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						940.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						940.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						1000.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						1000.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 switched session",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						509.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						208.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						456.0
+					],
+					"rect": [
+						12.0,
+						491.0,
+						936.0,
+						456.0
+					],
+					"visible": [
+						936.0,
+						409.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						732.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						120.0
+					],
+					"visible": [
+						936.0,
+						120.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						879.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						21.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						879.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						21.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						145.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						456.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						770.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						822.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						836.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						888.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 long response",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						561.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						208.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"rect": [
+						12.0,
+						543.0,
+						936.0,
+						292.0
+					],
+					"visible": [
+						936.0,
+						292.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						620.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						154.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						172.0
+					],
+					"visible": [
+						936.0,
+						172.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						767.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						50.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						767.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						50.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						154.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						297.0,
+						292.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		},
+		{
+			"ancestors": [
+				{
+					"class": "AIChatDock",
+					"minimum": [
+						574.0,
+						770.0
+					],
+					"name": "AI Chat",
+					"rect": [
+						6.0,
+						72.0,
+						948.0,
+						822.0
+					]
+				},
+				{
+					"class": "EditorMainScreen",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@EditorMainScreen@166",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@103",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VSplitContainer@102",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitCenter",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "@VBoxContainer@38",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockHSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "DockSplitContainer",
+					"minimum": [
+						574.0,
+						776.0
+					],
+					"name": "DockVSplitMain",
+					"rect": [
+						6.0,
+						66.0,
+						948.0,
+						828.0
+					]
+				},
+				{
+					"class": "VBoxContainer",
+					"minimum": [
+						872.0,
+						836.0
+					],
+					"name": "@VBoxContainer@16",
+					"rect": [
+						6.0,
+						6.0,
+						948.0,
+						888.0
+					]
+				},
+				{
+					"class": "Panel",
+					"minimum": [
+						0.0,
+						0.0
+					],
+					"name": "@Panel@14",
+					"rect": [
+						0.0,
+						0.0,
+						960.0,
+						900.0
+					]
+				}
+			],
+			"case": "960 sending",
+			"controls": {
+				"ActionRow": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						12.0,
+						308.0,
+						936.0,
+						45.0
+					],
+					"visible": [
+						936.0,
+						45.0
+					]
+				},
+				"AddImage": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						30.0,
+						561.0,
+						108.0,
+						50.0
+					],
+					"visible": [
+						108.0,
+						50.0
+					]
+				},
+				"AdvancedToggle": {
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"rect": [
+						145.0,
+						308.0,
+						113.0,
+						45.0
+					],
+					"visible": [
+						113.0,
+						45.0
+					]
+				},
+				"AgentTabs": {
+					"minimum": [
+						208.0,
+						51.0
+					],
+					"rect": [
+						12.0,
+						132.0,
+						896.0,
+						51.0
+					],
+					"visible": [
+						896.0,
+						51.0
+					]
+				},
+				"ChatComposerPanel": {
+					"minimum": [
+						339.0,
+						292.0
+					],
+					"rect": [
+						12.0,
+						543.0,
+						936.0,
+						292.0
+					],
+					"visible": [
+						936.0,
+						292.0
+					]
+				},
+				"ChatInput": {
+					"minimum": [
+						24.0,
+						138.0
+					],
+					"rect": [
+						30.0,
+						620.0,
+						900.0,
+						138.0
+					],
+					"visible": [
+						900.0,
+						138.0
+					]
+				},
+				"ChatScroll": {
+					"minimum": [
+						247.0,
+						120.0
+					],
+					"rect": [
+						12.0,
+						362.0,
+						936.0,
+						172.0
+					],
+					"visible": [
+						936.0,
+						172.0
+					]
+				},
+				"ModelPicker": {
+					"minimum": [
+						240.0,
+						50.0
+					],
+					"rect": [
+						510.0,
+						249.0,
+						324.0,
+						50.0
+					],
+					"visible": [
+						324.0,
+						50.0
+					]
+				},
+				"SelectorRow": {
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"rect": [
+						12.0,
+						249.0,
+						936.0,
+						50.0
+					],
+					"visible": [
+						936.0,
+						50.0
+					]
+				},
+				"Send": {
+					"minimum": [
+						108.0,
+						50.0
+					],
+					"rect": [
+						153.0,
+						767.0,
+						705.0,
+						50.0
+					],
+					"visible": [
+						705.0,
+						50.0
+					]
+				},
+				"Stop": {
+					"minimum": [
+						66.0,
+						50.0
+					],
+					"rect": [
+						864.0,
+						767.0,
+						66.0,
+						50.0
+					],
+					"visible": [
+						66.0,
+						50.0
+					]
+				}
+			},
+			"layout_children": [
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						468.0,
+						50.0
+					],
+					"name": "SelectorRow"
+				},
+				{
+					"class": "HFlowContainer",
+					"minimum": [
+						113.0,
+						45.0
+					],
+					"name": "ActionRow"
+				},
+				{
+					"class": "ScrollContainer",
+					"minimum": [
+						247.0,
+						120.0
+					],
+					"name": "ChatScroll"
+				},
+				{
+					"class": "PanelContainer",
+					"minimum": [
+						339.0,
+						292.0
+					],
+					"name": "ChatComposerPanel"
+				},
+				{
+					"class": "Label",
+					"minimum": [
+						25.0,
+						44.0
+					],
+					"name": "AIProgressStatus"
+				}
+			],
+			"window": [
+				960,
+				900
+			]
+		}
+	],
+	"scale": 1.5
+}

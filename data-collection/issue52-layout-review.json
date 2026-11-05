@@ -1,0 +1,20 @@
+{
+  "issue": 52,
+  "scope": "Windows supplementary tests and documentation only",
+  "reviewer": "independent subagent /root/review_issue52",
+  "author_is_reviewer": false,
+  "result": "passed_after_corrections",
+  "method": "Read-only code and existing run report review; no separate editor run",
+  "corrections": [
+    "Compare full split_offsets arrays including both DockHSplitMain offsets",
+    "Compare actual restored Dock offsets across processes, excluding center height affected by selected bottom panel",
+    "Reject non-Windows runner use until native configuration isolation is adapted"
+  ],
+  "verified_test_sha256": {
+    "run_issue52_layout_validation.py": "26a621e3f9712751923b9c074305e1989b658b12fd6c80f413800d80fcef8027",
+    "issue52_layout_validation.gd": "996b91452cfdb438501efc1b8035bb6c75eb4603d41eeb6b6a092e6421839000"
+  },
+  "unresolved": ["macOS target platform execution", "full visual and exact content width acceptance"],
+  "merge_approval": false,
+  "usage": null
+}

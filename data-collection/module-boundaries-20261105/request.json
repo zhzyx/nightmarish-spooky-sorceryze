@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "module-boundaries-20261105-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "module-boundaries-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-05T01:00:08.470076+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/111",
+  "agent": {
+    "id": "codex-host",
+    "version": "unreported",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "external_host_workspace_instructions"
+  },
+  "payload": {
+    "description": "User requested structure definitions only; explicitly authorized Issue creation. Intake passed; isolated documentation candidate prepared. No framework Agent instantiated.",
+    "definition_hash_scope": "repository AGENTS.md only; not host identity authentication",
+    "input_tokens": null,
+    "output_tokens": null,
+    "duration_ms": null,
+    "reason": "Host usage measurements unavailable",
+    "validation_ref": "data-collection/module-boundaries-20261105/validation.json"
+  },
+  "evidence_refs": []
+}

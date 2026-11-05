@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-coverage-20261104",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "coverage",
+  "occurred_at": "2026-11-04T07:46:11.677778+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-root-issue51",
+    "version": "20261104",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "Candidate Windows build, 17 native tests and 171 assertions passed; Unicode page verified and admitted fixture chat passed; remaining generic UI failures and unreproduced reported deadlock remain open.",
+    "evidence_path": "data-collection/issue51-candidate-verification.json",
+    "path_base": "repository_root",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Usage not supplied; no estimate"
+  },
+  "evidence_refs": [],
+  "sha256": "1226b89119420cb015e1043957e7d6742184e288b1bca221c436892f41a03585"
+}

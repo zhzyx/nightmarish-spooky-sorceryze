@@ -58,7 +58,45 @@
         "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
       },
       "display_name": "Godot 接入宿主"
+    },
+    {
+      "id": "yanluo",
+      "display_name": "阎罗",
+      "version": "0.1.2",
+      "path": "customizations/components/yanluo",
+      "path_base": "repository_root",
+      "ownership": "gonggong_customization",
+      "state": "candidate_pending_review",
+      "entry": "customizations/components/yanluo/AGENT.md",
+      "reporting": {
+        "profile": "customizations/components/yanluo/reporting.json",
+        "runtime_connected": false
+      },
+      "activation": false,
+      "rollback": "Stop candidate invocation; retain original owners until an acknowledged handoff; preserve evidence"
     }
   ],
-  "module_migration": "customizations/module-migration.json"
+  "module_migration": "customizations/module-migration.json",
+  "candidate_extensions": [
+    {
+      "id": "codex-dispatch",
+      "version": "0.1.0",
+      "path": "customizations/components/codex-dispatch",
+      "path_base": "repository_root",
+      "state": "candidate_pending_host_binding_and_admission",
+      "entry": "adapter.mjs",
+      "reporting": "source.report must invoke shared Diting; no global listener",
+      "runtime_connected": false
+    },
+    {
+      "id": "godot-parallel-dispatch",
+      "version": "0.1.0",
+      "path": "tools/godot_parallel",
+      "path_base": "repository_root",
+      "state": "candidate_pending_validation_and_admission",
+      "entry": "runner.mjs",
+      "reporting": "Existing Issue and Diting gates remain required; local process receipts are not Diting delivery",
+      "runtime_connected": false
+    }
+  ]
 }

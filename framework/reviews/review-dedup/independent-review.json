@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "path_base": "framework_root",
+  "reviewer_id": "/root/review_dedup",
+  "independence": "independent_subagent_review",
+  "reviewed_at": "2026-11-04T23:11:18.101668+00:00",
+  "base_commit": "78a47fb8daf02cc45769275f810517353d7e09e1",
+  "status": "pass",
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass",
+    "truth": "pass",
+    "economy": "pass",
+    "authority": "pass",
+    "adaptation": "pass",
+    "continuity": "pass"
+  },
+  "yuanheng_evidence": {
+    "purpose": "User clarified definition-generation-only review; active triggers and all five Agent entry points now agree.",
+    "truth": "Unknown runtime effects and pending release are not called successful deployment; evidence roles remain distinct.",
+    "economy": "Existing check IDs and evidence reused; no ordinary-request governance report, Diting approval or routine Kuafu gate introduced.",
+    "authority": "All Agents remain under Yuanheng; actual host authority and independent validation retained; no self-approval.",
+    "adaptation": "Scope is bounded to Agent/skill definitions; user instruction is retained and prior admissions remain untouched.",
+    "continuity": "Frozen foundation and upstream originals byte-identical to HEAD; business acceptance and delivery obligations retained."
+  },
+  "subjects": [
+    {
+      "id": "yanshi",
+      "version": "0.4.1",
+      "candidate_digest": "db448a24a0ef61ab5f460cbcf1491b4ef28fc7ec5f41d64d63af4136924dcddc"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.4.1",
+      "candidate_digest": "b7bfa58a00ff037227e4ec32b455f86c4ed89aa931950c7be2325adc4ab7d6b2"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.1",
+      "candidate_digest": "2580769a79c1f8a44eb7b22799927cd02f4ae5fca0d6b6a373b434009c22ecd3"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.2",
+      "candidate_digest": "77447c2037128078c55979381da73327a37909c11d4d4d05b3c88d1f822c68af"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.2",
+      "candidate_digest": "78ea11c7531f1d02e57cbe421d38d7b661f681e1ea84eee0489ca5196df5e9e7"
+    },
+    {
+      "id": "gonggong-check",
+      "version": "0.3.1",
+      "entry_sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
+    },
+    {
+      "id": "work-order-coordination",
+      "version": "0.4.2",
+      "entry_sha256": "083fd7c054af31d2b7b9dfdc83c4eea53a5cbb4b8b42035ec39244415003d348"
+    }
+  ],
+  "concision": {
+    "status": "pass",
+    "entry_characters": [
+      {
+        "path": "agents/yanshi/AGENT.md",
+        "before_characters": 893,
+        "after_characters": 971
+      },
+      {
+        "path": "agents/kuafu/AGENT.md",
+        "before_characters": 898,
+        "after_characters": 982
+      },
+      {
+        "path": "agents/diting/AGENT.md",
+        "before_characters": 713,
+        "after_characters": 741
+      },
+      {
+        "path": "agents/heqi/AGENT.md",
+        "before_characters": 894,
+        "after_characters": 919
+      },
+      {
+        "path": "agents/sinan/AGENT.md",
+        "before_characters": 869,
+        "after_characters": 894
+      },
+      {
+        "path": "skills/gonggong-check/SKILL.md",
+        "before_characters": 769,
+        "after_characters": 1135
+      },
+      {
+        "path": "skills/work-order-coordination/SKILL.md",
+        "before_characters": 2659,
+        "after_characters": 2756
+      }
+    ],
+    "rationale": "Small explicit scope clauses replace unconditional review entry points. Additional words disambiguate triggers and avoid recurring reviews; no numerical token/time savings claimed."
+  },
+  "validation": {
+    "candidate_verifier": "passed after metadata follow-up",
+    "reporting_profiles": {
+      "passed": true,
+      "count": 15,
+      "runtime_connected": false
+    },
+    "frozen_and_upstream_byte_comparison": "passed",
+    "agent_digests": "five recomputed and matched",
+    "quality_ownership": "passed",
+    "boundary_probes": [
+      "single authoritative check accepted",
+      "existing evidence reference accepted",
+      "same-identity duplicate execution rejected",
+      "Kuafu test-verdict execution rejected"
+    ],
+    "diff_whitespace": "passed",
+    "entry_and_scope_semantic_review": "passed"
+  },
+  "findings_resolved": [
+    {
+      "finding": "work-order-coordination 0.4.2 still pointed to 0.4.1 admission",
+      "resolution": "Fresh exact-version/entry-hash skill admission references created; historical approval preserved."
+    },
+    {
+      "finding": "agent and skill pending state needed reconciliation during approval finalization",
+      "resolution": "Agent states updated and all resulting digests independently recomputed; skill registry references updated. Actual pass decision and user approval are finalized by parent after this evidence."
+    }
+  ],
+  "unresolved": [],
+  "limitations": [
+    "This review is not an approval, host authorization, remote merge receipt or production execution proof.",
+    "Parent must finalize pending admission decisions using actual user authority and rerun formal gate before commit; no full test rerun required solely for evidence metadata."
+  ]
+}

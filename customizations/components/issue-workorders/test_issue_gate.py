@@ -81,7 +81,19 @@ class GateTests(unittest.TestCase):
             )
         for target, kwargs in (
             ("check_repository", {}),
-            ("git", {"return_value": b""}),
+            (
+                "git",
+                {
+                    "side_effect": lambda root, *args: (
+                        b"gonggong-diting-data/events/local/req-6/event.json\0"
+                        if args[:2] == ("ls-files", "-z")
+                        else b""
+                    )
+                },
+            ),
+            ("check_history", {}),
+            ("check_collection", {}),
+            ("check_pr_evidence", {"return_value": {"matching_event": True, "matching_collection": True}}),
             ("snapshot", {"return_value": "digest"}),
             ("environment", {"return_value": {}}),
             (
@@ -96,12 +108,12 @@ class GateTests(unittest.TestCase):
 
     def test_formal_gate_calls_existing_tools(self):
         self.setup_gate()
-        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]) as run:
+        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]) as run:
             result = gate.gate(self.root, 6, "req-6")
         self.assertNotIn("--candidate", run.call_args_list[0].args[0])
-        self.assertIn("validate", run.call_args_list[1].args[0])
-        self.assertIn("git-check", run.call_args_list[2].args[0])
-        self.assertNotIn("--require-committed", run.call_args_list[2].args[0])
+        self.assertEqual(run.call_count, 2)
+        self.assertIn("git-check", run.call_args_list[1].args[0])
+        self.assertNotIn("--require-committed", run.call_args_list[1].args[0])
         self.assertEqual(result["state"], "local_checks_passed")
         self.assertFalse(result["approval_granted"])
         self.assertFalse(result["diting_ingestion_confirmed"])
@@ -109,7 +121,7 @@ class GateTests(unittest.TestCase):
 
     def test_missing_collection_fails(self):
         self.setup_gate(events=False)
-        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]):
+        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]):
             with self.assertRaisesRegex(ValueError, "No actual Diting events"):
                 gate.gate(self.root, 6, "req-6")
 
@@ -119,7 +131,6 @@ class GateTests(unittest.TestCase):
             [ValueError("formal failure")],
             [{"mode": "candidate"}],
             [{"mode": "approved_file_integrity"}, ValueError("Diting failure")],
-            [{"mode": "approved_file_integrity"}, {}, ValueError("deleted history")],
         ):
             with self.subTest(outcome=outcome), patch.object(gate, "validate_command", side_effect=outcome):
                 with self.assertRaises(ValueError):
@@ -128,7 +139,7 @@ class GateTests(unittest.TestCase):
     def test_mutating_content_fails(self):
         self.setup_gate()
         with (
-            patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]),
+            patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]),
             patch.object(gate, "snapshot", side_effect=["before", "after"]),
         ):
             with self.assertRaisesRegex(ValueError, "changed during check"):
@@ -136,11 +147,11 @@ class GateTests(unittest.TestCase):
 
     def test_unstaged_content_or_untracked_event_fails(self):
         self.setup_gate()
-        for calls in ([ValueError("unstaged content")], [b"", b"", ValueError("event not staged")]):
+        for calls in ([ValueError("unstaged content")], [b"", ValueError("event not staged")]):
             with (
                 self.subTest(calls=calls),
                 patch.object(gate, "git", side_effect=calls),
-                patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]),
+                patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]),
             ):
                 with self.assertRaises(ValueError):
                     gate.gate(self.root, 6, "req-6")
@@ -158,12 +169,12 @@ class GateTests(unittest.TestCase):
             path.write_text(json.dumps({**original, **mutation}))
             with (
                 self.subTest(mutation=mutation),
-                patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]),
+                patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]),
             ):
                 with self.assertRaises(ValueError):
                     gate.gate(self.root, 6, "req-6")
         path.write_text(json.dumps({**original, "source_ref": "github:test/repo:issue:6"}))
-        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]):
+        with patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]):
             self.assertEqual(gate.gate(self.root, 6, "req-6")["state"], "local_checks_passed")
 
     def test_history_cannot_be_rewritten(self):
@@ -171,7 +182,7 @@ class GateTests(unittest.TestCase):
         path.parent.mkdir(parents=True)
         path.write_bytes(b"changed")
         name = path.relative_to(self.root).as_posix().encode()
-        with patch.object(gate, "git", side_effect=[name + b"\0", b"original"]):
+        with patch.dict(gate.BATCH, {"objects": lambda *args: {name: b"original"}}):
             with self.assertRaisesRegex(ValueError, "history must remain immutable"):
                 gate.check_history(self.root)
 
@@ -180,7 +191,7 @@ class GateTests(unittest.TestCase):
         updated = {**self.issue, "updated_at": "2026-11-02T02:00:00Z"}
         with (
             patch.object(gate.work_items, "gh", side_effect=[json.dumps(self.issue), json.dumps(updated)]),
-            patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}, {}]),
+            patch.object(gate, "validate_command", side_effect=[{"mode": "approved_file_integrity"}, {}]),
         ):
             with self.assertRaisesRegex(ValueError, "changed during check"):
                 gate.gate(self.root, 6, "req-6")

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "issue9-source-reconciliation-20261105-step",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-event-data-loop-20261102",
+  "kind": "step",
+  "occurred_at": "2026-11-04T17:34:01.234722+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "agent": {
+    "id": "codex-issue9-reconciliation",
+    "version": "20261105",
+    "origin": "explicit-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "scope": "Reconcile actual GitHub event and analyze evidence; investigate source adapter boundary",
+    "status": "candidate_evidence_only_external_host_blocked",
+    "evidence": "data-collection/issue9-source-reconciliation-20261105.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "518ca5801556ee2cc3517241b636ea3a4a71904b81b247bb17f018283d9fd824"
+}

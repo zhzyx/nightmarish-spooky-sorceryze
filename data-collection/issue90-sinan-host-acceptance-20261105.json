@@ -1,0 +1,37 @@
+{
+  "request_id": "yanluo-issue-9-source-host-binding-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/90",
+  "path_base": "repository_root",
+  "related_issue": 72,
+  "scope": "Current authenticated operator and bound shared installation, explicit events only; not global GitHub CAS",
+  "acceptance": [
+    {
+      "id": "identity-claims",
+      "status": "passed",
+      "evidence": "data-collection/sinan-parallel-native-live-20261105.json",
+      "details": "Authenticated Sail-Li, two bound actual Issue snapshots, shared claim persistence; independent-process conflict and stale revision tests passed"
+    },
+    {
+      "id": "start-ack-terminal",
+      "status": "passed",
+      "evidence": "data-collection/sinan-parallel-native-live-20261105.json",
+      "details": "Actual source claim, native workers, acknowledgement, Diting record and native terminal verification; active reservations released to zero"
+    },
+    {
+      "id": "representative-source-report",
+      "status": "passed",
+      "evidence": "data-collection/sinan-parallel-godot-live-20261105.json",
+      "details": "Real built editor to two isolated CLI model workers and successful source reads; review receipts independently accepted by current host"
+    },
+    {
+      "id": "consumer-readback",
+      "status": "passed",
+      "evidence": "data-collection/sinan-parallel-consumption-20261105.json",
+      "details": "Actual shared analyze read of 34 listed relevant canonical events"
+    }
+  ],
+  "source_event": "issue90-current-operator-live-request-20261105",
+  "publication": "Pending guarded main readback; closure only after receipt",
+  "usage": null,
+  "usage_unknown_reason": "Native host usage unavailable; measured CLI usage retained in its separate actual trace reports"
+}

@@ -1,0 +1,162 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "path_base": "repository_root",
+  "base_commit": "78a47fb8daf02cc45769275f810517353d7e09e1",
+  "implementation_digest": "a28d9ab15f131f48414949899266af7a65a53d7aad4167caa5e2beb96389e3f1",
+  "framework_digest": "dee11998394d4eb292c4b213ddfb5c638c85779fc1f29f2ef568ddaa31e788cb",
+  "files": [
+    {
+      "path": ".github/CONTRIBUTING.md",
+      "sha256": "a7101b1d19184d4a080d889583288cb8d611cf9d57fb38080e91d93f76c73f58"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "c7ca0537c72bb987183cd2c173f1be5e69903a4ccfde6ca3e6231a703d36e2ff"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+      "sha256": "35f830f2bb56eb0c81b0a031fe0679762999235b244db397ed58efccaae58dc0"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/README.md",
+      "sha256": "80b7fce78702efb5edf0bf5b33ef496d454a11aa776a87b13a52afa394df5f55"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.mjs",
+      "sha256": "e610d71831cbe759c459c8e9d2f8b0fe7eef688063aba77c8574ff268584ac26"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.test.mjs",
+      "sha256": "baee7b7bf346a88af5bc8835effb07224c2180ad193533980c428afd41a205ec"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/native-bridge.mjs",
+      "sha256": "33a656a790a6462805e18f40fc49b30da6dbefe615c4b09c165f6bd215887888"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/operator.mjs",
+      "sha256": "77f8f7d110e31862f7e1a421cb2c1d1e5201f2a804a19fa1b3d593d19b714743"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/operator.test.mjs",
+      "sha256": "a0f8f539e013a1ecdfc36f26179dab76703721e03a705a16e9e925f515f7f604"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/report.py",
+      "sha256": "7c2843529f15cecc4748e0323132e33db0091a098d99876e759c09d40d52e2a5"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/session.mjs",
+      "sha256": "4d3a6f346909dcc984b381a06705263b9d5f1b544ab8d61d8cfbe4a6b9e20862"
+    },
+    {
+      "path": "customizations/components/issue-workorders/README.md",
+      "sha256": "65f17c5fb14017cf1d72893b53930aeb3ca3ace230545e67b7f32c481ef34b68"
+    },
+    {
+      "path": "customizations/components/issue-workorders/execution-policy.md",
+      "sha256": "8103f90fb344db02f03f6888c901f306fe3f51b0ab6b6ce0a3e9955517e5f2ee"
+    },
+    {
+      "path": "customizations/components/issue-workorders/github_source.mjs",
+      "sha256": "ec60cf10d4a43707c6905f0d3a0fc5d349283c1798e36ba5d1df6c115623af0f"
+    },
+    {
+      "path": "customizations/components/issue-workorders/test_work_items.py",
+      "sha256": "29bbbb470f73b375ace56978a9c9ac9e55cee4bc0522171e1cdcfabc88e851d4"
+    },
+    {
+      "path": "customizations/components/issue-workorders/work_items.py",
+      "sha256": "fa14aa6bad617528fa8e2d47540f6d1e9f26523ddc5c9359ccfe2abc0a220229"
+    },
+    {
+      "path": "customizations/registry.json",
+      "sha256": "d351b5abcdd7fa778c622b2c39b796b91e0bfc50e2e0592676a34eef379392c1"
+    },
+    {
+      "path": "design-docs/sinan-parallel-20261105.md",
+      "sha256": "5c797e5756ab5bd9354cb886bf1ddd85eeabcefa1f685bba1fb175750868f6ef"
+    },
+    {
+      "path": "design-docs/yanluo-issue-64-closure-discrepancy-20261105.md",
+      "sha256": "77cc203b0238d5e595ba5fae4a4ee5be4fb9391b07333b8c743909190ebc1a4e"
+    },
+    {
+      "path": "design-docs/yanluo-issue-audit-20261105.md",
+      "sha256": "ca5250a11aa61ce0e8d97f73e8732e1841d0ae3e7cf1096c3eee9dd4c903db72"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "5f8998f802d397f9fb6995eb221af109984e59a189be237e22982953c17804d9"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "de3ed505077783cdf9f7d4c499d5df2ed67b735733806c53871daa3b3308a6f1"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "a362b909e20ba81acc71e2a641d98946fa162397acfa5976c468d49c45861d08"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.h",
+      "sha256": "9b92a5a7ae42f8ffa9e7cf015b108a7b39cbdb5041b82194efa261e82c7f91c0"
+    },
+    {
+      "path": "framework/agents/sinan/AGENT.md",
+      "sha256": "65c18a21a076c79e1e2c66840f12b51035cd9a22c4b13079a93568eae935e1a0"
+    },
+    {
+      "path": "framework/agents/sinan/agent.json",
+      "sha256": "7b7f4be5094fa6c6d78afcb681548a8dd739261931cc0ffde135454cccb8529d"
+    },
+    {
+      "path": "framework/agents/sinan/references/parallel-dispatch.md",
+      "sha256": "bd39d2497bc7cac5931cfdd122ba5c88a57802b40b4a88183d8d4f8d7914b1c7"
+    },
+    {
+      "path": "framework/agents/sinan/reporting.json",
+      "sha256": "31909df6824d3dfa574845e500e614c0991ba1f53372a7899be77543225e7532"
+    },
+    {
+      "path": "framework/framework-manifest.json",
+      "sha256": "18bb76ea8f113772e13b992cc64193ed8ad68d390b47ded6d59b2eb691e0fc36"
+    },
+    {
+      "path": "framework/modules/sinan/dispatch.mjs",
+      "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654"
+    },
+    {
+      "path": "framework/modules/sinan/module.json",
+      "sha256": "cb0e5ed3e70de62e02fe14e5a30467b883254e4dd097188adf364a0216506bb4"
+    },
+    {
+      "path": "framework/modules/sinan/test/dispatch.test.mjs",
+      "sha256": "04b3b9a700aad4d9e9e3d189f6b5f140d0799df6edbf6a2345d020e1469eec4a"
+    },
+    {
+      "path": "tests/editor/parallel_dispatch_editor_smoke.gd",
+      "sha256": "4ef07719deb156cca8b6466653896e87642b6300a940d965bc83a39523dc9932"
+    },
+    {
+      "path": "tests/editor/test_parallel_work_orders.mjs",
+      "sha256": "71cf565f243e99a03afd0fbff03d576a3c254325aad02dea71b5bc1238b7d9d5"
+    },
+    {
+      "path": "tools/godot_parallel/README.md",
+      "sha256": "50041100ef670a946a878270d14f4fe28bced062a1a8148c498f09dae522da74"
+    },
+    {
+      "path": "tools/godot_parallel/report.py",
+      "sha256": "4a4591040f87351b4c19a9b2c871a8635a7426fd96922fa885e7c76df3ec16c9"
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "ab3967fa6b73266a28ee07da72a5bd11daf6825fc8469480f046b9a09124edec"
+    }
+  ],
+  "excluded_administration": "Admission records/package inventory and later collection receipts only; not reviewed implementation",
+  "independent_review": "/root/integration_review",
+  "live_acceptance": "pending",
+  "admission": "pending_approval"
+}

@@ -1,5 +1,7 @@
 # 共工接入与定制
 
+核心与接入的细粒度职责、当前实现映射及新平台／工具按需扩展流程见 [接入子模块边界](module-boundaries.md)。该文档定义职责结构；逻辑子模块不等于已拆分的代码或已启用能力，现有 registry.json 与有效发布继续表示实际状态。
+
 当前只有共工一个框架。framework/ 保存核心 Agent、治理、协调、采集及现有配套实现；目录存在不代表业务能力属于核心。Git 与 Godot 接入由本目录 components/ 管理，registry.json 声明实际归属、依赖和验证状态。
 
 文件采集适配位于 framework/extensions/diting-files/，直接复用谛听规范，随唯一框架包完整性清单核验；不再存在双框架同步豁免。新事件写入 gonggong-diting-data/，旧 olympus-hermes-data/ 仅按原身份读取。所有模块必须具备真实采集绑定和代表任务回执，配置不等于接通。

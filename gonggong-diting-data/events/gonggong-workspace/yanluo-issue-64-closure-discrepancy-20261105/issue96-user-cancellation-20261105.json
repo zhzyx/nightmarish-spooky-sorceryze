@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue96-user-cancellation-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-64-closure-discrepancy-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T22:21:01.810331+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/96",
+  "agent": {
+    "id": "codex-root",
+    "version": "session-20261105",
+    "definition_sha256": "c7ca0537c72bb987183cd2c173f1be5e69903a4ccfde6ca3e6231a703d36e2ff",
+    "origin": "codex-host:/root; definition snapshot=repository AGENTS.md"
+  },
+  "payload": {
+    "description": "用户在 Codex 明确指示：“#96，撤销放宽门禁相关需求。清理并关闭相关内容”。",
+    "source": "data-collection/issue96-gate-relaxation-cancellation.json",
+    "decision": "cancel gate relaxation #64; resolve #96; retain kind=request",
+    "issue64_readback": "closed/not_planned/status:cancelled",
+    "repository_delivery": "pending this candidate",
+    "sinan_consumed": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "b3cd58f8a5dcdc1e72e1a115abfcd7cf4880f7cebe84a5a7ad13c600c339e0b4"
+}

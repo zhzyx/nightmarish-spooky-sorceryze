@@ -1,0 +1,25 @@
+{
+  "request_id": "review-dedup-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/101",
+  "issue_number": 101,
+  "path_base": "repository_root",
+  "source_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+  "evidence": [
+    {
+      "path": "data-collection/review-dedup-source-validation.json",
+      "sha256": "0892f9a795e6d65ea72e1ce25ba4897072bb856525e5370a18af39e8526630ff"
+    },
+    {
+      "path": "data-collection/review-dedup-delivery.json",
+      "sha256": "d5789a887d11d641cd3b56020b9c6608a177ec68726669edc23d25d9c53908a5"
+    },
+    {
+      "path": "framework/reviews/review-dedup/independent-review.json",
+      "sha256": "80ff0d53480c6c3237bb1015ae06c8a6d86c303c58c3eb8ff4b209816509842e"
+    }
+  ],
+  "correction": "CI requires explicit request_id and issue_url at collection envelope top level; original sources remain unchanged",
+  "failed_ci_run": 41932084033,
+  "production_effect_measured": false,
+  "consumed": null
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue59-integration-verification-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-semantic-control-mvp-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T20:11:18.074458+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+  "agent": {
+    "id": "codex-desktop-issue59",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "state": "in_progress",
+    "path_base": "repository_root",
+    "source": "data-collection/issue59-integration-source-20261105.json",
+    "evidence": "data-collection/issue59-integration-validation-20261105.json",
+    "result": "Native offline Codex editor and Stop signal checks passed; visible click unexecuted due tool activation failure; business/admission pending coordinator",
+    "usage": null,
+    "usage_unknown_reason": "Host measured usage unavailable"
+  },
+  "evidence_refs": [
+    "issue59-bounds-correction-20261105"
+  ],
+  "sha256": "1b3bed94783c1a4e577035455fa9945009a9ac2685c8bfe289ffab173fe806e8"
+}

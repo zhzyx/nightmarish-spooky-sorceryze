@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "verification-efficiency-validation-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "verification-efficiency-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T21:36:12.824739+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/85",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "state": "validated_pending_commit",
+    "tests_passed": 34,
+    "independent_review": "passed",
+    "formal_framework": "approved_file_integrity",
+    "offline_distribution": "passed",
+    "candidate_manifest_sha256": "de39f873b2a7e6537e233c4b651b8fe5a344e1ef026ece899761a9d372a442f8",
+    "benchmark_ref": "data-collection/verification-efficiency-benchmark-20261105.json",
+    "snapshot_ref": "data-collection/verification-efficiency-snapshot-20261105.json",
+    "issue_update": "auto_review_rejected_not_executed",
+    "usage": null,
+    "usage_unknown_reason": "host did not provide usage totals"
+  },
+  "evidence_refs": [
+    "verification-efficiency-request-20261105"
+  ]
+}

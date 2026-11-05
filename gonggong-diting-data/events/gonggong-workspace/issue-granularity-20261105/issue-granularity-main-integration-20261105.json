@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-granularity-main-integration-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-granularity-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T21:56:17.702642+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/84",
+  "agent": {
+    "id": "codex-main-reconcile",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "c7ca0537c72bb987183cd2c173f1be5e69903a4ccfde6ca3e6231a703d36e2ff"
+  },
+  "payload": {
+    "state": "integration_reviewed_pending_formal_gate",
+    "source_commit": "9045f5899b8c3587dfd621b43d8c5a996550bcab",
+    "expected_main": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+    "scope": "documentation_and_templates",
+    "authorization": "current user requested merge and Git synchronization",
+    "review": "Retain both responsibility and lifecycle entries; completion differs from transfer; automatic adapter limits explicit",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "eb6f0a91f52e259bc626e909e05d686df319deb1dd605e45571135817da4ec09"
+}

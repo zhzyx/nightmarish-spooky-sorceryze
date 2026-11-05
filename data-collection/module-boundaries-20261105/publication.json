@@ -1,0 +1,31 @@
+{
+  "request_id": "module-boundaries-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/111",
+  "path_base": "repository_root",
+  "event": "release.completed",
+  "read_at": "2026-11-05T01:12:25.018648+00:00",
+  "main_commit": "a4713d69e571935f6b66292a62b01b53a296e863",
+  "tree": "b550b40ca8e62451c46df31bd54add82cc50f51e",
+  "pr": {
+    "mergeCommit": {
+      "oid": "a4713d69e571935f6b66292a62b01b53a296e863"
+    },
+    "mergedAt": "2026-11-05T01:11:09Z",
+    "state": "MERGED",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/112"
+  },
+  "ci": [
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/41946620081/job/126980328966",
+      "name": "issue-association",
+      "state": "SUCCESS"
+    }
+  ],
+  "delivery_consistency": "passed for exact commit",
+  "formal_issue_gate": "passed",
+  "committed_data": "passed",
+  "acceptance": "all requested structure definitions complete; runtime/platform implementation excluded by user",
+  "publication_scope": "definition source only",
+  "consumption": "not_claimed",
+  "receipt_commit": "This record follows the source commit; its own Git receipt is verified separately"
+}

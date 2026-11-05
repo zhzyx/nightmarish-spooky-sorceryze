@@ -1,9 +1,13 @@
 # GongGong 仓库协作入口
 
+设计定版后按 [父子 Issue 与尾项结转规则](../customizations/components/issue-workorders/issue-lifecycle.md) 拆分：子项独立提交、验收和关闭，父项逐项核对后关闭。阎罗合入时审查少量尾项，完整承接并留存文档映射后可结转关闭旧单。
+
 
 本约定适用于本仓库的所有贡献者：人工、IDE/CLI/引擎宿主、Agent、外部协作者；覆盖需求、设计、开发、缺陷、研究、测试、文档、维护及资产。技术细节沿用根目录 CONTRIBUTING.md 的 Godot 指南；本仓库分支及治理以本入口为准。
 
 任务开始与范围变更遵循 [执行范围与验证成本](../customizations/components/issue-workorders/execution-policy.md)，在原需求文档记录最小验证计划、证据复用依据和完成条件；不另造状态账本。
+
+用户明确要求创建并完成需求时，按该策略连续推进到提交、合入、交付回读和全部已验收关联工单关闭；已有授权不在实现、审查、推送或合入阶段重复询问。只有实际必要决定、权限/准入缺失或范围变化才挂起相应操作。正常流程不以“等待用户说继续”作为阶段出口；真实候选批准与独立审查仍须满足。
 
 宿主开发必须在开发模型/生产工具执行前回读同仓库真实 Issue，校验稳定需求 ID、租户、类别、有效执行状态和 workspace:gonggong；查询失败即停止。Godot GongGong 页面填写 Issue 编号和稳定 ID，其他宿主使用 issue-workorders 的 intake-only 契约。data-collection 中的真实来源、证据和回执与 gonggong-diting-data 文件事件均为本次需求必须提交的产物；代码提交不能替代数据交付。普通引擎会话先由现有 Yanshi／ClarifyFeature 受限整理需求并自动建单或更新原单；该阶段只允许需求文档与 Issue 跟踪，不开放开发或生产工具，恢复开发仍须真实工单回读。见 [当前需求入口协议](../customizations/components/godot-host/HOST_PROTOCOL.md)。提交前检查 index，提交后检查 HEAD；禁止删除原始采集历史，纠正追加记录。
 
@@ -11,7 +15,7 @@
 2. 加载 `framework/AGENTS.md` 与职责相关入口；框架审查复用 GonggongCheck/Yuanheng，实际身份权限由宿主决定。已有有效源保持绑定；上游升级另建候选并完整同步，禁止修改旧批准以跳过检查。冻结框架和 Diting 原件规则继续生效。
 3. 开始实际工作时将工单置为 `status:in-progress` 并写执行责任及范围。独立任务并发，冲突文件单一写入，必要审查独立；不用额外完整历史或重复审查。开始、状态、依赖、决策、执行回执等真实事件触发一次跟进，无 cron、轮询或延时唤醒。
 4. 需求文档放 `design-docs/` 并与 Issue 互链；实际事件调用已有 Diting 文件入口写入 `gonggong-diting-data/`，来源/验证证据放 `data-collection/`。提交前执行组件 README 中的 Issue 门禁及适用业务测试。把记录、Git 提交、远程发布、谛听消费分别记账；未测用量留 null。
-5. PR 面向仓库实际默认分支，填写 `.github/PULL_REQUEST_TEMPLATE.md`，关联同仓库 Issue。提交精确候选、实际检查结果及所需独立审查；仍未验收时用 `Refs`，不要写自动关闭关键字。候选有修改时仅重验受影响部分。
+5. 本地必要验证通过后，在同次任务中自动开始正式门禁、提交、提交后核验、推送及 main 合入推进，无需用户再次催促；具体执行与真实阻塞处理见执行策略“本地验证通过即推进 main”。PR 面向 main，填写 `.github/PULL_REQUEST_TEMPLATE.md`，关联同仓库 Issue。提交精确候选、实际检查结果及所需独立审查；仍未验收时用 `Refs`，不要写自动关闭关键字。候选有修改时仅重验受影响部分。合入后取得远端回读再收尾。
 6. 只有验收与约定交付完成后才设置 `status:done` 并以 completed 关闭；取消用 `status:cancelled` 和 not_planned，不能冒充通过。父单逐项核对自己的验收，子单完成不自动关闭父单。失败保留原因、证据和下一事件，不添加定时重试。
 
 标签使用唯一 `type:*`（`.github/labels.json`）和唯一 `status:*`（`.github/status-labels.json`）。待判断 needs-decision、计划 planned、处理中 in-progress、阻塞 blocked、待验收 in-review、完成 done、取消 cancelled。GitHub open/closed 是生命周期，status 表示执行状态；bug 属于 type。状态变更保留其他类别/业务标签，不覆盖并行编辑。

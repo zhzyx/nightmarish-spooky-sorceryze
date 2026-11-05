@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "validation-to-main-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "validation-to-main-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-04T23:14:06.619161+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/103",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "7636c2ec075a385485384a8f397667ab114f617bd7daec6734c5405a669c57a9",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "user_request": "明确需求在本地验证完毕后自动开始推进合入 main",
+    "intake": "passed",
+    "scope": "host documentation only",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "f38cf7b58901981b31ef13430c41fb98f1bd397ffba52fb64e8db02ebc4abefd"
+}

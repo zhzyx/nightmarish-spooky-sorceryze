@@ -259,7 +259,6 @@
   },
   "mandatory_review": {
     "events": [
-      "gonggong_production",
       "skill_create_or_change",
       "agent_create_or_change",
       "external_agent_admission"
@@ -278,15 +277,18 @@
     "unknown_is_pass": false,
     "external_admission_requires_both_reviews": true,
     "authorized_approver_required": true,
-    "runtime_enforcement": "file_procedure_not_host_automatic_interception"
+    "runtime_enforcement": "file_procedure_not_host_automatic_interception",
+    "applies_to": "generated_agent_and_skill_definitions_only",
+    "ordinary_business_requests_require_review": false
   },
   "skills": [
     {
       "name": "gonggong-check",
       "path": "skills/gonggong-check/SKILL.md",
       "state": "format_and_semantic_review_passed",
-      "version": "0.3.0",
-      "reporting": "skills/gonggong-check/reporting.json"
+      "version": "0.3.1",
+      "reporting": "skills/gonggong-check/reporting.json",
+      "admission_pass": "reviews/review-dedup/gonggong-check-skill-admission.json"
     },
     {
       "name": "clarify-feature",
@@ -299,7 +301,7 @@
       "name": "kuafu",
       "path": "skills/kuafu/SKILL.md",
       "state": "format_and_semantic_review_passed",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "reporting": "skills/kuafu/reporting.json"
     },
     {
@@ -339,12 +341,12 @@
     },
     {
       "name": "work-order-coordination",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "display_name": "司南",
       "path": "skills/work-order-coordination/SKILL.md",
       "reporting": "skills/work-order-coordination/reporting.json",
-      "state": "available_on_demand_event_driven",
-      "admission_pass": "reviews/request-intake-0.9.1-work-order-coordination.json"
+      "state": "format_and_semantic_review_passed",
+      "admission_pass": "reviews/review-dedup/work-order-coordination-skill-admission.json"
     }
   ],
   "agents": [
@@ -352,13 +354,13 @@
       "id": "yanshi",
       "name": "偃师",
       "kind": "independent_agent",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "entry": "agents/yanshi/AGENT.md",
       "manifest": "agents/yanshi/agent.json",
       "governance_root": "yuanheng",
       "state": "approved_local_definition_host_mandate_required",
-      "candidate_digest": "750061f390b05b9ce21ad22264115f1e0ec724235bdc14ac160016f84a8a4763",
-      "admission_pass": "reviews/unification-43/yanshi-admission.json",
+      "candidate_digest": "93e3844ee3eafd6cf032d71e68536e2484c2505aa3e58f88107dcba6e6cb6283",
+      "admission_pass": "reviews/kuafu-blockers/yanshi-admission.json",
       "business_module": "document_design",
       "candidate_files": [
         "AGENTS.md",
@@ -419,9 +421,11 @@
         "tools/agent-context.mjs",
         "tools/create-component.py",
         "tools/diting-report.py",
+        "tools/git_batch.py",
         "tools/package_integrity.py",
         "tools/reporting.mjs",
         "tools/verify_framework.py",
+        "tools/verify_metadata.mjs",
         "upstream/yuanheng/agents/yuanheng.md",
         "upstream/yuanheng/core.md"
       ],
@@ -431,13 +435,13 @@
       "id": "kuafu",
       "name": "夸父",
       "kind": "independent_agent",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "entry": "agents/kuafu/AGENT.md",
       "manifest": "agents/kuafu/agent.json",
       "governance_root": "yuanheng",
       "state": "approved_local_definition_host_mandate_required",
-      "candidate_digest": "baf867dad0e50d734e3ae9d756f032674c91520c818a0315b9bab48db7ddb10a",
-      "admission_pass": "reviews/unification-43/kuafu-admission.json",
+      "candidate_digest": "820d6cdc2a3fb4422c174a9ed329c0bc917227d5a052c47d98726c1d8b5832ac",
+      "admission_pass": "reviews/kuafu-blockers/kuafu-admission.json",
       "business_module": "quality_event_oversight",
       "ownership": "domains/quality/responsibility-map.json",
       "candidate_files": [
@@ -496,9 +500,11 @@
         "tools/check_quality_ownership.py",
         "tools/create-component.py",
         "tools/diting-report.py",
+        "tools/git_batch.py",
         "tools/package_integrity.py",
         "tools/reporting.mjs",
         "tools/verify_framework.py",
+        "tools/verify_metadata.mjs",
         "upstream/yuanheng/agents/yuanheng.md",
         "upstream/yuanheng/core.md"
       ],
@@ -508,10 +514,10 @@
       "id": "diting",
       "name": "谛听",
       "kind": "independent_agent",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "entry": "agents/diting/AGENT.md",
       "governance_root": "yuanheng",
-      "admission_pass": "reviews/unification-43/diting-admission.json",
+      "admission_pass": "reviews/kuafu-blockers/diting-admission.json",
       "manifest": "agents/diting/agent.json",
       "state": "approved_local_definition_host_mandate_required",
       "business_module": "data_feedback",
@@ -568,27 +574,29 @@
         "tools/agent-context.mjs",
         "tools/create-component.py",
         "tools/diting-report.py",
+        "tools/git_batch.py",
         "tools/package_integrity.py",
         "tools/reporting.mjs",
         "tools/verify_framework.py",
+        "tools/verify_metadata.mjs",
         "upstream/yuanheng/agents/yuanheng.md",
         "upstream/yuanheng/core.md",
         "upstream/yuanheng/skills/yuanheng-organize/SKILL.md"
       ],
-      "candidate_digest": "77233fd9af63852e3beb34d5b5cef3d54d33bcd187e19fc20f0d766b37323768",
+      "candidate_digest": "f578a7a5b6f7aea1f0c7df3d618c347cbf8cca760b3499c87bf9520ba5366fb6",
       "reporting": "agents/diting/reporting.json"
     },
     {
       "id": "heqi",
       "name": "合契",
       "kind": "independent_agent",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "entry": "agents/heqi/AGENT.md",
       "manifest": "agents/heqi/agent.json",
       "governance_root": "yuanheng",
       "state": "approved_local_definition_host_mandate_required",
-      "candidate_digest": "45a902a243eb3a294bc3ecf6503b8ac9d199859c5d090ea4783da8a7898550c1",
-      "admission_pass": "reviews/unification-43/heqi-final-admission.json",
+      "candidate_digest": "fbbfea6faeb5c560d433d4a1f680c30cc9f291a72daa1e73aea26a48be16e4a9",
+      "admission_pass": "reviews/kuafu-blockers/heqi-admission.json",
       "candidate_files": [
         "AGENTS.md",
         "FOUNDATION.md",
@@ -615,8 +623,10 @@
         "specs/reporting.md",
         "specs/work-order-management.md",
         "tools/diting-report.py",
+        "tools/git_batch.py",
         "tools/package_integrity.py",
         "tools/reporting.mjs",
+        "tools/verify_metadata.mjs",
         "upstream/yuanheng/agents/yuanheng.md",
         "upstream/yuanheng/core.md"
       ],
@@ -639,13 +649,16 @@
         "agents/sinan/agent.json",
         "agents/sinan/references/README.md",
         "agents/sinan/references/adapters.md",
+        "agents/sinan/references/parallel-dispatch.md",
         "agents/sinan/reporting.json",
         "contracts/admission-policy.json",
         "contracts/diting-reporting.json",
         "foundation.lock.json",
         "modules/sinan/coordinator.mjs",
+        "modules/sinan/dispatch.mjs",
         "modules/sinan/module.json",
         "modules/sinan/refresh.mjs",
+        "modules/sinan/test/dispatch.test.mjs",
         "modules/sinan/test/generic-tracking.test.mjs",
         "modules/sinan/test/refresh.test.mjs",
         "skills/gonggong-check/SKILL.md",
@@ -656,22 +669,24 @@
         "specs/reporting.md",
         "specs/work-order-management.md",
         "tools/diting-report.py",
+        "tools/git_batch.py",
         "tools/package_integrity.py",
         "tools/reporting.mjs",
+        "tools/verify_metadata.mjs",
         "upstream/yuanheng/agents/yuanheng.md",
         "upstream/yuanheng/core.md"
       ],
       "name": "司南",
-      "version": "0.1.1",
+      "version": "0.1.4",
       "entry": "agents/sinan/AGENT.md",
       "manifest": "agents/sinan/agent.json",
       "governance_root": "yuanheng",
       "state": "approved_local_definition_host_mandate_required",
-      "admission_pass": "reviews/unification-43/sinan-final-admission.json",
+      "admission_pass": "reviews/kuafu-blockers/sinan-admission.json",
       "reporting": "agents/sinan/reporting.json",
       "layer": "core",
       "core_capability": "task_coordination",
-      "candidate_digest": "cc33afad0e1e26bc1d13ce17fe8a18dd2963175bd7c2c223805d2cbadbc349d8"
+      "candidate_digest": "7ad67a941a60c41cc75287deca0d9127af11ed968fc9cf238df0a143cfe45b61"
     }
   ],
   "quality_domain": {
@@ -725,11 +740,11 @@
     {
       "id": "sinan",
       "name": "司南",
-      "version": "0.5.1",
+      "version": "0.6.1",
       "manifest": "modules/sinan/module.json",
       "governance_root": "yuanheng",
-      "state": "available_on_demand_event_driven",
-      "admission_pass": "reviews/sinan/core-agent-support-0.5.1.json",
+      "state": "candidate_pending_review",
+      "admission_pass": "reviews/sinan/parallel-main-integration-0.1.4.json",
       "role": "core_agent_implementation_support",
       "agent_ref": "agents/sinan/agent.json"
     }

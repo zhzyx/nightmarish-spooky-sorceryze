@@ -1,0 +1,31 @@
+{
+  "request_id": "issue-event-data-loop-20261102",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9",
+  "path_base": "repository_root",
+  "configured": {
+    "state": "configured",
+    "tenant_id": "gonggong-workspace",
+    "host_id": "codex-issue9-final-operator",
+    "definition_sha256": "4a10cdb14fc8d4326d89f9981aad50bfb5242a9d8f4e1ff4de84778d4604829f",
+    "entry": "customizations/components/godot-host/bridge.py"
+  },
+  "queued": {
+    "state": "queued",
+    "event_id": "issue9-parent-acceptance-step-20261105",
+    "envelope_sha256": "e0172e031545e372d1eae56e7e2a2ce4bd22fb659ac6334764ad493c828e859e",
+    "persistent_envelope_observed_before_flush": true
+  },
+  "delivered": {
+    "state": "recorded_file",
+    "receipts": [
+      {
+        "state": "recorded_file",
+        "sha256": "324d9b4db4dbba65600ae3a06a4fc70d7f9c36aef2df8b5d79d58ec834fc26cc"
+      }
+    ],
+    "event_id": "issue9-parent-acceptance-step-20261105"
+  },
+  "git_committed_at_generation": false,
+  "consumption": "Subsequent actual shared analyze read captured separately",
+  "semantics": "Actual persistent queue observed then flushed; file receipt does not stand for Git/main or consumption"
+}

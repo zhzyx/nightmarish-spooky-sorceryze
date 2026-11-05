@@ -5,7 +5,7 @@ description: Coordinate Gonggong work orders when requests, progress, dependenci
 
 # Work-order coordination
 
-Use the shared Gonggong framework's gonggong-check, project-state and work-order-management specifications for the current responsibility. Reuse already loaded Yuanheng and foundation sources. This skill adds no agent identity, authority, ledger or automatic dispatch.
+Use the shared Gonggong framework's project-state and work-order-management specifications for the current responsibility. Apply gonggong-check only when generating Agent or skill definitions; ordinary coordination does not trigger it. Reuse already loaded Yuanheng and foundation sources. This skill adds no agent identity, authority, ledger or automatic dispatch.
 
 Resolve the registered sources and coordinator entry in runtime-ref.json. Run board to inspect source health, provenance and blockers; ready gives dispatch candidates, not authorization. Prioritize using the user's actual goals and delegated scope. Use business-appropriate task types and completion criteria; Feature links apply only when relevant. Keep delivery with its accountable owner and escalated quality oversight with Kuafu.
 

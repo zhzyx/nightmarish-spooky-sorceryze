@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue55-ui-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-eecb7c4b90c0c55a8cde516aac5472f2",
+  "kind": "request",
+  "occurred_at": "2026-11-04T16:59:06.100972+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/55",
+  "agent": {
+    "id": "codex-root-issue55-ui",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "17a9d2a8ecf1cb1fcac54b6e1fbf4075a82c787e2114dfb5ba6174c795af420b"
+  },
+  "payload": {
+    "intent": "Optimize AI Chat UI, update to origin/main, and commit local changes",
+    "authorization": "Explicit user instructions in this chat",
+    "status": "in_progress",
+    "baseline_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+    "path_base": "repository_root",
+    "agent_definition_ref": "data-collection/issue55-ui/host-definition.md",
+    "usage": null
+  },
+  "evidence_refs": []
+}

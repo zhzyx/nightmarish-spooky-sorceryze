@@ -1,0 +1,154 @@
+{
+  "request_id": "sinan-parallel-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/72",
+  "path_base": "repository_root",
+  "base_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "branch": "codex/sinan-parallel",
+  "candidate_digest": "664a0f217d117e9d5eb21e5755a1f227c43ab6e28cef444bd0b93f018cb47759",
+  "files": [
+    {
+      "path": "customizations/components/codex-dispatch/README.md",
+      "sha256": "021860a656c0778623219fafa5c77cc3dd94e58f2405a727900a0c71eeb98611"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.mjs",
+      "sha256": "24711e52de3be07c61ad6a26cdb467da93116d71cb8fc09117feb8202802b23f"
+    },
+    {
+      "path": "customizations/components/codex-dispatch/adapter.test.mjs",
+      "sha256": "beb4261dae90c4a8b93ea630675fcfb301d2b78b7f9f4872395f42b402ce8d03"
+    },
+    {
+      "path": "customizations/registry.json",
+      "sha256": "dea10c78183f74e1778af15a618f4f63190d4904e0b41a8104c083209772ad29"
+    },
+    {
+      "path": "design-docs/sinan-parallel-20261105.md",
+      "sha256": "d79c673a51c3a36764907b9202207f68075d0a1a1ae02c29ae2dc3412459b143"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "69e17a5669521c09f72a4419dabab3320997acd954fc49e433007d2eda38e396"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "458a551398c4ade6cb27560166fe336c199bc09e818767648d09242b89d7a16b"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "a362b909e20ba81acc71e2a641d98946fa162397acfa5976c468d49c45861d08"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.h",
+      "sha256": "9b92a5a7ae42f8ffa9e7cf015b108a7b39cbdb5041b82194efa261e82c7f91c0"
+    },
+    {
+      "path": "framework/agents/sinan/AGENT.md",
+      "sha256": "65c18a21a076c79e1e2c66840f12b51035cd9a22c4b13079a93568eae935e1a0"
+    },
+    {
+      "path": "framework/agents/sinan/agent.json",
+      "sha256": "0b0c896ff7f3e7cdb9cea4f9f293d716483fcc533830ac9e990a91f78f3e5fe1"
+    },
+    {
+      "path": "framework/agents/sinan/references/parallel-dispatch.md",
+      "sha256": "daef4d216f92bd8c1276ad1afb7f6e8e9a35bc4aeb116adc4fa270b4a6572ef8"
+    },
+    {
+      "path": "framework/agents/sinan/reporting.json",
+      "sha256": "24a3812e09f2cb2fc4fc4826d6c0b26a1aaee73e42b1df7ebefdfb830f92c707"
+    },
+    {
+      "path": "framework/framework-manifest.json",
+      "sha256": "30d86c92f4b6ef78d56edfeb53885a78e28caa7ef4b48984656cbf29c3a63065"
+    },
+    {
+      "path": "framework/modules/sinan/dispatch.mjs",
+      "sha256": "d3c7c8677185083715f25b7d59f5add895a2d9b038ce75a45175880ecb42a1b1"
+    },
+    {
+      "path": "framework/modules/sinan/module.json",
+      "sha256": "325a00755dd777280bfc1d708eb563fe0205c1645b53ec95aeeb80100384c1d2"
+    },
+    {
+      "path": "framework/modules/sinan/test/dispatch.test.mjs",
+      "sha256": "04b3b9a700aad4d9e9e3d189f6b5f140d0799df6edbf6a2345d020e1469eec4a"
+    },
+    {
+      "path": "framework/package-lock.json",
+      "sha256": "7dfe6f63502b1b93471055ff2eb8fb4ec025fd714b18c27dbacc8cf776306aba"
+    },
+    {
+      "path": "framework/reviews/sinan/parallel-dispatch-0.1.2.json",
+      "sha256": "8207982c8f071dfb7ed97b6bd68d04240aad14f77834d6b7eb0d6fc1c984c5c8"
+    },
+    {
+      "path": "framework/reviews/sinan/parallel-dispatch-independent.md",
+      "sha256": "d97decf21804aac3f832b73b11be973458f1f74928522136411bcd1f795a66d8"
+    },
+    {
+      "path": "tests/editor/test_parallel_work_orders.mjs",
+      "sha256": "d95ae6e10fb6f1dcd882ab8ee4b016fc35e13bc189b51a7cff198d842b5c9191"
+    },
+    {
+      "path": "tools/godot_parallel/README.md",
+      "sha256": "50041100ef670a946a878270d14f4fe28bced062a1a8148c498f09dae522da74"
+    },
+    {
+      "path": "tools/godot_parallel/report.py",
+      "sha256": "4a4591040f87351b4c19a9b2c871a8635a7426fd96922fa885e7c76df3ec16c9"
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "d1229f71fe12921ea08d99fd50117d12f3477fed34abe266937fea92985c4743"
+    }
+  ],
+  "validation": {
+    "node_tests": {
+      "passed": 49,
+      "failed": 0,
+      "core": 32,
+      "codex": 10,
+      "godot": 7
+    },
+    "python_report_syntax": "passed",
+    "framework_candidate": "passed",
+    "diff_check": "passed",
+    "independent_review": "passed_for_code_and_contract",
+    "msvc": {
+      "platform": "Windows x86_64",
+      "toolset": "Visual Studio 14.5",
+      "sdk": "10.0.26100.0",
+      "scope": "Two affected translation units compiled by implementing subagent; final SCons check reports both up-to-date",
+      "objects": [
+        {
+          "path": "bin/obj/editor/docks/ai_chat_dock.windows.editor.x86_64.obj",
+          "sha256": "7e6e9bd76d465a6a408b459de3c338d5c7a89f5877628cacb18ca23797be6041"
+        },
+        {
+          "path": "bin/obj/editor/docks/ai_chat_sub_agents.windows.editor.x86_64.obj",
+          "sha256": "99545a7c0e67bd6abb0776606b418730e644867ce5d951ddd275074965012062"
+        }
+      ],
+      "full_link_and_gui": "not_run"
+    },
+    "actual_reporting": {
+      "state": "recorded_file",
+      "event_id": "parallel-9990cf15f6564b32b29332b616ea1206",
+      "provider_model_started": false,
+      "consumed": false
+    }
+  },
+  "admission": "pending_approval",
+  "formal_verification": "blocked: Invalid admission status, event or phase",
+  "git_committed": false,
+  "remote_merge_verified": false,
+  "runtime_connected": false,
+  "unresolved": [
+    "Exact candidate approval",
+    "Codex native host callbacks and authoritative source binding",
+    "Godot runtime configuration and real provider representative task",
+    "Full editor link/start validation"
+  ],
+  "usage": null
+}

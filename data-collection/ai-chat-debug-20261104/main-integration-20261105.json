@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "path_base": "repository_root",
+  "observed_at": "2026-11-04T20:37:50.546981+00:00",
+  "base_commit": "83754370c0b992d76291083b6654c076b4a1457d",
+  "integrated_commits": [
+    "6c57a342151884f0e72fc281832930a5410f56b9",
+    "116f64ec51737c8c0c7ae52df12d8969058d9e49"
+  ],
+  "conflict_paths": [
+    "design-docs/ai-chat-debug-20261104.md"
+  ],
+  "resolution": "Common original prefix plus exact exit-diagnostics/user-skip additions plus exact existing lifetime additions; integration note appended. Both histories preserved.",
+  "production_delta": "Only original bridgeError(failure, code) line; no native source change",
+  "source_sha256_lf": {
+    "tools/codex_cli/godot_bridge.js": "990228ef0fde9d3bb0c3b261dc2a68743fa4cea3b0369e2f1f20979cef8cabbe",
+    "tests/editor/test_codex_bridge.js": "bfea4460fc14ac1499f5214ef1cf4ab3afce217a7a175f7da867fbc79766efc8"
+  },
+  "preserved_originals": [
+    {
+      "path": "data-collection/ai-chat-debug-20261104/issue-association-correction-20261105.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "c838dfd8ce2878a921dd8d35b7bd20eb4e6eee8db2812dff323288a8d2eff86b"
+    },
+    {
+      "path": "data-collection/ai-chat-debug-20261104/real-provider-verification-20261105.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "ea54768f077e264045cd5569d910ab5af90e7ec6445731a0d4a0491d016af989"
+    },
+    {
+      "path": "data-collection/ai-chat-debug-20261104/ui-and-exit-diagnostics-20261105.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "9030149c6ca6dc44b5f1f9142900d781779636032bffd8b0856b838fe3602c70"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-association-correction.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "c95f19f1e15e2b8f3a11ac648bbfa4687bfeabdb0caebaa1c6c05943cd62e85f"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-evidence-correction.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "da8202597fd128eb06658b2d3bd34d99be1546a1b0e7fbbddc230c1ca4e992be"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-real-provider.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "888c4233825e4a491032239155991b0dd6bd5878bef145d3d0327e2a9b0991f7"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-ui-exit-fix.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "d7ad341189fd665f9fdfd858f2b0096dc88288a41c141ccf256ab37545a54e0f"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-user-skip.json",
+      "source_commit": "116f64ec51737c8c0c7ae52df12d8969058d9e49",
+      "sha256_git_blob": "181c35777b1278c02edfd8f4623e7f29d474d0f8c9230f0b4459bdf7ce5a0653"
+    }
+  ],
+  "validation": {
+    "javascript_tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "command": "node --test tests/editor/test_codex_bridge.js",
+    "reason": "Tests auto-merged with main semantic-action case; one focused current-base regression",
+    "native_tests_rerun": false,
+    "real_provider_called": false,
+    "old_user_ui_queue_touched": false
+  },
+  "original_real_process_exit_cause": "unknown",
+  "remote_writes_performed": false,
+  "usage": null,
+  "consumption_confirmed": false
+}

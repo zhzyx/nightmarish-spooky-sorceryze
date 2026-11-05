@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "event_id": "verification-efficiency-main-integration-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "verification-efficiency-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-04T21:52:42.803061+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/85",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "state": "integration_validated_pending_commit",
+    "target": "main",
+    "expected_main": "3afe3b0dfc42464c554d91b84461be33aa8d2031",
+    "original_commit": "3a79ade3cb67001b8155ca85d5d0ea0a37ad7e11",
+    "user_authorization": "合入到main",
+    "conflicts_resolved": [
+      "README append sections preserved from both branches"
+    ],
+    "implementation_fingerprints": "unchanged except integration README",
+    "tests_passed": 31,
+    "test_scope": [
+      "issue_gate",
+      "host_intake",
+      "yanluo_host"
+    ],
+    "source_changed_consumers": [
+      "issue-workorders",
+      "yanluo_host"
+    ],
+    "compatibility": "31 regressions passed; original 34-case evidence retained for unchanged inputs",
+    "recovery_commit": "3afe3b0dfc42464c554d91b84461be33aa8d2031"
+  },
+  "evidence_refs": [
+    "verification-efficiency-validation-20261105"
+  ]
+}
