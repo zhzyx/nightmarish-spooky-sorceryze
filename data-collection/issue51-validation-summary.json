@@ -1,0 +1,166 @@
+{
+  "issue": 51,
+  "request_id": "olympus-residue-deadlock-20261104",
+  "path_base": "repository_root",
+  "baseline_commit": "b123479a433efa96c2183aca6eea1da49781213c",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "4562a9c9324cdcb95ce367da3f894a11c4812b5b5594f5d3c0ebb467312c1e0a",
+    "tests/editor/ai_chat_integration.gd": "c60111c020b4573310d4b12f0be23c0c7dc1f686a3216957c792d4c0ca5993ef",
+    "tests/editor/run_editor_self_update.py": "78b149b0476c63c0ec89b5644dfc6972072c277e011b7b2ff564b42a79b1c272",
+    "tests/editor/test_codebuddy_bridge.js": "485050294f3235adfd4a0ffe8a0aa13cef0c70c25dce315cbc1b2953921a236e",
+    "tests/editor/test_frozen_gonggong_distribution.py": "b8188cbecb9c2f0db59d19ea9f7a08db4d06378e3a5753f2790c4eec8ff0b14e",
+    "tools/test_gonggong_standalone.py": "dcb1c1a8b2a7c52aa55493a7890410111017ceb29eac8780ee330391f4a12b91"
+  },
+  "scope": "Windows x64 existing framework, adapters and representative native UI scenarios; not exhaustive engine/platform coverage",
+  "checks": {
+    "formal_framework": "approved_file_integrity",
+    "offline_snapshot": {
+      "files": 243,
+      "python": 23,
+      "javascript": 12,
+      "json": 122,
+      "passed": true
+    },
+    "workorders": {
+      "passed": 42
+    },
+    "godot_host": {
+      "passed": 49
+    },
+    "framework_unittest": {
+      "passed": 19
+    },
+    "framework_runtime_scenarios": {
+      "passed": 10,
+      "real_models": false
+    },
+    "migration": {
+      "passed": 10
+    },
+    "git_issue_module": {
+      "passed": 8
+    },
+    "sinan": {
+      "passed": 16
+    },
+    "editor_python": {
+      "run": 32,
+      "passed": 31,
+      "skipped": 1,
+      "skip_reason": "Windows symlink permission"
+    },
+    "cli": {
+      "passed": 52
+    },
+    "standalone": {
+      "passed": 9
+    },
+    "self_update": {
+      "passed": true,
+      "build_worker": "mock",
+      "restart": "actual isolated editor process"
+    },
+    "history_performance": {
+      "passed": true,
+      "fixture": "60MB synthetic history"
+    }
+  },
+  "native_reports": [
+    "data-collection/issue51-flow-verification.json",
+    "data-collection/issue51-requirements.json",
+    "data-collection/issue51-consultation.json"
+  ],
+  "receipt_delay_scenarios": {
+    "receipt_failure": [
+      {
+        "directory": "D:\\GongGong\\.godot-integration-local\\issue51-temp\\gonggong-gate-wbjq87i9\\gonggong-diting-data",
+        "created": true,
+        "git_committed": false,
+        "records": 0
+      },
+      {
+        "max_frame_gap_seconds": 0.013547,
+        "injected_flush_delay_seconds": 2.0
+      },
+      {
+        "mode": "receipt_failure",
+        "model_requests": 0,
+        "pending_preserved": true,
+        "production_data_written": false
+      }
+    ],
+    "receipt_retry": [
+      {
+        "directory": "D:\\GongGong\\.godot-integration-local\\issue51-temp\\gonggong-gate-6jd_3y5m\\gonggong-diting-data",
+        "created": true,
+        "git_committed": false,
+        "records": 0
+      },
+      {
+        "max_frame_gap_seconds": 0.015591,
+        "injected_flush_delay_seconds": 2.0
+      },
+      {
+        "native_page": true,
+        "mode": "receipt_retry",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 1,
+        "production_data_written": false
+      }
+    ],
+    "receipt_cancel": [
+      {
+        "directory": "D:\\GongGong\\.godot-integration-local\\issue51-temp\\gonggong-gate-eamqbhns\\gonggong-diting-data",
+        "created": true,
+        "git_committed": false,
+        "records": 0
+      },
+      {
+        "max_frame_gap_seconds": 0.015334,
+        "injected_flush_delay_seconds": 2.0
+      },
+      {
+        "native_page": true,
+        "mode": "receipt_cancel",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      }
+    ],
+    "recovery_receipt_failure": [
+      {
+        "directory": "D:\\GongGong\\.godot-integration-local\\issue51-temp\\gonggong-gate-97iikgzx\\gonggong-diting-data",
+        "created": true,
+        "git_committed": false,
+        "records": 0
+      },
+      {
+        "max_frame_gap_seconds": 0.014564,
+        "injected_flush_delay_seconds": 2.0
+      },
+      {
+        "native_page": true,
+        "mode": "recovery_receipt_failure",
+        "real_framework_called": false,
+        "model_transport_fixture": true,
+        "receipt_verified": true,
+        "model_requests": 0,
+        "production_data_written": false
+      }
+    ]
+  },
+  "limitations": [
+    "No real model provider tested.",
+    "Legacy general UI tests remain failing before representative actions: obsolete page assumptions and wait logic observes Stop enabled state before asynchronous requirements intake completes. These are not passed.",
+    "Installed editor page title is mojibake; Unicode source fix awaits candidate build validation.",
+    "No runtime deadlock reproduced in the four delayed receipt scenarios; user-specific deadlock remains unlocalized.",
+    "No installation, publication, commit or remote merge performed."
+  ],
+  "original_extended_failures": "data-collection/issue51-extended-checks.json",
+  "usage": null,
+  "created_at": "2026-11-04T07:42:44.952469+00:00"
+}

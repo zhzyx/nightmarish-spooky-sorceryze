@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "issue51-skill-agent-residue-audit-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "olympus-residue-deadlock-20261104",
+  "kind": "coverage",
+  "occurred_at": "2026-11-04T18:27:29.066289+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+  "agent": {
+    "id": "codex-root-issue51-residue-audit",
+    "version": "20261105",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7600fa782534781ece0c94abf9a05b3aab2102305e4a262aaaa249244315d9cb"
+  },
+  "payload": {
+    "description": "Active skill/agent definitions have no legacy name hits; repository and worktree residual audit completed with explicit limits. No production definitions changed.",
+    "evidence_path": "data-collection/issue51-skill-agent-residue-audit-20261105.json",
+    "evidence_sha256": "295dd0d92e061ce74126f02e838c5faefdd2b1c9f636abcd6b684e8c6f273839",
+    "path_base": "repository_root",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Usage not supplied; no estimates",
+    "git_committed": false,
+    "consumed": false
+  },
+  "evidence_refs": [],
+  "sha256": "d3af08beb859490d6417eac00867a1e6220c586dc10347e90d96ecd5cb97dc53"
+}
