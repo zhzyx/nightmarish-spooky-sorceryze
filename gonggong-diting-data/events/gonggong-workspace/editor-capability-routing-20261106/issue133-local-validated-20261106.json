@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "event_id": "issue133-local-validated-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-capability-routing-20261106",
+  "kind": "step",
+  "occurred_at": "2026-11-05T17:31:43Z",
+  "source_ref": "data-collection/issue133-candidate-validation-20261106.json",
+  "agent": {
+    "id": "codex-desktop-editor-routing",
+    "version": "session-20261106",
+    "definition_sha256": "3e875424a568b9353157335c9281dccd426ce4fa85fd4c221b48d3eafbf61bcd",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "event": "candidate.locally_validated",
+    "base_commit": "b5314cae2ab6f7e77d4cab6702dfe9db65e797db",
+    "evidence": "data-collection/issue133-candidate-validation-20261106.json",
+    "editor_sha256": "ab9976d8039ace81472e63ce207cc34a0255a916f71262ceef391044913ccc16",
+    "results": {
+      "windows_msvc_build": "passed",
+      "automatic_ui_http_cli": "passed",
+      "routed_http_guidance_restore": "passed",
+      "routed_native_codex_guidance_restore": "passed",
+      "javascript_affected_tests": 55,
+      "cpp_format_and_includes": "passed",
+      "python_syntax": "passed"
+    },
+    "boundaries": {
+      "real_provider": "not_run",
+      "independent_review": null,
+      "remote_ci": null,
+      "main_delivery": null,
+      "full_shell_terminal_suite": "five dependency failures due to missing Bash",
+      "headless_exit": "RID/ObjectDB warnings retained",
+      "ruff": "unavailable, not claimed"
+    },
+    "usage": null,
+    "usage_unknown_reason": "No measured token/cost receipt available",
+    "consumed": null
+  },
+  "evidence_refs": [
+    "issue133-request-20261106"
+  ],
+  "sha256": "0148b51d47e597e23a47971b0fe1233d9edf7c1e86cca55a02bd9e970e42bdf8"
+}

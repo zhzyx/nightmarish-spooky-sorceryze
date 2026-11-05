@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-capability-routing-20261106",
+  "issue_number": 133,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/133",
+  "path_base": "repository_root",
+  "submission_base": "7d164e2804f2736d001b638ca8f479a7536dedbb",
+  "previous_runtime_validation": "data-collection/issue133-mainline-integration-20261106.json",
+  "integration": {
+    "from": "e9d2029a6bc68b42475c258902df50ce8e319dd6",
+    "to": "7d164e2804f2736d001b638ca8f479a7536dedbb",
+    "changed": "Collection/audit records, .gdignore and a sample project; no engine, route, embedded script or fixture source changed",
+    "validation_reuse": "The actual e9d2029a build, UI/HTTP/CLI test and hash-bound b5314cae guidance/JS tests still apply; exact candidate governance checks run separately",
+    "other_worktrees": "Preserved"
+  },
+  "independent_review": null,
+  "remote_ci": null,
+  "remote_main_receipt": null
+}

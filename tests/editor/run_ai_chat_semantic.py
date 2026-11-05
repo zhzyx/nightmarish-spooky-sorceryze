@@ -49,7 +49,9 @@ def main():
     parser.add_argument("--manual-stop", action="store_true", help="Visible 100-second delayed highlight response; click Stop")
     parser.add_argument("--signal-stop", action="store_true", help="Headless Stop signal callback; not a native click")
     parser.add_argument("--guidance", action="store_true", help="Target registry, guidance state machine and restart preview")
+    parser.add_argument("--routing", action="store_true", help="Run guidance through the shared engine-operation router")
     args = parser.parse_args()
+    assert not args.routing or args.guidance
     assert not (args.manual_stop and args.signal_stop)
     stop_case = args.manual_stop or args.signal_stop
     assert not args.codex or args.bounds or args.guidance
@@ -92,6 +94,8 @@ def main():
                 else:
                     if args.guidance:
                         name, arguments = "editor_action", json.loads(case)
+                        if args.routing and arguments["action"] not in ("find_targets", "describe_target"):
+                            name, arguments = "route_engine_message", {"intent": "engine_operation", "request_id": f"http-{latest}", "source": "mock-http", "operation": arguments}
                     else:
                         name, arguments = ("get_editor_state", {}) if case in BOUND_CASES else CASES[case]
                     message = {"role": "assistant", "content": "", "tool_calls": [{"id": "guidance" if args.guidance else case, "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}
@@ -158,6 +162,7 @@ def main():
             env["SEMANTIC_INTERFACES"] = "1" if args.interfaces else ""
             env["SEMANTIC_BOUNDS"] = "1" if args.bounds else ""
             env["SEMANTIC_GUIDANCE"] = "1" if args.guidance else ""
+            env["SEMANTIC_ROUTING"] = "1" if args.routing else ""
             env["SEMANTIC_CODEX_ENTRY"] = str(workspace / "mock_codex_semantic.js") if args.codex else ""
             env["SEMANTIC_WIRE_DIR"] = str(workspace / "wire")
             env["SEMANTIC_MANUAL_STOP"] = "1" if stop_case else ""

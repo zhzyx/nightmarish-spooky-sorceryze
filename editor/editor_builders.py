@@ -140,4 +140,9 @@ def daqian_scripts_builder(target, source, env):
             code = path.read_text(encoding="utf-8")
             if ')DAQIAN"' in code:
                 raise ValueError("Unexpected raw string delimiter in editor script")
-            header.write(f'static constexpr char daqian_{path.stem}[] = R"DAQIAN({code})DAQIAN";\n')
+            # MSVC limits individual string literals, including raw literals.
+            # Split on Unicode code points so every chunk remains valid UTF-8.
+            header.write(f"static constexpr const char *daqian_{path.stem}[] = {{\n")
+            for offset in range(0, len(code), 1024):
+                header.write(f'R"DAQIAN({code[offset:offset + 1024]})DAQIAN",\n')
+            header.write("nullptr,\n};\n")

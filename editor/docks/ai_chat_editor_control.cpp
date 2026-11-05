@@ -38,6 +38,7 @@
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "core/os/time.h"
+#include "editor/docks/ai_chat_editor_registry.h"
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/scene_tree_dock.h"
@@ -68,7 +69,7 @@ String workflow_path() {
 }
 
 bool preparation_action(const String &p_action) {
-	return p_action == "project_settings" || p_action == "editor_settings" || p_action == "main_screen" || p_action == "open_scene" || p_action == "open_script" || p_action == "select_node" || p_action == "reveal_target";
+	return p_action == "project_settings" || p_action == "editor_settings" || p_action == "main_screen" || p_action == "open_scene" || p_action == "open_script" || p_action == "select_node" || p_action == "reveal_target" || p_action == "open_target" || p_action == "focus";
 }
 
 bool declarative_action(const Variant &p_value, bool p_writing) {
@@ -85,7 +86,7 @@ bool declarative_action(const Variant &p_value, bool p_writing) {
 		return false;
 	}
 	const String action = args.get("action", "");
-	return preparation_action(action) || (p_writing && (action == "set_project_setting" || action == "clear_project_setting"));
+	return preparation_action(action) || (p_writing && (action == "set_project_setting" || action == "clear_project_setting" || action == "set_text" || action == "set_value" || action == "select_option" || action == "press"));
 }
 bool bounded_integer(const Variant &p_value, int64_t p_min, int64_t p_max) {
 	if (p_value.get_type() == Variant::INT) {
@@ -146,6 +147,9 @@ bool AIChatEditorControl::unregister_target(const String &p_id) {
 }
 
 Dictionary AIChatEditorControl::describe_target(const String &p_id) const {
+	if (p_id.begins_with("editor.")) {
+		return registry->describe(p_id);
+	}
 	const bool core = target_ids().has(p_id);
 	const Target *entry = targets.getptr(p_id);
 	Dictionary result = outcome(core || entry, core || entry ? String() : String("unknown_target"));
@@ -156,9 +160,7 @@ Dictionary AIChatEditorControl::describe_target(const String &p_id) const {
 	Control *control = resolve_target(p_id);
 	result["available"] = control && control->is_inside_tree();
 	result["visible"] = control && control->is_visible_in_tree() && control->get_window() && control->get_window()->is_visible();
-	Array actions;
-	actions.push_back("highlight");
-	actions.push_back("reveal_target");
+	Array actions = control ? AIChatEditorRegistry::actions(control) : Array();
 	result["actions"] = actions;
 	return result;
 }
@@ -182,6 +184,9 @@ Array AIChatEditorControl::find_targets(const String &p_query, int p_limit) cons
 				break;
 			}
 		}
+	}
+	if (result.size() < CLAMP(p_limit, 1, 20)) {
+		result.append_array(registry->find(p_query, CLAMP(p_limit, 1, 20) - result.size()));
 	}
 	return result;
 }
@@ -478,6 +483,7 @@ Dictionary AIChatEditorControl::_guidance_action(const Dictionary &p_args, bool 
 	if (action == "find_targets") {
 		Dictionary result = outcome(true);
 		result["targets"] = find_targets(p_args.get("query", ""), p_args.get("limit", 8));
+		result["registry"] = registry->status();
 		return result;
 	}
 	if (action == "describe_target") {
@@ -546,6 +552,9 @@ Dictionary AIChatEditorControl::_guidance_action(const Dictionary &p_args, bool 
 		if (p_args.has("expected_old_value")) {
 			args["expected_old_value"] = p_args["expected_old_value"];
 		}
+		if (p_args.has("expected_target_instance")) {
+			args["expected_target_instance"] = p_args["expected_target_instance"];
+		}
 		Dictionary result = execute(args, true, false, p_confirmed);
 		if (bool(result.get("confirmation_required", false))) {
 			result["guidance_revision"] = guidance_revision;
@@ -558,7 +567,114 @@ Dictionary AIChatEditorControl::_guidance_action(const Dictionary &p_args, bool 
 }
 
 bool AIChatEditorControl::handles(const String &p_name) {
-	return p_name == "get_editor_state" || p_name == "editor_action";
+	return p_name == "get_editor_state" || p_name == "editor_action" || p_name == "route_engine_message";
+}
+
+Dictionary AIChatEditorControl::route_status(const String &p_request_id, const String &p_source) const {
+	const RoutedRequest *request = routed_requests.getptr(p_source + ":" + p_request_id);
+	return request ? request->result.duplicate(true) : outcome(false, "unknown_request");
+}
+
+Dictionary AIChatEditorControl::cancel_route(const Dictionary &p_message, const String &p_reason) {
+	const String key = String(p_message.get("source", "internal-ai")) + ":" + String(p_message.get("request_id", ""));
+	Dictionary result = outcome(false, p_reason);
+	result["routing_status"] = "cancelled";
+	result["request_id"] = p_message.get("request_id", "");
+	if (RoutedRequest *request = routed_requests.getptr(key)) {
+		request->result = result;
+		request->updated = Time::get_singleton()->get_ticks_msec();
+	}
+	return result;
+}
+
+Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed) {
+	if (!p_tools_allowed || p_consultation) {
+		return outcome(false, "permission_denied");
+	}
+	if (JSON::stringify(p_message).utf8().length() > 32768) {
+		return outcome(false, "message_too_large");
+	}
+	if (p_message.get("intent", Variant()).get_type() != Variant::STRING || p_message["intent"] != "engine_operation") {
+		Dictionary result = outcome(true);
+		result["routed"] = false;
+		result["routing_status"] = "not_applicable";
+		return result;
+	}
+	const Variant request_id = p_message.get("request_id", Variant());
+	const Variant source = p_message.get("source", "internal-ai");
+	if (request_id.get_type() != Variant::STRING || source.get_type() != Variant::STRING || String(request_id).is_empty() || String(request_id).length() > 96 || String(source).is_empty() || String(source).length() > 96) {
+		return outcome(false, "invalid_route_identity");
+	}
+	for (const String &identity : { String(request_id), String(source) }) {
+		for (int i = 0; i < identity.length(); i++) {
+			const char32_t c = identity[i];
+			if (!(c == '-' || c == '_' || c == '.' || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) {
+				return outcome(false, "invalid_route_identity");
+			}
+		}
+	}
+	Dictionary normalized;
+	for (const String &field : { "intent", "request_id", "source", "request", "operation" }) {
+		if (p_message.has(field)) {
+			normalized[field] = p_message[field];
+		}
+	}
+	normalized["source"] = source;
+	const String key = String(source) + ":" + String(request_id);
+	const String fingerprint = JSON::stringify(normalized).sha256_text();
+	const uint64_t now = Time::get_singleton()->get_ticks_msec();
+	Vector<String> expired;
+	for (const KeyValue<String, RoutedRequest> &entry : routed_requests) {
+		if (now - entry.value.updated > 15 * 60 * 1000 && entry.value.result.get("routing_status", "") != "awaiting_confirmation") {
+			expired.push_back(entry.key);
+		}
+	}
+	for (const String &id : expired) {
+		routed_requests.erase(id);
+	}
+	if (const RoutedRequest *previous = routed_requests.getptr(key)) {
+		if (previous->fingerprint != fingerprint) {
+			return outcome(false, "request_id_conflict");
+		}
+		if (!p_confirmed || previous->result.get("routing_status", "") != "awaiting_confirmation") {
+			Dictionary result = previous->result.duplicate(true);
+			result["idempotent"] = true;
+			return result;
+		}
+	} else if (p_confirmed || routed_requests.size() >= 256) {
+		return outcome(false, p_confirmed ? "unknown_confirmation" : "route_capacity_exceeded");
+	}
+	Dictionary result;
+	if (!p_message.has("operation")) {
+		if (p_message.get("request", Variant()).get_type() != Variant::STRING || String(p_message["request"]).length() > 8192) {
+			return outcome(false, "invalid_engine_request");
+		}
+		result = outcome(true);
+		result["routing_status"] = "planning_required";
+		result["targets"] = find_targets(p_message.get("request", ""), 8);
+		result["next"] = "Discover targets with editor_action/find_targets, then route_engine_message with a NEW request_id and one declarative operation. Use start_guidance for multi-step help. Do not claim an operation happened yet.";
+	} else {
+		if (p_message["operation"].get_type() != Variant::DICTIONARY) {
+			return outcome(false, "invalid_engine_operation");
+		}
+		Dictionary operation = Dictionary(p_message["operation"]).duplicate(true);
+		for (const String &field : { "expected_old_value", "expected_target_instance", "guidance_revision" }) {
+			operation.erase(field);
+			if (p_confirmed && p_message.has(field)) {
+				operation[field] = p_message[field];
+			}
+		}
+		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed);
+		result["routing_status"] = bool(result.get("confirmation_required", false)) ? "awaiting_confirmation" : bool(result.get("ok", false)) ? "completed"
+																																			  : "failed";
+	}
+	result["routed"] = true;
+	result["route"] = "engine_control";
+	result["request_id"] = request_id;
+	result["source"] = source;
+	result["idempotency_window_seconds"] = 900;
+	routed_requests[key] = { fingerprint, result.duplicate(true), now };
+	return result;
 }
 
 bool AIChatEditorControl::valid_project_path(const String &p_path) {
@@ -574,6 +690,9 @@ Array AIChatEditorControl::target_ids() {
 }
 
 Control *AIChatEditorControl::resolve_target(const String &p_id) const {
+	if (p_id.begins_with("editor.")) {
+		return registry->resolve(p_id);
+	}
 	if (p_id == "scene_tree") {
 		return SceneTreeDock::get_singleton();
 	}
@@ -755,6 +874,9 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return outcome(false, "invalid_target");
 	}
 	const String target = target_value;
+	if (AIChatEditorRegistry::supported(action)) {
+		return registry->perform(resolve_target(target), target, p_args, p_confirmed);
+	}
 	EditorInterface *editor = EditorInterface::get_singleton();
 	if (action == "project_settings" || action == "editor_settings") {
 		List<PropertyInfo> properties;
@@ -978,11 +1100,34 @@ Array AIChatEditorControl::tool_definitions() {
 		tool["function"] = function;
 		tools.push_back(tool);
 	}
+	Dictionary route_properties;
+	for (const String &field : { "intent", "request_id", "source", "request", "operation" }) {
+		Dictionary schema;
+		schema["type"] = field == "operation" ? "object" : "string";
+		route_properties[field] = schema;
+	}
+	Dictionary route_parameters;
+	route_parameters["type"] = "object";
+	route_parameters["properties"] = route_properties;
+	Array route_required;
+	route_required.push_back("intent");
+	route_required.push_back("request_id");
+	route_parameters["required"] = route_required;
+	route_parameters["additionalProperties"] = false;
+	Dictionary route_function;
+	route_function["name"] = "route_engine_message";
+	route_function["description"] = "Whenever user intent is to operate this editor, automatically enter this route. Set intent=engine_operation, a unique request_id and source. Discover current targets via editor_action/find_targets or describe_target, then pass one declarative operation using editor_action's schema. New pages and inputs are discovered automatically; open_target, focus, highlight, set_text(value), set_value(value), select_option(index in value) and press depend on actual target capabilities. Use start_guidance for multiple steps. Natural-language request without operation returns planning_required: discover and plan, then submit a NEW request_id. Repeat identical IDs only to recover results; a changed operation needs a new ID. All execution and confirmation remain host-controlled; rejection is final.";
+	route_function["parameters"] = route_parameters;
+	Dictionary route_tool;
+	route_tool["type"] = "function";
+	route_tool["function"] = route_function;
+	tools.push_back(route_tool);
 	return tools;
 }
 
 AIChatEditorControl::AIChatEditorControl() {
 	singleton = this;
+	registry = memnew(AIChatEditorRegistry);
 	set_name("AIEditorHighlight");
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
 	set_focus_mode(FOCUS_NONE);
@@ -992,6 +1137,7 @@ AIChatEditorControl::AIChatEditorControl() {
 }
 
 AIChatEditorControl::~AIChatEditorControl() {
+	memdelete(registry);
 	_disconnect_observer();
 	if (Timer *timer = ObjectDB::get_instance<Timer>(guidance_timer)) {
 		memdelete(timer);

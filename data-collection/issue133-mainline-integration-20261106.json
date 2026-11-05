@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-capability-routing-20261106",
+  "issue_number": 133,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/133",
+  "path_base": "repository_root",
+  "base_commit": "e9d2029a6bc68b42475c258902df50ce8e319dd6",
+  "previous_evidence": "data-collection/issue133-candidate-validation-20261106.json",
+  "route_inputs_unchanged": true,
+  "input_files_sha256": {
+    "data-collection/issue133-request-20261106.json": "3ab600e12be520d59d8bae8de6c8019994d12ab1059cba976ac4de02e9044ce5",
+    "design-docs/editor-capability-routing-20261106.md": "2790ff41e3a63de116ecedd559a07d884e2e0baadc752814d93e751a2fb6af06",
+    "editor/docks/ai_chat_dock.cpp": "b50e0243e4ec862af0efdfbd7406675b92771cd53b4085702a71558365a54690",
+    "editor/docks/ai_chat_dock.h": "a22dd785d77817751230d8ea7410faaa7c4073629886adb2e316615089079561",
+    "editor/docks/ai_chat_editor_bridge.cpp": "2c11b6a0dfb0e11cd2df92b7acd3383da457750c218e26f54625c088290daffa",
+    "editor/docks/ai_chat_editor_bridge.h": "8ee88550876a0103f95bac94d19858d1fe730bb5b90c6b42b964101d7c30ed05",
+    "editor/docks/ai_chat_editor_control.cpp": "793a1750bebcb646ee8f0878826a54811120fdc4931c2c42ccd74617d971403e",
+    "editor/docks/ai_chat_editor_control.h": "b9d2a324b23394a4d168edfd49d3a97e76dd6af82bd3aa6f679d1284fb825d69",
+    "editor/docks/ai_chat_editor_registry.cpp": "ba5ce635a3e73339a6aa5d28d5d6ca5033a4c2c6fc195141a6229bbfbd17f95d",
+    "editor/docks/ai_chat_editor_registry.h": "f288df0e72740c1dc7bea0b70dc0c05d0a83dd838e8a07af10be50fe3c9655c8",
+    "editor/docks/daqian_dock.cpp": "e82ab795c0ee7a6747c94bee54a7a80c08baf93c67f5f8024e3490cc8f572826",
+    "editor/editor_builders.py": "28a3dcc12a08e406ce24ecbe51cd2e011819f6ab48fa568c128ba96663fe32ed",
+    "gonggong-diting-data/events/gonggong-workspace/editor-capability-routing-20261106/issue133-request-20261106.json": "c0208f1e10b554efa97dd5a813a574bd078c835237fc0cb82b8f810a6167782c",
+    "tests/editor/editor_capability_routing.gd": "944d5f2bef5b8b56cddbc2bcd305a5a813f26a05936bb14c5f8266877dc4b24d",
+    "tests/editor/editor_guided_workflows.gd": "45fc1809c7824b4f960b85c410a3fd77575da61a27cc27bd9d0b0eda692c7e5e",
+    "tests/editor/mock_codex_semantic.js": "a6660116f044582ce4ffe349e33d69e501cce83e5d7e8777d6a5648646db3bce",
+    "tests/editor/run_ai_chat_semantic.py": "0936a90f13a584dba77b47ea4a970f1cf2d7312217758945101be9d255a836e8",
+    "tests/editor/run_editor_capability_routing.py": "992d47ef42292d16cdfe42ac73fd2c99d03c8e128649bc3a851cc2ff33555a61",
+    "tests/editor/test_codebuddy_bridge.js": "a047ade3d8ae33e2d68a58392089bc72a7d18075d7f0ec7dfe066fe32ad6c2fb",
+    "tests/editor/test_codebuddy_terminal.js": "1470fcf1e391fb9ceb4b616aebcbf000a5f79986ec81406b1501e487e8535823",
+    "tests/editor/test_codex_bridge.js": "df93a64c1a2ae841ce5bd3fcd4d073a56c0a699ff0b35b4cce3a6e7c2a8dce18",
+    "tools/EDITOR_CONTROL.md": "fb9db16e88b1fd17878579df61531fb51ec68c48e8f0e948e37cdf8634b2170c",
+    "tools/codebuddy_cli/godot_acp.js": "d509f5eb29ba136e12a59a972f3f3220f3ffb8ec11f2dc569b8522e2f1fcde6c",
+    "tools/codebuddy_cli/godot_bridge.js": "c9bd97a38e2e61313beca6c291e18831f30f6e8e434ea4eef47a466a3ec830a0",
+    "tools/codebuddy_cli/godot_terminal.js": "4424385ccb110793515940511c430465ffd15c14a4b749d63df11dd68b56354c",
+    "tools/codex_cli/godot_bridge.js": "3bf3b6f35654b621f269d876733161168aaa3e2605b219301123337dfed03c4d",
+    "tools/editor_control_client.py": "640a22ac3de096c2bd7ee47c096ebd1e7f2b9d08e20808f1b4a9718730469e09"
+  },
+  "mainline_updated_script_hashes": {
+    "editor/docks/daqian/graph_rules.gd": "56682a60afc47503e961e7ac3e9ca60b11eee43895053f8a458b00f4d88502b2",
+    "editor/docks/daqian/issue_graph.gd": "8bd921757b591cded506d638d4cae5c9d1b0bbb69de53f19cd5ca0a7a222dbcb",
+    "editor/docks/daqian/model_settings.gd": "b14e9924d0b5cce205c416959db077f3d2723c9eed3a278984490f7a1c2aa4f3",
+    "editor/docks/daqian/workspace.gd": "1a277a6d0e042f5d4dd65859ad46cb5961f17c436bf647b68d7a08cf83be9d52"
+  },
+  "local_binaries": {
+    "bin/godot.windows.editor.x86_64.guidance60.exe": {
+      "sha256": "b0cf364ce085b8c7150a05e00502405b1d375fe60055889d40ad124518332ee2",
+      "bytes": 164164096
+    },
+    "bin/godot.windows.editor.x86_64.guidance60.console.exe": {
+      "sha256": "b4fe776a9098e3fcffab9582571a79ffbd1093840063301ea3efb400d511f344",
+      "bytes": 298496
+    }
+  },
+  "build": {
+    "exit_code": 0,
+    "incremental_seconds": 20.65
+  },
+  "reuse": {
+    "basis": "Hash-checked all prior C++/header/JS/Python/GDScript route and fixture inputs; identical to the actually tested b5314cae candidate",
+    "tests": [
+      "55 affected JS checks",
+      "mock HTTP routed guidance plus restart preview",
+      "native Codex routed guidance plus restart preview"
+    ],
+    "changed_inputs": "Mainline Daqian scripts/backends, no changes in our routing/transport logic"
+  },
+  "tests_rerun": [
+    "Windows MSVC editor build",
+    "Four embedded GDScripts byte-for-byte reconstruction, maximum 4096 UTF-8 bytes per literal",
+    "Real editor auto capability/HTTP/CLI regression including new mainline Dock"
+  ],
+  "remote_ci": null,
+  "independent_review": null,
+  "main_delivery": null,
+  "usage": null,
+  "logs": {
+    "editor-capabilities-133-e9d2029a.log": {
+      "sha256": "f599d70b8c65b10021f74f4e0b2be30e0403edbad131147c0324070ba323bc3c",
+      "markers": [
+        "EDITOR_CAPABILITY_ROUTING_HTTP_CLI_OK",
+        "EDITOR_CAPABILITY_ROUTING_OK"
+      ]
+    },
+    "editor-capability-build-133-e9d2029a.log": {
+      "sha256": "ac5b1ec6aa3c18973629f1d8e66c135c7754cac49046cff143e6f25c12b77883",
+      "markers": [
+        "INFO: Time elapsed: 00:00:20.65"
+      ]
+    }
+  }
+}

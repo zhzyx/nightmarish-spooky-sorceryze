@@ -78,7 +78,7 @@ func run_checks() -> void:
 		dock.find_child("CodexModel", true, false).text = "mock-guidance"
 
 	var searched := await act({ "action": "find_targets", "query": "project settings", "limit": 5 })
-	check(searched.get("targets", []).size() == 1, "Target search did not find Project Settings")
+	check(searched.get("targets", []).any(func(item): return item.get("id") == "project_settings"), "Target search did not find Project Settings")
 	var missing := await act({ "action": "describe_target", "target": "missing.target" })
 	check(not missing.get("ok", true) and missing.get("candidates", []).size() <= 5, "Unknown target candidates were not bounded")
 	var invalid := await act({ "action": "start_guidance", "steps": [{ "target": "project_settings", "prepare": { "action": "set_project_setting", "target": "display/window/size/viewport_width", "value": 999 } }] })

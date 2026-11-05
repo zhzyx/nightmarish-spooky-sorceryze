@@ -33,6 +33,8 @@
 #include "core/templates/hash_map.h"
 #include "scene/gui/control.h"
 
+class AIChatEditorRegistry;
+
 // Owned by AIChatDock. All calls run on the editor thread.
 class AIChatEditorControl : public Control {
 	GDCLASS(AIChatEditorControl, Control);
@@ -44,6 +46,13 @@ class AIChatEditorControl : public Control {
 	};
 	static AIChatEditorControl *singleton;
 	HashMap<String, Target> targets;
+	AIChatEditorRegistry *registry = nullptr;
+	struct RoutedRequest {
+		String fingerprint;
+		Dictionary result;
+		uint64_t updated = 0;
+	};
+	HashMap<String, RoutedRequest> routed_requests;
 	Dictionary workflow;
 	ObjectID guidance_timer;
 	ObjectID observed_button;
@@ -91,6 +100,9 @@ public:
 	void suspend_guidance();
 	Dictionary get_state(const PackedStringArray &p_secrets = PackedStringArray()) const;
 	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
+	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
+	Dictionary route_status(const String &p_request_id, const String &p_source) const;
+	Dictionary cancel_route(const Dictionary &p_message, const String &p_reason);
 	void clear_highlight();
 	AIChatEditorControl();
 	~AIChatEditorControl();

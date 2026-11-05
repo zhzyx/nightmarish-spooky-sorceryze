@@ -36,6 +36,7 @@
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;
+class AIChatEditorBridge;
 class Button;
 class CheckBox;
 class ConfirmationDialog;
@@ -373,6 +374,10 @@ class AIChatDock : public EditorDock {
 	ObjectID editor_control_id;
 	AIChatEditorControl *_get_editor_control();
 	Dictionary pending_editor_action;
+	Dictionary pending_external_editor_message;
+	Dictionary _editor_bridge_request(const Dictionary &p_envelope);
+	void _finish_external_editor_request();
+	void _cancel_external_editor_request(const String &p_reason);
 	String pending_action;
 	String pending_command;
 	String pending_cwd;

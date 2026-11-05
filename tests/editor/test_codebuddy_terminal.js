@@ -18,6 +18,9 @@ function fixture(t, overrides = {}) {
 test('Semantic editor requests retain structured arguments and never reach the shell', async t => {
     const { hostActionRequest } = require('../../tools/codebuddy_cli/godot_terminal');
     assert.deepEqual(hostActionRequest('godot-host-action get_editor_state'), { name: 'get_editor_state', arguments: {} });
+    const routed = { intent: 'engine_operation', request_id: 'new-page', operation: { action: 'set_text', target: 'editor.input', value: '你好' } };
+    assert.deepEqual(hostActionRequest('godot-host-action route_engine_message ' + JSON.stringify(routed)), { name: 'route_engine_message', arguments: routed });
+    assert.throws(() => hostActionRequest('godot-host-action route_engine_message {} && echo bypass'));
     const args = { action: 'start_guidance', steps: [{ target: 'project_settings', message: '窗口配置' }] };
     const command = 'godot-host-action editor_action ' + JSON.stringify(args);
     let received;

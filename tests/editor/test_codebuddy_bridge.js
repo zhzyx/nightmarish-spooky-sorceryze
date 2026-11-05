@@ -17,6 +17,7 @@ test('Godot CLI disables automatic title inference without mutating the parent e
 });
 
 test('CLI tools, MCP, hooks and session persistence are disabled', () => {
+    assert(sessionInstructions().includes('route_engine_message'));
     const args = safeArguments('gpt-6.1-sol');
     assert.equal(args[args.indexOf('--tools') + 1], '');
     assert.equal(args[args.indexOf('--setting-sources') + 1], '');
