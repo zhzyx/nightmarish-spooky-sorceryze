@@ -36,6 +36,8 @@ def execute(root, envelope):
             return plan_store.snapshot(db, source)
         if envelope["action"] == "apply":
             return plan_store.apply(db,source,envelope["draft"])
+        if envelope["action"] == "answer":
+            return plan_store.answer(db,source,envelope["draft"])
         raise ValueError("不支持该图操作")
 
 
@@ -61,7 +63,7 @@ def main():
     parser.add_argument("--repo",type=Path,required=True)
     parser.add_argument("--number",type=int)
     parser.add_argument("--expected-user",default="")
-    parser.add_argument("action",choices=["read","apply","serve-stdio"])
+    parser.add_argument("action",choices=["read","apply","answer","serve-stdio"])
     parser.add_argument("--request",type=Path)
     parser.add_argument("--result",type=Path)
     args = parser.parse_args()
@@ -74,7 +76,7 @@ def main():
             result=execute(root,json.loads(raw))
         else:
             envelope={"action":args.action,"number":args.number,"repository":work_items.config(root)[0]["repository"],"expected_user":args.expected_user}
-            if args.action == "apply":
+            if args.action in {"apply","answer"}:
                 if not args.request or args.request.stat().st_size>MAX_REQUEST:
                     raise ValueError("计划请求无效或超长")
                 envelope["draft"]=json.loads(args.request.read_text(encoding="utf-8"))

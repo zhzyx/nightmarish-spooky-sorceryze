@@ -1,0 +1,21 @@
+{
+  "request_id": "daqian-input-20261105",
+  "issue_number": 122,
+  "base": "27e1a4609c63ca7f5753b85683682ec1cb49b1fb",
+  "native_macos": {
+    "state": "passed",
+    "editor_sha256": "16ac037f3392d3801c706ccb67b8f143b23b06f24d5c3a80f464c238b1595494",
+    "scenario": "inputs",
+    "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+  },
+  "observations": [
+    "file picker signal, clipboard button using fixture Image and dropped file route",
+    "automatic image-to-task association and image fan-out",
+    "missing answer blocks only its branch",
+    "cancelled worker terminal receipt before re-run on changed model",
+    "original Issue binding and back navigation",
+    "atomic decision receipt; stale/duplicate responses checked by source tests"
+  ],
+  "live_models": false,
+  "windows": "pending exact candidate"
+}

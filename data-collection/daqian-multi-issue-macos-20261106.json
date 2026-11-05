@@ -1,0 +1,33 @@
+{
+  "request_id": "daqian-parallel-20261105",
+  "issue_number": 124,
+  "macos": {
+    "": {
+      "state": "passed",
+      "editor_sha256": "9eeafd905fd89353f121035850d50a3b257092df86bd67dd901a0b0d7aeffa7c",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "-inputs": {
+      "state": "passed",
+      "editor_sha256": "9eeafd905fd89353f121035850d50a3b257092df86bd67dd901a0b0d7aeffa7c",
+      "scenario": "inputs",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "-multi_issue": {
+      "state": "passed",
+      "editor_sha256": "9eeafd905fd89353f121035850d50a3b257092df86bd67dd901a0b0d7aeffa7c",
+      "scenario": "multi_issue",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  },
+  "verified": [
+    "native editor dispatches two different issue graphs with identical node names",
+    "one Sinan coordination host and two global slots",
+    "worker intervals overlap across issues",
+    "cancelling one issue does not cancel the other",
+    "per-issue run and model histories survive stopping"
+  ],
+  "scope": "local protocol simulation; actual external suppliers deferred by user",
+  "windows": "pending exact head"
+}
