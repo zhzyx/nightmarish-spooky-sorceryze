@@ -11,6 +11,10 @@ on:
         description: Validate only the Windows MSVC editor
         type: boolean
         default: false
+      daqian_build_run:
+        description: Existing MSVC editor artifact for test-only Daqian changes
+        type: string
+        default: ""
       consultation_build_run:
         description: Successful Windows editor run to reuse for consultation native acceptance (no build)
         type: string
@@ -27,7 +31,7 @@ env:
 
 jobs:
   build-windows:
-    if: github.event_name != 'workflow_dispatch' || inputs.consultation_build_run == ''
+    if: github.event_name != 'workflow_dispatch' || (inputs.consultation_build_run == '' && inputs.daqian_build_run == '')
     # Windows 10 with latest image
     runs-on: windows-latest
     name: ${{ matrix.name }}
@@ -182,3 +186,60 @@ jobs:
         with:
           name: consultation-native-report
           path: native-report/*
+
+  daqian-native-reuse:
+    if: github.event_name == 'workflow_dispatch' && inputs.daqian_build_run != ''
+    runs-on: windows-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN: ${{ inputs.daqian_build_run }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Verify original editor build and unchanged inputs
+        shell: pwsh
+        run: |
+          if ($env:SOURCE_RUN -notmatch '^\d+$') { throw 'Numeric source run required' }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:SOURCE_RUN" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $run.path -ne '.github/workflows/windows_builds.yml' -or $run.head_repository.full_name -ne $env:GITHUB_REPOSITORY -or $run.head_branch -ne $env:GITHUB_REF_NAME) { throw 'Wrong build source' }
+          $jobs = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:SOURCE_RUN/jobs" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Missing build job receipt' }
+          $editor = $jobs.jobs | Where-Object { $_.name -eq 'Editor (target=editor)' }
+          foreach ($step in @('Compilation','Upload artifact','Unit tests')) {
+            if (-not ($editor.steps | Where-Object { $_.name -eq $step -and $_.conclusion -eq 'success' })) { throw "Missing successful $step" }
+          }
+          git merge-base --is-ancestor $run.head_sha HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Build is not an ancestor of this candidate' }
+          $changes = @(git diff --name-only $run.head_sha HEAD)
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to compare immutable sources' }
+          foreach ($f in $changes) {
+            if ($f -notmatch '^(data-collection/|design-docs/|gonggong-diting-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(daqian_[a-z_]+\.gd|run_daqian_graph\.py|run_ai_chat_tab_order\.py)$)') { throw "Build or runtime input changed: $f" }
+          }
+          New-Item -ItemType Directory -Force native-report | Out-Null
+          @{build_sha=$run.head_sha; test_sha=$env:GITHUB_SHA; build_run=$env:SOURCE_RUN} | ConvertTo-Json | Set-Content native-report/input.json
+          gh run download $env:SOURCE_RUN --repo $env:GITHUB_REPOSITORY --name windows-editor --dir native-editor
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to read original editor artifact' }
+      - name: Verify native graph, entry, and multi-provider loopback
+        shell: pwsh
+        run: |
+          $exe = "native-editor/godot.windows.editor.x86_64.exe"
+          foreach ($scenario in @('graph','entry','parallel')) {
+            python tests/editor/run_daqian_graph.py --scenario $scenario --godot $exe --report "native-report/$scenario.json"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          python tests/editor/run_ai_chat_tab_order.py --godot $exe --report native-report/tabs.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tests/editor/daqian_model_harness.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: daqian-windows-native
+          path: native-report/

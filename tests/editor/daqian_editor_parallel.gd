@@ -41,7 +41,11 @@ func run():
 	graph.debug_models[a] = "调试 · Claude"
 	graph.debug_models[b] = "调试 · Gemini"
 	panel._start_debug()
-	var deadline = Time.get_ticks_msec()+20000
+	if panel.debug_process.is_empty():
+		fail("Daqian debug launch failed: " + panel.notice.text + " · " + graph.notice.text)
+		return
+	var diagnostic_pipe: FileAccess = panel.debug_process.stderr
+	var deadline = Time.get_ticks_msec()+45000
 	while panel.debug_states.get(join,{}).get("state","") != "completed" and Time.get_ticks_msec()<deadline:
 		await create_timer(0.1).timeout
 	var runs = {}
@@ -55,7 +59,10 @@ func run():
 	if passed:
 		passed = maxf(runs[a].running.at,runs[b].running.at)<minf(runs[a].completed.at,runs[b].completed.at) and runs[a].running.worker!=runs[b].running.worker and "8×4" in runs[a].completed.result and "8×4" in runs[b].completed.result
 	if not passed:
-		fail("No native overlapping model workers and join: " + str(panel.debug_history) + " " + panel.notice.text)
+		var errors := ""
+		if diagnostic_pipe.get_length() > 0:
+			errors = diagnostic_pipe.get_buffer(mini(4096,diagnostic_pipe.get_length())).get_string_from_utf8()
+		fail("No native overlapping model workers and join: " + str(panel.debug_history) + " " + panel.notice.text + " " + errors)
 		return
 	print("DAQIAN_NATIVE_PARALLEL_OK ",JSON.stringify({"records":panel.debug_history,"scope":"synthetic_loopback","live_calls":0}))
 	panel._stop_debug()

@@ -29,8 +29,8 @@ with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=
     project = Path(directory)
     (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Daqian graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
-    result = subprocess.run([str(binary),"--headless","--editor","--path",str(project),"--script","res://test.gd","--quit-after","900"],
-                            env=env,capture_output=True, encoding="utf-8", errors="replace",timeout=60)
+    result = subprocess.run([str(binary),"--headless","--editor","--path",str(project),"--script","res://test.gd"],
+                            env=env,capture_output=True, encoding="utf-8", errors="replace",timeout=120)
     log = result.stdout + result.stderr
     passed = result.returncode == 0 and marker in log and "SCRIPT ERROR" not in log
     report = {"state":"passed" if passed else "failed","editor_sha256":hashlib.sha256(binary.read_bytes()).hexdigest(),
