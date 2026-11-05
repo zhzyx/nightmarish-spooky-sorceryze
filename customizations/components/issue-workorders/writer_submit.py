@@ -119,6 +119,7 @@ def issue_receipt(repo, repository, actor, branch, parent, tree, message):
             input={
                 "branch": {"repositoryNameWithOwner": repository, "branchName": branch},
                 "expectedHeadOid": parent,
+                "fileChanges": {"additions": [], "deletions": []},
                 "message": {"headline": title, "body": body},
             },
         )
