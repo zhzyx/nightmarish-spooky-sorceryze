@@ -40,13 +40,12 @@
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/button.h"
-#include "scene/gui/check_box.h"
 #include "scene/gui/dialogs.h"
-#include "scene/gui/file_dialog.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/timer.h"
+#include "servers/display/display_server.h"
 
 GongGongPanel::GongGongPanel() {
 	set_name("GongGongPage");
@@ -57,6 +56,7 @@ GongGongPanel::GongGongPanel() {
 		python_default = workspace_default.path_join("project/runtime/python/python.exe");
 	}
 	EDITOR_DEF("gonggong/python", python_default);
+	EDITOR_DEF("gonggong/gh", "");
 	const String saved_python = EDITOR_GET("gonggong/python");
 	const bool explicit_runtime = !OS::get_singleton()->get_environment("GONGGONG_PYTHON").is_empty();
 	if (!python_default.is_empty() && (explicit_runtime || saved_python.is_empty() || !FileAccess::exists(saved_python))) {
@@ -101,7 +101,7 @@ GongGongPanel::GongGongPanel() {
 	}
 	Button *setup_button = memnew(Button);
 	setup_button->set_name("GongGongEnvironmentSetup");
-	setup_button->set_text(U"本地配置点火器（Python / Node / Git）");
+	setup_button->set_text(U"AI 自动配置本地运行环境");
 	setup_button->connect("pressed", callable_mp(this, &GongGongPanel::open_setup));
 	add_child(setup_button);
 	setup_rollback = memnew(Button);
@@ -113,37 +113,33 @@ GongGongPanel::GongGongPanel() {
 	setup_dialog->set_name("GongGongRuntimeSetup");
 	// Keep configuration available alongside independent editor approvals.
 	setup_dialog->set_exclusive(false);
-	setup_dialog->set_title(U"共工本地配置点火器");
-	setup_dialog->set_ok_button_text(U"部署并自检，完成后继续原需求");
+	setup_dialog->set_title(U"独立 AI 配置 Agent");
+	setup_dialog->set_force_native(true);
+	setup_dialog->set_min_size(Size2i(760, 480));
+	setup_dialog->set_ok_button_text(U"重新运行 AI 配置 Agent");
+	setup_dialog->get_cancel_button()->hide();
 	VBoxContainer *setup_fields = memnew(VBoxContainer);
 	setup_dialog->add_child(setup_fields);
 	Label *setup_notice = memnew(Label);
-	setup_notice->set_text(U"选择需要部署的组件。优先复用本机已有运行库；缺失时可从已解压的共工完整包选择 project/runtime 目录。\n部署仅写当前工作区，不修改系统环境变量；失败保留日志并回退本次文件变更。");
+	setup_notice->set_text(U"AI 自动配置 Python、Node.js、Git 与 GitHub CLI；缺失的 GitHub CLI 会从官方校验包安装到当前工作区。\n配置完成后检查 GitHub 登录和仓库访问，需要账号授权时打开官方网页登录；通过后继续原需求。");
 	setup_notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	setup_fields->add_child(setup_notice);
 	setup_missing = memnew(Label);
 	setup_missing->set_name("GongGongMissingComponents");
 	setup_fields->add_child(setup_missing);
-	for (int i = 0; i < 3; i++) {
-		setup_components[i] = memnew(CheckBox);
-		setup_components[i]->set_text(i == 0 ? "Python" : i == 1 ? "Node.js"
-																 : "Git");
-		setup_components[i]->set_pressed(true);
-		setup_fields->add_child(setup_components[i]);
-	}
-	setup_source = memnew(LineEdit);
-	setup_source->set_name("GongGongRuntimeSource");
-	setup_source->set_placeholder(U"可选：完整包中的 project/runtime 目录");
-	setup_fields->add_child(setup_source);
-	Button *source_button = memnew(Button);
-	source_button->set_text(U"选择运行库来源目录…");
-	source_button->connect("pressed", callable_mp(this, &GongGongPanel::open_setup_source));
-	setup_fields->add_child(source_button);
-	setup_source_dialog = memnew(FileDialog);
-	setup_source_dialog->set_access(FileDialog::ACCESS_FILESYSTEM);
-	setup_source_dialog->set_file_mode(FileDialog::FILE_MODE_OPEN_DIR);
-	setup_source_dialog->connect("dir_selected", callable_mp(this, &GongGongPanel::choose_setup_source));
-	setup_dialog->add_child(setup_source_dialog);
+	setup_progress = memnew(TextEdit);
+	setup_progress->set_name("GongGongSetupProgress");
+	setup_progress->set_editable(false);
+	setup_progress->set_line_wrapping_mode(TextEdit::LINE_WRAPPING_BOUNDARY);
+	setup_progress->set_custom_minimum_size(Size2(720, 280));
+	setup_progress->set_v_size_flags(SIZE_EXPAND_FILL);
+	setup_fields->add_child(setup_progress);
+	setup_github_login = memnew(Button);
+	setup_github_login->set_name("GongGongGitHubLogin");
+	setup_github_login->set_text(U"登录 GitHub 并继续原需求");
+	setup_github_login->connect("pressed", callable_mp(this, &GongGongPanel::login_github));
+	setup_github_login->hide();
+	setup_fields->add_child(setup_github_login);
 	setup_dialog->connect("confirmed", callable_mp(this, &GongGongPanel::start_setup));
 	add_child(setup_dialog);
 	output = memnew(TextEdit);
@@ -184,10 +180,23 @@ bool GongGongPanel::ensure_environment() {
 	const String current_python = EDITOR_GET("gonggong/python");
 	const String node = gonggong_runtime_path(root, "GONGGONG_NODE", "project/runtime/node/node.exe", "node.exe");
 	const String git = gonggong_runtime_path(root, "GONGGONG_GIT", "project/runtime/git/cmd/git.exe", "git.exe");
-	const bool ready = !root.is_empty() && FileAccess::exists(root.path_join("tools/gonggong_bridge.py")) && FileAccess::exists(current_python) && !node.is_empty() && !git.is_empty();
+	String gh = EDITOR_GET("gonggong/gh");
+	if (!FileAccess::exists(gh)) {
+		gh = gonggong_runtime_path(root, "GONGGONG_GH", "project/runtime/gh/bin/gh.exe", "gh.exe");
+	}
+	if (gh.is_empty()) {
+		for (const String &candidate : { OS::get_singleton()->get_environment("ProgramFiles").path_join("GitHub CLI/gh.exe"), OS::get_singleton()->get_environment("LOCALAPPDATA").path_join("Microsoft/WinGet/Links/gh.exe") }) {
+			if (FileAccess::exists(candidate)) {
+				gh = candidate;
+				break;
+			}
+		}
+	}
+	const bool ready = !root.is_empty() && FileAccess::exists(root.path_join("tools/gonggong_bridge.py")) && FileAccess::exists(current_python) && !node.is_empty() && !git.is_empty() && !gh.is_empty();
 	if (ready) {
 		OS::get_singleton()->set_environment("GONGGONG_NODE", node);
 		OS::get_singleton()->set_environment("GONGGONG_GIT", git);
+		OS::get_singleton()->set_environment("GONGGONG_GH", gh);
 		return true;
 	}
 	PackedStringArray missing;
@@ -200,33 +209,104 @@ bool GongGongPanel::ensure_environment() {
 	if (git.is_empty()) {
 		missing.push_back("Git");
 	}
+	if (gh.is_empty()) {
+		missing.push_back("GitHub CLI (gh)");
+	}
 	if (root.is_empty() || !FileAccess::exists(root.path_join("tools/gonggong_bridge.py"))) {
 		missing.push_back(U"共工工作区");
 	}
 	setup_missing->set_text(String(U"缺失配置：") + String(", ").join(missing));
 	workspace->set_text(root);
 	python->set_text(current_python);
-	if (output) {
-		output->set_text(U"检测到本地运行环境缺失，已打开配置点火器。原需求保留，完成部署与自检后继续；取消不会安装任何组件。");
-	}
+	set_setup_status(U"准备启动：检测到本地运行环境缺失。\n原需求已保留；配置完成后会自动继续。");
 	if (is_inside_tree() && worker < 0) {
-		setup_dialog->popup_centered(Size2i(640, 360));
+		setup_dialog->popup_centered(Size2i(760, 480));
+		if (!setup_attempted) {
+			setup_attempted = true;
+			callable_mp(this, &GongGongPanel::start_setup).call_deferred();
+		}
 	}
 	return false;
 }
 
+bool GongGongPanel::start_ai_setup(const Array &p_missing) {
+	if (OS::get_singleton()->get_name() != "Windows" || p_missing.is_empty()) {
+		return false;
+	}
+	PackedStringArray names;
+	for (const Variant &component : p_missing) {
+		const String name = String(component).to_lower();
+		names.push_back(name == "python" ? "Python" : name == "node" ? "Node.js"
+						: name == "gh"								 ? "GitHub CLI (gh)"
+						: name == "github_auth"						 ? String(U"GitHub 登录")
+																	 : name.capitalize());
+	}
+	setup_missing->set_text(String(U"缺失配置：") + String(", ").join(names));
+	set_setup_status(U"准备启动：引擎内对话已暂停并保留。\n配置完成后会自动恢复这条请求。");
+	setup_dialog->popup_centered(Size2i(760, 480));
+	if (worker < 0) {
+		setup_attempted = true;
+		start_setup();
+	}
+	return true;
+}
+
 void GongGongPanel::open_setup() {
 	if (worker < 0) {
-		setup_dialog->popup_centered(Size2i(640, 360));
+		setup_missing->set_text(U"复检：Python、Node.js、Git、GitHub CLI 与 GitHub 访问");
+		set_setup_status(U"准备启动：将重新检查当前工作区的完整运行环境。");
+		setup_dialog->popup_centered(Size2i(760, 480));
+		start_setup();
 	}
 }
 
-void GongGongPanel::open_setup_source() {
-	setup_source_dialog->popup_centered_ratio();
+void GongGongPanel::set_setup_status(const String &p_status) {
+	const String context = String(U"上下文\n工作区：") + workspace->get_text().strip_edges() + "\n" + setup_missing->get_text() +
+			U"\n执行通道：独立 Codex 配置 Agent（绕开共工需求、工单与桥接流程）\n原需求：已保留，配置成功后自动继续\n\n实时进度\n" + p_status;
+	if (setup_progress) {
+		setup_progress->set_text(context);
+	}
+	if (output) {
+		output->set_text(p_status);
+	}
 }
 
-void GongGongPanel::choose_setup_source(const String &p_directory) {
-	setup_source->set_text(p_directory);
+void GongGongPanel::refresh_setup_progress() {
+	if (setup_progress_path.is_empty() || !FileAccess::exists(setup_progress_path)) {
+		return;
+	}
+	const Variant parsed = JSON::parse_string(FileAccess::get_file_as_string(setup_progress_path));
+	if (parsed.get_type() != Variant::DICTIONARY) {
+		return;
+	}
+	const Dictionary progress = parsed;
+	const String stage = progress.get("stage", String());
+	const String message = progress.get("message", String());
+	String stage_label = stage;
+	if (stage == "context") {
+		stage_label = U"1/5 检查上下文";
+	} else if (stage == "discovery") {
+		stage_label = U"2/5 发现运行库";
+	} else if (stage == "selection") {
+		stage_label = U"3/5 Agent 选择";
+	} else if (stage == "validation") {
+		stage_label = U"4/5 安全校验";
+	} else if (stage == "self_check") {
+		stage_label = U"5/5 本地自检";
+	} else if (stage == "github_install") {
+		stage_label = U"安装 GitHub CLI";
+	} else if (stage == "github_action_required") {
+		stage_label = U"等待 GitHub 授权或权限修复";
+	} else if (stage == "completed") {
+		stage_label = U"完成";
+	} else if (stage == "failed") {
+		stage_label = U"失败";
+	}
+	const String status = (stage_label.is_empty() ? String() : "[" + stage_label + "] ") + message;
+	if (!status.is_empty() && status != setup_last_progress) {
+		setup_last_progress = status;
+		set_setup_status(status);
+	}
 }
 
 void GongGongPanel::start_setup() {
@@ -237,18 +317,69 @@ void GongGongPanel::rollback_setup() {
 	run_setup(true);
 }
 
+void GongGongPanel::login_github() {
+	if (worker >= 0 || !FileAccess::exists(setup_github_path)) {
+		return;
+	}
+	const String root = workspace->get_text().strip_edges();
+	const String script = root.path_join("tools/check_gonggong_github.ps1");
+	if (!FileAccess::exists(script)) {
+		set_setup_status(U"缺少 GitHub 登录检查脚本，原需求继续保留。");
+		return;
+	}
+	const String shell = OS::get_singleton()->get_environment("SystemRoot").path_join("System32/WindowsPowerShell/v1.0/powershell.exe");
+	result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-github-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
+	List<String> args;
+	for (const String &arg : { String("-NoProfile"), String("-ExecutionPolicy"), String("RemoteSigned"), String("-File"), script, String("-Workspace"), root, String("-Gh"), setup_github_path, String("-Out"), result_path, String("-Login") }) {
+		args.push_back(arg);
+	}
+	ProcessID pid = 0;
+	const bool interactive = DisplayServer::get_singleton()->get_name() != "headless";
+	if (OS::get_singleton()->create_process(shell, args, &pid, interactive) != OK) {
+		set_setup_status(U"无法打开 GitHub 登录窗口，请点击登录按钮重试。");
+		return;
+	}
+	worker = pid;
+	setup_running = true;
+	setup_github_authenticating = true;
+	setup_progress_path.clear();
+	setup_github_login->set_disabled(true);
+	setup_dialog->get_ok_button()->set_disabled(true);
+	set_setup_status(String(U"[等待 GitHub 登录] 已打开官方登录终端。按终端提示在浏览器完成账号授权；窗口关闭后将自动复检仓库访问并继续原需求。") + setup_agent_details);
+	timer->start();
+}
+
+void GongGongPanel::finish_setup_github(const Dictionary &p_github) {
+	setup_github_login->set_disabled(false);
+	if (!bool(p_github.get("ok", false))) {
+		setup_github_login->show();
+		const String error = p_github.get("error", String("github_check_failed"));
+		set_setup_status(String(U"[等待 GitHub 访问] 本地运行库已配置，原需求继续保留。\n") + (error == "gh_unauthenticated" ? String(U"需要完成 GitHub 账号登录，授权后会自动继续。") : String(U"请确认当前账号可以访问工作区仓库，且仓库已启用 Issues。")) + "\n" + error + setup_agent_details);
+		return;
+	}
+	setup_github_login->hide();
+	set_setup_status(String(U"[完成] 本地运行库、GitHub 登录和仓库读取检查均已通过。正在恢复原需求。\n仓库：") + String(p_github.get("repository", String())) + setup_agent_details);
+	if (setup_completed.is_valid()) {
+		setup_completed.call_deferred();
+	}
+}
+
 void GongGongPanel::run_setup(bool p_rollback) {
 	if (worker >= 0) {
 		return;
 	}
 	const String root = workspace->get_text().strip_edges();
-	const String script = root.path_join("tools/configure_gonggong_runtime.ps1");
+	const String script = root.path_join(p_rollback ? "tools/configure_gonggong_runtime.ps1" : "tools/run_gonggong_config_agent.ps1");
 	if (!FileAccess::exists(script)) {
-		output->set_text(U"当前工作区缺少配置点火器脚本，请选择包含 tools/configure_gonggong_runtime.ps1 的完整共工工作区。");
+		set_setup_status(p_rollback ? U"失败：当前工作区缺少运行库回退脚本。" : U"失败：当前工作区缺少独立 AI 配置 Agent 启动脚本。");
 		return;
 	}
 	const String shell = OS::get_singleton()->get_environment("SystemRoot").path_join("System32/WindowsPowerShell/v1.0/powershell.exe");
 	result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-setup-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
+	setup_progress_path = result_path.get_basename() + ".progress.json";
+	setup_last_progress.clear();
+	setup_github_authenticating = false;
+	setup_github_login->hide();
 	List<String> args;
 	for (const String &arg : { String("-NoProfile"), String("-NonInteractive"), String("-ExecutionPolicy"), String("RemoteSigned"), String("-File"), script, String("-Workspace"), root, String("-Out"), result_path }) {
 		args.push_back(arg);
@@ -257,38 +388,35 @@ void GongGongPanel::run_setup(bool p_rollback) {
 		args.push_back("-Rollback");
 		args.push_back(setup_receipt);
 	} else {
-		PackedStringArray components;
-		for (int i = 0; i < 3; i++) {
-			if (setup_components[i]->is_pressed()) {
-				components.push_back(i == 0 ? "python" : i == 1 ? "node"
-																: "git");
-			}
+		args.push_back("-Progress");
+		args.push_back(setup_progress_path);
+		const String codex = EDITOR_GET("ai_chat/codex_entry");
+		const String codex_model = EDITOR_GET("ai_chat/codex_model");
+		if (!codex.strip_edges().is_empty()) {
+			args.push_back("-Codex");
+			args.push_back(codex.strip_edges());
 		}
-		if (components.is_empty()) {
-			output->set_text(U"请至少选择一个需要部署的组件。");
-			return;
-		}
-		args.push_back("-Components");
-		args.push_back(String(",").join(components));
-		if (!setup_source->get_text().strip_edges().is_empty()) {
-			args.push_back("-SourceRuntime");
-			args.push_back(setup_source->get_text().strip_edges());
+		if (!codex_model.strip_edges().is_empty()) {
+			args.push_back("-Model");
+			args.push_back(codex_model.strip_edges());
 		}
 		setup_previous["workspace"] = EDITOR_GET("gonggong/workspace");
 		setup_previous["python"] = EDITOR_GET("gonggong/python");
-		for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("PATH") }) {
+		setup_previous["gh"] = EDITOR_GET("gonggong/gh");
+		for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("GONGGONG_GH"), String("PATH") }) {
 			setup_previous[name] = OS::get_singleton()->get_environment(name);
 		}
 	}
 	ProcessID pid = 0;
 	if (OS::get_singleton()->create_process(shell, args, &pid, false) != OK) {
-		output->set_text(U"无法启动本机 PowerShell 配置点火器。原需求与环境未变更。");
+		set_setup_status(U"失败：无法启动本机 PowerShell 配置点火器。原需求与环境未变更。");
 		return;
 	}
 	worker = pid;
 	setup_running = true;
 	setup_rolling_back = p_rollback;
-	output->set_text(p_rollback ? U"正在回退本次运行库部署…" : U"正在部署选定的本地运行库并执行共工自检…");
+	setup_dialog->get_ok_button()->set_disabled(true);
+	set_setup_status(p_rollback ? U"正在回退本次运行库部署…" : U"[启动] 独立 Agent 进程已创建，正在读取本机上下文…");
 	timer->start();
 }
 
@@ -339,12 +467,17 @@ void GongGongPanel::run_action(const String &p_action) {
 
 void GongGongPanel::poll() {
 	if (OS::get_singleton()->is_process_running(worker)) {
+		if (setup_running) {
+			refresh_setup_progress();
+		}
 		return;
 	}
 	timer->stop();
 	worker = -1;
 	if (setup_running) {
+		refresh_setup_progress();
 		setup_running = false;
+		setup_dialog->get_ok_button()->set_disabled(false);
 		Dictionary result;
 		if (FileAccess::exists(result_path)) {
 			const Variant parsed = JSON::parse_string(FileAccess::get_file_as_string(result_path));
@@ -352,42 +485,56 @@ void GongGongPanel::poll() {
 				result = parsed;
 			}
 		}
+		if (setup_github_authenticating) {
+			setup_github_authenticating = false;
+			finish_setup_github(result);
+			return;
+		}
 		if (!bool(result.get("ok", false))) {
-			output->set_text(String(U"本地环境部署尚未完成，原需求保留。可修复后重试。\n") + String(result.get("error", U"点火器未返回结果")) + "\n" + result_path);
+			const String last_stage = setup_last_progress.is_empty() ? String() : String(U"\n最后阶段：") + setup_last_progress;
+			set_setup_status(String(U"[失败] AI 配置 Agent 尚未完成环境配置，原需求仍保留。\n") + String(result.get("error", U"配置 Agent 未返回结果")) + last_stage + U"\n结果：" + result_path + U"\n进度记录：" + setup_progress_path);
 			return;
 		}
 		if (setup_rolling_back) {
 			EditorSettings::get_singleton()->set("gonggong/workspace", setup_previous.get("workspace", String()));
 			EditorSettings::get_singleton()->set("gonggong/python", setup_previous.get("python", String()));
-			for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("PATH") }) {
+			EditorSettings::get_singleton()->set("gonggong/gh", setup_previous.get("gh", String()));
+			for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("GONGGONG_GH"), String("PATH") }) {
 				OS::get_singleton()->set_environment(name, setup_previous.get(name, String()));
 			}
 			python->set_text(EDITOR_GET("gonggong/python"));
 			setup_rollback->set_disabled(true);
 			EditorSettings::save();
-			output->set_text(String(U"已回退本次部署并恢复编辑器会话环境；日志和文件恢复副本保留。\n") + result_path);
+			set_setup_status(String(U"[完成] 已回退本次部署并恢复编辑器会话环境；日志和文件恢复副本保留。\n结果：") + result_path);
 			return;
 		}
 		const String deployed_python = result.get("python", String());
 		const String deployed_node = result.get("node", String());
 		const String deployed_git = result.get("git", String());
-		if (!FileAccess::exists(deployed_python) || !FileAccess::exists(deployed_node) || !FileAccess::exists(deployed_git)) {
-			output->set_text(U"点火器返回的运行库路径无效，未恢复原需求。");
+		const String deployed_gh = result.get("gh", String());
+		if (!FileAccess::exists(deployed_python) || !FileAccess::exists(deployed_node) || !FileAccess::exists(deployed_git) || !FileAccess::exists(deployed_gh)) {
+			set_setup_status(U"[失败] 点火器返回的运行库路径无效，原需求继续保留。");
 			return;
 		}
 		EditorSettings::get_singleton()->set("gonggong/workspace", workspace->get_text().strip_edges());
 		EditorSettings::get_singleton()->set("gonggong/python", deployed_python);
+		EditorSettings::get_singleton()->set("gonggong/gh", deployed_gh);
 		OS::get_singleton()->set_environment("GONGGONG_PYTHON", deployed_python);
 		OS::get_singleton()->set_environment("GONGGONG_NODE", deployed_node);
 		OS::get_singleton()->set_environment("GONGGONG_GIT", deployed_git);
+		OS::get_singleton()->set_environment("GONGGONG_GH", deployed_gh);
+		setup_github_path = deployed_gh;
 		OS::get_singleton()->set_environment("PATH", deployed_node.get_base_dir() + ";" + deployed_git.get_base_dir() + ";" + String(setup_previous.get("PATH", String())));
 		python->set_text(deployed_python);
 		setup_receipt = result.get("receipt", String());
 		setup_rollback->set_disabled(setup_receipt.is_empty());
 		EditorSettings::save();
-		output->set_text(String(U"本地运行库与共工自检通过。正在恢复原需求；模型连接与 GitHub 登录仍由实际请求验证。\n") + result_path);
-		if (setup_completed.is_valid()) {
-			setup_completed.call_deferred();
+		const Dictionary agent = result.get("agent", Dictionary());
+		setup_agent_details = String(U"\nAgent 摘要：") + String(agent.get("summary", U"已选择完整运行环境")) + U"\nAgent 日志：" + String(agent.get("log", String())) + U"\n配置结果：" + result_path;
+		const Dictionary github = result.get("github", Dictionary());
+		finish_setup_github(github);
+		if (String(github.get("error", String())) == "gh_unauthenticated" && DisplayServer::get_singleton()->get_name() != "headless") {
+			callable_mp(this, &GongGongPanel::login_github).call_deferred();
 		}
 		return;
 	}

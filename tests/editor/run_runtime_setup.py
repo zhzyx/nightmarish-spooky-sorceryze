@@ -5,10 +5,17 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+FAKE_CODEX = r"""$index=[Array]::IndexOf($args,'--output-last-message')
+$source=$env:GONGGONG_RUNTIME_SOURCE
+$plan=@{ok=$true;summary='isolated automatic Agent fixture';python=(Join-Path $source 'python/python.exe');node=(Join-Path $source 'node/node.exe');git=(Join-Path $source 'git/cmd/git.exe');gh=$env:GONGGONG_GH;source_runtime=''}|ConvertTo-Json
+[IO.File]::WriteAllText($args[$index+1],$plan,[Text.UTF8Encoding]::new($false))
+Write-Output '{"type":"turn.completed"}'
+"""
 
 
 def main():
@@ -23,6 +30,10 @@ def main():
         root = Path(folder)
         (root / "CURRENT_FRAMEWORK.json").write_text("{}")
         (root / "tools").mkdir()
+        shutil.copyfile(ROOT / "tools/configure_gonggong_runtime.ps1", root / "tools/configure_gonggong_runtime.ps1")
+        shutil.copyfile(ROOT / "tools/run_gonggong_config_agent.ps1", root / "tools/run_gonggong_config_agent.ps1")
+        shutil.copyfile(ROOT / "tools/check_gonggong_github.ps1", root / "tools/check_gonggong_github.ps1")
+        shutil.copyfile(ROOT / "tools/install_gonggong_github_cli.ps1", root / "tools/install_gonggong_github_cli.ps1")
         doctor = root / "tools/gonggong_bridge.py"
         doctor.write_text(
             'import json,os\nassert all(os.path.isfile(os.environ[k]) for k in ["GONGGONG_PYTHON","GONGGONG_NODE","GONGGONG_GIT"])\nprint(json.dumps({"ok":True}))\n'
@@ -89,6 +100,29 @@ def main():
         failure = run("-SourceRuntime", str(bad), success=False)
         assert "checksum mismatch" in failure["error"], failure
         cases += ["tampered source rejected before execution"]
+        doctor.write_text(
+            'import json,os\nassert all(os.path.isfile(os.environ[k]) for k in ["GONGGONG_PYTHON","GONGGONG_NODE","GONGGONG_GIT"])\nprint(json.dumps({"ok":True}))\n'
+        )
+        fake_codex = root / "fake-codex.ps1"
+        fake_codex.write_text(FAKE_CODEX, encoding="utf-8")
+        agent_result = root / "agent-result.json"
+        agent_env = dict(os.environ, GONGGONG_RUNTIME_SOURCE=str(args.source.resolve()), GONGGONG_GH=sys.executable)
+        agent = subprocess.run(
+            [
+                str(shell), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned",
+                "-File", str(root / "tools/run_gonggong_config_agent.ps1"),
+                "-Workspace", str(root), "-Out", str(agent_result), "-Codex", str(fake_codex),
+            ],
+            env=agent_env,
+            capture_output=True,
+            timeout=180,
+        )
+        agent_value = json.loads(agent_result.read_text(encoding="utf-8-sig"))
+        assert agent.returncode == 0 and agent_value["ok"], (agent.stderr.decode(errors="replace"), agent_value)
+        assert agent_value["agent"]["independent_from_gonggong"] is True
+        assert all(Path(agent_value[k]).is_file() for k in ["python", "node", "git", "gh"])
+        assert agent_value["github"]["ok"] is False and agent_value["github"]["error"] == "gh_unauthenticated"
+        cases += ["independent read-only AI Agent selects and validates a complete runtime package"]
         launcher = root / "tools/launch_gonggong_editor.ps1"
         shutil.copyfile(ROOT / "tools/launch_gonggong_editor.ps1", launcher)
         editor = root / "project/godot/bin/godot.windows.editor.x86_64.exe"

@@ -4,12 +4,17 @@ param(
     [Parameter(Mandatory=$true)][string]$Out,
     [string]$SourceRuntime,
     [string]$Components = 'python,node,git',
+    [string]$PythonPath,
+    [string]$NodePath,
+    [string]$GitPath,
+    [string]$GhPath,
     [string]$Rollback
 )
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath($Workspace)
 $runtime = Join-Path $root 'project/runtime'
-$entries = @{python='python/python.exe'; node='node/node.exe'; git='git/cmd/git.exe'}
+$entries = @{python='python/python.exe'; node='node/node.exe'; git='git/cmd/git.exe'; gh='gh/bin/gh.exe'}
+$provided = @{python=$PythonPath; node=$NodePath; git=$GitPath; gh=$GhPath}
 $changed = @()
 $receipt = $null
 function Assert-Within([string]$Path, [string]$Base) {
@@ -67,14 +72,22 @@ try {
         exit 0
     }
     $selected = @($Components.Split(',') | Where-Object { $_ })
-    if ($selected.Count -eq 0 -or @($selected | Where-Object { -not $entries.ContainsKey($_) }).Count) { throw 'Choose python, node, or git' }
+    if ($selected.Count -eq 0 -or @($selected | Where-Object { -not $entries.ContainsKey($_) }).Count) { throw 'Choose python, node, git, or gh' }
     $transaction = Assert-Within (Join-Path $runtime ('.gonggong-setup/' + [guid]::NewGuid().ToString('N'))) $root
     New-Item -ItemType Directory -Force -Path $transaction | Out-Null
     $receipt = Join-Path $transaction 'receipt.json'
     $paths = @{}
-    foreach ($name in @('python','node','git')) {
+    $required = @('python','node','git')
+    if ('gh' -in $selected -or $GhPath) { $required += 'gh' }
+    foreach ($name in $required) {
         $local = Join-Path $runtime $entries[$name]
         if (Probe $name $local) { $paths[$name] = $local; continue }
+        if ($provided[$name]) {
+            $candidate = [IO.Path]::GetFullPath($provided[$name])
+            if (-not (Probe $name $candidate)) { throw ('AI-selected component failed execution check: ' + $name) }
+            $paths[$name] = $candidate
+            continue
+        }
         if (-not $SourceRuntime) {
             $command = Get-Command ($name + '.exe') -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
             if ($command -and (Probe $name $command.Source)) { $paths[$name] = $command.Source; continue }
@@ -109,11 +122,12 @@ try {
         $paths[$name] = Join-Path $runtime $entries[$name]
     }
     $env:GONGGONG_PYTHON=$paths.python; $env:GONGGONG_NODE=$paths.node; $env:GONGGONG_GIT=$paths.git
+    if ($paths.gh) { $env:GONGGONG_GH=$paths.gh }
     $env:PATH=(Split-Path -Parent $paths.node)+';'+(Split-Path -Parent $paths.git)+';'+$env:PATH
     $doctor = & $paths.python -X utf8 (Join-Path $root 'tools/gonggong_bridge.py') doctor --workspace $root 2>&1
     if ($LASTEXITCODE -ne 0) { throw ('Runtime probes passed; framework self-check did not pass. ' + ($doctor -join "`n")) }
     if ($receipt) { Write-Json $receipt @{state='configured';workspace=$root;changed=$changed;paths=$paths;global_environment_changed=$false} }
-    Write-Json $Out @{ok=$true;state='configured';python=$paths.python;node=$paths.node;git=$paths.git;receipt=$receipt;changed=$changed;global_environment_changed=$false;chat_verified=$false}
+    Write-Json $Out @{ok=$true;state='configured';python=$paths.python;node=$paths.node;git=$paths.git;gh=$paths.gh;receipt=$receipt;changed=$changed;global_environment_changed=$false;chat_verified=$false}
 } catch {
     $failure=$_.Exception.Message
     $rollbackState='not_needed'

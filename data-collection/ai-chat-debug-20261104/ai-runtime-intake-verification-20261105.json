@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "issue_number": 49,
+  "base_commit": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+  "scope": "Windows AI runtime setup and requirements-intake recovery; source delivery",
+  "isolated_candidate": true,
+  "regression": {
+    "issue_guide_python": {"passed": 13, "failed": 0},
+    "requirements_python": {"passed": 27, "failed": 0},
+    "codebuddy_bridge_node": {"passed": 37, "failed": 0},
+    "codex_bridge_node": {"passed": 9, "failed": 0},
+    "native_intake": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": true,
+      "actual_yanshi_admission": true,
+      "requirements_calls": 11,
+      "development_calls": 8,
+      "fixture_issues_created": 6,
+      "fixture_events": 72,
+      "real_github_writes": false,
+      "editor_sha256": "ebb6ac82e9c81acf9994b8d0d283321d28cc0b4dfb59ad8c4dcf63b18931e279",
+      "artifact_provenance": "Reused the local Windows editor after checking the three affected C++ source blobs match the isolated candidate before mechanical formatting; this is not a new full-candidate build claim."
+    }
+  },
+  "real_service_smokes": {
+    "provider": "CodeBuddy CLI",
+    "model": "kimi-k3",
+    "response_format": "json",
+    "inputs": [
+      {"text": "test", "result": "clarification_required", "parsed": true},
+      {"text": "箭头指的地方 中文乱码", "result": "clarification_required", "parsed": true}
+    ],
+    "image_context_supplied": false,
+    "tools_executed": false,
+    "github_writes": false,
+    "production_execution": false,
+    "reused_evidence": "The same requirements/JSON-mode source was smoke-tested in the source worktree before the explicitly excluded unrelated editor-control instruction was removed. No additional service request was needed for that removal."
+  },
+  "runtime_setup": {
+    "real_independent_codex_agent": "selected and host-validated Python, Node.js, Git and GitHub CLI",
+    "github_cli_version": "2.103.3",
+    "official_archive_sha256": "98d0cfa794721665d7973dd728c78aff7bd836d58f10f6d7a03568eccb0a22e0",
+    "global_environment_changed": false,
+    "github_account_readback": "Current authenticated channel successfully read back Issue #49 with intake-only; this does not prove Issue-write permission."
+  },
+  "boundaries": [
+    "No frozen framework or Agent definitions changed.",
+    "No unrelated project, terminal or semantic editor-control changes included.",
+    "Incomplete drafts cannot create Issues or start development.",
+    "JSON data mode rejects action-bearing responses and requires tools disabled.",
+    "Cross-platform runtime setup and cross-restart recovery remain outside this Windows change.",
+    "Source commit/push is distinct from signed main publication and whole-Issue acceptance."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No provider usage receipt was returned for the real CLI smoke requests.",
+  "host_authority_authenticated": false,
+  "remote_main_verified": false,
+  "diting_consumption_confirmed": false
+}

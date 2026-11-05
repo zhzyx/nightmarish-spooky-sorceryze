@@ -308,6 +308,40 @@ test('Plain JSON output is accepted without inventing tool calls', () => {
     assert(!result.choices[0].message.tool_calls);
 });
 
+test('Explicit JSON data responses accept requirement drafts without an action envelope', () => {
+    const draft = { decision: 'new', title: '测试', category: 'development', goal: '', scope: [], acceptance: [], questions: ['测试哪个功能？'] };
+    for (const result of [
+        { result: JSON.stringify(draft) },
+        { structured_output: draft },
+        { result: JSON.stringify({ content: JSON.stringify(draft), actions: [] }) },
+        { structured_output: { content: draft, actions: [] } },
+    ]) {
+        const response = normalizeResult(result, false, 'permission_disabled', 'json');
+        assert.deepEqual(JSON.parse(response.choices[0].message.content), draft);
+        assert.equal(response.choices[0].finish_reason, 'stop');
+        assert(!response.choices[0].message.tool_calls);
+    }
+    assert.throws(() => normalizeResult({ structured_output: draft }, false), { bridgeCode: 'INVALID_ACTION' });
+});
+
+test('JSON data responses cannot grant tool permission or hide tool actions', () => {
+    const draft = { goal: 'untrusted draft data' };
+    const normalize = value => normalizeResult({ structured_output: value }, false, 'permission_disabled', 'json');
+    assert.throws(() => normalizeResult({ structured_output: draft }, true, 'none', 'json'), { bridgeCode: 'INVALID_REQUEST' });
+    for (const action of [
+        { content: draft, actions: [{ name: 'write_file', arguments: { path: '/tmp/forbidden' } }] },
+        { goal: 'untrusted', tool_calls: [{ name: 'Bash' }] },
+        { content: { goal: 'nested', actions: [{ name: 'Bash' }] }, actions: [] },
+    ]) assert.throws(() => normalize(action), { bridgeCode: 'DATA_ACTIONS_FORBIDDEN' });
+    for (const invalid of [null, [], 'not an object', { content: 'not JSON', actions: [] }]) {
+        assert.throws(() => normalize(invalid), { bridgeCode: 'INVALID_DATA_RESPONSE' });
+    }
+    const input = { model: '', messages: [], available_tools: [], response_format: 'json', tool_context: { permission_enabled: false, tool_rounds: 0, max_tool_rounds: null } };
+    assert.equal(validateInput(input).response_format, 'json');
+    assert.throws(() => validateInput({ ...input, response_format: 'unchecked' }), { bridgeCode: 'INVALID_REQUEST' });
+    assert.throws(() => validateInput({ ...input, tool_context: { ...input.tool_context, permission_enabled: true } }), { bridgeCode: 'INVALID_REQUEST' });
+});
+
 test('Official CLI JSON event arrays use the final result only', () => {
     const events = [
         { type: 'message', role: 'user', content: 'untrusted' },

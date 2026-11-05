@@ -44,27 +44,40 @@ func _run():
 	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
 	dock.find_child("APIModel", true, false).text = "fixture"
 	dock.find_child("APIKey", true, false).text = "intake-unit-session-secret"
-	var runtime_source = OS.get_environment("GONGGONG_TEST_RUNTIME_SOURCE")
-	if not runtime_source.is_empty():
+	var test_codex = OS.get_environment("GONGGONG_TEST_CODEX")
+	if not test_codex.is_empty():
 		settings.set_setting("gonggong/python", folder.path_join("missing-python.exe"))
+		settings.set_setting("ai_chat/codex_entry", test_codex)
 	_send(dock, "Create first feature button")
-	if not runtime_source.is_empty():
+	if not test_codex.is_empty():
 		await create_timer(0.2).timeout
 		var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 		if not setup.visible:
-			push_error("Missing Python did not open the local environment igniter")
+			push_error("Missing Python did not open the automatic AI configuration Agent")
+			quit(1)
+			return
+		if setup.exclusive:
+			push_error("Independent configuration window must not block the preserved chat request")
 			quit(1)
 			return
 		if "Python" not in setup.find_child("GongGongMissingComponents", true, false).text:
-			push_error("Igniter did not list the missing component")
+			push_error("Configuration Agent did not list the missing component")
 			quit(1)
 			return
-		setup.find_child("GongGongRuntimeSource", true, false).text = runtime_source
-		setup.get_ok_button().pressed.emit()
+		var setup_progress = setup.find_child("GongGongSetupProgress", true, false)
+		if setup_progress == null or "上下文" not in setup_progress.text or "独立 Codex 配置 Agent" not in setup_progress.text or "原需求" not in setup_progress.text:
+			push_error("Independent configuration window did not expose preserved request context")
+			quit(1)
+			return
 	for attempt in range(6000):
 		await create_timer(0.02).timeout
 		if FileAccess.file_exists(folder.path_join("first_intake_waiting")):
 			break
+	if not FileAccess.file_exists(folder.path_join("first_intake_waiting")):
+		var stalled_progress = dock.find_child("GongGongSetupProgress", true, false)
+		push_error("Preserved request did not resume after configuration: " + (stalled_progress.text if stalled_progress else "missing progress view"))
+		quit(1)
+		return
 	_send(dock, "Queued feature from requirements phase")
 	if dock.get_meta("queued_message_count", 0) != 1:
 		push_error("Requirement sent during intake was consumed instead of queued")
@@ -116,11 +129,27 @@ func _run():
 	if not _contains(dock, "gh_unauthenticated"):
 		quit(1)
 		return
+	if not test_codex.is_empty():
+		var github_setup = dock.find_child("GongGongRuntimeSetup", true, false)
+		for attempt in range(1200):
+			await create_timer(0.05).timeout
+			if "gh_unauthenticated" in github_setup.find_child("GongGongSetupProgress", true, false).text:
+				break
+		if not github_setup.visible or not github_setup.find_child("GongGongGitHubLogin", true, false).visible:
+			push_error("GitHub authentication failure did not remain visible in the independent configuration window")
+			quit(1)
+			return
 	DirAccess.remove_absolute(folder.path_join("gh_disabled"))
-	_send(dock, "重试")
+	if not test_codex.is_empty():
+		dock.find_child("GongGongGitHubLogin", true, false).pressed.emit()
+	else:
+		_send(dock, "重试")
 	if not await _wait_reply(dock, 7):
 		quit(1)
 		return
+	var bound_issue_before_clarification = settings.get_setting("gonggong/issue_number")
+	var bound_request_before_clarification = settings.get_setting("gonggong/request_id")
+	var issues_before_clarification = FileAccess.get_file_as_string(folder.path_join("fake-issues.json"))
 	_send(dock, "Clarify pending requirement")
 	for attempt in range(500):
 		await create_timer(0.02).timeout
@@ -128,6 +157,10 @@ func _run():
 			break
 	if not _contains(dock, "INTAKE_CLARIFICATION_REQUIRED") or not dock.find_child("Stop", true, false).disabled:
 		push_error("Requirements clarification did not release the active turn")
+		quit(1)
+		return
+	if settings.get_setting("gonggong/issue_number") != bound_issue_before_clarification or settings.get_setting("gonggong/request_id") != bound_request_before_clarification or FileAccess.get_file_as_string(folder.path_join("fake-issues.json")) != issues_before_clarification:
+		push_error("Incomplete requirement changed the Issue binding or published an empty draft")
 		quit(1)
 		return
 	_send(dock, "补充验收：点击后出现状态文字")

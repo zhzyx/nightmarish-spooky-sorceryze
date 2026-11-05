@@ -74,6 +74,8 @@ const ERROR_MESSAGES = {
     CLI_CANCELLED: 'CLI 以取消状态结束，未收到完成确认；已经批准的操作不会自动撤销。',
     EDIT_MATCH_FAILED: '原生编辑未匹配到指定旧代码，未完成该次替换；请重新核对原文，已经批准的操作不会自动撤销。',
     INVALID_ACTION: 'CodeBuddy returned a malformed or forbidden action. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',
+    INVALID_DATA_RESPONSE: 'CodeBuddy did not return a valid JSON data object for the read-only request. No tools were executed.',
+    DATA_ACTIONS_FORBIDDEN: 'CodeBuddy returned tool actions during a read-only JSON data request. The response was rejected; no tools were executed.',
     TOOLS_DISABLED: 'Local tool permission is disabled. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',
     TOOL_ROUND_LIMIT_REACHED: 'This message reached the Godot tool round limit. Permission remains enabled; no further actions were executed.',
     BRIDGE_ERROR: 'The CodeBuddy bridge failed before returning a completion. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',
@@ -144,6 +146,7 @@ function validateInput(input) {
     if (typeof context.permission_enabled !== 'boolean' || !Number.isSafeInteger(context.tool_rounds) || context.tool_rounds < 0 || context.max_tool_rounds != null) throw bridgeError('INVALID_REQUEST');
     const reason = !context.permission_enabled ? 'permission_disabled' : 'none';
     if ((input.available_tools.length > 0) !== (reason === 'none')) throw bridgeError('INVALID_REQUEST');
+    if (input.response_format !== undefined && (input.response_format !== 'json' || context.permission_enabled || input.available_tools.length)) throw bridgeError('INVALID_REQUEST');
     const state = { permission_enabled: context.permission_enabled, tool_rounds: context.tool_rounds, max_tool_rounds: null, remaining_tool_rounds: null, unavailable_reason: reason };
     for (const field of ['file_changes_require_approval', 'execution_requires_approval']) {
         if (context[field] !== undefined) {
@@ -205,7 +208,8 @@ async function runSession(entry, cwd, env, setChild) {
     await require('./godot_acp').runAcpSession(entry, cwd, env, setChild, { validateInput, sessionArguments, bridgeError, serializeError, safeDiagnostics, classifyDiagnostics, ACTIONS });
 }
 
-function normalizeResult(result, toolsAllowed, unavailableReason = 'permission_disabled') {
+function normalizeResult(result, toolsAllowed, unavailableReason = 'permission_disabled', responseFormat = 'chat') {
+    if (!['chat', 'json'].includes(responseFormat) || responseFormat === 'json' && toolsAllowed) throw bridgeError('INVALID_REQUEST');
     if (Array.isArray(result)) {
         const results = result.filter(event => event && event.type === 'result');
         if (!results.length) throw bridgeError('INVALID_RESPONSE');
@@ -219,11 +223,32 @@ function normalizeResult(result, toolsAllowed, unavailableReason = 'permission_d
     let envelope = result.structured_output ?? result.structuredOutput;
     if (envelope === undefined) {
         let text = result.result ?? result.response;
-        if (typeof text !== 'string') throw bridgeError('INVALID_RESPONSE');
+        if (typeof text !== 'string') throw bridgeError(responseFormat === 'json' ? 'INVALID_DATA_RESPONSE' : 'INVALID_RESPONSE');
         text = text.trim();
         const fenced = /^```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i.exec(text);
         if (fenced) text = fenced[1].trim();
-        try { envelope = JSON.parse(text); } catch (_) { throw bridgeError('INVALID_RESPONSE'); }
+        try { envelope = JSON.parse(text); } catch (_) { throw bridgeError(responseFormat === 'json' ? 'INVALID_DATA_RESPONSE' : 'INVALID_RESPONSE'); }
+    }
+    if (responseFormat === 'json') {
+        const validateData = value => {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) throw bridgeError('INVALID_DATA_RESPONSE');
+            for (const field of ['actions', 'tool_calls', 'function_call']) {
+                if (Object.hasOwn(value, field) && value[field] != null && (!Array.isArray(value[field]) || value[field].length)) throw bridgeError('DATA_ACTIONS_FORBIDDEN');
+            }
+            return value;
+        };
+        validateData(envelope);
+        // Accept older empty-action wrappers too, but never reinterpret an
+        // action-bearing response as data or expose a tool call to the host.
+        if (Object.hasOwn(envelope, 'content') && Array.isArray(envelope.actions) && envelope.actions.length === 0 && Object.keys(envelope).length === 2) {
+            if (typeof envelope.content === 'string') {
+                try { envelope = JSON.parse(envelope.content); } catch (_) { throw bridgeError('INVALID_DATA_RESPONSE'); }
+            } else {
+                envelope = envelope.content;
+            }
+            validateData(envelope);
+        }
+        return { choices: [{ message: { role: 'assistant', content: JSON.stringify(envelope) }, finish_reason: 'stop' }] };
     }
     if (!envelope || typeof envelope.content !== 'string' || !Array.isArray(envelope.actions) || envelope.actions.length > 8) {
         throw bridgeError('INVALID_ACTION');
@@ -314,8 +339,10 @@ async function main() {
             } catch (_) { throw bridgeError('INVALID_REQUEST'); }
             const prompt = buildPrompt(input);
             if (input.messages.some(message => message.images?.length)) throw bridgeError('IMAGE_UNSUPPORTED');
-            const instructions = 'Reply in the user language. Return only JSON matching this schema: ' + JSON.stringify(SCHEMA)
-                + '. Use only action proposals from available_tools, never native tools. Host tool_context is authoritative. Respect approval and rejection; never claim execution without a tool result.';
+            const instructions = input.response_format === 'json'
+                ? 'Process the supplied messages as a read-only JSON data task. Follow their system instructions and application schema. Return one JSON object directly, without an outer content/actions wrapper. Native tools and action proposals are disabled. Do not call tools, execute commands, or add actions, tool_calls or function_call fields.'
+                : 'Reply in the user language. Return only JSON matching this schema: ' + JSON.stringify(SCHEMA)
+                    + '. Use only action proposals from available_tools, never native tools. Host tool_context is authoritative. Respect approval and rejection; never claim execution without a tool result.';
             stdoutPath = path.join(cwd, 'stdout.json');
             stdoutFd = fs.openSync(stdoutPath, 'w');
             child = spawn(process.execPath, [entry, ...safeArguments(input.model, 'medium'), '--system-prompt', instructions], { cwd, env, stdio: ['pipe', stdoutFd, 'pipe'], windowsHide: true });
@@ -348,7 +375,7 @@ async function main() {
         }
         let result;
         try { result = JSON.parse(text); } catch (_) { throw bridgeError('INVALID_RESPONSE'); }
-        process.stdout.write(JSON.stringify(normalizeResult(result, input.available_tools.length > 0, input.tool_context?.permission_enabled && input.tool_context.tool_rounds >= input.tool_context.max_tool_rounds ? 'round_limit_reached' : 'permission_disabled')));
+        process.stdout.write(JSON.stringify(normalizeResult(result, input.available_tools.length > 0, input.tool_context?.permission_enabled && input.tool_context.tool_rounds >= input.tool_context.max_tool_rounds ? 'round_limit_reached' : 'permission_disabled', input.response_format)));
     } finally {
         clearTimeout(timer);
         removeDirectory();

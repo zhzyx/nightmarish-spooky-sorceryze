@@ -123,11 +123,15 @@ def enqueue(root, event):
     temporary.replace(pending)
 
 
-def find_gh(env):
+def find_gh(env, root=None):
     """GUI-launched hosts often lack the user's shell PATH; never guess beyond fixed install locations."""
     configured = env.get("GONGGONG_GH")
     if configured:
         return configured if Path(configured).is_file() else None
+    if root is not None:
+        local = Path(root) / "project/runtime/gh/bin/gh.exe"
+        if local.is_file():
+            return str(local)
     found = shutil.which("gh", path=env.get("PATH"))
     if found:
         return found
@@ -157,7 +161,7 @@ def host_environment(root):
     # A deployed local environment (the configuration igniter) is honored before
     # the host's own runtime discovery, but never grants admission by itself.
     env = _igniter.apply_state(root, env)
-    gh = find_gh(env)
+    gh = find_gh(env, root)
     if gh:
         env["GONGGONG_GH"] = gh
     node = env.get("GONGGONG_NODE")

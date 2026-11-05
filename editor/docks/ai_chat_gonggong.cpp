@@ -220,6 +220,12 @@ void AIChatDock::_clear_gonggong_files() {
 }
 
 void AIChatDock::_environment_setup_completed() {
+	if (!igniter_state.is_empty()) {
+		_append(TTR("Editor"), U"独立 AI 配置 Agent 已完成，正在用原消息重新进行 GongGong 入口校验…");
+		_cancel_igniter(String());
+		_igniter_resume();
+		return;
+	}
 	if (issue_guide_state != "environment_setup") {
 		return;
 	}
@@ -755,10 +761,28 @@ void AIChatDock::_poll_issue_guide() {
 			return;
 		}
 		if (!ok) {
+			if ((error == "gh_unavailable" || error == "gh_unauthenticated") && gonggong_panel) {
+				issue_guide_state = "environment_setup";
+				_set_busy(false);
+				Array missing;
+				missing.push_back(error == "gh_unavailable" ? "gh" : "github_auth");
+				if (gonggong_panel->start_ai_setup(missing)) {
+					_append(TTR("Editor"), String(U"GitHub 访问需要配置，已启动独立窗口；通过后会自动继续同一条需求。\n") + error);
+					return;
+				}
+			}
 			issue_guide_state = "agent_error";
 			_append(TTR("Error"), String(U"Yanshi 需求建单尚未完成，开发执行仍暂停。请先修复环境、模型 API 或 GitHub 权限，再回复“重试”。已发送的远程请求可能已生效，重试会按稳定需求 ID 对账。\n") + error);
 			if (error == "gh_unauthenticated") {
 				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));
+			}
+			_set_busy(false);
+			return;
+		}
+		if (String(result.get("phase", String())) == "clarification_required") {
+			issue_guide_state = "agent_questions";
+			for (const Variant &question : Array(result.get("questions", Array()))) {
+				_append(U"Yanshi", question);
 			}
 			_set_busy(false);
 			return;
@@ -910,9 +934,13 @@ bool AIChatDock::_start_igniter(const Array &p_missing) {
 	igniter_outcome = outcome;
 	igniter_missing = p_missing;
 	igniter_fields.clear();
-	igniter_state = "components";
+	igniter_state = "ai_agent";
 	set_meta("gonggong_status", "igniter");
-	_igniter_prompt();
+	if (!gonggong_panel || !gonggong_panel->start_ai_setup(p_missing)) {
+		_cancel_igniter(String());
+		return false;
+	}
+	_append(TTR("Editor"), U"环境检查发现运行库配置失效，已启动独立 AI 配置 Agent；它不经过 GongGong 需求、工单或桥接流程。原消息会在配置通过后自动继续。");
 	_set_busy(false);
 	return true;
 }
@@ -928,9 +956,9 @@ void AIChatDock::_igniter_prompt() {
 			names += String(U"`") + String(igniter_missing[i]) + U"`";
 		}
 		text = String(U"检测到本地环境配置缺失：") + names + U"。为避免把配置问题误判为系统阻塞，已进入本地配置点火器（编辑器本地处理，不调用模型或工具）。\n\n"
-			   U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
-			   U"- 放弃：回复 `取消`\n\n"
-			   U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
+															 U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
+															 U"- 放弃：回复 `取消`\n\n"
+															 U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
 	} else if (igniter_state == "python_path") {
 		text = U"Python 未配置，点火器无法通过桥接部署它。请回复 Python 可执行文件的绝对路径（例如 `/usr/bin/python3` 或 `/opt/homebrew/bin/python3`），编辑器会把它保存为 GongGong 的 Python 路径；回复 `取消` 放弃。";
 	} else if (igniter_state == "location") {
