@@ -1,0 +1,20 @@
+{
+  "issue_number": 134,
+  "request_id": "writer-submit",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "operator": "Sail-Li",
+  "repo_permission": "WRITE",
+  "admin": false,
+  "local_gate": "passed_before_commit",
+  "post_commit_diting": "passed",
+  "host_key_present_in_invocation": false,
+  "global_git_config": "empty",
+  "first_candidate": "804deb148dcdac90eea6f1c4677da739ae35a2e9",
+  "first_api_result": "error without explicit fileChanges, remote branch still at original parent",
+  "corrected_request": "explicit empty additions and deletions",
+  "verified_signature_commit": "fdd2473068954d247268483b4140ab0ecc4a8be2",
+  "github_verified": true,
+  "tree": "c9fbc343ce0f13311800a000f80e7af96dc00e2c",
+  "scope": "intermediate API verification before final submission; closure recorded on Issue 134",
+  "usage": null
+}

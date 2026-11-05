@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "writer-submit-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "writer-submit",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/134",
+  "occurred_at": "2026-11-05T16:35:50.1233236+00:00",
+  "agent": {
+    "definition_sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "origin": "workspace host operating under framework/AGENTS.md",
+    "id": "codex-workspace-operator",
+    "version": "workspace-instructions"
+  },
+  "payload": {
+    "issue_number": 134,
+    "request": "所有具有提交权限的协作者可用同一入口快速签发与自动提交",
+    "usage": null,
+    "intake": "passed"
+  },
+  "evidence_refs": [],
+  "sha256": "a0e4aa6f6f8e4284ddf18f3bba44a8b4ffc886fba9a17d85a7a4cb9900991fca"
+}

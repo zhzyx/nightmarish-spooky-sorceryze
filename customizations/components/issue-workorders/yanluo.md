@@ -4,6 +4,18 @@
 
 当前责任：合契交出已整合的候选、完整贡献快照和范围；阎罗负责最终核查、main 发布、发布后完成度复核、目标工单完成写入与回读；司南继续派发、依赖、父项验收和跨工单协调。已经在执行中的发布须完成原操作者交接，不能抢占或操纵其他工作树。此入口只接管新交接事件；原冻结 Agent 定义中的通用协作职责不扩展为另一位 main 发布者。
 
+## 协作者快速签发和自动提交
+
+在可信工作树中安装 Git、GitHub CLI（`gh` 在 PATH 中）及 Python 3.11+，以本人账号登录 github.com，具备仓库内容写入和 PR 创建权限。Windows、macOS、Linux 共用同一入口。先做业务验证并取得适用的独立审查，在基于最新 main 的任务分支仅暂存本工单内容。将验证范围、结果和必要审查引用写入 PR 说明文件；命令从仓库根运行，替换尖括号参数。
+
+```text
+python customizations/components/issue-workorders/writer_submit.py --issue <编号> --request-id <稳定ID> --title "<提交标题>" --notes-file <PR说明文件>
+```
+
+入口回读同仓库 WRITE、MAINTAIN 或 ADMIN 身份，运行正式门禁，为已暂存的树创建提交，执行提交后谛听核验并推送专属候选分支。GitHub 以当前协作者为作者签署一笔内容树完全相同的签发提交，绑定工单、原提交、树、目标和 main 基线。入口回读服务端签名、作者及唯一父提交后创建 PR，输出其 URL 与签发 SHA。此回执只用于这次 Git 候选提交。
+
+连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。基线或候选发生变化时重新整合验证，协调旧 PR。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
+
 ## 协作人以本人账号交付（PR 或合并队列）
 
 所有当前仓库协作人都是关键可提交角色。身份随 GitHub 仓库协作关系生效和撤销，不维护账号白名单。核对完整名单用 `gh api repos/OWNER/REPO/collaborators --paginate`；只需办理本人交付时，用 `gh api user --jq .login` 和 `gh repo view OWNER/REPO --json viewerPermission` 核对同一认证通道。OWNER/REPO 取自仓库根的 work-items.json 并与 origin 核对。提交作者、Issue 创建者和本地 Git 用户名均不证明当前权限。无法读取完整名单不等于本人没有权限；操作仍以远端实际许可为准。
