@@ -1,0 +1,55 @@
+{
+  "status": "pass",
+  "reviewer_id": "/root/review_kuafu",
+  "independence": "independent_subagent_review",
+  "reviewed_at": "2026-11-05T00:36:33.561609+00:00",
+  "subjects": [
+    {
+      "id": "yanshi",
+      "version": "0.4.1",
+      "candidate_digest": "93e3844ee3eafd6cf032d71e68536e2484c2505aa3e58f88107dcba6e6cb6283"
+    },
+    {
+      "id": "kuafu",
+      "version": "0.5.0",
+      "candidate_digest": "820d6cdc2a3fb4422c174a9ed329c0bc917227d5a052c47d98726c1d8b5832ac"
+    },
+    {
+      "id": "diting",
+      "version": "0.4.1",
+      "candidate_digest": "f578a7a5b6f7aea1f0c7df3d618c347cbf8cca760b3499c87bf9520ba5366fb6"
+    },
+    {
+      "id": "heqi",
+      "version": "0.3.2",
+      "candidate_digest": "fbbfea6faeb5c560d433d4a1f680c30cc9f291a72daa1e73aea26a48be16e4a9"
+    },
+    {
+      "id": "sinan",
+      "version": "0.1.4",
+      "candidate_digest": "7ad67a941a60c41cc75287deca0d9127af11ed968fc9cf238df0a143cfe45b61"
+    }
+  ],
+  "gonggong_framework": "pass",
+  "yuanheng": {
+    "purpose": "pass",
+    "truth": "pass",
+    "economy": "pass",
+    "authority": "pass",
+    "adaptation": "pass",
+    "continuity": "pass"
+  },
+  "evidence": [
+    "5 candidate digests, versions and full admission file records match",
+    "Frozen foundation, lock, Yuanheng core/template, current main gonggong-check and Sinan refresh bytes unchanged",
+    "Quality ownership and package integrity passed",
+    "Kuafu Agent/Skill entry hashes match"
+  ],
+  "conclusion": "Final integrated definition candidate passed. No new semantic conflict. Actual review was read-only.",
+  "limitations": [
+    "blocker_repair_delegation is declarative, not runtime permission enforcement",
+    "No automatic background listener deployed",
+    "Formal gate and publication readback remain separate"
+  ],
+  "author_id": "/root"
+}

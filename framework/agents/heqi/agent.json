@@ -15,7 +15,7 @@
     "skills/gonggong-check/SKILL.md",
     "skills/work-order-coordination/SKILL.md"
   ],
-  "admission_pass": "reviews/review-dedup/heqi-admission.json",
+  "admission_pass": "reviews/kuafu-blockers/heqi-admission.json",
   "host_required_for_execution": true,
   "scope": "authorized_multi_worker_change_comparison_conflict_resolution_and_handoffs",
   "reporting": "agents/heqi/reporting.json",

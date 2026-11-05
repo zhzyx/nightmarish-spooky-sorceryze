@@ -1,0 +1,18 @@
+{
+  "candidate": {
+    "repository": "..",
+    "commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+    "tree": "d910b29a4db02d7ec3356bb6c6938924f3d00442"
+  },
+  "inputs_sha256": "ff0246edf8a0cda9b508fcc2a754d9366fca5b0c094943533ccf0479649ed5e3",
+  "status": "passed",
+  "request_id": "kuafu-blockers-20261105",
+  "issue_number": 109,
+  "kind": "collection.configured",
+  "binding": {
+    "path": "../work-items.json",
+    "sha256": "05859d8af80bbfb944bbf68009d6a73a2e742f5a154a491c1302c80d1edc8a6f"
+  },
+  "file_events_committed": true,
+  "consumer_confirmation": null
+}

@@ -18,7 +18,7 @@
     "agents/diting/skills/data-classify/SKILL.md",
     "agents/diting/skills/data-analyze/SKILL.md"
   ],
-  "admission_pass": "reviews/review-dedup/diting-admission.json",
+  "admission_pass": "reviews/kuafu-blockers/diting-admission.json",
   "host_required_for_execution": true,
   "scope": "authorized_data_analysis_and_optimization_proposals_only",
   "reporting": "agents/diting/reporting.json",

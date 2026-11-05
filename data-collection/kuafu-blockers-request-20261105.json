@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-blockers-request-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-blockers-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-05T00:30:35.779581+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/109",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "definition_sha256": "c7ca0537c72bb987183cd2c173f1be5e69903a4ccfde6ca3e6231a703d36e2ff",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "description": "用户要求夸父即时介入阻塞、重复停滞及关键问题，优先清障或直接修复，并立即登记 bug。用户已明确授权目标仓库；Issue 109 创建及 intake-only 回读通过。",
+    "state": "candidate_prepared_not_activated",
+    "input_tokens": null,
+    "output_tokens": null,
+    "duration_ms": null,
+    "reason": "Host did not provide complete usage or duration measurements",
+    "definition_snapshot_basis": "repository AGENTS.md; not an identity authentication claim"
+  },
+  "evidence_refs": []
+}

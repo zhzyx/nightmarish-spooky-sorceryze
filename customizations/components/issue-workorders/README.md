@@ -1,5 +1,7 @@
 # GitHub Issue 工单适配
 
+夸父按 framework/specs/quality-responsibilities.md 在开发阻塞、用户报告、重复停滞或关键问题事件中即时登记工单。此类 Issue 统一使用唯一 `type:bug`；用稳定阻塞标识查重并保留原任务链接，同一问题追加原单，非 bug 父单保留原类别。首次创建回读前记录待关联状态，失败/回执不明先对账后重试。类别约定不等于已接通自动事件监听或授予工具权限。
+
 Windows 推荐从任务隔离工作树执行 `./tools/run_issue_gate.ps1 -Issue N -RequestId ID`；开发入口加 `-IntakeOnly`。入口探测 Python 3.11+，排除 WindowsApps 别名，复用该仓库或 Git common-dir 所属仓库的运行时，也支持 `-Python` / `GONGGONG_PYTHON` 指定已验证解释器。`-ProbeOnly` 只读输出实际解释器与仓库；不安装运行时、不修改 PATH 或权限。相对 `-Repo` 以调用 cwd 解析，默认仓库以脚本目录解析。
 
 提交门禁先按 `--base-ref`（默认已 fetch 的 `origin/main`）与 HEAD 的 merge-base 到 index 核对整个 PR 的新增/变更证据，包含此前已经提交的修改。有本需求 Diting 事件时，PR 中必须同时包含 JSON 采集证据，顶层 `request_id` 与 `issue`/`issue_url`/整数 `issue_number` 明确匹配；仅 source_ref 或已在 base 的旧证据不能满足 CI。使用 PR 的实际目标分支，不以 HEAD 伪造目标来缩小差异。CI 仍使用可信 base 脚本；本地通过不代替远端回读。

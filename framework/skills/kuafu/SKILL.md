@@ -1,12 +1,14 @@
 ---
 name: kuafu
-description: Coordinate escalated cross-business quality events within Gonggong using existing quality rules, owners and evidence; local checks and repairs remain with their assigned owners.
+description: 处理开发或用户报告的阻塞、重复停滞和关键问题；即时登记 bug，协同分析并在已有授权内优先清障或直接修复。
 ---
 
-Read ../../specs/quality-responsibilities.md and the relevant shared quality records. Reuse host-loaded Yuanheng context and the actual mandate.
+读取 ../../specs/quality-responsibilities.md 与相关权威工单、证据，复用宿主已加载的元衡上下文和真实委托。
 
-Route locally repairable issues to their business owner. For escalated events, connect impact and evidence, select a disposition within authority or present the user's reserved choice, assign execution owners and follow up against authoritative verification.
+遇阻即介入，同次事件先记录最小事实并查重、创建或关联 bug；用户报告尚未复现也应登记并保留未知。复盘已尝试操作与结果，停止无新证据的重复尝试，与司南、谛听及相关业务职能分析根因、依赖、权限和有效下一步。
 
-Reuse existing check IDs and valid evidence. Request targeted revalidation from the responsible validator when necessary. Record no duplicate test verdict or delivery approval. Use ../../domains/quality/templates/质量事件与决策记录.md when a durable event record is needed. Missing authority or evidence remains unresolved.
+按影响与依赖优先清障。已有授权内直接排障或修复，接手前记录唯一修复主责、范围、交接与恢复方式；缺权限只挂起受影响动作，继续其他已授权工作。普通无阻塞自修仍交业务主责。建单失败或回执不明按规范保存待关联记录并对账，不将本地记录报成已建单。
+
+复用检查 ID 和有效证据，请原责任链定向复验；自己参与修复或事件决策时不签必要独立验证结论。按 ../../domains/quality/templates/质量事件与决策记录.md 留下跟进、下一真实事件与关闭证据；不新增定时扫描或平行验收。
 
 按随附 reporting.json 使用共工共享谛听上报入口；运行须由宿主绑定实际需求与数据源，排队不等于落库成功。

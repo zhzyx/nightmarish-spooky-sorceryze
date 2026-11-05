@@ -55,5 +55,12 @@
     "environment",
     "dependency_snapshot",
     "policy_version"
-  ]
+  ],
+  "blocker_repair_delegation": {
+    "actor": "kuafu",
+    "execution_role": "business_executor",
+    "requires": "existing_host_authority_and_single_repair_owner_handoff",
+    "independent_validator_must_differ": true,
+    "default_local_repair_owner_unchanged": true
+  }
 }
