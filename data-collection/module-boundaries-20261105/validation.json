@@ -1,0 +1,28 @@
+{
+  "request_id": "module-boundaries-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/111",
+  "path_base": "repository_root",
+  "baseline_commit": "1b0a33fd5e3a579e70c46aedeb67dc3f179c2130",
+  "checked_at": "2026-11-05T01:00:08.469219+00:00",
+  "candidate_files": {
+    "customizations/README.md": "da378d0c5f7d2e3670eddcc63697d4614658d458cc891ce66552d53cad28c4c4",
+    "customizations/module-boundaries.md": "e18fc5156e7e65a0f5277e04e0bf4139f64ce9da98bab1fd3e77749677c59003",
+    "framework/README.md": "23674be72b4d5830a8fcfd62e86be212948d975db4efe0d88f9b5a62d127232d",
+    "framework/specs/module-system.md": "f475991be5c0888e5eac146b0720ae067ef217c1eb2ee5192bb3741d9bd77d50",
+    "framework/specs/document-design.md": "8c90eeaea77f8d716b818bea6c20757ff4b2afbc1dc975748fd8fa9ef5ef6244",
+    "framework/specs/delivery.md": "e20f1905e39aff5305391bdaeeb3b0d432d2333e23e1a2402203981aa38914df",
+    "design-docs/module-boundaries-20261105.md": "e2422dd82520a31571c51b2576ae27669b46e81939a712aa221f63aa3f709b45"
+  },
+  "checks": {
+    "local_links": "passed",
+    "protected_files_unchanged": 66,
+    "diff_check": "passed",
+    "intake_only": "passed",
+    "framework_candidate": "blocked: original package lock differs for four edited framework documents"
+  },
+  "scope": "definition documents only; no runtime change or platform verification",
+  "independent_review": "not_performed",
+  "approval": "not_granted",
+  "release": "not_activated",
+  "usage": null
+}

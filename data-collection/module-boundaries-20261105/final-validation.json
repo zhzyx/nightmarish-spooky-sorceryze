@@ -1,0 +1,30 @@
+{
+  "request_id": "module-boundaries-20261105",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/111",
+  "path_base": "repository_root",
+  "baseline_commit": "d5829898d1620e889a14ab859303e591aef5e9b3",
+  "recorded_at": "2026-11-05T01:05:40.939827+00:00",
+  "candidate_files": {
+    "customizations/README.md": "d7a424a797d26b6dede50372cc766843b7b28e62eb5ffeb6cce67970e5eb9731",
+    "customizations/module-boundaries.md": "74c6cdd00b7ba41fabdea26c68ab6e11811971bd87ba52a079db74a0e1044870",
+    "framework/specs/module-system.md": "e167de6e78910a583464141c8dad632f05fb7c10beea702456cd065b82e508a0",
+    "framework/specs/delivery.md": "e20f1905e39aff5305391bdaeeb3b0d432d2333e23e1a2402203981aa38914df",
+    "framework/package-lock.json": "3f43b40cd447cf96856ffabebc62b1d7616e3af1e3eed17a7c61b3438c6bf502",
+    "design-docs/module-boundaries-20261105.md": "4150248fa7aea204a948d96f5587ac809062fc79de11a3fcf906549fe4d242dd"
+  },
+  "checks": {
+    "links_and_conflict_markers": "passed",
+    "agent_skill_admission_frozen_files_unchanged": "passed",
+    "formal_framework": "approved_file_integrity"
+  },
+  "acceptance": {
+    "core_vs_adapter_responsibilities": "passed",
+    "git_submodule_inventory": "passed",
+    "godot_scope_and_future_discovery": "passed",
+    "no_platform_implementation": "passed"
+  },
+  "historical_report": "validation.json reflects the earlier baseline and is not current evidence",
+  "runtime_tests": "not_applicable_documentation_only",
+  "release": "pending_remote_readback",
+  "usage": null
+}
