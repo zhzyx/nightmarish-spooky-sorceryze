@@ -25,6 +25,30 @@ test('actual callbacks receive capability selected models, isolated contexts and
   assert.ok(f.calls.every(c => c.fork_turns === 'none' && c.message.includes('source:context')));
   assert.ok(result.results.every(r => r.receipt.observedModel === null));
 });
+test('inherited agent model limits selection and leaves the native override unset', async t => {
+  const f = setup(t);
+  f.policy.inheritedAgentModel = 'large';
+  f.requests[1].model = 'small';
+  f.requests[2].target = 'chat';
+  const result = await f.make().run(event, f.requests);
+  assert.deepEqual(result.deferred, [{ticket:'two', reason:'required_model_or_capabilities_unavailable'}]);
+  assert.equal(f.calls.length, 2);
+  assert.ok(f.calls.every(args => !Object.hasOwn(args, 'model')));
+  const agent = result.results.find(r => r.ticket === 'one').receipt;
+  assert.equal(agent.model, 'large');
+  assert.equal(agent.requestedModel, null);
+  assert.equal(agent.observedModel, null);
+  assert.equal(agent.modelEvidence, 'host_inheritance_not_observed');
+  assert.equal(result.results.find(r => r.ticket === 'three').receipt.model, 'small');
+});
+test('inherited agent cannot borrow capabilities from another catalog entry', async t => {
+  const f = setup(t);
+  f.policy.inheritedAgentModel = 'small';
+  f.requests[0].capabilities.push('reasoning');
+  const result = await f.make().run(event, [f.requests[0]]);
+  assert.equal(result.deferred[0].reason, 'required_model_or_capabilities_unavailable');
+  assert.equal(f.calls.length, 0);
+});
 test('launches overlap, before either receipt is resolved', async t => {
   const f = setup(t), release = [];
   f.native.spawn_agent = a => {f.calls.push(a);return new Promise(resolve => release.push(() => resolve({task_name:a.task_name})));};
@@ -54,10 +78,12 @@ test('durable receipt survives ack failure; authenticated completion frees capac
 });
 test('chat uses configured default without overriding model; explicit exact model may override', async t=>{
   const f=setup(t);f.requests[0].target='chat';
-  await f.make().run(event,[f.requests[0]]);
+  const first = await f.make().run(event,[f.requests[0]]);
+  assert.equal(first.results[0].receipt.requestedModel, null);
   assert.equal(Object.hasOwn(f.calls[0],'model'),false);
   f.requests[1].target='chat';f.requests[1].model='large';f.policy.explicitChatModels={two:'large'};
-  await f.make().run(event,[f.requests[1]]);
+  const second = await f.make().run(event,[f.requests[1]]);
+  assert.equal(second.results[0].receipt.requestedModel, 'large');
   assert.equal(f.calls[1].model,'large');
 });
 test('chat creation and model override restrictions fail before source start', async t=>{

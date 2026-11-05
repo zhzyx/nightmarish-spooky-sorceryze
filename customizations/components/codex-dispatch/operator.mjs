@@ -113,7 +113,7 @@ export async function openSession(config,ports={}) {
     const result=await bridge.request('verify_setup',{event,pending,receipt},{assignmentKey:a.key,ticket:a.ticket});
     return result?.clientThreadId===pending.workerId&&result.threadId===receipt.workerId&&result.reference===event.reference;
   });
-  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:bridge.native(),policy:{defaultChatModel:config.defaultChatModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
+  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:bridge.native(),policy:{defaultChatModel:config.defaultChatModel,inheritedAgentModel:config.inheritedAgentModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
   const launch=host.launch.bind(host);host.launch=async a=>{await runtime.beforeLaunch(a);return launch(a);};
   return {host,bridge,runtime};
 }

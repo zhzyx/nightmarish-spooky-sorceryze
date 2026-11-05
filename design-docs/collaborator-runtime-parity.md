@@ -1,0 +1,19 @@
+# 协作者已有工单的连续执行
+
+用户要求核查本机与远端 main 的环境差异，使任意有权协作者在明确 Issue 上得到相同的持续推进和司南多 Agent 派发流程。
+
+本次从活跃 Codex 会话入手，核实 Git 身份、运行时、宿主派发与跨安装边界；将明确派发指令放入所有克隆读取的仓库入口，修复复现的 Windows 门禁兼容问题。验收包括两代 PowerShell 默认探测及工单回读、原生派发证据与其他协作者的真实 PR。跨设备接收真实事件、统一认领、终态验收后推进依赖和另一账户端到端验收分别跟踪，未验证的生产能力保持开放。范围不含接管业务工单、扩大远端 ACL 或共享个人凭据。
+
+## #140 的真实停点
+
+#140 原文将授权绑定到 Codex 对话。kaiyunxue 以本人 GitHub 身份创建并合入 PR #155。#142 仍需 NodeRegistry、Provider 与 Publish 接口验收；#143–154 为 planned。#140 的后续评论记录了 plan_store 的写入/回读和缺少生产启动回执。这是可从命令行调用的本地 SQLite 接口；该次写计划的记录不能证明 Godot 正在运行。父单仍由原责任者推进，未从本工单接手业务代码。
+
+远端 main 核对基线 be0d0a90dd355cec82afdb70aac1e24a9627167d。本机根工作树的 HEAD 与该基线一致，本机 main 引用落后 12 次提交。GitHub 回读 Sail-Li 与 kaiyunxue 均为 WRITE，zhzyx 为 ADMIN。本机 Codex 工作区受信任；当前会话有网络、可写工作树及原生子 Agent。GitHub 身份、工具权限、模型目录及可用槽位在每个宿主分别核对。Codex 派发的私有认领目录属于同一安装，另一 clone 需独立绑定并确认交接。同一协作账户以 PR 路径交付无需阎罗宿主密钥。
+
+证据：[原始需求与交接](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6665309133)、[首批剩余验收](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/142#issuecomment-6665047824)、[其他协作者合入](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/155)、[跟踪工单 #158](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158)。
+
+## 大千入口核查
+
+大千的设计定位见 design-docs/daqian-workflow.md。editor/docks/daqian/workspace.gd 展示工单状态，经 graph_host.py 读写计划或答复，调试按钮另起 debug_session.mjs 并标注本机协议夹具。graph_host.py 的 read/apply/answer 路径均未启动工作者。计划库默认在当前 Git 安装的 data-collection/daqian.sqlite，也可以通过已经配置的 SSH 计划宿主访问。框架司南、Codex 派发入口、工单提交入口均可独立运行。#140 的公开记录支持“一次主动写入大千计划”，谁决定这次移交及其当时的内部理由未知。
+
+路径相对仓库根。核查为源码、工单和原生 Codex 运行回执复核，本次未启动 Godot。未获第二设备的实际终态回执，也未把在途业务从 kaiyunxue 转给本机。

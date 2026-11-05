@@ -18,3 +18,8 @@ Git/Godot 接入在 customizations/components/；当前框架不再有 Olympus �
 司南只在需求、进度、依赖、决策、交接或完成事件时协调，不设定时扫描。局部阻塞只挂起受影响操作；合契按实际工作者与变更集处理差异，不能代操作其他工作副本。执行范围遵循 customizations/components/issue-workorders/execution-policy.md；交付遵循 framework/specs/delivery.md。
 
 archive/、历史发布及批准记录只作证据，不自动启用；不继续已停止草稿。持久化路径注明解析基准。Godot 源码及现有接入保持在仓库根，不改外部引擎目录。未经验证不切换有效发布。
+## Codex 中已授权的 Issue
+
+用户在 Codex 中要求完成明确 Issue 时，当前 Codex 会话负责接续至整体验收。先回读该 Issue、授权来源、已有 PR、已交付范围与剩余验收，并核对实际责任者及在途工作。部分 PR 合入或计划登记后，继续当前可执行的剩余项。只有用户指定或实际发布者确认接收时才移交执行。大千计划登记、打开 Godot、额外配置模型 API Key 均非 Codex 路径的前置步骤。
+
+当前会话应调用司南组织多 Agent 派发：对已授权、依赖已验收且读写范围可隔离的任务，按真实可用槽位派发原生子 Agent；同一实现允许独立只读核查。按 [Codex 派发宿主协议](customizations/components/codex-dispatch/HOST_PROTOCOL.md) 绑定工单、占用及真实回执。只有一项可执行时由当前责任者继续；宿主缺少子 Agent 能力时记录受影响的派发步骤并推进可独立完成的工作。完成事件到达后核验结果、回读依赖并继续下一项。跨设备先核对在途认领和交接；无法确认已有工作者终态时保留其占用。

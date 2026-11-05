@@ -1,0 +1,21 @@
+{
+  "second_installation_end_to_end_verified": false,
+  "main": "be0d0a90dd355cec82afdb70aac1e24a9627167d",
+  "request_id": "collaborator-runtime-parity",
+  "codex_root_native_subagents": [
+    "authority",
+    "dispatch"
+  ],
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+  "sinan_session_dispatch_this_audit": true,
+  "issue_number": 158,
+  "other_writer_merged_pr": 155,
+  "worker": "/root/sinan_fcb986a08428c0ca",
+  "reservation_key": "1050e1b3a48b26b625bd69506c566d5b68e5ccac808ea5315100f57d958f7190",
+  "terminal": "released_after_terminal_verification",
+  "regression_tests_passed": 30,
+  "powershell_intake": [
+    "5.1",
+    "7.6.5"
+  ]
+}

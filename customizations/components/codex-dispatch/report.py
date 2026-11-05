@@ -23,7 +23,8 @@ public = {'ticket': assignment.get('ticket'), 'reservation_key': assignment.get(
           'state': record.get('state'), 'stage': record.get('stage'),
           'record_sha256': hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest(),
           'source_revision': assignment.get('sourceSnapshot', {}).get('sha256'),
-          'requested_model': assignment.get('model', {}).get('id'),
+          'planned_model': assignment.get('model', {}).get('id'),
+          'requested_model': receipt.get('requestedModel'),
           'worker_id': receipt.get('workerId'), 'receipt_reference': receipt.get('reference'),
           'setup_pending': receipt.get('setupPending'), 'observed_model': receipt.get('observedModel')}
 event = {
