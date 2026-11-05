@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Repo = (Split-Path $PSScriptRoot -Parent),
+    [string]$Repo,
     [int]$Issue,
     [string]$RequestId,
     [string]$Tenant = 'gonggong-workspace',
@@ -10,12 +10,15 @@ param(
     [switch]$ProbeOnly
 )
 $ErrorActionPreference = 'Stop'
+if (-not $PSBoundParameters.ContainsKey('Repo')) {
+    $Repo = Split-Path $PSScriptRoot -Parent
+}
 $root = (Resolve-Path -LiteralPath $Repo).Path
 function Test-Python([string]$Candidate) {
     if (-not $Candidate -or $Candidate -match '[\\/]WindowsApps[\\/]' -or
         -not (Test-Path -LiteralPath $Candidate -PathType Leaf)) { return $false }
     try {
-        $probe = & $Candidate -I -c 'import sys,json,hashlib,subprocess; assert sys.version_info >= (3,11); print("gonggong-python-ok")' 2>$null
+        $probe = & $Candidate -I -c "import sys,json,hashlib,subprocess; assert sys.version_info >= (3,11); print('gonggong-python-ok')" 2>$null
         return ($LASTEXITCODE -eq 0 -and $probe -eq 'gonggong-python-ok')
     } catch { return $false }
 }

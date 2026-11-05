@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "collaborator-runtime-parity-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "collaborator-runtime-parity",
+  "kind": "request",
+  "occurred_at": "2026-11-05T18:07:46.8513725+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+  "agent": {
+    "definition_sha256": "c732bbc27364eacde9159dfdd8ee152db9c58e9cc41cd5e8e2d254abbb4cd67b",
+    "origin": "actual_codex_host",
+    "version": "host-session",
+    "id": "codex-primary"
+  },
+  "payload": {
+    "intake": "passed",
+    "baseline": "be0d0a90dd355cec82afdb70aac1e24a9627167d",
+    "issue_number": 158,
+    "usage": null,
+    "scope": "Compare collaborator Codex execution and dispatch from existing Issues"
+  },
+  "evidence_refs": []
+}

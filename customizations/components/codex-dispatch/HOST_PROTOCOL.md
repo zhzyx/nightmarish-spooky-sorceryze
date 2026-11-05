@@ -4,6 +4,8 @@
 
 配置绑定 `workspace`（实际 Git 工作副本根）、`python`、`repository`、已登录 `operator`、`authorityRef`、`bindings:[{number,requestId}]`、宿主实际 `catalog`、`capacity`、`defaultChatModel`、`event:{type,reference}` 和 `requests`。request 沿用 adapter README 的完整契约。模型目录由当前工具能力及实测提供；不能由子 Agent 的自评建立。`chatCreationAuthorized` 只有实际用户已要求建聊才为 true，`threadTarget` 必须来自实际宿主发现；仅 `explicitChatModels` 内用户明确指定的型号可覆盖默认模型。
 
+当宿主要求 Agent 继承当前模型时，在会话配置中把 `inheritedAgentModel` 设为当前宿主核实的继承型号，并在 `catalog` 中登记它的实际能力及 agent 目标。司南仅在该型号满足请求时派发，原生调用省略 model 参数。宿主无法核实继承型号或模型能力时保留待派发。仅在宿主允许显式选模时使用原有精确型号模式（省略此配置项）。
+
 会话输出 `nativeRoot` 后，真实 Codex 宿主处理文件事件：
 
 1. 在 `NativeToolBridge.take(id)` 排他落盘 issued 后，按 request.tool 执行一次实际 `spawn_agent` 或 `create_thread`，参数只取 request.args；context 只用于工单与预留关联，不传给原生工具。请求必须仍匹配 task、授权、tool 及 argsDigest。

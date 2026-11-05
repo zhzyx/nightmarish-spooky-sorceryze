@@ -26,6 +26,9 @@ export class CodexDispatchHost {
       if (typeof source?.[method] !== 'function') throw Error(`Missing authoritative source callback: ${method}`);
     }
     if (!policy || !nonempty(policy.defaultChatModel)) throw Error('Current default chat model required');
+    if (policy.inheritedAgentModel !== undefined && !nonempty(policy.inheritedAgentModel)) {
+      throw Error('Current inherited agent model required');
+    }
     this.root = stateRoot; this.source = source; this.native = native; this.policy = policy;
     fs.mkdirSync(stateRoot, {recursive: true});
     for (const directory of ['reservations', 'records', 'released']) fs.mkdirSync(path.join(stateRoot, directory), {recursive: true});
@@ -51,7 +54,11 @@ export class CodexDispatchHost {
       const old = active.get(a.ticket);
       active.set(a.ticket, old ? {...a, reads: [...new Set([...old.reads, ...a.reads])], writes: [...new Set([...old.writes, ...a.writes])]} : a);
     }
-    return {...value, environment: {...value.environment, active: [...active.values()],
+    const inherited = this.policy.inheritedAgentModel;
+    const catalog = value.environment.catalog.map(model => inherited && model.id !== inherited && Array.isArray(model.targets)
+      ? {...model, targets: model.targets.filter(target => target !== 'agent')}
+      : model);
+    return {...value, environment: {...value.environment, catalog, active: [...active.values()],
       chatCreationAuthorized: this.policy.chatCreationAuthorized === true && value.environment.chatCreationAuthorized === true}};
   }
   async revalidate(a) {
@@ -78,11 +85,14 @@ export class CodexDispatchHost {
     return await next;
   }
   async launch(a) {
-    let raw;
+    let args, raw;
+    const inherited = a.target === 'agent' && this.policy.inheritedAgentModel !== undefined;
     if (a.target === 'agent') {
-      raw = await this.native.spawn_agent({task_name: `sinan_${hash(a.key).slice(0, 16)}`, fork_turns: 'none', model: a.model.id, message: handoff(a)}, {assignmentKey:a.key,ticket:a.ticket});
+      args = {task_name: `sinan_${hash(a.key).slice(0, 16)}`, fork_turns: 'none', message: handoff(a)};
+      if (!inherited) args.model = a.model.id;
+      raw = await this.native.spawn_agent(args, {assignmentKey:a.key,ticket:a.ticket});
     } else {
-      const args = {title: a.outcome, prompt: handoff(a), target: this.policy.threadTarget};
+      args = {title: a.outcome, prompt: handoff(a), target: this.policy.threadTarget};
       if (this.policy.explicitChatModels?.[a.ticket]) args.model = this.policy.explicitChatModels[a.ticket];
       raw = await this.native.create_thread(args, {assignmentKey:a.key,ticket:a.ticket});
     }
@@ -91,8 +101,8 @@ export class CodexDispatchHost {
     const workerId = a.target === 'agent' ? (value?.agent_id ?? value?.task_name) : (value?.threadId ?? value?.clientThreadId);
     if (!nonempty(workerId)) throw Error('Native launch receipt missing worker identity; reconcile before retry');
     const receipt = {workerId, reference: `${a.target}:${workerId}`, target: a.target,
-      model: a.model.id, requestedModel: a.model.id, observedModel: value.model ?? null,
-      modelEvidence: value.model ? 'native_receipt' : 'request_accepted_not_observed',
+      model: a.model.id, requestedModel: args.model ?? null, observedModel: value.model ?? null,
+      modelEvidence: value.model ? 'native_receipt' : args.model ? 'request_accepted_not_observed' : 'host_inheritance_not_observed',
       setupPending: !!value.clientThreadId && !value.threadId, hostId: value.hostId ?? null};
     // Persist immediately, so subsequent source ack/report failure cannot lose worker identity.
     try {

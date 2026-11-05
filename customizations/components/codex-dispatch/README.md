@@ -16,7 +16,9 @@ source 必须实现 inspect、revalidate、startSource、ack、report、verifyTe
 
 native 回调接受原生工具参数，返回工具的解析后对象（或 structuredContent）。Agent 调用使用 `fork_turns: none` 和精确 model，交接只含目标、权限、验收、资源和引用。chat 使用 policy.threadTarget（由实际宿主发现的项目/目标配置）和明确的 chatCreationAuthorized；默认使用 policy.defaultChatModel，不传 model 覆盖。只有 policy.explicitChatModels[ticket] 保存用户明确指定的具体型号时，才传 model。默认模型不满足能力时延后，不暗中换型。建聊的目标、工作副本选择等仍受原生工具约束。
 
-接收方回执中的 `model` 表示本次被接受的请求型号，`observedModel` 仅在宿主实际回传型号时填写；空值保留未知。`modelEvidence` 区分请求接受与实际回读，不声称工具已暴露它未返回的信息。queued clientThreadId 以 setupPending 保存，不能作为已就绪 threadId 交给其他工具；由宿主 setup 完成事件继续对账。实际启动的线程/Agent 标识立即落盘，ack 或上报失败保留占用，禁止重派。完成不自动关闭父工单或替代验收。
+当宿主要求 Agent 继承模型时，设置 `policy.inheritedAgentModel`（会话配置同名字段）为宿主核实的当前型号。派发只考虑该型号的真实能力，保留任务的精确型号要求；不匹配的任务延后。原生 spawn_agent 省略 model，此时回执 `model` 表示规划型号，`requestedModel` 为 null，未回传型号时 `modelEvidence` 为 `host_inheritance_not_observed`。省略此选项沿用原显式选模协议。
+
+回执的 `observedModel` 仅在宿主实际回传型号时填写。queued clientThreadId 以 setupPending 保存，不能作为已就绪 threadId 交给其他工具；由宿主 setup 完成事件继续对账。实际启动的线程/Agent 标识立即落盘，ack 或上报失败保留占用，禁止重派。完成不自动关闭父工单或替代验收。
 
 同一来源快照的 key 仅派发一次，包括已终止记录；明确重试必须由权威来源形成新修订，不能删除历史预留后重放。变更来源版本也不能重复启动仍在途的同一工单。失联实例保留容量直到终态核验。回退时停用适配器、处理在途对账并保留证据。
 
