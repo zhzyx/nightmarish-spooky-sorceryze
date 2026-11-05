@@ -4,6 +4,17 @@
 
 当前责任：合契交出已整合的候选、完整贡献快照和范围；阎罗负责最终核查、main 发布、发布后完成度复核、目标工单完成写入与回读；司南继续派发、依赖、父项验收和跨工单协调。已经在执行中的发布须完成原操作者交接，不能抢占或操纵其他工作树。此入口只接管新交接事件；原冻结 Agent 定义中的通用协作职责不扩展为另一位 main 发布者。
 
+## 协作人以本人账号交付（PR 或合并队列）
+
+所有当前仓库协作人都是关键可提交角色。身份随 GitHub 仓库协作关系生效和撤销，不维护账号白名单。核对完整名单用 `gh api repos/OWNER/REPO/collaborators --paginate`；只需办理本人交付时，用 `gh api user --jq .login` 和 `gh repo view OWNER/REPO --json viewerPermission` 核对同一认证通道。OWNER/REPO 取自仓库根的 work-items.json 并与 origin 核对。提交作者、Issue 创建者和本地 Git 用户名均不证明当前权限。无法读取完整名单不等于本人没有权限；操作仍以远端实际许可为准。
+
+1. 每位协作人可提交自己的候选。先按正式工单门禁提交，再运行 git-check --require-committed。可写者推送任务分支；只读或 triage 协作人按仓库允许的 fork/PR 流程贡献，无权写入上游或自行合入。关键角色不改变仓库 ACL。
+2. 当前有合入权限的人是本次发布执行者，可在自己的认证通道中承担阎罗的交付职责。接收合契交接，核对 PR 目标为本仓库 main、完整贡献和验收范围、必要独立审查、正式门禁、交付证据及精确候选 CI。固定已审查的 PR head 和预期 main，核对候选包含该基线。合入前核对最新状态；并发发布须交接。基线变化时更新候选并复验，或使用按最新基线验证的合并队列。
+3. 使用仓库允许的 PR 合入方式，例如 `gh pr merge PR --repo OWNER/REPO --merge --match-head-commit SHA`；要求队列时按队列流程提交。PR 为真实编号，SHA 为通过核查的完整 head。遵守分支保护、审批和 CI，不用 admin 绕过，不直推 main。必要审查仍由独立审查者提供。本人 PR 路径不调用 yanluo_host.py，不需要宿主密钥、私有 grant 或固定账号代办。
+4. 回读 PR 的 mergedAt、mergedBy、mergeCommit、headRefOid 和远端 main，验证交付提交已进入主线及交付内容对应；排队或请求成功不算已交付。按下文对完整验收清单复核进度，记入实际操作者、候选及回执，满足整单验收才按生命周期更新并回读 Issue。权限被撤销、检查未过或回执未知时，只保留受影响步骤待处理，不借用他人账号。
+
+## 宿主自动快进发布
+
 `yanluo_host.py --repo REPO --grant PRIVATE_GRANT --apply` 是真实 GitHub CLI 接入，默认不带 `--apply` 只校验授权。它从调用者已经认证的 gh 通道回读账号、Issue 和远端，使用同一通道更新 main、状态和记录。宿主必须在自身可信进程中提供 GONGGONG_HOST_KEY（至少 32 字符），沿用当前运行时 HMAC-SHA256/canonical JSON 约定。密钥不进日志、源码、工单或模型上下文；接入没有签发授权的命令。grant 由有权宿主签发，至少包括：
 
 - payload：candidate（closure.Candidate 全部字段）、绝对 repo_root、expires_at（Unix 秒）、authority_ref、account_login、target=main、mode=fast_forward、adapter_sha256、approval_sha256、candidate_manifest_sha256、host_registry_sha256、definition_digest、trusted_files（可信安装全部执行依赖及framework文件摘要）、checks、required_ci_names、acceptance_items。
