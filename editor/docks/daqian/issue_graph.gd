@@ -2,6 +2,8 @@
 extends VBoxContainer
 
 signal answer_requested(node_id: String, answer: String)
+signal debug_command(action: String, id: String, value: String)
+signal configure_model
 signal draft_changed
 signal applied(issue_id: String, revision: String)
 
@@ -9,6 +11,9 @@ const LABELS := {"text":"文本", "image":"图片", "question":"待用户答复"
 const DATA := Color("#64c6e8")
 const AFTER := Color("#eecb86")
 
+var debug_active := false
+var debug_states := {}
+var debug_models := {}
 var rules: Script
 var issue_id := ""
 var revision := ""
@@ -137,7 +142,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 			draft.nodes[id].value = input.text
 			draft_changed.emit())
 		view.add_child(input)
-	if item.kind == "question" and issue_id.begins_with("https://"):
+	if item.kind == "question" and (debug_active or issue_id.begins_with("https://")):
 		var answer := TextEdit.new()
 		answer.placeholder_text = "你的答复"
 		answer.custom_minimum_size = Vector2(215,60)
@@ -153,15 +158,40 @@ func _render_node(id: String, item: Dictionary) -> void:
 		models.add_item("司南自动分配")
 		models.set_item_metadata(0,"")
 		for model in context.get("models", {}):
-			models.add_item(model)
+			models.add_item(context.get("model_names",{}).get(model,model))
 			models.set_item_metadata(models.item_count - 1, model)
 			if item.get("model","") == model:
 				models.select(models.item_count - 1)
+		for model in context.get("model_names",{}):
+			if not context.get("models",{}).has(model):
+				models.add_item(str(context.model_names[model]) + " · 待评测")
+				models.set_item_disabled(models.item_count-1,true)
 		models.disabled = locked
 		models.item_selected.connect(func(index):
 			draft.nodes[id].model = models.get_item_metadata(index)
 			draft_changed.emit())
 		view.add_child(models)
+		var configure := Button.new()
+		configure.text = "添加供应商 API"
+		configure.pressed.connect(func(): configure_model.emit())
+		view.add_child(configure)
+		var choose := OptionButton.new()
+		choose.add_item("调试 · 自动分配")
+		for model in ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]:
+			choose.add_item(model)
+			if model == debug_models.get(id,""):
+				choose.select(choose.item_count-1)
+		choose.item_selected.connect(func(index): debug_models[id] = choose.get_item_text(index) if index else "")
+		view.add_child(choose)
+		if debug_active:
+			var stop := Button.new()
+			stop.text = "停止该分支"
+			stop.pressed.connect(func(): debug_command.emit("cancel",id,""))
+			view.add_child(stop)
+			var retry := Button.new()
+			retry.text = "用所选调试模型重跑"
+			retry.pressed.connect(func(): debug_command.emit("retry",id,debug_models.get(id,"")))
+			view.add_child(retry)
 	if item.kind == "image":
 		var preview := TextureRect.new()
 		preview.name = "Preview"
@@ -192,7 +222,13 @@ func _render_node(id: String, item: Dictionary) -> void:
 		view.add_child(criterion)
 	if context.get("states", {}).has(id):
 		view.add_child(_label(context.states[id]))
+	if debug_active:
+		var state_label := _label("")
+		state_label.name = "DebugState"
+		view.add_child(state_label)
 	canvas.add_child(view)
+	if debug_states.has(id):
+		set_debug_state(debug_states[id])
 
 
 func set_image(id: String, image: Image) -> void:
@@ -316,3 +352,10 @@ func apply_draft() -> void:
 	context = result.context
 	notice.text = "已应用" if baseline == draft else "已应用提交版本；后续编辑仍在草稿中"
 	applied.emit(issue_id, revision)
+
+func set_debug_state(event: Dictionary) -> void:
+	debug_states[event.id] = event
+	var view := canvas.get_node_or_null(NodePath(str(event.id) + "/DebugState")) as Label
+	if view:
+		view.text = "调试 · " + str(event.state) + " " + str(event.get("model",""))
+		view.tooltip_text = str(event.get("result",event.get("reason","")))

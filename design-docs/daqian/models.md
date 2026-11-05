@@ -13,3 +13,5 @@
 前置依赖为图编排契约。原生父子工单关系、候选与接收回执由父级档案统一追溯。
 
 父工单 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/119
+
+用户范围更新：首版验证合成四协议、系统凭据接口、能力/评分选型和节点覆盖。实际供应商帐号接入及 live 图像能力评测延期；synthetic 不能用于生产派工。

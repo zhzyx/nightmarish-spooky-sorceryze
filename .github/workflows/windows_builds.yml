@@ -123,6 +123,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/editor/run_ai_chat_tab_order.py --godot ${{ matrix.bin }} --report daqian-tabs.json
 
+      - name: Daqian cross-provider loopback in the editor
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        run: |
+          python tests/editor/run_daqian_graph.py --scenario parallel --godot ${{ matrix.bin }} --report daqian-parallel.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tests/editor/daqian_model_harness.mjs
+
       - name: Upload Daqian editor results
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         uses: actions/upload-artifact@v7

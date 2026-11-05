@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import sqlite3
 import subprocess
+from contextlib import closing
+import model_catalog
 
 from board import source_plan, work_items
 
@@ -124,7 +126,12 @@ def read_source(root, number):
     actor = json.loads(work_items.gh("api", "user"))["login"]
     access = json.loads(work_items.gh("api", f"repos/{repo}"))["permissions"]
     projection = source_plan(obj, req)
-    return {"issue":obj["html_url"], "source_revision":digest([req,projection]),
+    with closing(model_catalog.database()) as db:
+        profiles = model_catalog.profiles(db)
+        verified = model_catalog.sinan_catalog(db, ["text"], "live")
+    return {"models":{v["id"]: v["capabilities"] for v in verified},
+            "model_names":{k: v["name"]+" · "+v["model"] for k,v in profiles.items()},
+            "issue":obj["html_url"], "source_revision":digest([req,projection]),
             "issue_revision":obj["updated_at"], "base":projection["plan"], "sources":projection["sources"], "actor":actor,
             "can_edit":bool(access.get("push"))}
 
@@ -134,7 +141,7 @@ def snapshot(db, source):
     row = db.execute("SELECT source_revision,plan_json,plan_revision FROM plans WHERE issue=?", (issue,)).fetchone()
     states = dict(db.execute("SELECT node,state FROM node_runs WHERE issue=? ORDER BY rowid", (issue,)))
     context = {"protected_nodes":list(source["base"]["nodes"]), "protected_edges":source["base"]["edges"],
-               "states":states, "sources":source["sources"], "models":{}}
+               "states":states, "sources":source["sources"], "models":source.get("models",{}), "model_names":source.get("model_names",{})}
     # A changed upstream design needs explicit reconciliation before editing this version.
     return {"plan":json.loads(row[1]) if row else source["base"],
             "revision":digest([row[2] if row else None,source["source_revision"]]),

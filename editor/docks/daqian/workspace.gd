@@ -3,6 +3,8 @@ extends VBoxContainer
 
 var rules: Script
 var graph_script: Script
+var models_script: Script
+var models_dialog: AcceptDialog
 var editor
 var overview: GraphEdit
 var notice: Label
@@ -24,6 +26,14 @@ var io_timer: Timer
 var save_timer: Timer
 var picker_scope := ""
 var started := false
+var debug_process := {}
+var debug_timer: Timer
+var debug_buffer := PackedByteArray()
+var debug_issue := ""
+var debug_states := {}
+var debug_history: Array = []
+var debug_seed := ""
+const DEBUG_MODELS := ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]
 var host: Object
 var selection_epoch := 0
 
@@ -68,6 +78,8 @@ func _ready() -> void:
 	_button(actions, "仅推演", _chat_action.bind("preview"))
 	_button(actions, "创建并执行", _chat_action.bind("execute"))
 	_button(actions, "关联对话", _chat_action.bind("discuss"))
+	_button(actions, "调试运行", _start_debug)
+	_button(actions, "结束调试", _stop_debug)
 	overview = GraphEdit.new()
 	overview.name = "IssueOverview"
 	overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -81,6 +93,11 @@ func _ready() -> void:
 	editor.rules = rules
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	models_dialog = models_script.new()
+	add_child(models_dialog)
+	models_dialog.connect("catalog_changed",_catalog_changed)
+	editor.debug_command.connect(_debug_command)
+	editor.configure_model.connect(func(): models_dialog.popup_centered())
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
 	add_child(editor)
@@ -89,6 +106,10 @@ func _ready() -> void:
 	save_timer.wait_time = 0.4
 	save_timer.timeout.connect(_save)
 	add_child(save_timer)
+	debug_timer = Timer.new()
+	debug_timer.wait_time = 0.08
+	debug_timer.timeout.connect(_debug_update)
+	add_child(debug_timer)
 	io_timer = Timer.new()
 	io_timer.wait_time = 0.15
 	io_timer.timeout.connect(_receive)
@@ -172,6 +193,7 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
+	_stop_debug()
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
 
@@ -402,6 +424,8 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	var port: Object = host if is_instance_valid(host) else self
 	var apply_port := Callable(port,"apply_graph") if id.begins_with("https://") else Callable()
 	var read_port := Callable(port,"read_graph") if id.begins_with("https://") else Callable()
+	editor.debug_active = current == debug_issue and not debug_process.is_empty()
+	editor.debug_states = debug_states.duplicate(true) if editor.debug_active else {}
 	editor.bind_issue(id,snapshot,apply_port,read_port)
 	var stored: Dictionary = saved.get("drafts", {}).get(id,{})
 	if stored.has("graph"):
@@ -549,6 +573,9 @@ func _preview_received(source: String, text: String) -> void:
 
 
 func _answer_question(id: String, answer: String) -> void:
+	if debug_issue == current and not debug_process.is_empty():
+		_debug_command("answer",id,answer)
+		return
 	if not chat or not editor.draft.nodes.has(id):
 		return
 	for item in board.get("issues",[]):
@@ -559,3 +586,115 @@ func _answer_question(id: String, answer: String) -> void:
 			notice.text = error if error else "已交给关联对话，等待共工回执"
 			return
 	notice.text = "工单尚无可验证的需求绑定，答复保留在节点上"
+
+func _catalog_changed() -> void:
+	if not current.begins_with("https://"):
+		editor.notice.text = "配置已保存，执行节点将按实测能力分配模型"
+		return
+	var id := current
+	var snapshot: Dictionary = await read_graph(id)
+	if current == id and snapshot.has("context"):
+		editor.context = snapshot.context
+		editor.draw_graph()
+		editor.notice.text = "已回读模型库；能力证据不足的型号保留待评测状态"
+
+func _start_debug() -> void:
+	if not debug_process.is_empty():
+		notice.text = "已有调试会话，请结束后再启动"
+		return
+	var test_ctx: Dictionary = editor.context.duplicate(true)
+	var capabilities: Dictionary = test_ctx.get("models",{})
+	for label in DEBUG_MODELS:
+		capabilities[label] = ["text","image"]
+	test_ctx.models = capabilities
+	var error: String = rules.changes_error(editor.baseline,editor.draft,test_ctx)
+	if error:
+		notice.text = error
+		return
+	var path := _repo().path_join("customizations/components/godot-host/daqian/debug_session.mjs")
+	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
+		notice.text = "请在 AI 对话中绑定包含大千调试宿主的仓库"
+		return
+	var settings := EditorInterface.get_editor_settings()
+	var node: String = str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""
+	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	if node.is_empty():
+		node = "node"
+	if python.is_empty():
+		python = "python" if OS.has_feature("windows") else "python3"
+	debug_issue = current
+	debug_buffer = PackedByteArray()
+	debug_states.clear()
+	debug_history.clear()
+	var plan: Dictionary = editor.draft.duplicate(true)
+	for id in plan.nodes:
+		if plan.nodes[id].kind == "task":
+			plan.nodes[id].model = editor.debug_models.get(id,"")
+	debug_seed = EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-loopback-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
+	var file := FileAccess.open(debug_seed,FileAccess.WRITE)
+	if not file:
+		notice.text = "无法暂存本次调试请求"
+		return
+	file.store_string(JSON.stringify({"action":"start","plan":plan,"python":python}))
+	file.close()
+	debug_process = OS.execute_with_pipe(node,[path,debug_seed],false)
+	if debug_process.is_empty():
+		DirAccess.remove_absolute(debug_seed)
+		notice.text = "无法启动 Node 调试宿主，请核对可执行路径"
+		debug_issue = ""
+		return
+	editor.debug_active = true
+	editor.draw_graph()
+	debug_timer.start()
+	notice.text = "调试运行 · 仅使用本机协议夹具"
+
+
+func _debug_command(action: String,id: String,value: String) -> void:
+	if debug_process.is_empty() or debug_issue != current:
+		return
+	var pipe: FileAccess = debug_process.stdio
+	debug_timer.start()
+	pipe.store_line(JSON.stringify({"action":action,"id":id,"model":value,"value":value}))
+	pipe.flush()
+
+
+func _debug_update() -> void:
+	var pipe: FileAccess = debug_process.stdio
+	if pipe.get_length()>0:
+		debug_buffer.append_array(pipe.get_buffer(pipe.get_length()))
+	var newline := debug_buffer.find(10)
+	while newline >= 0:
+		var event = JSON.parse_string(debug_buffer.slice(0,newline).get_string_from_utf8())
+		debug_buffer = debug_buffer.slice(newline+1)
+		if event is Dictionary and event.has("id"):
+			debug_states[event.id] = event
+			debug_history.append(event)
+			if current == debug_issue:
+				editor.set_debug_state(event)
+		elif event is Dictionary and event.has("error"):
+			notice.text = event.error
+		elif event is Dictionary and event.get("idle",false):
+			debug_timer.stop()
+			notice.text = "本轮调试已就绪或结束 · 可答复、重跑或结束调试"
+		newline = debug_buffer.find(10)
+	if not OS.is_process_running(debug_process.pid):
+		_stop_debug()
+
+
+func _stop_debug() -> void:
+	if debug_process.is_empty():
+		return
+	# Closing stdin lets the host terminate its own workers and close the fixture socket.
+	debug_process.clear()
+	if not debug_seed.is_empty() and FileAccess.file_exists(debug_seed):
+		DirAccess.remove_absolute(debug_seed)
+	debug_seed = ""
+	debug_issue = ""
+	debug_states.clear()
+	if is_instance_valid(debug_timer):
+		debug_timer.stop()
+	if is_instance_valid(editor):
+		editor.debug_active = false
+		editor.debug_states.clear()
+		if editor.is_inside_tree():
+			editor.draw_graph()
