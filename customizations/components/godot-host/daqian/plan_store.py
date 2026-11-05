@@ -132,13 +132,14 @@ def read_source(root, number):
     labels=[x["name"] for x in obj["labels"]]
     statuses=[x for x in labels if x.startswith("status:")]
     decision_only=statuses==["status:needs-decision"]
-    if decision_only:
-        # A user may supply the missing decision before the production intake gate opens.
+    historical=obj.get("state")=="closed"
+    if decision_only or historical:
+        # Closed dependencies can be inspected; pending decisions can be answered before intake.
         categories=[x for x in labels if x.startswith("type:")]
         if (obj.get("number")!=number or obj.get("html_url")!=f"https://github.com/{repo}/issues/{number}" or
-            "pull_request" in obj or obj.get("state")!="open" or "workspace:gonggong" not in labels or
+            "pull_request" in obj or obj.get("state") not in {"open","closed"} or "workspace:gonggong" not in labels or
             len(categories)!=1 or categories[0] not in types):
-            raise ValueError("待决定工单身份无效")
+            raise ValueError("来源工单身份无效")
     else:
         issue_gate.check_issue(obj, repo, number, req, types)
     projection = source_plan(obj, req)
@@ -153,7 +154,7 @@ def read_source(root, number):
             "model_names":{k: v["name"]+" · "+v["model"] for k,v in profiles.items()},
             "issue":obj["html_url"], "source_revision":digest([req,{"plan":projection["plan"],"sources":projection["sources"]}]),
             "issue_revision":obj["updated_at"], "base":projection["plan"], "sources":projection["sources"], "actor":principal["login"],"principal":principal,
-            "questions":projection.get("questions",{}),"can_answer":True,"can_edit":not decision_only}
+            "questions":projection.get("questions",{}),"can_answer":not historical,"can_edit":not historical and not decision_only}
 
 
 def snapshot(db, source):
