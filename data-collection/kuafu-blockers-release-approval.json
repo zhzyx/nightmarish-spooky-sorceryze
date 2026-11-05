@@ -1,0 +1,12 @@
+{
+  "request_id": "kuafu-blockers-20261105",
+  "issue_number": 109,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/109",
+  "user_statement": "批准发布启用",
+  "scope": "夸父 0.5.0 / Skill 0.4.0 职责定义发布启用及必要主线整合",
+  "definition_approval": "framework/reviews/kuafu-blockers/user-approval.json",
+  "path_base": "repository_root",
+  "runtime_privilege_expansion": false,
+  "automatic_background_listener_deployed": false,
+  "consumption_confirmed": null
+}

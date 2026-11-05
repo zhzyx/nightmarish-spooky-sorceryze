@@ -15,11 +15,11 @@
     "skills/gonggong-check/SKILL.md",
     "skills/work-order-coordination/SKILL.md"
   ],
-  "admission_pass": "reviews/sinan/parallel-main-integration-0.1.4.json",
+  "admission_pass": "reviews/kuafu-blockers/sinan-admission.json",
   "host_required_for_execution": true,
   "scope": "authorized_cross_domain_task_coordination_dependencies_dispatch_and_reconciliation",
   "reporting": "agents/sinan/reporting.json",
   "reporting_binding_template": "templates/reporting-binding.json",
   "layer": "core",
-  "state": "candidate_pending_review"
+  "state": "approved_local_definition_host_mandate_required"
 }

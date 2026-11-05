@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "kuafu",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "entry": "agents/kuafu/AGENT.md",
-    "entry_sha256": "c249de9d53fcc33ee31583b8d55d41d1f11bbf0759c3c0e0ee25108d3e8babf4"
+    "entry_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

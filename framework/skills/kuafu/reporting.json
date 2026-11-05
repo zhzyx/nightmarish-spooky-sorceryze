@@ -3,9 +3,9 @@
   "component": {
     "kind": "skill",
     "id": "kuafu",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "entry": "skills/kuafu/SKILL.md",
-    "entry_sha256": "bbc8651308ef5fe820446b20d7240d1c2021d571c3feeb855e7abcee37be7b25"
+    "entry_sha256": "a3834ced0f541e823568e585ec55c9256c74721a5af8ab3267279607d1e6d966"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

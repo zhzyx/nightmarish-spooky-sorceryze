@@ -25,4 +25,4 @@
 
 ## 统一质量职责与领域配置
 
-夸父作为既有质量体系内的跨业务事件监察与协调单元，职责以 specs/quality-responsibilities.md 为准；既有 G0 至 G4、证据、缺陷和例外配置统一保存在 domains/quality/quality-policy.json。普通业务自检、指定验证和授权验收保留原责任归属，夸父不另设检查、批准或状态体系。记录模板由同一领域目录维护，跨角色引用同一证据。
+夸父作为既有质量体系内的阻塞处置及跨业务事件监察与协调单元，职责以 specs/quality-responsibilities.md 为准；既有 G0 至 G4、证据、缺陷和例外配置统一保存在 domains/quality/quality-policy.json。普通业务自检、指定验证和授权验收保留原责任归属，夸父不另设检查、批准或状态体系。记录模板由同一领域目录维护，跨角色引用同一证据。
