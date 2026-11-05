@@ -9,6 +9,7 @@ import sys
 
 from credentials import secret
 from model_api import PROTOCOLS, endpoint
+from local_models import MODEL_ID, discover_cli
 
 
 def identity(profile):
@@ -50,6 +51,51 @@ def add(db, config, key, vault=secret):
     with db:
         db.execute("INSERT OR IGNORE INTO profiles VALUES(?,?)", (key_id,json.dumps(config,ensure_ascii=False)))
     return key_id
+
+
+# Only a provider's explicit model and matching credential are imported.
+ENV_APIS = (
+    ("OPENAI", "GPT", "responses", "https://api.openai.com/v1/responses"),
+    ("ANTHROPIC", "Claude", "anthropic-messages", "https://api.anthropic.com/v1/messages"),
+    ("DEEPSEEK", "DeepSeek", "chat-completions", "https://api.deepseek.com/chat/completions"),
+    ("GEMINI", "Gemini", "gemini-generate-content", "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"),
+)
+
+
+def connect_local(db, settings, vault=secret):
+    sources = []
+    for label, configs, note in discover_cli(settings):
+        with db:
+            added = sum(db.execute("INSERT OR IGNORE INTO profiles VALUES(?,?)",
+                                   (identity(config), json.dumps(config))).rowcount for config in configs)
+        sources.append({"name": label, "added": added, "existing": len(configs) - added, "note": note,
+                        "models": [config["model"] for config in configs]})
+    for prefix, label, protocol, url in ENV_APIS:
+        model = os.environ.get(prefix + "_MODEL", "")
+        key = os.environ.get(prefix + "_API_KEY")
+        if not model and not key:
+            continue
+        row = {"name": label, "added": 0, "existing": 0, "note": ""}
+        sources.append(row)
+        if not MODEL_ID.fullmatch(model) or not key:
+            row["note"] = "需要 " + prefix + "_MODEL 和 " + prefix + "_API_KEY"
+            continue
+        if os.environ.get(prefix + "_BASE_URL") or os.environ.get(prefix + "_API_BASE"):
+            row["note"] = "使用自定义接口地址，请通过手工入口绑定"
+            continue
+        config = {"name": label, "protocol": protocol, "endpoint": url, "model": model}
+        try:
+            with db:
+                db.execute("BEGIN IMMEDIATE")
+                if db.execute("SELECT 1 FROM profiles WHERE id=?", (identity(config),)).fetchone():
+                    row["existing"] = 1
+                else:
+                    add(db, config, key, vault)
+                    row["added"] = 1
+            row["models"] = [model]
+        except (ValueError, OSError):
+            row["note"] = "系统凭据存储写入失败"
+    return sources
 
 
 def profiles(db):

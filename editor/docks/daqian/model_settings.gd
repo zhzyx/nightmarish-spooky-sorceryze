@@ -7,6 +7,7 @@ const PROTOCOLS := ["anthropic-messages","chat-completions","gemini-generate-con
 const ENDPOINTS := ["https://api.anthropic.com/v1/messages","https://api.deepseek.com/chat/completions",
 	"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent","https://api.openai.com/v1/responses",""]
 
+var connect_local: Button
 var provider: OptionButton
 var account_name: LineEdit
 var model: LineEdit
@@ -18,7 +19,7 @@ var user_id := ""
 
 
 func _ready() -> void:
-	title = "添加供应商模型 API"
+	title = "接入模型"
 	dialog_hide_on_ok = false
 	get_ok_button().text = "保存到个人模型库"
 	var fields := VBoxContainer.new()
@@ -27,6 +28,11 @@ func _ready() -> void:
 	provider = OptionButton.new()
 	for label in PROVIDERS:
 		provider.add_item(label)
+	connect_local = Button.new()
+	connect_local.text = "一键识别并接入本地模型"
+	connect_local.tooltip_text = "读取本机 Codex、CodeBuddy 型号和已配置的供应商环境变量"
+	connect_local.pressed.connect(_connect_local)
+	fields.add_child(connect_local)
 	fields.add_child(provider)
 	account_name = _field(fields,"配置名称")
 	model = _field(fields,"准确的模型 ID")
@@ -58,6 +64,42 @@ func _provider_selected(index: int) -> void:
 
 
 func _save_profile() -> void:
+	if model.text.strip_edges().is_empty() or key.text.is_empty():
+		info.text = "请填写模型 ID 和密钥"
+		return
+	var profile := {"name":account_name.text.strip_edges(),"model":model.text.strip_edges(),"endpoint":url.text.strip_edges(),
+		"protocol":PROTOCOLS[provider.selected]}
+	_run("add", {"profile":profile, "secret":key.text})
+
+
+func _connect_local() -> void:
+	var settings := EditorInterface.get_editor_settings()
+	var local := {}
+	for field in ["cli_node", "cli_entry", "cli_model", "codex_entry", "codex_model"]:
+		var path: String = "ai_chat/" + field
+		if settings.has_setting(path):
+			local[field] = str(settings.get_setting(path))
+	_run("connect-local", local)
+
+
+func _editor_api_hint() -> String:
+	var settings := EditorInterface.get_editor_settings()
+	if not settings.has_setting("ai_chat/model") or not settings.has_setting("ai_chat/endpoint"):
+		return ""
+	var saved_model := str(settings.get_setting("ai_chat/model")).strip_edges()
+	var saved_url := str(settings.get_setting("ai_chat/endpoint")).strip_edges()
+	if saved_model.is_empty() or saved_url.is_empty():
+		return ""
+	if not model.text.is_empty() or not key.text.is_empty() or account_name.text != PROVIDERS[provider.selected] or url.text != ENDPOINTS[provider.selected]:
+		return "已发现 AI Chat 的 HTTP 接口；手工表单中有待保存的输入"
+	provider.select(PROVIDERS.size() - 1)
+	account_name.text = "AI Chat"
+	url.text = saved_url
+	model.text = saved_model
+	return "已填入 AI Chat 的模型与接口；输入对应密钥即可保存"
+
+
+func _run(action: String, input: Dictionary) -> void:
 	if pending:
 		return
 	var settings := EditorInterface.get_editor_settings()
@@ -67,24 +109,21 @@ func _save_profile() -> void:
 	if not root.is_absolute_path() or not FileAccess.file_exists(entry):
 		info.text = "请绑定包含大千模型接入的共工仓库"
 		return
-	if model.text.strip_edges().is_empty() or key.text.is_empty():
-		info.text = "请填写模型 ID 和密钥"
-		return
-	var profile := {"name":account_name.text.strip_edges(),"model":model.text.strip_edges(),"endpoint":url.text.strip_edges(),
-		"protocol":PROTOCOLS[provider.selected]}
 	if python.is_empty():
 		python = "python" if OS.has_feature("windows") else "python3"
-	var process := OS.execute_with_pipe(python,[entry,"add",root,user_id],false)
+	var process := OS.execute_with_pipe(python,[entry,action,root,user_id],false)
 	if process.is_empty():
 		info.text = "无法启动凭据存储接入"
 		return
 	pending = true
+	connect_local.disabled = true
 	get_ok_button().disabled = true
 	var pipe: FileAccess = process.stdio
-	pipe.store_line(JSON.stringify({"profile":profile,"secret":key.text}))
+	pipe.store_line(JSON.stringify(input))
 	pipe.flush()
-	key.clear()
-	info.text = "正在写入系统凭据存储…"
+	if action == "add":
+		key.clear()
+	info.text = "正在识别本机模型…" if action == "connect-local" else "正在写入系统凭据存储…"
 	var data := PackedByteArray()
 	while OS.is_process_running(process.pid):
 		if pipe.get_length()>0:
@@ -94,8 +133,25 @@ func _save_profile() -> void:
 		data.append_array(pipe.get_buffer(pipe.get_length()))
 	var result = JSON.parse_string(data.get_string_from_utf8())
 	pending = false
+	connect_local.disabled = false
 	get_ok_button().disabled = false
 	if result is Dictionary and result.has("result"):
+		if action == "connect-local":
+			var lines := PackedStringArray()
+			for source in result.result:
+				var line := "%s · 新接入 %d，已有 %d" % [source.name, source.added, source.existing]
+				var names := PackedStringArray(source.get("models", []).slice(0, 3))
+				if not names.is_empty():
+					line += "（" + "、".join(names) + ("…" if source.models.size() > names.size() else "") + "）"
+				if not str(source.note).is_empty():
+					line += " · " + str(source.note)
+				lines.append(line)
+			var hint := _editor_api_hint()
+			if not hint.is_empty():
+				lines.append(hint)
+			info.text = "\n".join(lines)
+			catalog_changed.emit()
+			return
 		info.text = "已保存，能力由宿主的评测证据决定"
 		catalog_changed.emit()
 		hide()

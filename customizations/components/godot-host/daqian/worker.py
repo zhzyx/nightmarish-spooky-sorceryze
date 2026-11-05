@@ -3,11 +3,13 @@ import json
 import sys
 from urllib.parse import urlsplit
 
-from model_api import invoke
+from model_api import PROTOCOLS, invoke
 
 
 def fixture_call(request):
     profile = request["profile"]
+    if profile["protocol"] not in PROTOCOLS:
+        raise ValueError("模拟执行仅接受 HTTP API 协议")
     url = urlsplit(profile["endpoint"])
     if url.scheme != "http" or url.hostname not in {"127.0.0.1","::1"}:
         raise ValueError("模拟执行仅接受本机回环服务")
