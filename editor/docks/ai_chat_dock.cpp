@@ -2793,7 +2793,7 @@ void AIChatDock::_close_agent() {
 			state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
 			state.message_list->add_theme_constant_override("separation", 16 * EDSCALE);
 			active_agent = next_agent++;
-			agent_tabs->add_tab(vformat("会话 %d", active_agent + 1));
+			agent_tabs->add_tab(vformat(U"会话 %d", active_agent + 1));
 			agent_tabs->set_tab_metadata(0, active_agent);
 			chat_scroll->add_child(state.message_list);
 			agent_tabs->set_current_tab(0);
@@ -2845,7 +2845,7 @@ void AIChatDock::_add_agent() {
 		return;
 	}
 	const int index = agent_tabs->get_tab_count();
-	agent_tabs->add_tab(vformat("会话 %d", next_agent + 1));
+	agent_tabs->add_tab(vformat(U"会话 %d", next_agent + 1));
 	agent_tabs->set_tab_metadata(index, next_agent++);
 	agent_tabs->set_current_tab(index);
 	callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
@@ -4480,12 +4480,12 @@ AIChatDock::AIChatDock() {
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");
 	workspace_pages->add_child(timers_page);
-	workspace_pages->set_tab_title(0, "会话");
+	workspace_pages->set_tab_title(0, U"会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	workspace_pages->add_child(gonggong_panel);
-	workspace_pages->set_tab_title(2, "共工");
+	workspace_pages->set_tab_title(2, U"共工");
 	workspace_pages->set_current_tab(0);
 	Label *heading = memnew(Label);
 	heading->set_text(U"AI 对话");
@@ -4513,7 +4513,7 @@ AIChatDock::AIChatDock() {
 	agent_tabs->set_scroll_to_selected(true);
 	agent_tabs->set_h_size_flags(SIZE_EXPAND_FILL);
 	agent_tabs->set_v_size_flags(SIZE_SHRINK_CENTER);
-	agent_tabs->add_tab("会话 1");
+	agent_tabs->add_tab(U"会话 1");
 	agent_tabs->set_tab_metadata(0, 0);
 	agent_tabs->set_tooltip_text(U"点击切换会话，各自的上下文、工具详情和草稿互不混用。右键标签可重命名，名称会自动保存并在重启后恢复。点击标签旁的叉号可关闭会话，移除其聊天和草稿并停止相关任务；关闭最后一个会自动新建空白会话。聊天及图片以明文自动保存到当前项目的 .godot/editor/ai_chat_history.json，重启编辑器后恢复；.bak 保留上一份记录。删除 .godot 会删除记录，请按需另行备份。");
 	agent_tabs->connect("tab_changed", callable_mp(this, &AIChatDock::_agent_selected));
