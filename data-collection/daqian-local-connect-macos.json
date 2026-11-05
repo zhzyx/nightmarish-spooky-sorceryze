@@ -1,0 +1,37 @@
+{
+  "request_id": "daqian-local-connect-20261106",
+  "issue_number": 138,
+  "platform": "macOS arm64",
+  "inputs_sha256": {
+    "customizations/components/godot-host/daqian/local_models.py": "5d97baf4798e5b2392f71cdc456fae955082b28fd16ebf68d8ffa610547201aa",
+    "customizations/components/godot-host/daqian/model_api.py": "27bde4bdd3cab621408e0b200ab0ae05b0509233a0278e54f40d907c1a082510",
+    "customizations/components/godot-host/daqian/model_catalog.py": "5eb5ee32965c473b86408da1577dfdf0db3b0d1cea628f31b4612fad0b4038a7",
+    "customizations/components/godot-host/daqian/models_cli.py": "09964efccf08faf44b5075cdaaa89043a7f81d93dac76b90b22f073342639c30",
+    "customizations/components/godot-host/daqian/worker.py": "5ce667f13dc7adfda555c7352f04cd1e832d82a29ca61be1addc46ab271ddea1",
+    "editor/docks/daqian/model_settings.gd": "dbbec0a530d14e48b8fc97b78365e7114162275b88638a99bc442e53cd24379e",
+    "tests/editor/test_daqian_local_models.py": "9f02d8aaa3af3a083d1a7eaf6856f8a75da3a6e24767f22986b2e5dcd8a32c8e"
+  },
+  "editor_sha256": "d93d89113be60ff86a246b8e0b7bd067e0f189043719b62b1c0cabfac9d2c1a3",
+  "unit_tests": 19,
+  "local_cli_discovery": {
+    "Codex": 8,
+    "CodeBuddy": "not installed in discovered locations"
+  },
+  "native_editor_fixture": {
+    "first_added": {
+      "Codex": 1,
+      "CodeBuddy": 2
+    },
+    "second_added": 0,
+    "http_prefill_verified": true,
+    "calls": [
+      "Codex bridge to fixture CLI",
+      "CodeBuddy bridge to fixture CLI and loopback HTTP"
+    ],
+    "exit_code": 0,
+    "shutdown_diagnostics": "headless dummy-renderer RID allocations reported at exit"
+  },
+  "http_regression": "4 protocols, concurrent workers and isolated cancellation passed on loopback",
+  "live_provider_calls": 0,
+  "review": "Independent review of CLI invocation, budget, route isolation, Python compatibility, Windows npm shim and HTTP draft preservation passed after fixes."
+}

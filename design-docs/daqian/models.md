@@ -15,3 +15,13 @@
 父工单 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/119
 
 用户范围更新：首版验证合成四协议、系统凭据接口、能力/评分选型和节点覆盖。实际供应商帐号接入及 live 图像能力评测延期；synthetic 不能用于生产派工。
+
+## 本地模型一键接入
+
+需求 ID 为 daqian-local-connect-20261106，本次用户需求授权实现和交付。大千模型设置提供一个按钮，识别本机 Codex、CodeBuddy 已支持的模型入口，复用 CLI 登录态及已有接口配置。列出本次导入、已存在或缺失的来源，已有手工配置可继续使用。重复导入须幂等，密钥和登录令牌不得进入模型目录或日志。CLI 能力仍依赖宿主实测。验收覆盖本机发现、部分来源缺失、重复导入和通过现有适配器调用；本次验证平台为 macOS。
+
+关联工单 [#138](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/138)。
+
+在任务节点的模型设置中点击「一键识别并接入本地模型」。Codex 读取本机目录和配置型号，CodeBuddy 通过已登录 CLI 的模型列表或编辑器保存的型号接入。CLI 入口优先使用 AI Chat 个人设置，再查找本机安装。CLI 文本调用使用原有禁用工具的桥接；宿主要求硬性输出上限时选择支持上限的 API。使用自定义 Codex 路由或认证的配置需要按实际接口绑定。
+
+供应商 API 支持编辑器进程中的 `OPENAI`、`ANTHROPIC`、`DEEPSEEK`、`GEMINI` 四组环境变量，每组使用同一前缀的 `_MODEL` 和 `_API_KEY`。仅将这类成对配置绑定到各自的官方端点；自定义地址通过手工入口绑定。已在 AI Chat 保存的 HTTP 模型及地址可填入空白表单。新型号在节点评测通过前显示「待评测」。

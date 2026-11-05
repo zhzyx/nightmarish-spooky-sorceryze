@@ -78,7 +78,28 @@ def result_data(protocol, raw):
     return {"text":text,"observed_model":observed,"provider_request_id":raw.get("id") or raw.get("responseId")}
 
 
-def invoke(profile, text, images, key, limit=1024):
+def invoke(profile, text, images, key=None, limit=None):
+    # The admitted host may pass a catalog profile. Resolve executable bindings
+    # from the personal registry before launching anything supplied by a caller.
+    if profile["protocol"] in {"codex-cli", "codebuddy-cli"}:
+        from contextlib import closing
+        from model_catalog import database, identity, profiles
+        from local_models import invoke_cli
+
+        if limit is not None:
+            raise ValueError("CLI 桥接无法强制输出 token 上限，请使用支持此预算的 API")
+        with closing(database()) as db:
+            registered = profiles(db).get(identity(profile))
+        if registered != profile:
+            raise ValueError("CLI 配置未登记在本机模型库中")
+        return invoke_cli(registered, text, images)
+    if key is None:
+        from credentials import secret
+        from model_catalog import identity
+
+        key = secret(identity(profile))
+    if limit is None:
+        limit = 1024
     url, headers, body = request_data(profile,text,images,key,limit)
     req = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers, method="POST")
     try:

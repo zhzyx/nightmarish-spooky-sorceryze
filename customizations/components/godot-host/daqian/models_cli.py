@@ -20,6 +20,11 @@ def main():
             action = sys.argv[1]
             if action == "list":
                 result = catalog.profiles(db)
+            elif action == "connect-local":
+                settings = json.loads(sys.stdin.buffer.readline(32769))
+                if not isinstance(settings, dict) or not all(isinstance(v, str) for v in settings.values()):
+                    raise ValueError("本地 CLI 设置格式无效")
+                result = catalog.connect_local(db, settings)
             elif action == "add":
                 data = json.loads(sys.stdin.buffer.readline(32769))
                 result = {"id":catalog.add(db,data["profile"],data["secret"])}
