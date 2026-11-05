@@ -32,12 +32,12 @@ function hostActionRequest(command) {
     const text = command.trim();
     const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|build_engine|restart_engine|rollback_engine)$/.exec(text);
     if (plain) return { name: plain[1], arguments: {} };
-    const action = /^godot-host-action editor_action ([\s\S]{2,16384})$/.exec(text);
+    const action = /^godot-host-action (editor_action|route_engine_message) ([\s\S]{2,32768})$/.exec(text);
     if (action) {
         let args;
-        try { args = JSON.parse(action[1]); } catch (_) { throw new Error('Godot editor_action requires one valid JSON object.'); }
-        if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Godot editor_action requires one valid JSON object.');
-        return { name: 'editor_action', arguments: args };
+        try { args = JSON.parse(action[2]); } catch (_) { throw new Error('Godot host action requires one valid JSON object.'); }
+        if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Godot host action requires one valid JSON object.');
+        return { name: action[1], arguments: args };
     }
     throw new Error('Invalid Godot host action. Shell operators and other arguments are forbidden.');
 }
@@ -125,7 +125,7 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
                 const bytes = Buffer.from(JSON.stringify(result));
                 // Log and parent-context snapshots are bounded by Godot. Keep
                 // the JSON envelope intact even for escaped or non-ASCII text.
-                const outputByteLimit = ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action'].includes(request.name) ? 256 * 1024 : args.outputByteLimit;
+                const outputByteLimit = ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message'].includes(request.name) ? 256 * 1024 : args.outputByteLimit;
                 const terminal = { status, exit: Promise.resolve(status), output: bytes.subarray(Math.max(0, bytes.length - outputByteLimit)), truncated: bytes.length > outputByteLimit };
                 terminals.set(id, terminal);
                 finished({ terminalId: id, exit_status: status, timed_out: false, output_truncated: terminal.truncated, output: redactOutput(terminal.output.toString('utf8'), env) });

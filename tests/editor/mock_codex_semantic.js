@@ -25,6 +25,12 @@ process.stdin.on('end', () => {
             answer = { content: 'Checked ' + name, actions: [] };
         } else {
             answer = { content: '', actions: [{ name: guidance || name === 'open_scene' ? 'editor_action' : 'get_editor_state', arguments: guidance ? name : JSON.stringify(name === 'open_scene' ? { action: 'open_scene', target: 'res://fixture.tscn' } : {}) }] };
+            if (guidance && process.env.SEMANTIC_ROUTING === '1') {
+                const operation = JSON.parse(name);
+                if (!['find_targets', 'describe_target'].includes(operation.action)) {
+                    answer.actions = [{ name: 'route_engine_message', arguments: JSON.stringify({ intent: 'engine_operation', request_id: 'codex-' + latest, source: 'mock-codex', operation }) }];
+                }
+            }
         }
     }
     process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(answer) } }) + '\n');

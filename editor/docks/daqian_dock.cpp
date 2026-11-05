@@ -37,10 +37,14 @@
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
 
-static Ref<Script> load_editor_script(const char *p_source) {
+static Ref<Script> load_editor_script(const char *const *p_source) {
 	Ref<Script> script = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
 	ERR_FAIL_COND_V(script.is_null(), Ref<Script>());
-	script->set_source_code(String::utf8(p_source));
+	String source;
+	for (int i = 0; p_source[i]; i++) {
+		source += String::utf8(p_source[i]);
+	}
+	script->set_source_code(source);
 	ERR_FAIL_COND_V(script->reload() != OK, Ref<Script>());
 	return script;
 }

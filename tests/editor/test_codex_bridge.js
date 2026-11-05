@@ -40,6 +40,7 @@ test('Godot context preserves Chinese, tool results and current permissions', ()
     assert(prompt.includes('你好'));
     assert(prompt.includes('permission_enabled'));
     assert(prompt.includes('Never claim success'));
+    assert(prompt.includes('route_engine_message') && prompt.includes('planning_required'));
 });
 
 test('consultation accepts semantic editor state but refuses editor actions', () => {
