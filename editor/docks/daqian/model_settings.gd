@@ -14,6 +14,7 @@ var url: LineEdit
 var key: LineEdit
 var info: Label
 var pending := false
+var user_id := ""
 
 
 func _ready() -> void:
@@ -73,7 +74,7 @@ func _save_profile() -> void:
 		"protocol":PROTOCOLS[provider.selected]}
 	if python.is_empty():
 		python = "python" if OS.has_feature("windows") else "python3"
-	var process := OS.execute_with_pipe(python,[entry,"add"],false)
+	var process := OS.execute_with_pipe(python,[entry,"add",root,user_id],false)
 	if process.is_empty():
 		info.text = "无法启动凭据存储接入"
 		return

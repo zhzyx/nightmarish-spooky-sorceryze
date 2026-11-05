@@ -5,24 +5,8 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
-import re
-import sys
-import shutil
+from repository_access import AccessDenied, collaborator, configured_login, work_items
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "issue-workorders"))
-import work_items
-
-
-# GUI-launched editors often have a smaller PATH than the user's terminal.
-if not os.environ.get("GONGGONG_GH") and not shutil.which("gh"):
-    if os.name == "nt":
-        candidates = [Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "GitHub CLI" / "gh.exe"]
-    else:
-        candidates = [Path.home()/".local/bin/gh", Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")]
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            os.environ["GONGGONG_GH"] = str(candidate)
-            break
 
 def source_plan(issue, request_id):
     """Project only explicit Yanshi clauses from this exact work order."""
@@ -51,11 +35,12 @@ def source_plan(issue, request_id):
     return {"plan": {"nodes": nodes, "edges": edges}, "sources": evidence}
 
 
-def read_board(root, follows):
+def read_board(root, follows, actor=None):
     settings, _ = work_items.config(root)
     repo = settings["repository"]
     base = f"repos/{repo}/issues"
-    login = json.loads(work_items.gh("api", "user"))["login"]
+    actor = actor or collaborator(root)
+    login = actor["login"]
 
     def pages(url):
         raw = json.loads(work_items.gh("api", url, "--paginate", "--slurp"))
@@ -102,7 +87,7 @@ def read_board(root, follows):
                 key = local_number(dependency)
                 if key not in items:
                     queue[key] = dependency
-    return {"repo": repo, "login": login, "issues": sorted(items.values(), key=lambda row: row["number"]),
+    return {"repo": repo, "login": login, "user_id": actor["user_id"], "repo_id": actor["repo_id"], "issues": sorted(items.values(), key=lambda row: row["number"]),
             "verified_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
@@ -111,13 +96,24 @@ def main():
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--result", type=Path, required=True)
     parser.add_argument("--follow", nargs="*", type=int, default=[])
+    parser.add_argument("--access-only",action="store_true")
+    parser.add_argument("--expected-user",default="")
     args = parser.parse_args()
     try:
         if any(n <= 0 for n in args.follow):
             raise ValueError("工单编号必须为正整数")
-        result = {"board": read_board(args.repo, args.follow)}
+        actor=collaborator(args.repo)
+        if args.expected_user and actor["user_id"]!=args.expected_user:
+            raise AccessDenied("当前登录账号已切换")
+        result={"access":actor} if args.access_only else {"board":read_board(args.repo,args.follow,actor)}
+    except AccessDenied as error:
+        result={"denied":True,"error":str(error)}
+    except work_items.GitHubCommandError as error:
+        reason=str(error)
+        offline=reason.startswith(("GITHUB_NETWORK","GITHUB_TIMEOUT"))
+        result={"denied":not offline,"offline_login":configured_login() if offline else "","error":reason}
     except (ValueError, OSError, KeyError) as error:
-        result = {"error": str(error) if isinstance(error, work_items.GitHubCommandError) else "读取工单来源失败"}
+        result = {"denied":True,"error":"读取工单来源失败"}
     temporary = args.result.with_suffix(".partial")
     temporary.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
     os.replace(temporary, args.result)

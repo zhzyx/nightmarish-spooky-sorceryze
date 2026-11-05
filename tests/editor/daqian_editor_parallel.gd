@@ -23,6 +23,7 @@ func run():
 	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
 	await process_frame
 	var panel = dock.find_child("DaqianWorkspace",true,false)
+	await panel.refresh()
 	panel._new_requirement()
 	var graph = panel.editor
 	graph.draft.nodes.requirement.value = "结合截图核对 AI 对话入口是否有猪头和醒目配色"
@@ -40,7 +41,7 @@ func run():
 		graph.connect_ports(id,0,join,0)
 	graph.debug_models[a] = "调试 · Claude"
 	graph.debug_models[b] = "调试 · Gemini"
-	panel._start_debug()
+	await panel._start_debug()
 	if panel.debug_process.is_empty():
 		fail("Daqian debug launch failed: " + panel.notice.text + " · " + graph.notice.text)
 		return

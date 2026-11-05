@@ -31,6 +31,9 @@ func apply_graph(_id, revision, execution_revision, draft):
 
 func run() -> void:
 	await create_timer(1.5).timeout
+	var settings = EditorInterface.get_editor_settings()
+	settings.set_setting("gonggong/workspace",OS.get_environment("DAQIAN_TEST_REPO"))
+	settings.set_setting("gonggong/python",OS.get_environment("DAQIAN_TEST_PYTHON"))
 	var dock = root.find_child("Daqian", true, false)
 	if not dock:
 		push_error("Missing native Daqian editor tab")
@@ -39,6 +42,8 @@ func run() -> void:
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await process_frame
 	var workspace = dock.find_child("DaqianWorkspace", true, false)
+	await workspace.refresh()
+	check(workspace.actor.get("user_id","")=="42","fixture collaborator membership was not verified")
 	var graph = workspace.editor
 	workspace._new_requirement()
 	state = {"plan":{"nodes":{},"edges":[]},"revision":"0","execution_revision":"0",
@@ -92,5 +97,18 @@ func run() -> void:
 	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
 	workspace.board = {}
 	workspace._show_board()
+	var access_path = OS.get_environment("DAQIAN_TEST_ACCESS_FILE")
+	if not access_path.is_empty():
+		var access_file = FileAccess.open(access_path,FileAccess.WRITE)
+		access_file.store_string("switch")
+		access_file.close()
+		await workspace.refresh()
+		check(workspace.actor.get("user_id")=="84" and not workspace.saved.has("drafts"),"another account inherited personal drafts")
+		access_file=FileAccess.open(access_path,FileAccess.WRITE)
+		access_file.store_string("denied")
+		access_file.close()
+		await workspace.refresh()
+		workspace._new_requirement()
+		check(workspace.actor.is_empty() and not workspace.editor.visible and not workspace.overview.visible,"revoked member can still view or edit")
 	print("DAQIAN_GRAPH_TEST ", "passed" if failures.is_empty() else failures)
 	quit(0 if failures.is_empty() else 1)

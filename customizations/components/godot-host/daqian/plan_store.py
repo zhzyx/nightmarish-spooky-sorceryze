@@ -9,6 +9,7 @@ from contextlib import closing
 import model_catalog
 
 from board import source_plan, work_items
+from repository_access import collaborator
 
 PUBLIC_KINDS = {"text", "image", "question", "task", "join"}
 LOCKED = {"reserved", "dispatched", "running", "completed", "failed", "cancelled", "reconcile_required"}
@@ -116,6 +117,7 @@ def read_source(root, number):
     settings, _ = work_items.config(root)
     repo = settings["repository"]
     issue_gate.check_repository(root, repo)
+    principal = collaborator(root)
     obj = json.loads(work_items.gh("api", f"repos/{repo}/issues/{number}"))
     ids = work_items.request_ids(obj.get("body"))
     if len(ids) != 1:
@@ -123,8 +125,6 @@ def read_source(root, number):
     req = next(iter(ids))
     _, definitions = work_items.config(root)
     issue_gate.check_issue(obj, repo, number, req, {x["name"] for x in definitions})
-    actor = json.loads(work_items.gh("api", "user"))["login"]
-    access = json.loads(work_items.gh("api", f"repos/{repo}"))["permissions"]
     projection = source_plan(obj, req)
     with closing(model_catalog.database()) as db:
         profiles = model_catalog.profiles(db)
@@ -132,8 +132,8 @@ def read_source(root, number):
     return {"models":{v["id"]: v["capabilities"] for v in verified},
             "model_names":{k: v["name"]+" · "+v["model"] for k,v in profiles.items()},
             "issue":obj["html_url"], "source_revision":digest([req,projection]),
-            "issue_revision":obj["updated_at"], "base":projection["plan"], "sources":projection["sources"], "actor":actor,
-            "can_edit":bool(access.get("push"))}
+            "issue_revision":obj["updated_at"], "base":projection["plan"], "sources":projection["sources"], "actor":principal["login"],"principal":principal,
+            "can_edit":True}
 
 
 def snapshot(db, source):
