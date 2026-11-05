@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "issue60-candidate-validated-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-guided-workflows-20261105",
+  "kind": "step",
+  "occurred_at": "2026-11-05T16:05:37Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/60",
+  "agent": {
+    "id": "codex-desktop-editor-guidance",
+    "version": "session-20261105",
+    "definition_sha256": "125185c4a550bed209c05ded8f39f66866e632f8032074cf7702e0ea717db7f7",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "event": "candidate.local_validation_passed",
+    "base_commit": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+    "evidence": "data-collection/issue60-candidate-validation-20261105.json",
+    "build_exit_code": 0,
+    "javascript_passes": 55,
+    "guidance_http": "passed including second-process inert restore",
+    "guidance_native_codex": "passed including second-process inert restore",
+    "native_guidance_unique_wire_cases": 19,
+    "http_business_fallback_cases": 0,
+    "publication_at_capture": "not yet committed or pushed",
+    "delivery_target": "origin/main",
+    "real_model_service_acceptance": false,
+    "independent_review": null,
+    "usage": null,
+    "usage_unknown_reason": "No measured token/cost receipt is available",
+    "consumed": null
+  },
+  "evidence_refs": [
+    "issue60-request-resumed-20261105"
+  ],
+  "sha256": "2a0b8360834f8e802fd6a171d717214f44284fa2fbd6a1fa556d2a8386af8c0d"
+}

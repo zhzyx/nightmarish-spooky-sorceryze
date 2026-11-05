@@ -30,18 +30,43 @@
 
 #pragma once
 
+#include "core/templates/hash_map.h"
 #include "scene/gui/control.h"
 
 // Owned by AIChatDock. All calls run on the editor thread.
 class AIChatEditorControl : public Control {
 	GDCLASS(AIChatEditorControl, Control);
 
+	struct Target {
+		ObjectID control;
+		String name;
+		String screen;
+	};
+	static AIChatEditorControl *singleton;
+	HashMap<String, Target> targets;
+	Dictionary workflow;
+	ObjectID guidance_timer;
+	ObjectID observed_button;
+	uint64_t target_missing_since = 0;
+	uint64_t guidance_revision = 0;
+
 	String target_id;
 	String hint;
 	ObjectID target_object;
 	float pulse = 0;
+	void _poll_guidance();
+	void _target_pressed();
+	void _disconnect_observer();
+	void _activate_step(bool p_prepare);
+	void _advance(const String &p_observation);
+	void _persist_guidance() const;
+	void _restore_guidance();
+	void _set_guidance_status(const String &p_status, const String &p_error = String());
+	Dictionary _guidance_action(const Dictionary &p_args, bool p_confirmed);
+	static bool _valid_steps(const Array &p_steps);
 
 protected:
+	static void _bind_methods();
 	void _notification(int p_what);
 
 public:
@@ -56,8 +81,17 @@ public:
 	static Array target_ids();
 	static bool save_setting_snapshot(const String &p_path, const String &p_original, const String &p_target, const Variant &p_value, String &r_error);
 	Control *resolve_target(const String &p_id) const;
+	static AIChatEditorControl *get_singleton() { return singleton; }
+	bool register_target(const String &p_id, Control *p_control, const String &p_name, const String &p_screen = String());
+	bool unregister_target(const String &p_id);
+	Array find_targets(const String &p_query, int p_limit = 8) const;
+	Dictionary describe_target(const String &p_id) const;
+	Dictionary guidance_status() const;
+	void cancel_guidance();
+	void suspend_guidance();
 	Dictionary get_state(const PackedStringArray &p_secrets = PackedStringArray()) const;
 	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
 	void clear_highlight();
 	AIChatEditorControl();
+	~AIChatEditorControl();
 };

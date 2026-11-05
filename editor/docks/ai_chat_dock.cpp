@@ -30,9 +30,6 @@
 
 #include "ai_chat_dock.h"
 
-#include "ai_chat_editor_control.h"
-#include "ai_chat_issue_guide.h"
-
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/input/input_event.h"
@@ -43,6 +40,8 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_cli_login.h"
+#include "editor/docks/ai_chat_editor_control.h"
+#include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_openai.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_sub_agents.h"
@@ -906,7 +905,7 @@ void AIChatDock::_load_resume() {
 	queue_paused = !can_send;
 	turn_completed = false;
 	session_generation++;
-	_get_editor_control()->clear_highlight();
+	_get_editor_control()->cancel_guidance();
 	turn_model_requests = 0;
 	_set_busy(true);
 	_append_work(String(U"版本切换完成，继续处理中断前的工具调用：") + String(restart.get("tool_name", "build_engine")));
@@ -2205,7 +2204,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		return;
 	}
 	const bool engine_tool = name == "build_engine" || name == "restart_engine" || name == "rollback_engine";
-	if (backend->get_selected() == 1 && !engine_tool && name != "read_logs" && name != "read_file" && name != "write_file" && name != "run_command" && name != "get_parent_context") {
+	if (backend->get_selected() == 1 && !engine_tool && name != "read_logs" && name != "read_file" && name != "write_file" && name != "run_command" && name != "get_parent_context" && !AIChatEditorControl::handles(name)) {
 		_finish_tool("Error: This native channel only supports on-demand logs, files, authorized Bash commands and the editor self-update tools.");
 		return;
 	}
@@ -2222,6 +2221,9 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 			pending_action = "editor_action";
 			pending_editor_action = arguments.duplicate(true);
 			pending_editor_action["expected_old_value"] = result["old_value"];
+			if (result.has("guidance_revision")) {
+				pending_editor_action["guidance_revision"] = result["guidance_revision"];
+			}
 			if (auto_execute_commands->is_pressed()) {
 				_confirm_action();
 			} else {
@@ -2472,6 +2474,20 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 }
 
 void AIChatDock::_show_confirmation() {
+	// Settings are exclusive windows. Nest approval under the active modal so
+	// users can confirm a guided setting change without closing its target.
+	Node *parent = this;
+	Window *approval_window = get_window();
+	while (Window *child = approval_window->get_exclusive_child()) {
+		if (child == confirmation) {
+			break;
+		}
+		approval_window = child;
+		parent = child;
+	}
+	if (confirmation->get_parent() != parent) {
+		confirmation->reparent(parent, false);
+	}
 	confirmation->popup_centered(Size2(760, 540) * EDSCALE);
 	if (confirmation->is_visible() && (confirmation->is_embedded() || confirmation->get_window_id() != DisplayServerEnums::INVALID_WINDOW_ID)) {
 		return;
@@ -2483,6 +2499,13 @@ void AIChatDock::_show_confirmation() {
 		_append(TTR("Error"), error);
 	} else {
 		_finish_tool(error);
+	}
+}
+
+void AIChatDock::_restore_confirmation_parent() {
+	ConfirmationDialog *dialog = ObjectDB::get_instance<ConfirmationDialog>(confirmation_id);
+	if (is_inside_tree() && dialog && !dialog->is_visible() && dialog->get_parent() != this) {
+		dialog->reparent(this, false);
 	}
 }
 
@@ -2696,7 +2719,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	active_agent = id;
 	request_generation++;
 	session_generation++;
-	_get_editor_control()->clear_highlight();
+	_get_editor_control()->cancel_guidance();
 	// The guide belongs to the paused message of the conversation being left.
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
@@ -2829,7 +2852,7 @@ void AIChatDock::_close_agent() {
 		_cancel_cli();
 		request_generation++;
 		session_generation++;
-		_get_editor_control()->clear_highlight();
+		_get_editor_control()->cancel_guidance();
 		closed_messages = message_list;
 	} else {
 		AgentSession state = agent_sessions[id];
@@ -2988,7 +3011,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	set_process(process_id >= 0);
 	request_generation++;
 	session_generation++;
-	_get_editor_control()->clear_highlight();
+	_get_editor_control()->cancel_guidance();
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
 	messages.clear();
@@ -3380,7 +3403,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 		const String name = function["name"];
 		// Files and commands use native CLI tools; live editor logs and
 		// self-update actions are served only by the host, on demand.
-		if (name == "read_logs" || name == "read_file" || name == "write_file" || name == "run_command" || name == "build_engine" || name == "restart_engine" || name == "rollback_engine" || (name == "get_parent_context" && sub_agents.has(active_agent))) {
+		if (AIChatEditorControl::handles(name) || name == "read_logs" || name == "read_file" || name == "write_file" || name == "run_command" || name == "build_engine" || name == "restart_engine" || name == "rollback_engine" || (name == "get_parent_context" && sub_agents.has(active_agent))) {
 			native_tools.push_back(tool);
 		}
 	}
@@ -4358,7 +4381,7 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
-	_get_editor_control()->clear_highlight();
+	_get_editor_control()->cancel_guidance();
 	gonggong_recovered_result = String();
 	gonggong_recovery_can_send = false;
 	if (snapshot_restoring) {
@@ -4396,7 +4419,7 @@ void AIChatDock::_stop() {
 		cli_stream_text = nullptr;
 	}
 	session_generation++;
-	_get_editor_control()->clear_highlight();
+	_get_editor_control()->cancel_guidance();
 	if (request) {
 		request->cancel_request();
 		request->queue_free();
@@ -4491,7 +4514,7 @@ void AIChatDock::_notification(int p_what) {
 		_cancel_all_agents();
 		request_generation++;
 		session_generation++;
-		_get_editor_control()->clear_highlight();
+		_get_editor_control()->suspend_guidance();
 		if (request) {
 			request->cancel_request();
 		}
@@ -4522,6 +4545,7 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 
 AIChatDock::AIChatDock() {
 	set_name(TTRC("AI Chat"));
+	_get_editor_control();
 	set_layout_key("AIChatMainScreen");
 	set_icon_name("Script");
 	set_available_layouts(DOCK_LAYOUT_MAIN_SCREEN);
@@ -5093,10 +5117,12 @@ AIChatDock::AIChatDock() {
 	// File restore is attached to each turn, not to the latest single write.
 
 	confirmation = memnew(ConfirmationDialog);
+	confirmation_id = confirmation->get_instance_id();
 	confirmation->set_name("AIFileApproval");
 	confirmation->set_ok_button_text(TTRC("Approve"));
 	confirmation->connect(SceneStringName(confirmed), callable_mp(this, &AIChatDock::_confirm_action));
 	confirmation->connect("canceled", callable_mp(this, &AIChatDock::_reject_action));
+	confirmation->connect(SceneStringName(visibility_changed), callable_mp(this, &AIChatDock::_restore_confirmation_parent), CONNECT_DEFERRED);
 	add_child(confirmation);
 	preview = memnew(TextEdit);
 	preview->set_editable(false);
@@ -5826,6 +5852,10 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	// A visible approval can still belong to a settings window during shutdown.
+	if (ConfirmationDialog *dialog = ObjectDB::get_instance<ConfirmationDialog>(confirmation_id); dialog && dialog->get_parent() != this) {
+		memdelete(dialog);
+	}
 	if (Object *control = ObjectDB::get_instance(editor_control_id)) {
 		memdelete(control);
 	}

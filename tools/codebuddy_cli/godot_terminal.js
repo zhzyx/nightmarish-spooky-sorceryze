@@ -27,12 +27,22 @@ function terminalArguments(params, workspace) {
 }
 
 // Reserved terminal requests are dispatched to Godot, never evaluated by a shell.
-function hostActionName(command) {
+function hostActionRequest(command) {
     if (!command.trim().startsWith('godot-host-action')) return null;
-    const match = /^godot-host-action (read_logs|get_parent_context|build_engine|restart_engine|rollback_engine)$/.exec(command.trim());
-    if (match) return match[1];
+    const text = command.trim();
+    const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|build_engine|restart_engine|rollback_engine)$/.exec(text);
+    if (plain) return { name: plain[1], arguments: {} };
+    const action = /^godot-host-action editor_action ([\s\S]{2,16384})$/.exec(text);
+    if (action) {
+        let args;
+        try { args = JSON.parse(action[1]); } catch (_) { throw new Error('Godot editor_action requires one valid JSON object.'); }
+        if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Godot editor_action requires one valid JSON object.');
+        return { name: 'editor_action', arguments: args };
+    }
     throw new Error('Invalid Godot host action. Shell operators and other arguments are forbidden.');
 }
+
+function hostActionName(command) { return hostActionRequest(command)?.name ?? null; }
 
 function redactOutput(text, env) {
     for (const [name, value] of Object.entries(env)) {
@@ -103,10 +113,10 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
             validate(params);
             if (closed || terminals.size >= 8) throw new Error('Godot terminal capacity exceeded or session closed.');
             const args = terminalArguments(params, workspace);
-            const action = hostActionName(args.command);
-            if (action) {
+            const request = hostActionRequest(args.command);
+            if (request) {
                 if (!hostAction) throw new Error('Godot host action is unavailable. No shell command was executed.');
-                const result = await hostAction(action, args.command);
+                const result = await hostAction(request.name, request.arguments, args.command);
                 validate(params);
                 if (closed || terminals.size >= 8) throw new Error('Godot terminal session closed or capacity exceeded.');
                 if (!result || typeof result.ok !== 'boolean') throw new Error('Godot did not confirm the host action result.');
@@ -115,7 +125,7 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
                 const bytes = Buffer.from(JSON.stringify(result));
                 // Log and parent-context snapshots are bounded by Godot. Keep
                 // the JSON envelope intact even for escaped or non-ASCII text.
-                const outputByteLimit = action === 'read_logs' || action === 'get_parent_context' ? 256 * 1024 : args.outputByteLimit;
+                const outputByteLimit = ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action'].includes(request.name) ? 256 * 1024 : args.outputByteLimit;
                 const terminal = { status, exit: Promise.resolve(status), output: bytes.subarray(Math.max(0, bytes.length - outputByteLimit)), truncated: bytes.length > outputByteLimit };
                 terminals.set(id, terminal);
                 finished({ terminalId: id, exit_status: status, timed_out: false, output_truncated: terminal.truncated, output: redactOutput(terminal.output.toString('utf8'), env) });
@@ -178,4 +188,4 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
     };
 }
 
-module.exports = { bashExecutable, terminalArguments, hostActionName, createTerminals, redactOutput };
+module.exports = { bashExecutable, terminalArguments, hostActionName, hostActionRequest, createTerminals, redactOutput };

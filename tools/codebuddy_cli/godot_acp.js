@@ -209,7 +209,7 @@ function createTraceLog(directory, maxBytes = 8 * 1024 * 1024) {
     const enums = {
         direction: ['incoming', 'outgoing'],
         stage: ['connecting', 'waiting', 'analyzing', 'responding', 'tool_pending', 'searching', 'executing'],
-        operation: ['read_logs', 'get_parent_context', 'read_file', 'write_file', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine'],
+        operation: ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'read_file', 'write_file', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine'],
         decision: ['allow_once', 'reject_once', 'cancelled'],
         kind_source: ['permission', 'notification', 'missing'],
         native_tool: ['Glob', 'Grep'],
@@ -513,12 +513,12 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
             if (name && !active.input.available_tools.some(tool => tool.function?.name === name)) throw fileError('Godot host action is unavailable. Nothing was executed.');
         }
     };
-    const hostAction = (name, command = '') => {
+    const hostAction = (name, actionArgs = {}, command = '') => {
         if (pending.size || terminals.running) return Promise.reject(fileError('Godot host actions must run alone, after all other tools and terminals finish'));
         reportProgress('tool_pending');
         return new Promise((resolve, reject) => {
             const id = 'acp_host_' + randomUUID();
-            pending.set(id, { resolve, reject, name, arguments: {}, sent: false });
+            pending.set(id, { resolve, reject, name, arguments: actionArgs, sent: false });
             record('host_action_queued', { operation: name, pending_count: pending.size });
             if (!flushTimer && !active.yielded) flushTimer = setTimeout(flushTools, 10);
         });
@@ -632,7 +632,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 const item = pending.get(result.tool_call_id);
                 pending.delete(result.tool_call_id);
                 record('host_file_result', { operation: item.name, success: result.godot_file_success === true, content_bytes: Buffer.byteLength(result.content), call_hash: createHash('sha256').update(result.tool_call_id).digest('hex').slice(0, 16), pending_count: pending.size });
-                if (['read_logs', 'get_parent_context', 'build_engine', 'restart_engine', 'rollback_engine'].includes(item.name)) {
+                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'build_engine', 'restart_engine', 'rollback_engine'].includes(item.name)) {
                     try {
                         const actionResult = JSON.parse(result.content);
                         if (!actionResult || typeof actionResult.ok !== 'boolean') throw new Error('Invalid host action result');

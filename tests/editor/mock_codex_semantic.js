@@ -2,6 +2,7 @@
 // Offline Codex protocol fixture. Never invokes a provider or executes a proposed action.
 const fs = require('node:fs');
 const path = require('node:path');
+const { createHash } = require('node:crypto');
 let text = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => { text += chunk; });
@@ -15,12 +16,15 @@ process.stdin.on('end', () => {
     } else {
         const latest = messages.findLastIndex(message => message.role === 'user');
         const name = messages[latest].content;
+        const guidance = process.env.SEMANTIC_GUIDANCE === '1';
         const result = messages.slice(latest).findLast(message => message.role === 'tool');
         if (result) {
-            fs.writeFileSync(path.join(process.env.SEMANTIC_WIRE_DIR, name + '.json'), JSON.stringify(result));
+            const file = guidance ? createHash('sha256').update(name).digest('hex') : name;
+            fs.writeFileSync(path.join(process.env.SEMANTIC_WIRE_DIR, file + '.json'), JSON.stringify(result));
+            if (guidance) fs.writeFileSync(path.join(__dirname, 'project', 'last-result.json'), result.content);
             answer = { content: 'Checked ' + name, actions: [] };
         } else {
-            answer = { content: '', actions: [{ name: name === 'open_scene' ? 'editor_action' : 'get_editor_state', arguments: JSON.stringify(name === 'open_scene' ? { action: 'open_scene', target: 'res://fixture.tscn' } : {}) }] };
+            answer = { content: '', actions: [{ name: guidance || name === 'open_scene' ? 'editor_action' : 'get_editor_state', arguments: guidance ? name : JSON.stringify(name === 'open_scene' ? { action: 'open_scene', target: 'res://fixture.tscn' } : {}) }] };
         }
     }
     process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(answer) } }) + '\n');

@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-guided-workflows-20261105",
+  "issue_number": 60,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/60",
+  "source_authority": "User requested two phases/two issues, then commit/push, then explicitly push to main",
+  "source_root_base": "repository root",
+  "base_commit": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+  "phase1": {
+    "issue": 59,
+    "status": "already on main",
+    "commit": "e79128a863ecb8c794edba920f437a947885e0df"
+  },
+  "candidate_identity": "Base commit plus input files below; this record is included in the subsequent source commit",
+  "input_hash_basis": "SHA-256 of actual worktree bytes read after the final include normalization and fixture path fix",
+  "input_files_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "a3dd7cb3fb1c0a87ec6ab348f180480d574c5a905a120a57ac8e0624e8d475fb",
+    "editor/docks/ai_chat_dock.h": "7140b04fa2500465d62e748d62ae2fe3d74930b6b00e276d78b751e9c28e4927",
+    "editor/docks/ai_chat_editor_control.cpp": "2365e96a337a2b3ecb2a2883319fb87e334ac22ad02ac3b6d9005f371ec9697e",
+    "editor/docks/ai_chat_editor_control.h": "cd8b2cf9990bbb2d8e78f91b4a1230ecb6ec81f095e3ef13f36eae3acd2676b8",
+    "editor/register_editor_types.cpp": "86113ae8a49c4347834eda03be4ea1dedb30100c44737551c82b31c903fbcb43",
+    "tools/codebuddy_cli/godot_terminal.js": "328bffac830171997ba902be86f009d29b95eee54c6ab7644a23ee10a7f002a6",
+    "tools/codebuddy_cli/godot_acp.js": "4b5cbdb0e8133663f11f57d5bbd56eebc0c2b98b46569794a71ea31046060b07",
+    "tools/codebuddy_cli/godot_bridge.js": "18aa7f2171ebad312aee9cc8815209a0119da2fe119636524cb6ef82805c3697",
+    "tests/editor/ai_chat_semantic.gd": "8a5bd29852fa4699f9e84e24f686debd2c2faf58d1f33599d044f3f589dde885",
+    "tests/editor/run_ai_chat_semantic.py": "ee20580b403df319dd5365a26e09e1fa29d97f39d4f79cf0d8f7d519be170e8e",
+    "tests/editor/test_codebuddy_terminal.js": "989485e66bc501275be9ef74ccb3fd9ec813308b61bbee5c6baf865877566d56",
+    "tests/editor/mock_codex_semantic.js": "2131a1661fcac8a1f455f1eb27074dba814739e20698e0316b5f09c2230f5871",
+    "tests/editor/editor_guided_workflows.gd": "942644cec571618f276150374ebfc527e168125cd2c0d40efab1e1703c2bf4c3",
+    "tests/editor/editor_guided_workflows_restore.gd": "fa49fcdb56cdd30febcb19d95a45f3f9479ffc52a88d08728914107777bc6b84",
+    "tools/codebuddy_cli/package-lock.json": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda"
+  },
+  "local_binaries": {
+    "bin/godot.windows.editor.x86_64.guidance60.exe": {
+      "sha256": "749195e495c479d5585412f8ee7a0e66b1ec21d319cd5ecf00425e4ef9fd857c",
+      "bytes": 163985920
+    },
+    "bin/godot.windows.editor.x86_64.guidance60.console.exe": {
+      "sha256": "56b0659156efb2d79ebb87439c3f73d9b917e952d71698e3323e1aad295ac188",
+      "bytes": 298496
+    }
+  },
+  "platform": {
+    "os": "Windows",
+    "architecture": "x86_64",
+    "compiler": "MSVC Visual Studio 14.5",
+    "windows_sdk": "10.0.26100.0",
+    "python": "3.12",
+    "node": "24.22.1"
+  },
+  "delivery": {
+    "artifact": "source and regression scripts",
+    "target": "origin/main",
+    "user_instruction": "push到main",
+    "method": "ordinary non-force Git push",
+    "remote_receipt_at_capture": null,
+    "local_binaries_distributed": false,
+    "independent_review": null,
+    "signed_yanluo_grant": null,
+    "scope": "User's explicit direct-main instruction governs this ordinary engineering delivery; no host signature or independent-review pass is fabricated"
+  },
+  "dependencies": {
+    "codebuddy_node_modules": "Ignored junction to the existing pinned installation in the original worktree; no dependency source or lockfile change",
+    "models": "isolated local HTTP mock and offline native Codex protocol fixture; no real provider calls"
+  },
+  "build": {
+    "command": "python -m SCons platform=windows target=editor extra_suffix=guidance60 -j12",
+    "exit_code": 0,
+    "last_incremental_seconds": 19.47
+  },
+  "tests": [
+    {
+      "command": "node --test tests/editor/test_codebuddy_bridge.js tests/editor/test_codebuddy_acp.js",
+      "exit_code": 0,
+      "passed": 43
+    },
+    {
+      "command": "node --test --test-name-pattern='Semantic editor|Reserved host|On-demand editor' tests/editor/test_codebuddy_terminal.js",
+      "exit_code": 0,
+      "passed": 3
+    },
+    {
+      "command": "node --test tests/editor/test_codex_bridge.js",
+      "exit_code": 0,
+      "passed": 9
+    },
+    {
+      "command": "python -X utf8 tests/editor/run_ai_chat_semantic.py --godot bin/godot.windows.editor.x86_64.guidance60.console.exe",
+      "exit_code": 0,
+      "marker": "SEMANTIC_MOCK_HTTP_ACCEPTANCE_OK",
+      "tested_editor_sha256": "7e70dddf68c00e1644598c54c0bf2b0cda6b3d74a69bcff87ab548b3ce7a6bf1",
+      "reuse": "Run before include-only normalization; no runtime function or phase-1 test behavior changed afterward"
+    },
+    {
+      "command": "python -X utf8 tests/editor/run_ai_chat_semantic.py --godot bin/godot.windows.editor.x86_64.guidance60.console.exe --interfaces",
+      "exit_code": 0,
+      "marker": "SEMANTIC_MOCK_INTERFACES_OK",
+      "tested_editor_sha256": "7e70dddf68c00e1644598c54c0bf2b0cda6b3d74a69bcff87ab548b3ce7a6bf1",
+      "reuse": "Same pre-normalization editor; include path spelling and ordering are the only subsequent C++ changes"
+    },
+    {
+      "command": "python -X utf8 tests/editor/run_ai_chat_semantic.py --godot bin/godot.windows.editor.x86_64.guidance60.console.exe --bounds --codex",
+      "exit_code": 0,
+      "marker": "SEMANTIC_MOCK_BOUNDS_OK",
+      "native_wire_cases": 10,
+      "http_business_cases": 0,
+      "max_observed_state_bytes": 15268,
+      "tested_editor_sha256": "7e70dddf68c00e1644598c54c0bf2b0cda6b3d74a69bcff87ab548b3ce7a6bf1",
+      "reuse": "Same pre-normalization editor; production Codex bridge and bounded-state logic remain unchanged"
+    },
+    {
+      "command": "python -X utf8 tests/editor/run_ai_chat_semantic.py --godot bin/godot.windows.editor.x86_64.guidance60.console.exe --guidance",
+      "exit_code": 0,
+      "markers": [
+        "AI_CHAT_SEMANTIC_OK",
+        "EDITOR_GUIDED_WORKFLOWS_RESTORE_OK",
+        "EDITOR_GUIDED_WORKFLOWS_OK"
+      ],
+      "tested_editor_sha256": "749195e495c479d5585412f8ee7a0e66b1ec21d319cd5ecf00425e4ef9fd857c"
+    },
+    {
+      "command": "python -X utf8 tests/editor/run_ai_chat_semantic.py --godot bin/godot.windows.editor.x86_64.guidance60.console.exe --guidance --codex",
+      "exit_code": 0,
+      "markers": [
+        "AI_CHAT_SEMANTIC_OK",
+        "EDITOR_GUIDED_WORKFLOWS_RESTORE_OK",
+        "EDITOR_GUIDED_WORKFLOWS_OK"
+      ],
+      "native_unique_wire_cases": 19,
+      "http_business_cases": 0,
+      "tested_editor_sha256": "749195e495c479d5585412f8ee7a0e66b1ec21d319cd5ecf00425e4ef9fd857c"
+    }
+  ],
+  "static_checks": [
+    {
+      "name": "C++ clang-format dry-run --Werror",
+      "exit_code": 0
+    },
+    {
+      "name": "validate_includes.py on five affected C++ files after normalization",
+      "exit_code": 0
+    },
+    {
+      "name": "Python py_compile",
+      "exit_code": 0
+    },
+    {
+      "name": "Node --check on native fixture",
+      "exit_code": 0
+    },
+    {
+      "name": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "corrected_failures": [
+    {
+      "failure": "Confirmed JSON numeric setting did not complete observer",
+      "fix": "Normalize finite integral JSON floats to the actual integer setting type",
+      "verified_by": "HTTP guidance and final native guidance"
+    },
+    {
+      "failure": "Approval dialog conflicted with an already exclusive settings window",
+      "fix": "Nest under the active modal and restore ownership after hiding",
+      "verified_by": "Guidance modal assertions and phase-1 regression"
+    },
+    {
+      "failure": "Native guidance fixture could not find returned tool results",
+      "fix": "Write to the explicit temporary project's result file rather than Codex's separate working directory",
+      "scope": "Test fixture only"
+    },
+    {
+      "failure": "Include style validator normalized three pre-existing relative include paths",
+      "fix": "Canonical repository paths and ordered includes; final editor rebuilt",
+      "scope": "No runtime logic change"
+    }
+  ],
+  "limitations": [
+    "No real model service or manual desktop-click acceptance was run",
+    "Headless scripted exits report RID/ObjectDB cleanup warnings; this is not a clean-exit claim",
+    "The phase-1 read-only save-failure case intentionally reports safe-save errors and an existing warning-dialog log while its rollback and subsequent-action assertions pass",
+    "Full shell-terminal tests require Bash, which is unavailable in this environment; the affected reserved semantic-action tests passed"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured token/cost receipt is available",
+  "diting": {
+    "recorded_file": true,
+    "git_committed_at_capture": false,
+    "consumed": null
+  },
+  "observed_at": "2026-11-05T16:05:37Z",
+  "logs": {
+    "location": "Local worktree Git private directory; summaries and hashes are delivered here, raw fixture logs remain local",
+    "receipts": {
+      "guidance60-http-final.log": {
+        "sha256": "7f4199a79008dd4b753bd54710fc54d842a6ba4767d0dd12d6368a5848028e40",
+        "markers": [
+          "AI_CHAT_SEMANTIC_OK",
+          "MOCK_ERRORS []",
+          "EDITOR_GUIDED_WORKFLOWS_RESTORE_OK",
+          "EDITOR_GUIDED_WORKFLOWS_OK"
+        ]
+      },
+      "guidance60-codex-final.log": {
+        "sha256": "6ee08522ae3b87d5ecf41698c230938c9f0044d802617c49dfc658931218ed0b",
+        "markers": [
+          "AI_CHAT_SEMANTIC_OK",
+          "MOCK_ERRORS []",
+          "EDITOR_GUIDED_WORKFLOWS_RESTORE_OK",
+          "EDITOR_GUIDED_WORKFLOWS_OK"
+        ]
+      },
+      "guidance60-phase1-final.log": {
+        "sha256": "6139adfc199c612c2f9b9e6453288e793d0934c87f006a2dad805778d987124d",
+        "markers": [
+          "AI_CHAT_SEMANTIC_OK",
+          "MOCK_ERRORS []",
+          "SEMANTIC_MOCK_HTTP_ACCEPTANCE_OK"
+        ]
+      },
+      "guidance60-interfaces-final.log": {
+        "sha256": "811a9e9fa2eaca7452dcab2c1efe259dddddc1b1b045b3535d7df9fd55b95dc1",
+        "markers": [
+          "AI_CHAT_SEMANTIC_OK",
+          "MOCK_ERRORS []",
+          "SEMANTIC_MOCK_INTERFACES_OK"
+        ]
+      },
+      "guidance60-bounds-final.log": {
+        "sha256": "baf97689e51261674b6639c273385b33762c2fe02a7ed4ba2b3a22cbd4d7a85d",
+        "markers": [
+          "AI_CHAT_SEMANTIC_OK",
+          "MOCK_ERRORS []",
+          "BOUND_STATE_BYTES state_case_a 265",
+          "BOUND_STATE_BYTES state_long_unicode 249",
+          "BOUND_STATE_BYTES state_case_c 265",
+          "BOUND_STATE_BYTES state_long_ascii 249",
+          "BOUND_STATE_BYTES state_long_cjk 249",
+          "BOUND_STATE_BYTES state_case_b 265",
+          "BOUND_STATE_BYTES state_empty 218",
+          "BOUND_STATE_BYTES state_budget 15268",
+          "BOUND_STATE_BYTES state_count 1138",
+          "SEMANTIC_MOCK_BOUNDS_OK"
+        ]
+      }
+    }
+  },
+  "reused_test_input_hashes_before_include_normalization": {
+    "editor/docks/ai_chat_dock.cpp": "34039d955ef0aad2539412649faad65b54a9b13d5f379cbc6dbd3b60d9da20c3",
+    "editor/docks/ai_chat_editor_control.cpp": "a8d1c12d54eec3c2ca6af2b868a3fe74707bb9a0705e7f2b70fbaea138b4e9ef"
+  },
+  "acceptance": [
+    {
+      "id": 1,
+      "state": "locally_validated",
+      "evidence": "Registry discovery, core collision refusal, unregister/release/re-register assertions in both guidance transports"
+    },
+    {
+      "id": 2,
+      "state": "locally_validated",
+      "evidence": "Three-step Project Settings workflow, rejected and accepted setting writes in both transports"
+    },
+    {
+      "id": 3,
+      "state": "locally_validated",
+      "evidence": "Button, main-screen, node-selection and setting observers; unchanged baselines remain waiting"
+    },
+    {
+      "id": 4,
+      "state": "locally_validated",
+      "evidence": "Previous/next/relocate/cancel, stopped overlay processing and detached button observer"
+    },
+    {
+      "id": 5,
+      "state": "locally_validated",
+      "evidence": "Headless target reparent/resize, different Window, target recreation, transient hide and bounded failure/recovery; manual desktop acceptance not run"
+    },
+    {
+      "id": 6,
+      "state": "locally_validated",
+      "evidence": "Second editor process restores preview with no highlight or settings window replay"
+    },
+    {
+      "id": 7,
+      "state": "locally_validated",
+      "evidence": "Same guidance scene through HTTP and offline native Codex subprocess, no HTTP business fallback; permission/consultation regressions"
+    },
+    {
+      "id": 8,
+      "state": "locally_validated",
+      "evidence": "55 JavaScript tests, affected style/syntax/include checks, Windows editor build and phase-1 regressions"
+    }
+  ]
+}

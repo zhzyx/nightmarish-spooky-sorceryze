@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "issue60-request-resumed-20261105",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-guided-workflows-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-05T15:52:28Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/60",
+  "agent": {
+    "id": "codex-desktop-editor-guidance",
+    "version": "session-20261105",
+    "definition_sha256": "125185c4a550bed209c05ded8f39f66866e632f8032074cf7702e0ea717db7f7",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "event": "request.resumed",
+    "authorization": [
+      "两阶段分两个issue落地",
+      "提交然后push吧",
+      "重新执行",
+      "请继续",
+      "push到main"
+    ],
+    "delivery_target": "origin/main",
+    "scope": "Phase 2 semantic editor target registry, guided workflows, observers and regression coverage",
+    "base_commit": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+    "phase1_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/59",
+    "phase1_commit": "e79128a863ecb8c794edba920f437a947885e0df",
+    "worktree": "D:/Projects/godot-editor-guidance-60-20261105",
+    "isolation": "Adapt only phase 2 in a separate worktree; preserve unrelated changes in the original main worktree",
+    "definition_hash_scope": "Bytes of this worktree's AGENTS.md; not a digest of hidden model instructions",
+    "usage": null,
+    "usage_unknown_reason": "No measured token or cost receipt is available",
+    "consumed": null
+  },
+  "evidence_refs": [],
+  "sha256": "2e36de973018977b00cc88c6f6e56eb866feaeeaf5e507d104363806199b90d3"
+}
