@@ -13,6 +13,7 @@ def source_plan(issue, request_id):
     source = issue["html_url"]
     nodes = {"requirement": {"kind": "text", "title": "需求", "value": issue["title"]}}
     evidence = {"requirement": source}
+    questions = {}
     edges = []
     heading = ""
     clauses = {"范围": ("task", "预计任务"), "验收条件": ("join", "验收条件"), "待确认": ("question", "待确认")}
@@ -27,12 +28,26 @@ def source_plan(issue, request_id):
             identity = "s_" + hashlib.sha256((source + heading + value).encode()).hexdigest()[:24]
             if identity in nodes:
                 continue
-            nodes[identity] = {"kind": kind, "title": title, "value": value}
+            if heading == "待确认":
+                if value.startswith(("【图片】", "[图片]", "请提供截图", "请上传截图")):
+                    kind, title = "image", "待补图片"
+                    questions[identity] = {"kind":"image","prompt":value}
+                elif value.startswith(("【选择】","[选择]")) and "|" in value:
+                    prompt, *options = [v.strip() for v in value.split("|")]
+                    questions[identity] = {"kind":"choice","prompt":prompt,"options":list(dict.fromkeys(v for v in options if v))}
+                elif value.startswith(("【确认】","[确认]")):
+                    questions[identity] = {"kind":"confirmation","prompt":value,"options":["同意本项","退回修改"]}
+                else:
+                    questions[identity] = {"kind":"text","prompt":value}
+            nodes[identity] = {"kind": kind, "title": title, "value": "" if kind=="image" else value}
             evidence[identity] = source + " · " + heading
             # Scope clauses are planned tasks, not actual launches or approved gates.
             if kind == "task":
                 edges.append({"from": "requirement", "to": identity, "kind": "data"})
-    return {"plan": {"nodes": nodes, "edges": edges}, "sources": evidence}
+    result={"plan":{"nodes":nodes,"edges":edges},"sources":evidence}
+    if questions:
+        result["questions"]=questions
+    return result
 
 
 def read_board(root, follows, actor=None):
@@ -75,6 +90,8 @@ def read_board(root, follows, actor=None):
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
         item.update(source_plan(row, item["request"]))
+        item["pending_count"] = len(item.get("questions",{})) if row["state"]=="open" else 0
+        item["decision"] = item["decision"] or item["pending_count"]>0
         items[number] = item
         # GitHub only returns a summary on some endpoint/API versions.
         summary = row.get("issue_dependencies_summary", {})
@@ -105,7 +122,24 @@ def main():
         actor=collaborator(args.repo)
         if args.expected_user and actor["user_id"]!=args.expected_user:
             raise AccessDenied("当前登录账号已切换")
-        result={"access":actor} if args.access_only else {"board":read_board(args.repo,args.follow,actor)}
+        if args.access_only:
+            result={"access":actor}
+        else:
+            board=read_board(args.repo,args.follow,actor)
+            if not os.environ.get("DAQIAN_PLAN_SSH_HOST"):
+                import plan_store
+                with plan_store.connect(args.repo.resolve()) as db:
+                    for item in board["issues"]:
+                        if item["closed"]:
+                            continue
+                        source={"issue":item["url"],"base":item["plan"],"sources":item["sources"],"source_revision":"projection",
+                                "questions":item.get("questions",{}),"can_edit":False}
+                        view=plan_store.snapshot(db,source)
+                        ctx=view["context"]
+                        count=len(ctx["questions"])-len(ctx["answers"])
+                        item["pending_count"]=count
+                        item["decision"]=count>0 or (item["status"]=="needs-decision" and not ctx["answers"])
+            result={"board":board}
     except AccessDenied as error:
         result={"denied":True,"error":str(error)}
     except work_items.GitHubCommandError as error:

@@ -32,7 +32,10 @@ var debug_buffer := PackedByteArray()
 var debug_issue := ""
 var debug_states := {}
 var debug_history: Array = []
-var debug_seed := ""
+var debug_sessions := {}
+var history_dialog: AcceptDialog
+var history_view: TextEdit
+var debug_serial := 0
 const DEBUG_MODELS := ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]
 var host: Object
 var selection_epoch := 0
@@ -81,6 +84,15 @@ func _ready() -> void:
 	_button(actions, "关联对话", _chat_action.bind("discuss"))
 	_button(actions, "调试运行", _start_debug)
 	_button(actions, "结束调试", _stop_debug)
+	_button(actions, "调试记录", _show_debug_history)
+	history_dialog = AcceptDialog.new()
+	history_dialog.title = "此工单的本机调试记录"
+	history_view = TextEdit.new()
+	history_view.editable = false
+	history_view.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	history_view.custom_minimum_size = Vector2(560,320)
+	history_dialog.add_child(history_view)
+	add_child(history_dialog)
 	overview = GraphEdit.new()
 	overview.name = "IssueOverview"
 	overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -192,7 +204,7 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
-	_stop_debug(false)
+	_stop_debug(false,true)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
 
@@ -219,6 +231,7 @@ func _draw_board() -> void:
 	var statuses := ["全部状态", "待我处理"]
 	var owners := ["全部负责人"]
 	var rows: Array = board.get("issues", [])
+	var waiting_inputs := 0
 	pending_menu.get_popup().clear()
 	var by_url := {}
 	for index in rows.size():
@@ -239,6 +252,7 @@ func _draw_board() -> void:
 			label.modulate = Color("#edbe66")
 		card.add_child(label)
 		if item.decision:
+			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
 		detail.name = "StepDetails"
@@ -263,10 +277,10 @@ func _draw_board() -> void:
 		for dep in item.dependencies:
 			if by_url.has(dep):
 				overview.connect_node(by_url[dep], 0, by_url[item.url], 0)
-	pending_menu.text = "待办 (%d)" % pending_menu.get_popup().item_count
+	pending_menu.text = "待办 (%d)" % waiting_inputs
 	var dock := get_parent() as EditorDock
 	if dock:
-		dock.title = "大千" if pending_menu.get_popup().item_count == 0 else "大千 (%d)" % pending_menu.get_popup().item_count
+		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
 	_zoom_detail()
 	_fill_filter(status, statuses)
 	_fill_filter(owner_filter, owners)
@@ -333,12 +347,14 @@ func _gate_visibility(opened: bool) -> void:
 	editor.visible = opened and not current.is_empty()
 	if not opened:
 		models_dialog.hide()
+		history_dialog.hide()
+		history_view.clear()
 		draft_menu.get_popup().hide()
 
 
 func _forget(reason: String) -> void:
 	selection_epoch += 1
-	_stop_debug(false)
+	_stop_debug(false,true)
 	_save()
 	actor = {}
 	offline = false
@@ -441,7 +457,7 @@ func refresh() -> void:
 	else:
 		settings.set_project_metadata("daqian_access",_access_key(),{"actor":auth,"checked":Time.get_unix_time_from_system()})
 	if previous != auth or picker_scope != _repo():
-		_stop_debug(false)
+		_stop_debug(false,true)
 		current = ""
 		actor = auth
 		_load_personal()
@@ -533,8 +549,9 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	var port: Object = host if is_instance_valid(host) else self
 	var apply_port := Callable(port,"apply_graph") if id.begins_with("https://") else Callable()
 	var read_port := Callable(port,"read_graph") if id.begins_with("https://") else Callable()
-	editor.debug_active = current == debug_issue and not debug_process.is_empty()
-	editor.debug_states = debug_states.duplicate(true) if editor.debug_active else {}
+	_select_debug(current)
+	editor.debug_active = debug_sessions.has(current)
+	editor.debug_states = debug_states.duplicate(true)
 	editor.bind_issue(id,snapshot,apply_port,read_port)
 	var stored: Dictionary = saved.get("drafts", {}).get(id,{})
 	if stored.has("graph"):
@@ -559,12 +576,21 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 func _drop_images(paths: PackedStringArray) -> void:
 	if not is_visible_in_tree() or not editor.is_visible_in_tree() or not editor.canvas.get_global_rect().has_point(editor.canvas.get_global_mouse_position()):
 		return
+	insert_dropped_images(paths,(editor.canvas.get_local_mouse_position()+editor.canvas.scroll_offset)/editor.canvas.zoom)
+
+
+func insert_dropped_images(paths: PackedStringArray,at: Vector2) -> void:
+	if actor.is_empty() or not editor.visible:
+		return
 	for path in paths:
 		if path.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp"]:
 			var image := Image.load_from_file(path)
 			if image and not image.is_empty():
-				var at: Vector2 = (editor.canvas.get_local_mouse_position() + editor.canvas.scroll_offset) / editor.canvas.zoom
-				editor.set_image(editor.add_node("image",at),image)
+				var target: String = editor.pending_image
+				if target.is_empty() or not editor.draft.nodes.has(target):
+					target = editor.add_node("image",at)
+				editor.set_image(target,image)
+				editor.pending_image = ""
 
 
 func read_graph(id: String) -> Dictionary:
@@ -593,7 +619,7 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var result_path := stem + ".result"
 	var req_path := stem + ".request"
 	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--result",result_path,action])
-	if action == "apply":
+	if action in ["apply","answer"]:
 		var f := FileAccess.open(req_path,FileAccess.WRITE)
 		if not f:
 			return {"error":"无法保存本次提交请求"}
@@ -692,19 +718,29 @@ func _preview_received(source: String, text: String) -> void:
 func _answer_question(id: String, answer: String) -> void:
 	if not await _fresh_access():
 		return
-	if debug_issue == current and not debug_process.is_empty():
+	if debug_sessions.has(current):
 		_debug_command("answer",id,answer)
 		return
-	if not chat or not editor.draft.nodes.has(id):
+	if not editor.draft.nodes.has(id):
 		return
+	var target := current
+	var response: Dictionary = await _graph_command(target,"answer",{"revision":editor.revision,"node":id,"value":answer})
+	if current != target:
+		return
+	if not response.get("ok",false):
+		notice.text = str(response.get("error","未收到答复回执，草稿已保留"))
+		return
+	editor.context = response.context
 	for item in board.get("issues",[]):
-		if item.url == current and not str(item.request).is_empty():
-			var question: Dictionary = editor.draft.nodes[id]
-			var message := "答复工单 #%s 的问题「%s」\n%s" % [item.number,question.get("value",question.title),answer]
-			var error: String = chat.open_daqian_chat(current,int(item.number),item.request,message,false)
-			notice.text = error if error else "已交给关联对话，等待共工回执"
-			return
-	notice.text = "工单尚无可验证的需求绑定，答复保留在节点上"
+		if item.url==current:
+			item.pending_count = response.context.questions.size()-response.context.answers.size()
+			item.decision = item.pending_count>0
+	_draw_board()
+	editor.answers.erase(id)
+	editor.draw_graph()
+	_save()
+	notice.text = "已按当前协作者身份记录答复 · " + id
+
 
 func _catalog_changed() -> void:
 	if not current.begins_with("https://"):
@@ -717,11 +753,19 @@ func _catalog_changed() -> void:
 		editor.draw_graph()
 		editor.notice.text = "已回读模型库；能力证据不足的型号保留待评测状态"
 
+func _select_debug(target: String) -> void:
+	var session: Dictionary = debug_sessions.get(target,{})
+	debug_issue = target if not session.is_empty() else ""
+	debug_states = session.get("states",{})
+	debug_history = session.get("history",[])
+
+
 func _start_debug() -> void:
-	if not await _fresh_access():
+	var target := current
+	if not await _fresh_access() or target != current:
 		return
-	if not debug_process.is_empty():
-		notice.text = "已有调试会话，请结束后再启动"
+	if debug_sessions.has(target):
+		notice.text = "当前工单已在调试中"
 		return
 	var test_ctx: Dictionary = editor.context.duplicate(true)
 	var capabilities: Dictionary = test_ctx.get("models",{})
@@ -743,27 +787,37 @@ func _start_debug() -> void:
 		node = "node"
 	if python.is_empty():
 		python = "python" if OS.has_feature("windows") else "python3"
-	debug_issue = current
-	debug_buffer = PackedByteArray()
-	debug_states.clear()
-	debug_history.clear()
 	var plan: Dictionary = editor.draft.duplicate(true)
 	for id in plan.nodes:
 		if plan.nodes[id].kind == "task":
 			plan.nodes[id].model = editor.debug_models.get(id,"")
-	debug_seed = EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-loopback-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
+		if editor.context.get("answers",{}).has(id):
+			plan.nodes[id].value = editor.context.answers[id].value
+			if plan.nodes[id].kind == "question":
+				plan.nodes[id].kind = "text"
+		elif editor.context.get("questions",{}).get(id,{}).get("kind","") == "image":
+			plan.nodes[id].pending_image = true
+	var debug_seed := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-loopback-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
 	var file := FileAccess.open(debug_seed,FileAccess.WRITE)
 	if not file:
 		notice.text = "无法暂存本次调试请求"
 		return
-	file.store_string(JSON.stringify({"action":"start","plan":plan,"python":python}))
+	debug_serial += 1
+	file.store_string(JSON.stringify({"action":"start","issue":target,"plan":plan,"python":python,"serial":debug_serial}))
 	file.close()
-	debug_process = OS.execute_with_pipe(node,[path,debug_seed],false)
 	if debug_process.is_empty():
-		DirAccess.remove_absolute(debug_seed)
-		notice.text = "无法启动 Node 调试宿主，请核对可执行路径"
-		debug_issue = ""
-		return
+		debug_buffer = PackedByteArray()
+		debug_process = OS.execute_with_pipe(node,[path,debug_seed],false)
+		if debug_process.is_empty():
+			DirAccess.remove_absolute(debug_seed)
+			notice.text = "无法启动 Node 调试宿主，请核对可执行路径"
+			return
+	else:
+		var pipe: FileAccess = debug_process.stdio
+		pipe.store_line(JSON.stringify({"action":"start_file","file":debug_seed,"serial":debug_serial}))
+		pipe.flush()
+	debug_sessions[target] = {"states":{},"history":[],"seed":debug_seed,"instance":debug_seed.get_file().get_basename()}
+	_select_debug(target)
 	editor.debug_active = true
 	editor.draw_graph()
 	debug_timer.start()
@@ -771,11 +825,15 @@ func _start_debug() -> void:
 
 
 func _debug_command(action: String,id: String,value: String) -> void:
-	if debug_process.is_empty() or debug_issue != current:
+	var target := current
+	if action == "retry" and (not await _fresh_access() or target != current):
+		return
+	if debug_process.is_empty() or not debug_sessions.has(current):
 		return
 	var pipe: FileAccess = debug_process.stdio
 	debug_timer.start()
-	pipe.store_line(JSON.stringify({"action":action,"id":id,"model":value,"value":value}))
+	debug_serial += 1
+	pipe.store_line(JSON.stringify({"action":action,"issue":current,"id":id,"model":value,"value":value,"serial":debug_serial}))
 	pipe.flush()
 
 
@@ -788,34 +846,75 @@ func _debug_update() -> void:
 		var event = JSON.parse_string(debug_buffer.slice(0,newline).get_string_from_utf8())
 		debug_buffer = debug_buffer.slice(newline+1)
 		if event is Dictionary and event.has("id"):
-			debug_states[event.id] = event
-			debug_history.append(event)
-			if current == debug_issue:
-				editor.set_debug_state(event)
+			var target: String = event.get("issue","")
+			var session: Dictionary = debug_sessions.get(target,{})
+			if not session.is_empty():
+				session.states[event.id] = event
+				session.history.append(event)
+				if not saved.has("debug_receipts"):
+					saved.debug_receipts = {}
+				if not saved.debug_receipts.has(target):
+					saved.debug_receipts[target] = []
+				var receipt: Dictionary = event.duplicate()
+				receipt.instance = session.instance
+				saved.debug_receipts[target].append(receipt)
+				_queue_save()
+				if current == target:
+					editor.set_debug_state(event)
 		elif event is Dictionary and event.has("error"):
 			notice.text = event.error
-		elif event is Dictionary and event.get("idle",false):
+		elif event is Dictionary and event.get("idle",false) and int(event.get("serial",-1)) == debug_serial:
 			debug_timer.stop()
 			notice.text = "本轮调试已就绪或结束 · 可答复、重跑或结束调试"
 		newline = debug_buffer.find(10)
 	if not OS.is_process_running(debug_process.pid):
-		_stop_debug()
+		_stop_debug(true,true)
 
 
-func _stop_debug(redraw := true) -> void:
+func _stop_debug(redraw := true, all_issues := false) -> void:
 	if debug_process.is_empty():
 		return
-	# Closing stdin lets the host terminate its own workers and close the fixture socket.
-	debug_process.clear()
-	if not debug_seed.is_empty() and FileAccess.file_exists(debug_seed):
-		DirAccess.remove_absolute(debug_seed)
-	debug_seed = ""
-	debug_issue = ""
-	debug_states.clear()
-	if is_instance_valid(debug_timer):
-		debug_timer.stop()
+	var targets: Array = debug_sessions.keys() if all_issues else [current]
+	for target in targets:
+		if not debug_sessions.has(target):
+			continue
+		var seed: String = debug_sessions[target].seed
+		if not seed.is_empty() and FileAccess.file_exists(seed):
+			DirAccess.remove_absolute(seed)
+		debug_sessions.erase(target)
+		if not all_issues and not debug_sessions.is_empty():
+			debug_serial += 1
+			var pipe: FileAccess = debug_process.stdio
+			pipe.store_line(JSON.stringify({"action":"stop_issue","issue":target,"serial":debug_serial}))
+			pipe.flush()
+			debug_timer.start()
+	if debug_sessions.is_empty():
+		debug_process.clear()
+		if is_instance_valid(debug_timer):
+			debug_timer.stop()
+	_select_debug(current)
 	if is_instance_valid(editor):
-		editor.debug_active = false
-		editor.debug_states.clear()
+		editor.debug_active = debug_sessions.has(current)
+		editor.debug_states = debug_states.duplicate(true)
 		if redraw and editor.is_inside_tree():
 			editor.draw_graph()
+
+func _show_debug_history() -> void:
+	if actor.is_empty():
+		return
+	var lines := PackedStringArray()
+	for event in saved.get("debug_receipts",{}).get(current,[]):
+		var when_text := Time.get_datetime_string_from_unix_time(int(float(event.get("at",0))/1000.0),true)
+		var node: Dictionary = editor.draft.nodes.get(event.id,{})
+		var row := "%s UTC  %s  ·  %s" % [when_text,node.get("title",event.id),event.state]
+		if event.has("run"):
+			row += "  ·  #%s" % event.run
+		if event.has("model"):
+			row += "  ·  " + str(event.model)
+		if event.has("worker"):
+			row += "  ·  PID " + str(event.worker)
+		if event.has("result") or event.has("reason"):
+			row += "\n" + str(event.get("result",event.get("reason","")))
+		lines.append(row)
+	history_view.text = "\n".join(lines) if not lines.is_empty() else "当前工单尚无调试记录"
+	history_dialog.popup_centered()

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-parallel-20261105-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-parallel-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-05T16:51:38.292323+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/124",
+  "agent": {
+    "id": "codex-daqian-current-operator",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "7589575ee09fb0aa3b603a5ebebd0f5c066528b91ab5db37a94e9ba3cfd0b199"
+  },
+  "payload": {
+    "intent": "补齐跨 Issue 的共享司南执行槽、同名节点隔离、局部停止与个人调试记录",
+    "definition_basis": "repository-root AGENTS.md",
+    "design_document": "design-docs/daqian/parallel.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "未取得实际用量"
+  },
+  "evidence_refs": [],
+  "sha256": "c89803fcad2c5ff363a114d74970f0f50363c46a34fbd9ad8feef4ba88454201"
+}

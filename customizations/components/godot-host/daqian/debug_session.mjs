@@ -2,6 +2,7 @@
 import http from 'node:http';
 import readline from 'node:readline';
 import fs from 'node:fs';
+import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {setTimeout as delay} from 'node:timers/promises';
@@ -10,7 +11,10 @@ import {dispatchGraph} from './execution.mjs';
 const emit = event => process.stdout.write(JSON.stringify(event)+'\n');
 const protocols = {'调试 · Claude':'anthropic-messages','调试 · Gemini':'gemini-generate-content','调试 · GPT':'responses','调试 · DeepSeek':'chat-completions'};
 const worker = fileURLToPath(new URL('./worker.py',import.meta.url));
-let graph, python, server, closed=false, revision=0, queue=Promise.resolve();
+const graph={nodes:Object.create(null),edges:[]};
+const sessions=new Map();
+const owners=new Map();
+let python, server, closed=false, revision=0, generation=0, serial=0, queue=Promise.resolve();
 const nodes = new Map();
 const active = new Map();
 const history = new Map();
@@ -18,8 +22,10 @@ const data = new Map();
 const accepted = id => nodes.get(id)==='completed';
 const eligible = id => !nodes.has(id);
 function state(id, value, fields={}) {
+  const owner=owners.get(id);
+  if (!owner) return;
   nodes.set(id,value);
-  emit({scope:'synthetic_loopback',id,state:value,at:Date.now(),...fields});
+  emit({scope:'synthetic_loopback',issue:owner.issue,id:owner.node,state:value,at:Date.now(),...fields});
 }
 function fixtureEndpoint() {
   return http.createServer(async (req,res)=>{
@@ -66,7 +72,7 @@ function wake(reason) {
       for (const [id,n] of Object.entries(graph.nodes)) {
         if (!eligible(id) || !['text','image','question'].includes(n.kind)) continue;
         if (graph.edges.some(e=>e.to===id && !accepted(e.from))) continue;
-        if (n.kind==='question') state(id,'waiting');
+        if (n.kind==='question' || n.pending_image) state(id,'waiting');
         else {data.set(id,{kind:n.kind,value:n.value});state(id,'completed');}
         advanced=true;
       }
@@ -95,6 +101,7 @@ function wake(reason) {
           proc.once('close',code=>{
             active.delete(id);
             if (closed) return;
+            if (!owners.has(id)) {wake('execution.finished');return;}
             if (nodes.get(id)==='stopping') {
               state(id,'cancelled',{run,model});
             } else {
@@ -121,18 +128,67 @@ function wake(reason) {
       })
     };
     await dispatchGraph(event,'local-fixture',graph,host);
-    if (!active.size) emit({scope:'synthetic_loopback',idle:true});
+    if (!active.size) emit({scope:'synthetic_loopback',idle:true,serial});
   }).catch(error=>emit({error:String(error.message)}));
 }
 async function handle(cmd) {
-  if(cmd.action==='start' && !graph) {
-    graph=cmd.plan;
-    python=cmd.python;
-    server=fixtureEndpoint();
-    await new Promise((resolve,reject)=>server.once('error',reject).listen(0,'127.0.0.1',resolve));
+  serial=Math.max(serial,Number(cmd.serial)||0);
+  if(cmd.action==='start_file') {
+    // Secondary graph payloads are private sibling files of the first editor seed.
+    if (!process.argv[2] || path.dirname(path.resolve(cmd.file))!==path.dirname(path.resolve(process.argv[2])) ||
+        !/^daqian-loopback-[a-f0-9]+\.json$/.test(path.basename(cmd.file)) || fs.lstatSync(cmd.file).isSymbolicLink()) {
+      throw Error('非法调试输入路径');
+    }
+    const seed=JSON.parse(fs.readFileSync(cmd.file,'utf8'));
+    fs.unlinkSync(cmd.file);
+    return handle(seed);
+  }
+  if(cmd.action==='start') {
+    const issue=cmd.issue;
+    if (typeof issue!=='string' || !issue || sessions.has(issue)) throw Error('工单调试已启动或缺少身份');
+    if (!server) {
+      python=cmd.python;
+      server=fixtureEndpoint();
+      await new Promise((resolve,reject)=>server.once('error',reject).listen(0,'127.0.0.1',resolve));
+    }
+    const entries=Object.entries(cmd.plan.nodes);
+    const sequence=++generation;
+    const keys=new Map(entries.map(([node])=>[node,JSON.stringify([issue,sequence,node])]));
+    // Validate the entire graph boundary before publishing any nodes to the shared queue.
+    const edges=cmd.plan.edges.map(edge=>{
+      if (!keys.has(edge.from) || !keys.has(edge.to) || !['after','data'].includes(edge.kind)) throw Error('跨单或无效连线');
+      return {from:keys.get(edge.from),to:keys.get(edge.to),kind:edge.kind};
+    });
+    for (const [node,value] of entries) {
+      const id=keys.get(node);
+      owners.set(id,{issue,node});
+      graph.nodes[id]=value;
+    }
+    graph.edges.push(...edges);
+    sessions.set(issue,keys);
     wake('user.requested');
-  } else if(cmd.action==='answer' && graph?.nodes[cmd.id]?.kind==='question' && nodes.get(cmd.id)==='waiting') {
-    data.set(cmd.id,{kind:'text',value:cmd.value});state(cmd.id,'completed');wake('decision.recorded');
+    return;
+  }
+  const keys=sessions.get(cmd.issue);
+  if (!keys) return;
+  if (cmd.action==='stop_issue') {
+    // Killed workers retain their capacity until their individual close callbacks run.
+    const removed=new Set(keys.values());
+    for (const id of removed) {
+      active.get(id)?.kill();
+      delete graph.nodes[id];
+      nodes.delete(id);history.delete(id);data.delete(id);owners.delete(id);
+    }
+    graph.edges=graph.edges.filter(e=>!removed.has(e.from) && !removed.has(e.to));
+    sessions.delete(cmd.issue);
+    wake('user.requested');
+    return;
+  }
+  const id=keys.get(cmd.id);
+  if (!id) return;
+  cmd={...cmd,id};
+  if(cmd.action==='answer'  && (graph?.nodes[cmd.id]?.kind==='question' || graph?.nodes[cmd.id]?.pending_image) && nodes.get(cmd.id)==='waiting') {
+    data.set(cmd.id,{kind:graph.nodes[cmd.id].pending_image?'image':'text',value:cmd.value});state(cmd.id,'completed');wake('decision.recorded');
   } else if(cmd.action==='cancel' && active.has(cmd.id)) {
     state(cmd.id,'stopping');active.get(cmd.id).kill();
   } else if(cmd.action==='retry' && ['failed','cancelled','waiting'].includes(nodes.get(cmd.id)) && graph.nodes[cmd.id].kind==='task') {
