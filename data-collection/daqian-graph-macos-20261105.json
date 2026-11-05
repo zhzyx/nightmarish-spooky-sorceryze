@@ -1,0 +1,22 @@
+{
+  "request_id": "daqian-graph-20261105",
+  "issue_number": 120,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/120",
+  "platform": "macOS arm64",
+  "editor_sha256": "6cd73105e28920f8b1f6ef9fa3571585f64bca504abf36dda85ed9a325f5d619",
+  "tab_order_verified": [
+    "initial",
+    "restart",
+    "second_restart"
+  ],
+  "graph_ui": "DAQIAN_GRAPH_TEST passed; controlled runtime and catalog for conflict tests",
+  "graph_source": "real GitHub permissions/Issue readback for #120; 4 SQLite transaction and projection tests",
+  "unverified": [
+    "Windows",
+    "real cross-provider calls",
+    "real concurrent Agents and delivery",
+    "single-user case",
+    "cross-installation plan synchronization"
+  ],
+  "production_admission": "not_claimed"
+}

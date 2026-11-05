@@ -1,0 +1,29 @@
+{
+  "request_id": "daqian-acceptance-20261105",
+  "issue_number": 125,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/125",
+  "event": {
+    "schema_version": 1,
+    "event_id": "daqian-acceptance-20261105-intake",
+    "tenant_id": "gonggong-workspace",
+    "request_id": "daqian-acceptance-20261105",
+    "kind": "request",
+    "occurred_at": "2026-11-05T15:27:51.902900+00:00",
+    "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/125",
+    "agent": {
+      "id": "codex-daqian-current-operator",
+      "version": "host-version-unreported",
+      "origin": "user-authorized-codex-chat",
+      "definition_sha256": "125185c4a550bed209c05ded8f39f66866e632f8032074cf7702e0ea717db7f7"
+    },
+    "payload": {
+      "intent": "双平台同候选集成大千、四协议调试和真实案例 #127，保持生产授权与调试边界",
+      "definition_basis": "repository-root AGENTS.md",
+      "design_document": "design-docs/daqian/acceptance.md",
+      "input_tokens": null,
+      "output_tokens": null,
+      "reason": "未取得实际用量"
+    },
+    "evidence_refs": []
+  }
+}

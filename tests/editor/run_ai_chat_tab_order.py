@@ -34,14 +34,17 @@ def main():
         report['engine_sha256'] = sha(engine)
     (ROOT / 'bin').mkdir(exist_ok=True)
     try:
-        with tempfile.TemporaryDirectory(prefix='issue58-order-', dir=ROOT / 'bin') as directory:
+        with tempfile.TemporaryDirectory(prefix='issue58-order-', dir=ROOT / 'bin', ignore_cleanup_errors=os.name == 'nt') as directory:
             project = Path(directory)
             (project / 'project.godot').write_text('config_version=5\n[application]\nconfig/name="Tab Order Regression"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding='utf-8')
             shutil.copyfile(Path(__file__).with_name('ai_chat_tab_order.gd'), project / 'order.gd')
             env = os.environ.copy()
             for key in ['APPDATA', 'LOCALAPPDATA', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME']:
                 env[key] = str(project / key.lower())
-            for phase in ['initial', 'restart', 'second_restart']:
+            for phase in ['initial', 'pre_daqian_layout', 'restart']:
+                if phase == 'pre_daqian_layout':
+                    config = project / '.godot/editor/editor_layout.cfg'
+                    config.write_text(config.read_text(encoding='utf-8').replace(',DaqianMainScreen', ''), encoding='utf-8')
                 env['AI_CHAT_ORDER_PHASE'] = phase
                 result = subprocess.run([str(binary), '--headless', '--editor', '--path', str(project), '--script', 'res://order.gd'], env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
                 assert result.returncode == 0, result.stdout + result.stderr
@@ -52,7 +55,7 @@ def main():
                 saved = re.search(r'^dock_12="([^"\n]+)"', layout, re.M)
                 assert saved is not None, 'Normal editor exit did not save the main-screen layout'
                 sample['saved_order'] = saved.group(1).split(',')
-                assert sample['saved_order'][0] == 'AIChatMainScreen' and sample['saved_order'][1] == '2D', sample
+                assert sample['saved_order'][:3] == ['AIChatMainScreen', 'DaqianMainScreen', '2D'], sample
                 if report['phases']:
                     assert sample['labels'] == report['phases'][0]['labels'], 'Restart changed visible peer order'
                     assert sample['saved_order'] == report['phases'][0]['saved_order'], 'Restart changed saved peer order'

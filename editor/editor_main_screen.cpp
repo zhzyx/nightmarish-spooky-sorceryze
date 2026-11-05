@@ -93,7 +93,8 @@ void EditorMainScreen::suspend_window_fill() {
 void EditorMainScreen::update_window_fill() {
 	// Docks are added while the editor is being constructed, before the first real selection.
 	if (is_inside_tree()) {
-		_set_window_fill(Object::cast_to<AIChatDock>(get_current_tab_control()) != nullptr);
+		const EditorDock *dock = get_dock(get_current_tab());
+		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen"));
 	}
 }
 

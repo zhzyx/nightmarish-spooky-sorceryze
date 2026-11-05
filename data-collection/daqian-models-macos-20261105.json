@@ -1,0 +1,119 @@
+{
+  "request_id": "daqian-models-20261105",
+  "issue_number": 123,
+  "case": {
+    "candidate_screenshot": "(485, 80)",
+    "dispatch_scope": "synthetic_loopback",
+    "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/127",
+    "records": [
+      {
+        "at": 1793891991954.0,
+        "id": "entry_capture",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891991954.0,
+        "id": "requirement",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891991954.0,
+        "id": "s_0a72ede2ef15fb077e5cb613",
+        "result": "",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891991954.0,
+        "id": "s_76f11bbf53e95d78f83a2c95",
+        "result": "",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891991954.0,
+        "id": "s_de6b244d87a1769b1ea409b5",
+        "result": "",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891991955.0,
+        "id": "entry_review",
+        "scope": "synthetic_loopback",
+        "state": "reserved"
+      },
+      {
+        "at": 1793891991955.0,
+        "id": "icon_review",
+        "scope": "synthetic_loopback",
+        "state": "reserved"
+      },
+      {
+        "at": 1793891991956.0,
+        "id": "entry_review",
+        "model": "调试 · Gemini",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "running",
+        "worker": "72058"
+      },
+      {
+        "at": 1793891991956.0,
+        "id": "icon_review",
+        "model": "调试 · Claude",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "running",
+        "worker": "72059"
+      },
+      {
+        "at": 1793891992414.0,
+        "id": "entry_review",
+        "model": "调试 · Gemini",
+        "result": "协议调试完成 · gemini-generate-content · PNG 485×80",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891992416.0,
+        "id": "icon_review",
+        "model": "调试 · Claude",
+        "result": "协议调试完成 · anthropic-messages · PNG 485×80",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793891992416.0,
+        "id": "verification",
+        "result": "协议调试完成 · anthropic-messages · PNG 485×80\n协议调试完成 · gemini-generate-content · PNG 485×80",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      }
+    ],
+    "source_revision": "ec43d1e450716d97d26a0a0a2b9bb3447c32963159f65c85fa330a8baf9fecd1"
+  },
+  "related_issues": [
+    119,
+    124,
+    125,
+    127
+  ],
+  "real_provider_calls": 0,
+  "native_mac_parallel": "passed",
+  "protocol_fixture": [
+    "anthropic-messages",
+    "gemini-generate-content",
+    "responses",
+    "chat-completions"
+  ],
+  "limitations": [
+    "synthetic dispatch only",
+    "Windows candidate verification recorded separately",
+    "live credentials, model capabilities and release mandate deferred or unavailable"
+  ]
+}

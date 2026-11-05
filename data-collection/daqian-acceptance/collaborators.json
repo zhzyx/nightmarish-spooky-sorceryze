@@ -1,0 +1,28 @@
+{
+  "request_id": "daqian-acceptance-20261105",
+  "issue_number": 125,
+  "date_local": "2026-11-06",
+  "policy": "All authenticated collaborators of the bound Git origin; code push/main release remain operation-specific",
+  "live_repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "verified_login": "Sail-Li",
+  "verified_repository_id": "1441270901",
+  "test_scopes": {
+    "unit": "five collaborator cases; four plan tests; two model registry/transport tests",
+    "macos_graph": {
+      "state": "passed",
+      "editor_sha256": "d17023a142d4ae57fd554638849f4e929d22bab7dedef25f9a08284d61ed1326",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "macos_parallel": {
+      "state": "passed",
+      "editor_sha256": "d17023a142d4ae57fd554638849f4e929d22bab7dedef25f9a08284d61ed1326",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "revocation_and_switch": "denial and account-isolated cache tested in the native Mac editor using fixture users",
+    "windows_prior_scope": "42059601418 succeeded prior to this policy change",
+    "current_windows": "awaiting this candidate",
+    "production_grant": "not supplied"
+  }
+}

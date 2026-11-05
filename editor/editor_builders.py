@@ -128,3 +128,16 @@ extern const unsigned int _{category}_comp_size;
 extern const unsigned char _{category}_translation_compressed[];
 extern const EditorTranslationList _{category}_translations[];
 """)
+
+
+def daqian_scripts_builder(target, source, env):
+    """Embed reviewed editor tools in the binary, independently of the open project."""
+    from pathlib import Path
+
+    with methods.generated_wrapper(str(target[0])) as header:
+        for entry in source:
+            path = Path(str(entry))
+            code = path.read_text(encoding="utf-8")
+            if ')DAQIAN"' in code:
+                raise ValueError("Unexpected raw string delimiter in editor script")
+            header.write(f'static constexpr char daqian_{path.stem}[] = R"DAQIAN({code})DAQIAN";\n')

@@ -1,0 +1,32 @@
+{
+  "request_id": "daqian-graph-20261105",
+  "issue_number": 120,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/120",
+  "request_event": {
+    "schema_version": 1,
+    "event_id": "daqian-graph-intake-20261105",
+    "tenant_id": "gonggong-workspace",
+    "request_id": "daqian-graph-20261105",
+    "kind": "request",
+    "occurred_at": "2026-11-05T14:51:09.355108+00:00",
+    "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/120",
+    "agent": {
+      "id": "codex-desktop-daqian",
+      "version": "host-version-unreported",
+      "origin": "user-authorized-codex-chat",
+      "definition_sha256": "125185c4a550bed209c05ded8f39f66866e632f8032074cf7702e0ea717db7f7"
+    },
+    "payload": {
+      "intent": "实现大千单 Issue 图编排，依据已回读父子关系及 intake-only 开发门禁",
+      "parent_issue": 119,
+      "baseline": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+      "source_event_id": 35250237421,
+      "definition_basis": "repository-root AGENTS.md",
+      "input_tokens": null,
+      "output_tokens": null,
+      "reason": "未取得实际用量",
+      "requirement_path": "design-docs/daqian/graph.md"
+    },
+    "evidence_refs": []
+  }
+}

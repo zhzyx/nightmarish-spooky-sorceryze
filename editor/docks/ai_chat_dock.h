@@ -599,7 +599,13 @@ class AIChatDock : public EditorDock {
 	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
 
+	String daqian_preview_source;
+	String daqian_preview_conversation;
+	String _work_order_binding(const String &p_field) const;
+	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview);
+
 protected:
+	static void _bind_methods();
 	void _notification(int p_what);
 
 public:

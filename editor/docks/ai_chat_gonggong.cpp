@@ -287,7 +287,7 @@ void AIChatDock::_begin_gonggong_context() {
 			break;
 		}
 	}
-	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, EDITOR_GET("gonggong/issue_number"), EDITOR_GET("gonggong/request_id"));
+	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
 	// a child inherits the real Issue its parent's finalized design was bound to.
 	if (tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key) {
@@ -295,8 +295,8 @@ void AIChatDock::_begin_gonggong_context() {
 		_begin_issue_agent(outcome);
 		return;
 	}
-	int64_t bound_issue = String(EDITOR_GET("gonggong/issue_number")).to_int();
-	String bound_request = String(EDITOR_GET("gonggong/request_id")).strip_edges();
+	int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
+	String bound_request = String(_work_order_binding("request_id")).strip_edges();
 	String authority = "godot-editor:user-chat:" + conversation_id;
 	if (sub_agents.has(active_agent)) {
 		const Dictionary info = sub_agents[active_agent];
@@ -476,10 +476,10 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	Dictionary input_request;
 	input_request["outcome"] = p_outcome;
 	input_request["conversation_id"] = conversation_id + ":" + snapshot_id;
-	issue_guide_fields["initial_issue"] = EDITOR_GET("gonggong/issue_number");
-	issue_guide_fields["initial_request"] = EDITOR_GET("gonggong/request_id");
-	input_request["issue_number"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
-	input_request["request_id"] = String(EDITOR_GET("gonggong/request_id"));
+	issue_guide_fields["initial_issue"] = _work_order_binding("issue_number");
+	issue_guide_fields["initial_request"] = _work_order_binding("request_id");
+	input_request["issue_number"] = int64_t(String(_work_order_binding("issue_number")).to_int());
+	input_request["request_id"] = String(_work_order_binding("request_id"));
 	input_request["endpoint"] = endpoint->get_text().strip_edges();
 	input_request["model"] = model->get_text().strip_edges();
 	static const char *backend_names[] = { "http", "codebuddy", "codex", "responses" };
@@ -748,7 +748,7 @@ void AIChatDock::_poll_issue_guide() {
 	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
 	const String error = result.get("error", U"桥接进程没有返回有效结果。");
 	if (issue_guide_action == "issue-agent") {
-		if (issue_guide_fields.get("initial_issue", Variant()) != EDITOR_GET("gonggong/issue_number") || issue_guide_fields.get("initial_request", Variant()) != EDITOR_GET("gonggong/request_id")) {
+		if (issue_guide_fields.get("initial_issue", Variant()) != _work_order_binding("issue_number") || issue_guide_fields.get("initial_request", Variant()) != _work_order_binding("request_id")) {
 			issue_guide_state = "agent_error";
 			_append(TTR("Editor"), U"处理期间工单绑定已改变，旧结果不会覆盖新绑定。请回复“重试”按当前绑定核对。");
 			_set_busy(false);
@@ -779,7 +779,7 @@ void AIChatDock::_poll_issue_guide() {
 			clarified["content"] = issue_guide_outcome;
 			messages.push_back(clarified);
 		}
-		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), EDITOR_GET("gonggong/issue_number"), EDITOR_GET("gonggong/request_id"));
+		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), _work_order_binding("issue_number"), _work_order_binding("request_id"));
 		// Continue the same busy turn; toggling idle here pauses already queued
 		// requirements and falsely closes the active reply before development.
 		issue_guide_state = "retrying";
@@ -868,7 +868,20 @@ void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 }
 
 void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
-	EditorSettings::get_singleton()->set("gonggong/issue_number", itos(p_number));
+	EditorSettings *settings = EditorSettings::get_singleton();
+	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
+	if (bindings.has(conversation_id)) {
+		Dictionary bound = bindings[conversation_id];
+		bound["issue_number"] = itos(p_number);
+		bound["request_id"] = p_request_id;
+		bindings[conversation_id] = bound;
+		settings->set_project_metadata("daqian", "bindings", bindings);
+		issue_guide_fields["issue_number"] = p_number;
+		issue_guide_fields["request_id"] = p_request_id;
+		emit_signal("daqian_issue_bound", bound["source"], p_number, p_request_id);
+		return;
+	}
+	settings->set("gonggong/issue_number", itos(p_number));
 	EditorSettings::get_singleton()->set("gonggong/request_id", p_request_id);
 	EditorSettings::save();
 	if (gonggong_panel) {

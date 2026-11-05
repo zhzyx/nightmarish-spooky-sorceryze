@@ -181,8 +181,8 @@ void AIChatDock::_add_sub_agent() {
 	info["source"] = "manual";
 	info["state"] = "manual";
 	info["work_order"] = 0;
-	info["request_id"] = String(EDITOR_GET("gonggong/request_id")).strip_edges();
-	info["issue_number"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
+	info["request_id"] = String(_work_order_binding("request_id")).strip_edges();
+	info["issue_number"] = int64_t(String(_work_order_binding("issue_number")).to_int());
 	const int id = _create_sub_agent(parent, vformat(U"子会话%d", _sub_agent_children(parent, false).size() + 1), info, String());
 	if (id < 0) {
 		_append(TTR("Error"), U"无法新建子会话：每个父会话最多 16 个、总计最多 128 个子会话，且聊天记录需可保存。");
@@ -207,8 +207,8 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	if (sub_agents.has(p_parent) || scheduled_agents.has(p_parent) || _agent_index(p_parent) < 0) {
 		return false;
 	}
-	const int64_t issue = String(EDITOR_GET("gonggong/issue_number")).to_int();
-	const String request_id = String(EDITOR_GET("gonggong/request_id")).strip_edges();
+	const int64_t issue = String(_work_order_binding("issue_number")).to_int();
+	const String request_id = String(_work_order_binding("request_id")).strip_edges();
 	if (!AIChatIssueGuide::is_bound(issue, request_id)) {
 		if (p_explicit) {
 			_append(TTR("Editor"), U"尚未绑定真实 Issue 与需求 ID，无法按工单创建子会话。请先完成工单绑定，或手动新建子会话。");
@@ -373,7 +373,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		return true;
 	}
 	const String workspace = EDITOR_GET("gonggong/workspace");
-	const String request_id = EDITOR_GET("gonggong/request_id");
+	const String request_id = _work_order_binding("request_id");
 	const int dispatch_parent = _sub_agent_root(active_agent);
 	Array workers;
 	for (const KeyValue<int, Dictionary> &entry : sub_agents) {
@@ -408,7 +408,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	Dictionary dispatch_request;
 	dispatch_request["workspace"] = workspace;
 	dispatch_request["config"] = config;
-	dispatch_request["issue"] = int64_t(String(EDITOR_GET("gonggong/issue_number")).to_int());
+	dispatch_request["issue"] = int64_t(String(_work_order_binding("issue_number")).to_int());
 	dispatch_request["requestId"] = request_id;
 	dispatch_request["batchId"] = batch_id;
 	dispatch_request["workers"] = workers;

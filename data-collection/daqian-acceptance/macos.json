@@ -1,0 +1,239 @@
+{
+  "request_id": "daqian-acceptance-20261105",
+  "issue_number": 125,
+  "parent": 119,
+  "case_number": 127,
+  "macos_arm64": {
+    "parallel": {
+      "state": "passed",
+      "editor_sha256": "1c76013fe552e29efd91e9f918581b03e1602d55ef3347d9360e8cd6bcef237a",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "graph": {
+      "state": "passed",
+      "editor_sha256": "1c76013fe552e29efd91e9f918581b03e1602d55ef3347d9360e8cd6bcef237a",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "entry": {
+      "state": "passed",
+      "editor_sha256": "1c76013fe552e29efd91e9f918581b03e1602d55ef3347d9360e8cd6bcef237a",
+      "scenario": "entry",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "tabs": {
+      "state": "passed",
+      "mode": "headless",
+      "binary_sha256": "1c76013fe552e29efd91e9f918581b03e1602d55ef3347d9360e8cd6bcef237a",
+      "phases": [
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "initial",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        },
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "pre_daqian_layout",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        },
+        {
+          "current": 0,
+          "labels": [
+            "AI Chat",
+            "大千",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ],
+          "phase": "restart",
+          "slot": 11,
+          "saved_order": [
+            "AIChatMainScreen",
+            "DaqianMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store"
+          ]
+        }
+      ],
+      "test_sha256": {
+        "run_ai_chat_tab_order.py": "f688fe7d7adf7ce3b38774711f68c3dd7b971cf5a2aecd827c54022127c9b584",
+        "ai_chat_tab_order.gd": "88f988b79e64ee45291544ee7bc8cf5d86ea79dbafacfbbe1224fae7ed4f44f3"
+      }
+    },
+    "protocols": {
+      "state": "passed",
+      "scope": "synthetic_loopback",
+      "protocols": [
+        "anthropic-messages",
+        "gemini-generate-content",
+        "responses",
+        "chat-completions"
+      ],
+      "distinctWorkers": 2,
+      "peakRequests": 2,
+      "joined": [
+        {
+          "kind": "result",
+          "value": "anthropic-messages"
+        },
+        {
+          "kind": "result",
+          "value": "gemini-generate-content"
+        }
+      ],
+      "cancelIsolated": true,
+      "liveProviderCalls": 0
+    }
+  },
+  "case_result": {
+    "candidate_screenshot": "(506, 80)",
+    "dispatch_scope": "synthetic_loopback",
+    "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/127",
+    "records": [
+      {
+        "at": 1793893013744.0,
+        "id": "entry_capture",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793893013744.0,
+        "id": "requirement",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793893013745.0,
+        "id": "s_0a72ede2ef15fb077e5cb613",
+        "reason": "待取得上游结果或独立验收证据",
+        "scope": "synthetic_loopback",
+        "state": "waiting"
+      },
+      {
+        "at": 1793893013745.0,
+        "id": "s_76f11bbf53e95d78f83a2c95",
+        "reason": "待取得上游结果或独立验收证据",
+        "scope": "synthetic_loopback",
+        "state": "waiting"
+      },
+      {
+        "at": 1793893013745.0,
+        "id": "s_de6b244d87a1769b1ea409b5",
+        "reason": "待取得上游结果或独立验收证据",
+        "scope": "synthetic_loopback",
+        "state": "waiting"
+      },
+      {
+        "at": 1793893013745.0,
+        "id": "entry_review",
+        "scope": "synthetic_loopback",
+        "state": "reserved"
+      },
+      {
+        "at": 1793893013745.0,
+        "id": "icon_review",
+        "scope": "synthetic_loopback",
+        "state": "reserved"
+      },
+      {
+        "at": 1793893013747.0,
+        "id": "entry_review",
+        "model": "调试 · Gemini",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "running",
+        "worker": "73172"
+      },
+      {
+        "at": 1793893013747.0,
+        "id": "icon_review",
+        "model": "调试 · Claude",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "running",
+        "worker": "73173"
+      },
+      {
+        "at": 1793893014209.0,
+        "id": "entry_review",
+        "model": "调试 · Gemini",
+        "result": "协议调试完成 · gemini-generate-content · PNG 506×80",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793893014210.0,
+        "id": "icon_review",
+        "model": "调试 · Claude",
+        "result": "协议调试完成 · anthropic-messages · PNG 506×80",
+        "run": 1.0,
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      },
+      {
+        "at": 1793893014210.0,
+        "id": "verification",
+        "result": "协议调试完成 · anthropic-messages · PNG 506×80\n协议调试完成 · gemini-generate-content · PNG 506×80",
+        "scope": "synthetic_loopback",
+        "state": "completed"
+      }
+    ],
+    "source_revision": "029588af6858b858c92b4f4a0797c3cf38f2bc55b0cc69e066f8f74dbad5a119"
+  },
+  "capture_scope": "interactive macOS capture after legacy layout migration; final binary separately reran all three native scenarios",
+  "visual_ref": "data-collection/daqian-acceptance/macos-issue127-canvas.png",
+  "path_base": "repository_root",
+  "windows_final": "pending",
+  "remote_main": "pending Yanluo exact candidate grant",
+  "unknowns": [
+    "live supplier availability and vision comprehension deferred by user",
+    "cross-machine SSH deployment",
+    "system keychain live credentials"
+  ],
+  "diagnostics": [
+    "headless/native exits emitted renderer/ObjectDB cleanup diagnostics; test success markers and process exits checked separately"
+  ]
+}
