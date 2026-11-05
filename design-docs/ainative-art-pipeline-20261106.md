@@ -1,0 +1,74 @@
+<!-- gonggong-request:ainative-art-pipeline-20261106 -->
+<!-- gonggong-host-git:kaiyunxue -->
+
+# AINative 美术与人物工作流实施方案
+
+版本：2026-11-06 v1。路径基准：仓库根。用户授权：本聊天“把上述任务拆分一下然后落地吧”。
+
+## 边界与交付
+
+先完成通用管线，再以领域能力包接入人物、装备、动画、布料和毛发。当前首个实现单元为 01-contracts：可执行资产契约验证器、样例及负向测试。Windows / Python 3.11+ 验证该单元；引擎集成在后续子项使用 Godot 原生 Resource/编辑器能力。本文不将任务建单或契约验证当成整套功能已实现。
+
+生成 Provider 的选择与真实服务凭据在 04/08 单元验证；未提供时保留外部依赖，不虚构生成结果。所有实现默认编辑器内生产、运行时消费发布资产；运行时在线生成另作扩展。标准人体与自由 Mesh 两路并存，服装不承诺跨任意体型无损复用。
+
+## 架构约定
+
+- 管线内核：类型化资产、上下文、任务执行、Provider、缓存、版本、插件注册、发布适配器。
+- 领域包：Character / Rig / Animation / Garment / Face / Cloth / Hair；可以注册资产、节点、验证器与预览器。
+- 引擎运行时：装配、动画求值、约束、形变、物理、LOD；不直接依赖生成 Provider。
+- Context 必须区分文字、图片等参考的角色（风格/身份/姿态/结构）、作用域、强弱约束与来源；不能把全部上游内容无差别拼入提示词。
+- Artifact 使用不可变版本引用；显式记录坐标、单位、参考姿态、拓扑身份与来源。改变体型/拓扑/绑定姿势需使服装拟合、毛发绑定和模拟缓存失效。
+- 衣服可无目标先生成 draft；绑定或宣称兼容时必须有实际角色或 AvatarProfile。AvatarProfile 描述体型和表面，SkeletonProfile 描述骨骼，两者不可互换。
+- 装备允许 shared bones + accessory bones；extra bones 不自动追加至所有角色。刚性胸甲、蒙皮皮带、布料裙摆可属于同一装备。
+- 兼容等级分为 semantic_mapped、animation_retargeted、target_bound、roundtrip_verified。名字相同只证明映射候选；目标骨架层级、bind/rest pose、单位、骨轴、辅助骨行为、蒙皮和目标工具回读分别验收。
+- UE4、UE5 Manny/Quinn、MetaHuman Body 与 Mixamo 分版本 Profile；辅助 IK 骨不必有蒙皮权重；扭转与修正骨需要驱动规则。Mixamo 命名空间非破坏映射，独立 Root 可选。
+- 动画先在源/目标明确的空间完成重定向，再混合目标空间动画；装备/接触 IK 在主体混合后。脸部声明头颈写入权；布料消费最终身体碰撞形状。不能把所有流固定为混合后统一重定向。
+- UE 仅作架构参考，不复制其 Engine 代码；独立开放组件与资产在引入时逐项核对许可证。此前讨论的精确版本与开源可用性尚未在此仓库验证，不作为已具备能力。
+
+## 父级验收
+
+13-integration 负责集成验收；各子项负责自己的可独立验收行为。六项原始要求分别映射：上下身→09，手持→09，衣服盔甲→07，脸部→10，布料→11，毛发→12。多模态任意阶段上下文→01/03/04/08，捏人→10，独立装备→07，UE/Mixamo→06。Motion Matching 与 ML Deformer 仅为未来增强，不是用户要求的首轮完成条件。
+
+## 任务清单
+
+每项主责：当前执行者 Codex（GitHub kaiyunxue）；后续交接需写明实际接收者。各项交付目标为 main，未验收保持开放。
+
+| ID | 可独立交付单元 | 依赖 |
+| --- | --- | --- |
+| 01-contracts | [资产、上下文与扩展契约](ainative-art/01-contracts.md) | 无 |
+| 02-executor | [工作流执行与持久任务](ainative-art/02-executor.md) | 01-contracts |
+| 03-editor | [引擎内工作流编辑与发布](ainative-art/03-editor.md) | 01-contracts, 02-executor |
+| 04-generators | [图像与 Mesh 生成节点](ainative-art/04-generators.md) | 02-executor, 03-editor |
+| 05-rigging | [人物标准化、自动绑骨与蒙皮](ainative-art/05-rigging.md) | 04-generators |
+| 06-skeleton-interop | [UE 与 Mixamo 骨骼兼容](ainative-art/06-skeleton-interop.md) | 05-rigging |
+| 07-garments | [独立衣服盔甲生成、拟合与装配](ainative-art/07-garments.md) | 05-rigging, 06-skeleton-interop |
+| 08-motion-generation | [文字与视频生成动画](ainative-art/08-motion-generation.md) | 05-rigging, 06-skeleton-interop |
+| 09-layering-equipment | [上下半身分层与手持物](ainative-art/09-layering-equipment.md) | 07-garments, 08-motion-generation |
+| 10-customization-face | [捏人捏脸与面部叠加](ainative-art/10-customization-face.md) | 05-rigging, 07-garments, 08-motion-generation |
+| 11-cloth | [布料制作与运行](ainative-art/11-cloth.md) | 07-garments, 09-layering-equipment |
+| 12-hair | [毛发生成、绑定与分级表现](ainative-art/12-hair.md) | 10-customization-face |
+| 13-integration | [端到端角色工作台验收](ainative-art/13-integration.md) | 03-editor, 04-generators, 06-skeleton-interop, 07-garments, 08-motion-generation, 09-layering-equipment, 10-customization-face, 11-cloth, 12-hair |
+
+## 检查及停止条件
+
+01 运行标准库 unittest、样例检查和 git diff --check；其他子项按各自验收执行。门禁、远端 PR/CI/main 回读按仓库约定。不存在 Provider 或目标工具时仅挂起相关验收，不能报完整系统完成。工单映射和实际回执追加在本文，不擅自关闭父单。
+
+## 实际工单与首批交付记录
+
+父工单：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140 。创建并回读日期：2026-11-06（Asia/Shanghai）。
+
+- 01-contracts：[Issue #142](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/142)。
+- 02-executor：[Issue #143](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/143)。
+- 03-editor：[Issue #144](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/144)。
+- 04-generators：[Issue #145](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/145)。
+- 05-rigging：[Issue #146](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/146)。
+- 06-skeleton-interop：[Issue #147](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147)。
+- 07-garments：[Issue #148](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/148)。
+- 08-motion-generation：[Issue #149](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/149)。
+- 09-layering-equipment：[Issue #150](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/150)。
+- 10-customization-face：[Issue #151](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151)。
+- 11-cloth：[Issue #152](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152)。
+- 12-hair：[Issue #153](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/153)。
+- 13-integration：[Issue #154](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154)。
+
+本候选主关联 #142；总设计及其他子项文档作为接口实施的需求溯源随首批提交，其他子项实现不计入本候选。01 首批交付 tools/ainative/ 的 Manifest 验证器、样例与测试；节点注册、Provider 和发布可执行接口尚待实现，因此 #142 与父单保持开放。当前没有实际模型调用、UE/Mixamo 真实夹具、引擎 UI 或物理求解器交付。

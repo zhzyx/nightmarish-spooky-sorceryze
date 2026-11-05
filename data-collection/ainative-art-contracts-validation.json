@@ -1,0 +1,15 @@
+{
+  "request_id": "ainative-art-01-contracts-20261106",
+  "issue_number": 142,
+  "parent_issue": 140,
+  "date": "2026-11-06",
+  "tests_passed": 10,
+  "independent_review": "review_contracts: initial P2 fixed and re-reviewed; 10 tests independently passed; no remaining blockers within manifest-validator scope",
+  "review_fix": "Verification evidence is a non-production reference; report subject must match exact asset revision. Positive backreference and stale-subject tests passed.",
+  "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+  "example": "synthetic manifest accepted; not real UE/Mixamo compatibility evidence",
+  "sub_issues": [142,143,144,145,146,147,148,149,150,151,152,153,154],
+  "parent_children_readback": "verified",
+  "implementation": "partial manifest contract validator",
+  "full_pipeline_delivered": false
+}

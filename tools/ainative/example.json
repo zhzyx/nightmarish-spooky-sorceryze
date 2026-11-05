@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "artifacts": [
+    {
+      "id": "ue5-body-profile",
+      "revision": "fixture-v1",
+      "type": "skeleton_profile",
+      "payload": {
+        "family": "ue5-manny",
+        "profile_status": "placeholder_not_compatible"
+      }
+    },
+    {
+      "id": "mixamo-profile",
+      "revision": "fixture-v1",
+      "type": "skeleton_profile",
+      "payload": {
+        "family": "mixamo",
+        "profile_status": "placeholder_not_compatible"
+      }
+    },
+    {
+      "id": "body-envelope",
+      "revision": "fixture-v1",
+      "type": "avatar_profile",
+      "payload": {
+        "status": "synthetic_contract_fixture"
+      }
+    },
+    {
+      "id": "garment-source",
+      "revision": "1",
+      "type": "garment",
+      "payload": {
+        "uri": "fixture://garment"
+      },
+      "context": [
+        {
+          "text": "胸甲配软质裙摆",
+          "role": "design",
+          "scope": "whole_asset",
+          "strength": "reference"
+        }
+      ],
+      "binding": {
+        "level": "unbound"
+      }
+    },
+    {
+      "id": "garment-fit",
+      "revision": "1",
+      "type": "garment",
+      "payload": {
+        "status": "synthetic_not_real_fit"
+      },
+      "dependencies": [
+        {
+          "id": "garment-source",
+          "revision": "1"
+        }
+      ],
+      "binding": {
+        "level": "target_bound",
+        "skeleton": {
+          "id": "ue5-body-profile",
+          "revision": "fixture-v1"
+        },
+        "fit_target": {
+          "id": "body-envelope",
+          "revision": "fixture-v1"
+        }
+      }
+    },
+    {
+      "id": "animation-request",
+      "revision": "1",
+      "type": "extension:motion_request",
+      "payload": {
+        "target_profile": "mixamo-profile"
+      },
+      "dependencies": [
+        {
+          "id": "mixamo-profile",
+          "revision": "fixture-v1"
+        }
+      ]
+    }
+  ]
+}
