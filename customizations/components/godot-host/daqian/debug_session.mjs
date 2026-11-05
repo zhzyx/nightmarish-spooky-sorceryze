@@ -91,7 +91,10 @@ function wake(reason) {
         startSource:a=>({reference:'fixture-source-'+a.key}),
         launch:a=>{
           const id=a.ticket, model=a.model.id;
-          const proc=spawn(python,[worker,'--fixture'],{stdio:['pipe','pipe','pipe']});
+          const proc=spawn(python,[worker,'--fixture'],{
+            stdio:['pipe','pipe','pipe'],
+            env:{...process.env,PYTHONIOENCODING:'utf-8'}
+          });
           active.set(id,proc);
           const run=(history.get(id)??0)+1;
           history.set(id,run);
