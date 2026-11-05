@@ -9,7 +9,7 @@
 停止条件：结构定义经必要核查后提交、推送并完成 main 接收及工单回读。用户后续明确要求继续自动合入；此修订只补齐交付阶段，不扩展实现范围。实际代码拆分、自动发现器、动态 Agent 创建器、各设备测试和发布启用均留待真实需求；不把本次文档声明当作已部署能力。未来子 Agent 仅在复用不足或必要审查时按现有元衡治理创建。
 
 <!-- sinan:begin -->
-状态：本地结构候选已形成；[Issue #111](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/111) 已创建，intake-only 回读通过。继续自动交付；合入状态以远端回读为准，不涉及运行能力启用。
+结构定义已通过验收并由 PR #112 合入 main，源码提交 a4713d69e571935f6b66292a62b01b53a296e863。发布与检查回读见 data-collection/module-boundaries-20261105/publication.json。实际工单状态以 Issue #111 为权威；本次不涉及运行能力启用。
 <!-- sinan:end -->
 
 ## 交付与回查
