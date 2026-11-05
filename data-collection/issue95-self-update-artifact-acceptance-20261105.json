@@ -1,0 +1,25 @@
+{
+  "request_id": "yanluo-issue-63-nonwindows-artifact-20261105",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+  "path_base": "repository_root",
+  "related_issue": 63,
+  "scope": "Fix self-update acceptance for macOS/Linux no-extension a/b artifacts; source and test change only, no engine build or runtime validation claimed",
+  "acceptance": [
+    {
+      "id": "ends-with-acceptance",
+      "status": "changed",
+      "evidence": "editor/docks/ai_chat_dock.cpp",
+      "details": "Added ends_with .self_update_a / .self_update_b to the artifact acceptance condition, keeping Windows .exe reception and non-editor/non-a-b name rejection"
+    },
+    {
+      "id": "artifact-path-tests",
+      "status": "changed",
+      "evidence": "tests/editor/test_editor_self_build.py",
+      "details": "Added macOS no-extension a/b artifact_path positive/negative test; not executed here because no build_engine run was performed"
+    }
+  ],
+  "source_event": "issue95-current-operator-live-request-20261105",
+  "publication": "Pending guarded main readback; closure only after receipt",
+  "usage": null,
+  "usage_unknown_reason": "Not measured"
+}

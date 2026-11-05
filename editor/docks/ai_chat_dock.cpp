@@ -4017,7 +4017,7 @@ void AIChatDock::_poll_engine_build() {
 	const String executable = String(status.get("executable", "")).replace("\\", "/").simplify_path();
 	const String expected_dir = engine_build_root.path_join("bin").replace("\\", "/").simplify_path();
 	const String artifact_file = executable.get_file();
-	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.contains(".self_update_b.")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
+	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.ends_with(".self_update_a") || executable.contains(".self_update_b.") || executable.ends_with(".self_update_b")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
 		engine_updated_executable = executable;
 		engine_build_progress->set_value(100);
 		engine_build_status->set_text(U"编译与启动校验通过 · 100% · 新版本已就绪");

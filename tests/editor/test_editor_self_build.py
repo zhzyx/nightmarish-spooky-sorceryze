@@ -24,6 +24,14 @@ class SelfBuildTests(unittest.TestCase):
         self.assertEqual(worker.artifact_path(first).name, "godot.windows.editor.dev.x86_64.self_update_a.mono.exe")
         self.assertEqual(first["msvc_version"], "14.3")
 
+    def test_macos_artifacts_have_no_extension_and_alternate_slots(self):
+        first = worker.build_options(Path("godot.macos.editor.x86_64"), [])
+        self.assertEqual(first["extra_suffix"], "self_update_a")
+        self.assertEqual(worker.artifact_path(first).name, "godot.macos.editor.x86_64.self_update_a")
+        second = worker.build_options(Path("godot.macos.editor.x86_64.self_update_a"), [])
+        self.assertEqual(second["extra_suffix"], "self_update_b")
+        self.assertEqual(worker.artifact_path(second).name, "godot.macos.editor.x86_64.self_update_b")
+
     def test_protected_flags_and_invalid_input(self):
         current = Path("godot.windows.editor.dev.x86_64.mono.exe")
         for value in ["extra_suffix=live", "platform=linuxbsd", "target=template_release", "--clean", "ninja=yes"]:
