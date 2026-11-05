@@ -1,5 +1,7 @@
 # 共工统一工作区
 
+共工由仓库协作者共同推进。工单范围内，每位有仓库写权限的操作者均用本人 GitHub 身份签发和自动提交。默认调用 [协作者签发入口](customizations/components/issue-workorders/yanluo.md#协作者快速签发和自动提交)，然后按精确候选推进 PR 合入。授权随仓库权限生效或撤销。
+
 唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/；生成 Agent／Skill 定义时读取 framework/AGENTS.md 与 gonggong-check；普通需求不触发共工审查与元衡评价。冻结纲领和元衡原件不可修改，所有 Agent 受元衡治理。准入绑定精确候选，迁移不自动授权。
 
 本仓库已接入 Git，任务通过 work-items.json 关联真实 Issue，需求在 design-docs/。开发前执行 customizations/components/issue-workorders/issue_gate.py 的 intake-only 回读；提交前执行正式门禁，提交后核验 git-check --require-committed。Git 约定属于接入层，不是共工核心的通用前提。

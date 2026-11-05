@@ -1,5 +1,7 @@
 # GongGong 仓库协作入口
 
+已暂存本工单候选的仓库写入者，按[协作者快速签发和自动提交](../customizations/components/issue-workorders/yanluo.md#协作者快速签发和自动提交)用本人账号运行交付入口。由同一条命令完成门禁、提交、签发与 PR 创建。
+
 设计定版后按 [父子 Issue 与尾项结转规则](../customizations/components/issue-workorders/issue-lifecycle.md) 拆分：子项独立提交、验收和关闭，父项逐项核对后关闭。阎罗合入时审查少量尾项，完整承接并留存文档映射后可结转关闭旧单。
 
 
