@@ -99,28 +99,8 @@ export function repositoryWorker(config, receipts) {
 export async function runEvent(config) {
   if (fs.realpathSync(config.workspace) !== workspace) throw Error('Run the entry from the bound trusted checkout');
   if (config.action && config.action !== 'dispatch' && config.action !== 'reconcile') throw Error('Unsupported repository event action');
-  for (const r of config.requests) {
-    const w = config.workers[r.ticket];
-    if (config.authorityRef !== r.authorityRef) throw Error('Request authority mismatch');
-    if (r.target !== 'agent' || !w || !(w.kind === check && r.model === check && r.capabilities.length === 1 &&
-        r.capabilities[0] === check || w.kind === 'framework-model' && r.model && r.model !== check && path.isAbsolute(w.grant))) throw Error('Invalid repository worker binding');
-  }
   const receipts = path.join(await operatorStateRoot(workspace), 'sources');
   const gh = config.gh || 'gh';
-  const verifyOperator = async () => {
-    const permission = (await exec(gh,['repo','view',config.repository,'--json','viewerPermission','--jq','.viewerPermission'])).stdout.trim();
-    const login = (await exec(gh,['api','user','--jq','.login'])).stdout.trim();
-    if (login !== config.operator || !['WRITE','ADMIN','MAINTAIN'].includes(permission)) throw Error('Current operator write permission required');
-  };
-  await verifyOperator();
-  for (const b of config.bindings) {
-    if (!config.requests.some(r=>r.ticket === 'github:'+config.repository+'#'+b.number)) continue;
-    const ticket = 'github:' + config.repository + '#' + b.number;
-    await ticketOperation(ticket, () => exec(config.python, [path.join(workspace,'customizations/components/issue-workorders/issue_gate.py'),
-      '--repo',workspace,'--issue',String(b.number),'--request-id',b.requestId,'--tenant','gonggong-workspace','--intake-only'],
-      {env:{...process.env, GONGGONG_GH:gh}}));
-
-  }
   const worker = repositoryWorker(config, receipts);
   const acceptedDependency = async ticket => {
     const source = config.dependencyRegistry;
@@ -131,11 +111,27 @@ export async function runEvent(config) {
     if (config.workers['github:'+config.repository+'#'+issue.number]?.kind === check &&
         !issue.labels.some(label=>label.name === 'type:test')) throw Error('Verification requires a dedicated type:test Issue');
   };
-  const {host} = await openSession(config, {worker, acceptedDependency, validateIssue, beforeLaunch:verifyOperator});
-  return advance(config, host, worker);
+  const {host,runtime} = await openSession(config, {worker, acceptedDependency, validateIssue});
+  async function intake() {
+    if (config.action === 'reconcile') await runtime.verifyWriteAccess();
+    for (const r of config.requests) {
+      const w = config.workers[r.ticket];
+      if (config.authorityRef !== r.authorityRef) throw Error('Request authority mismatch');
+      if (r.target !== 'agent' || !w || !(w.kind === check && r.model === check && r.capabilities.length === 1 &&
+          r.capabilities[0] === check || w.kind === 'framework-model' && r.model && r.model !== check && path.isAbsolute(w.grant))) throw Error('Invalid repository worker binding');
+    }
+    for (const b of config.bindings) {
+      if (!config.requests.some(r=>r.ticket === 'github:'+config.repository+'#'+b.number)) continue;
+      const ticket = 'github:' + config.repository + '#' + b.number;
+      await ticketOperation(ticket, () => exec(config.python, [path.join(workspace,'customizations/components/issue-workorders/issue_gate.py'),
+        '--repo',workspace,'--issue',String(b.number),'--request-id',b.requestId,'--tenant','gonggong-workspace','--intake-only'],
+        {env:{...process.env, GONGGONG_GH:gh}}));
+    }
+  }
+  return advance(config, host, worker, intake);
 }
 
-export async function advance(config, host, worker) {
+export async function advance(config, host, worker, intake) {
   let event = config.event;
   let pending = config.requests;
   let deferred = [];
@@ -144,6 +140,7 @@ export async function advance(config, host, worker) {
   if (config.action === 'reconcile') {
     results.push(await reservationOperation(config, () => host.reconcile(event,config.reservationKey,config.workerReceipt)));
   }
+  if (pending.length && intake) await intake();
   while (pending.length || active.size) {
     if (pending.length) {
       const batch = await host.run(event, pending);
