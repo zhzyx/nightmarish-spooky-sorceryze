@@ -1,0 +1,44 @@
+{
+  "platform": "macOS arm64",
+  "native": [
+    {
+      "state": "passed",
+      "editor_sha256": "1f26e825027c16548a927913af8b7b71fe4b97770f046e000b84043e33f5e914",
+      "scenario": "direct",
+      "scope": "native editor to direct issue and Sinan admission subprocesses"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "1f26e825027c16548a927913af8b7b71fe4b97770f046e000b84043e33f5e914",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "fc000f871d0d525c96c4fd081960d16cfcf50269615d58dc1a64e1da4b8b3c3a",
+      "scenario": "publish",
+      "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
+    }
+  ],
+  "source": "original repository, real local host receipts and GitHub board",
+  "URL_detail": {
+    "195": {
+      "status": "planned",
+      "ready": true,
+      "scope_count": 3,
+      "acceptance_count": 3,
+      "display_nodes": 12
+    },
+    "204": {
+      "status": "in-progress",
+      "actual_worker": "/root/sinan_d05c5700bddd2f96",
+      "terminal_event": "codex:final:/root/sinan_d05c5700bddd2f96",
+      "before": "正在工作",
+      "after": "等待工作者回执",
+      "manual_refresh": false
+    }
+  },
+  "source_base": "repository_root",
+  "visual_run_editor_sha256": "fc000f871d0d525c96c4fd081960d16cfcf50269615d58dc1a64e1da4b8b3c3a",
+  "notes": "The terminal transition and screenshots were observed on the build before the final account-scoped in-flight routing key. The final direct and graph runs cover the final source."
+}

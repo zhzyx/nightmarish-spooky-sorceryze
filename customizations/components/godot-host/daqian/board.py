@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import json
 import os
 import re
+import progress
 from pathlib import Path
 from repository_access import AccessDenied, SessionChanged, collaborator, configured_login, session_actor, session_path, work_items
 
@@ -92,6 +93,7 @@ def read_board(root, follows, actor=None):
             row = json.loads(work_items.gh("api", f"{base}/{num}"))
             local_number(row)
             queue[num] = row
+    receipts = progress.receipt_root(root)
     items = {}
     while queue:
         number, row = queue.popitem()
@@ -112,6 +114,8 @@ def read_board(root, follows, actor=None):
                                             re.MULTILINE))),
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
+        item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
+        item["workers"] = progress.workers_for_row(receipts, repo, row, item)
         item.update(source_plan(row, item["request"]))
         item["pending_count"] = len(item.get("questions",{})) if row["state"]=="open" else 0
         item["decision"] = item["decision"] or item["pending_count"]>0
@@ -184,7 +188,12 @@ def main():
                         item["decision"]=count>0 or (item["status"]=="needs-decision" and not ctx["answers"])
             if args.editor_session and session_actor(args.repo, args.editor_session) != actor:
                 raise AccessDenied("读取工单期间 GitHub 账号已切换")
+            import bridge
+            receipts = progress.receipt_root(args.repo)
+            node = bridge._igniter.discover_node(args.repo, bridge.host_environment(args.repo))
             result={"board":board}
+            if receipts.is_dir() and node:
+                result["watch"] = {"node": node, "directory": str(receipts)}
     except AccessDenied as error:
         if args.editor_session:
             session_path(args.editor_session).unlink(missing_ok=True)

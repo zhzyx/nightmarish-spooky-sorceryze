@@ -102,6 +102,10 @@ bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, c
 			gonggong_running_steps.erase(p_phase);
 		}
 	}
+	if (p_kind == "request" || p_kind == "request_end" || p_kind == "step") {
+		const Dictionary agent = gonggong_reporting["agent"];
+		emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), p_kind, p_phase, p_status);
+	}
 	set_meta("gonggong_reporting", "queued");
 	return true;
 }
