@@ -3,7 +3,7 @@
   "component": {
     "kind": "agent",
     "id": "kuafu",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "entry": "agents/kuafu/AGENT.md",
     "entry_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
   },

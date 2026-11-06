@@ -1,6 +1,6 @@
 // The host supplies fresh source snapshots, admission checks, reservation, and real receipts.
 // This adapter contributes graph dependencies and per-task evidence ranking to the existing Sinan dispatcher.
-import { dispatchEvent, selectModel } from '../../../../framework/modules/sinan/dispatch.mjs';
+import { dispatchEvent, selectModel } from '../../../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 
 export async function dispatchGraph(event, issue, graph, host) {
   const requests = [];

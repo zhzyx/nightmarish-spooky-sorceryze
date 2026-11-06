@@ -398,7 +398,7 @@ class DirectIssueTests(unittest.TestCase):
             self.skipTest("Node.js required to exercise the Sinan entry")
         for relative in [
             "customizations/platforms/data-collection/git-files/storage/diting_files.py",
-            "framework/tools/git_batch.py",
+            "customizations/platforms/development/git/git_batch.py",
             "gonggong-diting-data/dataset.json",
         ]:
             target = self.root / relative

@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {issueSnapshot} from '../issue-workorders/github_source.mjs';
 import {openSession, operatorStateRoot} from '../codex-dispatch/operator.mjs';
 import {create} from '../codex-dispatch/native-bridge.mjs';
-import {board} from '../../../framework/modules/sinan/coordinator.mjs';
+import {board} from '../../../customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
 
 const exec = promisify(execFile);
 const directory = path.dirname(fileURLToPath(import.meta.url));

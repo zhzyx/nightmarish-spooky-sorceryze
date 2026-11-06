@@ -81,10 +81,16 @@ class GateTests(unittest.TestCase):
         storage = "customizations/platforms/data-collection/git-files/storage"
         (self.root / storage).mkdir(parents=True)
         (self.root / storage / "diting_files.py").write_bytes(b"# fixture")
+        batch = "customizations/platforms/development/git/git_batch.py"
+        (self.root / batch).parent.mkdir(parents=True)
+        (self.root / batch).write_bytes(b"# fixture")
         lock = self.root / "integrations/gonggong/frozen-distribution.json"
         lock.parent.mkdir(parents=True)
         lock.write_text(
-            json.dumps({"platform_files": {storage: {"diting_files.py": hashlib.sha256(b"# fixture").hexdigest()}}})
+            json.dumps({
+                "host_files": {batch: hashlib.sha256(b"# fixture").hexdigest()},
+                "platform_files": {storage: {"diting_files.py": hashlib.sha256(b"# fixture").hexdigest()}},
+            })
         )
 
         if events:

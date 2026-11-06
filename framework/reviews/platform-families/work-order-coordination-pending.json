@@ -1,0 +1,16 @@
+{
+  "template": false,
+  "status": "pending_approval",
+  "subject": {
+    "id": "work-order-coordination",
+    "version": "0.4.3",
+    "entry_sha256": "026bdc5836cdc104e996890e9fc5c3cfebad84e762391f815a835d2bc1d0d71a"
+  },
+  "baseline": {
+    "framework_version": "0.10.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+  },
+  "independent_review": "reviews/platform-families/independent-review.json",
+  "approval_evidence": null,
+  "scope": "local skill definition only; host runtime authority required"
+}

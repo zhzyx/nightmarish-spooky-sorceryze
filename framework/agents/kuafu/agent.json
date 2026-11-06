@@ -2,7 +2,7 @@
   "id": "kuafu",
   "name": "夸父",
   "kind": "independent_agent",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "entry": "agents/kuafu/AGENT.md",
   "path_base": "framework_root",
   "framework_root": "../..",
@@ -14,10 +14,10 @@
   "supporting_skills": [
     "skills/kuafu/SKILL.md"
   ],
-  "admission_pass": "reviews/kuafu-blockers/kuafu-admission.json",
+  "admission_pass": "reviews/platform-families/kuafu-pending.json",
   "host_required_for_execution": true,
   "scope": "blocker_analysis_priority_remediation_and_escalated_quality_events",
   "reporting": "agents/kuafu/reporting.json",
   "reporting_binding_template": "templates/reporting-binding.json",
-  "state": "approved_local_definition_host_mandate_required"
+  "state": "candidate_pending_exact_review"
 }
