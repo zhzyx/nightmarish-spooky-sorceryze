@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-codex-action-arguments-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-action-arguments-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T11:47:19.564253+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/168",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "4d1fc81cd1f9968b1b6e2783edec776c955352344ae0567c568136069d5cf8b6"
+  },
+  "payload": {
+    "outcome": "Recover Codex action-format failure blocking the running Godot conversation",
+    "state": "locally_verified",
+    "issue_number": 168,
+    "validation_ref": "data-collection/issue168-codex-action-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual usage not supplied by host"
+  },
+  "evidence_refs": [],
+  "sha256": "903d06fe2fc22d6a949d3a8dc01630a03b478892fea0fd2cb1a511f8a08e4bfd"
+}

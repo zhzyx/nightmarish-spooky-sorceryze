@@ -8,6 +8,72 @@ const input = {
     tool_context: { permission_enabled: true, tool_rounds: 0, max_tool_rounds: null },
 };
 
+const typedTool = {
+    type: 'function', function: { name: 'run_command', parameters: {
+        type: 'object', additionalProperties: false, required: ['command'], properties: {
+            command: { type: 'string' }, cwd: { type: 'string' },
+            timeout_seconds: { type: 'integer', minimum: 1, maximum: 3600 },
+        },
+    } },
+};
+
+test('output schema constrains active tools and typed arguments, retaining dynamic fallback', () => {
+    const { outputSchemaFor } = require('../../tools/codex_cli/action_schema');
+    const { SCHEMA } = require('../../tools/codex_cli/godot_bridge');
+    const dynamic = { type: 'function', function: { name: 'editor_action', parameters: {
+        type: 'object', properties: { action: { type: 'string' }, value: {} },
+        required: ['action'], additionalProperties: false,
+    } } };
+    const schema = outputSchemaFor({ available_tools: [typedTool, dynamic] }, SCHEMA);
+    const [typed, fallback] = schema.properties.actions.items.anyOf;
+    assert.deepEqual(typed.properties.name.enum, ['run_command']);
+    assert.equal(typed.properties.arguments.type, 'object');
+    assert.deepEqual(typed.properties.arguments.required, ['command', 'cwd', 'timeout_seconds']);
+    assert.deepEqual(typed.properties.arguments.properties.cwd.anyOf, [{ type: 'string' }, { type: 'null' }]);
+    assert.equal(fallback.properties.arguments.type, 'string');
+    assert.equal(outputSchemaFor({ available_tools: [] }, SCHEMA).properties.actions.maxItems, 0);
+    assert.equal(typedTool.function.parameters.properties.cwd.type, 'string');
+    assert.deepEqual(typedTool.function.parameters.required, ['command']);
+});
+
+test('typed commands avoid double encoding and preserve optional host defaults', () => {
+    const configured = { ...input, available_tools: [typedTool] };
+    const command = 'python3 - <<\'PY\'\nprint("中文 \\\\ \\\"quoted\\\"")\nPY';
+    const wire = JSON.stringify({ content: '继续', actions: [{ name: 'run_command',
+        arguments: { command, cwd: null, timeout_seconds: null } }] });
+    const calls = completion(wire, configured).choices[0].message.tool_calls;
+    assert.deepEqual(JSON.parse(calls[0].function.arguments), { command });
+    const legacy = JSON.stringify({ content: '', actions: [{ name: 'run_command', arguments: JSON.stringify({ command }) }] });
+    assert.deepEqual(JSON.parse(completion(legacy, configured).choices[0].message.tool_calls[0].function.arguments), { command });
+    const fenced = completion('```json\n' + wire + '\n```', configured);
+    assert.equal(fenced.choices[0].message.tool_calls.length, 1);
+    assert.throws(() => completion('Here is the result:\n' + wire, configured));
+});
+
+test('required nulls and invalid batches are rejected without partial calls', () => {
+    const configured = { ...input, available_tools: [typedTool] };
+    for (const args of [null, [], { command: null }, {}, { command: 'ok', unknown: true },
+        { command: 'ok', timeout_seconds: 0 }, { command: 'ok', timeout_seconds: '20' }]) {
+        assert.throws(() => completion(JSON.stringify({ content: '', actions: [
+            { name: 'run_command', arguments: { command: 'valid first action' } },
+            { name: 'run_command', arguments: args },
+        ] }), configured));
+    }
+    assert.throws(() => completion(JSON.stringify({ content: '', actions: [
+        { name: 'run_command', arguments: { command: 'ok' } },
+        { name: 'write_file', arguments: '{}' },
+    ] }), configured));
+    assert.throws(() => completion(JSON.stringify({ content: 1, actions: [] }), configured));
+    assert.throws(() => completion(JSON.stringify({ content: '', actions: Array(9).fill({ name: 'run_command', arguments: '{}' }) }), configured));
+    const nullable = { ...typedTool, function: { ...typedTool.function, parameters: {
+        type: 'object', additionalProperties: false, required: ['command'],
+        properties: { command: { type: ['string', 'null'] } },
+    } } };
+    const preserved = completion(JSON.stringify({ content: '', actions: [{ name: 'run_command', arguments: { command: null } }] }),
+        { ...input, available_tools: [nullable] });
+    assert.deepEqual(JSON.parse(preserved.choices[0].message.tool_calls[0].function.arguments), { command: null });
+});
+
 test('Codex arguments preserve default model, isolate config and disable native execution', () => {
     const args = argumentsFor('', 'schema.json');
     assert(!args.includes('--model'));
@@ -106,6 +172,10 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
             { events: [{ type: 'turn.failed', error: { message: 'authentication required' } }], success: false, exitCode: 23, errorCode: 'AUTH_REQUIRED' },
             { events: [{ type: 'error', message: 'private-token-must-not-leak' }], success: false, exitCode: 17, errorCode: 'PROCESS_EXIT' },
             { events: [{ type: 'item.completed', item: { type: 'agent_message', text: '{"content":"unfinished","actions":[]}' } }], success: false },
+            { events: [
+                { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"private-model-text","actions":[{"name":"read_file","arguments":"private-command-invalid-json"}]}' } },
+                { type: 'turn.completed' },
+            ], success: false, errorCode: 'INVALID_ACTION', exitCode: undefined, validationReason: 'argument_json' },
         ];
         for (const scenario of cases) {
             const wire = scenario.events.map(event => JSON.stringify(event)).join('\n');
@@ -129,6 +199,14 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 if (scenario.errorCode) {
                     assert.equal(packet.error.code, scenario.errorCode);
                     assert.equal(packet.error.exit_code, scenario.exitCode);
+                }
+                if (scenario.validationReason) {
+                    assert.equal(packet.error.validation_reason, scenario.validationReason);
+                    assert.equal(packet.error.action_index, 0);
+                    const retained = fs.readFileSync(request + '.failure.json', 'utf8');
+                    assert(!retained.includes('private-model-text'));
+                    assert(!retained.includes('private-command'));
+                    assert.equal(JSON.parse(retained).validation_reason, 'argument_json');
                 }
             }
         }
