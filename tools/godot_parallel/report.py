@@ -18,12 +18,13 @@ settings = json.loads((root / 'work-items.json').read_text(encoding='utf-8'))
 request_id = payload.pop('requestId')
 issue = payload.pop('issue')
 kind = payload.pop('kind')
+host_id = {'codex': 'godot-parallel-codex-host', 'command': 'godot-parallel-command-host'}[payload.get('workerBackend', 'codex')]
 event = {
     'schema_version': 1, 'event_id': 'parallel-' + uuid.uuid4().hex,
     'tenant_id': settings['tenant_id'], 'request_id': request_id,
     'kind': kind, 'occurred_at': datetime.now(timezone.utc).isoformat(),
     'source_ref': f"https://github.com/{settings['repository']}/issues/{issue}",
-    'agent': {'id': 'godot-parallel-codex-host', 'version': '0.1.0',
+    'agent': {'id': host_id, 'version': '0.1.0',
               'definition_sha256': hashlib.sha256(source.with_name('runner.mjs').read_bytes()).hexdigest(),
               'origin': 'external-authorized-host'},
     'payload': {**payload, 'usage': None, 'usage_reason': 'provider usage not collected by this host',

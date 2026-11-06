@@ -74,20 +74,27 @@ export class OperatorRuntime {
     } finally {fs.unlinkSync(lock);}
   }
 }
-export async function openSession(config,ports={}) {
-  const workspace=fs.realpathSync(config.workspace);
+export async function operatorStateRoot(workspace) {
   const gitCommon=(await exec('git',['rev-parse','--git-common-dir'],{cwd:workspace})).stdout.trim();
   const common=fs.realpathSync(path.resolve(workspace,gitCommon));
-  const root=path.join(path.dirname(common),'data-collection/receipts/codex-dispatch');
+  return path.join(path.dirname(common),'data-collection/receipts/codex-dispatch');
+}
+export async function openSession(config,ports={}) {
+  const workspace=fs.realpathSync(config.workspace);
+  const root=await operatorStateRoot(workspace);
   const api=async endpoint=>command(config.gh??'gh',['api',endpoint],workspace);
   const login=(await api('user')).login;
   if(login!==config.operator)throw Error('Authenticated operator changed');
   const settings=read(path.join(workspace,'work-items.json'));
   if(settings.repository!==config.repository||settings.tenant_id!=='gonggong-workspace')throw Error('Repository/tenant binding mismatch');
   const categories=read(path.join(workspace,'.github/labels.json')).map(l=>l.name);
-  const readIssue=async(repo,n)=>api(`repos/${repo}/issues/${n}`);
+  const readIssue=async(repo,n)=>{
+    const issue=await api(`repos/${repo}/issues/${n}`);
+    if (ports.validateIssue) await ports.validateIssue(issue);
+    return issue;
+  };
   // A host port must attest real terminal events; no file or model text self-attests.
-  const verifyWorker=ports.verifyWorker??(async(receipt,event,a)=>{
+  const verifyWorker=ports.worker?.verifyTerminal??ports.verifyWorker??(async(receipt,event,a)=>{
     const result=await bridge.request('verify_worker',{receipt,event},{assignmentKey:a.key,ticket:a.ticket});
     return result?.workerId===receipt.workerId&&result.reference===event.reference&&
       (event.type==='execution.finished'?result.state==='completed':['failed','interrupted'].includes(result.state));
@@ -103,7 +110,7 @@ export async function openSession(config,ports={}) {
         const child=spawn(config.python,[fileURLToPath(new URL('./report.py',import.meta.url)),workspace],{cwd:workspace,windowsHide:true,stdio:['pipe','pipe','pipe']});
         let output='',error='';child.stdout.on('data',d=>output+=d);child.stderr.on('data',d=>error+=d);
         child.on('error',reject);child.on('close',code=>{if(code!==0)return reject(Error('Diting reporting failed: '+error));try{const receipt=JSON.parse(output);if(receipt.ok!==true||receipt.state!=='recorded_file')throw Error('No reporting receipt');resolve(receipt);}catch(e){reject(e);}});
-        child.stdin.on('error',reject);child.stdin.end(JSON.stringify({requestId:binding.requestId,issue:binding.number,record}));
+        child.stdin.on('error',reject);child.stdin.end(JSON.stringify({requestId:binding.requestId,issue:binding.number,record,backend:ports.worker ? 'repository' : 'codex'}));
       });
     }),verifyWorker,acceptedDependency:ports.acceptedDependency,chatCreationAuthorized:config.chatCreationAuthorized===true});
   const source=new GitHubIssueSource({repository:config.repository,bindings:config.bindings,readIssue,allowedCategories:categories,runtime});
@@ -113,7 +120,11 @@ export async function openSession(config,ports={}) {
     const result=await bridge.request('verify_setup',{event,pending,receipt},{assignmentKey:a.key,ticket:a.ticket});
     return result?.clientThreadId===pending.workerId&&result.threadId===receipt.workerId&&result.reference===event.reference;
   });
-  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:bridge.native(),policy:{defaultChatModel:config.defaultChatModel,inheritedAgentModel:config.inheritedAgentModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
-  const launch=host.launch.bind(host);host.launch=async a=>{await runtime.beforeLaunch(a);return launch(a);};
+  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:ports.worker ? {launchAgent:ports.worker.launch} : bridge.native(),policy:{defaultChatModel:config.defaultChatModel,inheritedAgentModel:config.inheritedAgentModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
+  if (ports.worker?.revalidate) {
+    const revalidate = host.revalidate.bind(host);
+    host.revalidate = async a => await revalidate(a) && await ports.worker.revalidate(a);
+  }
+  const launch=host.launch.bind(host);host.launch=async a=>{if (ports.beforeLaunch) await ports.beforeLaunch(a);await runtime.beforeLaunch(a);return launch(a);};
   return {host,bridge,runtime};
 }
