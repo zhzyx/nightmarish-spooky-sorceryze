@@ -69,3 +69,9 @@ accepted 使用临时合成上下文和本机 HTTP 服务，仅验证传输。�
 包含已编译编辑器、标准运行时和全部源码的完整下载见 [发布说明](../../../../distribution/README.md)。当前发布固定既有已批准来源的字节版本；解压后配置有效共工来源，不能将正在改写的新上游自动视为已批准。
 
 当前框架由 CURRENT_FRAMEWORK.json 定位；完整框架随源码和发布包提供。使用 framework/tools/verify_framework.py --candidate 验证候选，正式运行使用无 --candidate 的校验。package-lock.json 固定全部框架文件；准入和宿主授权仍单独核验，不需要外部框架来源。
+
+## Godot 引擎适配与迁移
+
+首版优先利用编辑器插件、导入插件和命令行能力建立闭环；确需统一变更事务、深层运行观测或编辑体验时再修改引擎源码。Godot 官方文档提供上述扩展和命令行入口：[编辑器插件](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/index.html)、[导入插件](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/import_plugins.html)、[命令行运行与构建](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html)。无窗口执行适合部分自动检查；视觉效果及 GPU 性能验证需实际渲染环境。
+
+AI 层可迁移不等于游戏工程自动迁移。先用代表性 Feature 在两个后端验证相同规格与可比较行为，再扩大范围。Godot 分支维护独立补丁清单、升级兼容检查和适配测试，避免业务能力散落在引擎改动中。

@@ -3,9 +3,9 @@
   "component": {
     "kind": "agent",
     "id": "heqi",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "entry": "agents/heqi/AGENT.md",
-    "entry_sha256": "9981b5c68b73a81aedf314f5110c2c5280ed9219aed3a4f7f885fa28f28f84f6"
+    "entry_sha256": "0790ad82b2373c07ed9a8594e577f0d25c88bb0f9d7b6b45df91bf2165947063"
   },
   "required": true,
   "policy": "contracts/diting-reporting.json",

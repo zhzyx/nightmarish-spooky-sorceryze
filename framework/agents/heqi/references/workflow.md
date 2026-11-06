@@ -8,7 +8,7 @@
 
 每次委托绑定 worker_ref、identity_receipt、execution_id、change_id、work_ref、workspace_root、read_paths、write_paths、authority_ref、预算、交接对象和验收条件。work_ref 指适用权威来源及稳定任务身份，可是本地工单。版本采用 source_revision 或内容摘要；base_ref、各 contribution_ref、target_ref 声明 available/unknown，未知不得冒充已验证基准。来源无法提供版本时，只开展可核验部分并登记补证。
 
-接入契约须明确身份核验、来源读取、版本比较、候选保存、发布/接收回读及能力限制。未提供的能力不虚报已实现。具体工具权限和任务权限分别核验，身份不明不以任意账号或宿主名称替代。没有 Git 接入时不要求账号、仓库或 Issue 字段；已接入 Git 的任务另加载 git-workflow.md，把认证 login 映射为 worker_ref、Issue 映射为 work_ref、commit/tree 映射为版本及贡献来源。
+接入契约须明确身份核验、来源读取、版本比较、候选保存、发布及接收回读。工具权限和任务权限分别核验。
 
 ## 生命周期
 

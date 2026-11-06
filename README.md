@@ -2,6 +2,8 @@
 
 [按平台查找共工接入子模块](customizations/platforms/README.md)
 
+当前版本和准入以 [框架登记表](framework/framework-manifest.json) 及其指向的逐项批准为准。0.10.0 的批准绑定五个 Agent 和工单协调技能；框架发现页开头保留的 0.9.2 字样属于旧版说明。
+
 
 共工唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/。仓库包含完整当前框架、Godot 源码、Git/Godot 接入、示例及采集工具。已取消 Olympus 派生框架和外部共工同步依赖，历史原件保留用于追溯。
 
@@ -95,7 +97,7 @@ for more information.
 | 路径 | 用途 |
 | --- | --- |
 | `framework/framework-manifest.json` | 当前 Agent、Skill、版本和精确候选准入引用 |
-| `framework/modules/sinan/` | 司南的事件刷新、依赖判断与派发 |
+| `customizations/platforms/process-management/yuanheng-local/sinan/` | 司南的事件刷新、依赖判断与派发 |
 | `customizations/components/repository-dispatch/` | 协作者取得代码后使用的宿主派发入口 |
 | `work-items.json`、`design-docs/` | 真实 Issue 的仓库绑定、需求与验收 |
 | `data-collection/`、`gonggong-diting-data/` | 采集来源、回执与实际生产事件 |

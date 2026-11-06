@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {dispatchEvent} from '../../../framework/modules/sinan/dispatch.mjs';
+import {dispatchEvent} from '../../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));

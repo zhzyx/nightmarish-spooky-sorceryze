@@ -395,7 +395,7 @@ class KuafuGitHubTests(unittest.TestCase):
                 "work-items.json",
                 "CURRENT_FRAMEWORK.json",
                 "gonggong-diting-data/dataset.json",
-                "framework/tools/git_batch.py",
+                "customizations/platforms/development/git/git_batch.py",
                 "customizations/platforms/data-collection/git-files/storage/diting_files.py",
             ):
                 (root / name).parent.mkdir(parents=True, exist_ok=True)

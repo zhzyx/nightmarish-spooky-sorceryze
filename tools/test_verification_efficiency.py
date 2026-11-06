@@ -18,7 +18,7 @@ spec = importlib.util.spec_from_file_location("efficiency_diting", DITING)
 assert spec is not None and spec.loader is not None
 d = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(d)
-batch = runpy.run_path(str(ROOT / "framework/tools/git_batch.py"))
+batch = runpy.run_path(str(ROOT / "customizations/platforms/development/git/git_batch.py"))
 sys.path.insert(0, str(ROOT / "customizations/components/issue-workorders"))
 import issue_gate as gate  # noqa: E402
 
@@ -131,7 +131,7 @@ class EvidenceTests(unittest.TestCase):
     def test_session_tool_changes_and_failures_clear_evidence(self):
         for relative in [
             "customizations/platforms/data-collection/git-files/storage/diting_files.py",
-            "framework/tools/git_batch.py",
+            "customizations/platforms/development/git/git_batch.py",
         ]:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -140,7 +140,7 @@ class EvidenceTests(unittest.TestCase):
         session.check_diting(self.root)
         self.assertTrue(session.events)
         old_module = session.module
-        path = self.root / "framework/tools/git_batch.py"
+        path = self.root / "customizations/platforms/development/git/git_batch.py"
         path.write_bytes(path.read_bytes() + b"\n")
         session.check_diting(self.root)
         self.assertIsNot(session.module, old_module)
