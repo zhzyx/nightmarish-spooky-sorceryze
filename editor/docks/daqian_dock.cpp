@@ -55,7 +55,7 @@ EditorDock *create_daqian_dock() {
 	dock->set_title(U"大千");
 	dock->set_layout_key("DaqianMainScreen");
 	dock->set_icon_name("GraphEdit");
-	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN);
+	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
 	Ref<Script> silent_validation = load_editor_script(daqian_silent_validation);
 	if (silent_validation.is_valid()) {
