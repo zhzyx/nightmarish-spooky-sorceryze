@@ -18,6 +18,11 @@ var scope_epoch := 0
 var personal_snapshot := {}
 var far_depth := 0.0
 var project_anchor := Button.new()
+var notice_panel := PanelContainer.new()
+var create_button: Button
+var board_heading := HFlowContainer.new()
+var result_count := Label.new()
+var board_palette := []
 var board_views := TabBar.new()
 var issue_list := Tree.new()
 var issue_rows := {}
@@ -118,11 +123,23 @@ var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
 
 
 func _ready() -> void:
+	var scale_factor := get_theme_default_base_scale()
+	board_heading.add_theme_constant_override("h_separation", roundi(12 * scale_factor))
+	add_child(board_heading)
 	var row := HFlowContainer.new()
 	toolbar = row
 	add_child(row)
-	return_button = _button(row, "← 工单总览", _show_board)
-	_button(row, "＋ 新建需求", _compose_requirement)
+	return_button = _button(board_heading, "← 工单总览", _show_board)
+	scope_picker.flat = true
+	scope_picker.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
+	scope_picker.add_theme_font_size_override("font_size", roundi(22 * scale_factor))
+	board_heading.add_child(scope_picker)
+	result_count.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	result_count.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
+	board_heading.add_child(result_count)
+	create_button = _button(board_heading, "新建需求", _compose_requirement)
+	create_button.icon = get_theme_icon("Add", "EditorIcons")
+	create_button.custom_minimum_size.y = roundi(32 * scale_factor)
 	search = LineEdit.new()
 	search.placeholder_text = "搜索工单编号或标题"
 	search.clear_button_enabled = true
@@ -133,6 +150,7 @@ func _ready() -> void:
 	search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	search.text_changed.connect(func(_text): _filter_board())
 	row.add_child(search)
+	board_views.clip_tabs = false
 	board_views.add_tab("列表", get_theme_icon("ListSelect", "EditorIcons"))
 	board_views.add_tab("依赖图", get_theme_icon("GraphEdit", "EditorIcons"))
 	board_views.tab_changed.connect(func(view):
@@ -142,16 +160,22 @@ func _ready() -> void:
 		_draw_board()
 		_queue_save())
 	row.add_child(board_views)
+	row.move_child(board_views, 0)
 	scope_picker.add_item("个人工单")
 	scope_picker.add_item("项目工单")
 	scope_picker.tooltip_text = "切换画板范围"
 	scope_picker.item_selected.connect(func(index): _set_project(index == 1))
-	row.add_child(scope_picker)
+
 	pending_menu = MenuButton.new()
 	pending_menu.text = "待办"
 	pending_menu.get_popup().id_pressed.connect(_locate_pending)
-	row.add_child(pending_menu)
-	connection_button = _button(row, "工作区连接", _open_connection)
+	board_heading.add_child(pending_menu)
+	board_heading.move_child(pending_menu, create_button.get_index())
+	connection_button = _button(row, "", _open_connection)
+	connection_button.icon = get_theme_icon("Tools", "EditorIcons")
+	connection_button.flat = true
+	connection_button.tooltip_text = "工作区连接"
+	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", refresh)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
 	advanced_bar = HFlowContainer.new()
@@ -182,17 +206,15 @@ func _ready() -> void:
 	notice = Label.new()
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var notice_panel := PanelContainer.new()
 	var notice_style := StyleBoxFlat.new()
 	notice_style.bg_color = get_theme_color("base_color", "Editor")
-	notice_style.border_color = get_theme_color("accent_color", "Editor")
-	notice_style.border_width_left = 3
+	notice_style.border_width_top = 1
+	notice_style.border_color = get_theme_color("contrast_color_1", "Editor")
 	notice_style.content_margin_left = 12
 	notice_style.content_margin_top = 7
 	notice_style.content_margin_bottom = 7
 	notice_panel.add_theme_stylebox_override("panel", notice_style)
 	notice_panel.add_child(notice)
-	add_child(notice_panel)
 	work_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	work_status.hide()
 	add_child(work_status)
@@ -219,6 +241,7 @@ func _ready() -> void:
 	add_child(history_dialog)
 	overview = graph_script.FlowCanvas.new()
 	overview.name = "IssueOverview"
+	overview.grid_pattern = GraphEdit.GRID_PATTERN_DOTS
 	overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	overview.zoom_min = 0.02
 	overview.zoom_max = 1.7
@@ -230,6 +253,7 @@ func _ready() -> void:
 	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
+	overview.resized.connect(_queue_board_layout)
 	var center := CenterContainer.new()
 	overview.add_child(center)
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -245,13 +269,13 @@ func _ready() -> void:
 	issue_list.select_mode = Tree.SELECT_ROW
 	issue_list.columns = 3
 	issue_list.column_titles_visible = true
-	var scale_factor := get_theme_default_base_scale()
 	for col in 3:
 		issue_list.set_column_title(col, ["编号", "工单", "状态"][col])
 		issue_list.set_column_title_alignment(col, HORIZONTAL_ALIGNMENT_LEFT)
 		issue_list.set_column_expand(col, col == 1)
 		issue_list.set_column_clip_content(col, true)
-	issue_list.set_column_custom_minimum_width(0, roundi(68 * scale_factor))
+	issue_list.set_column_custom_minimum_width(0, roundi(72 * scale_factor))
+	issue_list.set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_CENTER)
 	issue_list.set_column_custom_minimum_width(2, roundi(120 * scale_factor))
 	issue_list.add_theme_constant_override("v_separation", roundi(5 * scale_factor))
 	issue_list.item_activated.connect(func():
@@ -260,6 +284,7 @@ func _ready() -> void:
 			_open_issue(selected.get_metadata(0))
 			return_button.grab_focus())
 	add_child(issue_list)
+	_style_board_controls()
 	empty_state = CenterContainer.new()
 	empty_state.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	empty_state.gui_input.connect(func(event):
@@ -319,6 +344,7 @@ func _ready() -> void:
 	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow_split.hide()
 	_build_operation_details(flow_split)
+	add_child(notice_panel)
 	resized.connect(_adapt_layout)
 	_adapt_layout()
 	editor.confirm_operation.connect(_confirm_operation)
@@ -332,12 +358,51 @@ func _ready() -> void:
 	debug_timer.wait_time = 0.08
 	debug_timer.timeout.connect(_debug_update)
 	add_child(debug_timer)
+	theme_changed.connect(_update_board_theme, CONNECT_DEFERRED)
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
 	_gate_visibility(false)
 	notice.text = "点击「工作区连接」绑定共工仓库。" if _repo().is_empty() else "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
 	_start_session.call_deferred()
+
+
+func _style_board_controls() -> void:
+	var scale_factor := get_theme_default_base_scale()
+	var accent := get_theme_color("accent_color", "Editor")
+	var surface := get_theme_color("base_color", "Editor")
+	board_palette = [accent, surface, scale_factor]
+	result_count.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
+	var primary := StyleBoxFlat.new()
+	primary.set_corner_radius_all(roundi(6 * scale_factor))
+	primary.content_margin_left = 12 * scale_factor
+	primary.content_margin_right = 12 * scale_factor
+	primary.bg_color = accent
+	var ink := Color("#111722") if accent.get_luminance() > 0.24 else Color.WHITE
+	for state in ["normal", "hover", "pressed"]:
+		var fill := primary.duplicate() as StyleBoxFlat
+		if state == "hover":
+			fill.bg_color = accent.lerp(ink, 0.07)
+		elif state == "pressed":
+			fill.bg_color = accent.lerp(ink, 0.14)
+		create_button.add_theme_stylebox_override(state, fill)
+	for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_focus_color"]:
+		create_button.add_theme_color_override(color_name, ink)
+	for state in ["selected", "selected_focus", "hovered_selected", "hovered_selected_focus"]:
+		var selected := StyleBoxFlat.new()
+		selected.bg_color = surface.lerp(accent, 0.25 if "focus" in state else 0.17)
+		selected.border_width_left = roundi(3 * scale_factor)
+		selected.border_color = accent
+		selected.set_corner_radius_all(roundi(4 * scale_factor))
+		issue_list.add_theme_stylebox_override(state, selected)
+
+
+func _update_board_theme() -> void:
+	if board_palette != [get_theme_color("accent_color", "Editor"), get_theme_color("base_color", "Editor"), get_theme_default_base_scale()]:
+		_style_board_controls()
+		if not actor.is_empty():
+			_draw_board()
+			editor.refresh_states()
 
 
 func _button(parent: Control, title: String, action: Callable) -> Button:
@@ -513,6 +578,17 @@ func _build_operation_details(split: SplitContainer) -> void:
 
 
 func _adapt_layout() -> void:
+	var columns := 4 if size.x >= 860 * get_theme_default_base_scale() else 3
+	if issue_list.columns != columns:
+		issue_list.columns = columns
+		if columns == 4:
+			issue_list.set_column_title(3, "负责人")
+			issue_list.set_column_title_alignment(3, HORIZONTAL_ALIGNMENT_LEFT)
+			issue_list.set_column_expand(3, false)
+			issue_list.set_column_clip_content(3, true)
+			issue_list.set_column_custom_minimum_width(3, roundi(132 * get_theme_default_base_scale()))
+			for item: TreeItem in issue_rows.values():
+				_set_owner_cell(item, item.get_metadata(0))
 	var narrow := size.x < 720.0 * get_theme_default_base_scale()
 	flow_split.vertical = narrow
 	details_panel.custom_minimum_size.x = 0 if narrow else 320 * get_theme_default_base_scale()
@@ -746,7 +822,10 @@ func _show_board() -> void:
 	editor.hide()
 	flow_split.hide()
 	actions.hide()
+	board_heading.visible = not actor.is_empty()
+	result_count.show()
 	scope_picker.show()
+	move_child(notice_panel, -1)
 	board_views.show()
 	search.show()
 	pending_menu.show()
@@ -794,7 +873,8 @@ func _draw_board() -> void:
 		var needs_approval := not _pending_operation(item).is_empty()
 		if needs_approval:
 			issue_state = "awaiting_approval"
-		if item.decision or needs_approval or _has_routing_questions(item):
+		var actionable: bool = item.decision or needs_approval or _has_routing_questions(item)
+		if actionable:
 			waiting_inputs += int(item.get("pending_count", int(item.decision))) + int(needs_approval) + int(_has_routing_questions(item))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		if item.status not in statuses:
@@ -805,6 +885,9 @@ func _draw_board() -> void:
 		var suffix := " · 需要决定" if item.decision and not needs_approval and issue_state != "needs-decision" else ""
 		if board_views.current_tab == 0:
 			var line := _add_issue_row(item, issue_state, suffix, running)
+			if actionable:
+				line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
+				line.set_icon_modulate(1, overview.status_ink("waiting"))
 			if item.url == selected_url:
 				line.select(0)
 		else:
@@ -815,6 +898,8 @@ func _draw_board() -> void:
 				overview.connect_flow(by_url[dep], 0, by_url[item.url], 0)
 	pending_menu.text = "待办 (%d)" % waiting_inputs
 	pending_menu.disabled = waiting_inputs == 0
+	pending_menu.flat = waiting_inputs == 0
+	pending_menu.icon = get_theme_icon("Notification", "EditorIcons") if waiting_inputs > 0 else null
 	var dock := get_parent() as EditorDock
 	if dock:
 		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
@@ -824,7 +909,7 @@ func _draw_board() -> void:
 	_fill_filter(owner_filter, owners)
 	_filter_board()
 	if current.is_empty():
-		notice.text = "已核实 %s · %s 个工单" % [board.verified_at,rows.size()] if board.has("verified_at") else "跟进工单或创建需求以开始"
+		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
 
 
 func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray) -> TreeItem:
@@ -833,23 +918,41 @@ func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, runni
 	line.set_metadata(0, item)
 	line.set_text(0, "#%s" % item.number)
 	line.set_text(1, item.title)
+	line.set_cell_mode(2, TreeItem.CELL_MODE_CUSTOM)
 	line.set_text(2, graph_script.FlowCanvas.state_text(issue_state) + suffix)
 	line.set_custom_color(0, get_theme_color("font_readonly_color", "Editor"))
 	line.set_tooltip_text(1, item.title + "\n" + "、".join(item.owners))
 	line.set_tooltip_text(2, line.get_text(2) + ("\n" + "、".join(running) if not running.is_empty() else ""))
-	var icons := {"done":"StatusSuccess", "failed":"StatusError", "waiting":"Time", "running":"Play"}
-	var category: String = graph_script.FlowCanvas.category(issue_state)
-	if icons.has(category):
-		line.set_icon(2, get_theme_icon(icons[category], "EditorIcons"))
+	if issue_list.columns == 4:
+		_set_owner_cell(line, item)
+	line.set_text_alignment(2, HORIZONTAL_ALIGNMENT_CENTER)
+	line.set_custom_color(2, overview.status_ink(issue_state))
+	line.set_custom_draw_callback(2, _paint_issue_status.bind(issue_state))
 	return line
+
+
+func _set_owner_cell(line: TreeItem, item: Dictionary) -> void:
+	line.set_text(3, "、".join(item.owners) if not item.owners.is_empty() else "—")
+	line.set_tooltip_text(3, line.get_text(3))
+	line.set_custom_color(3, get_theme_color("font_readonly_color", "Editor"))
+
+
+func _paint_issue_status(item: TreeItem, rect: Rect2, state: String) -> void:
+	var font := issue_list.get_theme_font("font")
+	var font_size := issue_list.get_theme_font_size("font_size")
+	var scale_factor := get_theme_default_base_scale()
+	var width := minf(rect.size.x, font.get_string_size(item.get_text(2), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + 16 * scale_factor)
+	var height := minf(rect.size.y, font.get_height(font_size) + 4 * scale_factor)
+	var bounds := Rect2(rect.get_center() - Vector2(width, height) * 0.5, Vector2(width, height))
+	issue_list.draw_style_box(overview.status_badge(state), bounds)
 
 
 func _add_board_card(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray) -> StringName:
 	var card = graph_script.SizeableCard.new()
 	card.set_meta("issue_url", item.url)
 	card.name = "i_" + str(item.number)
-	card.title = "#%s  %s" % [item.number, item.title]
-	card.tooltip_text = card.title + "\n" + item.url
+	card.title = "#%s" % item.number
+	card.tooltip_text = item.title + "\n" + item.url
 	card.custom_minimum_size.x = 280 * overview.get_theme_default_base_scale()
 	var title_label := card.get_titlebar_hbox().get_child(0) as Label
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -861,7 +964,24 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		_queue_save())
 	var label := Label.new()
 	overview.mark_card(card, label, issue_state, suffix)
-	card.add_child(label)
+	label.size_flags_horizontal = Control.SIZE_SHRINK_END
+	card.get_titlebar_hbox().add_child(label)
+	var open_title := _button(card, "", _open_issue.bind(item))
+	open_title.name = "OpenIssue"
+	open_title.flat = true
+	open_title.accessibility_name = "打开工单 · " + item.title
+	open_title.tooltip_text = item.title
+	var title := Label.new()
+	title.text = item.title
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.max_lines_visible = 2
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
+	title.add_theme_font_size_override("font_size", roundi(16 * get_theme_default_base_scale()))
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	open_title.add_child(title)
+	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	open_title.custom_minimum_size.y = 2 * title.get_line_height()
 	if not running.is_empty():
 		var active := Label.new()
 		active.text = "运行中 · " + "、".join(running)
@@ -882,7 +1002,13 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		detail.add_child(line)
 	card.add_child(detail)
 	card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
-	_button(card, "查看流程", _open_issue.bind(item))
+	if not item.owners.is_empty():
+		var owner := Label.new()
+		owner.text = "、".join(item.owners)
+		owner.tooltip_text = "负责人 · " + owner.text
+		owner.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		owner.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
+		card.add_child(owner)
 	overview.add_child(card)
 	if saved.get("card_sizes", {}).has(item.url):
 		card.size = saved.card_sizes[item.url]
@@ -926,7 +1052,8 @@ func _layout_board() -> void:
 	var origin := Vector2(38, 75) * scale_factor
 	var pinned: Dictionary = saved.get("positions", {})
 	var obstacles: Array[Rect2] = []
-	var widths := PackedFloat32Array([0, 0, 0, 0, 0])
+	var widths := PackedFloat32Array()
+	widths.resize(clampi(floori((overview.size.x / scale_factor - 20) / 336.0), 1, 5))
 	for i in board_cards.size():
 		var card := board_cards[i]
 		var extent := card.size.max(card.get_combined_minimum_size())
@@ -1029,6 +1156,8 @@ func _filter_board() -> void:
 			shown += 1
 
 	overview.refresh_wires()
+	var total: int = board.get("issues", []).size()
+	result_count.text = "%d 项" % total if shown == total else "%d / %d 项" % [shown, total]
 	if current.is_empty() and not actor.is_empty():
 		empty_buttons.visible = board.get("issues", []).is_empty()
 		reset_filters.visible = not empty_buttons.visible
@@ -1063,6 +1192,10 @@ func _follow() -> void:
 
 
 func _gate_visibility(opened: bool) -> void:
+	board_heading.visible = opened
+	move_child(notice_panel, -1 if opened and current.is_empty() else toolbar.get_index() + 1)
+	result_count.visible = current.is_empty()
+	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
 		child.visible = opened or child == refresh_button or child == connection_button
 	return_button.visible = opened and not current.is_empty()
@@ -2042,6 +2175,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	_sync_debug_actions()
 	overview.hide()
 	issue_list.hide()
+	result_count.hide()
 	scope_picker.hide()
 	board_views.hide()
 	empty_state.hide()
@@ -2050,6 +2184,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	advanced_button.hide()
 	advanced_bar.hide()
 	return_button.show()
+	move_child(notice_panel, toolbar.get_index() + 1)
 	notice.text = "个人需求草稿"
 	notice.tooltip_text = ""
 	if id.begins_with("https://"):

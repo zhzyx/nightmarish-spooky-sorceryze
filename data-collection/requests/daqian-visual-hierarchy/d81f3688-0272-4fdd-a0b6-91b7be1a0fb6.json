@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "daqian-visual-hierarchy",
+  "collected_at": "2026-11-06T21:04:32.029931+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-visual-hierarchy/daqian-visual-hierarchy-intake.json",
+      "sha256": "68599d078420a2454c0b5b83c6ee67e0f0ae39ee27510693485b5d10d9921006",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "daqian-visual-hierarchy-intake",
+      "origin": "user-authorized-codex-chat"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 333,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/333"
+}
