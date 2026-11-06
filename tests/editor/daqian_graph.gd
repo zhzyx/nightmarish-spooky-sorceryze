@@ -51,6 +51,9 @@ func apply_graph(_id, revision, execution_revision, draft):
 
 
 func run() -> void:
+	root.content_scale_size = Vector2i(1280, 900)
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
 	await create_timer(1.5).timeout
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace",OS.get_environment("DAQIAN_TEST_REPO"))
@@ -174,6 +177,41 @@ func run() -> void:
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
 	await settle_layout()
+	check(workspace.issue_list.visible and workspace.issue_rows.size() == 55 and workspace.board_cards.is_empty(), "list should show the 55 issues without building hidden graph cards")
+	var first_row: TreeItem = workspace.issue_rows[issues[0].url]
+	check(first_row.get_text(1) == issues[0].title and first_row.get_text(2) == "已完成", "list lost full title or status")
+	workspace.host = self
+	workspace.issue_list.grab_focus()
+	var find := InputEventKey.new()
+	find.keycode = KEY_F
+	find.pressed = true
+	find.meta_pressed = OS.has_feature("macos")
+	find.ctrl_pressed = not find.meta_pressed
+	workspace.get_viewport().push_input(find, true)
+	check(workspace.search.has_focus(), "platform Find shortcut did not focus search")
+	workspace.search.text = "#50"
+	workspace.search.text_changed.emit("#50")
+	var down := InputEventKey.new()
+	down.keycode = KEY_DOWN
+	down.pressed = true
+	workspace.get_viewport().push_input(down, true)
+	check(workspace.issue_list.has_focus() and workspace.issue_list.get_selected() == workspace.issue_rows[issues[49].url], "Down did not focus the first matching issue")
+	var enter := InputEventKey.new()
+	enter.keycode = KEY_ENTER
+	enter.pressed = true
+	workspace.get_viewport().push_input(enter, true)
+	check(workspace.current == issues[49].url and not workspace.issue_list.visible, "Enter did not open the selected issue")
+	workspace.return_button.pressed.emit()
+	check(workspace.search.text == "#50" and workspace.issue_list.has_focus() and workspace.issue_list.get_selected() == workspace.issue_rows[issues[49].url], "return lost filter, selection or keyboard focus")
+	workspace.search.grab_focus()
+	var escape := InputEventKey.new()
+	escape.keycode = KEY_ESCAPE
+	escape.pressed = true
+	workspace.get_viewport().push_input(escape, true)
+	check(workspace.search.text.is_empty() and workspace.issue_rows[issues[0].url].visible, "Escape did not clear the search")
+	workspace.board_views.current_tab = 1
+	check(workspace.saved.board_view == 1 and not workspace.issue_list.visible, "graph preference or view visibility lost")
+	await settle_layout()
 	check_spacing(workspace.overview, "board overview")
 	workspace.overview.zoom = 1.4
 	workspace._zoom_detail()
@@ -196,6 +234,79 @@ func run() -> void:
 	check(not board_wire.visible, "filtered wire visible without endpoints")
 	workspace._locate_pending(51)
 	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
+	workspace._open_issue(issues[50])
+	graph.canvas.zoom = 100
+	check(is_equal_approx(graph.canvas.zoom, 1.6), "single issue detail exceeded zoom cap")
+	graph.canvas.zoom = 0.29
+	await settle_layout()
+	check(workspace.current.is_empty() and workspace.overview.visible and workspace.board_cards.size() == 55, "zoom out from issue missed personal board")
+	workspace.overview.zoom = 0.34
+	var wheel := InputEventMouseButton.new()
+	wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
+	wheel.pressed = true
+	wheel.position = workspace.overview.get_global_rect().get_center()
+	workspace.get_viewport().push_input(wheel, true)
+	for frame in 250:
+		await create_timer(0.025).timeout
+		if workspace.project_mode:
+			break
+	check(workspace.project_mode and workspace.board_cards.size() == 1 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
+	workspace.overview.zoom = 0.04
+	await settle_layout()
+	check(workspace.project_anchor.visible, "project overview has no readable outer anchor")
+	for step in 20:
+		workspace.overview.zoom = 0.5
+		workspace._check_canvas_zoom()
+	check(workspace.far_depth > 20 and workspace.overview.zoom == 1.0, "outer zoom stopped or collapsed canvas scale")
+	workspace.project_anchor.pressed.emit()
+	workspace.overview.zoom = 1.7
+	await settle_layout()
+	check(not workspace.project_mode and workspace.board_cards.size() == 55, "zooming in did not return to personal issues")
+	var resize_card = workspace.overview.get_node("i_5")
+	var before_rect := Rect2(resize_card.position_offset, resize_card.size)
+	workspace.overview.zoom = 1.0
+	workspace.overview.scroll_offset = resize_card.position_offset - Vector2(40, 40)
+	await settle_layout()
+	var point: Vector2 = resize_card.get_global_transform_with_canvas() * Vector2(2, 10)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.position = point
+	var viewport: Viewport = workspace.get_viewport()
+	var hover := InputEventMouseMotion.new()
+	hover.position = point
+	viewport.push_input(hover, true)
+	viewport.push_input(press, true)
+	var move := InputEventMouseMotion.new()
+	move.button_mask = MOUSE_BUTTON_MASK_LEFT
+	move.position = point - Vector2(24, 0)
+	move.relative = Vector2(-24, 0)
+	viewport.push_input(move, true)
+	press.pressed = false
+	press.position = move.position
+	viewport.push_input(press, true)
+	check(is_equal_approx(resize_card.size.x, before_rect.size.x + 24) and is_equal_approx(resize_card.position_offset.x, before_rect.position.x - 24), "left edge failed to preserve right edge")
+	workspace._draw_board()
+	check(is_equal_approx(workspace.overview.get_node("i_5").size.x, before_rect.size.x + 24), "redraw lost resized issue card")
+	await settle_layout()
+	resize_card = workspace.overview.get_node("i_5")
+	point = resize_card.get_global_transform_with_canvas() * Vector2(resize_card.size.x - 2, 10)
+	press.position = point
+	press.pressed = true
+	viewport.push_input(press, true)
+	move.position = point - Vector2(12, 0)
+	move.relative = Vector2(-12, 0)
+	viewport.push_input(move, true)
+	press.position = move.position
+	press.pressed = false
+	viewport.push_input(press, true)
+	check(is_equal_approx(resize_card.size.x, before_rect.size.x + 12), "right edge failed to shrink card")
+	var full_size: Vector2 = workspace.size
+	workspace.size.x = 600 * workspace.get_theme_default_base_scale()
+	workspace._adapt_layout()
+	check(workspace.flow_split.vertical and workspace.details_panel.custom_minimum_size.x == 0, "narrow inspector did not stack")
+	workspace.size = full_size
+	workspace._adapt_layout()
 	state.plan = {"nodes":{},"edges":[]}
 	state.context = {}
 	workspace.host = self

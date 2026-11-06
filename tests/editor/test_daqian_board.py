@@ -152,6 +152,12 @@ class BoardProjection(unittest.TestCase):
 
         def gh(command, path, *flags):
             self.assertEqual(command, "api")
+            if path.endswith("?state=open&per_page=100"):
+                self.assertEqual(flags, ("--paginate", "--slurp"))
+                return json.dumps([[pull, a], [additional]])
+            if "state=all" in path:
+                self.assertEqual(flags, ("--paginate", "--slurp"))
+                return json.dumps([[a], [old]])
             if "?assignee=" in path:
                 self.assertEqual(path, f"repos/{repo}/issues?assignee=team-user&state=open&per_page=100")
                 self.assertEqual(flags, ("--paginate", "--slurp"))
@@ -169,6 +175,11 @@ class BoardProjection(unittest.TestCase):
             projection = board.read_board(
                 ROOT, [1, 2, 2], {"login": "team-user", "user_id": "42", "repo": repo, "repo_id": "7"}
             )
+            actor = {"login": "team-user", "user_id": "42", "repo": repo, "repo_id": "7"}
+            history = board.read_board(ROOT, [], actor, personal_history=True)
+            project = board.read_board(ROOT, [3], actor, project=True)
+        self.assertIn(3, [item["number"] for item in history["issues"]])
+        self.assertEqual([item["number"] for item in project["issues"]], [1, 4])
         self.assertEqual([item["number"] for item in projection["issues"]], [1, 2, 3, 4, 5, 7])
         self.assertTrue(projection["issues"][2]["closed"])
         self.assertEqual(projection["issues"][2]["dependencies"], [additional["html_url"]])
