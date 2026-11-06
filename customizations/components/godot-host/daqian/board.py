@@ -153,6 +153,7 @@ def read_board(root, follows, actor=None, *, project=False, personal_history=Fal
             "status": status,
             "url": row["html_url"],
             "updated": row["updated_at"],
+            "creator": (row.get("user") or {}).get("login") or "",
             "owners": [x["login"] for x in row["assignees"]],
             "request": markers[0] if len(markers) == 1 else "",
             "dependencies": [],
