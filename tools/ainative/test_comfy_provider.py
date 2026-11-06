@@ -151,6 +151,36 @@ class ComfyTests(unittest.TestCase):
         self.fail=True
         result=self.p.submit(self.request,self.manifest,KEY)
         self.assertEqual(result['state'],'failed')
+    def test_mesh_extraction_controls_and_defaults(self):
+        req=copy.deepcopy(self.request); req['node']='text_to_mesh'
+        graph,usage=self.p.build(req,self.manifest,KEY)
+        self.assertEqual(graph['mesh']['inputs']['algorithm'],'surface net')
+        self.assertEqual(graph['mesh']['inputs']['threshold'],0.6)
+        for algorithm in ('surface net','basic'):
+            for threshold in (-1.0,0.0,0.6,1.0):
+                req['parameters'].update(mesh_algorithm=algorithm,mesh_threshold=threshold)
+                graph,usage=self.p.build(req,self.manifest,KEY)
+                self.assertEqual(graph['mesh']['inputs']['algorithm'],algorithm)
+                self.assertEqual(graph['mesh']['inputs']['threshold'],threshold)
+                self.assertEqual(usage['parameters']['mesh_algorithm'],algorithm)
+                self.assertEqual(usage['parameters']['mesh_threshold'],threshold)
+        req['parameters'].update(mesh_algorithm='basic',mesh_threshold=0.6)
+        registry=NodeRegistry(); register(registry)
+        host=Executor(Path(self.tmp.name)/'mesh-controls.sqlite',registry,{'comfy':self.p})
+        try:
+            graph,manifest=compile_graph({'nodes':[dict(id='mesh',type='text_to_mesh',provider='comfy',parameters=req['parameters'])],'edges':[]})
+            host.create(graph,manifest)
+        finally: host.close()
+    def test_mesh_extraction_invalid_controls(self):
+        for key,value in [('mesh_algorithm','marching_cubes'),('mesh_algorithm',''),('mesh_threshold',-1.001),('mesh_threshold',1.001),('mesh_threshold',float('nan')),('mesh_threshold',float('inf'))]:
+            req=copy.deepcopy(self.request); req['node']='text_to_mesh'; req['parameters'][key]=value
+            with self.subTest(key=key,value=value):
+                with self.assertRaises(ValueError): self.p.build(req,self.manifest,KEY)
+        for key,value in [('mesh_algorithm',1),('mesh_algorithm',None),('mesh_threshold','0.6'),('mesh_threshold',True),('mesh_threshold',None)]:
+            req=copy.deepcopy(self.request); req['node']='text_to_mesh'; req['parameters'][key]=value
+            with self.subTest(key=key,value=value):
+                with self.assertRaises(ValueError): self.p.submit(req,self.manifest,KEY)
+        self.assertEqual(self.posts,[])
     def test_host_text_nodes_embedded_context_and_typed_links(self):
         image=self.image()
         model={'nodes':[dict(id='a',type='text_to_image',provider='comfy',parameters={'prompt':'test'},image_context_snapshot=image['payload']),dict(id='b',type='image_to_mesh',provider='comfy',parameters={})],'edges':[{'from':'a','to':'b','input':'source','output':'result'}]}
