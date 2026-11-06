@@ -72,3 +72,9 @@
 - 13-integration：[Issue #154](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154)。
 
 本候选主关联 #142；总设计及其他子项文档作为接口实施的需求溯源随首批提交，其他子项实现不计入本候选。01 首批交付 tools/ainative/ 的 Manifest 验证器、样例与测试；节点注册、Provider 和发布可执行接口尚待实现，因此 #142 与父单保持开放。当前没有实际模型调用、UE/Mixamo 真实夹具、引擎 UI 或物理求解器交付。
+
+## Codex 接续执行决定（2026-11-06）
+
+用户选择“由当前 Codex 按依赖执行，大千展示进度”。执行责任为当前 Codex 会话；大千计划、节点状态和 GitHub 工单显示实际进度，独立常驻生产宿主不作为前置。已真实登记并回读全部 GitHub blocked_by 关系及司南 gonggong-depends-on 来源标记。#142 剩余扩展契约先验收，然后依次解锁 #143、#144；有独立且已满足前置的子项才并行。仅在真实需要凭据或用户决定时通知，不因部分 PR 合入停止用户目标。
+
+本次 #142 接续候选增加版本化 NodeRegistry、Provider 描述/调用/状态/输出验证及 PublishAdapter 编码与新文件原子发布契约。真实模型调用、异步持久执行器和 Godot 编辑器分别由后续子项验收。基础契约使用合成夹具验证，不将其作为真实 UE/Mixamo 适配证明。发布回读及关单以 #142 时间线为准。
