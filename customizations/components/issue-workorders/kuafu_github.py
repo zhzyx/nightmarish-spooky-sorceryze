@@ -337,13 +337,14 @@ def prior_reports(api, issue):
             bug = int(link[1])
             incident = api.get(f"issues/{bug}")
             body = incident.get("body") or ""
-            if (
-                incident["user"]["login"] != BOT
-                or "pull_request" in incident
-                or not body.startswith(f"<!-- gonggong-request:kuafu-run-{rid}-attempt-{attempt} -->\n")
-            ):
+            if incident["user"]["login"] != BOT or "pull_request" in incident:
                 continue
-        match = re.search(r"\n```json\n(\{.*\})\n```\Z", body, re.S)
+            key = f"run-{rid}-attempt-{attempt}"
+            if f"<!-- gonggong-request:kuafu-{key} -->" not in body.splitlines():
+                if tracker_marker(n) not in body.splitlines():
+                    continue
+                body = comment_text(api, bug, f"<!-- kuafu-report:{key} -->") or ""
+        match = re.search(r"^```json\n(\{.*?\})\n```$", body, re.M | re.S)
         if match:
             try:
                 report = json.loads(match[1])
@@ -440,14 +441,21 @@ def load_context(key, report):
     return hashlib.sha256(context).hexdigest()
 
 
-def post_once(api, n, marker, text):
+def comment_text(api, n, marker):
     path = f"issues/{number(n)}/comments"
     prefix = marker + "\n"
     for comment in api.pages(path):
         body = comment.get("body") or ""
         if comment["user"]["login"] == BOT and body.startswith(prefix):
             return body[len(prefix) :]
-    api.post(path, {"body": prefix + text})
+    return None
+
+
+def post_once(api, n, marker, text):
+    existing = comment_text(api, n, marker)
+    if existing is not None:
+        return existing
+    api.post(f"issues/{number(n)}/comments", {"body": marker + "\n" + text})
     return text
 
 
@@ -507,6 +515,47 @@ def record_evidence(directory, key, report):
     return {"state": receipt["state"], "sha256": receipt.get("sha256"), "consumption": None}
 
 
+def tracker_marker(n):
+    return f"<!-- kuafu-tracker:issue-{number(n)} -->"
+
+
+def track_incident(api, n, key, marker, text):
+    # Preserve exact historical registrations, including closed issues and lost write receipts.
+    issues = [
+        i
+        for i in api.pages("issues?state=all&creator=github-actions%5Bbot%5D")
+        if "pull_request" not in i and i["user"]["login"] == BOT
+    ]
+    matches = [i for i in issues if marker in (i.get("body") or "").splitlines()]
+    title = f"夸父阻塞：{key}"
+    header = marker
+    if n:
+        group = tracker_marker(n)
+        trackers = [i for i in issues if group in (i.get("body") or "").splitlines()]
+        event = f"<!-- kuafu-report:{key} -->"
+        if not matches:
+            matches = [i for i in trackers if comment_text(api, i["number"], event) is not None]
+        if not matches:
+            matches = [i for i in trackers if i["state"] == "open" and "type:bug" in labels(i)]
+            if len(matches) == 1:
+                post_once(api, matches[0]["number"], event, text)
+        title = f"夸父阻塞跟踪：原工单 #{n}"
+        header += f"\n{group}\n\n原工单 #{n} 的阻塞事件在此分别登记和复验。"
+    if len(matches) > 1:
+        raise ValueError("Multiple incident bugs found; reconcile their identities")
+    if matches:
+        return number(matches[0]["number"])
+    created = api.post(
+        "issues",
+        {
+            "title": title,
+            "body": header + "\n\n" + text,
+            "labels": ["type:bug", "workspace:gonggong", "status:planned"],
+        },
+    )
+    return number(created["number"])
+
+
 def route(api, name, event, context=load_context, record=None):
     incident = inspect_event(api, name, event)
     if incident is None:
@@ -541,25 +590,7 @@ def route(api, name, event, context=load_context, record=None):
         bug = n
         post_once(api, bug, f"<!-- kuafu-report:{key} -->", text)
     else:
-        matches = [
-            i
-            for i in api.pages("issues?state=all&creator=github-actions%5Bbot%5D")
-            if "pull_request" not in i and i["user"]["login"] == BOT and marker in (i.get("body") or "")
-        ]
-        if len(matches) > 1:
-            raise ValueError("Multiple incident bugs found; reconcile their identities")
-        if matches:
-            bug = number(matches[0]["number"])
-        else:
-            created = api.post(
-                "issues",
-                {
-                    "title": f"夸父阻塞：{key}",
-                    "body": marker + "\n\n" + text,
-                    "labels": ["type:bug", "workspace:gonggong", "status:planned"],
-                },
-            )
-            bug = number(created["number"])
+        bug = track_incident(api, n, key, marker, text)
         if n:
             post_once(
                 api, n, f"<!-- kuafu-notice:{key} -->", f"夸父已将本次阻塞登记到 #{bug}。证据：{report['source']}"
