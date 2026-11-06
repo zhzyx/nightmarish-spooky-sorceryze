@@ -1,0 +1,24 @@
+{
+  "state": "passed",
+  "editor_sha256": "ed9f9a394b0dc6a044d44b460bb34d75ffe6319dc9a177bf544dbaba0faf7532",
+  "scenario": "graph",
+  "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board",
+  "request_id": "daqian-card-layout-20261106",
+  "issue_number": 196,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/196",
+  "platform": "macOS arm64",
+  "baseline": "0b36320b9c662a77b918bba9a0244f614728de09",
+  "reproduced": [
+    "board overview overlap",
+    "expanded board overlap",
+    "restored task overlap",
+    "join alignment"
+  ],
+  "verified": [
+    "55-card overview with long title and expanded steps",
+    "variable-height diamond and centered join",
+    "generated workflow with wrapped stages and repeatable positions",
+    "dragged signal in overview and detail, pinned position restoration"
+  ],
+  "review": "Independent review identified missing reflow after drag. Both callbacks now schedule layout; both native geometry assertions passed."
+}

@@ -18,6 +18,23 @@ func check(value: bool, reason: String) -> void:
 		push_error(reason)
 
 
+func check_spacing(canvas: GraphEdit, scenario: String) -> void:
+	var bounds: Array[Rect2] = []
+	for card in canvas.get_children():
+		if card is GraphNode:
+			var rect := Rect2(card.position_offset, card.size)
+			for other in bounds:
+				if rect.grow(8).intersects(other):
+					check(false, "%s: %s overlaps another card" % [scenario, card.name])
+					return
+			bounds.append(rect)
+
+
+func settle_layout() -> void:
+	for frame in 5:
+		await process_frame
+
+
 func read_graph(_id):
 	if delay_detail:
 		await release_detail
@@ -85,14 +102,61 @@ func run() -> void:
 	var edge = graph.draft.edges[0]
 	graph.disconnect_ports(edge.from,0,edge.to,0)
 	check(graph.draft.edges.size()==3,"removed protected connection")
+	graph.positions.clear()
+	graph.draft.edges.append({"from":source, "to":left, "kind":"data"})
+	graph.draw_graph()
+	await settle_layout()
+	check_spacing(graph.canvas, "parallel tasks")
+	var first := graph.canvas.get_node(NodePath(left)) as GraphNode
+	var second := graph.canvas.get_node(NodePath(right)) as GraphNode
+	var join := graph.canvas.get_node(NodePath(merge)) as GraphNode
+	var midpoint := (minf(first.position_offset.y, second.position_offset.y)
+		+ maxf(first.position_offset.y + first.size.y, second.position_offset.y + second.size.y)) / 2.0
+	check(absf(join.position_offset.y + join.size.y / 2.0 - midpoint) < 2, "join misaligned with branches")
+	var previous := first.position_offset
+	first.position_offset = second.position_offset
+	first.dragged.emit(previous, first.position_offset)
+	await settle_layout()
+	check_spacing(graph.canvas, "drag onto automatic task")
+	graph.draw_graph()
+	await settle_layout()
+	check_spacing(graph.canvas, "restored drag position")
+	check(graph.canvas.get_node(NodePath(left)).position_offset == graph.positions[left], "moved pinned task")
+	graph.draft = {"nodes":{"requirement":{"kind":"text","title":"需求","value":"布局验证"}}, "edges":[]}
+	graph.workflow = {"phase":"ready", "item":{}, "design":{"scope":["步骤一", "包含换行的阶段描述".repeat(40), "步骤三"], "acceptance":["验收"]}}
+	graph.draw_graph()
+	await settle_layout()
+	check(graph.canvas.has_node("wf-verify"), "missing generated verification stage")
+	check_spacing(graph.canvas, "generated workflow with wrapped stages")
+	var original: Vector2 = graph.canvas.get_node("wf-verify").position_offset
+	graph.draw_graph()
+	await settle_layout()
+	check(graph.canvas.get_node("wf-verify").position_offset == original, "unstable generated layout")
+	graph.workflow = {}
 	var issues := []
 	for i in range(55):
 		var url := "https://github.com/fixture/board/issues/" + str(i+1)
 		issues.append({"number":i+1,"url":url,"title":"需求 " + str(i+1),"owners":["tester"],
 			"status":"in-progress","closed":false,"request":"test","updated":"fixture","decision":i==50,
 			"dependencies":[issues[i-1].url] if i>0 else [],"plan":{"nodes":{},"edges":[]}})
+	issues[0].title = "包含长标题的工单".repeat(20)
+	for step in 12:
+		issues[0].plan.nodes[str(step)] = {"kind":"task","title":"预计任务","value":"详细步骤".repeat(12)}
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
+	await settle_layout()
+	check_spacing(workspace.overview, "board overview")
+	workspace.overview.zoom = 1.4
+	workspace._zoom_detail()
+	await settle_layout()
+	check_spacing(workspace.overview, "expanded board")
+	var pinned := workspace.overview.get_node("i_1") as GraphNode
+	previous = pinned.position_offset
+	pinned.position_offset = workspace.overview.get_node("i_2").position_offset
+	pinned.dragged.emit(previous, pinned.position_offset)
+	await settle_layout()
+	check_spacing(workspace.overview, "drag onto automatic issue")
+	check(workspace.saved.positions[issues[0].url] == pinned.position_offset, "board drag was not saved")
 	check(workspace.overview.get_connection_list().size()==54,"historical dependency chain")
 	workspace.search.text = "#50"
 	workspace._filter_board()
