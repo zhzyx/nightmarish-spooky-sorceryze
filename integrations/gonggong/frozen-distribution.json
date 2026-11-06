@@ -67,7 +67,6 @@
     "domains/quality/templates/质量约定.md": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d",
     "extensions/diting-files/diting_files.py": "8884a690c42b08c09c0f1061082c402540417898b59fa87a7bd38250fa91cacf",
     "extensions/diting-files/event.schema.json": "22fe532e3cd17be7a73c66b9f0689965412e0c50a938988c7d4bda6b6bff1aae",
-    "extensions/diting-files/event.template.json": "dcb5371fd7cbe7a44a2ce762a7e34675c1c04554dfc8e1ce8b390ee7b0f4e43e",
     "extensions/diting-files/README.md": "a5d16a275a9096e1b3f09b8c62ae555d83d7d55a1693af1a8a9c3e3720472dc2",
     "extensions/diting-files/reporting.json": "73f751941a17272912e039fdc34b0d4ed0624cb1fb52bb343747590d0cff0a34",
     "foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
@@ -80,13 +79,8 @@
     "integrations/yanshi-legacy/runtime/src/production.mjs": "5fe9f9eacf34e758a32110068ac1984574f3d26be72a606798fbaccb6914d618",
     "integrations/yanshi-legacy/yanshi.mjs": "377e426967089691a79e32bc9337ae43ed7acf859cb0af0750215be52e15a5e2",
     "integrations/yuanheng-organize-reporting.json": "1095bcc28da4d790cb4dd7069d1d4ab9c510b7d7999c1c4546647a3881bf9ff8",
-    "modules/git-issue/issue_create.py": "26afc0e5c2ba8458fdb3411e271782ad0f86b92d512629c7804329e9b625550b",
-    "modules/git-issue/module.json": "00da75892905fb14fb7291a664d27bd63c5d5762ead6fa3955e25262cd4691c4",
-    "modules/git-issue/README.md": "ab13ff1768b63162ea9602e909d80634740155c5d1ab268b3a5f35c8e9a26f5f",
-    "modules/git-issue/reporting.json": "4d4a92e94b377498138c09e5ac0c284b2aa7ea5f7821ce629e332ac7e080d7a8",
-    "modules/git-issue/settings.example.json": "3da64bd2168a460eb919783bb399f4bb9603671ec875effee3a60f434f509325",
-    "modules/git-issue/test_issue_create.py": "444926dcea3a3eb0a5eea8202d413f380c5b434fdcdcf3b2fb83fd757a8eafd3",
-    "modules/optional.json": "b8185e80d68f812c61268945a790d4bbced8ca407e34bd3e11c0dd1159fd77d0",
+    "modules/git-issue/issue_create.py": "38f233fc6c0998d1d1318f021271a928cf960a40338db5db09ebe324718b79e3",
+    "modules/optional.json": "ebdf24edc563961799d0df05fdb96af72a0fd2960916de459991599199c2f647",
     "modules/sinan/coordinator.mjs": "d4050b53056937984021f650338400244f78de1182738bb764149126a15e363f",
     "modules/sinan/dispatch.mjs": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
     "modules/sinan/module.json": "9ac65004726de94d4f3e520aef17ba1211438188f4368852271288cd1344b067",
@@ -283,6 +277,6 @@
     "upstream/yuanheng/skills/yuanheng-organize/SKILL.md": "f05238997f7f1d44e5430c033764de86a46f64fabf2bd9cdc9b2ee70ce6e8c6c",
     "upstream/yuanheng/tools/check_message.py": "5d8ca64d426a6c4961f418c5d339842c0e4cc580a640d284c38dc4c1b721061c",
     "upstream/yuanheng/tools/context.py": "db431155ad8575cdd1a3fae81a1fb77eb9b235c3f79c7346653a9388efe1dbb0",
-    "package-lock.json": "3f43b40cd447cf96856ffabebc62b1d7616e3af1e3eed17a7c61b3438c6bf502"
+    "package-lock.json": "9dab8e5a31f3b9722bfaab183f45cc47cc1b7e5904291b59db5f8bbf04899663"
   }
 }
