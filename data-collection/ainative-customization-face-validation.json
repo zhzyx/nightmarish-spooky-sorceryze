@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "issue_number": 151,
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "date": "2026-11-07",
+  "status": "local_validation_passed_pending_delivery",
+  "source_sha256": {
+    "design-docs/ainative-art/10-customization-face.md": "33769a7ae1d55a321d3e5a67a7072a3a5e5b1e71b8685c389aaec2f44f49c573",
+    "samples/ainative-workbench/addons/ainative/customization.gd": "00764ff6982abf7e5bac1ed0b8ec4bb6e5592e4be2e34039c52bdf7f7008bcc2",
+    "samples/ainative-workbench/addons/ainative/customization.gd.uid": "cad143d3d288e8c239cd22576072683efcc4cf18ebdd3aecbc36c13386dc4646",
+    "samples/ainative-workbench/addons/ainative/customization_panel.gd": "5ed4a8e2e4868855931751a6abdd56967b91d18f4f5954d81ddc5c72b8e98450",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "c062c626f35567eae7baf768c58e56b2f1e3531c85ee4cbbea15d4580f467096",
+    "samples/ainative-workbench/customization_assemble.gd": "e2c108d665db34afbf09046ad08080c3dae821db0c72d7b621147803b01fbb3d",
+    "samples/ainative-workbench/customization_contract_tests.gd": "41ce20b50f58d258858fa911a8a294a20bd044e86e626855346008cdde8c9156",
+    "samples/ainative-workbench/customization_geometry_tests.gd": "669b1f95922504695134376f3d7ddc56108a89d4e17b3a2e183965a1030ca4e2",
+    "samples/ainative-workbench/customization_live_ui.gd": "4f5201996800735415ab3e8edd97128498748abe91e3e38830b9ca17b9fad511",
+    "tools/ainative/rain_convert.py": "053a2da98654b091a3ecad3b1cd1c18edb7952b06182a607a986bd23c6f7c1c9",
+    "tools/ainative/rain_inspect.py": "b2df186d8023e9d550726836d6377687c54d13b73eed86172d3a1c70cb89f652",
+    "tools/ainative/rain_probe.py": "1157240464e3090a6a4d1b2ba24a18bd0c2ebec077602df90bcb1812a218b8e9"
+  },
+  "private_candidate_sha256": "58799813441aabe99b2b1ffa4dfd9353bebf2fe97ac992523be10586ebdcff00",
+  "asset_provenance": {
+    "rain_credit": "Rain Rig (CC) Blender Foundation | studio.blender.org",
+    "rain_license": "https://creativecommons.org/licenses/by/4.0/",
+    "rain_source": "https://studio.blender.org/characters/rain/v3/",
+    "ue_assets": "private local validation only; no redistribution",
+    "files": [
+      {
+        "path": "runtime/customization/rain-v33.zip",
+        "sha256": "80217f163f6392dc829233d63c2cfb5e1376775bc34101ad14f39631fea70d24",
+        "bytes": 67579177
+      },
+      {
+        "path": "runtime/customization/rain/Rain v3.3/rain_v3.2.blend",
+        "sha256": "831ab6d837c679040285862b15dc9ee5180b018442a88aeaf92aaa7509b80258",
+        "bytes": 9167189
+      },
+      {
+        "path": "runtime/customization/converted-v5/rain-semantic-v1.glb",
+        "sha256": "1b46074b13829030befcbb98d0799a657096321743d69914d45a179670e21cf2",
+        "bytes": 10195632
+      },
+      {
+        "path": "runtime/customization/ue4-rain-head-v2.tscn",
+        "sha256": "37f1e390912e869255e107e11b5a1e85491cca82ec2023188fa7becb18cd1178",
+        "bytes": 12269434
+      },
+      {
+        "path": "runtime/customization/ue4-rain-head-v2.tscn.face-binding.json",
+        "sha256": "c5bc744b9ff4ae9cfc958a82cc035f7a321f6f3b738719dbf182ec5bec1fa7a9",
+        "bytes": 61071
+      },
+      {
+        "path": "runtime/customization/ue4-final-v3.tscn",
+        "sha256": "64b3fa4778ccef722e8344abfbf968277e45694eaabc02d3a49685d7ed1f78c5",
+        "bytes": 32398949
+      },
+      {
+        "path": "ue4-native.glb",
+        "sha256": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446",
+        "bytes": 482208
+      }
+    ]
+  },
+  "evidence": {
+    "ui": {
+      "body_animation_combination": {
+        "chest": 2.54975962638855,
+        "head": 2.52910947799683,
+        "neck": 2.53541231155396
+      },
+      "body_clip_origin": {
+        "profile_revision": "59990bc182823a98b606812aad097cffc53795d353ae8b19c50b074c86a1a606",
+        "sha256": "4ee8cc2fb75b2fac5b18b6bfa309a8988e9d988ed7b6e276159cf1114b92fc0f"
+      },
+      "bones_unchanged": 68,
+      "dna": {
+        "body": {
+          "chest": 1.15,
+          "depth": 1.0,
+          "hips": 1.0,
+          "waist": 1.0
+        },
+        "face": {
+          "face_width": 0.45,
+          "jaw_width": -0.35,
+          "nose_width": 0.0
+        },
+        "mapping_version": "ue4-rain-head-v1",
+        "revision": "60b3302192d26a0a333de6ec252223c3b9662f171927608019c17da7ae504191",
+        "schema_version": 1,
+        "source_sha256": "831ab6d837c679040285862b15dc9ee5180b018442a88aeaf92aaa7509b80258"
+      },
+      "face": {
+        "channels": {
+          "browDown": 0.503870457410812,
+          "eyeBlink": 0.16988642513752,
+          "jawOpen": 0.65,
+          "lookDown": 0.0,
+          "lookLeft": 0.65,
+          "lookRight": 0.0,
+          "lookUp": 0.0,
+          "mouthFrown": 0.000492281265906055,
+          "mouthSmile": 3.97795956814662e-05
+        },
+        "head_neck_writes": 0,
+        "morph_writes": 156,
+        "owners": {
+          "browDown": "mediapipe-expression",
+          "eyeBlink": "mediapipe-expression",
+          "jawOpen": "manual-mouth-gaze",
+          "lookDown": "manual-mouth-gaze",
+          "lookLeft": "manual-mouth-gaze",
+          "lookRight": "manual-mouth-gaze",
+          "lookUp": "manual-mouth-gaze",
+          "mouthFrown": "mediapipe-expression",
+          "mouthSmile": "mediapipe-expression"
+        }
+      },
+      "face_stream_sha256": "2a94ab3227ea589276c7827f964d1848bae00dbe3b22074d4da17b35dfdc96ac",
+      "fit_revisions": [
+        "92c0e96f2788a16e227b3d5be0e3a78e8995b46f0dd62182baf9a07773fb89a4",
+        "e4e6c3c466a290d19363f4a9e9718ab576b9c8a36ab35d51fbde7e378a5ee5ae"
+      ],
+      "garment_clearance": {
+        "body_edges_tested": 5976,
+        "crossing_edges": 0,
+        "garment_samples": 511,
+        "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+        "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+        "radial_hits": 506,
+        "radial_median_distance_m": 0.0604450702667236,
+        "radial_min_distance_m": 8.22432411951013e-05,
+        "samples_under_3mm": 9,
+        "status": "no_intersections_in_sample"
+      },
+      "garment_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "garment_vertex_delta_m": 0.0346891731023788,
+      "overwrite_rejected": true,
+      "save_reopen": true,
+      "scalp_binding": {
+        "body_owns_head_neck": true,
+        "geometry_space": "mesh-local; skin follows body skeleton",
+        "mapping_version": "ue4-rain-head-v1",
+        "pose_revision": "35ff5d6d3602a67b64f441375a20dc14083aa6a14b17455d60b78d165a3b1112",
+        "revision": "d60996e964bf4bf53e7c4ce56b5599f2187f5440780009e5911834db297b9152"
+      },
+      "screenshots": [
+        "ue4-final-v3-time0.png",
+        "ue4-final-v3-time1.png"
+      ],
+      "source_sha256": "37f1e390912e869255e107e11b5a1e85491cca82ec2023188fa7becb18cd1178",
+      "ui_reopen_refit_animation_preserved": true
+    },
+    "ui_receipt_sha256": "921d4c8f30b9ebee460a13ffc03dd1afd68a63cf4e55be23f80f9a9797ddf5e9",
+    "geometry": {
+      "asset_sha256": "37f1e390912e869255e107e11b5a1e85491cca82ec2023188fa7becb18cd1178",
+      "boundary_geometry": [
+        {
+          "max_morph_displacement_m": 0.137866333127022,
+          "rest_binding_stable_under_expression": true,
+          "sign": -1,
+          "vertices": 25777
+        },
+        {
+          "max_morph_displacement_m": 0.137866333127022,
+          "rest_binding_stable_under_expression": true,
+          "sign": 1,
+          "vertices": 25777
+        }
+      ]
+    },
+    "geometry_receipt_sha256": "0f8ff035ab3ce956fa1cbd39ba4827efae90bf27a0dfcaeeafe0988959b9477a",
+    "assembled_asset_sha256": "37f1e390912e869255e107e11b5a1e85491cca82ec2023188fa7becb18cd1178",
+    "face_binding_sha256": "c5bc744b9ff4ae9cfc958a82cc035f7a321f6f3b738719dbf182ec5bec1fa7a9"
+  },
+  "root_visual_review": {
+    "state": "accepted_first_version_scope",
+    "inspected_screenshots": {
+      "ue4-final-v1-time1.png": "9dff2713598b1a48596fcbe629715121a5f47a22a1aa02db35aeb2850136ce5b",
+      "ue4-final-v1-dressed-side.png": "e2dc630f60cee16a1d26df6ef1770feb6fc7e97f9caecd03e4939bc7333a6ff2",
+      "ue4-final-v1-neck-side.png": "64fae6298f934b17f5f94f07afbcc790ffe238d7e8d10bd43c9c4ea71e64167e",
+      "ue4-final-v3-time1.png": "9dff2713598b1a48596fcbe629715121a5f47a22a1aa02db35aeb2850136ce5b"
+    },
+    "observed": [
+      "Independent Rain head, face controls and actual body motion",
+      "Neck transition in side view",
+      "Independently generated open vest on native UE4 body"
+    ],
+    "limitations": [
+      "Generated vest surface corrugation and open-front topology remain",
+      "Native mechanical body segmentation is the compatibility fixture, not a final art character",
+      "Cloth intersection sampling is not exhaustive collision certification"
+    ]
+  },
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "state": "approved",
+    "native_body": {
+      "bones": 68,
+      "skin_binds": 68,
+      "vertices": 7147,
+      "names_parents_rest_weights_preserved": true
+    },
+    "head": {
+      "parts": 8,
+      "vertices": 18630,
+      "only_head_neck_weights": true,
+      "max_weight_sum_error": 1.53e-05
+    },
+    "refit": {
+      "chest": 1.15,
+      "repeat_and_reopened_geometry_difference": 0,
+      "body_pose_origin_difference": 0
+    },
+    "verified": [
+      "Duplicate morph mapping rejected",
+      "Repeated BodyMotion load preserves stable path",
+      "Incomplete FaceBinding rejects without replacing valid scene",
+      "Atomic no-clobber publishing",
+      "No absolute local source path in published scene",
+      "Actual boundary morph and static scalp versus expression revision",
+      "72-frame capture: frame71 to saved frame0 reopen clears old UI capture and restores all 156 morph values plus saved layers and pose revision"
+    ]
+  },
+  "limitations": [
+    "Rain is a CC-BY reference head with explicit manual semantic adapter, not an AI-generated or universally auto-rigged face",
+    "Earlier full Rain body FK conversion failed visual deformation and is excluded from acceptance",
+    "Mouth and gaze sequence are authored; expression stream reuses actual MediaPipe inference from #149",
+    "This integration uses native UE4 body; generated body and other target variants require #154 calibration and acceptance",
+    "Quinn remains unverified in #202"
+  ]
+}
