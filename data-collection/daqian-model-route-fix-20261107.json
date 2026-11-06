@@ -1,0 +1,11 @@
+{
+  "request_id": "daqian-model-route-fix-20261107",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/348",
+  "source_event_id": 35398111621,
+  "receipt": "data-collection/issue-events/fb6b1536c35e20c307366c83aaa069ff20203af376fe654b8e0e4aa7272c5772/receipt.json",
+  "verification": {
+    "direct_issue_tests": "16 passed with PYTHONUTF8=1 on Windows",
+    "gdscript_check": "Godot 4.8 --headless --path . --check-only workspace.gd passed",
+    "diff_check": "passed"
+  }
+}
