@@ -1,0 +1,26 @@
+[
+  {
+    "prefix": "OPENAI",
+    "name": "GPT",
+    "protocol": "responses",
+    "endpoint": "https://api.openai.com/v1/responses"
+  },
+  {
+    "prefix": "ANTHROPIC",
+    "name": "Claude",
+    "protocol": "anthropic-messages",
+    "endpoint": "https://api.anthropic.com/v1/messages"
+  },
+  {
+    "prefix": "DEEPSEEK",
+    "name": "DeepSeek",
+    "protocol": "chat-completions",
+    "endpoint": "https://api.deepseek.com/chat/completions"
+  },
+  {
+    "prefix": "GEMINI",
+    "name": "Gemini",
+    "protocol": "gemini-generate-content",
+    "endpoint": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+  }
+]
