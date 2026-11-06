@@ -48,6 +48,7 @@ class Host:
             "body": "GongGong-Issue: #7\nGongGong-Request: abc",
         }
         self.bugs, self.comments, self.jobs = [], [], []
+        self.tracker_comments = {}
         self.lose_receipt = False
         self.permission = "write"
 
@@ -57,6 +58,8 @@ class Host:
         return {"issues/7": self.issue, "pulls/12": self.pr, "actions/runs/18/attempts/2": self.run}[path]
 
     def pages(self, path, field=None):
+        if path in self.tracker_comments:
+            return self.tracker_comments[path]
         return {
             f"commits/{'a' * 40}/pulls": [self.pr],
             "actions/runs/18/attempts/2/jobs": self.jobs,
@@ -67,11 +70,16 @@ class Host:
     def post(self, path, body):
         record = {**body, "user": {"login": BOT}}
         if path == "issues":
-            record["number"] = 99
+            record["number"] = 99 + len(self.bugs)
+            record["state"] = "open"
+            record["labels"] = [{"name": label} for label in body["labels"]]
+            self.tracker_comments[f"issues/{record['number']}/comments"] = []
             self.bugs.append(record)
             if self.lose_receipt:
                 self.lose_receipt = False
                 raise RuntimeError("receipt unknown")
+        elif path in self.tracker_comments:
+            self.tracker_comments[path].append(record)
         elif path == "issues/7/comments":
             self.comments.append(record)
         else:
@@ -168,6 +176,9 @@ class KuafuGitHubTests(unittest.TestCase):
         self.api.jobs = before
         self.api.run["conclusion"] = old_conclusion
         self.api.route()
+        # Collaborators may add diagnosis and closure notes to the initial issue.
+        bug = self.api.bugs[0]
+        bug["body"] = "诊断记录\n" + bug["body"] + "\n复验说明"
         failed = self.api.run.copy()
         self.api.run.update(run_attempt=3, conclusion="success")
         success = self.api.run
@@ -176,7 +187,7 @@ class KuafuGitHubTests(unittest.TestCase):
             success.update(id=22, run_attempt=1, head_sha="f" * 40, run_started_at="2026-11-07T00:00:00Z")
             self.api.pr["head"]["sha"] = success["head_sha"]
         path = f"actions/runs/{success['id']}/attempts/{success['run_attempt']}"
-        bug_comments = []
+        bug_comments = self.api.tracker_comments["issues/99/comments"]
         api_get, api_pages, api_post = self.api.get, self.api.pages, self.api.post
 
         def get(url):
@@ -228,6 +239,15 @@ class KuafuGitHubTests(unittest.TestCase):
         self.assertEqual(len(comments), 1)
         self.assertEqual(len(self.api.bugs), 1)
         self.assertEqual(len(self.api.comments), 2)
+
+    def test_ci_recovery_from_report_appended_after_local_failure(self):
+        self.local_dispatch()
+        comments = self.successful_retry([], [{"id": 23, "conclusion": "success"}], "startup_failure")
+        self.assertEqual(self.api.route()["reverification"][0]["state"], "operation_reverified")
+        self.assertIsNone(self.api.route())
+        self.assertEqual(len(comments), 2)
+        self.assertIn("kuafu-recovery:run-18-attempt-2", comments[-1]["body"])
+        self.assertEqual(len(self.api.bugs), 1)
 
     def test_successful_descendant_can_only_be_a_recovery_candidate(self):
         self.successful_retry([], [{"id": 23, "conclusion": "success"}], "startup_failure", successor=True)
@@ -323,6 +343,23 @@ class KuafuGitHubTests(unittest.TestCase):
         self.assertEqual(result["host_attempt"], "https://github.com/example/repository/actions/runs/122/attempts/1")
         self.local_dispatch()
         self.assertEqual((len(self.api.bugs), len(self.api.comments)), (1, 1))
+
+    def test_local_and_ci_share_tracker_with_separate_replayable_reports(self):
+        self.local_dispatch()
+        self.api.route()
+        self.local_dispatch(input_updates={"incident": "d" * 64})
+        self.api.route()
+        self.assertEqual(len(self.api.bugs), 1)
+        self.assertEqual(len(self.api.comments), 3)
+        reports = self.api.tracker_comments["issues/99/comments"]
+        self.assertEqual(len(reports), 2)
+        self.assertIn("run-18-attempt-2", reports[0]["body"])
+        self.assertIn("d" * 64, reports[1]["body"])
+        self.api.bugs[0]["body"] = "人工备注\n" + self.api.bugs[0]["body"]
+        self.assertEqual(self.local_dispatch()["bug_number"], 99)
+        self.api.bugs[0]["state"] = "closed"
+        self.assertEqual(self.api.route()["bug_number"], 99)
+        self.assertEqual(self.local_dispatch(input_updates={"incident": "e" * 64})["bug_number"], 100)
 
     def test_dispatch_requires_current_default_branch_writer_and_open_issue(self):
         for args in [
