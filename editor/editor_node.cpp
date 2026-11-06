@@ -9587,6 +9587,9 @@ EditorNode::EditorNode() {
 	// AI Chat is registered first so it is the opening main-screen tab.
 	editor_dock_manager->add_dock(memnew(AIChatDock));
 	editor_dock_manager->add_dock(create_daqian_dock());
+#ifdef MACOS_ENABLED
+	install_gonggong_startup_validation(this);
+#endif
 
 	add_editor_plugin(memnew(CanvasItemEditorPlugin));
 	add_editor_plugin(memnew(Node3DEditorPlugin));
