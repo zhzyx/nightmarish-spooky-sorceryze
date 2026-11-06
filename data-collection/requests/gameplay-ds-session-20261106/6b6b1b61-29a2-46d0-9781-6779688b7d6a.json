@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "gameplay-ds-session-20261106",
+  "collected_at": "2026-11-06T13:49:13.514532+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gameplay-ds-session-20261106/dispatch-307fd8becbf74edd813892eaaa17980e.json",
+      "sha256": "9f125bfd0c1a0d8a336c4401177408468fe6ed9a2e76b371fb789449406abd1d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-307fd8becbf74edd813892eaaa17980e",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gameplay-ds-session-20261106/dispatch-fe409790ff0c4fd79ff110dca0d678f6.json",
+      "sha256": "8b96f4482cf9ff45e4812bb03ef43f5f2cca4dd99e56b3823d12ecc0bb3a69dd",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-fe409790ff0c4fd79ff110dca0d678f6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gameplay-ds-session-20261106/gameplay-ds-session-delivery-request-20261106.json",
+      "sha256": "9b00dece67d250a223e439b5653103dd4f5a32452b265feef90f6c1f7448ea95",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "gameplay-ds-session-delivery-request-20261106",
+      "origin": "current-user-authorized-codex-session"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gameplay-ds-session-20261106/gameplay-gf2-validation-20261106.json",
+      "sha256": "e18f42e75729f88795257deb1404e5c24a34bedb42ffbbc54e2a93b53981446f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "gameplay-gf2-validation-20261106",
+      "origin": "current-user-authorized-codex-session"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 177,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177"
+}

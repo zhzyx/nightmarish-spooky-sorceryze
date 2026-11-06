@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplaySubsystem" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		A scoped gameplay service managed by [GameplaySubsystemRegistry].
+	</brief_description>
+	<description>
+		GameplaySubsystem provides deterministic initialization and deinitialization for services whose lifetime belongs to an application, world, local player, or connection scope. Subclass it and implement [method _initialize] and [method _deinitialize].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_deinitialize" qualifiers="virtual">
+			<return type="void" />
+			<description>
+				Called once during registry shutdown, in reverse registration order.
+			</description>
+		</method>
+		<method name="_initialize" qualifiers="virtual">
+			<return type="void" />
+			<description>
+				Called once during registry initialization, in registration order.
+			</description>
+		</method>
+		<method name="get_registry" qualifiers="const">
+			<return type="GameplaySubsystemRegistry" />
+			<description>
+				Returns the managing registry, or [code]null[/code] before registration or after removal.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="initialized" type="bool" setter="" getter="is_initialized">
+			The read-only lifecycle state.
+		</member>
+		<member name="scope" type="int" setter="set_scope" getter="get_scope" enum="GameplaySubsystem.Scope" default="1">
+			The required lifetime scope. It must match the registry scope.
+		</member>
+		<member name="subsystem_id" type="StringName" setter="set_subsystem_id" getter="get_subsystem_id" default="&amp;&quot;&quot;">
+			A non-empty ID unique within the registry.
+		</member>
+	</members>
+	<signals>
+		<signal name="subsystem_deinitialized">
+			<description>
+				Emitted after [method _deinitialize] completes.
+			</description>
+		</signal>
+		<signal name="subsystem_initialized">
+			<description>
+				Emitted after [method _initialize] completes.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="SCOPE_APPLICATION" value="0" enum="Scope">
+			A process-wide service lifetime.
+		</constant>
+		<constant name="SCOPE_WORLD" value="1" enum="Scope">
+			A gameplay-world lifetime.
+		</constant>
+		<constant name="SCOPE_LOCAL_PLAYER" value="2" enum="Scope">
+			A local-player lifetime.
+		</constant>
+		<constant name="SCOPE_CONNECTION" value="3" enum="Scope">
+			A network-connection lifetime.
+		</constant>
+	</constants>
+</class>
