@@ -184,8 +184,7 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(self.adapter.call.call_count, 2)
 
     def test_invalid_or_oversized_history_is_rejected_before_model_call(self):
-        for context in [None, [{"role": "system", "content": "bad"}],
-                        [{"role": "user", "content": "x" * 16001}]]:
+        for context in [None, [{"role": "system", "content": "bad"}], [{"role": "user", "content": "x" * 16001}]]:
             self.request["conversation_context"] = context
             with self.assertRaisesRegex(ValueError, "bounded requirements conversation"):
                 self.invoke()
@@ -381,8 +380,9 @@ class RequirementsTests(unittest.TestCase):
         module.subprocess.run.side_effect = transport
         self.assertTrue(self.invoke()["ready"])
         expected_agent = "sinan"
-        routed = module.complete(self.root, self.request, {}, [{"role": "system", "content": "registered sinan"}],
-                                 {}, agent_id="sinan")
+        routed = module.complete(
+            self.root, self.request, {}, [{"role": "system", "content": "registered sinan"}], {}, agent_id="sinan"
+        )
         self.assertEqual(routed["finish_reason"], "stop")
         self.adapter.call.assert_not_called()
 

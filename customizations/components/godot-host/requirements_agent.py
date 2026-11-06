@@ -516,7 +516,10 @@ def _intake(root, request, bridge):
         if path.is_symlink():
             raise ValueError("Preserve existing requirement original; cannot write through a symlink")
         content = prefix + design_summary(design)
-        if path.exists() and path.read_text(encoding="utf-8") not in (content, prefix + design_summary(design, legacy=True)):
+        if path.exists() and path.read_text(encoding="utf-8") not in (
+            content,
+            prefix + design_summary(design, legacy=True),
+        ):
             raise ValueError("Preserve existing requirement original; cannot overwrite a different proposal")
         if not path.exists():
             with path.open("x", encoding="utf-8") as stream:
