@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPawn" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		A controllable gameplay embodiment that can be possessed by a [GameplayController].
+	</brief_description>
+	<description>
+		GameplayPawn represents the replaceable physical or scene embodiment of a player or agent. Possession is maintained bidirectionally by [method GameplayController.possess]. Gameplay ownership does not grant Godot multiplayer authority; authoritative simulation remains controlled by [method Node.set_multiplayer_authority].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_possessed" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether a live controller possesses this pawn.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="controller" type="GameplayController" setter="" getter="get_controller">
+			The read-only possessing controller.
+		</member>
+		<member name="owner_peer_id" type="int" setter="set_owner_peer_id" getter="get_owner_peer_id" default="0">
+			The gameplay owner peer. This is identity metadata and is deliberately separate from multiplayer authority.
+		</member>
+	</members>
+	<signals>
+		<signal name="controller_changed">
+			<param index="0" name="old_controller" type="GameplayController" />
+			<param index="1" name="new_controller" type="GameplayController" />
+			<description>
+				Emitted when possession changes.
+			</description>
+		</signal>
+	</signals>
+</class>

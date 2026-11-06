@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPlayerState" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Persistent player identity and match state independent from a pawn.
+	</brief_description>
+	<description>
+		GameplayPlayerState stores stable user, session, and peer identity across pawn replacement. It may be retained when a controller disconnects and later rebound. Match-wide registration is maintained by [GameplayGameState].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="activate">
+			<return type="void" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="session_id" type="String" />
+			<description>
+				Marks the state active for the given connection identity.
+			</description>
+		</method>
+		<method name="copy_identity_to" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="target" type="GameplayPlayerState" />
+			<description>
+				Copies user, session, peer, and active connection identity to [param target]. Controller and game-state relationships are not copied.
+			</description>
+		</method>
+		<method name="deactivate">
+			<return type="void" />
+			<description>
+				Marks the state inactive and clears its peer ID while preserving stable identity.
+			</description>
+		</method>
+		<method name="get_controller" qualifiers="const">
+			<return type="GameplayController" />
+			<description>
+				Returns the associated controller, or [code]null[/code].
+			</description>
+		</method>
+		<method name="get_game_state" qualifiers="const">
+			<return type="GameplayGameState" />
+			<description>
+				Returns the match state that contains this player, or [code]null[/code].
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="" getter="is_active">
+			The read-only connection state.
+		</member>
+		<member name="peer_id" type="int" setter="set_peer_id" getter="get_peer_id" default="0">
+			The current multiplayer peer identity, or [code]0[/code] when inactive.
+		</member>
+		<member name="session_id" type="String" setter="set_session_id" getter="get_session_id" default="&quot;&quot;">
+			The reconnectable session identity.
+		</member>
+		<member name="user_id" type="String" setter="set_user_id" getter="get_user_id" default="&quot;&quot;">
+			The stable application user identity.
+		</member>
+	</members>
+	<signals>
+		<signal name="activated">
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="session_id" type="String" />
+			<description>
+				Emitted when the player becomes active.
+			</description>
+		</signal>
+		<signal name="controller_changed">
+			<param index="0" name="old_controller" type="GameplayController" />
+			<param index="1" name="new_controller" type="GameplayController" />
+			<description>
+				Emitted when the controller relationship changes.
+			</description>
+		</signal>
+		<signal name="deactivated">
+			<param index="0" name="previous_peer_id" type="int" />
+			<description>
+				Emitted when the player becomes inactive.
+			</description>
+		</signal>
+	</signals>
+</class>

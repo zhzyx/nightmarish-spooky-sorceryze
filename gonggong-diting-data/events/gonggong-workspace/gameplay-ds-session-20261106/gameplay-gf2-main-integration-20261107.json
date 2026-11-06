@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-gf2-main-integration-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-ds-session-20261106",
+  "kind": "step",
+  "occurred_at": "2026-11-06T17:13:57Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "agent": {
+    "id": "codex-current-gameplay-host",
+    "version": "2026-11-07",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "event": "source.changed",
+    "record": "data-collection/gameplay-gf2-main-integration-20261107.json",
+    "source_version": "49bd38d31812dc5c5ef838727483555ee7636a12",
+    "consumers": [
+      "gameplay-gf2-delivery-20261106"
+    ],
+    "compatibility": "Gameplay and underlying APIs unchanged; editor overlap limited to upstream five daqian_bound lines alongside previous local variable renames",
+    "recovery_point": "4bd8a038439cf32aef67e6c48a45d079927a0431",
+    "source_blob": "4877ea0672570864c85b77511d8ea822f6da018f",
+    "strict_compile_exit_code": 0,
+    "independent_review": "no blockers",
+    "new_head_ci": "required",
+    "remote_merge_verified": false
+  },
+  "evidence_refs": [
+    "gameplay-gf2-strict-compile-20261107"
+  ],
+  "sha256": "67e492976b35d6db43b64d520e8646beecf9a399a19d3a4be6128b4b56e9cca8"
+}

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayGameMode" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Server-only authority for admission, player lifecycle, and match transitions.
+	</brief_description>
+	<description>
+		GameplayGameMode owns authoritative gameplay decisions. It may operate offline, but in a multiplayer tree its mutating operations require this node to have multiplayer authority. Clients should consume [GameplayGameState] and must not instantiate a game mode as their rule authority.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="admit_player">
+			<return type="int" enum="Error" />
+			<param index="0" name="controller" type="GameplayController" />
+			<param index="1" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Admits a controller and player state, links them, and registers the state with [member game_state].
+			</description>
+		</method>
+		<method name="end_match">
+			<return type="int" enum="Error" />
+			<description>
+				Ends the authoritative match and sets the game-state phase to [code]&amp;"ended"[/code].
+			</description>
+		</method>
+		<method name="get_controllers" qualifiers="const">
+			<return type="GameplayController[]" />
+			<description>
+				Returns all live admitted controllers.
+			</description>
+		</method>
+		<method name="get_player_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of live admitted controllers.
+			</description>
+		</method>
+		<method name="is_authority_context" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] offline or when this node has multiplayer authority.
+			</description>
+		</method>
+		<method name="remove_player">
+			<return type="int" enum="Error" />
+			<param index="0" name="controller" type="GameplayController" />
+			<param index="1" name="preserve_player_state" type="bool" default="false" />
+			<description>
+				Removes an admitted controller. If [param preserve_player_state] is [code]true[/code], its deactivated player state remains in [member game_state] for reconnect or travel.
+			</description>
+		</method>
+		<method name="start_match">
+			<return type="int" enum="Error" />
+			<description>
+				Starts the authoritative match and sets the game-state phase to [code]&amp;"in_progress"[/code].
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="game_state" type="GameplayGameState" setter="set_game_state" getter="get_game_state">
+			The shared match state controlled by this game mode.
+		</member>
+		<member name="match_running" type="bool" setter="" getter="is_match_running">
+			The read-only authoritative match-running state.
+		</member>
+	</members>
+	<signals>
+		<signal name="match_ended">
+			<description>
+				Emitted after the match ends.
+			</description>
+		</signal>
+		<signal name="match_started">
+			<description>
+				Emitted after the match starts.
+			</description>
+		</signal>
+		<signal name="player_admitted">
+			<param index="0" name="controller" type="GameplayController" />
+			<param index="1" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Emitted after successful admission.
+			</description>
+		</signal>
+		<signal name="player_removed">
+			<param index="0" name="controller" type="GameplayController" />
+			<param index="1" name="player_state" type="GameplayPlayerState" />
+			<param index="2" name="player_state_preserved" type="bool" />
+			<description>
+				Emitted after a controller is removed.
+			</description>
+		</signal>
+	</signals>
+</class>

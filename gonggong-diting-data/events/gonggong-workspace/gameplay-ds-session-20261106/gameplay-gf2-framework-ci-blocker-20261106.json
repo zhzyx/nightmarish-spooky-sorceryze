@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-gf2-framework-ci-blocker-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-ds-session-20261106",
+  "kind": "quality_issue",
+  "occurred_at": "2026-11-06T14:11:17Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "agent": {
+    "id": "codex-current-gameplay-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "blocking_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/189",
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42230459568",
+    "evidence_file": "data-collection/gameplay-gf2-ci-blocker-20261106.json",
+    "extra_files": 28,
+    "changed_registered_files": 37,
+    "owned_fix": "Gameplay CODEOWNERS category registrations validated",
+    "remote_merge_verified": false
+  },
+  "evidence_refs": [
+    "gameplay-gf2-ci-preflight-20261106"
+  ],
+  "sha256": "b056ef072cb46d331ad82818b76fa1b9608fe6b0b32d87b3920c395996aeaa84"
+}

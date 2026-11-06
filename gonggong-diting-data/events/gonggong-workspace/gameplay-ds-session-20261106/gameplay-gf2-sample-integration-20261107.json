@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-gf2-sample-integration-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-ds-session-20261106",
+  "kind": "step",
+  "occurred_at": "2026-11-06T17:26:34Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "agent": {
+    "id": "codex-current-gameplay-host",
+    "version": "2026-11-07",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "event": "source.changed",
+    "record": "data-collection/gameplay-gf2-sample-integration-20261107.json",
+    "source_version": "5a42d425b976057e9c531642b1659e5e01091c30",
+    "consumers": [
+      "gameplay-gf2-delivery-20261106"
+    ],
+    "compatibility": "22 independent sample/tools/evidence paths; none intersect the 59 GF-2 paths; no Gameplay, engine C++ or build/CI input changes",
+    "recovery_point": "f4dc60d02c2c61c82a7d01e459a7e0788b0408d7",
+    "previous_push_ci": "success 42259999173",
+    "independent_review": "no blockers",
+    "new_head_ci": "required",
+    "remote_merge_verified": false
+  },
+  "evidence_refs": [
+    "gameplay-gf2-main-integration-20261107"
+  ],
+  "sha256": "3dee4b7cdec9abd02f2780571d6889cf79aa18bf0e3879ef7840b2a770a28b18"
+}

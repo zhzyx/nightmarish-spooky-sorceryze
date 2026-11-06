@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayServerConfig" inherits="Resource" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Headless dedicated-server startup and shutdown configuration.
+	</brief_description>
+	<description>
+		GameplayServerConfig configures the ENet listener and session timing. [method apply_command_line] recognizes [code]--gameplay-bind[/code], [code]--gameplay-port[/code], [code]--gameplay-max-clients[/code], [code]--gameplay-protocol[/code], [code]--gameplay-grace-msec[/code], and [code]--gameplay-shutdown-msec[/code], with either separate or [code]=[/code] values.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="apply_command_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="arguments" type="PackedStringArray" />
+			<description>
+				Applies recognized headless arguments and rejects invalid values.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="bind_address" type="String" setter="set_bind_address" getter="get_bind_address" default="&quot;*&quot;">
+			Address on which ENet listens.
+		</member>
+		<member name="disconnect_grace_period_msec" type="int" setter="set_disconnect_grace_period_msec" getter="get_disconnect_grace_period_msec" default="30000">
+			Reconnect grace period.
+		</member>
+		<member name="max_clients" type="int" setter="set_max_clients" getter="get_max_clients" default="32">
+			Maximum ENet clients.
+		</member>
+		<member name="port" type="int" setter="set_port" getter="get_port" default="7000">
+			Listening port. Use [code]0[/code] to select an ephemeral port.
+		</member>
+		<member name="protocol_version" type="String" setter="set_protocol_version" getter="get_protocol_version" default="&quot;1&quot;">
+			Exact handshake version.
+		</member>
+		<member name="shutdown_timeout_msec" type="int" setter="set_shutdown_timeout_msec" getter="get_shutdown_timeout_msec" default="10000">
+			Maximum drain time after refusing new connections.
+		</member>
+	</members>
+</class>
