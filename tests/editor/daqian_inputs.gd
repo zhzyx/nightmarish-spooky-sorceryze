@@ -72,7 +72,21 @@ func run():
 	if panel.debug_states.get(question,{}).get("state","")!="waiting" or panel.debug_states.has(waiting):
 		fail("Unanswered branch did not wait independently")
 		return
-	await panel._answer_question(question,"青色")
+	if not panel.reply_button.is_visible_in_tree():
+		fail("Waiting branch did not expose the reply entry in the issue toolbar")
+		return
+	panel.reply_button.pressed.emit()
+	var answer_field: TextEdit = graph.canvas.get_node(NodePath(question + "/AnswerInput"))
+	if not answer_field.has_focus():
+		fail("Reply entry did not focus the waiting question")
+		return
+	answer_field.text = "青色"
+	answer_field.text_changed.emit()
+	var submit: Button = graph.canvas.get_node(NodePath(question + "/SubmitReply"))
+	if submit.disabled:
+		fail("Valid reply cannot be submitted")
+		return
+	submit.pressed.emit()
 	deadline=Time.get_ticks_msec()+30000
 	while panel.debug_states.get(waiting,{}).get("state","")!="completed" and Time.get_ticks_msec()<deadline:
 		await create_timer(0.1).timeout

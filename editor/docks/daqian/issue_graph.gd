@@ -1,6 +1,7 @@
 @tool
 extends VBoxContainer
 
+signal workflow_reply_requested
 signal answer_requested(node_id: String, answer: String)
 signal debug_command(action: String, id: String, value: String)
 signal confirm_operation(token: String)
@@ -286,6 +287,8 @@ func _render_node(id: String, item: Dictionary) -> void:
 			receipt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			view.add_child(receipt)
 		elif debug_active or context.get("can_answer", false):
+			var send := Button.new()
+			send.disabled = str(answers.get(id, "")).strip_edges().is_empty()
 			var options: Array = request.get("options",[])
 			if not options.is_empty():
 				var choose := OptionButton.new()
@@ -297,6 +300,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 						choose.select(choose.item_count-1)
 				choose.item_selected.connect(func(index):
 					answers[id] = choose.get_item_text(index) if index else ""
+					send.disabled = index == 0
 					draft_changed.emit())
 				view.add_child(choose)
 			else:
@@ -306,10 +310,11 @@ func _render_node(id: String, item: Dictionary) -> void:
 				answer.text = answers.get(id,"")
 				answer.text_changed.connect(func():
 					answers[id] = answer.text
+					send.disabled = answer.text.strip_edges().is_empty()
 					draft_changed.emit())
 				answer.custom_minimum_size = Vector2(215,60)
 				view.add_child(answer)
-			var send := Button.new()
+			send.name = "SubmitReply"
 			send.text = "提交调试答复" if debug_active else "提交答复"
 			send.pressed.connect(func():
 				var value: String = answers.get(id,"")
@@ -680,6 +685,11 @@ func _render_stage(id: String, item: Dictionary) -> void:
 			navigate.text = caption
 			navigate.pressed.connect(focus_flow_node.bind(target))
 			view.add_child(navigate)
+	if id.begins_with("wf-questions-") and workflow.get("phase") == "questions":
+		var reply := Button.new()
+		reply.text = "填写答复"
+		reply.pressed.connect(func(): workflow_reply_requested.emit())
+		view.add_child(reply)
 	if id == "wf-operation":
 		view.set_meta("ai_control_exclude", true)
 		if _node_state(id) == "awaiting_approval":

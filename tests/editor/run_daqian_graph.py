@@ -89,7 +89,7 @@ Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))
         bridge.write_text("""import json, os, sys
 from pathlib import Path
 action = sys.argv[1]
-request = json.loads(Path(sys.argv[sys.argv.index('--request') + 1]).read_text())
+request = json.loads(Path(sys.argv[sys.argv.index('--request') + 1]).read_text(encoding='utf-8'))
 calls = Path(__file__).with_name('calls')
 previous = calls.read_text().splitlines() if calls.exists() else []
 with calls.open('a') as out:
