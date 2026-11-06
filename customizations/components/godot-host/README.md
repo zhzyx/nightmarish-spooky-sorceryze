@@ -1,5 +1,13 @@
 # Godot GongGong 宿主适配器
 
+## 静默验证
+
+所有协作者默认在后台验证 Godot 变更。使用候选编辑器的 `--headless`、隔离项目、控件信号和几何断言。不要通过电脑控制驱动用户桌面、切换焦点、移动鼠标或发送按键。碰到只能由真实显示器复现的问题，记录具体缺口，留给用户自行检查。
+
+首次启动带此接入的编辑器时，它用同一可执行文件和临时项目在后台实际运行 GDScript 控件探针。子进程成功退出并返回预期结果后，编辑器才在本机用户的编辑器缓存目录写入 `godot-silent-*.ok`。更换构建路径、构建版本、文件修改时间或探针内容时重新校验。失败、超时或启动中断会在下次打开时重试。修复宿主或可执行文件的 headless 支持后，应取得成功回执再使用该环境验收。
+
+探针验证后台运行能力。业务变更仍需跑对应场景。例如在仓库根运行 `python tests/editor/run_daqian_graph.py --godot <候选编辑器路径> --scenario graph --report <本机报告路径>`，检查大千入口、图交互和布局。
+
 `bridge.py` 是唯一 Python 实现；引擎通过 `tools/gonggong_bridge.py` 调用。原生页面在 `editor/docks/gonggong_panel.*`，发送控制在 `editor/docks/ai_chat_gonggong.cpp`。
 
 开发前先创建或复用 `work-items.json` 对应仓库的真实 Issue，在 GongGong 页面填写 Issue 编号和工单中的稳定需求 ID（修改即保存到本机）。IDE/CLI/生产工具在 chat 协议中传入整数 `issue_number` 和稳定 `request_id`，不再以聊天快照生成需求 ID。每轮先回读真实 Issue，核对 origin、租户、唯一类别、唯一 in-progress/in-review 状态、需求 ID 和 workspace:gonggong；失败或离线拒绝执行。工单本身不产生工具权限或 Agent 准入。创建工具仍需显式发布确认及真实权限；未建单不能先开发再补单。

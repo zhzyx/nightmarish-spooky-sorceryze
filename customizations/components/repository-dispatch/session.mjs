@@ -1,3 +1,4 @@
+import {hostPython, reservationOperation, ticketOperation, withBlockerRouting} from '../issue-workorders/kuafu_dispatch.mjs';
 // One real source event. The operator supplies signed plans only for model production.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -114,9 +115,10 @@ export async function runEvent(config) {
   await verifyOperator();
   for (const b of config.bindings) {
     if (!config.requests.some(r=>r.ticket === 'github:'+config.repository+'#'+b.number)) continue;
-    await exec(config.python, [path.join(workspace,'customizations/components/issue-workorders/issue_gate.py'),
+    const ticket = 'github:' + config.repository + '#' + b.number;
+    await ticketOperation(ticket, () => exec(config.python, [path.join(workspace,'customizations/components/issue-workorders/issue_gate.py'),
       '--repo',workspace,'--issue',String(b.number),'--request-id',b.requestId,'--tenant','gonggong-workspace','--intake-only'],
-      {env:{...process.env, GONGGONG_GH:gh}});
+      {env:{...process.env, GONGGONG_GH:gh}}));
 
   }
   const worker = repositoryWorker(config, receipts);
@@ -140,7 +142,7 @@ export async function advance(config, host, worker) {
   const results = [];
   const active = new Map();
   if (config.action === 'reconcile') {
-    results.push(await host.reconcile(event,config.reservationKey,config.workerReceipt));
+    results.push(await reservationOperation(config, () => host.reconcile(event,config.reservationKey,config.workerReceipt)));
   }
   while (pending.length || active.size) {
     if (pending.length) {
@@ -161,7 +163,7 @@ export async function advance(config, host, worker) {
       continue;
     }
     event = {type:outcome === 'completed' ? 'execution.finished' : 'execution.failed', reference:result.receipt.reference + ':exited'};
-    const terminal = await host.reconcile(event, result.key, result.receipt);
+    const terminal = await ticketOperation(result.ticket, () => host.reconcile(event, result.key, result.receipt));
     results.push({...result, state:outcome === 'failed' ? 'failed' : terminal.state});
     const waiting = new Set(deferred.map(r => r.ticket));
     pending = config.requests.filter(r => waiting.has(r.ticket));
@@ -172,7 +174,7 @@ export async function advance(config, host, worker) {
 async function issueConfig(number, requestId, grant) {
   if (!Number.isSafeInteger(number) || number < 1 || typeof requestId !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requestId)) throw Error('Supply ISSUE and stable request ID');
   const {repository} = read(path.join(workspace,'work-items.json'));
-  const python = process.env.GONGGONG_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+  const python = hostPython();
   const gh = process.env.GONGGONG_GH || 'gh';
   const operator = (await exec(gh,['api','user','--jq','.login'])).stdout.trim();
   const ticket = 'github:' + repository + '#' + number;
@@ -206,11 +208,15 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
   let config;
   if (args.length === 3 && args[0] === 'verify' || args.length === 4 && args[0] === 'model') {
-    config = await issueConfig(Number(args[1]),args[2],args[3]);
+    const number = Number(args[1]);
+    const repository = read(path.join(workspace,'work-items.json')).repository;
+    const bootstrap = {workspace, repository, bindings:[{number,requestId:args[2]}],
+      requests:[{ticket:'github:' + repository + '#' + number}]};
+    config = await withBlockerRouting(bootstrap, () => issueConfig(number,args[2],args[3]));
   } else if (args.length === 1 && path.isAbsolute(args[0])) {
     config = read(args[0]);
   } else throw Error('Usage: session.mjs inspect|verify ISSUE REQUEST_ID | model ISSUE REQUEST_ID ABS_GRANT | ABS_CONFIG');
-  const result = await runEvent(config);
+  const result = await withBlockerRouting(config, () => runEvent(config));
   console.log(JSON.stringify(result));
   if (!result.results.length || result.deferred.length || result.results.some(r=>!['released','already_reconciled'].includes(r.state))) process.exitCode = 1;
 }

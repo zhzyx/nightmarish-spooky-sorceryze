@@ -1,0 +1,48 @@
+{
+  "issue": 184,
+  "request_id": "requirements-context-user-corrections",
+  "base_commit": "c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40",
+  "platform": "macOS arm64",
+  "source_sha256": {
+    "editor/docks/ai_chat_gonggong.cpp": "1989453700cae7cfb1a237f1acc8f312aa758cdc07018cc1b920888ddab3d121",
+    "editor/docks/ai_chat_requirement_context.h": "f1d067fab61115edc8ae7aba30b24401bf72fc70de6151427c5c9a60dab25c4b",
+    "tests/editor/test_ai_chat_tools.cpp": "6482d1533099d62aeff11d4b371bc6691abd84da3c334acc817da5a64a3ce2f3",
+    "design-docs/requirements-context-user-corrections.md": "f601c4a8cc09f6126a13e432ddf857f42a120eb72bb78fe96f205a6a5385786a"
+  },
+  "checks": [
+    {
+      "name": "Issue intake-only readback",
+      "passed": true,
+      "issue": 184,
+      "request_id": "requirements-context-user-corrections"
+    },
+    {
+      "name": "Affected production and native-test C++ translation units",
+      "passed": true,
+      "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no allow_unsupported_apple_clang=yes tests=yes -j2 bin/obj/editor/docks/ai_chat_gonggong.macos.editor.arm64.o bin/obj/tests/editor/test_ai_chat_tools.macos.editor.arm64.o",
+      "scope": "Independent worktree object targets only; no editor link/restart or shared outputs."
+    },
+    {
+      "name": "Existing requirements intake transport regressions",
+      "passed": true,
+      "tests": 24,
+      "command": "python -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py -v"
+    },
+    {
+      "name": "git diff --check",
+      "passed": true
+    }
+  ],
+  "native_selector_regressions": {
+    "cases_added": 4,
+    "compile_passed": true,
+    "executed": false,
+    "pending_reason": "The live feature worker is building its editor. Do not start a competing full editor build/link or switch the current engine."
+  },
+  "limitations": [
+    "No complete editor binary was linked or run for this candidate yet; native selector execution and editor intake capture remain pending safe side-by-side validation.",
+    "The current engine, conversation history and unfinished #165 changes were not modified.",
+    "Captured retry contexts deliberately retain their original journal identity; this fix changes future context captures rather than rewriting an earlier attempt.",
+    "The 32-record/16000-character/4000-per-record budget cannot retain an unlimited number of substantive user turns."
+  ]
+}

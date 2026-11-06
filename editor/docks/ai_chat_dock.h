@@ -356,6 +356,9 @@ class AIChatDock : public EditorDock {
 	void _update_composer_height();
 	void _toggle_chat_settings(bool p_visible);
 	AcceptDialog *chat_settings_dialog = nullptr;
+	Button *settings_button = nullptr;
+	VBoxContainer *settings_layout = nullptr;
+	ScrollContainer *settings_scroll = nullptr;
 	void _save_history();
 	static void _write_history(void *p_job);
 	void _poll_history_save();
@@ -460,6 +463,11 @@ class AIChatDock : public EditorDock {
 
 	// Periodic tasks share the single executor, but own separate Agent histories.
 	TabContainer *workspace_pages = nullptr;
+	VBoxContainer *session_navigation = nullptr;
+	ObjectID daqian_chat_host;
+	String daqian_mount_conversation;
+	bool _mount_daqian_chat(Control *p_host);
+	void _unmount_daqian_chat();
 	VBoxContainer *agents_page = nullptr;
 	VBoxContainer *chat_layout = nullptr;
 	VBoxContainer *timer_chat_host = nullptr;
@@ -607,6 +615,15 @@ class AIChatDock : public EditorDock {
 	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
 
+	Dictionary daqian_approval;
+	uint64_t daqian_approval_generation = 0;
+	bool daqian_approval_running = false;
+	bool _offer_daqian_approval(const String &p_detail);
+	Dictionary _get_daqian_approval() const;
+	bool _confirm_daqian_approval(const String &p_token);
+	void _end_daqian_approval(const String &p_state);
+	void _daqian_tool_result(const String &p_result, bool p_file_success);
+
 	String daqian_preview_source;
 	String daqian_preview_conversation;
 	String _work_order_binding(const String &p_field) const;
@@ -614,7 +631,7 @@ class AIChatDock : public EditorDock {
 	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
 	void _set_issue_model_config(Dictionary &r_request) const;
 	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());
-	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection);
+	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded);
 
 protected:
 	static void _bind_methods();

@@ -34,7 +34,52 @@ TEST_FORCE_LINK(test_os)
 
 #include "core/os/os.h"
 
+#ifdef MACOS_ENABLED
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
+#include "tests/test_utils.h"
+#endif
+
 namespace TestOS {
+
+#ifdef MACOS_ENABLED
+class RestartStateGuard {
+	OS *os;
+	bool enabled;
+	List<String> arguments;
+	String executable;
+
+public:
+	explicit RestartStateGuard(OS *p_os) :
+			os(p_os),
+			enabled(p_os->is_restart_on_exit_set()),
+			arguments(p_os->get_restart_on_exit_arguments()),
+			executable(p_os->get_restart_on_exit_executable()) {}
+
+	~RestartStateGuard() {
+		os->set_restart_on_exit(enabled, arguments);
+		os->set_restart_on_exit_executable(executable);
+	}
+};
+
+static void check_process_receipt(OS *p_os, ProcessID p_child_id, const String &p_receipt_path, const String &p_payload) {
+	const uint64_t deadline = p_os->get_ticks_msec() + 5000;
+	while (p_os->is_process_running(p_child_id) && p_os->get_ticks_msec() < deadline) {
+		p_os->delay_usec(1000);
+	}
+	const bool running = p_os->is_process_running(p_child_id);
+	CHECK_FALSE(running);
+	if (running) {
+		CHECK(p_os->kill(p_child_id) == OK);
+		return;
+	}
+	CHECK(p_os->get_process_exit_code(p_child_id) == 0);
+	CHECK(FileAccess::get_file_as_string(p_receipt_path) == itos(p_child_id) + "\n" + p_payload);
+	if (FileAccess::exists(p_receipt_path)) {
+		CHECK(DirAccess::remove_absolute(p_receipt_path) == OK);
+	}
+}
+#endif
 
 TEST_CASE("[OS] Environment variables") {
 #ifdef WINDOWS_ENABLED
@@ -206,5 +251,86 @@ TEST_CASE("[OS] Execute") {
 			"Running the command `sh -c \"ls > /dev/null\"` returns a zero (successful) exit code.");
 #endif
 }
+
+#ifdef MACOS_ENABLED
+TEST_CASE("[OS][MacOS] Explicit restart executable") {
+	OS *os = OS::get_singleton();
+	const String receipt_path = TestUtils::get_temp_path("macos_restart_executable.txt");
+	const String payload = String::utf8("restart argument with spaces and 中文");
+	List<String> arguments;
+	arguments.push_back("-c");
+	arguments.push_back("printf '%s\\n%s' \"$$\" \"$1\" > \"$2\"");
+	arguments.push_back("godot-restart-test");
+	arguments.push_back(payload);
+	arguments.push_back(receipt_path);
+	// Keep an incorrect self-launch headless and short-lived if the target regresses.
+	arguments.push_back("--headless");
+	arguments.push_back("--quit");
+
+	ProcessID child_id = 0;
+	Error err = FAILED;
+	{
+		const RestartStateGuard restore(os);
+		os->set_restart_on_exit(true, arguments);
+		os->set_restart_on_exit_executable("/bin/sh");
+		err = os->create_instance(arguments, &child_id);
+	}
+	REQUIRE(err == OK);
+	REQUIRE(child_id > 0);
+
+	check_process_receipt(os, child_id, receipt_path, payload);
+}
+
+TEST_CASE("[OS][MacOS] Headless instance without an explicit restart executable") {
+	OS *os = OS::get_singleton();
+	bool restart = true;
+	String executable;
+	SUBCASE("Enabled restart with an empty target") {}
+	SUBCASE("Disabled restart ignores a configured target") {
+		restart = false;
+		executable = "/usr/bin/false";
+	}
+
+	const String project_path = TestUtils::get_temp_path("macos_restart_fallback");
+	const String receipt_path = project_path.path_join("receipt.txt");
+	const String script_path = project_path.path_join("probe.gd");
+	const String payload = "ordinary headless instance";
+	REQUIRE(DirAccess::make_dir_recursive_absolute(project_path) == OK);
+	{
+		Ref<FileAccess> project = FileAccess::open(project_path.path_join("project.godot"), FileAccess::WRITE);
+		REQUIRE(project.is_valid());
+		project->store_string("config_version=5\n[application]\nconfig/name=\"Restart fallback probe\"\n");
+		Ref<FileAccess> script = FileAccess::open(script_path, FileAccess::WRITE);
+		REQUIRE(script.is_valid());
+		script->store_string("extends SceneTree\n\nfunc _initialize():\n\tvar args = OS.get_cmdline_user_args()\n\tvar file = FileAccess.open(args[0], FileAccess.WRITE)\n\tfile.store_string(str(OS.get_process_id()) + \"\\n\" + args[1])\n\tfile.close()\n\tquit()\n");
+	}
+	List<String> arguments;
+	arguments.push_back("--headless");
+	arguments.push_back("--path");
+	arguments.push_back(project_path);
+	arguments.push_back("--script");
+	arguments.push_back(script_path);
+	arguments.push_back("--");
+	arguments.push_back(receipt_path);
+	arguments.push_back(payload);
+
+	ProcessID child_id = 0;
+	Error err = FAILED;
+	{
+		const RestartStateGuard restore(os);
+		os->set_restart_on_exit(restart, arguments);
+		os->set_restart_on_exit_executable(executable);
+		err = os->create_instance(arguments, &child_id);
+	}
+	REQUIRE(err == OK);
+	REQUIRE(child_id > 0);
+	check_process_receipt(os, child_id, receipt_path, payload);
+	Ref<DirAccess> project = DirAccess::open(project_path);
+	REQUIRE(project.is_valid());
+	CHECK(project->erase_contents_recursive() == OK);
+	project.unref();
+	CHECK(DirAccess::remove_absolute(project_path) == OK);
+}
+#endif
 
 } // namespace TestOS

@@ -543,3 +543,10 @@
 
 /integrations/**/*.py @zhzyx @godotengine/buildsystem
 /olympus-hermes-data/ @zhzyx
+
+# Gameplay framework maintained in this fork.
+/modules/gameplay/                              @kaiyunxue
+/modules/gameplay/**/*.py                       @kaiyunxue @godotengine/buildsystem
+/modules/gameplay/**/SCsub                       @kaiyunxue @godotengine/buildsystem
+/modules/gameplay/doc_classes/                  @kaiyunxue @godotengine/documentation
+/modules/gameplay/tests/                        @kaiyunxue @godotengine/tests

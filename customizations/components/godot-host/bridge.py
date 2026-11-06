@@ -336,6 +336,11 @@ def chat(root, request, tenant):
         mandate["bound_requirement"] = requirement
         binding["actor"] = requirement["actor"]
         binding["source_sha256"] = requirement["source_sha256"]
+    elif request.get("daqian_bound") is True:
+        routing, _ = direct_adapter()
+        principal = routing.direct_issue.collaborator(root)
+        binding["actor"] = principal["user_id"]
+        binding["source_sha256"] = routing.digest([issue["url"], request["request_id"], issue["updated_at"]])
     env = host_environment(root)
     environment_missing = _igniter.missing_components(root, env)
     with tempfile.TemporaryDirectory() as temporary:

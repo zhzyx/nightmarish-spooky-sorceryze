@@ -17,6 +17,15 @@ var follow: SpinBox
 var board := {}
 var saved := {}
 var actions: HBoxContainer
+var connection_button: Button
+var connection_panel := VBoxContainer.new()
+var workspace_path := LineEdit.new()
+var python_path := LineEdit.new()
+var conversation := VBoxContainer.new()
+var conversation_host := VBoxContainer.new()
+var conversation_title := Label.new()
+var apply_model: Button
+var resume_action := ""
 var publish_button: Button
 var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
@@ -28,6 +37,16 @@ var watcher_buffer := ""
 var fresh_progress := false
 var refresh_pending := false
 var work_status := Label.new()
+var operation_history := {}
+var flow_split := HSplitContainer.new()
+var details_panel := VBoxContainer.new()
+var details_title := Label.new()
+var details_location := Label.new()
+var details_document := RichTextLabel.new()
+var details_command := TextEdit.new()
+var details_confirm: Button
+var details_token := ""
+var confirming_token := ""
 var clarification_dialog := ConfirmationDialog.new()
 var clarification_prompt := Label.new()
 var clarification_answer := TextEdit.new()
@@ -84,6 +103,7 @@ func _ready() -> void:
 	draft_menu.get_popup().id_pressed.connect(_restore_personal)
 	row.add_child(draft_menu)
 	_button(row, "刷新", refresh)
+	connection_button = _button(row, "工作区连接", _open_connection)
 	search = LineEdit.new()
 	search.placeholder_text = "搜索编号或标题"
 	search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -117,7 +137,9 @@ func _ready() -> void:
 	publish_button = _button(actions, "发布需求…", _publish_or_follow)
 	_build_publish_dialog()
 	_build_clarification_dialog()
+	_button(actions, "推进模型", _open_issue_conversation)
 	_button(actions, "关联对话", _chat_action.bind("discuss"))
+	_build_workbench()
 	_button(actions, "调试运行", _start_debug)
 	_button(actions, "结束调试", _stop_debug)
 	_button(actions, "调试记录", _show_debug_history)
@@ -155,7 +177,14 @@ func _ready() -> void:
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
-	add_child(editor)
+	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(flow_split)
+	flow_split.add_child(editor)
+	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	flow_split.hide()
+	_build_operation_details(flow_split)
+	editor.confirm_operation.connect(_confirm_operation)
+	editor.show_operation_details.connect(_show_operation_details)
 	save_timer = Timer.new()
 	save_timer.one_shot = true
 	save_timer.wait_time = 0.4
@@ -168,7 +197,7 @@ func _ready() -> void:
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
 	_gate_visibility(false)
-	notice.text = "等待核对当前仓库协作者身份"
+	notice.text = "点击「工作区连接」绑定共工仓库。" if _repo().is_empty() else "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
 	_start_session.call_deferred()
 
@@ -179,6 +208,290 @@ func _button(parent: Control, title: String, action: Callable) -> Button:
 	button.pressed.connect(action)
 	parent.add_child(button)
 	return button
+
+
+func _build_workbench() -> void:
+	connection_panel.set_meta("ai_control_exclude", true)
+	add_child(connection_panel)
+	workspace_path.placeholder_text = "共工仓库的绝对路径"
+	python_path.placeholder_text = "Python 可执行文件的绝对路径"
+	for entry in [["共工仓库", workspace_path], ["Python", python_path]]:
+		var label := Label.new()
+		label.text = entry[0]
+		connection_panel.add_child(label)
+		connection_panel.add_child(entry[1])
+	var buttons := HBoxContainer.new()
+	connection_panel.add_child(buttons)
+	_button(buttons, "保存并连接", _save_connection)
+	_button(buttons, "返回", func(): connection_panel.hide())
+	connection_panel.hide()
+	conversation.set_meta("ai_control_exclude", true)
+	conversation.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(conversation)
+	var bar := HBoxContainer.new()
+	conversation.add_child(bar)
+	_button(bar, "返回工单", _leave_conversation)
+	conversation_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bar.add_child(conversation_title)
+	apply_model = _button(bar, "应用推进模型", _apply_issue_model)
+	conversation_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	conversation.add_child(conversation_host)
+	conversation.hide()
+
+
+func _open_connection() -> void:
+	var settings := EditorInterface.get_editor_settings()
+	workspace_path.text = _repo()
+	python_path.text = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	connection_panel.show()
+	workspace_path.grab_focus()
+
+
+func _save_connection() -> void:
+	var path := workspace_path.text.strip_edges().simplify_path()
+	var python := python_path.text.strip_edges()
+	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
+		notice.text = "请填写包含大千工单入口的共工仓库路径。"
+		return
+	if not python.is_absolute_path() or not FileAccess.file_exists(python):
+		notice.text = "请填写本机 Python 可执行文件的绝对路径。"
+		return
+	if path != _repo():
+		_forget("正在切换工作区")
+	var settings := EditorInterface.get_editor_settings()
+	settings.set_setting("gonggong/workspace", path)
+	settings.set_setting("gonggong/python", python)
+	connection_panel.hide()
+	await refresh()
+
+
+func _conversation_binding() -> Dictionary:
+	for item in board.get("issues", []):
+		if item.url == current:
+			return item
+	return saved.get("linked", {}).get(current, {})
+
+
+func _bind_conversation(binding: Dictionary) -> String:
+	if not is_instance_valid(chat):
+		return "推进对话尚未就绪。"
+	return chat.open_daqian_chat(binding.get("url", current), int(binding.get("number", 0)),
+		str(binding.get("request", "")), "", false, {}, true)
+
+
+func _mount_conversation(binding: Dictionary, next := "") -> void:
+	if not chat.mount_daqian_chat(conversation_host):
+		notice.text = "无法打开推进对话，请返回工单重试。"
+		return
+	resume_action = next
+	apply_model.text = "应用推进模型" if next.is_empty() else "应用模型并继续"
+	conversation_title.text = "工单 #%d" % int(binding.number) if binding.get("number", 0) else "需求草稿"
+	connection_panel.hide()
+	flow_split.hide()
+	actions.hide()
+	toolbar.hide()
+	conversation.show()
+
+
+func _open_issue_conversation(next := "") -> void:
+	var source := current
+	if source.is_empty() or not await _fresh_access() or current != source:
+		return
+	var binding := _conversation_binding()
+	var error := _bind_conversation(binding)
+	if not error.is_empty():
+		notice.text = error
+		return
+	_mount_conversation(binding, next)
+
+
+func _leave_conversation() -> void:
+	if conversation.visible and is_instance_valid(chat):
+		chat.unmount_daqian_chat()
+
+
+func _conversation_unmounted() -> void:
+	conversation.hide()
+	toolbar.show()
+	resume_action = ""
+	_gate_visibility(not actor.is_empty())
+
+
+func _needs_model(catalog: Dictionary, selection: Dictionary) -> bool:
+	return selection.get("backend") != catalog.backend or (catalog.backend in [0, 3] and str(selection.get("id", "")).strip_edges().is_empty())
+
+
+func _apply_issue_model() -> void:
+	var source := current
+	var binding := _conversation_binding().duplicate(true)
+	var principal := actor.duplicate()
+	var root := _repo()
+	if not conversation.visible or not await _fresh_access() or not conversation.visible:
+		return
+	if source != current or principal != actor or root != _repo() or binding != _conversation_binding():
+		return
+	var catalog: Dictionary = chat.get_daqian_models()
+	var selection := {"backend":catalog.backend, "id":str(catalog.current).strip_edges()}
+	if selection.backend in [0, 3] and selection.id.is_empty():
+		notice.text = "请选择模型，或在连接设置中填写模型 ID。"
+		return
+	if not saved.has("execution_models"):
+		saved.execution_models = {}
+	saved.execution_models[binding.get("url", current)] = selection
+	_save()
+	var next := resume_action
+	_leave_conversation()
+	notice.text = "已应用推进模型 · " + (selection.id if not selection.id.is_empty() else "CLI 默认模型")
+	if next == "direct":
+		await _start_or_view_direct(_direct_binding())
+	elif next == "preview":
+		await _chat_action(next)
+
+
+func _build_operation_details(split: HSplitContainer) -> void:
+	details_panel.name = "OperationDetails"
+	details_panel.set_meta("ai_control_exclude", true)
+	details_panel.custom_minimum_size.x = 320
+	details_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	details_panel.size_flags_stretch_ratio = 0.65
+	split.add_child(details_panel)
+	details_panel.hide()
+	var header := HBoxContainer.new()
+	details_panel.add_child(header)
+	details_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	details_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	header.add_child(details_title)
+	_button(header, "关闭", _close_operation_details)
+	details_command.editable = false
+	details_command.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details_command.custom_minimum_size.y = 96
+	details_panel.add_child(details_command)
+	details_location.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	details_panel.add_child(details_location)
+	details_document.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	details_document.selection_enabled = true
+	details_panel.add_child(details_document)
+	details_confirm = _button(details_panel, "确认执行", func(): _confirm_operation(details_token))
+
+
+func _close_operation_details() -> void:
+	details_token = ""
+	details_panel.hide()
+	details_document.clear()
+	details_command.clear()
+
+
+func _pending_operation(item: Dictionary) -> Dictionary:
+	if offline or not fresh_progress or actor.is_empty() or item.get("closed", true) or item.get("status") not in ["in-progress", "in-review"] or not is_instance_valid(chat) or not chat.has_method("get_daqian_approval"):
+		return {}
+	var op: Dictionary = chat.get_daqian_approval()
+	if op.is_empty() or op.root != _repo() or op.actor != actor.user_id or op.url != item.get("url") or op.request != item.get("request") or op.source_sha256 != item.get("source_sha256", ""):
+		return {}
+	return op
+
+
+func _operation_state(token: String, state: String) -> void:
+	for op in operation_history.values():
+		if op.token == token:
+			op.state = state
+			_sync_workflow()
+			return
+
+
+func _confirm_operation(token: String) -> void:
+	var epoch := selection_epoch
+	if token.is_empty() or token != _pending_operation(editor.workflow.get("item", {})).get("token", ""):
+		return
+	if confirming_token == token:
+		return
+	confirming_token = token
+	var principal := actor.duplicate()
+	var scope := _repo()
+	var item: Dictionary = editor.workflow.item
+	notice.text = "正在核对工单和本次操作…"
+	var verified := await _board_command(false, actor.user_id)
+	if confirming_token == token:
+		confirming_token = ""
+	if scope != _repo() or epoch != selection_epoch or principal != actor:
+		return
+	var latest: Dictionary = verified.get("board", {})
+	var valid := false
+	if latest.get("repo_id") == principal.repo_id and latest.get("user_id") == principal.user_id:
+		for row in latest.get("issues", []):
+			if row.url == item.url and row.updated == item.updated:
+				valid = _pending_operation(row).get("token", "") == token
+				break
+	if not valid:
+		notice.text = str(verified.get("error", "工单状态或本次操作有变，请刷新后核对。"))
+		return
+	notice.text = "已核实工单，正在执行所选操作。"
+	if not chat.confirm_daqian_approval(token):
+		notice.text = "这项操作已结束或发生变化，请核对当前节点。"
+	_sync_workflow()
+
+
+func _show_operation_details(token: String) -> void:
+	var item: Dictionary = editor.workflow.get("item", {})
+	var op := _pending_operation(item)
+	if op.is_empty() or op.token != token:
+		return
+	details_token = token
+	details_title.text = "#%s · %s" % [item.number, op.summary]
+	details_command.text = op.detail
+	details_panel.show()
+	var doc: Dictionary = item.get("design_document", {})
+	var markdown: String = doc.get("markdown", "")
+	details_document.clear()
+	if markdown.is_empty():
+		details_location.text = "此工单尚无可读取的设计文档"
+		return
+	var lines := markdown.split("\n")
+	var anchor := _document_anchor(lines, op)
+	details_location.text = "%s · %s" % [doc.path, doc.source]
+	if anchor < 0:
+		details_location.text += "\n此节点尚未关联文档位置"
+		chat.render_daqian_markdown(details_document, markdown)
+		return
+	if anchor > 0:
+		chat.render_daqian_markdown(details_document, "\n".join(lines.slice(0, anchor)))
+	var end := anchor + 1
+	while end < lines.size() and not lines[end].strip_edges().is_empty() and not lines[end].begins_with("#"):
+		end += 1
+	var paragraph := details_document.get_paragraph_count() - 1
+	details_document.push_bgcolor(Color("#825921"))
+	chat.render_daqian_markdown(details_document, "\n".join(lines.slice(anchor, end)))
+	details_document.pop()
+	if end < lines.size():
+		chat.render_daqian_markdown(details_document, "\n".join(lines.slice(end)))
+	await get_tree().process_frame
+	if token == details_token:
+		details_document.scroll_to_paragraph(paragraph)
+
+
+func _document_anchor(lines: PackedStringArray, op: Dictionary) -> int:
+	# Explicit node anchors identify a stable operation kind, independent of translated labels.
+	var marker := "<!-- daqian-node:%s -->" % op.tool
+	var fenced := false
+	var explicit := false
+	var candidate := -1
+	for i in lines.size():
+		var line := lines[i].strip_edges()
+		if line.begins_with("```"):
+			fenced = not fenced
+			continue
+		if fenced or line.is_empty():
+			continue
+		if line == marker:
+			explicit = true
+			continue
+		if explicit:
+			return i
+		var heading := line.trim_prefix("#").lstrip("#").strip_edges()
+		if line.begins_with("#") and heading == op.summary:
+			candidate = i
+		elif candidate < 0 and line.begins_with("#") and heading in ["原始需求", "原始需求与目标"] and op.tool == "run_command" and "issue_gate.py" in op.detail and "--intake-only" in op.detail:
+			candidate = i
+	return candidate
 
 
 func _start_session() -> void:
@@ -266,6 +579,8 @@ func _exit_tree() -> void:
 
 
 func _show_board() -> void:
+	_leave_conversation()
+	_close_operation_details()
 	work_status.hide()
 	selection_epoch += 1
 	if not current.is_empty():
@@ -273,6 +588,7 @@ func _show_board() -> void:
 	current = ""
 	saved.last_view = ""
 	editor.hide()
+	flow_split.hide()
 	actions.hide()
 	overview.show()
 	return_button.hide()
@@ -325,7 +641,11 @@ func _draw_board() -> void:
 			active.custom_minimum_size.x = 190
 			active.add_theme_color_override("font_color", graph_script.FlowCanvas.COLORS.running)
 			card.add_child(active)
-		if item.decision:
+		var needs_approval := not _pending_operation(item).is_empty()
+		if needs_approval:
+			label.text = "待你确认"
+			overview.mark_card(card, label, "awaiting_approval")
+		if item.decision or needs_approval:
 			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
@@ -413,6 +733,11 @@ func _layout_board() -> void:
 
 
 func _locate_pending(number: int) -> void:
+	for item in board.get("issues", []):
+		if item.number == number and not _pending_operation(item).is_empty():
+			await _open_issue(item)
+			_focus_operation()
+			return
 	_show_board()
 	status.select(0)
 	owner_filter.select(0)
@@ -442,7 +767,7 @@ func _filter_board() -> void:
 			continue
 		var query := search.text.strip_edges().to_lower().trim_prefix("#")
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
-		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and item.decision) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
+		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and (item.decision or not _pending_operation(item).is_empty())) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
 
 	overview.refresh_wires()
 
@@ -460,12 +785,14 @@ func _follow() -> void:
 
 func _gate_visibility(opened: bool) -> void:
 	for child in toolbar.get_children():
-		child.visible = opened or child is Button and child.text == "刷新"
+		child.visible = opened or child == connection_button or child is Button and child.text == "刷新"
 	return_button.visible = opened and not current.is_empty()
-	actions.visible = opened and not current.is_empty()
+	actions.visible = opened and not current.is_empty() and not conversation.visible
 	overview.visible = opened and current.is_empty()
 	editor.visible = opened and not current.is_empty()
+	flow_split.visible = editor.visible and not conversation.visible
 	if not opened:
+		_close_operation_details()
 		models_dialog.hide()
 		clarification_dialog.hide()
 		clarification_binding.clear()
@@ -483,6 +810,7 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 
 
 func _forget(reason: String) -> void:
+	_leave_conversation()
 	_stop_progress_watch()
 	work_status.hide()
 	if not picker_scope.is_empty():
@@ -515,7 +843,7 @@ func _board_command(access_only: bool, expected := "") -> Dictionary:
 	var root := _repo()
 	var bridge := root.path_join("customizations/components/godot-host/daqian/board.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
-		return {"denied":true,"error":"请在 AI 对话的共工设置中绑定当前 Git 仓库"}
+		return {"denied":true,"error":"点击「工作区连接」，填写共工仓库和 Python 路径。"}
 	var settings := EditorInterface.get_editor_settings()
 	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
 	if python.is_empty():
@@ -614,6 +942,7 @@ func refresh() -> void:
 		_start_progress_watch(value.get("watch", {}))
 		_draw_board()
 		_sync_workflow()
+		_reveal_pending_operation()
 		await _refresh_open_states()
 		_queue_save()
 	else:
@@ -643,6 +972,7 @@ func _stop_progress_watch() -> void:
 	fresh_progress = false
 	refresh_pending = false
 	chat_work.clear()
+	operation_history.clear()
 	routing_errors.clear()
 
 
@@ -872,20 +1202,25 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	if not answer.is_empty():
 		request.answer = answer
 		request.expected_questions = clarification_questions.duplicate()
-	var result := {"error":"请配置 AI 对话模型后重试框架判断。"}
+	var result := {"error":"请在工单内打开「推进模型」并配置连接，然后重试判断。"}
 	if is_instance_valid(chat) and await _fresh_access() and user == actor and root == _repo():
-		var selection: Dictionary = saved.get("execution_models", {}).get(url, {})
-		if retry and answer.is_empty():
-			var catalog: Dictionary = chat.get_daqian_models()
-			selection = {"backend":catalog.backend, "id":catalog.current}
-			if not saved.has("execution_models"):
-				saved.execution_models = {}
-			saved.execution_models[url] = selection
-			_save()
-		var process: Dictionary = chat.launch_daqian_routing(request, selection)
-		if process.has("pid"):
-			routing_in_flight[key] = process.pid
-		result = await _host_result(process.pid, process.input, process.output) if process.has("pid") else process
+		if _direct_binding().get("url") != url:
+			result.error = "回到此工单后，可继续需求判断。"
+		else:
+			var error := _bind_conversation(binding)
+			if not error.is_empty():
+				result.error = error
+			else:
+				var catalog: Dictionary = chat.get_daqian_models()
+				var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
+				if _needs_model(catalog, selection):
+					result.error = "请选择此工单的推进模型。"
+					_mount_conversation(binding, "direct")
+				else:
+					var process: Dictionary = chat.launch_daqian_routing(request, selection)
+					if process.has("pid"):
+						routing_in_flight[key] = process.pid
+					result = await _host_result(process.pid, process.input, process.output) if process.has("pid") else process
 	routing_in_flight.erase(key)
 	if user != actor or root != _repo():
 		return
@@ -960,6 +1295,18 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	if not started and (binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]):
 		notice.text = "当前工单状态不支持开始推进，请先处理待决定或阻塞事项。"
 		return
+	var bind_error := _bind_conversation(binding)
+	if not bind_error.is_empty():
+		notice.text = bind_error
+		return
+	var selection := {}
+	if not started:
+		var catalog: Dictionary = chat.get_daqian_models()
+		selection = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
+		if _needs_model(catalog, selection):
+			_mount_conversation(binding, "direct")
+			notice.text = "请为此工单选择后端和推进模型，然后点击「应用模型并继续」。"
+			return
 	if not started and binding.status == "planned":
 		var decision := _routing_receipt(binding)
 		if decision.is_empty():
@@ -975,17 +1322,7 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 			clarification_dialog.popup_centered_clamped(Vector2i(480, 300))
 			return
 	var message := "" if started else "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
-	var selection := {}
 	if not started:
-		var catalog: Dictionary = chat.get_daqian_models()
-		selection = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
-		if selection.backend != catalog.backend:
-			notice.text = "推进模型所属的后端已改变，请切回创建时选择的 AI 后端后开始。"
-			return
-		if selection.backend in [0, 3] and str(selection.id).strip_edges().is_empty():
-			notice.text = "需求判断已就绪。请在 AI Chat 选择用于开工的模型后重试。"
-			work_status.text = "当前工作者　等待选择开工模型"
-			return
 		if starting_direct.has(url):
 			return
 		var user := actor.duplicate()
@@ -1005,15 +1342,23 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 				_sync_workflow()
 			notice.text = str(result.get("error", "未取得开始推进回执，请刷新后核对。"))
 			return
-	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection)
+	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection, true)
 	if not error.is_empty():
+		if _bind_conversation(binding).is_empty():
+			_mount_conversation(binding)
 		notice.text = error
 		return
+	_mount_conversation(binding)
 	if not saved.has("direct_started"):
 		saved.direct_started = {}
 	saved.direct_started[url] = true
 	publish_button.text = "查看推进对话"
 	_save()
+	if not started and binding.status == "planned":
+		if checking:
+			refresh_pending = true
+		else:
+			refresh.call_deferred()
 
 
 func _open_publish() -> void:
@@ -1216,9 +1561,11 @@ func _new_requirement() -> void:
 
 
 func _show_issue(id: String, snapshot: Dictionary) -> void:
+	_leave_conversation()
 	if not current.is_empty():
 		_save()
 	current = id
+	_close_operation_details()
 	var port: Object = host if is_instance_valid(host) else self
 	var apply_port := Callable(port,"apply_graph") if id.begins_with("https://") else Callable()
 	var read_port := Callable(port,"read_graph") if id.begins_with("https://") else Callable()
@@ -1239,6 +1586,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.baseline = stored.baseline
 		editor.draw_graph()
 	_sync_workflow()
+	flow_split.show()
 	editor.show()
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
@@ -1358,11 +1706,42 @@ func _host_result(pid: int, req_path: String, result_path: String) -> Dictionary
 func _attach_chat() -> void:
 	chat = get_tree().root.find_child("AI Chat", true, false)
 	if chat and chat.has_signal("daqian_issue_bound"):
+		chat.connect("daqian_chat_unmounted", _conversation_unmounted)
 		chat.connect("daqian_issue_bound",_issue_bound)
 		chat.connect("daqian_requirement_phase",_requirement_phase)
 		if chat.has_signal("daqian_work_event"):
 			chat.connect("daqian_work_event", _chat_work_event)
+		if chat.has_signal("daqian_approval_changed"):
+			chat.connect("daqian_approval_changed", _approval_changed)
+		if chat.has_signal("daqian_approval_state"):
+			chat.connect("daqian_approval_state", _operation_state)
 		chat.connect("daqian_preview_received",_preview_received)
+
+
+func _approval_changed() -> void:
+	_sync_workflow()
+	if not actor.is_empty():
+		_draw_board()
+	_reveal_pending_operation()
+
+
+func _reveal_pending_operation() -> void:
+	var op := _pending_operation(editor.workflow.get("item", {}))
+	if not op.is_empty() and editor.visible and (chat.is_visible_in_tree() or conversation.is_visible_in_tree()):
+		_leave_conversation()
+		var dock := get_parent() as EditorDock
+		var tabs := dock.get_parent() as TabContainer
+		if tabs:
+			tabs.current_tab = tabs.get_tab_idx_from_control(dock)
+		else:
+			dock.make_visible()
+		_focus_operation.call_deferred()
+
+
+func _focus_operation() -> void:
+	var card := editor.canvas.get_node_or_null("wf-operation") as GraphNode
+	if card and editor.is_visible_in_tree():
+		editor.canvas.scroll_offset = (card.position_offset + card.size * 0.5) * editor.canvas.zoom - editor.canvas.size * 0.5
 
 
 func _requirement_phase(source: String, phase: String, design: Dictionary) -> void:
@@ -1509,12 +1888,23 @@ func _sync_workflow() -> void:
 	if direct and phase not in ["closed", "blocked"] and item.get("status") == "planned":
 		phase = "routing" if judged.is_empty() else ("bound" if judged.ready else "questions")
 	var progress := _work_summary(item, judged) if not item.is_empty() else {}
+	var pending := _pending_operation(item)
+	var operation: Dictionary = operation_history.get(item.get("url", ""), {})
+	if not pending.is_empty():
+		operation = {"token":pending.token, "summary":"操作确认", "state":"awaiting_approval",
+			"caption":pending.summary, "version":pending.source_sha256}
+		operation_history[pending.url] = operation
+		progress = {"state":"waiting", "text":"等待你确认 · " + str(pending.summary)}
+	elif operation.get("state") == "awaiting_approval" or operation.get("version") != item.get("source_sha256"):
+		operation = {}
+	if not details_token.is_empty() and details_token != pending.get("token", ""):
+		_close_operation_details()
 	work_status.visible = not progress.is_empty()
 	if work_status.visible:
 		work_status.text = "当前工作者　" + str(progress.text)
 	_update_direct_action()
 	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
-		"progress":progress, "judging":routing_in_flight.has(_routing_key(item))}
+		"progress":progress, "operation":operation, "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()
@@ -1538,15 +1928,17 @@ func _issue_bound(source: String, number: int, request_id: String, details := {}
 
 
 func _chat_action(action: String) -> void:
-	if not await _fresh_access():
+	var source := current
+	if not await _fresh_access() or source != current:
 		return
 	if not chat or not chat.has_method("open_daqian_chat"):
 		notice.text = "无法取得共工 AI 对话入口"
 		return
-	var binding: Dictionary = saved.get("linked",{}).get(current,{})
-	for item in board.get("issues",[]):
-		if item.url == current:
-			binding = item
+	var binding := _conversation_binding()
+	var error := _bind_conversation(binding)
+	if not error.is_empty():
+		notice.text = error
+		return
 	var message := ""
 	if action != "discuss":
 		message = str(editor.draft.nodes.get("requirement",{}).get("value","")).strip_edges()
@@ -1556,9 +1948,19 @@ func _chat_action(action: String) -> void:
 	if action == "preview":
 		message = "仅推演。按共工偃师的需求结构整理以下需求，只输出 JSON 对象，scope、acceptance、questions 各为字符串数组。列出适用步骤和真实需要决定的问题。\n" + message
 	_save()
-	var error: String = chat.open_daqian_chat(binding.get("url", current), int(binding.get("number",0)),str(binding.get("request","")),message,action=="preview")
+	if action == "preview":
+		var catalog: Dictionary = chat.get_daqian_models()
+		var selection: Dictionary = saved.get("execution_models", {}).get(binding.get("url", current), {"backend":catalog.backend, "id":catalog.current})
+		if _needs_model(catalog, selection):
+			_mount_conversation(binding, action)
+			notice.text = "请选择推演模型，然后点击「应用模型并继续」。"
+			return
+		error = chat.open_daqian_chat(binding.get("url", current), int(binding.get("number", 0)),
+			str(binding.get("request", "")), message, true, selection, true)
+	_mount_conversation(binding)
 	if not error.is_empty():
 		notice.text = error
+
 
 
 func _preview_received(source: String, text: String) -> void:
@@ -1655,7 +2057,7 @@ func _start_debug() -> void:
 		return
 	var path := _repo().path_join("customizations/components/godot-host/daqian/debug_session.mjs")
 	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
-		notice.text = "请在 AI 对话中绑定包含大千调试宿主的仓库"
+		notice.text = "请在「工作区连接」中绑定包含大千调试宿主的仓库。"
 		return
 	var settings := EditorInterface.get_editor_settings()
 	var node: String = str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""

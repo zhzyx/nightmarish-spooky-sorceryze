@@ -245,15 +245,25 @@ def main():
     parser.add_argument("--title", required=True)
     parser.add_argument("--notes-file", type=Path, required=True, help="PR scope, business checks and review evidence")
     args = parser.parse_args()
-    notes = args.notes_file.read_text(encoding="utf-8-sig")
-    require(
-        args.title.strip()
-        and "\n" not in args.title
-        and notes.strip()
-        and not re.search(r"^GongGong-(Issue|Request):", notes, re.M),
-        "Provide a title and PR validation notes",
-    )
-    print(json.dumps(submit(args.repo.resolve(), args.issue, args.request_id, args.title, notes), ensure_ascii=False))
+    try:
+        notes = args.notes_file.read_text(encoding="utf-8-sig")
+        require(
+            args.title.strip()
+            and "\n" not in args.title
+            and notes.strip()
+            and not re.search(r"^GongGong-(Issue|Request):", notes, re.M),
+            "Provide a title and PR validation notes",
+        )
+        result = submit(args.repo.resolve(), args.issue, args.request_id, args.title, notes)
+        from kuafu_incident import observe_success
+
+        observe_success(args.repo.resolve(), args.issue, args.request_id, "delivery", result)
+        print(json.dumps(result, ensure_ascii=False))
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
+        from kuafu_incident import notify_failure
+
+        notify_failure(args.repo.resolve(), args.issue, args.request_id, "delivery", error)
+        raise
 
 
 if __name__ == "__main__":

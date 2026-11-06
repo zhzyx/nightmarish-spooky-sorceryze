@@ -39,6 +39,7 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "core/os/os.h"
 #include "editor/docks/ai_chat_cli_login.h"
 #include "editor/docks/ai_chat_issue_guide.h"
+#include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_sub_agents.h"
 #include "editor/docks/ai_chat_tools.h"
@@ -402,6 +403,175 @@ TEST_CASE("[AIChat] Requirements decisions are bound to a user turn and actual I
 	CHECK(key == AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "22", "req"));
 	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-2", "add a button", "22", "req"));
 	CHECK(key != AIChatIssueGuide::requirement_key("chat", "turn-1", "add a button", "24", "other"));
+}
+
+Dictionary requirement_record(const String &p_role, const String &p_text) {
+	Dictionary record;
+	record["role"] = p_role;
+	record["content"] = p_text;
+	return record;
+}
+
+TEST_CASE("[AIChat] Requirement context keeps corrections and the latest real question after setup chatter") {
+	Array transcript;
+	const Dictionary initial = requirement_record("user", "Implement the selected connection.");
+	const Dictionary correction = requirement_record("user", "Support only connection A; leave an extension TODO.");
+	const Dictionary second_correction = requirement_record("user", "Use the three explicit values from my previous answer.");
+	const Dictionary question = requirement_record("editor", "Should unsupported additional values be visible but disabled?");
+	const Dictionary answer = requirement_record("user", "Yes.");
+	transcript.push_back(initial);
+	transcript.push_back(correction);
+	transcript.push_back(second_correction);
+	for (int i = 0; i < 45; i++) {
+		transcript.push_back(requirement_record("editor", vformat("Environment deployment step %d", i)));
+		transcript.push_back(requirement_record("work", "Checking the same prerequisite."));
+		transcript.push_back(requirement_record("user", U"重试"));
+		REQUIRE(AIChatRequirementContext::mark_transport_retry(transcript, U"重试"));
+	}
+	transcript.push_back(question);
+	transcript.push_back(answer);
+	const Array original = transcript.duplicate(true);
+	const Array selected = AIChatRequirementContext::select(transcript);
+	REQUIRE(selected.size() == 6);
+	CHECK(selected[0] == initial);
+	CHECK(selected[1] == correction);
+	CHECK(selected[2] == second_correction);
+	CHECK(selected[3] == requirement_record("user", U"重试"));
+	CHECK(selected[4] == question);
+	CHECK(selected[5] == answer);
+	CHECK(transcript == original);
+}
+
+TEST_CASE("[AIChat] Requirement context does not deduplicate answers to different questions") {
+	Array transcript;
+	transcript.push_back(requirement_record("editor", "First question?"));
+	transcript.push_back(requirement_record("user", "Yes."));
+	transcript.push_back(requirement_record("assistant", "Second question?"));
+	transcript.push_back(requirement_record("user", "Yes."));
+	for (int i = 0; i < 40; i++) {
+		transcript.push_back(requirement_record("editor", "A repeated environment failure."));
+		transcript.push_back(requirement_record("user", U"重试"));
+		REQUIRE(AIChatRequirementContext::mark_transport_retry(transcript, U"重试"));
+	}
+	const Array selected = AIChatRequirementContext::select(transcript);
+	REQUIRE(selected.size() == 6);
+	for (int i = 0; i < 4; i++) {
+		CHECK(selected[i] == transcript[i]);
+	}
+	CHECK(selected[4] == requirement_record("editor", "A repeated environment failure."));
+	CHECK(selected[5] == requirement_record("user", U"重试"));
+
+	Array continuations;
+	continuations.push_back(requirement_record("editor", "Proceed with the first choice?"));
+	continuations.push_back(requirement_record("user", U"继续"));
+	continuations.push_back(requirement_record("editor", "Proceed with the second choice?"));
+	continuations.push_back(requirement_record("user", U"继续"));
+	CHECK(AIChatRequirementContext::select(continuations) == continuations);
+}
+
+TEST_CASE("[AIChat] Requirement context preserves literal retry answers without host transport metadata") {
+	Array transcript;
+	transcript.push_back(requirement_record("user", "Create a button."));
+	transcript.push_back(requirement_record("editor", "What should the button text be?"));
+	transcript.push_back(requirement_record("user", U"重试"));
+	CHECK(AIChatRequirementContext::select(transcript) == transcript);
+
+	transcript.push_back(requirement_record("assistant", "What text should the second button show?"));
+	transcript.push_back(requirement_record("user", U"重试"));
+	transcript.push_back(requirement_record("editor", "What should the tooltip show?"));
+	transcript.push_back(requirement_record("user", "retry"));
+	CHECK(AIChatRequirementContext::select(transcript) == transcript);
+	CHECK_FALSE(Dictionary(transcript[2]).has("requirements_transport_retry"));
+	CHECK_FALSE(Dictionary(transcript[4]).has("requirements_transport_retry"));
+	CHECK_FALSE(Dictionary(transcript[6]).has("requirements_transport_retry"));
+
+	// A producer cannot accidentally mark an earlier or non-user turn.
+	CHECK_FALSE(AIChatRequirementContext::mark_transport_retry(transcript, "different text"));
+	transcript.push_back(requirement_record("editor", "retry"));
+	CHECK_FALSE(AIChatRequirementContext::mark_transport_retry(transcript, "retry"));
+
+	Array legacy;
+	const Dictionary old_correction = requirement_record("user", "Use the user-specified values, not the original proposal.");
+	legacy.push_back(old_correction);
+	for (int i = 0; i < 24; i++) {
+		legacy.push_back(requirement_record("editor", "Legacy setup message."));
+		legacy.push_back(requirement_record("user", "retry"));
+	}
+	legacy.push_back(requirement_record("editor", "What should the final button say?"));
+	legacy.push_back(requirement_record("user", "retry"));
+	const Array retained = AIChatRequirementContext::select(legacy);
+	CHECK(retained.has(old_correction));
+	int legacy_users = 0;
+	for (const Variant &value : retained) {
+		if (Dictionary(value)["role"] == "user") {
+			legacy_users++;
+		}
+	}
+	CHECK(legacy_users == 26);
+	CHECK(retained[retained.size() - 2] == legacy[legacy.size() - 2]);
+	CHECK(retained[retained.size() - 1] == legacy[legacy.size() - 1]);
+
+	Array transport;
+	transport.push_back(requirement_record("user", "retry"));
+	REQUIRE(AIChatRequirementContext::mark_transport_retry(transport, "retry"));
+	CHECK(AIChatResume::records_valid(transport, true));
+	const Array model_context = AIChatRequirementContext::select(transport);
+	REQUIRE(model_context.size() == 1);
+	CHECK_FALSE(Dictionary(model_context[0]).has("requirements_transport_retry"));
+}
+
+TEST_CASE("[AIChat] Requirement context keeps chronology and all three existing budgets") {
+	Array transcript;
+	for (int i = 0; i < 70; i++) {
+		transcript.push_back(requirement_record("user", vformat("User statement %d", i)));
+	}
+	const Array selected = AIChatRequirementContext::select(transcript);
+	REQUIRE(selected.size() == AIChatRequirementContext::MAX_RECORDS);
+	for (int i = 0; i < selected.size(); i++) {
+		CHECK(selected[i] == transcript[70 - selected.size() + i]);
+	}
+
+	Array large;
+	for (int i = 0; i < 20; i++) {
+		large.push_back(requirement_record("user", vformat("%d:", i) + String(U"问").repeat(5000)));
+	}
+	const Array bounded = AIChatRequirementContext::select(large);
+	REQUIRE(bounded.size() == 4);
+	int characters = 0;
+	for (int i = 0; i < bounded.size(); i++) {
+		const String text = Dictionary(bounded[i])["content"];
+		CHECK(text == String(Dictionary(large[16 + i])["content"]).left(4000));
+		CHECK(text.length() <= AIChatRequirementContext::MAX_RECORD_CHARACTERS);
+		characters += text.length();
+	}
+	CHECK(characters == AIChatRequirementContext::MAX_CHARACTERS);
+	CHECK(String(Dictionary(large[19])["content"]).length() > 4000);
+
+	const Dictionary long_question = requirement_record("editor", String("Question ").repeat(400));
+	const Dictionary last_answer = requirement_record("user", "Yes.");
+	large.push_back(long_question);
+	large.push_back(last_answer);
+	const Array with_question = AIChatRequirementContext::select(large);
+	REQUIRE(with_question.size() >= 2);
+	CHECK(with_question[with_question.size() - 2] == long_question);
+	CHECK(with_question[with_question.size() - 1] == last_answer);
+}
+
+TEST_CASE("[AIChat] Requirement context ignores malformed records and bounds retry-only chatter") {
+	Array transcript;
+	transcript.push_back(Variant("not a record"));
+	transcript.push_back(requirement_record("user", " "));
+	transcript.push_back(requirement_record("work", "Tool details are not requirement authority."));
+	CHECK(AIChatRequirementContext::select(transcript).is_empty());
+	for (int i = 0; i < 40; i++) {
+		transcript.push_back(requirement_record("editor", vformat("Deployment failed %d", i)));
+		transcript.push_back(requirement_record("user", "retry"));
+		REQUIRE(AIChatRequirementContext::mark_transport_retry(transcript, "retry"));
+	}
+	const Array selected = AIChatRequirementContext::select(transcript);
+	REQUIRE(selected.size() == 2);
+	CHECK(selected[0] == requirement_record("editor", "Deployment failed 39"));
+	CHECK(selected[1] == requirement_record("user", "retry"));
 }
 
 TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized design") {

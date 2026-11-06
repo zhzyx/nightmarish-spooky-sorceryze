@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "observed_at": "2026-11-06T17:44:52Z",
+  "event": "source.changed",
+  "previous_head": "e2f34f22ca8d782f06097311d00518fbd65eaf49",
+  "accepted_main": "ab029a263c88c415fbcf648b4d505f18f85885c4",
+  "upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/223",
+  "consumers": [
+    "gameplay-gf2-delivery-20261106"
+  ],
+  "merge_conflict": {
+    "path": "editor/docks/ai_chat_gonggong.cpp",
+    "location": "_direct_daqian_task",
+    "resolution": "Retain upstream entry.get(issue_url, entry.get(source, empty)) fallback and use bound_request_id consistently; no upstream logic removed"
+  },
+  "affected_blobs": {
+    "editor/docks/ai_chat_gonggong.cpp": "7cc74d7d62055aa6014135c664d0f523b54528ed",
+    "editor/docks/ai_chat_dock.h": "ab3c343c5be938e463cadbbdf4982e601bc861e9"
+  },
+  "strict_compile": {
+    "compiler": "MSVC 14.5",
+    "flags": "/W4 /WX",
+    "objects": [
+      "ai_chat_dock.windows.editor.x86_64.obj",
+      "ai_chat_gonggong.windows.editor.x86_64.obj"
+    ],
+    "exit_code": 0,
+    "elapsed": "00:00:06.72"
+  },
+  "format": "clang-format 22.1.5 dry-run --Werror passed on affected file",
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "result": "no_blockers",
+    "scope": "Conflict resolution preserves upstream logic; task delta remains two equivalent local renames and three string indentation lines; header identical upstream"
+  },
+  "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+  "business_evidence": "Original module/API input evidence reused; new editor source gets affected-file compilation and exact-head CI",
+  "previous_ci": {
+    "head": "e2f34f22ca8d782f06097311d00518fbd65eaf49",
+    "push_run": 42262915017,
+    "pr_run": 42262920181,
+    "static": "both passed",
+    "three_other_windows_variants": "passed",
+    "msvc_editor": "pending at observation"
+  },
+  "recovery_point": "e2f34f22ca8d782f06097311d00518fbd65eaf49",
+  "new_head_ci": "required",
+  "remote_merge_verified": false,
+  "input_tokens": null,
+  "output_tokens": null
+}

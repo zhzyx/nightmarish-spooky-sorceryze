@@ -75,6 +75,35 @@ def proposal(value, categories):
     return value
 
 
+def design_summary(design, *, legacy=False):
+    sections = [("待确认", "questions"), ("验收条件", "acceptance"), ("范围", "scope")]
+    if legacy:
+        sections.reverse()
+    text = design["goal"] + "\n"
+    for heading, key in sections:
+        items = "\n".join("- " + item for item in design[key])
+        if not items and not legacy:
+            items = "本次整理没有待确认项。"
+        text += f"\n## {heading}\n\n{items}\n"
+    return text
+
+
+def revision_comments(design, digest):
+    # Leave room for the header and marker. Proposal validation bounds each line.
+    chunks = [""]
+    for line in design_summary(design).splitlines(keepends=True):
+        if len((chunks[-1] + line).encode("utf-8")) > 60000:
+            chunks.append("")
+        chunks[-1] += line
+    for index, chunk in enumerate(chunks, 1):
+        last = index == len(chunks)
+        marker = f"<!-- requirement-revision:{digest}{'' if last else '-part-' + str(index)} -->"
+        heading = "Yanshi / ClarifyFeature 澄清更新"
+        if len(chunks) > 1:
+            heading += f"（{index}/{len(chunks)}）"
+        yield marker, f"{marker}\n\n{heading}\n\n{chunk}"
+
+
 def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
     if request.get("backend") == "responses":
         endpoint = (
@@ -466,29 +495,31 @@ def _intake(root, request, bridge):
                 "--slurp",
             )
         )
-        if not any(revision in c.get("body", "") for page in comments for c in page):
+        published = [comment.get("body") or "" for page in comments for comment in page]
+        # The final marker also identifies revisions published by older hosts.
+        if not any(body.startswith(revision) for body in published):
             with tempfile.TemporaryDirectory() as folder:
                 path = Path(folder) / "revision.md"
-                path.write_text(
-                    revision
-                    + "\n\nYanshi / ClarifyFeature 澄清更新\n\n"
-                    + design["goal"]
-                    + "\n\n验收：\n"
-                    + "\n".join("- " + x for x in design["acceptance"]),
-                    encoding="utf-8",
-                )
-                check_cancel()
-                work.gh("issue", "comment", str(number), "--repo", settings["repository"], "--body-file", str(path))
+                for marker, body in revision_comments(design, digest):
+                    if any(previous.startswith(marker) for previous in published):
+                        continue
+                    path.write_text(body, encoding="utf-8", newline="\n")
+                    check_cancel()
+                    work.gh("issue", "comment", str(number), "--repo", settings["repository"], "--body-file", str(path))
     else:
         request_id = identity
         document = "design-docs/" + request_id + ".md"
-        content = "# " + design["title"] + "\n\n<!-- gonggong-request:" + request_id + " -->\n\n"
-        content += "需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + digest + "`。\n\n" + design["goal"] + "\n"
-        for heading, key in [("范围", "scope"), ("验收条件", "acceptance"), ("待确认", "questions")]:
-            content += "\n## " + heading + "\n\n" + "\n".join("- " + x for x in design[key]) + "\n"
+        prefix = "# " + design["title"] + "\n\n<!-- gonggong-request:" + request_id + " -->\n\n"
+        prefix += "需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + digest + "`。\n\n"
         path = root / document
         path.parent.mkdir(exist_ok=True)
-        if path.is_symlink() or (path.exists() and path.read_text(encoding="utf-8") != content):
+        if path.is_symlink():
+            raise ValueError("Preserve existing requirement original; cannot write through a symlink")
+        content = prefix + design_summary(design)
+        if path.exists() and path.read_text(encoding="utf-8") not in (
+            content,
+            prefix + design_summary(design, legacy=True),
+        ):
             raise ValueError("Preserve existing requirement original; cannot overwrite a different proposal")
         if not path.exists():
             with path.open("x", encoding="utf-8") as stream:

@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "related_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/176",
+  "parent_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+  "recorded_at": "2026-11-06T13:47:45.6072591Z",
+  "delivery_kind": "buildable_source",
+  "platform": "Windows x86_64",
+  "compiler": "MSVC 14.5 / Windows SDK 10.0.26100.0",
+  "source_binding": {
+    "build_baseline": "8c391908f911af7b8ac8f6f88c99a87b6122c802",
+    "integrated_main": "c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40",
+    "reviewed_tree": "0169531f6dcc977be342f7e39169cc4c8c80876f",
+    "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+    "main_integration_scope": "c21ce691 adds only Godot-host bridge Python/tests and request evidence; no engine/module/build inputs changed. Existing built/tested module bytes are reused, not claimed as a rebuild of the newer commit.",
+    "files": [
+      {
+        "path": ".github/workflows/runner.yml",
+        "sha256": "4dc5f4e2d4bb935af120aae788a13bae9bcc96e196ce32007611490ce812f0b8"
+      },
+      {
+        "path": "modules/gameplay/SCsub",
+        "sha256": "69f341259c591044c9066c1356337bd75209a905c47d8605ac32a35b59383a02"
+      },
+      {
+        "path": "modules/gameplay/config.py",
+        "sha256": "7b211d592cdfdcc6838cdb2520d08761a11ecf5b73edbe3862fc0f3e820d021e"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayComponent.xml",
+        "sha256": "90523fa2f5a1a6996cbf982ecd16f0d42fc8cd1a4b90ac49c25613b8397345a6"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayConnection.xml",
+        "sha256": "c2e4b1d67a54787060d5e3c3f5c1749a9f1d22ef44b6cce33c09553798ac5b28"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayController.xml",
+        "sha256": "189eebcd460936d79303276ea7edad40eb884aaaf3f97657f1ebdf40406e03a2"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayDedicatedServer.xml",
+        "sha256": "05b0e4cb145dd97eca02e9ab021c04f7da1aa58106b56600009e7539cc8406bc"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayGameMode.xml",
+        "sha256": "b12ca653ca37a91258735ad098314f555d73de5b0e6843f0feb50d959aceecc8"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayGameState.xml",
+        "sha256": "a80ef03f651217d80f61125c150fa65f617863a1acc316e3376920539cdcc52c"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayPawn.xml",
+        "sha256": "e470668e998fe87634fedad7b378c45e554d0d344a2c3b707e0bb747c2f30a36"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayPlayerState.xml",
+        "sha256": "638844b4d1665e9ff7c5cc65298e26ea1e95cc0b7d577b9315b51772c5ec71be"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayServerConfig.xml",
+        "sha256": "48ac24e0d06d4aa9283d9ebc814052420276c44c7ea0a690705cb63aca04682e"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplaySessionClient.xml",
+        "sha256": "3eeab927411647bfe8daff882610739ae4baf659959bcbcced8bab82cead96f8"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplaySessionManager.xml",
+        "sha256": "cb6b5c9ed84b3abdc99697f0d5befd5fe76bbec10bd9200c4a8869c0312c5c83"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplaySubsystem.xml",
+        "sha256": "b60f5fa45f1c4f427d295dd963f89f3d3439e8602ca2dfbea73e5777a04d098e"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplaySubsystemRegistry.xml",
+        "sha256": "5cb05aa836f0558082e1e173a9f07119cdee4a3e3f2e6ab9a161c27d76259c3d"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayUserSession.xml",
+        "sha256": "d68ebf6b45a08fdc5e0d45a80d1c502129bb8a8ce5aa3830b1b404745c316e6d"
+      },
+      {
+        "path": "modules/gameplay/doc_classes/GameplayWorld.xml",
+        "sha256": "f628605f0748a05d537c9072b5a7d275cc8d54bd9f78af365f31fb9634b64217"
+      },
+      {
+        "path": "modules/gameplay/gameplay_entity.cpp",
+        "sha256": "36357bbaf909490940e3d105ca59dfb1061c8aa5aed8fc5b68059a0995f4d9e5"
+      },
+      {
+        "path": "modules/gameplay/gameplay_entity.h",
+        "sha256": "0bfbb32b4fd1b8adeff6a179a0629e42ab0eeed50ad53bbb4f78652e3c6aa5d5"
+      },
+      {
+        "path": "modules/gameplay/gameplay_match.cpp",
+        "sha256": "96ec692f4624fe5cfbdf3bcd6c3ea331d47767f9b015871a97723a10a833664c"
+      },
+      {
+        "path": "modules/gameplay/gameplay_match.h",
+        "sha256": "54ab5cbb3ff19f22957249ab542d5bd123fa7eaad65a5454f191375c5471cf15"
+      },
+      {
+        "path": "modules/gameplay/gameplay_server.cpp",
+        "sha256": "191715aa25a7c4615c5169a077bafea72aa54cfd73e7a9c5c7f387caa0f033f3"
+      },
+      {
+        "path": "modules/gameplay/gameplay_server.h",
+        "sha256": "81a2ae1e31222c316013a851b6fd1a26f4c7387257fb02f718c89f882cb1b41f"
+      },
+      {
+        "path": "modules/gameplay/gameplay_session.cpp",
+        "sha256": "7c4d7d78c14b797c4e1fc339ad13692e0396633179bfa3e8eb543bed223085a6"
+      },
+      {
+        "path": "modules/gameplay/gameplay_session.h",
+        "sha256": "4b7da259eefeaac03a42d9dc71379f2ae103294f8cbd05147e8ba4d37583824f"
+      },
+      {
+        "path": "modules/gameplay/gameplay_subsystem.cpp",
+        "sha256": "4e745287581af388ec8ff984e839d900252cd20514b23674b635bbdfdd1691ce"
+      },
+      {
+        "path": "modules/gameplay/gameplay_subsystem.h",
+        "sha256": "f65ce9eb9e6f0c6556d7579c8842f718be99cd324c3ef780c3294e792eec3028"
+      },
+      {
+        "path": "modules/gameplay/register_types.cpp",
+        "sha256": "4b318f0d4415c2ac074c1a55aea174f10f338d29d6dfae577069f158751bd9bc"
+      },
+      {
+        "path": "modules/gameplay/register_types.h",
+        "sha256": "b7109989e4b47bd451ebbaf533e931cc1c2c63d06b7b0aa07c10fd035c2f20ed"
+      },
+      {
+        "path": "modules/gameplay/tests/test_gameplay_framework.h",
+        "sha256": "bb69b136896a59474f0d8900dc21c1dd1f9abafc796117d2bb59eda7d19501c1"
+      }
+    ]
+  },
+  "builds": {
+    "editor": {
+      "command": "scons platform=windows target=editor tests=yes -j4",
+      "status": "passed",
+      "clean_build_elapsed": "00:12:50.47",
+      "final_incremental_elapsed": "00:00:17.88"
+    },
+    "template_debug": {
+      "command": "scons platform=windows target=template_debug -j8",
+      "status": "passed",
+      "elapsed": "00:05:34.66",
+      "headless_version": "4.8.beta.custom_build.8c391908f"
+    }
+  },
+  "gameplay_tests": {
+    "command": "godot.windows.editor.x86_64.console.exe --headless --test --test-case=*Gameplay*",
+    "status": "passed",
+    "test_cases": 13,
+    "assertions": 236,
+    "failures": 0,
+    "skipped": 1468
+  },
+  "gdscript_smoke": {
+    "status": "passed",
+    "runtime": "headless editor",
+    "classes_instantiated": 15,
+    "checks": [
+      "GDScript _initialize/_deinitialize hooks",
+      "Implicit registry reverse teardown",
+      "Direct subsystem free deregisters and deinitializes",
+      "World-owned nodes shut down before child deletion"
+    ]
+  },
+  "separate_headless_processes": {
+    "status": "passed",
+    "runtime": "editor binary with --headless",
+    "server_pid": 19112,
+    "server_port": 50781,
+    "clients": [
+      {
+        "user": "user-alice",
+        "session": "session-alice",
+        "peer_id": 1320772799,
+        "pid": 16520,
+        "exit_code": 0
+      },
+      {
+        "user": "user-bob",
+        "session": "session-bob",
+        "peer_id": 1953404771,
+        "pid": 33856,
+        "exit_code": 0
+      }
+    ],
+    "server_exit_code": 0,
+    "server_result": "joins=2 disconnects=2 shutdown=stopped",
+    "scope": "This supplements the C++ loopback integration, which also verifies reconnect with changed peer ID and preserved PlayerState/Controller."
+  },
+  "static_validation": {
+    "clang_format": "22.1.5 passed",
+    "ruff": "0.17.1 check/format passed",
+    "header_guards": "passed",
+    "copyright_headers": "canonical spacing normalized",
+    "include_validation": "passed",
+    "xml_schema": "passed",
+    "class_reference": "no XML warnings/errors",
+    "class_reference_code_sample_parity": "280 existing whole-reference parity notices; validator exits 0",
+    "codespell": "passed after expanding Unreal Engine abbreviation in design",
+    "diff_check": "passed"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "status": "no_remaining_blockers",
+    "reviewed_tree": "0169531f6dcc977be342f7e39169cc4c8c80876f",
+    "native_terminal": "completed and verified with collaboration.list_agents; shared reservation reconciled",
+    "initial_findings_fixed": [
+      "Admission closure applies to existing pending transports",
+      "Authentication/admission callbacks run only after phase checks",
+      "Preserved player/controller ownership is rebound only after admission",
+      "Direct possession replacement clears previous pawn owner",
+      "PREDELETE cleanup precedes owned child and script teardown",
+      "Callback-safe registry iteration, registration order, reverse cleanup and nested-transition guard"
+    ],
+    "boundary": "Reviewer read source/dependencies and affected fixes; host executed business tests."
+  },
+  "ci_prerequisite": {
+    "source_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42219878669",
+    "observed": "startup_failure before jobs: nested Windows actions:read exceeded caller actions:none",
+    "change": "runner grants contents:read/actions:read; no write privileges or disabled checks",
+    "candidate_ci": "pending actual signed PR head"
+  },
+  "artifacts": [
+    {
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "sha256": "576def5ee25fef28ed3b432f71fa2f71f070927f1a777c95b96c1ae4fa7f5d6b"
+    },
+    {
+      "path": "bin/godot.windows.editor.x86_64.console.exe",
+      "sha256": "56e930ce1822841ebdde46460173773c9444f3a14040aab67a30e0929414936f"
+    },
+    {
+      "path": "bin/godot.windows.template_debug.x86_64.exe",
+      "sha256": "04d283a86c6a67cbe73559b66127645da3db145fc19ba5ef2feaa4db189461a6"
+    },
+    {
+      "path": "bin/godot.windows.template_debug.x86_64.console.exe",
+      "sha256": "d693a5a870f23d0fde5a2e14609473bd6a664492263ba8bd97f81b180f4d882d"
+    }
+  ],
+  "observed_failures": [
+    {
+      "step": "First resumed build in original shared worktree",
+      "result": "test_main object permission conflict while another actor modified GF-3",
+      "resolution": "Copied exact staged tree into a new isolated worktree; completed fresh build there."
+    },
+    {
+      "step": "First new callback-order test",
+      "result": "One assertion required a rejection packet that ENet disconnect may not deliver",
+      "resolution": "Terminal predicate accepts rejection or disconnect, while retaining not-joined and unchanged admission-call-count assertions; final tests pass."
+    },
+    {
+      "step": "Optional template script launch with --path",
+      "result": "Default template disables path overrides; --path/cwd project launch refused before gameplay code",
+      "resolution": "No template flags were changed. Template build and --headless --version passed; script and separate-process checks use the headless editor binary."
+    }
+  ],
+  "limitations": [
+    "Linux not built or validated",
+    "Template project execution requires a normal exported pack; no packaged application is promised by this source delivery",
+    "No live account backend, encryption, cloud deployment, RPC/replication/relevancy/prediction in GF-2",
+    "Remote CI/main acceptance is pending actual publication receipts",
+    "Token/cost usage unavailable"
+  ],
+  "input_tokens": null,
+  "output_tokens": null
+}

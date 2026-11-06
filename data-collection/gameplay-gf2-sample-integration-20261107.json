@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "observed_at": "2026-11-06T17:26:34Z",
+  "event": "source.changed",
+  "previous_head": "f4dc60d02c2c61c82a7d01e459a7e0788b0408d7",
+  "accepted_main": "5a42d425b976057e9c531642b1659e5e01091c30",
+  "upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/219",
+  "consumers": [
+    "gameplay-gf2-delivery-20261106"
+  ],
+  "compatibility": "22 independent sample/tools/evidence paths; none intersect the 59 GF-2 paths; no Gameplay, engine C++ or build/CI input changes",
+  "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+  "previous_push_ci": {
+    "run": 42259999173,
+    "status": "completed",
+    "conclusion": "success",
+    "head": "f4dc60d02c2c61c82a7d01e459a7e0788b0408d7",
+    "variants": [
+      "MSVC editor",
+      "clang-cl editor",
+      "MSVC release template",
+      "GCC release template"
+    ],
+    "compilation_and_unit_tests": "passed"
+  },
+  "previous_pr_ci": {
+    "run": 42260004955,
+    "state": "MSVC compilation pending at observation; other applicable checks passed"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "result": "no_blockers",
+    "business_inputs_unchanged": true,
+    "original_13_236_and_three_process_evidence_reusable": true
+  },
+  "recovery_point": "f4dc60d02c2c61c82a7d01e459a7e0788b0408d7",
+  "new_head_ci": "required",
+  "remote_merge_verified": false,
+  "input_tokens": null,
+  "output_tokens": null
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "gha-windows-caller-read-permission",
+  "collected_at": "2026-11-06T16:52:00.313113+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gha-windows-caller-read-permission/issue207-kuafu-receipt.json",
+      "sha256": "22c31a7b5e05cabb0d702b814fa88440f39618b66a4767491ed9fe9ae0bb7762",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "issue207-kuafu-receipt",
+      "origin": "Codex /root/authority under current task delegation"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 207,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/207"
+}

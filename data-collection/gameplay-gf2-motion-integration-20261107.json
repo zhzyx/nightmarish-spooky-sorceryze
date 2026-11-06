@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "observed_at": "2026-11-06T17:33:09Z",
+  "event": "source.changed",
+  "previous_head": "1f7e2ac88f4557900c80c7cada6bc33a46b7aca8",
+  "accepted_main": "491888459dbb64c8130378d8dbb3649cc1fd6ac8",
+  "upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/221",
+  "consumers": [
+    "gameplay-gf2-delivery-20261106"
+  ],
+  "previous_push_ci": {
+    "run": 42261929311,
+    "status": "completed",
+    "conclusion": "success",
+    "variants": [
+      "MSVC editor",
+      "clang-cl editor",
+      "MSVC release template",
+      "GCC release template"
+    ],
+    "compilation_and_unit_tests": "passed"
+  },
+  "pr_static_failure": {
+    "run": 42261937762,
+    "job": 128043972192,
+    "checkout": "462ce97fdb4f2cba1305951f1a37c091f3270871",
+    "checkout_includes_main": "491888459dbb64c8130378d8dbb3649cc1fd6ac8",
+    "event_base": "5a42d425b976057e9c531642b1659e5e01091c30",
+    "files": 87,
+    "diagnostic": "Ruff style errors in newly merged upstream tools/ainative/motion*.py; old-base triple-dot diff included 25 upstream paths alongside 62 task paths"
+  },
+  "compatibility": "25 sample/tools/evidence paths have no intersection with the 62 GF-2 task paths; no Gameplay, engine C++ or build/CI inputs changed",
+  "resolution": "Normal merge of current accepted main, retaining upstream bytes and existing CI hooks; rerun new exact head against the current base",
+  "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "result": "no_blockers",
+    "business_evidence_reusable": true
+  },
+  "recovery_point": "1f7e2ac88f4557900c80c7cada6bc33a46b7aca8",
+  "new_head_ci": "required",
+  "remote_merge_verified": false,
+  "input_tokens": null,
+  "output_tokens": null
+}
