@@ -98,7 +98,9 @@ StringName GameplayReplicationProperty::get_property_name() const {
 }
 
 void GameplayReplicationProperty::set_condition(Condition p_condition) {
-	ERR_FAIL_INDEX_MSG(p_condition, 4, "Invalid replication condition.");
+	ERR_FAIL_COND_MSG(
+			p_condition != CONDITION_ALWAYS && p_condition != CONDITION_INITIAL_ONLY && p_condition != CONDITION_OWNER_ONLY && p_condition != CONDITION_SKIP_OWNER,
+			"Invalid replication condition.");
 	condition = p_condition;
 }
 
@@ -153,7 +155,9 @@ StringName GameplayRPCConfig::get_rpc_name() const {
 }
 
 void GameplayRPCConfig::set_direction(Direction p_direction) {
-	ERR_FAIL_INDEX_MSG(p_direction, 4, "Invalid RPC direction.");
+	ERR_FAIL_COND_MSG(
+			p_direction != DIRECTION_SERVER && p_direction != DIRECTION_OWNER && p_direction != DIRECTION_CLIENT && p_direction != DIRECTION_MULTICAST,
+			"Invalid RPC direction.");
 	direction = p_direction;
 }
 
