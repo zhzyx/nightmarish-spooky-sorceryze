@@ -31,7 +31,13 @@ def execute(root, envelope, principal=None):
         follows = envelope.get("follow", [])
         if not isinstance(follows, list) or any(type(n) is not int or n <= 0 for n in follows):
             raise ValueError("无效的跟进工单")
-        board = read_board(root, follows, actor)
+        board = read_board(
+            root,
+            follows,
+            actor,
+            project=envelope.get("project") is True,
+            personal_history=envelope.get("personal_history") is True,
+        )
         with plan_store.connect(root) as db:
             return {
                 "summaries": {item["url"]: plan_summary(db, item) for item in board["issues"] if not item["closed"]}
