@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "issue207-kuafu-receipt",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gha-windows-caller-read-permission",
+  "kind": "request",
+  "occurred_at": "2026-11-06T16:51:48.506161+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/207",
+  "agent": {
+    "id": "kuafu",
+    "version": "0.5.0",
+    "definition_sha256": "820d6cdc2a3fb4422c174a9ed329c0bc917227d5a052c47d98726c1d8b5832ac",
+    "origin": "Codex /root/authority under current task delegation"
+  },
+  "payload": {
+    "assignee": "/root/authority",
+    "github_actor": "Sail-Li",
+    "received": "Investigate and repair Issue 207 under current user request",
+    "observed_run_id": 42251651308,
+    "conclusion": "startup_failure",
+    "jobs": 0,
+    "diagnosis": "Windows reusable jobs request actions:read beyond caller permissions",
+    "usage": null
+  },
+  "evidence_refs": []
+}
