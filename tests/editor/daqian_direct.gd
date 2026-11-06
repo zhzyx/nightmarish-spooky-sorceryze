@@ -87,6 +87,32 @@ func run() -> void:
 	check(decision[0] == "issue-start" and decision[1].expected_revision == "fixture-revision" and decision[1].expected_user == "42", "Missing explicit start transition")
 	check(records.size() == 5 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
 	check(chat.find_child("APIModel", true, false).text == "chosen-execution-model", "Start ignored model chosen at creation")
+	# Replay an external route into the same linked draft without invoking a model.
+	var row: Dictionary = binding.duplicate()
+	row.updated = binding.get("revision", "fixture-revision")
+	row.source_sha256 = "verified-source"
+	var judged: Dictionary = panel.saved.routing[binding.url].duplicate(true)
+	row.routing_receipt = judged
+	panel.saved.routing.clear()
+	panel.board.issues = [row]
+	panel.current = source
+	panel.fresh_progress = true
+	panel._sync_workflow()
+	check(panel.editor.canvas.has_node("wf-prepare") and panel.editor.canvas.has_node("wf-worker"), "Receipt projection missing from linked draft")
+	check(panel.work_status.text.contains("等待开始推进"), "Readiness incorrectly implied execution")
+	var provenance := {"actor":panel.actor.user_id, "request_ref":row.request, "source_ref":row.url, "source_sha256":row.source_sha256}
+	panel._chat_work_event(repo, provenance, "sinan · AI Chat #1", "request", "chat", "running")
+	check(panel.work_status.text.contains("司南 · AI Chat #1"), "Running worker missing")
+	panel._chat_work_event(repo, provenance, "sinan · AI Chat #1", "step", "confirmation", "waiting")
+	check(panel.work_status.text.contains("等待操作确认"), "Human approval shown as running")
+	row.source_sha256 = "edited-source"
+	panel._sync_workflow()
+	check(not panel.work_status.text.contains("AI Chat #1"), "Old worker leaked across source revisions")
+	panel._chat_work_event(repo, provenance, "sinan · AI Chat #1", "request_end", "chat", "completed")
+	check(panel.chat_work[row.url].is_empty(), "Old terminal did not clear original work")
+	row.routing_receipt = {}
+	panel.saved.routing[row.url] = judged
+	check(panel._routing_receipt(row).is_empty(), "Revoked receipt revived by private cache")
 	if errors.is_empty():
 		print("DAQIAN_DIRECT_OK")
 	quit(0 if errors.is_empty() else 1)

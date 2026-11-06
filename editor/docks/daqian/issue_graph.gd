@@ -420,6 +420,7 @@ func _node_state(id: String) -> String:
 		return "waiting"
 	var phase: String = workflow.get("phase", "draft")
 	match id:
+		"wf-worker": return workflow.get("progress", {}).get("state", "waiting")
 		"requirement", "wf-workorder":
 			return "completed" if phase != "draft" or issue_id.begins_with("https://") else "pending"
 		"wf-routing":
@@ -562,6 +563,9 @@ func _display_plan() -> Dictionary:
 			var id := "wf-dep-" + str(dep).sha256_text().left(20)
 			_stage(plan, id, "前置工单", str(dep), "")
 			_stage_edge(plan, id, "wf-prepare")
+	var progress: Dictionary = workflow.get("progress", {})
+	if not progress.is_empty():
+		_stage(plan, "wf-worker", "当前工作者", progress.text, "wf-prepare" if prepare else intake)
 	var tasks := []
 	var criteria := []
 	var titles := {"scope":"预计任务", "acceptance":"验收条件", "questions":"待确认"}
