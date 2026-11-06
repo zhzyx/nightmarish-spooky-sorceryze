@@ -30,6 +30,8 @@ def source_plan(issue, request_id):
     edges = []
     heading = ""
     clauses = {"范围": ("task", "预计任务"), "验收条件": ("join", "验收条件"), "待确认": ("question", "待确认")}
+    for section in ("范围与验收", "范围和验收"):
+        clauses[section] = ("task", "范围与验收")
     for line in (issue.get("body") or "").splitlines():
         if line.startswith("#"):
             heading = line.lstrip("#").strip()
@@ -134,7 +136,7 @@ def read_board(root, follows, actor=None):
                          and bool(re.search(r"^需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + markers[0][12:]
                                             + r"[0-9a-f]{32}`。$", (row.get("body") or "").replace("\r\n", "\n"),
                                             re.MULTILINE))),
-            "decision": status == "needs-decision", "closed": row["state"] == "closed",
+            "closed": row["state"] == "closed",
         }
         if item["request"] and not item["request"].startswith("daqian-direct-"):
             item["source_sha256"] = progress.issue_route.digest([item["url"], item["request"], item["updated"]])
@@ -143,7 +145,7 @@ def read_board(root, follows, actor=None):
         item["workers"] = progress.workers_for_row(receipts, repo, row, item)
         item.update(source_plan(row, item["request"]))
         item["pending_count"] = len(item.get("questions",{})) if row["state"]=="open" else 0
-        item["decision"] = item["decision"] or item["pending_count"]>0
+        item["decision"] = item["pending_count"] > 0
         items[number] = item
         # GitHub only returns a summary on some endpoint/API versions.
         summary = row.get("issue_dependencies_summary", {})
@@ -158,6 +160,23 @@ def read_board(root, follows, actor=None):
                     queue[key] = dependency
     return {"repo": repo, "login": login, "user_id": actor["user_id"], "repo_id": actor["repo_id"], "issues": sorted(items.values(), key=lambda row: row["number"]),
             "verified_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+
+
+def plan_summary(db, item):
+    if item["closed"]:
+        return {}
+    import plan_store
+    source = {"issue": item["url"], "base": item["plan"], "sources": item["sources"], "source_revision": "projection",
+              "questions": item.get("questions", {}), "can_edit": False}
+    view = plan_store.snapshot(db, source)
+    ctx = view["context"]
+    can_answer = bool(item["request"]) and item["status"] in {"needs-decision", "in-progress", "in-review"}
+    count = len(ctx["questions"]) - len(ctx["answers"]) if can_answer else 0
+    return {"updated": item["updated"], "request": item["request"], "node_states": ctx["states"],
+            "running_titles": [(node.get("value") or node["title"]).partition("\n")[0][:48] if node["kind"] == "task"
+                               else node["title"] for key, node in view["plan"]["nodes"].items()
+                               if ctx["states"].get(key) == "running"],
+            "pending_count": count, "decision": count > 0, "answered_count": len(ctx["answers"])}
 
 
 def publish(path, value):
@@ -191,26 +210,31 @@ def main():
             result={"access":actor}
         else:
             board=read_board(args.repo,args.follow,actor)
-            if not os.environ.get("DAQIAN_PLAN_SSH_HOST"):
-                import plan_store
+            import plan_store
+            remote = os.environ.get("DAQIAN_PLAN_SSH_HOST", "")
+            if remote:
+                import graph_host
+                # The shared installation owns the answers. Its authenticated summary
+                # covers custom plan questions as well as questions in the Issue.
+                envelope = {"action": "board-progress", "repository": actor["repo"], "repo_id": actor["repo_id"],
+                            "expected_user": actor["user_id"], "follow": args.follow}
+                try:
+                    shared = graph_host.via_shared_host(remote, json.dumps(envelope).encode())
+                except (ValueError, OSError):
+                    shared = {}
+                summaries = shared.get("summaries", {})
+                for item in board["issues"]:
+                    if item["closed"]:
+                        continue
+                    summary = summaries.get(item["url"], {})
+                    if summary.get("updated") == item["updated"] and summary.get("request") == item["request"]:
+                        item.update(summary)
+                    else:
+                        item.update(pending_count=0, decision=False, answers_unverified=True)
+            else:
                 with plan_store.connect(args.repo.resolve()) as db:
                     for item in board["issues"]:
-                        if item["closed"]:
-                            continue
-                        source={"issue":item["url"],"base":item["plan"],"sources":item["sources"],"source_revision":"projection",
-                                "questions":item.get("questions",{}),"can_edit":False}
-                        view=plan_store.snapshot(db,source)
-                        ctx=view["context"]
-                        item["node_states"] = ctx["states"]
-                        nodes = view["plan"]["nodes"]
-                        item["running_titles"] = [
-                            (node.get("value") or node["title"]).partition("\n")[0][:48]
-                            if node["kind"] == "task" else node["title"]
-                            for key, node in nodes.items() if ctx["states"].get(key) == "running"
-                        ]
-                        count=len(ctx["questions"])-len(ctx["answers"])
-                        item["pending_count"]=count
-                        item["decision"]=count>0 or (item["status"]=="needs-decision" and not ctx["answers"])
+                        item.update(plan_summary(db, item))
             if args.editor_session and session_actor(args.repo, args.editor_session) != actor:
                 raise AccessDenied("读取工单期间 GitHub 账号已切换")
             import bridge
