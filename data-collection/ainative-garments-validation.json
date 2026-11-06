@@ -1,0 +1,3064 @@
+{
+  "request_id": "ainative-art-07-garments-20261106",
+  "issue_number": 148,
+  "date": "2026-11-07",
+  "dependency": {
+    "issues": [
+      146,
+      147
+    ],
+    "main_commit": "4934dcd836493366c89a93078596d53f41d2c6be"
+  },
+  "python_tests_passed": 65,
+  "actual_acceptance": {
+    "report_sha256": "657b1653420ea6707b57aa8d61706cf9e6a0d9a18d6f0c545fbc54eac8aaa8c2",
+    "failures": [],
+    "cases": [
+      {
+        "animation_vertex_delta_m": 0.12086229026317596,
+        "family": "ue4",
+        "kind": "top",
+        "sha256": "44305ad6f4cfefef3bfd1bdb1bce6bab0921a23bc340af4cc70fd7b3b4aacd85",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "ue4-top-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 511,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 510,
+            "radial_median_distance_m": 0.047429099678993225,
+            "radial_min_distance_m": 4.6802386350464076e-05,
+            "samples_under_3mm": 36,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+            "id": "shirt",
+            "kind": "top",
+            "occlude_torso": false,
+            "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+            "target_box": [
+              -0.24,
+              0.97,
+              -0.22,
+              0.48,
+              0.6,
+              0.44
+            ],
+            "version": "shirt-source-octree-v7"
+          },
+          "hidden_body_faces": 0,
+          "revision": "fa5328cf5b2aec14f1995239fd3abf2f8a5d2604400d0198ea7de6fbf247ea29",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.23999999463558197,
+            0.9700000286102295,
+            -0.2199999988079071,
+            0.47999998927116394,
+            0.6000000238418579,
+            0.4399999976158142
+          ],
+          "vertices": 178270,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 0,
+            "skinned": 178270
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.12086229026317596,
+        "family": "ue4",
+        "kind": "top",
+        "sha256": "25d56dfa356577e218c5744cab1f5c01f83f8502eab14ff6d347a44d013dc0ec",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.03678271546959877,
+        "output_name": "ue4-top-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 511,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 508,
+            "radial_median_distance_m": 0.05063524842262268,
+            "radial_min_distance_m": 0.0001373483391944319,
+            "samples_under_3mm": 34,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+            "id": "shirt",
+            "kind": "top",
+            "occlude_torso": false,
+            "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+            "target_box": [
+              -0.24,
+              0.97,
+              -0.22,
+              0.48,
+              0.6,
+              0.44
+            ],
+            "version": "shirt-source-octree-v7"
+          },
+          "hidden_body_faces": 0,
+          "revision": "41b0bfda0dde57e5287056839b675fdffaf108d157918140a547b78c94db42ac",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.23999999463558197,
+            0.9700000286102295,
+            -0.2199999988079071,
+            0.47999998927116394,
+            0.6000000238418579,
+            0.4399999976158142
+          ],
+          "vertices": 178270,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 0,
+            "skinned": 178270
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.1337936818599701,
+        "family": "ue4",
+        "kind": "armor",
+        "sha256": "bb975c4c0401773394a8610b692491670883f0bc42472907f03fbcc480f02755",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "ue4-armor-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 511,
+            "radial_median_distance_m": 0.05948878452181816,
+            "radial_min_distance_m": 0.00035254156682640314,
+            "samples_under_3mm": 10,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+            "id": "armor",
+            "kind": "armor",
+            "occlude_torso": true,
+            "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+            "target_box": [
+              -0.26,
+              1.03,
+              -0.24,
+              0.52,
+              0.54,
+              0.48
+            ],
+            "version": "armor-source-octree-v2"
+          },
+          "hidden_body_faces": 5130,
+          "revision": "b80f1e5a8bb0594bae814f9ff30f8cea5ecf972b5d49eaef02ef2f86cfce755c",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.25999999046325684,
+            1.0299999713897705,
+            -0.23999999463558197,
+            0.5199999809265137,
+            0.5400000214576721,
+            0.47999998927116394
+          ],
+          "vertices": 460325,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 460325,
+            "skinned": 0
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.1424064189195633,
+        "family": "ue4",
+        "kind": "armor",
+        "sha256": "7df0ddaa9b2fa71d1c0be19f7710edce04a3f0a6a0860bce73b250ac3deb691d",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.03723090887069702,
+        "output_name": "ue4-armor-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 511,
+            "radial_median_distance_m": 0.06307972967624664,
+            "radial_min_distance_m": 0.0003500005987007171,
+            "samples_under_3mm": 10,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+            "id": "armor",
+            "kind": "armor",
+            "occlude_torso": true,
+            "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+            "target_box": [
+              -0.26,
+              1.03,
+              -0.24,
+              0.52,
+              0.54,
+              0.48
+            ],
+            "version": "armor-source-octree-v2"
+          },
+          "hidden_body_faces": 5215,
+          "revision": "c7a630fb4312c95a693b942a9ee6f05ef1ac7391a1ce3e2301645a8b1e56560a",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.25999999046325684,
+            1.0299999713897705,
+            -0.23999999463558197,
+            0.5199999809265137,
+            0.5400000214576721,
+            0.47999998927116394
+          ],
+          "vertices": 460325,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 460325,
+            "skinned": 0
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.18236181139945984,
+        "family": "ue4",
+        "kind": "skirt",
+        "sha256": "6a473328d0104ba3d765fe8b55adffc04a6d0aa8188a18f28325505b39aa060d",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "ue4-skirt-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": 68,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 380,
+            "radial_median_distance_m": 0.09736465662717819,
+            "radial_min_distance_m": 0.013642414472997189,
+            "samples_under_3mm": 0,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+            "id": "skirt",
+            "kind": "skirt",
+            "occlude_torso": false,
+            "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+            "target_box": [
+              -0.3,
+              0.58,
+              -0.25,
+              0.6,
+              0.52,
+              0.5
+            ],
+            "version": "skirt-source-octree-v2"
+          },
+          "hidden_body_faces": 0,
+          "revision": "67e818a0cc109534363806a5d277a1b78593fdcfe8b65d2b70e0907ac643844f",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.30000001192092896,
+            0.5799999833106995,
+            -0.25,
+            0.6000000238418579,
+            0.5199999809265137,
+            0.5
+          ],
+          "vertices": 485382,
+          "partition_vertex_counts": {
+            "cloth": 424964,
+            "cloth_pins": 14568,
+            "rigid": 0,
+            "skinned": 60418
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "2a9a9a7fd29e0a71b41dfa2afaee3fdf215343e17a55634d48c30f6179ee5c1c",
+            "bones": [
+              {
+                "name": "garment_skirt_hem",
+                "parent": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.18236181139945984,
+        "family": "ue4",
+        "kind": "skirt",
+        "sha256": "9cdd83c83a376913fc18a654a6634eccc64e74247ea88a173014486c57ef2173",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.02509263902902603,
+        "output_name": "ue4-skirt-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": 68,
+          "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6002,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 380,
+            "radial_median_distance_m": 0.10155537724494934,
+            "radial_min_distance_m": 0.015026240609586239,
+            "samples_under_3mm": 0,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+            "id": "skirt",
+            "kind": "skirt",
+            "occlude_torso": false,
+            "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+            "target_box": [
+              -0.3,
+              0.58,
+              -0.25,
+              0.6,
+              0.52,
+              0.5
+            ],
+            "version": "skirt-source-octree-v2"
+          },
+          "hidden_body_faces": 0,
+          "revision": "9b6b1492f84b1e6b0813b7e2e30f6eda51c7371aff7595fec0d5f5f0bd7d99e0",
+          "schema_version": 1,
+          "shared_bones": 68,
+          "target_box": [
+            -0.30000001192092896,
+            0.5799999833106995,
+            -0.25,
+            0.6000000238418579,
+            0.5199999809265137,
+            0.5
+          ],
+          "vertices": 485382,
+          "partition_vertex_counts": {
+            "cloth": 424964,
+            "cloth_pins": 14568,
+            "rigid": 0,
+            "skinned": 60418
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+            "combined_revision": "2a9a9a7fd29e0a71b41dfa2afaee3fdf215343e17a55634d48c30f6179ee5c1c",
+            "bones": [
+              {
+                "name": "garment_skirt_hem",
+                "parent": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.09402208030223846,
+        "family": "mixamo",
+        "kind": "top",
+        "sha256": "da2aff6a7483c06bce39ed8a6187b7fc33dba41194bdaf45dedecfe38d3369f4",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "mixamo-top-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 511,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 511,
+            "radial_median_distance_m": 0.05857531353831291,
+            "radial_min_distance_m": 0.0001224519219249487,
+            "samples_under_3mm": 19,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+            "id": "shirt",
+            "kind": "top",
+            "occlude_torso": false,
+            "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+            "target_box": [
+              -0.24,
+              0.97,
+              -0.22,
+              0.48,
+              0.6,
+              0.44
+            ],
+            "version": "shirt-source-octree-v7"
+          },
+          "hidden_body_faces": 0,
+          "revision": "dae676af1f7dc722e84e8a02ea2169db76306eda792e35ee12085bf0ef7505c0",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.23999999463558197,
+            0.9700000286102295,
+            -0.2199999988079071,
+            0.47999998927116394,
+            0.6000000238418579,
+            0.4399999976158142
+          ],
+          "vertices": 178270,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 0,
+            "skinned": 178270
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.10151349008083344,
+        "family": "mixamo",
+        "kind": "top",
+        "sha256": "7d3ea6be667b17fef82f62361840dd5afeae75457e0904b181c83cd71242c8f3",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.0352785624563694,
+        "output_name": "mixamo-top-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 511,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 509,
+            "radial_median_distance_m": 0.062471453100442886,
+            "radial_min_distance_m": 0.0001224519219249487,
+            "samples_under_3mm": 17,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+            "id": "shirt",
+            "kind": "top",
+            "occlude_torso": false,
+            "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+            "target_box": [
+              -0.24,
+              0.97,
+              -0.22,
+              0.48,
+              0.6,
+              0.44
+            ],
+            "version": "shirt-source-octree-v7"
+          },
+          "hidden_body_faces": 0,
+          "revision": "250130e11ab56c46193f6e2ce814293be625a809f0a4bfd7304244f8353b850a",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.23999999463558197,
+            0.9700000286102295,
+            -0.2199999988079071,
+            0.47999998927116394,
+            0.6000000238418579,
+            0.4399999976158142
+          ],
+          "vertices": 178270,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 0,
+            "skinned": 178270
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.11624795198440552,
+        "family": "mixamo",
+        "kind": "armor",
+        "sha256": "7027551b8cbf28771be8d1e7ed31a626c1eca2b57428e1f054e81499666725be",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "mixamo-armor-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 503,
+            "radial_median_distance_m": 0.06464932858943939,
+            "radial_min_distance_m": 9.940923337126151e-05,
+            "samples_under_3mm": 18,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+            "id": "armor",
+            "kind": "armor",
+            "occlude_torso": true,
+            "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+            "target_box": [
+              -0.26,
+              1.03,
+              -0.24,
+              0.52,
+              0.54,
+              0.48
+            ],
+            "version": "armor-source-octree-v2"
+          },
+          "hidden_body_faces": 4298,
+          "revision": "368f530a81a5a8b8e4750c7e18f0369ac0dbf0f9135aef30cecde94bb1eb66c4",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.25999999046325684,
+            1.0299999713897705,
+            -0.23999999463558197,
+            0.5199999809265137,
+            0.5400000214576721,
+            0.47999998927116394
+          ],
+          "vertices": 460325,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 460325,
+            "skinned": 0
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.11926699429750443,
+        "family": "mixamo",
+        "kind": "armor",
+        "sha256": "9db8f3fd5a8f0694ef4907c7de489070b57d9faf68ea12ddac1accc5167ab5b8",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.03761820122599602,
+        "output_name": "mixamo-armor-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": -1,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 503,
+            "radial_median_distance_m": 0.06796691566705704,
+            "radial_min_distance_m": 4.606132279150188e-05,
+            "samples_under_3mm": 18,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+            "id": "armor",
+            "kind": "armor",
+            "occlude_torso": true,
+            "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+            "target_box": [
+              -0.26,
+              1.03,
+              -0.24,
+              0.52,
+              0.54,
+              0.48
+            ],
+            "version": "armor-source-octree-v2"
+          },
+          "hidden_body_faces": 4451,
+          "revision": "99345c0ae984dbe75e0153938e1a5429db8f639ab21d25ef74a57644d28304ee",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.25999999046325684,
+            1.0299999713897705,
+            -0.23999999463558197,
+            0.5199999809265137,
+            0.5400000214576721,
+            0.47999998927116394
+          ],
+          "vertices": 460325,
+          "partition_vertex_counts": {
+            "cloth": 0,
+            "cloth_pins": 0,
+            "rigid": 460325,
+            "skinned": 0
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+            "bones": []
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.12099803239107132,
+        "family": "mixamo",
+        "kind": "skirt",
+        "sha256": "d4ae3bb5d729b5d1b84498eaf0545f27097cff81ddd148836d1a54ff22f25ec2",
+        "shape": {},
+        "shape_vertex_delta_m": 0.0,
+        "output_name": "mixamo-skirt-0.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": 67,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {},
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 442,
+            "radial_median_distance_m": 0.11189267784357071,
+            "radial_min_distance_m": 0.013552731834352016,
+            "samples_under_3mm": 0,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+            "id": "skirt",
+            "kind": "skirt",
+            "occlude_torso": false,
+            "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+            "target_box": [
+              -0.3,
+              0.58,
+              -0.25,
+              0.6,
+              0.52,
+              0.5
+            ],
+            "version": "skirt-source-octree-v2"
+          },
+          "hidden_body_faces": 0,
+          "revision": "8fe72d6aaa94e114455de8dc5241e5e0f0c35eb38ea19172c654f94a577f683b",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.30000001192092896,
+            0.5799999833106995,
+            -0.25,
+            0.6000000238418579,
+            0.5199999809265137,
+            0.5
+          ],
+          "vertices": 485382,
+          "partition_vertex_counts": {
+            "cloth": 444850,
+            "cloth_pins": 12961,
+            "rigid": 0,
+            "skinned": 40532
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "3456dda1e3697e82e9eb0e2f414ebc88452c5394ad81958bd4a2103544dec192",
+            "bones": [
+              {
+                "name": "garment_skirt_hem",
+                "parent": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "animation_vertex_delta_m": 0.12099803239107132,
+        "family": "mixamo",
+        "kind": "skirt",
+        "sha256": "1af528c4a1426e9f40e0571c176e76200693c416c39e6796044785d24dae02c3",
+        "shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "shape_vertex_delta_m": 0.023967690765857697,
+        "output_name": "mixamo-skirt-1.tscn",
+        "manifest": {
+          "algorithm": "reviewed-axis-cage-v1",
+          "auxiliary_bone": 67,
+          "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "avatar_source": {
+            "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+            "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+            "version": "147-accepted"
+          },
+          "body_shape": {
+            "chest": 1.15,
+            "depth": 1.15,
+            "hips": 1.1,
+            "waist": 0.9
+          },
+          "clearance": {
+            "body_edges_tested": 6003,
+            "crossing_edges": 0,
+            "garment_samples": 512,
+            "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+            "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+            "radial_hits": 442,
+            "radial_median_distance_m": 0.11497755348682404,
+            "radial_min_distance_m": 0.015156058594584465,
+            "samples_under_3mm": 0,
+            "status": "no_intersections_in_sample"
+          },
+          "cloth_solver": "none; deferred to #152",
+          "garment": {
+            "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+            "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+            "id": "skirt",
+            "kind": "skirt",
+            "occlude_torso": false,
+            "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+            "target_box": [
+              -0.3,
+              0.58,
+              -0.25,
+              0.6,
+              0.52,
+              0.5
+            ],
+            "version": "skirt-source-octree-v2"
+          },
+          "hidden_body_faces": 0,
+          "revision": "c5b9b7cb4f365cf1104a9a57a530888c3e08655ec72a91c46caa8157879d1e1f",
+          "schema_version": 1,
+          "shared_bones": 67,
+          "target_box": [
+            -0.30000001192092896,
+            0.5799999833106995,
+            -0.25,
+            0.6000000238418579,
+            0.5199999809265137,
+            0.5
+          ],
+          "vertices": 485382,
+          "partition_vertex_counts": {
+            "cloth": 444850,
+            "cloth_pins": 12961,
+            "rigid": 0,
+            "skinned": 40532
+          },
+          "skeleton_extension": {
+            "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+            "combined_revision": "3456dda1e3697e82e9eb0e2f414ebc88452c5394ad81958bd4a2103544dec192",
+            "bones": [
+              {
+                "name": "garment_skirt_hem",
+                "parent": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "actual_ui": [
+    {
+      "receipt_name": "fit-mixamo-armor-0.json",
+      "receipt_sha256": "0382dcb1f6233e0a759a8d8d35d5e9943889ac21d290764ef16a83f3f4aaba4a",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "6dfbb6a6aacd2ad43d73965d69569b1bc6014234022a35d59ba1e557455c2fd2",
+          "name": "fit-mixamo-armor-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "517a5cc96245770ed21ff45e0b95e57dffa997557420737a13f5395d7c09a074",
+          "name": "fit-mixamo-armor-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "f1a4642d51555faa781cc52f04cc581a6893ae2542ca085413a2c21d3737c4b8",
+          "name": "fit-mixamo-armor-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "e9b3ee960bfb53f7d7be7efeeb3401dbc84baf57bb03fb9ba10e638d50236050",
+          "name": "fit-mixamo-armor-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 503,
+          "radial_median_distance_m": 0.06464932858943939,
+          "radial_min_distance_m": 9.940923337126151e-05,
+          "samples_under_3mm": 18,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+          "id": "armor",
+          "kind": "armor",
+          "occlude_torso": true,
+          "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+          "target_box": [
+            -0.26,
+            1.03,
+            -0.24,
+            0.52,
+            0.54,
+            0.48
+          ],
+          "version": "armor-source-octree-v2"
+        },
+        "hidden_body_faces": 4298,
+        "revision": "368f530a81a5a8b8e4750c7e18f0369ac0dbf0f9135aef30cecde94bb1eb66c4",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.25999999046325684,
+          1.0299999713897705,
+          -0.23999999463558197,
+          0.5199999809265137,
+          0.5400000214576721,
+          0.47999998927116394
+        ],
+        "vertices": 460325,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 460325,
+          "skinned": 0
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-mixamo-armor-1.json",
+      "receipt_sha256": "46a704297de69b6161a8ed2219e920208002a6395127d9c06e60cdbcdc367078",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "1991317389d8b90be28566b97f9fa43510d18e3d72fe5e17b6e5aa665f62faab",
+          "name": "fit-mixamo-armor-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "79dc029879818a1508065bd1d0c1d292775f05e13dea9337d25a0a8e66b5db61",
+          "name": "fit-mixamo-armor-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "048c269c6636635a18f851e6bc339166b20c0a7180c679c30e045f997a6c7160",
+          "name": "fit-mixamo-armor-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "1765ee925b33163b7adc07e8bee2c680c6fcd7d162c12fc3ee0784f280ad8b75",
+          "name": "fit-mixamo-armor-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 503,
+          "radial_median_distance_m": 0.06796691566705704,
+          "radial_min_distance_m": 4.606132279150188e-05,
+          "samples_under_3mm": 18,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+          "id": "armor",
+          "kind": "armor",
+          "occlude_torso": true,
+          "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+          "target_box": [
+            -0.26,
+            1.03,
+            -0.24,
+            0.52,
+            0.54,
+            0.48
+          ],
+          "version": "armor-source-octree-v2"
+        },
+        "hidden_body_faces": 4451,
+        "revision": "99345c0ae984dbe75e0153938e1a5429db8f639ab21d25ef74a57644d28304ee",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.25999999046325684,
+          1.0299999713897705,
+          -0.23999999463558197,
+          0.5199999809265137,
+          0.5400000214576721,
+          0.47999998927116394
+        ],
+        "vertices": 460325,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 460325,
+          "skinned": 0
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-mixamo-shirt-0.json",
+      "receipt_sha256": "83dc0701e4bee8d2970927b776a43416113917229a762917e031bc7dad10cc5d",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "d01e7ce39440212d696d62afaac272f15903e85fceb64d19b3cc7e462ed19c65",
+          "name": "fit-mixamo-shirt-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "7b73e7029e36172756eb8c07a3ea4ea7d4f4a139d6811e57d0c66ff3f04525f1",
+          "name": "fit-mixamo-shirt-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "591347f058fa85e44a09568aff7cfa58f98f461d1315b2a3b5d21602989f1775",
+          "name": "fit-mixamo-shirt-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "b5c726f106663e8f1a2f6301d30b8f6ae0e52bc651ef38790e1b4ef19d15a186",
+          "name": "fit-mixamo-shirt-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 511,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 511,
+          "radial_median_distance_m": 0.05857531353831291,
+          "radial_min_distance_m": 0.0001224519219249487,
+          "samples_under_3mm": 19,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+          "id": "shirt",
+          "kind": "top",
+          "occlude_torso": false,
+          "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+          "target_box": [
+            -0.24,
+            0.97,
+            -0.22,
+            0.48,
+            0.6,
+            0.44
+          ],
+          "version": "shirt-source-octree-v7"
+        },
+        "hidden_body_faces": 0,
+        "revision": "dae676af1f7dc722e84e8a02ea2169db76306eda792e35ee12085bf0ef7505c0",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.23999999463558197,
+          0.9700000286102295,
+          -0.2199999988079071,
+          0.47999998927116394,
+          0.6000000238418579,
+          0.4399999976158142
+        ],
+        "vertices": 178270,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 0,
+          "skinned": 178270
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-mixamo-shirt-1.json",
+      "receipt_sha256": "3d6e690f5ce2aa19a2e10175686a8c74349764fd80ef3d717fc0195163688c2b",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "5e190fa674a5cb9b6162a0f295637ba24d3d2818a2b72cdd12c1d58f4ac88a07",
+          "name": "fit-mixamo-shirt-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "1d87ddff212a2a3fc75dec00f1f4b191ce9891f8a80b441d1e5c29446703c795",
+          "name": "fit-mixamo-shirt-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "83e5160499ff100181fc6a21852780cd678217475e1ba2aea7b63ce84f4d48dc",
+          "name": "fit-mixamo-shirt-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "0282c1c941ddcae3786a1ffd1f2c842d02dd868539702113ee1d3886dafaa4a5",
+          "name": "fit-mixamo-shirt-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 511,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 509,
+          "radial_median_distance_m": 0.062471453100442886,
+          "radial_min_distance_m": 0.0001224519219249487,
+          "samples_under_3mm": 17,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+          "id": "shirt",
+          "kind": "top",
+          "occlude_torso": false,
+          "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+          "target_box": [
+            -0.24,
+            0.97,
+            -0.22,
+            0.48,
+            0.6,
+            0.44
+          ],
+          "version": "shirt-source-octree-v7"
+        },
+        "hidden_body_faces": 0,
+        "revision": "250130e11ab56c46193f6e2ce814293be625a809f0a4bfd7304244f8353b850a",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.23999999463558197,
+          0.9700000286102295,
+          -0.2199999988079071,
+          0.47999998927116394,
+          0.6000000238418579,
+          0.4399999976158142
+        ],
+        "vertices": 178270,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 0,
+          "skinned": 178270
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "2ca326a4e127b2bfbbdf434f63c42750e4a729bf9d69bf2243ba21b5469e1301",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-mixamo-skirt-0.json",
+      "receipt_sha256": "fc484d149e98cb661c7a2179f5b919be9011a599f4b7ba406017617278bf8131",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "9d06a55fea5e7aa98d74773d5e0437f08539334bac46566d392f49d12340ee1a",
+          "name": "fit-mixamo-skirt-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "686179f06abec97dca510a1dba965ff0160676a8f895251a4b5afdf4d28abcb3",
+          "name": "fit-mixamo-skirt-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "411ac4777419f8de1d4c49eebd997d46af9d480b05a808e4ea95e2b48d08ffe1",
+          "name": "fit-mixamo-skirt-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "8924d7756d0427424c1faaacb862dbea9d50f4053dcb66ddcf70c5d80a3e841e",
+          "name": "fit-mixamo-skirt-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": 67,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 442,
+          "radial_median_distance_m": 0.11189267784357071,
+          "radial_min_distance_m": 0.013552731834352016,
+          "samples_under_3mm": 0,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "id": "skirt",
+          "kind": "skirt",
+          "occlude_torso": false,
+          "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "target_box": [
+            -0.3,
+            0.58,
+            -0.25,
+            0.6,
+            0.52,
+            0.5
+          ],
+          "version": "skirt-source-octree-v2"
+        },
+        "hidden_body_faces": 0,
+        "revision": "8fe72d6aaa94e114455de8dc5241e5e0f0c35eb38ea19172c654f94a577f683b",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.30000001192092896,
+          0.5799999833106995,
+          -0.25,
+          0.6000000238418579,
+          0.5199999809265137,
+          0.5
+        ],
+        "vertices": 485382,
+        "partition_vertex_counts": {
+          "cloth": 444850,
+          "cloth_pins": 12961,
+          "rigid": 0,
+          "skinned": 40532
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "3456dda1e3697e82e9eb0e2f414ebc88452c5394ad81958bd4a2103544dec192",
+          "bones": [
+            {
+              "name": "garment_skirt_hem",
+              "parent": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-mixamo-skirt-1.json",
+      "receipt_sha256": "6e353e0772569083de6d4a921fd34a907dfa3ce4d6c8cb0eb069486dabab1f44",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "2d409165f789bab1a2e9d5fd9ccf7146b8ac16bec0b251a83cbbc00d37b7d610",
+          "name": "fit-mixamo-skirt-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "cc2de760cff57b81e7b2aed52e721e45f21749b726cd699feffe207e90d0a766",
+          "name": "fit-mixamo-skirt-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "03a0de369d70ba423e17d57c749854f8112bf5b693b60965a6d90f9a3f281465",
+          "name": "fit-mixamo-skirt-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "a088dc7060b77b2edc87270b7ecaa8c5b84ac7f236d664e0dc5ac1189d997aa8",
+          "name": "fit-mixamo-skirt-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": 67,
+        "avatar_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "1ff7c8b80bfb9fd792515cf2caf114685a839d97660bbb3bfdf069992cbe22a3",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6003,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 442,
+          "radial_median_distance_m": 0.11497755348682404,
+          "radial_min_distance_m": 0.015156058594584465,
+          "samples_under_3mm": 0,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "id": "skirt",
+          "kind": "skirt",
+          "occlude_torso": false,
+          "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "target_box": [
+            -0.3,
+            0.58,
+            -0.25,
+            0.6,
+            0.52,
+            0.5
+          ],
+          "version": "skirt-source-octree-v2"
+        },
+        "hidden_body_faces": 0,
+        "revision": "c5b9b7cb4f365cf1104a9a57a530888c3e08655ec72a91c46caa8157879d1e1f",
+        "schema_version": 1,
+        "shared_bones": 67,
+        "target_box": [
+          -0.30000001192092896,
+          0.5799999833106995,
+          -0.25,
+          0.6000000238418579,
+          0.5199999809265137,
+          0.5
+        ],
+        "vertices": 485382,
+        "partition_vertex_counts": {
+          "cloth": 444850,
+          "cloth_pins": 12961,
+          "rigid": 0,
+          "skinned": 40532
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "60b412f6a044643e174a8967ac08860192f01b572e5024ba21c866fb997a56fc",
+          "combined_revision": "3456dda1e3697e82e9eb0e2f414ebc88452c5394ad81958bd4a2103544dec192",
+          "bones": [
+            {
+              "name": "garment_skirt_hem",
+              "parent": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-armor-0.json",
+      "receipt_sha256": "8a7cc6c91358f651b41124b34a7392018fe58d697e4dc5f3f5b40d6f157439df",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "1932fc25a9bdc1ccd434dced25c6a5f9f0e241e78ac5cb0bd80ff94420bdee61",
+          "name": "fit-ue4-armor-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "8ed956769bffb6cca8140f1eb197ce5c78245b9b6533fe34cbc3d5c18fd78891",
+          "name": "fit-ue4-armor-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "0ce5f2985258f4e80c04f12958d9758db1b3933b8d03e15b8bcaeb321e713eb3",
+          "name": "fit-ue4-armor-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "e8d843d88755feb3d45cefbc9e9e8b9c546405f4e29278ba02794e93b5d6061e",
+          "name": "fit-ue4-armor-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 511,
+          "radial_median_distance_m": 0.05948878452181816,
+          "radial_min_distance_m": 0.00035254156682640314,
+          "samples_under_3mm": 10,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+          "id": "armor",
+          "kind": "armor",
+          "occlude_torso": true,
+          "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+          "target_box": [
+            -0.26,
+            1.03,
+            -0.24,
+            0.52,
+            0.54,
+            0.48
+          ],
+          "version": "armor-source-octree-v2"
+        },
+        "hidden_body_faces": 5130,
+        "revision": "b80f1e5a8bb0594bae814f9ff30f8cea5ecf972b5d49eaef02ef2f86cfce755c",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.25999999046325684,
+          1.0299999713897705,
+          -0.23999999463558197,
+          0.5199999809265137,
+          0.5400000214576721,
+          0.47999998927116394
+        ],
+        "vertices": 460325,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 460325,
+          "skinned": 0
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-armor-1.json",
+      "receipt_sha256": "c78eec6289ef1c6612bec4be67be5ad2ff5f1647a20eba7d894e9f3ff8936f23",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "fcc9a8fc8dc8b2de3bb15f69de83f1498b4d40bf2dbba78e4e15824f2f9e4a57",
+          "name": "fit-ue4-armor-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "3407286a45c86829ef819db5a024bb3ce5ac4ae373b374de654b24745e1c06b8",
+          "name": "fit-ue4-armor-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "c916ab921181bdd091da01a790c7503d6253f2372772bc066654ec772385429c",
+          "name": "fit-ue4-armor-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "35340cd21327603dbe4cbbf4549f63de564fa77b745e617be1118efdea4048c3",
+          "name": "fit-ue4-armor-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 511,
+          "radial_median_distance_m": 0.06307972967624664,
+          "radial_min_distance_m": 0.0003500005987007171,
+          "samples_under_3mm": 10,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+          "id": "armor",
+          "kind": "armor",
+          "occlude_torso": true,
+          "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+          "target_box": [
+            -0.26,
+            1.03,
+            -0.24,
+            0.52,
+            0.54,
+            0.48
+          ],
+          "version": "armor-source-octree-v2"
+        },
+        "hidden_body_faces": 5215,
+        "revision": "c7a630fb4312c95a693b942a9ee6f05ef1ac7391a1ce3e2301645a8b1e56560a",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.25999999046325684,
+          1.0299999713897705,
+          -0.23999999463558197,
+          0.5199999809265137,
+          0.5400000214576721,
+          0.47999998927116394
+        ],
+        "vertices": 460325,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 460325,
+          "skinned": 0
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-shirt-0.json",
+      "receipt_sha256": "a68edc62fde2add541f6513fc84be8e3efe43db3d45bb548ad86655e85e5325f",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "a1bf9dcbde601b108378d4c5ad85a087bf5516e5a483f2b562ccdd0f70e895f2",
+          "name": "fit-ue4-shirt-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "5b91e218fb8677294271f067c7dfb86bd4c3c9c533aa4338c9cff8f16ca43c8e",
+          "name": "fit-ue4-shirt-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "679c06bb5d74fabec866f91662db5fa17765cce4c853432da39ff782f6393e61",
+          "name": "fit-ue4-shirt-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "8c4be2d865962e13b1fb154b3bb81ac9334db1ca152b60599a00ed947fb8a899",
+          "name": "fit-ue4-shirt-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 511,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 510,
+          "radial_median_distance_m": 0.047429099678993225,
+          "radial_min_distance_m": 4.6802386350464076e-05,
+          "samples_under_3mm": 36,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+          "id": "shirt",
+          "kind": "top",
+          "occlude_torso": false,
+          "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+          "target_box": [
+            -0.24,
+            0.97,
+            -0.22,
+            0.48,
+            0.6,
+            0.44
+          ],
+          "version": "shirt-source-octree-v7"
+        },
+        "hidden_body_faces": 0,
+        "revision": "fa5328cf5b2aec14f1995239fd3abf2f8a5d2604400d0198ea7de6fbf247ea29",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.23999999463558197,
+          0.9700000286102295,
+          -0.2199999988079071,
+          0.47999998927116394,
+          0.6000000238418579,
+          0.4399999976158142
+        ],
+        "vertices": 178270,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 0,
+          "skinned": 178270
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+          "bones": []
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-shirt-1.json",
+      "receipt_sha256": "281bbdbaf8b2130c1ed89ff8fb24059d31678ff67c27ce394276296e1d8fbf1e",
+      "invalid_wardrobe_state_preserved": true,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {
+        "manifest_retained": true,
+        "no_clobber": true,
+        "sha256": "e04964e56998525654c95496f3380b311c365ae5d401eee884db7298e7e9e5bf",
+        "skin_weights_retained": true
+      },
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "b3c79fca4e0f7081750057fd7e680dd61d29d4c2413f3664fcf9e69d83c6f775",
+          "name": "fit-ue4-shirt-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "c1317b4fdbdea7d374617c4d55155b556569a15de94a176587f53bde16c6c76d",
+          "name": "fit-ue4-shirt-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "b241c8a2245871819bc75b9b17f2ab8799f974e778c88671f767671fed8d0c80",
+          "name": "fit-ue4-shirt-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "d2a809f32f1cb682b3fff5fab393e334a73d0f57fe5e48175161eb7d8780601a",
+          "name": "fit-ue4-shirt-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 511,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 508,
+          "radial_median_distance_m": 0.05063524842262268,
+          "radial_min_distance_m": 0.0001373483391944319,
+          "samples_under_3mm": 34,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "42592dd420ccfe08fe0b959e834a1f58155acefe2d2dfa8b242ff8baff0e74e6",
+          "id": "shirt",
+          "kind": "top",
+          "occlude_torso": false,
+          "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+          "target_box": [
+            -0.24,
+            0.97,
+            -0.22,
+            0.48,
+            0.6,
+            0.44
+          ],
+          "version": "shirt-source-octree-v7"
+        },
+        "hidden_body_faces": 0,
+        "revision": "41b0bfda0dde57e5287056839b675fdffaf108d157918140a547b78c94db42ac",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.23999999463558197,
+          0.9700000286102295,
+          -0.2199999988079071,
+          0.47999998927116394,
+          0.6000000238418579,
+          0.4399999976158142
+        ],
+        "vertices": 178270,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 0,
+          "skinned": 178270
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+          "bones": []
+        }
+      },
+      "workbench_screenshot": {
+        "name": "workbench.png",
+        "sha256": "0dba45f72cbf3847108718095e0f3942f108ad676bc3fa15784368950657ef19"
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-skirt-0.json",
+      "receipt_sha256": "2eb9648f1fe9c59775d82a623bfd9e37392d37b9bb5f26b3cb678692bb97bcbe",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "f9eef6a953c8ef912007a95685cd5300cbe865f77942ba5dad3b090095493cdb",
+          "name": "fit-ue4-skirt-0-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "43c4c4d207dcac92046b2bc31d06701e771388837e4c7c98b8758fc667a6e78d",
+          "name": "fit-ue4-skirt-0-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "2b80a1e3930728f5202049ba3e5d5cc888690498796f731ffe21fbbeaa154f32",
+          "name": "fit-ue4-skirt-0-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "4c10cc41081c2b4a5f1e9ef06d3eb399db590c9d1ea774ada3dc6c1147d9209b",
+          "name": "fit-ue4-skirt-0-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": 68,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 380,
+          "radial_median_distance_m": 0.09736465662717819,
+          "radial_min_distance_m": 0.013642414472997189,
+          "samples_under_3mm": 0,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "id": "skirt",
+          "kind": "skirt",
+          "occlude_torso": false,
+          "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "target_box": [
+            -0.3,
+            0.58,
+            -0.25,
+            0.6,
+            0.52,
+            0.5
+          ],
+          "version": "skirt-source-octree-v2"
+        },
+        "hidden_body_faces": 0,
+        "revision": "67e818a0cc109534363806a5d277a1b78593fdcfe8b65d2b70e0907ac643844f",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.30000001192092896,
+          0.5799999833106995,
+          -0.25,
+          0.6000000238418579,
+          0.5199999809265137,
+          0.5
+        ],
+        "vertices": 485382,
+        "partition_vertex_counts": {
+          "cloth": 424964,
+          "cloth_pins": 14568,
+          "rigid": 0,
+          "skinned": 60418
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "2a9a9a7fd29e0a71b41dfa2afaee3fdf215343e17a55634d48c30f6179ee5c1c",
+          "bones": [
+            {
+              "name": "garment_skirt_hem",
+              "parent": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "receipt_name": "fit-ue4-skirt-1.json",
+      "receipt_sha256": "3292aee51112ea412aa9d6a4cceb610bb04c96d1aaef1025bf25b3eb176de799",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "swap": {},
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "5819ce4790faedf37fccf2697b7bac0802d1acc43ceff1af54823a630286cd2a",
+          "name": "fit-ue4-skirt-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "f4b2959b1db1b88af394bf60e0d1a26e87cd7a14f6ee9339fbb344d0d94717a5",
+          "name": "fit-ue4-skirt-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "3ecabe61919a3f56f9aaeb74a8ea7339b56c6be782d50b5c9be3e9f5b73055be",
+          "name": "fit-ue4-skirt-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "06c35817a8a3df5fb68a19be5197f7133e5746e272361e29e7e7c3c905d959c9",
+          "name": "fit-ue4-skirt-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": 68,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {
+          "chest": 1.15,
+          "depth": 1.15,
+          "hips": 1.1,
+          "waist": 0.9
+        },
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 380,
+          "radial_median_distance_m": 0.10155537724494934,
+          "radial_min_distance_m": 0.015026240609586239,
+          "samples_under_3mm": 0,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "id": "skirt",
+          "kind": "skirt",
+          "occlude_torso": false,
+          "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "target_box": [
+            -0.3,
+            0.58,
+            -0.25,
+            0.6,
+            0.52,
+            0.5
+          ],
+          "version": "skirt-source-octree-v2"
+        },
+        "hidden_body_faces": 0,
+        "revision": "9b6b1492f84b1e6b0813b7e2e30f6eda51c7371aff7595fec0d5f5f0bd7d99e0",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.30000001192092896,
+          0.5799999833106995,
+          -0.25,
+          0.6000000238418579,
+          0.5199999809265137,
+          0.5
+        ],
+        "vertices": 485382,
+        "partition_vertex_counts": {
+          "cloth": 424964,
+          "cloth_pins": 14568,
+          "rigid": 0,
+          "skinned": 60418
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "2a9a9a7fd29e0a71b41dfa2afaee3fdf215343e17a55634d48c30f6179ee5c1c",
+          "bones": [
+            {
+              "name": "garment_skirt_hem",
+              "parent": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "receipt_name": "swap-1-2.json",
+      "receipt_sha256": "1b095e4098e8d2022a4665e533fa97396cbf76f9dbc6bdbb2b65ee6d847eede6",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "swap": {
+        "after": "skirt",
+        "before": "armor",
+        "bone_count": 69,
+        "expected_bone_count": 69,
+        "independent_instances": 1
+      },
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "f9eef6a953c8ef912007a95685cd5300cbe865f77942ba5dad3b090095493cdb",
+          "name": "swap-1-2-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "43c4c4d207dcac92046b2bc31d06701e771388837e4c7c98b8758fc667a6e78d",
+          "name": "swap-1-2-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "2b80a1e3930728f5202049ba3e5d5cc888690498796f731ffe21fbbeaa154f32",
+          "name": "swap-1-2-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "4c10cc41081c2b4a5f1e9ef06d3eb399db590c9d1ea774ada3dc6c1147d9209b",
+          "name": "swap-1-2-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": 68,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 380,
+          "radial_median_distance_m": 0.09736465662717819,
+          "radial_min_distance_m": 0.013642414472997189,
+          "samples_under_3mm": 0,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "id": "skirt",
+          "kind": "skirt",
+          "occlude_torso": false,
+          "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "target_box": [
+            -0.3,
+            0.58,
+            -0.25,
+            0.6,
+            0.52,
+            0.5
+          ],
+          "version": "skirt-source-octree-v2"
+        },
+        "hidden_body_faces": 0,
+        "revision": "67e818a0cc109534363806a5d277a1b78593fdcfe8b65d2b70e0907ac643844f",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.30000001192092896,
+          0.5799999833106995,
+          -0.25,
+          0.6000000238418579,
+          0.5199999809265137,
+          0.5
+        ],
+        "vertices": 485382,
+        "partition_vertex_counts": {
+          "cloth": 424964,
+          "cloth_pins": 14568,
+          "rigid": 0,
+          "skinned": 60418
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "2a9a9a7fd29e0a71b41dfa2afaee3fdf215343e17a55634d48c30f6179ee5c1c",
+          "bones": [
+            {
+              "name": "garment_skirt_hem",
+              "parent": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "receipt_name": "swap-2-1.json",
+      "receipt_sha256": "7b5ebf2015bb1659545752f44f312492b14e4ae6a74e40d98a84f6ad5760b276",
+      "invalid_wardrobe_state_preserved": false,
+      "source_only": false,
+      "source_preserved": true,
+      "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "swap": {
+        "after": "armor",
+        "before": "skirt",
+        "bone_count": 68,
+        "expected_bone_count": 68,
+        "independent_instances": 1
+      },
+      "visual_acceptance": "requires human review of rendered images; screenshots alone are not acceptance",
+      "publication": {},
+      "screenshots": [
+        {
+          "angle_degrees": 0,
+          "sha256": "1932fc25a9bdc1ccd434dced25c6a5f9f0e241e78ac5cb0bd80ff94420bdee61",
+          "name": "swap-2-1-0.png"
+        },
+        {
+          "angle_degrees": 90,
+          "sha256": "8ed956769bffb6cca8140f1eb197ce5c78245b9b6533fe34cbc3d5c18fd78891",
+          "name": "swap-2-1-1.png"
+        },
+        {
+          "angle_degrees": 180,
+          "sha256": "0ce5f2985258f4e80c04f12958d9758db1b3933b8d03e15b8bcaeb321e713eb3",
+          "name": "swap-2-1-2.png"
+        },
+        {
+          "animation_time": 1.0,
+          "sha256": "e8d843d88755feb3d45cefbc9e9e8b9c546405f4e29278ba02794e93b5d6061e",
+          "name": "swap-2-1-animation.png"
+        }
+      ],
+      "manifest": {
+        "algorithm": "reviewed-axis-cage-v1",
+        "auxiliary_bone": -1,
+        "avatar_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+        "avatar_source": {
+          "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "version": "147-accepted"
+        },
+        "body_shape": {},
+        "clearance": {
+          "body_edges_tested": 6002,
+          "crossing_edges": 0,
+          "garment_samples": 512,
+          "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+          "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+          "radial_hits": 511,
+          "radial_median_distance_m": 0.05948878452181816,
+          "radial_min_distance_m": 0.00035254156682640314,
+          "samples_under_3mm": 10,
+          "status": "no_intersections_in_sample"
+        },
+        "cloth_solver": "none; deferred to #152",
+        "garment": {
+          "calibration": "reviewed source cage, metres; full body shape applied to both body and garment",
+          "generation_receipt_sha256": "b642bd579fecca79ed67805258d3063868ea4f04031cd65a2f99da3259551bc5",
+          "id": "armor",
+          "kind": "armor",
+          "occlude_torso": true,
+          "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+          "target_box": [
+            -0.26,
+            1.03,
+            -0.24,
+            0.52,
+            0.54,
+            0.48
+          ],
+          "version": "armor-source-octree-v2"
+        },
+        "hidden_body_faces": 5130,
+        "revision": "b80f1e5a8bb0594bae814f9ff30f8cea5ecf972b5d49eaef02ef2f86cfce755c",
+        "schema_version": 1,
+        "shared_bones": 68,
+        "target_box": [
+          -0.25999999046325684,
+          1.0299999713897705,
+          -0.23999999463558197,
+          0.5199999809265137,
+          0.5400000214576721,
+          0.47999998927116394
+        ],
+        "vertices": 460325,
+        "partition_vertex_counts": {
+          "cloth": 0,
+          "cloth_pins": 0,
+          "rigid": 460325,
+          "skinned": 0
+        },
+        "skeleton_extension": {
+          "base_profile_revision": "396d155062be91b58d968447236ae7b99a4ce3e2ba8f12add6cff9da5368ba06",
+          "combined_revision": "aadc75d2bfd389e3f632032f83664b4856066a45e39df661ddd7c5367111b5d3",
+          "bones": []
+        }
+      }
+    }
+  ],
+  "generated_sources": [
+    {
+      "name": "shirt-source-octree-v7.glb",
+      "sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+      "bytes": 11011104,
+      "generation": {
+        "run_id": "a743439b345e495f8522ec77ad2f4c69",
+        "job_id": "0db54d3c5a936e50b41ef275caa41619e0142a6dd8968f15ec32c3d90284b959",
+        "prompt_id": "00a22657-beb4-4369-93fe-3b634d05d400",
+        "source_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+        "provenance": {
+          "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+          "checkpoints": {
+            "image": {
+              "name": "sd_turbo.safetensors",
+              "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+            },
+            "mesh": {
+              "name": "hunyuan3d-mini.safetensors",
+              "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+            }
+          },
+          "provider": {
+            "available": true,
+            "capabilities": [
+              "text_to_image",
+              "image_to_image",
+              "image_to_mesh",
+              "text_to_mesh"
+            ],
+            "context_types": [
+              "text",
+              "image"
+            ],
+            "id": "comfy",
+            "model": "SD-Turbo + Hunyuan3D-2mini",
+            "model_version": "e16ee358808ddeec071e4541d6563b987f75f6a68fee97d7c639aa3eb90f3995",
+            "version": "1"
+          },
+          "request": {
+            "context": [],
+            "inputs": {
+              "source": {
+                "id": "garment-source",
+                "revision": "ce4ca4bddb0150f9f9f23b8691c48d03686ffa2053480033e2f5369828d27a92"
+              }
+            },
+            "node": "image_to_mesh",
+            "parameters": {
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1481
+            },
+            "version": "1"
+          },
+          "source_manifest_sha256": "43b2e03bc03836b54a28c8c443a5fbfb606cf66ad678873a550e66e86bff7563",
+          "usage": {
+            "effective_prompt": "",
+            "image_usage": "hunyuan_vision",
+            "parameters": {
+              "denoise": 0.65,
+              "height": 512,
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_steps": 20,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1481,
+              "steps": 1,
+              "width": 512
+            },
+            "text_usage": "none"
+          },
+          "workflow_sha256": "f70752f1651141a191e40373e816fd65a99787906103ebd41761fc7d495e884a"
+        }
+      },
+      "image_lineage": {
+        "original_image_name": "shirt-image-v2.png",
+        "image_generation": {
+          "run_id": "e6deceba65c147fbbfcc0aeb8cd3a175",
+          "source_sha256": "520f84e11e1f3b6d5229fa27a3024f14f1105b8d4520fd40b1ae2a0cd882ba48",
+          "provenance": {
+            "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+            "checkpoints": {
+              "image": {
+                "name": "sd_turbo.safetensors",
+                "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+              },
+              "mesh": {
+                "name": "hunyuan3d-mini.safetensors",
+                "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+              }
+            },
+            "provider": {
+              "available": true,
+              "capabilities": [
+                "text_to_image",
+                "image_to_image",
+                "image_to_mesh",
+                "text_to_mesh"
+              ],
+              "context_types": [
+                "text",
+                "image"
+              ],
+              "id": "comfy",
+              "model": "SD-Turbo + Hunyuan3D-2mini",
+              "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+              "version": "1"
+            },
+            "request": {
+              "context": [
+                {
+                  "role": "instruction",
+                  "scope": "node",
+                  "strength": "constraint",
+                  "text": "Standalone garment upper body equipment for humanoid robot avatar. Wide neck opening, wide armholes."
+                }
+              ],
+              "inputs": {},
+              "node": "text_to_image",
+              "parameters": {
+                "prompt": "A single blue sleeveless tank top shirt laid flat, catalog packshot, front view, entire shirt visible, short waist length, white background, clothing only",
+                "seed": 915
+              },
+              "version": "1"
+            },
+            "source_manifest_sha256": "15d1c576fb3ef4904e4beb5fe30db44040f82dfdd54277c5ecefd05886180be0",
+            "usage": {
+              "effective_prompt": "A single blue sleeveless tank top shirt laid flat, catalog packshot, front view, entire shirt visible, short waist length, white background, clothing only\nStandalone garment upper body equipment for humanoid robot avatar. Wide neck opening, wide armholes.",
+              "image_usage": "none",
+              "parameters": {
+                "denoise": 0.65,
+                "height": 512,
+                "mesh_resolution": 512,
+                "mesh_steps": 20,
+                "octree_resolution": 128,
+                "prompt": "A single blue sleeveless tank top shirt laid flat, catalog packshot, front view, entire shirt visible, short waist length, white background, clothing only",
+                "seed": 915,
+                "steps": 1,
+                "width": 512
+              },
+              "text_usage": "image_diffusion"
+            },
+            "workflow_sha256": "e8ef6414e0c851d6d5e5f4310bbd73bff854fe10934b5b4d91874470b7ae71fc"
+          }
+        },
+        "explicit_preprocessing": {
+          "operation": "reviewed_color_mask_crop_padding",
+          "source_sha256": "520f84e11e1f3b6d5229fa27a3024f14f1105b8d4520fd40b1ae2a0cd882ba48",
+          "output_sha256": "ce4ca4bddb0150f9f9f23b8691c48d03686ffa2053480033e2f5369828d27a92",
+          "mode": "blue",
+          "top": 0,
+          "bottom": 477,
+          "bounds": [
+            106,
+            30,
+            407,
+            477
+          ],
+          "geometry_generated": false
+        }
+      }
+    },
+    {
+      "name": "armor-source-octree-v2.glb",
+      "sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+      "bytes": 22971652,
+      "generation": {
+        "run_id": "83ea7243c4e7422f97a36c542e613b66",
+        "job_id": "3da04a464be598a19b5b5a5e38f3e7d0fc6f35e58e83ed4ae2fc3310cceaea25",
+        "prompt_id": "fbb7bdff-9ee0-443d-8d52-4dcf5de9f601",
+        "source_sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+        "provenance": {
+          "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+          "checkpoints": {
+            "image": {
+              "name": "sd_turbo.safetensors",
+              "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+            },
+            "mesh": {
+              "name": "hunyuan3d-mini.safetensors",
+              "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+            }
+          },
+          "provider": {
+            "available": true,
+            "capabilities": [
+              "text_to_image",
+              "image_to_image",
+              "image_to_mesh",
+              "text_to_mesh"
+            ],
+            "context_types": [
+              "text",
+              "image"
+            ],
+            "id": "comfy",
+            "model": "SD-Turbo + Hunyuan3D-2mini",
+            "model_version": "e16ee358808ddeec071e4541d6563b987f75f6a68fee97d7c639aa3eb90f3995",
+            "version": "1"
+          },
+          "request": {
+            "context": [],
+            "inputs": {
+              "source": {
+                "id": "garment-source",
+                "revision": "18a6f75df17feb0e7e931b6679d18bb3309a2f2ea46481d2506138920d324d84"
+              }
+            },
+            "node": "image_to_mesh",
+            "parameters": {
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1482
+            },
+            "version": "1"
+          },
+          "source_manifest_sha256": "61cdd539172dd6286e421f74243f393fb8913a4ee5aae4819b5a3c36a5735b17",
+          "usage": {
+            "effective_prompt": "",
+            "image_usage": "hunyuan_vision",
+            "parameters": {
+              "denoise": 0.65,
+              "height": 512,
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_steps": 20,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1482,
+              "steps": 1,
+              "width": 512
+            },
+            "text_usage": "none"
+          },
+          "workflow_sha256": "826e3a65a01c0f7f0fc3c50e447f9f34d49a3bd7f989f12ff70be22b24eacba4"
+        }
+      },
+      "image_lineage": {
+        "original_image_name": "armor-image-v2.png",
+        "image_generation": {
+          "run_id": "d2664970d42f492b84b8350038ec539e",
+          "source_sha256": "9df3b7c97ec86ea9d0f5a2e81188f159ae98205ddcd5b712d2d414f868f0366e",
+          "provenance": {
+            "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+            "checkpoints": {
+              "image": {
+                "name": "sd_turbo.safetensors",
+                "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+              },
+              "mesh": {
+                "name": "hunyuan3d-mini.safetensors",
+                "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+              }
+            },
+            "provider": {
+              "available": true,
+              "capabilities": [
+                "text_to_image",
+                "image_to_image",
+                "image_to_mesh",
+                "text_to_mesh"
+              ],
+              "context_types": [
+                "text",
+                "image"
+              ],
+              "id": "comfy",
+              "model": "SD-Turbo + Hunyuan3D-2mini",
+              "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+              "version": "1"
+            },
+            "request": {
+              "context": [
+                {
+                  "role": "instruction",
+                  "scope": "node",
+                  "strength": "constraint",
+                  "text": "Standalone chest armor for humanoid AvatarProfile, shoulder width 0.48m and torso length 0.58m."
+                }
+              ],
+              "inputs": {},
+              "node": "text_to_image",
+              "parameters": {
+                "prompt": "One small complete medieval steel breastplate cuirass without sleeves, catalog photograph, isolated centered on white background with large empty margins all around, entire object visible, front view",
+                "seed": 218
+              },
+              "version": "1"
+            },
+            "source_manifest_sha256": "15d1c576fb3ef4904e4beb5fe30db44040f82dfdd54277c5ecefd05886180be0",
+            "usage": {
+              "effective_prompt": "One small complete medieval steel breastplate cuirass without sleeves, catalog photograph, isolated centered on white background with large empty margins all around, entire object visible, front view\nStandalone chest armor for humanoid AvatarProfile, shoulder width 0.48m and torso length 0.58m.",
+              "image_usage": "none",
+              "parameters": {
+                "denoise": 0.65,
+                "height": 512,
+                "mesh_resolution": 512,
+                "mesh_steps": 20,
+                "octree_resolution": 128,
+                "prompt": "One small complete medieval steel breastplate cuirass without sleeves, catalog photograph, isolated centered on white background with large empty margins all around, entire object visible, front view",
+                "seed": 218,
+                "steps": 1,
+                "width": 512
+              },
+              "text_usage": "image_diffusion"
+            },
+            "workflow_sha256": "ef1c862b52dd08026606d320fe372f28ca9ed2c70057821133af179c31d4fade"
+          }
+        },
+        "explicit_preprocessing": {
+          "operation": "reviewed_color_mask_crop_padding",
+          "source_sha256": "9df3b7c97ec86ea9d0f5a2e81188f159ae98205ddcd5b712d2d414f868f0366e",
+          "output_sha256": "18a6f75df17feb0e7e931b6679d18bb3309a2f2ea46481d2506138920d324d84",
+          "mode": "padding",
+          "top": 0,
+          "bottom": 512,
+          "bounds": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "geometry_generated": false
+        }
+      }
+    },
+    {
+      "name": "skirt-source-octree-v2.glb",
+      "sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+      "bytes": 28603012,
+      "generation": {
+        "run_id": "a3bcfc14d5294bbab2a0cbe4e025d918",
+        "job_id": "ec67d8777b5dc6564721726d723e67d4a2b25f6210bd74fd108dfbce33f0bf7f",
+        "prompt_id": "9657e69f-492d-428b-9116-46b22819e480",
+        "source_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+        "provenance": {
+          "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+          "checkpoints": {
+            "image": {
+              "name": "sd_turbo.safetensors",
+              "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+            },
+            "mesh": {
+              "name": "hunyuan3d-mini.safetensors",
+              "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+            }
+          },
+          "provider": {
+            "available": true,
+            "capabilities": [
+              "text_to_image",
+              "image_to_image",
+              "image_to_mesh",
+              "text_to_mesh"
+            ],
+            "context_types": [
+              "text",
+              "image"
+            ],
+            "id": "comfy",
+            "model": "SD-Turbo + Hunyuan3D-2mini",
+            "model_version": "e16ee358808ddeec071e4541d6563b987f75f6a68fee97d7c639aa3eb90f3995",
+            "version": "1"
+          },
+          "request": {
+            "context": [],
+            "inputs": {
+              "source": {
+                "id": "garment-source",
+                "revision": "feb8a69e2dad9c8afc811dd35f26492139a781fa7d7dffc993976a3873cd1318"
+              }
+            },
+            "node": "image_to_mesh",
+            "parameters": {
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1483
+            },
+            "version": "1"
+          },
+          "source_manifest_sha256": "5df4179c8641383589ca740f3f57e616639ca5133cb4f8c56ad72d1d069f863f",
+          "usage": {
+            "effective_prompt": "",
+            "image_usage": "hunyuan_vision",
+            "parameters": {
+              "denoise": 0.65,
+              "height": 512,
+              "mesh_algorithm": "surface net",
+              "mesh_resolution": 512,
+              "mesh_steps": 20,
+              "mesh_threshold": 0.5,
+              "octree_resolution": 256,
+              "prompt": "",
+              "seed": 1483,
+              "steps": 1,
+              "width": 512
+            },
+            "text_usage": "none"
+          },
+          "workflow_sha256": "adf47757145f7ce67d0532faa1a3c522a8401f722fa26809acc22d491e44d0ef"
+        }
+      },
+      "image_lineage": {
+        "original_image_name": "skirt-image-v1.png",
+        "image_generation": {
+          "run_id": "c6af963c47964ecf828e6ce8736c3a04",
+          "source_sha256": "11ec6ca08b66ab36a04fa609003903c8bb132dcffa273323153edf742d5dde43",
+          "provenance": {
+            "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+            "checkpoints": {
+              "image": {
+                "name": "sd_turbo.safetensors",
+                "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+              },
+              "mesh": {
+                "name": "hunyuan3d-mini.safetensors",
+                "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+              }
+            },
+            "provider": {
+              "available": true,
+              "capabilities": [
+                "text_to_image",
+                "image_to_image",
+                "image_to_mesh",
+                "text_to_mesh"
+              ],
+              "context_types": [
+                "text",
+                "image"
+              ],
+              "id": "comfy",
+              "model": "SD-Turbo + Hunyuan3D-2mini",
+              "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+              "version": "1"
+            },
+            "request": {
+              "context": [
+                {
+                  "role": "instruction",
+                  "scope": "node",
+                  "strength": "constraint",
+                  "text": "Independent waist armor and cloth skirt for humanoid avatar, waist width 0.38 meters, hip width 0.44 meters, skirt length 0.45 meters."
+                }
+              ],
+              "inputs": {},
+              "node": "text_to_image",
+              "parameters": {
+                "prompt": "A single brown leather medieval armored skirt with wide belt and hanging fabric panels, isolated product photo, entire item visible centered with white margins, front view, clothing only",
+                "seed": 1483
+              },
+              "version": "1"
+            },
+            "source_manifest_sha256": "15d1c576fb3ef4904e4beb5fe30db44040f82dfdd54277c5ecefd05886180be0",
+            "usage": {
+              "effective_prompt": "A single brown leather medieval armored skirt with wide belt and hanging fabric panels, isolated product photo, entire item visible centered with white margins, front view, clothing only\nIndependent waist armor and cloth skirt for humanoid avatar, waist width 0.38 meters, hip width 0.44 meters, skirt length 0.45 meters.",
+              "image_usage": "none",
+              "parameters": {
+                "denoise": 0.65,
+                "height": 512,
+                "mesh_resolution": 512,
+                "mesh_steps": 20,
+                "octree_resolution": 128,
+                "prompt": "A single brown leather medieval armored skirt with wide belt and hanging fabric panels, isolated product photo, entire item visible centered with white margins, front view, clothing only",
+                "seed": 1483,
+                "steps": 1,
+                "width": 512
+              },
+              "text_usage": "image_diffusion"
+            },
+            "workflow_sha256": "58f4b7f55ee036a9722169981190b4aacc0134fd92765476df02ce3d465b7951"
+          }
+        },
+        "explicit_preprocessing": {
+          "operation": "reviewed_color_mask_crop_padding",
+          "source_sha256": "11ec6ca08b66ab36a04fa609003903c8bb132dcffa273323153edf742d5dde43",
+          "output_sha256": "feb8a69e2dad9c8afc811dd35f26492139a781fa7d7dffc993976a3873cd1318",
+          "mode": "brown",
+          "top": 23,
+          "bottom": 477,
+          "bounds": [
+            12,
+            23,
+            510,
+            477
+          ],
+          "geometry_generated": false
+        }
+      }
+    }
+  ],
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "root",
+    "date": "2026-11-07",
+    "scope": "First-version #148 independent garment generation, reviewed fitting, binding, body variants and wardrobe publication; not production topology or cloth collision acceptance.",
+    "observations": [
+      "Root directly inspected listed images using view_image.",
+      "Three independent recognizable garment shapes retain openings and can be fitted to the tested avatars.",
+      "Open vest shows the underlying torso in the final generated-body view and independent native UE4 control.",
+      "Rigid armor stays on the chest; skinned vest and skirt attachment follow the sampled poses.",
+      "Final workbench controls, local preview and explicit existing-version refusal are visible together."
+    ],
+    "limits": [
+      "Layered surfaces and local fine holes/thin sheets remain, especially on the skirt; these are prototype generated assets.",
+      "The original robot also has holes/nonmanifold areas unrelated to clothing fitting.",
+      "Knees visibly penetrate the skirt in the squat pose before cloth collision. This is not accepted as final cloth behavior: #152 owns collision/cloth acceptance and #154 must replay this case.",
+      "Only representative rendered views were manually inspected; all twelve combinations have separate actual contract and UI receipts."
+    ],
+    "inspected_images": [
+      {
+        "name": "final-v3/workbench.png",
+        "sha256": "0dba45f72cbf3847108718095e0f3942f108ad676bc3fa15784368950657ef19"
+      },
+      {
+        "name": "final-v3/native-shirt-1.png",
+        "sha256": "b49deaa5dda0a7b9c6e9658aa2c450ea5bb21cea7238cf575f859ec582441438"
+      },
+      {
+        "name": "final-v3/fit-ue4-armor-0-0.png",
+        "sha256": "1932fc25a9bdc1ccd434dced25c6a5f9f0e241e78ac5cb0bd80ff94420bdee61"
+      },
+      {
+        "name": "final-v3/fit-ue4-skirt-0-0.png",
+        "sha256": "f9eef6a953c8ef912007a95685cd5300cbe865f77942ba5dad3b090095493cdb"
+      },
+      {
+        "name": "final-v3/fit-ue4-shirt-1-1.png",
+        "sha256": "c1317b4fdbdea7d374617c4d55155b556569a15de94a176587f53bde16c6c76d"
+      },
+      {
+        "name": "final-v3/fit-ue4-armor-1-animation.png",
+        "sha256": "35340cd21327603dbe4cbbf4549f63de564fa77b745e617be1118efdea4048c3"
+      },
+      {
+        "name": "final-v3/fit-ue4-skirt-1-2.png",
+        "sha256": "3ecabe61919a3f56f9aaeb74a8ea7339b56c6be782d50b5c9be3e9f5b73055be"
+      },
+      {
+        "name": "final-v3/fit-mixamo-shirt-1-animation.png",
+        "sha256": "0282c1c941ddcae3786a1ffd1f2c842d02dd868539702113ee1d3886dafaa4a5"
+      },
+      {
+        "name": "final-v3/fit-mixamo-armor-1-1.png",
+        "sha256": "79dc029879818a1508065bd1d0c1d292775f05e13dea9337d25a0a8e66b5db61"
+      },
+      {
+        "name": "final-v3/fit-mixamo-skirt-1-animation.png",
+        "sha256": "a088dc7060b77b2edc87270b7ecaa8c5b84ac7f236d664e0dc5ac1189d997aa8"
+      },
+      {
+        "name": "shirt-octree-preview-v7-0.png",
+        "sha256": "4edfbfd337868c15fed2e93ecda0c87ca5c875acaee79286d13cb0a85b0b8824"
+      },
+      {
+        "name": "shirt-octree-preview-v7-1.png",
+        "sha256": "44cdd6d640c91fef87d8af90043e5fa76b708c83cead67349447bf981a680f2b"
+      },
+      {
+        "name": "shirt-octree-preview-v7-2.png",
+        "sha256": "3fd2c908db70aa6a860b5cd78e49fc0de7f5b0d0f281f29aea9a99504d8107b4"
+      },
+      {
+        "name": "final-v1/armor-source-1.png",
+        "sha256": "edb5baa568e9ca71015f9ec47ebe0864558ca3859e3703107bc94d2198c8a75b"
+      },
+      {
+        "name": "final-v1/skirt-source-0.png",
+        "sha256": "2dc6128437920c9f90f79675785e0d5e988ba83f0c615ab3485840e313c5cf55"
+      },
+      {
+        "name": "final-v1/skirt-source-1.png",
+        "sha256": "665adc567a9659b7ff260e723fb93a23c43fefee09c542bce5347056cfbecafd"
+      },
+      {
+        "name": "final-v1/skirt-source-2.png",
+        "sha256": "a7d2661cee76e362dbc0c1e03f7c9c12d2662e01f5e5679cd50920bf05f6c174"
+      }
+    ]
+  },
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "contract_status": "passed",
+    "checks": [
+      "Three independently reproduced defects fixed and rerun",
+      "Four targeted Python tests passed",
+      "Twelve actual Godot cases passed including saved Skin/binds/weights/revision and animation",
+      "Atomic publication and same-byte GLB hash/import verified; external URI rejected",
+      "Final clockwise normals independently compared to actual UE4/Mixamo source normals",
+      "Shared viewport preview identity and garment 512/.5/256 preset independently checked"
+    ],
+    "scope": "Contract review only; final generated source visual review is separate"
+  },
+  "source_sha256": {
+    "tools/ainative/comfy_provider.py": "04980d1d3c9d630c73ea88421d22f6513f74046dd823d2d4da34550df4da4f71",
+    "tools/ainative/test_comfy_provider.py": "477d0af03a58ecf588f915bf2d80e11df98908b40f6cd88d5a5325abf897ef69",
+    "tools/ainative/garment_generate.py": "3212edb2dbf8c65b0bbf6f8db8b657a919fe448cbbc0b72e415a6d5d14ee6903",
+    "tools/ainative/garment_prepare.py": "54432e79448674d1425a8d54696fa397cfbb3dee53d00d647d994ff174841d16",
+    "tools/ainative/test_garment_generate.py": "a3ff62faf3770dda64a6d0dbcd9fa205073547a0eea983ae19d8b633f7eb81fa",
+    "tools/ainative/test_garment_prepare.py": "afc109e422eaa731e6a1eccd87ec7ea7016991b165220bcd63baeae4f61e6c51",
+    "samples/ainative-workbench/garments_acceptance.gd": "72ce010951df292801460c03b17c6b5dfa809256cf14f36e7e72bc7039c45532",
+    "samples/ainative-workbench/garments_live_ui.gd": "695aef8b6041d6a77e7600a4568b57d7dc4319d9d03208528e94520477e7e904",
+    "samples/ainative-workbench/addons/ainative/garments.gd": "86e87c1fe2af8cf8fee5ea32e0c5188004d959feea1f4b2ed2ad2b7aa9a1ef8d",
+    "samples/ainative-workbench/addons/ainative/garments_panel.gd": "a16f7ce465f56cb5a5a201caa4bec6e7a09f5820ff53ffe8b837ecb2a1f3bb67",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "0c3fbbb16016906a2f1c86476e6e4332f94d27f90e5faf4d1a37c3de5d677918"
+  },
+  "limits": [
+    "Reviewed per-item axis/cage fitting, not general learned clothing fitting.",
+    "Cloth partition and auxiliary bone preparation only; solver belongs to #152.",
+    "Generated surface layering remains; no claim of production-ready topology.",
+    "Skirt still has local thin sheets and fine holes; knee penetration is visible in squat replay before cloth simulation. #152 must validate body collision and #154 must retain this integration case.",
+    "Clearance diagnostics are sampled, not exhaustive; open/nonmanifold avatar prevents global no-penetration certification."
+  ],
+  "private_evidence": "Original images, derived masks, failed generations, full vertex partitions, scene outputs and screenshots remain in ignored runtime storage.",
+  "main_delivery": "pending"
+}

@@ -22,7 +22,8 @@ from extensions import canonical, require, validate_invocation
 KINDS = ('text_to_image', 'image_to_image', 'image_to_mesh', 'text_to_mesh')
 VERSION = '1'
 DEFAULTS = dict(prompt='', seed=0, width=512, height=512, steps=1, denoise=0.65,
-                mesh_steps=20, mesh_resolution=512, octree_resolution=128)
+                mesh_steps=20, mesh_resolution=512, octree_resolution=128,
+                mesh_algorithm='surface net', mesh_threshold=0.6)
 
 
 def register(registry):
@@ -150,6 +151,7 @@ class ComfyProvider:
         require(0 <= p['seed'] < 2**64 and p['width'] in range(64,1025,8) and p['height'] in range(64,1025,8), 'invalid dimensions/seed')
         require(1 <= p['steps'] <= 8 and 1 <= p['mesh_steps'] <= 50 and 0 < p['denoise'] < 1,'invalid sampling parameters')
         require(16 <= p['octree_resolution'] <= 256 and 1 <= p['mesh_resolution'] <= 4096,'invalid mesh resolution')
+        require(p['mesh_algorithm'] in ('surface net','basic') and -1 <= p['mesh_threshold'] <= 1,'invalid mesh extraction')
         refs=list(request['inputs'].values())+[c['artifact'] for c in request['context'] if 'artifact' in c]
         require(len(refs)<=1,'unsupported_multiple_image_constraints')
         for c in request['context']:
@@ -182,7 +184,7 @@ class ComfyProvider:
             latent=add('mesh_latent','EmptyLatentHunyuan3Dv2',resolution=p['mesh_resolution'],batch_size=1)
             sample=add('mesh_sample','KSampler',model=ck,positive=cond,negative=['conditioning',1],latent_image=latent,seed=p['seed'],steps=p['mesh_steps'],cfg=5.0,sampler_name='euler',scheduler='simple',denoise=1.0)
             voxel=add('voxel','VAEDecodeHunyuan3D',samples=sample,vae=['mesh_model',2],num_chunks=8000,octree_resolution=p['octree_resolution'])
-            mesh=add('mesh','VoxelToMesh',voxel=voxel,algorithm='surface net',threshold=0.6)
+            mesh=add('mesh','VoxelToMesh',voxel=voxel,algorithm=p['mesh_algorithm'],threshold=p['mesh_threshold'])
             mesh=add('normals','MeshSmoothNormals',mesh=mesh,crease_angle=180.0)
             add('output','SaveGLB',mesh=mesh,filename_prefix='ainative/'+key)
         else:
