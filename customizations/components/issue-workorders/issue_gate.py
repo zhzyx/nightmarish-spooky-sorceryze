@@ -398,20 +398,56 @@ def main():
             parser.error("--session takes issue/request_id from each input line")
         session = VerificationSession()
         for line in sys.stdin:
+            request = {}
             try:
                 request = json.loads(line)
                 result = gate(args.repo.resolve(), request["issue"], request["request_id"], session, args.base_ref)
+                from kuafu_incident import observe_success
+
+                observe_success(
+                    args.repo.resolve(), request["issue"], request["request_id"], "validation", result, args.base_ref
+                )
                 print(json.dumps(result, ensure_ascii=False), flush=True)
             except Exception as error:
                 session.events.clear()
-                print(json.dumps({"state": "failed", "error": str(error)}), flush=True)
+                result = {"state": "failed", "error": str(error)}
+                if isinstance(request, dict) and request.get("issue") and request.get("request_id"):
+                    from kuafu_incident import notify_failure
+
+                    result["kuafu"] = notify_failure(
+                        args.repo.resolve(), request["issue"], request["request_id"], "validation", error, args.base_ref
+                    )
+                print(json.dumps(result), flush=True)
         return
     if args.issue is None or args.request_id is None:
         parser.error("--issue and --request-id are required")
-    result = (
-        intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
-        if args.intake_only
-        else gate(args.repo.resolve(), args.issue, args.request_id, base_ref=args.base_ref)
+    try:
+        result = (
+            intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
+            if args.intake_only
+            else gate(args.repo.resolve(), args.issue, args.request_id, base_ref=args.base_ref)
+        )
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+        from kuafu_incident import notify_failure
+
+        notify_failure(
+            args.repo.resolve(),
+            args.issue,
+            args.request_id,
+            "intake" if args.intake_only else "validation",
+            error,
+            args.tenant if args.intake_only else args.base_ref,
+        )
+        raise
+    from kuafu_incident import observe_success
+
+    observe_success(
+        args.repo.resolve(),
+        args.issue,
+        args.request_id,
+        "intake" if args.intake_only else "validation",
+        result,
+        args.tenant if args.intake_only else args.base_ref,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 

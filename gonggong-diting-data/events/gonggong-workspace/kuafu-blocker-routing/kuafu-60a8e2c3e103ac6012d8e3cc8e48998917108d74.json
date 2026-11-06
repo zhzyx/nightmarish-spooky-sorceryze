@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-60a8e2c3e103ac6012d8e3cc8e48998917108d74",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-blocker-routing",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/209",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.0",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "65f90ae04d552a926597a924dd8f39a44019143a0fbd7d226822246ac89962b9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/209",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/209",
+    "action": "user-report",
+    "detection_head": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+    "context_sha256": "9dfc027789e83dede06b7247fbc5ea0e29c48f3062fb0ce3a09ba155858bab15",
+    "operator": "Sail-Li",
+    "worker": "codex-primary-209",
+    "authority_ref": "user-chat-20261107-fix-all-blockers",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180#issuecomment-6690356515",
+    "diagnosis": "原任务有宿主上报但缺夸父接单与原候选复验。分发登记已修复；#207 的 Windows 调用权限与 #187/#200 的候选整合分别跟进。",
+    "next_action": "在 #209 交付失败事件接单与上报；#207 以实际 CI 复验；#177/#180 由原发布者确认单一整合上下文，分别核实五项回归后再绑定发布候选。",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T17:04:14.224706+00:00",
+  "sha256": "237b3bc6456f4e99c584adb49dc55e9cf1d270cc84ce80b4981961d583833736"
+}
