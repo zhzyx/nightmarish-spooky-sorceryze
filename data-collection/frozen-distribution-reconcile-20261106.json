@@ -1,0 +1,468 @@
+{
+  "request_id": "frozen-distribution-reconcile-20261106",
+  "issue_number": 189,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/189",
+  "source_commit": "146865d1586825f1be0ad43815b360f3e65d77ed",
+  "framework_lock_sha256": "3f43b40cd447cf96856ffabebc62b1d7616e3af1e3eed17a7c61b3438c6bf502",
+  "registration_sha256": "6430b511da099e211f12a6620e8b0da74612b978bfb835b18321a3b48b4eb776",
+  "registration_scope": "offline_registered_snapshot_consistency_only",
+  "execution_authority_granted": false,
+  "path_base": "framework",
+  "changed_files": [
+    {
+      "path": "agents/diting/agent.json",
+      "prior_sha256": "05136e45d057767f571a9811cbb6e7f36dcfac359f64f41d1eebd89cbbe51b7d",
+      "sha256": "2e310aac9e7f2bfa6dc0b3e23e456690559943fda6fd9fa84364666fd4d73b68",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/diting/AGENT.md",
+      "prior_sha256": "4bb3c1986c594b7228313620c4b3cca1642052fcc1966b40c4c95a70e7c3c77e",
+      "sha256": "5ea6ba8b9b9d17b9ef8d2e7c44c493e036f56b8cfce9ee10fbc53e7cb766abef",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/diting/references/optimization.md",
+      "prior_sha256": "3f809d28b03679ecad2bb306ef45eb43400c00360458e05812205a0946cdce45",
+      "sha256": "ff411306c10388acb1181775bdee3b74d34352910a7201708519e70522968daf",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/diting/reporting.json",
+      "prior_sha256": "8469c79a66cbe779b3f07633b936aff68dde89b2c89b831991c97a54bbe69a3e",
+      "sha256": "4354062b8bc90cf7d310794b719c860ab38c0254e53ea05ec19be7bfee04f3f2",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/heqi/agent.json",
+      "prior_sha256": "41813d7335886f217a1fe4921f1201b7affcc1633592953fa1e9ec2e54308396",
+      "sha256": "f72398beeb961b7bdff93ce84bfb3d1572d98023ea5c4d55f1b437f8ff0d9c3a",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/heqi/AGENT.md",
+      "prior_sha256": "f70c13fb535859d6b211b2217d1afc77ca5afd9a0ab0a0fe131758810ea330b1",
+      "sha256": "9981b5c68b73a81aedf314f5110c2c5280ed9219aed3a4f7f885fa28f28f84f6",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/heqi/reporting.json",
+      "prior_sha256": "d779ad1f72fd34b11aa344f9f72d5217c5d4bfb464dd81dc5e80104d5d59630c",
+      "sha256": "190d9384395cd52ccb5cbc1dbc6cebe3a44c7aef5c580d1bb9442ee5632e9648",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/kuafu/agent.json",
+      "prior_sha256": "85b247c70b8d265c3110951574e06e11f7d739cf3e28c5a24442a316f7b84364",
+      "sha256": "20116daf03c3e1a661649fcba104a1c21f75b75528946718df18cb87b29d8de1",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/kuafu/AGENT.md",
+      "prior_sha256": "070861e09a33489edce74b4cff3a2b7caffb5c08f1d817a9146646e373722814",
+      "sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/kuafu/reporting.json",
+      "prior_sha256": "b1066f44c0a6e07224961a70d09cd5a8f2b9c9eaf9510661840400b76f50b8f4",
+      "sha256": "e792ba476dcbcc0b8392d698412b19f81433c7e8d2f831216170b6573f5ec18f",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/sinan/agent.json",
+      "prior_sha256": "efec5c7b81ed311f68243f570b7c7e6da65bf32b39da4f393e3fe1a296b141f6",
+      "sha256": "6020813f55aa6da0a9571c7806032164972e60e04c91ccab6293b1747214ab40",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/sinan/AGENT.md",
+      "prior_sha256": "fdf02ac81147dc270765df883bbce5537a603fd622e214f46b1aa73e346fb11a",
+      "sha256": "6df507ad1da031830f4032cb32f6bfa690af8a3781b0ef0b7038997367ad9a4a",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/sinan/references/parallel-dispatch.md",
+      "prior_sha256": null,
+      "sha256": "bd39d2497bc7cac5931cfdd122ba5c88a57802b40b4a88183d8d4f8d7914b1c7",
+      "last_change_commit": "cbb5dc5437336310d3208c25b9b646382fcd4db3",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/sinan/reporting.json",
+      "prior_sha256": "5efdeed66a7aa67ff0116b0eca8857537771448777c8432eae4f47fad14f0743",
+      "sha256": "e5f1430bf120fc7f9bc65e18a1ddc07243cbd5c7272a236f946f1fc0ef616ccb",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/yanshi/agent.json",
+      "prior_sha256": "e03fb73a2523f9af1a3ae4cd65c0d7f3c727acfc419a0d93afdda2dee5ee65ae",
+      "sha256": "d0f9daddcef3c5ce08931cff9f554749656439e89a1a851f75f5466a54312635",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/yanshi/AGENT.md",
+      "prior_sha256": "c25853878cce237fcfb5af44064c0ee8cdfdf66179e0da1281dd8539f83cd497",
+      "sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "agents/yanshi/reporting.json",
+      "prior_sha256": "edcd1a42ea5ce6801d04bd779a859c0c49c72d59d43616269ca94219e0a8c4d8",
+      "sha256": "b3c30c0d00083c389fe5237c60be4fb556ecfb8538d08fd50f8530bd967888eb",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "AGENTS.md",
+      "prior_sha256": "90b94c8843261e0a97e9434531861d135b4cb3c2a68fe9ee544b3a0dc42d9f0a",
+      "sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "domains/quality/responsibility-map.json",
+      "prior_sha256": "5286ac565feb60fb016e89b09cd8a23ef8884a1bac7804f783823575dc3aa4f6",
+      "sha256": "d92435119af3f067347e75ebbfc4175595655486d0bd3a7ccb0649044ed3e3eb",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "domains/quality/templates/质量事件与决策记录.md",
+      "prior_sha256": "68a2e7b828134d6088c7edef87da9e71b05e21d07cc8b4583092bf561642a7e5",
+      "sha256": "4430332ba795be35be3ff924703408f8cdbf136ceba7c40df88fd7e01b581a50",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "framework-manifest.json",
+      "prior_sha256": "f0eda7df3b264c41ececac89d7fc843eb04208e9a2be1dc3d58bbeb682334fd7",
+      "sha256": "85a70e8f054803f1b1bfa79e198e0331640fe9d6262165d99d523c2bcdab347e",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "prior_sha256": "b82296999d42ba138281fc247e0e4c0f1578c77f6106228e98614681a7827f31",
+      "sha256": "a6d2a4bd2992a8521926d5b4d03d66afb12b5081068b86d6614ae09ba7890c3a",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "modules/sinan/dispatch.mjs",
+      "prior_sha256": null,
+      "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+      "last_change_commit": "cbb5dc5437336310d3208c25b9b646382fcd4db3",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "modules/sinan/module.json",
+      "prior_sha256": "2cd5b446c4acd2520f506320b68acabb86cada91cd3c799a2a25e3890d2ad3ff",
+      "sha256": "9ac65004726de94d4f3e520aef17ba1211438188f4368852271288cd1344b067",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "modules/sinan/test/dispatch.test.mjs",
+      "prior_sha256": null,
+      "sha256": "04b3b9a700aad4d9e9e3d189f6b5f140d0799df6edbf6a2345d020e1469eec4a",
+      "last_change_commit": "4ba3e7e9a6754e22a19398714a6a3d44235e775d",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "README.md",
+      "prior_sha256": "bd872f0cf825b9982e9254757e15ca9c68f4abb0b476f3c7a23ca4459003d771",
+      "sha256": "8a15807c5944fb95050044be3e67e73a8fb5db42eb343590b1b4c9eec2f96fbe",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/diting-admission.json",
+      "prior_sha256": null,
+      "sha256": "e972c140964be73de538c8f39d5b1f21a3a9621be693bae6f3b84c6a4ffe390e",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/heqi-admission.json",
+      "prior_sha256": null,
+      "sha256": "dae3084f98e8698072bb44aac121c08d0b8df8d159dbd21b5503f1c2bf63a09c",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/independent-review.json",
+      "prior_sha256": null,
+      "sha256": "756e5c975bc3353a7ed9d591c170f44593b21b71454112ab6e1461799f1db91d",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/kuafu-admission.json",
+      "prior_sha256": null,
+      "sha256": "d0a4e10737dd58d7613f4a82fb17e4269aaba6a67b79f1281d440d99e14daa83",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/sinan-admission.json",
+      "prior_sha256": null,
+      "sha256": "e52b5518f8ca400bb90b84aa322fec9a8ed290b895d9168ed86da92ef9d54a1b",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/user-approval.json",
+      "prior_sha256": null,
+      "sha256": "9378e338e8da35bbceeedcfb324708bafd809a5986bb7096699e8b286405f60e",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/kuafu-blockers/yanshi-admission.json",
+      "prior_sha256": null,
+      "sha256": "9e4ccb26a58db8533876f08286414d7815fdfb2f803190f80f36b38a334b0b9e",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/diting-admission.json",
+      "prior_sha256": null,
+      "sha256": "7afbb672ae7d016fe127f864878904b59562a9bb61a8b56415d7d8af35066724",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/gonggong-check-skill-admission.json",
+      "prior_sha256": null,
+      "sha256": "40f7e22bf84084972643a3eeebbee32afd9420f72c5ef022c27a9721fe4b1eaf",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/heqi-admission.json",
+      "prior_sha256": null,
+      "sha256": "d517469985f9a7771ef80d904eaa8613ba9636741e4d5f7eefa2c3b925392b6c",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/independent-review.json",
+      "prior_sha256": null,
+      "sha256": "80ff0d53480c6c3237bb1015ae06c8a6d86c303c58c3eb8ff4b209816509842e",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/kuafu-admission.json",
+      "prior_sha256": null,
+      "sha256": "cdd825462d8f52e9f42c3a502b71ce7425cd3df8c6d2e43c8e9b25fb5deffcf1",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/sinan-admission.json",
+      "prior_sha256": null,
+      "sha256": "eba2b7f0deb43356994b076567e819cade9e3a907f504ec5a40e148cf558b8fe",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/user-approval.json",
+      "prior_sha256": null,
+      "sha256": "bc21d78190bbe2aebd3f5da29e4383e4eecdec7ab346a5ee6ec7d476169d81e2",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/work-order-coordination-skill-admission.json",
+      "prior_sha256": null,
+      "sha256": "59aee6b1388dd0c437e5111fa269a98a971e6b75b4747fe6fc235bc19f4d9259",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/review-dedup/yanshi-admission.json",
+      "prior_sha256": null,
+      "sha256": "3c7146b6feac1e5ba9ddf1f13c0ef3345a5dcfa9fafde85017f17c08fb31b073",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-dispatch-0.1.2.json",
+      "prior_sha256": null,
+      "sha256": "ddfa7d8dcb2a9e83c971cb6ce9e0613239f6c59d09b77fda86f22c095f0f819c",
+      "last_change_commit": "4ba3e7e9a6754e22a19398714a6a3d44235e775d",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-dispatch-independent.md",
+      "prior_sha256": null,
+      "sha256": "d97decf21804aac3f832b73b11be973458f1f74928522136411bcd1f795a66d8",
+      "last_change_commit": "4ba3e7e9a6754e22a19398714a6a3d44235e775d",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-dispatch-user-approval-20261105.json",
+      "prior_sha256": null,
+      "sha256": "0fad6820a85572b889d0cd1c5cb3c01997e4e23eec690cc8e728f667b0d0cd19",
+      "last_change_commit": "4ba3e7e9a6754e22a19398714a6a3d44235e775d",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-integration-0.1.3.json",
+      "prior_sha256": null,
+      "sha256": "545abb4b15dbc892b5a82c9859154bdabd19e077d18a7e454ffe8482f7ac2324",
+      "last_change_commit": "cbb5dc5437336310d3208c25b9b646382fcd4db3",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-integration-independent.json",
+      "prior_sha256": null,
+      "sha256": "007feda5890c62c5f349ce0e55984a463dcb82414754a9ea77aec9b1e56edce2",
+      "last_change_commit": "cbb5dc5437336310d3208c25b9b646382fcd4db3",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-integration-user-approval-20261105.json",
+      "prior_sha256": null,
+      "sha256": "1a3a8a16c6fab21aef9fcf87d66819fbf1d535c351c6730e16a2f487421180b5",
+      "last_change_commit": "cbb5dc5437336310d3208c25b9b646382fcd4db3",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-main-integration-0.1.4.json",
+      "prior_sha256": null,
+      "sha256": "f012a1e6c28866b77339d31ecf0183efa651662b70d8d79ef2b4eaf3a46361a1",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-main-integration-independent.json",
+      "prior_sha256": null,
+      "sha256": "3c7f9d0df186d1bd1b7773ac3796f8a145efc6e6fb7a55a5587ce0bcf32cab9b",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "reviews/sinan/parallel-main-integration-user-approval-20261105.json",
+      "prior_sha256": null,
+      "sha256": "7123ffa0772ef52fc33d146fb9a634d2aa11f7cdf08222fef3af8dfd38adac99",
+      "last_change_commit": "a598a41adb8eb2db715dfb18fe9276a9d8adbeec",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/gonggong-check/reporting.json",
+      "prior_sha256": "2f6d0c73b7f4925a7eeda64d1f6499c696230c7ec1b967710b0bc47606727033",
+      "sha256": "be8f35d89a16ce581685dd8e615138f8fdf3c60c0c697bcc419032648708051e",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/gonggong-check/SKILL.md",
+      "prior_sha256": "6f93e72696f8ef706c1a6aac432e62f8178d849def1eb594b66b876aba249da6",
+      "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/kuafu/reporting.json",
+      "prior_sha256": "a7f116e140d6f909cd8650ee0bc69be3e5c1a3c9b5f7b6e23d079fe7aebe1682",
+      "sha256": "d5d961eae6cbfb076ee28696e361ffd3e9f8346a3673d1893b1a60fae75c3a9a",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/kuafu/SKILL.md",
+      "prior_sha256": "bbc8651308ef5fe820446b20d7240d1c2021d571c3feeb855e7abcee37be7b25",
+      "sha256": "a3834ced0f541e823568e585ec55c9256c74721a5af8ab3267279607d1e6d966",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/work-order-coordination/reporting.json",
+      "prior_sha256": "9358291b67be2cebf8781d5cf245a7128807c8991738656d6ccbabceae3efb83",
+      "sha256": "01196cad1ba5dd744151a4d1053043624feb784ae028c07fd0a9f3b0869955d7",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "skills/work-order-coordination/SKILL.md",
+      "prior_sha256": "987e4b1ea8dc41fe77388da74917f553148ba34f3be261cd7d95cb0473e4b1b4",
+      "sha256": "083fd7c054af31d2b7b9dfdc83c4eea53a5cbb4b8b42035ec39244415003d348",
+      "last_change_commit": "23f41367efa6501b72d3b5c4091ce1f11ba64668",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/data-feedback.md",
+      "prior_sha256": "096ac76f76cf118edd403185117572c70706b41e0a3764ef82570251d2837f02",
+      "sha256": "3652e7b5bfbd2857625735ab368ec92365192f7c648b588f5f5ed43e7adda050",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/delivery.md",
+      "prior_sha256": "36771b8473e910e6029c275e06a5417d39940a9853ade7faae39dc2558bd6b54",
+      "sha256": "e20f1905e39aff5305391bdaeeb3b0d432d2333e23e1a2402203981aa38914df",
+      "last_change_commit": "a4713d69e571935f6b66292a62b01b53a296e863",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/governance-review.md",
+      "prior_sha256": "07aaa6c2fc959e86072a553aa592bb434ccafb12db228258eea7f00ce8dbbc1b",
+      "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/module-system.md",
+      "prior_sha256": "ef92e59092bd11b48a21d24b12e5c94e7ba45af016aedcddf966ca6fee65d7ea",
+      "sha256": "e167de6e78910a583464141c8dad632f05fb7c10beea702456cd065b82e508a0",
+      "last_change_commit": "a4713d69e571935f6b66292a62b01b53a296e863",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/quality-responsibilities.md",
+      "prior_sha256": "96793bc046a4c12c18e375db3c61a2acc57edbb60399e954d8b818c22de1787d",
+      "sha256": "2d3876305a740d3dc6d2aebcf414895c62dbede46aed3337bbdda5eef3640905",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/quality.md",
+      "prior_sha256": "7ac8e148b954f218ea11eb8391ab0ad87b1b9f068cadf852976cb78c46dd4798",
+      "sha256": "7abb98b64036f3556e71129009e1c78a3b020e896cf04614753f597496af352b",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "specs/work-order-management.md",
+      "prior_sha256": "d4a26afc1e02920f40835d9c88e39039923ba19e59e61bbb5ea0eaf315021091",
+      "sha256": "4da69e8c83ffa93043f2c50def2cbbfafe3e0e45482b6d6f0da23f55066edd14",
+      "last_change_commit": "d1afc3c0df4171586c278ffd0810210c08668b31",
+      "git_author": "Sail-Li"
+    },
+    {
+      "path": "package-lock.json",
+      "prior_sha256": "017c43c74d6ebc3f3025c11a68ebfc79c1f10b78e62f65165092cfd7e7560fb3",
+      "sha256": "3f43b40cd447cf96856ffabebc62b1d7616e3af1e3eed17a7c61b3438c6bf502",
+      "last_change_commit": "a4713d69e571935f6b66292a62b01b53a296e863",
+      "git_author": "Sail-Li"
+    }
+  ]
+}
