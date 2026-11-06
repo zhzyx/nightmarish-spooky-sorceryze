@@ -13,7 +13,9 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-BATCH = runpy.run_path(str(Path(__file__).resolve().parents[5] / "framework/tools/git_batch.py"))
+BATCH = runpy.run_path(
+    str(Path(__file__).resolve().parents[5] / "customizations/platforms/development/git/git_batch.py")
+)
 NAME = "gonggong-diting-data"
 KINDS = {
     "request",

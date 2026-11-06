@@ -1,6 +1,6 @@
 # Codex 派发接入候选
 
-路径相对仓库根。`adapter.mjs` 调用核心 `framework/modules/sinan/dispatch.mjs`。当前操作者通过 `operator.mjs` 和 [宿主协议](HOST_PROTOCOL.md) 绑定真实 GitHub 来源、共享认领、原生工具请求／回执、终态对账与事件补位。普通 Node 不直接访问 Codex 内部工具，由真实当前宿主处理 `native-bridge.mjs` 请求；配置、源码准入和代表任务回执分别核对，不创建定时扫描。
+路径相对仓库根。`adapter.mjs` 调用本地过程适配器 `customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs`。当前操作者通过 `operator.mjs` 和 [宿主协议](HOST_PROTOCOL.md) 绑定真实 GitHub 来源、共享认领、原生工具请求／回执、终态对账与事件补位。普通 Node 不直接访问 Codex 内部工具，由真实当前宿主处理 `native-bridge.mjs` 请求；配置、源码准入和代表任务回执分别核对，不创建定时扫描。
 
 ```js
 const host = new CodexDispatchHost({stateRoot, source, native, policy});

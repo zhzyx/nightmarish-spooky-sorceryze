@@ -146,6 +146,7 @@ class GithubHost:
         trusted_files += [
             "customizations/components/yanluo/closure.py",
             "tools/check_gonggong_distribution.py",
+            "customizations/platforms/development/git/git_batch.py",
             "integrations/gonggong/frozen-distribution.json",
             "customizations/platforms/data-collection/git-files/storage/diting_files.py",
             "customizations/platforms/development/git/delivery/check_delivery.py",

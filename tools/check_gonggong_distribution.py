@@ -156,7 +156,7 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
     for parent in [registration.parent.parent, registration.parent, registration]:
         no_link(parent)
     lock = parse_json(registration.read_bytes())
-    require(lock["schema_version"] in (1, 2) and lock["scope"] == SCOPE, "Unexpected registration format")
+    require(lock["schema_version"] in (1, 2, 3) and lock["scope"] == SCOPE, "Unexpected registration format")
     require(lock["exemption"] is None, "Unexpected exemption")
     expected = lock["files"]
     require(isinstance(expected, dict) and bool(expected), "Empty file registration")
@@ -193,6 +193,25 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
             and PLATFORM_PACKAGES[1] + "/check_delivery.py" in syntax_files,
             "Missing registered platform entry",
         )
+    if lock["schema_version"] == 3:
+        for directory in (
+            "customizations/platforms/process-management/yuanheng-local/sinan",
+            "customizations/platforms/document-management/git-markdown/yanshi-legacy",
+            "customizations/platforms/ai-access/host-http/runtime",
+        ):
+            package = platform_inventory(root, directory, lock["host_packages"][directory])
+            syntax_files.update({directory + "/" + name: raw for name, raw in package.items()})
+        for relative in (
+            "customizations/platforms/development/git/git_batch.py",
+            "customizations/platforms/work-management/github/follow_up.mjs",
+        ):
+            file = root
+            for component in relative.split("/"):
+                file = file / component
+                no_link(file)
+            raw = file.read_bytes()
+            require(digest(raw) == lock["host_files"][relative], "Registered host implementation mismatch: " + relative)
+            syntax_files[relative] = raw
     node_path = node or shutil.which("node")
     if not node_path:
         bundled = root / "project/runtime/node/node.exe"

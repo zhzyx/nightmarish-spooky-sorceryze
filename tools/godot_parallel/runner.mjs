@@ -3,8 +3,8 @@ import path from 'node:path';
 import {spawn, spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import crypto from 'node:crypto';
-import {selectModel} from '../../framework/modules/sinan/dispatch.mjs';
-import {board} from '../../framework/modules/sinan/coordinator.mjs';
+import {selectModel} from '../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
+import {board} from '../../customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
 
 const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
 const inside = (a,b) => {

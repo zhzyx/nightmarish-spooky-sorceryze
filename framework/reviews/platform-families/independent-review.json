@@ -1,0 +1,64 @@
+{
+  "issue": 257,
+  "reviewer": "codex_subagent_/root/review",
+  "independence": "read_only_independent_of_author",
+  "reviewed_implementation_tree": "2ca0463ab9913bb0cb21c840fe07a8d1d59934cd",
+  "scope": "五个 Agent、工单协调技能的共享定义与本次接入分离",
+  "framework_review": "pass",
+  "yuanheng": {
+    "purpose": "共享角色保留职责和验收语义，宿主按用户平台选用实现。",
+    "truth": "实际复跑候选、离线和门禁，真实供应商与生产消费未知。",
+    "economy": "复用五个角色、共享技能与治理体系，平台细节按需加载。",
+    "authority": "门禁加载独立 Git 帮助程序前校验摘要，正式校验拒绝待批对象。",
+    "adaptation": "独立安装司南可在无 GitHub 模块时运行。引擎契约与 Godot 专规分离。",
+    "continuity": "在途计划保留原安装对账；切换按新摘要重签，回执未知不重复调用。"
+  },
+  "validation": [
+    "33 项司南测试含单装回归",
+    "10 项模拟运行时测试",
+    "16 项门禁测试",
+    "0.10.0 候选校验与离线分发校验通过",
+    "冻结纲领和元衡原件无变更",
+    "正式校验拒绝待批对象"
+  ],
+  "entry_characters_before_after": {
+    "yanshi": [
+      971,
+      971
+    ],
+    "kuafu": [
+      479,
+      479
+    ],
+    "diting": [
+      741,
+      741
+    ],
+    "heqi": [
+      919,
+      794
+    ],
+    "sinan": [
+      1096,
+      991
+    ],
+    "work-order-coordination": [
+      2756,
+      2705
+    ]
+  },
+  "agents": {
+    "yanshi": "a0ac6d16523065678b74ae61c4db8bd4a5ee2ce335e44bfe2437c9f3aa5a058b",
+    "kuafu": "7a430f23ecec70e9121727994d2dfae26fef30322940a4c6475091a78185e8fe",
+    "diting": "ff9b6b70f0318b53db57d38516c55a8f00ecf8ad50571bc39b03957de09a58f4",
+    "heqi": "010295a8d986db4ebce7be37693b72a9b6269012ccc2e22c1b80e144ae58ff92",
+    "sinan": "59d90f15b093ee20a8a72044165c51c403dd2ea924f1c83df38f1a87f0de80b9"
+  },
+  "skill": {
+    "id": "work-order-coordination",
+    "version": "0.4.3",
+    "entry_sha256": "026bdc5836cdc104e996890e9fc5c3cfebad84e762391f815a835d2bc1d0d71a"
+  },
+  "decision": "independent_review_pass_only",
+  "runtime_authority": "requires actual host mandate"
+}

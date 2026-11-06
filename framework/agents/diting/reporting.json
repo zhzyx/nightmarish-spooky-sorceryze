@@ -3,7 +3,7 @@
   "component": {
     "kind": "agent",
     "id": "diting",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "entry": "agents/diting/AGENT.md",
     "entry_sha256": "5ea6ba8b9b9d17b9ef8d2e7c44c493e036f56b8cfce9ee10fbc53e7cb766abef"
   },

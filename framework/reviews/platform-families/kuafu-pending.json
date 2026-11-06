@@ -1,0 +1,285 @@
+{
+  "template": false,
+  "permit_id": "platform-families-0.10.0-kuafu",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "kuafu",
+    "version_or_digest": {
+      "version": "0.5.1",
+      "candidate_digest": "7a430f23ecec70e9121727994d2dfae26fef30322940a4c6475091a78185e8fe",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0aff54c5fb955e4dad5acdbc0dfaf4e22def74686c35f6cedd76232695897322"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/reporting.json",
+          "sha256": "ce08bb19a0459f98d10deb6b553565713f3becdfe8f4fdd48f08d24ed3cdf7b2"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/reporting.json",
+          "sha256": "1c101ba9c8b07f40fa2f7e329737df35e0b9807a3c25edbe6cd4485eb0239859"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/reporting.json",
+          "sha256": "fa716905f6ae68e435fb6ca292bc7cdb6f01a6a305a0565bd7817289a1ab766c"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/reporting.json",
+          "sha256": "be0ccdf7abc4ba406a916a345f2f9c528b2a8aed68d5fdf3e8e47baa3754b012"
+        },
+        {
+          "path": "agents/diting/skills/data-label/reporting.json",
+          "sha256": "3d1f2c05a5b9209799a1ca18898ec57036749e90dcf4b2933aed5abef9e5e83f"
+        },
+        {
+          "path": "agents/diting/skills/data-store/reporting.json",
+          "sha256": "ea2bf8261ecac8b989c3479c79e9a1b7ddce088163dc7e316f965f04c51c6793"
+        },
+        {
+          "path": "agents/kuafu/AGENT.md",
+          "sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+        },
+        {
+          "path": "agents/kuafu/agent.json",
+          "sha256": "1a7b1cdbbd5b971b64c11db3c368abacc3e55fb6ab1ae62ced4e9e02d6a7574d"
+        },
+        {
+          "path": "agents/kuafu/reporting.json",
+          "sha256": "efdee8292f7667863d410ef1f1ee1be5a1ec9b5fe596160ed251c9f25636a3fe"
+        },
+        {
+          "path": "agents/yanshi/reporting.json",
+          "sha256": "649f8a02db89727bbe436b262cbccaeb49e23ada402f6757e6fc0efe5dc66d3d"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/reporting.json",
+          "sha256": "166917d7fe7741dfb358109d7bff810f2e61110742cbb1a8b2805532eef46e41"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "domains/quality/provenance.json",
+          "sha256": "22f031d7da8efae72b7f99c6bcb0b0543c319ccddcde8860cd2b1be61e3d27e7"
+        },
+        {
+          "path": "domains/quality/quality-policy.json",
+          "sha256": "0e1bf17af53010da5982fcfd2ae2eb472e5ac7a6e5eb1401614e8d30afd2c128"
+        },
+        {
+          "path": "domains/quality/responsibility-map.json",
+          "sha256": "d92435119af3f067347e75ebbfc4175595655486d0bd3a7ccb0649044ed3e3eb"
+        },
+        {
+          "path": "domains/quality/templates/Feature质量看板.md",
+          "sha256": "9764c582ae636b22132a8e525f9ceada65241bdd0e8d50d86fdd32684d7e526b"
+        },
+        {
+          "path": "domains/quality/templates/例外与风险接受.md",
+          "sha256": "75fa9dfb4d2d873ce578c196099f79a1f45b309503f13c8ccd11b99c016a6b94"
+        },
+        {
+          "path": "domains/quality/templates/检查与验收记录.md",
+          "sha256": "536174846580e11c705fd961652205f8c053577979a79eecc7e013d098f6aa36"
+        },
+        {
+          "path": "domains/quality/templates/缺陷工单.md",
+          "sha256": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0"
+        },
+        {
+          "path": "domains/quality/templates/质量事件与决策记录.md",
+          "sha256": "4430332ba795be35be3ff924703408f8cdbf136ceba7c40df88fd7e01b581a50"
+        },
+        {
+          "path": "domains/quality/templates/质量约定.md",
+          "sha256": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "integrations/yuanheng-organize-reporting.json",
+          "sha256": "1095bcc28da4d790cb4dd7069d1d4ab9c510b7d7999c1c4546647a3881bf9ff8"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
+        },
+        {
+          "path": "skills/gonggong-check/reporting.json",
+          "sha256": "be8f35d89a16ce581685dd8e615138f8fdf3c60c0c697bcc419032648708051e"
+        },
+        {
+          "path": "skills/kuafu/SKILL.md",
+          "sha256": "a3834ced0f541e823568e585ec55c9256c74721a5af8ab3267279607d1e6d966"
+        },
+        {
+          "path": "skills/kuafu/reporting.json",
+          "sha256": "d5d961eae6cbfb076ee28696e361ffd3e9f8346a3673d1893b1a60fae75c3a9a"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "3652e7b5bfbd2857625735ab368ec92365192f7c648b588f5f5ed43e7adda050"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "2d3876305a740d3dc6d2aebcf414895c62dbede46aed3337bbdda5eef3640905"
+        },
+        {
+          "path": "specs/quality.md",
+          "sha256": "7abb98b64036f3556e71129009e1c78a3b020e896cf04614753f597496af352b"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "e86381dfdf26b43038a5ad4a1db5260d6d144790500ad4768aac018a4513f22f"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "0f021ebfe046102811bd40be4ad5adbc5930b1e27c592db0fd16ede64242b486"
+        },
+        {
+          "path": "tools/check_quality_ownership.py",
+          "sha256": "45508af6d1c0206e1a18159d1f7458853096fb45c2975156e9ebfd8b0c94e2d6"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/package_integrity.py",
+          "sha256": "cfe98c3888beceadb54494956cec1bc0e09711338f1226f63690ec77dc1089cd"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "bac1e9b35a6bfc15628f0bd8029219ff3159bcddb9276fdb06b8a1bd62589602"
+        },
+        {
+          "path": "tools/verify_metadata.mjs",
+          "sha256": "3f9bde3ae40036ca7da85478cd831639ce1f8dfc9e00623440dea6cd47aa2647"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": []
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.10.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 479,
+      "rationale": "仅在角色入口保留共用职责、授权与交接。平台细节按需选择。"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/platform-families/independent-review.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Live host and provider consumption require actual host evidence."
+    ]
+  },
+  "approval": {
+    "approver_id": "user-current-chat",
+    "authority_ref": "current-user-direct-approval-issue-257",
+    "decision_evidence_ref": "reviews/platform-families/user-approval.json",
+    "approved_at": "2026-11-06T19:16:50.776807+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

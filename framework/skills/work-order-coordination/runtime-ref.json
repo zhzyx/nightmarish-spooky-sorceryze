@@ -1,14 +1,10 @@
 {
-  "path_base": "framework_root",
-  "framework_root": ".",
-  "framework_pointer": "../CURRENT_FRAMEWORK.json",
-  "coordinator": "modules/sinan/coordinator.mjs",
-  "coordinator_state": "available_on_demand",
-  "default_registry": "modules/sinan/runtime/registry.json",
-  "scheduler": null,
-  "mode": "event_driven_host_invocation",
-  "enabled": true,
-  "relocation": "Paths resolve against the framework root discovered from this file at ../.., not process cwd. Register authorized sources explicitly. Host invokes only for real task events; no background listener or timer.",
-  "refresh": "modules/sinan/refresh.mjs",
+  "binding": "host_selected_process_platform",
+  "required_capabilities": [
+    "read_sources",
+    "prepare_handoff",
+    "refresh_progress"
+  ],
+  "invocation": "on_authorized_task_event",
   "time_based_invocation": false
 }

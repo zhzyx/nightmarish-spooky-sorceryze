@@ -13,8 +13,8 @@
 | 按需 skill | gonggong-check、clarify-feature、kuafu、data-collect、data-store、data-label、data-classify、data-analyze、上游 yuanheng-organize |
 | 临时审查职能 | 獬豸·框架审查：独立评价当前候选；不因临时审查职能增加常设 Agent，不因命名获得权限 |
 | 专项规范 | 模块、客户方案、组织、项目状态、并发、代码、场景、质量、引擎适配、企业运行、治理审查、文档设计、质量职责、数据反馈、上报、跨模型运行；路径与加载条件见 framework-manifest.json |
-| 跨模型本地运行 | [运行规范](specs/model-runtime.md)、runtime/runner.py、runtime/adapters.py、runtime/evaluate.py、runtime/diting.py；共享代码，不新增Agent/skill |
-| 共享实现与记录 | tools、contracts、templates；偃师兼容代码在 integrations/yanshi-legacy；本版审查证据在 reviews |
+| 跨模型本地运行 | [运行规范](specs/model-runtime.md)、由已选择的宿主实现模型评测、传输、执行及采集 |
+| 共享实现与记录 | tools、contracts、templates；偃师兼容代码在 文档平台兼容模块；本版审查证据在 reviews |
 
 组件版本以 framework-manifest.json 和各 Agent 元数据为准。所有组件路径相对本框架根。旧版本保留为历史来源，不把其中的 Agent、规范或批准自动并入当前清单。
 

@@ -1,0 +1,277 @@
+{
+  "template": false,
+  "permit_id": "platform-families-0.10.0-yanshi",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "yanshi",
+    "version_or_digest": {
+      "version": "0.4.2",
+      "candidate_digest": "a0ac6d16523065678b74ae61c4db8bd4a5ee2ce335e44bfe2437c9f3aa5a058b",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0aff54c5fb955e4dad5acdbc0dfaf4e22def74686c35f6cedd76232695897322"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/reporting.json",
+          "sha256": "ce08bb19a0459f98d10deb6b553565713f3becdfe8f4fdd48f08d24ed3cdf7b2"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/diting/skills/data-analyze/reporting.json",
+          "sha256": "1c101ba9c8b07f40fa2f7e329737df35e0b9807a3c25edbe6cd4485eb0239859"
+        },
+        {
+          "path": "agents/diting/skills/data-classify/reporting.json",
+          "sha256": "fa716905f6ae68e435fb6ca292bc7cdb6f01a6a305a0565bd7817289a1ab766c"
+        },
+        {
+          "path": "agents/diting/skills/data-collect/reporting.json",
+          "sha256": "be0ccdf7abc4ba406a916a345f2f9c528b2a8aed68d5fdf3e8e47baa3754b012"
+        },
+        {
+          "path": "agents/diting/skills/data-label/reporting.json",
+          "sha256": "3d1f2c05a5b9209799a1ca18898ec57036749e90dcf4b2933aed5abef9e5e83f"
+        },
+        {
+          "path": "agents/diting/skills/data-store/reporting.json",
+          "sha256": "ea2bf8261ecac8b989c3479c79e9a1b7ddce088163dc7e316f965f04c51c6793"
+        },
+        {
+          "path": "agents/kuafu/reporting.json",
+          "sha256": "efdee8292f7667863d410ef1f1ee1be5a1ec9b5fe596160ed251c9f25636a3fe"
+        },
+        {
+          "path": "agents/yanshi/AGENT.md",
+          "sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66"
+        },
+        {
+          "path": "agents/yanshi/README.md",
+          "sha256": "b86f70f115e6eb96860959178a21db610d878afcb8fcf946480bb4bb81641e7d"
+        },
+        {
+          "path": "agents/yanshi/THIRD_PARTY_LICENSE.txt",
+          "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+        },
+        {
+          "path": "agents/yanshi/agent.json",
+          "sha256": "7e992980a110e0f452602a2542fb8ade4f14a850c07287878bf125969b529cad"
+        },
+        {
+          "path": "agents/yanshi/provenance.json",
+          "sha256": "d118a2f5bc5549876161eb0f66f2b3da1676a8f717679e0f65c845e063c45883"
+        },
+        {
+          "path": "agents/yanshi/references/adaptation.md",
+          "sha256": "66e8d33c01d5fc225f3fbb71254825a01b5a0bdcbb412325f830a7738b861831"
+        },
+        {
+          "path": "agents/yanshi/references/design.md",
+          "sha256": "41bac9fca51ae3f68b510d28b2d0721972f1288fed391f7664c5b10bc102a46b"
+        },
+        {
+          "path": "agents/yanshi/references/tools.md",
+          "sha256": "5f4143e9b20b1a0e9fdee7d08d17399b096c5c549288fbbacd630ab81914b601"
+        },
+        {
+          "path": "agents/yanshi/references/understanding.md",
+          "sha256": "ea42515070eda3e8fb91602924d97333716cb7117ec98b8656f561723243332b"
+        },
+        {
+          "path": "agents/yanshi/references/workflow.md",
+          "sha256": "4f26fb69a252e5b82d064d2a0b78c5b7142c32b88b1f364615a569e2e26786b0"
+        },
+        {
+          "path": "agents/yanshi/reporting.json",
+          "sha256": "649f8a02db89727bbe436b262cbccaeb49e23ada402f6757e6fc0efe5dc66d3d"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/SKILL.md",
+          "sha256": "ee2d741fce76fab223bbe2337ae71c8068a97a448c3ef4e302c94f9af554a3b1"
+        },
+        {
+          "path": "agents/yanshi/skills/clarify-feature/reporting.json",
+          "sha256": "166917d7fe7741dfb358109d7bff810f2e61110742cbb1a8b2805532eef46e41"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "integrations/yuanheng-organize-reporting.json",
+          "sha256": "1095bcc28da4d790cb4dd7069d1d4ab9c510b7d7999c1c4546647a3881bf9ff8"
+        },
+        {
+          "path": "provenance.json",
+          "sha256": "cd119a3e899d4ae8d6f99de70e5d3d7b53c2df0c6256585fb44eeee712e1ef92"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
+        },
+        {
+          "path": "skills/gonggong-check/reporting.json",
+          "sha256": "be8f35d89a16ce581685dd8e615138f8fdf3c60c0c697bcc419032648708051e"
+        },
+        {
+          "path": "skills/kuafu/reporting.json",
+          "sha256": "d5d961eae6cbfb076ee28696e361ffd3e9f8346a3673d1893b1a60fae75c3a9a"
+        },
+        {
+          "path": "specs/data-feedback.md",
+          "sha256": "3652e7b5bfbd2857625735ab368ec92365192f7c648b588f5f5ed43e7adda050"
+        },
+        {
+          "path": "specs/document-design.md",
+          "sha256": "d2e235957fd9907d2a673e2a0210b8321da32f995d0c19d919d1bf249fb3373c"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7"
+        },
+        {
+          "path": "specs/model-runtime.md",
+          "sha256": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a"
+        },
+        {
+          "path": "specs/quality-responsibilities.md",
+          "sha256": "2d3876305a740d3dc6d2aebcf414895c62dbede46aed3337bbdda5eef3640905"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "e86381dfdf26b43038a5ad4a1db5260d6d144790500ad4768aac018a4513f22f"
+        },
+        {
+          "path": "templates/model-plan.json",
+          "sha256": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f"
+        },
+        {
+          "path": "templates/reporting-binding.json",
+          "sha256": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c"
+        },
+        {
+          "path": "tools/admission.mjs",
+          "sha256": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e"
+        },
+        {
+          "path": "tools/agent-context.mjs",
+          "sha256": "0f021ebfe046102811bd40be4ad5adbc5930b1e27c592db0fd16ede64242b486"
+        },
+        {
+          "path": "tools/create-component.py",
+          "sha256": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/package_integrity.py",
+          "sha256": "cfe98c3888beceadb54494956cec1bc0e09711338f1226f63690ec77dc1089cd"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c"
+        },
+        {
+          "path": "tools/verify_framework.py",
+          "sha256": "bac1e9b35a6bfc15628f0bd8029219ff3159bcddb9276fdb06b8a1bd62589602"
+        },
+        {
+          "path": "tools/verify_metadata.mjs",
+          "sha256": "3f9bde3ae40036ca7da85478cd831639ce1f8dfc9e00623440dea6cd47aa2647"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": []
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.10.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 971,
+      "rationale": "仅在角色入口保留共用职责、授权与交接。平台细节按需选择。"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/platform-families/independent-review.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Live host and provider consumption require actual host evidence."
+    ]
+  },
+  "approval": {
+    "approver_id": "user-current-chat",
+    "authority_ref": "current-user-direct-approval-issue-257",
+    "decision_evidence_ref": "reviews/platform-families/user-approval.json",
+    "approved_at": "2026-11-06T19:16:50.776807+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}
