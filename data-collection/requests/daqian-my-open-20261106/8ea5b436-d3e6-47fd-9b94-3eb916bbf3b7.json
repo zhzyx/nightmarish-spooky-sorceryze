@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "daqian-my-open-20261106",
+  "collected_at": "2026-11-06T14:08:41.485598+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-my-open-20261106/daqian-my-open-20261106-intake.json",
+      "sha256": "d15bce158a96fb1bd34376b902cb742f1b398f82b5c1ee57c6ae5398d07b628c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "daqian-my-open-20261106-intake",
+      "origin": "user-authorized-codex-chat"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-my-open-20261106/dispatch-410f9657e2c84066acc6afbeb7934e47.json",
+      "sha256": "f9dddeb709e0925f952462cacc4a060825479d6f0aa1e46bbad77734eb16f833",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-410f9657e2c84066acc6afbeb7934e47",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-my-open-20261106/dispatch-cbeef9cc26df457d9f29e5523a4aefb7.json",
+      "sha256": "624e5d5dee6128d7c52b935fc282aa401ace9d33a83b4103289970838653ad2e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-cbeef9cc26df457d9f29e5523a4aefb7",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 188,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/188"
+}

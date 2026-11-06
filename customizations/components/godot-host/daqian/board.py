@@ -77,8 +77,11 @@ def read_board(root, follows, actor=None):
             raise ValueError("来源工单与当前仓库不匹配")
         return row["number"]
 
-    assigned = pages(f"{base}?assignee={login}&state=open&per_page=100")
-    queue = {local_number(row): row for row in assigned if "pull_request" not in row}
+    queue = {}
+    for role in ("assignee", "creator"):
+        for row in pages(f"{base}?{role}={login}&state=open&per_page=100"):
+            if "pull_request" not in row:
+                queue[local_number(row)] = row
     for num in follows:
         if num not in queue:
             row = json.loads(work_items.gh("api", f"{base}/{num}"))

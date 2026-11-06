@@ -125,6 +125,7 @@
 - 提交前已整合 `c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40`，相对实际构建基线 `8c391908` 仅新增宿主 Python 接入和证据，不改变 Gameplay/引擎构建输入。复用上述验证并明确其输入对应关系，远端 CI 另绑定实际签发 head；后续真实候选、PR、CI、main 回执及各子项关闭证据写入 #177/#176 时间线，由本设计的真实 Issue 链接保持溯源，不预填未知发布结果。
 - 首次正式交付已通过门禁及提交后谛听核验，内容提交 `3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de`、GitHub 签发 head `25c3206b80f0238b391ec85223b963d55339603e` 与 [PR #185](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/185) 均已回读，Issue 关联检查通过。实际 CI 随后发现 21 个早已跟踪的 #55 历史验收日志被 `*.log` 忽略，阻断全量 gitignore 检查；本轮仅对这 21 个精确路径添加例外，保留全部历史字节和现有检查，沿新精确候选重新签发。详情见 `data-collection/gameplay-gf2-ci-preflight-20261106.json`；不因旧候选已有提交而跳过失败检查。
 - 重新签发前主线推进到 `c364925d2662e82106be215944ee3337f34a0013`，本地任务提交已重基且暂存修复完整恢复。新增主线为大千编辑器与宿主接入，不涉及 Gameplay 核心及其底层 Node/MultiplayerPeer 输入；复用逐文件相同的模块验收，新增编辑器整合由新候选 CI 验证，不把先前二进制声称为该基线重新构建。
+- 当前交付为 [PR #187](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/187)，旧 #185 已注明替代并关闭，分支和证据均保留。第二轮实际 CI 已通过历史日志规则、模块格式/脚本/文档及 Issue 关联检查；新模块 CODEOWNERS 登记已按构建/文档/测试类别补齐并本地验证。剩余失败为现有共工离线冻结登记相对框架多出 28 文件、37 文件摘要不同（无缺失），与本 Gameplay 候选无差异关联，已独立登记 [阻塞项 #189](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/189)。冻结登记需要确认真实批准精确版本及独立审查，本轮不改写登记或批准；main 合入及 #176/#177 完成关闭保持阻塞。详细回执见 `data-collection/gameplay-gf2-ci-blocker-20261106.json`。
 
 | 子项 ID / Issue URL | 原生父单 | 设计条款 | 范围及非目标 | 验收/必要检查 | 前置依赖 | 主责 | 交付目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
