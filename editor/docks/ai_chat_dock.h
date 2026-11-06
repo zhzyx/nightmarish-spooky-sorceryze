@@ -607,6 +607,15 @@ class AIChatDock : public EditorDock {
 	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
 
+	Dictionary daqian_approval;
+	uint64_t daqian_approval_generation = 0;
+	bool daqian_approval_running = false;
+	bool _offer_daqian_approval(const String &p_detail);
+	Dictionary _get_daqian_approval() const;
+	bool _confirm_daqian_approval(const String &p_token);
+	void _end_daqian_approval(const String &p_state);
+	void _daqian_tool_result(const String &p_result, bool p_file_success);
+
 	String daqian_preview_source;
 	String daqian_preview_conversation;
 	String _work_order_binding(const String &p_field) const;
