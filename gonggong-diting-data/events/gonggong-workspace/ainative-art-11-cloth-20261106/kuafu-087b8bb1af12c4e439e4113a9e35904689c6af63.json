@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-087b8bb1af12c4e439e4113a9e35904689c6af63",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-11-cloth-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2172204368835320f31ec26e4bc65d0ac3c50fdfa7b38393ba480a6c49121404",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/326",
+    "action": "intake",
+    "detection_head": "8930b67e1977e28f4c70bb68a724545060cf7402",
+    "context_sha256": "8a9d261105268dab35701342c2bd76e1620ff94056ae6de0b9b07d8c0869a0b1",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152",
+    "diagnosis": "集合工作树intake调用漏传 --tenant gonggong-workspace，配置校验正确拒绝。是root命令参数错误，不是业务源码、权限或框架缺陷；已补参重跑151/152/153三项intake，全部实际返回真实工单与in-progress状态。",
+    "next_action": "本次intake已恢复，保留原失败及纠正记录；继续已授权集合候选定向入口回放、独审和正式门禁。独立delivery事件仍按326跟进，不把intake恢复当main交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T20:43:39.231104+00:00",
+    "attempted": "补齐真实tenant后原intake三项均exit0",
+    "repair_owner": "/root",
+    "continuable": "yes: intake passed"
+  },
+  "occurred_at": "2026-11-06T20:45:21.253532+00:00",
+  "sha256": "ceeeae5af35e88790b9fc3a154ca02f6ab3feeac6262219983ff019f76882369"
+}

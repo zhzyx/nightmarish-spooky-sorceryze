@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-hair-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-12-hair-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T20:06:53.278615+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/153",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81"
+  },
+  "payload": {
+    "request": "按已验收依赖接续本工单完整首版实现",
+    "dependencies": {
+      "github:zhzyx/nightmarish-spooky-sorceryze#151": {
+        "issue": 151,
+        "pr": 303,
+        "mergeCommit": "689c90fae0af27f26c423d256242b42ecb9571c8"
+      }
+    },
+    "worker": "/root/sinan_1103de549a73fa8d",
+    "dispatch_receipt": "dc2ae261f245683fc29d5a60e3d1bbcb83792bdfee14075cef1e64bc03540a2b",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": []
+}

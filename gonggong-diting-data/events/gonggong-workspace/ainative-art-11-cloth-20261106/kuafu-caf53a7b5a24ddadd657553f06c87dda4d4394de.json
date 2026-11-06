@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-caf53a7b5a24ddadd657553f06c87dda4d4394de",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-11-cloth-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7b50c3b062816593569bbfe6b5ee956c62c9ce65d388764cee8df96aec2925a7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/152",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/326",
+    "action": "delivery",
+    "detection_head": "851f51e5d4cebb53d3c180b1ef3af8f053580002",
+    "context_sha256": "8a9d261105268dab35701342c2bd76e1620ff94056ae6de0b9b07d8c0869a0b1",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/323",
+    "diagnosis": "152候选309/315/323均实际全CI通过，等待期间外部main连续推进；本轮851f51e5变8930b67e(PR320)，合入前精确基线检查正确拒绝。尚无跨发布者接收顺序回执，不绕过检查。151修正和153毛发也已独立复核完成。",
+    "next_action": "root唯一发布者把已复核151/152/153归集至新隔离树，保留各贡献SHA与各单独验收，唯一workbench双钩子组合正由原worker回放及review独审；三项共用一个精确候选CI以减少自身重复发布，父140/154仍开放。向在途322/325发布者请求交接顺序，未确认不声称已接收；主线再次变化仅复核实际差异。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T20:41:03.440921+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-06T20:43:20.737388+00:00",
+  "sha256": "45680428869e3dcf5ad3859a28d9dbfac11c6467efb5dd5529b477b22a6e26b2"
+}

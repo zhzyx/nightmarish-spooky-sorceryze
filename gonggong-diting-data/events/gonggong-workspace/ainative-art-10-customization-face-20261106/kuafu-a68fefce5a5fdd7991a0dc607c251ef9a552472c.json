@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a68fefce5a5fdd7991a0dc607c251ef9a552472c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5cd7e13b531bd2f595d2790d3e1547c06216c759fcd00ea169003283e77b4460",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/319",
+    "action": "validation",
+    "detection_head": "e115e1d902d0bdaf681d0fbc6f4c8f7ad5c43d40",
+    "context_sha256": "72a1c05c77171c8d6cd458038bbfcb31d08d80fd7ad75d3ce4e6cdf055f2d5a8",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+    "diagnosis": "独立无毛发对照确认151原装配中心点矩形删面造成肩颈切口：1254删面精确匹配谓词，60跨裁平面，238含非head/neck影响；default apply前后顶点与正侧图字节相同。原验收远景/着装近景覆盖不足。151已重开并撤回最终基体通过状态，保留原功能和CI历史。",
+    "next_action": "唯一修复者为原151 worker /root/sinan_54d783bf08d24eb0，原工作树内显式审定头壳mask及新不可变源；已找到660三角全部head权重1的独立头壳，保留肩胸。review_contracts独立复核裸身无发rest正侧背/颈部运动与mask边界，153继续独立毛发实现并等修正源最终回放。root随后精确候选交付，未复验前319/151保持开放。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T20:22:11.157136+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-06T20:26:42.571056+00:00",
+  "sha256": "fd5952bb9d0517704a667d4bc7ee2907bdb7f4397dc0b978dcb97fe62a24bda3"
+}

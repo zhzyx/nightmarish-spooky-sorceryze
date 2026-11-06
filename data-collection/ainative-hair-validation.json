@@ -1,0 +1,776 @@
+{
+  "schema_version": 1,
+  "issue_number": 153,
+  "request_id": "ainative-art-12-hair-20261106",
+  "status": "local_validation_passed_pending_main_integration_delivery",
+  "candidate_manifest_sha256": "2d0f6b55ccdd53502fe886fa6d06ccabacae5465fa8808a9c5d076b7d696cf4c",
+  "candidate": {
+    "issue": 153,
+    "request_id": "ainative-art-12-hair-20261106",
+    "base_commit": "689c90fae0af27f26c423d256242b42ecb9571c8",
+    "files": [
+      {
+        "path": "tools/ainative/hair_select.py",
+        "sha256": "f224fc6ca3c0c13da1dfa24ff0c17fe8f375e750e9ab1f0193d3561008acf3af",
+        "bytes": 5924
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair.gd",
+        "sha256": "a04ac7160e240d2c4c960080aaf0a031519f4d0bbf506d1a08477d295a54df64",
+        "bytes": 15139
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair_runtime.gd",
+        "sha256": "2714b5607cc5eac2586c5b62dce1eac8031940d24f7052526ddb386891c111a4",
+        "bytes": 7823
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair_panel.gd",
+        "sha256": "bd3946c9fe9756c4258c1e95d0edfaea1016d16c10907ce7b196b1e3dc3ca334",
+        "bytes": 5079
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/interop.gd",
+        "sha256": "519327e309936f5eb1a338cf38b8bf011aaddb6b626553fb6281f6bd329affd4",
+        "bytes": 29694
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/workbench.gd",
+        "sha256": "869207e110443744a8ae299f7e3c6e1ca0ee96ea4a8d28baaf059a910087d153",
+        "bytes": 21673
+      },
+      {
+        "path": "samples/ainative-workbench/hair_live_ui.gd",
+        "sha256": "aaccb3ccdf3547fd18d6ffdd1a576954f264cb67c59c4f56377410f570d5d07a",
+        "bytes": 12614
+      },
+      {
+        "path": "design-docs/ainative-art/12-hair.md",
+        "sha256": "d956870f0cdb25c28179a5ba00fc526f03241b4a9058b4269af88f091623b6d7",
+        "bytes": 8052
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair.gd.uid",
+        "sha256": "04431c3836673ca9ae438abe6785483bd4c6641e5c2e40151a148431db395172",
+        "bytes": 20
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair_panel.gd.uid",
+        "sha256": "754e31c52fda0395b4ea64a2ccb067abfdff0752ac2e1ab713788207b3e2941c",
+        "bytes": 20
+      },
+      {
+        "path": "samples/ainative-workbench/addons/ainative/hair_runtime.gd.uid",
+        "sha256": "45607b7e9035aae7b3213603fbfe83e319c1aa0dec787ddc3428ce989125ccfe",
+        "bytes": 19
+      }
+    ],
+    "dispatch_artifacts": "Root-owned intake/diting files preserved; root integrates separately",
+    "committed": false
+  },
+  "summary": {
+    "issue": 153,
+    "candidate": "candidate-files.json",
+    "validation": "final-v2.json",
+    "config": "final-config-v2.json",
+    "source_selection": "selection-v5/posterior.json",
+    "source_selection_sha256": "66e1fca10497ccbaa0da978e97f09c3db84b05d46b5f41af89fff95dd3c19b32",
+    "source_mesh_sha256": "dbe21df1af13f4df0e21545bf7435eac4e88f71b0955bea99840ddf65d42ddab",
+    "new_base_sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a",
+    "saved_sha256": "c68f96b0de8f891d65d8dfedb75bcca5c38d8ed946cd856a728a737a8896bb56",
+    "combination_count": 12,
+    "source_runs": [
+      "10786138a4664798885053b479d9310b",
+      "b40454cf1f5347e7a8dd43391348bc2d"
+    ],
+    "expression_preserves_dynamics": true,
+    "external_scalp_change_stops_solver": true,
+    "portable_reopen_without_sources": true,
+    "missing_locator_preserves_scene": true,
+    "bad_metadata_preserves_scene": true,
+    "controlled_contact": {
+      "contacts": 13,
+      "pose_is_test_fixture": true,
+      "radius_m": 0.075,
+      "semantic": "upper_arm_l",
+      "separation_m": 0.0750000029802322
+    },
+    "motion_steps": 120,
+    "solver_mean_us": 47.88333333333333,
+    "solver_max_us": 93,
+    "error_log_bytes": 0,
+    "static_checks": [
+      "ruff 0.17.1 check + format --check",
+      "mypy 2.4.0",
+      "codespell 2.4.2",
+      "git diff --check"
+    ],
+    "visual_scope": "Controlled posterior AI-source sample; authored cap and solid Guide Cards, not arbitrary Groom or photoreal hair; no Strands",
+    "remaining": "Main integration and delivery pending; independent final review now approved.",
+    "no_commit_push": true
+  },
+  "actual_normal_workbench": {
+    "bad_metadata_preserves_scene": true,
+    "combinations": [
+      {
+        "cards": false,
+        "hat": false,
+        "lod": 0,
+        "triangles": 1536,
+        "view": "final-v2-lod0-cardsfalse-hatfalse.png"
+      },
+      {
+        "cards": false,
+        "hat": true,
+        "lod": 0,
+        "triangles": 1344,
+        "view": "final-v2-lod0-cardsfalse-hattrue.png"
+      },
+      {
+        "cards": true,
+        "hat": false,
+        "lod": 0,
+        "triangles": 1536,
+        "view": "final-v2-lod0-cardstrue-hatfalse.png"
+      },
+      {
+        "cards": true,
+        "hat": true,
+        "lod": 0,
+        "triangles": 1344,
+        "view": "final-v2-lod0-cardstrue-hattrue.png"
+      },
+      {
+        "cards": false,
+        "hat": false,
+        "lod": 1,
+        "triangles": 384,
+        "view": "final-v2-lod1-cardsfalse-hatfalse.png"
+      },
+      {
+        "cards": false,
+        "hat": true,
+        "lod": 1,
+        "triangles": 336,
+        "view": "final-v2-lod1-cardsfalse-hattrue.png"
+      },
+      {
+        "cards": true,
+        "hat": false,
+        "lod": 1,
+        "triangles": 384,
+        "view": "final-v2-lod1-cardstrue-hatfalse.png"
+      },
+      {
+        "cards": true,
+        "hat": true,
+        "lod": 1,
+        "triangles": 336,
+        "view": "final-v2-lod1-cardstrue-hattrue.png"
+      },
+      {
+        "cards": false,
+        "hat": false,
+        "lod": 2,
+        "triangles": 96,
+        "view": "final-v2-lod2-cardsfalse-hatfalse.png"
+      },
+      {
+        "cards": false,
+        "hat": true,
+        "lod": 2,
+        "triangles": 84,
+        "view": "final-v2-lod2-cardsfalse-hattrue.png"
+      },
+      {
+        "cards": true,
+        "hat": false,
+        "lod": 2,
+        "triangles": 96,
+        "view": "final-v2-lod2-cardstrue-hatfalse.png"
+      },
+      {
+        "cards": true,
+        "hat": true,
+        "lod": 2,
+        "triangles": 84,
+        "view": "final-v2-lod2-cardstrue-hattrue.png"
+      }
+    ],
+    "controlled_contact": {
+      "contacts": 13,
+      "pose_is_test_fixture": true,
+      "radius_m": 0.075,
+      "semantic": "upper_arm_l",
+      "separation_m": 0.0750000029802322
+    },
+    "expression_preserves_dynamics": true,
+    "external_scalp_change_stops_solver": true,
+    "failure_preserves_scene": true,
+    "head_rest": "[X: (-0.0, 0.999734, -0.02306), Y: (-1.0, -0.0, -0.0), Z: (-0.0, 0.02306, 0.999734), O: (-0.0, 1.65516, -0.039789)]",
+    "missing_locator_preserves_scene": true,
+    "motion": {
+      "body_bones_unchanged": 68,
+      "collisions": 0,
+      "head_neck_writes": 0,
+      "max_offset_m": 0.0650000125169754,
+      "reset_count": 3,
+      "solver_us": [
+        89,
+        93,
+        65,
+        46,
+        47,
+        46,
+        46,
+        46,
+        46,
+        46,
+        46,
+        46,
+        46,
+        47,
+        46,
+        47,
+        47,
+        46,
+        47,
+        47,
+        47,
+        46,
+        46,
+        46,
+        46,
+        46,
+        46,
+        46,
+        47,
+        47,
+        46,
+        46,
+        47,
+        47,
+        46,
+        46,
+        47,
+        46,
+        47,
+        47,
+        47,
+        46,
+        47,
+        47,
+        50,
+        47,
+        47,
+        47,
+        47,
+        46,
+        48,
+        47,
+        47,
+        47,
+        47,
+        47,
+        48,
+        48,
+        47,
+        47,
+        47,
+        92,
+        48,
+        47,
+        47,
+        47,
+        46,
+        47,
+        47,
+        46,
+        46,
+        46,
+        46,
+        46,
+        47,
+        51,
+        46,
+        46,
+        47,
+        47,
+        47,
+        46,
+        46,
+        46,
+        46,
+        47,
+        46,
+        47,
+        47,
+        46,
+        47,
+        46,
+        46,
+        47,
+        46,
+        46,
+        46,
+        47,
+        46,
+        45,
+        47,
+        46,
+        46,
+        46,
+        47,
+        47,
+        46,
+        47,
+        47,
+        46,
+        47,
+        47,
+        46,
+        46,
+        46,
+        47,
+        47,
+        48,
+        46,
+        46
+      ],
+      "steps": 120
+    },
+    "portable_reopen_without_sources": true,
+    "rebound": {
+      "new": "5e4ea0da3de5a1f0a482c781d10ec02526dd860baa585d01a2b53a9b1ce4e749",
+      "old": "f324b6574d5f0dfd16b3126e413a3c8b3e9cd545b1821bad9610b6be481f6a9e"
+    },
+    "roots": [
+      {
+        "barycentric": [
+          0.0910151869269343,
+          0.00768593605536611,
+          0.9012988770177
+        ],
+        "guide": 0,
+        "position": [
+          -0.0566381923854351,
+          1.77571439743042,
+          -0.0775019228458405
+        ],
+        "scalp_triangle": 8164,
+        "scalp_vertex": 4467
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.828630506771031,
+          0.171369493228969
+        ],
+        "guide": 1,
+        "position": [
+          -0.0556975193321705,
+          1.77607619762421,
+          -0.0788749828934669
+        ],
+        "scalp_triangle": 8166,
+        "scalp_vertex": 4466
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.0881996888190273,
+          0.911800311180973
+        ],
+        "guide": 2,
+        "position": [
+          -0.0530611984431744,
+          1.77837491035461,
+          -0.0813722312450409
+        ],
+        "scalp_triangle": 8166,
+        "scalp_vertex": 4466
+      },
+      {
+        "barycentric": [
+          0.712728873215953,
+          0.287271126784047,
+          0.0
+        ],
+        "guide": 3,
+        "position": [
+          -0.0514939203858376,
+          1.77952861785889,
+          -0.0825676620006561
+        ],
+        "scalp_triangle": 8158,
+        "scalp_vertex": 4584
+      },
+      {
+        "barycentric": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "guide": 4,
+        "position": [
+          -0.0483845956623554,
+          1.78171145915985,
+          -0.0847955197095871
+        ],
+        "scalp_triangle": 8158,
+        "scalp_vertex": 4584
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.397166732747222,
+          0.602833267252778
+        ],
+        "guide": 5,
+        "position": [
+          -0.044852577149868,
+          1.78360903263092,
+          -0.0865103080868721
+        ],
+        "scalp_triangle": 8168,
+        "scalp_vertex": 4464
+      },
+      {
+        "barycentric": [
+          0.0570001940354068,
+          0.229469338883169,
+          0.713530467081424
+        ],
+        "guide": 6,
+        "position": [
+          -0.0403538942337036,
+          1.78534531593323,
+          -0.0887225791811943
+        ],
+        "scalp_triangle": 8448,
+        "scalp_vertex": 4646
+      },
+      {
+        "barycentric": [
+          0.0211119393496478,
+          0.840065283692699,
+          0.138822776957653
+        ],
+        "guide": 7,
+        "position": [
+          -0.0349454805254936,
+          1.78691351413727,
+          -0.0911509171128273
+        ],
+        "scalp_triangle": 8451,
+        "scalp_vertex": 4645
+      },
+      {
+        "barycentric": [
+          0.294902803801486,
+          0.541108446062771,
+          0.163988750135743
+        ],
+        "guide": 8,
+        "position": [
+          -0.0289397556334734,
+          1.78827738761902,
+          -0.0931686982512474
+        ],
+        "scalp_triangle": 8452,
+        "scalp_vertex": 4645
+      },
+      {
+        "barycentric": [
+          0.230664274896919,
+          0.267776919155802,
+          0.501558805947279
+        ],
+        "guide": 9,
+        "position": [
+          -0.0224214401096106,
+          1.78965282440186,
+          -0.0946934223175049
+        ],
+        "scalp_triangle": 12127,
+        "scalp_vertex": 4645
+      },
+      {
+        "barycentric": [
+          0.178410674215992,
+          0.727097876329112,
+          0.0944914494548964
+        ],
+        "guide": 10,
+        "position": [
+          -0.0154703604057431,
+          1.79095435142517,
+          -0.095929242670536
+        ],
+        "scalp_triangle": 10538,
+        "scalp_vertex": 6300
+      },
+      {
+        "barycentric": [
+          0.24218637215637,
+          0.484321099391858,
+          0.273492528451772
+        ],
+        "guide": 11,
+        "position": [
+          -0.00780557421967387,
+          1.79118144512177,
+          -0.0969657972455025
+        ],
+        "scalp_triangle": 10530,
+        "scalp_vertex": 5578
+      },
+      {
+        "barycentric": [
+          0.649243668583132,
+          0.0,
+          0.350756331416868
+        ],
+        "guide": 12,
+        "position": [
+          -6.80941951713976e-08,
+          1.79166686534882,
+          -0.096862755715847
+        ],
+        "scalp_triangle": 4210,
+        "scalp_vertex": 6838
+      },
+      {
+        "barycentric": [
+          0.242243663645688,
+          0.273535392939601,
+          0.484220943414711
+        ],
+        "guide": 13,
+        "position": [
+          0.0078057711943984,
+          1.79118132591248,
+          -0.0969658866524696
+        ],
+        "scalp_triangle": 4212,
+        "scalp_vertex": 2146
+      },
+      {
+        "barycentric": [
+          0.178437460981411,
+          0.0944942222350868,
+          0.727068316783502
+        ],
+        "guide": 14,
+        "position": [
+          0.015470365062356,
+          1.79095435142517,
+          -0.0959292724728584
+        ],
+        "scalp_triangle": 4220,
+        "scalp_vertex": 2868
+      },
+      {
+        "barycentric": [
+          0.230689042040186,
+          0.501564621699546,
+          0.267746336260268
+        ],
+        "guide": 15,
+        "position": [
+          0.0224214550107718,
+          1.78965282440186,
+          -0.0946933925151825
+        ],
+        "scalp_triangle": 5809,
+        "scalp_vertex": 1213
+      },
+      {
+        "barycentric": [
+          0.29490265820842,
+          0.164005764727414,
+          0.541091577064166
+        ],
+        "guide": 16,
+        "position": [
+          0.028939725831151,
+          1.78827726840973,
+          -0.0931686609983444
+        ],
+        "scalp_triangle": 2134,
+        "scalp_vertex": 1213
+      },
+      {
+        "barycentric": [
+          0.0210893668871015,
+          0.138851648606403,
+          0.840058984506496
+        ],
+        "guide": 17,
+        "position": [
+          0.0349454805254936,
+          1.78691351413727,
+          -0.0911509171128273
+        ],
+        "scalp_triangle": 2135,
+        "scalp_vertex": 1213
+      },
+      {
+        "barycentric": [
+          0.057001163616971,
+          0.713544148185587,
+          0.229454688197442
+        ],
+        "guide": 18,
+        "position": [
+          0.0403538420796394,
+          1.78534519672394,
+          -0.0887225419282913
+        ],
+        "scalp_triangle": 2130,
+        "scalp_vertex": 1214
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.602820345576072,
+          0.397179654423928
+        ],
+        "guide": 19,
+        "position": [
+          0.0448525175452232,
+          1.78360903263092,
+          -0.0865102484822273
+        ],
+        "scalp_triangle": 1850,
+        "scalp_vertex": 1032
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "guide": 20,
+        "position": [
+          0.0483844578266144,
+          1.78171145915985,
+          -0.0847954899072647
+        ],
+        "scalp_triangle": 1840,
+        "scalp_vertex": 1152
+      },
+      {
+        "barycentric": [
+          0.712772905761719,
+          0.0,
+          0.287227094238281
+        ],
+        "guide": 21,
+        "position": [
+          0.0514939688146114,
+          1.7795284986496,
+          -0.082567498087883
+        ],
+        "scalp_triangle": 1840,
+        "scalp_vertex": 1152
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.0881898476913997,
+          0.9118101523086
+        ],
+        "guide": 22,
+        "position": [
+          0.0530610159039497,
+          1.7783750295639,
+          -0.0813722461462021
+        ],
+        "scalp_triangle": 2126,
+        "scalp_vertex": 1217
+      },
+      {
+        "barycentric": [
+          0.0,
+          0.171396575728971,
+          0.828603424271029
+        ],
+        "guide": 23,
+        "position": [
+          0.0556972771883011,
+          1.7760763168335,
+          -0.0788750424981117
+        ],
+        "scalp_triangle": 1848,
+        "scalp_vertex": 1034
+      },
+      {
+        "barycentric": [
+          0.0910126870678977,
+          0.901238465886693,
+          0.00774884704540956
+        ],
+        "guide": 24,
+        "position": [
+          0.0566382184624672,
+          1.77571427822113,
+          -0.0775016993284225
+        ],
+        "scalp_triangle": 1846,
+        "scalp_vertex": 1035
+      }
+    ],
+    "saved_sha256": "c68f96b0de8f891d65d8dfedb75bcca5c38d8ed946cd856a728a737a8896bb56",
+    "views": [
+      "final-v2-front.png",
+      "final-v2-side.png",
+      "final-v2-back.png"
+    ]
+  },
+  "evidence_sha256": {
+    "final-summary.json": "515211510da4cd940d79ac3fab4d0d1a4b66875c71eddbc2ad5108bf608ac69b",
+    "final-v2.json": "2ce8505601e3a3b4295243aef90829295a6c838066df8bdf177cc636594f7f8f",
+    "final-config-v2.json": "a9087f436689df6978f13ee6832f90a4068ae5ac803a5565eb8394ddcd5321d9",
+    "final-v2.tscn": "c68f96b0de8f891d65d8dfedb75bcca5c38d8ed946cd856a728a737a8896bb56",
+    "final-v2-root-side-hatfalse.png": "e00db33a4d376be34c9d19fa077ab217ce624672f27541db8158231fd60d97ac",
+    "final-v2-root-side-hattrue.png": "61a2c483aad9edcdde7fedf8de2a36c8cd68dd148fa194d35ded4b006ddebf4d",
+    "final-v2-back.png": "0edf7dd72fe87d9f5c207e11371613c13be33021f0ee99f04d896f5489f606b0"
+  },
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "state": "approved_limited_first_version",
+    "source_points": 825,
+    "source_reconstruction_max_error_m": 2.7724e-07,
+    "root_points": 25,
+    "root_reconstruction_max_error_m": 1.197e-07,
+    "root_offset_error_m": 9.96e-08,
+    "checks": [
+      "All 11 frozen source hashes, receipt and saved source SHA matched",
+      "Real BodyMotion 0 to 0.5s follows full head transform; 68 body bones unmodified",
+      "All Mesh/Cards and LOD 0/1/2 hat combinations remain nonzero and partially masked",
+      "Expression-only preserves instance and dynamics; stale external scalp stops runtime",
+      "Invalid source triangle/barycentric rejected despite recomputed selection hash",
+      "Malformed saved metadata rejected without replacing valid scene",
+      "Independent relocation of own source copies still permits published scene reopen; no local locator in published file",
+      "Missing locator during static rebind preserves valid instance; no clobber"
+    ],
+    "source_selection_boundary": "Narrowed final source h/v adjacent depth jumps 0.032871/0.042723; old deep edge spikes removed in reviewed views"
+  },
+  "root_visual_review": {
+    "state": "approved_first_version_technical_scope",
+    "images": [
+      "final-v2-root-side-hatfalse.png",
+      "final-v2-root-side-hattrue.png",
+      "final-v2-back.png"
+    ],
+    "observed": "New bare-source shoulder error corrected by151; authored cap covers continuously projected roots, earlier detached jagged root seam removed; small hat clipping edge remains."
+  },
+  "limits": [
+    "Controlled posterior source selection, authored cap and solid Guide Cards; not arbitrary generated Groom, fine fiber texture or Strands",
+    "Guide endpoint sphere collision only, no segment continuous collision or self collision",
+    "Actual MDM contact count zero; 13 contacts come from explicitly authored controlled test pose",
+    "Solver timing excludes whole frame; same-character full workflow remains154",
+    "Static re-sampling requires matching original source locator; saved scene playback is portable"
+  ]
+}

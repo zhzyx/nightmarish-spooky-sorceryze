@@ -1,0 +1,21 @@
+{
+  "issue_number": 152,
+  "request_id": "ainative-art-11-cloth-20261106",
+  "base": "851f51e5d4cebb53d3c180b1ef3af8f053580002",
+  "prior_pr": 315,
+  "prior_signed": "18b7aaf1306dac3e8e5186dd411d78c5be0a924d",
+  "prior_all_ci": "SUCCESS",
+  "main_changed_files": [
+    ".github/workflows/kuafu-blockers.yml",
+    "customizations/components/issue-workorders/kuafu_github.py",
+    "customizations/components/issue-workorders/test_kuafu_github.py",
+    "data-collection/requests/kuafu-report-grouping/2ecd2747-32ce-4451-89fd-ed83f698ae79.json",
+    "design-docs/kuafu-report-grouping.md",
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-report-grouping/kuafu-2310498808991c032458ecd79c1af095202b606b.json",
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-report-grouping/kuafu-7a8a0c687ceb0fd0339ae76f085f9726fc7384b2.json",
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-report-grouping/kuafu-report-grouping-intake.json"
+  ],
+  "ainative_overlap": false,
+  "all_candidate_source_hashes_verified_unchanged": true,
+  "behavior_evidence_reused": true
+}
