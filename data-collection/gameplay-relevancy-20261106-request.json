@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-relevancy-delivery-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-relevancy-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:59:12.2681638Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/179",
+  "agent": {
+    "id": "codex-current-gameplay-gf4-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "intent": "Implement and validate GF-4 relevancy and replication graph policy on the staged GF-1 through GF-3 candidate, then stop before GF-5",
+    "authorization": "Current user explicitly authorized GF-4 continuation in the parent Codex chat on 2026-11-06",
+    "operator": "kaiyunxue",
+    "permission_readback": "WRITE",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+    "design_document": "design-docs/gameplay-framework-20261106.md",
+    "intake": "passed for Issue 179 after status readback at 2026-11-06T13:36:34Z",
+    "local_validation": "Windows editor tests=yes and template_debug builds passed; Gameplay headless 16 tests / 4592 assertions passed; editor and template_debug headless version startup passed; runtime API signatures and complete class reference XML validation passed",
+    "representative_measurement": "Windows 11 build 22631, i7-13700KF 16C/24T: 4096 objects x 32 connections planned in 2809 usec with 19728 candidates, 3319 relevant, 2018 selected, 258304 estimated bytes; 3-peer ENet sample recorded Alice 1400 estimated bytes for real sends and 2264 measured MultiplayerPeer payload bytes",
+    "scope_stop": "Fix the combined GF-1 through GF-4 candidate and stop before GF-5",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": []
+}

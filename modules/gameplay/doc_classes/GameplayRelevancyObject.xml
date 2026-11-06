@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayRelevancyObject" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Transport-independent relevancy and scheduling descriptor for a replicated object.
+	</brief_description>
+	<description>
+		Describes how [GameplayReplicationGraph] finds and schedules one object. Policies are mutually exclusive: always wins by being its own policy, owner-only and team-only require their exact server-owned identity, owner-or-team accepts either, and distance performs exact radius filtering after spatial candidate lookup.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="cull_distance" type="float" setter="set_cull_distance" getter="get_cull_distance" default="100.0">
+			Exact radius for [constant POLICY_DISTANCE]. It must not exceed the graph's [member GameplayReplicationGraph.max_spatial_distance].
+		</member>
+		<member name="estimated_update_bytes" type="int" setter="set_estimated_update_bytes" getter="get_estimated_update_bytes" default="256">
+			Scheduling estimate charged against a connection budget when this object is selected.
+		</member>
+		<member name="object_id" type="int" setter="set_object_id" getter="get_object_id" default="0">
+			Stable positive ID matching the object registered with [GameplayMultiplayerReplication].
+		</member>
+		<member name="owner_peer_id" type="int" setter="set_owner_peer_id" getter="get_owner_peer_id" default="0">
+			Server-recorded gameplay owner. This does not change Godot multiplayer authority.
+		</member>
+		<member name="policy" type="int" setter="set_policy" getter="get_policy" enum="GameplayRelevancyObject.Policy" default="0">
+			The single deterministic relevancy rule for this object.
+		</member>
+		<member name="position" type="Vector3" setter="set_position" getter="get_position" default="Vector3(0, 0, 0)">
+			Authoritative object position used by distance policy and the spatial grid.
+		</member>
+		<member name="priority" type="int" setter="set_priority" getter="get_priority" default="1">
+			Base scheduling priority from 0 through 1000. Each budget miss adds starvation credit, so a feasible lower-priority object eventually runs.
+		</member>
+		<member name="team_id" type="int" setter="set_team_id" getter="get_team_id" default="0">
+			Server-assigned object team. Zero does not match a connection team.
+		</member>
+		<member name="update_interval_msec" type="int" setter="set_update_interval_msec" getter="get_update_interval_msec" default="0">
+			Minimum time between successful scheduling passes for the same connection. Zero allows every pass.
+		</member>
+	</members>
+	<constants>
+		<constant name="POLICY_DISTANCE" value="0" enum="Policy">
+			Uses the spatial grid for candidates, then checks the exact configured radius.
+		</constant>
+		<constant name="POLICY_OWNER_ONLY" value="1" enum="Policy">
+			Relevant only to the server-recorded owner peer.
+		</constant>
+		<constant name="POLICY_TEAM_ONLY" value="2" enum="Policy">
+			Relevant only when nonzero server-assigned team IDs match.
+		</constant>
+		<constant name="POLICY_OWNER_OR_TEAM" value="3" enum="Policy">
+			Relevant when either the owner peer or a nonzero team matches.
+		</constant>
+		<constant name="POLICY_ALWAYS" value="4" enum="Policy">
+			Relevant to every registered connection view.
+		</constant>
+	</constants>
+</class>

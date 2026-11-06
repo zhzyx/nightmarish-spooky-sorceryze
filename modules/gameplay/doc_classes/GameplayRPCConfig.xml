@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayRPCConfig" inherits="Resource" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Allowlisted gameplay RPC direction and payload policy.
+	</brief_description>
+	<description>
+		Gameplay RPCs must be registered by object ID and name before use. Incoming packets are matched against this local policy; packet fields cannot grant server authority or gameplay ownership.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="direction" type="int" setter="set_direction" getter="get_direction" enum="GameplayRPCConfig.Direction" default="0">
+			Allowed call direction.
+		</member>
+		<member name="max_payload_bytes" type="int" setter="set_max_payload_bytes" getter="get_max_payload_bytes" default="4096">
+			Maximum encoded argument size. The adapter also rejects any final packet over its 1200-byte safety budget rather than relying on UDP fragmentation.
+		</member>
+		<member name="require_owner" type="bool" setter="set_require_owner" getter="is_owner_required" default="false">
+			For server RPCs, requires the authenticated transport sender to equal the server-recorded gameplay owner.
+		</member>
+		<member name="rpc_name" type="StringName" setter="set_rpc_name" getter="get_rpc_name" default="&amp;&quot;&quot;">
+			Stable allowlisted RPC name.
+		</member>
+	</members>
+	<constants>
+		<constant name="DIRECTION_SERVER" value="0" enum="Direction">
+			A joined client calls the authoritative server.
+		</constant>
+		<constant name="DIRECTION_OWNER" value="1" enum="Direction">
+			The server calls the object's gameplay owner.
+		</constant>
+		<constant name="DIRECTION_CLIENT" value="2" enum="Direction">
+			The server calls one explicitly selected admitted client.
+		</constant>
+		<constant name="DIRECTION_MULTICAST" value="3" enum="Direction">
+			The server executes locally and calls every admitted client.
+		</constant>
+	</constants>
+</class>

@@ -4,7 +4,7 @@
 		ENet client for the dedicated-server connection handshake.
 	</brief_description>
 	<description>
-		GameplaySessionClient performs the GF-2 version, authentication, and join handshake. ENet does not encrypt the supplied credentials; use short-lived tokens and a suitable secure network boundary in production. This class is intentionally limited to connection bootstrap and does not provide gameplay RPCs, replication, relevancy, or prediction.
+		GameplaySessionClient performs the GF-2 version, authentication, and join handshake. Optional [member replication] and [member prediction] adapters share the peer for validated replication and prediction packets. ENet does not encrypt the supplied credentials; use short-lived tokens and a suitable secure network boundary in production.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -60,6 +60,12 @@
 	<members>
 		<member name="rejection_reason" type="String" setter="" getter="get_rejection_reason">
 			Machine-readable server rejection reason.
+		</member>
+		<member name="replication" type="GameplayMultiplayerReplication" setter="set_replication" getter="get_replication">
+			Optional RPC and property replication adapter sharing the client peer.
+		</member>
+		<member name="prediction" type="GameplayNetworkPrediction" setter="set_prediction" getter="get_prediction">
+			Optional owner prediction and remote interpolation adapter sharing the client peer.
 		</member>
 		<member name="session_id" type="String" setter="" getter="get_session_id">
 			Stable authenticated session identity.

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayMultiplayerReplication" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Godot MultiplayerPeer adapter for gameplay RPC and replication policy.
+	</brief_description>
+	<description>
+		Binds transport-independent RPC, property, and optional [GameplayReplicationGraph] policies to an existing Godot multiplayer peer. Server inbound calls require the actual transport sender to be a spawned [GameplaySessionManager] connection and optionally the server-recorded gameplay owner. Clients accept authority calls and state only from peer 1. Connection views are installed only by trusted server code; a client relevancy-control envelope is rejected. The adapter uses reliable channel 1, rejects packets over 1200 bytes, and explicitly fragments large state transfers.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_transport">
+			<return type="void" />
+			<description>Detaches the peer and clears in-progress reassembly state without removing registered policy.</description>
+		</method>
+		<method name="configure_client">
+			<return type="void" />
+			<param index="0" name="peer" type="MultiplayerPeer" />
+			<description>Attaches a client peer. Incoming authority packets must have transport sender 1.</description>
+		</method>
+		<method name="configure_server">
+			<return type="void" />
+			<param index="0" name="peer" type="MultiplayerPeer" />
+			<param index="1" name="session_manager" type="GameplaySessionManager" />
+			<description>Attaches a server peer and the authoritative connection lifecycle source.</description>
+		</method>
+		<method name="expire_reassemblies">
+			<return type="void" />
+			<param index="0" name="now_msec" type="int" />
+			<description>Expires incomplete state transfers.</description>
+		</method>
+		<method name="get_object_owner_peer_id" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="object_id" type="int" />
+			<description>Returns locally registered gameplay ownership. Network authority remains separate.</description>
+		</method>
+		<method name="set_object_dormant">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="dormant" type="bool" />
+			<description>On a configured server, changes graph dormancy and captures the bound state's current change serial.</description>
+		</method>
+		<method name="set_replication_graph">
+			<return type="int" enum="Error" />
+			<param index="0" name="graph" type="GameplayReplicationGraph" />
+			<description>Installs a graph before transport setup or on a configured server. Configured clients are rejected.</description>
+		</method>
+		<method name="update_server_connection_view">
+			<return type="int" enum="Error" />
+			<param index="0" name="view" type="GameplayConnectionView" />
+			<description>Adds or updates an authoritative view only when the adapter is a server and the peer is a spawned gameplay connection.</description>
+		</method>
+		<method name="wake_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<description>Explicitly wakes a graph object on the configured server.</description>
+		</method>
+		<method name="get_rejected_packet_count" qualifiers="const">
+			<return type="int" />
+			<description>Returns the number of rejected RPC or replication packets.</description>
+		</method>
+		<method name="handles_message" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="message" type="Dictionary" />
+			<description>Returns whether a decoded envelope belongs to this adapter.</description>
+		</method>
+		<method name="invoke_rpc">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="rpc_name" type="StringName" />
+			<param index="2" name="arguments" type="Array" default="[]" />
+			<param index="3" name="target_peer_id" type="int" default="0" />
+			<description>Invokes a registered RPC according to its local direction policy. Owner targets are resolved locally; client targets must be admitted connections.</description>
+		</method>
+		<method name="receive_packet">
+			<return type="int" enum="Error" />
+			<param index="0" name="transport_sender_peer_id" type="int" />
+			<param index="1" name="message" type="Dictionary" />
+			<param index="2" name="now_msec" type="int" />
+			<description>Validates and dispatches a decoded adapter envelope. The sender argument must come from [method MultiplayerPeer.get_packet_peer], never message data.</description>
+		</method>
+		<method name="register_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="owner_peer_id" type="int" />
+			<param index="2" name="state" type="GameplayReplicationState" default="null" />
+			<description>Registers a stable network object ID, its gameplay owner, and optional property state.</description>
+		</method>
+		<method name="register_rpc">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="config" type="GameplayRPCConfig" />
+			<param index="2" name="handler" type="Callable" />
+			<description>Adds one allowlisted RPC and its local handler.</description>
+		</method>
+		<method name="replicate">
+			<return type="int" enum="Error" />
+			<param index="0" name="now_msec" type="int" />
+			<description>On a configured server, collects and sends eligible dirty state to all spawned sessions.</description>
+		</method>
+		<method name="set_object_owner_peer_id">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="owner_peer_id" type="int" />
+			<description>Changes locally authoritative gameplay ownership without changing Godot multiplayer authority.</description>
+		</method>
+		<method name="unregister_object">
+			<return type="bool" />
+			<param index="0" name="object_id" type="int" />
+			<description>Removes an object, its state binding, and its RPC allowlist.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="fragmenter" type="GameplayReplicationFragmenter" setter="set_fragmenter" getter="get_fragmenter">
+			Fragmentation limits and reassembly runtime used by this endpoint.
+		</member>
+		<member name="replication_graph" type="GameplayReplicationGraph" setter="set_replication_graph" getter="get_replication_graph">
+			Optional server-side relevancy and budget scheduler. Without it, the GF-3 behavior of considering every registered object is preserved.
+		</member>
+		<member name="last_rejection_reason" type="String" setter="" getter="get_last_rejection_reason">
+			Machine-readable reason for the most recent rejected packet or local authority violation.
+		</member>
+		<member name="server" type="bool" setter="" getter="is_server">
+			Whether the adapter is configured as the authoritative endpoint.
+		</member>
+	</members>
+	<signals>
+		<signal name="replication_applied"><param index="0" name="object_id" type="int" /><description>Emitted after a complete valid transfer is applied.</description></signal>
+		<signal name="replication_failed"><param index="0" name="reason" type="String" /><description>Emitted when state validation or reassembly fails.</description></signal>
+		<signal name="object_became_irrelevant"><param index="0" name="peer_id" type="int" /><param index="1" name="object_id" type="int" /><description>Emitted when an object leaves a server connection's exact relevant set.</description></signal>
+		<signal name="object_became_relevant"><param index="0" name="peer_id" type="int" /><param index="1" name="object_id" type="int" /><description>Emitted when an object enters a server connection's exact relevant set.</description></signal>
+		<signal name="relevancy_rejected"><param index="0" name="sender_peer_id" type="int" /><param index="1" name="reason" type="String" /><description>Emitted when a peer attempts to control server relevancy.</description></signal>
+		<signal name="rpc_received"><param index="0" name="sender_peer_id" type="int" /><param index="1" name="object_id" type="int" /><param index="2" name="rpc_name" type="StringName" /><description>Emitted after an allowlisted handler runs.</description></signal>
+		<signal name="rpc_rejected"><param index="0" name="sender_peer_id" type="int" /><param index="1" name="rpc_name" type="StringName" /><param index="2" name="reason" type="String" /><description>Emitted when sender, lifecycle, ownership, direction, target, or payload validation fails.</description></signal>
+	</signals>
+</class>

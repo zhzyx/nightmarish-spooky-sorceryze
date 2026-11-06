@@ -10,6 +10,9 @@ env_gameplay.add_source_files(
     [
         "gameplay_entity.cpp",
         "gameplay_match.cpp",
+        "gameplay_prediction.cpp",
+        "gameplay_relevancy.cpp",
+        "gameplay_replication.cpp",
         "gameplay_server.cpp",
         "gameplay_session.cpp",
         "gameplay_subsystem.cpp",

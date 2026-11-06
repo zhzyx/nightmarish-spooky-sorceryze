@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPredictionState" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Authoritative or predicted state for the basic deterministic movement model.</brief_description>
+	<description>
+		GameplayPredictionState stores position, velocity, the last input sequence represented by the state, and the server sample time. It is a small extension point for the GF-5 sample model, not a general physics snapshot.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="duplicate_state" qualifiers="const">
+			<return type="GameplayPredictionState" />
+			<description>Returns an independent copy suitable for history or interpolation.</description>
+		</method>
+		<method name="to_dictionary" qualifiers="const">
+			<return type="Dictionary" />
+			<description>Returns a transport-safe state dictionary.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="confirmed_sequence" type="int" setter="set_confirmed_sequence" getter="get_confirmed_sequence" default="0">Last input sequence incorporated into this state.</member>
+		<member name="position" type="Vector3" setter="set_position" getter="get_position" default="Vector3(0, 0, 0)">Finite movement position.</member>
+		<member name="server_time_msec" type="int" setter="set_server_time_msec" getter="get_server_time_msec" default="0">Authority sample time used by remote interpolation.</member>
+		<member name="velocity" type="Vector3" setter="set_velocity" getter="get_velocity" default="Vector3(0, 0, 0)">Finite velocity produced by the model.</member>
+	</members>
+</class>

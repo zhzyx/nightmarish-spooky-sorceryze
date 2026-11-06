@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-38ad96c400de6cef27172559153196d17e4a7959",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-prediction-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "afdd52a4119555d4b8a9dc5f421c99fd3aa4fde1cff099b326d68fac08a5012c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/292",
+    "action": "validation",
+    "detection_head": "76f41a8fdcbea5c189318f95fb1dc02504593d8e",
+    "context_sha256": "c62f98dd4c3269eaef65cced1011d057fc8c97f595ef04bf06a6b3b888bf03bb",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root",
+    "authority_ref": "user:current-thread",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42280325025",
+    "diagnosis": "The formal gate observed issue #180 changing during its before/after consistency check; Gameplay content, Diting validation, and the exact Gameplay regression remained successful.",
+    "next_action": "Wait for the issue revision to stabilize, include the immutable Kuafu event, and rerun the same formal gate before publication.",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T19:35:09.056093+00:00",
+  "sha256": "3ffa23d0b25e8ea90f4f34bcefcd9628f69c5a2f4af57a926154eaa1d810d45f"
+}

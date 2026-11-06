@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPredictionInput" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>A numbered fixed-step movement command.</brief_description>
+	<description>
+		GameplayPredictionInput contains only player intent, a monotonic sequence, and the configured simulation step. It never carries position, velocity, ownership, or other authority state.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="to_dictionary" qualifiers="const">
+			<return type="Dictionary" />
+			<description>Returns the transport-safe sequence, input vector components, and step duration.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="movement_input" type="Vector3" setter="set_movement_input" getter="get_movement_input" default="Vector3(0, 0, 0)">Normalized movement intent. Lengths greater than one are rejected by the prediction model.</member>
+		<member name="sequence" type="int" setter="set_sequence" getter="get_sequence" default="0">Monotonic per-object input sequence. Zero is invalid for simulation.</member>
+		<member name="step_msec" type="int" setter="set_step_msec" getter="get_step_msec" default="16">Fixed simulation duration in milliseconds.</member>
+	</members>
+</class>

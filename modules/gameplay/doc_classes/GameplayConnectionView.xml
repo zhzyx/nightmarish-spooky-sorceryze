@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayConnectionView" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Server-owned view used to evaluate relevancy for one admitted connection.
+	</brief_description>
+	<description>
+		Carries the authoritative position, team, and per-pass scheduling budget for a connection. [GameplayMultiplayerReplication] accepts views only on a configured server and only for spawned sessions. Incoming client packets never modify this object.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="bandwidth_budget_bytes" type="int" setter="set_bandwidth_budget_bytes" getter="get_bandwidth_budget_bytes" default="4096">
+			Maximum sum of configured object update estimates selected during one graph pass. Actual encoded bytes are reported separately because envelope and fragmentation overhead can differ.
+		</member>
+		<member name="peer_id" type="int" setter="set_peer_id" getter="get_peer_id" default="0">
+			Temporary transport peer ID. A replication graph accepts client peer IDs greater than 1.
+		</member>
+		<member name="position" type="Vector3" setter="set_position" getter="get_position" default="Vector3(0, 0, 0)">
+			Authoritative view position used by distance relevancy.
+		</member>
+		<member name="team_id" type="int" setter="set_team_id" getter="get_team_id" default="0">
+			Server-assigned team. Zero means no team and never matches team-only policy.
+		</member>
+	</members>
+</class>

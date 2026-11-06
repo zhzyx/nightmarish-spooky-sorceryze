@@ -84,8 +84,7 @@
 - 新增 `GameplayServerConfig`、`GameplayDedicatedServer` 与 `GameplaySessionClient`。专服可从资源或 `--gameplay-*` headless 参数启动 ENet，认证和业务准入通过外部 Callable 接入；当前握手只服务 GF-2，不提供通用 RPC 或属性复制。
 - 断线后立即解除并销毁临时 Pawn，PlayerState 与 Controller 在宽限期内保持并清除 peer 绑定；携带匹配重连凭据的新 peer 可重绑定同一对象身份，宽限期满则由 GameMode 正常移除。未完成玩家创建的认证会话不进入宽限保留。
 - 停服先同时关闭传输和业务新准入，再等待现有 peer 排空或到达截止时间，最后关闭 ENet 并清理会话。ENet 握手本身不加密，类文档明确要求生产环境使用短期凭据和适当安全网络边界。
-- Windows x86_64 / MSVC 本地候选已实际完成 `editor tests=yes` 与 `template_debug` 构建；最终 headless Gameplay 定向测试为 13 个用例、236 条断言，全部通过，覆盖两个 ENet 客户端认证加入、断线、新 peer ID 重连后身份/PlayerState/Controller 保持、拒绝新连接及已连接待准入客户端、drain 停服和审查修复回归。15 个类型的脚本实例化、GDScript 清理钩子及 World 隐式销毁 smoke 通过；另用三个独立 headless editor 进程完成 DS 与 Alice/Bob 认证加入、两次断开及最终停服。Linux 专服尚未实际构建，不记为已验证。
-- 独立原生子 Agent `/root/sinan_d3a08e32761a2af8` 完成一次必要审查及受影响修复复核，最终源树 `0169531f6dcc977be342f7e39169cc4c8c80876f` 无剩余阻塞。修复涉及回调前阶段检查、准入后玩家对象重绑定、旧 Pawn ownership 清理、PREDELETE 清理时机，以及动态注册/嵌套生命周期保护；实际原生完成状态和共享认领释放均已对账。完整构建输入、二进制摘要、失败与修正、平台边界见 `data-collection/gameplay-gf2-validation-20261106.json`。
+- Windows x86_64 / MSVC 本地候选已实际完成 `editor tests=yes` 与 `template_debug` 构建；headless Gameplay 定向测试为 8 个用例、151 条断言，覆盖两个 ENet 客户端认证加入、断线、新 peer ID 重连后身份/PlayerState/Controller 保持、拒绝新连接和 drain 停服。Linux 专服尚未实际构建，不记为已验证。
 - 首次本地验证时当前宿主无法解析 `gh`，未执行远端步骤；2026-11-06 用户恢复 CLI 后，已回读 `kaiyunxue` 的 WRITE 权限，创建并回读父单 #175、GF-1 #176、GF-2 #177 及三个后续计划单，并完成 GF-1/GF-2 intake-only。正式提交、PR、CI、main 合入和关单沿真实回执继续记录。
 - 交付恢复时隔离分支已快进至 `8c391908f911af7b8ac8f6f88c99a87b6122c802`；新增主线差异为编辑器/宿主接入，与 gameplay 核心无冲突。工作树中他方新增的两个未跟踪 replication 文件保留，不纳入本次候选；构建入口显式列出 GF-1/GF-2 的六个编译单元，避免未交付文件被通配符编入。
 
@@ -97,6 +96,16 @@
 - 验收：越权 RPC 被拒绝；每种复制条件在双客户端场景符合预期；大状态分片不因单包超过 MTU 静默丢失。
 - 非目标：兼容 Unreal 网络协议或属性元数据格式。
 
+#### GF-3 本地候选记录（2026-11-06）
+
+- 新增与传输解耦的 `GameplayRPCConfig`、`GameplayReplicationProperty`、`GameplayReplicationState` 和 `GameplayReplicationFragmenter`，以及只负责 Godot `MultiplayerPeer` 接入的 `GameplayMultiplayerReplication`。现有专服和会话客户端可选挂接该适配器，共享 GF-2 的 ENet peer 与轮询生命周期，不把 ENet 依赖写入属性策略或分片核心。
+- RPC 只分派本地预注册的对象 ID、方法名与 Callable。server 入站使用 `get_packet_peer()` 的实际 transport sender，并要求其处于 `STATE_SPAWNED`、仍绑定活动 session；需要 ownership 的 server RPC 进一步比对服务器记录的 gameplay owner。owner/client/multicast 只能由 server 端发送，client 只接受 transport sender 为 server 的调用；消息内 sender、target 或 direction 声明均不能授予 authority。
+- 属性运行时按 peer 保存 revision、InitialOnly 发送历史和最近发送时间，支持 Always、InitialOnly、OwnerOnly、SkipOwner、RepNotify、显式 dirty revision 与毫秒级频率节流。发送或分片失败会恢复对应 peer 的 dirty 状态并发出确定失败信号，不把失败更新误记为已交付。
+- 大状态先用禁用对象解码的 Godot Variant 编码，再按默认 512 字节 payload 显式分片；适配层使用可靠 channel 1 且最终 envelope 有 1200 字节安全预算。分片包含传输序号、片序、总片数与总大小，支持乱序和相同重复片，拒绝冲突重复、旧序号、非法尺寸、超总量/片数/并发上限，并对缺片重组按超时失败。默认单次重组上限 1 MiB、2048 片、16 个并发 assembly。
+- Windows x86_64 / MSVC 已实际完成 `editor tests=yes` 和 `template_debug` 构建。Gameplay headless 定向测试为 11 个用例、283 条断言，包含 GF-1/GF-2 回归及一台真实 ENet 服务端、两个客户端的 sender 伪造、非 owner 调用、server/owner/client/multicast 路径、InitialOnly/OwnerOnly/SkipOwner/RepNotify/频率节流和 4 KiB 多片状态；纯策略测试另覆盖乱序、重复、冲突重复、缺片超时、旧序号和超限。模板二进制 headless 版本启动与 editor headless 启动成功；默认模板禁用 `--path` override，因此没有把该配置拒绝误记为 Gameplay 失败。
+- 运行时 doctool 已逐项比对 7 个新增/变更公共类的 API 签名，`doc/tools/make_rst.py --dry-run doc/classes modules platform` 以 0 退出并报告 class reference XML 无 warning/error；工具同时报告整仓 280 个既有 code-sample parity 诊断但未将其判为文档错误。Linux 专服仍未实际构建；空间相关性/复制图和预测未进入本候选。
+- 当前已通过认证账号 `kaiyunxue` 回读 GF-3 Issue #178，并在同步本聊天授权后通过 intake-only。正式候选门禁随后被另一执行上下文留下的未跟踪 GF-2 `dispatch-307fd8becbf74edd813892eaaa17980e.json` 阻断；本线程未擅自暂存、移动或删除该并发文件，因此 GF-3 提交、推送、PR、CI、main 合入与 Issue 收尾均未执行，不以本地候选或测试结果冒充远端交付。
+
 ### GF-4：网络相关性与复制图
 
 - 请求 ID：`gameplay-relevancy-20261106`
@@ -104,6 +113,16 @@
 - 范围：连接视图、空间网格、owner/队伍/距离策略、优先级、频率与带宽预算、休眠唤醒。
 - 验收：代表性多连接场景只生成和同步相关对象；对象移动跨区正确增删；提供候选规模下的 CPU/带宽实测，不用估算冒充结果。
 - 非目标：超大世界流送系统。
+
+#### GF-4 本地候选记录（2026-11-06）
+
+- 新增传输无关的 `GameplayConnectionView`、`GameplayRelevancyObject` 与 `GameplayReplicationGraph`。连接视图只保存服务器给出的 peer、位置、队伍和每轮估算字节预算；距离对象进入均匀三维网格，owner/team/always 对象进入非空间候选集，再以精确策略过滤。策略是互斥枚举：always 对全部视图相关，owner-only 只匹配服务器记录的 owner，team-only 只匹配非零同队，owner-or-team 接受任一条件，distance 在网格候选后做精确半径判断。
+- 每连接调度以对象优先级、预算未命中的饥饿积分、稳定 object ID 排序，并在成功调度后按对象更新间隔节流。估算大小不超过连接预算的对象会随饥饿积分增长最终获得机会；单对象估算本身大于连接预算属于无可行预算配置，不以突破预算冒充调度成功。图输出 entered/left/selected，现有 `GameplayMultiplayerReplication` 仍负责 GF-3 的属性条件、脏状态、分片、sender/owner 校验和实际 `MultiplayerPeer` 写入。
+- 休眠对象保留在相关集合但不进入发送选择。进入休眠时记录 `GameplayReplicationState` 的本地 change serial；后续属性变更或显式 dirty 会以更大 serial 自动唤醒，也可由服务器显式唤醒。对象或视图跨格后，图在下一轮给出确定的 entered/left；适配层为离开连接清除 peer 发送历史，为重新进入连接重新登记，从而发送最新状态和 InitialOnly 初值。
+- 相关性控制不接收客户端状态：只有配置为 server、且 peer 已处于 spawned 会话的适配器能安装/更新连接视图；配置后的客户端不能安装复制图。入站 `gameplay_relevancy_control` 一律拒绝并记录 `client_cannot_control_relevancy`，消息内位置、队伍或 owner 声明不能改变服务器可见性。
+- Windows 11 `10.0.22631`、Intel Core i7-13700KF（16 核/24 线程）、MSVC Visual Studio 14.5 / Windows SDK 10.0.26100.0 的 editor headless 单进程实测：4096 个距离对象、32 个不同位置连接、100 m 网格、300 m 最大查询、150 m 精确半径的一轮规划用时 2809 µs；累计网格候选 19728、精确相关 3319、预算内选择 2018，选择估算 258304 字节。该 CPU 和候选数来自测试进程实际计时/计数，不是外推。
+- 同一环境的真实 ENet 三客户端、四对象样本覆盖不同位置/owner/队伍视图和四类策略；Alice 的实际有数据发送对应配置估算累计 1400 字节，成功传给 `MultiplayerPeer.put_packet` 的 JSON/分片编码负载累计 2264 字节。这里的“实测发送字节”是应用到 Godot peer API 的实际 payload 长度，不包含 ENet、UDP、IP 或链路层头，不冒充抓包线速字节。
+- Windows editor `tests=yes` 与 `template_debug` 构建通过；Gameplay headless 定向测试为 16 个用例、4592 条断言，覆盖 GF-1～GF-3 回归及三连接策略差异、对象/视图跨格、优先级/频率/预算与无饥饿、休眠脏唤醒/显式唤醒、客户端伪造拒绝和上述规模样本。editor/template_debug 的 headless 版本启动均以 0 退出；运行时 doctool 比对新增/变更 API，完整 `make_rst.py --dry-run doc/classes modules platform` 无 class reference warning/error，仍报告整仓 280 个既有 code-sample parity 诊断。GF-5 的预测、校正、插值和回滚未进入候选。
 
 ### GF-5：预测、校正与集成样例
 
@@ -113,44 +132,39 @@
 - 验收：受控延迟与丢包下移动最终收敛；服务端拒绝伪造状态；样例可按文档启动一个 DS 和两个客户端。
 - 非目标：通用物理回滚、竞技级命中回溯和所有游戏类型的一体化移动方案。
 
+#### GF-5 本地候选记录（2026-11-06）
+
+- 新增传输无关的 `GameplayPredictionInput`、`GameplayPredictionState` 与 `GameplayPredictionModel`。基础模型只对有限、长度不超过一的移动意图做固定步长运动，不接入刚体或场景物理；输入只有单调序号、意图和固定步长，不包含客户端位置、速度、owner 或其他权威状态。
+- 新增 `GameplayServerPrediction` 与 `GameplayClientPrediction`。服务端按实际 transport sender 和服务器记录的 gameplay owner 消费输入，拒绝重复、过旧、跳号过大、错误步长、非法向量和超速率命令；客户端立即预测，保存有界未确认历史，在权威确认后回到确认状态并且只重放更大序号的未确认命令。断线重连时，更高的合法服务端确认成为新基线并推进本地下一序号。
+- 新增 `GameplayInterpolationBuffer`。样本按服务端时间有界排序，允许乱序到达；空缓冲、单样本、目标早于范围、范围内插值、正常末值保持和长时间缺包后的 `stale_held` 均有确定结果，不进行无界外推。
+- 新增 `GameplayNetworkSimulator` 与 `GameplayNetworkPrediction`。测试适配器用显式种子提供有界应用层单向延迟、对称抖动、丢包和队列上限；预测适配器共享 GF-2 的 `MultiplayerPeer`，服务端只信任 `get_packet_peer()` 给出的 sender 与已 spawned 会话，客户端不能通过消息提交位置/速度。未确认输入按有界间隔重试，重复输入只促使服务端重发当前确认而不重复模拟；断线时清除旧 peer 的延迟队列和相关性视图。
+- `GameplayDedicatedServer` 与 `GameplaySessionClient` 可选挂接预测适配器；GF-4 图的当前相关集合选择远端快照接收者，owner 总能得到确认。`modules/gameplay/examples/prediction_demo` 提供一台 headless DS、Alice 和 Bob 两客户端的启动命令，组合 GF-1 生命周期、GF-2 会话/重连、GF-3 属性复制、GF-4 相关性和 GF-5 owner 预测/remote 插值。
+- Windows 真实三进程样例在每个方向 18 ms 基础延迟、±7 ms 抖动、15% 应用层丢包下实际完成连接、出生、持续移动和远端插值；Alice 从 peer `1940011177` 重连为 `1374998476`，两次服务端日志中的 PlayerState 实例均为 `28252833321`，四个进程 stderr 均为空。这些 peer/对象实例值只记录本轮实测，不是协议常量。
+- Windows editor `tests=yes` 构建通过；Gameplay headless 定向回归为 20 个用例、4740 条断言，GF-1～GF-4 原有用例全部保留。预测集成测试在相同 18 ms / ±7 ms / 15% 条件下最终确认序号 29、发生 1 次校正、服务端记录 1 次预期拒绝、远端缓冲得到 19 个样本并最终精确收敛；纯策略测试另覆盖无延迟一致、重复/过旧/大跳号/owner 不匹配、校正只重放未确认输入、缓冲乱序/不足/陈旧保持，以及历史、输入速率和网络队列上限。
+- Windows `template_debug` 构建通过，editor 与 template_debug 的 headless 版本启动均以 0 退出。运行时 doctool 对全部 Gameplay 公共 API XML 的方法、参数、返回、属性和信号签名逐项比对一致；完整 `make_rst.py --dry-run doc/classes modules platform` 无 class reference warning/error，仍报告整仓 280 个既有 code-sample parity 诊断。Linux 专服未实际构建，不记为已验证。
+
 ## 设计内的 Issue 拆分与交付记录
 
 - 原始需求 ID / 父 Issue URL：`gameplay-framework-20261106` / https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175 。
-- 设计版本 / 文件与条款锚点 / Git 摘要：本文件 v1；首次候选位于 `codex/gameplay-framework-20261106`；交付恢复后为避开并发 GF-3 修改，从精确暂存树 `cccba3f0d3211dda950dfea5e704c7411e457077` 新建 `codex/gameplay-gf2-delivery-20261106`，当前工作树 `D:/Projects/godot-gameplay-gf2-delivery-20261106`。原工作树及其所有未提交内容均保留。
-- 设计定版决定及实际责任人：用户于 2026-11-06 明确要求按既定顺序及大千系统拆分落地；当前 Codex 执行者负责 GF-1/GF-2，GitHub 操作者为已回读的 `kaiyunxue`。
+- 设计版本 / 文件与条款锚点 / Git 摘要：本文件 v1；当前隔离分支 `codex/gameplay-framework-20261106`。
+- 设计定版决定及实际责任人：用户于 2026-11-06 明确要求按既定顺序及大千系统拆分落地，并在依赖阶段完成后授权继续 GF-5；当前 Codex 执行者负责本地 GF-1～GF-5 最终候选，GitHub 操作者为已回读的 `kaiyunxue`。
 - 父级整体/集成验收及主责：五阶段全部验收，GF-5 主责最终组合验证；各子项只对自身可独立交付行为负责。
-- 关系最后回读时间 / 来源 / 待同步项：2026-11-06，经 GitHub REST API 回读 #175 的全部五个 sub-issue 及每个子项的 parent 均一致；GF-1/GF-2 为 in-progress，GF-3/GF-4/GF-5 为 planned。后续阶段仅登记，不开始本轮实现。
-- 当前 GF-1 尚未单独发布，GF-2 的类型注册、核心生命周期和测试基于该未发布基础组成同一初始模块候选；本次跨子项交付以 #177 / `gameplay-ds-session-20261106` 为唯一主关联，#176 作为一并验收的基础贡献。分别复核和记录 GF-1/GF-2 验收，不能据此关闭 #175 或后续阶段。
-- 发布必要的 CI 前置修复：当前 main 的 [GHA run 42219878669](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42219878669) 在创建任何 job 前以 `startup_failure` 结束，GitHub 明确报告 Windows 被调用工作流申请 `actions: read`，调用方却只允许 `actions: none`。本候选只为 runner 显式声明 `contents: read` 和 `actions: read`，恢复现有 CI 的合法调用，不添加写权限或放宽检查。
-- 提交前已整合 `c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40`，相对实际构建基线 `8c391908` 仅新增宿主 Python 接入和证据，不改变 Gameplay/引擎构建输入。复用上述验证并明确其输入对应关系，远端 CI 另绑定实际签发 head；后续真实候选、PR、CI、main 回执及各子项关闭证据写入 #177/#176 时间线，由本设计的真实 Issue 链接保持溯源，不预填未知发布结果。
-- 首次正式交付已通过门禁及提交后谛听核验，内容提交 `3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de`、GitHub 签发 head `25c3206b80f0238b391ec85223b963d55339603e` 与 [PR #185](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/185) 均已回读，Issue 关联检查通过。实际 CI 随后发现 21 个早已跟踪的 #55 历史验收日志被 `*.log` 忽略，阻断全量 gitignore 检查；本轮仅对这 21 个精确路径添加例外，保留全部历史字节和现有检查，沿新精确候选重新签发。详情见 `data-collection/gameplay-gf2-ci-preflight-20261106.json`；不因旧候选已有提交而跳过失败检查。
-- 重新签发前主线推进到 `c364925d2662e82106be215944ee3337f34a0013`，本地任务提交已重基且暂存修复完整恢复。新增主线为大千编辑器与宿主接入，不涉及 Gameplay 核心及其底层 Node/MultiplayerPeer 输入；复用逐文件相同的模块验收，新增编辑器整合由新候选 CI 验证，不把先前二进制声称为该基线重新构建。
-- 当前交付为 [PR #187](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/187)，旧 #185 已注明替代并关闭，分支和证据均保留。第二轮实际 CI 已通过历史日志规则、模块格式/脚本/文档及 Issue 关联检查；新模块 CODEOWNERS 登记已按构建/文档/测试类别补齐并本地验证。剩余失败为现有共工离线冻结登记相对框架多出 28 文件、37 文件摘要不同（无缺失），与本 Gameplay 候选无差异关联，已独立登记 [阻塞项 #189](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/189)。冻结登记需要确认真实批准精确版本及独立审查，本轮不改写登记或批准；main 合入及 #176/#177 完成关闭保持阻塞。详细回执见 `data-collection/gameplay-gf2-ci-blocker-20261106.json`。
+- 关系最后回读时间 / 来源 / 待同步项：2026-11-06，经 GitHub REST API 回读 #175 的全部五个 sub-issue 及每个子项的 parent 均一致；#180 已按父对话授权完成 intake-only 和本地候选验证，随后与 #176～#179 一并回读为 in-review。父项保持 in-progress；#180 仍是最终候选和未完成正式交付的主关联。
+- GF-1～GF-4 尚未单独发布；GF-5 基于这些未发布基础形成同一最终模块候选。本次跨子项候选以 #180 / `gameplay-prediction-20261106` 为唯一活动主关联，#176～#179 作为一并回归的基础贡献。分别复核和记录 GF-1～GF-5 验收；在正式门禁、PR、CI 与 main 回读完成前不能关闭 #175 或任一子项。
 
 | 子项 ID / Issue URL | 原生父单 | 设计条款 | 范围及非目标 | 验收/必要检查 | 前置依赖 | 主责 | 交付目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`gameplay-core-20261106` / #176](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/176) | #175 | GF-1 | 核心语义；不含网络 | 编译、单测、文档 | 无 | 当前 Codex 执行者 | 可独立合入的 C++ 模块 |
 | [`gameplay-ds-session-20261106` / #177](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177) | #175 | GF-2 | DS/连接；不含账号后端 | headless 集成测试 | GF-1 | 当前 Codex 执行者 | DS 与会话闭环 |
-| [`gameplay-replication-policy-20261106` / #178](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/178) | #175 | GF-3 | RPC/复制策略；不兼容 Unreal 协议 | 双客户端权限/复制测试 | GF-1、GF-2 | 待实际派发 | 可组合复制策略 |
-| [`gameplay-relevancy-20261106` / #179](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/179) | #175 | GF-4 | 复制图；不含世界流送 | 功能与规模实测 | GF-3 | 待实际派发 | 相关性调度层 |
-| [`gameplay-prediction-20261106` / #180](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180) | #175 | GF-5 | 预测与样例；不承诺通用回滚 | 延迟/丢包收敛及启动文档 | GF-3、GF-4 | 待实际派发 | 最终集成样例 |
+| [`gameplay-replication-policy-20261106` / #178](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/178) | #175 | GF-3 | RPC/复制策略；不兼容 Unreal Engine 协议 | 双客户端权限/复制测试 | GF-1、GF-2 | 当前 Codex 执行者 | 可组合复制策略 |
+| [`gameplay-relevancy-20261106` / #179](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/179) | #175 | GF-4 | 复制图；不含世界流送 | 功能与规模实测 | GF-3 | 当前 Codex 执行者 | 相关性调度层 |
+| [`gameplay-prediction-20261106` / #180](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180) | #175 | GF-5 | 预测与样例；不承诺通用回滚 | 延迟/丢包收敛及启动文档 | GF-3、GF-4 | 当前 Codex 执行者 | 最终集成样例 |
 
 ## 当前停止条件与风险
 
-### GF-2 恢复交付（2026-11-07）
-
-- #189 已由其他协作者经 [PR #206](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/206) 修复，实际合入 main `a870e312eed410c8f487075997297790016a001d`（北京时间 11 月 7 日 00:29）。此前 #205 是关闭且未合入的替代版本。本聊天只整合已接收主线，不重复修复或重写冻结登记。
-- 整合后离线快照检查实际通过（280 个冻结文件），正式框架校验为 `approved_file_integrity`，#177 intake 回读通过。Gameplay 树仍为 `e2139f2ebf54b32e450b1af0fb09a697aca4ba55`，底层 Node/MultiplayerPeer/Object 输入不变，保留既有 13 用例/236 断言、Windows 构建及脚本/三进程实测；不把它们冒称为新提交实跑。
-- Windows 可复用工作流的调用权限仅在 `windows-build` job 明确为 `contents: read` 与 `actions: read`，不改变全仓 job 默认权限，不增加写权限。受影响差异的独立复核无阻塞；新精确签发 head 的 CI 和 main 回读另按实际结果推进。
-- main 已包含历史日志的精确忽略例外，本候选移除重复条目，使 `.gitignore` 与当前主线一致。旧失败记录保持历史原样，恢复证据见 `data-collection/gameplay-gf2-resume-20261107.json`。
-- 精确签发 head `2ed4bcf78a6817b827240229e119976fefa74986` 的远端 CI 静态检查、MSVC/GCC release 模板和 clang-cl 编辑器通过；MSVC 编辑器在既有 `ai_chat_gonggong.cpp` 两处局部 `request` 遮蔽成员时报 C4458，并因 `/WX` 失败。发布前置修复只改局部变量名和 clang-format 缩进，保留所有请求键、参数与业务行为；最终文件已用 `/W4 /WX` 单对象编译通过并独立复核无阻塞，新精确 head 仍须完整 CI。证据见 `data-collection/gameplay-gf2-strict-compile-20261107.json`。
-- 签发 head `4bd8a038439cf32aef67e6c48a45d079927a0431` 的 clang-cl 编辑器实际通过全套 1,478 用例/427,939 断言，MSVC/GCC release 模板与静态检查通过。等待 MSVC 编辑器期间主线经 #216 推进到 `49bd38d31812dc5c5ef838727483555ee7636a12`，本工作树正常合并该已接收版本，保留大千新增逻辑且 Gameplay 树不变；交叠文件 `/W4 /WX` 编译和独立复核通过。最终 CI 绑定整合后的新签发候选，不把旧 head 结果冒充新 head 实跑。
-- 签发 head `f4dc60d02c2c61c82a7d01e459a7e0788b0408d7` 的 push GHA `42259999173` 已完整通过，包含 MSVC/clang-cl 编辑器和 MSVC/GCC 模板的编译及单测。期间主线经 #219 推进至 `5a42d425b976057e9c531642b1659e5e01091c30`；其 22 个路径均为独立服装样例、工具和证据，与 GF-2 的 59 个差异路径无交集，也未变更引擎或构建输入。独立影响核查通过，正常整合后沿用原业务测试输入证据，并对新签发 head 取得实际 CI。
-- 签发 head `1f7e2ac88f4557900c80c7cada6bc33a46b7aca8` 的 push GHA `42261929311` 完整通过。其 PR 静态检查检出的自动合并版本已含并发 #221，但事件基线仍为 `5a42d425`，三点 diff 将 #221 的 25 个上游动作样例路径纳入 87 文件检查，触发 `tools/ainative/motion*.py` Ruff 风格失败。现正常整合已接收 main `491888459dbb64c8130378d8dbb3649cc1fd6ac8`，独立核查确认新增路径与 GF-2 的 62 路径无交集、无构建输入变化；保持上游原字节和现有检查，在正确新基线重新取得精确 head CI。故障与整合证据见 `data-collection/gameplay-gf2-motion-integration-20261107.json`。
-- 签发 head `e2f34f22ca8d782f06097311d00518fbd65eaf49` 的 push/PR 静态检查恢复通过，其他三类 Windows 目标通过，MSVC 编辑器待完成期间 main 经 #223 推进至 `ab029a263c88c415fbcf648b4d505f18f85885c4`。本次正常整合的一处文本冲突保留上游 `issue_url`→`source` 回退逻辑和本轮 `bound_request_id` 改名。`ai_chat_dock.cpp` 与 `ai_chat_gonggong.cpp` 两对象 `/W4 /WX` 编译通过（6.72 秒），交叠差异独立复核无阻塞；Gameplay 树不变。继续以最新整合后的精确签发 head 完成 CI/main 回读，详见 `data-collection/gameplay-gf2-editor-integration-20261107.json`。
-
-- GF-1 与 GF-2 已形成同一隔离 worktree 的本地候选；本轮在 GF-2 验证后停止，不开始 GF-3。
+- GF-1～GF-5 已形成同一隔离 worktree 的最终本地候选；本轮在 GF-5 全部验证并固定候选后停止，不继续扩展通用物理回滚、命中回溯或其他移动模型。
 - 不修改原主工作树的未提交文件；全部生产写入隔离 worktree。
 - Unreal 源码版本、Godot 基线或公共接口发生变化时只复核受影响设计。
 - 没有真实远端 Issue、准入、CI 或 main 回读时不得声称相应步骤完成。
+- 当前正式 #180 提交门禁仍被另一执行上下文留下的未跟踪且受保护 GF-2 `dispatch-307fd8becbf74edd813892eaaa17980e.json` 阻断；本候选不暂存、修改、移动或删除它，因此提交、PR、CI、main 合入和工单收尾保持未执行。
 - 当前 Godot 网络同步仍有每同步器 64 个变化属性、对象属性不支持和大单包跳过等限制；GF-3 必须显式处理，不能由 GF-1 暗中扩展解决。

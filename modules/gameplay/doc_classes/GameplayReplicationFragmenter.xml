@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayReplicationFragmenter" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Bounded fragmentation and deterministic reassembly for large replicated state.
+	</brief_description>
+	<description>
+		Splits an encoded state transfer into explicitly numbered chunks below the adapter's safe packet budget. Reassembly accepts out-of-order chunks and identical duplicates, rejects conflicting duplicates and stale sequences, bounds memory and chunk counts, and expires incomplete transfers.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="accept_fragment">
+			<return type="Dictionary" />
+			<param index="0" name="sender_peer_id" type="int" />
+			<param index="1" name="fragment" type="Dictionary" />
+			<param index="2" name="now_msec" type="int" />
+			<description>Returns a dictionary whose status is [code]pending[/code], [code]duplicate[/code], [code]complete[/code], or [code]rejected[/code]. A complete result contains the reassembled byte payload.</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>Clears pending assemblies, completed sequence history, and the last error.</description>
+		</method>
+		<method name="expire_assemblies">
+			<return type="int" />
+			<param index="0" name="now_msec" type="int" />
+			<description>Drops incomplete assemblies past the timeout and returns the number dropped.</description>
+		</method>
+		<method name="fragment">
+			<return type="Array" />
+			<param index="0" name="sequence" type="int" />
+			<param index="1" name="payload" type="PackedByteArray" />
+			<description>Returns ordered chunk dictionaries, or an empty array and [member last_error] when limits reject the transfer.</description>
+		</method>
+		<method name="get_pending_assembly_count" qualifiers="const">
+			<return type="int" />
+			<description>Returns the number of incomplete transfers currently consuming bounded reassembly state.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="assembly_timeout_msec" type="int" setter="set_assembly_timeout_msec" getter="get_assembly_timeout_msec" default="5000">
+			Maximum lifetime of an incomplete transfer.
+		</member>
+		<member name="chunk_payload_bytes" type="int" setter="set_chunk_payload_bytes" getter="get_chunk_payload_bytes" default="512">
+			Raw bytes in each chunk. The allowed range keeps the encoded envelope below the packet budget.
+		</member>
+		<member name="last_error" type="String" setter="" getter="get_last_error">
+			Machine-readable reason for the last fragmentation or reassembly failure.
+		</member>
+		<member name="max_chunks" type="int" setter="set_max_chunks" getter="get_max_chunks" default="2048">
+			Maximum chunks in one transfer.
+		</member>
+		<member name="max_pending_assemblies" type="int" setter="set_max_pending_assemblies" getter="get_max_pending_assemblies" default="16">
+			Maximum concurrent incomplete transfers.
+		</member>
+		<member name="max_transfer_bytes" type="int" setter="set_max_transfer_bytes" getter="get_max_transfer_bytes" default="1048576">
+			Maximum reassembled transfer size.
+		</member>
+	</members>
+	<signals>
+		<signal name="assembly_failed">
+			<param index="0" name="reason" type="String" />
+			<description>Emitted for rejected or expired assembly state.</description>
+		</signal>
+	</signals>
+</class>

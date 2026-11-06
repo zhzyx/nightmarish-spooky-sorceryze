@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayReplicationProperty" inherits="Resource" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Transport-independent replicated property descriptor.
+	</brief_description>
+	<description>
+		Describes one value managed by [GameplayReplicationState]. Conditions are evaluated from server-owned connection and gameplay ownership data; a client-provided owner claim is never authoritative.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="condition" type="int" setter="set_condition" getter="get_condition" enum="GameplayReplicationProperty.Condition" default="0">
+			Controls which admitted connections receive the value.
+		</member>
+		<member name="property_name" type="StringName" setter="set_property_name" getter="get_property_name" default="&amp;&quot;&quot;">
+			Stable name used in replication updates.
+		</member>
+		<member name="rep_notify" type="bool" setter="set_rep_notify" getter="is_rep_notify" default="false">
+			Emits the state notification after a newer remote value changes the local value.
+		</member>
+		<member name="update_interval_msec" type="int" setter="set_update_interval_msec" getter="get_update_interval_msec" default="0">
+			Minimum interval between updates sent to the same peer. Zero disables throttling.
+		</member>
+	</members>
+	<constants>
+		<constant name="CONDITION_ALWAYS" value="0" enum="Condition">
+			Sends initial and dirty values to every admitted peer.
+		</constant>
+		<constant name="CONDITION_INITIAL_ONLY" value="1" enum="Condition">
+			Sends the current value once for each peer registration.
+		</constant>
+		<constant name="CONDITION_OWNER_ONLY" value="2" enum="Condition">
+			Sends only to the server-recorded gameplay owner.
+		</constant>
+		<constant name="CONDITION_SKIP_OWNER" value="3" enum="Condition">
+			Sends to admitted peers other than the server-recorded gameplay owner.
+		</constant>
+	</constants>
+</class>
