@@ -2,6 +2,8 @@
 
 本文件定义接入职责结构，关联 Issue #111（需求 module-boundaries-20261105）。路径统一以仓库根解析；链接相对本文件。依据 [模块规范](../framework/specs/module-system.md)，只定义职责、现有归属和后续接入方式，不改变运行入口、注册状态或既有批准。下列 ID 是逻辑命名，不是已注册可执行模块；customizations/registry.json 仍记录当前组件现状，customizations/module-migration.json 保持历史证据。
 
+现行目录见[按平台选择接入子模块](platforms/README.md)。以下表格保留各职责的细分说明。
+
 ## 当前 Git 相关职责细分
 
 Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；二者分别声明依赖。“Git 接入”是组合名称，不能作为所有子能力的不可拆前提。
@@ -9,7 +11,7 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 | 逻辑子模块 | 职责与输出 | 当前实现／配置归属 | 边界与现状 |
 | --- | --- | --- | --- |
 | git-markdown-documents | 将偃师结构化需求／设计保存为仓库内 Markdown，返回文档引用、内容版本与写入回执 | customizations/components/godot-host/requirements_agent.py 中 design-docs 写入；design-docs/；work-items.json 的 requirements_root | 内容设计属偃师；Git 文档存储属本模块。写文件、提交、推送分别留证；与工单创建可组合但不可互代 |
-| github-workorders | 稳定需求标识查重、创建／回读 Issue、类别／状态映射、来源修订及幂等对账 | customizations/components/issue-workorders/work_items.py、issue_events.py、github_source.mjs；framework/modules/git-issue/；work-items.json；.github/ISSUE_TEMPLATE/、labels.json、status-labels.json | 两套入口需按宿主选择，不双重创建；来源状态以远端为准，司南协调职责不迁入本模块 |
+| github-workorders | 稳定需求标识查重、创建／回读 Issue、类别／状态映射、来源修订及幂等对账 | customizations/components/issue-workorders/work_items.py、issue_events.py、github_source.mjs；customizations/platforms/work-management/github/git-issue/；work-items.json；.github/ISSUE_TEMPLATE/、labels.json、status-labels.json | 两套入口需按宿主选择，不双重创建；来源状态以远端为准，司南协调职责不迁入本模块 |
 | github-workorder-relations | 将通用父子任务／依赖映射为远端子 Issue／关系，回读关系与修订 | 通用语义在 framework/specs/work-order-management.md；GitHub 生命周期在 customizations/components/issue-workorders/issue-lifecycle.md | 生命周期已定义原生关系及人工授权回读；当前自动适配器未实现关系迁移，不能宣称已自动接通；正文写“父单 #N”不证明 GitHub 原生关系存在，父单不得因子单完成自动关闭 |
 | git-change-integration | Git 身份映射、共同基准、工作树隔离、差异／冲突、commit/tree、贡献整合 | framework/agents/heqi/references/git-workflow.md、concurrent-issue.md；customizations/components/issue-workorders/git-workflow.md | 合契保留通用整合责任；认证 login 与实际执行者关联由宿主核验，提交作者字段本身不是认证 |
 | github-pr-gates | PR 关联、Issue 回读门禁、分支保护与 CI 接入 | customizations/components/issue-workorders/issue_gate.py；.github/CONTRIBUTING.md、PULL_REQUEST_TEMPLATE.md、workflows/gonggong-issue-gate.yml | 本仓库入口约定仍有效；不升级为无 Git 项目的核心前置条件。CI 文件存在不证明远端保护已启用 |
