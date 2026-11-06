@@ -34,7 +34,7 @@
       "provider": "git-files",
       "directory": "customizations/platforms/data-collection/git-files",
       "related_paths": [
-        "framework/extensions/diting-files",
+        "customizations/platforms/data-collection/git-files/storage",
         "gonggong-diting-data",
         "data-collection",
         "customizations/components/issue-workorders/work_items.py"
@@ -64,8 +64,8 @@
       "related_paths": [
         "framework/agents/heqi/references",
         "framework/tools/git_batch.py",
-        "framework/tools/check_delivery.py",
-        "framework/templates/delivery.json",
+        "customizations/platforms/development/git/delivery/check_delivery.py",
+        "customizations/platforms/development/git/delivery/templates/delivery.json",
         "tools/run_issue_gate.ps1",
         ".github/workflows",
         "customizations/components/issue-workorders/writer_submit.py",

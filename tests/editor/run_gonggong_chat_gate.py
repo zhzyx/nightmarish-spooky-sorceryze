@@ -189,7 +189,12 @@ def main():
                 root / "customizations/components/godot-host",
                 ignore=shutil.ignore_patterns("__pycache__"),
             )
+            platforms = "customizations/platforms"
+            shutil.copytree(ROOT / platforms, root / platforms, ignore=shutil.ignore_patterns("__pycache__"))
             (root / "tools").mkdir()
+            for relative in ("tools/check_gonggong_distribution.py", "integrations/gonggong/frozen-distribution.json"):
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, root / relative)
             shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
             if args.receipt_delay or args.mode in ("receipt_failure", "receipt_retry", "recovery_receipt_failure"):
                 shutil.copyfile(root / "tools/gonggong_bridge.py", root / "tools/bridge_impl.py")
@@ -276,7 +281,18 @@ def main():
                 subprocess.run(
                     ["git", "-C", str(root), "remote", "add", "origin", "https://github.com/test/repo.git"], check=True
                 )
-            subprocess.run(["git", "-C", str(root), "add", "framework"], check=True, capture_output=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(root),
+                    "add",
+                    "framework",
+                    "customizations/platforms/data-collection/git-files/storage",
+                ],
+                check=True,
+                capture_output=True,
+            )
             subprocess.run(
                 [
                     "git",
@@ -298,7 +314,8 @@ def main():
             subprocess.run(
                 [
                     sys.executable,
-                    str(root / "framework/extensions/diting-files/diting_files.py"),
+                    "-I",
+                    str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
                     "init",
                     "--repo",
                     str(root),

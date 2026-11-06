@@ -18,7 +18,7 @@ def load(p, name):
     return m
 
 
-api = load(ROOT / "framework/extensions/diting-files/diting_files.py", "migration_data")
+api = load(ROOT / "customizations/platforms/data-collection/git-files/storage/diting_files.py", "migration_data")
 paths = load(ROOT / "customizations/components/godot-host/workspace_paths.py", "migration_paths")
 
 

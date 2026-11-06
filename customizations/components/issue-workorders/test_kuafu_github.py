@@ -372,7 +372,7 @@ class KuafuGitHubTests(unittest.TestCase):
                 "CURRENT_FRAMEWORK.json",
                 "gonggong-diting-data/dataset.json",
                 "framework/tools/git_batch.py",
-                "framework/extensions/diting-files/diting_files.py",
+                "customizations/platforms/data-collection/git-files/storage/diting_files.py",
             ):
                 (root / name).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / name, root / name)

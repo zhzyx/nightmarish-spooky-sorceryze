@@ -4,6 +4,10 @@
 
 当前责任：合契交出已整合的候选、完整贡献快照和范围；阎罗负责最终核查、main 发布、发布后完成度复核、目标工单完成写入与回读；司南继续派发、依赖、父项验收和跨工单协调。已经在执行中的发布须完成原操作者交接，不能抢占或操纵其他工作树。此入口只接管新交接事件；原冻结 Agent 定义中的通用协作职责不扩展为另一位 main 发布者。
 
+### 当前宿主的 Git 校验程序
+
+以仓库根为基准，Git 交付检查入口为 `customizations/platforms/development/git/delivery/check_delivery.py`，提供 `--framework-root` 时沿用原清单的解析基准。提交后运行 `customizations/platforms/data-collection/git-files/storage/diting_files.py git-check --repo . --require-committed`。这两个入口对应原 HOST_PROTOCOL 第 5 项的检查。新宿主私有 grant 的 trusted_files 须包含两个脚本及原有可信依赖，注册表与旧 grant 的摘要变化后重新核验和签发。
+
 ## 协作者快速签发和自动提交
 
 在可信工作树中安装 Git、GitHub CLI（`gh` 在 PATH 中）及 Python 3.11+，以本人账号登录 github.com，具备仓库内容写入和 PR 创建权限。Windows、macOS、Linux 共用同一入口。先做业务验证并取得适用的独立审查，在基于最新 main 的任务分支仅暂存本工单内容。将验证范围、结果和必要审查引用写入 PR 说明文件；命令从仓库根运行，替换尖括号参数。

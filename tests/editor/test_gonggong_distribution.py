@@ -46,12 +46,10 @@ class DistributionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "drift"):
             api["check"](self.root)
 
-    def test_extension_is_pinned_and_sync_is_absent(self):
-        self.assertFalse((self.root / "sync").exists())
-        p = self.root / "extensions/diting-files/diting_files.py"
-        p.write_text("# synthetic tamper")
-        with self.assertRaisesRegex(ValueError, "drift"):
-            api["check"](self.root)
+    def test_framework_can_be_installed_without_git_storage(self):
+        self.assertFalse((self.root / "extensions/diting-files").exists())
+        self.assertFalse((self.root / "tools/check_delivery.py").exists())
+        self.assertTrue(api["check"](self.root)["local_integrity"])
 
 
 if __name__ == "__main__":
