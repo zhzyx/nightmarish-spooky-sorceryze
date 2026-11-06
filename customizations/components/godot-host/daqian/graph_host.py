@@ -13,20 +13,20 @@ import subprocess
 import sys
 
 from board import work_items
-from repository_access import AccessDenied, collaborator
+from repository_access import AccessDenied, collaborator, session_actor, session_path
 import plan_store
 
 MAX_REQUEST = 32 * 1024 * 1024
 
 
-def execute(root, envelope):
+def execute(root, envelope, principal=None):
     repo = work_items.config(root)[0]["repository"]
     if envelope.get("repository") != repo:
         raise ValueError("共享宿主绑定的仓库不同")
     number = envelope["number"]
     if type(number) is not int or number < 1:
         raise ValueError("工单编号无效")
-    source = plan_store.read_source(root, number)
+    source = plan_store.read_source(root, number, principal) if principal else plan_store.read_source(root, number)
     if envelope.get("expected_user") and envelope["expected_user"] != source["principal"]["user_id"]:
         raise ValueError("当前仓库协作者与请求身份不匹配")
     if envelope.get("repo_id") and envelope["repo_id"] != source["principal"]["repo_id"]:
@@ -62,6 +62,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo",type=Path,required=True)
     parser.add_argument("--number",type=int)
+    parser.add_argument("--editor-session",default="")
     parser.add_argument("--expected-user",default="")
     parser.add_argument("action",choices=["read","apply","answer","serve-stdio"])
     parser.add_argument("--request",type=Path)
@@ -81,16 +82,26 @@ def main():
                     raise ValueError("计划请求无效或超长")
                 envelope["draft"]=json.loads(args.request.read_text(encoding="utf-8"))
             remote=os.environ.get("DAQIAN_PLAN_SSH_HOST","")
+            reader = session_actor(root,args.editor_session) if args.editor_session and args.action == "read" else None
             if remote:
-                caller=collaborator(root)
+                caller=reader or collaborator(root)
                 if args.expected_user and args.expected_user!=caller["user_id"]:
                     raise ValueError("当前仓库协作者已切换")
                 envelope.update(expected_user=caller["user_id"],repo_id=caller["repo_id"])
                 result=via_shared_host(remote,json.dumps(envelope,ensure_ascii=False).encode())
             else:
-                result=execute(root,envelope)
+                result=execute(root,envelope,reader)
+            if reader and session_actor(root,args.editor_session) != reader:
+                raise AccessDenied("读取流程期间账号已切换")
             result["source_mode"]="shared_host" if remote else "local_installation"
+    except work_items.GitHubCommandError as error:
+        denied = error.http_status in (401, 403)
+        if denied and args.editor_session:
+            session_path(args.editor_session).unlink(missing_ok=True)
+        result = {"ok":False,"denied":denied,"error":str(error)}
     except AccessDenied as error:
+        if args.editor_session:
+            session_path(args.editor_session).unlink(missing_ok=True)
         result={"ok":False,"denied":True,"error":str(error)}
     except (KeyError,OSError,RuntimeError,ValueError,TypeError,sqlite3.Error) as error:
         result={"ok":False,"error":str(error)}

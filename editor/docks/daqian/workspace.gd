@@ -60,6 +60,7 @@ var debug_serial := 0
 const DEBUG_MODELS := ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]
 var host: Object
 var selection_epoch := 0
+var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
 
 
 func _ready() -> void:
@@ -130,8 +131,10 @@ func _ready() -> void:
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
+	models_dialog.editor_session = editor_session
 	add_child(models_dialog)
 	models_dialog.connect("catalog_changed",_catalog_changed)
+	models_dialog.connect("access_denied",_access_denied)
 	editor.debug_command.connect(_debug_command)
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
@@ -151,7 +154,7 @@ func _ready() -> void:
 	_gate_visibility(false)
 	notice.text = "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
-	_opened.call_deferred()
+	_start_session.call_deferred()
 
 
 func _button(parent: Control, title: String, action: Callable) -> Button:
@@ -160,6 +163,11 @@ func _button(parent: Control, title: String, action: Callable) -> Button:
 	button.pressed.connect(action)
 	parent.add_child(button)
 	return button
+
+
+func _start_session() -> void:
+	if not _repo().is_empty() and not checking:
+		refresh()
 
 
 func _opened() -> void:
@@ -227,6 +235,14 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
+	if not picker_scope.is_empty():
+		var bridge := picker_scope.path_join("customizations/components/godot-host/daqian/board.py")
+		var settings := EditorInterface.get_editor_settings()
+		var python := str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+		if FileAccess.file_exists(bridge):
+			if python.is_empty():
+				python = "python" if OS.has_feature("windows") else "python3"
+			OS.execute(python,[bridge,"--repo",picker_scope,"--end-session","--editor-session",editor_session])
 	_stop_debug(false,true)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
@@ -380,7 +396,14 @@ func _gate_visibility(opened: bool) -> void:
 		draft_menu.get_popup().hide()
 
 
+func _access_denied(root: String, user_id: String, reason: String) -> void:
+	if root == _repo() and not actor.is_empty() and actor.user_id == user_id:
+		_forget(reason)
+
+
 func _forget(reason: String) -> void:
+	if not picker_scope.is_empty():
+		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",picker_scope.sha256_text(),{})
 	selection_epoch += 1
 	_stop_debug(false,true)
 	_save()
@@ -416,6 +439,7 @@ func _board_command(access_only: bool, expected := "") -> Dictionary:
 		python = "python" if OS.has_feature("windows") else "python3"
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
 	var args := PackedStringArray([bridge,"--repo",root,"--result",path])
+	args.append_array(["--editor-session",editor_session])
 	if access_only:
 		args.append("--access-only")
 	else:
@@ -458,34 +482,10 @@ func _open_models() -> void:
 		models_dialog.popup_centered()
 
 
-func refresh() -> void:
-	if checking:
-		while checking:
-			await get_tree().process_frame
-		return
-	checking = true
-	var previous := actor.duplicate()
-	_gate_visibility(false)
-	notice.text = "正在核对当前仓库的协作资格…"
-	var response: Dictionary = await _board_command(true)
-	var settings := EditorInterface.get_editor_settings()
-	var auth: Dictionary = response.get("access",{})
-	offline = false
-	if auth.is_empty():
-		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
-		var last_login: String = response.get("offline_login","")
-		if not response.get("denied",true) and not last_login.is_empty() and prior.get("actor",{}).get("login","")==last_login and Time.get_unix_time_from_system()-float(prior.get("checked",0)) < 86400:
-			auth = prior.actor
-			offline = true
-		else:
-			settings.set_project_metadata("daqian_access",_access_key(),{})
-			_forget(str(response.get("error","当前账号的仓库协作身份未核实")))
-			checking = false
-			return
-	else:
-		settings.set_project_metadata("daqian_access",_access_key(),{"actor":auth,"checked":Time.get_unix_time_from_system()})
-	if previous != auth or picker_scope != _repo():
+func _use_personal_board(auth: Dictionary) -> void:
+	if actor != auth or picker_scope != _repo():
 		_stop_debug(false,true)
+		_save()
 		current = ""
 		actor = auth
 		_load_personal()
@@ -495,21 +495,50 @@ func refresh() -> void:
 			var prior: Dictionary = saved.drafts[last]
 			_show_issue(last,{"revision":prior.revision,"plan":prior.baseline,"context":prior.get("context",{})})
 	_gate_visibility(true)
-	if offline:
-		notice.text = "离线个人快照 · " + str(actor.login) + " · 上次核实 " + str(board.get("verified_at","未知"))
+
+
+func refresh() -> void:
+	if checking:
+		while checking:
+			await get_tree().process_frame
+		return
+	checking = true
+	var root := _repo()
+	if actor.is_empty() or picker_scope != root:
+		_gate_visibility(false)
+		notice.text = "正在核对当前仓库的协作资格…"
+	offline = false
+	var expected := str(actor.get("user_id","")) if picker_scope == root else ""
+	var value: Dictionary = await _board_command(true,expected)
+	if value.get("session_changed",false) and root == _repo():
+		_forget("工作区或账号已切换，正在重新核实身份…")
+		value = await _board_command(true)
+	if root == _repo() and value.has("access"):
+		_use_personal_board(value.access)
+		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",_access_key(),{"actor":actor,"checked":actor.get("verified_at_unix",Time.get_unix_time_from_system())})
+		notice.text = "正在更新工单 · 上次核实 " + str(board.get("verified_at","暂无快照"))
+		value = await _board_command(false,actor.user_id)
+	var settings := EditorInterface.get_editor_settings()
+	if root != _repo():
+		_forget("工作区已切换")
+		checking = false
+		refresh.call_deferred()
+		return
+	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
+		board = value.board
+		_draw_board()
+		_sync_workflow()
+		_queue_save()
 	else:
-		var value: Dictionary = await _board_command(false,actor.user_id)
-		if value.has("board") and value.board.user_id == actor.get("user_id",""):
-			board = value.board
-			_draw_board()
-			_sync_workflow()
-			_queue_save()
-		elif value.get("denied",true):
-			settings.set_project_metadata("daqian_access",_access_key(),{})
-			_forget(str(value.get("error","仓库协作身份已变更")))
-		else:
+		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
+		var last_login: String = value.get("offline_login","")
+		if not value.get("denied",true) and not last_login.is_empty() and prior.get("actor",{}).get("login","")==last_login and Time.get_unix_time_from_system()-float(prior.get("checked",0)) < 86400:
 			offline = true
-			notice.text = "工单来源暂不可用 · 最近核实 " + str(board.get("verified_at","未知"))
+			_use_personal_board(prior.actor)
+			notice.text = "离线个人快照 · " + str(actor.login) + " · 上次核实 " + str(board.get("verified_at","未知"))
+		else:
+			settings.set_project_metadata("daqian_access",_access_key(),{})
+			_forget(str(value.get("error","当前账号的仓库协作身份未核实")))
 	checking = false
 
 
@@ -527,17 +556,40 @@ func _open_issue(item: Dictionary) -> void:
 	var snapshot := {"revision":item.updated,"plan":plan,"context":ctx}
 	selection_epoch += 1
 	var epoch := selection_epoch
-	notice.text = "正在读取 #" + str(item.number) + " 的最新流程…"
+	var scope := _repo()
+	var principal := actor.duplicate()
+	_show_issue(item.url, snapshot)
+	var revision: String = editor.revision
+	notice.text = "已显示快照，正在读取 #" + str(item.number) + " 的最新流程…"
 	var port: Object = host if is_instance_valid(host) else self
 	var live: Dictionary = await port.read_graph(item.url)
-	if epoch != selection_epoch:
+	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
 		return
 	if live.get("denied",false):
 		_forget(str(live.error))
 		return
-	if live.has("plan"):
-		snapshot = live
-	_show_issue(item.url, snapshot)
+	if live.has("plan") and editor.revision == revision and not editor.applying:
+		var clean: bool = editor.draft == editor.baseline and editor.answers.is_empty()
+		var next_plan: Dictionary = live.plan.duplicate(true)
+		if not clean and revision == item.updated:
+			for key in editor.draft.nodes:
+				if not editor.baseline.nodes.has(key):
+					next_plan.nodes[key] = editor.draft.nodes[key]
+			for edge in editor.draft.edges:
+				if edge not in editor.baseline.edges and edge not in next_plan.edges:
+					if not next_plan.nodes.has(edge.from) or not next_plan.nodes.has(edge.to):
+						notice.text = "流程端点已变更，已保留草稿。请移除失效连线后重新打开工单。"
+						return
+					next_plan.edges.append(edge)
+		if clean or revision == item.updated:
+			editor.revision = live.revision
+			editor.baseline = live.plan.duplicate(true)
+			editor.draft = next_plan
+		editor.context = live.context.duplicate(true)
+		if clean:
+			_sync_workflow()
+			editor.draw_graph()
+		_queue_save()
 	if live.has("source_mode"):
 		notice.text = item.url + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
 	if live.has("error"):
@@ -1078,8 +1130,13 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var path := _repo().path_join("customizations/components/godot-host/daqian/graph_host.py")
 	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
 		return {"error":"未连接工单流程宿主"}
-	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,action])
-	return await _host_command(args, "--result", request)
+	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--editor-session",editor_session,action])
+	var root := _repo()
+	var principal := actor.duplicate()
+	var response: Dictionary = await _host_command(args, "--result", request)
+	if response.get("denied",false) and principal == actor:
+		_access_denied(root,principal.user_id,str(response.get("error","工单访问已失效")))
+	return response
 
 
 func _host_command(args: PackedStringArray, output_flag: String, request: Dictionary) -> Dictionary:

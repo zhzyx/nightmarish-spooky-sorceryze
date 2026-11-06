@@ -1,0 +1,66 @@
+{
+  "request_id": "daqian-fast-refresh-20261106",
+  "issue": 191,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/191",
+  "before_seconds": 43.54,
+  "measurement": "Same GitHub login, current personal board, follow #1, includes active delivery Issue #191. Network latency varies. Timings exclude editor startup.",
+  "verified_actor": "Sail-Li",
+  "observed": [
+    {
+      "phase": "cold_verify",
+      "seconds": 5.11,
+      "remote_calls": [
+        "api graphql"
+      ],
+      "error": null,
+      "ids": []
+    },
+    {
+      "phase": "warm_verify",
+      "seconds": 0.1,
+      "remote_calls": [],
+      "error": null,
+      "ids": []
+    },
+    {
+      "phase": "warm_refresh",
+      "seconds": 7.58,
+      "remote_calls": [
+        "api repos/zhzyx/nightmarish-spooky-sorceryze/issues",
+        "api repos/zhzyx/nightmarish-spooky-sorceryze/issues",
+        "api repos/zhzyx/nightmarish-spooky-sorceryze/issues/1"
+      ],
+      "error": null,
+      "ids": [
+        1,
+        49,
+        51,
+        56,
+        83,
+        91,
+        92,
+        93,
+        94,
+        95,
+        158,
+        160,
+        191
+      ]
+    },
+    {
+      "phase": "detail",
+      "seconds": 2.85,
+      "remote_calls": [
+        "api repos/zhzyx/nightmarish-spooky-sorceryze/issues/49"
+      ],
+      "error": null,
+      "ids": []
+    }
+  ],
+  "native_scenarios": [
+    "graph",
+    "direct",
+    "publish"
+  ],
+  "python_tests": 21
+}
