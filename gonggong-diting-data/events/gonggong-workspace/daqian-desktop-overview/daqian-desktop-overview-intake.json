@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-desktop-overview-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-desktop-overview",
+  "kind": "request",
+  "occurred_at": "2026-11-06T19:51:41.0045956+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/297",
+  "agent": {
+    "origin": "user-authorized-codex-chat",
+    "id": "daqian-current-operator",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "version": "host-version-unreported"
+  },
+  "payload": {
+    "document": "design-docs/daqian/desktop-overview.md",
+    "intent": "工单列表与依赖图、键盘导航、返回定位及后台验证"
+  },
+  "evidence_refs": [],
+  "sha256": "7814fb6895645f64ef55a2cb3f78c157212e9e2bd746bd155ec80b56c948b401"
+}

@@ -27,6 +27,7 @@ var draft := {"nodes": {}, "edges": []}
 var context := {}
 var answers := {}
 var positions := {}
+var card_sizes := {}
 var layout_columns: Array = []
 var layout_pending := false
 var host_apply: Callable
@@ -144,6 +145,48 @@ void fragment() {
 		disconnect_node(source, output, target, input)
 
 
+class SizeableCard extends GraphNode:
+	signal geometry_edited
+	var edge := Vector2i.ZERO
+	var start_pointer := Vector2.ZERO
+	var start_rect := Rect2()
+
+	func _edges(at: Vector2) -> Vector2i:
+		var margin := 5.0 * get_theme_default_base_scale()
+		return Vector2i(int(at.x >= size.x - margin) - int(at.x <= margin), int(at.y >= size.y - margin) - int(at.y <= margin))
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				edge = _edges(event.position)
+				if edge == Vector2i.ZERO:
+					return
+				start_pointer = get_global_transform() * event.position
+				start_rect = Rect2(position_offset, size)
+			elif edge != Vector2i.ZERO:
+				edge = Vector2i.ZERO
+			else:
+				return
+			accept_event()
+		elif event is InputEventMouseMotion:
+			var hit := _edges(event.position) if edge == Vector2i.ZERO else edge
+			if hit.x and hit.y:
+				mouse_default_cursor_shape = CURSOR_FDIAGSIZE if hit.x == hit.y else CURSOR_BDIAGSIZE
+			elif hit.x:
+				mouse_default_cursor_shape = CURSOR_HSIZE
+			elif hit.y:
+				mouse_default_cursor_shape = CURSOR_VSIZE
+			else:
+				mouse_default_cursor_shape = CURSOR_ARROW
+			if edge != Vector2i.ZERO:
+				var xform := get_global_transform()
+				var delta := xform.affine_inverse().basis_xform(xform * event.position - start_pointer)
+				size = (start_rect.size + Vector2(edge) * delta).max(get_combined_minimum_size())
+				position_offset = start_rect.position + (start_rect.size - size) * Vector2(int(edge.x < 0), int(edge.y < 0))
+				geometry_edited.emit()
+				accept_event()
+
+
 class IssueCanvas extends FlowCanvas:
 	var controller
 	func _is_node_hover_valid(a: StringName, ap: int, b: StringName, bp: int) -> bool:
@@ -151,7 +194,7 @@ class IssueCanvas extends FlowCanvas:
 
 
 func _ready() -> void:
-	var toolbar := HBoxContainer.new()
+	var toolbar := HFlowContainer.new()
 	add_child(toolbar)
 	add_menu = MenuButton.new()
 	add_menu.text = "添加节点"
@@ -190,7 +233,7 @@ func _ready() -> void:
 	canvas.connection_drag_started.connect(_mark_targets)
 	canvas.connection_drag_ended.connect(_reset_ports)
 	canvas.zoom_min = 0.16
-	canvas.zoom_max = 3.0
+	canvas.zoom_max = 1.6
 	canvas.connection_request.connect(connect_ports)
 	canvas.disconnection_request.connect(disconnect_ports)
 	canvas.popup_request.connect(func(_point):
@@ -224,6 +267,7 @@ func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_por
 	host_apply = apply_port
 	host_read = read_port
 	positions = {}
+	card_sizes = {}
 	answers = {}
 	debug_models = {}
 	if is_node_ready():
@@ -249,7 +293,7 @@ func _label(value: String) -> Label:
 
 
 func _render_node(id: String, item: Dictionary) -> void:
-	var view := GraphNode.new()
+	var view := SizeableCard.new()
 	view.name = id
 	view.title = item.title
 	view.tooltip_text = str(context.get("sources", {}).get(id, ""))
@@ -272,6 +316,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 	if item.kind in ["task","text","question"]:
 		var input := TextEdit.new()
 		input.custom_minimum_size = Vector2(215, 78)
+		input.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		input.placeholder_text = "任务说明" if item.kind == "task" else "输入文字"
 		input.name = "PlanContent"
@@ -416,6 +461,13 @@ func _render_node(id: String, item: Dictionary) -> void:
 		view.add_child(criterion)
 	_add_state_row(view)
 	canvas.add_child(view)
+	if card_sizes.has(id):
+		view.size = card_sizes[id]
+	view.geometry_edited.connect(func():
+		card_sizes[id] = view.size
+		positions[id] = view.position_offset
+		_queue_layout()
+		draft_changed.emit())
 	_update_card(view)
 
 
@@ -653,7 +705,7 @@ func pending_question() -> String:
 
 
 func _render_stage(id: String, item: Dictionary) -> void:
-	var view := GraphNode.new()
+	var view := SizeableCard.new()
 	view.name = id
 	view.title = item.title
 	view.draggable = false
@@ -668,6 +720,13 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	view.set_slot(1, true, 1, AFTER, true, 1, AFTER)
 	_add_state_row(view)
 	canvas.add_child(view)
+	if card_sizes.has(id):
+		view.size = card_sizes[id]
+	view.geometry_edited.connect(func():
+		card_sizes[id] = view.size
+		positions[id] = view.position_offset
+		_queue_layout()
+		draft_changed.emit())
 	_update_card(view)
 	if id == "wf-worker" and workflow.item.get("status") == "needs-decision":
 		var target := pending_question()

@@ -59,6 +59,10 @@ if a[:2]==["api","graphql"]:
     print(json.dumps({"data":{"viewer":{"login":login,"databaseId":uid,"repositories":{"nodes":nodes,"pageInfo":{"hasNextPage":False}}}}}))
 elif a[:2]==["api","user"]: print(str(uid) if "--jq" in a else json.dumps({"id":uid,"login":login}))
 elif a[0]=="api" and a[1].startswith("user/repos?"): print("" if mode=="denied" else "123")
+elif a[0]=="api" and "/issues?state=open" in a[1]:
+    repo="zhzyx/nightmarish-spooky-sorceryze"
+    row=dict(number=901, html_url=f"https://github.com/{repo}/issues/901", title="Project issue", body="", updated_at="fixture", state="open", assignees=[], labels=[], issue_dependencies_summary={"total_blocked_by":0})
+    print(json.dumps([[dict(pull_request={}, number=900)], [row]]))
 elif a[0]=="api" and "issues?" in a[1]: print("[[]]")
 elif a[:3]==["config","get","user"]: print(login)
 else: sys.exit(1)
