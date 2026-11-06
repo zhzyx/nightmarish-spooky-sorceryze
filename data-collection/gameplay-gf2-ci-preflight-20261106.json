@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "recorded_at": "2026-11-06T13:56:16Z",
+  "source_pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/185",
+  "source_head": "25c3206b80f0238b391ec85223b963d55339603e",
+  "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42228830799",
+  "association_check": "passed",
+  "ci_failure": {
+    "step": "gitignore_check.sh",
+    "cause": "21 historical, already tracked Issue #55 regression log files matched the global *.log rule; no new Gameplay files were implicated",
+    "new_workflow_permissions": "Runner now starts jobs with Actions:read/Contents:read, confirming previous startup permission error is removed."
+  },
+  "repair": {
+    "path": ".gitignore",
+    "action": "Exact path negations for existing tracked logs; no wildcard exceptions, file modifications, deletions or disabled checks",
+    "paths": [
+      "data-collection/issue55-layout-regression/candidate2-headless/layout-1.5-1440.log",
+      "data-collection/issue55-layout-regression/candidate2-headless/layout-1.5-640.log",
+      "data-collection/issue55-layout-regression/candidate2-headless/layout-1.5-960.log",
+      "data-collection/issue55-layout-regression/candidate4-headless/layout-1.5-1440.log",
+      "data-collection/issue55-layout-regression/candidate4-headless/layout-1.5-640.log",
+      "data-collection/issue55-layout-regression/candidate4-headless/layout-1.5-960.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.0-1440.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.0-640.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.0-960.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.5-1440.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.5-640.log",
+      "data-collection/issue55-layout-regression/candidate6-native/layout-1.5-960.log",
+      "data-collection/issue55-layout-regression/geometry/layout-1.0.log",
+      "data-collection/issue55-layout-regression/geometry/layout-1.5.log",
+      "data-collection/issue55-layout-regression/native-tests.log",
+      "data-collection/issue55-layout-regression/native/layout-1.0-1440.log",
+      "data-collection/issue55-layout-regression/native/layout-1.0-640.log",
+      "data-collection/issue55-layout-regression/native/layout-1.0-960.log",
+      "data-collection/issue55-layout-regression/native/layout-1.5-1440.log",
+      "data-collection/issue55-layout-regression/native/layout-1.5-640.log",
+      "data-collection/issue55-layout-regression/native/layout-1.5-960.log"
+    ],
+    "validation": "git -c core.ignorecase=true ls-files -ci --exclude-standard is empty after patch"
+  },
+  "reuse": {
+    "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+    "business_evidence": "data-collection/gameplay-gf2-validation-20261106.json",
+    "scope": "No Gameplay source, build/runtime inputs or tests changed. Existing 13/236, Windows builds, GDScript and three-process evidence remain applicable."
+  },
+  "delivery_consistency": {
+    "candidate": "3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de",
+    "status": "passed",
+    "scope": "framework/tools/check_delivery.py local source consistency check; not remote acceptance"
+  },
+  "independent_followup_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "status": "no_blockers",
+    "source_head": "3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de",
+    "proposed_gitignore_blob": "d0ef61156dc144f91cae8a499bfd2e2fa24040be",
+    "verified": "All 21 exceptions match tracked paths exactly; new logs and private receipts/local/env patterns remain ignored; history and check script unchanged",
+    "host_signed_tree_readback": "Fetched 25c3206b80f0238b391ec85223b963d55339603e with sole parent 3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de and identical tree 77af951846c65a65ddfadaef3fa33147a26c6966 after reviewer inspected the local source candidate"
+  },
+  "remote_merge_verified": false,
+  "input_tokens": null,
+  "output_tokens": null
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "observed_at": "2026-11-06T17:06:07Z",
+  "client_date": "2026-11-07",
+  "trigger": "Exact-head CI diagnosed an existing editor member-shadowing warning; repair the delivery prerequisite without changing Gameplay behavior.",
+  "failed_candidate": "2ed4bcf78a6817b827240229e119976fefa74986",
+  "ci": {
+    "run": 42256375252,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42256375252",
+    "static": "passed",
+    "msvc_editor": {
+      "job": 128024737240,
+      "result": "failed",
+      "diagnostic": "C4458 at ai_chat_gonggong.cpp:249 and :521, hides AIChatDock::request; /WX treats warning as error"
+    },
+    "clang_cl_editor": "passed compilation and unit tests",
+    "msvc_release_template": "passed compilation and unit tests",
+    "gcc_release_template": "passed compilation and unit tests"
+  },
+  "affected_source": {
+    "path": "editor/docks/ai_chat_gonggong.cpp",
+    "blob": "6d7c43b243f06dbd3de08a27c2cc4458fd154154",
+    "change": "Rename two local request variables and all their uses to bound_request_id/routing_request; format three pre-existing adjacent-string indentation lines. No data keys, command arguments or behavior changed."
+  },
+  "local_checks": {
+    "strict_compile": {
+      "command": "scons platform=windows target=editor tests=yes dev_mode=yes -j4 bin/obj/editor/docks/ai_chat_gonggong.windows.editor.x86_64.obj",
+      "compiler": "MSVC 14.5 /W4 /WX",
+      "final_file_exit_code": 0,
+      "elapsed": "00:00:01.83"
+    },
+    "clang_format": "22.1.5 dry-run --Werror passed",
+    "diff_check": "passed"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "result": "no_blockers",
+    "scope": "All uses of both renamed locals and AIChatDock member; string whitespace equivalence",
+    "source_blob": "6d7c43b243f06dbd3de08a27c2cc4458fd154154",
+    "header_blob": "15801db86cc4002a35b6c21e47b6da424dbd4d35",
+    "remote_ci_verified_by_reviewer": false
+  },
+  "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+  "business_evidence": "Same Gameplay/API inputs: reuse data-collection/gameplay-gf2-validation-20261106.json. The editor prerequisite has separate strict compilation and will receive new-head CI.",
+  "publication": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/187",
+    "new_head": null,
+    "remote_merge_verified": false
+  },
+  "input_tokens": null,
+  "output_tokens": null
+}

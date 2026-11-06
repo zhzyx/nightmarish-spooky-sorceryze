@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayUserSession" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Stable server-side user session that can move between transport peers.
+	</brief_description>
+	<description>
+		GameplayUserSession owns the preserved [GameplayPlayerState] and [GameplayController] during the disconnect grace period. Its peer ID is temporary; its user ID, session ID, and reconnect token are stable. Treat reconnect tokens as secrets and do not log or replicate them.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_disconnected_at_msec" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the monotonic disconnect timestamp, or [code]0[/code] while active.
+			</description>
+		</method>
+		<method name="get_reconnect_token" qualifiers="const">
+			<return type="String" />
+			<description>
+				Returns the opaque reconnect credential. Server code should keep this value private.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="" getter="is_active">
+			Whether a transport peer is currently bound.
+		</member>
+		<member name="controller" type="GameplayController" setter="" getter="get_controller">
+			The preserved controller after player creation.
+		</member>
+		<member name="peer_id" type="int" setter="" getter="get_peer_id">
+			The current peer ID, or [code]0[/code] while disconnected.
+		</member>
+		<member name="player_state" type="GameplayPlayerState" setter="" getter="get_player_state">
+			The preserved stable player state.
+		</member>
+		<member name="session_id" type="String" setter="" getter="get_session_id">
+			The stable session identity.
+		</member>
+		<member name="user_id" type="String" setter="" getter="get_user_id">
+			The stable user identity.
+		</member>
+	</members>
+	<signals>
+		<signal name="deactivated">
+			<param index="0" name="previous_peer_id" type="int" />
+			<description>
+				Emitted when the transport binding is removed.
+			</description>
+		</signal>
+		<signal name="peer_bound">
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Emitted after an initial bind or reconnect.
+			</description>
+		</signal>
+	</signals>
+</class>

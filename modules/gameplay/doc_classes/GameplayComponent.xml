@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayComponent" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		A reusable gameplay capability with an explicit owner and activation state.
+	</brief_description>
+	<description>
+		GameplayComponent adds gameplay ownership and activation semantics without changing the scene-tree ownership model. The gameplay owner is independent from [member Node.owner] and multiplayer authority.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="activate">
+			<return type="void" />
+			<description>
+				Activates the component and emits [signal activated]. Calling this while active has no effect.
+			</description>
+		</method>
+		<method name="deactivate">
+			<return type="void" />
+			<description>
+				Deactivates the component and emits [signal deactivated]. Calling this while inactive has no effect.
+			</description>
+		</method>
+		<method name="get_gameplay_owner" qualifiers="const">
+			<return type="Node" />
+			<description>
+				Returns the explicit gameplay owner, or [code]null[/code] if it is unset or no longer exists.
+			</description>
+		</method>
+		<method name="set_gameplay_owner">
+			<return type="void" />
+			<param index="0" name="owner" type="Node" />
+			<description>
+				Sets the explicit gameplay owner and emits [signal gameplay_owner_changed].
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="" getter="is_active">
+			The read-only activation state.
+		</member>
+		<member name="component_name" type="StringName" setter="set_component_name" getter="get_component_name" default="&amp;&quot;&quot;">
+			A stable name used to identify this capability.
+		</member>
+	</members>
+	<signals>
+		<signal name="activated">
+			<description>
+				Emitted after the component becomes active.
+			</description>
+		</signal>
+		<signal name="deactivated">
+			<description>
+				Emitted after the component becomes inactive.
+			</description>
+		</signal>
+		<signal name="gameplay_owner_changed">
+			<param index="0" name="old_owner" type="Node" />
+			<param index="1" name="new_owner" type="Node" />
+			<description>
+				Emitted when the explicit gameplay owner changes.
+			</description>
+		</signal>
+	</signals>
+</class>

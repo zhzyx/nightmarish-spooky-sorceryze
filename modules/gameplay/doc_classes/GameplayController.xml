@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayController" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		A non-physical gameplay agent that possesses pawns and owns persistent player state.
+	</brief_description>
+	<description>
+		GameplayController separates input or decision ownership from the replaceable [GameplayPawn]. It maintains one-to-one, bidirectional links to its pawn and [GameplayPlayerState]. The gameplay peer ID is not network authority and must not be used to transfer authoritative simulation away from a dedicated server.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_game_mode" qualifiers="const">
+			<return type="GameplayGameMode" />
+			<description>
+				Returns the authoritative game mode that admitted this controller, or [code]null[/code].
+			</description>
+		</method>
+		<method name="has_pawn" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this controller currently possesses a live pawn.
+			</description>
+		</method>
+		<method name="possess">
+			<return type="int" enum="Error" />
+			<param index="0" name="pawn" type="GameplayPawn" />
+			<description>
+				Possesses [param pawn]. Existing relationships on both sides are detached first. Returns [constant OK] on success.
+			</description>
+		</method>
+		<method name="unpossess">
+			<return type="void" />
+			<description>
+				Releases the current pawn while retaining the player state.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="owner_peer_id" type="int" setter="set_owner_peer_id" getter="get_owner_peer_id" default="0">
+			The gameplay owner peer identity. Changing it also updates the possessed pawn.
+		</member>
+		<member name="pawn" type="GameplayPawn" setter="" getter="get_pawn">
+			The read-only possessed pawn.
+		</member>
+		<member name="player_state" type="GameplayPlayerState" setter="set_player_state" getter="get_player_state">
+			Persistent player identity and match state associated with this controller.
+		</member>
+	</members>
+	<signals>
+		<signal name="player_state_changed">
+			<param index="0" name="old_player_state" type="GameplayPlayerState" />
+			<param index="1" name="new_player_state" type="GameplayPlayerState" />
+			<description>
+				Emitted after the player-state relationship changes.
+			</description>
+		</signal>
+		<signal name="possession_changed">
+			<param index="0" name="old_pawn" type="GameplayPawn" />
+			<param index="1" name="new_pawn" type="GameplayPawn" />
+			<description>
+				Emitted after possession changes.
+			</description>
+		</signal>
+	</signals>
+</class>

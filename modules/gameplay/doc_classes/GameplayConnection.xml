@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayConnection" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Tracks one temporary transport peer through the server connection phases.
+	</brief_description>
+	<description>
+		GameplayConnection separates a short-lived multiplayer peer ID from a stable [GameplayUserSession]. The server advances it through version verification, authentication, business admission, player creation, and spawning in order.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="peer_id" type="int" setter="" getter="get_peer_id">
+			The temporary transport peer ID.
+		</member>
+		<member name="rejection_reason" type="String" setter="" getter="get_rejection_reason">
+			A stable machine-readable rejection reason.
+		</member>
+		<member name="session" type="GameplayUserSession" setter="" getter="get_session">
+			The stable session bound to this connection.
+		</member>
+		<member name="state" type="int" setter="" getter="get_state" enum="GameplayConnection.State">
+			The current [enum State].
+		</member>
+	</members>
+	<constants>
+		<constant name="STATE_TRANSPORT_CONNECTED" value="0" enum="State">
+			The transport connected but has not been validated.
+		</constant>
+		<constant name="STATE_VERSION_VERIFIED" value="1" enum="State">
+			The protocol version matches.
+		</constant>
+		<constant name="STATE_AUTHENTICATED" value="2" enum="State">
+			A stable user session is bound.
+		</constant>
+		<constant name="STATE_ADMITTED" value="3" enum="State">
+			Business rules accepted the user.
+		</constant>
+		<constant name="STATE_PLAYER_CREATED" value="4" enum="State">
+			PlayerState and Controller exist.
+		</constant>
+		<constant name="STATE_SPAWNED" value="5" enum="State">
+			A Pawn has been spawned and possessed.
+		</constant>
+		<constant name="STATE_DISCONNECTED" value="6" enum="State">
+			The transport disconnected.
+		</constant>
+		<constant name="STATE_REJECTED" value="7" enum="State">
+			The connection was rejected.
+		</constant>
+	</constants>
+</class>

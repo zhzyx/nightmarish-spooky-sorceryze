@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-ds-session-delivery-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-ds-session-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:12:14.2295761Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177",
+  "agent": {
+    "id": "codex-current-gameplay-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "intent": "Resume formal delivery of the staged GF-2 dedicated-server/session implementation after gh restoration",
+    "authorization": "Current user requested GF-2 on staged GF-1 and stated 已处理 请继续 on 2026-11-06",
+    "operator": "kaiyunxue",
+    "permission_readback": "WRITE",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+    "design_document": "design-docs/gameplay-framework-20261106.md",
+    "intake": "passed",
+    "base_commit": "8c391908f911af7b8ac8f6f88c99a87b6122c802",
+    "previous_index_tree": "2a9ca7d60929a06f7b81cb43cdcae168531d4706",
+    "scope_stop": "Finish GF-1/GF-2 publication; stop before GF-3. Preserve unrelated untracked replication files.",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "591154012a33cf530d7611ca627e0d853c6225a8fca70360b1ca9e22f43e7e69"
+}
