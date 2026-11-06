@@ -86,7 +86,8 @@ func run() -> void:
 	var decision: Array = JSON.parse_string(records[-2])
 	check(decision[0] == "issue-start" and decision[1].expected_revision == "fixture-revision" and decision[1].expected_user == "42", "Missing explicit start transition")
 	check(records.size() == 5 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
-	check(chat.find_child("APIModel", true, false).text == "chosen-execution-model", "Start ignored model chosen at creation")
+	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Start left Daqian")
+	check(chat.get_daqian_models().current == "chosen-execution-model", "Start ignored model chosen at creation")
 	# Replay an external route into the same linked draft without invoking a model.
 	var row: Dictionary = binding.duplicate()
 	row.updated = binding.get("revision", "fixture-revision")
