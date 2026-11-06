@@ -1,0 +1,90 @@
+{
+  "issue_number": 330,
+  "request_id": "history-deep-compression-20261107",
+  "worktrees": {
+    "processed": 42,
+    "skipped": 30,
+    "completed_issues": [
+      6,
+      7,
+      9,
+      22,
+      27,
+      32,
+      35,
+      39,
+      41,
+      46,
+      55,
+      58,
+      59,
+      79,
+      84,
+      85,
+      88,
+      90,
+      103,
+      106,
+      134,
+      189,
+      207,
+      209,
+      213,
+      227,
+      229,
+      231,
+      238,
+      239,
+      246,
+      257,
+      302
+    ],
+    "native_ntfs": {
+      "files": 238745,
+      "before": 30287380480,
+      "after": 12996894720,
+      "os_skip": 0,
+      "inaccessible": 0
+    },
+    "git_clean_and_same_head_before_after": true,
+    "hash_verified_per_file": true,
+    "reopened_samples": 84
+  },
+  "archive_lzx": {
+    "files": 1681,
+    "before": 2378821632,
+    "after": 1546362880
+  },
+  "additional_allocated_bytes_saved": 18122944512,
+  "prior_savings_bytes": 1689179240,
+  "clone_comparison": {
+    "commit": "8930b67e1977e28f4c70bb68a724545060cf7402",
+    "standard": {
+      "allocated": 549180456,
+      "files": 19264,
+      "pack_payload": 129652678
+    },
+    "light": {
+      "allocated": 27625576,
+      "files": 3162,
+      "pack_payload": 4634491
+    },
+    "core_contents_checked": true
+  },
+  "restore_verification": {
+    "archive_sample_logical": 10357200,
+    "restored_sample_sha256": "35e690a51c41558c6dafcc1e3ffbff02ec10c113b116003e98b0ea4ce0a9c025",
+    "restored_all_tracked_files": 19236,
+    "historical_fetch": true,
+    "full_main_history": true
+  },
+  "private_manifests": {
+    "path_base": "git_common_dir",
+    "path": "gonggong-history-storage/issue-330/index.json",
+    "index_sha256": "49f96eb4031c083e6689b5a78f5b3f122ef9ff63a19cfa30ea61343944f31ce0",
+    "allocated_size_excluded_from_savings": true,
+    "logical_bytes_including_index": 12472139
+  },
+  "local_private_directory_measured_bytes": 17787976,
+  "savings_less_private_directory_bytes": 18105156536
+}

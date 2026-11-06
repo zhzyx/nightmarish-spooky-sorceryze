@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "godot-macos-headless-preset",
+  "collected_at": "2026-11-06T19:19:04.893605+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/dispatch-0470085154854dfd90d7a5daa0c1d6a6.json",
+      "sha256": "66df9d290b6bc4937b2974af9f2ba5b22b665080b1a348f9d5c36da28270aaf5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0470085154854dfd90d7a5daa0c1d6a6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/dispatch-df4c2592eb6249ed9ed09e81cb8ec7ab.json",
+      "sha256": "bb4151506a31c74d0916b294b1277a57a18503d6b8d44d8cb889b9c709d305eb",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-df4c2592eb6249ed9ed09e81cb8ec7ab",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/issue226-startup-preset-request.json",
+      "sha256": "d41e55470868794ed2b73702ee06335e37deb09e1b8f7f0755542bc097a9ca61",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "issue226-startup-preset-request",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/kuafu-0cd6ab99a96b56c6dca22982231b1d7dc12ec7e1.json",
+      "sha256": "52c79cc643d2e13b04513717064e1c464007a6f6fe4655fb5c04f0bf1a718939",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-0cd6ab99a96b56c6dca22982231b1d7dc12ec7e1",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/kuafu-2dc14d6ea0a91adba2ac6bcc909278508012bf9a.json",
+      "sha256": "629b25b3350f39cd469e4db64486410c0f493f3c032050eea0d7a003035e84d9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-2dc14d6ea0a91adba2ac6bcc909278508012bf9a",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 226,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226"
+}
