@@ -78,6 +78,19 @@ func _ready():
 	host_edit = line(machine, "Trusted editor_host.py path", settings.get_value("host", "script", ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")))
 	factory_edit = line(machine, "Trusted provider factory", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(machine, "Save local settings", save_settings)
+	var character_panel = preload('res://addons/ainative/character_panel.gd').new()
+	content.add_child(character_panel)
+	character_panel.initialize(self)
+	var advanced = VBoxContainer.new()
+	advanced.name = 'IndependentModuleDiagnostics'
+	button(content,'Advanced independent module diagnostics',func(): advanced.visible = not advanced.visible)
+	content.add_child(advanced)
+	advanced.hide()
+	machine.reparent(advanced)
+	content = advanced
+	var diagnostics_title = Label.new()
+	diagnostics_title.text = 'Independent module diagnostics use separate characters.'
+	content.add_child(diagnostics_title)
 	var bar = HBoxContainer.new()
 	content.add_child(bar)
 	path_edit = line(bar, "Workflow JSON path", ProjectSettings.globalize_path("user://workflow.json"))

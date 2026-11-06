@@ -69,10 +69,10 @@ func initialize(workbench):
 	host.button(self,'Save cloth + cache as new version',save)
 	message = Label.new(); message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; add_child(message)
 	var preview = TextureRect.new(); preview.custom_minimum_size = Vector2(400,360); preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; preview.texture = host.viewport.get_texture(); add_child(preview)
-static func assemble(config: Dictionary) -> Dictionary:
+static func assemble(config: Dictionary, current: Node3D = null) -> Dictionary:
 	for key in ['scene','binding','family']:
 		if not config.get(key) is String: return {'error':'Missing '+key}
-	var loaded = I.load_scene(config.scene)
+	var loaded = I.load_scene(config.scene) if current==null else {'scene':current}
 	if loaded.has('error'): return loaded
 	var scene = loaded.scene
 	var old = scene.get_node_or_null('ClothSolver')
@@ -117,6 +117,9 @@ static func assemble(config: Dictionary) -> Dictionary:
 		if not manifest.has('partitions') or not manifest.partitions.has('cloth'): scene.free(); return {'error':'Skirt requires reviewed garment partitions'}
 		if manifest.get('garment',{}).get('source_sha256')!=binding.source_sha256 or manifest.garment.get('kind')!='skirt': scene.free(); return {'error':'Cloth source must match retained waist source/version'}
 		if I.revision(manifest)!=manifest.get('revision'): scene.free(); return {'error':'Reviewed garment manifest changed'}
+		var boundary = manifest.garment.get('cloth_start_y',I.decode(profile.profile.bones[int(profile.profile.mapping.hips)].global_rest).origin.y)
+		if not (binding.get('cloth_top') is int or binding.get('cloth_top') is float) or not is_equal_approx(float(binding.cloth_top),float(boundary)):
+			scene.free(); return {'error':'Cloth top must match the authored waist partition; refit both together'}
 		var vertex_count = 0
 		for surface in garment.mesh.get_surface_count(): vertex_count += garment.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX].size()
 		if manifest.get('vertices')!=vertex_count or not manifest.partitions.cloth is Array: scene.free(); return {'error':'Garment partition vertex count changed'}

@@ -1,0 +1,1971 @@
+{
+  "schema_version": 1,
+  "issue_number": 154,
+  "parent_issue": 140,
+  "request_id": "ainative-art-13-integration-20261106",
+  "base": "f7e3f390e06287ca0778b4a0b77a8bfa55c683ad",
+  "status": "local first-version acceptance; main delivery and issue closure require remote receipts",
+  "shared_character": {
+    "frame_cpu_usec": 14914,
+    "generation": 8,
+    "ok": true,
+    "saved_sha256": "de7e4c26cc09d4f6205ccbd2e08d6e0ca1eca7e08f74832fc2a44390c39d0dfe",
+    "scope": "Same-character UI body/face/clothes/MDM/layers/hair/cloth/save/reopen; external target validation separate"
+  },
+  "controls": {
+    "expression_keeps_hair_binding": true,
+    "hair_display_survives_shape": true,
+    "manual_expression_survives_shape": true,
+    "ok": true,
+    "shape_invalidates_cloth_cache": true
+  },
+  "publication": {
+    "cloth_cache_frames": 425,
+    "cloth_cache_key": "c6265d2ed82fdfd0ef1dfa6a625e85111964cc8388aebf9f7eea7edfdb69b490",
+    "cloth_skeleton_instance": 106568879616,
+    "evaluation_count": 4,
+    "generation": 3,
+    "hair_body_instance": 106568879616,
+    "sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+    "skeleton_instance": 106568879616
+  },
+  "cloth_geometry": {
+    "replay": {
+      "character_instance_unchanged": true,
+      "crossing_frames": [],
+      "duration_seconds": 7.067,
+      "frames": 425,
+      "limits": "Declared thigh/knee rest-centroid band only; finite sampled frames, not continuous collision or whole-volume certification.",
+      "method": "Actual primary-body Skin triangles with current static morphs; all triangle edges intersected against actual rendered cloth BVH at every 60Hz sample. Independent auxiliary skeletons excluded.",
+      "mode": "replay",
+      "rest_band_m": [
+        0.4106718349456787,
+        0.8675059914588928
+      ],
+      "sample_hz": 60,
+      "schema_version": 1,
+      "source_scene_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "tested_edges": 9957750,
+      "triangles_per_frame": 7810,
+      "worst_crossing_edges": 0
+    },
+    "realtime": {
+      "character_instance_unchanged": true,
+      "crossing_frames": [],
+      "duration_seconds": 7.067,
+      "frames": 425,
+      "limits": "Declared thigh/knee rest-centroid band only; finite sampled frames, not continuous collision or whole-volume certification.",
+      "method": "Actual primary-body Skin triangles with current static morphs; all triangle edges intersected against actual rendered cloth BVH at every 60Hz sample. Independent auxiliary skeletons excluded.",
+      "mode": "realtime",
+      "rest_band_m": [
+        0.4106718349456787,
+        0.8675059914588928
+      ],
+      "sample_hz": 60,
+      "schema_version": 1,
+      "source_scene_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "tested_edges": 9957750,
+      "triangles_per_frame": 7810,
+      "worst_crossing_edges": 0
+    },
+    "waist": {
+      "cloth_start_y_m": 1.075,
+      "comparison": "Fresh fit from immutable source and saved DNA; original non-cloth triangles retained",
+      "exact_bone_indices_and_weights": true,
+      "exact_triangle_ids": true,
+      "exact_vertex_positions": true,
+      "publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "retained_triangles": 6896,
+      "skin_bind_poses_equal": true,
+      "source_garment_sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28"
+    },
+    "retained_failure": {
+      "issue": 340,
+      "frames": 425,
+      "first_crossing_frame": 110,
+      "worst_crossing_edges": 131,
+      "cause": "Original low hip-fixed waist boundary intersects deformed thighs",
+      "repair": "Same-source refit with explicit cloth_start_y=1.075m and newly prepared matching binding; original solver unchanged"
+    }
+  },
+  "gpu_performance": {
+    "replay": {
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "capture_time_seconds": 5.866666666666666,
+      "character_cpu": {
+        "max_ms": 29.658,
+        "p50_ms": 21.073,
+        "p95_ms": 21.836
+      },
+      "deepest_pose": {
+        "hip_y": 0.9675061106681824,
+        "knee_angle_rad": 2.063199281692505,
+        "time_seconds": 5.866666666666666
+      },
+      "display": "Windows",
+      "driver": "opengl3",
+      "frame_wall": {
+        "max_ms": 31.193,
+        "p50_ms": 22.134,
+        "p95_ms": 23.214
+      },
+      "frames": 425,
+      "gpu_timer_available": true,
+      "limits": "Specific machine, assets, renderer and resolution; no general 60fps guarantee. Zero GPU timer values mean unavailable, not zero GPU cost.",
+      "mode": "replay",
+      "pose_sample_hz": 60,
+      "renderer": "gl_compatibility",
+      "schema_version": 1,
+      "scope": "Normal workbench UI plus one complete shared character; CPU body/layers/IK/face/cloth/hair and real GPU rendering. Wall time spans evaluate through frame_post_draw, with asynchronous GPU submission, vsync disabled. Image readback occurs after timing. Hidden parent visibility/foreground evidence comes from the native launcher.",
+      "source_scene_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "viewport_gpu": {
+        "max_ms": 17.06399917602539,
+        "p50_ms": 2.0339999198913574,
+        "p95_ms": 14.255000114440918
+      },
+      "viewport_render_cpu": {
+        "max_ms": 0.6759999990463257,
+        "p50_ms": 0.39399999380111694,
+        "p95_ms": 0.6010000109672546
+      },
+      "viewport_size": [
+        620,
+        768
+      ],
+      "views": [
+        "front",
+        "side",
+        "back"
+      ],
+      "warmup_frames": 20,
+      "host": {
+        "parent_visible": false,
+        "foreground_unchanged": true,
+        "exit_code": 0,
+        "elapsed_seconds": 17.0054361
+      },
+      "background_load": "Other CPU validation may overlap; observed workstation timings, not an idle-machine benchmark",
+      "views_sha256": {
+        "front": "36fdc93f412d6364d23dd2ad7702117fa72037f7b8cef6553988edcbf63090c1",
+        "side": "585ea3f64861f5618a116ecee189670d3746d78153b90b93f1c2cc7edf47f18e",
+        "back": "4b046a1310481f892f3d4642c224feb066fdd36f9cf7c814b9d2006cc054ace5"
+      }
+    },
+    "realtime": {
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "capture_time_seconds": 5.866666666666666,
+      "character_cpu": {
+        "max_ms": 62.953,
+        "p50_ms": 34.385,
+        "p95_ms": 41.759
+      },
+      "deepest_pose": {
+        "hip_y": 0.9675061106681824,
+        "knee_angle_rad": 2.063199281692505,
+        "time_seconds": 5.866666666666666
+      },
+      "display": "Windows",
+      "driver": "opengl3",
+      "frame_wall": {
+        "max_ms": 64.258,
+        "p50_ms": 35.609,
+        "p95_ms": 42.981
+      },
+      "frames": 425,
+      "gpu_timer_available": true,
+      "limits": "Specific machine, assets, renderer and resolution; no general 60fps guarantee. Zero GPU timer values mean unavailable, not zero GPU cost.",
+      "mode": "realtime",
+      "pose_sample_hz": 60,
+      "renderer": "gl_compatibility",
+      "schema_version": 1,
+      "scope": "Normal workbench UI plus one complete shared character; CPU body/layers/IK/face/cloth/hair and real GPU rendering. Wall time spans evaluate through frame_post_draw, with asynchronous GPU submission, vsync disabled. Image readback occurs after timing. Hidden parent visibility/foreground evidence comes from the native launcher.",
+      "source_scene_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "viewport_gpu": {
+        "max_ms": 20.527000427246094,
+        "p50_ms": 14.041000366210938,
+        "p95_ms": 16.420000076293945
+      },
+      "viewport_render_cpu": {
+        "max_ms": 1.5119999647140503,
+        "p50_ms": 0.5490000247955322,
+        "p95_ms": 0.6389999985694885
+      },
+      "viewport_size": [
+        620,
+        768
+      ],
+      "views": [
+        "front",
+        "side",
+        "back"
+      ],
+      "warmup_frames": 20,
+      "host": {
+        "parent_visible": false,
+        "foreground_unchanged": true,
+        "exit_code": 0,
+        "elapsed_seconds": 23.0069344
+      },
+      "background_load": "Other CPU validation may overlap; observed workstation timings, not an idle-machine benchmark",
+      "views_sha256": {
+        "front": "b6238b19e0a6571955fb4b80d76a13f22fdb4647ef7b01e44e280e5ad84d41be",
+        "side": "f32d1b1018d0e4ac55be3e3f96103aca69bc9c35cac348de0d20e80c881971c0",
+        "back": "5f52993cf44ee15868acd938ee6082d1896736b72acf90b892898d7530572fba"
+      }
+    }
+  },
+  "compatibility": {
+    "godot_readback": {
+      "publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "targets": [
+        {
+          "animation_players": 1,
+          "bones": 68,
+          "sha256": "15f20f31f5f29ac6a36b489903a723c69443e774b44f1105bf4d563eb152bc46",
+          "target": "ue4"
+        },
+        {
+          "animation_players": 1,
+          "bones": 161,
+          "sha256": "3d8c9af361d96a418c3b71a220c32f81e90906cf208bd083afcc41ebf5ede058",
+          "target": "manny"
+        },
+        {
+          "animation_players": 1,
+          "bones": 67,
+          "sha256": "5aca03dfdc204da7aa12b5b21a38cb53c032788726c6093dd77b53b80fd7ce1d",
+          "target": "mixamo"
+        }
+      ]
+    },
+    "reports": {
+      "ue4": {
+        "animation_duration": 7.067,
+        "animation_tracks": 204,
+        "binding": {
+          "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+          "binding": "target_bound",
+          "max_adaptation_m": 2.66560078898692e-07,
+          "max_rest_reconstruction_m": 8.23153968667611e-05,
+          "missing_source_fingers": [],
+          "unsupported": [
+            "MetaHuman Body"
+          ],
+          "vertices": 524775,
+          "weighted_finger_vertices": 0
+        },
+        "compatibility": "target_bound; external roundtrip evidence required",
+        "excluded": [
+          {
+            "part": "ClothSolver/SimulatedClothRender",
+            "reason": "Runtime-generated cloth surface geometry and cache are excluded; any retained main-Skin waist is listed separately"
+          },
+          {
+            "part": "IndependentHair",
+            "reason": "Independent hair geometry, scalp cap and guide dynamics are excluded from this body compatibility projection"
+          },
+          {
+            "part": "FunctionalWeaponFixture/GripBar",
+            "reason": "no body Skin; rigid props and runtime surfaces are not projected"
+          }
+        ],
+        "excluded_runtime": [
+          "character_editing",
+          "face_animation",
+          "weapon_attachment",
+          "cloth_simulation_and_cache",
+          "hair_guides_and_dynamics"
+        ],
+        "included": [
+          {
+            "morph_channels_frozen": 4,
+            "part": "Body",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyebrows",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyelashes",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyes",
+            "surfaces": 2
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_lower",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_upper",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-head",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-tongue",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 4,
+            "part": "AuthorBodyNeckSocket",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 0,
+            "part": "Garment",
+            "surfaces": 1
+          }
+        ],
+        "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "sampling": {
+          "evaluation": "body > layers > equipment IK > final bone poses",
+          "fps": 30,
+          "length_seconds": 7.067,
+          "source_publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb"
+        },
+        "schema_version": 1,
+        "scope": "body_skin_and_final_body_animation",
+        "source_profile_revision": "1a46fefd3ddbb30d0f24b260e7f8f505dad2c5e23650ab80f9dc37ce390aa390",
+        "static_morph_policy": "Current body/face morph values baked into rest geometry; editable morph channels and facial animation excluded",
+        "target_family": "ue4",
+        "target_profile_revision": "313c3b67006689358318104f7f4dbe30fc3d17f81a5f9a960a9ca87c5bb633b1",
+        "artifact_sha256": "15f20f31f5f29ac6a36b489903a723c69443e774b44f1105bf4d563eb152bc46"
+      },
+      "manny": {
+        "animation_duration": 7.067,
+        "animation_tracks": 483,
+        "binding": {
+          "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+          "binding": "target_bound",
+          "max_adaptation_m": 0.28187096118927,
+          "max_rest_reconstruction_m": 8.11961363069713e-05,
+          "missing_source_fingers": [],
+          "unsupported": [
+            "MetaHuman Body"
+          ],
+          "vertices": 524775,
+          "weighted_finger_vertices": 0
+        },
+        "compatibility": "target_bound; external roundtrip evidence required",
+        "excluded": [
+          {
+            "part": "ClothSolver/SimulatedClothRender",
+            "reason": "Runtime-generated cloth surface geometry and cache are excluded; any retained main-Skin waist is listed separately"
+          },
+          {
+            "part": "IndependentHair",
+            "reason": "Independent hair geometry, scalp cap and guide dynamics are excluded from this body compatibility projection"
+          },
+          {
+            "part": "FunctionalWeaponFixture/GripBar",
+            "reason": "no body Skin; rigid props and runtime surfaces are not projected"
+          }
+        ],
+        "excluded_runtime": [
+          "character_editing",
+          "face_animation",
+          "weapon_attachment",
+          "cloth_simulation_and_cache",
+          "hair_guides_and_dynamics"
+        ],
+        "included": [
+          {
+            "morph_channels_frozen": 4,
+            "part": "Body",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyebrows",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyelashes",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyes",
+            "surfaces": 2
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_lower",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_upper",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-head",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-tongue",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 4,
+            "part": "AuthorBodyNeckSocket",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 0,
+            "part": "Garment",
+            "surfaces": 1
+          }
+        ],
+        "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "sampling": {
+          "evaluation": "body > layers > equipment IK > final bone poses",
+          "fps": 30,
+          "length_seconds": 7.067,
+          "source_publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb"
+        },
+        "schema_version": 1,
+        "scope": "body_skin_and_final_body_animation",
+        "source_profile_revision": "1a46fefd3ddbb30d0f24b260e7f8f505dad2c5e23650ab80f9dc37ce390aa390",
+        "static_morph_policy": "Current body/face morph values baked into rest geometry; editable morph channels and facial animation excluded",
+        "target_family": "ue5_manny",
+        "target_profile_revision": "4858787952df88264bd06e1ca9bdbf357668ce7195c841a0da93261451840d0e",
+        "artifact_sha256": "3d8c9af361d96a418c3b71a220c32f81e90906cf208bd083afcc41ebf5ede058"
+      },
+      "mixamo": {
+        "animation_duration": 7.067,
+        "animation_tracks": 201,
+        "binding": {
+          "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+          "binding": "target_bound",
+          "max_adaptation_m": 0.493899434804916,
+          "max_rest_reconstruction_m": 8.01303758635186e-05,
+          "missing_source_fingers": [],
+          "unsupported": [
+            "MetaHuman Body"
+          ],
+          "vertices": 524775,
+          "weighted_finger_vertices": 0
+        },
+        "compatibility": "target_bound; external roundtrip evidence required",
+        "excluded": [
+          {
+            "part": "ClothSolver/SimulatedClothRender",
+            "reason": "Runtime-generated cloth surface geometry and cache are excluded; any retained main-Skin waist is listed separately"
+          },
+          {
+            "part": "IndependentHair",
+            "reason": "Independent hair geometry, scalp cap and guide dynamics are excluded from this body compatibility projection"
+          },
+          {
+            "part": "FunctionalWeaponFixture/GripBar",
+            "reason": "no body Skin; rigid props and runtime surfaces are not projected"
+          }
+        ],
+        "excluded_runtime": [
+          "character_editing",
+          "face_animation",
+          "weapon_attachment",
+          "cloth_simulation_and_cache",
+          "hair_guides_and_dynamics"
+        ],
+        "included": [
+          {
+            "morph_channels_frozen": 4,
+            "part": "Body",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyebrows",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyelashes",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-eyes",
+            "surfaces": 2
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_lower",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-gums_upper",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-head",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 19,
+            "part": "GEO-rain-tongue",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 4,
+            "part": "AuthorBodyNeckSocket",
+            "surfaces": 1
+          },
+          {
+            "morph_channels_frozen": 0,
+            "part": "Garment",
+            "surfaces": 1
+          }
+        ],
+        "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "sampling": {
+          "evaluation": "body > layers > equipment IK > final bone poses",
+          "fps": 30,
+          "length_seconds": 7.067,
+          "source_publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb"
+        },
+        "schema_version": 1,
+        "scope": "body_skin_and_final_body_animation",
+        "source_profile_revision": "1a46fefd3ddbb30d0f24b260e7f8f505dad2c5e23650ab80f9dc37ce390aa390",
+        "static_morph_policy": "Current body/face morph values baked into rest geometry; editable morph channels and facial animation excluded",
+        "target_family": "mixamo",
+        "target_profile_revision": "c1e29a1d0ccd4ccdc4e471bf77081213d204428187967b0d27621bd9024cfb0e",
+        "artifact_sha256": "5aca03dfdc204da7aa12b5b21a38cb53c032788726c6093dd77b53b80fd7ce1d"
+      }
+    },
+    "mixamo_full_skin_and_animation": {
+      "actual_bone_motion_span_m": 0.830109059810638,
+      "animation_position_error_m": 1.72738850778842e-06,
+      "animation_rotation_error_rad": 0.0009765625,
+      "animation_samples": 31,
+      "artifact_sha256": "5aca03dfdc204da7aa12b5b21a38cb53c032788726c6093dd77b53b80fd7ce1d",
+      "bones": 67,
+      "max_rest_error_m": 0.0,
+      "max_skin_rest_reconstruction_error_m": 6.58529752399772e-05,
+      "max_weight_sum_error": 4.58061695098877e-05,
+      "publication_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "scope": "Full target hierarchy/rest axes, all exported Skin vertices and 31 animation samples; excludes explicitly unexported runtime geometry",
+      "target_family": "mixamo",
+      "vertices_checked": 39820
+    },
+    "unreal": {
+      "engine": "5.8.3-0+UE5",
+      "failures": [],
+      "cases": [
+        {
+          "id": "ue4_integrated_highwaist_v2",
+          "source_sha256": "15f20f31f5f29ac6a36b489903a723c69443e774b44f1105bf4d563eb152bc46",
+          "bones": 68,
+          "vertices": 39919,
+          "mesh_parts": [
+            {
+              "name": "Body",
+              "vertices": 20042,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyebrows",
+              "vertices": 296,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyelashes",
+              "vertices": 308,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyes",
+              "vertices": 1634,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-gums_lower",
+              "vertices": 3464,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-gums_upper",
+              "vertices": 3464,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-head",
+              "vertices": 6779,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-tongue",
+              "vertices": 306,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "AuthorBodyNeckSocket",
+              "vertices": 256,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "Garment",
+              "vertices": 3370,
+              "bones": 68,
+              "skeleton": "/Game/AINativeIntegration154/ue4_integrated_highwaist_v2/compatibility-highwaist-v2-ue4/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            }
+          ],
+          "shared_skeleton": true,
+          "native_comparison": {
+            "max_position_error_cm": 0.00011275749578553546,
+            "max_rotation_error_rad": 5.638864019043613e-07,
+            "hierarchy_errors": []
+          },
+          "animations": [
+            {
+              "name": "compatibility-highwaist-v2-ue4_Anim",
+              "length": 7.066666603088379,
+              "pose_samples": 5
+            }
+          ],
+          "scope": "Actual Unreal Engine SkeletalMesh import, reference hierarchy/rest comparison, geometry and finite animation evaluation; quantitative Godot final-pose roundtrip is separate."
+        },
+        {
+          "id": "manny_integrated_highwaist_v2",
+          "source_sha256": "3d8c9af361d96a418c3b71a220c32f81e90906cf208bd083afcc41ebf5ede058",
+          "bones": 161,
+          "vertices": 39919,
+          "mesh_parts": [
+            {
+              "name": "Body",
+              "vertices": 20042,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyebrows",
+              "vertices": 296,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyelashes",
+              "vertices": 308,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-eyes",
+              "vertices": 1634,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-gums_lower",
+              "vertices": 3464,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-gums_upper",
+              "vertices": 3464,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-head",
+              "vertices": 6779,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "GEO-rain-tongue",
+              "vertices": 306,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "AuthorBodyNeckSocket",
+              "vertices": 256,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            },
+            {
+              "name": "Garment",
+              "vertices": 3370,
+              "bones": 161,
+              "skeleton": "/Game/AINativeIntegration154/manny_integrated_highwaist_v2/compatibility-highwaist-v2-manny/SkeletalMeshes/Body_Skeleton.Body_Skeleton"
+            }
+          ],
+          "shared_skeleton": true,
+          "native_comparison": {
+            "max_position_error_cm": 7.198864139066926e-05,
+            "max_rotation_error_rad": 7.432677694165705e-07,
+            "hierarchy_errors": []
+          },
+          "animations": [
+            {
+              "name": "compatibility-highwaist-v2-manny_Anim",
+              "length": 7.066666603088379,
+              "pose_samples": 5
+            }
+          ],
+          "scope": "Actual Unreal Engine SkeletalMesh import, reference hierarchy/rest comparison, geometry and finite animation evaluation; quantitative Godot final-pose roundtrip is separate."
+        }
+      ]
+    },
+    "quinn": {
+      "state": "explicitly_unvalidated",
+      "issue": 202,
+      "excluded_from_first_version_by_user": true
+    }
+  },
+  "editor_plugin": {
+    "actual_plugin_panel_path": "/root/@EditorNode@20931/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/@VBoxContainer@38/DockVSplitCenter/@EditorBottomPanel@8105/@EditorDock@21239/@VBoxContainer@21238/WorkbenchScroll/WorkbenchContent/CharacterWorkbench",
+    "cloth_ok": true,
+    "editor_hint": true,
+    "expression_frame_at_1s": 30,
+    "hair_body_valid": true,
+    "hair_ready": true,
+    "hair_render_vertices": 1584,
+    "manual_mouth": 0.4,
+    "runner_ok": true,
+    "shared_skeleton": true
+  },
+  "editor_fix": {
+    "issue": 340,
+    "failure": "Non-tool hair_runtime fields unavailable in editor context",
+    "repair": "Enable @tool on existing hair runtime; actual enabled editor bottom panel reopening/evaluation verified",
+    "limits": "Headless custom editor script shutdown emitted RID leak diagnostics; this is not a memory-leak certification"
+  },
+  "independent_review": {
+    "schema_version": 1,
+    "issue_number": 154,
+    "approved": true,
+    "approval_scope": "Frozen integration code, transactional session and publication contracts; scoped acceptance evidence verified. This is not issue closure or parent workflow completion.",
+    "blocking_findings_in_reviewed_scope": [],
+    "independent_execution": {
+      "runtime": "Godot v4.8.beta.custom_build.ced0368bb; headless behavior probes and actual EditorPlugin in editor mode",
+      "passed": [
+        "Saved A versus edited B restoration",
+        "Invalid source SHA and missing clip preserve live instance/generation",
+        "Portable no-journal playback and stale cache refusal",
+        "Expression PTS uses frame 30 at 1 second and holds last frame after end",
+        "Pose revision advances while scalp/hair static binding and instance remain unchanged",
+        "Single-flight isolated cloth bake; seek cancellation preserves previous live cache and playback state",
+        "Panel reopen restores hat/LOD rather than replaying stale controls",
+        "Publisher byte-snapshot consistency, duplicate GLB/report refusal and rollback",
+        "Default skirt partition unchanged; invalid boundary values rejected; mismatched cloth_top rejected"
+      ],
+      "actual_editor_plugin": {
+        "actual_editor_plugin_panel": "CharacterWorkbench",
+        "cloth_evaluation_ok": true,
+        "editor_hint": true,
+        "expression_index_at_1s": 30,
+        "hair_static_binding_preserved": true,
+        "hair_vertex_count": 1584,
+        "shared_skeleton": true,
+        "source_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "source_unchanged": true
+      },
+      "editor_shutdown_note": "Custom --editor --script runs exit 0 after assertions but emit RID/ObjectDB/resource cleanup warnings at shutdown; no leak-free claim.",
+      "body_bake": {
+        "actual_motion_change": 1.27282607555389,
+        "basis_error": 2.16964190258295e-06,
+        "bones": 69,
+        "position_error": 0.0,
+        "tracks": 207
+      },
+      "three_target_animation_roundtrip": [
+        {
+          "basis_error": 5.69372559766634e-07,
+          "family": "ue4",
+          "position_error_m": 3.29604006310547e-07
+        },
+        {
+          "basis_error": 6.42650377358223e-07,
+          "family": "ue5_manny",
+          "position_error_m": 3.06848164655094e-06
+        },
+        {
+          "basis_error": 6.5633304302537e-07,
+          "family": "mixamo",
+          "position_error_m": 3.22069837466188e-07
+        }
+      ],
+      "export_live_morph_cannot_change_frozen_source": true,
+      "test_receipt_sha256": {
+        "fixes-receipt.json": "d7c292d751bbb7272ff0d4a4e31bc65c47ff82ff908f8cb5f5a00cd558edba14",
+        "ui-state-receipt.json": "4d1cdd2a461dd9eb9ca38a137c342795e4064e7c32e5bbd824d7560e65830e05",
+        "boundary-receipt.json": "30239db606b272622501a0ab993fd05542918a048b934462a295476ee99751e6",
+        "export-receipt.json": "3ca69de0fdbfa47cf91d3748bceacbaa89f305b10c8359af9abc167f08a75fc4",
+        "roundtrip-receipt.json": "13a1e49ca559051bf2a7080f4293618f56813aa1debbba5201c13ece12262647",
+        "editor-plugin-final-receipt.json": "eb3913efadf4a5bb5a2e3f8483ceb2f950462511e09517db1fc8169ab4fd9fd7"
+      },
+      "publisher_fix_receipt_sha256": "e5f4fd12857eb61ba20867d4a0a11c0d48fd5818a2132a3b6e4292df6a75ced2"
+    },
+    "report_review_not_reexecuted": {
+      "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+      "issue_340": {
+        "modes": [
+          "replay",
+          "realtime"
+        ],
+        "frames_per_mode": 425,
+        "sample_hz": 60,
+        "actual_body_triangles_per_frame": 7810,
+        "tested_edges_per_mode": 9957750,
+        "worst_crossing_edges": 0,
+        "scope": "Declared thigh/knee rest-centroid band against actual rendered cloth BVH; not continuous collision or whole-body volume proof"
+      },
+      "waist": {
+        "retained_triangles": 6896,
+        "retained_index_entries": 20688,
+        "exact_positions_indices_weights": true,
+        "skin_bind_poses_equal_approx": true,
+        "cloth_start_y_m": 1.075
+      },
+      "gpu": {
+        "adapter": "NVIDIA GeForce RTX 4070 Ti",
+        "renderer": "OpenGL compatibility",
+        "frames_per_mode": 425,
+        "viewport": [
+          620,
+          768
+        ],
+        "replay_wall_p95_ms": 23.214,
+        "realtime_wall_p95_ms": 42.981,
+        "hidden_parent_and_unchanged_foreground_receipts_verified": true,
+        "general_60fps_claim": false
+      },
+      "mixamo_target_readback": {
+        "artifact_sha256": "5aca03dfdc204da7aa12b5b21a38cb53c032788726c6093dd77b53b80fd7ce1d",
+        "vertices_checked": 39820,
+        "animation_samples": 31,
+        "actual_motion_span_m": 0.830109059810638
+      },
+      "evidence_sha256": {
+        "runtime/integration/final-v14/squat-highwaist-body-v1.json": "1ddb40d42d30e0c315113fb17111b4f82b798e2078edc0cc5cddbd4ba51109a4",
+        "runtime/integration/final-v14/squat-highwaist-body-realtime-v1.json": "caff9ebde8412a3fe7e3880a004175e7e60f35e1ab69e1f1db0718bb50c6c3d3",
+        "runtime/integration/final-v14/waist-highwaist-v1.json": "0a5a8c1b39811cb05d129c6755a5781e08ad681fd491f9b6acf0fe803b3197d0",
+        "runtime/integration/final-v14/mixamo-target-readback-v1.json": "4aeaaa95291cb69b6e0d145e4789c05d0e2810e54aec467d4abf8b2fcd3d8306",
+        "runtime/integration/render-highwaist-v1/replay.json": "bcb01bf08882a20ee9a1d8563e6d715eedc7851f75485a9066c313b06fbc812b",
+        "runtime/integration/render-highwaist-v1/realtime.json": "74bc7eee88f7cf37372ac163d279e6547be206ee0378d02ef3bb9f086cf1b4a2"
+      }
+    },
+    "final_delta_review": {
+      "hair_runtime": "Only @tool added; actual editor-owned workbench independently exercised after change",
+      "panel": "Final scope wording explicitly excludes simulated cloth surfaces, independent hair geometry and props; prior behavior evidence reused",
+      "export": "Report now explicitly names runtime geometry exclusions even when frozen scene has not instantiated those meshes",
+      "performance_snapshot": "Predates the above @tool/report/wording changes; no claim of rerunning full GPU benchmark on final bytes"
+    },
+    "limitations": [
+      "UE external engine readback is owned by root and was still pending at this review; this document does not certify it.",
+      "GLB scope is body and retained main-Skin geometry, static morph shape, final body bone animation. Hair geometry/scalp cap, simulated cloth surfaces, facial animation, separate props and Godot runtime controls are excluded.",
+      "Mechanical authored neck/source adaptation and existing source surface quality limitations remain; no general automatic production-character guarantee.",
+      "No AI inference, shared source edits, commits or issue actions were performed by this review."
+    ],
+    "frozen_manifest_sha256": "77a91ad54548b0e47b4b060788ba71ea66abc6670f93bef76c76ec6e15605cd1",
+    "source_sha256": {
+      "samples/ainative-workbench/addons/ainative/character_session.gd": "2dda23a9ebc8ccf2466a4419c0c30a365df6bad0c79d9cb08250eeb85795c41d",
+      "samples/ainative-workbench/addons/ainative/character_panel.gd": "7367444a98a86db6614cca20cc1440536e3a8d60a9ce23bf7af90acc42e03335",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "37a539faa5b88150f424f7942399e8527c5c49c842a6a2d9466da227c67b631e",
+      "samples/ainative-workbench/addons/ainative/cloth_panel.gd": "fbb68bf94f209ef82773b9f87f21c4e312b3bd453b2fb575397dbf2988ee28fc",
+      "samples/ainative-workbench/addons/ainative/hair_runtime.gd": "7b2f24ac172e537d20be0206d071e5c207484da9c8d26e5d87ea472b26cfb2ca",
+      "samples/ainative-workbench/integration_acceptance.gd": "be74de6ed6c8eb0f94f38d58a336e34ed57db5adee09af82066df16c9d9f8fd8",
+      "samples/ainative-workbench/integration_squat.gd": "ced8113731d2d9e1b76b649e892a383e4b5230f998c998ec8836f2c7c247e8a7",
+      "samples/ainative-workbench/integration_controls.gd": "1605b0e6287c6bc938475a45b8cab777ed56ea99c9a064d30950d98212419bc8",
+      "samples/ainative-workbench/integration_export.gd": "20daa7ab77f622959a968e136bd64dfe0372e4f5348d92574c0550bf3aa4cd69",
+      "samples/ainative-workbench/integration_waist_check.gd": "b8014350901bb661b365d7d930635157c6b24929c782af5e6886fb0f53242fe9",
+      "samples/ainative-workbench/integration_target_check.gd": "72a8f69ebb0daf57145ef2d7796c550aaf46fee7f9147fd0153f6c5743e6dd00",
+      "tools/ainative/character_publish.py": "2420c366bccd93826edd5f4e76bdee6cfcf6ccb9e6eba7b77f845e40af258412",
+      "tools/ainative/test_character_publish.py": "65aafdcb6de8412e0dd6378e3405c3fb5d95ffde3ddedb5bf6d08d3fa4140491",
+      "design-docs/ainative-art/13-integration.md": "47bfab4181b7d1ed146c62ea194b75257cc5327287d27ea052a99e72a82bff09",
+      "samples/ainative-workbench/addons/ainative/character_session.gd.uid": "ae7e1a1bd3a161d8f114537c1246d7fb64e257159cace960e5969abe8c86b224",
+      "samples/ainative-workbench/addons/ainative/character_panel.gd.uid": "b9a911c5f0bae350b82160b4231fa5e2399e48732ba70167eff7a712ca31ecd0",
+      "samples/ainative-workbench/integration_acceptance.gd.uid": "9a1c4d7568bb238c9d721a395abde3df33889ca481e2ef51b8a06e5d18cb192b",
+      "samples/ainative-workbench/integration_squat.gd.uid": "98731446a54ecbbeebeb02a1086c8576c96180cf0fc36773813e04e27b1f5607",
+      "samples/ainative-workbench/integration_controls.gd.uid": "b1c47914e2908dc5a0d1e0ab1703a5310d97bdc74821b57ed06e6814d85fd902",
+      "samples/ainative-workbench/integration_export.gd.uid": "74f1e4e74388fa8e1d9edce263972a3c82d158b9725ff6bb76ffd0b10baf6398",
+      "samples/ainative-workbench/integration_waist_check.gd.uid": "b9bbd0b8665c2049103f3bd402690b48a4d7ea337966782d203e65254dd4fc14",
+      "samples/ainative-workbench/integration_target_check.gd.uid": "b70f40c99df804944f6dae045e6f08e1185c17a5524318137132729d6264c458",
+      "samples/ainative-workbench/addons/ainative/character_export.gd": "d12efd6f4e8f22f7fe7abc0db4dc2eee425b9bac77e56821fff15a50f2dafa72",
+      "samples/ainative-workbench/addons/ainative/character_export.gd.uid": "3f1c1d4aa237ccf0b1a4adae96c2e0c791948a33d2c6a06fcebf0d631da27af1",
+      "samples/ainative-workbench/addons/ainative/garments.gd": "b656b7dd7ce476eb00c05459d071694987238ee91b58e08e854cdf3bca2e799a",
+      "samples/ainative-workbench/integration_body_check.gd": "9e52a2232c59b33b17ded95975d458e6ad451d960c31f8340f61ade551b0d455",
+      "samples/ainative-workbench/integration_body_check.gd.uid": "872eba33b4752ffcce60abf545b7fb532486a6c1112c7f53c3d2dbf3f9c589ef",
+      "samples/ainative-workbench/integration_frame_probe.gd": "7b1979574fe66d933e4c38ad4e25007a25d0bc8e227631781d919408db2271d1",
+      "samples/ainative-workbench/integration_frame_probe.gd.uid": "18d6d9849378fff4e3d18b992d1f6b489291d6472f6bb34127daa6040dbec7ff"
+    }
+  },
+  "unreal_readback_review": {
+    "schema_version": 1,
+    "issue_number": 154,
+    "approved": true,
+    "approval_scope": "Read-only independent verification of the root-executed UE external readback for the frozen UE4/Manny compatibility GLBs. Not an independent UE execution.",
+    "engine_reported": "5.8.3-0+UE5",
+    "complements_review_sha256": "98512b3a05d6c7f0057b15f8e459ce6daa9edf31cefbb127481160721e63e1ec",
+    "report_sha256": "a68c620dedf827995b4c67574a21ab02e20a807993f79dcade17c67f9f58d9fc",
+    "executed_script_sha256": "78012cd2e4e9916c37d258dc4b69281364a6b0863dbd15cac984dc0550a53dd0",
+    "configuration_sha256": "30262e013840db13c4f3d009ddd9703848f079853b54f8e7a8ef5864dc6ff8a0",
+    "checks": [
+      "GLB source SHA matches frozen config, previous import, sidecar and v4 readback",
+      "Exact ten-part set equals both skinned GLB nodes and included sidecar list",
+      "Every reported part has positive vertices and the same skeleton with matching bone count",
+      "Full native bone-name and parent sets checked; rest errors independently recomputed from reported transforms",
+      "All five actual UE animation pose samples contain finite transforms; nonzero motion independently computed",
+      "Executed script requires AnimSequence skeleton association via get_editor_property"
+    ],
+    "cases": [
+      {
+        "target": "ue4",
+        "artifact_sha256": "15f20f31f5f29ac6a36b489903a723c69443e774b44f1105bf4d563eb152bc46",
+        "sidecar_sha256": "c59cbeee9d07431fbdf2c6bf372e9927b066c38345648edceb52426a6f063a93",
+        "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "native_reference_sha256": "8c7f3170a9710ebefc87ce0873f1cf8e447480725edcde793a25727367e4e021",
+        "expected_parts": [
+          "AuthorBodyNeckSocket",
+          "Body",
+          "GEO-rain-eyebrows",
+          "GEO-rain-eyelashes",
+          "GEO-rain-eyes",
+          "GEO-rain-gums_lower",
+          "GEO-rain-gums_upper",
+          "GEO-rain-head",
+          "GEO-rain-tongue",
+          "Garment"
+        ],
+        "exact_part_set_matches_glb_and_sidecar": true,
+        "skinned_parts": 10,
+        "vertices": 39919,
+        "all_parts_share_skeleton": true,
+        "bone_count": 68,
+        "complete_native_name_parent_set_matches": true,
+        "max_rest_position_error_cm": 0.00011275749578553546,
+        "max_rest_rotation_error_rad": 5.638864019043613e-07,
+        "animation_skeleton_assertion_present_in_executed_script": true,
+        "animations": [
+          {
+            "length_seconds": 7.066666603088379,
+            "actual_pose_samples": 5,
+            "finite_pose_values": true,
+            "moving_bones": 60,
+            "max_translation_change_from_first_sample_cm": 82.71435173417372,
+            "max_rotation_change_from_first_sample_rad": 1.395663878568835
+          }
+        ]
+      },
+      {
+        "target": "ue5_manny",
+        "artifact_sha256": "3d8c9af361d96a418c3b71a220c32f81e90906cf208bd083afcc41ebf5ede058",
+        "sidecar_sha256": "c431bb2d42569e72dcba2102202a656860cf6b5b46fec31d4ea561e240f094e4",
+        "published_character_sha256": "52005908d1f3c6acfb16117ee781eab7f8cbd9c51e689ae261bf07f420abceeb",
+        "native_reference_sha256": "11bb84c0a80b500ecb6f83e1628b5dab722444eb9009c0836cde088af7e972b6",
+        "expected_parts": [
+          "AuthorBodyNeckSocket",
+          "Body",
+          "GEO-rain-eyebrows",
+          "GEO-rain-eyelashes",
+          "GEO-rain-eyes",
+          "GEO-rain-gums_lower",
+          "GEO-rain-gums_upper",
+          "GEO-rain-head",
+          "GEO-rain-tongue",
+          "Garment"
+        ],
+        "exact_part_set_matches_glb_and_sidecar": true,
+        "skinned_parts": 10,
+        "vertices": 39919,
+        "all_parts_share_skeleton": true,
+        "bone_count": 161,
+        "complete_native_name_parent_set_matches": true,
+        "max_rest_position_error_cm": 7.198864139066926e-05,
+        "max_rest_rotation_error_rad": 7.432677694165705e-07,
+        "animation_skeleton_assertion_present_in_executed_script": true,
+        "animations": [
+          {
+            "length_seconds": 7.066666603088379,
+            "actual_pose_samples": 5,
+            "finite_pose_values": true,
+            "moving_bones": 151,
+            "max_translation_change_from_first_sample_cm": 84.10706130281646,
+            "max_rotation_change_from_first_sample_rad": 1.3956630173176803
+          }
+        ]
+      }
+    ],
+    "retained_failed_attempts": {
+      "v2": {
+        "sha256": "c3b33ba3fc49bfcedd3a5e3cf862799315fcb3bc30c131c60e0fc0776fce407a",
+        "reason": "Earlier validation incorrectly required a single skeletal mesh instead of the exported multipart set"
+      },
+      "v3": {
+        "sha256": "8f60a652296865d06e945b48f5590d8ef0e665f792aea7e21cb0f62f77fce156",
+        "reason": "Earlier validation accessed AnimSequence skeleton with the wrong Python API"
+      }
+    },
+    "limits": [
+      "The reviewer parsed reports and the executed script; the root performed the actual UE import/readback.",
+      "UE sampling proves finite non-static animation and skeleton association; it is not an independent frame-by-frame UE skinned-vertex comparison to the Godot character.",
+      "Compatibility projection exclusions remain: independent hair/scalp geometry, simulated cloth surfaces/cache, facial animation, separate props and Godot runtime editing are not claimed as carried by GLB.",
+      "No existing export, readback report, script or previous review was modified."
+    ]
+  },
+  "source_audit": {
+    "scope": "Independent source freeze audit only; not issue154 complete workflow approval",
+    "frozen_manifest": {
+      "path": "private-local/adaptation-freeze-v14.json",
+      "sha256": "339c1836336e5ca9c7553466537a5f60115469faea942e3b563767c4d8e6c907",
+      "bytes": 276581
+    },
+    "frozen_path_hash_checks": [
+      {
+        "path": "private-local/author-assembly-v14.tscn",
+        "expected": "163b2b76e5aaa3d550609ff217601a807578b593bb3d58049313846d8fb92dd4",
+        "actual": "163b2b76e5aaa3d550609ff217601a807578b593bb3d58049313846d8fb92dd4",
+        "match": true
+      },
+      {
+        "path": "private-local/author-assembly-v14.tscn.face-binding.json",
+        "expected": "ad9997074180ec6d47d9833f5eb0ef7b1d34473661b9d22ecc73d80f5737a1d2",
+        "actual": "ad9997074180ec6d47d9833f5eb0ef7b1d34473661b9d22ecc73d80f5737a1d2",
+        "match": true
+      },
+      {
+        "path": "private-local/interop-native-ue4.tscn",
+        "expected": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+        "actual": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+        "match": true
+      },
+      {
+        "path": "private-local/author-mask-v3.json",
+        "expected": "f38afa460d628c7f7aeb476970f4d8944195522e726857c9050df06c623c190c",
+        "actual": "f38afa460d628c7f7aeb476970f4d8944195522e726857c9050df06c623c190c",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-front.png",
+        "expected": "22dc94367d6369ce0fbd7a0cf525a241e6d76e37cf2ca160098f3604abe6c63c",
+        "actual": "22dc94367d6369ce0fbd7a0cf525a241e6d76e37cf2ca160098f3604abe6c63c",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-side.png",
+        "expected": "a76538b060e54e408695524856e975f1d8c91ce87f35c9d7c94c303303ef853e",
+        "actual": "a76538b060e54e408695524856e975f1d8c91ce87f35c9d7c94c303303ef853e",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-back.png",
+        "expected": "2b20cc013f5c91a2f52c66392f4c8bc9536b917d978904b4b0991b7ac597955a",
+        "actual": "2b20cc013f5c91a2f52c66392f4c8bc9536b917d978904b4b0991b7ac597955a",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-front.png",
+        "expected": "3604cf00a4d1a7a6e6b89da5645f9d45d8b6b872955196b11d37b5527c794dcb",
+        "actual": "3604cf00a4d1a7a6e6b89da5645f9d45d8b6b872955196b11d37b5527c794dcb",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-side.png",
+        "expected": "7b9b374c101535801cea99b05ff0b5975a177bb6e7af64c522e4c3702d455bfe",
+        "actual": "7b9b374c101535801cea99b05ff0b5975a177bb6e7af64c522e4c3702d455bfe",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-back.png",
+        "expected": "9e6fecb491f8ce6d365cc99ba905ce5f6ae2e212b370a7b9f453599c05db3b60",
+        "actual": "9e6fecb491f8ce6d365cc99ba905ce5f6ae2e212b370a7b9f453599c05db3b60",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-front.png",
+        "expected": "14fe43edbe81c22957d7d6b2cec66b437448948f0abcb636c2b5db0c59db99f5",
+        "actual": "14fe43edbe81c22957d7d6b2cec66b437448948f0abcb636c2b5db0c59db99f5",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-side.png",
+        "expected": "6b7430e0caa2eb199da44c4d8d5b014642633ec3537dfe40ffb4e6b0f06f68f4",
+        "actual": "6b7430e0caa2eb199da44c4d8d5b014642633ec3537dfe40ffb4e6b0f06f68f4",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-back.png",
+        "expected": "a77680250406f6bfeeed28c4745722a996989105dd7557d317d183725556b50c",
+        "actual": "a77680250406f6bfeeed28c4745722a996989105dd7557d317d183725556b50c",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-front.png",
+        "expected": "aa35d3ad3d45828a988e0880aa9a80e444093f0c87c9c1e22a22a13d28770e5c",
+        "actual": "aa35d3ad3d45828a988e0880aa9a80e444093f0c87c9c1e22a22a13d28770e5c",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-side.png",
+        "expected": "6ea8bfc6ebc9eb7a45623c82972b1e2db8d267ee49bc3b717920383d4c0e49b4",
+        "actual": "6ea8bfc6ebc9eb7a45623c82972b1e2db8d267ee49bc3b717920383d4c0e49b4",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-back.png",
+        "expected": "7767dce721fb284375be3b40cc45be7014aece7d2bb5f9a304dbebee6f372377",
+        "actual": "7767dce721fb284375be3b40cc45be7014aece7d2bb5f9a304dbebee6f372377",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-front.png",
+        "expected": "56bc86f4d9370e38f06ce206e22cf065a0bcecb6c40bfd239536f529ea5cbf6b",
+        "actual": "56bc86f4d9370e38f06ce206e22cf065a0bcecb6c40bfd239536f529ea5cbf6b",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-side.png",
+        "expected": "ddbe18e039a87ee0e89d1ba470883c380697bb298a54fa046b4ae1dbd9fa9755",
+        "actual": "ddbe18e039a87ee0e89d1ba470883c380697bb298a54fa046b4ae1dbd9fa9755",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-back.png",
+        "expected": "6de63dc62a2c17c673ebdf2190e8de02adb2c3de6a0801413008013b23682fff",
+        "actual": "6de63dc62a2c17c673ebdf2190e8de02adb2c3de6a0801413008013b23682fff",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-min-front.png",
+        "expected": "63533a84c125c7097c363afe2ead5044aba7c79e592231bf7a418fb8fa731fc0",
+        "actual": "63533a84c125c7097c363afe2ead5044aba7c79e592231bf7a418fb8fa731fc0",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-min-side.png",
+        "expected": "8a64e4ceafbe06c61be558727f871f824bd593d4484895f9df05ad36ffcbf8ab",
+        "actual": "8a64e4ceafbe06c61be558727f871f824bd593d4484895f9df05ad36ffcbf8ab",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-min-back.png",
+        "expected": "bedd8d6b919d41f55d88b81a32efbfdccf6a762d2badd5aef33c08fc115f1aea",
+        "actual": "bedd8d6b919d41f55d88b81a32efbfdccf6a762d2badd5aef33c08fc115f1aea",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-max-front.png",
+        "expected": "c691640936248911033c9fdd3fac0818b94159d7b38729e4bd04f6e590149727",
+        "actual": "c691640936248911033c9fdd3fac0818b94159d7b38729e4bd04f6e590149727",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-max-side.png",
+        "expected": "a7cc7f879c3da319487d5aa957ce5599abd2774751bb1e2fdd6252ec4d3e55ab",
+        "actual": "a7cc7f879c3da319487d5aa957ce5599abd2774751bb1e2fdd6252ec4d3e55ab",
+        "match": true
+      },
+      {
+        "path": "private-local/rest-max-back.png",
+        "expected": "9ee34deabea70ce4ed940a6163d2593b772e48faaff3be7b6684975b5657ad19",
+        "actual": "9ee34deabea70ce4ed940a6163d2593b772e48faaff3be7b6684975b5657ad19",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-min-front.png",
+        "expected": "322fc6c0f9593a8d723036da9d69f27aed147a666543f1dbcc86d3388fd8977b",
+        "actual": "322fc6c0f9593a8d723036da9d69f27aed147a666543f1dbcc86d3388fd8977b",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-min-side.png",
+        "expected": "84a225f01429744d086967c0673416fac502e5901bf863cd6843a772dc989d78",
+        "actual": "84a225f01429744d086967c0673416fac502e5901bf863cd6843a772dc989d78",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-min-back.png",
+        "expected": "84ce05b464561cb46fb0be98a3bda3f72fdecf11d6a5e5d27f762294b53d2814",
+        "actual": "84ce05b464561cb46fb0be98a3bda3f72fdecf11d6a5e5d27f762294b53d2814",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-max-front.png",
+        "expected": "1717d597308c395fc355c5a7f064cfca81a8ede19555e04850367638f8ec795c",
+        "actual": "1717d597308c395fc355c5a7f064cfca81a8ede19555e04850367638f8ec795c",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-max-side.png",
+        "expected": "1a709e6c066069810f63358be7a4b79eec92481c79242b1e43993ab5cf196a51",
+        "actual": "1a709e6c066069810f63358be7a4b79eec92481c79242b1e43993ab5cf196a51",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm0-max-back.png",
+        "expected": "103d695e4376d87847f6ecf87143af55aa4fece3e3ab93a19a5cfe9dc75f4e17",
+        "actual": "103d695e4376d87847f6ecf87143af55aa4fece3e3ab93a19a5cfe9dc75f4e17",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-min-front.png",
+        "expected": "5ce4f62064dc9e3d858adfbd84853e491945d6ac8a694bdc18aba42b57a24429",
+        "actual": "5ce4f62064dc9e3d858adfbd84853e491945d6ac8a694bdc18aba42b57a24429",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-min-side.png",
+        "expected": "879af6fafb7f3b7634a985ededee821b804919e1c14df73a6edc4b35bb914ac4",
+        "actual": "879af6fafb7f3b7634a985ededee821b804919e1c14df73a6edc4b35bb914ac4",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-min-back.png",
+        "expected": "d784d9ac81495196e8fe41e05717a75ed56ca161f7f9ce2ab4cc59cda412c88f",
+        "actual": "d784d9ac81495196e8fe41e05717a75ed56ca161f7f9ce2ab4cc59cda412c88f",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-max-front.png",
+        "expected": "3d27d6d625d260fd88b60715be1c837e67f5738b9d886845489e019c19094237",
+        "actual": "3d27d6d625d260fd88b60715be1c837e67f5738b9d886845489e019c19094237",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-max-side.png",
+        "expected": "fb1d0bd1c0de75f2cda152dcea553a3ebb2df67d72d8c7398950b589e8ae8358",
+        "actual": "fb1d0bd1c0de75f2cda152dcea553a3ebb2df67d72d8c7398950b589e8ae8358",
+        "match": true
+      },
+      {
+        "path": "private-local/mdm1-max-back.png",
+        "expected": "005aa320ecff31ddf9fdf141ac6f2424a3293eb1897f8d888871bce7c9f6c3bc",
+        "actual": "005aa320ecff31ddf9fdf141ac6f2424a3293eb1897f8d888871bce7c9f6c3bc",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-min-front.png",
+        "expected": "8f2f974d9fba787c88e581f290038662f7c2f38a430ee05970c3142c574a092f",
+        "actual": "8f2f974d9fba787c88e581f290038662f7c2f38a430ee05970c3142c574a092f",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-min-side.png",
+        "expected": "611e8961068c2791b214fd8dd4efbb14bb0d4cb30c1f4ba56267d509882dee4f",
+        "actual": "611e8961068c2791b214fd8dd4efbb14bb0d4cb30c1f4ba56267d509882dee4f",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-min-back.png",
+        "expected": "30f91f886f4356dd2a6bfee5004675a1696c913650e078ac3428243f4fe48070",
+        "actual": "30f91f886f4356dd2a6bfee5004675a1696c913650e078ac3428243f4fe48070",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-max-front.png",
+        "expected": "4dbe3c6b5b6f856464a8c64fdd93288f05a0ea19a3c517640c094ed200ab8e37",
+        "actual": "4dbe3c6b5b6f856464a8c64fdd93288f05a0ea19a3c517640c094ed200ab8e37",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-max-side.png",
+        "expected": "d34cab21269546f205d6232600e399325b290b195dc4b04538ef23e4cfc05273",
+        "actual": "d34cab21269546f205d6232600e399325b290b195dc4b04538ef23e4cfc05273",
+        "match": true
+      },
+      {
+        "path": "private-local/neckturn-max-back.png",
+        "expected": "cea91bfc7d0243aa66e081a703a8592500aa5688627e856703905e2dad805dae",
+        "actual": "cea91bfc7d0243aa66e081a703a8592500aa5688627e856703905e2dad805dae",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-min-front.png",
+        "expected": "eafcc4f7e350c68dd5e4c0ced5b0adda102a679abd20f00175cbf251a35bc8a2",
+        "actual": "eafcc4f7e350c68dd5e4c0ced5b0adda102a679abd20f00175cbf251a35bc8a2",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-min-side.png",
+        "expected": "31dcdfb3a4145b1383a02ce8349c4c66d4b679aaafa47bca59136651340f0d70",
+        "actual": "31dcdfb3a4145b1383a02ce8349c4c66d4b679aaafa47bca59136651340f0d70",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-min-back.png",
+        "expected": "ac9ae61b5faf7c30cab6c8f132f26a1a4c2afb1543b93299bc4a316b31da3d9a",
+        "actual": "ac9ae61b5faf7c30cab6c8f132f26a1a4c2afb1543b93299bc4a316b31da3d9a",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-max-front.png",
+        "expected": "47bc847ffb40a79a699cd80f5d84d14e3e571363c2735c2aca91d23bc85820c1",
+        "actual": "47bc847ffb40a79a699cd80f5d84d14e3e571363c2735c2aca91d23bc85820c1",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-max-side.png",
+        "expected": "a3ba382436e6549c9343abe017336cfe8a6222a118bfc55bf3bffcb0992e34fa",
+        "actual": "a3ba382436e6549c9343abe017336cfe8a6222a118bfc55bf3bffcb0992e34fa",
+        "match": true
+      },
+      {
+        "path": "private-local/neckbend-max-back.png",
+        "expected": "2ad3a5e9d7917441d04f288fe84e5c74071cc0e47dc90dc2b552b1dcfaf68385",
+        "actual": "2ad3a5e9d7917441d04f288fe84e5c74071cc0e47dc90dc2b552b1dcfaf68385",
+        "match": true
+      },
+      {
+        "path": "private-local/local-static-audit-v14.json",
+        "expected": "67a4e09f0ee413072a2b601883402d6a28cba9c398e3ac4f633d8199fa26837f",
+        "actual": "67a4e09f0ee413072a2b601883402d6a28cba9c398e3ac4f633d8199fa26837f",
+        "match": true
+      },
+      {
+        "path": "private-local/author-v14-shape-test.json",
+        "expected": "845e8a414b5edc7cc9c5e247378111a3150d45fa7f96b3189244dfebe54af72c",
+        "actual": "845e8a414b5edc7cc9c5e247378111a3150d45fa7f96b3189244dfebe54af72c",
+        "match": true
+      },
+      {
+        "path": "private-local/author_socket_v14.gd",
+        "expected": "dc6768d7751bef73f1108de02723448dfdae25ddd2d6b0928fd89e8820b58068",
+        "actual": "dc6768d7751bef73f1108de02723448dfdae25ddd2d6b0928fd89e8820b58068",
+        "match": true
+      },
+      {
+        "path": "private-local/local_neck_v13.gd",
+        "expected": "e0eb9eb2177064bac27d599ee1bfe9bd8de5dc25ba18f1e1bc87c2804ce3f140",
+        "actual": "e0eb9eb2177064bac27d599ee1bfe9bd8de5dc25ba18f1e1bc87c2804ce3f140",
+        "match": true
+      },
+      {
+        "path": "private-local/local_neck_v10.gd",
+        "expected": "f1f2e1e518b6b14560884b2f56832bfb67ec14f1644b06d98651fbed1f438724",
+        "actual": "f1f2e1e518b6b14560884b2f56832bfb67ec14f1644b06d98651fbed1f438724",
+        "match": true
+      },
+      {
+        "path": "private-local/author_motion_v14.gd",
+        "expected": "9f5e6cf65b02e63ac3c86ab9bb5d80837c644e308aa4836f0377c953fd7a94a7",
+        "actual": "9f5e6cf65b02e63ac3c86ab9bb5d80837c644e308aa4836f0377c953fd7a94a7",
+        "match": true
+      },
+      {
+        "path": "private-local/author_extremes_v14.gd",
+        "expected": "976a5a3f36b73d1f6dadc82fa62ddd4260940766ba346792dc977347c816c959",
+        "actual": "976a5a3f36b73d1f6dadc82fa62ddd4260940766ba346792dc977347c816c959",
+        "match": true
+      },
+      {
+        "path": "private-local/marked-back.png",
+        "expected": "9cab6c0d6f5f3324f9e702835997b774c658e340134a061c7376a09349d34eb4",
+        "actual": "9cab6c0d6f5f3324f9e702835997b774c658e340134a061c7376a09349d34eb4",
+        "match": true
+      },
+      {
+        "path": "private-local/marked-front.png",
+        "expected": "e5e056243b5d534cb12d459fd5b86c5a821f7530f5d8e550a7e19195bf01f609",
+        "actual": "e5e056243b5d534cb12d459fd5b86c5a821f7530f5d8e550a7e19195bf01f609",
+        "match": true
+      },
+      {
+        "path": "private-local/marked-side.png",
+        "expected": "db7c87507c988b4257a813573f1c19b7a344bcf97e1cae32216eaeaf7191a17a",
+        "actual": "db7c87507c988b4257a813573f1c19b7a344bcf97e1cae32216eaeaf7191a17a",
+        "match": true
+      }
+    ],
+    "static_actual": {
+      "all_non_socket_positions_and_morphs_equal_to_v8": true,
+      "head_triangles_removed": 5561,
+      "internal_triangles_removed": 299,
+      "morph_arrays_compared": 156,
+      "original_body_positions_bones_weights_exact": true,
+      "original_body_skin_bind_exact": true,
+      "original_body_triangles": 52003,
+      "rain_trim_indices_exact": 168,
+      "rain_weight_changed_vertices": 293,
+      "remaining_triangles": 46143,
+      "removed_indices_exact": true,
+      "skeleton68_equal_to_original": true,
+      "skin_binds_compared": 612,
+      "unchanged_upper_head_scalp_vertices": 6575
+    },
+    "socket_actual_15_states": [
+      {
+        "max_edge_stretch": 1.00016872700063,
+        "min_area_m2": 9.70369146671146e-05,
+        "mode": "rest",
+        "shape": 0,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.33638207549865,
+        "min_area_m2": 9.70368637354113e-05,
+        "mode": "mdm0",
+        "shape": 0,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.3244457240591,
+        "min_area_m2": 9.70362743828446e-05,
+        "mode": "mdm1",
+        "shape": 0,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.10491160843199,
+        "min_area_m2": 9.70366963883862e-05,
+        "mode": "neckturn",
+        "shape": 0,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.18175504361466,
+        "min_area_m2": 9.70368346315809e-05,
+        "mode": "neckbend",
+        "shape": 0,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.00016891541758,
+        "min_area_m2": 9.46493892115541e-05,
+        "mode": "rest",
+        "shape": -1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.30940032983693,
+        "min_area_m2": 9.4649032689631e-05,
+        "mode": "mdm0",
+        "shape": -1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.2991507321636,
+        "min_area_m2": 9.46486688917503e-05,
+        "mode": "mdm1",
+        "shape": -1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.11260899627549,
+        "min_area_m2": 9.46492073126137e-05,
+        "mode": "neckturn",
+        "shape": -1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.17009810092154,
+        "min_area_m2": 9.4649221864529e-05,
+        "mode": "neckbend",
+        "shape": -1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.00016858507157,
+        "min_area_m2": 9.94541769614443e-05,
+        "mode": "rest",
+        "shape": 1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.34336908781724,
+        "min_area_m2": 9.94534784695134e-05,
+        "mode": "mdm0",
+        "shape": 1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.33066179981989,
+        "min_area_m2": 9.94549991446547e-05,
+        "mode": "mdm1",
+        "shape": 1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.11351436864028,
+        "min_area_m2": 9.94539877865463e-05,
+        "mode": "neckturn",
+        "shape": 1,
+        "socket_flips": 0,
+        "triangles": 384
+      },
+      {
+        "max_edge_stretch": 1.18184756601398,
+        "min_area_m2": 9.94541769614443e-05,
+        "mode": "neckbend",
+        "shape": 1,
+        "socket_flips": 0,
+        "triangles": 384
+      }
+    ],
+    "socket_max_edge_stretch": 1.34336908781724,
+    "socket_min_area_m2": 9.46486688917503e-05,
+    "method": "Independent array/index/Skin comparison; own CPU skinning metric; existing interop retarget and source attach_motion routine reused, no new inference",
+    "diagnostic_programs": [
+      {
+        "path": "private-local/static.gd",
+        "sha256": "2df834e41d125f28b1d61696022a71b901641892481125df5fe75c6d3bc26db6",
+        "bytes": 4338
+      },
+      {
+        "path": "private-local/motion.gd",
+        "sha256": "07c2c2a3616911eb4c982166a19e288e7fcbbe39908d878f5428f946b6ec6d71",
+        "bytes": 4025
+      }
+    ],
+    "logs": [
+      {
+        "path": "private-local/static.log",
+        "sha256": "e009820bc0f6d8f4c42591c488c46bd508f62bef5b4baea649f2581c3ab535a1",
+        "bytes": 560
+      },
+      {
+        "path": "private-local/motion.log",
+        "sha256": "a2714666f3b99e7eb3a472584e99016d91366f17de95f97be89b40db17790f16",
+        "bytes": 136
+      }
+    ],
+    "limitations": [
+      "Generated original shoulders/arms retain holes, rough surface and inherited deformation defects; not a production-quality full body or seamless art asset.",
+      "Mechanical neck adapter can be exposed at front chest during movement; explicit body replacement geometry, not clothing.",
+      "No original-body weight edits retained; inherited original-body flips are not claimed fixed.",
+      "No full layering/clothing/hair/save-reopen workflow acceptance here; issue154 owns end-to-end integration.",
+      "New asset/FaceBinding revision requires hair rebinding despite unchanged scalp positions; do not reuse old asset-level cache.",
+      "Motion JSON seam fields are diagnostics of the old42 head-cut anchor pairs, not welded replacement-boundary error or acceptance thresholds."
+    ],
+    "metadata_caveat": "Nested body_neck_socket.review_state retains historical private unapproved preparation; top-level freeze and root explicit visual approval govern current first-version source acceptance",
+    "source_files_modified": false,
+    "supersedes_for_static_skin_scope": "v14-independent-source-audit-v1.json; retained immutable",
+    "frozen_motion_metrics_max_absolute_difference": 0.0,
+    "additional_diagnostics": [
+      {
+        "path": "private-local/static-v2.gd",
+        "sha256": "9c1b26236169a86bc0d487f53429bfc46f0273fa2d3373aaf1d70d344e29e91b"
+      },
+      {
+        "path": "private-local/static-v2.log",
+        "sha256": "7e9a245dc49315ed21a5683324388017b62434d711faebda8b8a59490926c683"
+      },
+      {
+        "path": "private-local/static-result-v2.json",
+        "sha256": "a8079f4fdca736a3c8a6dbeca4545dcad095eca6be65ae8be68dc2d0264e15ba"
+      }
+    ],
+    "source_hashes_rechecked_after_all_probes": true
+  },
+  "provenance": {
+    "schema": 1,
+    "status": "Provenance summary from frozen receipts; asset redistribution permissions are not inferred",
+    "built_from_existing_receipts_only": true,
+    "nodes": [
+      {
+        "id": "robot-image",
+        "kind": "real_AI_generated_image",
+        "run_id": "89b3cc18632e44c1a3c755cd77278564",
+        "asset": {
+          "path": "private-local/text_to_image.png",
+          "sha256": "f8bf2dfcec4a20c645954665ad9bcdba92027ebe291863a7001786158f173495",
+          "bytes": 333034
+        },
+        "evidence": {
+          "path": "private-local/live-runs.json",
+          "sha256": "1c79dedf8f8bb422917ab18f956d9ccc9d49401c0776d7da810084e8e84d96d3",
+          "bytes": 1717
+        }
+      },
+      {
+        "id": "robot-mesh",
+        "kind": "real_AI_image_to_mesh",
+        "parent": "robot-image",
+        "run_id": "a7e53d7b3f3f4ae097afca965f32310d",
+        "asset": {
+          "path": "private-local/image_to_mesh.glb",
+          "sha256": "cb2898e0bcb5b07c311a7da776a0b882e14fcc53cc867b05058a4d86f7ed0ae6",
+          "bytes": 1898368
+        },
+        "provider": {
+          "available": true,
+          "capabilities": [
+            "text_to_image",
+            "image_to_image",
+            "image_to_mesh",
+            "text_to_mesh"
+          ],
+          "context_types": [
+            "text",
+            "image"
+          ],
+          "id": "comfy",
+          "model": "SD-Turbo + Hunyuan3D-2mini",
+          "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+          "version": "1"
+        },
+        "workflow_sha256": "f398f555abe9728eba755085a87f45ab2156b55bdf724f890ad70ae5ccc70da9",
+        "input_handling": "hunyuan_vision",
+        "text_usage": "none",
+        "evidence": {
+          "path": "private-local/image_to_mesh.json",
+          "sha256": "47b28065ab06fb729d73b28e24ad31c6d88bb7a80c6c90654a9766236d6355ca",
+          "bytes": 2977394
+        },
+        "limitations": "Original holes, roughness and deformation defects remain; not a clean production body"
+      },
+      {
+        "id": "rig18",
+        "kind": "author_guided_rigging_derivative",
+        "parent": "robot-mesh",
+        "asset": {
+          "path": "private-local/robot-v3.tscn",
+          "sha256": "d4282e1e8b14b9da89cceb9af19439ff9af9b4f6b18a976c8d50b81e7d1ca725",
+          "bytes": 1599783
+        },
+        "evidence": {
+          "path": "private-local/ui-final2-receipt.json",
+          "sha256": "98838be44a3e1e559adce8c896f599857b7aa92c6c1aa17141ec7b09e6c97043",
+          "bytes": 2299
+        },
+        "note": "User-reviewed landmarks/cropping/weights; not newly AI-generated anatomy; 18-bone source, no fingers"
+      },
+      {
+        "id": "ue4-adapted-body",
+        "kind": "author_semantic_skeleton_adaptation",
+        "parent": "rig18",
+        "asset": {
+          "path": "private-local/interop-native-ue4.tscn",
+          "sha256": "291852fb09ffbcc840b81883156dae270030989de4d9634bd3c86075803b4867",
+          "bytes": 3521332
+        },
+        "reference": {
+          "path": "private-local/ue4-native.glb",
+          "sha256": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446",
+          "bytes": 482208
+        },
+        "related_acceptance": {
+          "path": "private-local/ui-ue4-final-receipt.json",
+          "sha256": "618eddcf004fad40a7e95489429d5125483718c16d30a39a74b096ade4f432f8",
+          "bytes": 1046
+        },
+        "note": "68-bone native UE4 reference; related acceptance receipt is lineage evidence, not a byte-identical claim for this intermediate scene",
+        "license_scope": "Licensed UE reference is private local validation only; no redistribution grant inferred"
+      },
+      {
+        "id": "rain-face",
+        "kind": "licensed_artist_authored_asset_and_semantic_bake",
+        "asset": {
+          "path": "private-local/rain-semantic-v1.glb",
+          "sha256": "1b46074b13829030befcbb98d0799a657096321743d69914d45a179670e21cf2",
+          "bytes": 10195632
+        },
+        "license": "CC BY 4.0",
+        "credit": "Rain Rig (CC) Blender Foundation | studio.blender.org",
+        "source": "[private local command/locator retained in original evidence]",
+        "evidence": {
+          "path": "private-local/asset-provenance.json",
+          "sha256": "918770ecea7394bdbe018c088ef202d2bcbcca706ba5a30cde3c4bb2f009ca93",
+          "bytes": 1653
+        },
+        "note": "Author face morph mapping and head adaptation; not AI head generation"
+      },
+      {
+        "id": "v14-mechanical-neck-character",
+        "kind": "explicit_author_head_neck_assembly",
+        "parents": [
+          "ue4-adapted-body",
+          "rain-face"
+        ],
+        "asset": {
+          "path": "private-local/author-assembly-v14.tscn",
+          "sha256": "163b2b76e5aaa3d550609ff217601a807578b593bb3d58049313846d8fb92dd4",
+          "bytes": 15495170
+        },
+        "face_binding": {
+          "path": "private-local/author-assembly-v14.tscn.face-binding.json",
+          "sha256": "ad9997074180ec6d47d9833f5eb0ef7b1d34473661b9d22ecc73d80f5737a1d2",
+          "bytes": 322945
+        },
+        "audit": "private-local/v14-independent-source-audit-v1.json",
+        "deletions": {
+          "old_head_triangles": 5561,
+          "internal_body_neck_triangles": 299,
+          "rain_low_neck_triangles": 168
+        },
+        "rain_low_neck_weight_vertices": 293,
+        "author_socket_vertices": 256,
+        "author_socket_triangles": 384,
+        "original_body_positions_and_weights_unchanged": true,
+        "limitation": "First-version exposed mechanical neck; inherited body defects not repaired; new source/scalp revision requires rebind"
+      },
+      {
+        "id": "independent-skirt",
+        "kind": "real_AI_generated_garment_plus_author_fit",
+        "run_id": "a3bcfc14d5294bbab2a0cbe4e025d918",
+        "asset": {
+          "path": "private-local/skirt-source-octree-v2.glb",
+          "sha256": "1a4575df118178159653a2d5fc6ea7b318f1a08ca8beaa01febefc16745a9a28",
+          "bytes": 28603012
+        },
+        "image_receipt": {
+          "path": "private-local/skirt-image-v1.receipt.json",
+          "sha256": "d536132df8c23c9c4709881867a6c8df2c379de5addb2dfa42af2ddcc9d12a91",
+          "bytes": 2782
+        },
+        "preparation_receipt": {
+          "path": "private-local/skirt-prepared-v1.prepare.json",
+          "sha256": "e25acc2f579a07b4e402918b7a7854ede203ca3f0700cbab881a2f02a96b8c2d",
+          "bytes": 373
+        },
+        "mesh_receipt": {
+          "path": "private-local/skirt-source-octree-v2.receipt.json",
+          "sha256": "8d39f5b61b6132823fdcd150c9d67ce51fc7612f53c4c2ffbec5d07a2e0e76df",
+          "bytes": 2246
+        },
+        "fit_configuration": {
+          "path": "private-local/config.json",
+          "sha256": "c17505cfee1039ecbba7d41260ed0af2ae2b890383a1539fedad397464efa3d0",
+          "bytes": 3192
+        },
+        "note": "Source generated independently of character; target cage/fit and later cloth proxy are author derivations, not AI solver output"
+      },
+      {
+        "id": "independent-hair",
+        "kind": "real_AI_source_plus_explicit_author_surface_selection_cap_and_cards",
+        "run_id": "b40454cf1f5347e7a8dd43391348bc2d",
+        "source": {
+          "path": "private-local/hair-source-v1.glb",
+          "sha256": "dbe21df1af13f4df0e21545bf7435eac4e88f71b0955bea99840ddf65d42ddab",
+          "bytes": 8364460
+        },
+        "image_receipt": {
+          "path": "private-local/hair-image-v1.receipt.json",
+          "sha256": "baa9953a49594f0ce5762871210e7981aae6db6ead8e20c9af0c50d1b1be3656",
+          "bytes": 3063
+        },
+        "selection": {
+          "path": "private-local/posterior.json",
+          "sha256": "66e1fca10497ccbaa0da978e97f09c3db84b05d46b5f41af89fff95dd3c19b32",
+          "bytes": 307016
+        },
+        "mesh_receipt": {
+          "path": "private-local/hair-source-v1.receipt.json",
+          "sha256": "2699245d9ee01dd3d37199faf10a8506b9b6a2d8a3de49ad23caa3182a96d4e2",
+          "bytes": 2246
+        },
+        "note": "Whole generated head rejected; only reviewed posterior first-hit patch retained with triangle IDs/barycentric mapping. Cap/Guide Cards are author geometry, not Strands. Rebind to v14 separately required"
+      },
+      {
+        "id": "text-motion",
+        "kind": "real_AI_MDM_inference",
+        "asset": {
+          "path": "private-local/ui-generated-text.json",
+          "sha256": "cf453a549f2643fcb240a1ea5759f81e275ccfb289efb13be79f45ff83c22640",
+          "bytes": 124210
+        },
+        "invocation_sha256": "c5bdb8ef1552b161a091f10d1c575bfeb33eabeda4c9579b6066213fdc0a8e71",
+        "provenance": {
+          "adapter_sha256": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+          "checkpoint_arguments_sha256": "924adeca8b21dbf2779101ae2dd896f2187715d4a184449230f74508ceffbeae",
+          "checkpoint_sha256": "0fbdc8547c8f262b8838645586790b55f983d90db3bb7ed58e4b5d49429587ca",
+          "clip_sha256": "40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af",
+          "device": "cpu",
+          "mean_sha256": "26e136555dab04c94a129d446c26e6b9939cbf045fbf77bcf5462c1fb5a2001c",
+          "prompt": "A person walks forward and raises both arms.\nContext: The movement is slow and deliberate.",
+          "provider": "official-MDM",
+          "seed": 10,
+          "source": "[private local command/locator retained in original evidence]",
+          "source_sha256": "936623bd81b77be410a94cb5f2831bb6bc34876758386f09b1672a12860805ca",
+          "std_sha256": "6565a65ed9b31e23c328829a309e1c482be8b85fd23b43d65451a9b19a917f40",
+          "steps": 50,
+          "unused_smpl_conversion": "excluded for hml_vec only"
+        },
+        "retargeted_scene": {
+          "path": "private-local/ui-generated-text-ue4-review-fix.tscn",
+          "sha256": "4ee8cc2fb75b2fac5b18b6bfa309a8988e9d988ed7b6e276159cf1114b92fc0f",
+          "bytes": 1866456
+        },
+        "note": "50-step CPU inference, then semantic retarget; old scenes without review-fix excluded"
+      },
+      {
+        "id": "video-motion",
+        "kind": "real_AI_MediaPipe_video_pose_extraction",
+        "asset": {
+          "path": "private-local/ui-generated-squat.json",
+          "sha256": "4b1fea4bb8efa71fa98b490355095e489d4babd99b0b8c3b5fb74a516c767f49",
+          "bytes": 2243419
+        },
+        "invocation_sha256": "4ae8a0e2cc908b5ce9b8b712a5cb4d4d8133de768b93077bd18c8fd5b8cbecfb",
+        "provenance": {
+          "input_sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
+          "models": {
+            "face": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
+            "hand": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+            "pose": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+          },
+          "provider": "mediapipe",
+          "version": "0.10.21"
+        },
+        "input_video_license": {
+          "name": "squat.webm",
+          "url": "[private local command/locator retained in original evidence]",
+          "source_page": "[private local command/locator retained in original evidence]",
+          "title": "Squat - exercise demonstration video",
+          "author": "FitnessScape",
+          "license": "CC BY 3.0",
+          "license_url": "[private local command/locator retained in original evidence]",
+          "original_source": "[private local command/locator retained in original evidence]",
+          "source_page_revision": "1145684703",
+          "expected_duration_s": 7.1,
+          "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
+          "bytes": 564942,
+          "changes": "Original Commons file bytes unchanged; any trim/resample or model-derived motion must record a separate artifact.",
+          "retrieved_at": "2026-11-07 Asia/Shanghai"
+        },
+        "retargeted_reference": {
+          "path": "private-local/ui-generated-squat-manny-review-fix.tscn",
+          "sha256": "49ffed735fd52212d676a3cf8134cbadbffe7eaf5c168d74742e532d81228182",
+          "bytes": 10512994
+        },
+        "note": "Reference scene is Manny, not v14 UE4; issue154 must explicitly retarget to its own character; do not relabel skeleton family"
+      },
+      {
+        "id": "neck-test-fixtures",
+        "kind": "author_validation_fixtures_not_AI",
+        "angles_degrees": {
+          "yaw": 25,
+          "bend": 18
+        },
+        "states": "5 poses x neutral/min/max DNA = 15",
+        "note": "Manual neckturn/neckbend plus real MDM t0/t1 and rest; not synthetic evidence of AI inference"
+      }
+    ],
+    "model_identity_locks": [
+      {
+        "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549",
+        "size": 5214561328,
+        "repository": "stabilityai/sd-turbo",
+        "revision": "b261bac6fd2cf515557d5d0707481eafa0485ec2",
+        "file": "sd_turbo.safetensors"
+      },
+      {
+        "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b",
+        "size": 3819958234,
+        "repository": "tencent/Hunyuan3D-2mini",
+        "revision": "f90a0f7df7d5e6f71109cf333f6a95a0ae3194a6",
+        "file": "hunyuan3d-dit-v2-mini/model.fp16.safetensors"
+      }
+    ],
+    "model_license_evidence": {
+      "path": "private-local/provenance.json",
+      "sha256": "97d419755410f271b0c9de4373dd5a5db8cfb6ce81b33e9f6fc67caa67d43735",
+      "bytes": 3235
+    },
+    "license_limits": [
+      "MediaPipe models Apache-2.0; MDM/CLIP and repository notices as recorded in motion/provenance.json; dataset terms not inferred from repository license",
+      "SD-Turbo/Hunyuan checkpoint lock receipts record identity but not complete license text; retain their upstream model terms, no generic redistribution or unrestricted commercial-rights claim",
+      "No proprietary UE assets, private videos, model weights, config credentials or large mesh payloads copied into this draft"
+    ],
+    "excluded_candidate": {
+      "path": "private-local/quality-review-v1.json",
+      "reason": "Single replacement-body image was cropped; rejected before mesh generation"
+    },
+    "unverified_in_this_draft": [
+      "154 composition/session/save-reopen and all same-character functional acceptance",
+      "Exact historical byte equivalence of original UE4 intermediate to distinct related UI export receipt; each artifact carries its own SHA"
+    ]
+  },
+  "source_files_sha256": {
+    "samples/ainative-workbench/addons/ainative/character_export.gd": "d12efd6f4e8f22f7fe7abc0db4dc2eee425b9bac77e56821fff15a50f2dafa72",
+    "samples/ainative-workbench/addons/ainative/character_panel.gd": "7367444a98a86db6614cca20cc1440536e3a8d60a9ce23bf7af90acc42e03335",
+    "samples/ainative-workbench/addons/ainative/character_session.gd": "2dda23a9ebc8ccf2466a4419c0c30a365df6bad0c79d9cb08250eeb85795c41d",
+    "samples/ainative-workbench/addons/ainative/cloth_panel.gd": "fbb68bf94f209ef82773b9f87f21c4e312b3bd453b2fb575397dbf2988ee28fc",
+    "samples/ainative-workbench/addons/ainative/garments.gd": "b656b7dd7ce476eb00c05459d071694987238ee91b58e08e854cdf3bca2e799a",
+    "samples/ainative-workbench/addons/ainative/hair_runtime.gd": "7b2f24ac172e537d20be0206d071e5c207484da9c8d26e5d87ea472b26cfb2ca",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "37a539faa5b88150f424f7942399e8527c5c49c842a6a2d9466da227c67b631e",
+    "samples/ainative-workbench/integration_acceptance.gd": "be74de6ed6c8eb0f94f38d58a336e34ed57db5adee09af82066df16c9d9f8fd8",
+    "samples/ainative-workbench/integration_body_check.gd": "9e52a2232c59b33b17ded95975d458e6ad451d960c31f8340f61ade551b0d455",
+    "samples/ainative-workbench/integration_controls.gd": "1605b0e6287c6bc938475a45b8cab777ed56ea99c9a064d30950d98212419bc8",
+    "samples/ainative-workbench/integration_export.gd": "20daa7ab77f622959a968e136bd64dfe0372e4f5348d92574c0550bf3aa4cd69",
+    "samples/ainative-workbench/integration_frame_probe.gd": "7b1979574fe66d933e4c38ad4e25007a25d0bc8e227631781d919408db2271d1",
+    "samples/ainative-workbench/integration_squat.gd": "ced8113731d2d9e1b76b649e892a383e4b5230f998c998ec8836f2c7c247e8a7",
+    "samples/ainative-workbench/integration_target_check.gd": "72a8f69ebb0daf57145ef2d7796c550aaf46fee7f9147fd0153f6c5743e6dd00",
+    "samples/ainative-workbench/integration_waist_check.gd": "b8014350901bb661b365d7d930635157c6b24929c782af5e6886fb0f53242fe9",
+    "tools/ainative/character_publish.py": "2420c366bccd93826edd5f4e76bdee6cfcf6ccb9e6eba7b77f845e40af258412",
+    "tools/ainative/test_character_publish.py": "65aafdcb6de8412e0dd6378e3405c3fb5d95ffde3ddedb5bf6d08d3fa4140491"
+  },
+  "python_validation": {
+    "character_publish_tests": 4,
+    "ruff": "passed",
+    "mypy": "passed"
+  },
+  "evidence": [
+    {
+      "name": "acceptance-highwaist-v1.log",
+      "sha256": "7e50a041c49c0870883c88ec782c0b448d52ce5898bb6ba1a62698d50af3a022",
+      "storage": "private local acceptance evidence"
+    },
+    {
+      "name": "controls.log",
+      "sha256": "56ac05c1e8de3b4a5b06d482465b1e4a713b3cd20b70c2e9ae1514a900d3c90a",
+      "storage": "private local acceptance evidence"
+    },
+    {
+      "name": "ue-readback-highwaist-v4.json",
+      "sha256": "a68c620dedf827995b4c67574a21ab02e20a807993f79dcade17c67f9f58d9fc",
+      "storage": "private local acceptance evidence"
+    },
+    {
+      "name": "final-review-v1.json",
+      "sha256": "98512b3a05d6c7f0057b15f8e459ce6daa9edf31cefbb127481160721e63e1ec",
+      "storage": "private local acceptance evidence"
+    },
+    {
+      "name": "v14-independent-source-audit-v2.json",
+      "sha256": "2a149170e587faade2e195ca51c474019dfad24759372f8bdfd39ae0ccdd36fc",
+      "storage": "private local acceptance evidence"
+    }
+  ],
+  "limitations": [
+    "Technical first version; generated body roughness and original topology holes remain.",
+    "Explicit template/manual landmarks, licensed author reference face, semantic mapping and mechanical neck adapter; no claim of general AI auto-rigging or generated facial semantics.",
+    "Complete Godot publication is authoritative; GLB omits simulated skirt geometry, independent hair geometry, props, facial animation and runtime behavior.",
+    "Mesh/Cards hair and CPU capsule cloth; no strands, arbitrary groom, continuous collision, self-collision or arbitrary-body guarantee.",
+    "Model/source licenses and provenance retained; raw assets, model weights and private locators are not committed.",
+    "Cloud deployment uses the provider contract but no cloud migration acceptance is claimed."
+  ]
+}
