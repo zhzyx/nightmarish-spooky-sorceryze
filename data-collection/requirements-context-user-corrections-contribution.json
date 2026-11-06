@@ -1,0 +1,34 @@
+{
+  "issue": 184,
+  "request_id": "requirements-context-user-corrections",
+  "source_base_commit": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+  "source_patch": {
+    "name": "requirements-context-184-transport-marker-v4-e9dd.patch",
+    "sha256": "9536044d56996ad47c08833830e0ba069ac858d6f00aef406cc9cde22e6b3089",
+    "revision": "v4",
+    "frozen": true
+  },
+  "source_files": {
+    "editor/docks/ai_chat_gonggong.cpp": "5a56e3a145b4b41c6c580598bd4c5d135e259a6f417ea813884bee9a8d844758",
+    "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+    "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+  },
+  "public_source_artifacts": {
+    "design-docs/requirements-context-user-corrections.md": "cc4d9cb747251ac89f080a2e85b919af1ab1ab9914a2e39dd457a02e6a9fa543",
+    "data-collection/requirements-context-user-corrections-validation.json": "53e545deb2600043d5225e7e83edbfbdde51b93a71a7cab3b736d98bde212920",
+    "data-collection/requirements-context-user-corrections-transport-marker-validation.json": "bd067bd55e2afe1bd52bdb8d8e8630533b23a5e973a53d72ca3fcd629144ac4f"
+  },
+  "handoff": {
+    "from": "/root/review_codex_bridge",
+    "accepted_by": "/root",
+    "scope": "Parent host will integrate this frozen source patch with the separately reviewed #212 source patch on the same base; each issue is gated separately and both are referenced by the combined PR. The child worktree/index remains unchanged."
+  },
+  "validation_boundary": "This file records source identity and handoff, not a passing native result. Native results must separately identify the exact six-source combination and built executable hash. Earlier c21 and v3 records are historical attempts, not evidence that the v4 tree was executed.",
+  "revision_note": "v4 differs from v3 only in a test guard: require at least two retained records before verifying the exact final question and answer. The prior fixed count of five was incorrect when the 16000-character budget retains another bounded excerpt. Both production source files are unchanged.",
+  "excluded_from_contribution": [
+    "CLI/model work for #165",
+    "Mac process implementation and tests for #212",
+    "live engine state, conversation history and approval records",
+    "private build logs and temporary source backups"
+  ]
+}

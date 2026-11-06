@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "event_id": "handoff-macos-restart-executable-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-restart-executable-20261107",
+  "kind": "handoff",
+  "occurred_at": "2026-11-06T17:30:35.608705+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "state": "candidate_ready_for_parent_review",
+    "issue_number": 212,
+    "receiver": "current responsible parent agent",
+    "receiver_final_acceptance_pending": true,
+    "scope": "Native macOS explicit restart target fix, handed off for exact combined source integration with Issue 184",
+    "validation_ref": "data-collection/issue212-macos-restart-validation.json",
+    "requirement_ref": "design-docs/macos-restart-executable-20261107.md",
+    "base_commit": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+    "issue212_source_patch_sha256": "934c2fa0c00d94cd19d715ab2041654b660adb27ba72b20384cfc09e1aaa5391",
+    "issue184_source_patch_sha256": "9536044d56996ad47c08833830e0ba069ac858d6f00aef406cc9cde22e6b3089",
+    "combined_binary_sha256": "b77a6506d2ea8c77867742e02fe1c41458c582b0568a2f73fc6f160d7dced2ef",
+    "native_macos": {
+      "tests": 2,
+      "assertions": 30,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "native_requirement_context": {
+      "tests": 5,
+      "assertions": 207,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "live_update_or_main_delivery_performed": false,
+    "gui_watchdog_end_to_end_executed": false,
+    "usage": null,
+    "usage_unknown_reason": "Measured host/model usage was not supplied"
+  },
+  "evidence_refs": [
+    "request-macos-restart-executable-20261107"
+  ],
+  "sha256": "04575f5ec5ad1f9e1f09dadb738059697a25b6db50368a00194ba07b400c1c62"
+}

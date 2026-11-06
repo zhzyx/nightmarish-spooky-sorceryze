@@ -1,0 +1,106 @@
+{
+  "issues": [
+    184,
+    212
+  ],
+  "base_commit": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+  "source_sha256": {
+    "core/os/os.h": "0a5870f74af29cb3e1f376a650063a6c57c637d60330510d415f65302801fe27",
+    "platform/macos/os_macos.mm": "4a08fec1fcaf7924b88ae408276ade9733a8f695be61578c2108485c45dc6947",
+    "tests/core/os/test_os.cpp": "fcdc77d75c2ff923f7a98b31995e82e0cff262691af463f4052e0b3dcdb773ea",
+    "editor/docks/ai_chat_gonggong.cpp": "5a56e3a145b4b41c6c580598bd4c5d135e259a6f417ea813884bee9a8d844758",
+    "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+    "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+  },
+  "binary": {
+    "path": "bin/godot.macos.editor.arm64",
+    "sha256": "b77a6506d2ea8c77867742e02fe1c41458c582b0568a2f73fc6f160d7dced2ef",
+    "size_bytes": 120451016,
+    "scope": "Combined #212 and #184 native verification artifact"
+  },
+  "native_runs": [
+    {
+      "name": "issue212-macos-process",
+      "command": [
+        "bin/godot.macos.editor.arm64",
+        "--headless",
+        "--test",
+        "--test-case=[OS][MacOS]*"
+      ],
+      "working_directory": "fresh temporary directory with isolated repository test fixtures; outside the user project",
+      "expected_tests": 2,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.656,
+      "test_cases": [
+        2,
+        2,
+        0
+      ],
+      "assertions": [
+        30,
+        30,
+        0
+      ],
+      "passed": true,
+      "log_sha256": "863cc98ccdec95d5f6b90f813ce983e40e0f3dba9f4767a8fd970c2cfeae5b31"
+    },
+    {
+      "name": "issue184-requirement-context",
+      "command": [
+        "bin/godot.macos.editor.arm64",
+        "--headless",
+        "--test",
+        "--test-case=*Requirement context*"
+      ],
+      "working_directory": "fresh temporary directory with isolated repository test fixtures; outside the user project",
+      "expected_tests": 5,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.092,
+      "test_cases": [
+        5,
+        5,
+        0
+      ],
+      "assertions": [
+        207,
+        207,
+        0
+      ],
+      "passed": true,
+      "log_sha256": "398662e9f3f2a3cfb96db96a5b56c9d5e80b8d66d055551cb535da4382fe16fa"
+    }
+  ],
+  "received_public_artifact_sha256": {
+    "design-docs/macos-restart-executable-20261107.md": "dc1cb1b903da25929ebd82cd9ec2873dd3f17baabd812a637305d29b507963db",
+    "data-collection/issue212-macos-restart-intake.json": "252f82b550c8112614cf4a039af437220e85583995b11fa6a1e5d73a9397b2b5",
+    "data-collection/issue212-macos-restart-validation.json": "599a8cf1941f1a6f08a3449270b9c1a90b69be9de6c9b76acb274e76a24640dd",
+    "gonggong-diting-data/events/gonggong-workspace/macos-restart-executable-20261107/request-macos-restart-executable-20261107.json": "387cc75d44f6c31c1161f23c254859955d8afd568c8d92fb275345b22d9cd112",
+    "gonggong-diting-data/events/gonggong-workspace/macos-restart-executable-20261107/handoff-macos-restart-executable-20261107.json": "a63518f95f2bf7eae03efe7eb11692b04a9e592c1cc694f02ae9f6eabea64cea",
+    "design-docs/requirements-context-user-corrections.md": "cc4d9cb747251ac89f080a2e85b919af1ab1ab9914a2e39dd457a02e6a9fa543",
+    "data-collection/requirements-context-user-corrections-validation.json": "53e545deb2600043d5225e7e83edbfbdde51b93a71a7cab3b736d98bde212920",
+    "data-collection/requirements-context-user-corrections-transport-marker-validation.json": "bd067bd55e2afe1bd52bdb8d8e8630533b23a5e973a53d72ca3fcd629144ac4f",
+    "data-collection/requirements-context-user-corrections-contribution.json": "00bbd733b9ed7f008ee961b01c3c27a094ad017c262d28f5bdd62e88c42e6f35",
+    "data-collection/requirements-context-user-corrections-native-validation.json": "bd3d3b01aabeafaca8d3c173b55f343d69793127a0dc5968deb39e38f20fb352"
+  },
+  "integration_metadata_only_edit": {
+    "path": "design-docs/requirements-context-user-corrections.md",
+    "change": "Added direct backlink to Issue #184; child artifact remains unchanged in its worktree.",
+    "final_sha256": "4dc7864b13fdc322f4838c1ef65aa85578965b81fb2c0058b9afc53746cef160"
+  },
+  "independent_review": {
+    "reviewer": "/root",
+    "authors": [
+      "/root/review_codex_bridge",
+      "/root/mac_restart_fix"
+    ],
+    "result": "No remaining blocking findings after explicit producer retry metadata and reviewed native tests."
+  },
+  "scope": "Exact six-source combination tested natively; no #165 CLI/model feature code included. Existing editor restored manually; this source patch is not deployed into the currently running editor.",
+  "limitations": [
+    "No .app package test or complete editor shutdown/watchdog/new-GUI chain under this patched C++ build.",
+    "Existing complete-file clang-format failure also reproduces on unchanged base; changed code checks passed.",
+    "Feature #165 and model/default-strength #217 are not accepted by this delivery."
+  ]
+}

@@ -860,6 +860,11 @@ Error OS_MacOS::create_process(const String &p_path, const List<String> &p_argum
 }
 
 Error OS_MacOS::create_instance(const List<String> &p_arguments, ProcessID *r_child_id) {
+	// An explicit restart target must not be replaced with the current executable or app bundle.
+	if (is_restart_on_exit_set() && !get_restart_on_exit_executable().is_empty()) {
+		return OS::create_instance(p_arguments, r_child_id);
+	}
+
 	// Do not run headless instance as app bundle, since it will never send `applicationDidFinishLaunching` and register as failed start after timeout.
 	for (size_t i = 0; i < std::size(OS_MacOS::headless_args); i++) {
 		if (p_arguments.find(String(OS_MacOS::headless_args[i]))) {

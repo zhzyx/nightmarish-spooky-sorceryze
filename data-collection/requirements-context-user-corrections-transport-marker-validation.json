@@ -1,0 +1,69 @@
+{
+  "issue": 184,
+  "request_id": "requirements-context-user-corrections",
+  "base_commit": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+  "supersedes_candidate_evidence": "data-collection/requirements-context-user-corrections-validation.json",
+  "patch": {
+    "name": "requirements-context-184-transport-marker-v3-e9dd.patch",
+    "sha256": "8fd5b83cbf82989ebf28b90665c905b845b82c8801ce3e71ab57f8ae4ae1b4a9",
+    "immutable": true
+  },
+  "source_sha256": {
+    "editor/docks/ai_chat_gonggong.cpp": "5a56e3a145b4b41c6c580598bd4c5d135e259a6f417ea813884bee9a8d844758",
+    "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+    "tests/editor/test_ai_chat_tools.cpp": "213df02d92f2afca0e1341bfcf734398063af260fd50ddd32bc4998347f429f3"
+  },
+  "review_correction": "Do not infer transport semantics from user text. Only the known agent_error/is_retry producer marks the current user record, after the direct-task bypass and immediately before the actual requirements retry. Unmarked/legacy retry text remains user input, and the newest actual user plus preceding reply are prioritized.",
+  "checks": [
+    {
+      "name": "Affected production and native-test C++ object targets",
+      "passed": true,
+      "platform": "macOS arm64",
+      "base": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+      "tests_enabled": true,
+      "jobs": 2,
+      "full_editor_link": false
+    },
+    {
+      "name": "Existing requirements context transport and retry-journal reuse regressions",
+      "passed": true,
+      "tests": 2,
+      "command": "PYTHONPATH=customizations/components/godot-host python -m unittest test_requirements_agent.RequirementsTests.test_followup_retains_answers_and_latest_scope_for_intake test_requirements_agent.RequirementsTests.test_resume_reuses_proposal_instead_of_charging_model_again -v"
+    },
+    {
+      "name": "git diff --check",
+      "passed": true
+    },
+    {
+      "name": "Frozen patch applicability in the designated combination validation worktree",
+      "passed": true,
+      "base": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2"
+    }
+  ],
+  "native_regressions": {
+    "cases": 5,
+    "compiled": true,
+    "executed": false,
+    "owner": "/root/mac_restart_fix",
+    "filter": "--headless --test --test-case=*Requirement context*",
+    "planned_combination": [
+      "issue:212 macOS restart executable fix",
+      "issue:184 requirement-context transport-marker fix"
+    ],
+    "rule": "A combination test result is not an independent source tree or release for either issue."
+  },
+  "history_compatibility": {
+    "producer_metadata": "requirements_transport_retry boolean true",
+    "stored_record_text_changed": false,
+    "source_review": "History validation allows additional Dictionary fields; save/replay/restore retain the complete transcript Dictionary. A native regression calls AIChatResume::records_valid on a marked record.",
+    "model_context_fields": [
+      "role",
+      "content"
+    ]
+  },
+  "limitations": [
+    "Complete native execution remains pending the designated safe combination build.",
+    "No live engine, user history, approval record or #165 business source was changed.",
+    "An existing captured retry context is retained to preserve its journal identity; this changes future captures."
+  ]
+}
