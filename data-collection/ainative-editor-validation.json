@@ -1,0 +1,31 @@
+{
+  "request_id": "ainative-art-03-editor-20261106",
+  "issue_number": 144,
+  "date": "2026-11-06",
+  "worker": "/root/sinan_62590796bc6a41a6",
+  "worker_terminal_verified": true,
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "python_tests_passed": 39,
+    "godot_headless_replay_exit": 0,
+    "godot_headless_replay_marker": "AINATIVE_ACCEPTANCE failures=0"
+  },
+  "engine": "4.8.beta.custom_build.ced0368bb",
+  "acceptance": {
+    "workflow_save_reopen": "passed",
+    "malformed_graph_preserves_current": "passed",
+    "png_gltf_glb_actual_preview": "passed",
+    "resource_scene_reload": "passed",
+    "publication_confirmation_no_clobber": "passed",
+    "source_bytes_unchanged": "passed",
+    "background_execution_heartbeat": "passed",
+    "retry_and_cancel_create_race": "passed",
+    "lost_receipt_explicit_resume_single_lookup": "passed"
+  },
+  "visual_check": "Implementer rendered with OpenGL; root inspected actual mesh preview screenshot. Root then offset default node placement below graph toolbar; behavior evidence remains applicable.",
+  "actual_ai_provider_tested": false,
+  "scope": "Installable Godot EditorPlugin, single source/result ports, local-copy demonstration. Embedded PNG/JPEG/GLB/glTF. Godot decode/encode remains synchronous; Python/Provider operations use child processes.",
+  "dependency_prs": [161, 162],
+  "main_delivery": "pending"
+}
