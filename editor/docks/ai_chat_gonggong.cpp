@@ -342,6 +342,11 @@ void AIChatDock::_begin_gonggong_context() {
 	context_input["agent_id"] = direct ? "sinan" : "yanshi";
 	context_input["issue_number"] = bound_issue;
 	context_input["request_id"] = bound_request;
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	if (!String(entry.get("source", "")).is_empty() && entry.get("request_id", "") == bound_request && String(entry.get("issue_number", "")).to_int() == bound_issue) {
+		context_input["daqian_bound"] = true;
+	}
 	context_input["outcome"] = outcome;
 	context_input["authority_ref"] = authority;
 	context_input["project"] = ProjectSettings::get_singleton()->get_resource_path();

@@ -11,6 +11,19 @@ import board
 
 
 class BoardProjection(unittest.TestCase):
+    def test_bound_design_document_and_published_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "design-docs"
+            docs.mkdir()
+            doc = docs / "design.md"
+            body = "<!-- gonggong-request:example -->\n\n需求文档：`design-docs/design.md`\n\n# Published\n\n<!-- gonggong-host-git:fixture -->\n"
+            self.assertEqual(board.design_document(root, body)["markdown"], "# Published")
+            doc.write_text("# In progress", encoding="utf-8")
+            self.assertEqual(board.design_document(root, body)["markdown"], "# In progress")
+            self.assertEqual(board.design_document(root, body.replace("design.md", "../outside.md")), {})
+            self.assertEqual(board.design_document(root, body.replace("需求文档", "无关链接")), {})
+
     def test_private_workers_match_current_source_until_terminal(self):
         repo = "fixture/board"
         row = dict(number=2, title="Review", state="open", updated_at="rev1",

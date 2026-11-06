@@ -1,0 +1,34 @@
+{
+  "request_id": "daqian-node-approval-20261107",
+  "issue_number": 210,
+  "platform": "macOS arm64",
+  "signed_app_executable_sha256": "8b9196f5716d8be3a1e212e29a0cb3ca2f7c6f86a64cb32e4b7c731480959b49",
+  "signature_verification": "codesign --verify --deep --strict passed",
+  "native_approval": "DAQIAN_INLINE_APPROVAL_OK",
+  "fixture_scope": "Local model and work-order transport; native editor, confirmation, command and file output are real.",
+  "validated": [
+    "Pending node, no approval dialog",
+    "Click expands confirm and details",
+    "Graph and sidebar visible together, markdown auto-scrolls to the bound section",
+    "Missing section returns no anchor",
+    "Details do not execute commands",
+    "Changed source version and stale token rejected",
+    "Duplicate clicks produce one output line",
+    "Completed state comes from the command result"
+  ],
+  "regressions": [
+    {
+      "state": "passed",
+      "editor_sha256": "c126a0b2f26d1cb0d720340a713de8121d1da55f8bb0f03e714ac24217eda464",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "c126a0b2f26d1cb0d720340a713de8121d1da55f8bb0f03e714ac24217eda464",
+      "scenario": "direct",
+      "scope": "native editor to direct issue and Sinan admission subprocesses"
+    }
+  ],
+  "review": "Native Sinan worker cross-reviewed UI binding, sensitive controls and stale source. Root reviewed native approval lifecycle and exercised the cross-component path."
+}

@@ -3,6 +3,8 @@ extends VBoxContainer
 
 signal answer_requested(node_id: String, answer: String)
 signal debug_command(action: String, id: String, value: String)
+signal confirm_operation(token: String)
+signal show_operation_details(token: String)
 signal configure_model
 signal draft_changed
 signal applied(issue_id: String, revision: String)
@@ -12,6 +14,7 @@ const DATA := Color("#64c6e8")
 const AFTER := Color("#eecb86")
 
 var workflow := {}
+var expanded_approval := ""
 var debug_active := false
 var debug_states := {}
 var debug_models := {}
@@ -46,7 +49,7 @@ class FlowCanvas extends GraphEdit:
 	const COLORS := {"pending": Color("#8290a5"), "running": Color("#45c9ff"),
 		"done": Color("#69d5a3"), "waiting": Color("#efbf70"), "failed": Color("#f18e87"),
 		"cancelled": Color("#ad9bb5"), "unknown": Color("#a5a6b3")}
-	const LABELS := {"pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
+	const LABELS := {"awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
 		"open":"待制作", "in-progress":"进行中", "in-review":"待验收", "completed":"已完成",
 		"dispatched":"已派发", "reserved":"已预留", "waiting":"等待输入或证据", "answered":"已答复",
 		"needs-decision":"待决定", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
@@ -69,7 +72,7 @@ void fragment() {
 		match state:
 			"running", "in-progress": return "running"
 			"done", "completed", "answered": return "done"
-			"reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
+			"awaiting_approval", "reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
 			"blocked", "failed": return "failed"
 			"cancelled", "closed": return "cancelled"
 			"planned", "pending", "open": return "pending"
@@ -410,6 +413,8 @@ func _add_state_row(view: GraphNode) -> void:
 
 
 func _node_state(id: String) -> String:
+	if id == "wf-operation":
+		return workflow.get("operation", {}).get("state", "pending")
 	if debug_active:
 		return debug_states.get(id, {}).get("state", "pending")
 	if context.get("states", {}).has(id):
@@ -566,6 +571,9 @@ func _display_plan() -> Dictionary:
 	var progress: Dictionary = workflow.get("progress", {})
 	if not progress.is_empty():
 		_stage(plan, "wf-worker", "当前工作者", progress.text, "wf-prepare" if prepare else intake)
+	var operation: Dictionary = workflow.get("operation", {})
+	if not operation.is_empty():
+		_stage(plan, "wf-operation", operation.summary, operation.get("caption", ""), "wf-worker" if not progress.is_empty() else intake)
 	var tasks := []
 	var criteria := []
 	var titles := {"scope":"预计任务", "acceptance":"验收条件", "questions":"待确认"}
@@ -623,6 +631,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	var description := _label(item.value)
 	description.custom_minimum_size.x = 210
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	description.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	view.add_child(description)
 	view.add_child(Control.new())
 	view.set_slot(0, true, 0, DATA, true, 0, DATA)
@@ -630,6 +639,38 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	_add_state_row(view)
 	canvas.add_child(view)
 	_update_card(view)
+	if id == "wf-operation":
+		view.set_meta("ai_control_exclude", true)
+		if _node_state(id) == "awaiting_approval":
+			_add_approval_actions(view, workflow.operation.token)
+
+
+func _add_approval_actions(view: GraphNode, token: String) -> void:
+	var row := HBoxContainer.new()
+	row.name = "ApprovalActions"
+	view.add_child(row)
+	row.visible = expanded_approval == token
+	var confirm := Button.new()
+	confirm.text = "确认"
+	confirm.pressed.connect(func(): confirm_operation.emit(token))
+	row.add_child(confirm)
+	var details := Button.new()
+	details.text = "查看详情"
+	details.pressed.connect(func(): show_operation_details.emit(token))
+	row.add_child(details)
+	var reveal := func():
+		expanded_approval = token
+		row.show()
+		_queue_layout()
+	view.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			reveal.call())
+	var prompt := Button.new()
+	prompt.text = "待你确认"
+	prompt.pressed.connect(reveal)
+	view.add_child(prompt)
+	row.visibility_changed.connect(func(): prompt.visible = not row.visible)
+	prompt.visible = not row.visible
 
 
 func draw_graph() -> void:
