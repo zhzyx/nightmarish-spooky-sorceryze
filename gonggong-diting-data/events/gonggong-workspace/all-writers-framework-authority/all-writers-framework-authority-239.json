@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "all-writers-framework-authority-239",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "all-writers-framework-authority",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:29:28.781136+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/239",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "origin": "actual_codex_host",
+    "definition_sha256": "3405f9710581b46c2274ef4c51a8ef59d61618398288152eb8e0e8fbbbab1918"
+  },
+  "payload": {
+    "issue_number": 239,
+    "request": "当前与未来所有仓库写入者均有完整的框架操作权限",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "846437c9e50a69da07006fac771748ea9281f26eb9223b22b27367dd71e8fcbe"
+}
