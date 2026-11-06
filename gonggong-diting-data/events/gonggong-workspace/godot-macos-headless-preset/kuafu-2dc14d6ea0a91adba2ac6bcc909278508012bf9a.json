@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2dc14d6ea0a91adba2ac6bcc909278508012bf9a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-macos-headless-preset",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.0",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "29adfee54596f4c773369af4376af6506d60fedf0ad09fbe9ab0781817f09dbb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/280",
+    "action": "delivery",
+    "detection_head": "04e605f84199a7afc75249d5591ce8ba2853a6a0",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-Sail-Li",
+    "authority_ref": "user-authorized-issue-226-delivery",
+    "evidence": "PR #277 signature e0376a408972dfcd4c0c89a5d43218ae88766fdb was read back after retry.",
+    "diagnosis": "GitHub GraphQL 请求瞬时 EOF；同一候选幂等回读后重新签发成功。",
+    "next_action": "已取得签发、PR 和原操作复验回执，继续跟随 #226 的整体验收。",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T19:18:39.119636+00:00",
+  "sha256": "ec070842538fcaae94634eb8409432ebc48a0690c28fa40c35d7ad778f272279"
+}
