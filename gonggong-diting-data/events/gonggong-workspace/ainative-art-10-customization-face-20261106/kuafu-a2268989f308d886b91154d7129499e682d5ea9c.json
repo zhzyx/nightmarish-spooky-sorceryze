@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a2268989f308d886b91154d7129499e682d5ea9c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "48abb0415db0e2e014cf9840f6b73da96661f070f385d4851fb200e99e50eae9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/295",
+    "action": "delivery",
+    "detection_head": "c9ec2a5f4e70ef0988c073a687ceaef3ecf8b7a4",
+    "context_sha256": "0827ebe2fc0149c05cc4e59c3066d8f4c935921b4f302b9d2a8cb3571dde7a64",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/290",
+    "diagnosis": "PR252、267、276、285、290 的精确 CI 全通过，但每次等待期间其他候选更新 main，按当前策略必须重整合再签发。AINative 业务源码和实际产物哈希不变。主因是并行发布缺少已接收的排序，不是人物功能回归；目前 main bada08d3，另有294、293、291在途。root仅负责151交付，不抢占其他副本。",
+    "next_action": "以本 bug 协调发布顺序，请相关发布者确认151下一完整候选的交付窗口；保留各轮成功CI。等待确认期间仅做新主线差异检查和必要接口准备，不再盲目重复同一轮签发。恢复后整合最新main、精确签发和CI，实际合入后再关闭本阻塞；不降低检查。",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T19:41:00.099485+00:00",
+  "sha256": "012a80276821dd5d7ebabbd953b179c7ebcc2a2ad4ec05272c8fde89ce495d0c"
+}

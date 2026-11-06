@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4ee1bba3c10c0322313681e828d8a441b6862e77",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.0",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2d98067a92079328ac3e211d4d069f19df8befa8c29a0db72b1f8a4a55eb9dcb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/243",
+    "action": "delivery",
+    "detection_head": "42062ebb1238a6a1bef2c07e7638e1f205cf8114",
+    "context_sha256": "ebbdcfce0c1d583c520e702ebb295b820fe6113271c1fcbbfa85e7413f79b6b5",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/240",
+    "diagnosis": "Candidate gate rejected rewriting an already committed validation receipt. Restore original receipt bytes and append separate ci240 correction evidence; keep source lineage immutable.",
+    "next_action": "Root has restored original committed evidence and added a new correction JSON. Repeat the same signed-candidate gate, then exact CI; original business scope and validated runtime artifacts unchanged.",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T18:35:17.116646+00:00",
+  "sha256": "f65496d0fe10851576e944e69420a11224506ae2821c8d86b7f5b38fd06662d8"
+}

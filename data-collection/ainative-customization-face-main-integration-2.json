@@ -1,0 +1,25 @@
+{
+  "issue_number": 151,
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "base": "2b9833ba59b6f89715a333f13096daee5a5ef1bd",
+  "prior_pr": 267,
+  "prior_signed": "e0afebcacbab55f901fdf2959cd073b5e106cbad",
+  "prior_all_ci": "SUCCESS",
+  "main_changed_files": [
+    "AGENTS.md",
+    "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+    "customizations/components/codex-dispatch/adapter.mjs",
+    "customizations/components/codex-dispatch/operator.mjs",
+    "customizations/components/codex-dispatch/operator.test.mjs",
+    "customizations/components/issue-workorders/kuafu_github.py",
+    "customizations/components/issue-workorders/test_kuafu_github.py",
+    "customizations/components/repository-dispatch/session.mjs",
+    "customizations/components/repository-dispatch/session.test.mjs",
+    "data-collection/all-writers-framework-authority-239-validation.json",
+    "data-collection/all-writers-framework-authority-239.json",
+    "design-docs/all-writers-framework-authority.md",
+    "gonggong-diting-data/events/gonggong-workspace/all-writers-framework-authority/all-writers-framework-authority-239.json"
+  ],
+  "ainative_overlap": false,
+  "behavior_evidence_reused": true
+}
