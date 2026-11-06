@@ -1,0 +1,53 @@
+{
+  "request_id": "godot-intake-recovery-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/181",
+  "issue_number": 181,
+  "platform": "macOS arm64",
+  "recorded_at": "2026-11-06T13:22:51.888325+00:00",
+  "inputs_sha256": {
+    "customizations/components/godot-host/bridge.py": "f79d9eb1a058ce66cba6547cec1e4d0b0c91a4d425ad9353605921ab07f8c40e",
+    "customizations/components/godot-host/test_bridge.py": "447617ddcd5376d55edff01437fd7d2d26829bd58a3c90ae3379755cb6ac150f"
+  },
+  "focused_tests": {
+    "class": "IssueIntakeRecoveryTests",
+    "passed": 8,
+    "failed": 0
+  },
+  "host_bridge_suite": {
+    "command": "TMPDIR=/private/tmp python customizations/components/godot-host/test_bridge.py",
+    "passed": 25,
+    "failed": 0,
+    "default_tmpdir_observation": "Two unchanged pre-existing runtime-path assertions fail on the macOS /var -> /private/var alias. The unmodified baseline reproduces exactly those two failures (17 tests). Canonical TMPDIR avoids the fixture alias and all 25 pass; no runtime discovery code was changed."
+  },
+  "real_intake_probe": {
+    "issue_number": 165,
+    "active_engine_environment_reused": true,
+    "result": "status:in-progress",
+    "read_only": true
+  },
+  "independent_review": {
+    "host_agent": "/root/review_codex_bridge",
+    "result": "no blocking findings; focused tests independently passed"
+  },
+  "active_workspace": {
+    "patch_applied": true,
+    "combined_host_suite_passed": 25,
+    "unfinished_issue165_changes_preserved": true,
+    "conversation_resumed": false
+  },
+  "safety": {
+    "max_reads": 2,
+    "total_timeout_seconds": 120,
+    "retries_models_or_writes": false,
+    "uses_stale_approval": false,
+    "diagnostic_stderr_limit_chars": 8192,
+    "diagnostic_permissions_octal": "0600",
+    "diagnostics_gitignored": true
+  },
+  "limitations": [
+    "The original rejection stderr was discarded; its exact cause is unknown.",
+    "This repair does not complete or close Issue #165."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Actual host usage was not supplied; no estimate."
+}
