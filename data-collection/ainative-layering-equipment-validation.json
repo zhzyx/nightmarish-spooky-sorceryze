@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "issue_number": 150,
+  "request_id": "ainative-art-09-layering-equipment-20261106",
+  "date": "2026-11-07",
+  "status": "local_validation_passed_pending_delivery",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/layering.gd": "106cb99885a60f75a8d0189bd1662214550624129ebdc586e211e71d93381743",
+    "samples/ainative-workbench/addons/ainative/layering_player.gd": "deb2895b535109689dbbcdfc21eb58545be136453bf1cb51d439b5a4141fd860",
+    "samples/ainative-workbench/addons/ainative/layering_panel.gd": "cd0e75aa838c0a3b2b1c03d681e4a96226226be977cedf0c11c5bdccee48dc19",
+    "samples/ainative-workbench/layering_acceptance.gd": "2bbb93b221fb0083d33386bf8f8a57b55d6333c1f2192d2e1ef5ed5a2a46253f",
+    "samples/ainative-workbench/layering_live_ui.gd": "1d85d64ce2e9b93c3dcd0861270d8404c2bc8967389a80d07979a6302f2809fa",
+    "design-docs/ainative-art/09-layering-equipment.md": "3639363655332af91fcfb660f8825a51932b2c72d23b12341f828d6e3dc20a9e",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "10f58e95bd055b889c38fb9ab56043aa0beda644ccba99dd89b0394e1ae8dd0c",
+    "samples/ainative-workbench/layering_contract_tests.gd": "c076e5567fd5b795c056ea34167395fb25da858ac0e8ca740c375d75f8478047"
+  },
+  "private_candidate_sha256": "7671ec5923e243f756c77527435d22ff7f94770e0b0ac46e28923fa8d9e356a6",
+  "private_summary_sha256": "d0dd54fa64c98ec2abd8c8a742616b7e92fa92bca85c5b241d58c7c17207da80",
+  "evidence": {
+    "issue": 150,
+    "state": "local_implementation_and_acceptance_complete_independent_review_passed",
+    "core_checks": {
+      "asset_sha256": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446",
+      "before_ik_error_m": 0.0633829459547997,
+      "checks": {
+        "cycle_rejected": true,
+        "fingers": true,
+        "full_body_overrides_upper": true,
+        "full_body_suppresses_ik_and_fingers": true,
+        "hips_rejected": true,
+        "ik": true,
+        "main_grip": true,
+        "out_of_bounds_rejected": true,
+        "reopened": true,
+        "reopened_ik": true,
+        "revision_rejected": true,
+        "running_legs_move": true,
+        "saved": true,
+        "upper_overrides_lower_priority_full": true
+      },
+      "evaluation_order": [
+        "base_animation",
+        "priority_layers",
+        "main_socket_weapon",
+        "offhand_ik",
+        "fingers",
+        "final_body_pose",
+        "face_reserved",
+        "cloth_reserved"
+      ],
+      "finger_bones": 30,
+      "fixture_provenance": "Pose, fingers and box weapon authored functional fixtures; locomotion actual MDM CPU",
+      "frames": 120,
+      "leg_rotation_range_radians": 0.90675961971283,
+      "main_grip_error_m": 0.0,
+      "max_finger_rotation_error_rad": 0.0,
+      "source_motion_sha256": "38bcf7ef5798e473686d6a0b049958e02facc4f35507e21413cc2a6631c90ed4",
+      "worst_grip_error_m": 0.000482738949358463
+    },
+    "rendered_ui": {
+      "invalid_load_preserves_scene": true,
+      "modes": [
+        {
+          "frames": 60,
+          "ik_active": true,
+          "mode": 0,
+          "upper_arm_rotation_range": 0.0009765625,
+          "worst_grip_error_m": 0.000482884061057121
+        },
+        {
+          "frames": 60,
+          "ik_active": false,
+          "mode": 1,
+          "upper_arm_rotation_range": 1.7166668176651,
+          "worst_grip_error_m": 0.0
+        },
+        {
+          "frames": 60,
+          "ik_active": false,
+          "mode": 2,
+          "upper_arm_rotation_range": 0.586362957954407,
+          "worst_grip_error_m": 0.0
+        },
+        {
+          "frames": 60,
+          "ik_active": false,
+          "mode": 3,
+          "upper_arm_rotation_range": 0.586362957954407,
+          "worst_grip_error_m": 0.0
+        }
+      ],
+      "overwrite_rejected": true,
+      "reopened_grip_error_m": 0.000298116414342076,
+      "source_unchanged": true,
+      "swaps": [
+        {
+          "bones": 68,
+          "frames": 30,
+          "garment": "shirt",
+          "grip_error_m": 0.000296210462693125,
+          "worst_grip_error_m": 0.000482884061057121
+        },
+        {
+          "bones": 68,
+          "frames": 30,
+          "garment": "armor",
+          "grip_error_m": 0.000296210462693125,
+          "worst_grip_error_m": 0.000482884061057121
+        },
+        {
+          "bones": 68,
+          "frames": 30,
+          "garment": "shirt",
+          "grip_error_m": 0.000296210462693125,
+          "worst_grip_error_m": 0.000482884061057121
+        }
+      ]
+    },
+    "motion_provenance": {
+      "adapter_sha256": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+      "checkpoint_arguments_sha256": "924adeca8b21dbf2779101ae2dd896f2187715d4a184449230f74508ceffbeae",
+      "checkpoint_sha256": "0fbdc8547c8f262b8838645586790b55f983d90db3bb7ed58e4b5d49429587ca",
+      "clip_sha256": "40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af",
+      "device": "cpu",
+      "mean_sha256": "26e136555dab04c94a129d446c26e6b9939cbf045fbf77bcf5462c1fb5a2001c",
+      "prompt": "A person runs forward quickly with alternating legs and swinging arms.",
+      "provider": "official-MDM",
+      "seed": 22,
+      "source": "https://github.com/GuyTevet/motion-diffusion-model",
+      "source_sha256": "936623bd81b77be410a94cb5f2831bb6bc34876758386f09b1672a12860805ca",
+      "std_sha256": "6565a65ed9b31e23c328829a309e1c482be8b85fd23b43d65451a9b19a917f40",
+      "steps": 50,
+      "unused_smpl_conversion": "excluded for hml_vec only"
+    },
+    "source_files": [
+      {
+        "path": "run-v1.json",
+        "sha256": "38bcf7ef5798e473686d6a0b049958e02facc4f35507e21413cc2a6631c90ed4",
+        "bytes": 122779
+      },
+      {
+        "path": "ue4-native.glb",
+        "sha256": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446",
+        "bytes": 482208
+      },
+      {
+        "path": "config.json",
+        "sha256": "c17505cfee1039ecbba7d41260ed0af2ae2b890383a1539fedad397464efa3d0",
+        "bytes": 3192
+      },
+      {
+        "path": "shirt-source-octree-v7.glb",
+        "sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+        "bytes": 11011104
+      },
+      {
+        "path": "armor-source-octree-v2.glb",
+        "sha256": "29d343b254bda480ffdfc437f13ad27f03c1576d1f319ffa79d0e5c90ed65b60",
+        "bytes": 22971652
+      }
+    ],
+    "outputs_and_receipts": [
+      {
+        "path": "run-inference.log",
+        "sha256": "d109a18196d413b7bb36c0a6effcae4609ffddc5ad465bdb3668a38ebc77fcb6",
+        "bytes": 2360
+      },
+      {
+        "path": "ue4-v6.tscn",
+        "sha256": "0eb7a5d322056210009426b31909bcef5340af1c71ed47ca9bae8dd41e756413",
+        "bytes": 1767179
+      },
+      {
+        "path": "ue4-v6.tscn.json",
+        "sha256": "884587bfcd7589660a5a5d379eb420aa4b56a65aa209f2499fe4ed11440ab135",
+        "bytes": 1114
+      },
+      {
+        "path": "ui-final-v5.json",
+        "sha256": "02c002237cbd77ec97a7e19ee3a57751515fa1bfc6dd1b3af2953aefc61bc356",
+        "bytes": 441
+      },
+      {
+        "path": "ui-final-v5.tscn",
+        "sha256": "12819d6a8d1eb9967bf2a2b9d5fb007e144c1ea2e4875cea9cac1e27b4893dd1",
+        "bytes": 20628891
+      },
+      {
+        "path": "ui-final-v5-receipt.json",
+        "sha256": "09e3980f8eb405475524808fc2822cd367bef626d26b54856f891dfbc936069d",
+        "bytes": 1208
+      },
+      {
+        "path": "ui-final-v5-ui.png",
+        "sha256": "458daa930b841ebc2e77aa8cf38c87e011a72709984231acc0ad2f1fb7893cef",
+        "bytes": 97587
+      },
+      {
+        "path": "ui-final-v5-negative-ui.png",
+        "sha256": "2bf8d1678bba0fa92a76a64862cb86086df0d17f42de925aa2fae822e261d3c9",
+        "bytes": 88348
+      },
+      {
+        "path": "ui-final-v5-mode0.png",
+        "sha256": "56917f33af2eb541541e0518ac92b2272b76ba969572099b4963db6aff8ee219",
+        "bytes": 42601
+      },
+      {
+        "path": "ui-final-v5-mode1.png",
+        "sha256": "a59fab00bc75c51a9181f75a6a9343ecd3b5569a586f15063f9d3fdd24226c41",
+        "bytes": 46217
+      },
+      {
+        "path": "ui-final-v5-mode2.png",
+        "sha256": "a97157dca8c3e4a5b46449185b623244b74cb4ad56deda2abce0ce2adfea391e",
+        "bytes": 40422
+      },
+      {
+        "path": "ui-final-v5-mode3.png",
+        "sha256": "5137ba29eff465d423848ada8796a78727bbd0286cab19bc21f32b7bd596a1c7",
+        "bytes": 40425
+      },
+      {
+        "path": "ui-final-v5-garment-shirt.png",
+        "sha256": "e17f5b9c8f826f95fa7ae646c3983c191e7ef70caed2a4251604936dcbeccc2e",
+        "bytes": 57671
+      },
+      {
+        "path": "ui-final-v5-garment-armor.png",
+        "sha256": "e53ee27d340ce1da06b9507c6ce4eb7a441440c9de833529da5990f0c20249f9",
+        "bytes": 49999
+      },
+      {
+        "path": "contract-final.log",
+        "sha256": "494f678d1909b31c9a2fa76ec0e752bad0017640eb378bea71fbeda53e166257",
+        "bytes": 247
+      }
+    ],
+    "validation_scope": [
+      "actual Godot UE4 native 30 finger bones",
+      "actual CPU MDM 50-step running generation",
+      "120-frame core acceptance and 4 x 60-frame rendered modes",
+      "3 garment swaps x 30 rendered frames",
+      "atomic no-clobber save and reopen",
+      "generated garments from issue148 source SHA validated"
+    ],
+    "not_claimed": [
+      "Manny/Mixamo/Quinn this-issue rendered acceptance",
+      "cloth solver",
+      "AI-generated aiming/sword/finger poses or weapon mesh",
+      "proprietary UE asset redistribution"
+    ],
+    "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "contract_tests": {
+      "failures": [],
+      "finger_bones_with_weights": 30,
+      "finger_weighted_vertices": 2072,
+      "finger_only_deformation_m": 0.0958794578909874,
+      "negative_cases": 7,
+      "additional_atomic_cases": [
+        "missing mask",
+        "duplicate mask",
+        "nonfinite timestamp"
+      ]
+    },
+    "formal_ui_entry": "workbench.gd loads layering_panel; acceptance finds existing panel and scrolls normal WorkbenchScroll; no injection or hiding",
+    "independent_review": {
+      "reviewer": "/root/review_contracts",
+      "result": "passed",
+      "reported_checks": [
+        "repository contract tests failures empty",
+        "missing mask/duplicate mask/nonfinite timestamp atomic rejection",
+        "real finger Skin effect",
+        "formal workbench unique layering panel",
+        "all four modes save/reopen matching every local Transform at t=0.5",
+        "repeat save rejected with unchanged hash"
+      ],
+      "probe": "ui-persistence.gd"
+    }
+  },
+  "root_visual_review": {
+    "state": "accepted_first_version_scope",
+    "observed": [
+      "Actual UE4 running with independently generated shirt and armor",
+      "Two-handed weapon and single-handed sword mode",
+      "Normal workbench existing layering panel, controls and inline character preview visible"
+    ],
+    "inspected_screenshots": {
+      "ui-final-v5-ui.png": "458daa930b841ebc2e77aa8cf38c87e011a72709984231acc0ad2f1fb7893cef",
+      "ui-final-v3-garment-shirt.png": "e17f5b9c8f826f95fa7ae646c3983c191e7ef70caed2a4251604936dcbeccc2e",
+      "ui-final-v3-garment-armor.png": "e53ee27d340ce1da06b9507c6ce4eb7a441440c9de833529da5990f0c20249f9",
+      "ui-final-v1-mode0.png": "56917f33af2eb541541e0518ac92b2272b76ba969572099b4963db6aff8ee219",
+      "ui-final-v1-mode1.png": "a59fab00bc75c51a9181f75a6a9343ecd3b5569a586f15063f9d3fdd24226c41"
+    },
+    "limitations": [
+      "Weapon and aiming/sword/finger poses are explicitly authored functional fixtures",
+      "Generated garment surface roughness remains; cloth solver not included",
+      "This task actual rendered validation uses UE4; no claim of a fresh Manny/Mixamo/Quinn UI acceptance"
+    ]
+  },
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "state": "approved",
+    "actual_skin": {
+      "finger_bones_with_weights": 30,
+      "weighted_vertices": 2072,
+      "finger_only_deformation_m": 0.09587946
+    },
+    "formal_ui": {
+      "existing_panel_count": 1,
+      "saved_reopened_modes": 4,
+      "all_local_transforms_match": true,
+      "each_mode_duplicate_save_rejected": true
+    },
+    "negative_inputs": "seven invalid types/chain/quaternion cases plus missing mask, duplicate mask and nonfinite timestamp rejected without pose mutation",
+    "reused_evidence": "No model inference or old foundation tests rerun; targeted final candidate checks only"
+  },
+  "line_ending_normalization": [
+    {
+      "path": "samples/ainative-workbench/addons/ainative/layering.gd",
+      "validated_sha256": "9c31ffa1344599a71c13f2879b673f5038509e007f686b1bd33a685ed14f7b0c",
+      "lf_sha256": "106cb99885a60f75a8d0189bd1662214550624129ebdc586e211e71d93381743",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/addons/ainative/layering_player.gd",
+      "validated_sha256": "3039e8378620c3d4bfcdfeae4ac7077072733f42dc2ab290bbb5ec8e699a1d18",
+      "lf_sha256": "deb2895b535109689dbbcdfc21eb58545be136453bf1cb51d439b5a4141fd860",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/addons/ainative/layering_panel.gd",
+      "validated_sha256": "98f3e4004e9b52facc7d1cbe4c500d066d9ac464921bb0706da910309b1b5fb2",
+      "lf_sha256": "cd0e75aa838c0a3b2b1c03d681e4a96226226be977cedf0c11c5bdccee48dc19",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/layering_acceptance.gd",
+      "validated_sha256": "9ae55870b21ec3c2de9143970b0a60ea84605572ba06eb4cf419d5d4a0446f3b",
+      "lf_sha256": "2bbb93b221fb0083d33386bf8f8a57b55d6333c1f2192d2e1ef5ed5a2a46253f",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/layering_live_ui.gd",
+      "validated_sha256": "bcf4f09095b3fd5221b9acd6ee2f785fd524d9d36d926580c6536c7232943411",
+      "lf_sha256": "1d85d64ce2e9b93c3dcd0861270d8404c2bc8967389a80d07979a6302f2809fa",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "design-docs/ainative-art/09-layering-equipment.md",
+      "validated_sha256": "29f34419799c0b5dd10738f62435b287877a6ab395218b1d4277d14fad3d7c9c",
+      "lf_sha256": "3639363655332af91fcfb660f8825a51932b2c72d23b12341f828d6e3dc20a9e",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/addons/ainative/workbench.gd",
+      "validated_sha256": "640dfe0914bbc275de27f31b815cfa21acc3dd7202ec41289eabda3dfa4d4be9",
+      "lf_sha256": "10f58e95bd055b889c38fb9ab56043aa0beda644ccba99dd89b0394e1ae8dd0c",
+      "only_crlf_to_lf": true
+    },
+    {
+      "path": "samples/ainative-workbench/layering_contract_tests.gd",
+      "validated_sha256": "46b55381be12de4bc0870f7903cca6235326223bc13bf6a8e7909ce0f80c76ef",
+      "lf_sha256": "c076e5567fd5b795c056ea34167395fb25da858ac0e8ca740c375d75f8478047",
+      "only_crlf_to_lf": true
+    }
+  ]
+}
