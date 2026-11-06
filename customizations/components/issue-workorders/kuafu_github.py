@@ -433,7 +433,6 @@ def record_evidence(directory, key, report):
     directory.mkdir(parents=True, exist_ok=True)
     write_json(directory / "diagnosis.json", report)
     settings = json.loads((ROOT / "work-items.json").read_text(encoding="utf-8"))
-    framework = ROOT / json.loads((ROOT / "CURRENT_FRAMEWORK.json").read_text())["root"]
     request = "kuafu-" + key
     # Each real host invocation is a separate observation of the same incident.
     event_id = f"kuafu-host-{int(os.environ['GITHUB_RUN_ID'])}-{int(os.environ['GITHUB_RUN_ATTEMPT'])}"
@@ -460,9 +459,9 @@ def record_evidence(directory, key, report):
         envelope["occurred_at"] = json.loads(stored_path.read_text(encoding="utf-8"))["occurred_at"]
     input_file = directory / "quality_issue.json"
     write_json(input_file, envelope)
-    cli = framework / "extensions/diting-files/diting_files.py"
+    cli = ROOT / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
     process = subprocess.run(
-        [sys.executable, str(cli), "record", "--repo", str(ROOT), "--input", str(input_file)],
+        [sys.executable, "-I", str(cli), "record", "--repo", str(ROOT), "--input", str(input_file)],
         capture_output=True,
         encoding="utf-8",
     )

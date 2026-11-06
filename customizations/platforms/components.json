@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "owner": "gonggong",
+  "components": [
+    {
+      "id": "diting-file-data",
+      "version": "1.0.0",
+      "path": "customizations/platforms/data-collection/git-files/storage",
+      "ownership": "gonggong_customization",
+      "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
+      "validation": "design-docs/platform-host-storage-20261107.md",
+      "rollback": "Keep existing immutable data and module snapshots; restore compatible reader before resuming writes; do not delete records",
+      "state": "validated_on_demand",
+      "reporting": {
+        "shared": "framework/agents/diting/reporting.json",
+        "file_adapter": "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+        "data_root": "gonggong-diting-data",
+        "historical_read_only": "olympus-hermes-data",
+        "runtime_connected": true,
+        "validated_scope": "Local Git storage and existing event history. Remote consumption requires its own receipt."
+      },
+      "display_name": "谛听文件采集",
+      "placement": "platform_adapter"
+    },
+    {
+      "id": "issue-workorders",
+      "version": "1.2.1",
+      "path": "customizations/components/issue-workorders",
+      "ownership": "gonggong_customization",
+      "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
+      "validation": "distribution/verification-gonggong-20261104-r2.json",
+      "rollback": "Stop adapter invocation; preserve existing Issues, documents and immutable event/source files",
+      "state": "validated_on_demand",
+      "reporting": {
+        "shared": "framework/agents/diting/reporting.json",
+        "file_adapter": "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+        "data_root": "gonggong-diting-data",
+        "historical_read_only": "olympus-hermes-data",
+        "runtime_connected": true,
+        "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
+      },
+      "display_name": "Git 接入工单"
+    },
+    {
+      "id": "godot-host",
+      "version": "1.3.0",
+      "path": "customizations/components/godot-host",
+      "ownership": "gonggong_customization",
+      "framework_dependency": "CURRENT_FRAMEWORK.json; local package integrity and exact Agent admission; actual host permissions and Diting receipts required",
+      "validation": "distribution/verification-gonggong-20261104-r2.json",
+      "rollback": "Restore matching source and verified binary; retain events; never remove framework checks to enable chat",
+      "state": "validated_on_demand",
+      "reporting": {
+        "shared": "framework/agents/diting/reporting.json",
+        "file_adapter": "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+        "data_root": "gonggong-diting-data",
+        "historical_read_only": "olympus-hermes-data",
+        "runtime_connected": true,
+        "validated_scope": "Representative file persistence and consumption verified; Godot model sessions simulated. Each invocation still requires actual tenant, Issue and host authorization; no global listener."
+      },
+      "display_name": "Godot 接入宿主"
+    },
+    {
+      "id": "yanluo",
+      "display_name": "阎罗",
+      "version": "0.1.2",
+      "path": "customizations/components/yanluo",
+      "path_base": "repository_root",
+      "ownership": "gonggong_customization",
+      "state": "candidate_pending_review",
+      "entry": "customizations/components/yanluo/AGENT.md",
+      "reporting": {
+        "profile": "customizations/components/yanluo/reporting.json",
+        "runtime_connected": false
+      },
+      "activation": false,
+      "rollback": "Stop candidate invocation; retain original owners until an acknowledged handoff; preserve evidence",
+      "framework_dependency": "CURRENT_FRAMEWORK.json; exact definition approval and host authority",
+      "validation": "data-collection/yanluo-user-approval.json"
+    }
+  ],
+  "module_migration": "customizations/module-migration.json",
+  "candidate_extensions": [
+    {
+      "id": "codex-dispatch",
+      "version": "0.1.0",
+      "path": "customizations/components/codex-dispatch",
+      "path_base": "repository_root",
+      "state": "candidate_pending_host_binding_and_admission",
+      "entry": "adapter.mjs",
+      "reporting": "source.report must invoke shared Diting; no global listener",
+      "runtime_connected": false
+    },
+    {
+      "id": "godot-parallel-dispatch",
+      "version": "0.1.0",
+      "path": "tools/godot_parallel",
+      "path_base": "repository_root",
+      "state": "candidate_pending_validation_and_admission",
+      "entry": "runner.mjs",
+      "reporting": "Existing Issue and Diting gates remain required; local process receipts are not Diting delivery",
+      "runtime_connected": false
+    }
+  ]
+}

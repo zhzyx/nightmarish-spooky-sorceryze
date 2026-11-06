@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import re
+import runpy
 import shlex
 import shutil
 import subprocess
@@ -33,6 +34,19 @@ if _igniter_spec is None or _igniter_spec.loader is None:
     raise ImportError("Cannot load environment igniter")
 _igniter = importlib.util.module_from_spec(_igniter_spec)
 _igniter_spec.loader.exec_module(_igniter)
+
+
+def storage_entry():
+    # Execute only the installed host adapter. The selected project supplies data.
+    installation = Path(__file__).resolve().parents[3]
+    checker = runpy.run_path(str(installation / "tools/check_gonggong_distribution.py"))
+    directory = checker["PLATFORM_PACKAGES"][0]
+    lock = json.loads((installation / checker["REGISTRATION"]).read_text(encoding="utf-8"))
+    checker["platform_inventory"](installation, directory, lock["platform_files"][directory])
+    batch = "tools/git_batch.py"
+    if hashlib.sha256((installation / "framework" / batch).read_bytes()).hexdigest() != lock["files"][batch]:
+        raise ValueError("Git storage dependency differs from its registered version")
+    return str(installation / directory / "diting_files.py")
 
 
 @contextmanager
@@ -91,7 +105,8 @@ def flush_locked(root, deadline):
         recorded = subprocess.run(
             [
                 sys.executable,
-                str(root / "framework/extensions/diting-files/diting_files.py"),
+                "-I",
+                storage_entry(),
                 "record",
                 "--repo",
                 str(root),
@@ -223,10 +238,20 @@ def record_intake_failure(root, request, tenant, attempt, code, stderr, returnco
         path = directory / (uuid.uuid4().hex + ".json")
         fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
-            json.dump({"occurred_at": datetime.now(timezone.utc).isoformat(),
-                       "issue_number": request["issue_number"], "request_id": request["request_id"],
-                       "tenant": tenant, "read_attempt": attempt, "code": code,
-                       "returncode": returncode, "stderr": stderr[:8192]}, stream, ensure_ascii=False)
+            json.dump(
+                {
+                    "occurred_at": datetime.now(timezone.utc).isoformat(),
+                    "issue_number": request["issue_number"],
+                    "request_id": request["request_id"],
+                    "tenant": tenant,
+                    "read_attempt": attempt,
+                    "code": code,
+                    "returncode": returncode,
+                    "stderr": stderr[:8192],
+                },
+                stream,
+                ensure_ascii=False,
+            )
     except OSError:
         pass  # A diagnostic-write failure must never hide the original rejection.
 
@@ -242,24 +267,31 @@ def issue_binding(root, request, tenant):
     ):
         raise ValueError("Before development, create/reuse a real Issue and bind issue_number and stable request_id")
     command = [
-            sys.executable,
-            str(root / "customizations/components/issue-workorders/issue_gate.py"),
-            "--repo",
-            str(root),
-            "--issue",
-            str(number),
-            "--request-id",
-            request_id,
-            "--tenant",
-            tenant,
-            "--intake-only",
-        ]
+        sys.executable,
+        str(root / "customizations/components/issue-workorders/issue_gate.py"),
+        "--repo",
+        str(root),
+        "--issue",
+        str(number),
+        "--request-id",
+        request_id,
+        "--tenant",
+        tenant,
+        "--intake-only",
+    ]
     env = host_environment(root)
     deadline = time.monotonic() + 120
     for attempt in range(1, 3):
         try:
-            process = subprocess.run(command, cwd=root, env=env, capture_output=True,
-                                     text=True, encoding="utf-8", timeout=max(0.001, deadline - time.monotonic()))
+            process = subprocess.run(
+                command,
+                cwd=root,
+                env=env,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=max(0.001, deadline - time.monotonic()),
+            )
             if process.returncode == 0:
                 return json.loads(process.stdout)
             stderr, returncode = process.stderr or "", process.returncode
@@ -459,16 +491,27 @@ def diagnose(root):
             [node, str(framework / "tools/admission.mjs"), str(framework), agent["id"]], root
         )
     checks["diting_data"] = run(
-        [sys.executable, str(framework / "extensions/diting-files/diting_files.py"), "validate", "--repo", str(root)],
+        [
+            sys.executable,
+            "-I",
+            storage_entry(),
+            "validate",
+            "--repo",
+            str(root),
+        ],
         root,
     )
     environment_checks = {"python_available", "node_available", "git_available"}
-    environment_missing = [component_id for component_id in ("python", "node", "git") if not status[component_id]["available"]]
+    environment_missing = [
+        component_id for component_id in ("python", "node", "git") if not status[component_id]["available"]
+    ]
     return {
         "ok": all(c["ok"] for c in checks.values()),
         "checks": checks,
         "environment_missing": environment_missing,
-        "blocking_checks": [name for name, check in checks.items() if name not in environment_checks and not check["ok"]],
+        "blocking_checks": [
+            name for name, check in checks.items() if name not in environment_checks and not check["ok"]
+        ],
         "model_execution_started": False,
         "host_authority_authenticated": False,
         "note": "Readiness diagnostics do not grant permission or test model credentials. Each chat still runs admission and requires a real Diting receipt. Environment gaps are reported separately from framework/admission/data blocking checks.",
@@ -684,13 +727,17 @@ def _issue_start(root, request, routing=None, api=None):
     statuses = [name for name in names if name.startswith("status:")]
     if request_id.startswith("daqian-direct-"):
         expected = request.get("expected_user")
-        if (not isinstance(expected, str) or not re.fullmatch(r"[1-9][0-9]*", expected)
-                or module.gh("api", "user", "--jq", ".id").strip() != expected
-                or value.get("html_url") != f"https://github.com/{repository}/issues/{number}"
-                or statuses not in (["status:planned"], ["status:in-progress"], ["status:in-review"])):
+        if (
+            not isinstance(expected, str)
+            or not re.fullmatch(r"[1-9][0-9]*", expected)
+            or module.gh("api", "user", "--jq", ".id").strip() != expected
+            or value.get("html_url") != f"https://github.com/{repository}/issues/{number}"
+            or statuses not in (["status:planned"], ["status:in-progress"], ["status:in-review"])
+        ):
             raise ValueError("请重新核对当前账号、工单来源及状态")
-        if statuses == ["status:planned"] and (not value.get("updated_at") or
-                                                request.get("expected_revision") != value["updated_at"]):
+        if statuses == ["status:planned"] and (
+            not value.get("updated_at") or request.get("expected_revision") != value["updated_at"]
+        ):
             raise ValueError("工单已更新，请刷新大千后重新确认开始")
         if statuses == ["status:planned"]:
             if routing is None:
@@ -720,6 +767,7 @@ def _issue_start(root, request, routing=None, api=None):
 
 def direct_adapter():
     from types import SimpleNamespace
+
     # tools/gonggong_bridge.py uses runpy, which retains the entry point's import path.
     directory = str(Path(__file__).resolve().parent)
     sys.path.insert(0, directory)
@@ -727,9 +775,16 @@ def direct_adapter():
         import issue_route
     finally:
         sys.path.remove(directory)
-    api = SimpleNamespace(guide_fields=guide_fields, gh_state=gh_state, outbox_lock=outbox_lock,
-                          host_environment=host_environment, work_items_module=work_items_module,
-                          enqueue=enqueue, flush=flush, discover_node=_igniter.discover_node)
+    api = SimpleNamespace(
+        guide_fields=guide_fields,
+        gh_state=gh_state,
+        outbox_lock=outbox_lock,
+        host_environment=host_environment,
+        work_items_module=work_items_module,
+        enqueue=enqueue,
+        flush=flush,
+        discover_node=_igniter.discover_node,
+    )
     return issue_route, api
 
 
@@ -815,7 +870,6 @@ def execute(workspace, action, tenant):
             for a in manifest["agents"]
         ],
     }
-    diting = str(framework / "extensions/diting-files/diting_files.py")
     if action == "status":
         result.update(
             ok=True,
@@ -827,9 +881,11 @@ def execute(workspace, action, tenant):
     elif action == "check":
         result.update(run([sys.executable, str(framework / "tools/verify_framework.py"), "--candidate"], root))
     elif action == "validate":
-        result.update(run([sys.executable, diting, "validate", "--repo", str(root)], root))
+        result.update(run([sys.executable, "-I", storage_entry(), "validate", "--repo", str(root)], root))
     elif action == "analyze":
-        result.update(run([sys.executable, diting, "analyze", "--repo", str(root), "--tenant", tenant], root))
+        result.update(
+            run([sys.executable, "-I", storage_entry(), "analyze", "--repo", str(root), "--tenant", tenant], root)
+        )
     else:
         raise ValueError("Unsupported action")
     return result
@@ -839,7 +895,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "action",
-        choices=["status", "doctor", "check", "validate", "analyze", "chat", "flush", *GUIDE_ACTIONS, *ENVIRONMENT_ACTIONS],
+        choices=[
+            "status",
+            "doctor",
+            "check",
+            "validate",
+            "analyze",
+            "chat",
+            "flush",
+            *GUIDE_ACTIONS,
+            *ENVIRONMENT_ACTIONS,
+        ],
     )
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--tenant", default="gonggong-workspace")

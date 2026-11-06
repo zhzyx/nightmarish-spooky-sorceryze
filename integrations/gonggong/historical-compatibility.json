@@ -12,7 +12,7 @@
       "purpose": "immutable historical tenant event source; no new normal writes"
     },
     {
-      "path": "framework/extensions/diting-files/diting_files.py",
+      "path": "customizations/platforms/data-collection/git-files/storage/diting_files.py",
       "purpose": "explicit read-only historical dataset adapter and cross-source conflict protection"
     },
     {

@@ -17,6 +17,10 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 DITING_EXTENSION = "extensions/diting-files/"
+PLATFORM_PACKAGES = (
+    "customizations/platforms/data-collection/git-files/storage",
+    "customizations/platforms/development/git/delivery",
+)
 REGISTRATION = "integrations/gonggong/frozen-distribution.json"
 SCOPE = "offline_registered_snapshot_consistency_only"
 
@@ -127,9 +131,20 @@ def candidate_checks(files: dict[str, bytes], require_admission=True) -> None:
         require(isinstance(refs, list) and bool(refs), "Missing review evidence references")
         for value in [*refs, approval["decision_evidence_ref"]]:
             path = safe_name(value)
-            require(
-                path in files and bool(files[path]), f"Missing pinned evidence: {path}"
-            )
+            require(path in files and bool(files[path]), f"Missing pinned evidence: {path}")
+
+
+def platform_inventory(root, directory, expected):
+    folder = root
+    for component in directory.split("/"):
+        folder = folder / component
+        no_link(folder)
+    actual = inventory(folder)
+    require(
+        {name: digest(raw) for name, raw in actual.items()} == expected,
+        "Platform file set or digest mismatch: " + directory,
+    )
+    return actual
 
 
 def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any]:
@@ -141,7 +156,7 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
     for parent in [registration.parent.parent, registration.parent, registration]:
         no_link(parent)
     lock = parse_json(registration.read_bytes())
-    require(lock["schema_version"] == 1 and lock["scope"] == SCOPE, "Unexpected registration format")
+    require(lock["schema_version"] in (1, 2) and lock["scope"] == SCOPE, "Unexpected registration format")
     require(lock["exemption"] is None, "Unexpected exemption")
     expected = lock["files"]
     require(isinstance(expected, dict) and bool(expected), "Empty file registration")
@@ -159,18 +174,32 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
     )
     for name, data in frozen.items():
         require(digest(data) == expected[name], f"Frozen byte mismatch: {name}")
-    require(
-        {DITING_EXTENSION + name for name in ("README.md", "diting_files.py", "event.schema.json")} <= files.keys(),
-        "Pinned Diting extension missing",
-    )
     candidate_checks(files, require_admission=not candidate)
+    syntax_files = {"framework/" + name: raw for name, raw in files.items()}
+    if lock["schema_version"] == 1:
+        require(
+            {DITING_EXTENSION + name for name in ("README.md", "diting_files.py", "event.schema.json")} <= files.keys(),
+            "Pinned Diting extension missing",
+        )
+    else:
+        packages = lock["platform_files"]
+        require(set(packages) == set(PLATFORM_PACKAGES), "Missing platform package registration")
+        for directory in PLATFORM_PACKAGES:
+            actual = platform_inventory(root, directory, packages[directory])
+            syntax_files.update({directory + "/" + name: raw for name, raw in actual.items()})
+        require(
+            PLATFORM_PACKAGES[0] + "/diting_files.py" in syntax_files
+            and PLATFORM_PACKAGES[0] + "/event.schema.json" in syntax_files
+            and PLATFORM_PACKAGES[1] + "/check_delivery.py" in syntax_files,
+            "Missing registered platform entry",
+        )
     node_path = node or shutil.which("node")
     if not node_path:
         bundled = root / "project/runtime/node/node.exe"
         node_path = str(bundled) if bundled.is_file() else None
     environment = {k: v for k, v in os.environ.items() if k.upper() not in {"NODE_OPTIONS", "NODE_PATH"}}
     checked = {"python": 0, "javascript": 0, "json": 0}
-    for name, raw in files.items():
+    for name, raw in syntax_files.items():
         suffix = PurePosixPath(name).suffix
         if suffix == ".py":
             # Compile in memory; never import, execute or write bytecode.
@@ -182,7 +211,7 @@ def check(root: Path, node: str | None = None, candidate=False) -> dict[str, Any
         elif suffix in (".js", ".mjs", ".cjs"):
             require(bool(node_path), "Node is required for JavaScript syntax checks")
             result = subprocess.run(
-                [str(node_path), "--check", str(root / "framework" / name)],
+                [str(node_path), "--check", str(root / name)],
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
