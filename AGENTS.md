@@ -6,6 +6,8 @@
 
 唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/；生成 Agent／Skill 定义时读取 framework/AGENTS.md 与 gonggong-check；普通需求不触发共工审查与元衡评价。冻结纲领和元衡原件不可修改，所有 Agent 受元衡治理。准入绑定精确候选，迁移不自动授权。
 
+排查当前问题时，发现并复现的范围内缺陷直接进入修复、验证与交付，无需用户再说“优化”。用户明确要求仅解释或只读排查时，遵循该限制。
+
 本仓库已接入 Git，任务通过 work-items.json 关联真实 Issue，需求在 design-docs/。开发前执行 customizations/components/issue-workorders/issue_gate.py 的 intake-only 回读；提交前执行正式门禁，提交后核验 git-check --require-committed。Git 约定属于接入层，不是共工核心的通用前提。
 
 Windows 工单门禁使用 tools/run_issue_gate.ps1 探测可执行 Python，见接入层 README；PR 证据预检绑定已回读目标分支与完整候选 index。新任务从当前主线隔离，保留其他工作树；按 commit/push/CI/main 回读分别记录失败，发布回执未知先回读，不重复发布。

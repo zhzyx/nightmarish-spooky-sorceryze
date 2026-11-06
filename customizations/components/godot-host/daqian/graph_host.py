@@ -12,7 +12,7 @@ import sqlite3
 import subprocess
 import sys
 
-from board import work_items
+from board import plan_summary, read_board, work_items
 from repository_access import AccessDenied, collaborator, session_actor, session_path
 import plan_store
 
@@ -23,6 +23,16 @@ def execute(root, envelope, principal=None):
     repo = work_items.config(root)[0]["repository"]
     if envelope.get("repository") != repo:
         raise ValueError("共享宿主绑定的仓库不同")
+    if envelope.get("action") == "board-progress":
+        actor = principal or collaborator(root)
+        if envelope.get("expected_user") != actor["user_id"] or envelope.get("repo_id") != actor["repo_id"]:
+            raise ValueError("共享宿主的账号或仓库身份不匹配")
+        follows = envelope.get("follow", [])
+        if not isinstance(follows, list) or any(type(n) is not int or n <= 0 for n in follows):
+            raise ValueError("无效的跟进工单")
+        board = read_board(root, follows, actor)
+        with plan_store.connect(root) as db:
+            return {"summaries": {item["url"]: plan_summary(db, item) for item in board["issues"] if not item["closed"]}}
     number = envelope["number"]
     if type(number) is not int or number < 1:
         raise ValueError("工单编号无效")

@@ -144,10 +144,6 @@ def read_source(root, number, principal=None):
     else:
         issue_gate.check_issue(obj, repo, number, req, types)
     projection = source_plan(obj, req)
-    if decision_only and not projection.get("questions"):
-        projection["plan"]["nodes"]["decision"]={"kind":"question","title":"待决定","value":obj["title"]}
-        projection["questions"]={"decision":{"kind":"text","prompt":obj["title"]}}
-        projection["sources"]["decision"]=obj["html_url"]
     with closing(model_catalog.database()) as db:
         profiles = model_catalog.profiles(db)
         verified = model_catalog.sinan_catalog(db, ["text"], "live")
@@ -175,7 +171,7 @@ def snapshot(db, source):
         if versions.get(key)==version:
             answers[key]={"value":json.loads(raw),"actor":author,"version":version}
             states[key]="answered"
-    context.update(questions=questions,answers=answers)
+    context.update(questions=questions,answers=answers,can_answer=source.get("can_answer",source["can_edit"]))
     # A changed upstream design needs explicit reconciliation before editing this version.
     return {"plan":plan,"can_answer":source.get("can_answer",source["can_edit"]),
             "revision":digest([row[2] if row else None,source["source_revision"]]),

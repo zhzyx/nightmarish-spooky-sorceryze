@@ -220,6 +220,30 @@ func run() -> void:
 	release_detail.emit()
 	check(graph.revision == state.revision and graph.draft == state.plan, "clean snapshot did not advance to live plan")
 	workspace._show_board()
+	delay_detail = false
+	var entry: Dictionary = issues[1].duplicate(true)
+	entry.merge({"number":83, "url":"https://github.com/fixture/board/issues/83", "status":"needs-decision", "analyzed":true, "decision":true, "pending_count":1,
+		"node_states":{}, "questions":{"q":{"kind":"text", "prompt":"请选择验收平台"}}}, true)
+	state.plan = {"nodes":{"requirement":{"kind":"text","title":"需求","value":"编辑器"},
+		"q":{"kind":"question","title":"待确认","value":"请选择验收平台"}}, "edges":[]}
+	entry.plan = state.plan
+	state.context = {"questions":entry.questions,"answers":{},"states":{},"can_answer":true,"protected_nodes":["q"]}
+	workspace.board.issues = [entry]
+	workspace.fresh_progress = true
+	await workspace._open_issue(entry)
+	var card = graph.canvas.get_node("q")
+	check(card.find_children("*","TextEdit",false,false).size() == 2, "real question must have prompt and answer together")
+	state.context.answers.q = {"actor":"collaborator","value":"macOS"}
+	state.context.states.q = "answered"
+	entry.merge({"pending_count":0, "decision":false, "answered_count":1}, true)
+	await workspace._refresh_open_states()
+	card = graph.canvas.get_node("q")
+	check(card.find_children("*","TextEdit",false,false).size() == 1, "external answer left a second input")
+	check(card.find_children("*","Label",false,false).any(func(label): return "collaborator" in label.text and "macOS" in label.text), "receipt omitted answer or author")
+	check(not "等待答复" in graph.canvas.get_node("wf-analysis").tooltip_text and "已收到答复" in workspace.work_status.text, "answered workflow still asks user to reply")
+	entry.answered_count = 0
+	check("工单负责人" in workspace._work_summary(entry, {}).text, "label-only Issue asks the user for input")
+	workspace._show_board()
 	workspace.host = null
 	delay_detail = false
 	workspace.board = {}

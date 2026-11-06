@@ -24,6 +24,49 @@ class BoardProjection(unittest.TestCase):
             self.assertEqual(board.design_document(root, body.replace("design.md", "../outside.md")), {})
             self.assertEqual(board.design_document(root, body.replace("需求文档", "无关链接")), {})
 
+    def test_combined_scope_is_visible_without_requesting_user_input(self):
+        from plan_store import connect
+        issue = {"html_url": "https://github.com/fixture/board/issues/83", "title": "验证只读权限"}
+        lines = ["核对权限", "读取代码", "拒绝写入", "隔离咨询", "固定模式", "记录上游阻塞"]
+        with tempfile.TemporaryDirectory() as tmp, patch("subprocess.check_output", return_value=str(Path(tmp)/".git")), connect(Path(tmp)) as db:
+            for section in ("范围与验收", "范围和验收"):
+                issue["body"] = "## " + section + "\n" + "\n".join("- " + line for line in lines)
+                item = board.source_plan(issue, "request")
+                item.update(url=issue["html_url"], closed=False, updated="rev", request="request", status="needs-decision")
+                tasks = [node["value"] for node in item["plan"]["nodes"].values() if node["kind"] == "task"]
+                self.assertEqual(tasks, lines)
+                self.assertEqual(len(item["plan"]["edges"]), len(lines))
+                db.execute("INSERT OR IGNORE INTO answers(issue,node,question_version,value_json,actor) VALUES(?,?,?,?,?)",
+                           (item["url"], "decision", "old-version", '"确认"', "member"))
+                summary = board.plan_summary(db, item)
+                self.assertEqual((summary["decision"], summary["pending_count"], summary["answered_count"]), (False, 0, 0))
+
+    def test_shared_progress_counts_only_admitted_answers_and_verifies_actor(self):
+        import graph_host
+        import plan_store
+        actor = {"user_id": "42", "repo_id": "7"}
+        url = "https://github.com/fixture/board/issues/83"
+        source = board.source_plan({"html_url": url, "title": "需求", "body": "## 待确认\n- 支持哪个版本？"}, "request")
+        item = dict(source, url=url, updated="revision", request="request", closed=False, status="needs-decision")
+        envelope = dict(action="board-progress", repository="fixture/board", expected_user="42", repo_id="7", follow=[83])
+        with tempfile.TemporaryDirectory() as tmp, patch("subprocess.check_output", return_value=str(Path(tmp)/".git")), patch.object(board.work_items, "config", return_value=({"repository":"fixture/board"}, [])), patch.object(graph_host, "read_board", return_value={"issues":[item]}) as read:
+            root = Path(tmp)
+            with self.assertRaisesRegex(ValueError, "身份"):
+                graph_host.execute(root, dict(envelope, expected_user="other"), actor)
+            read.assert_not_called()
+            summary = lambda: graph_host.execute(root, envelope, actor)["summaries"][url]
+            self.assertEqual(summary()["pending_count"], 1)
+            item["status"] = "blocked"
+            self.assertFalse(summary()["decision"])
+            item["status"] = "needs-decision"
+            with plan_store.connect(root) as db:
+                question, = item["questions"]
+                source = dict(issue=url, actor="member", source_revision="rev", base=item["plan"],
+                              sources=item["sources"], questions=item["questions"], can_edit=False, can_answer=True)
+                revision = plan_store.snapshot(db, source)["revision"]
+                plan_store.answer(db, source, dict(node=question, value="版本 1", revision=revision))
+            self.assertEqual((summary()["pending_count"], summary()["answered_count"]), (0, 1))
+
     def test_private_workers_match_current_source_until_terminal(self):
         repo = "fixture/board"
         row = dict(number=2, title="Review", state="open", updated_at="rev1",
