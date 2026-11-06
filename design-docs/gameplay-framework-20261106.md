@@ -123,6 +123,8 @@
 - 当前 GF-1 尚未单独发布，GF-2 的类型注册、核心生命周期和测试基于该未发布基础组成同一初始模块候选；本次跨子项交付以 #177 / `gameplay-ds-session-20261106` 为唯一主关联，#176 作为一并验收的基础贡献。分别复核和记录 GF-1/GF-2 验收，不能据此关闭 #175 或后续阶段。
 - 发布必要的 CI 前置修复：当前 main 的 [GHA run 42219878669](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42219878669) 在创建任何 job 前以 `startup_failure` 结束，GitHub 明确报告 Windows 被调用工作流申请 `actions: read`，调用方却只允许 `actions: none`。本候选只为 runner 显式声明 `contents: read` 和 `actions: read`，恢复现有 CI 的合法调用，不添加写权限或放宽检查。
 - 提交前已整合 `c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40`，相对实际构建基线 `8c391908` 仅新增宿主 Python 接入和证据，不改变 Gameplay/引擎构建输入。复用上述验证并明确其输入对应关系，远端 CI 另绑定实际签发 head；后续真实候选、PR、CI、main 回执及各子项关闭证据写入 #177/#176 时间线，由本设计的真实 Issue 链接保持溯源，不预填未知发布结果。
+- 首次正式交付已通过门禁及提交后谛听核验，内容提交 `3f9c06bcfb9a4bb9c215c2bf55da9bd5c3edb6de`、GitHub 签发 head `25c3206b80f0238b391ec85223b963d55339603e` 与 [PR #185](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/185) 均已回读，Issue 关联检查通过。实际 CI 随后发现 21 个早已跟踪的 #55 历史验收日志被 `*.log` 忽略，阻断全量 gitignore 检查；本轮仅对这 21 个精确路径添加例外，保留全部历史字节和现有检查，沿新精确候选重新签发。详情见 `data-collection/gameplay-gf2-ci-preflight-20261106.json`；不因旧候选已有提交而跳过失败检查。
+- 重新签发前主线推进到 `c364925d2662e82106be215944ee3337f34a0013`，本地任务提交已重基且暂存修复完整恢复。新增主线为大千编辑器与宿主接入，不涉及 Gameplay 核心及其底层 Node/MultiplayerPeer 输入；复用逐文件相同的模块验收，新增编辑器整合由新候选 CI 验证，不把先前二进制声称为该基线重新构建。
 
 | 子项 ID / Issue URL | 原生父单 | 设计条款 | 范围及非目标 | 验收/必要检查 | 前置依赖 | 主责 | 交付目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
