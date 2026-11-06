@@ -244,6 +244,27 @@ func run() -> void:
 	entry.answered_count = 0
 	check("工单负责人" in workspace._work_summary(entry, {}).text, "label-only Issue asks the user for input")
 	workspace._show_board()
+	workspace.board.issues = issues
+	issues[4].decision = true
+	issues[4].pending_count = 1
+	state.plan = {"nodes":{"requirement":{"title":"需求", "kind":"text", "value":"选主题"}, "theme":{"title":"主题", "kind":"question", "value":"选主题"}}, "edges":[]}
+	state.context = {"questions":{"theme":{"kind":"choice", "prompt":"选主题", "options":["青色","紫色"]}}, "answers":{}, "can_answer":true}
+	workspace._draw_board()
+	await workspace._locate_pending(5)
+	var choice := graph.canvas.get_node_or_null("theme/AnswerInput") as OptionButton
+	check(workspace.current == issues[4].url and choice != null and choice.has_focus(), "pending item did not open the correct issue and focus its choice field")
+	if choice:
+		var submit := graph.canvas.get_node("theme/SubmitReply") as Button
+		check(submit.disabled, "empty choice can be submitted")
+		choice.select(1)
+		choice.item_selected.emit(1)
+		check(not submit.disabled and graph.answers.theme == "青色", "chosen reply was lost")
+	workspace._show_board()
+	workspace.search.text = "no-such-title"
+	workspace._filter_board()
+	check(workspace.empty_state.visible and workspace.reset_filters.visible, "empty search needs a recovery action")
+	workspace.reset_filters.pressed.emit()
+	check(workspace.overview.visible and not workspace.empty_state.visible, "clear filters did not restore the overview")
 	workspace.host = null
 	delay_detail = false
 	workspace.board = {}
