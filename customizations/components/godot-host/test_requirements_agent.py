@@ -68,9 +68,9 @@ class RequirementsTests(unittest.TestCase):
             if args[1] == "repos/org/repo":
                 return json.dumps({"full_name": "org/repo", "permissions": {"push": True}})
             if "/comments" in args[1]:
-                return "[[]]"
+                return json.dumps([[{"body": body} for body in self.comments]])
             if args[0] == "issue":
-                self.comments.append(args)
+                self.comments.append(Path(args[args.index("--body-file") + 1]).read_bytes().decode("utf-8"))
                 return ""
             return json.dumps(self.existing)
 
@@ -142,6 +142,27 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(result["issue_number"], 17)
         self.work.issue.assert_not_called()
         self.assertEqual(len(self.comments), 1)
+        self.assertIn("输入反馈", self.comments[0])
+        self.assertLess(self.comments[0].index("## 待确认"), self.comments[0].index("## 范围"))
+
+    def test_long_followup_resumes_after_first_part(self):
+        self.design.update(decision="continue", questions=["问" * 1999 + str(i % 10) for i in range(20)])
+        self.request.update(issue_number=17, request_id="bound-req")
+        original = self.work.gh
+
+        def interrupt(*args):
+            if args[:2] == ("issue", "comment") and self.comments:
+                raise ValueError("interrupted")
+            return original(*args)
+
+        with patch.object(self.work, "gh", side_effect=interrupt), self.assertRaisesRegex(ValueError, "interrupted"):
+            self.invoke()
+        self.invoke()
+        self.assertEqual(len(self.comments), 3)
+        self.assertTrue(all("\r" not in c for c in self.comments))
+        self.assertEqual(sum(c.count("- 问") for c in self.comments), 20)
+        self.assertTrue(all(len(c.encode("utf-8")) < 65536 for c in self.comments))
+        self.assertEqual(self.adapter.call.call_count, 1)
 
     def test_followup_retains_answers_and_latest_scope_for_intake(self):
         self.design["decision"] = "continue"
@@ -163,8 +184,7 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(self.adapter.call.call_count, 2)
 
     def test_invalid_or_oversized_history_is_rejected_before_model_call(self):
-        for context in [None, [{"role": "system", "content": "bad"}],
-                        [{"role": "user", "content": "x" * 16001}]]:
+        for context in [None, [{"role": "system", "content": "bad"}], [{"role": "user", "content": "x" * 16001}]]:
             self.request["conversation_context"] = context
             with self.assertRaisesRegex(ValueError, "bounded requirements conversation"):
                 self.invoke()
@@ -360,8 +380,9 @@ class RequirementsTests(unittest.TestCase):
         module.subprocess.run.side_effect = transport
         self.assertTrue(self.invoke()["ready"])
         expected_agent = "sinan"
-        routed = module.complete(self.root, self.request, {}, [{"role": "system", "content": "registered sinan"}],
-                                 {}, agent_id="sinan")
+        routed = module.complete(
+            self.root, self.request, {}, [{"role": "system", "content": "registered sinan"}], {}, agent_id="sinan"
+        )
         self.assertEqual(routed["finish_reason"], "stop")
         self.adapter.call.assert_not_called()
 

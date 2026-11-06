@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "diting-flow-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "diting-flow-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:05:45.491209+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/227",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "outcome": "按用户需求扫描谛听、已完成工单和设计，优化协作与信息获取",
+    "scan_reference": "data-collection/diting-flow-20261107.json",
+    "path_base": "repository_root",
+    "usage": null,
+    "usage_unknown_reason": "Provider totals unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "1c8afa4dbef149db2e44d4d645101085fbf36c6e910bd269645579cfdbc13e55"
+}
