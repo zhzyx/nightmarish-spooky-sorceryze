@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d29237cfa615a4c97e89c0c51a7c6aa882955377",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-13-integration-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "748a581333556e6e9d397cb8e435ad5a3bb7ed82991b68efa7ef1d23148ce19c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/340",
+    "action": "validation",
+    "detection_head": "123e5f1e6b19d43a493e0dc71d975777402a0641",
+    "context_sha256": "a2952c6c2ceb2ace365bec3c71a1f96d3aa8385db3128e76ce313f82e241afc5",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "local:cloth-contact-diagnostic-v2.json:frame319-top-two-rows",
+    "diagnosis": "全425帧原视频蹲回放显示最差131条实际腿带边穿过cloth面。定向第319帧全部交叉位于渲染顶端0/1行，交点y .974至1.039，距最近胶囊表面负21至60mm。问题是低位hip固定模拟边界进入深蹲身体，不能靠扩大自由粒子碰撞半径修复。原刚性腰带分界固定hip高度，需作者按身体/动作共同调整分区与独立cloth binding。",
+    "next_action": "root负责显式cloth_start_y契约和binding匹配校验，派生新1.075m边界保留上方2.5cm腰带，原source不改，随后实际同角色425帧/腰带/视图/缓存复验；失败记录保留。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T21:45:14.651111+00:00",
+    "attempted": "原全帧BVH检查与隐藏GPU帧319正侧视图、131交点位置/胶囊距离定向诊断",
+    "repair_owner": "/root",
+    "continuable": "yes: author-boundary refit and rebake"
+  },
+  "occurred_at": "2026-11-06T21:54:00.787859+00:00",
+  "sha256": "4877612f3695bc8d0945f26eceaca8e3708c36f4262254d98cf8db872a3187bf"
+}

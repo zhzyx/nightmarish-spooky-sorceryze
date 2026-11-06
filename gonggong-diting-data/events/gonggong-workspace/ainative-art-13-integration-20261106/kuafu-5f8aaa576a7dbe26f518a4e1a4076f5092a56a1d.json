@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5f8aaa576a7dbe26f518a4e1a4076f5092a56a1d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-13-integration-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "92b88d32855f5e3b2bfd38fc126a9cb6273c512a1f64835d30391685e922c980",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/340",
+    "action": "validation",
+    "detection_head": "123e5f1e6b19d43a493e0dc71d975777402a0641",
+    "context_sha256": "a2952c6c2ceb2ace365bec3c71a1f96d3aa8385db3128e76ce313f82e241afc5",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "Actual --editor probe reopening frozen character reports invalid access hair.config on Node3D(hair_runtime.gd); standalone runtime path previously passed.",
+    "diagnosis": "Hair runtime script lacks @tool and its fields/initialization are not executable in editor context. Integration owner /root/sinan_e753a7fa411ea3eb is assigned the minimal script-context repair; original publication and runtime evidence retained.",
+    "next_action": "Owner adds tool execution support, tests editor reopen/evaluate and runtime equivalence; independent reviewer verifies. Keep issue154 and bug340 open until exact candidate delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T22:05:39.871373+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-06T22:06:34.699857+00:00",
+  "sha256": "1e43917a49631b572d77c41d5498b9851666c052b54d46f5cb95eea65e03f4d6"
+}

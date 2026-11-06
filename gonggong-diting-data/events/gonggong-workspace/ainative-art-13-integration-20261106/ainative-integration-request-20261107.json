@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-integration-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-13-integration-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T21:30:59.816017+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81"
+  },
+  "payload": {
+    "request": "按已验收依赖接续本工单完整首版实现",
+    "dependencies": {
+      "github:zhzyx/nightmarish-spooky-sorceryze#144": {
+        "issue": 144,
+        "pr": 163,
+        "mergeCommit": "b9433dcabe69be1a8850a42a9fe8b9234829b867"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#145": {
+        "issue": 145,
+        "pr": 192,
+        "mergeCommit": "f537f112ac3e8c8ed62b748f5f6fd4cf790d0867"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#147": {
+        "issue": 147,
+        "pr": 203,
+        "mergeCommit": "4934dcd836493366c89a93078596d53f41d2c6be"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#148": {
+        "issue": 148,
+        "pr": 219,
+        "mergeCommit": "5a42d425b976057e9c531642b1659e5e01091c30"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#149": {
+        "issue": 149,
+        "pr": 221,
+        "mergeCommit": "491888459dbb64c8130378d8dbb3649cc1fd6ac8"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#150": {
+        "issue": 150,
+        "pr": 228,
+        "mergeCommit": "a61963195b3f75471be6e6a7f6ba05f6073db35d"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#151": {
+        "issue": 151,
+        "pr": 336,
+        "mergeCommit": "123e5f1e6b19d43a493e0dc71d975777402a0641"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#152": {
+        "issue": 152,
+        "pr": 336,
+        "mergeCommit": "123e5f1e6b19d43a493e0dc71d975777402a0641"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#153": {
+        "issue": 153,
+        "pr": 336,
+        "mergeCommit": "123e5f1e6b19d43a493e0dc71d975777402a0641"
+      }
+    },
+    "worker": "/root/sinan_e753a7fa411ea3eb",
+    "dispatch_receipt": "0d4d967515c2cdac20b7cd810d54d10fce35b155d4d7d691fc60af4f8e8f7d35",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "a0d6cbed58af6dbd7e60b3a7497bf76710668ed41cb2f3d24ceace097bdf39cf"
+}

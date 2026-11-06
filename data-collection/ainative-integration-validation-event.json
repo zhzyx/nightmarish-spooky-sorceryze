@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-integration-validation-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-13-integration-20261106",
+  "kind": "coverage",
+  "occurred_at": "2026-11-06T22:13:23.592891+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81"
+  },
+  "payload": {
+    "validation_path": "data-collection/ainative-integration-validation.json",
+    "validation_sha256": "11b88f43c3d5219e00b9b849426b4e28361fbd17a63d62f1d34241b923b5def3",
+    "local_acceptance": "passed",
+    "main_delivery": "pending",
+    "quinn": "unvalidated #202",
+    "usage": null
+  },
+  "evidence_refs": [
+    "ainative-integration-request-20261107"
+  ]
+}

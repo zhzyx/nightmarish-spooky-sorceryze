@@ -144,11 +144,20 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 		target = AABB(Vector3(-shoulder_width*.7,knee_y,-shoulder_width*.4),Vector3(shoulder_width*1.4,waist_y-knee_y,shoulder_width*.8))
 	if spec.has('target_box'):
 		var b = spec.target_box
-		if not b is Array or b.size()!=6: return {'error':'target_box requires six metre coordinates'}
+		if not b is Array or b.size()!=6: return {'error':'target_box requires six meter coordinates'}
 		for value in b:
 			if not (value is float or value is int) or not is_finite(float(value)): return {'error':'Nonfinite target cage'}
 		target = AABB(Vector3(b[0],b[1],b[2]),Vector3(b[3],b[4],b[5]))
 		if minf(target.size.x,minf(target.size.y,target.size.z))<=0: return {'error':'Invalid target cage dimensions'}
+	# The authored cloth boundary is separate from the skeleton's hip joint.
+	# Deep poses can intersect a low hip-pinned boundary; refit the partition
+	# and cloth binding together instead of weakening prescribed waist pins.
+	var cloth_start_y = hips.y
+	if spec.has('cloth_start_y'):
+		var boundary = spec.cloth_start_y
+		if spec.kind != 'skirt' or not (boundary is int or boundary is float) or not is_finite(float(boundary)) or boundary <= target.position.y+.02 or boundary >= target.end.y-.01:
+			return {'error':'Skirt cloth_start_y must be finite inside the target cage with a retained waist band'}
+		cloth_start_y = float(boundary)
 	var scene = avatar.duplicate()
 	scene.name = 'GarmentAssembly'
 	var sk = Interop.skeleton(scene)
@@ -201,11 +210,11 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 			var unit = (vertices[i]-bounds.position)/bounds.size
 			vertices[i] = shaped(target.position+unit*target.size,shape,hips.y,chest.y)
 			var scores = []
-			var zone = 'rigid' if spec.kind=='armor' else ('cloth' if spec.kind=='skirt' and vertices[i].y<hips.y else 'skinned')
+			var zone = 'rigid' if spec.kind=='armor' else ('cloth' if spec.kind=='skirt' and vertices[i].y<cloth_start_y else 'skinned')
 			partitions[zone].append(vertex_id)
 			if zone=='rigid': scores = [[1.0,chest_bone]]
 			elif zone=='cloth':
-				var free = clampf((hips.y-vertices[i].y)/maxf(target.size.y*.25,.01),0,1)
+				var free = clampf((cloth_start_y-vertices[i].y)/maxf(target.size.y*.25,.01),0,1)
 				scores = [[free,auxiliary],[1.0-free,int(profile.mapping.hips)]]
 				if free<.15: partitions.cloth_pins.append(vertex_id)
 			else:

@@ -1,0 +1,37 @@
+extends SceneTree
+const Session = preload('res://addons/ainative/character_session.gd')
+func _initialize(): run.call_deferred()
+func run():
+	var args = OS.get_cmdline_user_args()
+	var host = load('res://addons/ainative/workbench.gd').new()
+	root.add_child(host)
+	host.python_edit.text = args[3]
+	var panel = host.find_child('CharacterWorkbench',true,false)
+	panel.local_config = Session.read_object(args[0])
+	panel.destination.text = args[1]
+	panel.reopen()
+	assert(is_instance_valid(panel.session.live),panel.message.text)
+	panel.animation_choice.clear()
+	for item in panel.local_config.animations: panel.animation_choice.add_item(item.label)
+	panel.animation_choice.select(1)
+	panel.change_animation()
+	assert(panel.session.recipe.motion==panel.local_config.animations[1].path,panel.message.text)
+	print('Video squat applied to complete character.')
+	var error = await panel.session.bake_cloth()
+	assert(error.is_empty(),str(error))
+	print('Complete character cloth baked.')
+	panel.destination.text = args[2]
+	panel.save()
+	assert(FileAccess.file_exists(args[2]),panel.message.text)
+	panel.reopen()
+	assert(panel.session.live.get_node('ClothSolver').mode=='replay',panel.message.text)
+	var cloth = panel.session.live.get_node('ClothSolver')
+	var hair = panel.session.live.get_node('IndependentHair')
+	var sk = Session.I.skeleton(panel.session.live)
+	assert(cloth.get_node(cloth.skeleton_path)==sk and hair.body==sk)
+	var record = {'sha256':FileAccess.get_sha256(args[2]),'generation':panel.session.generation,'skeleton_instance':sk.get_instance_id(),'cloth_skeleton_instance':cloth.get_node(cloth.skeleton_path).get_instance_id(),'hair_body_instance':hair.body.get_instance_id(),'cloth_cache_frames':cloth.cache.frames.size(),'cloth_cache_key':cloth.expected_key,'evaluation_count':panel.session.evaluation_count}
+	var output = FileAccess.open(args[2]+'.receipt.json',FileAccess.WRITE)
+	output.store_string(JSON.stringify(record,'\t'))
+	print(JSON.stringify(record))
+	host.free()
+	quit()

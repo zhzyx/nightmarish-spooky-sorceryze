@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 const I = preload('res://addons/ainative/interop.gd')
 var config = {}

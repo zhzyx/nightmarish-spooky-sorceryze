@@ -106,5 +106,6 @@ ignore-words-list = [
 	"te",
 	"textin",
 	"thirdparty",
+	"ue", # Unreal Engine acronym used by compatibility evidence.
 	"vai",
 ]

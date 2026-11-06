@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5275a06f31a4668c5730953c5d8ccdcfa54020f0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-13-integration-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "136f35fa99d39f4b7af02578e46634e2dbcf5a47a325d6a733e0d6719bc869e3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/154",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/339",
+    "action": "dispatch",
+    "detection_head": "123e5f1e6b19d43a493e0dc71d975777402a0641",
+    "context_sha256": "bf799bf5e10ae0016d3244723345613e32dd228fc14e966659548c6a1a353fe3",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "local:inspect154-result.json",
+    "diagnosis": "私有宿主辅助脚本在依赖main祖先核验时读取完整GitHub compare响应，超过Node execFileSync默认缓冲区，真实依赖因此未就绪。已将compare读取缩为真实API的status字段，保留Issue关闭、PR合入SHA和祖先判断。随后复验已越过依赖评估，但原单收到夸父评论修订变化，启动前复核正确拒绝，尚未创建工作者。",
+    "next_action": "本次记录落定后重新按最新Issue修订派发，核对真实原生工具接收，再关闭本bug；不修改业务实现或放松依赖门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T21:25:52.168628+00:00",
+    "attempted": "只缩减API响应字段，首次复验host_revalidation_failed且无native启动",
+    "repair_owner": "/root",
+    "continuable": "yes: dispatch on updated revision"
+  },
+  "occurred_at": "2026-11-06T21:27:08.724644+00:00",
+  "sha256": "48fbdd918d6a6714573ea4eb6b78f426164b756ffde26da72d52385278568ba8"
+}
