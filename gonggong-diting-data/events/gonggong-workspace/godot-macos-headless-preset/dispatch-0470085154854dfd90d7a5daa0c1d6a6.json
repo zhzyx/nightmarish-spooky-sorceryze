@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "dispatch-0470085154854dfd90d7a5daa0c1d6a6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-macos-headless-preset",
+  "kind": "handoff",
+  "occurred_at": "2026-11-06T18:00:07.530084+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "db4733a8516db3518ff2253b54c10197290985fb0260225c6c9629725e718029",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "record": {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#226",
+      "reservation_key": "3abac32b28550fb179882b837300ee43d4d5e9db919dca9fea0e0d62390e2369",
+      "state": "running",
+      "stage": null,
+      "record_sha256": "7c44c4a1dc349f715cce82939fb4c0b9e25c701ad75aee3491fbb90e19bece83",
+      "source_revision": "f9ac4a3b6aee993d388976141c9cca8048da1c463f7426c2957471e692862756",
+      "planned_model": "GPT-6",
+      "requested_model": null,
+      "worker_id": "/root/sinan_3f1736dd5bfe1566",
+      "receipt_reference": "agent:/root/sinan_3f1736dd5bfe1566",
+      "setup_pending": false,
+      "observed_model": null
+    },
+    "usage": null,
+    "usage_unknown_reason": "native tool usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "90f9c33e34cfe7006f752d84ad86867d614a8e96ec637691a7e2654d74d5435b"
+}
