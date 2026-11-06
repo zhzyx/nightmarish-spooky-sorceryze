@@ -90,6 +90,10 @@ var direct_in_flight := {}
 var starting_direct := {}
 var model_options: OptionButton
 var manual_model: LineEdit
+var route_model_dialog := ConfirmationDialog.new()
+var route_model_options := OptionButton.new()
+var route_manual_model := LineEdit.new()
+var route_model_source := ""
 var publish_status: Label
 var publish_backend := -1
 var publish_source := ""
@@ -245,6 +249,8 @@ func _ready() -> void:
 	_build_clarification_dialog()
 	reply_button = _button(actions, "答复问题", _respond_to_wait)
 	_button(actions, "工单对话与模型", _open_issue_conversation)
+	_button(actions, "选择司南模型", _open_route_model)
+	_build_route_model_dialog()
 	_build_workbench()
 	debug_start_button = _button(actions, "调试运行", _start_debug)
 	debug_stop_button = _button(actions, "结束调试", _stop_debug)
@@ -542,6 +548,70 @@ func _conversation_unmounted() -> void:
 
 func _needs_model(catalog: Dictionary, selection: Dictionary) -> bool:
 	return selection.get("backend") != catalog.backend or (catalog.backend in [0, 3] and str(selection.get("id", "")).strip_edges().is_empty())
+
+
+func _build_route_model_dialog() -> void:
+	route_model_dialog.title = "选择司南判断模型"
+	route_model_dialog.get_ok_button().text = "保存并重试判断"
+	var fields := VBoxContainer.new()
+	route_model_dialog.add_child(fields)
+	var label := Label.new()
+	label.text = "使用当前 AI Chat 后端；可选列表型号或手动填写模型 ID"
+	fields.add_child(label)
+	fields.add_child(route_model_options)
+	route_manual_model.placeholder_text = "手动模型 ID；CLI 留空使用默认模型"
+	route_manual_model.max_length = 128
+	fields.add_child(route_manual_model)
+	route_model_options.item_selected.connect(func(_index): _update_route_model_field())
+	add_child(route_model_dialog)
+	route_model_dialog.confirmed.connect(_confirm_route_model)
+
+
+func _update_route_model_field() -> void:
+	route_manual_model.visible = route_model_options.selected == route_model_options.item_count - 1
+
+
+func _open_route_model() -> void:
+	if actor.is_empty() or not is_instance_valid(chat):
+		return
+	var binding := _direct_binding()
+	if binding.is_empty() or binding.has("error") or binding.get("status") != "planned":
+		notice.text = "请先打开待判断的大千工单"
+		return
+	var catalog: Dictionary = chat.get_daqian_models()
+	var selected: Dictionary = saved.get("execution_models", {}).get(binding.url, {"backend":catalog.backend, "id":catalog.current})
+	route_model_source = current
+	route_model_options.clear()
+	var found := -1
+	for option in catalog.options:
+		route_model_options.add_item(option.label)
+		var index := route_model_options.item_count - 1
+		route_model_options.set_item_metadata(index, option.id)
+		if option.id == selected.get("id", ""):
+			found = index
+	route_model_options.add_item("手动填写模型 ID")
+	route_model_options.select(found if found >= 0 else route_model_options.item_count - 1)
+	route_manual_model.text = str(selected.get("id", ""))
+	_update_route_model_field()
+	route_model_dialog.popup_centered_clamped(Vector2i(440, 180))
+
+
+func _confirm_route_model() -> void:
+	if route_model_source != current or not is_instance_valid(chat):
+		return
+	var binding := _direct_binding()
+	if binding.is_empty() or binding.has("error"):
+		return
+	var catalog: Dictionary = chat.get_daqian_models()
+	var model_id := route_manual_model.text.strip_edges() if route_manual_model.visible else str(route_model_options.get_selected_metadata())
+	if model_id.contains("\n") or model_id.contains("\r") or (catalog.backend in [0, 3] and model_id.is_empty()):
+		notice.text = "请填写有效的模型 ID"
+		return
+	if not saved.has("execution_models"):
+		saved.execution_models = {}
+	saved.execution_models[binding.url] = {"backend":catalog.backend, "id":model_id}
+	_save()
+	await _judge_requirement(binding, "", true)
 
 
 func _apply_issue_model() -> void:
@@ -2189,7 +2259,7 @@ func _open_publish() -> void:
 					if kind == pending.get("category", saved.get("categories", {}).get(current, "development")):
 						category.select(category.item_count - 1)
 	var execution_model: Dictionary = saved.get("execution_models", {}).get(current, {})
-	choose_execution_model.set_pressed_no_signal(not execution_model.is_empty() and execution_model.get("backend") == publish_backend)
+	choose_execution_model.set_pressed_no_signal(true)
 	var stored: Dictionary = execution_model
 	var chosen: String = stored.get("id", catalog.current) if stored.get("backend", -1) == publish_backend else catalog.current
 	publish_source = current
@@ -2211,8 +2281,8 @@ func _open_publish() -> void:
 
 
 func _update_publish_controls() -> void:
-	choose_execution_model.visible = publish_backend >= 0
-	model_label.visible = choose_execution_model.visible and choose_execution_model.button_pressed
+	choose_execution_model.visible = false
+	model_label.visible = publish_backend >= 0
 	model_options.visible = model_label.visible
 	var pending: bool = saved.get("direct_pending", {}).has(current)
 	category.disabled = pending
