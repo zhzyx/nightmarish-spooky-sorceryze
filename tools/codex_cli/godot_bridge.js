@@ -6,6 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { StringDecoder } = require('node:string_decoder');
+const { outputSchemaFor, argumentsForHost } = require('./action_schema');
 const { validateInput, normalizeResult, classifyDiagnostics, bridgeError, serializeError, ACTIONS } = require('../codebuddy_cli/godot_bridge');
 
 const LIMIT = 2 * 1024 * 1024;
@@ -64,7 +65,9 @@ function prepareImages(input, directory) {
 function promptFor(input) {
     return 'You are the Godot editor assistant. Reply in the user language. Native tools are disabled. '
         + 'Use only the available_tools in the following host data by returning actions. '
-        + 'Each action.arguments must be a JSON-encoded object matching that tool schema. '
+        + 'Follow the supplied output schema: use an object for typed action.arguments; only tools whose arguments schema is a string use a JSON-encoded object. '
+        + 'Inside object arguments, use ordinary string values: do not JSON.stringify values or add a second layer of escaping. '
+        + 'For typed optional fields use null to omit them and preserve host defaults. '
         + 'Godot executes actions with its permission, approval and snapshot workflow and returns results next turn. '
         + 'For engine-operation intent, automatically discover targets with editor_action/find_targets and enter route_engine_message with intent=engine_operation, a unique request_id, source=codex and one declarative operation. New pages register automatically; inspect their actual capabilities. Use start_guidance for multiple steps. A natural-language-only request returns planning_required: plan and submit a new request_id. Repeat identical IDs only for result recovery. '
         + 'Never claim success without a successful tool result. Respect rejected actions. '
@@ -77,16 +80,35 @@ function promptFor(input) {
 
 function completion(text, input) {
     let envelope;
+    let reason = 'response_json';
+    let actionIndex = -1;
     try {
+        text = text.trim();
+        const fenced = /^```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i.exec(text);
+        if (fenced) text = fenced[1];
         envelope = JSON.parse(text);
-        if (!Array.isArray(envelope.actions)) throw new Error();
-        const allowed = new Set(input.available_tools.map(tool => tool.function.name));
+        reason = 'response_shape';
+        if (!envelope || typeof envelope.content !== 'string' || !Array.isArray(envelope.actions)
+            || envelope.actions.length > 8) throw new Error();
+        const allowed = new Map(input.available_tools.map(tool => [tool.function.name, tool.function]));
+        const actions = [];
         for (const action of envelope.actions) {
-            if (!allowed.has(action.name) || (input.tool_context?.consultation_only && !READ_TOOLS.has(action.name))
-                || typeof action.arguments !== 'string') throw new Error();
-            action.arguments = JSON.parse(action.arguments);
+            actionIndex++;
+            reason = 'tool_not_allowed';
+            if (!action || !allowed.has(action.name) || (input.tool_context?.consultation_only && !READ_TOOLS.has(action.name))) throw new Error();
+            reason = 'action_arguments';
+            actions.push({ name: action.name, arguments: argumentsForHost(action.arguments, allowed.get(action.name).parameters) });
         }
-    } catch (_) { throw bridgeError('INVALID_ACTION'); }
+        envelope = { content: envelope.content, actions };
+    } catch (cause) {
+        const error = bridgeError('INVALID_ACTION');
+        // Only fixed categories are surfaced; never echo model text or commands.
+        const detail = ['argument_type', 'argument_enum', 'argument_required', 'argument_extra',
+            'argument_range', 'argument_json', 'argument_object'].includes(cause.message) ? cause.message : reason;
+        error.validationReason = detail;
+        error.actionIndex = actionIndex;
+        throw error;
+    }
     return normalizeResult({ structured_output: envelope }, input.available_tools.length > 0);
 }
 
@@ -117,7 +139,7 @@ async function run(entry, request) {
     process.once('exit', cleanup);
     try {
         const schema = path.join(directory, 'response.schema.json');
-        fs.writeFileSync(schema, JSON.stringify(SCHEMA), { mode: 0o600 });
+        fs.writeFileSync(schema, JSON.stringify(outputSchemaFor(input, SCHEMA)), { mode: 0o600 });
         const prepared = prepareImages(input, directory);
         const args = argumentsFor(input.model, schema, prepared.images);
         // JS entry support is useful for npm installations and offline protocol tests.
@@ -187,6 +209,15 @@ if (require.main === module) {
             error => {
                 const safe = serializeError(error);
                 safe.message = safe.message.replaceAll('CodeBuddy', 'Codex');
+                if (error.validationReason) {
+                    safe.validation_reason = error.validationReason;
+                    safe.action_index = error.actionIndex;
+                    // Retain only bounded categories beside the temporary request.
+                    // Never retain model text, command bodies, images or credentials.
+                    try { fs.writeFileSync(process.argv[4] + '.failure.json', JSON.stringify({
+                        occurred_at: new Date().toISOString(), ...safe,
+                    }), { mode: 0o600, flag: 'wx' }); } catch (_) {}
+                }
                 process.stdout.write(JSON.stringify({ error: safe }));
                 process.exitCode = 1;
             });

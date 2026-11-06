@@ -1,0 +1,44 @@
+{
+  "request_id": "codex-action-arguments-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/168",
+  "issue_number": 168,
+  "platform": "macOS arm64",
+  "recorded_at": "2026-11-06T11:47:19.551872+00:00",
+  "inputs_sha256": {
+    "tools/codex_cli/action_schema.js": "5a18d2ae8385a9bcbe830f8d4fddcc81638873b958c66036197519441101e36d",
+    "tools/codex_cli/godot_bridge.js": "413b30f52bd88290e04e7e827ae7e21341c96ebce945761e3a7f4b7f69e4c1b1",
+    "tests/editor/test_codex_bridge.js": "dbb6ff10ab844369d1eb6a080210d93ea43cc819ba1e64479459974fef732467"
+  },
+  "offline_tests": {
+    "command": "node --test tests/editor/test_codex_bridge.js",
+    "passed": 14,
+    "failed": 0
+  },
+  "real_cli_format_check": {
+    "passed": true,
+    "proposed_command_executed": false,
+    "verified": [
+      "typed action schema with multiple tools and dynamic fallback",
+      "Chinese multiline command with quotes and Windows backslashes",
+      "optional null placeholders omitted; exact command comparison passed"
+    ],
+    "initial_probe": "A JSON-embedded copy instruction yielded an overescaped command; the final probe used unambiguous literal text and the prompt explicitly prohibits double encoding. No command from either probe was executed."
+  },
+  "independent_review": {
+    "host_agent": "/root/review_codex_bridge",
+    "result": "no blocking findings; offline tests independently passed"
+  },
+  "active_workspace": {
+    "recovery_patch_applied": true,
+    "prior_issue165_changes_preserved": true,
+    "combined_bridge_offline_tests_passed": 14,
+    "engine_conversation_resumed": false
+  },
+  "limitations": [
+    "Original rejected reply was not retained, so its precise syntax defect is unknown.",
+    "This fix does not finish Issue #165.",
+    "No automatic model retries or action replay."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Host model/token usage not reported for this task; no estimate."
+}
