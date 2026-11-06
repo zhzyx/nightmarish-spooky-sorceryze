@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-prediction-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180",
+  "issue_number": 180,
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "status": "status:in-review",
+  "status_at_intake": "status:in-progress",
+  "intake_readback_at": "2026-11-06T14:05:25Z",
+  "final_status_readback_at": "2026-11-06T14:35:45Z",
+  "scope": "GF-5 numbered input, server authority, owner prediction, correction replay, remote interpolation, controlled network conditions, and the final DS plus two-client integration sample"
+}

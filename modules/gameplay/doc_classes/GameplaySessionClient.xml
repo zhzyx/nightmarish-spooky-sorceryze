@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplaySessionClient" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		ENet client for the dedicated-server connection handshake.
+	</brief_description>
+	<description>
+		GameplaySessionClient performs the GF-2 version, authentication, and join handshake. Optional [member replication] and [member prediction] adapters share the peer for validated replication and prediction packets. ENet does not encrypt the supplied credentials; use short-lived tokens and a suitable secure network boundary in production.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="connect_to_server">
+			<return type="int" enum="Error" />
+			<param index="0" name="address" type="String" />
+			<param index="1" name="port" type="int" />
+			<param index="2" name="protocol_version" type="String" />
+			<param index="3" name="auth_token" type="String" />
+			<param index="4" name="reconnect_token" type="String" default="&quot;&quot;" />
+			<description>
+				Creates an ENet client and begins connecting.
+			</description>
+		</method>
+		<method name="disconnect_from_server">
+			<return type="void" />
+			<description>
+				Closes the transport.
+			</description>
+		</method>
+		<method name="get_multiplayer_peer" qualifiers="const">
+			<return type="MultiplayerPeer" />
+			<description>
+				Returns the ENet peer while allocated.
+			</description>
+		</method>
+		<method name="get_peer_id" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the temporary ENet peer ID.
+			</description>
+		</method>
+		<method name="get_reconnect_token" qualifiers="const">
+			<return type="String" />
+			<description>
+				Returns the opaque token supplied by successful authentication.
+			</description>
+		</method>
+		<method name="is_joined" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the server completed player spawning.
+			</description>
+		</method>
+		<method name="poll">
+			<return type="int" enum="Error" />
+			<description>
+				Polls ENet and advances the handshake.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="rejection_reason" type="String" setter="" getter="get_rejection_reason">
+			Machine-readable server rejection reason.
+		</member>
+		<member name="replication" type="GameplayMultiplayerReplication" setter="set_replication" getter="get_replication">
+			Optional RPC and property replication adapter sharing the client peer.
+		</member>
+		<member name="prediction" type="GameplayNetworkPrediction" setter="set_prediction" getter="get_prediction">
+			Optional owner prediction and remote interpolation adapter sharing the client peer.
+		</member>
+		<member name="session_id" type="String" setter="" getter="get_session_id">
+			Stable authenticated session identity.
+		</member>
+		<member name="state" type="int" setter="" getter="get_state" enum="GameplayConnection.State">
+			Current [enum GameplayConnection.State].
+		</member>
+		<member name="user_id" type="String" setter="" getter="get_user_id">
+			Stable authenticated user identity.
+		</member>
+	</members>
+	<signals>
+		<signal name="state_changed">
+			<param index="0" name="state" type="int" />
+			<description>
+				Emitted when the client handshake state changes.
+			</description>
+		</signal>
+	</signals>
+</class>

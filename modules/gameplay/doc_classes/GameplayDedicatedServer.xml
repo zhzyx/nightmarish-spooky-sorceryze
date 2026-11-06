@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayDedicatedServer" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Headless ENet bootstrap for the gameplay session state machine.
+	</brief_description>
+	<description>
+		GameplayDedicatedServer owns the GF-2 version, authentication, and join handshake. The [member authenticator] must return a Dictionary containing [code]accepted[/code] and, on success, stable [code]user_id[/code], [code]session_id[/code], and opaque [code]reconnect_token[/code]. Optional [member replication] and [member prediction] adapters share the peer while retaining their own sender, ownership, and authority validation. ENet does not encrypt these packets, so production deployments must use short-lived credentials and an appropriate secure network boundary.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="begin_shutdown">
+			<return type="void" />
+			<param index="0" name="timeout_msec" type="int" default="-1" />
+			<description>
+				Refuses new connections, drains existing peers, then stops at the deadline.
+			</description>
+		</method>
+		<method name="get_bound_port" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the actual listening port.
+			</description>
+		</method>
+		<method name="get_multiplayer_peer" qualifiers="const">
+			<return type="MultiplayerPeer" />
+			<description>
+				Returns the owned ENet peer while running.
+			</description>
+		</method>
+		<method name="get_session_manager" qualifiers="const">
+			<return type="GameplaySessionManager" />
+			<description>
+				Returns the attached session manager.
+			</description>
+		</method>
+		<method name="get_transport_peer_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of connected transport peers.
+			</description>
+		</method>
+		<method name="is_refusing_new_connections" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether ENet rejects new transports.
+			</description>
+		</method>
+		<method name="is_shutting_down" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the server is draining.
+			</description>
+		</method>
+		<method name="poll">
+			<return type="int" enum="Error" />
+			<description>
+				Polls ENet, dispatches handshake packets, expires sessions, and advances shutdown.
+			</description>
+		</method>
+		<method name="refuse_new_connections">
+			<return type="void" />
+			<description>
+				Stops transport and gameplay admission without dropping existing peers.
+			</description>
+		</method>
+		<method name="start">
+			<return type="int" enum="Error" />
+			<param index="0" name="config" type="GameplayServerConfig" />
+			<param index="1" name="session_manager" type="GameplaySessionManager" />
+			<description>
+				Starts the ENet listener.
+			</description>
+		</method>
+		<method name="start_from_command_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="session_manager" type="GameplaySessionManager" />
+			<param index="1" name="arguments" type="PackedStringArray" default="PackedStringArray()" />
+			<description>
+				Starts from explicit arguments, or OS user arguments when empty.
+			</description>
+		</method>
+		<method name="stop_now">
+			<return type="void" />
+			<description>
+				Immediately closes ENet and removes all sessions.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="admission_check" type="Callable" setter="set_admission_check" getter="get_admission_check" default="Callable()">
+			Optional callable receiving user and session IDs and returning whether business admission succeeds.
+		</member>
+		<member name="authenticator" type="Callable" setter="set_authenticator" getter="get_authenticator" default="Callable()">
+			Authentication adapter callable receiving auth and reconnect tokens.
+		</member>
+		<member name="running" type="bool" setter="" getter="is_running">
+			Whether the server listener is active.
+		</member>
+		<member name="replication" type="GameplayMultiplayerReplication" setter="set_replication" getter="get_replication">
+			Optional RPC and property replication adapter sharing the server peer.
+		</member>
+		<member name="prediction" type="GameplayNetworkPrediction" setter="set_prediction" getter="get_prediction">
+			Optional authoritative input and prediction snapshot adapter sharing the server peer.
+		</member>
+	</members>
+	<signals>
+		<signal name="peer_rejected">
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="reason" type="String" />
+			<description>
+				Emitted for a rejected handshake.
+			</description>
+		</signal>
+		<signal name="server_started">
+			<param index="0" name="port" type="int" />
+			<description>
+				Emitted after ENet begins listening.
+			</description>
+		</signal>
+		<signal name="server_stopped">
+			<description>
+				Emitted after the transport and sessions close.
+			</description>
+		</signal>
+		<signal name="server_stopping">
+			<description>
+				Emitted when graceful draining begins.
+			</description>
+		</signal>
+	</signals>
+</class>

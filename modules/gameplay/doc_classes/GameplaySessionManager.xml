@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplaySessionManager" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Authoritative connection state machine and reconnectable session owner.
+	</brief_description>
+	<description>
+		GameplaySessionManager is transport-independent. A server adapter must call each phase in order: [method transport_connected], [method verify_version], [method authenticate], [method admit], [method create_player], and [method spawn_player]. Disconnects deactivate the PlayerState and retain session objects until the grace period expires.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="admit">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Advances an authenticated connection through business admission.
+			</description>
+		</method>
+		<method name="authenticate">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="user_id" type="String" />
+			<param index="2" name="session_id" type="String" />
+			<param index="3" name="reconnect_token" type="String" />
+			<description>
+				Binds trusted authentication output to a new or inactive stable session.
+			</description>
+		</method>
+		<method name="create_player">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Creates or rebinds PlayerState and Controller after admission.
+			</description>
+		</method>
+		<method name="expire_disconnected">
+			<return type="int" />
+			<param index="0" name="now_msec" type="int" default="-1" />
+			<description>
+				Destroys sessions whose grace periods elapsed and returns the count removed.
+			</description>
+		</method>
+		<method name="get_active_session_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of sessions with live peer bindings.
+			</description>
+		</method>
+		<method name="get_connection" qualifiers="const">
+			<return type="GameplayConnection" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Returns the live connection for a peer.
+			</description>
+		</method>
+		<method name="get_session" qualifiers="const">
+			<return type="GameplayUserSession" />
+			<param index="0" name="session_id" type="String" />
+			<description>
+				Returns a session by stable identity.
+			</description>
+		</method>
+		<method name="get_session_by_peer" qualifiers="const">
+			<return type="GameplayUserSession" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Returns the session currently bound to a peer.
+			</description>
+		</method>
+		<method name="get_sessions" qualifiers="const">
+			<return type="GameplayUserSession[]" />
+			<description>
+				Returns all active and grace-period sessions.
+			</description>
+		</method>
+		<method name="reject">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="reason" type="String" />
+			<description>
+				Marks a connection rejected with a machine-readable reason.
+			</description>
+		</method>
+		<method name="shutdown">
+			<return type="void" />
+			<description>
+				Stops admission and removes every connection and session.
+			</description>
+		</method>
+		<method name="spawn_player">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Creates and possesses a Pawn after player creation.
+			</description>
+		</method>
+		<method name="transport_connected">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Begins state tracking for a new transport peer.
+			</description>
+		</method>
+		<method name="transport_disconnected">
+			<return type="void" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="now_msec" type="int" default="-1" />
+			<description>
+				Deactivates the peer's session and begins its reconnect grace period.
+			</description>
+		</method>
+		<method name="verify_version">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="version" type="String" />
+			<description>
+				Validates the application protocol version before authentication.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="accepting_connections" type="bool" setter="set_accepting_connections" getter="is_accepting_connections" default="true">
+			Whether new transport peers may enter the state machine.
+		</member>
+		<member name="disconnect_grace_period_msec" type="int" setter="set_disconnect_grace_period_msec" getter="get_disconnect_grace_period_msec" default="30000">
+			How long disconnected sessions remain reconnectable.
+		</member>
+		<member name="game_mode" type="GameplayGameMode" setter="set_game_mode" getter="get_game_mode">
+			The authority used for player creation and removal.
+		</member>
+		<member name="protocol_version" type="String" setter="set_protocol_version" getter="get_protocol_version" default="&quot;1&quot;">
+			The exact accepted application protocol version.
+		</member>
+	</members>
+	<signals>
+		<signal name="connection_state_changed">
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="state" type="int" />
+			<description>
+				Emitted for every accepted phase transition.
+			</description>
+		</signal>
+		<signal name="session_created">
+			<param index="0" name="session" type="GameplayUserSession" />
+			<description>
+				Emitted for a new stable session.
+			</description>
+		</signal>
+		<signal name="session_deactivated">
+			<param index="0" name="session" type="GameplayUserSession" />
+			<description>
+				Emitted when a session enters its grace period.
+			</description>
+		</signal>
+		<signal name="session_expired">
+			<param index="0" name="session" type="GameplayUserSession" />
+			<description>
+				Emitted immediately before an expired session is destroyed.
+			</description>
+		</signal>
+		<signal name="session_rebound">
+			<param index="0" name="session" type="GameplayUserSession" />
+			<param index="1" name="peer_id" type="int" />
+			<description>
+				Emitted when an inactive session binds a new peer.
+			</description>
+		</signal>
+	</signals>
+</class>

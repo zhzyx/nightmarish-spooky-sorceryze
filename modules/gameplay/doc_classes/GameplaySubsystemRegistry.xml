@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplaySubsystemRegistry" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Owns and orders gameplay subsystems for one lifetime scope.
+	</brief_description>
+	<description>
+		GameplaySubsystemRegistry enforces unique subsystem IDs and a common scope. It initializes subsystems in registration order and deinitializes them in reverse order. Repeated initialize or deinitialize calls are safe.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_subsystem">
+			<return type="int" enum="Error" />
+			<param index="0" name="subsystem" type="GameplaySubsystem" />
+			<description>
+				Registers a matching-scope subsystem with a unique, non-empty ID.
+			</description>
+		</method>
+		<method name="deinitialize_subsystems">
+			<return type="void" />
+			<description>
+				Deinitializes all registered subsystems in reverse order. Calling this while inactive has no effect.
+			</description>
+		</method>
+		<method name="get_subsystem" qualifiers="const">
+			<return type="GameplaySubsystem" />
+			<param index="0" name="id" type="StringName" />
+			<description>
+				Returns the live subsystem with [param id], or [code]null[/code].
+			</description>
+		</method>
+		<method name="get_subsystems" qualifiers="const">
+			<return type="GameplaySubsystem[]" />
+			<description>
+				Returns live subsystems in registration order.
+			</description>
+		</method>
+		<method name="initialize_subsystems">
+			<return type="int" enum="Error" />
+			<description>
+				Initializes all subsystems in registration order. Already-initialized registries return [constant OK].
+			</description>
+		</method>
+		<method name="remove_subsystem">
+			<return type="bool" />
+			<param index="0" name="subsystem" type="GameplaySubsystem" />
+			<description>
+				Deinitializes and removes [param subsystem] if it is registered.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="initialized" type="bool" setter="" getter="is_initialized">
+			The read-only registry lifecycle state.
+		</member>
+		<member name="scope" type="int" setter="set_scope" getter="get_scope" enum="GameplaySubsystem.Scope" default="1">
+			The lifetime scope accepted by this registry.
+		</member>
+	</members>
+	<signals>
+		<signal name="subsystem_added">
+			<param index="0" name="subsystem" type="GameplaySubsystem" />
+			<description>
+				Emitted after a subsystem is registered.
+			</description>
+		</signal>
+		<signal name="subsystem_removed">
+			<param index="0" name="subsystem" type="GameplaySubsystem" />
+			<description>
+				Emitted after a subsystem is removed.
+			</description>
+		</signal>
+	</signals>
+</class>

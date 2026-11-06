@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayWorld" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Composes the match state, optional authority, and world-scoped services.
+	</brief_description>
+	<description>
+		GameplayWorld is the root lifetime boundary for the gameplay framework. A server composition supplies both [GameplayGameState] and [GameplayGameMode]. A client composition supplies only the shared game state. An optional world-scoped [GameplaySubsystemRegistry] is initialized and shut down with the world.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_game_mode" qualifiers="const">
+			<return type="GameplayGameMode" />
+			<description>
+				Returns the authoritative game mode, or [code]null[/code] for a client composition.
+			</description>
+		</method>
+		<method name="get_game_state" qualifiers="const">
+			<return type="GameplayGameState" />
+			<description>
+				Returns the shared match state.
+			</description>
+		</method>
+		<method name="get_subsystem_registry" qualifiers="const">
+			<return type="GameplaySubsystemRegistry" />
+			<description>
+				Returns the optional world-scoped subsystem registry.
+			</description>
+		</method>
+		<method name="initialize_world">
+			<return type="int" enum="Error" />
+			<param index="0" name="game_state" type="GameplayGameState" />
+			<param index="1" name="game_mode" type="GameplayGameMode" default="null" />
+			<param index="2" name="subsystems" type="GameplaySubsystemRegistry" default="null" />
+			<description>
+				Initializes a client or server composition. The subsystem registry must use [constant GameplaySubsystem.SCOPE_WORLD].
+			</description>
+		</method>
+		<method name="is_initialized" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this world composition is active.
+			</description>
+		</method>
+		<method name="shutdown_world">
+			<return type="void" />
+			<description>
+				Deinitializes subsystems and clears the composition. Calling this repeatedly is safe.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="world_initialized">
+			<description>
+				Emitted after the world and its subsystems initialize.
+			</description>
+		</signal>
+		<signal name="world_shutdown">
+			<description>
+				Emitted after the world shuts down.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayGameState" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Shared, client-visible match state and player-state collection.
+	</brief_description>
+	<description>
+		GameplayGameState contains the match phase and unique [GameplayPlayerState] instances. It is suitable for server-to-client state replication, while authoritative rules remain in [GameplayGameMode].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_player_state">
+			<return type="int" enum="Error" />
+			<param index="0" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Adds a unique player state and establishes its reverse relationship.
+			</description>
+		</method>
+		<method name="get_player_states" qualifiers="const">
+			<return type="GameplayPlayerState[]" />
+			<description>
+				Returns all live player states in insertion order.
+			</description>
+		</method>
+		<method name="has_player_state" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Returns whether [param player_state] belongs to this match state.
+			</description>
+		</method>
+		<method name="remove_player_state">
+			<return type="bool" />
+			<param index="0" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Removes [param player_state] and clears its reverse relationship.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="match_phase" type="StringName" setter="set_match_phase" getter="get_match_phase" default="&amp;&quot;&quot;">
+			An application-defined match phase such as [code]&amp;"waiting"[/code] or [code]&amp;"in_progress"[/code].
+		</member>
+		<member name="player_count" type="int" setter="" getter="get_player_count">
+			The number of live registered player states.
+		</member>
+	</members>
+	<signals>
+		<signal name="match_phase_changed">
+			<param index="0" name="old_phase" type="StringName" />
+			<param index="1" name="new_phase" type="StringName" />
+			<description>
+				Emitted when [member match_phase] changes.
+			</description>
+		</signal>
+		<signal name="player_state_added">
+			<param index="0" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Emitted after a player state is registered.
+			</description>
+		</signal>
+		<signal name="player_state_removed">
+			<param index="0" name="player_state" type="GameplayPlayerState" />
+			<description>
+				Emitted after a player state is removed.
+			</description>
+		</signal>
+	</signals>
+</class>
