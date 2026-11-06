@@ -127,6 +127,165 @@ def issue_receipt(repo, repository, actor, branch, parent, tree, message):
     return verify_receipt(tip, actor, parent, tree, message)
 
 
+def changed_paths(repo, before, after):
+    # Disable rename heuristics so both the removed and added paths are represented.
+    raw = issue_gate.git(repo, "diff", "--no-renames", "--name-only", "-z", before, after, "--")
+    return sorted(os.fsdecode(path) for path in raw.split(b"\0") if path)
+
+
+def handoff(repo, base, tree, main):
+    writes = changed_paths(repo, base, tree)
+    upstream = changed_paths(repo, base, main) if main != base else []
+
+    # A file replaced by a directory (or vice versa) also intersects a nested write.
+    def prefixes(paths):
+        return {path[:i] for path in paths for i, char in enumerate(path) if char == "/"}
+
+    upstream_set = set(upstream)
+    directories = prefixes(upstream)
+    overlap = [
+        path for path in writes if path in upstream_set or path in directories or prefixes([path]) & upstream_set
+    ]
+    advanced = main != base and git(repo, "merge-base", base, main) == base
+    if main == base:
+        action = "合入前回读精确签发 head、当前 main、CI 与验收。"
+    elif not advanced:
+        action = "目标历史与签发基线分离；核对目标和主线历史，重新整合、验证及签发。"
+    elif overlap:
+        action = "核对双方对重叠路径的修改意图，复验受影响条款；对整合后的候选重新门禁和签发。"
+    else:
+        action = "检查上游接口与依赖变化，整合 main 后重新执行候选门禁与签发。"
+    return {
+        "base": base,
+        "main_observed": main,
+        "tree": tree,
+        "write_paths": writes,
+        "base_advanced": advanced,
+        "upstream_change_count": len(upstream),
+        "overlapping_write_paths": overlap,
+        "substantive_rework": None,
+        "next_action": action,
+    }
+
+
+def pr_handoff(repository, report, candidate, signed, login):
+    paths = report["write_paths"]
+    listing = "\n".join("    " + json.dumps(path, ensure_ascii=True) for path in paths)
+    if len(listing) > 6000:
+        listing = f"[完整路径差异](https://github.com/{repository}/compare/{report['base']}...{signed}#files_bucket)"
+    return (
+        f"交接 · 发布者 {login} · 目标 main · 基线 `{report['base']}`\n"
+        f"源候选 `{candidate}` · 已签 head `{signed}` · 内容树 `{report['tree']}`\n"
+        f"相对签发基线写入 {len(paths)} 个仓库路径（含删除）：\n\n{listing}"
+    )
+
+
+def matching_pr(repository, branch):
+    prs = json.loads(
+        work_items.gh(
+            "pr",
+            "list",
+            "-R",
+            "github.com/" + repository,
+            "--state",
+            "all",
+            "--head",
+            branch,
+            "--base",
+            "main",
+            "--json",
+            "url,headRefOid,isCrossRepository,state",
+        )
+    )
+    matches = [pr for pr in prs if not pr["isCrossRepository"]]
+    require(len(matches) <= 1, "Multiple PRs for this candidate; reconcile before submission")
+    return matches[0] if matches else None
+
+
+def inspect_pr(repo, repository, pr_number):
+    remote = "github.com/" + repository
+    pr = json.loads(
+        work_items.gh(
+            "pr",
+            "view",
+            str(pr_number),
+            "-R",
+            remote,
+            "--json",
+            "url,headRefName,headRefOid,baseRefName,isCrossRepository,state,mergeCommit",
+        )
+    )
+    branch = re.fullmatch(r"codex/submit/([A-Za-z0-9-]+)/([1-9][0-9]*)/([a-f0-9]{40})", pr["headRefName"])
+    require(
+        branch and pr["baseRefName"] == "main" and not pr["isCrossRepository"],
+        "Expected a same-repository signed candidate for main",
+    )
+    login, issue, candidate = branch.groups()
+    url = "https://github.com/" + repository + ".git"
+    authenticated_git(repo, "fetch", url, f"refs/pull/{pr_number}/head")
+    signed = git(repo, "rev-parse", "FETCH_HEAD")
+    require(signed == pr["headRefOid"], "PR head changed during readback")
+    owner, name = repository.split("/")
+    data = graphql(
+        "query($owner:String!,$name:String!,$oid:GitObjectID!){repository(owner:$owner,name:$name){object(oid:$oid){... on Commit{"
+        + COMMIT_FIELDS
+        + "}}}}",
+        owner=owner,
+        name=name,
+        oid=signed,
+    )
+    tip = data["repository"]["object"]
+    # Use the signature envelope shared with older submissions, never trust mutable PR notes.
+    require(tip and isinstance(tip.get("message"), str), "Signed commit unavailable")
+    message = tip["message"].rstrip()
+    body = re.fullmatch(
+        rf"Sign delivery for #{issue}\n\nGongGong-Issue: #{issue}\nGongGong-Request: ([a-z0-9-]+)\n"
+        rf"Repository: {re.escape(repository)}\nCandidate: {candidate}\nTree: ([0-9a-f]{{40}})\n"
+        rf"Base: ([0-9a-f]{{40}})\nTarget: main\nWriter: {re.escape(login)}",
+        message,
+    )
+    require(body, "Signed message does not bind this repository and candidate")
+    request, tree, base = body.groups()
+    require(verify_receipt(tip, login, candidate, tree, message) == signed, "Signed head mismatch")
+    require(
+        git(repo, "rev-parse", candidate + "^{tree}") == tree and git(repo, "merge-base", candidate, base) == base,
+        "Signed tree or base differs from the source candidate",
+    )
+    authenticated_git(repo, "fetch", url, "refs/heads/main")
+    main = git(repo, "rev-parse", "FETCH_HEAD")
+    merge = (pr["mergeCommit"] or {}).get("oid")
+    comparison = main
+    if pr["state"] == "MERGED":
+        require(merge and git(repo, "merge-base", main, merge) == merge, "Merged result requires main readback")
+        parents = git(repo, "show", "-s", "--format=%P", merge).split()
+        # Only a normal PR merge exposes the exact pre-merge target as its first parent.
+        comparison = parents[0] if parents[1:] == [signed] else None
+    report = handoff(repo, base, tree, comparison or base)
+    if comparison is None:
+        report.update(main_observed=None, base_advanced=None, upstream_change_count=None, overlapping_write_paths=None)
+    report.update(
+        current_main=main,
+        pr_state=pr["state"],
+        merge_commit=merge,
+        issue=int(issue),
+        request_id=request,
+        writer=login,
+        candidate=candidate,
+        signed_commit=signed,
+        pull_request=pr["url"],
+        repository=repository,
+    )
+    if pr["state"] == "MERGED":
+        landed_diff = set(changed_paths(repo, tree, merge))
+        report["delivered_paths_differ"] = sorted(landed_diff.intersection(report["write_paths"]))
+        report["next_action"] = "回读已合入文件及原验收；已有 main 回执，继续处理验收。"
+    elif pr["state"] == "CLOSED":
+        report["next_action"] = "核对旧 PR 的关闭原因及接替候选后再推进。"
+    if comparison and comparison != base:
+        report["upstream_diff"] = f"https://github.com/{repository}/compare/{base}..{comparison}"
+    return report
+
+
 def submit(repo, issue, request, title, notes):
     repository = work_items.config(repo)[0]["repository"]
     issue_gate.check_repository(repo, repository)
@@ -138,7 +297,27 @@ def submit(repo, issue, request, title, notes):
     base = git(repo, "rev-parse", "FETCH_HEAD")
     head = git(repo, "rev-parse", "HEAD")
     tree = git(repo, "write-tree")
-    require(git(repo, "merge-base", base, head) == base, "Integrate current main before signing")
+    common = git(repo, "merge-base", base, head)
+    if common != base:
+        branch = f"codex/submit/{login}/{issue}/{head}"
+        previous = matching_pr(repository, branch)
+        if previous and tree == git(repo, "rev-parse", head + "^{tree}"):
+            report = inspect_pr(repo, repository, int(previous["url"].rsplit("/", 1)[1]))
+            require(
+                report["request_id"] == request and report["candidate"] == head, "Prior submission binding mismatch"
+            )
+            if report["pr_state"] == "MERGED":
+                return report
+        else:
+            report = handoff(repo, common, tree, base)
+            report.update(
+                local_head=head,
+                writer=login,
+                prior_pr=previous,
+                upstream_diff=f"https://github.com/{repository}/compare/{common}..{base}",
+            )
+        raise ValueError("Integrate current main before signing: " + json.dumps(report, ensure_ascii=True))
+    report = handoff(repo, base, tree, base)
     require(tree != git(repo, "rev-parse", base + "^{tree}"), "No changes relative to main")
     trailers = f"GongGong-Issue: #{issue}\nGongGong-Request: {request}"
     issue_gate.gate(repo, issue, request, base_ref=base)
@@ -181,33 +360,18 @@ def submit(repo, issue, request, title, notes):
     )
     signed = issue_receipt(repo, repository, login, branch, candidate, tree, message)
     remote = "github.com/" + repository
-    prs = json.loads(
-        work_items.gh(
-            "pr",
-            "list",
-            "-R",
-            remote,
-            "--state",
-            "all",
-            "--head",
-            branch,
-            "--base",
-            "main",
-            "--json",
-            "url,headRefOid,isCrossRepository,state",
-        )
-    )
-    matches = [p for p in prs if not p["isCrossRepository"]]
-    if matches:
+    previous = matching_pr(repository, branch)
+    if previous:
         require(
-            len(matches) == 1 and matches[0]["headRefOid"] == signed and matches[0]["state"] != "CLOSED",
+            previous["headRefOid"] == signed and previous["state"] != "CLOSED",
             "Existing PR conflicts with this signed candidate",
         )
-        url = matches[0]["url"]
+        url = previous["url"]
     else:
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "body.md"
-            path.write_text(f"{trailers}\n\n{notes.strip()}\n\n签发人 {login}，签发提交 {signed}。\n", encoding="utf-8")
+            summary = pr_handoff(repository, report, candidate, signed, login)
+            path.write_text(f"{trailers}\n\n{summary}\n\n{notes.strip()}\n", encoding="utf-8")
             url = work_items.gh(
                 "pr",
                 "create",
@@ -222,11 +386,22 @@ def submit(repo, issue, request, title, notes):
                 "--body-file",
                 str(path),
             )
-    observed = json.loads(work_items.gh("pr", "view", url, "--json", "headRefOid,baseRefName,isCrossRepository"))
+    observed = json.loads(
+        work_items.gh("pr", "view", url, "--json", "headRefOid,baseRefName,isCrossRepository,baseRefOid,state")
+    )
+    observed_base = observed.pop("baseRefOid")
+    state = observed.pop("state")
     require(
         observed == {"headRefOid": signed, "baseRefName": "main", "isCrossRepository": False},
         "Submitted PR no longer matches the signed candidate",
     )
+    if observed_base != base or state != "OPEN":
+        latest = inspect_pr(repo, repository, int(url.rsplit("/", 1)[1]))
+        require(
+            latest["pr_state"] == "MERGED" or (latest["pr_state"] == "OPEN" and latest["current_main"] == base),
+            "PR handoff requires reconciliation: " + json.dumps(latest, ensure_ascii=True),
+        )
+        return latest
     return {
         "repository": repository,
         "writer": login,
@@ -234,17 +409,31 @@ def submit(repo, issue, request, title, notes):
         "tree": tree,
         "signed_commit": signed,
         "pull_request": url,
+        "handoff": report,
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path.cwd())
-    parser.add_argument("--issue", type=int, required=True)
-    parser.add_argument("--request-id", required=True)
-    parser.add_argument("--title", required=True)
-    parser.add_argument("--notes-file", type=Path, required=True, help="PR scope, business checks and review evidence")
+    parser.add_argument("--inspect-pr", type=int, help="Read signed PR handoff and compare to current main")
+    parser.add_argument("--issue", type=int)
+    parser.add_argument("--request-id")
+    parser.add_argument("--title")
+    parser.add_argument("--notes-file", type=Path, help="PR scope, business checks and review evidence")
     args = parser.parse_args()
+    if args.inspect_pr is not None:
+        if args.inspect_pr < 1 or any(
+            value is not None for value in (args.issue, args.request_id, args.title, args.notes_file)
+        ):
+            parser.error("--inspect-pr requires a positive PR number and no submission arguments")
+        repo = args.repo.resolve()
+        repository = work_items.config(repo)[0]["repository"]
+        issue_gate.check_repository(repo, repository)
+        print(json.dumps(inspect_pr(repo, repository, args.inspect_pr), ensure_ascii=False))
+        return
+    if not (args.issue and args.request_id and args.title and args.notes_file):
+        parser.error("submission requires --issue, --request-id, --title and --notes-file")
     try:
         notes = args.notes_file.read_text(encoding="utf-8-sig")
         require(
