@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "chat-images-intake-20261106",
+  "collected_at": "2026-11-06T11:09:02.587517+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/chat-images-intake-20261106/chat-images-intake-20261106-request.json",
+      "sha256": "a2acd4b7bee907d0fdc09fe1d67f2fd4fa5ad6eec610ff82904692d959e50729",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "chat-images-intake-20261106-request",
+      "origin": "current-user-authorized-codex-session"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 166,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/166"
+}

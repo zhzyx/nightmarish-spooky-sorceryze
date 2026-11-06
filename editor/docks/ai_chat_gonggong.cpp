@@ -475,6 +475,34 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	issue_guide_state = "agent_pending";
 	Dictionary input_request;
 	input_request["outcome"] = p_outcome;
+	// Intake runs before the normal model context. Preserve recent questions and
+	// corrections here too, including after an earlier model request failed.
+	Array requirement_context;
+	int context_chars = 0;
+	for (int i = transcript.size() - 1; i >= 0 && requirement_context.size() < 32 && context_chars < 16000; i--) {
+		const Dictionary record = transcript[i];
+		const String role = record.get("role", "");
+		if (role != "user" && role != "editor" && role != "assistant") {
+			continue;
+		}
+		const String text = record.get("content", "");
+		const String excerpt = text.left(MIN(4000, 16000 - context_chars));
+		if (excerpt.is_empty()) {
+			continue;
+		}
+		Dictionary entry;
+		entry["role"] = role;
+		entry["content"] = excerpt;
+		requirement_context.push_front(entry);
+		context_chars += excerpt.length();
+	}
+	if (p_retry && issue_guide_fields.has("conversation_context")) {
+		// Reconcile the same journal even after progress/error messages appear.
+		input_request["conversation_context"] = issue_guide_fields["conversation_context"];
+	} else {
+		issue_guide_fields["conversation_context"] = requirement_context;
+		input_request["conversation_context"] = requirement_context;
+	}
 	input_request["conversation_id"] = conversation_id + ":" + snapshot_id;
 	issue_guide_fields["initial_issue"] = _work_order_binding("issue_number");
 	issue_guide_fields["initial_request"] = _work_order_binding("request_id");

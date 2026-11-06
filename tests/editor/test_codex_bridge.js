@@ -149,3 +149,80 @@ test('semantic actions are discoverable and disabled permissions reject them', (
         assert.throws(() => completion(envelope, { ...configured, available_tools: [] }));
     }
 });
+
+test('images reach the CLI as private attachments with message references and are cleaned up', () => {
+    const fs = require('node:fs');
+    const os = require('node:os');
+    const path = require('node:path');
+    const { spawnSync } = require('node:child_process');
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-images-test-'));
+    const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aRZkAAAAASUVORK5CYII=';
+    try {
+        const entry = path.join(directory, 'mock.js');
+        const request = path.join(directory, 'request.json');
+        const observed = path.join(directory, 'observed.json');
+        fs.writeFileSync(request, JSON.stringify({ ...input, messages: [
+            { role: 'user', content: '看图', images: [{ name: '截图.png', mime_type: 'image/png', data }] },
+            { role: 'user', content: '请继续' },
+        ] }));
+        for (const fail of [false, true]) {
+            fs.writeFileSync(entry, `const fs = require('node:fs'); let prompt = '';
+                process.stdin.on('data', chunk => prompt += chunk);
+                process.stdin.on('end', () => {
+                    const index = process.argv.indexOf('--image');
+                    const file = process.argv[index + 1];
+                    const bytes = fs.readFileSync(file).toString('base64');
+                    fs.writeFileSync(${JSON.stringify(observed)}, JSON.stringify({ file, bytes, prompt }));
+                    process.stdout.write(JSON.stringify(${fail
+                        ? "{ type: 'turn.failed', error: { message: 'authentication required' } }"
+                        : "{ type: 'item.completed', item: { type: 'agent_message', text: '{\"content\":\"已读取\",\"actions\":[]}' } }"}) + '\\n');
+                    process.stdout.write(JSON.stringify({ type: 'turn.completed' }) + '\\n');
+                });`);
+            const result = spawnSync(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request],
+                { encoding: 'utf8', timeout: 10000 });
+            assert.equal(result.status, fail ? 1 : 0, result.stdout + result.stderr);
+            const captured = JSON.parse(fs.readFileSync(observed));
+            assert.equal(captured.bytes, data);
+            assert(!captured.prompt.includes(data));
+            assert(captured.prompt.includes('"attachment":1'));
+            assert(captured.prompt.includes('截图.png'));
+            assert(!fs.existsSync(captured.file));
+            assert(!fs.existsSync(path.dirname(captured.file)));
+        }
+    } finally {
+        fs.rmSync(directory, { recursive: true, force: true });
+    }
+});
+
+test('cancelling a pending image request removes private attachments', async () => {
+    const fs = require('node:fs');
+    const os = require('node:os');
+    const path = require('node:path');
+    const { spawn } = require('node:child_process');
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-cancel-test-'));
+    let child;
+    try {
+        const entry = path.join(directory, 'mock.js');
+        const observed = path.join(directory, 'observed.json');
+        const request = path.join(directory, 'request.json');
+        fs.writeFileSync(entry, `const fs = require('node:fs');
+            fs.writeFileSync(${JSON.stringify(observed)}, JSON.stringify(process.argv[process.argv.indexOf('--image') + 1]));
+            process.stdin.resume(); setInterval(() => {}, 1000);`);
+        fs.writeFileSync(request, JSON.stringify({ ...input, messages: [{ role: 'user', content: '看图', images: [{
+            name: '截图.png', mime_type: 'image/png',
+            data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aRZkAAAAASUVORK5CYII=',
+        }] }] }));
+        child = spawn(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request], { stdio: 'ignore' });
+        const closed = new Promise(resolve => child.once('close', resolve));
+        for (let i = 0; i < 200 && !fs.existsSync(observed); i++) await new Promise(resolve => setTimeout(resolve, 10));
+        assert(fs.existsSync(observed));
+        const file = JSON.parse(fs.readFileSync(observed));
+        assert(fs.existsSync(file));
+        child.kill('SIGTERM');
+        await closed;
+        assert(!fs.existsSync(path.dirname(file)));
+    } finally {
+        if (child && child.exitCode === null) child.kill();
+        fs.rmSync(directory, { recursive: true, force: true });
+    }
+});
