@@ -1,4 +1,5 @@
 """Read-only, model-backed coordination for an already verified planned Daqian Issue."""
+
 import hashlib
 import json
 import os
@@ -33,20 +34,43 @@ def source_from_row(work, settings, number, key, row):
     labels = [label["name"] for label in row["labels"]]
     statuses = [label[7:] for label in labels if label.startswith("status:")]
     categories = [label for label in labels if label.startswith("type:")]
-    if (row.get("number") != number or row.get("html_url") != url or row.get("state") != "open"
-            or "pull_request" in row or work.request_ids(body) != {key} or not row.get("updated_at")
-            or not isinstance(row.get("title"), str) or not row["title"].strip()
-            or not heading or not footer or not original.strip()
-            or not re.fullmatch(r"[A-Za-z0-9-]+ -->\n?", owner)
-            or "\n<!-- gonggong-intake:daqian-direct -->\n" not in before
-            or "workspace:gonggong" not in labels or len(statuses) != 1 or len(categories) != 1):
+    if (
+        row.get("number") != number
+        or row.get("html_url") != url
+        or row.get("state") != "open"
+        or "pull_request" in row
+        or work.request_ids(body) != {key}
+        or not row.get("updated_at")
+        or not isinstance(row.get("title"), str)
+        or not row["title"].strip()
+        or not heading
+        or not footer
+        or not original.strip()
+        or not re.fullmatch(r"[A-Za-z0-9-]+ -->\n?", owner)
+        or "\n<!-- gonggong-intake:daqian-direct -->\n" not in before
+        or "workspace:gonggong" not in labels
+        or len(statuses) != 1
+        or len(categories) != 1
+    ):
         raise ValueError("无法核实绑定的原始工单、来源和状态")
     direct_issue.check_text({"title": row["title"], "outcome": original})
     # The original body is prompt data, including whitespace. Its digest survives only a status transition.
-    source = {"number": number, "request_id": key, "url": url, "creator": str(row["user"]["id"]),
-              "category": categories[0], "title": row["title"], "body": body}
-    binding = {"number": number, "request_id": key, "url": url, "revision": row["updated_at"],
-               "source_sha256": digest(source)}
+    source = {
+        "number": number,
+        "request_id": key,
+        "url": url,
+        "creator": str(row["user"]["id"]),
+        "category": categories[0],
+        "title": row["title"],
+        "body": body,
+    }
+    binding = {
+        "number": number,
+        "request_id": key,
+        "url": url,
+        "revision": row["updated_at"],
+        "source_sha256": digest(source),
+    }
     return binding, source, original.removesuffix("\n"), statuses[0], row
 
 
@@ -65,8 +89,11 @@ def planned_source(root, request, bridge):
     binding, source, original, status, row = issue_source(work, settings, number, key)
     if work.gh("api", "user", "--jq", ".id").strip() != principal["user_id"]:
         raise ValueError("工单回读期间账号已切换")
-    if (status != "planned" or source["category"] not in [label["name"] for label in labels]
-            or binding["revision"] != request.get("expected_revision")):
+    if (
+        status != "planned"
+        or source["category"] not in [label["name"] for label in labels]
+        or binding["revision"] != request.get("expected_revision")
+    ):
         raise ValueError("工单或来源版本已变更，请刷新后重试")
     binding["actor"] = principal["user_id"]
     return work, settings, binding, source, original, row
@@ -85,27 +112,51 @@ def context(root, bridge, agent_id, binding, request):
     node = bridge.discover_node(root, env)
     if not node:
         selected = Path(request.get("cli_node") or "")
-        if not (selected.is_absolute() and selected.name.lower() in {"node", "node.exe"}
-                and selected.is_file() and os.access(selected, os.X_OK)):
+        if not (
+            selected.is_absolute()
+            and selected.name.lower() in {"node", "node.exe"}
+            and selected.is_file()
+            and os.access(selected, os.X_OK)
+        ):
             raise ValueError("请配置可执行的 Node.js 以验证框架上下文")
         node = str(selected)
-    mandate = {"feature_id": binding["request_id"], "outcome": "按真实工单内容判断推进路径及必要的需求澄清",
-               "authority_ref": binding["url"], "issue_binding": binding, "tools_enabled": False,
-               "production_execution_authorized": False, "phase": "planned_issue_routing"}
+    mandate = {
+        "feature_id": binding["request_id"],
+        "outcome": "按真实工单内容判断推进路径及必要的需求澄清",
+        "authority_ref": binding["url"],
+        "issue_binding": binding,
+        "tools_enabled": False,
+        "production_execution_authorized": False,
+        "phase": "planned_issue_routing",
+    }
     with tempfile.TemporaryDirectory() as folder:
         path = Path(folder) / "mandate.json"
         path.write_text(json.dumps(mandate, ensure_ascii=False), encoding="utf-8")
-        loaded = subprocess.run([node, str(framework / "tools/agent-context.mjs"), agent_id, str(path)],
-                                cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
+        loaded = subprocess.run(
+            [node, str(framework / "tools/agent-context.mjs"), agent_id, str(path)],
+            cwd=root,
+            env=env,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=120,
+        )
     if loaded.returncode or not loaded.stdout.strip():
         raise ValueError("当前框架未通过 " + agent_id + " 定义、准入和上下文核查")
     registry = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
-    agent, = [a for a in registry["agents"] if a["id"] == agent_id]
-    references = (["skills/work-order-coordination/SKILL.md", "specs/work-order-management.md"] if agent_id == "sinan"
-                  else ["agents/yanshi/skills/clarify-feature/SKILL.md", "agents/yanshi/references/understanding.md"])
+    (agent,) = [a for a in registry["agents"] if a["id"] == agent_id]
+    references = (
+        ["skills/work-order-coordination/SKILL.md", "specs/work-order-management.md"]
+        if agent_id == "sinan"
+        else ["agents/yanshi/skills/clarify-feature/SKILL.md", "agents/yanshi/references/understanding.md"]
+    )
     content = "\n\n".join([loaded.stdout, *((framework / name).read_text(encoding="utf-8") for name in references)])
-    snapshot = {"id": agent_id, "version": agent["version"], "origin": "gonggong-framework",
-                "definition_sha256": hashlib.sha256((framework / agent["entry"]).read_bytes()).hexdigest()}
+    snapshot = {
+        "id": agent_id,
+        "version": agent["version"],
+        "origin": "gonggong-framework",
+        "definition_sha256": hashlib.sha256((framework / agent["entry"]).read_bytes()).hexdigest(),
+    }
     return content, agent["candidate_digest"], snapshot, env
 
 
@@ -125,23 +176,33 @@ When ready, provide concrete scope and acceptance and an empty questions array."
 
 def decision(raw, agent, private_key):
     value = json.loads(raw)
-    if (not isinstance(value, dict) or set(value) != {"route", "reason", "scope", "acceptance", "questions"}
-            or value["route"] not in ({"sinan", "yanshi"} if agent == "sinan" else {"yanshi"})
-            or not isinstance(value["reason"], str) or not value["reason"].strip() or len(value["reason"]) > 2000):
+    if (
+        not isinstance(value, dict)
+        or set(value) != {"route", "reason", "scope", "acceptance", "questions"}
+        or value["route"] not in ({"sinan", "yanshi"} if agent == "sinan" else {"yanshi"})
+        or not isinstance(value["reason"], str)
+        or not value["reason"].strip()
+        or len(value["reason"]) > 2000
+    ):
         raise ValueError("模型返回了无效的路由结论")
     values = [value["reason"]]
     for field in ("scope", "acceptance", "questions"):
         items = value[field]
-        if (not isinstance(items, list) or len(items) > 20
-                or any(not isinstance(item, str) or not item.strip() or len(item) > 2000 for item in items)):
+        if (
+            not isinstance(items, list)
+            or len(items) > 20
+            or any(not isinstance(item, str) or not item.strip() or len(item) > 2000 for item in items)
+        ):
             raise ValueError("模型返回了无效的范围、验收或待确认项")
         values.extend(items)
     direct_issue.check_text({"title": "", "outcome": "\n".join(values)})
     if private_key and any(private_key in item for item in values):
         raise ValueError("模型结论含敏感字段")
-    if ((value["route"] == "sinan" and value["questions"])
-            or ((value["route"] == "sinan" or agent == "yanshi") and not value["questions"]
-                and (not value["scope"] or not value["acceptance"]))):
+    if (value["route"] == "sinan" and value["questions"]) or (
+        (value["route"] == "sinan" or agent == "yanshi")
+        and not value["questions"]
+        and (not value["scope"] or not value["acceptance"])
+    ):
         raise ValueError("就绪结论缺少可执行范围或验收")
     return value
 
@@ -172,7 +233,12 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             raise ValueError("上次模型调用未取得可用结论，请核实后显式重试本工单")
         if request.get("_cancel_path") and not Path(request["_cancel_path"]).is_file():
             raise ValueError("已取消本次路由")
-        attempt = {"id": uuid.uuid4().hex, "agent": agent, "pid": os.getpid(), "at": datetime.now(timezone.utc).isoformat()}
+        attempt = {
+            "id": uuid.uuid4().hex,
+            "agent": agent,
+            "pid": os.getpid(),
+            "at": datetime.now(timezone.utc).isoformat(),
+        }
         call.setdefault("attempts", []).append(attempt)
         state["calls"][key] = call
         bridge.flush(root)
@@ -183,9 +249,17 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             if private_key and request["backend"] in {"http", "responses"}:
                 profile["api_key_env"] = "GONGGONG_REQUIREMENTS_KEY"
                 os.environ["GONGGONG_REQUIREMENTS_KEY"] = private_key
-            result = requirements_agent.complete(root, request, profile, [
-                {"role": "system", "content": system + "\n" + INSTRUCTIONS + "\n" + ROLE[agent]},
-                {"role": "user", "content": json.dumps(data, ensure_ascii=False)}], env, agent_id=agent)
+            result = requirements_agent.complete(
+                root,
+                request,
+                profile,
+                [
+                    {"role": "system", "content": system + "\n" + INSTRUCTIONS + "\n" + ROLE[agent]},
+                    {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
+                ],
+                env,
+                agent_id=agent,
+            )
             if result["finish_reason"] != "stop":
                 raise ValueError("模型响应不完整")
             value = decision(result["text"], agent, private_key)
@@ -219,23 +293,43 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
                 os.environ["GONGGONG_REQUIREMENTS_KEY"] = previous
         attempt["outcome"] = "decision_received"
         model_name = profile["model"]
-        if (not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{0,159}", model_name)
-                or (private_key and private_key in model_name)):
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{0,159}", model_name) or (
+            private_key and private_key in model_name
+        ):
             model_name = None
         if model_name:
             try:
                 direct_issue.check_text({"title": model_name, "outcome": ""})
             except ValueError:
                 model_name = None
-        call.update(decision=value, event={
-            "schema_version": 1, "event_id": "route-" + attempt["id"], "kind": "step",
-            "tenant_id": settings["tenant_id"], "request_id": binding["request_id"], "source_ref": binding["url"],
-            "occurred_at": attempt["at"], "agent": snapshot, "evidence_refs": [],
-            "payload": {"phase": "planned_issue_routing", "candidate_digest": candidate, "revision": binding["revision"],
-                        "source_sha256": binding["source_sha256"], "actor_id": binding["actor"],
-                        "route": value["route"], "decision_sha256": digest(value), "backend": request["backend"],
-                        "requested_model": model_name, "usage": result["usage"],
-                        "questions_count": len(value["questions"]), "production_execution": False}})
+        call.update(
+            decision=value,
+            event={
+                "schema_version": 1,
+                "event_id": "route-" + attempt["id"],
+                "kind": "step",
+                "tenant_id": settings["tenant_id"],
+                "request_id": binding["request_id"],
+                "source_ref": binding["url"],
+                "occurred_at": attempt["at"],
+                "agent": snapshot,
+                "evidence_refs": [],
+                "payload": {
+                    "phase": "planned_issue_routing",
+                    "candidate_digest": candidate,
+                    "revision": binding["revision"],
+                    "source_sha256": binding["source_sha256"],
+                    "actor_id": binding["actor"],
+                    "route": value["route"],
+                    "decision_sha256": digest(value),
+                    "backend": request["backend"],
+                    "requested_model": model_name,
+                    "usage": result["usage"],
+                    "questions_count": len(value["questions"]),
+                    "production_execution": False,
+                },
+            },
+        )
         requirements_agent.save(journal, state)
     if not call.get("recorded"):
         bridge.enqueue(root, call["event"])
@@ -255,11 +349,23 @@ def route(root, request, bridge):
             if saved.get("url") and saved["url"] != binding["url"]:
                 raise ValueError("绑定与建单回执不符")
             if "coordination" not in saved:
-                direct_issue.finish_coordination(root, {**binding, "status": "planned"}, row, work,
-                    settings["repository"], request.get("cli_node"), bridge, create_journal, saved)
+                direct_issue.finish_coordination(
+                    root,
+                    {**binding, "status": "planned"},
+                    row,
+                    work,
+                    settings["repository"],
+                    request.get("cli_node"),
+                    bridge,
+                    create_journal,
+                    saved,
+                )
         journal = folder / ("route-" + digest(binding) + ".json")
-        state = json.loads(journal.read_text(encoding="utf-8")) if journal.exists() else {
-            "binding": binding, "calls": {}, "answers": []}
+        state = (
+            json.loads(journal.read_text(encoding="utf-8"))
+            if journal.exists()
+            else {"binding": binding, "calls": {}, "answers": []}
+        )
         if state["binding"] != binding:
             raise ValueError("路由记录与当前绑定不符")
         answer = request.get("answer", "")
@@ -288,7 +394,9 @@ def route(root, request, bridge):
                     state.pop("result", None)
                     requirements_agent.save(journal, state)
             data.update(sinan_decision=sinan, clarifications=history)
-            result, candidates["yanshi"] = run_turn(root, bridge, work, settings, binding, journal, state, request, "yanshi", data)
+            result, candidates["yanshi"] = run_turn(
+                root, bridge, work, settings, binding, journal, state, request, "yanshi", data
+            )
         elif answer.strip():
             raise ValueError("此工单没有待澄清的问题")
         # Do not return readiness for an Issue edited while an inference was running.
@@ -322,8 +430,9 @@ def prepare_start(root, request, bridge):
     if state["candidates"] != registered_candidates(root, state["result"]["route"]):
         raise RoutingReceiptRequired("当前框架候选已变更，请重新进行工单判断")
     # Store the exact ready revision before the label write. A lost edit receipt can be reconciled via GitHub.
-    requirements_agent.save(folder / "start.json", {"binding": binding, "result": state["result"],
-                                                   "clarifications": state["answers"]})
+    requirements_agent.save(
+        folder / "start.json", {"binding": binding, "result": state["result"], "clarifications": state["answers"]}
+    )
 
 
 def chat_context(root, request, bridge):
@@ -336,11 +445,18 @@ def chat_context(root, request, bridge):
     if not path.is_file():
         raise ValueError("缺少此工单已确认的推进回执，请在原安装环境核对或交接回执后继续")
     saved = json.loads(path.read_text(encoding="utf-8"))
-    if (any(binding[field] != saved["binding"][field] for field in ("source_sha256", "request_id", "number", "url"))
-            or not saved.get("result", {}).get("ready")):
+    if any(
+        binding[field] != saved["binding"][field] for field in ("source_sha256", "request_id", "number", "url")
+    ) or not saved.get("result", {}).get("ready"):
         raise ValueError("工单原文与已确认的推进回执不符，请核对后继续")
     if direct_issue.collaborator(root)["user_id"] != saved["binding"]["actor"]:
         raise ValueError("推进回执与当前账号不符，请核对交接")
-    return {"original": original, "source_ref": binding["url"], "actor": saved["binding"]["actor"],
-            "source_sha256": binding["source_sha256"], "planned_revision": saved["binding"]["revision"],
-            "decision": saved["result"], "clarifications": saved["clarifications"]}
+    return {
+        "original": original,
+        "source_ref": binding["url"],
+        "actor": saved["binding"]["actor"],
+        "source_sha256": binding["source_sha256"],
+        "planned_revision": saved["binding"]["revision"],
+        "decision": saved["result"],
+        "clarifications": saved["clarifications"],
+    }
