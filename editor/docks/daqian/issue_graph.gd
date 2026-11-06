@@ -371,14 +371,18 @@ func _display_plan() -> Dictionary:
 		"questions":"等待答复", "ready":"分析完成，需求已就绪", "error":"处理受阻，请查看关联对话",
 		"cancelled":"已停止", "waiting_environment":"等待本地环境配置", "bound":"已关联工单",
 		"blocked":"关联工单受阻", "closed":"关联工单已关闭"}
-	_stage(plan, "wf-analysis", "偃师 · 需求分析", labels.get(phase, "等待分析回执"), "requirement")
+	var intake := "wf-analysis" if workflow.get("analyzed", false) else "wf-workorder"
+	if intake == "wf-analysis":
+		_stage(plan, intake, "偃师 · 需求分析", labels.get(phase, "等待分析回执"), "requirement")
+	else:
+		_stage(plan, intake, "工单登记", "等待确认创建" if phase == "draft" else "已关联工单", "requirement")
 	var item: Dictionary = workflow.item
 	var design: Dictionary = workflow.design
-	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["in-progress", "in-review"])
+	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["planned", "in-progress", "in-review"])
 	if item.get("status") == "blocked":
-		_stage(plan, "wf-blocked", "夸父 · 阻塞处置", "工单已标记阻塞，等待处置回执", "wf-analysis")
+		_stage(plan, "wf-blocked", "夸父 · 阻塞处置", "工单已标记阻塞，等待处置回执", intake)
 	if prepare:
-		_stage(plan, "wf-prepare", "司南 · 运行准备", "核对依赖、授权与可用执行者", "wf-analysis")
+		_stage(plan, "wf-prepare", "司南 · 运行准备", "核对依赖、授权与可用执行者", intake)
 		for dep in item.get("dependencies", []):
 			var id := "wf-dep-" + str(dep).sha256_text().left(20)
 			_stage(plan, id, "前置工单", str(dep), "")
@@ -404,9 +408,9 @@ func _display_plan() -> Dictionary:
 				_stage(plan, key, titles[field], clause, "")
 			if field == "scope":
 				tasks.append(key)
-				_stage_edge(plan, "wf-prepare" if prepare else "wf-analysis", key)
+				_stage_edge(plan, "wf-prepare" if prepare else intake, key)
 			elif field == "questions":
-				_stage_edge(plan, "wf-analysis", key)
+				_stage_edge(plan, intake, key)
 			else:
 				criteria.append(key)
 	if not criteria.is_empty():
@@ -414,7 +418,7 @@ func _display_plan() -> Dictionary:
 		for task in tasks:
 			_stage_edge(plan, task, "wf-verify")
 		if tasks.is_empty():
-			_stage_edge(plan, "wf-prepare" if prepare else "wf-analysis", "wf-verify")
+			_stage_edge(plan, "wf-prepare" if prepare else intake, "wf-verify")
 		for criterion in criteria:
 			_stage_edge(plan, "wf-verify", criterion)
 	if prepare and item.get("development", false):

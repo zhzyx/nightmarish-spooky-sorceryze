@@ -32,6 +32,8 @@ func run():
 		quit(1)
 		return
 	check(panel.publish_dialog.get_ok_button().disabled, "Blank draft can be sent")
+	panel.route.select(1)
+	panel.route.item_selected.emit(1)
 	var graph = panel.editor
 	var source = panel.current
 	check(graph.canvas.has_node("wf-analysis") and graph.draft.nodes.size() == 1, "Analysis card missing or executable")

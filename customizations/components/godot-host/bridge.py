@@ -662,6 +662,16 @@ def issue_start(root, request):
     if "workspace:gonggong" not in names:
         raise ValueError("Issue must explicitly include workspace:gonggong")
     statuses = [name for name in names if name.startswith("status:")]
+    if request_id.startswith("daqian-direct-"):
+        expected = request.get("expected_user")
+        if (not isinstance(expected, str) or not re.fullmatch(r"[1-9][0-9]*", expected)
+                or module.gh("api", "user", "--jq", ".id").strip() != expected
+                or value.get("html_url") != f"https://github.com/{repository}/issues/{number}"
+                or statuses not in (["status:planned"], ["status:in-progress"], ["status:in-review"])):
+            raise ValueError("请重新核对当前账号、工单来源及状态")
+        if statuses == ["status:planned"] and (not value.get("updated_at") or
+                                                request.get("expected_revision") != value["updated_at"]):
+            raise ValueError("工单已更新，请刷新大千后重新确认开始")
     if len(statuses) == 1 and statuses[0] in ACTIVE_STATUSES:
         return {"ok": True, "state": "already_active", "status": statuses[0], "remote_changed": False}
     if len(statuses) > 1 or (statuses and statuses[0] not in STARTABLE_STATUSES):
@@ -677,6 +687,21 @@ def issue_start(root, request):
         "status": "status:in-progress",
         "remote_changed": True,
     }
+
+
+def issue_direct(root, request):
+    from types import SimpleNamespace
+    # tools/gonggong_bridge.py uses runpy, which retains the entry point's import path.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    try:
+        from direct_issue import create
+    finally:
+        sys.path.remove(str(Path(__file__).resolve().parent))
+
+    api = SimpleNamespace(guide_fields=guide_fields, gh_state=gh_state, outbox_lock=outbox_lock,
+                          host_environment=host_environment,
+                          enqueue=enqueue, flush=flush, discover_node=_igniter.discover_node)
+    return create(root, request, api)
 
 
 def issue_agent(root, request):
@@ -728,6 +753,7 @@ GUIDE_ACTIONS = {
     "issue-create": issue_create,
     "issue-start": issue_start,
     "issue-agent": issue_agent,
+    "issue-direct": issue_direct,
 }
 
 
@@ -810,6 +836,8 @@ def main():
             result = execute(args.workspace, args.action, args.tenant)
     except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
         result = {"ok": False, "agent_execution_enabled": False, "error": str(error)}
+    if args.action == "issue-direct" and not result["ok"]:
+        result.setdefault("reconcile_required", True)
     content = json.dumps(result, ensure_ascii=False, indent=2)
     if args.out:
         temporary = args.out.with_suffix(".tmp")

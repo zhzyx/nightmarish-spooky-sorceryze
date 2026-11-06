@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime, timezone
 import json
 import os
+import re
 from pathlib import Path
 from repository_access import AccessDenied, collaborator, configured_login, work_items
 
@@ -13,6 +14,16 @@ def source_plan(issue, request_id):
     source = issue["html_url"]
     nodes = {"requirement": {"kind": "text", "title": "需求", "value": issue["title"]}}
     evidence = {"requirement": source}
+    if re.fullmatch(r"daqian-direct-[a-f0-9]{20}", request_id or ""):
+        # A directly submitted requirement can itself contain example Yanshi headings.
+        # Display the original as one input rather than generating clauses from those headings.
+        body = (issue.get("body") or "").replace("\r\n", "\n")
+        if "<!-- gonggong-intake:daqian-direct -->" in body:
+            _, heading, original = body.partition("\n\n## 原始需求\n\n")
+            original, suffix, _ = original.rpartition("\n\n<!-- gonggong-host-git:")
+            if heading and suffix:
+                nodes["requirement"]["value"] = original.removesuffix("\n")
+        return {"plan": {"nodes": nodes, "edges": []}, "sources": evidence}
     questions = {}
     edges = []
     heading = ""
@@ -72,8 +83,7 @@ def read_board(root, follows, actor=None):
         if num not in queue:
             row = json.loads(work_items.gh("api", f"{base}/{num}"))
             local_number(row)
-            if row["state"] == "open":
-                queue[num] = row
+            queue[num] = row
     items = {}
     while queue:
         number, row = queue.popitem()
@@ -88,6 +98,10 @@ def read_board(root, follows, actor=None):
             "updated": row["updated_at"], "owners": [x["login"] for x in row["assignees"]],
             "request": markers[0] if len(markers) == 1 else "", "dependencies": [],
             "development": "type:development" in labels,
+            "analyzed": (len(markers) == 1 and re.fullmatch(r"requirement-[0-9a-f]{32}", markers[0]) is not None
+                         and bool(re.search(r"^需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + markers[0][12:]
+                                            + r"[0-9a-f]{32}`。$", (row.get("body") or "").replace("\r\n", "\n"),
+                                            re.MULTILINE))),
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
         item.update(source_plan(row, item["request"]))

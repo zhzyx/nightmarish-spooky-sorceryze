@@ -98,6 +98,7 @@ class AIChatDock : public EditorDock {
 	void _finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state);
 	void _poll_gonggong_receipt();
 	void _end_gonggong(const String &p_status);
+	bool _direct_daqian_task() const;
 	void _begin_gonggong_context();
 	void _environment_setup_completed();
 	void _poll_gonggong_context();

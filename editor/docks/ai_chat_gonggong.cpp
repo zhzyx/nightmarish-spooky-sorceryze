@@ -239,12 +239,22 @@ static String last_user_content(const Array &p_messages) {
 	return String();
 }
 
+bool AIChatDock::_direct_daqian_task() const {
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const String request = entry.get("request_id", "");
+	const String number = entry.get("issue_number", "");
+	const String source = entry.get("source", "");
+	return request.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request) && source.ends_with("/issues/" + number);
+}
+
 void AIChatDock::_begin_gonggong_context() {
 	const String outcome = last_user_content(messages);
 	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
 	// a child inherits the real Issue its parent's finalized design was bound to.
-	const bool needs_intake = tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
+	const bool direct = _direct_daqian_task() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent);
+	const bool needs_intake = !direct && tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
 	if (gonggong_pid >= 0) {
 		if (needs_intake) {
 			_emit_daqian_requirement_phase("error");
@@ -325,7 +335,7 @@ void AIChatDock::_begin_gonggong_context() {
 	host["kind"] = "engine";
 	context_input["protocol_version"] = 1;
 	context_input["host"] = host;
-	context_input["agent_id"] = "yanshi";
+	context_input["agent_id"] = direct ? "sinan" : "yanshi";
 	context_input["issue_number"] = bound_issue;
 	context_input["request_id"] = bound_request;
 	context_input["outcome"] = outcome;
@@ -417,7 +427,7 @@ void AIChatDock::_poll_gonggong_context() {
 			_set_busy(false);
 			return;
 		}
-		if (AIChatIssueGuide::is_binding_error(error) && _start_issue_guide()) {
+		if (!_direct_daqian_task() && AIChatIssueGuide::is_binding_error(error) && _start_issue_guide()) {
 			return;
 		}
 		set_meta("gonggong_status", "blocked");
@@ -593,6 +603,10 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 	}
 	if (issue_guide_state == "agent_error") {
 		if (AIChatIssueGuide::is_retry(p_text)) {
+			if (_direct_daqian_task()) {
+				_issue_guide_retry();
+				return;
+			}
 			_begin_issue_agent(issue_guide_outcome, true);
 		} else {
 			_append(TTR("Editor"), U"请先修复 GongGong 页的环境、需求会话的 HTTP/CLI 模型配置或 GitHub 访问，再回复“重试”；工单尚未完成绑定，不会进入开发执行。");

@@ -1,6 +1,7 @@
 import importlib.util
 import json
-import types
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -25,17 +26,20 @@ class BindingTests(unittest.TestCase):
                 run.assert_not_called()
 
     def test_rejection_and_success_use_real_intake_command(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
         for code in (0, 1):
             with patch.object(
                 bridge.subprocess,
                 "run",
-                return_value=types.SimpleNamespace(returncode=code, stdout=json.dumps({"number": 6})),
+                return_value=subprocess.CompletedProcess([], code, stdout=json.dumps({"number": 6}), stderr=""),
             ) as run:
                 if code:
                     with self.assertRaises(ValueError):
-                        bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")
+                        bridge.issue_binding(root, {"request_id": "req-6", "issue_number": 6}, "test")
                 else:
                     self.assertEqual(
-                        bridge.issue_binding(Path("."), {"request_id": "req-6", "issue_number": 6}, "test")["number"], 6
+                        bridge.issue_binding(root, {"request_id": "req-6", "issue_number": 6}, "test")["number"], 6
                     )
                 self.assertIn("--intake-only", run.call_args.args[0])

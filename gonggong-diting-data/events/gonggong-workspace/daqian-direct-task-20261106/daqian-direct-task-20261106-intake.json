@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-direct-task-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-task-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:16:58.605756+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/174",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "大千直接建单、按需偃师分析与显式开始推进",
+    "document": "design-docs/daqian/direct-task.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "e3024e95c9acc175b0a5f1eac3f563f36d138fd6859cd981e13d8cf425649886"
+}
