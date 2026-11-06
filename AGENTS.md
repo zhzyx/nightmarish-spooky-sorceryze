@@ -15,6 +15,8 @@ Windows 工单门禁使用 tools/run_issue_gate.ps1 探测可执行 Python，见
 接到用户明确需求后，按 customizations/components/issue-workorders/execution-policy.md 连续执行；本地必要验证通过即在同次任务中自动开始提交、推送与 main 合入推进，不等待用户再次说“提交”“合入”或“继续”。远端 main 回读及全部已验收关联工单关闭属于交付；已有授权不重复询问。用户明确限定本地或草稿范围时遵循其限制。只在真实必要决定、权限/准入缺失或范围变化时挂起受影响步骤；保留必要独立审查和精确候选准入。
 
 所有当前仓库协作人均为关键可提交角色；有实际合入权限的协作人可用本人账号按阎罗入口的 PR 路径完成交付，不需要所有者另行签发。当前 Git 交付由阎罗承担提交前校验、全部适用核查通过后的 main 交付、状态记录和目标 Issue 关闭；入口见 customizations/components/issue-workorders/yanluo.md，定义批准见 data-collection/yanluo-user-approval.json。合契负责候选整合与冲突处理，司南负责派发、依赖与跨工单协调；现有在途发布须明确交接，不抢占其他工作副本。main 合入后，阎罗按完整验收项复核进度；大部分完成或仅少模块未支持时创建/复用关联剩余 Issue，保留未知与未完成范围，原单未满足整体验收不得标为完成；尾项承接核实后的结转关闭按 issue-lifecycle.md 执行。由真实事件触发，不新增定时扫描。
+交付接收后，司南立即按原需求逐项核对验收责任、证据与关联工单，阎罗沿[交付后验收与人工判断](customizations/components/issue-workorders/yanluo.md#交付后验收与人工判断)连续推进到权威来源的结束回执。可执行的实测由责任者当次完成，失败修复后复验。只有当前授权与可用手段确实无法推进，或决定保留给人时，才向有权人发出具体提醒，继续其余独立项。
+
 偃师在设计内拆分父 Issue 与可独立交付的 sub-issue；提交、关闭和阎罗尾项结转遵循 customizations/components/issue-workorders/issue-lifecycle.md，需求文档保留全部溯源映射。
 
 按用户平台组合的八类接入见 customizations/platforms/README.md；Git/Godot 宿主入口在 customizations/components/；当前框架不再有 Olympus 派生或同步关系。现行采集写入 gonggong-diting-data/，来源与回执在 data-collection/；历史 olympus-hermes-data/ 只读，纠正追加记录。采集配置不等于送达或消费，不记录凭据和估算用量。
