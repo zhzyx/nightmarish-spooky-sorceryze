@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue226-startup-preset-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-macos-headless-preset",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:07:45.171645+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+  "agent": {
+    "id": "codex-workspace-operator",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "scope": "用户授权在 macOS 编辑器启动时应用 Godot 子模块的后台验证预设并交付到 main",
+    "definition_ref": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "d6fd53971c8fe055d8ff89dea4cb5c2c84eccc5f6c8217fa2cfd6223dfd1a20d"
+}

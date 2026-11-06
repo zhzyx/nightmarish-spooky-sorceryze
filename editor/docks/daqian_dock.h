@@ -33,3 +33,8 @@
 class EditorDock;
 
 EditorDock *create_daqian_dock();
+
+#ifdef MACOS_ENABLED
+class Node;
+void install_gonggong_startup_validation(Node *p_editor);
+#endif
