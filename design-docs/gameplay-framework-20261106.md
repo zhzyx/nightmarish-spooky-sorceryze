@@ -146,6 +146,7 @@
 - 精确签发 head `2ed4bcf78a6817b827240229e119976fefa74986` 的远端 CI 静态检查、MSVC/GCC release 模板和 clang-cl 编辑器通过；MSVC 编辑器在既有 `ai_chat_gonggong.cpp` 两处局部 `request` 遮蔽成员时报 C4458，并因 `/WX` 失败。发布前置修复只改局部变量名和 clang-format 缩进，保留所有请求键、参数与业务行为；最终文件已用 `/W4 /WX` 单对象编译通过并独立复核无阻塞，新精确 head 仍须完整 CI。证据见 `data-collection/gameplay-gf2-strict-compile-20261107.json`。
 - 签发 head `4bd8a038439cf32aef67e6c48a45d079927a0431` 的 clang-cl 编辑器实际通过全套 1,478 用例/427,939 断言，MSVC/GCC release 模板与静态检查通过。等待 MSVC 编辑器期间主线经 #216 推进到 `49bd38d31812dc5c5ef838727483555ee7636a12`，本工作树正常合并该已接收版本，保留大千新增逻辑且 Gameplay 树不变；交叠文件 `/W4 /WX` 编译和独立复核通过。最终 CI 绑定整合后的新签发候选，不把旧 head 结果冒充新 head 实跑。
 - 签发 head `f4dc60d02c2c61c82a7d01e459a7e0788b0408d7` 的 push GHA `42259999173` 已完整通过，包含 MSVC/clang-cl 编辑器和 MSVC/GCC 模板的编译及单测。期间主线经 #219 推进至 `5a42d425b976057e9c531642b1659e5e01091c30`；其 22 个路径均为独立服装样例、工具和证据，与 GF-2 的 59 个差异路径无交集，也未变更引擎或构建输入。独立影响核查通过，正常整合后沿用原业务测试输入证据，并对新签发 head 取得实际 CI。
+- 签发 head `1f7e2ac88f4557900c80c7cada6bc33a46b7aca8` 的 push GHA `42261929311` 完整通过。其 PR 静态检查检出的自动合并版本已含并发 #221，但事件基线仍为 `5a42d425`，三点 diff 将 #221 的 25 个上游动作样例路径纳入 87 文件检查，触发 `tools/ainative/motion*.py` Ruff 风格失败。现正常整合已接收 main `491888459dbb64c8130378d8dbb3649cc1fd6ac8`，独立核查确认新增路径与 GF-2 的 62 路径无交集、无构建输入变化；保持上游原字节和现有检查，在正确新基线重新取得精确 head CI。故障与整合证据见 `data-collection/gameplay-gf2-motion-integration-20261107.json`。
 
 - GF-1 与 GF-2 已形成同一隔离 worktree 的本地候选；本轮在 GF-2 验证后停止，不开始 GF-3。
 - 不修改原主工作树的未提交文件；全部生产写入隔离 worktree。

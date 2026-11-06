@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "request_id": "ainative-art-08-motion-generation-20261106",
+  "issue_number": 149,
+  "date": "2026-11-07",
+  "status": "local_validation_and_independent_review_passed_pending_integration",
+  "baseline": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+  "frozen_candidate_sha256": "eec056abc4d30d7ec55094b7d3fc39e46419436110f2bc7253e949d5996202a8",
+  "private_acceptance_summary_sha256": "434d46d2a47cb41b2c8c5640d6a34fb31b803b66a7d245bebe709ee1867f643d",
+  "generation_device": "CPU",
+  "godot": "4.8.beta.custom_build.ced0368bb",
+  "text_chain": {
+    "provider": "official-MDM",
+    "job_id": "20430cf5480759583e1b75edb1f59c8f4fd600956bec3f453d894bb2abb137f0",
+    "source_sha256": "cf453a549f2643fcb240a1ea5759f81e275ccfb289efb13be79f45ff83c22640",
+    "button_receipt_sha256": "c1c464b418e23ed4bd603074d558233eed867a8509953048f3b687ca910b76e5",
+    "scene_artifact": "ui-generated-text-ue4-review-fix.tscn",
+    "scene_sha256": "4ee8cc2fb75b2fac5b18b6bfa309a8988e9d988ed7b6e276159cf1114b92fc0f",
+    "reopen_receipt_sha256": "f0ba24a0f4dcb54e0b2a8eeb23070ea1063b0d8fcf80c98f1393743e014c66bc",
+    "source_profile": "3df7f9e7339b74e225cef0b654e51216184d8848ab0416aeaf82c2621cbff9e5",
+    "target_profile": "59990bc182823a98b606812aad097cffc53795d353ae8b19c50b074c86a1a606",
+    "target_bones": 68,
+    "reopened_tracks": 204,
+    "reopened_pose_max_error_m": 2.731428025981586e-07,
+    "duplicate_publication_exit_code": 1,
+    "fps": 20,
+    "retarget_fps": 30.0,
+    "streams": {
+      "body": {
+        "frames": 80,
+        "detected": 80,
+        "time_base": "model_20fps_ms"
+      },
+      "face": {
+        "frames": 0,
+        "detected": 0,
+        "time_base": "model_20fps_ms"
+      },
+      "hands": {
+        "frames": 0,
+        "detected": 0,
+        "time_base": "model_20fps_ms"
+      }
+    },
+    "model_provenance": {
+      "adapter_sha256": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+      "checkpoint_arguments_sha256": "924adeca8b21dbf2779101ae2dd896f2187715d4a184449230f74508ceffbeae",
+      "checkpoint_sha256": "0fbdc8547c8f262b8838645586790b55f983d90db3bb7ed58e4b5d49429587ca",
+      "clip_sha256": "40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af",
+      "device": "cpu",
+      "mean_sha256": "26e136555dab04c94a129d446c26e6b9939cbf045fbf77bcf5462c1fb5a2001c",
+      "prompt": "A person walks forward and raises both arms.\nContext: The movement is slow and deliberate.",
+      "provider": "official-MDM",
+      "seed": 10,
+      "source": "https://github.com/GuyTevet/motion-diffusion-model",
+      "source_sha256": "936623bd81b77be410a94cb5f2831bb6bc34876758386f09b1672a12860805ca",
+      "std_sha256": "6565a65ed9b31e23c328829a309e1c482be8b85fd23b43d65451a9b19a917f40",
+      "steps": 50,
+      "unused_smpl_conversion": "excluded for hml_vec only"
+    }
+  },
+  "video_chain": {
+    "provider": "mediapipe",
+    "job_id": "b77f2860cc5f7c033620e9faccdac55b577f1b318403c710ed7e0eb31c119be1",
+    "source_sha256": "4b1fea4bb8efa71fa98b490355095e489d4babd99b0b8c3b5fb74a516c767f49",
+    "button_receipt_sha256": "0457535f850044a1356173940105da7e1c84c6cff1b9d3333ebd11118d41791a",
+    "scene_artifact": "ui-generated-squat-manny-review-fix.tscn",
+    "scene_sha256": "49ffed735fd52212d676a3cf8134cbadbffe7eaf5c168d74742e532d81228182",
+    "reopen_receipt_sha256": "492f0a37277281710ac86a45c7b7125cce55fb620df36491f13ef66c2ab3bd4a",
+    "source_profile": "0a64ae01129c86c60a8b2693bbe59c3d3b144b13d8a00b9ff5680ebe6a400194",
+    "target_profile": "0b79e9d70899bc045db82b8a71d2bdd4d2bb0d6be88e5ff304844b42e92a0504",
+    "target_bones": 161,
+    "reopened_tracks": 483,
+    "reopened_pose_max_error_m": 1.7249341510705563e-07,
+    "duplicate_publication_exit_code": 1,
+    "fps": 30.0,
+    "retarget_fps": 24.0,
+    "streams": {
+      "body": {
+        "frames": 213,
+        "detected": 213,
+        "time_base": "decoded_video_pts_ms"
+      },
+      "face": {
+        "frames": 213,
+        "detected": 0,
+        "time_base": "decoded_video_pts_ms"
+      },
+      "hands": {
+        "frames": 213,
+        "detected": 107,
+        "time_base": "decoded_video_pts_ms"
+      }
+    },
+    "model_version": "0.10.21",
+    "input": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:Squat_-_exercise_demonstration_video.webm",
+      "source_page_revision": "1145684703",
+      "author": "FitnessScape",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
+      "changes": "Original Commons file bytes unchanged; any trim/resample or model-derived motion must record a separate artifact."
+    },
+    "pts_ms": [
+      0,
+      7067
+    ],
+    "low_visibility_body_frames": 162
+  },
+  "face_confirmation": {
+    "input": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:20140529_-_Frowning.webm",
+      "source_page_revision": "751951394",
+      "author": "Clément Bucco-Lechat",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "sha256": "b2424ddb88f5a7f25f2f304614d2cfd9c411f330b30a86459e25c040b188084c",
+      "changes": "Original Commons bytes unchanged. Model observations are separate derived artifacts; local facial motion validation only."
+    },
+    "result_sha256": "2a94ab3227ea589276c7827f964d1848bae00dbe3b22074d4da17b35dfdc96ac",
+    "frames": 72,
+    "face_detections": 72,
+    "hand_detections": 0,
+    "observed_blendshape_coefficient_range": [
+      0.44818633794784546,
+      0.7533392310142517
+    ],
+    "character_binding": "unbound; deferred to #151"
+  },
+  "models": [
+    {
+      "url": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+      "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1",
+      "bytes": 9398198,
+      "license": "Apache-2.0"
+    },
+    {
+      "url": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "bytes": 7819105,
+      "license": "Apache-2.0"
+    },
+    {
+      "url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
+      "bytes": 3758596,
+      "license": "Apache-2.0"
+    },
+    {
+      "url": "https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
+      "sha256": "40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af",
+      "bytes": 353976522,
+      "license": "MIT (official repository; retain upstream notices)"
+    },
+    {
+      "url": "https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view",
+      "sha256": "4d87cd647b89752d16867f25972e30e561ea7e3e138098abb1d333ddb3d157ac",
+      "bytes": 206513256,
+      "license": "MIT (official repository; retain upstream notices)"
+    }
+  ],
+  "source_repositories": {
+    "mdm": {
+      "commit": "ef8edce6a53c6ab19e53b4d4dcf15bc0bc60a778",
+      "license_sha256": "afa4accaa84daafe03b9164128b34ba36f261384f10c7325bbb3888dda15e805"
+    },
+    "clip": {
+      "commit": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+      "license_sha256": "d860b08e3ac59e475d0bcd14c4787494ddc0e385cddd81c47acbbbbd7ed6cb98"
+    },
+    "humanml": {
+      "commit": "9176e8fb446b71c7d2a725eb5cf6fec1ae3b3c23",
+      "license_sha256": "44767ded3730644c075cbff0972c5511528b7e541879473e826af8e7311ea64e"
+    }
+  },
+  "license_evidence": [
+    "https://github.com/GuyTevet/motion-diffusion-model/blob/main/LICENSE",
+    "https://github.com/openai/CLIP/blob/main/LICENSE",
+    "https://storage.googleapis.com/mediapipe-assets/Model%20Card%20BlazePose%20GHUM%203D.pdf",
+    "https://storage.googleapis.com/mediapipe-assets/Model%20Card%20Hand%20Tracking%20%28Lite_Full%29%20with%20Fairness%20Oct%202021.pdf",
+    "https://storage.googleapis.com/mediapipe-assets/Model%20Card%20MediaPipe%20Face%20Mesh%20V2.pdf"
+  ],
+  "license_scope": "Repository MIT statements do not transfer all training-data rights. Retain upstream notices; weights and licensed reference assets are not redistributed.",
+  "processing": {
+    "source_profile_explicit_before_147_retarget": true,
+    "source_preserved": true,
+    "raw_root_normal_m": 4.818692207336426,
+    "raw_root_smoothed_m": 4.818692207336426,
+    "processed_horizontal_root_m": 0.0,
+    "loop_max_joint_seam_radians": 0.942479133605957,
+    "low_confidence_correction": {
+      "frame": 2,
+      "point": 31,
+      "visibility": 0.49769872426986694,
+      "original_position_and_confidence_retained": true,
+      "purpose": "validation edit, not ground truth"
+    },
+    "smoothing_max_displacement_m": 0.023981692269444466,
+    "contact_max_error_m": 0.020553428679704666,
+    "receipt_sha256": "b9744ad67dc69aa1e80e4e19632782c7f1c9fea485728c81abe5b7e4c3693fe3"
+  },
+  "publication": {
+    "withdrawn_scenes": [
+      {
+        "artifact": "ui-generated-text-ue4.tscn",
+        "sha256": "98e3c803b7950636acfca5316d14230c614c77710a1d1a0c8f6cc1a500ffc1de"
+      },
+      {
+        "artifact": "ui-generated-squat-manny.tscn",
+        "sha256": "0ffaf6421b8c9e5de2fe41c8a55048e2ff2036e2c942118cb2311aa5e82acecc"
+      }
+    ],
+    "reason": "Old scenes omitted unowned AnimationPlayer nodes; metadata-only reopen checks were insufficient. Their scene acceptance is withdrawn.",
+    "replacement_policy": "Review fixes reused the original immutable JSON from actual text/video generation buttons; no AI inference rerun. New UI receipts truthfully report generation_button.triggered=false. New published animations were reopened with generated clips, 204/483 resolvable tracks, rest poses and two-time bone-transform equivalence; duplicate publication explicitly failed with exit code 1.",
+    "verification": [
+      "reopened generated clip",
+      "204 UE4 / 483 Manny resolvable tracks and bone names",
+      "rest pose on reopen",
+      "all global bone transforms match at zero and midpoint",
+      "duplicate publication explicitly exits 1"
+    ]
+  },
+  "validation": {
+    "python_tests_passed": 70,
+    "existing_tests_preserved": 58,
+    "python_log_sha256": "9f7207c89de3229c8ff97b8a6417c031c31544149b0c588b2735fe06088322b1",
+    "dependencies_lock_sha256": "27b912052f41fac92ce4029bac8c9cf1d5a978b3da72c3035deb6621053867f7",
+    "independent_reviewer": "/root/review_contracts",
+    "review_status": "passed",
+    "targeted_independent_checks": 12,
+    "remaining_blockers": 0,
+    "review_evidence": "root coordination confirmation retained in hashed acceptance summary",
+    "fixed_findings": [
+      "Published AnimationPlayer/Skeleton ownership and full rest-pose snapshot packing",
+      "Reopened animation tracks and paths plus two-time bone-transform equivalence",
+      "Duplicate publication requires explicit nonzero exit code",
+      "Profile-specific coordinate/units/axes/clock and nonnegative timestamp validation",
+      "Raw root displacement captured before smoothing/in-place processing",
+      "Video input SHA checked before and after inference and against invocation during result recovery"
+    ],
+    "executor_run": "ad84bada73d6407ca7cd793e0fd1ae43",
+    "executor_state": "succeeded",
+    "executor_result_sha256": "4c36f57dce7857d563ff67acd3c45df32b081cd4867f2569169296d8e3737f67"
+  },
+  "limitations": [
+    "Single-person selection, no persistent multi-person identity",
+    "Monocular body is hip-relative, no absolute root travel",
+    "No calibrated per-joint hand/face confidence",
+    "Position-only axial twist unobserved",
+    "Face binding deferred to #151",
+    "Image ContextBundle rejected; video text metadata-only",
+    "Loop mode preserves measured seam; contact residual reported, not guaranteed zero"
+  ],
+  "publication_scope": "Compact additive evidence record only; no video bytes, weights, machine paths, credentials or raw trajectories.",
+  "frozen_candidate_files": {
+    "design-docs/ainative-art/08-motion-generation.md": "086340c7cf5188b0103924ca122a01c7101f3354bb35f42b43d493004a7ccc11",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "b6309a281c3b5282ff14f9fea7146fa2fde254edc5c9610e4c31fc42b544a392",
+    "samples/ainative-workbench/addons/ainative/motion.gd": "a6d680e91f9ed11231ce84f6c867df479896d92b6bf2c59bef9bacfa75d8bb1e",
+    "samples/ainative-workbench/addons/ainative/motion.gd.uid": "2f15daaea6e5cacfee82579e10af52d2ef448f9e9a202142dd006ec30daa00d8",
+    "samples/ainative-workbench/addons/ainative/motion_panel.gd": "03ecfe1fa3955c5cddb5f85c38e9995cbc797e32a14d7dc5bc01a2f628ddae24",
+    "samples/ainative-workbench/addons/ainative/motion_panel.gd.uid": "2bf7a76bff750993ac88a48f9f7b5e32a7547e6479c5467b2c9e8fb8e61666e6",
+    "samples/ainative-workbench/motion_acceptance.gd": "d9d8b58ee28df12451d366a1b82f2eba91bf7969e458b7b170761ec420516a20",
+    "samples/ainative-workbench/motion_live_ui.gd": "dadd53c67013f2b452bf0d81682ed1acdbea0798ba960bf689c25e1e5a007b65",
+    "samples/ainative-workbench/motion_validation.gd": "cd29cd0462aec65d97b86c0cd3382c98adaf00bb1472fa370eef94115f3849d1",
+    "tools/ainative/MOTION.md": "8eddaf18c3f261f8bf3029a0b35c7ac65473e84be087849997bb88ae130caff7",
+    "tools/ainative/motion-config.example.json": "3d1e5d6d35b8c3efd94fdbe2b97a72e5737b81f6a2200a974b40efd0ef2bf0dd",
+    "tools/ainative/motion-requirements.txt": "6838e89cf241260438741a5671b931da11b50653474011c38838a01f46f23ce8",
+    "tools/ainative/motion.py": "551c9899caba439c108d3897b2e27af6ff851a4a9a330db111008c7ea2430f20",
+    "tools/ainative/motion_jobs.py": "949a9d64bc75b5efd73b31be327502730501384f1aada052bcb5685dd26261dc",
+    "tools/ainative/motion_mdm.py": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+    "tools/ainative/motion_provider.py": "781c56bb3dc80e94d6c4b05fc83c6b58322e6cbf4b521de042c5d6034c9b059c",
+    "tools/ainative/motion_video.py": "3a144190ef87b07e185a4836aefa51154dd85c0233db0e9c7b4b569813fa691b",
+    "tools/ainative/test_motion.py": "db097a62c06e4a870f6723cba9d08c0d277e43c83096368a3cf46b5a34a8cd58",
+    "tools/ainative/test_motion_provider.py": "4aeaf6d9a2f48e5385d17b9574ae4c16e167d15c16927143462c88d5a7f0231b"
+  },
+  "integration": {
+    "main_commit": "5a42d425b976057e9c531642b1659e5e01091c30",
+    "preintegration_workbench_sha256": "b6309a281c3b5282ff14f9fea7146fa2fde254edc5c9610e4c31fc42b544a392",
+    "integrated_workbench_sha256": "1ac0f37b3c28779c881ba53397712161dd25fc9bfa8aa6c7b2b5c31d5a271892",
+    "preserved_other_frozen_files": 18,
+    "change": "Preserve merged #148 garments hook; append original three-line motion hook. No other #149 implementation file changed.",
+    "godot_parse_exit_code": 0,
+    "runtime_panel_counts": {
+      "garments_panel.gd": 1,
+      "motion_panel.gd": 1
+    },
+    "parse_log_sha256": "1bacd7a87db4d45681e10c46e297270c1a9924864ef8c016feab6c1cbae600f0",
+    "panel_log_sha256": "5aa4dbeb3ec1f67f55fb5949a8a7cf749c2274ad8aa48368e3b011faff878d13",
+    "inference_rerun": false
+  }
+}
