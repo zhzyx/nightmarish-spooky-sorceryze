@@ -1,0 +1,30 @@
+{
+  "request_id": "godot-macos-headless-preset",
+  "issue_number": 226,
+  "platform": "macOS arm64",
+  "base": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+  "build": "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no generate_bundle=yes -j8",
+  "probe_source_sha256": "8dfc3e3084cbb93717810ce512ec04425b3625ca2c0ffb80f4a1cad60bb85253",
+  "preset_sha256": "1dc3eb3974a6dd5ec503ffe2d832b41617979baa5bdcd6810b93d514c48288e5",
+  "tested_executable_sha256": "35686955a1fd118c8d3f10b5babc5f24ba244ec6ffd18e8893a0c52fa6289b05",
+  "launch": "Two separate hidden LaunchServices launches of a locally ad-hoc signed copy, with isolated project and settings",
+  "successful_entry_checks_per_launch": [
+    1,
+    0
+  ],
+  "headless_negative": "On two consecutive scripted headless launches the no-marker probe exited 0. Each explicit attempt warned of failure, ended its process and removed its temporary directory. Only the original successful receipt exists.",
+  "limits": "Control state only. Parent logs also reported a JSON parse error and Metal fence warning. Overall editor health and physical display rendering were outside the probe.",
+  "independent_review": "Codex native read-only review, with follow-up of integration with #229 on base 2f1074d3; per-launch coordinator, receipt reuse, retries and other-platform behavior checked.",
+  "coordinator_sha256": "74be485145140d9f51ae4f8c47ce59c9158d1dc72d71205b15eb991039961c62",
+  "reused_receipts_per_launch": [
+    0,
+    1
+  ],
+  "main_integration": {
+    "base": "59338c06fbe96f745afaed56b615be507e36b39b",
+    "editor_sha256": "0ad315c0cf8d0a967d311b60f7e21e1517d65dfa52080a5041c44affae66d0ee",
+    "first_launch": "passed",
+    "second_launch": "reused",
+    "scope": "Rebuilt after the Daqian board change and verified two hidden launches. Prior negative tests used the same coordinator and probe."
+  }
+}
