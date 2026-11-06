@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-skeleton-interop-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-06-skeleton-interop-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T15:33:41.765540+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261106",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按已验收依赖接续UE/Mixamo骨骼兼容、模型重绑与动画重定向",
+    "dependency": {
+      "issue": 146,
+      "pr": 198,
+      "main_commit": "3003153c21cf42e865d39f06abb4115421046527",
+      "acceptance_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/146#issuecomment-6688445713",
+      "state": "closed_completed"
+    },
+    "worker": "/root/sinan_2b9618ddaed70881",
+    "dispatch_receipt": "d5fb1e8dd0d099db0881d8cb17210207ec6221e6680734b8a51be29316b97fe6",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "bfa8d4f08f52344ad7db5cb847465797095cb895d0ff1b4ba3d020b0176bccee"
+}

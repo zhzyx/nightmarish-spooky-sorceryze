@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "dispatch-a0435b86d9be4800830d8dd3df701cff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-06-skeleton-interop-20261106",
+  "kind": "handoff",
+  "occurred_at": "2026-11-06T15:30:00.639481+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "db4733a8516db3518ff2253b54c10197290985fb0260225c6c9629725e718029",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "record": {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#147",
+      "reservation_key": "d5fb1e8dd0d099db0881d8cb17210207ec6221e6680734b8a51be29316b97fe6",
+      "state": "running",
+      "stage": null,
+      "record_sha256": "24acf4490a4fd81008fc3b5b0cc4260fb79c2b8ade305a5e5a819377f8a04b4d",
+      "source_revision": "203a92966a27e5c3c90acf21c6a9580f4c9a9590738f1cef76ba1116fe92d3e8",
+      "planned_model": "gpt-6-astra",
+      "requested_model": null,
+      "worker_id": "/root/sinan_2b9618ddaed70881",
+      "receipt_reference": "agent:/root/sinan_2b9618ddaed70881",
+      "setup_pending": false,
+      "observed_model": null
+    },
+    "usage": null,
+    "usage_unknown_reason": "native tool usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "be7ba74d6d217bdbca989472f35feea2f04e6bac30a425237d6bce43b3e8cbfb"
+}
