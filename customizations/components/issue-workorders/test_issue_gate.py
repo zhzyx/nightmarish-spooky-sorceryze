@@ -25,6 +25,13 @@ class GateTests(unittest.TestCase):
     def check(self, value=None):
         return gate.check_issue(value or self.issue, "test/repo", 6, "req-6", {"type:development"})
 
+    def test_storage_adapter_rejects_unregistered_import_before_execution(self):
+        self.setup_gate()
+        storage = "customizations/platforms/data-collection/git-files/storage"
+        (self.root / storage / "tempfile.py").write_text("raise AssertionError()")
+        with self.assertRaisesRegex(ValueError, "Platform file set or digest"):
+            gate.verify_platform_adapter(self.root, storage)
+
     def test_real_issue_and_form_id(self):
         self.check()
         self.issue["body"] = "### 稳定需求 ID\r\n\r\nreq-6\r\n\r\n### 目标\r\nSome task"
@@ -68,6 +75,18 @@ class GateTests(unittest.TestCase):
             run.assert_not_called()
 
     def setup_gate(self, events=True):
+        # The formal gate checks platform bytes before invoking the mocked validator.
+        import hashlib
+
+        storage = "customizations/platforms/data-collection/git-files/storage"
+        (self.root / storage).mkdir(parents=True)
+        (self.root / storage / "diting_files.py").write_bytes(b"# fixture")
+        lock = self.root / "integrations/gonggong/frozen-distribution.json"
+        lock.parent.mkdir(parents=True)
+        lock.write_text(
+            json.dumps({"platform_files": {storage: {"diting_files.py": hashlib.sha256(b"# fixture").hexdigest()}}})
+        )
+
         if events:
             directory = self.root / "gonggong-diting-data/events/local/req-6"
             directory.mkdir(parents=True)

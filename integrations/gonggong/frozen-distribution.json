@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "scope": "offline_registered_snapshot_consistency_only",
   "exemption": null,
   "registration_note": "All current framework files pinned; byte integrity is not approval.",
@@ -65,13 +65,9 @@
     "domains/quality/templates/缺陷工单.md": "f7709dc0200e5dd45308faa288b6799d146f899c169accb37008cc33832f07d0",
     "domains/quality/templates/质量事件与决策记录.md": "4430332ba795be35be3ff924703408f8cdbf136ceba7c40df88fd7e01b581a50",
     "domains/quality/templates/质量约定.md": "dc7c987d4a66bdb6be86a92feb0787f4c469c72e3fb4a56d8e690d7e64de584d",
-    "extensions/diting-files/diting_files.py": "8884a690c42b08c09c0f1061082c402540417898b59fa87a7bd38250fa91cacf",
-    "extensions/diting-files/event.schema.json": "22fe532e3cd17be7a73c66b9f0689965412e0c50a938988c7d4bda6b6bff1aae",
-    "extensions/diting-files/README.md": "a5d16a275a9096e1b3f09b8c62ae555d83d7d55a1693af1a8a9c3e3720472dc2",
-    "extensions/diting-files/reporting.json": "73f751941a17272912e039fdc34b0d4ed0624cb1fb52bb343747590d0cff0a34",
     "foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
     "FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
-    "framework-manifest.json": "85a70e8f054803f1b1bfa79e198e0331640fe9d6262165d99d523c2bcdab347e",
+    "framework-manifest.json": "82bd1a6f3c4547153926487e46864b06bf7b25a8d804d3a8177d99cb281c924d",
     "GOVERNANCE.md": "a6d2a4bd2992a8521926d5b4d03d66afb12b5081068b86d6614ae09ba7890c3a",
     "integrations/yanshi-legacy/feature-memory.mjs": "2ab591dd48e7c5ea07c6429498df1524d0c9903352ebdd8f9b172751603a7381",
     "integrations/yanshi-legacy/runtime/cli.mjs": "5f69d325b5f1672219377b9ef5b1ee4ec4a5aa8a66ee51fa0b1c3e1aafae4e24",
@@ -235,7 +231,7 @@
     "specs/core-agent-adaptation.md": "bc0abc35aa8387952567b7d1d152357d2785e641b2dae06defef411456f720ea",
     "specs/customer-solution.md": "fef73c3ecb2438f448145cca2a6a63ed8554ef2673dd560cc49c134fe8fbcea4",
     "specs/data-feedback.md": "3652e7b5bfbd2857625735ab368ec92365192f7c648b588f5f5ed43e7adda050",
-    "specs/delivery.md": "e20f1905e39aff5305391bdaeeb3b0d432d2333e23e1a2402203981aa38914df",
+    "specs/delivery.md": "d0328d6c85b88af9063c585f1f36c37f0620b476194510c18694c5c4e080f599",
     "specs/document-design.md": "d2e235957fd9907d2a673e2a0210b8321da32f995d0c19d919d1bf249fb3373c",
     "specs/engine-adapter.md": "7b166fb3af06f76a44a8b1d708d541ebbfc64532054ff427c4c3f599ff83760b",
     "specs/enterprise-operations.md": "f86df03088a53b81961fbec203e1500d97c0023ad0a6d10f7d35917d203dabd0",
@@ -249,16 +245,13 @@
     "specs/reporting.md": "0c53dd0d9bc2450b9d06ab4d7a2de3938b5009d36610395aaf84348099bace30",
     "specs/scene-collaboration.md": "104b9efef907beef867352a40b0e8bec5668b555b77d799e9c45bd1f8ee1a859",
     "specs/work-order-management.md": "4da69e8c83ffa93043f2c50def2cbbfafe3e0e45482b6d6f0da23f55066edd14",
-    "templates/delivery.json": "ba1ad796f443457c647627794514d246b25a586431708fe32097a4dd1b22da54",
     "templates/model-plan.json": "f7d93f470560920dee0f4b6a49666dc8508b05cca26ca71e52cf7a38bce9077f",
     "templates/reporting-binding.json": "257a113b0efa9f292a0f2f099c924ba36afba314cb9bc4e59b38c4c00d61a00c",
     "templates/review-pass.json": "d7dc31618ece57e7120df2629cef4911fecf741cc89091d7f649cef6da305a1b",
-    "tests/test_delivery.py": "1664f37a9998cbaf15329fdb3e6eb85373bf8c664757396727b199c97dcb4018",
     "tests/test_diting_host.py": "a8f79f542ee1195df029d2dab503ad0185893dcc8f13f71b76fc5e388328c7ce",
     "tests/test_runtime.py": "17c6d0c6ae4de3f8b24c37003d26f102165584f7b659dd23a19f7b04e1ffa534",
     "tools/admission.mjs": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e",
     "tools/agent-context.mjs": "0f021ebfe046102811bd40be4ad5adbc5930b1e27c592db0fd16ede64242b486",
-    "tools/check_delivery.py": "e8973d3931371caf22983252aff9157b90a8260a6dafaf8e7b2870ab4ec2ac21",
     "tools/check_quality_ownership.py": "45508af6d1c0206e1a18159d1f7458853096fb45c2975156e9ebfd8b0c94e2d6",
     "tools/create-component.py": "2a8b8bb133a4a0bdb141091a2ce7d6a019efb430c242b0d9609a10c7601bc125",
     "tools/diting-host.py": "8d2a517f2539eaac8a1b142e72b168d379828f883ae4056defb680c8dd49decd",
@@ -277,6 +270,19 @@
     "upstream/yuanheng/skills/yuanheng-organize/SKILL.md": "f05238997f7f1d44e5430c033764de86a46f64fabf2bd9cdc9b2ee70ce6e8c6c",
     "upstream/yuanheng/tools/check_message.py": "5d8ca64d426a6c4961f418c5d339842c0e4cc580a640d284c38dc4c1b721061c",
     "upstream/yuanheng/tools/context.py": "db431155ad8575cdd1a3fae81a1fb77eb9b235c3f79c7346653a9388efe1dbb0",
-    "package-lock.json": "9dab8e5a31f3b9722bfaab183f45cc47cc1b7e5904291b59db5f8bbf04899663"
+    "package-lock.json": "b917714d790588642e01a514799538f8fa12185179e08b5239fd8875944f9d54"
+  },
+  "platform_files": {
+    "customizations/platforms/data-collection/git-files/storage": {
+      "diting_files.py": "64efeae452ae4a2aeac249256052bc08629237c348a98bcb8bb1a26875c054b9",
+      "event.schema.json": "22fe532e3cd17be7a73c66b9f0689965412e0c50a938988c7d4bda6b6bff1aae",
+      "README.md": "7c26f2f5ac81862d0a86ac2800ba37f1c37c88e052f8b2d43c43bebb0480c679",
+      "reporting.json": "f220ad69a3439a4d89db40ee4ed4765ffff68627aaeef9d0965f6111eaf13b6b"
+    },
+    "customizations/platforms/development/git/delivery": {
+      "check_delivery.py": "55db64f943c649445edc6ef7b6a03c75a7729e5256fd4d1bc0c4b4019196abd1",
+      "templates/delivery.json": "ba1ad796f443457c647627794514d246b25a586431708fe32097a4dd1b22da54",
+      "test_delivery.py": "756dbf468554e708bcfddd5aca84276fec65a682ed0b42888aabf474ccb36962"
+    }
   }
 }

@@ -9,7 +9,7 @@
   "historical_data_roots": [
     "olympus-hermes-data"
   ],
-  "data_module": "framework/extensions/diting-files",
+  "data_module": "customizations/platforms/data-collection/git-files/storage",
   "data_artifacts_required_in_git": true,
   "runtime_entry": "tools/gonggong_bridge.py",
   "editor_launch": "tools/launch_gonggong_editor.ps1",
@@ -45,5 +45,6 @@
       "migration": "customizations/module-migration.json"
     }
   ],
-  "platform_catalog": "customizations/platforms/catalog.json"
+  "platform_catalog": "customizations/platforms/catalog.json",
+  "component_registry": "customizations/platforms/components.json"
 }

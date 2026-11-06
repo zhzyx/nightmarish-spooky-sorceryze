@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "component": "diting-file-data",
+  "shared_reporting": "framework/agents/diting/reporting.json",
+  "specification": "framework/specs/reporting.md",
+  "host_binding_required": true,
+  "runtime_connected": false,
+  "file_event_schema": "customizations/platforms/data-collection/git-files/storage/event.schema.json",
+  "historical_source_mode": "read_only",
+  "new_and_historical_sources_validated": true
+}

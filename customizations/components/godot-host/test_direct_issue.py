@@ -1,15 +1,16 @@
 """Exercise the actual GitHub work-item adapter, stubbing only its remote transport."""
-from concurrent.futures import ThreadPoolExecutor
+
 import io
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import threading
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from unittest.mock import patch
 
 import bridge
@@ -41,15 +42,22 @@ class DirectIssueTests(unittest.TestCase):
         self.next_error = None
         self.lose_receipt = False
         self.account = "7"
-        self.request = {"draft_id": "draft_0123456789abcdef0123", "expected_user": "7", "title": "原始标题",
-                        "category": "development", "outcome": "原始输入\n\n  保留空格  "}
+        self.request = {
+            "draft_id": "draft_0123456789abcdef0123",
+            "expected_user": "7",
+            "title": "原始标题",
+            "category": "development",
+            "outcome": "原始输入\n\n  保留空格  ",
+        }
         self.patch(bridge, "work_items_module", return_value=self.work)
         self.patch(bridge, "gh_state", return_value=("gh", None))
         self.patch(direct_issue, "collaborator", return_value={"user_id": "7", "repo": "test/repo", "login": "alice"})
         self.patch(self.work, "gh", side_effect=self.gh)
         self.enqueue = self.patch(bridge, "enqueue")
         self.flush = self.patch(bridge, "flush")
-        self.refresh = self.patch(direct_issue, "refresh", return_value={"execution": "not_dispatched", "sourcesRead": 0})
+        self.refresh = self.patch(
+            direct_issue, "refresh", return_value={"execution": "not_dispatched", "sourcesRead": 0}
+        )
 
     def patch(self, obj, attr, **kwargs):
         context = patch.object(obj, attr, **kwargs)
@@ -70,11 +78,17 @@ class DirectIssueTests(unittest.TestCase):
         self.writes += 1
         if self.next_error:
             raise self.next_error
-        row = {"number": 19, "html_url": URL, "state": "open", "user": {"id": 7},
-               "body": Path(args[args.index("--body-file") + 1]).read_text(),
-               "title": args[args.index("--title") + 1],
-               "updated_at": "2026-11-06T00:00:00Z", "created_at": "2026-11-06T00:00:00Z",
-               "labels": [{"name": v} for i, v in enumerate(args) if args[i-1] == "--label"]}
+        row = {
+            "number": 19,
+            "html_url": URL,
+            "state": "open",
+            "user": {"id": 7},
+            "body": Path(args[args.index("--body-file") + 1]).read_text(),
+            "title": args[args.index("--title") + 1],
+            "updated_at": "2026-11-06T00:00:00Z",
+            "created_at": "2026-11-06T00:00:00Z",
+            "labels": [{"name": v} for i, v in enumerate(args) if args[i - 1] == "--label"],
+        }
         row["assignees"] = []
         self.rows.append(row)
         if self.lose_receipt:
@@ -87,34 +101,58 @@ class DirectIssueTests(unittest.TestCase):
     def routing(self, created=None):
         created = created or self.submit()
         self.assertTrue(created["ok"], created)
-        return {"issue_number": created["number"], "request_id": created["request_id"], "expected_user": "7",
-                "expected_revision": created["revision"], "backend": "http", "model": "fixture-model",
-                "endpoint": "https://example.invalid", "_private_api_key": "private-fixture-token"}
+        return {
+            "issue_number": created["number"],
+            "request_id": created["request_id"],
+            "expected_user": "7",
+            "expected_revision": created["revision"],
+            "backend": "http",
+            "model": "fixture-model",
+            "endpoint": "https://example.invalid",
+            "_private_api_key": "private-fixture-token",
+        }
 
     def fixture_model(self, *results):
         def context(root, bridge_api, agent_id, binding, request):
-            return ("REGISTERED " + agent_id, "fixture-" + agent_id, {"id": agent_id, "version": "1",
-                    "origin": "gonggong-framework", "definition_sha256": "a"*64}, {})
+            return (
+                "REGISTERED " + agent_id,
+                "fixture-" + agent_id,
+                {"id": agent_id, "version": "1", "origin": "gonggong-framework", "definition_sha256": "a" * 64},
+                {},
+            )
 
         self.patch(issue_route, "context", side_effect=context)
-        self.patch(issue_route, "registered_candidates", side_effect=lambda root, route: {
-            agent: "fixture-" + agent for agent in {"sinan", route}})
+        self.patch(
+            issue_route,
+            "registered_candidates",
+            side_effect=lambda root, route: {agent: "fixture-" + agent for agent in {"sinan", route}},
+        )
         model = self.patch(issue_route.requirements_agent, "complete")
-        model.side_effect = [r if isinstance(r, Exception) else
-                             {"text": json.dumps(r), "finish_reason": "stop", "usage": {"input_tokens": 18}}
-                             for r in results]
+        model.side_effect = [
+            r
+            if isinstance(r, Exception)
+            else {"text": json.dumps(r), "finish_reason": "stop", "usage": {"input_tokens": 18}}
+            for r in results
+        ]
         return model
 
     @staticmethod
     def judgment(route="sinan", questions=None):
-        return {"route": route, "reason": "依据原文核实范围", "scope": ["导出原文"], "acceptance": ["可以回读"],
-                "questions": questions or []}
+        return {
+            "route": route,
+            "reason": "依据原文核实范围",
+            "scope": ["导出原文"],
+            "acceptance": ["可以回读"],
+            "questions": questions or [],
+        }
 
     def test_create_and_reread_without_model_or_worker(self):
         first = self.submit()
         self.assertTrue(first["ok"], first)
-        self.assertEqual((19, "daqian-direct-0123456789abcdef0123", URL, "planned", self.rows[0]["updated_at"]),
-                         tuple(first[key] for key in ("number", "request_id", "url", "status", "revision")))
+        self.assertEqual(
+            (19, "daqian-direct-0123456789abcdef0123", URL, "planned", self.rows[0]["updated_at"]),
+            tuple(first[key] for key in ("number", "request_id", "url", "status", "revision")),
+        )
         self.assertNotIn("执行授权来源", self.rows[0]["body"])
         self.assertIn(self.request["outcome"], self.rows[0]["body"])
         self.assertIn("<!-- gonggong-intake:daqian-direct -->", self.rows[0]["body"])
@@ -123,15 +161,20 @@ class DirectIssueTests(unittest.TestCase):
         self.rows[0]["labels"][1]["name"] = "status:blocked"
         self.rows[0]["updated_at"] = "2026-11-06T00:00:01Z"
         repeated = self.submit()
-        self.assertEqual((repeated["status"], repeated["revision"], self.writes),
-                         ("blocked", self.rows[0]["updated_at"], 1))
+        self.assertEqual(
+            (repeated["status"], repeated["revision"], self.writes), ("blocked", self.rows[0]["updated_at"], 1)
+        )
         self.refresh.assert_called_once()
 
     def test_only_start_can_activate_exact_planned_issue(self):
         bound = self.submit()
         self.assertTrue(bound["ok"], bound)
-        start = {"issue_number": bound["number"], "request_id": bound["request_id"], "expected_user": "7",
-                 "expected_revision": bound["revision"]}
+        start = {
+            "issue_number": bound["number"],
+            "request_id": bound["request_id"],
+            "expected_user": "7",
+            "expected_revision": bound["revision"],
+        }
         for change in [{"expected_revision": "stale"}, {"expected_user": "8"}]:
             with self.subTest(change=change), self.assertRaises(ValueError):
                 bridge.issue_start(self.root, {**start, **change})
@@ -183,8 +226,9 @@ class DirectIssueTests(unittest.TestCase):
 
     def test_delegation_requires_yanshi_and_answers_same_issue(self):
         inputs = self.routing()
-        model = self.fixture_model(self.judgment("yanshi"), self.judgment("yanshi", ["输出格式？"]),
-                                   self.judgment("yanshi"))
+        model = self.fixture_model(
+            self.judgment("yanshi"), self.judgment("yanshi", ["输出格式？"]), self.judgment("yanshi")
+        )
         first = bridge.issue_route(self.root, inputs)
         self.assertEqual((first["route"], first["ready"], first["questions"]), ("yanshi", False, ["输出格式？"]))
         self.assertTrue(bridge.issue_start(self.root, inputs)["refresh_routing"])
@@ -201,8 +245,12 @@ class DirectIssueTests(unittest.TestCase):
 
     def test_concurrent_editors_answer_only_the_bound_questions(self):
         inputs = self.routing()
-        model = self.fixture_model(self.judgment("yanshi"), self.judgment("yanshi", ["语言？"]),
-                                   self.judgment("yanshi", ["界面语言？"]), self.judgment("yanshi"))
+        model = self.fixture_model(
+            self.judgment("yanshi"),
+            self.judgment("yanshi", ["语言？"]),
+            self.judgment("yanshi", ["界面语言？"]),
+            self.judgment("yanshi"),
+        )
         self.assertFalse(bridge.issue_route(self.root, inputs)["ready"])
         first = {**inputs, "expected_questions": ["语言？"], "answer": "中文"}
         self.assertEqual(bridge.issue_route(self.root, first)["questions"], ["界面语言？"])
@@ -261,13 +309,18 @@ class DirectIssueTests(unittest.TestCase):
         analyzed = "<!-- gonggong-request:requirement-" + digest[:32] + " -->\n" + marker
         cases = [direct, {**direct, "body": analyzed}, {**direct, "body": "example text " + marker}]
         for n, row in enumerate(cases, 19):
-            row.update(number=n, html_url=f"https://github.com/test/repo/issues/{n}",
-                       issue_dependencies_summary={"total_blocked_by": 0})
+            row.update(
+                number=n,
+                html_url=f"https://github.com/test/repo/issues/{n}",
+                issue_dependencies_summary={"total_blocked_by": 0},
+            )
         actor = {"login": "alice", "user_id": "7", "repo": "test/repo", "repo_id": "1"}
         with patch.object(board.work_items, "gh", return_value=json.dumps([cases])):
             items = board.read_board(self.root, [], actor)["issues"]
         self.assertEqual([item["analyzed"] for item in items], [False, True, False])
-        self.assertEqual(items[0]["plan"]["nodes"], {"requirement": {"kind": "text", "title": "需求", "value": outcome}})
+        self.assertEqual(
+            items[0]["plan"]["nodes"], {"requirement": {"kind": "text", "title": "需求", "value": outcome}}
+        )
         self.assertEqual(items[0]["pending_count"], 0)
 
     def test_concurrent_draft_is_published_once(self):
@@ -283,8 +336,14 @@ class DirectIssueTests(unittest.TestCase):
         self.assertEqual(self.writes, 1)
 
     def test_bad_inputs_and_account_switch_before_write(self):
-        for change in [{"title": "sk-" + "x" * 32}, {"outcome": "/Users/me/private"}, {"draft_id": "../oops"},
-                       {"outcome": "<!-- gonggong-depends-on:#42 -->"}, {"expected_user": "8"}, {"category": "other"}]:
+        for change in [
+            {"title": "sk-" + "x" * 32},
+            {"outcome": "/Users/me/private"},
+            {"draft_id": "../oops"},
+            {"outcome": "<!-- gonggong-depends-on:#42 -->"},
+            {"expected_user": "8"},
+            {"category": "other"},
+        ]:
             with self.subTest(change=change):
                 result = self.submit(**change)
                 self.assertFalse(result["ok"])
@@ -317,8 +376,14 @@ class DirectIssueTests(unittest.TestCase):
         self.lose_receipt = True
         self.submit()
         row = self.rows[0]
-        for change in [{"state": "closed"}, {"user": {"id": 8}}, {"title": "different"},
-                       {"body": row["body"] + "different"}, {"updated_at": ""}, {"pull_request": {}}]:
+        for change in [
+            {"state": "closed"},
+            {"user": {"id": 8}},
+            {"title": "different"},
+            {"body": row["body"] + "different"},
+            {"updated_at": ""},
+            {"pull_request": {}},
+        ]:
             with self.subTest(change=change):
                 self.rows[0] = {**row, **change}
                 self.assertTrue(self.submit()["reconcile_required"])
@@ -331,8 +396,11 @@ class DirectIssueTests(unittest.TestCase):
         node = os.environ.get("GONGGONG_NODE") or shutil.which("node")
         if not node:
             self.skipTest("Node.js required to exercise the Sinan entry")
-        for relative in ["framework/extensions/diting-files/diting_files.py", "framework/tools/git_batch.py",
-                         "gonggong-diting-data/dataset.json"]:
+        for relative in [
+            "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+            "framework/tools/git_batch.py",
+            "gonggong-diting-data/dataset.json",
+        ]:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(HOST.parents[2] / relative, target)
@@ -343,8 +411,10 @@ class DirectIssueTests(unittest.TestCase):
         result = self.submit(node_runtime=node)
         self.assertTrue(result["ok"], result)
         receipt = result["coordination"]
-        self.assertEqual((receipt["sourceSnapshot"]["source"], receipt["revision"], receipt["sourcesRead"]),
-                         ("github:test/repo#19", result["revision"], 1))
+        self.assertEqual(
+            (receipt["sourceSnapshot"]["source"], receipt["revision"], receipt["sourcesRead"]),
+            ("github:test/repo#19", result["revision"], 1),
+        )
         self.assertEqual(receipt["execution"], "not_dispatched")
         self.assertFalse(receipt["ready"])
         self.assertRegex(receipt["sourceSnapshot"]["sha256"], r"^[a-f0-9]{64}$")
@@ -362,6 +432,8 @@ class DirectIssueTests(unittest.TestCase):
         node = os.environ.get("GONGGONG_NODE") or shutil.which("node")
         if not node:
             self.skipTest("Node.js required for actual registered agent contexts")
+        storage = "customizations/platforms/data-collection/git-files/storage"
+        shutil.copytree(HOST.parents[2] / storage, self.root / storage)
         shutil.copytree(HOST.parents[2] / "framework", self.root / "framework")
         shutil.copy(HOST.parents[2] / "CURRENT_FRAMEWORK.json", self.root)
         (self.root / "gonggong-diting-data").mkdir()
@@ -378,9 +450,17 @@ class DirectIssueTests(unittest.TestCase):
             self.assertNotIn("tools", payload)
             self.assertEqual(request.get_header("Authorization"), "Bearer " + inputs["_private_api_key"])
             self.assertNotIn(inputs["_private_api_key"], str(payload))
-            value = {"choices": [{"finish_reason": "stop", "message": {
-                "content": json.dumps(self.judgment("yanshi", [] if len(requests) == 1 else ["由谁验收？"]))}}],
-                "usage": {"prompt_tokens": 21, "completion_tokens": 9}}
+            value = {
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {
+                            "content": json.dumps(self.judgment("yanshi", [] if len(requests) == 1 else ["由谁验收？"]))
+                        },
+                    }
+                ],
+                "usage": {"prompt_tokens": 21, "completion_tokens": 9},
+            }
             return io.BytesIO(json.dumps(value).encode())
 
         with patch("urllib.request.build_opener") as opener:
