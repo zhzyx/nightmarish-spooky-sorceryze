@@ -1,12 +1,14 @@
 """Discover local CLI model IDs and invoke the editor's tool-disabled chat bridges."""
+
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.request
+from pathlib import Path
 
 TOOLS = Path(__file__).resolve().parents[4] / "tools"
 BRIDGES = {name: TOOLS / (name + "_cli") / "godot_bridge.js" for name in ("codex", "codebuddy")}
@@ -40,27 +42,64 @@ def codex_entry(candidates):
 def installations(settings):
     # An app launched from Finder may have neither npm nor the desktop Codex on PATH.
     mac = sys.platform == "darwin"
-    node = installed(settings.get("cli_node"), shutil.which("node"), mac and "/opt/homebrew/bin/node",
-                     mac and "/usr/local/bin/node", mac and CHATGPT / "cua_node/bin/node", executable=True)
-    codex = codex_entry([settings.get("codex_entry"), shutil.which("codex"),
-                      mac and "/Applications/Codex.app/Contents/Resources/codex",
-                      mac and CHATGPT / "codex-cli/CodexCLI.app/Contents/MacOS/codex"])
+    windows = os.name == "nt"
+    desktop = Path(os.environ.get("LOCALAPPDATA", "")) / "OpenAI/Codex/bin"
+    desktop_entries = (
+        sorted(desktop.glob("*/codex.exe"), key=lambda p: p.stat().st_mtime, reverse=True) if windows else []
+    )
+    bundled_node = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe"
+    node = installed(
+        settings.get("cli_node"),
+        shutil.which("node"),
+        mac and "/opt/homebrew/bin/node",
+        mac and "/usr/local/bin/node",
+        mac and CHATGPT / "cua_node/bin/node",
+        windows and bundled_node,
+        executable=True,
+    )
+    codex = codex_entry([
+        settings.get("codex_entry"),
+        shutil.which("codex"),
+        mac and "/Applications/Codex.app/Contents/Resources/codex",
+        mac and CHATGPT / "codex-cli/CodexCLI.app/Contents/MacOS/codex",
+        *desktop_entries,
+    ])
     buddy_package = Path("node_modules/@tencent-ai/codebuddy-code/bin/codebuddy")
     npm_bin = Path(os.environ.get("APPDATA", "")) / "npm"
-    buddy = installed(settings.get("cli_entry"), TOOLS / "codebuddy_cli" / buddy_package,
-                      npm_bin / buddy_package if os.name == "nt" else shutil.which("codebuddy"))
+    buddy = installed(
+        settings.get("cli_entry"),
+        TOOLS / "codebuddy_cli" / buddy_package,
+        npm_bin / buddy_package if os.name == "nt" else shutil.which("codebuddy"),
+    )
     return node, {"codex": codex, "codebuddy": buddy}
 
 
 def run_json(args, timeout):
     try:
-        proc = subprocess.run(args, stdin=subprocess.DEVNULL, capture_output=True, timeout=timeout)
-        if proc.returncode == 0:
-            packet = json.loads(proc.stdout)
-            if isinstance(packet, dict):
-                return packet
+        env = os.environ.copy()
+        if os.name == "nt" and not any(name.lower().endswith("_proxy") for name in env if name.lower() != "no_proxy"):
+            # Native desktop apps see the Windows proxy. Child CLIs often only read the environment.
+            for scheme, proxy in urllib.request.getproxies().items():
+                if scheme in {"http", "https", "no"}:
+                    env.setdefault(scheme.upper() + "_PROXY", proxy)
+        proc = subprocess.run(
+            args,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            timeout=timeout,
+            env=env,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        packet = json.loads(proc.stdout)
     except (OSError, ValueError, subprocess.TimeoutExpired):
-        pass
+        packet = {}
+    if isinstance(packet, dict) and packet:
+        if proc.returncode == 0:
+            return packet
+        error = packet.get("error")
+        code = error.get("code") if isinstance(error, dict) else None
+        if isinstance(code, str) and re.fullmatch("[A-Z_]{2,40}", code):
+            raise ValueError("本地 CLI 验证失败 · " + code)
     raise ValueError("CLI 未返回有效回执，请检查安装和登录状态")
 
 
@@ -69,9 +108,14 @@ def model_ids(packet, backend):
     if not isinstance(rows, list):
         return []
     field = "slug" if backend == "codex" else "id"
-    return [row[field] for row in rows[:500] if isinstance(row, dict)
-            and isinstance(row.get(field), str) and MODEL_ID.fullmatch(row[field])
-            and (backend != "codex" or row.get("visibility", "list") == "list")]
+    return [
+        row[field]
+        for row in rows[:500]
+        if isinstance(row, dict)
+        and isinstance(row.get(field), str)
+        and MODEL_ID.fullmatch(row[field])
+        and (backend != "codex" or row.get("visibility", "list") == "list")
+    ]
 
 
 def codex_config(home):
@@ -87,8 +131,12 @@ def codex_config(home):
     except (OSError, ValueError):
         raise ValueError("无法读取 Codex 配置，请检查 config.toml") from None
     # The existing bridge deliberately starts with --ignore-user-config.
-    if (config.get("model_provider", "openai") != "openai" or config.get("profile")
-            or config.get("openai_base_url") or config.get("model_catalog_json")):
+    if (
+        config.get("model_provider", "openai") != "openai"
+        or config.get("profile")
+        or config.get("openai_base_url")
+        or config.get("model_catalog_json")
+    ):
         raise ValueError("Codex 使用自定义配置，请在下方按实际供应商接口接入")
     return config
 
@@ -122,8 +170,11 @@ def discover_cli(settings):
             if backend == "codex":
                 home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
                 config = codex_config(home)
-                ids.extend(value for value in (configured, config.get("model"))
-                           if isinstance(value, str) and MODEL_ID.fullmatch(value))
+                ids.extend(
+                    value
+                    for value in (configured, config.get("model"))
+                    if isinstance(value, str) and MODEL_ID.fullmatch(value)
+                )
                 ids.extend(codex_ids(node, entry, home))
             else:
                 if MODEL_ID.fullmatch(configured):
@@ -132,8 +183,10 @@ def discover_cli(settings):
                 ids.extend(model_ids(packet, backend))
         except ValueError as error:
             note = str(error)
-        profiles = [{"name": label, "protocol": backend + "-cli", "model": model, "node": node, "entry": entry}
-                    for model in dict.fromkeys(ids)]
+        profiles = [
+            {"name": label, "protocol": backend + "-cli", "model": model, "node": node, "entry": entry}
+            for model in dict.fromkeys(ids)
+        ]
         yield label, profiles, note or ("" if profiles else "未发现型号，请在 AI Chat 设置中选择模型")
 
 

@@ -174,10 +174,16 @@ func run() -> void:
 		issues[0].plan.nodes[str(step)] = {"kind":"task","title":"预计任务","value":"详细步骤".repeat(12)}
 	issues[0].status = "done"
 	issues[2].closed = true
+	issues[9].status = "needs-decision"
+	issues[7].categories = ["development"]
+	issues[8].categories = ["bug"]
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
 	await settle_layout()
 	check(workspace.issue_list.visible and workspace.issue_rows.size() == 55 and workspace.board_cards.is_empty(), "list should show the 55 issues without building hidden graph cards")
+	var sorted: Array = workspace.issue_list.get_root().get_children()
+	check(sorted[0].get_metadata(0).number == 10 and sorted[1].get_metadata(0).number == 51, "explicit decision and pending answers must lead")
+	check(sorted[2].get_metadata(0).number == 9 and sorted[3].get_metadata(0).number == 8, "category order must precede issue number")
 	var first_row: TreeItem = workspace.issue_rows[issues[0].url]
 	check(first_row.get_text(1) == issues[0].title and first_row.get_text(2) == "已完成", "list lost full title or status")
 	check(workspace.board_views.get_tab_rect(1).end.x <= workspace.board_views.size.x, "second view tab is clipped")
@@ -252,7 +258,7 @@ func run() -> void:
 		await create_timer(0.025).timeout
 		if workspace.project_mode:
 			break
-	check(workspace.project_mode and workspace.board_cards.size() == 1 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
+	check(workspace.project_mode and workspace.board_cards.size() == 3 and workspace.owner_sections.size() == 3 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
 	workspace.overview.zoom = 0.04
 	await settle_layout()
 	check(workspace.project_anchor.visible, "project overview has no readable outer anchor")
@@ -261,9 +267,29 @@ func run() -> void:
 		workspace._check_canvas_zoom()
 	check(workspace.far_depth > 20 and workspace.overview.zoom == 1.0, "outer zoom stopped or collapsed canvas scale")
 	workspace.project_anchor.pressed.emit()
-	workspace.overview.zoom = 1.7
 	await settle_layout()
-	check(not workspace.project_mode and workspace.board_cards.size() == 55, "zooming in did not return to personal issues")
+	for owner in ["bob", "未指派"]:
+		workspace.overview.zoom = 1.65
+		workspace._open_owner_at(Vector2(-100000, -100000))
+		check(workspace.board_views.current_tab == 1, "background zoom selected an owner")
+		var region: GraphFrame = workspace.owner_sections[owner]
+		var pointer: Vector2 = workspace.overview.size * 0.5
+		workspace.overview.scroll_offset = (region.position_offset + Vector2(22, 22)) * workspace.overview.zoom - pointer
+		await settle_layout()
+		var hover_region := InputEventMouseMotion.new()
+		hover_region.position = workspace.overview.get_global_transform_with_canvas() * pointer
+		workspace.get_viewport().push_input(hover_region, true)
+		var zoom_in := InputEventMouseButton.new()
+		zoom_in.position = hover_region.position
+		zoom_in.button_index = MOUSE_BUTTON_WHEEL_UP
+		zoom_in.pressed = true
+		workspace.get_viewport().push_input(zoom_in, true)
+		await settle_layout()
+		check(workspace.project_mode and workspace.issue_list.visible and workspace.owner_filter.text == owner and workspace.result_count.text == "1 / 2 项", "zoom missed owner %s got %s tab=%d zoom=%s scroll=%s pointer=%s region=%s anchor=%s" % [owner,workspace.owner_filter.text,workspace.board_views.current_tab,workspace.overview.zoom,workspace.overview.scroll_offset,pointer,region.position_offset if is_instance_valid(region) else Vector2.ZERO,workspace.zoom_anchor])
+		workspace.owner_filter.select(0)
+		workspace.board_views.current_tab = 1
+		await settle_layout()
+	await workspace._set_project(false)
 	var resize_card = workspace.overview.get_node("i_5")
 	var before_rect := Rect2(resize_card.position_offset, resize_card.size)
 	workspace.overview.zoom = 1.0
@@ -315,6 +341,7 @@ func run() -> void:
 	workspace.host = self
 	delay_detail = true
 	workspace.overview.get_node("i_1/OpenIssue").pressed.emit()
+	check(workspace.issue_link.uri == issues[0].url and "已完成" in workspace.work_status.text, "issue detail lost link or status")
 	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
 	workspace._open_issue(issues[1])
 	var edited = graph.add_node("text",Vector2.ZERO)

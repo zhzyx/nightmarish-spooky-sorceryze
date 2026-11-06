@@ -4,7 +4,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 const { StringDecoder } = require('node:string_decoder');
 const { outputSchemaFor, argumentsForHost } = require('./action_schema');
 const { validateInput, normalizeResult, classifyDiagnostics, bridgeError, serializeError, ACTIONS } = require('../codebuddy_cli/godot_bridge');
@@ -118,6 +118,20 @@ async function run(entry, request) {
     let input;
     try { input = validateRequest(JSON.parse(fs.readFileSync(request, 'utf8'))); }
     catch (_) { throw bridgeError('INVALID_REQUEST'); }
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-codex-'));
+    // TerminateProcess skips JS exit handlers. A pipe held by the bridge closes
+    // even on forced cancellation; start its cleanup listener outside the CLI job.
+    let cleanupPipe;
+    if (process.platform === 'win32') {
+        const listener = spawn(process.execPath, ['-e',
+            "process.stdin.on('error', () => {}); process.stdin.on('close', () => require('node:fs').rmSync(process.argv[1], " +
+            "{ recursive: true, force: true, maxRetries: 30, retryDelay: 100 })); process.stdin.resume();",
+            directory], { windowsHide: true, detached: true, stdio: ['pipe', 'ignore', 'ignore'] });
+        cleanupPipe = listener.stdin;
+        cleanupPipe.on('error', () => {});
+        listener.unref();
+        cleanupPipe.unref();
+    }
     // Share the kill-on-close job already shipped for the CodeBuddy connection.
     // Fail closed if the Windows process-tree boundary cannot be established.
     if (process.platform === 'win32') {
@@ -125,14 +139,20 @@ async function run(entry, request) {
         try {
             job = require(path.join(__dirname, '../codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native',
                 'win32-' + process.arch, 'job-object.node'));
-        } catch (_) { throw bridgeError('NATIVE_COMPONENT_MISSING'); }
-        if (!job.ensureKillOnCloseJob()) throw bridgeError('PROCESS_BOUNDARY_FAILED');
+        } catch (_) {
+            // A standalone Codex installation does not ship CodeBuddy's native addon.
+            const shell = path.join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe');
+            const attached = spawnSync(shell, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+                '-File', path.join(__dirname, 'attach_job.ps1'), String(process.pid)],
+                { windowsHide: true, stdio: 'ignore', timeout: 15000 });
+            if (attached.status !== 0) throw bridgeError('PROCESS_BOUNDARY_FAILED');
+        }
+        if (job && !job.ensureKillOnCloseJob()) throw bridgeError('PROCESS_BOUNDARY_FAILED');
     }
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-codex-'));
     let child;
     let timer;
     const stop = () => { if (child && child.exitCode === null) child.kill(); };
-    const cleanup = () => { stop(); fs.rmSync(directory, { recursive: true, force: true }); };
+    const cleanup = () => { stop(); fs.rmSync(directory, { recursive: true, force: true }); cleanupPipe?.end(); };
     const terminate = () => { cleanup(); process.exit(1); };
     process.once('SIGTERM', terminate);
     process.once('SIGINT', terminate);

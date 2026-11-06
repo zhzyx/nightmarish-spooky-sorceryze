@@ -4,13 +4,14 @@ import hashlib
 import json
 import math
 import os
+import secrets
 import sqlite3
 import sys
 from pathlib import Path
 
 from credentials import secret
 from local_models import MODEL_ID, discover_cli
-from model_api import PROTOCOLS, endpoint
+from model_api import PROTOCOLS, endpoint, invoke
 
 
 def identity(profile):
@@ -74,6 +75,7 @@ def connect_local(db, settings, vault=secret):
             )
         sources.append({
             "name": label,
+            "candidate": identity(configs[0]) if configs else "",
             "added": added,
             "existing": len(configs) - added,
             "note": note,
@@ -106,8 +108,52 @@ def connect_local(db, settings, vault=secret):
                     add(db, config, key, vault)
                     row["added"] = 1
             row["models"] = [model]
+            row["candidate"] = identity(config)
         except (ValueError, OSError):
             row["note"] = "系统凭据存储写入失败"
+    if settings.get("backend") == "0" and settings.get("model") and settings.get("endpoint"):
+        url = settings["endpoint"]
+        config = {"name": "AI Chat", "protocol": "chat-completions", "endpoint": url, "model": settings["model"]}
+        row = {"name": "AI Chat", "added": 0, "existing": 0, "note": "", "models": [config["model"]]}
+        sources.append(row)
+        try:
+            endpoint(url)
+            with db:
+                db.execute("BEGIN IMMEDIATE")
+                if db.execute("SELECT 1 FROM profiles WHERE id=?", (identity(config),)).fetchone():
+                    row["existing"] = 1
+                else:
+                    add(db, config, settings.get("editor_key", ""), vault)
+                    row["added"] = 1
+            row["candidate"] = identity(config)
+        except (ValueError, OSError) as error:
+            row["note"] = str(error) if isinstance(error, ValueError) else "系统凭据存储写入失败"
+    return sources
+
+
+def connect_and_verify(db, settings):
+    sources = connect_local(db, settings)
+    registered = profiles(db)
+    proven = {row["id"] for row in sinan_catalog(db, ["text"])}
+    preferred = {"0": "AI Chat", "1": "CodeBuddy", "2": "Codex"}.get(settings.get("backend"))
+    for row in sorted(sources, key=lambda source: source["name"] != preferred):
+        candidate = row.get("candidate")
+        if candidate not in registered:
+            continue
+        model = registered[candidate]["model"]
+        if candidate in proven:
+            row["note"] = f"{model} · 已验证，可用于文本任务"
+            break
+        challenge = "DAQIAN-" + secrets.token_hex(8)
+        try:
+            response = invoke(registered[candidate], "Reply only with this exact string: " + challenge, [])
+            if response["text"].strip() != challenge:
+                raise ValueError("验证回复与预期不符")
+            record_evaluation(db, candidate, "text", "live", True, [True], identity([candidate, challenge]))
+            row["note"] = f"{model} · 文本验证通过，可用于任务"
+            break
+        except (ValueError, OSError) as error:
+            row["note"] = f"{model} · {error}" if isinstance(error, ValueError) else f"{model} · 验证连接失败"
     return sources
 
 
