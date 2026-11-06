@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue253-daqian-actionable-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-actionable-decisions",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:48:13.834890+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/253",
+  "agent": {
+    "id": "codex-workspace-operator",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5a810f5501eb0932bf640f19ee70d1b836262912df9f026948dd43877357e414"
+  },
+  "payload": {
+    "scope": "用户要求修复大千虚假等待、答复回显和后续工作遗漏",
+    "definition_ref": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "84f5aa22d75fc185266a7efe3ef4b9162ab7a7d8da51bad7b445f4edfd04f160"
+}
