@@ -61,9 +61,10 @@ elif a[:2]==["api","user"]: print(str(uid) if "--jq" in a else json.dumps({"id":
 elif a[0]=="api" and a[1].startswith("user/repos?"): print("" if mode=="denied" else "123")
 elif a[0]=="api" and "/issues?state=open" in a[1]:
     repo="zhzyx/nightmarish-spooky-sorceryze"
-    row=dict(number=901, html_url=f"https://github.com/{repo}/issues/901", title="Project issue", body="", updated_at="fixture", state="open", assignees=[], labels=[], issue_dependencies_summary={"total_blocked_by":0})
+    row=dict(number=901, html_url=f"https://github.com/{repo}/issues/901", title="Project issue", body="", updated_at="fixture", state="open", user=dict(login="writer"), assignees=[], labels=[], issue_dependencies_summary={"total_blocked_by":0})
     shared=dict(row, number=902, html_url=f"https://github.com/{repo}/issues/902", assignees=[dict(login="alice"),dict(login="bob")])
-    print(json.dumps([[dict(pull_request={}, number=900)], [row, shared]]))
+    other=dict(row, number=903, html_url=f"https://github.com/{repo}/issues/903", user=None)
+    print(json.dumps([[dict(pull_request={}, number=900)], [row, shared, other]]))
 elif a[0]=="api" and "issues?" in a[1]: print("[[]]")
 elif a[:3]==["config","get","user"]: print(login)
 else: sys.exit(1)

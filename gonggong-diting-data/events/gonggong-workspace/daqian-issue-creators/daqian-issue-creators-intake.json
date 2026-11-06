@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-issue-creators-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-issue-creators",
+  "kind": "request",
+  "occurred_at": "2026-11-06T22:46:29.1417765+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/345",
+  "agent": {
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "id": "daqian-current-operator"
+  },
+  "payload": {
+    "intent": "项目工单按创建人分类，光标缩放与分类一致",
+    "document": "design-docs/daqian/issue-creators.md"
+  },
+  "evidence_refs": [],
+  "sha256": "ac72b0f123567ba9140a31985ebc866284b88d2ec1d3149ea24d57e5587ca5db"
+}

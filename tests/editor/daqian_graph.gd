@@ -258,7 +258,7 @@ func run() -> void:
 		await create_timer(0.025).timeout
 		if workspace.project_mode:
 			break
-	check(workspace.project_mode and workspace.board_cards.size() == 3 and workspace.owner_sections.size() == 3 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
+	check(workspace.project_mode and workspace.board_cards.size() == 3 and workspace.creator_sections.size() == 2 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
 	workspace.overview.zoom = 0.04
 	await settle_layout()
 	check(workspace.project_anchor.visible, "project overview has no readable outer anchor")
@@ -268,11 +268,12 @@ func run() -> void:
 	check(workspace.far_depth > 20 and workspace.overview.zoom == 1.0, "outer zoom stopped or collapsed canvas scale")
 	workspace.project_anchor.pressed.emit()
 	await settle_layout()
-	for owner in ["bob", "未指派"]:
+	for creator in ["writer", "未知创建人"]:
+		var expected_count := "2 / 3 项" if creator == "writer" else "1 / 3 项"
 		workspace.overview.zoom = 1.65
-		workspace._open_owner_at(Vector2(-100000, -100000))
+		workspace._open_creator_at(Vector2(-100000, -100000))
 		check(workspace.board_views.current_tab == 1, "background zoom selected an owner")
-		var region: GraphFrame = workspace.owner_sections[owner]
+		var region: GraphFrame = workspace.creator_sections[creator]
 		var pointer: Vector2 = workspace.overview.size * 0.5
 		workspace.overview.scroll_offset = (region.position_offset + Vector2(22, 22)) * workspace.overview.zoom - pointer
 		await settle_layout()
@@ -285,8 +286,8 @@ func run() -> void:
 		zoom_in.pressed = true
 		workspace.get_viewport().push_input(zoom_in, true)
 		await settle_layout()
-		check(workspace.project_mode and workspace.issue_list.visible and workspace.owner_filter.text == owner and workspace.result_count.text == "1 / 2 项", "zoom missed owner %s got %s tab=%d zoom=%s scroll=%s pointer=%s region=%s anchor=%s" % [owner,workspace.owner_filter.text,workspace.board_views.current_tab,workspace.overview.zoom,workspace.overview.scroll_offset,pointer,region.position_offset if is_instance_valid(region) else Vector2.ZERO,workspace.zoom_anchor])
-		workspace.owner_filter.select(0)
+		check(workspace.project_mode and workspace.issue_list.visible and workspace.creator_filter.text == creator and workspace.result_count.text == expected_count, "zoom missed creator %s got %s tab=%d zoom=%s scroll=%s pointer=%s region=%s anchor=%s" % [creator,workspace.creator_filter.text,workspace.board_views.current_tab,workspace.overview.zoom,workspace.overview.scroll_offset,pointer,region.position_offset if is_instance_valid(region) else Vector2.ZERO,workspace.zoom_anchor])
+		workspace.creator_filter.select(0)
 		workspace.board_views.current_tab = 1
 		await settle_layout()
 	await workspace._set_project(false)

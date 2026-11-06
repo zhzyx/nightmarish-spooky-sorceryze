@@ -26,10 +26,10 @@ var board_palette := []
 var board_views := TabBar.new()
 var issue_list := Tree.new()
 var issue_rows := {}
-var owner_sections := {}
-var owner_rows := {}
-var grouped_rows := {}
+var creator_sections := {}
+var creator_rows := {}
 const CATEGORY_NAMES := {"requirement":"需求", "design":"设计", "development":"开发", "bug":"缺陷", "test":"测试", "research":"调研", "documentation":"文档", "maintenance":"维护"}
+const UNKNOWN_CREATOR := "未知创建人"
 const UNASSIGNED := "未指派"
 const STATE_ORDER := ["needs-decision", "awaiting_approval", "blocked", "in-progress", "in-review", "planned", "open", "done", "closed", "cancelled"]
 var issue_link := LinkButton.new()
@@ -39,7 +39,7 @@ var overview: GraphEdit
 var notice: Label
 var search: LineEdit
 var status: OptionButton
-var owner_filter: OptionButton
+var creator_filter: OptionButton
 var follow: SpinBox
 var board := {}
 var saved := {}
@@ -201,10 +201,10 @@ func _ready() -> void:
 	status.tooltip_text = "按工单状态筛选"
 	status.item_selected.connect(func(_index): _filter_board())
 	advanced_bar.add_child(status)
-	owner_filter = OptionButton.new()
-	owner_filter.tooltip_text = "按负责人筛选"
-	owner_filter.item_selected.connect(func(_index): _filter_board())
-	advanced_bar.add_child(owner_filter)
+	creator_filter = OptionButton.new()
+	creator_filter.tooltip_text = "按创建人筛选"
+	creator_filter.item_selected.connect(func(_index): _filter_board())
+	advanced_bar.add_child(creator_filter)
 	var follow_label := Label.new()
 	follow_label.text = "跟进 #"
 	advanced_bar.add_child(follow_label)
@@ -331,7 +331,7 @@ func _ready() -> void:
 		follow.get_line_edit().grab_focus())
 	reset_filters = _button(empty_content, "清除筛选", func():
 		status.select(0)
-		owner_filter.select(0)
+		creator_filter.select(0)
 		search.clear()
 		_filter_board())
 	empty_state.hide()
@@ -599,9 +599,8 @@ func _adapt_layout() -> void:
 			issue_list.set_column_expand(3, false)
 			issue_list.set_column_clip_content(3, true)
 			issue_list.set_column_custom_minimum_width(3, roundi(132 * get_theme_default_base_scale()))
-			for entries in grouped_rows.values():
-				for item: TreeItem in entries:
-					_set_owner_cell(item, item.get_metadata(0))
+			for item: TreeItem in issue_rows.values():
+				_set_owner_cell(item, item.get_metadata(0))
 	var narrow := size.x < 720.0 * get_theme_default_base_scale()
 	flow_split.vertical = narrow
 	details_panel.custom_minimum_size.x = 0 if narrow else 320 * get_theme_default_base_scale()
@@ -858,9 +857,8 @@ func _show_board() -> void:
 
 func _draw_board() -> void:
 	board_cards.clear()
-	owner_sections.clear()
-	owner_rows.clear()
-	grouped_rows.clear()
+	creator_sections.clear()
+	creator_rows.clear()
 	for child in overview.get_children():
 		if child is GraphNode or child is GraphFrame:
 			overview.remove_child(child)
@@ -873,7 +871,7 @@ func _draw_board() -> void:
 	issue_list.clear()
 	issue_list.create_item()
 	var statuses := ["全部状态", "待我处理"]
-	var owners := ["全部负责人"]
+	var creators := ["全部创建人"]
 	var rows: Array = board.get("issues", []).duplicate()
 	var keys := {}
 	var groups := {}
@@ -883,31 +881,29 @@ func _draw_board() -> void:
 		var categories := PackedStringArray(item.get("categories", ["development"] if item.get("development", false) else []))
 		categories.sort()
 		keys[item.url] = [int(not _needs_decision(item, state)), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
-		for owner in _owners(item):
-			groups[owner] = true
+		groups[_creator(item)] = true
 	rows.sort_custom(func(a, b): return keys[a.url] < keys[b.url])
 	var names := groups.keys()
-	names.sort_custom(func(a, b): return a != b and (b == UNASSIGNED or (a != UNASSIGNED and str(a).naturalnocasecmp_to(b) < 0)))
-	owners.append_array(names)
+	names.sort_custom(func(a, b): return a != b and (b == UNKNOWN_CREATOR or (a != UNKNOWN_CREATOR and str(a).naturalnocasecmp_to(b) < 0)))
+	creators.append_array(names)
 	if project_mode:
-		for owner: String in names:
+		for creator: String in names:
 			if board_views.current_tab == 0:
 				var header := issue_list.create_item(issue_list.get_root())
-				header.set_text(1, owner)
-				header.set_metadata(1, owner)
+				header.set_text(1, creator)
 				header.set_selectable(0, false)
 				header.set_selectable(1, false)
 				header.set_selectable(2, false)
-				owner_rows[owner] = header
+				creator_rows[creator] = header
 			else:
 				var frame := GraphFrame.new()
-				frame.title = owner
+				frame.title = creator
 				frame.autoshrink_enabled = false
 				frame.draggable = false
 				frame.selectable = false
 				frame.resizable = false
 				overview.add_child(frame)
-				owner_sections[owner] = frame
+				creator_sections[creator] = frame
 	var waiting_inputs := 0
 	pending_menu.get_popup().clear()
 	var by_url := {}
@@ -928,19 +924,16 @@ func _draw_board() -> void:
 		if item.status not in statuses:
 			statuses.append(item.status)
 		var suffix := " · 待决策" if actionable and issue_state not in ["needs-decision", "awaiting_approval"] else ""
-		var regions := _owners(item) if project_mode else [""]
-		for owner: String in regions:
-			if board_views.current_tab == 0:
-				var line := _add_issue_row(item, issue_state, suffix, running, owner_rows.get(owner, issue_list.get_root()))
-				if actionable:
-					line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
-					line.set_icon_modulate(1, overview.status_ink("waiting"))
-				if item.url == selected_url and (owner_filter.selected <= 0 or owner_filter.text == owner):
-					line.select(0)
-			else:
-				var node := _add_board_card(item, issue_state, suffix, running, owner)
-				if not by_url.has(item.url):
-					by_url[item.url] = node
+		var creator := _creator(item)
+		if board_views.current_tab == 0:
+			var line := _add_issue_row(item, issue_state, suffix, running, creator_rows.get(creator, issue_list.get_root()))
+			if actionable:
+				line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
+				line.set_icon_modulate(1, overview.status_ink("waiting"))
+			if item.url == selected_url:
+				line.select(0)
+		else:
+			by_url[item.url] = _add_board_card(item, issue_state, suffix, running, creator if project_mode else "")
 	for item in rows:
 		for dep in item.dependencies:
 			if by_url.has(dep) and by_url.has(item.url):
@@ -955,14 +948,15 @@ func _draw_board() -> void:
 	_zoom_detail()
 	_layout_board()
 	_fill_filter(status, statuses)
-	_fill_filter(owner_filter, owners)
+	_fill_filter(creator_filter, creators)
 	_filter_board()
 	if current.is_empty():
 		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
 
 
-func _owners(item: Dictionary) -> Array:
-	return item.owners if not item.owners.is_empty() else [UNASSIGNED]
+func _creator(item: Dictionary) -> String:
+	var login: String = item.get("creator", "")
+	return UNKNOWN_CREATOR if login.is_empty() else login
 
 
 func _display_state(item: Dictionary) -> String:
@@ -987,9 +981,6 @@ func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
 
 func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem) -> TreeItem:
 	var line := issue_list.create_item(parent)
-	if not grouped_rows.has(item.url):
-		grouped_rows[item.url] = []
-	grouped_rows[item.url].append(line)
 	issue_rows[item.url] = line
 	line.set_metadata(0, item)
 	line.set_text(0, "#%s" % item.number)
@@ -1032,10 +1023,8 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	var card = graph_script.SizeableCard.new()
 	card.set_meta("issue_url", item.url)
 	card.name = "i_" + str(item.number)
-	card.set_meta("owner_region", region)
+	card.set_meta("creator_region", region)
 	card.draggable = region.is_empty()
-	if not region.is_empty() and overview.has_node(NodePath(card.name)):
-		card.name += "_" + region.sha256_text().left(12)
 	card.title = "#%s" % item.number
 	card.tooltip_text = item.title + "\n" + item.url
 	card.custom_minimum_size.x = 280 * overview.get_theme_default_base_scale()
@@ -1095,10 +1084,10 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		detail.add_child(line)
 	card.add_child(detail)
 	card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
-	if region.is_empty() and not item.owners.is_empty():
+	if not item.owners.is_empty():
 		var owner := Label.new()
-		owner.text = "、".join(item.owners)
-		owner.tooltip_text = "负责人 · " + owner.text
+		owner.text = "负责人 · " + "、".join(item.owners)
+		owner.tooltip_text = owner.text
 		owner.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		owner.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
 		card.add_child(owner)
@@ -1148,14 +1137,14 @@ func _layout_board() -> void:
 		var x := origin.x
 		var y := origin.y
 		var bottom := y
-		for owner: String in owner_sections:
-			var frame: GraphFrame = owner_sections[owner]
+		for creator: String in creator_sections:
+			var frame: GraphFrame = creator_sections[creator]
 			if not frame.visible:
 				continue
 			var pad := 16 * scale_factor
 			var extent := Vector2(280 * scale_factor, 50 * scale_factor)
 			for card in board_cards:
-				if card.visible and card.get_meta("owner_region") == owner:
+				if card.visible and card.get_meta("creator_region") == creator:
 					card.position_offset = Vector2(x + pad, y + extent.y)
 					extent.y += card.size.y + pad
 					extent.x = maxf(extent.x, card.size.x)
@@ -1205,7 +1194,7 @@ func _locate_pending(number: int) -> void:
 			return
 	_show_board()
 	status.select(0)
-	owner_filter.select(0)
+	creator_filter.select(0)
 	search.clear()
 	_filter_board()
 	if issue_list.visible:
@@ -1259,7 +1248,7 @@ func _fill_filter(control: OptionButton, values: Array) -> void:
 
 
 func _filter_board() -> void:
-	if not is_instance_valid(status) or not is_instance_valid(owner_filter):
+	if not is_instance_valid(status) or not is_instance_valid(creator_filter):
 		return
 	var shown := 0
 	var matched := {}
@@ -1267,25 +1256,22 @@ func _filter_board() -> void:
 	var query := search.text.strip_edges().to_lower().trim_prefix("#")
 	for item in board.get("issues", []):
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
-		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _needs_decision(item, _display_state(item))) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in _owners(item))
+		var creator := _creator(item)
+		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _needs_decision(item, _display_state(item))) or status.text == item.status) and (creator_filter.selected <= 0 or creator_filter.text == creator)
 		matched[item.url] = included
 		if included:
 			shown += 1
-			for owner in _owners(item):
-				if owner_filter.selected <= 0 or owner_filter.text == owner:
-					counts[owner] = int(counts.get(owner, 0)) + 1
-		for line: TreeItem in grouped_rows.get(item.url, []):
-			line.visible = included and (not project_mode or owner_filter.selected <= 0 or owner_filter.text == line.get_parent().get_metadata(1))
-			if line.visible:
-				issue_rows[item.url] = line
-	for owner in owner_rows:
-		owner_rows[owner].visible = counts.has(owner)
-		owner_rows[owner].set_text(1, "%s · %d" % [owner, counts.get(owner, 0)])
-	for owner in owner_sections:
-		owner_sections[owner].visible = far_depth <= 0.0 and counts.has(owner)
-		owner_sections[owner].title = "%s · %d" % [owner, counts.get(owner, 0)]
+			counts[creator] = int(counts.get(creator, 0)) + 1
+		if issue_rows.has(item.url):
+			issue_rows[item.url].visible = included
+	for creator in creator_rows:
+		creator_rows[creator].visible = counts.has(creator)
+		creator_rows[creator].set_text(1, "创建人 · %s (%d)" % [creator, counts.get(creator, 0)])
+	for creator in creator_sections:
+		creator_sections[creator].visible = far_depth <= 0.0 and counts.has(creator)
+		creator_sections[creator].title = "创建人 · %s (%d)" % [creator, counts.get(creator, 0)]
 	for card in board_cards:
-		card.visible = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0 and (not project_mode or counts.has(card.get_meta("owner_region")))
+		card.visible = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0
 	if project_mode:
 		_queue_board_layout()
 
@@ -1384,8 +1370,7 @@ func _forget(reason: String) -> void:
 	far_depth = 0.0
 	project_anchor.hide()
 	personal_snapshot = {}
-	grouped_rows.clear()
-	owner_rows.clear()
+	creator_rows.clear()
 	issue_rows.clear()
 	issue_list.clear()
 	saved = {}
@@ -1639,7 +1624,7 @@ func _set_project(enabled: bool) -> void:
 	project_anchor.hide()
 	search.clear()
 	status.select(0)
-	owner_filter.select(0)
+	creator_filter.select(0)
 	overview.zoom = 0.8
 	overview.scroll_offset = Vector2.ZERO
 	_draw_board()
@@ -1663,14 +1648,14 @@ func _check_canvas_zoom() -> void:
 			var origin_issue := current
 			editor.canvas.zoom = 0.85
 			_show_board()
-			if project_mode and owner_filter.selected > 0:
+			if project_mode and creator_filter.selected > 0:
 				board_views.current_tab = 0
 				return
 			if project_mode:
 				_set_project(false)
 			board_views.current_tab = 1
 			status.select(0)
-			owner_filter.select(0)
+			creator_filter.select(0)
 			search.clear()
 			_filter_board()
 			overview.zoom = 0.85
@@ -1698,7 +1683,7 @@ func _check_canvas_zoom() -> void:
 		if project_mode:
 			if not zoom_crossed:
 				zoom_crossed = true
-				if not _open_owner_at(zoom_anchor if zoom_anchor.is_finite() else (overview.scroll_offset + overview.get_local_mouse_position()) / overview.zoom):
+				if not _open_creator_at(zoom_anchor if zoom_anchor.is_finite() else (overview.scroll_offset + overview.get_local_mouse_position()) / overview.zoom):
 					overview.zoom = ZOOM_TO_ISSUE / overview.zoom_step
 				zoom_anchor = Vector2.INF
 			return
@@ -1723,13 +1708,13 @@ func _check_canvas_zoom() -> void:
 					break
 
 
-func _open_owner_at(point: Vector2) -> bool:
-	for owner: String in owner_sections:
-		var frame: GraphFrame = owner_sections[owner]
+func _open_creator_at(point: Vector2) -> bool:
+	for creator: String in creator_sections:
+		var frame: GraphFrame = creator_sections[creator]
 		if frame.visible and Rect2(frame.position_offset, frame.size).has_point(point):
-			for index in owner_filter.item_count:
-				if owner_filter.get_item_text(index) == owner:
-					owner_filter.select(index)
+			for index in creator_filter.item_count:
+				if creator_filter.get_item_text(index) == creator:
+					creator_filter.select(index)
 					overview.zoom = 0.85
 					board_views.current_tab = 0
 					advanced_bar.show()
