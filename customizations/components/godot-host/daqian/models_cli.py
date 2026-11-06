@@ -4,18 +4,19 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from repository_access import collaborator
+from repository_access import AccessDenied, collaborator, session_actor, session_path, work_items
 
 import model_catalog as catalog
 
 
 def main():
     try:
-        if len(sys.argv)!=4:
+        if len(sys.argv) not in (4,5):
             raise ValueError("模型配置需要当前仓库及已核实账号")
-        actor = collaborator(Path(sys.argv[2]))
+        root = Path(sys.argv[2])
+        actor = session_actor(root,sys.argv[4]) if len(sys.argv)==5 and sys.argv[1]=="list" else collaborator(root)
         if actor["user_id"]!=sys.argv[3]:
-            raise ValueError("GitHub 协作账号已切换")
+            raise AccessDenied("GitHub 协作账号已切换")
         with closing(catalog.database()) as db:
             action = sys.argv[1]
             if action == "list":
@@ -31,6 +32,12 @@ def main():
             else:
                 raise ValueError("不支持的目录操作")
         print(json.dumps({"result":result},ensure_ascii=False))
+    except (AccessDenied, work_items.GitHubCommandError) as error:
+        denied = isinstance(error, AccessDenied) or error.http_status in (401, 403)
+        if denied and len(sys.argv)==5 and sys.argv[4]:
+            session_path(sys.argv[4]).unlink(missing_ok=True)
+        print(json.dumps({"denied":denied,"error":str(error)},ensure_ascii=False))
+        return 1
     except (ValueError,KeyError,IndexError,OSError,sqlite3.Error) as error:
         print(json.dumps({"error":str(error) if isinstance(error,ValueError) else "系统存储或配置不可用"},ensure_ascii=False))
         return 1

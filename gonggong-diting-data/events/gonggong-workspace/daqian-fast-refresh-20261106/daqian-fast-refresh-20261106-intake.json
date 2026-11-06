@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-fast-refresh-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-fast-refresh-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T14:41:52.604151+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/191",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "优化大千工单刷新与流程首屏",
+    "document": "design-docs/daqian/fast-refresh.md"
+  },
+  "evidence_refs": [],
+  "sha256": "8510d46a9cbd96c0a087cd1cea6977dfa7a8f70b6577054fd65e847c71ccb45f"
+}

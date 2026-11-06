@@ -4,6 +4,8 @@ extends SceneTree
 var failures := []
 var state := {}
 var writes := 0
+var delay_detail := false
+signal release_detail
 
 
 func _initialize() -> void:
@@ -17,6 +19,8 @@ func check(value: bool, reason: String) -> void:
 
 
 func read_graph(_id):
+	if delay_detail:
+		await release_detail
 	return state.duplicate(true)
 
 
@@ -95,10 +99,40 @@ func run() -> void:
 	check(workspace.overview.get_node("i_50").visible and not workspace.overview.get_node("i_5").visible,"large board search")
 	workspace._locate_pending(51)
 	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
+	state.plan = {"nodes":{},"edges":[]}
+	state.context = {}
+	workspace.host = self
+	delay_detail = true
+	workspace._open_issue(issues[0])
+	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
+	workspace._open_issue(issues[1])
+	var edited = graph.add_node("text",Vector2.ZERO)
+	var input: TextEdit = graph.canvas.get_node(NodePath(edited)).find_children("*","TextEdit",false,false)[0]
+	input.grab_focus()
+	input.text = "草稿输入"
+	input.text_changed.emit()
+	release_detail.emit()
+	check(workspace.current == issues[1].url and graph.draft.nodes.has(edited), "late reply replaced selection or erased edits")
+	check(is_instance_valid(input) and input.has_focus(), "background reply stole draft input focus")
+	delay_detail = false
+	await graph.apply_draft()
+	check(state.plan.nodes.has(edited) and state.plan.nodes[edited].value == "草稿输入", "edits made before source read could not be applied")
+	delay_detail = true
+	workspace._show_board()
+	workspace._open_issue(issues[2])
+	release_detail.emit()
+	check(graph.revision == state.revision and graph.draft == state.plan, "clean snapshot did not advance to live plan")
+	workspace._show_board()
+	workspace.host = null
+	delay_detail = false
 	workspace.board = {}
 	workspace._show_board()
 	var access_path = OS.get_environment("DAQIAN_TEST_ACCESS_FILE")
 	if not access_path.is_empty():
+		var calls := access_path.get_base_dir().path_join("daqian-auth-calls")
+		var before := FileAccess.get_file_as_string(calls)
+		await workspace.refresh()
+		check("verify" in before and FileAccess.get_file_as_string(calls) == before,"warm refresh repeated remote verification")
 		var access_file = FileAccess.open(access_path,FileAccess.WRITE)
 		access_file.store_string("switch")
 		access_file.close()

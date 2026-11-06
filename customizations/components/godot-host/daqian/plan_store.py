@@ -116,12 +116,12 @@ def connect(root):
         db.close()
 
 
-def read_source(root, number):
+def read_source(root, number, principal=None):
     import issue_gate
     settings, _ = work_items.config(root)
     repo = settings["repository"]
     issue_gate.check_repository(root, repo)
-    principal = collaborator(root)
+    principal = principal or collaborator(root)
     obj = json.loads(work_items.gh("api", f"repos/{repo}/issues/{number}"))
     ids = work_items.request_ids(obj.get("body"))
     if len(ids) != 1:
