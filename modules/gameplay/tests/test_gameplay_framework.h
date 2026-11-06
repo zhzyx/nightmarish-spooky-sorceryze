@@ -38,6 +38,7 @@
 #include "../gameplay_session.h"
 #include "../gameplay_subsystem.h"
 
+#include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
 #include "core/string/print_string.h"
@@ -67,6 +68,56 @@ public:
 	}
 };
 
+class MutatingSubsystem : public RecordingSubsystem {
+	GameplaySubsystemRegistry *registry = nullptr;
+	GameplaySubsystem *added = nullptr;
+	GameplaySubsystem *removed = nullptr;
+	bool reregister_on_initialize = false;
+
+protected:
+	void on_initialize() override {
+		RecordingSubsystem::on_initialize();
+		if (added) {
+			if (reregister_on_initialize) {
+				registry->remove_subsystem(added);
+			}
+			registry->add_subsystem(added);
+		}
+	}
+
+	void on_deinitialize() override {
+		RecordingSubsystem::on_deinitialize();
+		if (removed) {
+			registry->remove_subsystem(removed);
+		}
+	}
+
+public:
+	MutatingSubsystem(Vector<String> *p_events, const String &p_label, GameplaySubsystemRegistry *p_registry, GameplaySubsystem *p_added, GameplaySubsystem *p_removed, bool p_reregister_on_initialize = false) :
+			RecordingSubsystem(p_events, p_label), registry(p_registry), added(p_added), removed(p_removed), reregister_on_initialize(p_reregister_on_initialize) {}
+};
+
+class NestedLifecycleSubsystem : public RecordingSubsystem {
+	GameplaySubsystemRegistry *registry = nullptr;
+
+protected:
+	void on_initialize() override {
+		RecordingSubsystem::on_initialize();
+		registry->deinitialize_subsystems();
+	}
+
+	void on_deinitialize() override {
+		RecordingSubsystem::on_deinitialize();
+		nested_initialize_error = registry->initialize_subsystems();
+	}
+
+public:
+	Error nested_initialize_error = OK;
+
+	NestedLifecycleSubsystem(Vector<String> *p_events, GameplaySubsystemRegistry *p_registry) :
+			RecordingSubsystem(p_events, "nested"), registry(p_registry) {}
+};
+
 static Dictionary authenticate_test_user(const String &p_token, const String &p_reconnect_token) {
 	Dictionary result;
 	if (p_token != "alice" && p_token != "bob" && p_token != "charlie") {
@@ -86,6 +137,22 @@ static Dictionary authenticate_test_user(const String &p_token, const String &p_
 	result["reconnect_token"] = expected_reconnect_token;
 	return result;
 }
+
+class RecordingSessionChecks : public RefCounted {
+public:
+	int authentication_calls = 0;
+	int admission_calls = 0;
+
+	Dictionary authenticate(const String &p_token, const String &p_reconnect_token) {
+		authentication_calls++;
+		return authenticate_test_user(p_token, p_reconnect_token);
+	}
+
+	bool admit(const String &p_user_id, const String &p_session_id) {
+		admission_calls++;
+		return true;
+	}
+};
 
 static bool pump_gameplay_network(GameplayDedicatedServer *p_server, const Vector<GameplaySessionClient *> &p_clients, uint64_t p_timeout_msec, const Callable &p_until) {
 	const uint64_t deadline = OS::get_singleton()->get_ticks_msec() + p_timeout_msec;
@@ -126,6 +193,29 @@ static bool client_joined(GameplaySessionClient *p_client) {
 
 static bool server_stopped(GameplayDedicatedServer *p_server) {
 	return !p_server->is_running();
+}
+
+static bool client_transport_connected(GameplayDedicatedServer *p_server, GameplaySessionClient *p_client) {
+	Ref<MultiplayerPeer> peer = p_client->get_multiplayer_peer();
+	peer->poll();
+	return peer->get_connection_status() == MultiplayerPeer::CONNECTION_CONNECTED && p_server->get_session_manager()->get_connection(p_client->get_peer_id()).is_valid();
+}
+
+static bool client_transport_closed(GameplaySessionClient *p_client) {
+	Ref<MultiplayerPeer> peer = p_client->get_multiplayer_peer();
+	peer->poll();
+	return peer->get_connection_status() == MultiplayerPeer::CONNECTION_DISCONNECTED;
+}
+
+static bool client_rejected_or_disconnected(GameplaySessionClient *p_client) {
+	return p_client->get_state() == GameplayConnection::STATE_REJECTED || p_client->get_state() == GameplayConnection::STATE_DISCONNECTED;
+}
+
+static Error send_gameplay_message(GameplaySessionClient *p_client, const Dictionary &p_message) {
+	Ref<MultiplayerPeer> peer = p_client->get_multiplayer_peer();
+	peer->set_target_peer(MultiplayerPeer::TARGET_PEER_SERVER);
+	const CharString payload = JSON::stringify(p_message).utf8();
+	return peer->put_packet(reinterpret_cast<const uint8_t *>(payload.get_data()), payload.length());
 }
 
 static bool gameplay_wait_full_duration() {
@@ -453,6 +543,106 @@ TEST_CASE("[Gameplay] Gameplay world supports server and client compositions") {
 	memdelete(server_state);
 }
 
+TEST_CASE("[Gameplay] Implicit teardown deinitializes owned and individually freed subsystems") {
+	Vector<String> events;
+	GameplaySubsystemRegistry *registry = memnew(GameplaySubsystemRegistry);
+	RecordingSubsystem *first = memnew(RecordingSubsystem(&events, "first"));
+	RecordingSubsystem *second = memnew(RecordingSubsystem(&events, "second"));
+	REQUIRE_EQ(registry->add_subsystem(first), OK);
+	REQUIRE_EQ(registry->add_subsystem(second), OK);
+	REQUIRE_EQ(registry->initialize_subsystems(), OK);
+	memdelete(registry);
+	REQUIRE_EQ(events.size(), 4);
+	CHECK_EQ(events[2], "second:deinitialize");
+	CHECK_EQ(events[3], "first:deinitialize");
+
+	events.clear();
+	registry = memnew(GameplaySubsystemRegistry);
+	first = memnew(RecordingSubsystem(&events, "single"));
+	REQUIRE_EQ(registry->add_subsystem(first), OK);
+	REQUIRE_EQ(registry->initialize_subsystems(), OK);
+	memdelete(first);
+	REQUIRE_EQ(events.size(), 2);
+	CHECK_EQ(events[1], "single:deinitialize");
+	CHECK_EQ(registry->get_subsystems().size(), 0);
+	memdelete(registry);
+}
+
+TEST_CASE("[Gameplay] Subsystem callbacks can add and remove services without invalidating lifecycle traversal") {
+	Vector<String> events;
+	GameplaySubsystemRegistry *registry = memnew(GameplaySubsystemRegistry);
+	RecordingSubsystem *second = memnew(RecordingSubsystem(&events, "second"));
+	MutatingSubsystem *added = memnew(MutatingSubsystem(&events, "added", registry, nullptr, second));
+	MutatingSubsystem *first = memnew(MutatingSubsystem(&events, "first", registry, added, nullptr));
+	REQUIRE_EQ(registry->add_subsystem(first), OK);
+	REQUIRE_EQ(registry->add_subsystem(second), OK);
+	REQUIRE_EQ(registry->initialize_subsystems(), OK);
+	CHECK(first->is_initialized());
+	CHECK(second->is_initialized());
+	CHECK(added->is_initialized());
+	CHECK_EQ(registry->get_subsystems().size(), 3);
+	registry->deinitialize_subsystems();
+	REQUIRE_EQ(events.size(), 6);
+	CHECK_EQ(events[0], "first:initialize");
+	CHECK_EQ(events[1], "second:initialize");
+	CHECK_EQ(events[2], "added:initialize");
+	CHECK_EQ(events[3], "added:deinitialize");
+	CHECK_EQ(events[4], "second:deinitialize");
+	CHECK_EQ(events[5], "first:deinitialize");
+	CHECK_EQ(second->get_registry(), nullptr);
+	memdelete(second);
+	memdelete(registry);
+}
+
+TEST_CASE("[Gameplay] Nested subsystem lifecycle requests cannot leave registry and service state inconsistent") {
+	Vector<String> events;
+	GameplaySubsystemRegistry *registry = memnew(GameplaySubsystemRegistry);
+	NestedLifecycleSubsystem *first = memnew(NestedLifecycleSubsystem(&events, registry));
+	RecordingSubsystem *second = memnew(RecordingSubsystem(&events, "second"));
+	REQUIRE_EQ(registry->add_subsystem(first), OK);
+	REQUIRE_EQ(registry->add_subsystem(second), OK);
+	ERR_PRINT_OFF;
+	CHECK_EQ(registry->initialize_subsystems(), OK);
+	ERR_PRINT_ON;
+	CHECK(registry->is_initialized());
+	CHECK(first->is_initialized());
+	CHECK(second->is_initialized());
+	ERR_PRINT_OFF;
+	registry->deinitialize_subsystems();
+	ERR_PRINT_ON;
+	CHECK_FALSE(registry->is_initialized());
+	CHECK_FALSE(first->is_initialized());
+	CHECK_FALSE(second->is_initialized());
+	CHECK_EQ(first->nested_initialize_error, ERR_BUSY);
+	REQUIRE_EQ(events.size(), 4);
+	CHECK_EQ(events[0], "nested:initialize");
+	CHECK_EQ(events[1], "second:initialize");
+	CHECK_EQ(events[2], "second:deinitialize");
+	CHECK_EQ(events[3], "nested:deinitialize");
+	memdelete(registry);
+}
+
+TEST_CASE("[Gameplay] Re-registration during initialization preserves current order and reverse teardown") {
+	Vector<String> events;
+	GameplaySubsystemRegistry *registry = memnew(GameplaySubsystemRegistry);
+	RecordingSubsystem *second = memnew(RecordingSubsystem(&events, "second"));
+	RecordingSubsystem *third = memnew(RecordingSubsystem(&events, "third"));
+	MutatingSubsystem *first = memnew(MutatingSubsystem(&events, "first", registry, second, nullptr, true));
+	REQUIRE_EQ(registry->add_subsystem(first), OK);
+	REQUIRE_EQ(registry->add_subsystem(second), OK);
+	REQUIRE_EQ(registry->add_subsystem(third), OK);
+	REQUIRE_EQ(registry->initialize_subsystems(), OK);
+	registry->deinitialize_subsystems();
+	REQUIRE_EQ(events.size(), 6);
+	CHECK_EQ(events[0], "first:initialize");
+	CHECK_EQ(events[1], "third:initialize");
+	CHECK_EQ(events[2], "second:initialize");
+	CHECK_EQ(events[3], "second:deinitialize");
+	CHECK_EQ(events[4], "third:deinitialize");
+	CHECK_EQ(events[5], "first:deinitialize");
+	memdelete(registry);
+}
+
 TEST_CASE("[Gameplay][Session] Connection phases are ordered and disconnected identities survive the grace period") {
 	GameplayGameState *game_state = memnew(GameplayGameState);
 	GameplayGameMode *game_mode = memnew(GameplayGameMode);
@@ -491,6 +681,9 @@ TEST_CASE("[Gameplay][Session] Connection phases are ordered and disconnected id
 	CHECK_EQ(manager->transport_connected(84), OK);
 	CHECK_EQ(manager->verify_version(84, "test-1"), OK);
 	CHECK_EQ(manager->authenticate(84, "user-a", "session-a", "resume-a"), OK);
+	CHECK_FALSE(player_state->is_active());
+	CHECK_EQ(player_state->get_peer_id(), 0);
+	CHECK_EQ(controller->get_owner_peer_id(), 0);
 	CHECK_EQ(manager->admit(84), OK);
 	CHECK_EQ(manager->create_player(84), OK);
 	CHECK_EQ(manager->spawn_player(84), OK);
@@ -508,6 +701,11 @@ TEST_CASE("[Gameplay][Session] Connection phases are ordered and disconnected id
 	CHECK_EQ(manager->transport_connected(90), OK);
 	CHECK_EQ(manager->verify_version(90, "test-1"), OK);
 	CHECK_EQ(manager->authenticate(90, "user-b", "session-b", "resume-b"), OK);
+	manager->set_accepting_connections(false);
+	ERR_PRINT_OFF;
+	CHECK_EQ(manager->admit(90), ERR_UNAVAILABLE);
+	ERR_PRINT_ON;
+	CHECK_EQ(manager->get_connection(90)->get_state(), GameplayConnection::STATE_AUTHENTICATED);
 	manager->transport_disconnected(90, 300);
 	CHECK_EQ(manager->get_session("session-b"), nullptr);
 
@@ -1531,6 +1729,55 @@ TEST_CASE("[Gameplay][Prediction][Integration] ENet owner prediction and remote 
 	memdelete(manager);
 	memdelete(game_mode);
 	memdelete(game_state);
+}
+
+TEST_CASE("[Gameplay][DedicatedServer] Out of order packets do not invoke external authentication or admission") {
+	Ref<GameplayServerConfig> config;
+	config.instantiate();
+	config->set_bind_address("127.0.0.1");
+	config->set_port(0);
+	Ref<RecordingSessionChecks> checks;
+	checks.instantiate();
+	GameplayGameState *state = memnew(GameplayGameState);
+	GameplayGameMode *mode = memnew(GameplayGameMode);
+	GameplaySessionManager *manager = memnew(GameplaySessionManager);
+	GameplayDedicatedServer *server = memnew(GameplayDedicatedServer);
+	mode->set_game_state(state);
+	manager->set_game_mode(mode);
+	server->set_authenticator(callable_mp(checks.ptr(), &RecordingSessionChecks::authenticate));
+	server->set_admission_check(callable_mp(checks.ptr(), &RecordingSessionChecks::admit));
+	REQUIRE_EQ(server->start(config, manager), OK);
+	GameplaySessionClient *early = memnew(GameplaySessionClient);
+	REQUIRE_EQ(early->connect_to_server("127.0.0.1", server->get_bound_port(), "1", "alice"), OK);
+	Vector<GameplaySessionClient *> no_clients;
+	REQUIRE(pump_gameplay_network(server, no_clients, 5000, callable_mp_static(client_transport_connected).bind(server, early)));
+	Dictionary request;
+	request["type"] = "authenticate";
+	request["auth_token"] = "alice";
+	REQUIRE_EQ(send_gameplay_message(early, request), OK);
+	REQUIRE(pump_gameplay_network(server, no_clients, 5000, callable_mp_static(client_transport_closed).bind(early)));
+	CHECK_EQ(checks->authentication_calls, 0);
+	CHECK_EQ(manager->get_sessions().size(), 0);
+
+	GameplaySessionClient *joined = memnew(GameplaySessionClient);
+	REQUIRE_EQ(joined->connect_to_server("127.0.0.1", server->get_bound_port(), "1", "bob"), OK);
+	Vector<GameplaySessionClient *> clients = { joined };
+	REQUIRE(pump_gameplay_network(server, clients, 5000, callable_mp_static(client_joined).bind(joined)));
+	CHECK_EQ(checks->authentication_calls, 1);
+	CHECK_EQ(checks->admission_calls, 1);
+	request.clear();
+	request["type"] = "join";
+	REQUIRE_EQ(send_gameplay_message(joined, request), OK);
+	REQUIRE(pump_gameplay_network(server, clients, 5000, callable_mp_static(client_rejected_or_disconnected).bind(joined)));
+	CHECK_FALSE(joined->is_joined());
+	CHECK_EQ(checks->admission_calls, 1);
+	server->stop_now();
+	memdelete(joined);
+	memdelete(early);
+	memdelete(server);
+	memdelete(manager);
+	memdelete(mode);
+	memdelete(state);
 }
 
 } // namespace TestGameplayFramework

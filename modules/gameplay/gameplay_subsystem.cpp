@@ -61,6 +61,12 @@ void GameplaySubsystem::_bind_methods() {
 	BIND_ENUM_CONSTANT(SCOPE_CONNECTION);
 }
 
+void GameplaySubsystem::_notification(int p_what) {
+	if (p_what == NOTIFICATION_PREDELETE) {
+		_deinitialize_internal();
+	}
+}
+
 void GameplaySubsystem::set_subsystem_id(const StringName &p_id) {
 	ERR_FAIL_COND_MSG(is_initialized(), "Cannot rename an initialized subsystem.");
 	ERR_FAIL_COND_MSG(get_registry() != nullptr, "Remove the subsystem from its registry before renaming it.");
@@ -96,17 +102,22 @@ void GameplaySubsystem::_initialize_internal() {
 	}
 	initialized = true;
 	on_initialize();
+	if (!initialized) {
+		return;
+	}
 	GDVIRTUAL_CALL(_initialize);
-	emit_signal(SNAME("subsystem_initialized"));
+	if (initialized) {
+		emit_signal(SNAME("subsystem_initialized"));
+	}
 }
 
 void GameplaySubsystem::_deinitialize_internal() {
 	if (!initialized) {
 		return;
 	}
+	initialized = false;
 	GDVIRTUAL_CALL(_deinitialize);
 	on_deinitialize();
-	initialized = false;
 	emit_signal(SNAME("subsystem_deinitialized"));
 }
 
@@ -140,6 +151,12 @@ void GameplaySubsystemRegistry::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("subsystem_removed", PropertyInfo(Variant::OBJECT, "subsystem", PROPERTY_HINT_RESOURCE_TYPE, "GameplaySubsystem")));
 }
 
+void GameplaySubsystemRegistry::_notification(int p_what) {
+	if (p_what == NOTIFICATION_PREDELETE) {
+		deinitialize_subsystems();
+	}
+}
+
 void GameplaySubsystemRegistry::set_scope(GameplaySubsystem::Scope p_scope) {
 	ERR_FAIL_INDEX(int(p_scope), int(GameplaySubsystem::SCOPE_CONNECTION) + 1);
 	ERR_FAIL_COND_MSG(initialized || !subsystem_ids.is_empty(), "A populated subsystem registry cannot change scope.");
@@ -163,8 +180,8 @@ Error GameplaySubsystemRegistry::add_subsystem(GameplaySubsystem *p_subsystem) {
 	}
 	subsystem_ids.push_back(p_subsystem->get_instance_id());
 	p_subsystem->_set_registry(this);
-	if (initialized) {
-		p_subsystem->_initialize_internal();
+	if (initialized && !lifecycle_transition) {
+		_initialize_registered_subsystems();
 	}
 	emit_signal(SNAME("subsystem_added"), p_subsystem);
 	return OK;
@@ -178,13 +195,19 @@ bool GameplaySubsystemRegistry::remove_subsystem(GameplaySubsystem *p_subsystem)
 	if (index < 0) {
 		return false;
 	}
-	p_subsystem->_deinitialize_internal();
-	p_subsystem->_set_registry(nullptr);
 	subsystem_ids.remove_at(index);
+	const bool previous_transition = lifecycle_transition;
+	lifecycle_transition = true;
+	p_subsystem->_deinitialize_internal();
+	lifecycle_transition = previous_transition;
+	p_subsystem->_set_registry(nullptr);
 	if (p_subsystem->get_parent() == this) {
 		remove_child(p_subsystem);
 	}
 	emit_signal(SNAME("subsystem_removed"), p_subsystem);
+	if (initialized && !lifecycle_transition) {
+		_initialize_registered_subsystems();
+	}
 	return true;
 }
 
@@ -209,31 +232,50 @@ TypedArray<GameplaySubsystem> GameplaySubsystemRegistry::get_subsystems() const 
 	return subsystems;
 }
 
+void GameplaySubsystemRegistry::_initialize_registered_subsystems() {
+	lifecycle_transition = true;
+	bool initialized_any = true;
+	while (initialized_any) {
+		initialized_any = false;
+		const Vector<ObjectID> initializing_ids = subsystem_ids;
+		for (const ObjectID &id : initializing_ids) {
+			GameplaySubsystem *subsystem = _gameplay_subsystem_object<GameplaySubsystem>(id);
+			if (subsystem && subsystem->get_registry() == this && !subsystem->is_initialized()) {
+				subsystem->_initialize_internal();
+				initialized_any = true;
+				// A callback may reorder registrations, so select the next service from a fresh snapshot.
+				break;
+			}
+		}
+	}
+	lifecycle_transition = false;
+}
+
 Error GameplaySubsystemRegistry::initialize_subsystems() {
+	ERR_FAIL_COND_V_MSG(lifecycle_transition, ERR_BUSY, "Cannot start a nested subsystem lifecycle transition.");
 	if (initialized) {
 		return OK;
 	}
 	initialized = true;
-	for (const ObjectID &id : subsystem_ids) {
-		GameplaySubsystem *subsystem = _gameplay_subsystem_object<GameplaySubsystem>(id);
-		if (subsystem) {
-			subsystem->_initialize_internal();
-		}
-	}
+	_initialize_registered_subsystems();
 	return OK;
 }
 
 void GameplaySubsystemRegistry::deinitialize_subsystems() {
+	ERR_FAIL_COND_MSG(lifecycle_transition, "Cannot start a nested subsystem lifecycle transition.");
 	if (!initialized) {
 		return;
 	}
-	for (int i = subsystem_ids.size() - 1; i >= 0; i--) {
-		GameplaySubsystem *subsystem = _gameplay_subsystem_object<GameplaySubsystem>(subsystem_ids[i]);
-		if (subsystem) {
+	initialized = false;
+	lifecycle_transition = true;
+	const Vector<ObjectID> deinitializing_ids = subsystem_ids;
+	for (int i = deinitializing_ids.size() - 1; i >= 0; i--) {
+		GameplaySubsystem *subsystem = _gameplay_subsystem_object<GameplaySubsystem>(deinitializing_ids[i]);
+		if (subsystem && subsystem->get_registry() == this) {
 			subsystem->_deinitialize_internal();
 		}
 	}
-	initialized = false;
+	lifecycle_transition = false;
 }
 
 bool GameplaySubsystemRegistry::is_initialized() const {

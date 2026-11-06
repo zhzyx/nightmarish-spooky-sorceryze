@@ -207,6 +207,12 @@ void GameplaySessionManager::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("session_expired", PropertyInfo(Variant::OBJECT, "session", PROPERTY_HINT_RESOURCE_TYPE, "GameplayUserSession")));
 }
 
+void GameplaySessionManager::_notification(int p_what) {
+	if (p_what == NOTIFICATION_PREDELETE) {
+		shutdown();
+	}
+}
+
 uint64_t GameplaySessionManager::_resolve_time(uint64_t p_now_msec) const {
 	return p_now_msec == UINT64_MAX ? OS::get_singleton()->get_ticks_msec() : p_now_msec;
 }
@@ -298,14 +304,6 @@ Error GameplaySessionManager::authenticate(int p_peer_id, const String &p_user_i
 			return ERR_ALREADY_IN_USE;
 		}
 		session->_bind_peer(p_peer_id);
-		GameplayPlayerState *player_state = session->get_player_state();
-		if (player_state) {
-			player_state->activate(p_peer_id, session->get_session_id());
-		}
-		GameplayController *controller = session->get_controller();
-		if (controller) {
-			controller->set_owner_peer_id(p_peer_id);
-		}
 		emit_signal(SNAME("session_rebound"), session, p_peer_id);
 	} else {
 		GameplayUserSession *other_session = _find_session_for_user(p_user_id);
@@ -328,6 +326,7 @@ Error GameplaySessionManager::authenticate(int p_peer_id, const String &p_user_i
 }
 
 Error GameplaySessionManager::admit(int p_peer_id) {
+	ERR_FAIL_COND_V_MSG(!accepting_connections, ERR_UNAVAILABLE, "The session manager is not accepting new players.");
 	Ref<GameplayConnection> connection = get_connection(p_peer_id);
 	ERR_FAIL_COND_V_MSG(connection.is_null(), ERR_DOES_NOT_EXIST, "The transport peer is not connected.");
 	ERR_FAIL_COND_V_MSG(connection->get_state() != GameplayConnection::STATE_AUTHENTICATED, ERR_INVALID_DATA, "Business admission is out of order.");

@@ -4,7 +4,7 @@
 		Owns and orders gameplay subsystems for one lifetime scope.
 	</brief_description>
 	<description>
-		GameplaySubsystemRegistry enforces unique subsystem IDs and a common scope. It initializes subsystems in registration order and deinitializes them in reverse order. Repeated initialize or deinitialize calls are safe.
+		GameplaySubsystemRegistry enforces unique subsystem IDs and a common scope. It initializes subsystems in registration order and deinitializes them in reverse order, including when the registry is freed. Repeated initialize or deinitialize calls are safe outside lifecycle callbacks. Nested registry lifecycle transitions from initialization or deinitialization callbacks are rejected.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -13,7 +13,7 @@
 			<return type="int" enum="Error" />
 			<param index="0" name="subsystem" type="GameplaySubsystem" />
 			<description>
-				Registers a matching-scope subsystem with a unique, non-empty ID.
+				Registers a matching-scope subsystem with a unique, non-empty ID. Services added by an initialization callback are initialized after the services registered before them, preserving registration order.
 			</description>
 		</method>
 		<method name="deinitialize_subsystems">
@@ -38,7 +38,7 @@
 		<method name="initialize_subsystems">
 			<return type="int" enum="Error" />
 			<description>
-				Initializes all subsystems in registration order. Already-initialized registries return [constant OK].
+				Initializes all subsystems in registration order. Already-initialized registries return [constant OK]. Returns [constant ERR_BUSY] if called from another subsystem lifecycle transition.
 			</description>
 		</method>
 		<method name="remove_subsystem">

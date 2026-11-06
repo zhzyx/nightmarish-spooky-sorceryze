@@ -126,6 +126,7 @@ class GameplaySessionManager : public Node {
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
 	void set_protocol_version(const String &p_version);

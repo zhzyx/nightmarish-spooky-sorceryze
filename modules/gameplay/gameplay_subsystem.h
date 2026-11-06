@@ -61,6 +61,7 @@ private:
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 	virtual void on_initialize() {}
 	virtual void on_deinitialize() {}
@@ -91,11 +92,14 @@ class GameplaySubsystemRegistry : public Node {
 	GameplaySubsystem::Scope scope = GameplaySubsystem::SCOPE_WORLD;
 	Vector<ObjectID> subsystem_ids;
 	bool initialized = false;
+	bool lifecycle_transition = false;
 
 	void _subsystem_destroyed(GameplaySubsystem *p_subsystem);
+	void _initialize_registered_subsystems();
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
 	void set_scope(GameplaySubsystem::Scope p_scope);

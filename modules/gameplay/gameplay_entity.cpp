@@ -288,6 +288,7 @@ Error GameplayController::possess(GameplayPawn *p_pawn) {
 	GameplayPawn *old_pawn = get_pawn();
 	if (old_pawn) {
 		old_pawn->_set_controller(nullptr);
+		old_pawn->set_owner_peer_id(0);
 	}
 	pawn_id = p_pawn->get_instance_id();
 	p_pawn->_set_controller(this);

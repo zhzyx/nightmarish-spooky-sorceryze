@@ -199,7 +199,9 @@ void GameplayDedicatedServer::_bind_methods() {
 }
 
 void GameplayDedicatedServer::_notification(int p_what) {
-	if (p_what == NOTIFICATION_PROCESS && running) {
+	if (p_what == NOTIFICATION_PREDELETE) {
+		stop_now();
+	} else if (p_what == NOTIFICATION_PROCESS && running) {
 		poll();
 	}
 }
@@ -321,6 +323,10 @@ void GameplayDedicatedServer::_handle_packet(int p_peer_id, const Dictionary &p_
 		_reject_peer(p_peer_id, "server_unconfigured");
 		return;
 	}
+	if (!manager->is_accepting_connections()) {
+		_reject_peer(p_peer_id, "server_not_accepting_connections");
+		return;
+	}
 	GameplayMultiplayerReplication *replication = get_replication();
 	if (replication && replication->handles_message(p_message)) {
 		replication->receive_packet(p_peer_id, p_message, OS::get_singleton()->get_ticks_msec());
@@ -343,6 +349,11 @@ void GameplayDedicatedServer::_handle_packet(int p_peer_id, const Dictionary &p_
 		return;
 	}
 	if (type == "authenticate") {
+		Ref<GameplayConnection> connection = manager->get_connection(p_peer_id);
+		if (connection.is_null() || connection->get_state() != GameplayConnection::STATE_VERSION_VERIFIED) {
+			_reject_peer(p_peer_id, "authentication_out_of_order");
+			return;
+		}
 		if (!authenticator.is_valid()) {
 			_reject_peer(p_peer_id, "authentication_unavailable");
 			return;
@@ -363,7 +374,7 @@ void GameplayDedicatedServer::_handle_packet(int p_peer_id, const Dictionary &p_
 		const String session_id = result.get("session_id", String());
 		const String reconnect_token = result.get("reconnect_token", String());
 		if (manager->authenticate(p_peer_id, user_id, session_id, reconnect_token) != OK) {
-			Ref<GameplayConnection> connection = manager->get_connection(p_peer_id);
+			connection = manager->get_connection(p_peer_id);
 			_reject_peer(p_peer_id, connection.is_valid() ? connection->get_rejection_reason() : String("authentication_failed"));
 			return;
 		}
@@ -376,6 +387,11 @@ void GameplayDedicatedServer::_handle_packet(int p_peer_id, const Dictionary &p_
 		return;
 	}
 	if (type == "join") {
+		Ref<GameplayConnection> connection = manager->get_connection(p_peer_id);
+		if (connection.is_null() || connection->get_state() != GameplayConnection::STATE_AUTHENTICATED) {
+			_reject_peer(p_peer_id, "admission_out_of_order");
+			return;
+		}
 		GameplayUserSession *session = manager->get_session_by_peer(p_peer_id);
 		if (!session) {
 			_reject_peer(p_peer_id, "not_authenticated");

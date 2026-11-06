@@ -316,6 +316,12 @@ void GameplayWorld::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("world_shutdown"));
 }
 
+void GameplayWorld::_notification(int p_what) {
+	if (p_what == NOTIFICATION_PREDELETE) {
+		shutdown_world();
+	}
+}
+
 Error GameplayWorld::initialize_world(GameplayGameState *p_game_state, GameplayGameMode *p_game_mode, GameplaySubsystemRegistry *p_subsystems) {
 	ERR_FAIL_COND_V_MSG(initialized, ERR_ALREADY_IN_USE, "The gameplay world is already initialized.");
 	ERR_FAIL_NULL_V_MSG(p_game_state, ERR_INVALID_PARAMETER, "A gameplay world requires a game state.");

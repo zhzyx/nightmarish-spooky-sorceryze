@@ -105,6 +105,7 @@ class GameplayWorld : public Node {
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
 	Error initialize_world(GameplayGameState *p_game_state, GameplayGameMode *p_game_mode = nullptr, GameplaySubsystemRegistry *p_subsystems = nullptr);
