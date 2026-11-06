@@ -46,7 +46,8 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
       contains(fromJSON('["push","pull_request","pull_request_target"]'), github.event.workflow_run.event))))
     concurrency:
-      group: kuafu-${{ github.event_name }}-${{ github.event.workflow_run.workflow_id || github.event.issue.number || inputs.source_issue }}-${{ github.event.workflow_run.head_branch || inputs.incident || 1 }}
+      # Local, label and CI events can claim the same tracker. Serialize lookup and registration.
+      group: kuafu-blocker-registration
       queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 10
