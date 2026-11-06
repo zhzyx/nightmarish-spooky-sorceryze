@@ -7,3 +7,5 @@
 对应工单 [#213](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/213)。
 
 首轮联合候选的 push 运行 42258917710 已通过 MSVC Editor。PR 运行 42258934070 的静态步骤检出了同文件既有的三行 clang-format 差异。按仓库锁定的 22.1.5 修正缩进并执行 dry-run，沿最新 main 复验完整候选。
+
+PR #220 的 push / PR 均已成功。与 #223 整合后保留新 issue_url 字段优先及旧 source 的回退逻辑，使用独立的 request_id 局部值，针对合并后的精确候选重验。
