@@ -206,9 +206,10 @@ def collect(root, request_id):
         raise ValueError("Invalid request ID")
     command = [
         sys.executable,
+        "-I",
         "-X",
         "utf8",
-        str(root / "framework/extensions/diting-files/diting_files.py"),
+        str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
         "validate",
         "--repo",
         str(root),

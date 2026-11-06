@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "platform-host-storage-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "platform-host-storage-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:41:34.532666+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/238",
+  "agent": {
+    "id": "codex-host",
+    "version": "unreported",
+    "definition_sha256": "5a810f5501eb0932bf640f19ee70d1b836262912df9f026948dd43877357e414",
+    "origin": "external_host_workspace_instructions"
+  },
+  "payload": {
+    "description": "已校验 #238 及原生父项 #231，迁移采集及交付工具并验证原数据与独立分发。",
+    "definition_hash_scope": "base repository AGENTS.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "duration_ms": null,
+    "reason": "Host usage measurements unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "f19486900ebbff9171c42c0a1151211771e40471c478fcbd566ed6b1d2a3a3f6"
+}
