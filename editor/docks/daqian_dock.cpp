@@ -57,6 +57,13 @@ EditorDock *create_daqian_dock() {
 	dock->set_icon_name("GraphEdit");
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
+	Ref<Script> silent_validation = load_editor_script(daqian_silent_validation);
+	if (silent_validation.is_valid()) {
+		Node *probe = memnew(Node);
+		probe->set_name("SilentValidation");
+		probe->set_script(silent_validation);
+		dock->add_child(probe);
+	}
 	Ref<Script> rules = load_editor_script(daqian_graph_rules);
 	Ref<Script> graph = load_editor_script(daqian_issue_graph);
 	Ref<Script> workspace = load_editor_script(daqian_workspace);
