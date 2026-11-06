@@ -111,7 +111,7 @@ export class CodexDispatchHost {
     if (this.activeReservations().some(x => x.ticket === a.ticket)) return false;
     const file = path.join(this.root, 'reservations', `${a.key}.json`);
     if (fs.existsSync(file)) return false;
-    persistNew(file, {assignment: a, event, state: 'reserved'});
+    persistNew(file, {assignment: a, event, state: 'reserved', operator:this.policy.operator});
     return true;
   }
   async startSource(a) {
@@ -166,9 +166,15 @@ export class CodexDispatchHost {
     if(event?.type!=='ticket.changed'||!nonempty(event.reference)||!/^[a-f0-9]{64}$/.test(key))throw Error('Actual setup event required');
     return this.withLock(async()=>{
       const a=read(path.join(this.root,'reservations',key+'.json')).assignment;
-      if(fs.existsSync(path.join(this.root,'released',key+'.json')))return {state:'already_reconciled',key};
+      if(fs.existsSync(path.join(this.root,'released',key+'.json'))) {
+        await this.source.verifyClaimOwner?.(a);
+        return {state:'already_reconciled',key};
+      }
       const records=fs.readdirSync(path.join(this.root,'records')).filter(n=>n.endsWith('.json')).map(n=>read(path.join(this.root,'records',n)));
-      if(records.some(r=>r.assignment?.key===key&&r.state==='running_after_verified_setup'&&JSON.stringify(r.receipt)===JSON.stringify(receipt)))return {state:'already_setup',key};
+      if(records.some(r=>r.assignment?.key===key&&r.state==='running_after_verified_setup'&&JSON.stringify(r.receipt)===JSON.stringify(receipt))) {
+        await this.source.verifyClaimOwner?.(a);
+        return {state:'already_setup',key};
+      }
       const pending=records.find(r=>r.assignment?.key===key&&r.receipt?.setupPending===true)?.receipt;
       if(!pending||a.target!=='chat'||receipt?.target!=='chat'||receipt.setupPending!==false||receipt.model!==a.model.id||!nonempty(receipt.workerId)||!nonempty(receipt.reference))throw Error('Pending and ready chat receipts required');
       if(typeof this.source.verifySetup!=='function'||await this.source.verifySetup(a,event,pending,receipt)!==true)throw Error('Chat setup mapping not verified by host');
@@ -205,7 +211,10 @@ export class CodexDispatchHost {
     return await this.withLock(async () => {
       const reserved = read(path.join(this.root, 'reservations', `${key}.json`));
       const file = path.join(this.root, 'released', `${key}.json`);
-      if (fs.existsSync(file)) return {state: 'already_reconciled', key};
+      if (fs.existsSync(file)) {
+        await this.source.verifyClaimOwner?.(reserved.assignment);
+        return {state: 'already_reconciled', key};
+      }
       // Verification must match worker, reservation, revision and real terminal source state.
       if (await this.source.verifyTerminal(reserved.assignment, event, receipt) !== true) throw Error('Terminal receipt not authenticated');
       await this.record({assignment: reserved.assignment, event, receipt, state: 'terminal_verified'});

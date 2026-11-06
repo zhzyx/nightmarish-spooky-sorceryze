@@ -43,13 +43,17 @@ class Host:
             "base": {"repo": self.repo_ref, "ref": "main"},
             "merged": True,
             "merge_commit_sha": "a" * 40,
-            "author_association": "COLLABORATOR",
+            "user": {"login": "new-writer"},
+            "author_association": "NONE",
             "body": "GongGong-Issue: #7\nGongGong-Request: abc",
         }
         self.bugs, self.comments, self.jobs = [], [], []
         self.lose_receipt = False
+        self.permission = "write"
 
     def get(self, path):
+        if path == "collaborators/new-writer/permission":
+            return {"user": self.pr["user"], "permission": self.permission}
         return {"issues/7": self.issue, "pulls/12": self.pr, "actions/runs/18/attempts/2": self.run}[path]
 
     def pages(self, path, field=None):
@@ -93,6 +97,19 @@ class KuafuGitHubTests(unittest.TestCase):
         self.assertEqual(result["bug_number"], 99)
         self.assertIsNone(result["root_cause"])
         self.assertEqual(len(self.api.comments), 1)
+
+    def test_pr_without_embedded_reference_binds_exact_signed_head(self):
+        self.api.run["event"] = "pull_request"
+        self.api.pr["head"]["sha"] = self.api.run["head_sha"]
+        self.assertEqual(self.api.route()["original_issue"], 7)
+        self.api.pr["head"]["sha"] = "b" * 40
+        self.assertIsNone(self.api.route()["original_issue"])
+
+    def test_former_collaborator_cannot_bind_incident_to_original_issue(self):
+        self.api.pr["author_association"] = "COLLABORATOR"
+        self.api.permission = "read"
+        self.assertIsNone(self.api.route()["original_issue"])
+        self.assertEqual(self.api.comments, [])
 
     def test_recover_after_ambiguous_issue_create(self):
         self.api.lose_receipt = True

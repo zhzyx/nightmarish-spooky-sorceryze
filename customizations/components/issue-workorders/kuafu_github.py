@@ -55,10 +55,26 @@ def labels(issue):
     return {label["name"] for label in issue["labels"]}
 
 
+def current_writer(api, login):
+    if not isinstance(login, str) or not re.fullmatch(r"[A-Za-z0-9_-]+(?:\[bot\])?", login):
+        return False
+    try:
+        access = api.get(f"collaborators/{login}/permission")
+    except GitHubCommandError as exc:
+        if exc.http_status == 404:
+            return False
+        raise
+    return access["user"]["login"].casefold() == login.casefold() and access["permission"] in {
+        "admin",
+        "maintain",
+        "write",
+    }
+
+
 def related_issue(api, run):
     # Use a unique provider-bound PR. A fork or an arbitrary PR body cannot direct writes.
     prs = run.get("pull_requests") or []
-    if not prs and run["event"] == "push":
+    if not prs and run["event"] in {"push", "pull_request"}:
         prs = api.pages("commits/" + run["head_sha"] + "/pulls")
     if len(prs) != 1:
         return None
@@ -73,11 +89,12 @@ def related_issue(api, run):
     if (
         pr["base"]["repo"]["full_name"] != api.repo
         or (pr["head"].get("repo") or {}).get("full_name") != api.repo
-        or pr["author_association"] not in {"OWNER", "MEMBER", "COLLABORATOR"}
         or pr["head"]["sha"] != ref["head"]["sha"]
         or not re.fullmatch("[0-9a-f]{40}", pr["head"]["sha"])
         or (run["event"] != "pull_request_target" and pr["head"]["sha"] != run["head_sha"] and not merged_push)
     ):
+        return None
+    if not current_writer(api, (pr.get("user") or {}).get("login")):
         return None
     body = pr.get("body") or ""
     issues = re.findall(r"^GongGong-Issue:[ \t]*#([1-9][0-9]*)[ \t]*\r?$", body, re.M)
@@ -136,14 +153,7 @@ def local_dispatch(api, event):
     if actor.casefold() != event["sender"]["login"].casefold():
         raise ValueError("Handoff sender differs from the authenticated workflow actor")
     for login in {actor, os.environ["GITHUB_TRIGGERING_ACTOR"]}:
-        if not re.fullmatch(r"[A-Za-z0-9_-]+(?:\[bot\])?", login):
-            raise ValueError("Invalid workflow actor")
-        access = api.get(f"collaborators/{login}/permission")
-        if access["user"]["login"].casefold() != login.casefold() or access["permission"] not in {
-            "admin",
-            "maintain",
-            "write",
-        }:
+        if not current_writer(api, login):
             raise ValueError("Local handoff requires current repository write permission")
     n = int(inputs["source_issue"])
     issue = api.get(f"issues/{n}")

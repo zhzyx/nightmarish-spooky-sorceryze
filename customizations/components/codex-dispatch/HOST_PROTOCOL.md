@@ -1,5 +1,7 @@
 # 当前操作者原生工具桥
 
+终态恢复按持久认领或预留中的 `operator` 核对当前 GitHub 身份。原操作者在降为只读后仍可核实已有工作者回执；补位派发需要当前写权限。跨操作者或缺少原操作者的历史记录，仅可由有写权限的接收人通过可信宿主的 `verifyRecoveryHandoff(assignment, previousOperator, currentOperator)` 核验该认领的真实交接后恢复。前操作者未知时取 null。缺少交接核验端口时保留占用等待原责任方处理。
+
 路径以仓库根为基准。一次真实需求／完成事件运行一次 `node customizations/components/codex-dispatch/session.mjs ABS_CONFIG ABS_RESULT`；没有事件不执行，不设定时任务。配置、请求、issued、原始工具回执、预留和日志保存在宿主私有 `data-collection/receipts/`，不发布凭据或原始本机路径。
 
 配置绑定 `workspace`（实际 Git 工作副本根）、`python`、`repository`、已登录 `operator`、`authorityRef`、`bindings:[{number,requestId}]`、宿主实际 `catalog`、`capacity`、`defaultChatModel`、`event:{type,reference}` 和 `requests`。request 沿用 adapter README 的完整契约。模型目录由当前工具能力及实测提供；不能由子 Agent 的自评建立。`chatCreationAuthorized` 只有实际用户已要求建聊才为 true，`threadTarget` 必须来自实际宿主发现；仅 `explicitChatModels` 内用户明确指定的型号可覆盖默认模型。
