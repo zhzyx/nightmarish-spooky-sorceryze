@@ -273,7 +273,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		input.custom_minimum_size = Vector2(215, 78)
 		input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		input.placeholder_text = "任务说明" if item.kind == "task" else "输入文字"
-		input.name = "PlanText"
+		input.name = "PlanContent"
 		input.text = request.get("prompt", item.get("value","")) if item.kind == "question" else item.get("value","")
 		input.text_changed.connect(func():
 			draft.nodes[id].value = input.text
@@ -460,7 +460,7 @@ func _update_card(view: GraphNode) -> void:
 	canvas.mark_card(view, label, state, suffix)
 	var id := String(view.name)
 	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
-	for field in ["PlanText", "Caption"]:
+	for field in ["PlanContent", "Caption"]:
 		if view.has_node(NodePath(field)):
 			view.get_node(NodePath(field)).editable = not locked
 	if view.has_node("PlanModel"):

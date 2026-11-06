@@ -90,7 +90,7 @@ func run() -> void:
 	var right_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(right), 0]]
 	var left_card: GraphNode = graph.canvas.get_node(NodePath(left))
 	var right_card: GraphNode = graph.canvas.get_node(NodePath(right))
-	var editor_field: TextEdit = left_card.get_node("PlanText")
+	var editor_field: TextEdit = left_card.get_node("PlanContent")
 	graph.context.states = {source:"completed", left:"running"}
 	graph.refresh_states()
 	check(left_card.get_node("FlowState").text == "运行中" and not editor_field.editable, "active state and edit lock")
@@ -109,7 +109,7 @@ func run() -> void:
 	check(right_wire.material == graph.canvas.materials.failed and not graph.running_nodes.visible, "failure stopped activity")
 	graph.debug_active = false
 	graph.refresh_states()
-	check(left_card.get_node("PlanText") == editor_field and graph.draft == draft_before and left_wire.material == graph.canvas.materials.running, "debug isolated from editing and production")
+	check(left_card.get_node("PlanContent") == editor_field and graph.draft == draft_before and left_wire.material == graph.canvas.materials.running, "debug isolated from editing and production")
 	graph.context.states.clear()
 	graph.refresh_states()
 	check(editor_field.editable and left_wire.material == graph.canvas.materials.pending, "clear state restores draft control")
