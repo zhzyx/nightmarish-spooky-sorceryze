@@ -186,7 +186,7 @@ class HandoffTests(unittest.TestCase):
         self.git("switch", "-c", "ship", "main")
         (self.repo / "new.txt").write_text("new")
         self.git("add", "new.txt")
-        checker = self.repo / "framework/extensions/diting-files/diting_files.py"
+        checker = self.repo / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
         checker.parent.mkdir(parents=True)
         checker.write_text("import sys\nassert '--require-committed' in sys.argv\n")
         bodies = []

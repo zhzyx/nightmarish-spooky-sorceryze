@@ -452,7 +452,7 @@ def report(root, framework, folder, record, key, binding, args):
             "-I",
             "-X",
             "utf8",
-            str(framework / "extensions/diting-files/diting_files.py"),
+            str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
             "record",
             "--repo",
             str(root),

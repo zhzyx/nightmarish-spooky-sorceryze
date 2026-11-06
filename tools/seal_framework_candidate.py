@@ -48,16 +48,11 @@ def main():
     inventory = runpy.run_path(str(root / "tools/package_integrity.py"))["inventory"](root)
     write(root / "package-lock.json", {"schema_version": 1, "path_base": "framework_root", "files": inventory})
     files = {**inventory, "package-lock.json": hashlib.sha256((root / "package-lock.json").read_bytes()).hexdigest()}
-    write(
-        ROOT / "integrations/gonggong/frozen-distribution.json",
-        {
-            "schema_version": 1,
-            "scope": "offline_registered_snapshot_consistency_only",
-            "exemption": None,
-            "registration_note": "All current framework files pinned; byte integrity is not approval.",
-            "files": files,
-        },
-    )
+    registration = ROOT / "integrations/gonggong/frozen-distribution.json"
+    snapshot = json.loads(registration.read_text(encoding="utf-8"))
+    snapshot["files"] = files
+    # Host platform byte registrations have a separate review boundary.
+    write(registration, snapshot)
     print(json.dumps({a["id"]: a["candidate_digest"] for a in manifest["agents"]}))
 
 

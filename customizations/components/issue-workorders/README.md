@@ -98,7 +98,7 @@ session 仅在同一进程内复用成功事件的结构/摘要校验，精确�
 ```powershell
 python customizations/components/issue-workorders/issue_gate.py --repo . --issue 9 --request-id issue-event-data-loop-20261102 --intake-only --tenant gonggong-workspace
 python customizations/components/issue-workorders/issue_events.py --repo . --issue 9 --event-id 35158186727 --host-id codex-issue9-current-operator --tenant gonggong-workspace --request-id issue-event-data-loop-20261102 --host-definition AGENTS.md
-python framework/extensions/diting-files/diting_files.py analyze --repo . --tenant gonggong-workspace
+python customizations/platforms/data-collection/git-files/storage/diting_files.py analyze --repo . --tenant gonggong-workspace
 ```
 
 当前用户是本轮接收责任方，Codex 本聊天是授权执行上下文。首次实际调用为 idempotent=false，同绑定重放为 true。这落实单次来源接收契约，尚不表示司南 board 注册了 GitHub 来源、自动 start/ack 或全局事件覆盖。来源注册状态以实际 board 为准。

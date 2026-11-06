@@ -341,9 +341,10 @@ def submit(repo, issue, request, title, notes):
     subprocess.run(
         [
             sys.executable,
+            "-I",
             "-X",
             "utf8",
-            str(repo / "framework/extensions/diting-files/diting_files.py"),
+            str(repo / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
             "git-check",
             "--repo",
             str(repo),

@@ -1,6 +1,6 @@
 # 接入子模块边界与现有实现映射
 
-本文件定义接入职责结构，关联 Issue #111（需求 module-boundaries-20261105）。路径统一以仓库根解析；链接相对本文件。依据 [模块规范](../framework/specs/module-system.md)，只定义职责、现有归属和后续接入方式，不改变运行入口、注册状态或既有批准。下列 ID 是逻辑命名，不是已注册可执行模块；customizations/registry.json 仍记录当前组件现状，customizations/module-migration.json 保持历史证据。
+本文件定义接入职责结构，关联 Issue #111（需求 module-boundaries-20261105）。路径统一以仓库根解析；链接相对本文件。依据 [模块规范](../framework/specs/module-system.md)，只定义职责、现有归属和后续接入方式，不改变运行入口、注册状态或既有批准。下列 ID 是逻辑命名，不是已注册可执行模块；customizations/platforms/components.json 仍记录当前组件现状，customizations/module-migration.json 保持历史证据。
 
 现行目录见[按平台选择接入子模块](platforms/README.md)。以下表格保留各职责的细分说明。
 
@@ -15,9 +15,9 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 | github-workorder-relations | 将通用父子任务／依赖映射为远端子 Issue／关系，回读关系与修订 | 通用语义在 framework/specs/work-order-management.md；GitHub 生命周期在 customizations/components/issue-workorders/issue-lifecycle.md | 生命周期已定义原生关系及人工授权回读；当前自动适配器未实现关系迁移，不能宣称已自动接通；正文写“父单 #N”不证明 GitHub 原生关系存在，父单不得因子单完成自动关闭 |
 | git-change-integration | Git 身份映射、共同基准、工作树隔离、差异／冲突、commit/tree、贡献整合 | framework/agents/heqi/references/git-workflow.md、concurrent-issue.md；customizations/components/issue-workorders/git-workflow.md | 合契保留通用整合责任；认证 login 与实际执行者关联由宿主核验，提交作者字段本身不是认证 |
 | github-pr-gates | PR 关联、Issue 回读门禁、分支保护与 CI 接入 | customizations/components/issue-workorders/issue_gate.py；.github/CONTRIBUTING.md、PULL_REQUEST_TEMPLATE.md、workflows/gonggong-issue-gate.yml | 本仓库入口约定仍有效；不升级为无 Git 项目的核心前置条件。CI 文件存在不证明远端保护已启用 |
-| git-delivery-evidence | commit/tree 与交付文件摘要、来源一致性、发布引用和回读 | framework/tools/check_delivery.py；framework/templates/delivery.json；framework/tests/test_delivery.py | 现有检查器／模板是 Git 专用实现；核心只要求不可变候选、证据及实际交付回执，其他来源另行适配 |
+| git-delivery-evidence | commit/tree 与交付文件摘要、来源一致性、发布引用和回读 | customizations/platforms/development/git/delivery/check_delivery.py；customizations/platforms/development/git/delivery/templates/delivery.json；customizations/platforms/development/git/delivery/test_delivery.py | 现有检查器／模板是 Git 专用实现；核心只要求不可变候选、证据及实际交付回执，其他来源另行适配 |
 | github-delivery-lifecycle | main 接收、Issue 完成／结转及实际状态回读 | customizations/components/issue-workorders/yanluo_host.py、yanluo_progress.py、yanluo.md、issue-lifecycle.md；customizations/components/yanluo/ | 阎罗承担当前宿主交付；GitHub 写入与关系操作属接入实现，不改通用协调、整合责任，不扩大已准入 Agent 权限 |
-| git-file-telemetry | 事件文件持久化、只增不改、采集索引、index／HEAD 校验 | framework/extensions/diting-files/；issue_gate.py 的采集检查；work_items.py 的 collect；gonggong-diting-data/、data-collection/ | 共享谛听语义保留；文件落库、Git 跟踪、远端发布、消费分别证明，历史数据只读 |
+| git-file-telemetry | 事件文件持久化、只增不改、采集索引、index／HEAD 校验 | customizations/platforms/data-collection/git-files/storage/；issue_gate.py 的采集检查；work_items.py 的 collect；gonggong-diting-data/、data-collection/ | 共享谛听语义保留；文件落库、Git 跟踪、远端发布、消费分别证明，历史数据只读 |
 | yanshi-git-ledger | 兼容偃师 CLI 的本地文档、账本、工单及 Git 操作 | framework/integrations/yanshi-legacy/；framework/agents/yanshi/references/tools.md | 兼容接入组合，不是偃师本体；后续有真实替换需求时按文档、工单、版本能力继续拆实现 |
 
 一个文件承载多个职责时按函数／流程分别归属，不能仅迁移文件夹就宣称解耦完成。尤其 requirements_agent.py 当前同时承担需求模型调用、GitHub 身份／仓库检查、Markdown 保存与建单，本次只是把这些责任标清。
