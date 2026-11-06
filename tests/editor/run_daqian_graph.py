@@ -32,6 +32,7 @@ if args.scenario in {"parallel","inputs","multi_issue"}:
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory)
+    env["XDG_CACHE_HOME"] = str(project / "cache")
     if args.scenario in {"graph","parallel","inputs","multi_issue"}:
         # The repository gate is exercised using the ordinary gh transport; no product bypass.
         fixture=project/"fixture_gh.py"
@@ -42,10 +43,14 @@ mode=mode_path.read_text() if mode_path.is_file() else "member"
 uid=84 if mode=="switch" else 42
 login="next" if mode=="switch" else "fixture"
 a=sys.argv[1:]
-if a[:2]==["api","user"]: print(str(uid) if "--jq" in a else json.dumps({"id":uid,"login":login}))
+if a[:2]==["api","graphql"]:
+    with (mode_path.parent/"daqian-auth-calls").open("a") as log: print("verify", file=log)
+    nodes=[] if mode=="denied" else [{"nameWithOwner":"zhzyx/nightmarish-spooky-sorceryze","databaseId":123}]
+    print(json.dumps({"data":{"viewer":{"login":login,"databaseId":uid,"repositories":{"nodes":nodes,"pageInfo":{"hasNextPage":False}}}}}))
+elif a[:2]==["api","user"]: print(str(uid) if "--jq" in a else json.dumps({"id":uid,"login":login}))
 elif a[0]=="api" and a[1].startswith("user/repos?"): print("" if mode=="denied" else "123")
 elif a[0]=="api" and "issues?" in a[1]: print("[[]]")
-elif a[:3]==["config","get","user"]: print("fixture")
+elif a[:3]==["config","get","user"]: print(login)
 else: sys.exit(1)
 """,encoding="utf-8")
         if os.name == "nt":
@@ -71,8 +76,9 @@ else: sys.exit(1)
         shutil.copyfile(Path(__file__).resolve().parents[2] / ".github/labels.json", labels)
         board = workspace / "customizations/components/godot-host/daqian/board.py"
         board.parent.mkdir(parents=True)
-        board.write_text("""import json, sys
+        board.write_text("""import json, sys, time
 from pathlib import Path
+if '--end-session' in sys.argv: sys.exit(0)
 actor = dict(login='tester', user_id='42', repo='fixture/board', repo_id='1')
 result = {'access': actor} if '--access-only' in sys.argv else {'board': dict(actor, issues=[], verified_at='fixture')}
 Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))

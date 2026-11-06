@@ -25,6 +25,33 @@ class Membership(unittest.TestCase):
         with patch.object(access.work_items,"gh",side_effect=gh):
             return access.collaborator(ROOT)
 
+    def test_session_reuse_switch_and_restart(self):
+        nonce = "a" * 32
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(access.os.environ, {"LOCALAPPDATA":tmp, "GH_TOKEN":"","GITHUB_TOKEN":""}), patch.object(access,"configured_login",return_value="operator") as login, patch.object(access,"refresh_collaborator",return_value={"login":"operator","user_id":"7","repo_id":"123","repo":"example/repo"}) as verify:
+            actor = access.session_actor(ROOT,nonce,allow_login=True)
+            self.assertEqual(access.session_actor(ROOT,nonce),actor)
+            self.assertEqual(access.session_actor(ROOT,nonce,allow_login=True),actor)
+            verify.assert_called_once()
+            login.return_value = "another"
+            with self.assertRaises(access.SessionChanged):
+                access.session_actor(ROOT,nonce)
+            with self.assertRaises(access.SessionChanged):
+                access.session_actor(ROOT,"b"*32)
+
+    def test_membership_on_later_page_is_bound_to_same_viewer(self):
+        def response(uid,nodes,more):
+            return json.dumps({"data":{"viewer":{"databaseId":uid,"login":"operator",
+                "repositories":{"nodes":nodes,"pageInfo":{"hasNextPage":more,"endCursor":"next"}}}}})
+        row = {"nameWithOwner":"zhzyx/nightmarish-spooky-sorceryze","databaseId":123}
+        for uid in (7,8):
+            with patch.object(access.work_items,"gh",side_effect=[response(7,[],True),response(uid,[row],False)]) as gh:
+                if uid == 7:
+                    self.assertEqual(access.refresh_collaborator(ROOT)["repo_id"],"123")
+                else:
+                    with self.assertRaises(access.AccessDenied):
+                        access.refresh_collaborator(ROOT)
+                self.assertIn("cursor=next",gh.call_args.args)
+
     def test_member_without_push_can_use_graph(self):
         self.assertEqual(self.identity([123])["login"],"operator")
 

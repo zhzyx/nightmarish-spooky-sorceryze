@@ -2,6 +2,7 @@
 extends AcceptDialog
 
 signal catalog_changed
+signal access_denied(root: String, user: String, reason: String)
 const PROVIDERS := ["Claude", "DeepSeek", "Gemini", "GPT", "自定义兼容端点"]
 const PROTOCOLS := ["anthropic-messages","chat-completions","gemini-generate-content","responses","chat-completions"]
 const ENDPOINTS := ["https://api.anthropic.com/v1/messages","https://api.deepseek.com/chat/completions",
@@ -15,6 +16,7 @@ var url: LineEdit
 var key: LineEdit
 var info: Label
 var pending := false
+var editor_session := ""
 var user_id := ""
 
 
@@ -111,7 +113,8 @@ func _run(action: String, input: Dictionary) -> void:
 		return
 	if python.is_empty():
 		python = "python" if OS.has_feature("windows") else "python3"
-	var process := OS.execute_with_pipe(python,[entry,action,root,user_id],false)
+	var user := user_id
+	var process := OS.execute_with_pipe(python,[entry,action,root,user,editor_session],false)
 	if process.is_empty():
 		info.text = "无法启动凭据存储接入"
 		return
@@ -135,6 +138,9 @@ func _run(action: String, input: Dictionary) -> void:
 	pending = false
 	connect_local.disabled = false
 	get_ok_button().disabled = false
+	if result is Dictionary and result.get("denied",false):
+		access_denied.emit(root,user,str(result.error))
+		return
 	if result is Dictionary and result.has("result"):
 		if action == "connect-local":
 			var lines := PackedStringArray()
