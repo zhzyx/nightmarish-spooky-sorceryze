@@ -1,0 +1,26 @@
+{
+  "issue_number": 151,
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "base": "59338c06fbe96f745afaed56b615be507e36b39b",
+  "prior_pr": 276,
+  "prior_signed": "57b01e79701479d22daddef682d5e1b6010d60f1",
+  "prior_all_ci": "SUCCESS",
+  "main_changed_files": [
+    "AGENTS.md",
+    "customizations/components/godot-host/daqian/board.py",
+    "customizations/components/godot-host/daqian/graph_host.py",
+    "customizations/components/godot-host/daqian/plan_store.py",
+    "data-collection/requests/daqian-actionable-decisions/c637fd01-2a5c-4075-bb9b-87771d24bfdb.json",
+    "data-collection/requests/daqian-actionable-decisions/d727ec5d-1244-4985-8f25-8f16a3d0d0ae.json",
+    "design-docs/daqian-actionable-decisions.md",
+    "editor/docks/daqian/issue_graph.gd",
+    "editor/docks/daqian/workspace.gd",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-actionable-decisions/dispatch-7b593b8515d44be6b8c9478ae71d7e9d.json",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-actionable-decisions/dispatch-d8c5e07ef486482c9fc11dbc6caac1f4.json",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-actionable-decisions/issue253-daqian-actionable-request.json",
+    "tests/editor/daqian_graph.gd",
+    "tests/editor/test_daqian_board.py"
+  ],
+  "ainative_overlap": false,
+  "behavior_evidence_reused": true
+}
