@@ -107,7 +107,7 @@ for more information.
 
 ```powershell
 python tools/verify_workspace.py --require-committed
-python framework/extensions/diting-files/diting_files.py analyze --repo . --tenant gonggong-workspace
+python customizations/platforms/data-collection/git-files/storage/diting_files.py analyze --repo . --tenant gonggong-workspace
 ```
 
 更新分发登记时，将变动路径逐项对应到已复核的框架提交和包清单，单独审查登记差异。实际执行由当前宿主核实操作者、工单授权和工作者回执。协作与交付入口见 [AGENTS.md](AGENTS.md)。
