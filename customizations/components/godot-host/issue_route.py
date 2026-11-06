@@ -189,7 +189,15 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             if result["finish_reason"] != "stop":
                 raise ValueError("模型响应不完整")
             value = decision(result["text"], agent, private_key)
-        except (OSError, RuntimeError, KeyError, IndexError, ValueError, TypeError, subprocess.SubprocessError) as error:
+        except (
+            OSError,
+            RuntimeError,
+            KeyError,
+            IndexError,
+            ValueError,
+            TypeError,
+            subprocess.SubprocessError,
+        ) as error:
             attempt["outcome"] = "no_valid_decision"
             if isinstance(error, subprocess.TimeoutExpired):
                 reason = "模型调用超时"
