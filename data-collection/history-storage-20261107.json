@@ -1,0 +1,145 @@
+{
+  "request_id": "history-storage-20261107",
+  "issue_number": 317,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/317",
+  "baseline": "e115e1d902d0bdaf681d0fbc6f4c8f7ad5c43d40",
+  "path_base": "repository_root unless otherwise specified",
+  "observed_at": "2026-11-06T20:24:40.436781+00:00",
+  "tracked_history": {
+    "archive": {
+      "files": 169,
+      "logical_bytes": 755287
+    },
+    "data-collection": {
+      "files": 543,
+      "logical_bytes": 5587097
+    },
+    "gonggong-diting-data": {
+      "files": 1938,
+      "logical_bytes": 3017207
+    },
+    "olympus-hermes-data": {
+      "files": 118,
+      "logical_bytes": 140207
+    },
+    "releases": {
+      "files": 1,
+      "logical_bytes": 911
+    }
+  },
+  "local_archive_inventory": {
+    "godot-integration-local-archive": {
+      "files": 211156,
+      "logical_bytes": 8439615069,
+      "unreadable_count": 0
+    },
+    "gonggong-work": {
+      "files": 80673,
+      "logical_bytes": 7284167349,
+      "unreadable_count": 2
+    },
+    "worktrees-archive": {
+      "files": 81496,
+      "logical_bytes": 1856041339,
+      "unreadable_count": 0
+    },
+    "olympus-workspace": {
+      "files": 29952,
+      "logical_bytes": 1703702219,
+      "unreadable_count": 0
+    },
+    "unused-initial-clone": {
+      "files": 147,
+      "logical_bytes": 126282620,
+      "unreadable_count": 0
+    },
+    "gonggong-root": {
+      "files": 239,
+      "logical_bytes": 1736366,
+      "unreadable_count": 0
+    },
+    "local-settings": {
+      "files": 2,
+      "logical_bytes": 19054,
+      "unreadable_count": 0
+    },
+    "gonggong-candidates": {
+      "files": 1,
+      "logical_bytes": 12072,
+      "unreadable_count": 0
+    },
+    "collisions": {
+      "files": 1,
+      "logical_bytes": 1039,
+      "unreadable_count": 0
+    }
+  },
+  "compressed_files": 6357,
+  "allocation_before": 4135944192,
+  "allocation_after": 2454650880,
+  "by_group": {
+    "godot-integration-local-archive": {
+      "files": 1591,
+      "logical": 2243996912,
+      "allocation_before": 2247299072,
+      "allocation_after": 1321447424
+    },
+    "olympus-workspace": {
+      "files": 4572,
+      "logical": 1536666476,
+      "allocation_before": 1546305536,
+      "allocation_after": 878317568
+    },
+    "gonggong-work": {
+      "files": 177,
+      "logical": 340801874,
+      "allocation_before": 341184512,
+      "allocation_after": 254332928
+    },
+    "gonggong-root": {
+      "files": 9,
+      "logical": 898732,
+      "allocation_before": 921600,
+      "allocation_after": 417792
+    },
+    "worktrees-archive": {
+      "files": 8,
+      "logical": 215293,
+      "allocation_before": 233472,
+      "allocation_after": 135168
+    }
+  },
+  "excluded": {
+    "protected_tree": 50,
+    "small": 46928,
+    "working_copy": 46,
+    "packed_media": 23
+  },
+  "other_eligible_unchanged": 747,
+  "unreadable_directories": 2,
+  "file_errors": 0,
+  "git_objects": {
+    "before_allocated": 138155256,
+    "after_allocated": 130269328,
+    "before_count": 27001,
+    "after_count": 27001,
+    "before_set_sha256": "fa5b9c99325bd16d4211f8ae08c1aa9d54f2624f844c93a195ba5950fafbf505",
+    "after_set_sha256": "fa5b9c99325bd16d4211f8ae08c1aa9d54f2624f844c93a195ba5950fafbf505",
+    "missing": 0,
+    "fsck": "passed"
+  },
+  "verification": {
+    "verified": 6357,
+    "logical_read": 4122579287,
+    "sample_sha256": "04df7089598feb0f7cb89134adc49d075f3f3112231a3972bb98fd3560a892d5",
+    "sample_bytes": 130362,
+    "native_restore_and_recompress_verified": true
+  },
+  "private_journal": {
+    "path_base": "git_common_dir",
+    "path": "gonggong-history-storage/issue-317/verified.jsonl.gz",
+    "sha256": "26b56896e02e21fd41f27a1048342b9abe571e60b90ffe51ba440e89bbd98c25",
+    "bytes": 421221
+  },
+  "allocated_bytes_reclaimed": 1689179240
+}

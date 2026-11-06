@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "history-storage-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "history-storage-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T20:27:23.798660+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/317",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81"
+  },
+  "payload": {
+    "outcome": "用户要求压缩梳理历史数据，已按本机实际分配字节和不可变文件校验测量",
+    "evidence": "data-collection/history-storage-20261107.json",
+    "path_base": "repository_root",
+    "usage": null,
+    "usage_unknown_reason": "Host did not report provider usage"
+  },
+  "evidence_refs": [],
+  "sha256": "286a8668cd6612b464b3d233480d96100554b03a0b0889579bb1ed9d11d03945"
+}
