@@ -190,6 +190,47 @@ def request_identity(request):
     return {"id": host["id"], "kind": host["kind"]}, agent_id
 
 
+def intake_failure_reason(stderr):
+    """Classify trusted gate output without reflecting arbitrary stderr in the UI."""
+    match = re.match(r"GITHUB_(HTTP_\d{3}|NETWORK|TIMEOUT|RUNTIME|COMMAND)\b", stderr.strip())
+    if match:
+        code = "GITHUB_" + match[1]
+        transient = code in {"GITHUB_NETWORK", "GITHUB_TIMEOUT", "GITHUB_HTTP_429"}
+        transient = transient or bool(re.fullmatch(r"GITHUB_HTTP_5\d{2}", code))
+        return code, transient, code
+    binding_errors = {
+        "Host tenant must match work-items.json",
+        "Git origin must match the configured GitHub repository",
+        "--repo must be the Git repository root",
+        "Issue must be a real Issue in the configured repository",
+        "Issue is not open",
+        "Issue must explicitly include workspace:gonggong",
+        "Issue requires exactly one known type label",
+        "Issue requires exactly one active status label",
+        "Issue stable request ID does not match unambiguously",
+    }
+    if stderr.strip() in binding_errors:
+        return "ISSUE_BINDING", False, stderr.strip()
+    return "INTAKE_LOCAL_FAILURE", False, "INTAKE_LOCAL_FAILURE (see private intake diagnostics)"
+
+
+def record_intake_failure(root, request, tenant, attempt, code, stderr, returncode):
+    # Private diagnostics are never a permission certificate or a model prompt.
+    # Keep the original bounded gate error locally; expose only fixed reasons.
+    try:
+        directory = root / ".gonggong-outbox/intake-failures"
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / (uuid.uuid4().hex + ".json")
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump({"occurred_at": datetime.now(timezone.utc).isoformat(),
+                       "issue_number": request["issue_number"], "request_id": request["request_id"],
+                       "tenant": tenant, "read_attempt": attempt, "code": code,
+                       "returncode": returncode, "stderr": stderr[:8192]}, stream, ensure_ascii=False)
+    except OSError:
+        pass  # A diagnostic-write failure must never hide the original rejection.
+
+
 def issue_binding(root, request, tenant):
     number = request.get("issue_number")
     request_id = request.get("request_id")
@@ -200,8 +241,7 @@ def issue_binding(root, request, tenant):
         or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id)
     ):
         raise ValueError("Before development, create/reuse a real Issue and bind issue_number and stable request_id")
-    process = subprocess.run(
-        [
+    command = [
             sys.executable,
             str(root / "customizations/components/issue-workorders/issue_gate.py"),
             "--repo",
@@ -213,19 +253,25 @@ def issue_binding(root, request, tenant):
             "--tenant",
             tenant,
             "--intake-only",
-        ],
-        cwd=root,
-        env=host_environment(root),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        timeout=120,
-    )
-    if process.returncode:
-        raise ValueError(
-            "Issue intake rejected; verify GitHub access, repository, tenant, workspace label, active status and stable request ID"
-        )
-    return json.loads(process.stdout)
+        ]
+    env = host_environment(root)
+    deadline = time.monotonic() + 120
+    for attempt in range(1, 3):
+        try:
+            process = subprocess.run(command, cwd=root, env=env, capture_output=True,
+                                     text=True, encoding="utf-8", timeout=max(0.001, deadline - time.monotonic()))
+            if process.returncode == 0:
+                return json.loads(process.stdout)
+            stderr, returncode = process.stderr or "", process.returncode
+        except subprocess.TimeoutExpired:
+            stderr, returncode = "GITHUB_TIMEOUT: intake read exceeded the time budget", None
+        code, transient, reason = intake_failure_reason(stderr)
+        record_intake_failure(root, request, tenant, attempt, code, stderr, returncode)
+        # --intake-only performs reads. Never repeat model calls or writes, and
+        # never treat a previous approval as a substitute for a successful read.
+        if attempt == 1 and transient and time.monotonic() < deadline:
+            continue
+        raise ValueError("Issue intake rejected: " + reason + "; read attempts=" + str(attempt))
 
 
 def chat(root, request, tenant):

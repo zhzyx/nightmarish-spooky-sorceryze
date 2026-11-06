@@ -14,6 +14,95 @@ bridge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bridge)
 
 
+class IssueIntakeRecoveryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.request = {"issue_number": 165, "request_id": "fixture-request"}
+        self.env = patch.object(bridge, "host_environment", return_value={"PATH": "fixture"})
+        self.env.start()
+        self.addCleanup(self.env.stop)
+
+    def result(self, stderr="", ok=False):
+        return types.SimpleNamespace(returncode=0 if ok else 1, stderr=stderr,
+                                     stdout='{"number":165,"url":"https://github.com/test/repo/issues/165"}' if ok else "")
+
+    def receipts(self):
+        return [json.loads(path.read_text()) for path in (self.root / ".gonggong-outbox/intake-failures").glob("*.json")]
+
+    def test_success_reads_once_and_never_records_a_failure(self):
+        with patch.object(bridge.subprocess, "run", return_value=self.result(ok=True)) as run:
+            self.assertEqual(bridge.issue_binding(self.root, self.request, "tenant")["number"], 165)
+        self.assertEqual(run.call_count, 1)
+        self.assertIn("--intake-only", run.call_args.args[0])
+        self.assertEqual(self.receipts(), [])
+
+    def test_recognised_transient_failure_rechecks_read_once(self):
+        for code in ["GITHUB_NETWORK", "GITHUB_HTTP_429", "GITHUB_HTTP_500", "GITHUB_HTTP_503"]:
+            with self.subTest(code=code), patch.object(bridge.subprocess, "run", side_effect=[
+                self.result(code + ": fixture transient error"), self.result(ok=True),
+            ]) as run:
+                self.assertEqual(bridge.issue_binding(self.root, self.request, "tenant")["number"], 165)
+                self.assertEqual(run.call_count, 2)
+                self.assertEqual(run.call_args_list[0].args, run.call_args_list[1].args)
+                self.assertGreater(run.call_args_list[0].kwargs["timeout"], run.call_args_list[1].kwargs["timeout"])
+
+    def test_permission_binding_and_unknown_errors_never_retry(self):
+        for error in ["GITHUB_HTTP_401", "GITHUB_HTTP_403", "GITHUB_HTTP_404", "GITHUB_COMMAND",
+                      "Issue is not open", "Host tenant must match work-items.json", "fixture unexpected failure"]:
+            with self.subTest(error=error), patch.object(bridge.subprocess, "run", return_value=self.result(error)) as run:
+                with self.assertRaisesRegex(ValueError, "Issue intake rejected:"):
+                    bridge.issue_binding(self.root, self.request, "tenant")
+                self.assertEqual(run.call_count, 1)
+
+    def test_repeated_transient_failure_is_bounded_at_two_reads(self):
+        with patch.object(bridge.subprocess, "run", return_value=self.result("GITHUB_NETWORK: unavailable")) as run:
+            with self.assertRaisesRegex(ValueError, "GITHUB_NETWORK; read attempts=2"):
+                bridge.issue_binding(self.root, self.request, "tenant")
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual({r["read_attempt"] for r in self.receipts()}, {1, 2})
+
+    def test_no_retry_after_total_budget_is_exhausted(self):
+        with patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]), patch.object(
+            bridge.subprocess, "run", return_value=self.result("GITHUB_NETWORK: unavailable")
+        ) as run:
+            with self.assertRaisesRegex(ValueError, "read attempts=1"):
+                bridge.issue_binding(self.root, self.request, "tenant")
+        self.assertEqual(run.call_count, 1)
+        self.assertEqual(run.call_args.kwargs["timeout"], 120)
+
+    def test_timeout_is_recorded_without_an_unbounded_read(self):
+        with patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]), patch.object(
+            bridge.subprocess, "run", side_effect=bridge.subprocess.TimeoutExpired("fixture", 120)
+        ) as run:
+            with self.assertRaisesRegex(ValueError, "GITHUB_TIMEOUT; read attempts=1"):
+                bridge.issue_binding(self.root, self.request, "tenant")
+        self.assertEqual(run.call_count, 1)
+        self.assertEqual(self.receipts()[0]["code"], "GITHUB_TIMEOUT")
+
+    def test_second_read_rejection_never_reuses_prior_permission(self):
+        with patch.object(bridge.subprocess, "run", side_effect=[
+            self.result("GITHUB_NETWORK: unavailable"), self.result("Issue is not open"),
+        ]) as run:
+            with self.assertRaisesRegex(ValueError, "Issue is not open; read attempts=2"):
+                bridge.issue_binding(self.root, self.request, "tenant")
+        self.assertEqual(run.call_count, 2)
+
+    def test_arbitrary_stderr_is_private_bounded_and_not_reflected_in_the_ui(self):
+        stderr = "fixture-private-secret " + "x" * 10000
+        with patch.object(bridge.subprocess, "run", return_value=self.result(stderr)):
+            with self.assertRaises(ValueError) as caught:
+                bridge.issue_binding(self.root, self.request, "tenant")
+        self.assertIn("INTAKE_LOCAL_FAILURE", str(caught.exception))
+        self.assertNotIn("fixture-private-secret", str(caught.exception))
+        receipt = self.receipts()[0]
+        self.assertEqual(len(receipt["stderr"]), 8192)
+        if bridge.os.name != "nt":
+            path = next((self.root / ".gonggong-outbox/intake-failures").glob("*.json"))
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+
 class ChatGateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

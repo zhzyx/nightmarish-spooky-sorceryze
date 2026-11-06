@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-godot-intake-recovery-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-intake-recovery-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:22:51.889560+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/181",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "outcome": "Diagnose and recover the intake rejection blocking the running Godot conversation without retry loops",
+    "state": "locally_verified",
+    "issue_number": 181,
+    "validation_ref": "data-collection/issue181-intake-recovery-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual usage not supplied by host"
+  },
+  "evidence_refs": [],
+  "sha256": "bd4b8384c2bad363c2411526623d3a7b29849e2437174dc3c3e1020be58a406a"
+}
