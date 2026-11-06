@@ -32,6 +32,12 @@ def load(path, name):
     return value
 
 
+save_requirement = load(
+    Path(__file__).resolve().parents[2] / "platforms/document-management/git-markdown/requirements.py",
+    "git_markdown_requirements",
+).save_requirement
+
+
 def save(path, value):
     """Cancellation may kill the process at any instruction; retain the previous complete journal."""
     fd, temporary = tempfile.mkstemp(prefix=path.stem + "-", suffix=".tmp", dir=path.parent)
@@ -508,22 +514,9 @@ def _intake(root, request, bridge):
                     work.gh("issue", "comment", str(number), "--repo", settings["repository"], "--body-file", str(path))
     else:
         request_id = identity
-        document = "design-docs/" + request_id + ".md"
-        prefix = "# " + design["title"] + "\n\n<!-- gonggong-request:" + request_id + " -->\n\n"
-        prefix += "需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + digest + "`。\n\n"
-        path = root / document
-        path.parent.mkdir(exist_ok=True)
-        if path.is_symlink():
-            raise ValueError("Preserve existing requirement original; cannot write through a symlink")
-        content = prefix + design_summary(design)
-        if path.exists() and path.read_text(encoding="utf-8") not in (
-            content,
-            prefix + design_summary(design, legacy=True),
-        ):
-            raise ValueError("Preserve existing requirement original; cannot overwrite a different proposal")
-        if not path.exists():
-            with path.open("x", encoding="utf-8") as stream:
-                stream.write(content)
+        document = save_requirement(
+            root, request_id, design["title"], digest, design_summary(design), design_summary(design, legacy=True)
+        )
         check_cancel()
         if saved.get("publication"):
             created = saved["publication"]

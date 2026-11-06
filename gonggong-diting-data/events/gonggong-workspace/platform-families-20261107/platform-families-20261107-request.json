@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "platform-families-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "platform-families-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:09:56.944083+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/231",
+  "agent": {
+    "id": "codex-host",
+    "version": "unreported",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "external_host_workspace_instructions"
+  },
+  "payload": {
+    "description": "已回读 #231 及工作区接入规则，按八类整理当前主线平台接入。",
+    "definition_hash_scope": "repository AGENTS.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "duration_ms": null,
+    "reason": "Host usage measurements unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "cb5f907d26a880cdea3932154905c064c2f18245dbe14c50f34bf41b4fe0fc05"
+}
