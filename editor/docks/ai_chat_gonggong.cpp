@@ -246,10 +246,10 @@ static String last_user_content(const Array &p_messages) {
 bool AIChatDock::_direct_daqian_task() const {
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
 	const Dictionary entry = bindings.get(conversation_id, Dictionary());
-	const String request = entry.get("request_id", "");
+	const String request_id = entry.get("request_id", "");
 	const String number = entry.get("issue_number", "");
 	const String source = entry.get("source", "");
-	return request.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request) && source.ends_with("/issues/" + number);
+	return request_id.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request_id) && source.ends_with("/issues/" + number);
 }
 
 void AIChatDock::_begin_gonggong_context() {
@@ -518,15 +518,15 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		result["error"] = U"请配置共工工作区和 Python 后重试判断。";
 		return result;
 	}
-	Dictionary request = p_binding.duplicate();
-	_set_issue_model_config(request);
+	Dictionary route_request = p_binding.duplicate();
+	_set_issue_model_config(route_request);
 	if (!p_selection.is_empty()) {
 		if (int64_t(p_selection.get("backend", -1)) != backend->get_selected()) {
 			result["error"] = U"请切回需求模型所属后端，或重新选择模型。";
 			return result;
 		}
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
-		request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
+		route_request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
 	}
 	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-issue-route-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
 	const String input_path = stem + ".request";
@@ -536,7 +536,7 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		result["error"] = U"无法保存工单判断请求。";
 		return result;
 	}
-	file->store_string(JSON::stringify(request));
+	file->store_string(JSON::stringify(route_request));
 	file.unref();
 	List<String> args;
 	for (const String &arg : { bridge, String("issue-route"), String("--workspace"), workspace, String("--request"), input_path, String("--out"), output_path }) {
