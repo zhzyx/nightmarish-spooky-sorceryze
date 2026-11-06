@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-node-approval-20261107-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-node-approval-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:03:04.067076+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/210",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "intent": "在大千流程节点内高亮、确认执行以及打开侧边 Markdown 文档并定位。",
+    "document": "design-docs/daqian/node-approval.md"
+  },
+  "evidence_refs": [],
+  "sha256": "0ad17c8e9469bea945894738a921971f0330d94c0c5e949db74c82a9f05d48e9"
+}

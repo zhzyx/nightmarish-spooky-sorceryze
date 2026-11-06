@@ -63,6 +63,28 @@ def source_plan(issue, request_id):
     return result
 
 
+def design_document(root, body):
+    """Read the document named by the work-order envelope, or its published copy."""
+    match = re.match(r"^<!-- (?:gonggong|olympus)-request:[a-z0-9-]+ -->\n\n需求文档：`(design-docs/[^`\n]+\.md)`\n\n", (body or "").replace("\r\n", "\n"))
+    if not match:
+        return {}
+    relative = match[1]
+    parts = relative.split("/")
+    if any(part in ("", ".", "..") or "\\" in part or ":" in part for part in parts):
+        return {}
+    try:
+        path = (root / relative).resolve()
+        if not path.is_relative_to(root.resolve() / "design-docs"):
+            return {}
+        if path.is_file() and path.stat().st_size <= 512 * 1024:
+            return {"path": relative, "markdown": path.read_text(encoding="utf-8"), "source": "工作区"}
+    except (OSError, RuntimeError, UnicodeError):
+        pass
+    snapshot = match.string[match.end():].rsplit("\n\n<!-- gonggong-host-git:", 1)[0]
+    snapshot = snapshot.rsplit("\n\n执行授权来源（由调用宿主核实，不代替候选准入）：", 1)[0]
+    return {"path": relative, "markdown": snapshot.rstrip(), "source": "工单发布版本"}
+
+
 def read_board(root, follows, actor=None):
     settings, _ = work_items.config(root)
     repo = settings["repository"]
@@ -114,6 +136,9 @@ def read_board(root, follows, actor=None):
                                             re.MULTILINE))),
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
+        if item["request"] and not item["request"].startswith("daqian-direct-"):
+            item["source_sha256"] = progress.issue_route.digest([item["url"], item["request"], item["updated"]])
+        item["design_document"] = design_document(root, row.get("body")) if item["request"] else {}
         item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
         item["workers"] = progress.workers_for_row(receipts, repo, row, item)
         item.update(source_plan(row, item["request"]))
