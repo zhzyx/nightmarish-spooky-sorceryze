@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7a8a0c687ceb0fd0339ae76f085f9726fc7384b2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-report-grouping",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/302",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2fd1a4a5f0ecad1beeaad319364a0b17da3b5e2f3ee1d9fa0aed22fdd43e8e13",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/302",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/314",
+    "action": "delivery",
+    "detection_head": "58bf8d1faa484c791816c8d2768dcd4f74c66f3e",
+    "context_sha256": "e12a3a94eabc78838e2cd8afadcb4aff39d32f31662b07ca2e8edb6c2b3ad36b",
+    "operator": "Sail-Li",
+    "worker": "codex-kuafu-302",
+    "authority_ref": "issue-302-user-authorized",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/314",
+    "diagnosis": "提交和提交后校验已通过。远端未找到候选分支，重试同一已校验提交的 push 成功。首次传输返回 128，具体原因未知。",
+    "next_action": "用已回读候选分支完成 GitHub 签发并取得 PR 回执。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T20:18:32.976884+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-06T20:19:51.819252+00:00",
+  "sha256": "555f18278fc981d451f34e0decf26e93a760ebfe25a0b8280fb9ea3f4fb491c8"
+}
