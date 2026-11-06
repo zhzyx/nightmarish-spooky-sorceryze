@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "history-deep-compression-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "history-deep-compression-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T20:56:34.793753+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/330",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81"
+  },
+  "payload": {
+    "outcome": "按用户明确选择继续压缩历史档案、已完结工单工作树，并实测轻量 GitHub 新克隆与完整恢复",
+    "evidence": "data-collection/history-deep-compression-20261107.json",
+    "path_base": "repository_root",
+    "usage": null,
+    "usage_unknown_reason": "Host did not report provider usage"
+  },
+  "evidence_refs": [],
+  "sha256": "f1b6f5876ef6108992ee9ae0a4f0ba0ccce76f519a7451586be5c4b4204ba9ad"
+}
