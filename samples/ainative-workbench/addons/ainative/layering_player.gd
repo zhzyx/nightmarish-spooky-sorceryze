@@ -68,4 +68,6 @@ func sample(time: float):
 		return
 	var weapon = get_node_or_null(weapon_path)
 	if weapon: weapon.global_transform = sk.global_transform*result.weapon_transform
+	# Preserve unwrapped caller time so downstream cloth can detect large seeks.
+	result['input_timestamp_seconds'] = time
 	pose_evaluated.emit(result)

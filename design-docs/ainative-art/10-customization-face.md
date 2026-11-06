@@ -55,6 +55,34 @@ UE4 原生资产、既有 MDM 身体推理产物和独立生成衣服仅用于�
 
 非目标：其他子项的完整实现；任务登记不表示功能通过。
 
+## 肩颈裁面纠正（#319，2026-11-07）
+
+#153 的无发近景复核发现旧 `ue4-rain-head-v2` 用三角中心高度/横向范围隐藏原头，实际删掉 1254 三角，其中 60 跨裁平面、238 含非 head/neck 权重，误删了肩胸原面。此前 `ue4-final-v3` 远景和着装近景覆盖不足。**撤销旧装配肩颈几何通过结论**；旧文件、回执和诊断保持原样作为历史证据。体型、表情仲裁的独立证据不能代替新基体复验。
+
+装配现在要求可信本机 spec 提供 `head_mask` 和 `head_mask_sha256`。遮罩 schema_version=1，绑定 `source_sha256`，每项明确 `mesh_path`、`surface`、`vertex_count`、`triangle_count`、原始零起算 `triangles` ID。先全量验证源/遮罩 SHA、节点、surface、数量、整数范围和重复项，再修改派生索引。没有隐式高度裁面或骨名/权重阈值自动批准；其他生成基体须另行审定自己的遮罩。
+
+本机原生 UE4（SHA `14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446`）按位置焊接连通分区（量化 1e-5m）识别出独立头壳：surface 0 的 660 三角、384 原顶点，正权重全部只属 head。结合包围范围和裸身图核对，形成私有 `ue4-head-mask-v1.json`，SHA `6ff7573736a625555efeee815e78d1d469449a09ffe0a5f23de278e4a5eb7fb0`。其余 10062 三角全部保留，包括原生颈圈、肩胸和第二 surface。该分区是此资产的审定依据，不是通用自动算法。
+
+新基体 `runtime/customization/ue4-rain-head-v4.tscn` SHA `4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a`，同名 `.face-binding.json` SHA `de89e8bcd157ffac5c76df25dcbd93f3432e0d705f67bc5e215cf1e007bc0579`。Rain 颈过渡参数未扩大；原机械颈圈完整保留。`face_parts` 排除旧 `GEO-rain-hair_main`，供 #153 重新计算 scalp/hair 缓存。仍是独立人脸与机械身体技术参考，保留原机械颈圈风格，不宣称无缝写实人体或任意角色自动适配。
+
+`customization_publish.py` 校验完整暂存 scene 与 FaceBinding SHA，先独占建立 sidecar，再独占建立 scene 作为提交点；已有路径拒绝，第二步失败清理本次 sidecar。中断可能留下 sidecar，此时仍拒绝重用目标，必须选择新版本；不会发布缺少 sidecar 的 scene。
+
+本轮本地新增证据：
+
+- `neckfix-mask-tests-v2.json`：68 骨/rest/parent、Skin bind、身体位置/权重/骨索引精确一致，保留面索引精确一致；只隐藏审定头壳。ArrayMesh 法线/切线重编码误差分别约 1.29e-4 / 1.70e-4，不声称压缩属性逐字节相同。
+- `neckfix-negative-tests.json`：错误源 SHA、错误遮罩 SHA、越界 ID、已有输出、发布竞争拒绝并保留旧源；GDScript 另测重复 ID。
+- `neckfix-views-v1`：无衣无发 rest 与既有真实 MDM 动画 0/1 秒正、侧、背近景；三向照明，后台 Godot 实际渲染。
+- `neckfix-ui-v1-receipt.json`：正常工作台新源→体型/脸型→独立衣服 refit→真实身体动画/MediaPipe 表情及人工口型注视→保存重开再次 refit；68 骨不被面部覆盖。未重新执行 AI 推理。
+- `neckfix-geometry-v1.json`：新基体双端极限、有限顶点、rest/pose scalp revision 分离通过。
+
+复现入口：`customization_assemble.gd -- <private-spec>`，`customization_mask_tests.gd -- <same-spec> <new-receipt>`；既有 geometry/UI 测试使用新 asset/sidecar 和新输出前缀。专有二进制、完整遮罩、配置和图像保留于忽略的 `runtime/customization`，公共纠正证据由 root 追加；最终批准依独立复核与精确候选交付。
+
 主责：Codex / kaiyunxue（当前操作者）；目标 main；先 intake-only，交付通过正式门禁和精确候选 CI。必要检查：契约单使用单元测试，其余使用该范围内真实资产、编辑器回放或目标工具回读；保留失败证据。
 
 最终窄回归：当前面板先选择捕获 frame71，再重开保存的 frame0 版本，保存 layers（按既有 float32 revision 规范）、pose_revision 和 156 morph 状态恢复。旧 final-v2 的严格双精度字典比较因 .tscn 十进制回读舍入失败，保留日志；修正比较方式后的 final-v3 exit0 且无 Godot 错误。独立审查另核对原生 UE4 68 骨、68 Skin bind 与 7147 身体顶点/权重/骨索引，八个人脸部件 18630 顶点只含 head/neck 影响；重复映射、失败加载保持旧实例、重复载入 BodyMotion 节点命名、只作用一次、重开/refit 与 no-clobber 均有定向真实回读。
+
+
+#319 提交前来源说明修正：未来装配的 `assembly.body_skin` 使用通用描述，表示保留输入身体 Skin 与权重，实际来源由 `body_source`（取自 `profile.source`）绑定，不再将其他 family 或生成身体误标为原生 UE4。已核验 v4 的输入确实为原生 UE4，其历史 sidecar 文案属实；本次不覆盖 v4，不改变该源/sidecar 的 SHA，也不要求 #153 因文案变更重新绑定。
+
+
+#319 独立审查追加：初版 publisher 直接链接调用方可写 stage，会留下可改写成品的别名。修复后先读取 scene/sidecar 的 bytes 快照并校验配对 SHA，再写入私有临时 inode、fsync、独占链接至最终路径并移除私有临时别名；发布过程不再使用调用方 stage 作为链接源。`neckfix-publish-snapshot-tests.json` 实测发布中与发布后改写两个 stage 文件均不影响成品，已有 scene/sidecar 拒绝和自建 sidecar 回滚保持通过。此前 v4 成品文件仍保持原 SHA；本次不覆盖它。

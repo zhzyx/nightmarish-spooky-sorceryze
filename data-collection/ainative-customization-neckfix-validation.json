@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "issue_number": 151,
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "bug": 319,
+  "status": "corrected_local_validation_passed_pending_delivery",
+  "supersedes": "Initial v2/final-v3 assembled neck and shoulder geometry acceptance withdrawn; historical functional checks and original records retained.",
+  "diagnosis": {
+    "original_hidden_triangles": 1254,
+    "triangles_crossing_cut_plane": 60,
+    "triangles_with_non_head_neck_influence": 238,
+    "source_without_hair_already_defective": true,
+    "default_customization_before_after_geometry_identical": true
+  },
+  "candidate": {
+    "schema_version": 1,
+    "issue": 151,
+    "bug": 319,
+    "base_commit": "e115e1d902d0bdaf681d0fbc6f4c8f7ad5c43d40",
+    "status": "candidate frozen pending independent review; no worker commit/push",
+    "files": [
+      {
+        "path": "design-docs/ainative-art/10-customization-face.md",
+        "bytes": 14659,
+        "sha256": "39788873ddbe92e55e026ba74e2e2a80900c1afb744b1e2b64cf8d4cf951201c"
+      },
+      {
+        "path": "samples/ainative-workbench/customization_assemble.gd",
+        "bytes": 9364,
+        "sha256": "bc88fc7425977156476f8db6ccf5cab0af022556f6814241c6af3489d0c84bc9"
+      },
+      {
+        "path": "samples/ainative-workbench/customization_mask_tests.gd",
+        "bytes": 3419,
+        "sha256": "e3241e63d3016912889378bb08163cab33e4e6b233e92c7ff86e32458e318c35"
+      },
+      {
+        "path": "tools/ainative/customization_publish.py",
+        "bytes": 1548,
+        "sha256": "b52e06468a0a1ce13858cafde053d363a1b6ed7f5850343e5f18ddfb479673ee"
+      }
+    ],
+    "evidence": [
+      {
+        "path": "runtime/customization/ue4-rain-head-v4.tscn",
+        "bytes": 10849996,
+        "sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a"
+      },
+      {
+        "path": "runtime/customization/ue4-rain-head-v4.tscn.face-binding.json",
+        "bytes": 70840,
+        "sha256": "de89e8bcd157ffac5c76df25dcbd93f3432e0d705f67bc5e215cf1e007bc0579"
+      },
+      {
+        "path": "runtime/customization/ue4-head-mask-v1.json",
+        "bytes": 9713,
+        "sha256": "6ff7573736a625555efeee815e78d1d469449a09ffe0a5f23de278e4a5eb7fb0"
+      },
+      {
+        "path": "runtime/customization/assemble-v4.json",
+        "bytes": 1034,
+        "sha256": "af4631639308c7793aee095496499e3930da048983b4f54b9a7f4a50f6289480"
+      },
+      {
+        "path": "runtime/customization/neckfix-ui-v1-receipt.json",
+        "bytes": 3129,
+        "sha256": "d8b803b7579179f7dc4576a45a252b352d975238b34fb8182550f6feb09063a3"
+      },
+      {
+        "path": "runtime/customization/neckfix-geometry-v1.json",
+        "bytes": 401,
+        "sha256": "9937520b69fb4a20dc1b071d904be6fee0ec223f6392213b1d7f0fbd224588b7"
+      },
+      {
+        "path": "runtime/customization/neckfix-mask-tests-v2.json",
+        "bytes": 398,
+        "sha256": "96680cfca58190f4285901239de961a2593d545454f68a87bda0e2bb68c19f2d"
+      },
+      {
+        "path": "runtime/customization/neckfix-negative-tests.json",
+        "bytes": 1318,
+        "sha256": "cbc20d213c246ecf3539c7f45b050e01b1e3d53ceaf699baadc834ce1368567c"
+      },
+      {
+        "path": "runtime/customization/neckfix_views.gd",
+        "bytes": 1895,
+        "sha256": "8e9e4f5b43e4da7937fd585604f1233f0e9afba55c59b5fffcc7037c21640850"
+      },
+      {
+        "path": "runtime/customization/neckfix_negative.py",
+        "bytes": 2451,
+        "sha256": "93979e5a080a25c7f7299d9680542ffba157cfa7ae123b4dac2cf53a0c967e78"
+      },
+      {
+        "path": "runtime/customization/analyze_topology.py",
+        "bytes": 1382,
+        "sha256": "ca1b1390f8137fe029e0497c0959aec12d13d5e67739e9d37f7e7e20cb658b28"
+      },
+      {
+        "path": "runtime/customization/native-topology.json",
+        "bytes": 824337,
+        "sha256": "66bb4b0fbd765d79e498fcf4b0d0b88bac226084b66106f5620c7dc8b132c026"
+      },
+      {
+        "path": "runtime/customization/native-components-0.json",
+        "bytes": 82451,
+        "sha256": "4752c71136423ba663104927b031f8f50ceda209a9cb258956ab4cd6bfc90c0d"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion0-back.png",
+        "bytes": 148874,
+        "sha256": "1497a96e77f9e70ff30e012fdc9020facb999fac004df0e87712facb74a02c79"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion0-front.png",
+        "bytes": 147530,
+        "sha256": "0b0669c0eff6ebaec02af059c46fb29c4ae0dab4a3f1286ee1f72c4d9b005efe"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion0-side.png",
+        "bytes": 105310,
+        "sha256": "a83abe0ce20696bc5d8209b0776b55eb4c05bea6f7d03ab92564cba7a6a30d3c"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion1-back.png",
+        "bytes": 146160,
+        "sha256": "d592325f491377b7b71b426aea5d75d26a1276d0f2ac626577fee9d6ca024d6d"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion1-front.png",
+        "bytes": 148003,
+        "sha256": "a96ce57e76782eb25d5f736fd54fa771aabeba98b96abc1ebd9151610561a375"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/motion1-side.png",
+        "bytes": 109173,
+        "sha256": "fb1c5fdc2a533887f0fe3e780bac15edf4aa875723910207ed00d683c344a3b6"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/rest-back.png",
+        "bytes": 124645,
+        "sha256": "aebfe47d5a8d963800d9db80c6da58f39cc139316190e1db8d4667d74eaafdef"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/rest-front.png",
+        "bytes": 149183,
+        "sha256": "14555229eec1e90ad71b6f65b7550a835ec699b96ed3ee792f2e3fa5af9b76cc"
+      },
+      {
+        "path": "runtime/customization/neckfix-views-v1/rest-side.png",
+        "bytes": 99576,
+        "sha256": "0ee673f365441dd253583a21e744a706055a42443445500cfc3c464ec55c1962"
+      },
+      {
+        "path": "runtime/customization/publish_snapshot_tests.py",
+        "bytes": 1942,
+        "sha256": "e6dcdd6c288745df15794e37cf2ac34ea265fb4503aec37e46ab1853a3ab4ae4"
+      },
+      {
+        "path": "runtime/customization/neckfix-publish-snapshot-tests.json",
+        "bytes": 235,
+        "sha256": "5b81db083241a732f18906202f399a03472c5c3dcd759b92d3bb51cb16e6a591"
+      }
+    ],
+    "supersedes_geometry_only": "ue4-rain-head-v2 and final-v3 geometry acceptance withdrawn; originals unchanged",
+    "validation": "mask tests + 5 negative checks + real normal workbench UI save/reopen/refit + boundary geometry + naked rest/MDM front/side/back",
+    "revision_note": "Private-inode publication from validated byte snapshots; no caller-owned writable aliases. v4 artifacts unchanged."
+  },
+  "candidate_manifest_sha256": "b6c3ed6c5b8df891335004a6c62662e0129ea50b2020c43e2b249b14648f8a32",
+  "mask_validation": {
+    "asset_sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a",
+    "invalid_source_range_duplicate_masks_rejected": true,
+    "normal_reencoding_max_error": 0.00012882356531918,
+    "original_skeleton_skin_positions_weights_bone_indices_equal": true,
+    "preserved_original_triangles": 10062,
+    "removed_head_only_triangles": 660,
+    "tangent_reencoding_max_error": 0.000169485807418823
+  },
+  "negative_validation": [
+    {
+      "case": "existing-output",
+      "exit": 1,
+      "stderr": "ERROR: Output exists\n   at: VariantUtilityFunctions::push_error (core\\variant\\variant_utility.cpp:1024)\n   GDScript backtrace (most recent call first):\n       [0] run (res://customization_assemble.gd:10)\n"
+    },
+    {
+      "case": "wrong-mask-sha",
+      "exit": 1,
+      "stderr": "ERROR: Approved head mask SHA mismatch\n   at: VariantUtilityFunctions::push_error (core\\variant\\variant_utility.cpp:1024)\n   GDScript backtrace (most recent call first):\n       [0] run (res://customization_assemble.gd:24)\n"
+    },
+    {
+      "case": "wrong-source-sha",
+      "exit": 1,
+      "stderr": "ERROR: Head mask source SHA/schema mismatch\n   at: VariantUtilityFunctions::push_error (core\\variant\\variant_utility.cpp:1024)\n   GDScript backtrace (most recent call first):\n       [0] run (res://customization_assemble.gd:28)\n"
+    },
+    {
+      "case": "invalid-triangle",
+      "exit": 1,
+      "stderr": "ERROR: Invalid/duplicate head triangle ID\n   at: VariantUtilityFunctions::push_error (core\\variant\\variant_utility.cpp:1024)\n   GDScript backtrace (most recent call first):\n       [0] run (res://customization_assemble.gd:28)\n"
+    },
+    {
+      "case": "publication-race-target-exists",
+      "original_preserved": true,
+      "owned_sidecar_rolled_back": true
+    }
+  ],
+  "new_base_boundary_validation": {
+    "asset_sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a",
+    "boundary_geometry": [
+      {
+        "max_morph_displacement_m": 0.137866333127022,
+        "rest_binding_stable_under_expression": true,
+        "sign": -1,
+        "vertices": 23387
+      },
+      {
+        "max_morph_displacement_m": 0.137866333127022,
+        "rest_binding_stable_under_expression": true,
+        "sign": 1,
+        "vertices": 23387
+      }
+    ]
+  },
+  "normal_workbench_replay": {
+    "body_animation_combination": {
+      "chest": 2.54975962638855,
+      "head": 2.52910947799683,
+      "neck": 2.53541231155396
+    },
+    "body_clip_origin": {
+      "profile_revision": "59990bc182823a98b606812aad097cffc53795d353ae8b19c50b074c86a1a606",
+      "sha256": "4ee8cc2fb75b2fac5b18b6bfa309a8988e9d988ed7b6e276159cf1114b92fc0f"
+    },
+    "bones_unchanged": 68,
+    "dna": {
+      "body": {
+        "chest": 1.15,
+        "depth": 1.0,
+        "hips": 1.0,
+        "waist": 1.0
+      },
+      "face": {
+        "face_width": 0.45,
+        "jaw_width": -0.35,
+        "nose_width": 0.0
+      },
+      "mapping_version": "ue4-rain-head-v4",
+      "revision": "ec537357f70b1825386245f92c82999e9f8dbbdb9a525dc4cd1ed16e6395fde1",
+      "schema_version": 1,
+      "source_sha256": "831ab6d837c679040285862b15dc9ee5180b018442a88aeaf92aaa7509b80258"
+    },
+    "face": {
+      "channels": {
+        "browDown": 0.503870457410812,
+        "eyeBlink": 0.16988642513752,
+        "jawOpen": 0.65,
+        "lookDown": 0.0,
+        "lookLeft": 0.65,
+        "lookRight": 0.0,
+        "lookUp": 0.0,
+        "mouthFrown": 0.000492281265906055,
+        "mouthSmile": 3.97795956814662e-05
+      },
+      "head_neck_writes": 0,
+      "morph_writes": 137,
+      "owners": {
+        "browDown": "mediapipe-expression",
+        "eyeBlink": "mediapipe-expression",
+        "jawOpen": "manual-mouth-gaze",
+        "lookDown": "manual-mouth-gaze",
+        "lookLeft": "manual-mouth-gaze",
+        "lookRight": "manual-mouth-gaze",
+        "lookUp": "manual-mouth-gaze",
+        "mouthFrown": "mediapipe-expression",
+        "mouthSmile": "mediapipe-expression"
+      }
+    },
+    "face_stream_sha256": "2a94ab3227ea589276c7827f964d1848bae00dbe3b22074d4da17b35dfdc96ac",
+    "fit_revisions": [
+      "b1ad53c861b1a70da7b54889c806e7b59d63607a19652e39adcc372f8331e80b",
+      "916283598bc0ea7028f67ce84e6dc45351f0212b75bc8a784dad3dff5a251ca0"
+    ],
+    "garment_clearance": {
+      "body_edges_tested": 6078,
+      "crossing_edges": 0,
+      "garment_samples": 511,
+      "limitations": "Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.",
+      "method": "actual triangle BVH edge intersections and bidirectional radial surface-distance samples",
+      "radial_hits": 511,
+      "radial_median_distance_m": 0.0599457286298275,
+      "radial_min_distance_m": 8.22432411951013e-05,
+      "samples_under_3mm": 10,
+      "status": "no_intersections_in_sample"
+    },
+    "garment_sha256": "0061d01632e4e6d0e4bebd7a7ccd4c0432649b2f14d6d94d0f9e793f106c3048",
+    "garment_vertex_delta_m": 0.0346891731023788,
+    "overwrite_rejected": true,
+    "save_reopen": true,
+    "scalp_binding": {
+      "body_owns_head_neck": true,
+      "geometry_space": "mesh-local; skin follows body skeleton",
+      "mapping_version": "ue4-rain-head-v4",
+      "pose_revision": "6ea864127bb3813061d27bb95186a1fa9dd1c538e77cab1415218f6d2dd65911",
+      "revision": "903a57a51beeb595b1ee23e706c9a5e6a0307c95dd9c1c3877b6ad7bfae14da0"
+    },
+    "screenshots": [
+      "neckfix-ui-v1-time0.png",
+      "neckfix-ui-v1-time1.png"
+    ],
+    "source_sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a",
+    "ui_reopen_refit_animation_preserved": true
+  },
+  "independent_review": {
+    "state": "approved",
+    "reviewer": "/root/review_contracts",
+    "candidate_manifest_sha256": "b6c3ed6c5b8df891335004a6c62662e0129ea50b2020c43e2b249b14648f8a32",
+    "checks": [
+      "Every frozen source and evidence hash independently matched",
+      "Actual mask replay removed 660 all-head triangles and retained 10062 original triangles",
+      "68 bones, Skin, original vertex positions and weights preserved",
+      "Saved actual body animation has 204 tracks and 68 bones move between 0 and 1 second",
+      "Snapshot publication remains unchanged when caller staging files mutate during or after publication",
+      "Existing scene and existing sidecar protected; only own sidecar rolled back on publication failure"
+    ],
+    "scope": "Original source-specific mechanical neck rings remain; no universal head segmentation or realistic seamless neck claim"
+  },
+  "root_visual_review": {
+    "state": "approved_first_version_technical_scope",
+    "inspected": [
+      "rest-front.png",
+      "rest-side.png",
+      "rest-back.png",
+      "motion1-side.png"
+    ],
+    "directory": "runtime/customization/neckfix-views-v1",
+    "observed": "Original shoulder/chest triangles retained; erroneous wedge cuts removed, native mechanical neck rings remain; no clothing or hair used to hide the defect."
+  },
+  "limits": [
+    "This source-specific approved triangle mask is not universal automatic head segmentation.",
+    "Rain is a mapped licensed reference head, not an AI-generated face.",
+    "Mechanical body and separate human head are a technical fixture, not a seamless realistic final character.",
+    "Existing v4 source and sidecar remain immutable; future output provenance wording is generic and binds body_source."
+  ]
+}

@@ -82,8 +82,9 @@ static func normalize_imported(scene: Node3D) -> String:
 	return ''
 
 static func skeleton(scene: Node) -> Skeleton3D:
-	if scene is Skeleton3D: return scene
+	if scene is Skeleton3D: return null if scene.get_meta('ainative_auxiliary_skeleton',false) is bool and scene.get_meta('ainative_auxiliary_skeleton',false)==true else scene
 	var all = scene.find_children('*','Skeleton3D',true,false)
+	all = all.filter(func(candidate): return not (candidate.get_meta('ainative_auxiliary_skeleton',false) is bool and candidate.get_meta('ainative_auxiliary_skeleton',false)==true))
 	return all[0] if all.size()==1 else null
 
 static func semantic(name: String, family: String) -> String:
@@ -124,7 +125,7 @@ static func extract(scene: Node, family: String, source: Dictionary, corrections
 	if sk == null: return {'error':'Exactly one Skeleton3D is required'}
 	var ancestor = sk
 	while ancestor!=null and ancestor is Node3D:
-		if not ancestor.transform.is_equal_approx(Transform3D.IDENTITY): return {'error':'Bake skeleton ancestor transforms into the reference asset before extracting a metres profile'}
+		if not ancestor.transform.is_equal_approx(Transform3D.IDENTITY): return {'error':'Bake skeleton ancestor transforms into the reference asset before extracting a meters profile'}
 		if ancestor==scene: break
 		ancestor = ancestor.get_parent()
 	var p = {'schema_version':1,'family':family,'rules_version':'1','source':source.duplicate(true),'coordinates':{'units':'metres','up':'+Y','forward':'+Z','space':'Godot imported skeleton local'},'bones':[],'mapping':{},'corrections':corrections.duplicate(true),'auxiliary_policy':'preserve_local_rest','binding':'semantic_mapped'}

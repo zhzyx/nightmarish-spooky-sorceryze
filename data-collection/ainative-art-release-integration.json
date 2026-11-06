@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "issue_number": 152,
+  "request_id": "ainative-art-11-cloth-20261106",
+  "related_issues": [
+    151,
+    152,
+    153
+  ],
+  "base": "b33f06591a4bcb517e5364eb767588bec1dac2dd",
+  "initial_preparation_base": "8930b67e1977e28f4c70bb68a724545060cf7402",
+  "later_main_delta": [
+    "customizations/components/godot-host/daqian/board.py",
+    "customizations/components/godot-host/daqian/graph_host.py",
+    "data-collection/requests/daqian-desktop-overview/f9a5e044-1aa0-46eb-afde-593f39771da5.json",
+    "design-docs/daqian/desktop-overview.md",
+    "editor/docks/daqian/issue_graph.gd",
+    "editor/docks/daqian/workspace.gd",
+    "editor/docks/daqian_dock.cpp",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-desktop-overview/daqian-desktop-overview-intake.json",
+    "tests/editor/daqian_graph.gd",
+    "tests/editor/run_daqian_graph.py",
+    "tests/editor/test_daqian_board.py"
+  ],
+  "source_files": {
+    "data-collection/ainative-cloth-main-integration-1.json": {
+      "contribution": 152,
+      "sha256": "2421f8c59df909e7dea63713049a24a4abb691fe1b3ccd032ce8263074a3c3d2"
+    },
+    "data-collection/ainative-cloth-main-integration-2.json": {
+      "contribution": 152,
+      "sha256": "1f7efe3694daef93fff2b4f7b9b75c7c64f928564da1d30f3aacc86db5b5f306"
+    },
+    "data-collection/ainative-cloth-request.json": {
+      "contribution": 152,
+      "sha256": "550c6e24ed4abd19383fed825260008071ee3f568edcba8cd23b6840c46025ce"
+    },
+    "data-collection/ainative-cloth-validation-main.json": {
+      "contribution": 152,
+      "sha256": "73744f54b43f1b0e1da8a133c635d7ab58d32e27c2175ded6df565d3cf20e72e"
+    },
+    "data-collection/ainative-cloth-validation.json": {
+      "contribution": 152,
+      "sha256": "c34d7a272c9257a7c207e6de6d95aacc5a0258b2863829e061832e9dda7771d2"
+    },
+    "design-docs/ainative-art/11-cloth.md": {
+      "contribution": 152,
+      "sha256": "9076306237fbe7fe486e35ff0c4c4d412c123a68acc12132f6ecccd2639b718e"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-11-cloth-20261106/ainative-cloth-request-20261107.json": {
+      "contribution": 152,
+      "sha256": "d63cc3ecb38a21ccaac7dc251f518856c30cc89ff5bb51095467b886f074dcc2"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-11-cloth-20261106/dispatch-606a872941c541c581d2ae99a37178c9.json": {
+      "contribution": 152,
+      "sha256": "7324e87fc5f886de7fbc50d12a83f8a37331ab177ac4092e5b56cb79a0897101"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-11-cloth-20261106/dispatch-de70c2eef57e4ba49fddae6651757fbf.json": {
+      "contribution": 152,
+      "sha256": "93dd2ed6cc175defacb100c3b054c09e15d77706350bf5d71dca844bd2f74eb4"
+    },
+    "samples/ainative-workbench/addons/ainative/cloth_panel.gd": {
+      "contribution": 152,
+      "sha256": "fe13e3dc51d71a8feeb6be32cd522a2dfc633106d004e9145631df5fe7af88d8"
+    },
+    "samples/ainative-workbench/addons/ainative/cloth_solver.gd": {
+      "contribution": 152,
+      "sha256": "c284f9c27745a7e24290eb0b6c6c6135091e9a866bb1374e0594818c34685228"
+    },
+    "samples/ainative-workbench/addons/ainative/cloth_solver.gd.uid": {
+      "contribution": 152,
+      "sha256": "a0f5754ec2dd230507fb2c639dc83a784925b75e815681db72ff3f1cc197ac54"
+    },
+    "samples/ainative-workbench/addons/ainative/layering_player.gd": {
+      "contribution": 152,
+      "sha256": "0b7a6252f13c2150369105060606374d44c4d1f2743e5276e7743c745d8dae59"
+    },
+    "samples/ainative-workbench/addons/ainative/workbench.gd": {
+      "contribution": [
+        152,
+        153
+      ],
+      "sha256": "14204fd82a56fabed217ddc3d98617cd2fa2b6b31d0392f80d1bbb7542320dea"
+    },
+    "samples/ainative-workbench/cloth_acceptance.gd": {
+      "contribution": 152,
+      "sha256": "ca74a4ec8bf26555cacf2d53b4b5a1d756612431a44bda1b2e56360b8a9e321e"
+    },
+    "samples/ainative-workbench/cloth_anchor_check.gd": {
+      "contribution": 152,
+      "sha256": "2fcc03b536cf03e4f3e9f81953935a01d93c219a2f6b0b0cb08471425bdb8282"
+    },
+    "samples/ainative-workbench/cloth_body_check.gd": {
+      "contribution": 152,
+      "sha256": "34dcb95b576784445a929c46d7bf986929bdf1d7a0266b92153d77965f540c45"
+    },
+    "samples/ainative-workbench/cloth_live_ui.gd": {
+      "contribution": 152,
+      "sha256": "95f2c4af259bf1e2d418bf93c151dd9a00d3c714c9c5fa26adbfbd0e6c296eef"
+    },
+    "samples/ainative-workbench/cloth_probe.gd": {
+      "contribution": 152,
+      "sha256": "1a40530239bb9959ae3b869a29cb5d2404e3ac689211d0a3d5769e6823b31651"
+    },
+    "samples/ainative-workbench/cloth_views.gd": {
+      "contribution": 152,
+      "sha256": "79f6c6a2638d4bd7eceaea5819466c4d6581b724f068ae49ebf3151c4c7b8da1"
+    },
+    "tools/ainative/cloth_anchor_metrics.py": {
+      "contribution": 152,
+      "sha256": "224248844a6fba8a01a536cc4ab318af54b17329183b7a2917b147996821c49e"
+    },
+    "tools/ainative/cloth_pin_fit.py": {
+      "contribution": 152,
+      "sha256": "b8f66c00f70c3857499dc4f751c7ac2276e59c6c199d2fab16e30e256d441738"
+    },
+    "tools/ainative/cloth_prepare.py": {
+      "contribution": 152,
+      "sha256": "e8f8aa7fec7f71d11ed6dbf83e50c11b6ebe3378ed9701f88427a57abd5de64a"
+    },
+    "design-docs/ainative-art/10-customization-face.md": {
+      "contribution": 151,
+      "sha256": "39788873ddbe92e55e026ba74e2e2a80900c1afb744b1e2b64cf8d4cf951201c"
+    },
+    "samples/ainative-workbench/customization_assemble.gd": {
+      "contribution": 151,
+      "sha256": "bc88fc7425977156476f8db6ccf5cab0af022556f6814241c6af3489d0c84bc9"
+    },
+    "samples/ainative-workbench/customization_mask_tests.gd": {
+      "contribution": 151,
+      "sha256": "e3241e63d3016912889378bb08163cab33e4e6b233e92c7ff86e32458e318c35"
+    },
+    "tools/ainative/customization_publish.py": {
+      "contribution": 151,
+      "sha256": "b52e06468a0a1ce13858cafde053d363a1b6ed7f5850343e5f18ddfb479673ee"
+    },
+    "data-collection/ainative-customization-neckfix-validation.json": {
+      "contribution": 151,
+      "sha256": "8e582c1c3501e0b485132f67f0de6617f7dc5c640dcf138b4484cb7810b9ffbe"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-10-customization-face-20261106/kuafu-9b33ea765f0a105d4af7ceddb3f0b45d3d756473.json": {
+      "contribution": 151,
+      "sha256": "394d4570955901870fe33218c479d14999aed780d2b494a7664ea9f8735f249c"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-10-customization-face-20261106/kuafu-a68fefce5a5fdd7991a0dc607c251ef9a552472c.json": {
+      "contribution": 151,
+      "sha256": "ad06245bd17d1eb80c208e53f5f8c9244197aee37fce4dbf63743f2a925bf4fc"
+    },
+    "tools/ainative/hair_select.py": {
+      "contribution": 153,
+      "sha256": "f224fc6ca3c0c13da1dfa24ff0c17fe8f375e750e9ab1f0193d3561008acf3af"
+    },
+    "samples/ainative-workbench/addons/ainative/hair.gd": {
+      "contribution": 153,
+      "sha256": "a04ac7160e240d2c4c960080aaf0a031519f4d0bbf506d1a08477d295a54df64"
+    },
+    "samples/ainative-workbench/addons/ainative/hair_runtime.gd": {
+      "contribution": 153,
+      "sha256": "2714b5607cc5eac2586c5b62dce1eac8031940d24f7052526ddb386891c111a4"
+    },
+    "samples/ainative-workbench/addons/ainative/hair_panel.gd": {
+      "contribution": 153,
+      "sha256": "bd3946c9fe9756c4258c1e95d0edfaea1016d16c10907ce7b196b1e3dc3ca334"
+    },
+    "samples/ainative-workbench/addons/ainative/interop.gd": {
+      "contribution": 153,
+      "sha256": "519327e309936f5eb1a338cf38b8bf011aaddb6b626553fb6281f6bd329affd4"
+    },
+    "samples/ainative-workbench/hair_live_ui.gd": {
+      "contribution": 153,
+      "sha256": "aaccb3ccdf3547fd18d6ffdd1a576954f264cb67c59c4f56377410f570d5d07a"
+    },
+    "design-docs/ainative-art/12-hair.md": {
+      "contribution": 153,
+      "sha256": "d956870f0cdb25c28179a5ba00fc526f03241b4a9058b4269af88f091623b6d7"
+    },
+    "samples/ainative-workbench/addons/ainative/hair.gd.uid": {
+      "contribution": 153,
+      "sha256": "04431c3836673ca9ae438abe6785483bd4c6641e5c2e40151a148431db395172"
+    },
+    "samples/ainative-workbench/addons/ainative/hair_panel.gd.uid": {
+      "contribution": 153,
+      "sha256": "754e31c52fda0395b4ea64a2ccb067abfdff0752ac2e1ab713788207b3e2941c"
+    },
+    "samples/ainative-workbench/addons/ainative/hair_runtime.gd.uid": {
+      "contribution": 153,
+      "sha256": "45607b7e9035aae7b3213603fbfe83e319c1aa0dec787ddc3428ce989125ccfe"
+    },
+    "data-collection/ainative-hair-request.json": {
+      "contribution": 153,
+      "sha256": "c0430a1307300fd67809b07c4ba402292229f2fb56cd9af4e5cddd7c4790c77a"
+    },
+    "data-collection/ainative-hair-validation.json": {
+      "contribution": 153,
+      "sha256": "fe7df8a973ba8eaed88bf9858cd0d2e36d5fd60567fc4545ca5648f4070cb229"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-12-hair-20261106/ainative-hair-request-20261107.json": {
+      "contribution": 153,
+      "sha256": "4d9261b370192ace281425d5e88f3be62d556283dbff7f068ec2c007a3d8c4eb"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-12-hair-20261106/dispatch-535778eb863d452eb89c3df2d120c4bf.json": {
+      "contribution": 153,
+      "sha256": "b3c9474b1daea2ec8df1c452e73bc2536098de31f7da529b16491face9c30450"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/ainative-art-12-hair-20261106/dispatch-69d926acd18541a5b0cd843f0f923887.json": {
+      "contribution": 153,
+      "sha256": "f1c7cd15cccf0088a42e9fb73d72d44bed82400a5cc61d6a18c99985be46b817"
+    }
+  },
+  "all_frozen_sources_unchanged_except_combined_additive_workbench_hooks": true,
+  "run": {
+    "argv": [
+      "godot.windows.editor.x86_64.console.exe",
+      "--headless",
+      "--path",
+      "ainative-workbench",
+      "--script",
+      "integration.gd",
+      "--",
+      "release-integration-v2",
+      "final-config-v2.json",
+      "cape-final-v5-reopen.json",
+      "skirt-final-v4-reopen.json"
+    ],
+    "cwd": "godot-ainative-art-release-20261107",
+    "exit_code": 0,
+    "exit_code_source": "exec_command session 14930, write_stdin completion chunk 4f4ac0",
+    "log": "run.log",
+    "receipt": "receipt.json",
+    "source_snapshot": "source-sha256.json",
+    "production_source_changed": false,
+    "v1_status": "Preserved failed exact roots-array equality assertion; no release approval based on v1",
+    "v2_correction": "Digest and scalp triangle IDs remain strict; coordinates and barycentrics separately measured. Root coordinate error 5.3291320911697e-8 m; barycentric error 1.11022302462516e-16; render geometry error 0 m.",
+    "scope": "Normal workbench save/reopen; cloth cache replay only, no model inference or physics rebake",
+    "artifact_hashes": [
+      {
+        "path": "runtime/hair/release-integration-v2/receipt.json",
+        "sha256": "1c962ed4590cde8a3ba43414fba3f567863f76df9431f5fe2763c9bc156e9862",
+        "bytes": 2338
+      },
+      {
+        "path": "runtime/hair/release-integration-v2/run.log",
+        "sha256": "57714f7294f05dd19ba27bebd985675daae424ddfab324eab9d765e0e232f963",
+        "bytes": 2519
+      },
+      {
+        "path": "runtime/hair/release-integration-v2/hair-saved.tscn",
+        "sha256": "fca4d80c36d0edc7cb989257e65032db2a349592ccb1d01947daae288ad4b8d5",
+        "bytes": 11421027
+      },
+      {
+        "path": "runtime/hair/release-integration-v2/cloth-1.tscn",
+        "sha256": "a01700a56bf19b94d032f8f09848e19e299fd1b92bd4718f4c21e0b47853e634",
+        "bytes": 4537662
+      },
+      {
+        "path": "runtime/hair/release-integration-v2/cloth-2.tscn",
+        "sha256": "3ccff6335e1e9cdd877c6c9ea6582bd1a883a72275d4e330000a27675b4e22c8",
+        "bytes": 34740378
+      }
+    ]
+  },
+  "result": {
+    "cloth": [
+      {
+        "cache_frames": 237,
+        "cache_key_preserved": true,
+        "input": "cape-final-v5-reopen.json",
+        "input_scene_sha256": "3ebef8b4c4674cf74eeee86b55aa09d8e378f1fd39f78e30dbb5f3c791cafa30",
+        "mode": "replay",
+        "render_error_m": 0.0,
+        "sample_time_s": 0.5,
+        "saved": "cloth-1.tscn",
+        "saved_sha256": "a01700a56bf19b94d032f8f09848e19e299fd1b92bd4718f4c21e0b47853e634"
+      },
+      {
+        "cache_frames": 120,
+        "cache_key_preserved": true,
+        "input": "skirt-final-v4-reopen.json",
+        "input_scene_sha256": "9bf8210ffbfa453ad5a2ef6f6beb9f2c9527dd1fee525db1f4fc0047a2ac58bc",
+        "mode": "replay",
+        "render_error_m": 0.0,
+        "sample_time_s": 0.5,
+        "saved": "cloth-2.tscn",
+        "saved_sha256": "3ccff6335e1e9cdd877c6c9ea6582bd1a883a72275d4e330000a27675b4e22c8"
+      }
+    ],
+    "display_server": "headless",
+    "hair": {
+      "base_sha256": "4ce01a55ea2880bae9a00420b79c1b85cf9a249bf0d98d5708bde870ade31e0a",
+      "binding_digest": "34760f0a5918c1040564869c8832067d3e4acde861b1c2e893807c434a97458c",
+      "body_bones": 68,
+      "cards": true,
+      "face_binding_sha256": "de89e8bcd157ffac5c76df25dcbd93f3432e0d705f67bc5e215cf1e007bc0579",
+      "hat": true,
+      "input_config": "final-config-v2.json",
+      "lod": 2,
+      "no_absolute_source_locator": true,
+      "render_geometry_max_error_m": 0.0,
+      "root_barycentric_max_error": 1.11022302462516e-16,
+      "root_coordinate_max_error_m": 5.3291320911697e-08,
+      "roots_preserved": true,
+      "saved": "hair-saved.tscn",
+      "saved_sha256": "fca4d80c36d0edc7cb989257e65032db2a349592ccb1d01947daae288ad4b8d5",
+      "source_mesh_sha256": "dbe21df1af13f4df0e21545bf7435eac4e88f71b0955bea99840ddf65d42ddab",
+      "source_record_sha256": "66e1fca10497ccbaa0da978e97f09c3db84b05d46b5f41af89fff95dd3c19b32"
+    },
+    "panel_counts": {
+      "cloth": 1,
+      "customization": 1,
+      "hair": 1,
+      "layering": 1
+    },
+    "scope": "Normal workbench integration only; source inference and full physics evidence reused"
+  },
+  "source_snapshot_sha256": "aea5bc067446b0a7c998525b8dd28f1dda7dcf30827616020181d388b3574ab4",
+  "publisher_snapshot_sha256": "35ed0aad4f2a2b7d92d4477fbe144f290913f6a365935ea22297f37810d9e0db",
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "state": "approved",
+    "preparation_files_verified": 45,
+    "checks": [
+      "151 all four source files unchanged",
+      "152 full23 contribution unchanged except workbench",
+      "153 all11 contribution unchanged except workbench",
+      "Workbench contains only two additive three-line hooks relative to main",
+      "Actual normal entry save/reopen v2 reviewed; all3 saved hashes independently matched"
+    ],
+    "v1_failure": "Retained overly strict float-array equality failure; v2 strict binding digest/triangle IDs plus measured coordinate and render comparison; no business code change"
+  },
+  "limits": [
+    "Shared default entry is validated, not154 same-character full chain",
+    "Existing physical, source and visual limits retained",
+    "Daqian editor UI main delta does not intersect sample runtime sources; exact candidate build CI still required"
+  ],
+  "status": "combined_local_validation_and_review_passed_pending_exact_ci_main"
+}
