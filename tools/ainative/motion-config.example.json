@@ -1,0 +1,8 @@
+{
+  "runtime": "ABSOLUTE_PRIVATE_MOTION_RUNTIME",
+  "python": "ABSOLUTE_PRIVATE_MOTION_RUNTIME/venv/Scripts/python.exe",
+  "checkpoint": "models/humanml_enc_512_50steps/model000750000.pt",
+  "mean": "humanml/HumanML3D/Mean.npy",
+  "std": "humanml/HumanML3D/Std.npy",
+  "device": "cpu"
+}
