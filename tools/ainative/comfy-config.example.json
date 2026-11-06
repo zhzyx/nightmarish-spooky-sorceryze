@@ -1,0 +1,9 @@
+{
+  "endpoint": "http://127.0.0.1:8188",
+  "storage": "./comfy-state",
+  "backend_revision": "REPLACE_WITH_INSTALLED_COMFY_COMMIT",
+  "checkpoints": {
+    "image": {"name": "sd_turbo.safetensors", "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"},
+    "mesh": {"name": "hunyuan3d-mini.safetensors", "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"}
+  }
+}

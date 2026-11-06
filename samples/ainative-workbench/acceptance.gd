@@ -18,6 +18,7 @@ func run():
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await process_frame
 	panel.python_edit.text = OS.get_environment("AINATIVE_PYTHON")
+	panel.factory_edit.text = "editor_demo:factory"
 	panel.host_edit.text = ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")
 	panel.state_dir = ProjectSettings.globalize_path("user://test-" + str(Time.get_ticks_usec()))
 	DirAccess.make_dir_recursive_absolute(panel.state_dir)
@@ -38,10 +39,17 @@ func run():
 	panel.connect_nodes(first, 0, second, 0)
 	panel.path_edit.text = panel.state_dir.path_join("graph.json")
 	panel.save_graph()
-	var original = JSON.stringify(panel.model())
+	var original = FileAccess.get_file_as_string(panel.path_edit.text)
+	check(not original.contains(source) and original.contains("source_snapshot"), "portable graph embeds content without source paths")
 	panel.nodes = []; panel.edges = []
 	panel.open_graph()
 	check(JSON.parse_string(JSON.stringify(panel.model())) == JSON.parse_string(original), "save/reopen preserves nodes edges positions parameters text image context")
+	var saved_graph = FileAccess.get_file_as_string(panel.path_edit.text)
+	panel.source_edit.text = panel.state_dir.path_join("missing.png")
+	panel.save_graph()
+	check(FileAccess.get_file_as_string(panel.path_edit.text) == saved_graph, "bad source preserves previous workflow")
+	panel.source_edit.text = ""
+	panel.apply_fields()
 	var valid_model = JSON.stringify(panel.model())
 	var invalid = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
 	invalid.store_string('{"format":1,"nodes":[],"edges":[{}]}')

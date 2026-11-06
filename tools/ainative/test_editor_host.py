@@ -34,7 +34,55 @@ def reconcile_factory():
             return None
     return registry, {'local-copy':Unknown()}
 
+
+def integer_transport_factory():
+    """Production node schemas, without constructing or calling a model backend."""
+    from comfy_provider import register, KINDS
+    from extensions import NodeRegistry
+    registry = NodeRegistry()
+    register(registry)
+    class DescriptionOnly:
+        def describe(self):
+            return dict(id='comfy',version='1',model='transport-test',model_version='1',
+                        capabilities=list(KINDS),context_types=['text','image'],available=True)
+    return registry, {'comfy': DescriptionOnly()}
+
 class BridgeTests(unittest.TestCase):
+    def test_godot_float_integer_serialization_at_create_boundary(self):
+        import subprocess, sys
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            # Godot JSON.parse_string -> JSON.stringify represents seed as 42.0.
+            request=json.loads('{"model":{"nodes":[{"id":"g","type":"text_to_image","provider":"comfy","parameters":{"prompt":"owl","seed":42.0,"width":512.0,"denoise":0.5}}],"edges":[]}}')
+            spec=root/'spec.json'; result=root/'result.json'
+            spec.write_text(json.dumps(request),encoding='utf-8')
+            subprocess.run([sys.executable,str(Path(__file__).with_name('editor_host.py')),'create',
+                            '--db',str(root/'db'),'--factory','test_editor_host:integer_transport_factory',
+                            '--spec',str(spec),'--result',str(result)],check=True)
+            run=json.loads(result.read_text(encoding='utf-8'))['result']['run_id']
+            args=argparse.Namespace(db=str(root/'db'),command='status')
+            params=dispatch(args,{'run':run})['nodes']['g']['request']['parameters']
+            self.assertEqual(params['seed'],42); self.assertIs(type(params['seed']),int)
+            self.assertIs(type(params['width']),int)
+            self.assertEqual(params['denoise'],0.5); self.assertIs(type(params['denoise']),float)
+            self.assertIs(type(request['model']['nodes'][0]['parameters']['seed']),float)
+
+    def test_editor_integer_rejects_fraction_bool_nonfinite_and_unsafe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            args=argparse.Namespace(db=str(Path(tmp)/'db'),factory='test_editor_host:integer_transport_factory',command='create')
+            for seed in (42.5,True,False,float('nan'),float('inf'),float('-inf'),float(2**53),2**53,-2**53,'42'):
+                with self.subTest(seed=seed):
+                    request={'model':{'nodes':[dict(id='g',type='text_to_image',provider='comfy',parameters={'prompt':'owl','seed':seed})],'edges':[]}}
+                    with self.assertRaises(ValueError): dispatch(args,request)
+            for seed in (float(2**53-1),float(-(2**53-1)),42):
+                with self.subTest(valid_seed=seed):
+                    request={'model':{'nodes':[dict(id='g',type='text_to_image',provider='comfy',parameters={'prompt':'owl','seed':seed,'denoise':1.0})],'edges':[]}}
+                    run=dispatch(args,request)['run_id']
+                    status_args=argparse.Namespace(db=args.db,command='status')
+                    params=dispatch(status_args,{'run':run})['nodes']['g']['request']['parameters']
+                    self.assertEqual(params['seed'],int(seed)); self.assertIs(type(params['seed']),int)
+                    self.assertIs(type(params['denoise']),float)
+
     def test_bound_publish_and_no_clobber(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); fixtures(root); source=root/'sample.png'; before=source.read_bytes()

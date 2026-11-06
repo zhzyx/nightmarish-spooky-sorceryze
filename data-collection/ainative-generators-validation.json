@@ -1,0 +1,353 @@
+{
+  "request_id": "ainative-art-04-generators-20261106",
+  "issue_number": 145,
+  "date": "2026-11-06",
+  "worker": "/root/sinan_943fa621ff3a25e8",
+  "worker_terminal_verified": true,
+  "python_tests_passed": 53,
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "scope": "Independent initial 51-test suite and Godot replay; affected 12 Provider tests and two integer-transport regressions after fixes; final 53-test suite run by implementer."
+  },
+  "engine": "4.8.beta.custom_build.ced0368bb",
+  "runtime": {
+    "gpu": "NVIDIA GeForce RTX 4070 Ti",
+    "vram_mib": 12282,
+    "python": "3.12.14",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "pip_check": "No broken requirements found",
+    "requirements_sha256": "f9b20fb6923eed3c4ddfc162a36d6f2c9031785c16b0c2207d8dfc1ae35cba26",
+    "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e"
+  },
+  "actual_flows": [
+    {
+      "kind": "text_to_image",
+      "run_id": "89b3cc18632e44c1a3c755cd77278564",
+      "sha256": "f8bf2dfcec4a20c645954665ad9bcdba92027ebe291863a7001786158f173495",
+      "bytes": 333034,
+      "provenance": {
+        "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+        "checkpoints": {
+          "image": {
+            "name": "sd_turbo.safetensors",
+            "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+          },
+          "mesh": {
+            "name": "hunyuan3d-mini.safetensors",
+            "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+          }
+        },
+        "provider": {
+          "available": true,
+          "capabilities": [
+            "text_to_image",
+            "image_to_image",
+            "image_to_mesh",
+            "text_to_mesh"
+          ],
+          "context_types": [
+            "text",
+            "image"
+          ],
+          "id": "comfy",
+          "model": "SD-Turbo + Hunyuan3D-2mini",
+          "model_version": "40545552f84731a33f0ac24d711a6be610c1b1063cc57fabfa23021cc189a620",
+          "version": "1"
+        },
+        "request": {
+          "context": [],
+          "inputs": {},
+          "node": "text_to_image",
+          "parameters": {
+            "prompt": "A full body 3D render of a simple friendly humanoid robot, standing front view, arms spread apart, separated legs, entire figure visible, plain white background",
+            "seed": 42
+          },
+          "version": "1"
+        },
+        "source_manifest_sha256": "15d1c576fb3ef4904e4beb5fe30db44040f82dfdd54277c5ecefd05886180be0",
+        "usage": {
+          "effective_prompt": "A full body 3D render of a simple friendly humanoid robot, standing front view, arms spread apart, separated legs, entire figure visible, plain white background",
+          "image_usage": "none",
+          "parameters": {
+            "denoise": 0.65,
+            "height": 512,
+            "mesh_resolution": 3072,
+            "mesh_steps": 20,
+            "octree_resolution": 128,
+            "prompt": "A full body 3D render of a simple friendly humanoid robot, standing front view, arms spread apart, separated legs, entire figure visible, plain white background",
+            "seed": 42,
+            "steps": 1,
+            "width": 512
+          },
+          "text_usage": "image_diffusion"
+        },
+        "workflow_sha256": "1e4e2f460cd21bdc72fd9b4f6676708d568da08e56702043769670da56b7e5c0"
+      }
+    },
+    {
+      "kind": "image_to_image",
+      "run_id": "799142813c444d58aa86753ab555ef56",
+      "sha256": "6b0677d012f5cd6879613a468607c70b19ad8eacbbe0c5fe4ceb730be1ea47da",
+      "bytes": 214830,
+      "provenance": {
+        "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+        "checkpoints": {
+          "image": {
+            "name": "sd_turbo.safetensors",
+            "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+          },
+          "mesh": {
+            "name": "hunyuan3d-mini.safetensors",
+            "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+          }
+        },
+        "provider": {
+          "available": true,
+          "capabilities": [
+            "text_to_image",
+            "image_to_image",
+            "image_to_mesh",
+            "text_to_mesh"
+          ],
+          "context_types": [
+            "text",
+            "image"
+          ],
+          "id": "comfy",
+          "model": "SD-Turbo + Hunyuan3D-2mini",
+          "model_version": "40545552f84731a33f0ac24d711a6be610c1b1063cc57fabfa23021cc189a620",
+          "version": "1"
+        },
+        "request": {
+          "context": [],
+          "inputs": {
+            "source": {
+              "id": "generate-source",
+              "revision": "f8bf2dfcec4a20c645954665ad9bcdba92027ebe291863a7001786158f173495"
+            }
+          },
+          "node": "image_to_image",
+          "parameters": {
+            "prompt": "A full body 3D render of a friendly humanoid robot with bright blue armor, standing front view, arms spread apart, plain white background",
+            "seed": 42
+          },
+          "version": "1"
+        },
+        "source_manifest_sha256": "6a3485646ae52c3365ac1c059a4598c555d0242ffdf59cb0aaa7ad9a3b37fb4d",
+        "usage": {
+          "effective_prompt": "A full body 3D render of a friendly humanoid robot with bright blue armor, standing front view, arms spread apart, plain white background",
+          "image_usage": "img2img_initial_latent",
+          "parameters": {
+            "denoise": 0.65,
+            "height": 512,
+            "mesh_resolution": 3072,
+            "mesh_steps": 20,
+            "octree_resolution": 128,
+            "prompt": "A full body 3D render of a friendly humanoid robot with bright blue armor, standing front view, arms spread apart, plain white background",
+            "seed": 42,
+            "steps": 1,
+            "width": 512
+          },
+          "text_usage": "image_diffusion"
+        },
+        "workflow_sha256": "6f2d68c5e97900f227fd276947ba1083476d4df047ce5de1de62d877ad682d3c"
+      }
+    },
+    {
+      "kind": "image_to_mesh",
+      "run_id": "a7e53d7b3f3f4ae097afca965f32310d",
+      "sha256": "cb2898e0bcb5b07c311a7da776a0b882e14fcc53cc867b05058a4d86f7ed0ae6",
+      "bytes": 1898368,
+      "provenance": {
+        "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+        "checkpoints": {
+          "image": {
+            "name": "sd_turbo.safetensors",
+            "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+          },
+          "mesh": {
+            "name": "hunyuan3d-mini.safetensors",
+            "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+          }
+        },
+        "provider": {
+          "available": true,
+          "capabilities": [
+            "text_to_image",
+            "image_to_image",
+            "image_to_mesh",
+            "text_to_mesh"
+          ],
+          "context_types": [
+            "text",
+            "image"
+          ],
+          "id": "comfy",
+          "model": "SD-Turbo + Hunyuan3D-2mini",
+          "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+          "version": "1"
+        },
+        "request": {
+          "context": [],
+          "inputs": {
+            "source": {
+              "id": "generate-source",
+              "revision": "f8bf2dfcec4a20c645954665ad9bcdba92027ebe291863a7001786158f173495"
+            }
+          },
+          "node": "image_to_mesh",
+          "parameters": {
+            "prompt": "",
+            "seed": 42
+          },
+          "version": "1"
+        },
+        "source_manifest_sha256": "6a3485646ae52c3365ac1c059a4598c555d0242ffdf59cb0aaa7ad9a3b37fb4d",
+        "usage": {
+          "effective_prompt": "",
+          "image_usage": "hunyuan_vision",
+          "parameters": {
+            "denoise": 0.65,
+            "height": 512,
+            "mesh_resolution": 512,
+            "mesh_steps": 20,
+            "octree_resolution": 128,
+            "prompt": "",
+            "seed": 42,
+            "steps": 1,
+            "width": 512
+          },
+          "text_usage": "none"
+        },
+        "workflow_sha256": "f398f555abe9728eba755085a87f45ab2156b55bdf724f890ad70ae5ccc70da9"
+      }
+    },
+    {
+      "kind": "text_to_mesh",
+      "run_id": "ab20c61b2eb34c6eab3ca55f1b995963",
+      "sha256": "faf3b07c4b43fb5da06d4dc2a83957bd801d48e3e02743750491cbd49e5fe8fb",
+      "bytes": 3638348,
+      "provenance": {
+        "backend_revision": "63e5bf594339f676b4b15e072529873e3448409e",
+        "checkpoints": {
+          "image": {
+            "name": "sd_turbo.safetensors",
+            "sha256": "3f067a1b943cf162f2b8f8588f6cf5824bd5b4c7d1d88d87164b9ca123616549"
+          },
+          "mesh": {
+            "name": "hunyuan3d-mini.safetensors",
+            "sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b"
+          }
+        },
+        "provider": {
+          "available": true,
+          "capabilities": [
+            "text_to_image",
+            "image_to_image",
+            "image_to_mesh",
+            "text_to_mesh"
+          ],
+          "context_types": [
+            "text",
+            "image"
+          ],
+          "id": "comfy",
+          "model": "SD-Turbo + Hunyuan3D-2mini",
+          "model_version": "b8121876f7b9a1ff12e889949a7d4623cfa6eee5bdc5a2b831b4b3681fcdb681",
+          "version": "1"
+        },
+        "request": {
+          "context": [],
+          "inputs": {},
+          "node": "text_to_mesh",
+          "parameters": {
+            "prompt": "A 3D render of a small medieval knight helmet, isolated object, plain white background",
+            "seed": 42
+          },
+          "version": "1"
+        },
+        "source_manifest_sha256": "15d1c576fb3ef4904e4beb5fe30db44040f82dfdd54277c5ecefd05886180be0",
+        "usage": {
+          "effective_prompt": "A 3D render of a small medieval knight helmet, isolated object, plain white background",
+          "image_usage": "none",
+          "parameters": {
+            "denoise": 0.65,
+            "height": 512,
+            "mesh_resolution": 512,
+            "mesh_steps": 20,
+            "octree_resolution": 128,
+            "prompt": "A 3D render of a small medieval knight helmet, isolated object, plain white background",
+            "seed": 42,
+            "steps": 1,
+            "width": 512
+          },
+          "text_usage": "image_diffusion"
+        },
+        "workflow_sha256": "8a40cddfd41fe58ffc35f750b0aadd1f80300b17a0bcdc2c3cc9ac35d422b50f"
+      }
+    }
+  ],
+  "actual_editor_run_with_text_and_image_context": {
+    "failures": 0,
+    "node": "n1424266",
+    "output_sha256": "0ff2846fcb661cddba1130edd89e73c58acd6d761e56c1d1f595d131a5cda31e",
+    "reference_sha256": "f8bf2dfcec4a20c645954665ad9bcdba92027ebe291863a7001786158f173495",
+    "run_id": "749b9be2257d40ec83f03ab4db623978"
+  },
+  "engine_log_evidence": [
+    {
+      "name": "godot-live.stdout.log",
+      "sha256": "e9f93209700e4d278de4ffeb22a1d4e7aed3948a4ff2f268c00f78c959eba1dd",
+      "marker": "AINATIVE_LIVE_ACCEPTANCE failures=0"
+    },
+    {
+      "name": "context.stdout.log",
+      "sha256": "17ae21b58e09a31a53d6942c4894bfa5537ef13be65a5153481b3440d361dc9c",
+      "marker": "AINATIVE_LIVE_GENERATE failures=0"
+    }
+  ],
+  "source_sha256": {
+    "tools/ainative/comfy_provider.py": "c6083aa0f7d26c278380aa0899440d248136473f2373778e91afa1fbf4f663cc",
+    "tools/ainative/editor_host.py": "5e683e49ceb05eeae7bcf114eb81ff67ababc81d7bce8338fe750c32aae37ebc",
+    "tools/ainative/generate.py": "51257010c1e96e47bc850e20662479f6d88763119a2dfbcc65e2c45f446f0686",
+    "tools/ainative/start_local.ps1": "df9c3253ebc1324407c8caa31986dbdeac06798af665ba7893ecb74c540742e7",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "65fb921d89e89fff7e28f1038610070cf008cbfcdf9a9b6e23f5f2422c3aa658",
+    "samples/ainative-workbench/live_acceptance.gd": "ee072beffa476d8b0d2867709576c6a7c4006f6b0fabc68f4fe5a634c3253b2b",
+    "samples/ainative-workbench/live_generate.gd": "b40bf149553d10e21da2d0c91295996877cef7c31eaffffd476123ce6b2c9eb2"
+  },
+  "acceptance": {
+    "four_real_generation_flows": "passed",
+    "version_parameters_provenance": "passed",
+    "unsupported_capabilities_explicit": "passed",
+    "preview_confirmation_publish_reload": "passed",
+    "source_preservation": "passed",
+    "portable_context_save_reopen_actual_run": "passed"
+  },
+  "evidence_reuse": "The two image runs precede mesh-only resolution/surface-normal fixes; their image graphs were unchanged. Each run retains its own actual Provider fingerprint. Later editor transport fixes have a separate actual Godot Run/context receipt. Main updates before submission did not modify AINative modules.",
+  "quality_limits": [
+    "Raw untextured geometry; no rig, animation, garment fit or production-topology acceptance in #145.",
+    "Robot mesh has a residual floor/shadow base; thin-shell helmet has holes and rough geometry. #146 owns normalization and topology diagnosis.",
+    "Image reference conditioning does not guarantee identity or pose preservation.",
+    "One total image including source; multiple images and unsupported context semantics fail explicitly."
+  ],
+  "mesh_defaults": {
+    "mesh_resolution": 512,
+    "mesh_steps": 20,
+    "octree_resolution": 128,
+    "surface_algorithm": "surface net",
+    "threshold": 0.6,
+    "normal_crease_angle": 180
+  },
+  "godot_mesh_vertices": {
+    "image_to_mesh": 33635,
+    "text_to_mesh": 59628
+  },
+  "private_evidence_storage": "Ignored local inference runtime contains immutable packages, generated files, original logs and screenshots; public record retains hashes and provenance, not machine paths or generated binary data.",
+  "dependency_prs": [
+    162,
+    163
+  ],
+  "main_delivery": "pending"
+}
