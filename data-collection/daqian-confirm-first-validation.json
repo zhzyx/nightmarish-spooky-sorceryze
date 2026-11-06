@@ -1,0 +1,62 @@
+{
+  "request_id": "daqian-direct-task-20261106",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/174",
+  "supersedes_candidate": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/183",
+  "user_decision": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/174#issuecomment-6686037574",
+  "platform": "macOS arm64",
+  "native": [
+    {
+      "state": "passed",
+      "editor_sha256": "10bef772a6923730b12ebb256a29a19cdd6d09bdf92012431f76ce4afd613c3b",
+      "scenario": "direct",
+      "scope": "native editor to direct issue and Sinan admission subprocesses"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "10bef772a6923730b12ebb256a29a19cdd6d09bdf92012431f76ce4afd613c3b",
+      "scenario": "publish",
+      "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "10bef772a6923730b12ebb256a29a19cdd6d09bdf92012431f76ce4afd613c3b",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "d89af248ad648944c198fcb2799c508bd3dfce38a2d30f0684b78bc4dd02261a",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "d89af248ad648944c198fcb2799c508bd3dfce38a2d30f0684b78bc4dd02261a",
+      "scenario": "inputs",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "d89af248ad648944c198fcb2799c508bd3dfce38a2d30f0684b78bc4dd02261a",
+      "scenario": "multi_issue",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  ],
+  "tests": {
+    "godot_host": 93,
+    "daqian": 19,
+    "work_items": 13
+  },
+  "coverage": [
+    "Create confirmed requirements before invoking any model. An indeterminate create reconciles its original ID. A verified Issue survives a failed framework judgment.",
+    "Admitted Sinan context judges the live source; Yanshi runs only for delegated cases. Answers and explicit start use the same verified Issue. Active execution requires accepted evidence.",
+    "Credentials are passed by stdin. Captured usage is from the test transport. GitHub mutations and model replies are fixtures."
+  ],
+  "limits": [
+    "Local clarification journals are shared by linked worktrees. Continuing an active Issue on another installation requires a verified handoff."
+  ],
+  "review": {
+    "worker": "/root/sinan_a5e6815b678eaed2",
+    "conclusion": "accepted after resolving stale start readiness and resuming a failed Yanshi inference from an answer already received on the same Issue."
+  }
+}

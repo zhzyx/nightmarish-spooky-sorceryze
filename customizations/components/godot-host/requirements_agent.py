@@ -75,7 +75,7 @@ def proposal(value, categories):
     return value
 
 
-def complete(root, request, profile, messages, env):
+def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
     if request.get("backend") == "responses":
         endpoint = (
             profile["endpoint"].rstrip("/").removesuffix("/chat/completions").removesuffix("/responses") + "/responses"
@@ -172,7 +172,7 @@ def complete(root, request, profile, messages, env):
             "messages": messages,
             "model": request.get("cli_model", ""),
             "available_tools": [],
-            "agent_id": "yanshi",
+            "agent_id": agent_id,
             "tool_context": {"permission_enabled": False, "tool_rounds": 0, "max_tool_rounds": None},
         }
         payload["messages"][0]["content"] += (

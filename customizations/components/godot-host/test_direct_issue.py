@@ -1,5 +1,6 @@
 """Exercise the actual GitHub work-item adapter, stubbing only its remote transport."""
 from concurrent.futures import ThreadPoolExecutor
+import io
 import json
 import os
 from pathlib import Path
@@ -13,6 +14,7 @@ from unittest.mock import patch
 
 import bridge
 import direct_issue
+import issue_route
 
 HOST = Path(__file__).resolve().parent
 REAL_REFRESH = direct_issue.refresh
@@ -82,6 +84,32 @@ class DirectIssueTests(unittest.TestCase):
     def submit(self, **overrides):
         return bridge.GUIDE_ACTIONS["issue-direct"](self.root, {**self.request, **overrides})
 
+    def routing(self, created=None):
+        created = created or self.submit()
+        self.assertTrue(created["ok"], created)
+        return {"issue_number": created["number"], "request_id": created["request_id"], "expected_user": "7",
+                "expected_revision": created["revision"], "backend": "http", "model": "fixture-model",
+                "endpoint": "https://example.invalid", "_private_api_key": "private-fixture-token"}
+
+    def fixture_model(self, *results):
+        def context(root, bridge_api, agent_id, binding, request):
+            return ("REGISTERED " + agent_id, "fixture-" + agent_id, {"id": agent_id, "version": "1",
+                    "origin": "gonggong-framework", "definition_sha256": "a"*64}, {})
+
+        self.patch(issue_route, "context", side_effect=context)
+        self.patch(issue_route, "registered_candidates", side_effect=lambda root, route: {
+            agent: "fixture-" + agent for agent in {"sinan", route}})
+        model = self.patch(issue_route.requirements_agent, "complete")
+        model.side_effect = [r if isinstance(r, Exception) else
+                             {"text": json.dumps(r), "finish_reason": "stop", "usage": {"input_tokens": 18}}
+                             for r in results]
+        return model
+
+    @staticmethod
+    def judgment(route="sinan", questions=None):
+        return {"route": route, "reason": "依据原文核实范围", "scope": ["导出原文"], "acceptance": ["可以回读"],
+                "questions": questions or []}
+
     def test_create_and_reread_without_model_or_worker(self):
         first = self.submit()
         self.assertTrue(first["ok"], first)
@@ -121,8 +149,105 @@ class DirectIssueTests(unittest.TestCase):
             return original(*args)
 
         self.work.gh.side_effect = activate
+        self.assertTrue(bridge.issue_start(self.root, start)["refresh_routing"])
+        inputs = self.routing(bound)
+        model = self.fixture_model(self.judgment())
+        result = bridge.issue_route(self.root, inputs)
+        self.assertTrue(result["ready"], result)
+        self.assertEqual(result["route"], "sinan")
+        self.assertEqual(bridge.issue_route(self.root, inputs), result)
+        model.assert_called_once()
+        messages = model.call_args.args[3]
+        self.assertIn("REGISTERED sinan", messages[0]["content"])
+        self.assertEqual(json.loads(messages[1]["content"])["issue"]["body"], self.rows[0]["body"])
+        self.assertEqual(self.writes, 1)
         self.assertEqual(bridge.issue_start(self.root, start)["state"], "started")
         self.assertEqual(bridge.issue_start(self.root, start)["state"], "already_active")
+        self.rows[0]["updated_at"] = "2026-11-06T00:00:01Z"
+        _, api = bridge.direct_adapter()
+        context = issue_route.chat_context(self.root, start, api)
+        self.assertEqual(context["original"], self.request["outcome"])
+        self.assertEqual(context["decision"]["scope"], result["scope"])
+        self.assertEqual(context["planned_revision"], bound["revision"])
+        folder = direct_issue.receipt_folder(self.root, bound["request_id"])
+        self.assertNotIn(inputs["_private_api_key"], "".join(p.read_text() for p in folder.glob("*.json")))
+
+    def test_active_label_without_local_start_receipt_cannot_execute(self):
+        inputs = self.routing()
+        self.rows[0]["labels"][1]["name"] = "status:in-progress"
+        _, api = bridge.direct_adapter()
+        with self.assertRaisesRegex(ValueError, "回执"):
+            bridge.issue_start(self.root, inputs)
+        with self.assertRaisesRegex(ValueError, "回执"):
+            issue_route.chat_context(self.root, inputs, api)
+
+    def test_delegation_requires_yanshi_and_answers_same_issue(self):
+        inputs = self.routing()
+        model = self.fixture_model(self.judgment("yanshi"), self.judgment("yanshi", ["输出格式？"]),
+                                   self.judgment("yanshi"))
+        first = bridge.issue_route(self.root, inputs)
+        self.assertEqual((first["route"], first["ready"], first["questions"]), ("yanshi", False, ["输出格式？"]))
+        self.assertTrue(bridge.issue_start(self.root, inputs)["refresh_routing"])
+        self.assertEqual(bridge.issue_route(self.root, inputs), first)
+        answered = {**inputs, "answer": "CSV", "expected_questions": first["questions"]}
+        last = bridge.issue_route(self.root, answered)
+        self.assertEqual((last["ready"], last["number"], last["url"]), (True, 19, URL))
+        self.assertEqual(bridge.issue_route(self.root, answered), last)
+        self.assertEqual(bridge.issue_route(self.root, inputs), last)
+        self.assertEqual([call.kwargs["agent_id"] for call in model.call_args_list], ["sinan", "yanshi", "yanshi"])
+        data = json.loads(model.call_args.args[3][1]["content"])
+        self.assertEqual(data["clarifications"], [{"questions": ["输出格式？"], "answer": "CSV"}])
+        self.assertEqual(self.writes, 1)
+
+    def test_concurrent_editors_answer_only_the_bound_questions(self):
+        inputs = self.routing()
+        model = self.fixture_model(self.judgment("yanshi"), self.judgment("yanshi", ["语言？"]),
+                                   self.judgment("yanshi", ["界面语言？"]), self.judgment("yanshi"))
+        self.assertFalse(bridge.issue_route(self.root, inputs)["ready"])
+        first = {**inputs, "expected_questions": ["语言？"], "answer": "中文"}
+        self.assertEqual(bridge.issue_route(self.root, first)["questions"], ["界面语言？"])
+        self.assertEqual(bridge.issue_route(self.root, first)["questions"], ["界面语言？"])
+        stale = bridge.issue_route(self.root, dict(first, answer="英文"))
+        self.assertFalse(stale["ok"])
+        self.assertTrue(stale["refresh_routing"])
+        self.assertEqual(bridge.issue_route(self.root, inputs)["questions"], ["界面语言？"])
+        second = {**first, "expected_questions": ["界面语言？"]}
+        self.assertTrue(bridge.issue_route(self.root, second)["ready"])
+        self.assertTrue(bridge.issue_route(self.root, first)["ready"])
+        self.assertEqual(model.call_count, 4)
+
+    def test_source_revision_and_account_change_invalidate_readiness(self):
+        inputs = self.routing()
+        self.fixture_model(self.judgment(), self.judgment())
+        bridge.issue_route(self.root, inputs)
+        self.account = "8"
+        with self.assertRaises(ValueError):
+            bridge.issue_start(self.root, inputs)
+        self.account = "7"
+        self.rows[0]["body"] = self.rows[0]["body"].replace("原始输入", "改后的需求")
+        self.assertTrue(bridge.issue_start(self.root, inputs)["refresh_routing"])
+        self.rows[0]["updated_at"] = "2026-11-06T00:00:01Z"
+        with self.assertRaisesRegex(ValueError, "版本"):
+            bridge.issue_route(self.root, inputs)
+        fresh = dict(inputs, expected_revision=self.rows[0]["updated_at"])
+        self.assertEqual(bridge.issue_route(self.root, fresh)["revision"], fresh["expected_revision"])
+
+    def test_model_failure_and_missing_model_leave_verified_issue_recoverable(self):
+        inputs = self.routing()
+        model = self.fixture_model(RuntimeError(inputs["_private_api_key"]), self.judgment())
+        with self.assertRaisesRegex(ValueError, "配置"):
+            bridge.issue_route(self.root, dict(inputs, model=""))
+        model.assert_not_called()
+        with self.assertRaisesRegex(ValueError, "显式重试"):
+            bridge.issue_route(self.root, inputs)
+        with self.assertRaisesRegex(ValueError, "显式重试"):
+            bridge.issue_route(self.root, inputs)
+        model.assert_called_once()
+        self.assertTrue(bridge.issue_start(self.root, inputs)["refresh_routing"])
+        self.assertTrue(bridge.issue_route(self.root, dict(inputs, retry_authorized=True))["ready"])
+        self.assertEqual(model.call_count, 2)
+        self.assertEqual(self.writes, 1)
+        self.assertEqual(self.rows[0]["labels"][1]["name"], "status:planned")
 
     def test_reopened_board_distinguishes_originals_from_yanshi_design(self):
         with patch.object(sys, "path", [str(HOST / "daqian"), *sys.path]):
@@ -233,11 +358,61 @@ class DirectIssueTests(unittest.TestCase):
             with self.subTest(changed=changed), self.assertRaisesRegex(ValueError, "未取得匹配"):
                 REAL_REFRESH(*args)
 
+    def test_actual_admitted_contexts_http_adapter_and_model_receipts(self):
+        node = os.environ.get("GONGGONG_NODE") or shutil.which("node")
+        if not node:
+            self.skipTest("Node.js required for actual registered agent contexts")
+        shutil.copytree(HOST.parents[2] / "framework", self.root / "framework")
+        shutil.copy(HOST.parents[2] / "CURRENT_FRAMEWORK.json", self.root)
+        (self.root / "gonggong-diting-data").mkdir()
+        shutil.copy(HOST.parents[2] / "gonggong-diting-data/dataset.json", self.root / "gonggong-diting-data")
+        self.refresh.side_effect = REAL_REFRESH
+        self.flush.side_effect = REAL_FLUSH
+        self.enqueue.side_effect = REAL_ENQUEUE
+        inputs = self.routing(self.submit(node_runtime=node))
+        requests = []
+
+        def response(request, timeout):
+            payload = json.loads(request.data)
+            requests.append(payload)
+            self.assertNotIn("tools", payload)
+            self.assertEqual(request.get_header("Authorization"), "Bearer " + inputs["_private_api_key"])
+            self.assertNotIn(inputs["_private_api_key"], str(payload))
+            value = {"choices": [{"finish_reason": "stop", "message": {
+                "content": json.dumps(self.judgment("yanshi", [] if len(requests) == 1 else ["由谁验收？"]))}}],
+                "usage": {"prompt_tokens": 21, "completion_tokens": 9}}
+            return io.BytesIO(json.dumps(value).encode())
+
+        with patch("urllib.request.build_opener") as opener:
+            opener.return_value.open.side_effect = response
+            result = bridge.issue_route(self.root, dict(inputs, cli_node=node))
+            repeated = bridge.issue_route(self.root, dict(inputs, cli_node=node))
+        self.assertEqual(result, repeated)
+        self.assertEqual(len(requests), 2)
+        self.assertEqual(result["questions"], ["由谁验收？"])
+        self.assertIn("司南：通用任务协调 Agent", requests[0]["messages"][0]["content"])
+        self.assertIn("ClarifyFeature", requests[1]["messages"][0]["content"])
+        for payload in requests:
+            self.assertEqual(json.loads(payload["messages"][1]["content"])["issue"]["body"], self.rows[0]["body"])
+        records = [json.loads(path.read_text()) for path in (self.root / "gonggong-diting-data/events").rglob("*.json")]
+        self.assertEqual(len(records), 3)
+        steps = [event for event in records if event["kind"] == "step"]
+        self.assertEqual({step["agent"]["id"] for step in steps}, {"sinan", "yanshi"})
+        self.assertTrue(all(event["source_ref"] == URL for event in records))
+        self.assertTrue(all(step["payload"]["usage"]["input_tokens"] == 21 for step in steps))
+        self.assertNotIn(inputs["_private_api_key"], str(records))
+
     def test_incomplete_coordination_can_resume_without_recreating(self):
         self.refresh.side_effect = ValueError("refresh unavailable")
-        self.assertTrue(self.submit()["reconcile_required"])
+        bound = self.submit()
+        self.assertTrue(bound["ok"] and bound["coordination_pending"])
+        inputs = self.routing(bound)
+        model = self.fixture_model(self.judgment())
+        with self.assertRaisesRegex(ValueError, "refresh unavailable"):
+            bridge.issue_route(self.root, inputs)
+        model.assert_not_called()
         self.refresh.side_effect = None
-        self.assertTrue(self.submit()["ok"])
+        self.assertTrue(bridge.issue_route(self.root, inputs)["ready"])
         self.assertEqual(self.writes, 1)
 
 

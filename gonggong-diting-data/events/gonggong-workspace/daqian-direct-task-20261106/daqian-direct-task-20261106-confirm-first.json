@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-direct-task-20261106-confirm-first",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-task-20261106",
+  "kind": "correction",
+  "occurred_at": "2026-11-06T13:41:34.149045+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/174#issuecomment-6686037574",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "用户确认后立即建单；共工根据已绑定工单内容决定是否需要偃师；取消人为选路。",
+    "document": "design-docs/daqian/direct-task.md",
+    "usage": null
+  },
+  "evidence_refs": [
+    "daqian-direct-task-20261106-intake"
+  ],
+  "supersedes": "daqian-direct-task-20261106-intake",
+  "sha256": "513646036c44c6d34a905999f5fa8c50ab496e7ed8977838ac4cb2d4436b1c76"
+}

@@ -376,6 +376,13 @@ func _display_plan() -> Dictionary:
 		_stage(plan, intake, "偃师 · 需求分析", labels.get(phase, "等待分析回执"), "requirement")
 	else:
 		_stage(plan, intake, "工单登记", "等待确认创建" if phase == "draft" else "已关联工单", "requirement")
+	if workflow.get("direct", false) and phase != "draft":
+		var decision: Dictionary = workflow.get("routing", {})
+		_stage(plan, "wf-routing", "司南 · 需求判断", decision.get("reason", "等待框架判断回执"), intake)
+		intake = "wf-routing"
+		if decision.get("route") == "yanshi":
+			_stage(plan, "wf-analysis", "偃师 · 需求分析", "等待补充需求" if not decision.ready else "需求已整理", intake)
+			intake = "wf-analysis"
 	var item: Dictionary = workflow.item
 	var design: Dictionary = workflow.design
 	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["planned", "in-progress", "in-review"])

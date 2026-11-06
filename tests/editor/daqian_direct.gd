@@ -25,7 +25,7 @@ func run() -> void:
 	panel.chat = null
 	panel._compose_requirement()
 	var source = panel.current
-	check(panel.route.selected == 0 and not panel.model_options.visible, "Direct task requires a model")
+	check(not panel.model_options.visible and panel.publish_dialog.get_ok_button().text == "确认需求并建单", "Direct task requires a model")
 	check(panel.editor.canvas.has_node("wf-workorder") and not panel.editor.canvas.has_node("wf-analysis"), "Direct draft incorrectly attributed to Yanshi")
 	panel.publish_dialog.hide()
 	panel.chat = chat
@@ -49,7 +49,7 @@ func run() -> void:
 	var deadline := Time.get_ticks_msec() + 10000
 	while panel.publish_status.text != "先核对发布结果" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
-	check(panel.route.disabled and not panel.requirement_input.editable, "Unknown publication allows a competing route")
+	check(panel.category.disabled and not panel.requirement_input.editable, "Unknown publication allows a competing route")
 	panel.publish_dialog.hide()
 	panel.publish_button.pressed.emit()
 	check(panel.publish_dialog.get_ok_button().text == "核对建单回执", "Lost stable reconciliation entry")
@@ -62,7 +62,7 @@ func run() -> void:
 	await panel.refresh()
 	check(panel.editor.canvas.has_node("wf-prepare") and not panel.editor.canvas.has_node("wf-analysis"), "Bound direct task missing preparation")
 	var records := FileAccess.get_file_as_string(calls).strip_edges().split("\n")
-	check(records.size() == 2 and records[0] == records[1], "Reconciliation changed request, duplicated a click or launched work")
+	check(records.size() == 3 and JSON.parse_string(records[2])[0] == "issue-route" and JSON.parse_string(records[2])[1].model == "chosen-execution-model" and records[0] == records[1], "Reconciliation changed request, duplicated a click or launched work")
 	var first: Array = JSON.parse_string(records[0])
 	check(first[0] == "issue-direct" and first[1].get("expected_user") == "42" and first[1].get("draft_id") == source and first[1].get("title") == "Fixture direct task" and first[1].get("category") == "development" and not first[1].has("model"), "Wrong direct host fields")
 	var previous = panel.board.get("issues", []).duplicate(true)
@@ -79,13 +79,13 @@ func run() -> void:
 	chat.find_child("APIModel", true, false).text = "different-current-model"
 	panel.publish_button.pressed.emit()
 	deadline = Time.get_ticks_msec() + 10000
-	while records.size() < 4 and Time.get_ticks_msec() < deadline:
+	while records.size() < 5 and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
 		records = FileAccess.get_file_as_string(calls).strip_edges().split("\n")
 	var started: Array = JSON.parse_string(records[-1])
 	var decision: Array = JSON.parse_string(records[-2])
 	check(decision[0] == "issue-start" and decision[1].expected_revision == "fixture-revision" and decision[1].expected_user == "42", "Missing explicit start transition")
-	check(records.size() == 4 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
+	check(records.size() == 5 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
 	check(chat.find_child("APIModel", true, false).text == "chosen-execution-model", "Start ignored model chosen at creation")
 	if errors.is_empty():
 		print("DAQIAN_DIRECT_OK")

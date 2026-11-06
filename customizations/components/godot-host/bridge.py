@@ -330,6 +330,9 @@ def chat(root, request, tenant):
         "tool_permission": {k: request[k] for k in permission_fields},
         "reporting": binding,
     }
+    if request["request_id"].startswith("daqian-direct-"):
+        routing, api = direct_adapter()
+        mandate["bound_requirement"] = routing.chat_context(root, request, api)
     env = host_environment(root)
     environment_missing = _igniter.missing_components(root, env)
     with tempfile.TemporaryDirectory() as temporary:
@@ -636,6 +639,15 @@ def issue_create(root, request):
 
 
 def issue_start(root, request):
+    key = request.get("request_id")
+    if isinstance(key, str) and re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key):
+        routing, api = direct_adapter()
+        with outbox_lock(routing.direct_issue.receipt_folder(root, key), time.monotonic() + 3):
+            return _issue_start(root, request, routing, api)
+    return _issue_start(root, request)
+
+
+def _issue_start(root, request, routing=None, api=None):
     """Explicit user decision in the host: move an unstarted guide Issue to in-progress."""
     number = request.get("issue_number")
     request_id = request.get("request_id")
@@ -672,6 +684,15 @@ def issue_start(root, request):
         if statuses == ["status:planned"] and (not value.get("updated_at") or
                                                 request.get("expected_revision") != value["updated_at"]):
             raise ValueError("工单已更新，请刷新大千后重新确认开始")
+        if statuses == ["status:planned"]:
+            if routing is None:
+                raise ValueError("Invalid direct Issue binding")
+            try:
+                routing.prepare_start(root, request, api)
+            except routing.RoutingReceiptRequired as error:
+                return {"ok": False, "error": str(error), "refresh_routing": True, "remote_changed": False}
+        elif routing is not None:
+            routing.chat_context(root, request, api)
     if len(statuses) == 1 and statuses[0] in ACTIVE_STATUSES:
         return {"ok": True, "state": "already_active", "status": statuses[0], "remote_changed": False}
     if len(statuses) > 1 or (statuses and statuses[0] not in STARTABLE_STATUSES):
@@ -689,19 +710,29 @@ def issue_start(root, request):
     }
 
 
-def issue_direct(root, request):
+def direct_adapter():
     from types import SimpleNamespace
     # tools/gonggong_bridge.py uses runpy, which retains the entry point's import path.
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    directory = str(Path(__file__).resolve().parent)
+    sys.path.insert(0, directory)
     try:
-        from direct_issue import create
+        import issue_route
     finally:
-        sys.path.remove(str(Path(__file__).resolve().parent))
-
+        sys.path.remove(directory)
     api = SimpleNamespace(guide_fields=guide_fields, gh_state=gh_state, outbox_lock=outbox_lock,
-                          host_environment=host_environment,
+                          host_environment=host_environment, work_items_module=work_items_module,
                           enqueue=enqueue, flush=flush, discover_node=_igniter.discover_node)
-    return create(root, request, api)
+    return issue_route, api
+
+
+def issue_direct(root, request):
+    routing, api = direct_adapter()
+    return routing.direct_issue.create(root, request, api)
+
+
+def issue_route(root, request):
+    routing, api = direct_adapter()
+    return routing.route(root, request, api)
 
 
 def issue_agent(root, request):
@@ -754,6 +785,7 @@ GUIDE_ACTIONS = {
     "issue-start": issue_start,
     "issue-agent": issue_agent,
     "issue-direct": issue_direct,
+    "issue-route": issue_route,
 }
 
 
@@ -822,7 +854,7 @@ def main():
             request = json.loads(args.request.read_text(encoding="utf-8"))
             if not isinstance(request, dict):
                 raise ValueError("Issue guide request must be an object")
-            if args.action == "issue-agent":
+            if args.action in {"issue-agent", "issue-route"}:
                 sys.stdin.reconfigure(encoding="utf-8")
                 credentials = json.loads(sys.stdin.readline(8192))
                 if set(credentials) != {"api_key"} or not isinstance(credentials["api_key"], str):

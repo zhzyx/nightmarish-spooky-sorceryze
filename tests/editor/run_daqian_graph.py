@@ -79,38 +79,40 @@ Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))
 """, encoding="utf-8")
         bridge = workspace / "tools/gonggong_bridge.py"
         bridge.parent.mkdir(parents=True)
-        bridge.write_text("""import json, sys
-from pathlib import Path
-assert sys.argv[1] == 'issue-agent'
-request = json.loads(Path(sys.argv[sys.argv.index('--request')+1]).read_text())
-with Path(__file__).with_name('calls').open('a') as out:
-    print(json.dumps([request['outcome'], request['backend'], request['model']]), file=out)
-reply = dict(ok=True, ready=True, issue_number=123, request_id='fixture', url='https://github.com/fixture/board/issues/123',
-             scope=['Implement'], acceptance=['Verify'], questions=[])
-if not request['retry_authorized']:
-    reply = dict(ok=False, error='fixture model unavailable')
-Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(reply))
-""", encoding="utf-8")
-        if args.scenario == "direct":
-            bridge.write_text("""import json, sys
+        env["DAQIAN_TEST_SCENARIO"] = args.scenario
+        bridge.write_text("""import json, os, sys
 from pathlib import Path
 action = sys.argv[1]
-request = json.loads(Path(sys.argv[sys.argv.index('--request')+1]).read_text())
+request = json.loads(Path(sys.argv[sys.argv.index('--request') + 1]).read_text())
 calls = Path(__file__).with_name('calls')
-first = not calls.exists()
+previous = calls.read_text().splitlines() if calls.exists() else []
 with calls.open('a') as out:
     print(json.dumps([action, request]), file=out)
+direct = os.environ["DAQIAN_TEST_SCENARIO"] == "direct"
+url = 'https://github.com/fixture/board/issues/124'
 if action == 'issue-direct':
-    reply = dict(ok=True, number=124, url='https://github.com/fixture/board/issues/124',
-                 status='planned', revision='fixture-revision', request_id='daqian-direct-'+request['draft_id'][6:])
-    if first:
+    reply = dict(ok=True, number=124, url=url, status='planned', revision='fixture-revision',
+                 request_id='daqian-direct-' + request['draft_id'][6:])
+    if direct and not previous:
         reply = dict(ok=False, reconcile_required=True, error='先核对发布结果')
+elif action == 'issue-route':
+    assert 'api_key' not in request and 'api_key' in json.loads(sys.stdin.readline())
+    assert request['issue_number'] == 124 and request['expected_revision'] == 'fixture-revision'
+    if request.get('answer'):
+        assert request['expected_questions'] == ['Which target?']
+    earlier_answer = any(json.loads(line)[1].get('answer') for line in previous)
+    ready = direct or earlier_answer
+    reply = dict(ok=True, number=124, url=url, revision='fixture-revision', request_id=request['request_id'],
+                 route='sinan' if direct else 'yanshi', reason='fixture content judgment', scope=['Implement'],
+                 acceptance=['Verify'], questions=[] if ready else ['Which target?'], ready=ready)
+    if not direct and (request.get('answer') or not any(json.loads(line)[0] == 'issue-route' for line in previous)):
+        reply = dict(ok=False, error='fixture model unavailable')
 elif action == 'issue-start':
-    reply = dict(ok=True, status='status:in-progress')
+    reply = dict(ok=True, status='status:in-progress') if direct else dict(ok=False, refresh_routing=True, error='工单内容已更新')
 else:
     assert action == 'chat'
     reply = dict(ok=False, error='fixture stops at the execution admission boundary')
-Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(reply))
+Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
 """, encoding="utf-8")
         env.update(DAQIAN_TEST_REPO=str(workspace), DAQIAN_TEST_PYTHON=sys.executable)
     (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Daqian graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
@@ -120,7 +122,7 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(reply))
     log = result.stdout + result.stderr
     passed = result.returncode == 0 and marker in log and "SCRIPT ERROR" not in log
     report = {"state":"passed" if passed else "failed","editor_sha256":hashlib.sha256(binary.read_bytes()).hexdigest(),
-              "scenario":args.scenario,"scope":"native editor to Yanshi subprocess with fixture receipt" if args.scenario == "publish" else "native editor to direct issue and Sinan admission subprocesses" if args.scenario == "direct" else "native editor; fixture graph source, execution state, model catalog and 55-issue board"}
+              "scenario":args.scenario,"scope":"native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification" if args.scenario == "publish" else "native editor to direct issue and Sinan admission subprocesses" if args.scenario == "direct" else "native editor; fixture graph source, execution state, model catalog and 55-issue board"}
     args.report.parent.mkdir(parents=True,exist_ok=True)
     args.report.write_text(json.dumps(report,indent=2)+"\n")
     if not passed:

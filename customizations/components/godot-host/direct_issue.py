@@ -156,6 +156,24 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
     return url
 
 
+def receipt_folder(root, key):
+    if not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key):
+        raise ValueError("无效的大千需求标识")
+    common = subprocess.run(["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+                            text=True, capture_output=True, check=True, timeout=15).stdout.strip()
+    return Path(common).parent / "data-collection/receipts/daqian-direct" / key
+
+
+def finish_coordination(root, result, row, work, repository, node, bridge, journal, saved):
+    if "coordination" not in saved:
+        bridge.enqueue(root, saved["event"])
+        bridge.flush(root)
+        _, definitions = work.config(root)
+        saved["coordination"] = refresh(root, result, row, [label["name"] for label in definitions],
+                                        repository, node, bridge)
+        save(journal, saved)
+
+
 def create_locked(root, request, bridge, journal, saved):
     expected_user = request.get("expected_user")
     if not isinstance(expected_user, str) or not re.fullmatch(r"[1-9][0-9]*", expected_user):
@@ -195,13 +213,12 @@ def create_locked(root, request, bridge, journal, saved):
             "evidence_refs": [],
         }
         save(journal, saved)
-    bridge.enqueue(root, saved["event"])
-    bridge.flush(root)
-    if "coordination" not in saved:
-        _, definitions = work.config(root)
-        saved["coordination"] = refresh(root, result, row, [label["name"] for label in definitions],
-                                        settings["repository"], request.get("node_runtime"), bridge)
-        save(journal, saved)
+    try:
+        finish_coordination(root, result, row, work, settings["repository"], request.get("node_runtime"),
+                            bridge, journal, saved)
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        # GitHub already confirmed the binding. Only the creation event needs reconciliation.
+        return {"ok": True, **result, "coordination_pending": True, "execution": "not_dispatched"}
     return {"ok": True, **result, "coordination": saved["coordination"], "execution": "not_dispatched"}
 
 
@@ -213,9 +230,7 @@ def create(root, request, bridge):
         if not isinstance(draft, str) or not re.fullmatch(r"draft_[a-f0-9]{20}", draft):
             raise ValueError("无效的大千草稿标识")
         key = "daqian-direct-" + draft[6:]
-        common = subprocess.run(["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
-                                text=True, capture_output=True, check=True, timeout=15).stdout.strip()
-        folder = Path(common).parent / "data-collection/receipts/daqian-direct" / key
+        folder = receipt_folder(root, key)
         journal = folder / "state.json"
         uncertain = True  # An occupied lock or unreadable journal can represent an in-flight create.
         with bridge.outbox_lock(folder, time.monotonic() + 3):

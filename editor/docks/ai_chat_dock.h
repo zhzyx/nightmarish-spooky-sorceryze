@@ -611,6 +611,8 @@ class AIChatDock : public EditorDock {
 	String daqian_preview_conversation;
 	String _work_order_binding(const String &p_field) const;
 	Dictionary _get_daqian_models() const;
+	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
+	void _set_issue_model_config(Dictionary &r_request) const;
 	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());
 	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection);
 
