@@ -180,6 +180,8 @@ func run() -> void:
 	check(workspace.issue_list.visible and workspace.issue_rows.size() == 55 and workspace.board_cards.is_empty(), "list should show the 55 issues without building hidden graph cards")
 	var first_row: TreeItem = workspace.issue_rows[issues[0].url]
 	check(first_row.get_text(1) == issues[0].title and first_row.get_text(2) == "已完成", "list lost full title or status")
+	check(workspace.board_views.get_tab_rect(1).end.x <= workspace.board_views.size.x, "second view tab is clipped")
+	check(workspace.result_count.text == "55 项", "visible count missing from overview")
 	workspace.host = self
 	workspace.issue_list.grab_focus()
 	var find := InputEventKey.new()
@@ -305,13 +307,14 @@ func run() -> void:
 	workspace.size.x = 600 * workspace.get_theme_default_base_scale()
 	workspace._adapt_layout()
 	check(workspace.flow_split.vertical and workspace.details_panel.custom_minimum_size.x == 0, "narrow inspector did not stack")
+	check(workspace.issue_list.columns == 3, "narrow list did not give the owner column space back to the title")
 	workspace.size = full_size
 	workspace._adapt_layout()
 	state.plan = {"nodes":{},"edges":[]}
 	state.context = {}
 	workspace.host = self
 	delay_detail = true
-	workspace._open_issue(issues[0])
+	workspace.overview.get_node("i_1/OpenIssue").pressed.emit()
 	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
 	workspace._open_issue(issues[1])
 	var edited = graph.add_node("text",Vector2.ZERO)
