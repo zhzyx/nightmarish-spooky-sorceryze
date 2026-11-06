@@ -157,6 +157,7 @@ def read_board(root, follows, actor=None, *, project=False, personal_history=Fal
             "request": markers[0] if len(markers) == 1 else "",
             "dependencies": [],
             "development": "type:development" in labels,
+            "categories": sorted({v[5:] for v in labels if v.startswith("type:") and v[5:]}),
             "analyzed": (
                 len(markers) == 1
                 and re.fullmatch(r"requirement-[0-9a-f]{32}", markers[0]) is not None

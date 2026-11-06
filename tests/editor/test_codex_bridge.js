@@ -298,6 +298,9 @@ test('cancelling a pending image request removes private attachments', async () 
         assert(fs.existsSync(file));
         child.kill('SIGTERM');
         await closed;
+        // Windows closes the pipe on forced termination. The independent listener
+        // can finish removing private files after the process handle signals.
+        for (let i = 0; i < 200 && fs.existsSync(path.dirname(file)); i++) await new Promise(resolve => setTimeout(resolve, 10));
         assert(!fs.existsSync(path.dirname(file)));
     } finally {
         if (child && child.exitCode === null) child.kill();

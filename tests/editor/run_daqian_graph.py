@@ -62,7 +62,8 @@ elif a[0]=="api" and a[1].startswith("user/repos?"): print("" if mode=="denied" 
 elif a[0]=="api" and "/issues?state=open" in a[1]:
     repo="zhzyx/nightmarish-spooky-sorceryze"
     row=dict(number=901, html_url=f"https://github.com/{repo}/issues/901", title="Project issue", body="", updated_at="fixture", state="open", assignees=[], labels=[], issue_dependencies_summary={"total_blocked_by":0})
-    print(json.dumps([[dict(pull_request={}, number=900)], [row]]))
+    shared=dict(row, number=902, html_url=f"https://github.com/{repo}/issues/902", assignees=[dict(login="alice"),dict(login="bob")])
+    print(json.dumps([[dict(pull_request={}, number=900)], [row, shared]]))
 elif a[0]=="api" and "issues?" in a[1]: print("[[]]")
 elif a[:3]==["config","get","user"]: print(login)
 else: sys.exit(1)

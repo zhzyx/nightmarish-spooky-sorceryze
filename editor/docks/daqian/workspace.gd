@@ -26,6 +26,15 @@ var board_palette := []
 var board_views := TabBar.new()
 var issue_list := Tree.new()
 var issue_rows := {}
+var owner_sections := {}
+var owner_rows := {}
+var grouped_rows := {}
+const CATEGORY_NAMES := {"requirement":"需求", "design":"设计", "development":"开发", "bug":"缺陷", "test":"测试", "research":"调研", "documentation":"文档", "maintenance":"维护"}
+const UNASSIGNED := "未指派"
+const STATE_ORDER := ["needs-decision", "awaiting_approval", "blocked", "in-progress", "in-review", "planned", "open", "done", "closed", "cancelled"]
+var issue_link := LinkButton.new()
+var zoom_crossed := false
+var zoom_anchor := Vector2.INF
 var overview: GraphEdit
 var notice: Label
 var search: LineEdit
@@ -134,6 +143,8 @@ func _ready() -> void:
 	scope_picker.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
 	scope_picker.add_theme_font_size_override("font_size", roundi(22 * scale_factor))
 	board_heading.add_child(scope_picker)
+	board_heading.add_child(issue_link)
+	issue_link.hide()
 	result_count.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	result_count.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
 	board_heading.add_child(result_count)
@@ -217,6 +228,7 @@ func _ready() -> void:
 	notice_panel.add_child(notice)
 	work_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	work_status.hide()
+	issue_link.hide()
 	add_child(work_status)
 	actions = HFlowContainer.new()
 	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -280,7 +292,7 @@ func _ready() -> void:
 	issue_list.add_theme_constant_override("v_separation", roundi(5 * scale_factor))
 	issue_list.item_activated.connect(func():
 		var selected := issue_list.get_selected()
-		if selected and selected.visible:
+		if selected and selected.visible and selected.get_metadata(0) is Dictionary:
 			_open_issue(selected.get_metadata(0))
 			return_button.grab_focus())
 	add_child(issue_list)
@@ -582,13 +594,14 @@ func _adapt_layout() -> void:
 	if issue_list.columns != columns:
 		issue_list.columns = columns
 		if columns == 4:
-			issue_list.set_column_title(3, "负责人")
+			issue_list.set_column_title(3, "类别 / 负责人")
 			issue_list.set_column_title_alignment(3, HORIZONTAL_ALIGNMENT_LEFT)
 			issue_list.set_column_expand(3, false)
 			issue_list.set_column_clip_content(3, true)
 			issue_list.set_column_custom_minimum_width(3, roundi(132 * get_theme_default_base_scale()))
-			for item: TreeItem in issue_rows.values():
-				_set_owner_cell(item, item.get_metadata(0))
+			for entries in grouped_rows.values():
+				for item: TreeItem in entries:
+					_set_owner_cell(item, item.get_metadata(0))
 	var narrow := size.x < 720.0 * get_theme_default_base_scale()
 	flow_split.vertical = narrow
 	details_panel.custom_minimum_size.x = 0 if narrow else 320 * get_theme_default_base_scale()
@@ -814,6 +827,7 @@ func _show_board() -> void:
 	_leave_conversation()
 	_close_operation_details()
 	work_status.hide()
+	issue_link.hide()
 	selection_epoch += 1
 	if not current.is_empty():
 		_save()
@@ -844,54 +858,89 @@ func _show_board() -> void:
 
 func _draw_board() -> void:
 	board_cards.clear()
+	owner_sections.clear()
+	owner_rows.clear()
+	grouped_rows.clear()
 	for child in overview.get_children():
-		if child is GraphNode:
+		if child is GraphNode or child is GraphFrame:
 			overview.remove_child(child)
 			child.queue_free()
 	overview.clear_flow()
 	var selected_url := ""
-	if issue_list.get_selected():
+	if issue_list.get_selected() and issue_list.get_selected().get_metadata(0) is Dictionary:
 		selected_url = issue_list.get_selected().get_metadata(0).url
 	issue_rows.clear()
 	issue_list.clear()
 	issue_list.create_item()
 	var statuses := ["全部状态", "待我处理"]
 	var owners := ["全部负责人"]
-	var rows: Array = board.get("issues", [])
+	var rows: Array = board.get("issues", []).duplicate()
+	var keys := {}
+	var groups := {}
+	for item: Dictionary in rows:
+		var state := _display_state(item)
+		var rank := STATE_ORDER.find(state)
+		var categories := PackedStringArray(item.get("categories", ["development"] if item.get("development", false) else []))
+		categories.sort()
+		keys[item.url] = [int(not _needs_decision(item, state)), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
+		for owner in _owners(item):
+			groups[owner] = true
+	rows.sort_custom(func(a, b): return keys[a.url] < keys[b.url])
+	var names := groups.keys()
+	names.sort_custom(func(a, b): return a != b and (b == UNASSIGNED or (a != UNASSIGNED and str(a).naturalnocasecmp_to(b) < 0)))
+	owners.append_array(names)
+	if project_mode:
+		for owner: String in names:
+			if board_views.current_tab == 0:
+				var header := issue_list.create_item(issue_list.get_root())
+				header.set_text(1, owner)
+				header.set_metadata(1, owner)
+				header.set_selectable(0, false)
+				header.set_selectable(1, false)
+				header.set_selectable(2, false)
+				owner_rows[owner] = header
+			else:
+				var frame := GraphFrame.new()
+				frame.title = owner
+				frame.autoshrink_enabled = false
+				frame.draggable = false
+				frame.selectable = false
+				frame.resizable = false
+				overview.add_child(frame)
+				owner_sections[owner] = frame
 	var waiting_inputs := 0
 	pending_menu.get_popup().clear()
 	var by_url := {}
 	for index in rows.size():
 		var item: Dictionary = rows[index]
 		item.number = int(item.number)
-		var issue_state: String = item.status
-		if item.get("closed", false) and issue_state not in ["done", "cancelled"]:
-			issue_state = "closed"
+		var issue_state := _display_state(item)
 		var running := PackedStringArray(item.get("running_titles", [])) if fresh_progress else PackedStringArray()
 		if fresh_progress:
 			running.append_array(PackedStringArray(item.get("workers", [])))
 		var needs_approval := not _pending_operation(item).is_empty()
 		if needs_approval:
 			issue_state = "awaiting_approval"
-		var actionable: bool = item.decision or needs_approval or _has_routing_questions(item)
+		var actionable := _needs_decision(item, issue_state)
 		if actionable:
-			waiting_inputs += int(item.get("pending_count", int(item.decision))) + int(needs_approval) + int(_has_routing_questions(item))
+			waiting_inputs += maxi(1, int(item.get("pending_count", int(item.decision))) + int(needs_approval) + int(_has_routing_questions(item)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		if item.status not in statuses:
 			statuses.append(item.status)
-		for name_text in item.owners:
-			if name_text not in owners:
-				owners.append(name_text)
-		var suffix := " · 需要决定" if item.decision and not needs_approval and issue_state != "needs-decision" else ""
-		if board_views.current_tab == 0:
-			var line := _add_issue_row(item, issue_state, suffix, running)
-			if actionable:
-				line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
-				line.set_icon_modulate(1, overview.status_ink("waiting"))
-			if item.url == selected_url:
-				line.select(0)
-		else:
-			by_url[item.url] = _add_board_card(item, issue_state, suffix, running)
+		var suffix := " · 待决策" if actionable and issue_state not in ["needs-decision", "awaiting_approval"] else ""
+		var regions := _owners(item) if project_mode else [""]
+		for owner: String in regions:
+			if board_views.current_tab == 0:
+				var line := _add_issue_row(item, issue_state, suffix, running, owner_rows.get(owner, issue_list.get_root()))
+				if actionable:
+					line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
+					line.set_icon_modulate(1, overview.status_ink("waiting"))
+				if item.url == selected_url and (owner_filter.selected <= 0 or owner_filter.text == owner):
+					line.select(0)
+			else:
+				var node := _add_board_card(item, issue_state, suffix, running, owner)
+				if not by_url.has(item.url):
+					by_url[item.url] = node
 	for item in rows:
 		for dep in item.dependencies:
 			if by_url.has(dep) and by_url.has(item.url):
@@ -912,8 +961,35 @@ func _draw_board() -> void:
 		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
 
 
-func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray) -> TreeItem:
-	var line := issue_list.create_item(issue_list.get_root())
+func _owners(item: Dictionary) -> Array:
+	return item.owners if not item.owners.is_empty() else [UNASSIGNED]
+
+
+func _display_state(item: Dictionary) -> String:
+	if item.get("closed", false) and item.status not in ["done", "cancelled"]:
+		return "closed"
+	return item.status
+
+
+func _needs_decision(item: Dictionary, state: String) -> bool:
+	return not item.get("closed", false) and state not in ["done", "cancelled", "closed"] and (state in ["needs-decision", "awaiting_approval"] or item.get("decision", false) or _has_routing_questions(item) or not _pending_operation(item).is_empty())
+
+
+func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
+	var number := int(item.get("number", 0))
+	var repo := str(board.get("repo", actor.get("repo", "")))
+	var canonical := "https://github.com/%s/issues/%d" % [repo, number]
+	link.uri = canonical if number > 0 and repo.split("/").size() == 2 and item.get("url") == canonical else ""
+	link.text = "#%d" % number
+	link.tooltip_text = link.uri
+	link.visible = not link.uri.is_empty()
+
+
+func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem) -> TreeItem:
+	var line := issue_list.create_item(parent)
+	if not grouped_rows.has(item.url):
+		grouped_rows[item.url] = []
+	grouped_rows[item.url].append(line)
 	issue_rows[item.url] = line
 	line.set_metadata(0, item)
 	line.set_text(0, "#%s" % item.number)
@@ -921,7 +997,7 @@ func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, runni
 	line.set_cell_mode(2, TreeItem.CELL_MODE_CUSTOM)
 	line.set_text(2, graph_script.FlowCanvas.state_text(issue_state) + suffix)
 	line.set_custom_color(0, get_theme_color("font_readonly_color", "Editor"))
-	line.set_tooltip_text(1, item.title + "\n" + "、".join(item.owners))
+	line.set_tooltip_text(1, item.title + "\n" + "、".join(item.get("categories", [])) + "\n" + "、".join(item.owners))
 	line.set_tooltip_text(2, line.get_text(2) + ("\n" + "、".join(running) if not running.is_empty() else ""))
 	if issue_list.columns == 4:
 		_set_owner_cell(line, item)
@@ -932,7 +1008,12 @@ func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, runni
 
 
 func _set_owner_cell(line: TreeItem, item: Dictionary) -> void:
-	line.set_text(3, "、".join(item.owners) if not item.owners.is_empty() else "—")
+	var names := PackedStringArray()
+	for category in item.get("categories", ["development"] if item.get("development", false) else []):
+		names.append(CATEGORY_NAMES.get(category, category))
+	var categories := "、".join(names)
+	var owner := "、".join(item.owners) if not item.owners.is_empty() else UNASSIGNED
+	line.set_text(3, categories + " / " + owner if not categories.is_empty() else owner)
 	line.set_tooltip_text(3, line.get_text(3))
 	line.set_custom_color(3, get_theme_color("font_readonly_color", "Editor"))
 
@@ -947,14 +1028,24 @@ func _paint_issue_status(item: TreeItem, rect: Rect2, state: String) -> void:
 	issue_list.draw_style_box(overview.status_badge(state), bounds)
 
 
-func _add_board_card(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray) -> StringName:
+func _add_board_card(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, region: String) -> StringName:
 	var card = graph_script.SizeableCard.new()
 	card.set_meta("issue_url", item.url)
 	card.name = "i_" + str(item.number)
+	card.set_meta("owner_region", region)
+	card.draggable = region.is_empty()
+	if not region.is_empty() and overview.has_node(NodePath(card.name)):
+		card.name += "_" + region.sha256_text().left(12)
 	card.title = "#%s" % item.number
 	card.tooltip_text = item.title + "\n" + item.url
 	card.custom_minimum_size.x = 280 * overview.get_theme_default_base_scale()
 	var title_label := card.get_titlebar_hbox().get_child(0) as Label
+	var link := LinkButton.new()
+	_bind_issue_link(link, item)
+	card.get_titlebar_hbox().add_child(link)
+	if link.visible:
+		title_label.hide()
+		link.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	card.dragged.connect(func(_from, to):
 		if not saved.has("positions"):
@@ -969,6 +1060,8 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	var open_title := _button(card, "", _open_issue.bind(item))
 	open_title.name = "OpenIssue"
 	open_title.flat = true
+	open_title.clip_contents = true
+	open_title.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	open_title.accessibility_name = "打开工单 · " + item.title
 	open_title.tooltip_text = item.title
 	var title := Label.new()
@@ -981,7 +1074,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	open_title.add_child(title)
 	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	open_title.custom_minimum_size.y = 2 * title.get_line_height()
+	open_title.custom_minimum_size.y = 2 * title.get_line_height() + title.get_theme_constant("line_spacing") + ceilf(4 * get_theme_default_base_scale())
 	if not running.is_empty():
 		var active := Label.new()
 		active.text = "运行中 · " + "、".join(running)
@@ -1002,7 +1095,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		detail.add_child(line)
 	card.add_child(detail)
 	card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
-	if not item.owners.is_empty():
+	if region.is_empty() and not item.owners.is_empty():
 		var owner := Label.new()
 		owner.text = "、".join(item.owners)
 		owner.tooltip_text = "负责人 · " + owner.text
@@ -1018,7 +1111,8 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		if not saved.has("positions"):
 			saved.positions = {}
 		saved.card_sizes[item.url] = card.size
-		saved.positions[item.url] = card.position_offset
+		if region.is_empty():
+			saved.positions[item.url] = card.position_offset
 		_queue_board_layout()
 		_queue_save())
 	board_cards.append(card)
@@ -1050,6 +1144,29 @@ func _layout_board() -> void:
 	var scale_factor := overview.get_theme_default_base_scale()
 	var gap := Vector2(56, 36) * scale_factor
 	var origin := Vector2(38, 75) * scale_factor
+	if project_mode:
+		var x := origin.x
+		var y := origin.y
+		var bottom := y
+		for owner: String in owner_sections:
+			var frame: GraphFrame = owner_sections[owner]
+			if not frame.visible:
+				continue
+			var pad := 16 * scale_factor
+			var extent := Vector2(280 * scale_factor, 50 * scale_factor)
+			for card in board_cards:
+				if card.visible and card.get_meta("owner_region") == owner:
+					card.position_offset = Vector2(x + pad, y + extent.y)
+					extent.y += card.size.y + pad
+					extent.x = maxf(extent.x, card.size.x)
+			frame.position_offset = Vector2(x, y)
+			frame.size = Vector2(extent.x + 2 * pad, extent.y)
+			bottom = maxf(bottom, y + frame.size.y)
+			x += frame.size.x + gap.x
+			if x + 312 * scale_factor > overview.size.x:
+				x = origin.x
+				y = bottom + gap.y
+		return
 	var pinned: Dictionary = saved.get("positions", {})
 	var obstacles: Array[Rect2] = []
 	var widths := PackedFloat32Array()
@@ -1123,6 +1240,8 @@ func _search_input(event: InputEvent) -> void:
 		search.accept_event()
 	elif event.keycode in [KEY_DOWN, KEY_ENTER, KEY_KP_ENTER] and issue_list.visible:
 		var first := issue_list.get_root().get_next_visible()
+		while first and not first.get_metadata(0) is Dictionary:
+			first = first.get_next_visible()
 		if first:
 			first.select(0)
 			issue_list.scroll_to_item(first)
@@ -1143,17 +1262,32 @@ func _filter_board() -> void:
 	if not is_instance_valid(status) or not is_instance_valid(owner_filter):
 		return
 	var shown := 0
+	var matched := {}
+	var counts := {}
 	var query := search.text.strip_edges().to_lower().trim_prefix("#")
 	for item in board.get("issues", []):
-		var node := overview.get_node_or_null(NodePath("i_" + str(item.number))) as GraphNode
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
-		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and (item.decision or _has_routing_questions(item) or not _pending_operation(item).is_empty())) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
-		if node:
-			node.visible = included and far_depth <= 0.0
-		if issue_rows.has(item.url):
-			issue_rows[item.url].visible = included
+		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _needs_decision(item, _display_state(item))) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in _owners(item))
+		matched[item.url] = included
 		if included:
 			shown += 1
+			for owner in _owners(item):
+				if owner_filter.selected <= 0 or owner_filter.text == owner:
+					counts[owner] = int(counts.get(owner, 0)) + 1
+		for line: TreeItem in grouped_rows.get(item.url, []):
+			line.visible = included and (not project_mode or owner_filter.selected <= 0 or owner_filter.text == line.get_parent().get_metadata(1))
+			if line.visible:
+				issue_rows[item.url] = line
+	for owner in owner_rows:
+		owner_rows[owner].visible = counts.has(owner)
+		owner_rows[owner].set_text(1, "%s · %d" % [owner, counts.get(owner, 0)])
+	for owner in owner_sections:
+		owner_sections[owner].visible = far_depth <= 0.0 and counts.has(owner)
+		owner_sections[owner].title = "%s · %d" % [owner, counts.get(owner, 0)]
+	for card in board_cards:
+		card.visible = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0 and (not project_mode or counts.has(card.get_meta("owner_region")))
+	if project_mode:
+		_queue_board_layout()
 
 	overview.refresh_wires()
 	var total: int = board.get("issues", []).size()
@@ -1235,6 +1369,7 @@ func _forget(reason: String) -> void:
 	_leave_conversation()
 	_stop_progress_watch()
 	work_status.hide()
+	issue_link.hide()
 	if not picker_scope.is_empty():
 		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",picker_scope.sha256_text(),{})
 	selection_epoch += 1
@@ -1249,6 +1384,8 @@ func _forget(reason: String) -> void:
 	far_depth = 0.0
 	project_anchor.hide()
 	personal_snapshot = {}
+	grouped_rows.clear()
+	owner_rows.clear()
 	issue_rows.clear()
 	issue_list.clear()
 	saved = {}
@@ -1321,6 +1458,7 @@ func _fresh_access() -> bool:
 func _open_models() -> void:
 	if await _fresh_access():
 		models_dialog.user_id = actor.user_id
+		models_dialog.chat = chat
 		models_dialog.popup_centered()
 
 
@@ -1428,6 +1566,15 @@ func _start_progress_watch(config: Dictionary) -> void:
 		watcher = OS.execute_with_pipe(config.node, [entry, config.directory], false)
 
 
+func _input(event: InputEvent) -> void:
+	if not project_mode or not overview.is_visible_in_tree():
+		return
+	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP) or event is InputEventMagnifyGesture:
+		var pointer: Vector2 = overview.get_global_transform_with_canvas().affine_inverse() * event.position
+		if Rect2(Vector2.ZERO, overview.size).has_point(pointer):
+			zoom_anchor = (overview.scroll_offset + pointer) / overview.zoom
+
+
 func _process(_delta: float) -> void:
 	_check_canvas_zoom()
 	if watcher.is_empty():
@@ -1485,6 +1632,8 @@ func _set_project(enabled: bool) -> void:
 		board = personal_snapshot
 		personal_snapshot = {}
 	project_mode = enabled
+	zoom_anchor = Vector2.INF
+	zoom_crossed = false
 	scope_picker.select(int(enabled))
 	far_depth = 0.0
 	project_anchor.hide()
@@ -1514,6 +1663,9 @@ func _check_canvas_zoom() -> void:
 			var origin_issue := current
 			editor.canvas.zoom = 0.85
 			_show_board()
+			if project_mode and owner_filter.selected > 0:
+				board_views.current_tab = 0
+				return
 			if project_mode:
 				_set_project(false)
 			board_views.current_tab = 1
@@ -1531,6 +1683,8 @@ func _check_canvas_zoom() -> void:
 		return
 	if not overview.is_visible_in_tree():
 		return
+	if overview.zoom < ZOOM_TO_ISSUE:
+		zoom_crossed = false
 	if far_depth > 0.0:
 		if not is_equal_approx(overview.zoom, 1.0):
 			_set_far_depth(far_depth - log(overview.zoom) / log(overview.zoom_step))
@@ -1541,8 +1695,12 @@ func _check_canvas_zoom() -> void:
 		if not loading_project:
 			_set_project(true)
 	elif overview.zoom >= ZOOM_TO_ISSUE:
-		if project_mode and not board_cards.any(func(card): return card.visible and card.selected):
-			_set_project(false)
+		if project_mode:
+			if not zoom_crossed:
+				zoom_crossed = true
+				if not _open_owner_at(zoom_anchor if zoom_anchor.is_finite() else (overview.scroll_offset + overview.get_local_mouse_position()) / overview.zoom):
+					overview.zoom = ZOOM_TO_ISSUE / overview.zoom_step
+				zoom_anchor = Vector2.INF
 			return
 		var center := (overview.scroll_offset + overview.size * 0.5) / overview.zoom
 		var nearest: GraphNode
@@ -1563,6 +1721,21 @@ func _check_canvas_zoom() -> void:
 					_open_issue(item)
 					editor.canvas.zoom = 1.0
 					break
+
+
+func _open_owner_at(point: Vector2) -> bool:
+	for owner: String in owner_sections:
+		var frame: GraphFrame = owner_sections[owner]
+		if frame.visible and Rect2(frame.position_offset, frame.size).has_point(point):
+			for index in owner_filter.item_count:
+				if owner_filter.get_item_text(index) == owner:
+					owner_filter.select(index)
+					overview.zoom = 0.85
+					board_views.current_tab = 0
+					advanced_bar.show()
+					advanced_button.text = "收起筛选 ▴"
+					return true
+	return false
 
 
 func _refresh_open_states() -> void:
@@ -2143,6 +2316,8 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	if not current.is_empty():
 		_save()
 	current = id
+	issue_link.hide()
+	work_status.hide()
 	_close_operation_details()
 	var port: Object = host if is_instance_valid(host) else self
 	var apply_port := Callable(port,"apply_graph") if id.begins_with("https://") else Callable()
@@ -2193,6 +2368,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		for item in board.get("issues", []):
 			if item.url == id and not str(item.get("title", "")).is_empty():
 				notice.text += " · " + str(item.title)
+				notice.tooltip_text = item.title + "\n" + id
 				break
 
 
@@ -2475,8 +2651,25 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 	return {"state":"waiting", "text":"等待工作者回执"}
 
 
+func _set_issue_brief(item: Dictionary, progress: Dictionary) -> void:
+	_bind_issue_link(issue_link, item)
+	work_status.visible = not item.is_empty() or not progress.is_empty()
+	if work_status.visible:
+		work_status.text = "当前状态 · " + graph_script.FlowCanvas.state_text(_display_state(item)) if item.has("status") else "当前进度"
+		if not progress.is_empty():
+			work_status.text += "　" + str(progress.text)
+		if offline:
+			work_status.text += "　离线快照"
+
+
 func _sync_workflow() -> void:
-	if current.is_empty() or not editor.draft.nodes.has("requirement"):
+	if current.is_empty():
+		return
+	if not editor.draft.nodes.has("requirement"):
+		for row in board.get("issues", []):
+			if row.url == current:
+				_set_issue_brief(row, _work_summary(row, {}))
+				break
 		return
 	var source := current
 	var binding: Dictionary = saved.get("linked", {}).get(source, {})
@@ -2553,9 +2746,7 @@ func _sync_workflow() -> void:
 	reply_button.text = "查看待确认操作" if not pending.is_empty() else ("讨论阻塞原因" if phase == "blocked" and _next_question().is_empty() else "答复问题")
 	if progress.get("chat_waiting", false) and pending.is_empty() and _next_question().is_empty():
 		reply_button.text = "进入待处理对话"
-	work_status.visible = not progress.is_empty()
-	if work_status.visible:
-		work_status.text = "当前工作者　" + str(progress.text)
+	_set_issue_brief(item, progress)
 	_update_direct_action()
 	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
 		"progress":progress, "operation":operation, "judging":routing_in_flight.has(_routing_key(item))}
