@@ -28,6 +28,16 @@ var watcher_buffer := ""
 var fresh_progress := false
 var refresh_pending := false
 var work_status := Label.new()
+var operation_history := {}
+var flow_split := HSplitContainer.new()
+var details_panel := VBoxContainer.new()
+var details_title := Label.new()
+var details_location := Label.new()
+var details_document := RichTextLabel.new()
+var details_command := TextEdit.new()
+var details_confirm: Button
+var details_token := ""
+var confirming_token := ""
 var clarification_dialog := ConfirmationDialog.new()
 var clarification_prompt := Label.new()
 var clarification_answer := TextEdit.new()
@@ -155,7 +165,14 @@ func _ready() -> void:
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
-	add_child(editor)
+	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(flow_split)
+	flow_split.add_child(editor)
+	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	flow_split.hide()
+	_build_operation_details(flow_split)
+	editor.confirm_operation.connect(_confirm_operation)
+	editor.show_operation_details.connect(_show_operation_details)
 	save_timer = Timer.new()
 	save_timer.one_shot = true
 	save_timer.wait_time = 0.4
@@ -179,6 +196,152 @@ func _button(parent: Control, title: String, action: Callable) -> Button:
 	button.pressed.connect(action)
 	parent.add_child(button)
 	return button
+
+
+func _build_operation_details(split: HSplitContainer) -> void:
+	details_panel.name = "OperationDetails"
+	details_panel.set_meta("ai_control_exclude", true)
+	details_panel.custom_minimum_size.x = 320
+	details_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	details_panel.size_flags_stretch_ratio = 0.65
+	split.add_child(details_panel)
+	details_panel.hide()
+	var header := HBoxContainer.new()
+	details_panel.add_child(header)
+	details_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	details_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	header.add_child(details_title)
+	_button(header, "关闭", _close_operation_details)
+	details_command.editable = false
+	details_command.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details_command.custom_minimum_size.y = 96
+	details_panel.add_child(details_command)
+	details_location.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	details_panel.add_child(details_location)
+	details_document.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	details_document.selection_enabled = true
+	details_panel.add_child(details_document)
+	details_confirm = _button(details_panel, "确认执行", func(): _confirm_operation(details_token))
+
+
+func _close_operation_details() -> void:
+	details_token = ""
+	details_panel.hide()
+	details_document.clear()
+	details_command.clear()
+
+
+func _pending_operation(item: Dictionary) -> Dictionary:
+	if offline or not fresh_progress or actor.is_empty() or item.get("closed", true) or item.get("status") not in ["in-progress", "in-review"] or not is_instance_valid(chat) or not chat.has_method("get_daqian_approval"):
+		return {}
+	var op: Dictionary = chat.get_daqian_approval()
+	if op.is_empty() or op.root != _repo() or op.actor != actor.user_id or op.url != item.get("url") or op.request != item.get("request") or op.source_sha256 != item.get("source_sha256", ""):
+		return {}
+	return op
+
+
+func _operation_state(token: String, state: String) -> void:
+	for op in operation_history.values():
+		if op.token == token:
+			op.state = state
+			_sync_workflow()
+			return
+
+
+func _confirm_operation(token: String) -> void:
+	var epoch := selection_epoch
+	if token.is_empty() or token != _pending_operation(editor.workflow.get("item", {})).get("token", ""):
+		return
+	if confirming_token == token:
+		return
+	confirming_token = token
+	var principal := actor.duplicate()
+	var scope := _repo()
+	var item: Dictionary = editor.workflow.item
+	notice.text = "正在核对工单和本次操作…"
+	var verified := await _board_command(false, actor.user_id)
+	if confirming_token == token:
+		confirming_token = ""
+	if scope != _repo() or epoch != selection_epoch or principal != actor:
+		return
+	var latest: Dictionary = verified.get("board", {})
+	var valid := false
+	if latest.get("repo_id") == principal.repo_id and latest.get("user_id") == principal.user_id:
+		for row in latest.get("issues", []):
+			if row.url == item.url and row.updated == item.updated:
+				valid = _pending_operation(row).get("token", "") == token
+				break
+	if not valid:
+		notice.text = str(verified.get("error", "工单状态或本次操作有变，请刷新后核对。"))
+		return
+	notice.text = "已核实工单，正在执行所选操作。"
+	if not chat.confirm_daqian_approval(token):
+		notice.text = "这项操作已结束或发生变化，请核对当前节点。"
+	_sync_workflow()
+
+
+func _show_operation_details(token: String) -> void:
+	var item: Dictionary = editor.workflow.get("item", {})
+	var op := _pending_operation(item)
+	if op.is_empty() or op.token != token:
+		return
+	details_token = token
+	details_title.text = "#%s · %s" % [item.number, op.summary]
+	details_command.text = op.detail
+	details_panel.show()
+	var doc: Dictionary = item.get("design_document", {})
+	var markdown: String = doc.get("markdown", "")
+	details_document.clear()
+	if markdown.is_empty():
+		details_location.text = "此工单尚无可读取的设计文档"
+		return
+	var lines := markdown.split("\n")
+	var anchor := _document_anchor(lines, op)
+	details_location.text = "%s · %s" % [doc.path, doc.source]
+	if anchor < 0:
+		details_location.text += "\n此节点尚未关联文档位置"
+		chat.render_daqian_markdown(details_document, markdown)
+		return
+	if anchor > 0:
+		chat.render_daqian_markdown(details_document, "\n".join(lines.slice(0, anchor)))
+	var end := anchor + 1
+	while end < lines.size() and not lines[end].strip_edges().is_empty() and not lines[end].begins_with("#"):
+		end += 1
+	var paragraph := details_document.get_paragraph_count() - 1
+	details_document.push_bgcolor(Color("#825921"))
+	chat.render_daqian_markdown(details_document, "\n".join(lines.slice(anchor, end)))
+	details_document.pop()
+	if end < lines.size():
+		chat.render_daqian_markdown(details_document, "\n".join(lines.slice(end)))
+	await get_tree().process_frame
+	if token == details_token:
+		details_document.scroll_to_paragraph(paragraph)
+
+
+func _document_anchor(lines: PackedStringArray, op: Dictionary) -> int:
+	# Explicit node anchors identify a stable operation kind, independent of translated labels.
+	var marker := "<!-- daqian-node:%s -->" % op.tool
+	var fenced := false
+	var explicit := false
+	var candidate := -1
+	for i in lines.size():
+		var line := lines[i].strip_edges()
+		if line.begins_with("```"):
+			fenced = not fenced
+			continue
+		if fenced or line.is_empty():
+			continue
+		if line == marker:
+			explicit = true
+			continue
+		if explicit:
+			return i
+		var heading := line.trim_prefix("#").lstrip("#").strip_edges()
+		if line.begins_with("#") and heading == op.summary:
+			candidate = i
+		elif candidate < 0 and line.begins_with("#") and heading in ["原始需求", "原始需求与目标"] and op.tool == "run_command" and "issue_gate.py" in op.detail and "--intake-only" in op.detail:
+			candidate = i
+	return candidate
 
 
 func _start_session() -> void:
@@ -266,6 +429,7 @@ func _exit_tree() -> void:
 
 
 func _show_board() -> void:
+	_close_operation_details()
 	work_status.hide()
 	selection_epoch += 1
 	if not current.is_empty():
@@ -273,6 +437,7 @@ func _show_board() -> void:
 	current = ""
 	saved.last_view = ""
 	editor.hide()
+	flow_split.hide()
 	actions.hide()
 	overview.show()
 	return_button.hide()
@@ -325,7 +490,11 @@ func _draw_board() -> void:
 			active.custom_minimum_size.x = 190
 			active.add_theme_color_override("font_color", graph_script.FlowCanvas.COLORS.running)
 			card.add_child(active)
-		if item.decision:
+		var needs_approval := not _pending_operation(item).is_empty()
+		if needs_approval:
+			label.text = "待你确认"
+			overview.mark_card(card, label, "awaiting_approval")
+		if item.decision or needs_approval:
 			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
@@ -413,6 +582,11 @@ func _layout_board() -> void:
 
 
 func _locate_pending(number: int) -> void:
+	for item in board.get("issues", []):
+		if item.number == number and not _pending_operation(item).is_empty():
+			await _open_issue(item)
+			_focus_operation()
+			return
 	_show_board()
 	status.select(0)
 	owner_filter.select(0)
@@ -442,7 +616,7 @@ func _filter_board() -> void:
 			continue
 		var query := search.text.strip_edges().to_lower().trim_prefix("#")
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
-		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and item.decision) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
+		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and (item.decision or not _pending_operation(item).is_empty())) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
 
 	overview.refresh_wires()
 
@@ -465,7 +639,9 @@ func _gate_visibility(opened: bool) -> void:
 	actions.visible = opened and not current.is_empty()
 	overview.visible = opened and current.is_empty()
 	editor.visible = opened and not current.is_empty()
+	flow_split.visible = editor.visible
 	if not opened:
+		_close_operation_details()
 		models_dialog.hide()
 		clarification_dialog.hide()
 		clarification_binding.clear()
@@ -643,6 +819,7 @@ func _stop_progress_watch() -> void:
 	fresh_progress = false
 	refresh_pending = false
 	chat_work.clear()
+	operation_history.clear()
 	routing_errors.clear()
 
 
@@ -1219,6 +1396,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	if not current.is_empty():
 		_save()
 	current = id
+	_close_operation_details()
 	var port: Object = host if is_instance_valid(host) else self
 	var apply_port := Callable(port,"apply_graph") if id.begins_with("https://") else Callable()
 	var read_port := Callable(port,"read_graph") if id.begins_with("https://") else Callable()
@@ -1239,6 +1417,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.baseline = stored.baseline
 		editor.draw_graph()
 	_sync_workflow()
+	flow_split.show()
 	editor.show()
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
@@ -1362,7 +1541,32 @@ func _attach_chat() -> void:
 		chat.connect("daqian_requirement_phase",_requirement_phase)
 		if chat.has_signal("daqian_work_event"):
 			chat.connect("daqian_work_event", _chat_work_event)
+		if chat.has_signal("daqian_approval_changed"):
+			chat.connect("daqian_approval_changed", _approval_changed)
+		if chat.has_signal("daqian_approval_state"):
+			chat.connect("daqian_approval_state", _operation_state)
 		chat.connect("daqian_preview_received",_preview_received)
+
+
+func _approval_changed() -> void:
+	_sync_workflow()
+	if not actor.is_empty():
+		_draw_board()
+	var op := _pending_operation(editor.workflow.get("item", {}))
+	if not op.is_empty() and editor.visible and chat.is_visible_in_tree():
+		var dock := get_parent() as EditorDock
+		var tabs := dock.get_parent() as TabContainer
+		if tabs:
+			tabs.current_tab = tabs.get_tab_idx_from_control(dock)
+		else:
+			dock.make_visible()
+		_focus_operation.call_deferred()
+
+
+func _focus_operation() -> void:
+	var card := editor.canvas.get_node_or_null("wf-operation") as GraphNode
+	if card and editor.is_visible_in_tree():
+		editor.canvas.scroll_offset = (card.position_offset + card.size * 0.5) * editor.canvas.zoom - editor.canvas.size * 0.5
 
 
 func _requirement_phase(source: String, phase: String, design: Dictionary) -> void:
@@ -1509,12 +1713,23 @@ func _sync_workflow() -> void:
 	if direct and phase not in ["closed", "blocked"] and item.get("status") == "planned":
 		phase = "routing" if judged.is_empty() else ("bound" if judged.ready else "questions")
 	var progress := _work_summary(item, judged) if not item.is_empty() else {}
+	var pending := _pending_operation(item)
+	var operation: Dictionary = operation_history.get(item.get("url", ""), {})
+	if not pending.is_empty():
+		operation = {"token":pending.token, "summary":"操作确认", "state":"awaiting_approval",
+			"caption":pending.summary, "version":pending.source_sha256}
+		operation_history[pending.url] = operation
+		progress = {"state":"waiting", "text":"等待你确认 · " + str(pending.summary)}
+	elif operation.get("state") == "awaiting_approval" or operation.get("version") != item.get("source_sha256"):
+		operation = {}
+	if not details_token.is_empty() and details_token != pending.get("token", ""):
+		_close_operation_details()
 	work_status.visible = not progress.is_empty()
 	if work_status.visible:
 		work_status.text = "当前工作者　" + str(progress.text)
 	_update_direct_action()
 	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
-		"progress":progress, "judging":routing_in_flight.has(_routing_key(item))}
+		"progress":progress, "operation":operation, "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()

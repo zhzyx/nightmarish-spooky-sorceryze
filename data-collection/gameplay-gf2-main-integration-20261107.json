@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "request_id": "gameplay-ds-session-20261106",
+  "observed_at": "2026-11-06T17:13:57Z",
+  "event": "source.changed",
+  "previous_head": "4bd8a038439cf32aef67e6c48a45d079927a0431",
+  "accepted_main": "49bd38d31812dc5c5ef838727483555ee7636a12",
+  "upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/216",
+  "consumers": [
+    "gameplay-gf2-delivery-20261106"
+  ],
+  "merge": "Normal no-commit merge; no conflicts; retain all upstream additions",
+  "module_tree": "e2139f2ebf54b32e450b1af0fb09a697aca4ba55",
+  "compatibility": "Gameplay and underlying APIs unchanged; editor overlap limited to upstream five daqian_bound lines alongside previous local variable renames",
+  "source_blob": "4877ea0672570864c85b77511d8ea822f6da018f",
+  "header_blob": "44c2b3f54f53ec0f08363354787aaaf0eb67dc80",
+  "strict_single_object_compile": {
+    "exit_code": 0,
+    "flags": "/W4 /WX",
+    "elapsed": "00:00:01.93"
+  },
+  "format": "clang-format 22.1.5 dry-run --Werror passed",
+  "independent_review": {
+    "worker": "/root/sinan_d3a08e32761a2af8",
+    "result": "no_blockers",
+    "upstream_logic_preserved": true,
+    "gameplay_unchanged": true
+  },
+  "previous_head_ci": {
+    "push_run": 42258751685,
+    "pr_run": 42258758190,
+    "clang_cl": {
+      "passed": true,
+      "test_cases": 1478,
+      "assertions": 427939,
+      "failed": 0
+    },
+    "msvc_release": "passed",
+    "gcc_release": "passed",
+    "static": "passed",
+    "msvc_editor": "pending compilation at observation"
+  },
+  "recovery_point": "4bd8a038439cf32aef67e6c48a45d079927a0431",
+  "next": "Exact-head CI on integrated candidate before main",
+  "remote_merge_verified": false,
+  "input_tokens": null,
+  "output_tokens": null
+}

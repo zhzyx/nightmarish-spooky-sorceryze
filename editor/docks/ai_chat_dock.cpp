@@ -990,6 +990,7 @@ RichTextLabel *AIChatDock::_message_text(VBoxContainer *p_parent, bool p_small) 
 }
 
 void AIChatDock::_render_markdown(RichTextLabel *p_label, const String &p_text) {
+	ERR_FAIL_NULL(p_label);
 	bool code = false;
 	for (const String &line : p_text.split("\n")) {
 		if (line.begins_with("```")) {
@@ -1427,6 +1428,7 @@ void AIChatDock::_automation_toggled(bool) {
 void AIChatDock::_set_busy(bool p_busy) {
 	const bool was_busy = busy;
 	if (was_busy && !p_busy) {
+		_end_daqian_approval(daqian_approval_running ? "unknown" : "cancelled");
 		_end_gonggong(turn_completed ? "completed" : "failed");
 	}
 	busy = p_busy;
@@ -2437,6 +2439,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 }
 
 void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
+	_daqian_tool_result(p_result, p_file_success);
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
 		_set_busy(false);
 		return;
@@ -2491,7 +2494,158 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 	callable_mp(this, &AIChatDock::_next_tool).call_deferred(session_generation);
 }
 
+// Only a model tool in a conversation explicitly bound by Daqian can offer a
+// node approval. Manual editor actions and external bridge requests use their dialogs.
+bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
+	if (!busy || consultation_turn || snapshot_restoring || !pending_external_editor_message.is_empty() || tool_index >= tool_calls.size()) {
+		return false;
+	}
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	if (!bindings.has(conversation_id)) {
+		return false;
+	}
+	const Dictionary call = tool_calls[tool_index];
+	const Dictionary function = call["function"];
+	const String tool = function["name"];
+	String summary;
+	if (tool == "run_command") {
+		summary = String(U"执行命令 · ") + pending_command.get_slice("\n", 0);
+	} else if (tool == "write_file" || tool == "write_script") {
+		summary = String(U"写入文件 · ") + pending_path;
+	} else if (tool == "check_script" || tool == "run_test") {
+		summary = String(tool == "check_script" ? U"检查脚本 · " : U"运行测试 · ") + pending_path;
+	} else if (tool == "editor_action" || tool == "route_engine_message") {
+		const Dictionary operation = tool == "route_engine_message" ? Dictionary(pending_editor_action["operation"]) : pending_editor_action;
+		summary = String(U"编辑器操作 · ") + String(operation.get("action", "")) + " " + String(operation.get("target", ""));
+	} else {
+		summary = tool == "build_engine" ? (engine_tool_wants_restart ? U"编译并重启引擎" : U"编译引擎") : tool == "restart_engine" ? U"重启引擎" : U"回退引擎";
+	}
+	daqian_approval_generation = session_generation;
+	daqian_approval["token"] = new_conversation_id();
+	daqian_approval["root"] = gonggong_report_root;
+	daqian_approval["url"] = gonggong_reporting.get("source_ref", "");
+	daqian_approval["request"] = gonggong_reporting.get("request_ref", "");
+	daqian_approval["actor"] = gonggong_reporting.get("actor", "");
+	daqian_approval["source_sha256"] = gonggong_reporting.get("source_sha256", "");
+	daqian_approval["step"] = "tool-" + itos(tool_rounds) + "-" + itos(tool_index);
+	daqian_approval["tool"] = tool;
+	daqian_approval["summary"] = _redact(summary).left(160);
+	daqian_approval["detail"] = _redact(p_detail);
+	if (_get_daqian_approval().is_empty()) {
+		daqian_approval.clear();
+		const String error = "Error: The Daqian approval could not be bound to this tool and Issue. No action was executed.";
+		if (engine_dialog_action.begins_with("tool_")) {
+			engine_dialog_action = String();
+			Dictionary result;
+			result["ok"] = false;
+			result["error"] = error;
+			_finish_engine_tool(result);
+		} else {
+			if (pending_action == "route_engine_message") {
+				_get_editor_control()->cancel_route(pending_editor_action, "approval_unavailable");
+			}
+			_finish_tool(error);
+		}
+		return true;
+	}
+	const Dictionary agent = gonggong_reporting["agent"];
+	emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), "step", "confirmation", "waiting");
+	emit_signal("daqian_approval_changed");
+	return true;
+}
+
+Dictionary AIChatDock::_get_daqian_approval() const {
+	if (daqian_approval.is_empty() || daqian_approval_running || !busy || !is_inside_tree() || session_generation != daqian_approval_generation || tool_index >= tool_calls.size()) {
+		return Dictionary();
+	}
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const String number = entry.get("issue_number", "");
+	const String source = entry.get("source", "");
+	const String url = daqian_approval["url"];
+	const String version = daqian_approval["source_sha256"];
+	const Dictionary call = tool_calls[tool_index];
+	const Dictionary function = call["function"];
+	const String tool = daqian_approval["tool"];
+	const bool engine = tool == "build_engine" || tool == "restart_engine" || tool == "rollback_engine";
+	if (function.get("name", "") != tool || (engine ? engine_dialog_action != "tool_" + tool || engine_tool_call_id != String(call["id"]) : pending_action != (tool == "write_file" ? String("write_script") : tool))) {
+		return Dictionary();
+	}
+	if (source.is_empty() || (source.contains("://") && source != url) || !url.ends_with("/issues/" + number) ||
+			!AIChatIssueGuide::is_bound(number.to_int(), entry.get("request_id", "")) || entry.get("request_id", "") != daqian_approval["request"] ||
+			String(daqian_approval["token"]).is_empty() || String(daqian_approval["actor"]).is_empty() || version.length() != 64 || !version.is_valid_hex_number(false) ||
+			gonggong_report_root.is_empty() || gonggong_report_root != String(EDITOR_GET("gonggong/workspace")) || daqian_approval["root"] != gonggong_report_root ||
+			gonggong_reporting.get("source_ref", "") != url || gonggong_reporting.get("request_ref", "") != daqian_approval["request"] ||
+			gonggong_reporting.get("actor", "") != daqian_approval["actor"] || gonggong_reporting.get("source_sha256", "") != version ||
+			daqian_approval["step"] != "tool-" + itos(tool_rounds) + "-" + itos(tool_index)) {
+		return Dictionary();
+	}
+	return daqian_approval.duplicate();
+}
+
+bool AIChatDock::_confirm_daqian_approval(const String &p_token) {
+	const Dictionary approval = _get_daqian_approval();
+	if (approval.is_empty() || approval["token"] != p_token) {
+		return false;
+	}
+	// Consume before any callbacks. A synchronous completion or a second click
+	// must never authorize the same tool again.
+	daqian_approval_running = true;
+	emit_signal("daqian_approval_state", p_token, "running");
+	if (daqian_approval.get("token", "") == p_token) { // A signal listener may have stopped the turn.
+		if (engine_dialog_action.begins_with("tool_")) {
+			_confirm_engine_action();
+		} else {
+			_confirm_action();
+		}
+	}
+	emit_signal("daqian_approval_changed");
+	return true;
+}
+
+void AIChatDock::_end_daqian_approval(const String &p_state) {
+	if (daqian_approval.is_empty()) {
+		return;
+	}
+	const String token = daqian_approval["token"];
+	daqian_approval.clear();
+	daqian_approval_running = false;
+	emit_signal("daqian_approval_state", token, p_state);
+	emit_signal("daqian_approval_changed");
+}
+
+void AIChatDock::_daqian_tool_result(const String &p_result, bool p_file_success) {
+	if (!daqian_approval_running) {
+		return;
+	}
+	const String tool = daqian_approval["tool"];
+	if (p_result.begins_with("Error:")) {
+		_end_daqian_approval("failed");
+	} else if (tool == "write_file" || tool == "write_script") {
+		_end_daqian_approval(p_file_success ? "completed" : "failed");
+	} else {
+		JSON json;
+		Dictionary result;
+		if (json.parse(p_result) == OK && json.get_data().get_type() == Variant::DICTIONARY) {
+			result = json.get_data();
+		}
+		if (result.get("stage", "") == "cancelled") {
+			_end_daqian_approval("cancelled");
+		} else if (result.has("ok")) {
+			_end_daqian_approval(bool(result["ok"]) ? "completed" : "failed");
+		} else if (result.has("exit_code")) {
+			_end_daqian_approval(int(result["exit_code"]) == 0 && !bool(result.get("timed_out", false)) ? "completed" : "failed");
+		} else {
+			// In particular, a native CLI's approval receipt has no exit status.
+			_end_daqian_approval("unknown");
+		}
+	}
+}
+
 void AIChatDock::_show_confirmation() {
+	if (_offer_daqian_approval(preview->get_text())) {
+		return;
+	}
 	// Settings are exclusive windows. Nest approval under the active modal so
 	// users can confirm a guided setting change without closing its target.
 	Node *parent = this;
@@ -3050,6 +3204,11 @@ String AIChatDock::_work_order_binding(const String &p_field) const {
 }
 
 void AIChatDock::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_daqian_approval"), &AIChatDock::_get_daqian_approval);
+	ClassDB::bind_method(D_METHOD("confirm_daqian_approval", "token"), &AIChatDock::_confirm_daqian_approval);
+	ClassDB::bind_method(D_METHOD("render_daqian_markdown", "label", "text"), &AIChatDock::_render_markdown);
+	ADD_SIGNAL(MethodInfo("daqian_approval_changed"));
+	ADD_SIGNAL(MethodInfo("daqian_approval_state", PropertyInfo(Variant::STRING, "token"), PropertyInfo(Variant::STRING, "state")));
 	ClassDB::bind_method(D_METHOD("launch_daqian_routing", "binding", "selection"), &AIChatDock::_launch_daqian_routing);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()));
@@ -4170,6 +4329,9 @@ void AIChatDock::_run_engine_tool(const String &p_name, const Dictionary &p_argu
 	}
 	if (!auto_execute_commands->is_pressed()) {
 		engine_dialog_action = "tool_" + p_name;
+		if (_offer_daqian_approval(summary + "\n" + JSON::stringify(engine_tool_arguments, "  "))) {
+			return;
+		}
 		engine_approval->set_text(summary);
 		engine_approval->popup_centered();
 		if (!engine_approval->is_visible()) {
@@ -4348,6 +4510,9 @@ void AIChatDock::_poll_engine_build() {
 			result["restarted"] = false;
 			result["executable"] = executable;
 			result["build_log"] = engine_log_path;
+			if (engine_tool_wants_restart) {
+				_end_daqian_approval("failed");
+			}
 			result["note"] = engine_tool_wants_restart ? "The build and its startup check passed, but the restart handoff could not be armed. The edited C++ is NOT active yet; the running editor is unchanged." : "The build and its startup check passed. The edited C++ is NOT active until a restart; call restart_engine when the user is ready.";
 			_finish_engine_tool(result);
 			_set_busy(busy);
@@ -4678,6 +4843,11 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
+	_end_daqian_approval("cancelled");
+	if (engine_dialog_action.begins_with("tool_")) {
+		engine_dialog_action = String();
+		engine_approval->hide();
+	}
 	if (!pending_external_editor_message.is_empty()) {
 		_cancel_external_editor_request("user_cancelled");
 		_get_editor_control()->cancel_guidance();
@@ -4802,6 +4972,7 @@ void AIChatDock::_notification(int p_what) {
 			_poll_process();
 		}
 	} else if (p_what == NOTIFICATION_EXIT_TREE) {
+		_end_daqian_approval(daqian_approval_running ? "unknown" : "cancelled");
 		if (!pending_external_editor_message.is_empty()) {
 			_get_editor_control()->cancel_route(pending_external_editor_message, "editor_closed");
 		}
