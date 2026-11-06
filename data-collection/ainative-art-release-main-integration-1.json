@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "issue_number": 152,
+  "request_id": "ainative-art-11-cloth-20261106",
+  "related_issues": [
+    151,
+    152,
+    153
+  ],
+  "base": "e79ef45d4ceb78a827b135d164e4088ba8f2ba85",
+  "prior_pr": 331,
+  "prior_signed": "3da6b8aebda9e53c57601d44ab29fc9c8492cdc3",
+  "prior_exact_ci": "SUCCESS",
+  "main_changed_files": [
+    "README.md",
+    "customizations/components/godot-host/README.md",
+    "customizations/components/godot-host/macos_validation.gd",
+    "customizations/components/godot-host/silent_validation.gd",
+    "data-collection/godot-macos-headless-preset.json",
+    "data-collection/history-deep-compression-20261107.json",
+    "data-collection/requests/godot-macos-headless-preset/16f7a9af-2f28-493a-a36c-197272c7424d.json",
+    "data-collection/requests/godot-macos-headless-preset/6d3da42a-84b4-43a9-b91f-445a0e7542dc.json",
+    "design-docs/godot-macos-headless-preset.md",
+    "design-docs/history-storage-20261107.md",
+    "editor/SCsub",
+    "editor/docks/daqian_dock.cpp",
+    "editor/docks/daqian_dock.h",
+    "editor/editor_node.cpp",
+    "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/dispatch-0470085154854dfd90d7a5daa0c1d6a6.json",
+    "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/dispatch-df4c2592eb6249ed9ed09e81cb8ec7ab.json",
+    "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/issue226-startup-preset-request.json",
+    "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/kuafu-0cd6ab99a96b56c6dca22982231b1d7dc12ec7e1.json",
+    "gonggong-diting-data/events/gonggong-workspace/godot-macos-headless-preset/kuafu-2dc14d6ea0a91adba2ac6bcc909278508012bf9a.json",
+    "gonggong-diting-data/events/gonggong-workspace/history-deep-compression-20261107/history-deep-compression-20261107-request.json",
+    "tests/editor/macos_startup_validation.gd"
+  ],
+  "no_owned_file_overlap": true,
+  "all45_prepared_files_byte_identical": true,
+  "reused_evidence": [
+    "Independent source/physics/visual reviews",
+    "Normal workbench four panels and three actual save/reopen products"
+  ],
+  "scope": "Main delta does not change AINative sample runtime. Exact candidate gates and CI rerun; original records retained."
+}
