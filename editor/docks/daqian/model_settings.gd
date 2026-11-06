@@ -18,6 +18,7 @@ var info: Label
 var pending := false
 var editor_session := ""
 var user_id := ""
+var chat: Control
 
 
 func _ready() -> void:
@@ -77,28 +78,18 @@ func _save_profile() -> void:
 func _connect_local() -> void:
 	var settings := EditorInterface.get_editor_settings()
 	var local := {}
-	for field in ["cli_node", "cli_entry", "cli_model", "codex_entry", "codex_model"]:
+	for field in ["backend", "model", "endpoint", "cli_node", "cli_entry", "cli_model", "codex_entry", "codex_model"]:
 		var path: String = "ai_chat/" + field
 		if settings.has_setting(path):
 			local[field] = str(settings.get_setting(path))
+	if local.get("backend") == "0" and is_instance_valid(chat):
+		var field := chat.find_child("APIKey", true, false) as LineEdit
+		if field:
+			var secret := field.text.strip_edges()
+			# An ambient OpenAI key belongs only to its own endpoint.
+			if secret != OS.get_environment("OPENAI_API_KEY") or local.get("endpoint") == "https://api.openai.com/v1/chat/completions":
+				local.editor_key = secret
 	_run("connect-local", local)
-
-
-func _editor_api_hint() -> String:
-	var settings := EditorInterface.get_editor_settings()
-	if not settings.has_setting("ai_chat/model") or not settings.has_setting("ai_chat/endpoint"):
-		return ""
-	var saved_model := str(settings.get_setting("ai_chat/model")).strip_edges()
-	var saved_url := str(settings.get_setting("ai_chat/endpoint")).strip_edges()
-	if saved_model.is_empty() or saved_url.is_empty():
-		return ""
-	if not model.text.is_empty() or not key.text.is_empty() or account_name.text != PROVIDERS[provider.selected] or url.text != ENDPOINTS[provider.selected]:
-		return "已发现 AI Chat 的 HTTP 接口；手工表单中有待保存的输入"
-	provider.select(PROVIDERS.size() - 1)
-	account_name.text = "AI Chat"
-	url.text = saved_url
-	model.text = saved_model
-	return "已填入 AI Chat 的模型与接口；输入对应密钥即可保存"
 
 
 func _run(action: String, input: Dictionary) -> void:
@@ -126,7 +117,7 @@ func _run(action: String, input: Dictionary) -> void:
 	pipe.flush()
 	if action == "add":
 		key.clear()
-	info.text = "正在识别本机模型…" if action == "connect-local" else "正在写入系统凭据存储…"
+	info.text = "正在识别本机模型，并验证文本回复…" if action == "connect-local" else "正在写入系统凭据存储…"
 	var data := PackedByteArray()
 	while OS.is_process_running(process.pid):
 		if pipe.get_length()>0:
@@ -152,9 +143,6 @@ func _run(action: String, input: Dictionary) -> void:
 				if not str(source.note).is_empty():
 					line += " · " + str(source.note)
 				lines.append(line)
-			var hint := _editor_api_hint()
-			if not hint.is_empty():
-				lines.append(hint)
 			info.text = "\n".join(lines)
 			catalog_changed.emit()
 			return

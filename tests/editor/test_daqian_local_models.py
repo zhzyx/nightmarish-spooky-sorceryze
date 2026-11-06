@@ -1,17 +1,18 @@
 import json
 import os
-from contextlib import closing, ExitStack
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from contextlib import ExitStack, closing
+from pathlib import Path
 from unittest.mock import patch
+
+import local_models
+import model_catalog as catalog
+from model_api import invoke
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/godot-host/daqian"))
-from model_api import invoke
-import local_models
-import model_catalog as catalog
 
 
 class LocalModels(unittest.TestCase):
@@ -23,8 +24,11 @@ class LocalModels(unittest.TestCase):
         self.db = self.stack.enter_context(closing(catalog.database(folder)))
         self.stack.enter_context(patch.dict(os.environ, {"CODEX_HOME": str(folder)}, clear=True))
         self.cache = folder / "models_cache.json"
-        self.stack.enter_context(patch.object(local_models, "installations", return_value=(
-            "/node", {"codex": "/codex", "codebuddy": "/codebuddy"})))
+        self.stack.enter_context(
+            patch.object(
+                local_models, "installations", return_value=("/node", {"codex": "/codex", "codebuddy": "/codebuddy"})
+            )
+        )
 
     def test_connect_retries_preserve_profiles_evidence_and_secrets(self):
         self.cache.write_text(json.dumps({"models": [{"slug": "local-a"}, {"slug": "hidden", "visibility": "hide"}]}))
@@ -56,6 +60,33 @@ class LocalModels(unittest.TestCase):
         self.assertIn("自定义" if sys.version_info >= (3, 11) else "3.11", rows[0]["note"])
         self.assertFalse(catalog.profiles(self.db))
 
+    def test_one_click_proves_selected_source_and_reuses_evidence(self):
+        self.cache.write_text('{"models":[{"slug":"chosen"}]}')
+        calls = []
+
+        def respond(profile, prompt, images):
+            calls.append(profile["model"])
+            return {"text": prompt.split()[-1]}
+
+        with (
+            patch.object(local_models, "run_json", return_value={"models": []}),
+            patch.object(catalog, "invoke", side_effect=respond),
+        ):
+            for _ in range(2):
+                catalog.connect_and_verify(self.db, {"backend": "2"})
+        self.assertEqual(calls, ["chosen"])
+        self.assertEqual(catalog.sinan_catalog(self.db, ["text"])[0]["config"]["model"], "chosen")
+
+    def test_wrong_challenge_keeps_discovered_model_unqualified(self):
+        self.cache.write_text('{"models":[{"slug":"local"}]}')
+        with (
+            patch.object(local_models, "run_json", return_value={"models": []}),
+            patch.object(catalog, "invoke", return_value={"text": "other"}),
+        ):
+            rows = catalog.connect_and_verify(self.db, {"backend": "2"})
+        self.assertIn("验证回复", rows[0]["note"])
+        self.assertEqual(catalog.sinan_catalog(self.db, ["text"]), [])
+
     def test_source_failures_are_independent(self):
         self.cache.write_text("{")
         os.environ.update(OPENAI_MODEL="example", OPENAI_API_KEY="private-test", OPENAI_BASE_URL="https://other.test")
@@ -70,8 +101,9 @@ class LocalModels(unittest.TestCase):
                 return {"models": [{"id": "buddy"}]}
             self.assertEqual(list(args[1:4]), [local_models.BRIDGES["codebuddy"], "chat", "/codebuddy"])
             payload = json.loads(args[4].read_text())
-            self.assertEqual(payload, {"model": "buddy", "messages": [{"role": "user", "content": "ping"}],
-                                       "available_tools": []})
+            self.assertEqual(
+                payload, {"model": "buddy", "messages": [{"role": "user", "content": "ping"}], "available_tools": []}
+            )
             return {"choices": [{"message": {"content": "pong"}, "finish_reason": "stop"}]}
 
         self.cache.write_text('{"models":[{"slug":"codex"}]}')

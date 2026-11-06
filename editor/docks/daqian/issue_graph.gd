@@ -54,7 +54,7 @@ class FlowCanvas extends GraphEdit:
 	const LABELS := {"awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
 		"open":"待制作", "in-progress":"进行中", "in-review":"待验收", "completed":"已完成",
 		"dispatched":"已派发", "reserved":"已预留", "waiting":"等待输入或证据", "answered":"已答复",
-		"needs-decision":"待决定", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
+		"needs-decision":"待决策", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
 		"closed":"已关闭", "stopping":"正在停止", "reconcile_required":"待核实"}
 	const WIRE := """
 shader_type canvas_item;

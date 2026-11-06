@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-auto-connect-issue-context-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-auto-connect-issue-context",
+  "kind": "request",
+  "occurred_at": "2026-11-06T22:01:11.8687426+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/341",
+  "agent": {
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "id": "daqian-current-operator"
+  },
+  "payload": {
+    "intent": "自动接入已配置 AI、工单链接和摘要、按负责人缩放及个人待决策优先排序",
+    "document": "design-docs/daqian/auto-connect-and-issue-context.md"
+  },
+  "evidence_refs": [],
+  "sha256": "a87e92082d37605d468cf78acee99842a563478641161213a5fd899a0d25dfe6"
+}
