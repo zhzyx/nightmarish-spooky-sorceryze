@@ -1,0 +1,30 @@
+{
+  "request_id": "ainative-art-01-contracts-20261106",
+  "issue_number": 142,
+  "date": "2026-11-06",
+  "scope": "Complete node/provider/publication extension contracts",
+  "tests": {
+    "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+    "passed": 22
+  },
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "fixed": "canonical equality prevents numeric type changes in immutable node definitions and terminal receipts"
+  },
+  "acceptance": {
+    "serialization": "passed",
+    "dependency_and_binding_validation": "passed",
+    "unknown_artifact_preservation": "passed",
+    "ue_mixamo_requests": "passed_synthetic_contracts_only",
+    "node_provider_context_contracts": "passed",
+    "atomic_no_clobber_publication": "passed"
+  },
+  "remaining_in_other_issues": [
+    "executor",
+    "actual generation providers",
+    "Godot UI",
+    "actual UE/Mixamo fitting"
+  ],
+  "remote_main": "pending_at_validation"
+}
