@@ -1940,10 +1940,7 @@ func _next_question() -> String:
 			if debug_states[id].get("state") == "waiting" and editor.draft.nodes.get(id, {}).get("kind") == "question":
 				return id
 		return ""
-	for id in editor.context.get("questions", {}):
-		if not editor.context.get("answers", {}).has(id) and editor.draft.nodes.has(id):
-			return id
-	return ""
+	return editor.pending_question()
 
 
 func _respond_to_wait() -> void:
