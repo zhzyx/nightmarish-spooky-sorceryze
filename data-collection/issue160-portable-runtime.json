@@ -1,0 +1,43 @@
+{
+  "request_id": "collaborator-runtime-second-host",
+  "issue_number": 160,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160",
+  "parent_issue": 158,
+  "authority": "2026-11-06 user request in this chat: audit Codex dependencies, deliver necessary capabilities in main; no changes to other collaborators’ installations",
+  "baseline": "b9433dcabe69be1a8850a42a9fe8b9234829b867",
+  "verified_input_tree": "4d79b9d7028153dd4c2992f9be34aa2068ee951d",
+  "entry_sha256": "d6f5f46454e18d58a113e22d5d5c16d111676232c4a93ccb79d0a9bf84d406b8",
+  "scope": "Independent temporary Git clone; matching staged candidate tree before appending receipts. No historical claims, codex executable on PATH, Godot, signed production grant or model service used for the framework verification.",
+  "operator": "Sail-Li",
+  "permission": "WRITE",
+  "source_revision": "5b039a52011d4df9cb2e02b4fe86744bf68dc29d074a47a5a594e7090ccbbcc2",
+  "worker_id": "29d205a6-ee76-4ed4-a816-54167cc3ff91",
+  "worker_pid": 99537,
+  "exit_code": 0,
+  "terminal": "completed",
+  "reservation": "453d21f3666611fffee2b495b2e7a0ceeffed67dd2106ebee08a8a0c6c7caf21",
+  "reservation_state": "released",
+  "framework_version": "0.9.2",
+  "tests": {
+    "node": 60,
+    "python": 6,
+    "portable_model_binding": "signature rejection, task/authority/source/profile capability & state resource binding, private ledger recovery; controlled unit tests",
+    "generic_production_command": "real child processes and isolated worktree writes using controlled workers; real suppliers not invoked",
+    "dependency_progression": "registered upstream evidence + real subprocess in fixture; original GitHub business dependency acceptance not observed",
+    "framework_runtime_loopback": 10
+  },
+  "limitations": [
+    "second collaborator identity still pending",
+    "cross-installation shared claim service and unattended event consumer not deployed",
+    "no provider model call or Godot GUI run",
+    "checkout tests on macOS; Windows production runtime not exercised here"
+  ],
+  "usage": null,
+  "integration_base": "67a4313853642cfde5935b2ee49d98745f16f65e",
+  "integration_note": "New main touched different files. Verification entry and framework integrity inputs match the tested tree. Historical signed ledger recovery and Python child runtime selection subsequently corrected and verified separately.",
+  "independent_review": {
+    "initial": "/root/sinan_77a2a007fa098a05",
+    "corrected": "/root/sinan_39760f8d2dbf83f1",
+    "result": "pass after targeted fixes"
+  }
+}

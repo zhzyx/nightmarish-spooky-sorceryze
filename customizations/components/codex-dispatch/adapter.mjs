@@ -62,7 +62,7 @@ export class CodexDispatchHost {
       chatCreationAuthorized: this.policy.chatCreationAuthorized === true && value.environment.chatCreationAuthorized === true}};
   }
   async revalidate(a) {
-    if (a.target === 'agent' && typeof this.native.spawn_agent !== 'function') return false;
+    if (a.target === 'agent' && typeof this.native.spawn_agent !== 'function' && typeof this.native.launchAgent !== 'function') return false;
     if (a.target === 'chat') {
       if (typeof this.native.create_thread !== 'function' || this.policy.chatCreationAuthorized !== true || !this.policy.threadTarget) return false;
       const explicit = this.policy.explicitChatModels?.[a.ticket];
@@ -87,6 +87,13 @@ export class CodexDispatchHost {
   async launch(a) {
     let args, raw;
     const inherited = a.target === 'agent' && this.policy.inheritedAgentModel !== undefined;
+    if (a.target === 'agent' && this.native.launchAgent) {
+      const receipt = await this.native.launchAgent(a);
+      if (!nonempty(receipt?.workerId) || !nonempty(receipt.reference) ||
+          receipt.target !== a.target || receipt.model !== a.model.id) throw Error('Repository worker receipt mismatch');
+      persistNew(path.join(this.root, 'records', `${crypto.randomUUID()}.json`), {assignment:a, state:'launch_received', receipt});
+      return receipt;
+    }
     if (a.target === 'agent') {
       args = {task_name: `sinan_${hash(a.key).slice(0, 16)}`, fork_turns: 'none', message: handoff(a)};
       if (!inherited) args.model = a.model.id;
