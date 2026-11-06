@@ -1,6 +1,7 @@
 @tool
 extends VBoxContainer
 # Local machine settings are intentionally excluded from workflow serialization.
+var rigging_panel: VBoxContainer
 var generator_choice: OptionButton
 var graph: GraphEdit
 var status: Label
@@ -55,19 +56,30 @@ func button(parent: Node, label: String, action: Callable):
 
 func _ready():
 	custom_minimum_size = Vector2(900, 520)
+	var scroll = ScrollContainer.new()
+	scroll.name = 'WorkbenchScroll'
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
+	add_child(scroll)
+	var content = VBoxContainer.new()
+	content.name = 'WorkbenchContent'
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
 	state_dir = ProjectSettings.globalize_path("user://ainative")
 	DirAccess.make_dir_recursive_absolute(state_dir)
 	db = state_dir.path_join("executor.sqlite")
 	var settings = ConfigFile.new()
 	settings.load(state_dir.path_join("local.cfg"))
 	var machine = HBoxContainer.new()
-	add_child(machine)
+	content.add_child(machine)
 	python_edit = line(machine, "Trusted local Python executable", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", "python"))
 	host_edit = line(machine, "Trusted editor_host.py path", settings.get_value("host", "script", ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")))
 	factory_edit = line(machine, "Trusted provider factory", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(machine, "Save local settings", save_settings)
 	var bar = HBoxContainer.new()
-	add_child(bar)
+	content.add_child(bar)
 	path_edit = line(bar, "Workflow JSON path", ProjectSettings.globalize_path("user://workflow.json"))
 	button(bar, "Save graph", save_graph)
 	button(bar, "Open graph", open_graph)
@@ -83,7 +95,7 @@ func _ready():
 	button(bar, "Resume run", resume_run)
 	var split = HSplitContainer.new()
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(split)
+	content.add_child(split)
 	graph = GraphEdit.new()
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -140,8 +152,11 @@ func _ready():
 	environment.environment.ambient_light_color = Color.WHITE
 	environment.environment.ambient_light_energy = 0.3
 	preview_root.add_child(environment)
+	rigging_panel = preload('res://addons/ainative/rigging_panel.gd').new()
+	content.add_child(rigging_panel)
+	rigging_panel.initialize(self)
 	var publish_bar = HBoxContainer.new()
-	add_child(publish_bar)
+	content.add_child(publish_bar)
 	target_edit = line(publish_bar, "New .tres (image) or .tscn (mesh) absolute target", ProjectSettings.globalize_path("res://published.tres"))
 	button(publish_bar, "Review & publish", review_publish)
 	dialog = ConfirmationDialog.new()
@@ -149,7 +164,7 @@ func _ready():
 	dialog.confirmed.connect(confirm_publish)
 	status = Label.new()
 	status.text = "Copy demo or ComfyUI generation. Configure local factory for generation."
-	add_child(status)
+	content.add_child(status)
 	if FileAccess.file_exists(state_dir.path_join("last_run.txt")):
 		run_id = FileAccess.get_file_as_string(state_dir.path_join("last_run.txt"))
 	add_node()
@@ -441,6 +456,7 @@ func load_preview(data: Dictionary, node_id: String):
 		preview_scene = document.generate_scene(state)
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
+		rigging_panel.set_source(data.path)
 		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token

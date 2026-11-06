@@ -1,0 +1,226 @@
+{
+  "request_id": "ainative-art-05-rigging-20261106",
+  "issue_number": 146,
+  "date": "2026-11-06",
+  "worker": "/root/sinan_5fcee61f06b77e2b",
+  "worker_terminal_verified": true,
+  "dependency": {
+    "issue": 145,
+    "pr": 192,
+    "main_commit": "f537f112ac3e8c8ed62b748f5f6fd4cf790d0867"
+  },
+  "engine": "4.8.beta.custom_build.ced0368bb",
+  "platform": "Windows, actual Godot headless + NVIDIA OpenGL compatibility renderer",
+  "python_tests_passed": 55,
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "independent_checks": "Two publication Python tests, actual generated GLB marked-pose Godot acceptance, negative cases, publication/parameter identity review, final 1280x720 scroll accessibility screenshot. Root added requested run/provider identity and full rest-transform assertions to the UI replay and reran it successfully."
+  },
+  "source": {
+    "run_id": "a7e53d7b3f3f4ae097afca965f32310d",
+    "sha256": "cb2898e0bcb5b07c311a7da776a0b882e14fcc53cc867b05058a4d86f7ed0ae6",
+    "generator": "ComfyUI Hunyuan3D-2mini actual #145 output"
+  },
+  "method": "Independent anatomical template / segment-distance weights; free route uses complete manually marked anatomy, not general AI autorigging.",
+  "actual_character_acceptance": {
+    "bones": 18,
+    "diagnostics": {
+      "anatomy_corridor_vertices": {
+        "arm_l": 1686,
+        "arm_r": 2535,
+        "head": 2307,
+        "leg_l": 2993,
+        "leg_r": 2881
+      },
+      "boundary_edges": 217,
+      "degenerate_faces": 280,
+      "duplicate_faces": 18,
+      "input_faces": 90692,
+      "input_vertices": 33635,
+      "nonmanifold_edges": 8331,
+      "removed_faces": 38689,
+      "warnings": [
+        "Open/nonmanifold edges: inspect the preview; no watertight repair is claimed."
+      ]
+    },
+    "failures": [],
+    "movement_m": {
+      "raise_arms": 0.48269322514534,
+      "squat": 0.337760120630264,
+      "turn": 0.642120599746704
+    },
+    "rest_error": 8.24926246423274e-05,
+    "squat_ankle_drift_m": 8.5681676864624e-08,
+    "squat_sole_drift_m": 1.08482090865891e-07,
+    "vertices": 22897
+  },
+  "staged_scene_sha256": "d4282e1e8b14b9da89cceb9af19439ff9af9b4f6b18a976c8d50b81e7d1ca725",
+  "actual_panel_replay": {
+    "failures": 0,
+    "parameters": {
+      "clean_faces": true,
+      "confirmed_humanoid": true,
+      "crop_below_y": -0.940000000000509,
+      "height_m": 1.8,
+      "joints": {
+        "chest": [
+          -0.0134729652121735,
+          1.27386489363369,
+          0.0128679085569334
+        ],
+        "foot_l": [
+          0.155135497969171,
+          0.0842385145208666,
+          0.0128679085569334
+        ],
+        "foot_r": [
+          -0.182081428393518,
+          0.0842385145208666,
+          0.0128679085569334
+        ],
+        "forearm_l": [
+          0.454883876958228,
+          1.21766207257324,
+          0.0128679085569334
+        ],
+        "forearm_r": [
+          -0.481829807382575,
+          1.21766207257324,
+          0.0128679085569334
+        ],
+        "hand_l": [
+          0.689062298043428,
+          1.14272497782597,
+          0.0128679085569334
+        ],
+        "hand_r": [
+          -0.716008228467775,
+          1.14272497782597,
+          0.0128679085569334
+        ],
+        "head": [
+          -0.0134729652121735,
+          1.65791750421341,
+          0.0316021822437495
+        ],
+        "hips": [
+          -0.0134729652121735,
+          0.908546556740772,
+          0.0128679085569334
+        ],
+        "neck": [
+          -0.0134729652121735,
+          1.47994190418866,
+          0.0128679085569334
+        ],
+        "root": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "shin_l": [
+          0.136401224282355,
+          0.477658261944004,
+          0.0128679085569334
+        ],
+        "shin_r": [
+          -0.163347154706702,
+          0.477658261944004,
+          0.0128679085569334
+        ],
+        "spine": [
+          -0.0134729652121735,
+          1.06778788307871,
+          0.0128679085569334
+        ],
+        "thigh_l": [
+          0.117666950595539,
+          0.880445146210548,
+          0.0128679085569334
+        ],
+        "thigh_r": [
+          -0.144612881019886,
+          0.880445146210548,
+          0.0128679085569334
+        ],
+        "upper_arm_l": [
+          0.239439729559843,
+          1.39563767259799,
+          0.0128679085569334
+        ],
+        "upper_arm_r": [
+          -0.26638565998419,
+          1.39563767259799,
+          0.0128679085569334
+        ]
+      },
+      "reference_pose": "marked",
+      "route": "free",
+      "source_sha256": "cb2898e0bcb5b07c311a7da776a0b882e14fcc53cc867b05058a4d86f7ed0ae6",
+      "weights": {},
+      "weights_geometry": "",
+      "yaw_degrees": 0.0
+    },
+    "scene_sha256": "4b9a090d01d0fa45be7d43d086a4b99ccddd7a0ae51be04c3dab490a6e896d8a",
+    "source_run": "a7e53d7b3f3f4ae097afca965f32310d",
+    "source_sha256": "cb2898e0bcb5b07c311a7da776a0b882e14fcc53cc867b05058a4d86f7ed0ae6"
+  },
+  "parameters_file_sha256": "299ddbf070088e7ecb5ad55fb5c06902574c48d945ebf851a08be2d43ce8759f",
+  "logs": [
+    {
+      "name": "acceptance-final.log",
+      "sha256": "d2aed45e779889f6c98586ce68bf3ee1f4e2d1b5ed76bcf902aea57c7e479e93"
+    },
+    {
+      "name": "ui-final2.stdout.log",
+      "sha256": "602503f2c0128a965284e0be369804c3ae66f631b1f5c5477967d1f61a18cdae"
+    },
+    {
+      "name": "ui-final2.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "visual_check": {
+    "root_observed": [
+      "rest",
+      "raise_arms",
+      "squat",
+      "turn"
+    ],
+    "capture_sha256": {
+      "rest": "0406eb672eae8489852670c889ad0ef6f707f4de9ef9a40cb862ae7f116aee51",
+      "raise_arms": "6761d301329a920bcbc0da4e2212ae0ae9bdd02387d361133b004b41a517cd45",
+      "squat": "fd1245a1b7399c64aaba21c258c9786d88a9a68254a0317440b3bef411e39881",
+      "turn": "13cf2d202756f17a9c5a72db37974f90b0de3c928ac8812d921ccb28ef71e13d"
+    },
+    "layout": "Independent 1280x720 actual renderer confirms save/reopen/publish buttons accessible by scrolling; root actual panel replay also passed at 1280x720."
+  },
+  "fixes_verified": [
+    "Deep squat initially moved skin sole 8 cm below rest despite locked ankle; actual sole weighting fixed and 41 samples now pass.",
+    "Required anatomical marker set cannot be replaced by optional root.",
+    "Weight overrides bind derived-geometry parameters; failed fit cannot relabel old corrections.",
+    "Derived character preview invalidates original Mesh publication token.",
+    "Published scene snapshot resets full bone reference transforms even when ROM is playing.",
+    "Atomic no-overwrite publication and exact source preservation."
+  ],
+  "limits": [
+    "Original generated holes/nonmanifold topology remain diagnosed; cleanup removes selected faces, it does not reconstruct watertight topology.",
+    "Manual crop at source Y=-0.94 removes the generated base and a shallow part of the soles; this explicit operation is recorded with the original source hash.",
+    "Standard route accepts constrained humanoid T poses and still requires review; final generated character acceptance uses free/marked pose with complete manual landmarks.",
+    "No fingers, facial rig, arbitrary creature autorig, UE/Mixamo compatibility or animation-generation acceptance in #146.",
+    "Fitting, Godot serialization and small Python publication invocation are synchronous; large models can briefly pause the panel."
+  ],
+  "evidence_reuse": "Final full acceptance uses current rig code. v2 pose screenshots use the same geometry/weights/ROM algorithm; later changes affect parameter safeguards, rest-state serialization and UI layout. Final UI replay uses the final current source. Main update 0b36320b only changed Daqian modules and did not alter AINative behavior.",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/rigging.gd": "1f8420245b596ff9c6ffc176ec70931ee6d139f91869271fcb93d52373efc419",
+    "samples/ainative-workbench/addons/ainative/rigging_panel.gd": "15adb33af7083af762da5eb6fd85211f902eb1eb9d15817c1a42d091689f4a3e",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "678337b2edad0bf3065d363ed0fefa3f16467550ed1eb4322bcdc52910da4e23",
+    "samples/ainative-workbench/rigging_acceptance.gd": "c659d1074adb86454f09219c65693d4eadc7d53ebd1120fd424b31660bed9aaf",
+    "samples/ainative-workbench/rigging_live_ui.gd": "496fadb5032d55501e3d7d560edeb6f9fe8435355be05a71bbf181ae3c5df6dd",
+    "tools/ainative/rigging_publish.py": "9a9ca6e6befca74054e2a669f6038850b35a5a9eeb11a1d332c0c3f09188a967",
+    "tools/ainative/test_rigging.py": "cb70d290b9ee696152ee3001988e57fc675b55477369ff444368f3b7a22e884a"
+  },
+  "private_evidence_storage": "Ignored local inference runtime retains source, derived scenes, full logs and screenshots; public record omits machine paths and large binary assets.",
+  "main_delivery": "pending"
+}

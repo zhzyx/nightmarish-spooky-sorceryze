@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-rigging-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-05-rigging-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T15:02:42.564045+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/146",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261106",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按已验收依赖接续人物标准化、自动绑骨与蒙皮",
+    "dependency": {
+      "issue": 145,
+      "pr": 192,
+      "main_commit": "f537f112ac3e8c8ed62b748f5f6fd4cf790d0867",
+      "acceptance_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/145#issuecomment-6687824790",
+      "state": "closed_completed"
+    },
+    "worker": "/root/sinan_5fcee61f06b77e2b",
+    "dispatch_receipt": "21ea749119a048a064756fb4920b6c16cd7903dd68306579f32e6571544aa902",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": []
+}
