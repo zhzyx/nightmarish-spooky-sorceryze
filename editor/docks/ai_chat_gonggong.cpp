@@ -1078,9 +1078,9 @@ void AIChatDock::_igniter_prompt() {
 			names += String(U"`") + String(igniter_missing[i]) + U"`";
 		}
 		text = String(U"检测到本地环境配置缺失：") + names + U"。为避免把配置问题误判为系统阻塞，已进入本地配置点火器（编辑器本地处理，不调用模型或工具）。\n\n"
-			   U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
-			   U"- 放弃：回复 `取消`\n\n"
-			   U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
+															 U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
+															 U"- 放弃：回复 `取消`\n\n"
+															 U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
 	} else if (igniter_state == "python_path") {
 		text = U"Python 未配置，点火器无法通过桥接部署它。请回复 Python 可执行文件的绝对路径（例如 `/usr/bin/python3` 或 `/opt/homebrew/bin/python3`），编辑器会把它保存为 GongGong 的 Python 路径；回复 `取消` 放弃。";
 	} else if (igniter_state == "location") {
