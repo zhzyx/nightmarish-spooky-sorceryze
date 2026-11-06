@@ -1,0 +1,663 @@
+{
+  "schema_version": 1,
+  "issue_number": 152,
+  "request_id": "ainative-art-11-cloth-20261106",
+  "date": "2026-11-07",
+  "status": "local_validation_passed_pending_delivery",
+  "source_sha256": {
+    "tools/ainative/cloth_prepare.py": "e8f8aa7fec7f71d11ed6dbf83e50c11b6ebe3378ed9701f88427a57abd5de64a",
+    "tools/ainative/cloth_anchor_metrics.py": "224248844a6fba8a01a536cc4ab318af54b17329183b7a2917b147996821c49e",
+    "tools/ainative/cloth_pin_fit.py": "b8f66c00f70c3857499dc4f751c7ac2276e59c6c199d2fab16e30e256d441738",
+    "samples/ainative-workbench/addons/ainative/cloth_solver.gd": "c284f9c27745a7e24290eb0b6c6c6135091e9a866bb1374e0594818c34685228",
+    "samples/ainative-workbench/addons/ainative/cloth_panel.gd": "fe13e3dc51d71a8feeb6be32cd522a2dfc633106d004e9145631df5fe7af88d8",
+    "samples/ainative-workbench/addons/ainative/layering_player.gd": "0b7a6252f13c2150369105060606374d44c4d1f2743e5276e7743c745d8dae59",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "3b9a0d32b082184f5fedf8e705fda8d5d97ec3c5553937fd3a47ad006d1bfb0b",
+    "samples/ainative-workbench/cloth_acceptance.gd": "ca74a4ec8bf26555cacf2d53b4b5a1d756612431a44bda1b2e56360b8a9e321e",
+    "samples/ainative-workbench/cloth_body_check.gd": "34dcb95b576784445a929c46d7bf986929bdf1d7a0266b92153d77965f540c45",
+    "samples/ainative-workbench/cloth_live_ui.gd": "95f2c4af259bf1e2d418bf93c151dd9a00d3c714c9c5fa26adbfbd0e6c296eef",
+    "samples/ainative-workbench/cloth_views.gd": "79f6c6a2638d4bd7eceaea5819466c4d6581b724f068ae49ebf3151c4c7b8da1",
+    "samples/ainative-workbench/cloth_anchor_check.gd": "2fcc03b536cf03e4f3e9f81953935a01d93c219a2f6b0b0cb08471425bdb8282",
+    "samples/ainative-workbench/cloth_probe.gd": "1a40530239bb9959ae3b869a29cb5d2404e3ac689211d0a3d5769e6823b31651",
+    "design-docs/ainative-art/11-cloth.md": "9076306237fbe7fe486e35ff0c4c4d412c123a68acc12132f6ecccd2639b718e",
+    "samples/ainative-workbench/addons/ainative/cloth_solver.gd.uid": "a0f5754ec2dd230507fb2c639dc83a784925b75e815681db72ff3f1cc197ac54"
+  },
+  "private_candidate_sha256": "cea85fe16d8018b5167beba35874b0dc0550648f63085f9ffd5632945e4a4242",
+  "private_summary_sha256": "c2e3fb15f7850f50c565f01ca51c686bc5f382c907c012f1a1cfd084f8a1b535",
+  "evidence": {
+    "schema_version": 1,
+    "issue": 152,
+    "request_id": "ainative-art-11-cloth-20261106",
+    "candidate_manifest": {
+      "path": "candidate-files.json",
+      "sha256": "cea85fe16d8018b5167beba35874b0dc0550648f63085f9ffd5632945e4a4242",
+      "bytes": 3894
+    },
+    "solver_algorithm": "xpbd-world-v3-weighted-render-contact",
+    "status": "pre-delivery integration passed on local #151 candidate 902ef9bd; not a main delivery claim",
+    "commit_push_close_performed": false,
+    "artifacts": [
+      {
+        "path": "cape-final-v5-anchor-geometry.json",
+        "sha256": "d0785377cf48b3bda43a5326c312572db901d6b44f102b3c32e0a13a9470bd97",
+        "bytes": 1285424
+      },
+      {
+        "path": "cape-final-v5-anchor-metrics.json",
+        "sha256": "ab46e003709babd25638e1c3d9d89a60ea3244067541b5d109624d1a06221f56",
+        "bytes": 3024
+      },
+      {
+        "path": "cape-final-v5-back119.png",
+        "sha256": "d87b29459e67b9cee80c0841e9da92ab9aa95b736ba08372450b3fea1ed77203",
+        "bytes": 46369
+      },
+      {
+        "path": "cape-final-v5-body-intersections.json",
+        "sha256": "eab05b85db308fde2ca49ebdff3d4f3e9daf2ca6197b8430ad754d933e8512f7",
+        "bytes": 365
+      },
+      {
+        "path": "cape-final-v5-frame0.png",
+        "sha256": "7cb155d3a1f4b582e47167863869857e371546dc3c4819e08790546c91a89853",
+        "bytes": 50083
+      },
+      {
+        "path": "cape-final-v5-frame119.png",
+        "sha256": "f416db9189ad4f1fcb3cfe99aa0d6d283c6ca67e2a201dc0aed481dea1b85378",
+        "bytes": 51544
+      },
+      {
+        "path": "cape-final-v5-frame179.png",
+        "sha256": "6c249b7aa4792bea50e8a032fd8a6084d4206f2d517dd4b4e7939d65d4749f49",
+        "bytes": 52329
+      },
+      {
+        "path": "cape-final-v5-frame59.png",
+        "sha256": "7661d51f33c1aa3b556d633ad34646d22e502d126a765ef487c2ef2db5927128",
+        "bytes": 50249
+      },
+      {
+        "path": "cape-final-v5-metrics.json",
+        "sha256": "5cb2938751d413706fb0d33ede0270fb12bab8f1aecce01ffe3e2a5b75e6c60f",
+        "bytes": 951
+      },
+      {
+        "path": "cape-final-v5-reopen.json",
+        "sha256": "a384767fa6debdcc2265fa1b1bfe014e72c26679b0793cb442e91309c84cea2a",
+        "bytes": 302
+      },
+      {
+        "path": "cape-final-v5-side119.png",
+        "sha256": "de17ead858baf66f1d46e82ea1aba57b500e57d40136ee60e248d3a5f3371b58",
+        "bytes": 44456
+      },
+      {
+        "path": "cape-final-v5-ui-saved.tscn",
+        "sha256": "3ebef8b4c4674cf74eeee86b55aa09d8e378f1fd39f78e30dbb5f3c791cafa30",
+        "bytes": 4532264
+      },
+      {
+        "path": "cape-final-v5-ui.log",
+        "sha256": "4ddd4b1bb769776526338ec9f945824b6237b170ba5f9dea87f575c342030a6e",
+        "bytes": 324
+      },
+      {
+        "path": "cape-final-v5-ui.png",
+        "sha256": "9a34bc061518cd80c6d97bff1c7ad8fc923aee767eff4fab1f8dcbd955ab1c2f",
+        "bytes": 95373
+      },
+      {
+        "path": "cape-final-v5-verified-ui.png",
+        "sha256": "82b47c2056628401d1c68929a6904c0fc94d3997947c65ad6536ff8b241b69b5",
+        "bytes": 99825
+      },
+      {
+        "path": "cape-final-v5-views.json",
+        "sha256": "76215e4dcef68f6cbf6f52ad888adab26afe4b8ee3ca0663a68cdad6358e7c2b",
+        "bytes": 270
+      },
+      {
+        "path": "cape-final-v5.json",
+        "sha256": "93778ff93842d113f91c52aca9be25ea37dee44de4daa0af39fc8eebc695eb31",
+        "bytes": 321
+      },
+      {
+        "path": "skirt-final-v4-body-intersections.json",
+        "sha256": "0d7e207cac7a33c1bdff660cdda1627dce94bb4a528bb60503588f866c9f6f7d",
+        "bytes": 321
+      },
+      {
+        "path": "skirt-final-v4-frame0.png",
+        "sha256": "1c97ede9dc3b978ae1c1aa19570a5e62dbd24d8e58025b5ed1c49defe8d543d9",
+        "bytes": 80893
+      },
+      {
+        "path": "skirt-final-v4-frame119.png",
+        "sha256": "f88f538fbd576358064f815805341b880753bb5e5e27f107d777b84cb405ecd7",
+        "bytes": 82064
+      },
+      {
+        "path": "skirt-final-v4-frame179.png",
+        "sha256": "bd6a1e6910a51dd9101694a2ebf52fe51456a2c16c4c641f3909201315c073a2",
+        "bytes": 73259
+      },
+      {
+        "path": "skirt-final-v4-frame59.png",
+        "sha256": "4c3a929de6da0d57f50f4e6dc7373ecadc492c33519136b23d341cb4e0d5bf76",
+        "bytes": 73352
+      },
+      {
+        "path": "skirt-final-v4-metrics.json",
+        "sha256": "329ba1c41943bab9761967a4c4c2d93f2c9b078fe2114c2e3d2392c30eacf25c",
+        "bytes": 951
+      },
+      {
+        "path": "skirt-final-v4-reopen.json",
+        "sha256": "92446f08226d6a81b75047a28926107413e58d1de4eb6be2f77a2aa54ed713d0",
+        "bytes": 305
+      },
+      {
+        "path": "skirt-final-v4-ui-saved.tscn",
+        "sha256": "9bf8210ffbfa453ad5a2ef6f6beb9f2c9527dd1fee525db1f4fc0047a2ac58bc",
+        "bytes": 34738872
+      },
+      {
+        "path": "skirt-final-v4-ui.log",
+        "sha256": "412cfe55a5a0f29ede6d71adb15458d1108881577a23dd860b6af58bf3ed3479",
+        "bytes": 324
+      },
+      {
+        "path": "skirt-final-v4-ui.png",
+        "sha256": "65ca536f3b8fcb32e64e49294c9b4c3b2e4f6d31aeaf596b01cc82effca82cbe",
+        "bytes": 106767
+      },
+      {
+        "path": "skirt-final-v4-verified-ui.png",
+        "sha256": "1804731949f7fa4fd52bd05766289bdbea342fd84ae9505777747864d647c536",
+        "bytes": 108598
+      },
+      {
+        "path": "skirt-final-v4.json",
+        "sha256": "878cb1a1b0b8ba24263a18368605245629ffebf8c06cf679279d031cd172465e",
+        "bytes": 362
+      },
+      {
+        "path": "cape-binding-v6.json",
+        "sha256": "0f55ce568e79f7b7d956b469daf465d22676bfb1f17ec3713e39a2469957eef6",
+        "bytes": 635916
+      },
+      {
+        "path": "skirt-binding-v4.json",
+        "sha256": "6e26eaa659551404ca73198e9a40a23c87329784c113e157acb748d6293bbb09",
+        "bytes": 597760
+      },
+      {
+        "path": "code-freeze-v1.json",
+        "sha256": "908dec88606d9d2f030810008a91dedef98154b991263a9bf7239691d868ee13",
+        "bytes": 2209
+      }
+    ],
+    "metrics": {
+      "cape-final-v5": {
+        "baked_frames": 237,
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700KF",
+        "engine": {
+          "build": "custom_build",
+          "hash": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+          "hex": 264192,
+          "major": 4,
+          "minor": 8,
+          "patch": 0,
+          "status": "beta",
+          "string": "4.8-beta (custom_build)",
+          "timestamp": 1793883364
+        },
+        "failure_preserves_previous": true,
+        "frames": 474,
+        "gpu": "NVIDIA GeForce RTX 4070 Ti",
+        "invalid_settings_rejected": true,
+        "last": {
+          "mode": "realtime",
+          "particles": 221,
+          "quality": "XPBD",
+          "render_upload_us": 13022,
+          "render_vertices": 2665,
+          "resets": 2,
+          "solver_us": 17626,
+          "total_us": 30648
+        },
+        "metrics": {
+          "render_upload_us": {
+            "p50": 12882,
+            "p95": 13313
+          },
+          "solver_us": {
+            "p50": 11903,
+            "p95": 17596
+          },
+          "total_us": {
+            "p50": 24852,
+            "p95": 30570
+          }
+        },
+        "normal_workbench_panel_found": true,
+        "overwrite_rejected": true,
+        "reopened_cache": true,
+        "reopened_render_max_error_m": 0.0
+      },
+      "skirt-final-v4": {
+        "baked_frames": 120,
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700KF",
+        "engine": {
+          "build": "custom_build",
+          "hash": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+          "hex": 264192,
+          "major": 4,
+          "minor": 8,
+          "patch": 0,
+          "status": "beta",
+          "string": "4.8-beta (custom_build)",
+          "timestamp": 1793883364
+        },
+        "failure_preserves_previous": true,
+        "frames": 240,
+        "gpu": "NVIDIA GeForce RTX 4070 Ti",
+        "invalid_settings_rejected": true,
+        "last": {
+          "mode": "realtime",
+          "particles": 264,
+          "quality": "XPBD",
+          "render_upload_us": 12692,
+          "render_vertices": 2624,
+          "resets": 2,
+          "solver_us": 13424,
+          "total_us": 26116
+        },
+        "metrics": {
+          "render_upload_us": {
+            "p50": 12969,
+            "p95": 13928
+          },
+          "solver_us": {
+            "p50": 13764,
+            "p95": 20627
+          },
+          "total_us": {
+            "p50": 26780,
+            "p95": 33706
+          }
+        },
+        "normal_workbench_panel_found": true,
+        "overwrite_rejected": true,
+        "reopened_cache": true,
+        "reopened_render_max_error_m": 0.0
+      }
+    },
+    "body_collision": {
+      "cape-final-v5": {
+        "crossing_frames": [],
+        "frames": 237,
+        "method": "all edges of actual skinned body triangles in declared rest band against actual rendered cloth triangle BVH, every 60Hz frame",
+        "scope": "upper-body rest centroid y>1.2m; includes shoulder/back, not whole-body certification",
+        "tested_edges": 2680470,
+        "triangles_per_frame": 3770,
+        "worst_crossing_edges": 0
+      },
+      "skirt-final-v4": {
+        "crossing_frames": [],
+        "frames": 120,
+        "method": "all edges of actual skinned body triangles in declared rest band against actual rendered cloth triangle BVH, every 60Hz frame",
+        "scope": "thigh/knee band knee_y-0.12 to hip_y-0.10",
+        "tested_edges": 2811600,
+        "triangles_per_frame": 7810,
+        "worst_crossing_edges": 0
+      }
+    },
+    "anchor_metrics": {
+      "method": "exact closest point over all exported actual posed upper-body triangles",
+      "pin_target_max_error_m": 0.0,
+      "pins": {
+        "min_m": 0.0013562245851545137,
+        "p50_m": 0.0026369525087723746,
+        "max_m": 0.003726987657095302,
+        "distances_m": [
+          0.0013562245851545137,
+          0.0026716532339582846,
+          0.003726987657095302,
+          0.0026022517835864642
+        ],
+        "signed_min_m": 0.0013562245851545137,
+        "signed_max_m": 0.003726987657095302
+      },
+      "targets": {
+        "min_m": 0.0013562245851545137,
+        "p50_m": 0.0026369525087723746,
+        "max_m": 0.003726987657095302,
+        "distances_m": [
+          0.0013562245851545137,
+          0.0026716532339582846,
+          0.003726987657095302,
+          0.0026022517835864642
+        ],
+        "signed_min_m": 0.0013562245851545137,
+        "signed_max_m": 0.003726987657095302
+      },
+      "render_top": {
+        "min_m": 0.001411771109374868,
+        "p50_m": 0.0027380670080674806,
+        "max_m": 0.00432863029276696,
+        "distances_m": [
+          0.001411771109374868,
+          0.0014160360028551652,
+          0.0014202020031522033,
+          0.0014244594053684804,
+          0.0014286656739987966,
+          0.0014329364118331046,
+          0.0014774266271396325,
+          0.0015484179976398488,
+          0.0016193572792491378,
+          0.0016902903756011807,
+          0.0017612882334215004,
+          0.0018322207256477694,
+          0.0019031600072571433,
+          0.0019740931036139405,
+          0.0020450906593714882,
+          0.0021160367303638813,
+          0.0021869695246529344,
+          0.0022579605930903553,
+          0.0023289001767625127,
+          0.0023998394583718014,
+          0.002470778739985978,
+          0.0025417180215952548,
+          0.0026127093920955803,
+          0.002683596584813772,
+          0.002754588257376942,
+          0.002825586115197322,
+          0.0028575194595417217,
+          0.002850092128120552,
+          0.0028542387341442695,
+          0.002858213267797939,
+          0.002862306467569474,
+          0.00285984581024188,
+          0.002848802731800735,
+          0.0028377654046078792,
+          0.0028267277263085756,
+          0.0028155717330028748,
+          0.0028045344058100783,
+          0.0027934379211115357,
+          0.002782400593923628,
+          0.0027712976557587744,
+          0.002760141662448001,
+          0.002749104686366673,
+          0.0027380670080674806,
+          0.0027269045612903125,
+          0.002715874038675283,
+          0.0027047707494039465,
+          0.0026936746158118985,
+          0.002682643742090362,
+          0.0026715938590713907,
+          0.0026605034767326514,
+          0.002664035849912705,
+          0.0027786812583864336,
+          0.0028978253053356033,
+          0.00301711370134688,
+          0.0031363864236659067,
+          0.0032555304706150916,
+          0.0033747418969744805,
+          0.003494014619293514,
+          0.0036132969318600646,
+          0.0037325083582192267,
+          0.003851719784572991,
+          0.003970931210926658,
+          0.004090201356620565,
+          0.004209415359605132,
+          0.00432863029276696
+        ],
+        "signed_min_m": 0.001411771109374868,
+        "signed_max_m": 0.00432863029276696
+      }
+    },
+    "test_commands": [
+      {
+        "cwd": "godot-ainative-cloth-20261107",
+        "argv": [
+          "godot.windows.editor.x86_64.console.exe",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "cloth_body_check.gd",
+          "--",
+          "cape-final-v5.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "cwd": "godot-ainative-cloth-20261107",
+        "argv": [
+          "godot.windows.editor.x86_64.console.exe",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "cloth_live_ui.gd",
+          "--",
+          "cape-final-v5.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "cwd": "godot-ainative-cloth-20261107",
+        "argv": [
+          "godot.windows.editor.x86_64.console.exe",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "cloth_body_check.gd",
+          "--",
+          "skirt-final-v4.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "cwd": "godot-ainative-cloth-20261107",
+        "argv": [
+          "godot.windows.editor.x86_64.console.exe",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "cloth_live_ui.gd",
+          "--",
+          "skirt-final-v4.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "cwd": "godot-ainative-cloth-20261107",
+        "argv": [
+          "godot.windows.editor.x86_64.console.exe",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "integration_check.gd",
+          "--",
+          "pre-delivery-902ef9bd-v1",
+          "cape-final-v5-reopen.json",
+          "skirt-final-v4-reopen.json"
+        ],
+        "exit_code": 0,
+        "scope": "shared panel counts and two complete old cache save/reopen frames only"
+      }
+    ],
+    "independent_review": {
+      "worker": "/root/review_contracts",
+      "reported_passes": [
+        "failed initialization blocks consumption while retaining geometry",
+        "animation replacement and changed clips invalidate cache",
+        "malformed cache rejected",
+        "large raw seek, reverse seek, ordinary loop reset",
+        "atomic publication/no-overwrite and saved scene contains no local source path",
+        "bake cancellation on mode changes",
+        "13 invalid parameter types restore last valid settings",
+        "complete saved skirt cache reopens to exactly equal render frame",
+        "v3 prescribed fixed boundary continuity and old solver cache rejection"
+      ],
+      "scope": "Actual targeted independent probes, not a repeat of full suite or inference",
+      "probe_files": [
+        {
+          "path": "final.gd",
+          "sha256": "d6c8b7b6022dc051d9bc07c65f77f2fb217b196e1c8220dc74d5250246291f1d",
+          "bytes": 4170
+        },
+        {
+          "path": "settings-final.gd",
+          "sha256": "83ce50338027bf936687b2c4d4a1ba6527414a0cf4b7ce3419a4b16f6972fed3",
+          "bytes": 1881
+        },
+        {
+          "path": "boundary-final.gd",
+          "sha256": "ffc375eead48d35b07d6630154cce37837d1c74232d78aa5d4cef581eb215f23",
+          "bytes": 2493
+        }
+      ]
+    },
+    "superseded_or_failed_evidence_excluded": [
+      "cape-live-v1 clustering artifacts",
+      "skirt-live-v1 non-squat clip",
+      "skirt-live-v2 removed original waist partition",
+      "cape-final-v2 old 52-59mm floating render boundary",
+      "cape-final-v3 concurrent GPU run and incomplete boundary correction",
+      "cape-final-v4 v2 binary boundary intermediate; use v5 v3 body diagnostics instead",
+      "skirt-final-v3 v2 boundary intermediate; use v4 v3 diagnostics"
+    ],
+    "limitations": [
+      "single cloth item with calibrated proxy, no self/inter-cloth collision",
+      "CPU cloth update timing only; no full-character FPS or GPU fence claim",
+      "actual body triangle diagnostics cover declared shoulder/back or thigh/knee bands, not whole-body volume certification",
+      "author source-sampled retopology and explicit pin calibration, not original AI mesh repair",
+      "Quinn is not accepted; proprietary native assets remain local"
+    ],
+    "static_checks": {
+      "ruff": "0.17.1 check and format passed",
+      "mypy": "2.4.0 --ignore-missing-imports --scripts-are-modules passed",
+      "codespell": "2.4.2 passed",
+      "shared_inference_environment_modified": false
+    },
+    "integration": {
+      "kind": "pre-delivery integration",
+      "local_candidate": "902ef9bd0d56fe69b5a2204961cbd45c69c1bd21",
+      "main_delivered": false,
+      "normal_workbench_controls": "actual Button.pressed signals in headless normal workbench",
+      "receipt": {
+        "path": "pre-delivery-902ef9bd-v1-receipt.json",
+        "sha256": "2f9572d5f9962ae2229f241769e55488d5b557e07ba7a9835c819610f814eea0",
+        "bytes": 991
+      },
+      "result": {
+        "cases": [
+          {
+            "cache_frames": 237,
+            "cache_key_preserved": true,
+            "input": "cape-final-v5-reopen.json",
+            "render_error_m": 0.0,
+            "saved": "pre-delivery-902ef9bd-v1-1.tscn",
+            "saved_sha256": "61daa5b9057f09a1dc8476b938ea98e3fd91fe80814d2d24f3bc9ca0ac38e78a"
+          },
+          {
+            "cache_frames": 120,
+            "cache_key_preserved": true,
+            "input": "skirt-final-v4-reopen.json",
+            "render_error_m": 0.0,
+            "saved": "pre-delivery-902ef9bd-v1-2.tscn",
+            "saved_sha256": "24a1281df2f95c96028f27dfbe38f8973d806f1793741beaa6c4e0567f8502c2"
+          }
+        ],
+        "display_server": "headless",
+        "normal_workbench_panel_counts": {
+          "cloth": 1,
+          "customization": 1,
+          "layering": 1
+        },
+        "scope": "shared hook and existing cache save/reopen only; prior physics/BVH evidence reused"
+      },
+      "changed_since_physics_freeze": [
+        "samples/ainative-workbench/addons/ainative/workbench.gd"
+      ],
+      "physical_sources_byte_identical": true,
+      "backup_manifest": {
+        "path": "candidate-files.json",
+        "sha256": "315ccc3b24e22492378554019510e953783e5bc1262001cfbac56a7b09558f0a",
+        "bytes": 3476
+      },
+      "artifacts": [
+        {
+          "path": "pre-delivery-902ef9bd-v1-1.json",
+          "sha256": "5dc30d632087dea74ee6e3ae6b108b2073d375f2f7d161e2c7d137ec17b71f87",
+          "bytes": 306
+        },
+        {
+          "path": "pre-delivery-902ef9bd-v1-1.tscn",
+          "sha256": "61daa5b9057f09a1dc8476b938ea98e3fd91fe80814d2d24f3bc9ca0ac38e78a",
+          "bytes": 4537662
+        },
+        {
+          "path": "pre-delivery-902ef9bd-v1-2.json",
+          "sha256": "765004554397c2069b8eb9cb4ec04a2d555f5f30df35d55c630043c01ec199c3",
+          "bytes": 308
+        },
+        {
+          "path": "pre-delivery-902ef9bd-v1-2.tscn",
+          "sha256": "24a1281df2f95c96028f27dfbe38f8973d806f1793741beaa6c4e0567f8502c2",
+          "bytes": 34740378
+        },
+        {
+          "path": "pre-delivery-902ef9bd-v1-receipt.json",
+          "sha256": "2f9572d5f9962ae2229f241769e55488d5b557e07ba7a9835c819610f814eea0",
+          "bytes": 991
+        },
+        {
+          "path": "integration_check.gd",
+          "sha256": "1a8f852b7af6d9df0d54e7ceed5466dab28aee80e80c87eb10d643d05c008d0c",
+          "bytes": 3240
+        }
+      ],
+      "remaining": "root compares actual delivered main delta and performs exact candidate delivery freeze",
+      "preparation_note": "Initial Python LF normalization used system default encoding and failed without changing workbench; corrected explicitly with UTF-8. Godot integration test itself completed exit 0 without runtime errors."
+    }
+  },
+  "root_visual_review": {
+    "state": "accepted_first_version_scope",
+    "inspected_screenshots": {
+      "cape-final-v5-back119.png": "d87b29459e67b9cee80c0841e9da92ab9aa95b736ba08372450b3fea1ed77203",
+      "cape-final-v5-side119.png": "de17ead858baf66f1d46e82ea1aba57b500e57d40136ee60e248d3a5f3371b58",
+      "skirt-final-v4-frame59.png": "4c3a929de6da0d57f50f4e6dc7373ecadc492c33519136b23d341cb4e0d5bf76"
+    },
+    "observed": [
+      "Final cape back and side views: root boundary attached after correcting the original floating seam",
+      "Squatting generated character: original rigid belt and buckle preserved, simulated skirt retained",
+      "Actual normal workbench cloth panel and saved cache preview observed in earlier UI evidence"
+    ],
+    "limits": [
+      "Generated source quality and explicit author retopology remain",
+      "Body triangle tests cover specified bands and sampled times; no full continuous volume certification",
+      "Measured cloth update is not whole-application frame rate"
+    ]
+  },
+  "independent_review": {
+    "reviewer": "/root/review_contracts",
+    "state": "approved_targeted_core_and_boundary_change",
+    "full_fixed_render_points": 65,
+    "max_target_error_m": 2.421e-07,
+    "near_threshold_weight_delta_m": 1.865e-06,
+    "invalid_parameter_cases": 13,
+    "checks": [
+      "Invalid binding and replaced or changed animation invalidate cache",
+      "Large raw seek, reverse seek and loop reset",
+      "Bake cancellation, atomic no-clobber and no local source path in saved scene",
+      "Malformed cache, invalid pins and unknown mode rejected",
+      "Weighted render contact continuous; prior algorithm cache rejected"
+    ],
+    "final_hook_integration": "Root reviewed additive hook and verified source/evidence hashes; actual normal workbench and both cache save/reopen cases passed on local stable #151 candidate. Main delivery delta remains to verify."
+  }
+}
