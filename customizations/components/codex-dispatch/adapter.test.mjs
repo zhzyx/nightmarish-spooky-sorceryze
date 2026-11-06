@@ -154,3 +154,77 @@ test('only explicit verified never-launched failure releases a reservation',asyn
   f.source.verifyNeverLaunched=async()=>true;
   await h.releaseUnstarted(failed,key);assert.equal(h.activeReservations().length,0);
 });
+
+test('aliases to a future output block readers until the original worker is verified terminal', async t => {
+  const f = setup(t);
+  f.policy.localResources = true;
+  const shared = path.join(f.root, 'actual');
+  const alias = path.join(f.root, 'alias');
+  fs.mkdirSync(shared);
+  fs.symlinkSync(shared, alias, 'junction');
+  const [writer,reader,independent] = f.requests;
+  writer.writes = [path.join(alias, 'new')];
+  reader.reads = [path.join(shared, 'new', 'contract.txt')];
+  reader.writes = [];
+  independent.writes = [path.join(shared, 'independent')];
+  const batch = await f.make().run(event, f.requests);
+  assert.deepEqual(batch.results.map(row => row.ticket), [writer.ticket, independent.ticket]);
+  assert.equal(batch.deferred[0].reason, 'resource_conflict');
+  const started = batch.results[0];
+  assert.equal(started.acceptance, writer.acceptance);
+  assert.equal(started.owner, writer.owner);
+  const restart = f.make();
+  assert.equal((await restart.run(event, [reader])).deferred[0].reason, 'resource_conflict');
+  await restart.reconcile({type:'execution.finished', reference:'verified'}, started.key, started.receipt);
+  assert.equal((await restart.run(event, [reader])).results[0].state, 'running');
+});
+
+test('an unresolved requested path fails only that work order before reservation', async t => {
+  const f = setup(t);
+  f.policy.localResources = true;
+  const [invalid, independent] = f.requests;
+  const file = path.join(f.root, 'file');
+  fs.writeFileSync(file, 'not a directory');
+  invalid.writes = [path.join(file, 'child')];
+  independent.writes = [path.join(f.root, 'other')];
+  const host = f.make();
+  const batch = await host.run(event, [invalid, independent]);
+  assert.equal(batch.results.find(row => row.ticket === invalid.ticket).stage, 'resource_resolution');
+  assert.equal(batch.results.find(row => row.ticket === independent.ticket).state, 'running');
+  assert.deepEqual(host.activeReservations().map(row => row.ticket), [independent.ticket]);
+});
+
+test('a Windows drive root is refused for new work and retained in older reservations',
+    {skip:process.platform !== 'win32'}, async t => {
+  const f = setup(t);
+  f.policy.localResources = true;
+  const [writer, reader] = f.requests;
+  const drive = path.parse(f.root).root;
+  writer.writes = [drive];
+  reader.reads = [f.root];
+  reader.writes = [];
+  const host = f.make();
+  assert.equal((await host.run(event, [writer])).results[0].stage, 'resource_resolution');
+  const old = {...writer, key:'c'.repeat(64), writes:[drive.slice(0, 2).toLowerCase()]};
+  assert.equal(await host.reserve(old, event), true);
+  assert.equal((await f.make().run(event, [reader])).deferred[0].reason, 'resource_conflict');
+});
+
+test('a persisted slash-normalized UNC share still blocks a child read',
+    {skip:process.platform !== 'win32'}, async t => {
+  const f = setup(t);
+  f.policy.localResources = true;
+  const [writer, reader] = f.requests;
+  const share = '//fixture-server/share';
+  const nativeShare = path.normalize(share + '/');
+  // Only emulate access to the UNC filesystem; reservation and planning are real.
+  const stat = fs.lstatSync;
+  const realpath = fs.realpathSync.native;
+  t.mock.method(fs, 'lstatSync', (file, ...args) => file.startsWith(nativeShare) ? {} : stat(file, ...args));
+  t.mock.method(fs.realpathSync, 'native', (file, ...args) => file.startsWith(nativeShare) ? file : realpath(file, ...args));
+  const host = f.make();
+  assert.equal(await host.reserve({...writer, key:'d'.repeat(64), writes:[share+'/api']}, event), true);
+  reader.reads = [share+'/api/interface'];
+  reader.writes = [];
+  assert.equal((await f.make().run(event, [reader])).deferred[0].reason, 'resource_conflict');
+});

@@ -5,6 +5,38 @@ const nonempty = x => typeof x === 'string' && !!x.trim();
 const events = new Set(['request.created', 'ticket.changed', 'dependency.changed', 'decision.recorded', 'execution.finished', 'execution.failed', 'user.requested', 'scope.changed']);
 const methods = ['environment', 'assess', 'authorize', 'compareAndStart', 'ack', 'report', 'verifyTerminal'];
 
+// Follow the provider's native dependency list whenever it exists. A partial
+// list cannot establish readiness, even if all visible dependencies passed.
+async function readDependencies(issue, readPage) {
+  const total = issue.issue_dependencies_summary?.total_blocked_by;
+  if (total === 0) return [];
+  if (total !== undefined && (!Number.isSafeInteger(total) || total < 0)) throw Error('Invalid dependency count');
+  const tickets = new Set();
+  for (let page = 1; total === undefined || tickets.size < total; page++) {
+    const rows = await readPage(page);
+    if (total === undefined && Array.isArray(rows) && !rows.length) break;
+    if (!Array.isArray(rows) || !rows.length) throw Error('Incomplete native dependency list');
+    for (const row of rows) {
+      const match = /^https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/issues\/([1-9][0-9]*)$/.exec(row.html_url);
+      if (!match || row.number !== Number(match[2]) || row.pull_request) throw Error('Invalid dependency Issue');
+      const ticket = 'github:' + match[1] + '#' + match[2];
+      if (tickets.has(ticket)) throw Error('Native dependency list changed during read');
+      tickets.add(ticket);
+    }
+    if (total === undefined && rows.length < 100) break;
+  }
+  if (total !== undefined && tickets.size !== total) throw Error('Native dependency count changed during read');
+  return [...tickets].sort();
+}
+
+export async function readIssueWithDependencies(api, repository, number) {
+  const url = `repos/${repository}/issues/${number}`;
+  const issue = await api(url);
+  issue.nativeDependencies = await readDependencies(issue,
+    page => api(`${url}/dependencies/blocked_by?per_page=100&page=${page}`));
+  return issue;
+}
+
 export function issueSnapshot(repository, binding, issue, allowedCategories) {
   const url = `https://github.com/${repository}/issues/${binding.number}`;
   if (issue.number !== binding.number || issue.html_url !== url || issue.pull_request) throw Error('Wrong Issue identity');
@@ -23,9 +55,13 @@ export function issueSnapshot(repository, binding, issue, allowedCategories) {
   const dependencies = [...new Set([...body.matchAll(/<!--\s*gonggong-depends-on:#([1-9][0-9]*)\s*-->/g)].map(x => Number(x[1])))].sort((a,b) => a-b);
   const revision = {number: issue.number, state: issue.state, updated_at: issue.updated_at,
     body_sha256: hash(body), title: issue.title, labels, assignees: issue.assignees.map(x => x.login).sort(), dependencies};
+  const native = issue.nativeDependencies ?? [];
+  if (native.length !== (issue.issue_dependencies_summary?.total_blocked_by ?? native.length)) throw Error('Native dependency evidence missing');
+  if (native.length) revision.nativeDependencies = native;
+  const dependsOn = [...new Set([...dependencies.map(n => `github:${repository}#${n}`), ...native])];
   const sourceSnapshot = {source, provider: 'github_issues', authority: url, requestId: binding.requestId, sha256: hash(revision)};
   return {sourceSnapshot, item: {key: source, source, title: issue.title, status, lifecycle: issue.state,
-    owner: revision.assignees, dependsOn: dependencies.map(n => `github:${repository}#${n}`),
+    owner: revision.assignees, dependsOn,
     dispatchCandidate: false, acceptanceValid: false, requestId: binding.requestId}};
 }
 

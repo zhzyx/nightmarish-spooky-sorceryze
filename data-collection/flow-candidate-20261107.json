@@ -1,0 +1,12 @@
+{
+  "request_id": "flow-candidate-20261107",
+  "issue_number": 249,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/249",
+  "path_base": "repository_root",
+  "design": "design-docs/flow-candidate-20261107.md",
+  "source_baseline": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+  "scoped_paths": [
+    "customizations/components/issue-workorders/writer_submit.py",
+    "customizations/components/issue-workorders/test_writer_submit.py"
+  ]
+}

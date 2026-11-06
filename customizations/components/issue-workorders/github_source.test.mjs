@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {GitHubIssueSource, issueSnapshot} from './github_source.mjs';
+import {GitHubIssueSource, issueSnapshot, readIssueWithDependencies} from './github_source.mjs';
 const binding = {number: 9, requestId: 'test-request'};
 const issue = () => ({number: 9, html_url: 'https://github.com/test/repo/issues/9', title: 'test', state: 'open', updated_at: '2026-11-05T00:00:00Z', body: '<!-- gonggong-request:test-request -->', labels: ['workspace:gonggong','type:development','status:in-progress'].map(name => ({name})), assignees: []});
 const event = {type: 'user.requested', reference: 'synthetic-test'};
@@ -51,4 +51,19 @@ test('unknown category rejected and local assessment failure isolated', async ()
   const rt=runtime();rt.assess=async item=>{if(item.key.endsWith('#9'))throw Error('local evidence unavailable');return true;};
   const s=new GitHubIssueSource({repository:'test/repo',allowedCategories:['type:development'],bindings:[binding,{number:10,requestId:'test-request'}],runtime:rt,readIssue:async(_,n)=>({...issue(),number:n,html_url:`https://github.com/test/repo/issues/${n}`})});
   const {snapshot}=await s.inspect(event);assert.deepEqual(snapshot.ready,['github:test/repo#10']);assert.equal(snapshot.diagnostics[0].stage,'assessment');
+});
+
+test('native dependencies and legacy markers share the acceptance gate and revision', async () => {
+  const item = issue();
+  item.body += ' <!-- gonggong-depends-on:#11 -->';
+  const old = issueSnapshot('test/repo',binding,item,['type:development']);
+  item.issue_dependencies_summary = {total_blocked_by:2};
+  const rows = n => [{html_url:'https://github.com/test/repo/issues/'+n, number:n}];
+  const api = async url => url.includes('page=100&page=1') ? rows(11) : url.endsWith('&page=2') ? rows(12) : {...item};
+  const raw = await readIssueWithDependencies(api,'test/repo',9);
+  const current = issueSnapshot('test/repo',binding,raw,['type:development']);
+  assert.deepEqual(current.item.dependsOn,['github:test/repo#11','github:test/repo#12']);
+  assert.notEqual(current.sourceSnapshot.sha256,old.sourceSnapshot.sha256);
+  await assert.rejects(readIssueWithDependencies(async url => url.includes('?') ? [] : {...item},'test/repo',9), /Incomplete/);
+  assert.throws(() => issueSnapshot('test/repo',binding,item,['type:development']), /missing/);
 });
