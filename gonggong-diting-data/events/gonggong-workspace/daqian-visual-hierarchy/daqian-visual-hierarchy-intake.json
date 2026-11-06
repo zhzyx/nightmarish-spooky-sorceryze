@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-visual-hierarchy-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-visual-hierarchy",
+  "kind": "request",
+  "occurred_at": "2026-11-06T21:04:19.2603018+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/333",
+  "agent": {
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "id": "daqian-current-operator"
+  },
+  "payload": {
+    "intent": "改善大千列表、依赖图和工单视觉层级，后台对比真实渲染",
+    "document": "design-docs/daqian/visual-hierarchy.md"
+  },
+  "evidence_refs": [],
+  "sha256": "1075ff57fd052f6fe6c941e466f9fff70773ef95ff4b912f22710ee9ed213aea"
+}

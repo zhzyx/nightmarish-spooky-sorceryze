@@ -83,19 +83,45 @@ void fragment() {
 	static func state_text(state: String) -> String:
 		return LABELS.get(state, "待核实 · " + state)
 
-	func mark_card(view: GraphNode, label: Label, state: String, suffix := "") -> void:
+	var badge_styles := {}
+
+	func status_ink(state: String) -> Color:
 		var color: Color = COLORS[category(state)]
+		var surface := get_theme_color("base_color", "Editor")
+		if surface.get_luminance() > 0.42:
+			return color.darkened(0.58)
+		return color.lerp(Color.WHITE, 0.16)
+
+	func status_badge(state: String) -> StyleBoxFlat:
+		var ink := status_ink(state)
+		var radius := roundi(5 * get_theme_default_base_scale())
+		var key := [ink, radius]
+		if not badge_styles.has(key):
+			var badge := StyleBoxFlat.new()
+			badge.set_corner_radius_all(radius)
+			badge.bg_color = Color(ink, 0.16)
+			badge.content_margin_left = radius
+			badge.content_margin_right = radius
+			badge_styles[key] = badge
+		return badge_styles[key]
+
+	func mark_card(view: GraphNode, label: Label, state: String, suffix := "") -> void:
+		var color := status_ink(state)
 		view.set_meta("flow_state", state)
 		label.text = state_text(state) + suffix
 		label.add_theme_color_override("font_color", color)
-		for style in ["titlebar", "titlebar_selected"]:
+		label.add_theme_stylebox_override("normal", status_badge(state))
+		for style in ["titlebar", "titlebar_selected", "panel", "panel_selected"]:
 			var base := get_theme_stylebox(style, "GraphNode") as StyleBoxFlat
 			if base:
-				var tinted := base.duplicate() as StyleBoxFlat
-				tinted.bg_color = base.bg_color.lerp(color.darkened(0.52), 0.75)
-				tinted.border_color = color
-				tinted.border_width_left = 4
-				view.add_theme_stylebox_override(style, tinted)
+				var box := base.duplicate() as StyleBoxFlat
+				var selected: bool = style.ends_with("_selected")
+				var surface := get_theme_color("base_color", "Editor")
+				box.bg_color = surface.lerp(color, 0.12 if style.begins_with("titlebar") else 0.045)
+				box.border_color = get_theme_color("accent_color", "Editor") if selected else surface.lerp(color, 0.28)
+				box.set_border_width_all(roundi((2 if selected else 1) * get_theme_default_base_scale()))
+				view.add_theme_stylebox_override(style, box)
+
 
 	func connect_flow(source: StringName, output: int, target: StringName, input: int) -> void:
 		var key := [source, output, target, input]
