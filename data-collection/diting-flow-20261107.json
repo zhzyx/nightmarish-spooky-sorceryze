@@ -1,0 +1,1678 @@
+{
+  "request_id": "diting-flow-20261107",
+  "issue_number": 227,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/227",
+  "path_base": "repository_root",
+  "baseline": "81f19a1fdf708ec3128ea0ceb278b9b4429d7f53",
+  "timeline_hash_encoding": "SHA256 of UTF-8 canonical JSON; keys sorted, no ASCII escapes or optional whitespace, chronological API order",
+  "closed_issues": [
+    {
+      "issue": 1,
+      "closed_at": "2026-11-01T22:15:39Z",
+      "timeline_entries": 4,
+      "timeline_sha256": "4e157c9c573bbc4f4e7ae97e9def4e40c05a895eb7a8d583dc04798424ade70b",
+      "body_sha256": "338aa28bd4992494ea07a4c04fb21f6ad199114379945db07ac7d3bea68821ca",
+      "design_paths": [
+        "design-docs/issue-workflow-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 2,
+      "closed_at": "2026-11-01T22:15:43Z",
+      "timeline_entries": 5,
+      "timeline_sha256": "ca0820bf8209e25956238343d0e87bcf01d65633c72a2a213b03cd5d6d646404",
+      "body_sha256": "ab8d80944a28de604ac4106f239c18297ba2b591ec6e0f10a89b367ab454543a",
+      "design_paths": [
+        "design-docs/godot-olympus-chat-20261102.md",
+        "design-docs/godot-olympus-independent-review-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 3,
+      "closed_at": "2026-11-01T21:34:13Z",
+      "timeline_entries": 3,
+      "timeline_sha256": "f3e539407eef66854fc834ee9f1146dadc810f313c61a11b9f25c83fa526d340",
+      "body_sha256": "33417195b895aa1031c62ad7185ae6a090c5b15b4b9d4382d1dae1b6a4bcfe9b",
+      "design_paths": [
+        "design-docs/godot-host-portability-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 4,
+      "closed_at": "2026-11-01T21:34:16Z",
+      "timeline_entries": 3,
+      "timeline_sha256": "79ed9fe6f499eeac3a758601abb1c00583bd2e22e7af3172e559f8ca2215b9c5",
+      "body_sha256": "626e6e49e23ad1af495cc3f972a101b03a13aee4903247e8a4ebf2bc5e242846",
+      "design_paths": [
+        "design-docs/godot-simulated-flow-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 5,
+      "closed_at": "2026-11-01T22:15:48Z",
+      "timeline_entries": 4,
+      "timeline_sha256": "22f97f6972808a4a0db30b3d3ba0fe75f6ccca6ef363c6a640fa9753f5e2888a",
+      "body_sha256": "847a7db9aee127b67afe0629926cc3b18df7ce5d712819f30eec52b6db30670b",
+      "design_paths": [
+        "design-docs/full-repository-delivery-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 6,
+      "closed_at": "2026-11-03T06:55:50Z",
+      "timeline_entries": 28,
+      "timeline_sha256": "6e8664b4f9a42a2f72c4f5c3e07865132f7f238462f0a85e463d7c74a6e5b212",
+      "body_sha256": "88e8c1400633ac98324ee312dfd7117d9e20a676b95d1837a7040448c2af189f",
+      "design_paths": [
+        "design-docs/issue-6-host-intake-delivery-20261103.md",
+        "design-docs/issue-governance-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 7,
+      "closed_at": "2026-11-02T20:19:10Z",
+      "timeline_entries": 20,
+      "timeline_sha256": "77c6682df9e6cd532f304bae4d53316a38e279949b1d5ce5f7dac1bc79bbc753",
+      "body_sha256": "5fc417acead32b6c2fa79b85e5356da43ae2f59d61ee24fe1fac4d3fd59c749b",
+      "design_paths": [
+        "design-docs/execution-efficiency-20261103.md",
+        "design-docs/issue-7-admission-20261103.md",
+        "design-docs/issue7-042-standalone-20261103.md",
+        "design-docs/standalone-runtime-20261103.md",
+        "design-docs/upstream-workflow-upgrade-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 8,
+      "closed_at": "2026-11-02T21:08:12Z",
+      "timeline_entries": 15,
+      "timeline_sha256": "7a3550cf129f646915ef57a6603c85aea001f3196facd81bddf33ea0fcc7cbfe",
+      "body_sha256": "488fb78801631352b4a96267dcdd61e2f99b7171cdff5664bc22e62df5deda59",
+      "design_paths": [
+        "design-docs/godot-receipt-ui-blocking-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 9,
+      "closed_at": "2026-11-05T00:20:18Z",
+      "timeline_entries": 66,
+      "timeline_sha256": "de359d3dd13172af6ab44babc8b29d0caf593d94614b80020108941693407992",
+      "body_sha256": "fb4ac423f837ad7c567ac121a5a7265d9d2c566600db8d93bead72ec25511d66",
+      "design_paths": [
+        "design-docs/issue-event-data-loop-20261102.md",
+        "design-docs/yanluo-issue-9-source-host-binding-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 11,
+      "closed_at": "2026-11-02T21:08:41Z",
+      "timeline_entries": 21,
+      "timeline_sha256": "617dcedfc6b9176733cd232b72df4013f6f250751d7914c413bd5d6a83c543c0",
+      "body_sha256": "e44ae7be70386ebada6607651199f9209cf38aca944ae8b2db5566da9b2e75c7",
+      "design_paths": [
+        "design-docs/cli-ci-fixes-20261103.md",
+        "design-docs/restore-repository-ci-20261102.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 12,
+      "closed_at": "2026-11-02T16:11:55Z",
+      "timeline_entries": 8,
+      "timeline_sha256": "0a33fdbf8321209ec978b97bb51a66297af852a0d8cfd349ed186ea98a609d2a",
+      "body_sha256": "cf2061243d3708b507c3cf7fa98670f12d76d326d763a484354b89bcf17f818a",
+      "design_paths": [],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 13,
+      "closed_at": "2026-11-02T17:23:45Z",
+      "timeline_entries": 8,
+      "timeline_sha256": "175b3f6e6d726ed84f20855a779226f365bf2604e67b6c0956b45d683bfc2790",
+      "body_sha256": "ad0d8699ccf9028001eac88e715438f5313d9f739425f88b5be71bc6ff3f7d04",
+      "design_paths": [],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 15,
+      "closed_at": "2026-11-02T21:08:18Z",
+      "timeline_entries": 14,
+      "timeline_sha256": "76d7b4a6e4ff4426721f01c989f731ada5daaf76ff6d2a373cb6d70a7a75f98d",
+      "body_sha256": "1e5d8771d0c3fff0228964df6bdc711410379270e684e6d5c9759df8aad89fb1",
+      "design_paths": [
+        "design-docs/execution-efficiency-20261103.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 22,
+      "closed_at": "2026-11-03T16:31:30Z",
+      "timeline_entries": 32,
+      "timeline_sha256": "da68dfafcd7f990127b2716496822a116db04233011b3c0b382267c5ea87a360",
+      "body_sha256": "c205434681bff13a73d8a3ae063c16fd2fc796755aef8627f260b151b8676c04",
+      "design_paths": [
+        "design-docs/godot-chat-issue-guide-20261103.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 24,
+      "closed_at": "2026-11-03T15:15:45Z",
+      "timeline_entries": 7,
+      "timeline_sha256": "9c65d4ecea58c8b46d705dbc01fe467cd772afae895622624d81e54cfade632c",
+      "body_sha256": "40faadf87fefa06b83a785669aa69e948fb8c28b46299abf34053e4a4d5c25b6",
+      "design_paths": [],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 25,
+      "closed_at": "2026-11-04T18:02:16Z",
+      "timeline_entries": 20,
+      "timeline_sha256": "73853f3244c285223723079fd9ee19c790306ff3f49e918d437952a5f52601ed",
+      "body_sha256": "1104356e645f132402db0bdf9373cfc6384774c7d266063ef5c1070727c529e3",
+      "design_paths": [],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 27,
+      "closed_at": "2026-11-03T17:09:15Z",
+      "timeline_entries": 16,
+      "timeline_sha256": "4f412fe2a5e02d6ef56961f1bea72556523d64b5b8efbcfab7771dfae037c9ad",
+      "body_sha256": "adf0f165561788a31eb136a6aee82132a096ff8a54bc3d1a60ba736a3b362fb8",
+      "design_paths": [
+        "design-docs/heqi-olympus-sync-20261103.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 32,
+      "closed_at": "2026-11-03T17:50:17Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "a13473726e3aaf8af9a6a591c023cc2e60b9c79220178049242bbed0b01305ef",
+      "body_sha256": "e0ac8b7918c609de84606192f17d6b4ef25802b0e3f8bd6bb3d79b7217878a74",
+      "design_paths": [
+        "design-docs/issue-20261104-002257.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 35,
+      "closed_at": "2026-11-03T17:33:18Z",
+      "timeline_entries": 18,
+      "timeline_sha256": "d227ecfcbd26ac12d0b29400280aefb251e165f4b015549e3e6ae4bb57726476",
+      "body_sha256": "62305eea1ebb967d38faf8596580fc62dd7cc83854733c201a963c8eb28fd969",
+      "design_paths": [
+        "design-docs/core-agents-olympus-sync-20261104.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 39,
+      "closed_at": "2026-11-03T18:15:28Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "901eb146aedba043afdaf16da103c1d1b17335df0251ccf87a2c546f45491fa2",
+      "body_sha256": "f87b9f45cba4bfd7f7fac7ef152c061dd079a62703e969d50ddde7fe193811fd",
+      "design_paths": [
+        "design-docs/cli-ci-fixes-20261103.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 41,
+      "closed_at": "2026-11-03T19:33:43Z",
+      "timeline_entries": 7,
+      "timeline_sha256": "1178c59c597952e6c1bc0b37b0bd5ba38a3a0de503db4b288a74949af567c444",
+      "body_sha256": "4bda1866fa17dcfc52c8968048ee9d8f56f6be7e6f31b4737ddbaa3d0c5a7169",
+      "design_paths": [
+        "design-docs/framework-intake-sync-20261104.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 43,
+      "closed_at": "2026-11-03T22:22:02Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "ae1d9b914784f65c694c7ac0ae1e95ead9f0db70a4f690dbb19f4d821ae05245",
+      "body_sha256": "caa1f375f64f5badd78e9c4a6030b52cd9eeacd70034b7ba4fc3813c11a6e9ab",
+      "design_paths": [
+        "design-docs/gonggong-unification-20261104.md",
+        "design-docs/unification-43-approval.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 46,
+      "closed_at": "2026-11-04T20:58:43Z",
+      "timeline_entries": 19,
+      "timeline_sha256": "dfb1fabb809ef4422548ddfcf881a2079de9ff32c726206445c4e93bbbb342ea",
+      "body_sha256": "b9c5e081ed097c70d5698609d022308cbf6e5ac25cd475bcb330d0f12b63424b",
+      "design_paths": [
+        "design-docs/requirement-8275346195acf05e0605ca999b44d868.md"
+      ],
+      "yanshi_published_design": true
+    },
+    {
+      "issue": 48,
+      "closed_at": "2026-11-04T08:56:22Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "6535aa518052be550ab45aee3978a96e56f40300b02c8d77cf08cd69b1e560ed",
+      "body_sha256": "85b0b6cb3600d54f4c557590e0bb91d7b3b95a71684969c85fb580eeb85e69b4",
+      "design_paths": [
+        "design-docs/sub-agents-20261104.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 50,
+      "closed_at": "2026-11-04T08:58:34Z",
+      "timeline_entries": 10,
+      "timeline_sha256": "b39c81fd997a732214e3863592b521fc162b48ece91b2d88e60b347b3be9b308",
+      "body_sha256": "75819368e0bf857500471cd31b4cf958134d453ba65e12b8e29ad85703aa5bff",
+      "design_paths": [
+        "design-docs/codebuddy-cli-stdout-fix-20261104.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 53,
+      "closed_at": "2026-11-04T15:37:39Z",
+      "timeline_entries": 7,
+      "timeline_sha256": "40e07b58749202c4b249f4f07be6f11c80987b9050cf6a3c7788567f288938a6",
+      "body_sha256": "009cce2130f2fdd3eeb6e34bdcb040828a6b580b8e13e3d8849786f3e66a9957",
+      "design_paths": [
+        "design-docs/codex-gpt-chat-20261104.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 55,
+      "closed_at": "2026-11-04T21:58:51Z",
+      "timeline_entries": 18,
+      "timeline_sha256": "9b8bfcc984a8559caa69a98b2bf16f440669c7b4c7faba406b5f2b73a3894c29",
+      "body_sha256": "27ce61b329873088491a4780a628ea8e44e7a9b342623d69bbd6de0a50d2d846",
+      "design_paths": [
+        "design-docs/requirement-eecb7c4b90c0c55a8cde516aac5472f2.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 58,
+      "closed_at": "2026-11-04T21:58:56Z",
+      "timeline_entries": 18,
+      "timeline_sha256": "1efaa0db3d4959bfe59feeb16ec5a6bf109c496331c0b21dd5e7b6dc0b89cec2",
+      "body_sha256": "7784008694bb2892ed83713a7fd7bbb63f38659c0eb47a97eb7856d02411b7ed",
+      "design_paths": [
+        "design-docs/requirement-a13c004f01700a4c2098850c5bfb60be.md"
+      ],
+      "yanshi_published_design": true
+    },
+    {
+      "issue": 59,
+      "closed_at": "2026-11-04T21:59:01Z",
+      "timeline_entries": 26,
+      "timeline_sha256": "003a41b2712c095b7350a6b737c2efa5ddfc0e79a96cc5d89ebdc508a3a8d8a4",
+      "body_sha256": "acc712727b622700e2cd833a5e2a9146429d0606083cc5fc10de92cf5db6b57a",
+      "design_paths": [
+        "design-docs/editor-guided-workflows-20261105.md",
+        "design-docs/editor-semantic-control-mvp-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 72,
+      "closed_at": "2026-11-04T23:47:01Z",
+      "timeline_entries": 20,
+      "timeline_sha256": "2698b12b0e894156037a91dcfcd4b963f3692d8eeed7167fe9b8abd3dc091797",
+      "body_sha256": "d319e066a9616e4cc354f888e02929df16721cb71880706b7c69b756b24bba01",
+      "design_paths": [],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 79,
+      "closed_at": "2026-11-04T21:39:05Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "9f41519c41459fbfe1f7eb2fb689e3dbba308baeabe5e3260797223d945f9dd2",
+      "body_sha256": "5c85c333e004891ff2257c7e358afef8c6f09636970275d1975cde6a8df42030",
+      "design_paths": [
+        "design-docs/yanluo-host-and-progress-20261105.md",
+        "design-docs/yanluo-precommit-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 84,
+      "closed_at": "2026-11-04T22:04:47Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "6dfcc07ef3660f4c1a3f2b6ad0ff3c436a47cb306c1ad70e454ab33a863a86c3",
+      "body_sha256": "1a419ea657b4eb8546e6c89d397025769dc1b5e91dc12fa6957bc4135fb833d2",
+      "design_paths": [
+        "design-docs/issue-granularity-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 85,
+      "closed_at": "2026-11-04T22:04:36Z",
+      "timeline_entries": 13,
+      "timeline_sha256": "d6d2a1ffb97330d107dd5587da2803a02c8a68bc69ad748c47b815e11855c3ab",
+      "body_sha256": "3e0d63a7bdfca9790561711e2dfcdd399d3d6700d1c19bbe0d168ad5ccae5f77",
+      "design_paths": [
+        "design-docs/verification-efficiency-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 88,
+      "closed_at": "2026-11-04T22:13:58Z",
+      "timeline_entries": 30,
+      "timeline_sha256": "ff368277943850af575dc88d4326028419acee36cc1e629ca199613dbb5f31d8",
+      "body_sha256": "d5f616d60d9fe8f7f405230eb154f9d61f18ee288d0522bb6cbef2416a143a38",
+      "design_paths": [
+        "design-docs/yanluo-issue-audit-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 90,
+      "closed_at": "2026-11-04T23:47:05Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "95bbd71383610e95aea37540b64075a3f3e464b8e4ac8bd489e025cd474faf65",
+      "body_sha256": "156145752db34136cdd94538a574697dd52ee2f20be61343b11953c220c5b394",
+      "design_paths": [
+        "design-docs/yanluo-issue-9-source-host-binding-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 100,
+      "closed_at": "2026-11-04T22:54:21Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "7258e05437f17913175a8164a01b3ee2cd21f42dd505e0f37d9e56b9c5d27a08",
+      "body_sha256": "72daf088339872855e28c78831b69580c44287419bcca4b39fcfb188c4c4abfb",
+      "design_paths": [
+        "design-docs/autonomous-delivery-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 101,
+      "closed_at": "2026-11-04T23:18:30Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "4bd53aa2d749108d0b15ff0518ecc7375aa7030d960d4c0fffe3887c1f46f90f",
+      "body_sha256": "65bd812b746706a815ae480a48d6788bb7b2865afc6d90e0a60e11addc4ba2c6",
+      "design_paths": [
+        "design-docs/review-dedup-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 103,
+      "closed_at": "2026-11-04T23:19:29Z",
+      "timeline_entries": 7,
+      "timeline_sha256": "a843c4bc5171c7333be4f5eb5b0640df7bbaca5aa46ef07e297758907d969dad",
+      "body_sha256": "eac239f073f9d81b659671a6918e78997ba25c2b86aabcdb9a6a14f41e41aa82",
+      "design_paths": [
+        "design-docs/validation-to-main-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 106,
+      "closed_at": "2026-11-04T23:31:41Z",
+      "timeline_entries": 8,
+      "timeline_sha256": "ff0b9d27b44608a47eed2d6ba8e781ba8f4990db236f344728fa8e80e740b799",
+      "body_sha256": "e85bd8753691046772d4a97e42ad41398a4fef6e1857163787023acee3182c79",
+      "design_paths": [
+        "design-docs/gate-reliability-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 109,
+      "closed_at": "2026-11-05T00:41:37Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "05aa82d1c119f409f8aa679040e5ce3a1817e57438bcc59e068418b0ab1ff71a",
+      "body_sha256": "aea4c28dad22dcdbe6d347a6722d99b0dac70101e4fbded3e817a139bc1064ef",
+      "design_paths": [
+        "design-docs/kuafu-blockers-20261105.md",
+        "design-docs/kuafu-blockers-review-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 111,
+      "closed_at": "2026-11-05T01:13:53Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "db8302ef5274f0e9f01e76e73e1ad13b7a17d265624f3721a00742742785e723",
+      "body_sha256": "3efabb75ca7b512113190220e6b12eee159e6c3d43b55600a40ebea6b87af617",
+      "design_paths": [
+        "design-docs/module-boundaries-20261105.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 119,
+      "closed_at": "2026-11-05T17:12:03Z",
+      "timeline_entries": 24,
+      "timeline_sha256": "dc7e5a80e7a0d9b82f3e11c49ba5435a11274cc04f0e6e8a1f24c677cbf4cd8c",
+      "body_sha256": "7c1e0f793aa21591e5be453f1dc215f0108722c93d98c8f156b03c44fd46aba1",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/acceptance.md",
+        "design-docs/daqian/board.md",
+        "design-docs/daqian/graph.md",
+        "design-docs/daqian/input.md",
+        "design-docs/daqian/models.md",
+        "design-docs/daqian/parallel.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 120,
+      "closed_at": "2026-11-05T16:33:35Z",
+      "timeline_entries": 16,
+      "timeline_sha256": "acf3076efaf2bdfc6e112db50ca5b3c884cb3d344c27c8cf5f20e01696120624",
+      "body_sha256": "c32b22399141be2019af33336d296f0fab5917258189e8c2c84e12f86f304b71",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/graph.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 121,
+      "closed_at": "2026-11-05T17:10:30Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "6601903c63982dc1bf724080f7b788602a46b3983aee43d617dfc3809271015a",
+      "body_sha256": "08b2fc96c7d9a7bcea9c0d35e149817d8b49f36f828665b0b630ab6d1eecfa2b",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/board.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 122,
+      "closed_at": "2026-11-05T17:10:43Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "74b4d9f46fab7f1d587579cae7204edd6414ffee17d5b2b57aeb94b0c8595447",
+      "body_sha256": "e06962c23d4e7ccd6a8d4784f97fe8e8896b10d09c41992d693f563ddef4419b",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/input.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 123,
+      "closed_at": "2026-11-05T17:10:58Z",
+      "timeline_entries": 10,
+      "timeline_sha256": "ce3a7b81f15e1c502c20c294251dabac8afbad9e1da72b7810f2e1159ef9292e",
+      "body_sha256": "0832e05a87368f5270a5bdd866a88507ccaa013926c562056423c785ad2b150a",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/models.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 124,
+      "closed_at": "2026-11-05T17:11:14Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "8d96de9f8011c4db201d1ba6a8aa1b673cc887ac0b1f8764cac744be741230fb",
+      "body_sha256": "e4dc100fa92534d2d3c016561867db8671195084a14fb25eb6735ad0e405d546",
+      "design_paths": [
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/parallel.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 125,
+      "closed_at": "2026-11-05T17:11:34Z",
+      "timeline_entries": 22,
+      "timeline_sha256": "21f86626debb2eb4a16b71fa0f85f8febbeb46e22c0fcf84502421db5cd9b8fb",
+      "body_sha256": "cd9cf64b1a20048d20b99c110586811feecf6a8db7623567cbc5eaccb1a682d3",
+      "design_paths": [
+        "design-docs/daqian-ai-entry-pig.md",
+        "design-docs/daqian-workflow.md",
+        "design-docs/daqian/acceptance.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 127,
+      "closed_at": "2026-11-05T16:33:59Z",
+      "timeline_entries": 17,
+      "timeline_sha256": "cf142350a003a63df6976fb838215ce2be52b9b037972397de93aa588613e25f",
+      "body_sha256": "a9628b8e794dfb146730ba148b8d189ddff208e6890af7978170654b4a8f0856",
+      "design_paths": [
+        "design-docs/daqian-ai-entry-pig.md",
+        "design-docs/daqian-workflow.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 131,
+      "closed_at": "2026-11-05T16:18:01Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "84c6bc30e2f917106799efcb2c16372be54decb8ddecedeecb778a0b3d04d082",
+      "body_sha256": "63555ded8487e01e9f0e90bc47ef8057172c197548cb4486d1ed7c2d7dfbf153",
+      "design_paths": [
+        "design-docs/collaborator-delivery.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 133,
+      "closed_at": "2026-11-05T17:51:37Z",
+      "timeline_entries": 12,
+      "timeline_sha256": "99d601f31d20e248fb5b235b7ab65fedfb15a5e7ef2986fc13f2bfac2a16dd9a",
+      "body_sha256": "bf0e34c222157909a3e4ecf06622a037cebb0b7b752c98290ca13511377d3b36",
+      "design_paths": [
+        "design-docs/editor-capability-routing-20261106.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 134,
+      "closed_at": "2026-11-05T16:47:29Z",
+      "timeline_entries": 10,
+      "timeline_sha256": "4726f2abe5b5a7b065025f1dd620ed1a4f14cc57d350b62cf8cdf68ac7f8d67e",
+      "body_sha256": "24580adc4b8c79dc8ab015bfdfdd6be85ea1c302a60ec2fa5b1541184de18433",
+      "design_paths": [
+        "design-docs/writer-submit.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 138,
+      "closed_at": "2026-11-05T17:47:58Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "76ea8e4c46c5a88f6267aaa3e7f4fe9245b8ccb24c03dd5c65fe4c4fb685cb75",
+      "body_sha256": "2710b17599093ac403741e2ccf472cb71f1ac5ecbb10ca59e658005597649852",
+      "design_paths": [
+        "design-docs/daqian/models.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 142,
+      "closed_at": "2026-11-06T00:13:22Z",
+      "timeline_entries": 18,
+      "timeline_sha256": "606ee935b96e3ce40af0a3855072e6b78221064022ef8fdc99db2c6fc314b2b4",
+      "body_sha256": "87d078bdce6c07b008b7c4897339869639af2a2dc645729a7abaac3d1c8ca952",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/collaborator-runtime-parity.md",
+        "design-docs/ainative-art/01-contracts.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 143,
+      "closed_at": "2026-11-06T00:25:49Z",
+      "timeline_entries": 23,
+      "timeline_sha256": "f8b128f1a4a04e131bdc81bb678242f54c1f42476485782c8587bc07ec2e9d54",
+      "body_sha256": "3f5134506f6ac871d9ea5d7be7f822124c455d8c790093786ec4f48c113e3594",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/02-executor.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 144,
+      "closed_at": "2026-11-06T00:39:43Z",
+      "timeline_entries": 25,
+      "timeline_sha256": "ff489001cf3966fe82af80e1a53f22a9d8c865b5d56f437932e20f7e9ec20397",
+      "body_sha256": "deaeee0df6cc9898812eae03ea35fa83c24a5e749f8cb65551771f7327b8e17b",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/03-editor.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 145,
+      "closed_at": "2026-11-06T14:57:37Z",
+      "timeline_entries": 30,
+      "timeline_sha256": "62600f98970b520acbb36ac8fdb1e3ac0dda6c041a5314ec821d968819fcb7d3",
+      "body_sha256": "2a78d2f550d5607d43d894bdc25cfa85e2798c18f357dbf21fc0214128d8aae7",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/04-generators.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 146,
+      "closed_at": "2026-11-06T15:26:05Z",
+      "timeline_entries": 27,
+      "timeline_sha256": "9dfd07ab94c98815044d2512c2ab1c582182232adc25d7960c489bccb28746ae",
+      "body_sha256": "18507d4f525b7e50cd47da7238a002b5ab5613bca4ea9d519deafa63cbeb50cf",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/05-rigging.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 147,
+      "closed_at": "2026-11-06T16:13:15Z",
+      "timeline_entries": 27,
+      "timeline_sha256": "63abb63395b7dea1587b222921f4799362af0bb1389961cdbb54bf4a11f47038",
+      "body_sha256": "3cfb027b5c5946102c1bd5f4470edc66787dce904a6566b0dd373c50dc610181",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/06-skeleton-interop.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 148,
+      "closed_at": "2026-11-06T17:21:32Z",
+      "timeline_entries": 28,
+      "timeline_sha256": "e61bca047c970d832d655c7ac7727dc50f0cc791921dc3c762c03771c3788631",
+      "body_sha256": "212e019ac1b6d9504b26cdc10a0db4650ef9a358c7a8970e79e9519a156573b4",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/07-garments.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 149,
+      "closed_at": "2026-11-06T17:28:13Z",
+      "timeline_entries": 25,
+      "timeline_sha256": "f2387487e9b5bd4cb3caaed511889647a7eaa6a851a551ad70f083e8b2f1e9fa",
+      "body_sha256": "2700a947648d040d89cb1dbcb7bfcf5020c34ef62f091947fa990406478dff8a",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/08-motion-generation.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 150,
+      "closed_at": "2026-11-06T17:55:32Z",
+      "timeline_entries": 24,
+      "timeline_sha256": "dfc1ae3ca01604bd863f49b62a13fd70f912a16b58a5a8afd8f5f8411fc6b1bd",
+      "body_sha256": "729a53aefddccabf23241c773721823d2f93a09b43aa12389f55cfcef275d51d",
+      "design_paths": [
+        "design-docs/ainative-art-pipeline-20261106.md",
+        "design-docs/ainative-art/09-layering-equipment.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 156,
+      "closed_at": "2026-11-05T17:55:44Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "d5da13977434381802d17b12e0a28e65881a608427a58eaf930216d3745cdebb",
+      "body_sha256": "2f3d3c76bc5ce2ecdc66fbec93f3ae95bedc6487c1bc9619187b5e108ae304a5",
+      "design_paths": [
+        "design-docs/daqian/windows-utf8-20261106.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 168,
+      "closed_at": "2026-11-06T11:49:57Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "0f7b7974f5554508fca30388f3e3c7d3e5213b1adac9cf4f9233fddaabee81fb",
+      "body_sha256": "d2701d61a25508123f9fb3d31d26ea670295b0d428d6189df21621d9a1f92dd5",
+      "design_paths": [
+        "design-docs/codex-action-arguments-20261106.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 172,
+      "closed_at": "2026-11-06T12:46:51Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "5f8f1273738d1ed7431ff457308aab930e87d891384c9396ef647fd98f0267f3",
+      "body_sha256": "1c7089c060ceb3a535c6dde29c8581898c7d08c9b6d3091d6ebbfa74d6909eb0",
+      "design_paths": [
+        "design-docs/daqian/requirement-send.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 174,
+      "closed_at": "2026-11-06T13:58:51Z",
+      "timeline_entries": 14,
+      "timeline_sha256": "b983b222e5fbbe00d57f0bc396ab648766c06c3aa875c0fcd175ddb2aa086c6d",
+      "body_sha256": "b9644b24fb8064ed2e2db2b1563958bb88fdaf349892936e2248a47d64654c21",
+      "design_paths": [
+        "design-docs/daqian/direct-task.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 181,
+      "closed_at": "2026-11-06T13:25:23Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "15c0cf81f55f0e94b2dad9600b0de7db6bb71a879f931810657aef44d024d1fd",
+      "body_sha256": "ae43ffb03b5298226d5f79360873f3ddbc1fbc1669d402306275af6da0cbc90b",
+      "design_paths": [
+        "design-docs/godot-intake-recovery-20261106.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 184,
+      "closed_at": "2026-11-06T17:53:34Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "88dba32332cf7919f6bf910723f4237c781f4f41ae5545e6fe5bff7b27f23a9b",
+      "body_sha256": "1706656ac4c8adf6a5d14f7338f150698f538e05ce49735380284b225ea77041",
+      "design_paths": [
+        "design-docs/requirements-context-user-corrections.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 188,
+      "closed_at": "2026-11-06T14:12:16Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "bf88a3793ccec45daec52fc82af7e7221a048beb56e3f7e8dcc5e0f76d87bd33",
+      "body_sha256": "6ae814bceb9143463a71b8610da1e322c632426de86d179b9265762fc2a81c9e",
+      "design_paths": [
+        "design-docs/daqian/my-open-issues.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 189,
+      "closed_at": "2026-11-06T16:29:59Z",
+      "timeline_entries": 22,
+      "timeline_sha256": "3f8e1a1899e55f3c36b781d8dc72737d4bcdfcf56de266c3f3d086582b31104c",
+      "body_sha256": "cce4b3efa68455b7367df648bb2e0df5f7a87acfa64373f3ace945f8691efde7",
+      "design_paths": [
+        "design-docs/frozen-distribution-reconcile-20261106.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 191,
+      "closed_at": "2026-11-06T15:03:21Z",
+      "timeline_entries": 11,
+      "timeline_sha256": "dce2f44a4db3b1b74ce03135590cf356bc845263d8fe0b4a4d32f2ef3e3fb150",
+      "body_sha256": "953b5f0a449d010fa918e9d628a6eec51b5ae2a81e4b888bb31da79a1e470a88",
+      "design_paths": [
+        "design-docs/daqian/fast-refresh.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 196,
+      "closed_at": "2026-11-06T15:46:57Z",
+      "timeline_entries": 10,
+      "timeline_sha256": "16e613b1de500169de7f73e67d150ca63b6e9d1ad038c3f9fed476aaf54b0b1a",
+      "body_sha256": "6ea2343524ffe2d59d9ceda8bef37e7a0c7018a36dd248334573475f40f49ffd",
+      "design_paths": [
+        "design-docs/daqian-card-layout.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 197,
+      "closed_at": "2026-11-06T15:51:44Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "2f63682006aa9b3313bc9ace82f246e8349f6b4aa5ad4bb1d57eac70f7cabbe2",
+      "body_sha256": "a952dc74a4f22826592e7a95646edd5c7cfede201e288ba76ff9805c487f8cde",
+      "design_paths": [
+        "design-docs/daqian/flow-state.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 204,
+      "closed_at": "2026-11-06T16:44:44Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "037f1addd524f3ba1b31f8c68fd8f93cf8e54db278fb6b09eb6160b2ff7756d6",
+      "body_sha256": "6d4a7a8b17f2a50d597f0e5365911e8c0b7b1c92a847856a297d23e09a2f1a84",
+      "design_paths": [
+        "design-docs/daqian/worker-progress.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 210,
+      "closed_at": "2026-11-06T17:11:14Z",
+      "timeline_entries": 10,
+      "timeline_sha256": "26118d3068a2e64d0071eda861520b4921374107987b01a481f504b0d0692e93",
+      "body_sha256": "a21ddf0bb955303ac185a6bf4cb8fdcfa425bd763944a669aa054357977de51f",
+      "design_paths": [
+        "design-docs/daqian/node-approval.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 212,
+      "closed_at": "2026-11-06T17:53:28Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "abd32300b9ebd4728ff278ccb13f2003a76f3c6d870fb9ed1b174e0382250c89",
+      "body_sha256": "5b438435e28da1bb9347c39349aa97ded082f40bfec36eac6d64e098e2f0e15c",
+      "design_paths": [
+        "design-docs/macos-restart-executable-20261107.md"
+      ],
+      "yanshi_published_design": false
+    },
+    {
+      "issue": 218,
+      "closed_at": "2026-11-06T17:39:23Z",
+      "timeline_entries": 9,
+      "timeline_sha256": "7fe4997aea33db3c6318f5bda42a98dc29d844ffa90c0f4209ef979f137cfde8",
+      "body_sha256": "67ffad1d36f01cc104c937d7678b4d4895400e2695566d163cdc697133dc4b2b",
+      "design_paths": [
+        "design-docs/daqian/embedded-workbench.md"
+      ],
+      "yanshi_published_design": false
+    }
+  ],
+  "scanned_design_paths": [
+    "design-docs/README.md",
+    "design-docs/ai-chat-debug-20261104.md",
+    "design-docs/ai-chat-fill-window-20261104.md",
+    "design-docs/ainative-art-pipeline-20261106.md",
+    "design-docs/ainative-art/01-contracts.md",
+    "design-docs/ainative-art/02-executor.md",
+    "design-docs/ainative-art/03-editor.md",
+    "design-docs/ainative-art/04-generators.md",
+    "design-docs/ainative-art/05-rigging.md",
+    "design-docs/ainative-art/06-quinn-validation-followup.md",
+    "design-docs/ainative-art/06-skeleton-interop.md",
+    "design-docs/ainative-art/07-garments.md",
+    "design-docs/ainative-art/08-motion-generation.md",
+    "design-docs/ainative-art/09-layering-equipment.md",
+    "design-docs/ainative-art/10-customization-face.md",
+    "design-docs/ainative-art/11-cloth.md",
+    "design-docs/ainative-art/12-hair.md",
+    "design-docs/ainative-art/13-integration.md",
+    "design-docs/autonomous-delivery-20261105.md",
+    "design-docs/build-engine-macos-20261105.md",
+    "design-docs/chat-images-intake-20261106.md",
+    "design-docs/cli-ci-fixes-20261103.md",
+    "design-docs/codebuddy-cli-stdout-fix-20261104.md",
+    "design-docs/codex-action-arguments-20261106.md",
+    "design-docs/codex-gpt-chat-20261104.md",
+    "design-docs/collaborator-delivery.md",
+    "design-docs/collaborator-runtime-parity.md",
+    "design-docs/core-agents-olympus-sync-20261104.md",
+    "design-docs/daqian-ai-entry-pig.md",
+    "design-docs/daqian-card-layout.md",
+    "design-docs/daqian-workflow.md",
+    "design-docs/daqian/acceptance.md",
+    "design-docs/daqian/board.md",
+    "design-docs/daqian/direct-task.md",
+    "design-docs/daqian/embedded-workbench.md",
+    "design-docs/daqian/fast-refresh.md",
+    "design-docs/daqian/flow-state.md",
+    "design-docs/daqian/graph.md",
+    "design-docs/daqian/input.md",
+    "design-docs/daqian/models.md",
+    "design-docs/daqian/my-open-issues.md",
+    "design-docs/daqian/node-approval.md",
+    "design-docs/daqian/parallel.md",
+    "design-docs/daqian/requirement-send.md",
+    "design-docs/daqian/windows-utf8-20261106.md",
+    "design-docs/daqian/worker-progress.md",
+    "design-docs/editor-capability-routing-20261106.md",
+    "design-docs/editor-guided-workflows-20261105.md",
+    "design-docs/editor-semantic-control-mvp-20261105.md",
+    "design-docs/execution-efficiency-20261103.md",
+    "design-docs/framework-intake-sync-20261104.md",
+    "design-docs/frozen-distribution-reconcile-20261106.md",
+    "design-docs/full-repository-delivery-20261102.md",
+    "design-docs/gate-reliability-20261105.md",
+    "design-docs/gha-windows-caller-read-permission.md",
+    "design-docs/godot-chat-issue-guide-20261103.md",
+    "design-docs/godot-host-portability-20261102.md",
+    "design-docs/godot-intake-recovery-20261106.md",
+    "design-docs/godot-olympus-chat-20261102.md",
+    "design-docs/godot-olympus-independent-review-20261102.md",
+    "design-docs/godot-production-admission-review-20261102.md",
+    "design-docs/godot-receipt-ui-blocking-20261102.md",
+    "design-docs/godot-simulated-flow-20261102.md",
+    "design-docs/gonggong-unification-20261104.md",
+    "design-docs/heqi-olympus-sync-20261103.md",
+    "design-docs/issue-20261104-002257.md",
+    "design-docs/issue-6-host-intake-delivery-20261103.md",
+    "design-docs/issue-7-admission-20261103.md",
+    "design-docs/issue-event-data-loop-20261102.md",
+    "design-docs/issue-gate-diting-source-event-binding-20261105.md",
+    "design-docs/issue-governance-20261102.md",
+    "design-docs/issue-granularity-20261105.md",
+    "design-docs/issue-workflow-20261102.md",
+    "design-docs/issue7-042-standalone-20261103.md",
+    "design-docs/kuafu-blockers-20261105.md",
+    "design-docs/kuafu-blockers-review-20261105.md",
+    "design-docs/macos-restart-executable-20261107.md",
+    "design-docs/module-boundaries-20261105.md",
+    "design-docs/olympus-residue-deadlock-20261104.md",
+    "design-docs/requirement-5385e56ee3b0a81709e779d44d5f2489.md",
+    "design-docs/requirement-8275346195acf05e0605ca999b44d868.md",
+    "design-docs/requirement-a13c004f01700a4c2098850c5bfb60be.md",
+    "design-docs/requirement-ab1a9994bd1de186913cee5bdbeb9190.md",
+    "design-docs/requirement-c1d0427af0155780b0485d8570f2d4ba.md",
+    "design-docs/requirement-eecb7c4b90c0c55a8cde516aac5472f2.md",
+    "design-docs/requirements-context-user-corrections.md",
+    "design-docs/restore-repository-ci-20261102.md",
+    "design-docs/review-dedup-20261105.md",
+    "design-docs/sinan-parallel-20261105.md",
+    "design-docs/standalone-runtime-20261103.md",
+    "design-docs/sub-agents-20261104.md",
+    "design-docs/templates/issue-breakdown.md",
+    "design-docs/templates/requirement.md",
+    "design-docs/unification-43-approval.md",
+    "design-docs/unification-43-final-wording-approval.md",
+    "design-docs/upstream-workflow-upgrade-20261102.md",
+    "design-docs/validation-to-main-20261105.md",
+    "design-docs/verification-efficiency-20261105.md",
+    "design-docs/windows-editor-request-shadow.md",
+    "design-docs/writer-submit.md",
+    "design-docs/yanluo-host-and-progress-20261105.md",
+    "design-docs/yanluo-issue-47-igniter-acceptance-20261105.md",
+    "design-docs/yanluo-issue-51-deadlock-acceptance-20261105.md",
+    "design-docs/yanluo-issue-52-macos-layout-acceptance-20261105.md",
+    "design-docs/yanluo-issue-56-ui-acceptance-20261105.md",
+    "design-docs/yanluo-issue-63-nonwindows-artifact-20261105.md",
+    "design-docs/yanluo-issue-64-closure-discrepancy-20261105.md",
+    "design-docs/yanluo-issue-9-source-host-binding-20261105.md",
+    "design-docs/yanluo-issue-audit-20261105.md",
+    "design-docs/yanluo-precommit-20261105.md"
+  ],
+  "local_sources_with_completed_issue_urls": {
+    "data-collection/ainative-art-contracts-intake.json": [
+      142
+    ],
+    "data-collection/ainative-contracts-continuation-request.json": [
+      142
+    ],
+    "data-collection/ainative-editor-request.json": [
+      144
+    ],
+    "data-collection/ainative-executor-request.json": [
+      143
+    ],
+    "data-collection/ainative-garments-request.json": [
+      147,
+      148
+    ],
+    "data-collection/ainative-garments-validation.json": [
+      147
+    ],
+    "data-collection/ainative-generators-request.json": [
+      145
+    ],
+    "data-collection/ainative-layering-equipment-request.json": [
+      150
+    ],
+    "data-collection/ainative-motion-generation-request.json": [
+      147,
+      149
+    ],
+    "data-collection/ainative-rigging-request.json": [
+      145,
+      146
+    ],
+    "data-collection/ainative-skeleton-interop-request.json": [
+      146,
+      147
+    ],
+    "data-collection/autonomous-delivery-ci-binding-20261105.json": [
+      100
+    ],
+    "data-collection/autonomous-delivery-request-20261105.json": [
+      100
+    ],
+    "data-collection/cli-ci-review-20261103.json": [
+      11
+    ],
+    "data-collection/codex-gpt-merge-20261104.json": [
+      53
+    ],
+    "data-collection/collaborator-delivery-request.json": [
+      131
+    ],
+    "data-collection/daqian-acceptance-20261105-intake.json": [
+      125
+    ],
+    "data-collection/daqian-ai-entry-pig-20261105-intake.json": [
+      127
+    ],
+    "data-collection/daqian-card-layout-macos.json": [
+      196
+    ],
+    "data-collection/daqian-confirm-first-validation.json": [
+      174
+    ],
+    "data-collection/daqian-direct-task-validation.json": [
+      174
+    ],
+    "data-collection/daqian-fast-refresh-validation.json": [
+      191
+    ],
+    "data-collection/daqian-flow-state-macos.json": [
+      197
+    ],
+    "data-collection/daqian-graph-macos-20261105.json": [
+      120
+    ],
+    "data-collection/daqian-graph-request-20261105.json": [
+      120
+    ],
+    "data-collection/daqian-input-20261105-intake.json": [
+      122
+    ],
+    "data-collection/daqian-models-20261105-intake.json": [
+      123
+    ],
+    "data-collection/daqian-models-macos-20261105.json": [
+      127
+    ],
+    "data-collection/daqian-my-open-validation.json": [
+      188
+    ],
+    "data-collection/daqian-parallel-20261105-intake.json": [
+      124
+    ],
+    "data-collection/daqian-requirement-send-validation.json": [
+      172
+    ],
+    "data-collection/daqian-windows-utf8-20261106-intake.json": [
+      156
+    ],
+    "data-collection/execution-efficiency-20261103.json": [
+      15
+    ],
+    "data-collection/execution-efficiency-review-20261103.json": [
+      15
+    ],
+    "data-collection/frozen-distribution-reconcile-20261106.json": [
+      189
+    ],
+    "data-collection/gate-reliability-request-20261105.json": [
+      106
+    ],
+    "data-collection/gate-reliability-verification-20261105.json": [
+      106
+    ],
+    "data-collection/git-publication-20261102.json": [
+      2
+    ],
+    "data-collection/github-issue-1-20261102.json": [
+      1
+    ],
+    "data-collection/github-issue-2-20261102.json": [
+      2
+    ],
+    "data-collection/github-issue-3-20261102.json": [
+      3
+    ],
+    "data-collection/github-issue-3-final-20261102.json": [
+      3
+    ],
+    "data-collection/github-issue-3-simulated-acceptance-20261102.json": [
+      3
+    ],
+    "data-collection/github-issue-4-20261102.json": [
+      4
+    ],
+    "data-collection/github-issue-4-simulated-acceptance-20261102.json": [
+      4
+    ],
+    "data-collection/github-issue-6-20261102.json": [
+      6
+    ],
+    "data-collection/github-issue-7-20261102.json": [
+      7
+    ],
+    "data-collection/github-issue-8-20261102.json": [
+      8
+    ],
+    "data-collection/github-issue-9-20261102.json": [
+      9
+    ],
+    "data-collection/github-issues-snapshot-20261102.json": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "data-collection/godot-chat-issue-guide-20261103-acceptance.json": [
+      22
+    ],
+    "data-collection/godot-chat-issue-guide-20261103-gh-login.json": [
+      22
+    ],
+    "data-collection/godot-chat-issue-guide-20261103-merge.json": [
+      22
+    ],
+    "data-collection/godot-chat-issue-guide-20261103-msvc-shadow.json": [
+      22
+    ],
+    "data-collection/godot-chat-issue-guide-20261103-pr-format.json": [
+      22
+    ],
+    "data-collection/godot-chat-issue-guide-20261103.json": [
+      22
+    ],
+    "data-collection/issue-7-candidate-review-20261102.json": [
+      7
+    ],
+    "data-collection/issue-7-independent-review-20261103.json": [
+      7
+    ],
+    "data-collection/issue-cleanup-20261102.json": [
+      1,
+      2,
+      5
+    ],
+    "data-collection/issue-governance-verification.json": [
+      6
+    ],
+    "data-collection/issue-granularity-main-integration-20261105.json": [
+      84
+    ],
+    "data-collection/issue-granularity-request.json": [
+      84
+    ],
+    "data-collection/issue-granularity-validation.json": [
+      84
+    ],
+    "data-collection/issue-publication-20261102.json": [
+      1
+    ],
+    "data-collection/issue133-candidate-validation-20261106.json": [
+      133
+    ],
+    "data-collection/issue133-mainline-integration-20261106.json": [
+      133
+    ],
+    "data-collection/issue133-request-20261106.json": [
+      133
+    ],
+    "data-collection/issue133-submission-base-20261106.json": [
+      133
+    ],
+    "data-collection/issue168-codex-action-validation.json": [
+      168
+    ],
+    "data-collection/issue181-intake-recovery-validation.json": [
+      181
+    ],
+    "data-collection/issue189-self-check-request.json": [
+      189
+    ],
+    "data-collection/issue212-macos-restart-intake.json": [
+      212
+    ],
+    "data-collection/issue212-macos-restart-main491888-validation.json": [
+      212
+    ],
+    "data-collection/issue212-macos-restart-mainab029a-validation.json": [
+      212
+    ],
+    "data-collection/issue212-macos-restart-validation.json": [
+      212
+    ],
+    "data-collection/issue22-agent-intake-delivery-20261104.json": [
+      22
+    ],
+    "data-collection/issue22-agent-intake-native-20261104.json": [
+      22
+    ],
+    "data-collection/issue22-agent-intake-review-20261104.json": [
+      22
+    ],
+    "data-collection/issue22-agent-intake-source-validation-20261103.json": [
+      22
+    ],
+    "data-collection/issue27-admission-20261104.json": [
+      27
+    ],
+    "data-collection/issue27-ci-cache-correction-20261104.json": [
+      27
+    ],
+    "data-collection/issue27-ci-repair-20261104.json": [
+      27
+    ],
+    "data-collection/issue27-frozen-source.json": [
+      27
+    ],
+    "data-collection/issue27-sync-candidate-20261104.json": [
+      27
+    ],
+    "data-collection/issue32-build-review-20261104.json": [
+      32
+    ],
+    "data-collection/issue32-consultation-start-20261104.json": [
+      32
+    ],
+    "data-collection/issue32-delivery-20261104.json": [
+      32
+    ],
+    "data-collection/issue32-independent-acceptance-20261104.json": [
+      32
+    ],
+    "data-collection/issue32-native-acceptance-20261104.json": [
+      32
+    ],
+    "data-collection/issue35-admission-20261104.json": [
+      35
+    ],
+    "data-collection/issue35-sync-candidate-20261104.json": [
+      35
+    ],
+    "data-collection/issue39-cli-lint-validation-20261104.json": [
+      11,
+      39
+    ],
+    "data-collection/issue41-sync-verification-20261104.json": [
+      41
+    ],
+    "data-collection/issue59-bounds-source-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-bounds-validation-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-candidate-validation-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-independent-review-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-integration-source-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-integration-validation-20261105.json": [
+      59
+    ],
+    "data-collection/issue59-request-20261105.json": [
+      59
+    ],
+    "data-collection/issue6-continuation-verification-20261103.json": [
+      6
+    ],
+    "data-collection/issue6-simulated-acceptance-20261103.json": [
+      6
+    ],
+    "data-collection/issue6-simulated-procedure-20261103.md": [
+      6
+    ],
+    "data-collection/issue7-042-standalone-review-20261103.json": [
+      7
+    ],
+    "data-collection/issue7-042-standalone-verification-20261103.json": [
+      7
+    ],
+    "data-collection/issue9-final-acceptance-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-consumption-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-independent-review-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-reception-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-remote-readback-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-reporting-stages-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-final-source-inspect-20261105.json": [
+      9,
+      90
+    ],
+    "data-collection/issue9-git-workflow-20261103.json": [
+      9
+    ],
+    "data-collection/issue9-git-workflow-ci-20261104.json": [
+      9
+    ],
+    "data-collection/issue9-github-source-final-read-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-github-source-read-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-operator-reception-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-reconciliation-request-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-reconciliation-step-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-source-adapter-step-20261105.json": [
+      9
+    ],
+    "data-collection/issue9-source-reconciliation-20261105.json": [
+      9
+    ],
+    "data-collection/issue90-sinan-host-acceptance-20261105.json": [
+      90
+    ],
+    "data-collection/kuafu-blockers-approval-event.json": [
+      109
+    ],
+    "data-collection/kuafu-blockers-release-approval.json": [
+      109
+    ],
+    "data-collection/kuafu-blockers-request-20261105.json": [
+      109
+    ],
+    "data-collection/restart-context-main491888-integration-validation.json": [
+      212
+    ],
+    "data-collection/restart-context-mainab029a-integration-validation.json": [
+      212
+    ],
+    "data-collection/review-dedup-issue-binding.json": [
+      101
+    ],
+    "data-collection/review-dedup-request.json": [
+      101
+    ],
+    "data-collection/review-dedup-scope-r2.json": [
+      101
+    ],
+    "data-collection/review-dedup-source-changed.json": [
+      101
+    ],
+    "data-collection/sinan-parallel-codex-review.json": [
+      72
+    ],
+    "data-collection/sinan-parallel-integration-candidate-20261105.json": [
+      72
+    ],
+    "data-collection/sinan-parallel-validation.json": [
+      72
+    ],
+    "data-collection/sources.json": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "data-collection/standalone-runtime-independent-review-20261103.json": [
+      7
+    ],
+    "data-collection/standalone-runtime-verification-20261103.json": [
+      7
+    ],
+    "data-collection/validation-to-main-request-20261105.json": [
+      103
+    ],
+    "data-collection/validation-to-main-verification-20261105.json": [
+      103
+    ],
+    "data-collection/verification-efficiency-main-integration-20261105.json": [
+      85
+    ],
+    "data-collection/verification-efficiency-merge-source-20261105.json": [
+      85
+    ],
+    "data-collection/verification-efficiency-request-20261105.json": [
+      85
+    ],
+    "data-collection/verification-efficiency-step-20261105.json": [
+      85
+    ],
+    "data-collection/workspace-final-issues-20261103.json": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      15
+    ],
+    "data-collection/yanluo-audit-actions-20261105-source.json": [
+      88
+    ],
+    "data-collection/yanluo-audit-request-20261105-source.json": [
+      88
+    ],
+    "data-collection/yanluo-execution-handoff.json": [
+      79
+    ],
+    "data-collection/yanluo-host-readback.json": [
+      79
+    ],
+    "data-collection/yanluo-issue-association-correction.json": [
+      79
+    ],
+    "data-collection/yanluo-issue-audit-85-handoff.json": [
+      85,
+      88
+    ],
+    "data-collection/yanluo-issue-audit-containment.json": [
+      88
+    ],
+    "data-collection/yanluo-issue-audit-corrections.json": [
+      88
+    ],
+    "data-collection/yanluo-issue-audit-remote.json": [
+      9,
+      55,
+      58,
+      59,
+      88,
+      90
+    ],
+    "data-collection/yanluo-issue-audit-results.json": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      15,
+      22,
+      24,
+      25,
+      27,
+      32,
+      35,
+      39,
+      41,
+      43,
+      46,
+      48,
+      50,
+      53,
+      55,
+      58,
+      59,
+      72,
+      79,
+      85,
+      88
+    ],
+    "data-collection/yanluo-issue-audit-validation.json": [
+      88
+    ],
+    "data-collection/yanluo-precommit-request.json": [
+      79
+    ],
+    "data-collection/daqian-acceptance/macos.json": [
+      127
+    ],
+    "data-collection/issue27-previous-local-admission/issue7-042-independent-review-20261103.json": [
+      7
+    ],
+    "data-collection/issue55-layout-regression/candidate2-event.json": [
+      55
+    ],
+    "data-collection/issue55-layout-regression/candidate6-event.json": [
+      55
+    ],
+    "data-collection/issue55-layout-regression/candidate6-issue-association.json": [
+      55
+    ],
+    "data-collection/issue55-layout-regression/event.json": [
+      55
+    ],
+    "data-collection/issue55-ui/request.json": [
+      55
+    ],
+    "data-collection/issue55-ui/step.json": [
+      55
+    ],
+    "data-collection/issue58-tab-order/issue-association.json": [
+      58
+    ],
+    "data-collection/issue58-tab-order/request.json": [
+      58
+    ],
+    "data-collection/module-boundaries-20261105/final-validation.json": [
+      111
+    ],
+    "data-collection/module-boundaries-20261105/publication.json": [
+      111
+    ],
+    "data-collection/module-boundaries-20261105/release-event.json": [
+      111
+    ],
+    "data-collection/module-boundaries-20261105/request.json": [
+      111
+    ],
+    "data-collection/module-boundaries-20261105/validation.json": [
+      111
+    ],
+    "data-collection/unification-43/host-private-gate-fix.json": [
+      43
+    ],
+    "data-collection/unification-43/intake.json": [
+      43
+    ],
+    "data-collection/unification-43/publication-r2.json": [
+      43
+    ],
+    "data-collection/unification-43/publication.json": [
+      43
+    ],
+    "data-collection/unification-43/release-candidate.json": [
+      43
+    ],
+    "data-collection/requests/collaborator-delivery/0cd5dfc2-670c-45fd-9175-1e85bf76202f.json": [
+      131
+    ],
+    "data-collection/requests/daqian-direct-task-20261106/47c62301-b608-4a03-b1f7-09b124e94179.json": [
+      174
+    ],
+    "data-collection/requests/daqian-direct-task-20261106/cab69f20-6248-4e9f-aafd-9af80568aa5e.json": [
+      174
+    ],
+    "data-collection/requests/daqian-embedded-workbench-20261107/b2434fd0-d98e-41a1-b384-ef4c3171cf69.json": [
+      218
+    ],
+    "data-collection/requests/daqian-fast-refresh-20261106/1fda6e70-9b3d-4205-be67-2d2b1dc094c6.json": [
+      191
+    ],
+    "data-collection/requests/daqian-local-connect-20261106/d54d129a-35ca-424a-a6b3-736519b27605.json": [
+      138
+    ],
+    "data-collection/requests/daqian-my-open-20261106/8ea5b436-d3e6-47fd-9b94-3eb916bbf3b7.json": [
+      188
+    ],
+    "data-collection/requests/daqian-node-approval-20261107/035a5149-8485-4283-aafd-c6bac336a0b4.json": [
+      210
+    ],
+    "data-collection/requests/daqian-node-approval-20261107/9844e6f8-09da-4070-b0af-36a6c5fbb081.json": [
+      210
+    ],
+    "data-collection/requests/daqian-requirement-send-20261106/2b4249e2-ba69-43fd-9452-0df17d4533a3.json": [
+      172
+    ],
+    "data-collection/requests/daqian-worker-progress-20261107/30964997-4eb2-4914-be3f-187ccf52c5f6.json": [
+      204
+    ],
+    "data-collection/requests/gate-reliability-20261105/d7b37bb8-d199-4dad-bc6d-ef02ac019f08.json": [
+      106
+    ],
+    "data-collection/requests/macos-restart-executable-20261107/75f52c15-e392-477f-a57a-260493ab79b3.json": [
+      212
+    ],
+    "data-collection/requests/macos-restart-executable-20261107/ee9fabb2-9529-42a2-b96b-d99eabb37fbe.json": [
+      212
+    ],
+    "data-collection/requests/requirements-context-user-corrections/364d0644-4e51-4e12-a328-11647af925ae.json": [
+      184
+    ],
+    "data-collection/requests/writer-submit/a9648639-5577-4413-99d9-162eb6cf2e38.json": [
+      134
+    ],
+    "data-collection/issue35-previous-local-admission/local-admission/issue27-independent-review.json": [
+      27
+    ],
+    "data-collection/issue35-previous-local-admission/local-admission/issue27-user-decision.json": [
+      27
+    ],
+    "data-collection/issue-events/286d83ba9ca43fd1a117a8e2701f7f7e0185903d50c821b202ef98b418172bd7/envelope.json": [
+      9
+    ],
+    "data-collection/issue-events/4b616abe9db4e0eba1c8e348fbee22ec71aaef4616ff2c85958714d738923984/envelope.json": [
+      55
+    ],
+    "data-collection/issue-events/4e45ac85a254e7cf12b7d3cc7263500d5e1b5827c7fb065b6b7c284851e0ed53/envelope.json": [
+      9
+    ],
+    "data-collection/issue-events/a706904300c3299f80d17489b434b9e4c4702ee84c8d17c8b8662652b7ca1500/envelope.json": [
+      9
+    ]
+  },
+  "raw_diting_events": 1893,
+  "active_diting_events": 1425,
+  "active_by_kind": {
+    "coverage": 12,
+    "request": 290,
+    "handoff": 44,
+    "step": 586,
+    "correction": 11,
+    "message": 471,
+    "request_end": 9,
+    "rework": 1,
+    "quality_issue": 1
+  }
+}
