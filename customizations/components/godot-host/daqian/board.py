@@ -104,7 +104,7 @@ def design_document(root, body):
     return {"path": relative, "markdown": snapshot.rstrip(), "source": "工单发布版本"}
 
 
-def read_board(root, follows, actor=None):
+def read_board(root, follows, actor=None, *, project=False, personal_history=False):
     settings, _ = work_items.config(root)
     repo = settings["repository"]
     base = f"repos/{repo}/issues"
@@ -123,13 +123,16 @@ def read_board(root, follows, actor=None):
         return row["number"]
 
     queue = {}
-    urls = [f"{base}?{role}={login}&state=open&per_page=100" for role in ("assignee", "creator")]
+    state = "all" if personal_history else "open"
+    urls = [f"{base}?{role}={login}&state={state}&per_page=100" for role in ("assignee", "creator")]
+    if project:
+        urls = [f"{base}?state=open&per_page=100"]
     with ThreadPoolExecutor(max_workers=2) as pool:
         for rows in pool.map(pages, urls):
             for row in rows:
                 if "pull_request" not in row:
                     queue[local_number(row)] = row
-    for num in follows:
+    for num in [] if project else follows:
         if num not in queue:
             row = json.loads(work_items.gh("api", f"{base}/{num}"))
             local_number(row)
@@ -185,7 +188,7 @@ def read_board(root, follows, actor=None):
             item["dependencies"].append(url)
             if dependency.get("repository_url") == f"https://api.github.com/repos/{repo}":
                 key = local_number(dependency)
-                if key not in items:
+                if not project and key not in items:
                     queue[key] = dependency
     return {
         "repo": repo,
@@ -242,6 +245,8 @@ def main():
     parser.add_argument("--follow", nargs="*", type=int, default=[])
     parser.add_argument("--editor-session", default="")
     parser.add_argument("--end-session", action="store_true")
+    parser.add_argument("--project", action="store_true")
+    parser.add_argument("--personal-history", action="store_true")
     parser.add_argument("--access-only", action="store_true")
     parser.add_argument("--expected-user", default="")
     args = parser.parse_args()
@@ -259,7 +264,9 @@ def main():
         if args.access_only:
             result = {"access": actor}
         else:
-            board = read_board(args.repo, args.follow, actor)
+            board = read_board(
+                args.repo, args.follow, actor, project=args.project, personal_history=args.personal_history
+            )
             import plan_store
 
             remote = os.environ.get("DAQIAN_PLAN_SSH_HOST", "")
@@ -274,6 +281,8 @@ def main():
                     "repo_id": actor["repo_id"],
                     "expected_user": actor["user_id"],
                     "follow": args.follow,
+                    "project": args.project,
+                    "personal_history": args.personal_history,
                 }
                 try:
                     shared = graph_host.via_shared_host(remote, json.dumps(envelope).encode())
