@@ -228,6 +228,19 @@ def _intake(root, request, bridge):
         raise ValueError("A bounded user requirement is required")
     if not isinstance(conversation, str) or not conversation or len(conversation) > 200:
         raise ValueError("A stable conversation identity is required")
+    conversation_context = request.get("conversation_context", [])
+    if (
+        not isinstance(conversation_context, list)
+        or len(conversation_context) > 32
+        or any(
+            not isinstance(entry, dict)
+            or entry.get("role") not in {"user", "editor", "assistant"}
+            or not isinstance(entry.get("content"), str)
+            for entry in conversation_context
+        )
+        or sum(len(entry["content"]) for entry in conversation_context) > 16000
+    ):
+        raise ValueError("A bounded requirements conversation context is required")
     work = bridge.work_items_module(root)
     settings, labels = work.config(root)
     env = bridge.host_environment(root)
@@ -263,6 +276,10 @@ def _intake(root, request, bridge):
         if "pull_request" in existing:
             raise ValueError("A pull request cannot be a requirements Issue")
     digest = hashlib.sha256((conversation + "\0" + str(number) + "\0" + outcome).encode()).hexdigest()
+    if conversation_context:
+        digest = hashlib.sha256(
+            (digest + "\0" + json.dumps(conversation_context, ensure_ascii=False, sort_keys=True)).encode()
+        ).hexdigest()
     identity = "requirement-" + digest[:32]
     journal = root / ".gonggong-outbox/requirements" / (identity + ".json")
     journal.parent.mkdir(parents=True, exist_ok=True)
@@ -343,6 +360,9 @@ def _intake(root, request, bridge):
             "Requirements intake only. You are the registered Yanshi using ClarifyFeature, not a generic form filler. "
             "Do not implement, invoke tools, grant permissions, or approve design gates. "
             "Interpret the actual user goal; preserve material unknowns in questions. "
+            "Use conversation_context to retain earlier questions and answers. Latest user corrections supersede "
+            "the original request and stale Issue text. Never re-ask an answered question or revive removed scope. "
+            "A request to ignore an attachment is not a new requirement or a reason to repeat scope questions. "
             "New distinct requirements MUST be decision=new; follow-up to the supplied open Issue may be continue. "
             "A closed Issue cannot be continued. Do not expose credentials or local private paths in public requirements. "
             "Return only JSON with exactly decision(new|continue), title, category, goal, scope(string[]), "
@@ -386,6 +406,7 @@ def _intake(root, request, bridge):
                         "content": json.dumps(
                             {
                                 "request": outcome,
+                                "conversation_context": conversation_context,
                                 "existing_issue": None
                                 if existing is None
                                 else {

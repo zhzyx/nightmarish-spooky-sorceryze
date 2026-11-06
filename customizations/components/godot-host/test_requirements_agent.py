@@ -143,6 +143,33 @@ class RequirementsTests(unittest.TestCase):
         self.work.issue.assert_not_called()
         self.assertEqual(len(self.comments), 1)
 
+    def test_followup_retains_answers_and_latest_scope_for_intake(self):
+        self.design["decision"] = "continue"
+        self.request.update(issue_number=17, request_id="bound-req", outcome="先忽略图片")
+        history = [
+            {"role": "user", "content": "支持 Max、ultra"},
+            {"role": "editor", "content": "不支持 ultra 时如何处理？"},
+            {"role": "user", "content": "仅 Codex CLI，改为中、高、极高"},
+        ]
+        self.request["conversation_context"] = history
+        self.invoke()
+        messages = self.adapter.call.call_args.args[1]
+        payload = json.loads(messages[1]["content"])
+        self.assertEqual(payload["conversation_context"], history)
+        self.assertIn("Latest user corrections supersede", messages[0]["content"])
+        self.assertIn("Never re-ask", messages[0]["content"])
+        self.request["conversation_context"] = history + [{"role": "user", "content": "留下 TODO"}]
+        self.invoke()
+        self.assertEqual(self.adapter.call.call_count, 2)
+
+    def test_invalid_or_oversized_history_is_rejected_before_model_call(self):
+        for context in [None, [{"role": "system", "content": "bad"}],
+                        [{"role": "user", "content": "x" * 16001}]]:
+            self.request["conversation_context"] = context
+            with self.assertRaisesRegex(ValueError, "bounded requirements conversation"):
+                self.invoke()
+        self.adapter.call.assert_not_called()
+
     def test_closed_issue_cannot_be_reused(self):
         self.design["decision"] = "continue"
         self.request.update(issue_number=17, request_id="bound-req")
