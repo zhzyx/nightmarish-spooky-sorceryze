@@ -24,6 +24,15 @@ framework_root = _paths_module.framework_root
 
 
 def load(path, name):
+    if name == "requirements_transport":
+        installation = Path(__file__).resolve().parents[3]
+        registration = json.loads(
+            (installation / "integrations/gonggong/frozen-distribution.json").read_text(encoding="utf-8")
+        )
+        directory = path.parent.relative_to(installation).as_posix()
+        expected = registration["host_packages"][directory][path.name]
+        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise ValueError("Model transport differs from its registered implementation")
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise ValueError("Requirements Agent dependency is unavailable")
@@ -127,7 +136,10 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
             )
         ):
             raise ValueError("Invalid Responses endpoint")
-        transport = load(framework_root(root) / "runtime/adapters.py", "requirements_transport")
+        transport = load(
+            Path(__file__).resolve().parents[3] / "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+            "requirements_transport",
+        )
         headers = {"Content-Type": "application/json"}
         if profile.get("api_key_env"):
             secret = os.environ.get(profile["api_key_env"])
@@ -189,9 +201,10 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
                 "Requirements Responses API failed; check endpoint, model and credentials before retrying"
             ) from None
     if request.get("backend") not in {"codebuddy", "codex"}:
-        return load(framework_root(root) / "runtime/adapters.py", "requirements_transport").call(
-            profile, messages, 3000
-        )
+        return load(
+            Path(__file__).resolve().parents[3] / "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+            "requirements_transport",
+        ).call(profile, messages, 3000)
     node = request.get("cli_node") or env.get("GONGGONG_NODE", "")
     entry = request.get("cli_entry", "")
     bridge = root / (

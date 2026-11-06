@@ -2,7 +2,7 @@
 
 路径以工作区根为基准，命令可传 catalog 的绝对路径，不依赖进程 cwd。工具为 `framework/tools/diting-host.py`，目录为 `data-collection/catalog.json`。复用谛听 data-collect、原 reporter、outbox 和 v2 台账；没有新的 Agent 身份、授权、计费或质量账本。
 
-当前实际接入为当前授权宿主的显式调用：用户消息、任务开始、工具执行、失败、质量/返工、Agent 交接、实际 GitHub 回读及任务结束分别在事件发生时提交。旧来源只读加入目录；历史遗漏以有来源摘要的 feedback 观察补录，标明补录时间、原始时间未知，不能伪造历史 message/step/handoff 或用量。原始敏感内容留在授权文件，事件保存最少引用。无事件不运行，不设定时、后台监听或轮询。
+当前实际接入为当前授权宿主的显式调用：用户消息、任务开始、工具执行、失败、质量/返工、Agent 交接、已选权威来源的实际回读及任务结束分别在事件发生时提交。旧来源只读加入目录；历史遗漏以有来源摘要的 feedback 观察补录，标明补录时间、原始时间未知，不能伪造历史 message/step/handoff 或用量。原始敏感内容留在授权文件，事件保存最少引用。无事件不运行，不设定时、后台监听或轮询。
 
 ## 单次入口
 
@@ -10,7 +10,7 @@
 python framework/tools/diting-host.py --catalog data-collection/catalog.json init
 python framework/tools/diting-host.py --catalog data-collection/catalog.json submit --envelope path/to/actual-envelope.json
 python framework/tools/diting-host.py --catalog data-collection/catalog.json run --session path/to/actual-session.json --key unique-actual-operation -- command arg
-python framework/tools/diting-host.py --catalog data-collection/catalog.json query --tenant local-gonggong --work zhzyx/nightmarish-spooky-sorceryze#9 --receipt data-collection/receipts/issue9-read.json
+python framework/tools/diting-host.py --catalog data-collection/catalog.json query --tenant local-gonggong --work WORK_ID --receipt data-collection/receipts/issue9-read.json
 ```
 
 envelope 必含 tenant_id、稳定 batch_key、source_ref、agent_snapshot_ref、request_ref、authority_ref 与 records。records 遵循 `framework/agents/diting/references/data-contract.md`；source、真实 agent_snapshot、request 先送达，之后事件引用已落库身份。事件ID由来源或宿主实际实例提供；同一事件重放必须使用原 envelope，变更内容须新版本并沿用 supersedes。示例为 `work/diting-gap-9/begin.envelope.json`，它是已执行事实，不可冒用为新需求。
@@ -27,4 +27,4 @@ session 含上述绑定字段（除 batch_key/records）、source_key 和真实 
 
 query 对登记来源只读，按 tenant、可选 work/kind 过滤，按原始记录身份/摘要去重；在合并证据关系上计算 superseded/stale。冲突证据及受影响引用不计 current；缺失来源不妨碍其他可读来源。输出记录、源快照摘要、筛选条件、覆盖说明、生成时间，可写独立消费回执。不自动复制历史台账，也不把记录数当需求量或失败率。
 
-全局聊天捕获和供应商用量流仍需宿主平台提供真实事件源。当前接入以明确实际调用为边界；GitHub snapshot 观察不是 webhook，也不等于登记进司南原元衡账本适配器。司南仍在真实事件到达时单次刷新；未覆盖部分要显式记录，不能用配置开关宣称全接通。
+全局聊天捕获和供应商用量流仍需宿主平台提供真实事件源。当前接入以明确实际调用为边界；各来源分别核验接收方式、消费方与回执。司南仍在真实事件到达时单次刷新；未覆盖部分要显式记录，不能用配置开关宣称全接通。

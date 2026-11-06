@@ -1,0 +1,177 @@
+{
+  "template": false,
+  "permit_id": "platform-families-0.10.0-sinan",
+  "status": "approved",
+  "event": "agent_definition_change",
+  "phase": "local_definition_release",
+  "subject": {
+    "id": "sinan",
+    "version_or_digest": {
+      "version": "0.1.5",
+      "candidate_digest": "59d90f15b093ee20a8a72044165c51c403dd2ea924f1c83df38f1a87f0de80b9",
+      "candidate_files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc"
+        },
+        {
+          "path": "FOUNDATION.md",
+          "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+        },
+        {
+          "path": "GOVERNANCE.md",
+          "sha256": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724"
+        },
+        {
+          "path": "agents/diting/references/data-contract.md",
+          "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+        },
+        {
+          "path": "agents/diting/references/telemetry.md",
+          "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+        },
+        {
+          "path": "agents/diting/scripts/ledger.py",
+          "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+        },
+        {
+          "path": "agents/diting/scripts/telemetry.py",
+          "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+        },
+        {
+          "path": "agents/sinan/AGENT.md",
+          "sha256": "d1d470c1a9c12c5d87e7522d6b1da795a0859fc5d03b98bd92e98bc3ca6b8458"
+        },
+        {
+          "path": "agents/sinan/agent.json",
+          "sha256": "dbd437f16a319317df5d1ad6400799a81ee5f7ad028b01c9d9aa6006d647c341"
+        },
+        {
+          "path": "agents/sinan/references/README.md",
+          "sha256": "6bb1a6f82c038115b20cb8b4c91b1392d4566fdfcfc953fbe6b519ba92daa5a1"
+        },
+        {
+          "path": "agents/sinan/references/adapters.md",
+          "sha256": "5e8b18893f03fd9500a94007364278b2d3c3869cc56bbdeaad49f160e003ed2d"
+        },
+        {
+          "path": "agents/sinan/references/parallel-dispatch.md",
+          "sha256": "c2a73f29f052132b1734367d54c2bdbdc0165ea6affe53c1e8e5684a41e8dda4"
+        },
+        {
+          "path": "agents/sinan/reporting.json",
+          "sha256": "9f075d1f19207c52a0d6478f43fc93796b0d9e6e4487aa6347dfdc7365db4149"
+        },
+        {
+          "path": "contracts/admission-policy.json",
+          "sha256": "2c69fa122f79900f6a25ec5e0017eef956a22fce1b1582c055c7aff3e0f0dbfd"
+        },
+        {
+          "path": "contracts/diting-reporting.json",
+          "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+        },
+        {
+          "path": "foundation.lock.json",
+          "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+        },
+        {
+          "path": "skills/gonggong-check/SKILL.md",
+          "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
+        },
+        {
+          "path": "skills/work-order-coordination/SKILL.md",
+          "sha256": "026bdc5836cdc104e996890e9fc5c3cfebad84e762391f815a835d2bc1d0d71a"
+        },
+        {
+          "path": "skills/work-order-coordination/runtime-ref.json",
+          "sha256": "3560dc7af37f0dd33a48c92a4e19905417c61effc1b41354263e3d792fc6bddd"
+        },
+        {
+          "path": "specs/core-agent-adaptation.md",
+          "sha256": "d51a11fbe35ff9320452018d6a81f63a09de82c526a2e5d3f6dc487b2d4aa34a"
+        },
+        {
+          "path": "specs/governance-review.md",
+          "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7"
+        },
+        {
+          "path": "specs/reporting.md",
+          "sha256": "e86381dfdf26b43038a5ad4a1db5260d6d144790500ad4768aac018a4513f22f"
+        },
+        {
+          "path": "specs/work-order-management.md",
+          "sha256": "cffc3896e0c43765435ae1dc9b14bdf05cf5c3314d50d1a6a8e35b1c2c87dee2"
+        },
+        {
+          "path": "tools/diting-report.py",
+          "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+        },
+        {
+          "path": "tools/package_integrity.py",
+          "sha256": "cfe98c3888beceadb54494956cec1bc0e09711338f1226f63690ec77dc1089cd"
+        },
+        {
+          "path": "tools/reporting.mjs",
+          "sha256": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c"
+        },
+        {
+          "path": "tools/verify_metadata.mjs",
+          "sha256": "3f9bde3ae40036ca7da85478cd831639ce1f8dfc9e00623440dea6cd47aa2647"
+        },
+        {
+          "path": "upstream/yuanheng/agents/yuanheng.md",
+          "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+        },
+        {
+          "path": "upstream/yuanheng/core.md",
+          "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+        }
+      ]
+    },
+    "scope": [
+      "local_agent_definition_only"
+    ],
+    "agent_governance_refs": []
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.10.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "pass",
+      "truth": "pass",
+      "economy": "pass",
+      "authority": "pass",
+      "adaptation": "pass",
+      "continuity": "pass"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 991,
+      "rationale": "仅在角色入口保留共用职责、授权与交接。平台细节按需选择。"
+    },
+    "applicable_validation": "pass",
+    "evidence_refs": [
+      "reviews/platform-families/independent-review.json"
+    ],
+    "evaluator_id": "codex_subagent_/root/review",
+    "independence": "independent_subagent_review",
+    "unresolved": [
+      "Live host and provider consumption require actual host evidence."
+    ]
+  },
+  "approval": {
+    "approver_id": "user-current-chat",
+    "authority_ref": "current-user-direct-approval-issue-257",
+    "decision_evidence_ref": "reviews/platform-families/user-approval.json",
+    "approved_at": "2026-11-06T19:16:50.776807+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

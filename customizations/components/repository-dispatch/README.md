@@ -15,7 +15,7 @@ inspect 返回 GitHub 来源修订和依赖。verify 核实本人写权限、ori
 
 ## 运行模型生产
 
-宿主沿用 framework/templates/model-plan.json 与 framework/runtime/runner.py 签发和执行计划。在可信运行环境中提供自己的模型授权、实际评测及签名密钥。使用 inspect 提供的 sourceSnapshot.sha256 填写 task.source_revision，task.work_items 中的 id 使用同一 github:OWNER/REPO#N，task.tenant_id 填 gonggong-workspace。任务与宿主授权引用一致，指定一个经过 live 评测的 profile，validation_only 为 false；grant 与状态目录使用宿主的绝对私有路径。候选结果写入签发时绑定的运行时账本，可由授权接收方验收。用下面的命令交给同一事件入口：
+宿主沿用 framework/templates/model-plan.json 与 customizations/platforms/ai-access/host-http/runtime/runner.py 签发和执行计划。在可信运行环境中提供自己的模型授权、实际评测及签名密钥。使用 inspect 提供的 sourceSnapshot.sha256 填写 task.source_revision，task.work_items 中的 id 使用同一 github:OWNER/REPO#N，task.tenant_id 填 gonggong-workspace。任务与宿主授权引用一致，指定一个经过 live 评测的 profile，validation_only 为 false；grant 与状态目录使用宿主的绝对私有路径。候选结果写入签发时绑定的运行时账本，可由授权接收方验收。用下面的命令交给同一事件入口：
 
 ```text
 node customizations/components/repository-dispatch/session.mjs model ISSUE REQUEST_ID ABSOLUTE_SIGNED_GRANT

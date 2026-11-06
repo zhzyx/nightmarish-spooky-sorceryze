@@ -13,9 +13,17 @@ from pathlib import Path
 
 import work_items
 
-BATCH_PATH = Path(__file__).resolve().parents[3] / "framework/tools/git_batch.py"
+INSTALLATION = Path(__file__).resolve().parents[3]
+BATCH_RELATIVE = "customizations/platforms/development/git/git_batch.py"
+BATCH_PATH = INSTALLATION / BATCH_RELATIVE
 BATCH_SOURCE = BATCH_PATH.read_bytes()
 GATE_SOURCE = Path(__file__).read_bytes()
+REGISTRATION = INSTALLATION / "integrations/gonggong/frozen-distribution.json"
+if (
+    hashlib.sha256(BATCH_SOURCE).hexdigest()
+    != json.loads(REGISTRATION.read_text(encoding="utf-8"))["host_files"][BATCH_RELATIVE]
+):
+    raise ValueError("Installed Git helper differs from its registered implementation")
 BATCH = runpy.run_path(str(BATCH_PATH))
 
 ACTIVE = {"status:in-progress", "status:in-review"}
@@ -256,6 +264,9 @@ def verify_platform_adapter(root, directory, registration_root=None):
     installation = Path(__file__).resolve().parents[3]
     checker = runpy.run_path(str(installation / "tools/check_gonggong_distribution.py"))
     registration = json.loads(((registration_root or root) / checker["REGISTRATION"]).read_text(encoding="utf-8"))
+    batch = "customizations/platforms/development/git/git_batch.py"
+    if hashlib.sha256((root / batch).read_bytes()).hexdigest() != registration["host_files"][batch]:
+        raise ValueError("Git platform helper differs from its registered implementation")
     checker["platform_inventory"](root, directory, registration["platform_files"][directory])
 
 
@@ -371,7 +382,7 @@ class VerificationSession:
 
     def check_diting(self, root):
         validator = root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
-        batch = root / "framework/tools/git_batch.py"
+        batch = root / "customizations/platforms/development/git/git_batch.py"
         binding = (str(root.resolve()), validator.read_bytes(), batch.read_bytes(), sys.version)
         if binding != self.binding:
             self.module = runpy.run_path(str(validator))
