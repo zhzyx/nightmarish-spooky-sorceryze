@@ -1,0 +1,36 @@
+{
+  "request_id": "ainative-art-02-executor-20261106",
+  "issue_number": 143,
+  "date": "2026-11-06",
+  "tests": {
+    "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+    "root_passed": 37,
+    "independent_review_passed": 36,
+    "delta": "Final additional cross-process cancellation test passed by implementer and root"
+  },
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "fixes": [
+      "invalid receipts excluded from persistence",
+      "optional output link rejected",
+      "definition pinned after restart",
+      "asset savepoint preserves known job on conflicts"
+    ]
+  },
+  "acceptance": {
+    "restart": "passed",
+    "unknown_submit_no_replay": "passed",
+    "concurrent_drive": "passed",
+    "cancel_late_result": "passed",
+    "confirmed_failure_retry": "passed",
+    "image_model_profile_cache_invalidation": "passed",
+    "cli_subprocess": "passed"
+  },
+  "actual_provider_tested": false,
+  "scope": "Single trusted installation; SQLite; small JSON/base64 artifacts",
+  "worker": "/root/sinan_359f40b2937fa9c1",
+  "worker_terminal_verified": true,
+  "dependency_pr": 161,
+  "main_delivery": "pending"
+}
