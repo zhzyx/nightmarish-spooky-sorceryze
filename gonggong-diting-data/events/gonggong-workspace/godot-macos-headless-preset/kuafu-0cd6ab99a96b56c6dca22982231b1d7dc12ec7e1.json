@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0cd6ab99a96b56c6dca22982231b1d7dc12ec7e1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-macos-headless-preset",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.0",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "609f6ee5b69db62c105668fda497cd3bb435dbfbd06a21e20eddbf777e4c835c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/226",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/279",
+    "action": "delivery",
+    "detection_head": "d73af1b41d3967bc8b01685c29063e749e3e45d4",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-Sail-Li",
+    "authority_ref": "user-authorized-issue-226-delivery",
+    "evidence": "PRs #254, #268 and #277 passed all applicable checks but other releases advanced main before merge.",
+    "diagnosis": "发布顺序竞争，当前仓库没有 GitHub 合并队列。合入主线前须绑定最新基线。",
+    "next_action": "本次交付由 Sail-Li 继续，已整合 #272，在新基线上复验并申请本次发布先行；成功后回读远端 main。",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T19:18:20.901711+00:00",
+  "sha256": "d6d2bc9c0cba239c9fd472f8fbff1aa7fd9590751aec3865caf35f8563b87bd0"
+}
