@@ -646,7 +646,7 @@ func _draw_board() -> void:
 			label.text = "待你确认"
 			overview.mark_card(card, label, "awaiting_approval")
 		if item.decision or needs_approval:
-			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
+			waiting_inputs += int(item.get("pending_count", int(item.decision))) + int(needs_approval)
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
 		detail.name = "StepDetails"
@@ -734,9 +734,18 @@ func _layout_board() -> void:
 
 func _locate_pending(number: int) -> void:
 	for item in board.get("issues", []):
-		if item.number == number and not _pending_operation(item).is_empty():
+		if item.number != number:
+			continue
+		if not _pending_operation(item).is_empty():
 			await _open_issue(item)
 			_focus_operation()
+			return
+		if item.get("pending_count", 0) > 0:
+			await _open_issue(item)
+			if current == item.url:
+				var question: String = editor.pending_question()
+				if not question.is_empty():
+					editor.focus_flow_node(question)
 			return
 	_show_board()
 	status.select(0)
@@ -1014,7 +1023,10 @@ func _refresh_open_states() -> void:
 	if not target_url.begins_with("https://"):
 		return
 	for item in board.get("issues", []):
-		if item.url == target_url and item.has("node_states"):
+		if item.url != target_url or not item.has("node_states"):
+			continue
+		var has_questions: bool = item.get("decision", false) or item.get("answered_count", 0) > 0 or not editor.context.get("questions", {}).is_empty()
+		if not has_questions or target_url != current:
 			editor.context.states = item.node_states.duplicate()
 			editor.refresh_states()
 			return
@@ -1027,8 +1039,25 @@ func _refresh_open_states() -> void:
 	var port: Object = host if is_instance_valid(host) else self
 	var fresh: Dictionary = await port.read_graph(target)
 	if current == target and epoch == selection_epoch and principal == actor and scope == _repo() and fresh.has("context"):
+		var redraw: bool = false
+		for field in ["questions", "answers", "can_answer"]:
+			redraw = redraw or editor.context.get(field) != fresh.context.get(field)
+		if fresh.has("plan") and fresh.revision != editor.revision:
+			if editor.applying or editor.draft != editor.baseline or not editor.answers.is_empty():
+				notice.text = "工单问题已更新，当前草稿已保留。请核对新版流程后再提交。"
+				return
+			editor.revision = fresh.revision
+			editor.baseline = fresh.plan.duplicate(true)
+			editor.draft = fresh.plan.duplicate(true)
+			redraw = true
 		editor.context = fresh.context.duplicate(true)
-		editor.refresh_states()
+		for key in fresh.context.get("answers", {}):
+			editor.answers.erase(key)
+		if redraw:
+			editor.draw_graph()
+		else:
+			editor.refresh_states()
+		_sync_workflow()
 
 
 func _open_issue(item: Dictionary) -> void:
@@ -1037,10 +1066,6 @@ func _open_issue(item: Dictionary) -> void:
 	var plan: Dictionary = item.get("plan", rules.new_plan()).duplicate(true)
 	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":plan.nodes.get("requirement", {}).get("value", item.title)}
 	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":item.get("node_states", {}).duplicate()}
-	if item.decision:
-		plan.nodes["decision"] = {"kind":"question","title":"待决定","value":""}
-		plan.edges.append({"from":"requirement","to":"decision","kind":"after"})
-		ctx.protected_nodes.append("decision")
 	ctx.protected_edges = plan.edges.duplicate(true)
 	var snapshot := {"revision":item.updated,"plan":plan,"context":ctx}
 	selection_epoch += 1
@@ -1818,7 +1843,14 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 		return {"state":"waiting", "text":"正在核实当前进度" if not offline else "离线 · 当前工作者待核实"}
 	match item.get("status"):
 		"blocked": return {"state":"blocked", "text":"工单受阻 · 等待处理"}
-		"needs-decision": return {"state":"waiting", "text":"等待用户决定"}
+		"needs-decision":
+			if item.get("answers_unverified", false):
+				return {"state":"unknown", "text":"共享计划的答复待核实"}
+			if item.get("pending_count", 0) > 0:
+				return {"state":"waiting", "text":"请在待确认节点答复（剩余 %d 项）" % item.pending_count}
+			if item.get("answered_count", 0) > 0:
+				return {"state":"pending", "text":"已收到答复，等待工单负责人推进"}
+			return {"state":"pending", "text":"待工单负责人核对后续工作"}
 		"in-review": return {"state":"waiting", "text":"等待审查结果"}
 	if item.get("status") == "planned":
 		if judged.is_empty():
@@ -1851,7 +1883,7 @@ func _sync_workflow() -> void:
 	var design: Dictionary = receipt.get("design", {}).duplicate()
 	if not item.is_empty():
 		var clauses := {"scope":[], "acceptance":[], "questions":[]}
-		var titles := {"预计任务":"scope", "验收条件":"acceptance", "待确认":"questions"}
+		var titles := {"预计任务":"scope", "范围与验收":"scope", "验收条件":"acceptance", "待确认":"questions"}
 		for id in item.get("plan", {}).get("nodes", {}):
 			var node: Dictionary = item.plan.nodes[id]
 			if item.get("questions", {}).has(id):
@@ -1869,7 +1901,7 @@ func _sync_workflow() -> void:
 		elif item.get("status") == "needs-decision":
 			if not receipt.is_empty():
 				receipt.observed_decision = true
-			phase = "questions"
+			phase = "questions" if item.get("decision", false) else "bound"
 			if not clauses.questions.is_empty():
 				design.questions = clauses.questions
 		elif item.get("status") == "blocked":
@@ -1995,16 +2027,18 @@ func _preview_received(source: String, text: String) -> void:
 
 
 func _answer_question(id: String, answer: String) -> void:
-	if not await _fresh_access():
+	var target := current
+	var epoch := selection_epoch
+	var revision: String = editor.revision
+	if not await _fresh_access() or current != target or epoch != selection_epoch:
 		return
 	if debug_sessions.has(current):
 		_debug_command("answer",id,answer)
 		return
 	if not editor.draft.nodes.has(id):
 		return
-	var target := current
-	var response: Dictionary = await _graph_command(target,"answer",{"revision":editor.revision,"node":id,"value":answer})
-	if current != target:
+	var response: Dictionary = await _graph_command(target,"answer",{"revision":revision,"node":id,"value":answer})
+	if current != target or epoch != selection_epoch:
 		return
 	if not response.get("ok",false):
 		notice.text = str(response.get("error","未收到答复回执，草稿已保留"))
@@ -2013,12 +2047,14 @@ func _answer_question(id: String, answer: String) -> void:
 	for item in board.get("issues",[]):
 		if item.url==current:
 			item.pending_count = response.context.questions.size()-response.context.answers.size()
+			item.answered_count = response.context.answers.size()
 			item.decision = item.pending_count>0
 	_draw_board()
 	editor.answers.erase(id)
+	_sync_workflow()
 	editor.draw_graph()
 	_save()
-	notice.text = "已按当前协作者身份记录答复 · " + id
+	notice.text = "已记录你的答复"
 
 
 func _catalog_changed() -> void:
