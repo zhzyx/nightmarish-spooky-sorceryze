@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "issue160-repository-delivery-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "collaborator-runtime-second-host",
+  "kind": "request",
+  "occurred_at": "2026-11-06T11:44:15.469804+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160",
+  "agent": {
+    "id": "codex-primary",
+    "origin": "actual_codex_host",
+    "version": "host-session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "issue_number": 160,
+    "scope": "Record the user-authorized request to distribute portable automation and production through main; verify #160 without configuring another collaborator’s machine.",
+    "intake": "passed",
+    "usage": null,
+    "evidence_path_from_repo_root": "data-collection/issue160-portable-runtime.json"
+  },
+  "evidence_refs": [],
+  "sha256": "5c6968375f8e7f050095c0209bf99771b03557efbb95587ac814464b3a021d47"
+}

@@ -21,7 +21,19 @@ function fixture(t) {
   const a=path.join(base,'a'),b=path.join(base,'b');
   git('worktree','add','-b','a',a);git('worktree','add','-b','b',b);
   const fake=path.join(base,'fake.mjs');
-  fs.writeFileSync(fake,`import fs from 'node:fs';import path from 'node:path';const base=${JSON.stringify(base)};fs.writeFileSync(path.join(base,path.basename(process.cwd())+'.started'),'yes');const done=()=>fs.existsSync(path.join(base,'a.started'))&&fs.existsSync(path.join(base,'b.started'));if(done()){console.log('completed');}else{const w=fs.watch(base,()=>{if(done()){w.close();clearTimeout(timer);console.log('completed');}});const timer=setTimeout(()=>process.exit(3),5000);}`);
+  fs.writeFileSync(fake,`import assert from 'node:assert/strict';
+    import fs from 'node:fs';
+    import path from 'node:path';
+    import {setTimeout as delay} from 'node:timers/promises';
+    assert.deepEqual(process.argv.slice(2), ['exec','--approve-for-me','--json','--ephemeral','--ignore-user-config','--model','fixture-model','-']);
+    const base = ${JSON.stringify(base)};
+    fs.writeFileSync(path.join(base,path.basename(process.cwd())+'.started'),'yes');
+    const deadline = Date.now()+5000;
+    while (!['a','b'].every(name=>fs.existsSync(path.join(base,name+'.started')))) {
+      if (Date.now()>=deadline) throw Error('Second worker never started while first worker was alive');
+      await delay(10);
+    }
+  `);
   const config={nativeWorkspaceWrite:true,authorityRef:'fixture-only',capacity:2,python:process.execPath,codex:fake,
     models:[{id:'fixture-model',targets:['agent'],available:true,capabilities:['coding']}],
     jobs:[{order:1,worktree:a,capabilities:['coding'],dependsOn:[]},{order:2,worktree:b,capabilities:['coding'],dependsOn:[]}]};
@@ -30,8 +42,8 @@ function fixture(t) {
 }
 test('real child processes overlap in isolated worktrees and retain exact model receipts',async t=>{
   const f=fixture(t);const r=await run(f.request,f.config,f.output);
-  assert.deepEqual(r.workers.map(w=>w.state),['review','review']);
-  assert.ok(r.workers.every(w=>w.pid && w.model==='fixture-model' && w.exitCode===0));
+  assert.deepEqual(r.workers.map(w=>w.state),['review','review'],r.workers.map(w=>w.reason).join('\n'));
+  assert.ok(r.workers.every(w=>w.pid && w.workerBackend==='codex' && w.model==='fixture-model' && w.exitCode===0));
   const replay=await run(f.request,f.config,f.output);
   assert.deepEqual(replay.workers.map(w=>w.pid),r.workers.map(w=>w.pid));
   f.config.models=[];
@@ -97,4 +109,82 @@ test('registered evidence unlocks dependency on a later explicit invocation',asy
   task.review={verdict:'pass',criteria:[{met:true,evidence:'proof.txt'}]};save();
   result=await run(f.request,f.config,f.output);
   assert.equal(result.workers[1].state,'review');
+});
+
+function configureCommand(f) {
+  const script = path.join(path.dirname(f.output), 'worker with spaces.mjs');
+  fs.writeFileSync(script, `import fs from 'node:fs';
+    const chunks = [];
+    for await (const chunk of process.stdin) chunks.push(chunk);
+    fs.writeFileSync('worker-result.json', JSON.stringify({
+      args: process.argv.slice(2), cwd: process.cwd(), prompt: Buffer.concat(chunks).toString('utf8')
+    }), {flag:'wx'});
+  `);
+  delete f.config.codex;
+  f.config.workerCommand = {executable:process.execPath,args:[script,'--engine','{model}','a b;$HOME']};
+}
+
+test('command worker receives the selected model as one argument and bound prompt on stdin', async t => {
+  const f = fixture(t);
+  configureCommand(f);
+  f.config.models[0].id = 'fixture-model/2';
+  const events = [];
+  const result = await runHost(f.request,f.config,f.output,{report: async event => {
+    events.push(event);
+    return {ok:true,state:'recorded_file'};
+  }});
+  for (const [index, worker] of result.workers.entries()) {
+    assert.equal(worker.state,'review');
+    assert.equal(worker.workerBackend,'command');
+    assert.ok(worker.pid);
+    const cwd = fs.realpathSync(f.config.jobs[index].worktree);
+    const received = JSON.parse(fs.readFileSync(path.join(cwd,'worker-result.json'),'utf8'));
+    assert.equal(received.cwd,cwd);
+    assert.deepEqual(received.args,['--engine','fixture-model/2','a b;$HOME']);
+    assert.match(received.prompt,/Do not merge, push, publish/);
+    assert.ok(received.prompt.endsWith('\n'+f.request.workers[index].prompt));
+  }
+  assert.ok(events.length === 6 && events.every(event => event.workerBackend === 'command'));
+  delete f.config.workerCommand;
+  f.config.codex = path.join(path.dirname(f.output),'should-never-launch.mjs');
+  const replay = await run(f.request,f.config,f.output);
+  assert.deepEqual(replay.workers,result.workers);
+});
+
+test('command workers cannot bypass admission or use ambiguous model or executable configuration', async t => {
+  const f = fixture(t);
+  configureCommand(f);
+  const command = f.config.workerCommand;
+  for (const config of [
+    {...f.config,codex:process.execPath},
+    {...f.config,workerCommand:{...command,executable:'node'}},
+    {...f.config,workerCommand:{...command,args:['--model']}},
+    {...f.config,workerCommand:{...command,args:['{model}','{model}']}},
+    {...f.config,workerCommand:null},
+  ]) {
+    assert.throws(() => prepare(f.request,config),/workerCommand/);
+  }
+  assert.throws(() => prepare(f.request,{...f.config,nativeWorkspaceWrite:false}),/mandate/);
+  const gate = path.join(f.config.jobs[0].worktree,'customizations/components/issue-workorders/issue_gate.py');
+  fs.writeFileSync(gate,'process.exit(1)');
+  const result = await run(f.request,f.config,f.output);
+  assert.equal(result.workers[0].state,'blocked');
+  assert.equal(result.workers[0].pid,undefined);
+  assert.equal(fs.existsSync(path.join(f.config.jobs[0].worktree,'worker-result.json')),false);
+  assert.equal(result.workers[1].state,'review');
+  fs.writeFileSync(gate,'process.exit(0)');
+  const retry = await run(f.request,f.config,f.output);
+  assert.deepEqual(retry.workers.map(w => w.state),['review','review']);
+  assert.equal(retry.workers[1].pid,result.workers[1].pid);
+});
+
+test('child exit before prompt handoff retains an unknown work order',async t=>{
+  const f=fixture(t);
+  fs.writeFileSync(f.config.codex,'process.exit(0)');
+  f.request.workers=f.request.workers.slice(0,1);
+  const result=await runHost(f.request,f.config,f.output,{report:async record=>{
+    if(record.state==='running') await new Promise(resolve=>setTimeout(resolve,400));
+    return {ok:true,state:'recorded_file'};
+  }});
+  assert.equal(result.workers[0].state,'reconcile_required');
 });

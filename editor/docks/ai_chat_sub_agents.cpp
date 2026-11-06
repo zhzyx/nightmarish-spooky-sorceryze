@@ -434,7 +434,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		sub_agents[id]["parallel_batch"] = batch_id;
 		sub_agents[id]["parallel_output"] = sub_agent_parallel_output;
 	}
-	_append(TTR("Editor"), U"已启动独立 Codex CLI 工单执行器。各工单在独立工作副本运行并按能力选模；不操作当前编辑器。退出成功仅进入待验收，结果与日志留在 data-collection/outbox。");
+	_append(TTR("Editor"), U"已启动配置的 CLI 工单执行器。各工单在独立工作副本运行并按能力选模；不操作当前编辑器。退出成功仅进入待验收，结果与日志留在 data-collection/outbox。");
 	_queue_history_save();
 	_refresh_sub_agents();
 	return true;

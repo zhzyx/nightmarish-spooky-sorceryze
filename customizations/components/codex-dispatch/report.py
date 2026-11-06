@@ -19,11 +19,12 @@ record = payload['record']
 # Private transport retains raw tool arguments; published events carry only identity.
 assignment = record.get('assignment', {})
 receipt = record.get('receipt') or {}
+repository_worker = payload.get('backend') == 'repository'
 public = {'ticket': assignment.get('ticket'), 'reservation_key': assignment.get('key'),
           'state': record.get('state'), 'stage': record.get('stage'),
           'record_sha256': hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest(),
           'source_revision': assignment.get('sourceSnapshot', {}).get('sha256'),
-          'planned_model': assignment.get('model', {}).get('id'),
+          'planned_model': None if repository_worker and assignment.get('model', {}).get('id') == 'framework-integrity' else assignment.get('model', {}).get('id'),
           'requested_model': receipt.get('requestedModel'),
           'worker_id': receipt.get('workerId'), 'receipt_reference': receipt.get('reference'),
           'setup_pending': receipt.get('setupPending'), 'observed_model': receipt.get('observedModel')}
@@ -33,10 +34,10 @@ event = {
     'kind': 'handoff' if record.get('state') in ('running', 'delegated_pending_host') else 'step',
     'occurred_at': datetime.now(timezone.utc).isoformat(),
     'source_ref': f"https://github.com/{settings['repository']}/issues/{payload['issue']}",
-    'agent': {'id': 'codex-current-operator-host', 'version': '0.1.0',
-              'definition_sha256': hashlib.sha256(Path(__file__).with_name('operator.mjs').read_bytes()).hexdigest(),
+    'agent': {'id': 'repository-dispatch-host' if repository_worker else 'codex-current-operator-host', 'version': '0.1.0',
+              'definition_sha256': hashlib.sha256((Path(__file__).parent / ('../repository-dispatch/session.mjs' if repository_worker else 'operator.mjs')).read_bytes()).hexdigest(),
               'origin': 'external-authorized-host'},
     'payload': {'record': public, 'usage': None,
-                'usage_unknown_reason': 'native tool usage not exposed'}, 'evidence_refs': []}
+                'usage_unknown_reason': 'model usage not collected by the dispatch host' if repository_worker else 'native tool usage not exposed'}, 'evidence_refs': []}
 bridge.enqueue(root, event)
 print(json.dumps(bridge.flush(root)))

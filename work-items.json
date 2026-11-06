@@ -39,6 +39,8 @@
       "data-collection/issue90-sinan-host-acceptance-20261105.json",
       "data-collection/issue9-final-acceptance-20261105.json"
     ],
-    "historical_registry_flag": "sinan_source_registered remains false for the legacy framework registry; not an execution-host readiness flag"
+    "historical_registry_flag": "sinan_source_registered remains false for the legacy framework registry; not an execution-host readiness flag",
+    "repository_worker_entry": "customizations/components/repository-dispatch/session.mjs",
+    "repository_worker_protocol": "customizations/components/repository-dispatch/README.md"
   }
 }
