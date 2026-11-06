@@ -229,14 +229,35 @@ void AIChatDock::_environment_setup_completed() {
 	_request_completion();
 }
 
+static String last_user_content(const Array &p_messages) {
+	for (int i = p_messages.size() - 1; i >= 0; i--) {
+		const Dictionary message = p_messages[i];
+		if (String(message.get("role", "")) == "user") {
+			return message.get("content", "");
+		}
+	}
+	return String();
+}
+
 void AIChatDock::_begin_gonggong_context() {
+	const String outcome = last_user_content(messages);
+	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
+	// Scheduled and child Agents never run requirement intake or create Issues;
+	// a child inherits the real Issue its parent's finalized design was bound to.
+	const bool needs_intake = tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
 	if (gonggong_pid >= 0) {
+		if (needs_intake) {
+			_emit_daqian_requirement_phase("error");
+		}
 		_append(TTR("Error"), U"GongGong 上一轮校验尚未结束，请稍后重试。");
 		_set_busy(false);
 		return;
 	}
 	if (gonggong_panel && !gonggong_panel->ensure_environment()) {
 		issue_guide_state = "environment_setup";
+		if (needs_intake) {
+			_emit_daqian_requirement_phase("waiting_environment");
+		}
 		_append(TTR("Editor"), U"已触发本地配置点火器；原需求已保留。请在弹窗内完成本地部署，自检通过后自动继续识别需求与建单。");
 		_set_busy(false);
 		return;
@@ -249,14 +270,11 @@ void AIChatDock::_begin_gonggong_context() {
 	gonggong_report_python = python;
 	const String bridge = gonggong_report_root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || !FileAccess::exists(bridge)) {
-		for (int i = messages.size() - 1; i >= 0; i--) {
-			Dictionary message = messages[i];
-			if (String(message.get("role", "")) == "user") {
-				issue_guide_outcome = message.get("content", "");
-				break;
-			}
-		}
+		issue_guide_outcome = outcome;
 		issue_guide_state = "agent_error";
+		if (needs_intake) {
+			_emit_daqian_requirement_phase("error");
+		}
 		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区，并确认引擎 tools/gonggong_bridge.py 已安装。聊天不会绕过框架发送。");
 		_set_busy(false);
 		return;
@@ -265,32 +283,22 @@ void AIChatDock::_begin_gonggong_context() {
 		Array missing;
 		missing.push_back("python");
 		if (_start_igniter(missing)) {
+			igniter_for_intake = needs_intake;
+			if (needs_intake) {
+				_emit_daqian_requirement_phase("waiting_environment");
+			}
 			return; // A missing Python is an environment gap, not a framework block.
 		}
-		for (int i = messages.size() - 1; i >= 0; i--) {
-			Dictionary message = messages[i];
-			if (String(message.get("role", "")) == "user") {
-				issue_guide_outcome = message.get("content", "");
-				break;
-			}
-		}
+		issue_guide_outcome = outcome;
 		issue_guide_state = "agent_error";
+		if (needs_intake) {
+			_emit_daqian_requirement_phase("error");
+		}
 		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置 Python 可执行文件路径。聊天不会绕过框架发送。");
 		_set_busy(false);
 		return;
 	}
-	String outcome;
-	for (int i = messages.size() - 1; i >= 0; i--) {
-		Dictionary message = messages[i];
-		if (String(message.get("role", "")) == "user") {
-			outcome = message.get("content", "");
-			break;
-		}
-	}
-	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
-	// Scheduled and child Agents never run requirement intake or create Issues;
-	// a child inherits the real Issue its parent's finalized design was bound to.
-	if (tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key) {
+	if (needs_intake) {
 		_cancel_issue_guide(String());
 		_begin_issue_agent(outcome);
 		return;
@@ -436,16 +444,6 @@ void AIChatDock::_poll_gonggong_context() {
 	_request_completion();
 }
 
-static String last_user_content(const Array &p_messages) {
-	for (int i = p_messages.size() - 1; i >= 0; i--) {
-		const Dictionary message = p_messages[i];
-		if (String(message.get("role", "")) == "user") {
-			return message.get("content", "");
-		}
-	}
-	return String();
-}
-
 static String guide_state_before(const String &p_action) {
 	if (p_action == "issue-draft") {
 		return "request_id";
@@ -515,9 +513,17 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	input_request["cli_node"] = cli_node->get_text().strip_edges();
 	input_request["cli_entry"] = (backend->get_selected() == 2 ? codex_entry : cli_entry)->get_text().strip_edges();
 	input_request["cli_model"] = (backend->get_selected() == 2 ? codex_model : cli_model)->get_text().strip_edges();
+	if (snapshot_state.has("daqian_model")) {
+		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
+		if (p_retry) {
+			snapshot_state["daqian_model"] = _active_model_field()->get_text().strip_edges();
+		}
+		input_request[cli ? "cli_model" : "model"] = snapshot_state["daqian_model"];
+	}
 	input_request["retry_authorized"] = p_retry;
 	input_request["clarifying"] = p_clarifying;
 	_issue_guide_run("issue-agent", input_request);
+	_emit_daqian_requirement_phase(issue_guide_pid >= 0 ? "analyzing" : "error");
 }
 
 void AIChatDock::_issue_guide_prompt() {
@@ -778,12 +784,14 @@ void AIChatDock::_poll_issue_guide() {
 	if (issue_guide_action == "issue-agent") {
 		if (issue_guide_fields.get("initial_issue", Variant()) != _work_order_binding("issue_number") || issue_guide_fields.get("initial_request", Variant()) != _work_order_binding("request_id")) {
 			issue_guide_state = "agent_error";
+			_emit_daqian_requirement_phase("error");
 			_append(TTR("Editor"), U"处理期间工单绑定已改变，旧结果不会覆盖新绑定。请回复“重试”按当前绑定核对。");
 			_set_busy(false);
 			return;
 		}
 		if (!ok) {
 			issue_guide_state = "agent_error";
+			_emit_daqian_requirement_phase("error");
 			_append(TTR("Error"), String(U"Yanshi 需求建单尚未完成，开发执行仍暂停。请先修复环境、模型 API 或 GitHub 权限，再回复“重试”。已发送的远程请求可能已生效，重试会按稳定需求 ID 对账。\n") + error);
 			if (error == "gh_unauthenticated") {
 				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));
@@ -791,11 +799,29 @@ void AIChatDock::_poll_issue_guide() {
 			_set_busy(false);
 			return;
 		}
-		_issue_guide_bind(int64_t(result.get("issue_number", 0)), String(result.get("request_id", "")));
+		const int64_t number = result.get("issue_number", 0);
+		const String request_id = result.get("request_id", "");
+		if (!AIChatIssueGuide::is_bound(number, request_id) || result.get("ready", Variant()).get_type() != Variant::BOOL) {
+			issue_guide_state = "agent_error";
+			_emit_daqian_requirement_phase("error");
+			_append(TTR("Error"), U"偃师回执缺少工单绑定或需求状态，请在关联对话中核对后重试。");
+			_set_busy(false);
+			return;
+		}
+		_issue_guide_bind(number, request_id);
 		_append(TTR("Editor"), String(U"Yanshi / ClarifyFeature 已整理需求并关联真实工单：") + String(result.get("url", "")));
-		if (!bool(result.get("ready", false))) {
+		Dictionary design;
+		for (const String &field : { String("scope"), String("acceptance"), String("questions") }) {
+			const Variant values = result.get(field, Variant());
+			if (values.get_type() == Variant::ARRAY) {
+				design[field] = values;
+			}
+		}
+		const bool ready = result["ready"];
+		_emit_daqian_requirement_phase(ready ? "ready" : "questions", design);
+		if (!ready) {
 			issue_guide_state = "agent_questions";
-			for (const Variant &question : Array(result.get("questions", Array()))) {
+			for (const Variant &question : Array(design.get("questions", Array()))) {
 				_append(U"Yanshi", question);
 			}
 			_set_busy(false);
@@ -868,6 +894,9 @@ void AIChatDock::_clear_issue_guide_files() {
 
 void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 	const bool active = !issue_guide_state.is_empty() || issue_guide_pid >= 0;
+	if ((issue_guide_action == "issue-agent" && issue_guide_pid >= 0) || issue_guide_state == "agent_questions" || issue_guide_state == "environment_setup") {
+		_emit_daqian_requirement_phase("cancelled");
+	}
 	if (issue_guide_action == "issue-agent" && issue_guide_pid >= 0) {
 		_append(TTR("Editor"), U"已取消本地需求流程。已发送的远程请求无法撤回；再次处理相同需求时会先核对原请求，不会直接重复建单。");
 	}
@@ -1032,7 +1061,7 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 			selected.erase("python");
 			if (selected.is_empty()) {
 				_append(TTR("Editor"), U"Python 已配置，正在用原消息重新进行 GongGong 入口校验…");
-				_cancel_igniter(String());
+				_cancel_igniter(String(), String());
 				_igniter_resume();
 				return;
 			}
@@ -1067,7 +1096,7 @@ void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_reques
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"无法启动点火器：工作区或 Python 未配置，请在 GongGong 页设置后再试。");
-		_cancel_igniter(String());
+		_cancel_igniter(String(), "error");
 		return;
 	}
 	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-igniter-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
@@ -1076,7 +1105,7 @@ void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_reques
 	Ref<FileAccess> file = FileAccess::open(igniter_input_path, FileAccess::WRITE);
 	if (file.is_null()) {
 		_append(TTR("Error"), U"无法保存点火器请求。");
-		_cancel_igniter(String());
+		_cancel_igniter(String(), "error");
 		return;
 	}
 	file->store_string(JSON::stringify(p_request));
@@ -1089,7 +1118,7 @@ void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_reques
 	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
 		_clear_igniter_files();
 		_append(TTR("Error"), U"无法启动点火器，请检查 Python 路径。");
-		_cancel_igniter(String());
+		_cancel_igniter(String(), "error");
 		return;
 	}
 	igniter_pid = pid;
@@ -1145,7 +1174,7 @@ void AIChatDock::_poll_igniter() {
 			return;
 		}
 		_append(TTR("Editor"), U"本地环境已就绪，正在用原消息重新进行 GongGong 入口校验…");
-		_cancel_igniter(String());
+		_cancel_igniter(String(), String());
 		_igniter_resume();
 		return;
 	}
@@ -1162,7 +1191,11 @@ void AIChatDock::_clear_igniter_files() {
 	igniter_output_path = String();
 }
 
-void AIChatDock::_cancel_igniter(const String &p_notice) {
+void AIChatDock::_cancel_igniter(const String &p_notice, const String &p_phase) {
+	if (igniter_for_intake && !p_phase.is_empty()) {
+		_emit_daqian_requirement_phase(p_phase);
+	}
+	igniter_for_intake = false;
 	const bool active = !igniter_state.is_empty() || igniter_pid >= 0;
 	igniter_generation++;
 	if (igniter_pid >= 0) {

@@ -13,9 +13,10 @@ import tempfile
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
-parser.add_argument("--scenario", choices=["graph","parallel","entry","inputs","multi_issue"],default="graph")
+parser.add_argument("--scenario", choices=["graph","parallel","entry","inputs","multi_issue","publish"],default="graph")
 args = parser.parse_args()
 scenarios = {"graph":("daqian_graph.gd","DAQIAN_GRAPH_TEST passed"),
+             "publish":("daqian_publish.gd","DAQIAN_PUBLISH_OK"),
              "parallel":("daqian_editor_parallel.gd","DAQIAN_NATIVE_PARALLEL_OK"),
              "entry":("daqian_ai_entry.gd","DAQIAN_AI_ENTRY_OK"),
              "inputs":("daqian_inputs.gd","DAQIAN_NATIVE_INPUTS_OK"),
@@ -61,6 +62,32 @@ else: sys.exit(1)
             wrapper.write_text('#!/bin/sh\nexec '+shlex.quote(sys.executable)+' '+shlex.quote(str(fixture))+' "$@"\n')
             wrapper.chmod(0o755)
         env.update(DAQIAN_TEST_ACCESS_FILE=str(project/"membership-fixture"),GONGGONG_GH=str(wrapper),DAQIAN_TEST_REPO=str(Path(__file__).resolve().parents[2]),DAQIAN_TEST_PYTHON=sys.executable)
+    if args.scenario == "publish":
+        # Exercise the actual UI, chat session and subprocess boundary without creating a real Issue.
+        workspace = project / ".fixture"
+        board = workspace / "customizations/components/godot-host/daqian/board.py"
+        board.parent.mkdir(parents=True)
+        board.write_text("""import json, sys
+from pathlib import Path
+actor = dict(login='tester', user_id='42', repo='fixture/board', repo_id='1')
+result = {'access': actor} if '--access-only' in sys.argv else {'board': dict(actor, issues=[], verified_at='fixture')}
+Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))
+""", encoding="utf-8")
+        bridge = workspace / "tools/gonggong_bridge.py"
+        bridge.parent.mkdir(parents=True)
+        bridge.write_text("""import json, sys
+from pathlib import Path
+assert sys.argv[1] == 'issue-agent'
+request = json.loads(Path(sys.argv[sys.argv.index('--request')+1]).read_text())
+with Path(__file__).with_name('calls').open('a') as out:
+    print(json.dumps([request['outcome'], request['backend'], request['model']]), file=out)
+reply = dict(ok=True, ready=True, issue_number=123, request_id='fixture', url='https://github.com/fixture/board/issues/123',
+             scope=['Implement'], acceptance=['Verify'], questions=[])
+if not request['retry_authorized']:
+    reply = dict(ok=False, error='fixture model unavailable')
+Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(reply))
+""", encoding="utf-8")
+        env.update(DAQIAN_TEST_REPO=str(workspace), DAQIAN_TEST_PYTHON=sys.executable)
     (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Daqian graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
     result = subprocess.run([str(binary),"--headless","--editor","--path",str(project),"--script","res://test.gd"],
@@ -68,7 +95,7 @@ else: sys.exit(1)
     log = result.stdout + result.stderr
     passed = result.returncode == 0 and marker in log and "SCRIPT ERROR" not in log
     report = {"state":"passed" if passed else "failed","editor_sha256":hashlib.sha256(binary.read_bytes()).hexdigest(),
-              "scenario":args.scenario,"scope":"native editor; fixture graph source, execution state, model catalog and 55-issue board"}
+              "scenario":args.scenario,"scope":"native editor to Yanshi subprocess with fixture receipt" if args.scenario == "publish" else "native editor; fixture graph source, execution state, model catalog and 55-issue board"}
     args.report.parent.mkdir(parents=True,exist_ok=True)
     args.report.write_text(json.dumps(report,indent=2)+"\n")
     if not passed:

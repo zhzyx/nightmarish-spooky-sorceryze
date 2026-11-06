@@ -1,0 +1,44 @@
+{
+  "request_id": "daqian-requirement-send-20261106",
+  "issue_number": 172,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/172",
+  "platform": "macOS arm64",
+  "native": [
+    {
+      "state": "passed",
+      "editor_sha256": "ca6e9b08a0acb70f8d554bd0977cfbedc5fdc0ffa0ea1f6be76b57e659e852e9",
+      "scenario": "publish",
+      "scope": "native editor to Yanshi subprocess with fixture receipt"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "ca6e9b08a0acb70f8d554bd0977cfbedc5fdc0ffa0ea1f6be76b57e659e852e9",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "4dc9fe7c851d3a88916da97e03e26463f1350a056eeccd8ca37d70d49da411dc",
+      "scenario": "parallel",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "4dc9fe7c851d3a88916da97e03e26463f1350a056eeccd8ca37d70d49da411dc",
+      "scenario": "inputs",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "4dc9fe7c851d3a88916da97e03e26463f1350a056eeccd8ca37d70d49da411dc",
+      "scenario": "multi_issue",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  ],
+  "python_tests": {
+    "requirements_agent": 24,
+    "daqian_host": 19
+  },
+  "review": "/root/sinan_30631b1b69e373a5",
+  "limits": "Fixture model/Issue boundaries, production provider not invoked; parallel/inputs/multi_issue ran before last lifecycle fixes."
+}

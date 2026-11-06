@@ -11,6 +11,7 @@ const LABELS := {"text":"文本", "image":"图片", "question":"待用户答复"
 const DATA := Color("#64c6e8")
 const AFTER := Color("#eecb86")
 
+var workflow := {}
 var debug_active := false
 var debug_states := {}
 var debug_models := {}
@@ -348,16 +349,114 @@ func set_image(id: String, image: Image) -> void:
 	draft_changed.emit()
 
 
+# These cards describe the framework's work. Keep them out of editable and executable plans.
+func _stage(plan: Dictionary, id: String, title: String, value: String, upstream: String) -> void:
+	plan.nodes[id] = {"kind":"stage", "title":title, "value":value}
+	if not upstream.is_empty():
+		_stage_edge(plan, upstream, id)
+
+
+func _stage_edge(plan: Dictionary, source: String, target: String) -> void:
+	var link := {"from":source, "to":target, "kind":"after"}
+	if link not in plan.edges:
+		plan.edges.append(link)
+
+
+func _display_plan() -> Dictionary:
+	if workflow.is_empty() or not draft.nodes.has("requirement"):
+		return draft
+	var plan := {"nodes":draft.nodes.duplicate(), "edges":draft.edges.duplicate()}
+	var phase: String = workflow.phase
+	var labels := {"draft":"等待确认发送", "submitted":"已发送，等待分析回执", "analyzing":"正在分析",
+		"questions":"等待答复", "ready":"分析完成，需求已就绪", "error":"处理受阻，请查看关联对话",
+		"cancelled":"已停止", "waiting_environment":"等待本地环境配置", "bound":"已关联工单",
+		"blocked":"关联工单受阻", "closed":"关联工单已关闭"}
+	_stage(plan, "wf-analysis", "偃师 · 需求分析", labels.get(phase, "等待分析回执"), "requirement")
+	var item: Dictionary = workflow.item
+	var design: Dictionary = workflow.design
+	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["in-progress", "in-review"])
+	if item.get("status") == "blocked":
+		_stage(plan, "wf-blocked", "夸父 · 阻塞处置", "工单已标记阻塞，等待处置回执", "wf-analysis")
+	if prepare:
+		_stage(plan, "wf-prepare", "司南 · 运行准备", "核对依赖、授权与可用执行者", "wf-analysis")
+		for dep in item.get("dependencies", []):
+			var id := "wf-dep-" + str(dep).sha256_text().left(20)
+			_stage(plan, id, "前置工单", str(dep), "")
+			_stage_edge(plan, id, "wf-prepare")
+	var tasks := []
+	var criteria := []
+	var titles := {"scope":"预计任务", "acceptance":"验收条件", "questions":"待确认"}
+	var source_nodes: Dictionary = item.get("plan", {}).get("nodes", {})
+	for field in titles:
+		var entries: Dictionary = {}
+		for id in source_nodes:
+			var node: Dictionary = source_nodes[id]
+			if node.title == titles[field] or (field == "questions" and item.get("questions", {}).has(id)):
+				var value: String = str(item.get("questions", {}).get(id, {}).get("prompt", node.value))
+				entries[value] = id
+		var values: Array = design.get(field, entries.keys())
+		for clause in values:
+			if not clause is String or clause.is_empty():
+				continue
+			var key: String = entries.get(clause, "")
+			if key.is_empty() or not draft.nodes.has(key):
+				key = "wf-" + str(field) + "-" + clause.sha256_text().left(20)
+				_stage(plan, key, titles[field], clause, "")
+			if field == "scope":
+				tasks.append(key)
+				_stage_edge(plan, "wf-prepare" if prepare else "wf-analysis", key)
+			elif field == "questions":
+				_stage_edge(plan, "wf-analysis", key)
+			else:
+				criteria.append(key)
+	if not criteria.is_empty():
+		_stage(plan, "wf-verify", "结果验证", "按验收条件核对执行产物", "")
+		for task in tasks:
+			_stage_edge(plan, task, "wf-verify")
+		if tasks.is_empty():
+			_stage_edge(plan, "wf-prepare" if prepare else "wf-analysis", "wf-verify")
+		for criterion in criteria:
+			_stage_edge(plan, "wf-verify", criterion)
+	if prepare and item.get("development", false):
+		_stage(plan, "wf-integrate", "合契 · 候选整合", "待核对变更集与候选版本", "")
+		if tasks.is_empty():
+			_stage_edge(plan, "wf-prepare", "wf-integrate")
+		for task in tasks:
+			_stage_edge(plan, task, "wf-integrate")
+		if plan.nodes.has("wf-verify"):
+			_stage_edge(plan, "wf-integrate", "wf-verify")
+		_stage(plan, "wf-deliver", "阎罗 · 主线交付", "待门禁、主线及工单验收回读", "wf-integrate")
+		for criterion in criteria:
+			_stage_edge(plan, criterion, "wf-deliver")
+	return plan
+
+
+func _render_stage(id: String, item: Dictionary) -> void:
+	var view := GraphNode.new()
+	view.name = id
+	view.title = item.title
+	view.draggable = false
+	var description := _label(item.value)
+	description.custom_minimum_size.x = 210
+	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	view.add_child(description)
+	view.add_child(Control.new())
+	view.set_slot(0, true, 0, DATA, true, 0, DATA)
+	view.set_slot(1, true, 1, AFTER, true, 1, AFTER)
+	canvas.add_child(view)
+
+
 func draw_graph() -> void:
+	var plan := _display_plan()
 	auto_positions.clear()
 	var counts := {}
 	var outgoing := {}
 	var depth := {}
-	for id in draft.nodes:
+	for id in plan.nodes:
 		counts[id] = 0
 		outgoing[id] = []
 		depth[id] = 0
-	for edge in draft.edges:
+	for edge in plan.edges:
 		if counts.has(edge.to) and outgoing.has(edge.from):
 			counts[edge.to] += 1
 			outgoing[edge.from].append(edge.to)
@@ -380,18 +479,25 @@ func draw_graph() -> void:
 		if child is GraphNode:
 			canvas.remove_child(child)
 			child.queue_free()
-	for id in draft.nodes:
-		_render_node(id, draft.nodes[id])
+	for id in plan.nodes:
+		if draft.nodes.has(id):
+			_render_node(id, plan.nodes[id])
+		else:
+			_render_stage(id, plan.nodes[id])
+	# Personal edits can order existing tasks differently from the displayed plan.
+	for id in plan.nodes:
+		if counts[id] > 0:
+			ready.append(id)
 	var widths := {}
 	var offsets := {}
 	var last := 0
 	for id in ready:
 		var level: int = depth[id]
-		if draft.nodes[id].kind == "join" and outgoing[id].is_empty() and level == 0:
+		if plan.nodes[id].kind == "join" and outgoing[id].is_empty() and level == 0:
 			continue
 		last = maxi(last,level)
 	for id in ready:
-		if draft.nodes[id].kind == "join" and outgoing[id].is_empty() and depth[id] == 0:
+		if plan.nodes[id].kind == "join" and outgoing[id].is_empty() and depth[id] == 0:
 			depth[id] = last + 1
 		var view := canvas.get_node(NodePath(str(id))) as GraphNode
 		var level: int = depth[id]
@@ -409,14 +515,16 @@ func draw_graph() -> void:
 		if not positions.has(id):
 			view.position_offset = auto_positions[id]
 		heights[level] = top + maxf(view.size.y,view.get_combined_minimum_size().y) + 72.0
-	for edge in draft.edges:
-		_draw_edge(edge)
+	for edge in plan.edges:
+		_draw_edge(edge, plan.nodes)
 
 
-func _draw_edge(edge: Dictionary) -> void:
+func _draw_edge(edge: Dictionary, nodes := {}) -> void:
+	if nodes.is_empty():
+		nodes = draft.nodes
 	var output := 0 if edge.kind == "data" else 1
 	var input := 0
-	if edge.kind == "after" and draft.nodes[edge.to].kind in ["task","join"]:
+	if edge.kind == "after" and nodes[edge.to].kind in ["task","join","stage"]:
 		input = 1
 	canvas.connect_node(edge.from, output, edge.to, input)
 

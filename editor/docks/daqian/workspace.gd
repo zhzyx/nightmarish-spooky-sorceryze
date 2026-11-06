@@ -15,6 +15,16 @@ var follow: SpinBox
 var board := {}
 var saved := {}
 var actions: HBoxContainer
+var publish_button: Button
+var publish_dialog: ConfirmationDialog
+var requirement_input: TextEdit
+var model_options: OptionButton
+var manual_model: LineEdit
+var publish_status: Label
+var publish_backend := -1
+var publish_source := ""
+var publish_generation := 0
+var submitting := false
 var chat: Control
 var current := ""
 var pending_menu: MenuButton
@@ -46,7 +56,7 @@ func _ready() -> void:
 	toolbar = row
 	add_child(row)
 	return_button = _button(row, "工单总图", _show_board)
-	_button(row, "新建需求", _new_requirement)
+	_button(row, "新建需求", _compose_requirement)
 	draft_menu = MenuButton.new()
 	draft_menu.text = "个人草稿"
 	draft_menu.about_to_popup.connect(_list_drafts)
@@ -80,7 +90,8 @@ func _ready() -> void:
 	actions = HBoxContainer.new()
 	add_child(actions)
 	_button(actions, "仅推演", _chat_action.bind("preview"))
-	_button(actions, "创建并执行", _chat_action.bind("execute"))
+	publish_button = _button(actions, "发布需求…", _publish_or_follow)
+	_build_publish_dialog()
 	_button(actions, "关联对话", _chat_action.bind("discuss"))
 	_button(actions, "调试运行", _start_debug)
 	_button(actions, "结束调试", _stop_debug)
@@ -100,7 +111,7 @@ func _ready() -> void:
 	overview.zoom_max = 3.0
 	overview.minimap_enabled = true
 	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
-	overview.popup_request.connect(func(_position): _new_requirement())
+	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
 	editor = graph_script.new()
 	editor.rules = rules
@@ -347,6 +358,7 @@ func _gate_visibility(opened: bool) -> void:
 	editor.visible = opened and not current.is_empty()
 	if not opened:
 		models_dialog.hide()
+		publish_dialog.hide()
 		history_dialog.hide()
 		history_view.clear()
 		draft_menu.get_popup().hide()
@@ -474,6 +486,7 @@ func refresh() -> void:
 		if value.has("board") and value.board.user_id == actor.get("user_id",""):
 			board = value.board
 			_draw_board()
+			_sync_workflow()
 			_queue_save()
 		elif value.get("denied",true):
 			settings.set_project_metadata("daqian_access",_access_key(),{})
@@ -531,6 +544,168 @@ func _restore_personal(index: int) -> void:
 	_show_issue(id, {"revision":"", "plan":rules.new_plan(), "context":{}})
 
 
+func _compose_requirement() -> void:
+	_new_requirement()
+	_open_publish()
+
+
+func _build_publish_dialog() -> void:
+	publish_dialog = ConfirmationDialog.new()
+	publish_dialog.title = "发布需求"
+	publish_dialog.dialog_hide_on_ok = false
+	publish_dialog.get_ok_button().text = "确认发送并开始分析"
+	publish_dialog.get_cancel_button().text = "保存为草稿"
+	var fields := VBoxContainer.new()
+	publish_dialog.add_child(fields)
+	var prompt := Label.new()
+	prompt.text = "需求内容"
+	fields.add_child(prompt)
+	requirement_input = TextEdit.new()
+	requirement_input.custom_minimum_size = Vector2(360, 144)
+	requirement_input.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	requirement_input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	requirement_input.placeholder_text = "描述你希望完成的需求"
+	requirement_input.text_changed.connect(_edit_requirement)
+	fields.add_child(requirement_input)
+	var label := Label.new()
+	label.text = "偃师分析模型"
+	fields.add_child(label)
+	model_options = OptionButton.new()
+	model_options.item_selected.connect(_select_publish_model)
+	fields.add_child(model_options)
+	manual_model = LineEdit.new()
+	manual_model.placeholder_text = "输入当前连接支持的模型 ID"
+	manual_model.max_length = 128
+	manual_model.text_changed.connect(func(_value): _update_publish_form())
+	fields.add_child(manual_model)
+	publish_status = Label.new()
+	publish_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	fields.add_child(publish_status)
+	add_child(publish_dialog)
+	publish_dialog.confirmed.connect(_confirm_publish)
+	publish_dialog.visibility_changed.connect(_publish_visibility_changed)
+
+
+func _publish_or_follow() -> void:
+	if saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current):
+		_chat_action("discuss")
+	else:
+		_open_publish()
+
+
+func _open_publish() -> void:
+	if actor.is_empty() or not current.begins_with("draft_") or saved.get("linked", {}).has(current) or saved.get("submitted", {}).has(current):
+		return
+	if not editor.draft.nodes.has("requirement"):
+		notice.text = "草稿缺少需求节点"
+		return
+	if not is_instance_valid(chat) or not chat.has_method("get_daqian_models"):
+		notice.text = "无法取得共工 AI 对话入口"
+		return
+	var catalog: Dictionary = chat.get_daqian_models()
+	publish_backend = catalog.backend
+	var stored: Dictionary = saved.get("publish_models", {}).get(current, {})
+	var chosen: String = stored.id if stored.get("backend", -1) == publish_backend else catalog.current
+	publish_source = current
+	requirement_input.text = str(editor.draft.nodes.requirement.value)
+	model_options.clear()
+	var selected := -1
+	for option in catalog.options:
+		model_options.add_item(option.label)
+		var index := model_options.item_count - 1
+		model_options.set_item_metadata(index, option.id)
+		if option.id == chosen:
+			selected = index
+	model_options.add_item("手动填写模型 ID")
+	model_options.select(selected if selected >= 0 else model_options.item_count - 1)
+	manual_model.text = chosen
+	publish_status.text = "确认后由偃师分析需求，并在关联对话中继续推进。"
+	_select_publish_model(model_options.selected)
+	publish_dialog.popup_centered_clamped(Vector2i(540, 360))
+	requirement_input.grab_focus()
+
+
+func _selected_model() -> String:
+	if manual_model.visible:
+		return manual_model.text.strip_edges()
+	return str(model_options.get_selected_metadata())
+
+
+func _select_publish_model(index: int) -> void:
+	manual_model.visible = index == model_options.item_count - 1
+	_update_publish_form()
+
+
+func _update_publish_form() -> void:
+	var message := requirement_input.text.strip_edges()
+	var missing_model := manual_model.visible and manual_model.text.strip_edges().is_empty()
+	var too_long := message.length() > 16000
+	const LIMIT_HINT := "需求正文最多 16000 个字符，请缩短后发送。"
+	if too_long:
+		publish_status.text = LIMIT_HINT
+	elif publish_status.text == LIMIT_HINT:
+		publish_status.text = "确认后由偃师分析需求，并在关联对话中继续推进。"
+	publish_dialog.get_ok_button().disabled = submitting or message.is_empty() or too_long or missing_model
+	if publish_source == current and not current.is_empty():
+		if not saved.has("publish_models"):
+			saved.publish_models = {}
+		saved.publish_models[current] = {"backend":publish_backend, "id":_selected_model()}
+		_queue_save()
+
+
+func _edit_requirement() -> void:
+	if publish_source == current and editor.draft.nodes.has("requirement"):
+		editor.draft.nodes.requirement.value = requirement_input.text
+		_update_publish_form()
+
+
+func _publish_visibility_changed() -> void:
+	if not publish_dialog.visible:
+		publish_generation += 1
+		submitting = false
+		if publish_source == current and not current.is_empty():
+			editor.draw_graph()
+			_save()
+		publish_source = ""
+
+
+func _confirm_publish() -> void:
+	if submitting or publish_dialog.get_ok_button().disabled or publish_source != current or not publish_dialog.visible:
+		return
+	submitting = true
+	var generation := publish_generation
+	var source := publish_source
+	var selected := {"backend":publish_backend, "id":_selected_model()}
+	var message := requirement_input.text.strip_edges()
+	var epoch := selection_epoch
+	publish_dialog.get_ok_button().disabled = true
+	publish_status.text = "正在核对协作者身份…"
+	var allowed := await _fresh_access()
+	if generation != publish_generation:
+		return
+	submitting = false
+	_update_publish_form()
+	if not allowed or epoch != selection_epoch or source != current or saved.get("linked", {}).has(source):
+		publish_status.text = "发送已中止，请回到草稿核对工单和协作者身份。"
+		return
+	if selected.id != _selected_model() or message != requirement_input.text.strip_edges():
+		publish_status.text = "需求或模型已变更，请重新确认。"
+		return
+	_save()
+	var error: String = chat.open_daqian_chat(source, 0, "", message, false, selected)
+	if not error.is_empty():
+		publish_status.text = error
+		return
+	if not saved.has("submitted"):
+		saved.submitted = {}
+	saved.submitted[source] = true
+	_sync_workflow()
+	publish_button.text = "查看分析进度"
+	publish_dialog.hide()
+	_save()
+	notice.text = "已发送至偃师，请在关联对话中查看分析进度。"
+
+
 func _new_requirement() -> void:
 	if actor.is_empty():
 		return
@@ -552,6 +727,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	_select_debug(current)
 	editor.debug_active = debug_sessions.has(current)
 	editor.debug_states = debug_states.duplicate(true)
+	editor.workflow = {}
 	editor.bind_issue(id,snapshot,apply_port,read_port)
 	var stored: Dictionary = saved.get("drafts", {}).get(id,{})
 	if stored.has("graph"):
@@ -564,10 +740,12 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.revision = stored.revision
 		editor.baseline = stored.baseline
 		editor.draw_graph()
+	_sync_workflow()
 	editor.show()
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
-	actions.get_child(1).visible = id.begins_with("draft_") and not saved.get("linked", {}).has(id)
+	publish_button.visible = id.begins_with("draft_")
+	publish_button.text = "查看分析进度" if saved.get("submitted", {}).has(id) or saved.get("linked", {}).has(id) else "发布需求…"
 	overview.hide()
 	return_button.show()
 	notice.text = id if id.begins_with("https://") else "个人需求草稿"
@@ -643,10 +821,83 @@ func _attach_chat() -> void:
 	chat = get_tree().root.find_child("AI Chat", true, false)
 	if chat and chat.has_signal("daqian_issue_bound"):
 		chat.connect("daqian_issue_bound",_issue_bound)
+		chat.connect("daqian_requirement_phase",_requirement_phase)
 		chat.connect("daqian_preview_received",_preview_received)
 
 
+func _requirement_phase(source: String, phase: String, design: Dictionary) -> void:
+	if not saved.get("drafts", {}).has(source) and source != current:
+		return
+	if not saved.has("intake"):
+		saved.intake = {}
+	var receipt: Dictionary = saved.intake.get(source, {})
+	receipt.phase = phase
+	if not design.is_empty():
+		receipt.design = design.duplicate(true)
+		receipt.erase("issue_design")
+		receipt.erase("observed_decision")
+	saved.intake[source] = receipt
+	_sync_workflow()
+	_save()
+
+
+func _sync_workflow() -> void:
+	if current.is_empty() or not editor.draft.nodes.has("requirement"):
+		return
+	var source := current
+	var binding: Dictionary = saved.get("linked", {}).get(source, {})
+	var item: Dictionary = {}
+	for row in board.get("issues", []):
+		if row.url == current or row.number == binding.get("number", 0):
+			item = row
+			break
+	if current.begins_with("https://") and not item.is_empty():
+		for key in saved.get("linked", {}):
+			if saved.linked[key].number == item.number:
+				source = key
+				break
+	var receipt: Dictionary = saved.get("intake", {}).get(source, {})
+	var phase: String = receipt.get("phase", "submitted" if saved.get("submitted", {}).has(source) else "draft")
+	if receipt.is_empty() and not item.is_empty():
+		phase = "questions" if item.get("decision", false) else "bound"
+	var design: Dictionary = receipt.get("design", {}).duplicate()
+	if not item.is_empty():
+		var clauses := {"scope":[], "acceptance":[], "questions":[]}
+		var titles := {"预计任务":"scope", "验收条件":"acceptance", "待确认":"questions"}
+		for id in item.get("plan", {}).get("nodes", {}):
+			var node: Dictionary = item.plan.nodes[id]
+			if item.get("questions", {}).has(id):
+				clauses.questions.append(item.questions[id].prompt)
+			elif titles.has(node.title):
+				clauses[titles[node.title]].append(node.value)
+		if not receipt.is_empty():
+			if not receipt.has("issue_design"):
+				receipt.issue_design = clauses.duplicate(true)
+			for field in clauses:
+				if clauses[field] != receipt.issue_design[field]:
+					design[field] = clauses[field]
+		if item.get("closed", false):
+			phase = "closed"
+		elif item.get("status") == "needs-decision":
+			if not receipt.is_empty():
+				receipt.observed_decision = true
+			phase = "questions"
+			if not clauses.questions.is_empty():
+				design.questions = clauses.questions
+		elif item.get("status") == "blocked":
+			phase = "blocked"
+		elif receipt.get("observed_decision", false) and phase == "questions" and item.get("status") == "in-progress" and not item.get("decision", false):
+			phase = "bound"
+			design.questions = clauses.questions
+	var facts := {"phase":phase, "design":design, "item":item}
+	if editor.workflow != facts:
+		editor.workflow = facts.duplicate(true)
+		editor.draw_graph()
+
+
 func _issue_bound(source: String, number: int, request_id: String) -> void:
+	if actor.is_empty() or picker_scope != _repo() or (source != current and not saved.get("drafts", {}).has(source)):
+		return
 	if not saved.has("linked"):
 		saved.linked = {}
 	saved.linked[source] = {"number":number,"request":request_id}
@@ -655,7 +906,7 @@ func _issue_bound(source: String, number: int, request_id: String) -> void:
 		numbers.append(number)
 	saved.following = numbers
 	if current == source:
-		actions.get_child(1).hide()
+		publish_button.text = "查看分析进度"
 	_save()
 	refresh()
 
