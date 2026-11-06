@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-prediction-delivery-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-prediction-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T14:32:58.6739633Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180",
+  "agent": {
+    "id": "codex-current-gameplay-gf5-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "intent": "Implement and validate GF-5 prediction, correction, interpolation, controlled network conditions, and the final dedicated-server plus two-client integration sample on the staged GF-1 through GF-4 candidate",
+    "authorization": "The current user explicitly authorized continuing GF-5 after its dependencies completed in the parent Codex chat on 2026-11-06",
+    "operator": "kaiyunxue",
+    "permission_readback": "WRITE",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+    "design_document": "design-docs/gameplay-framework-20261106.md",
+    "intake": "passed for Issue 180 after status readback at 2026-11-06T14:05:25Z",
+    "local_validation": "Windows editor tests=yes and template_debug builds passed; Gameplay headless 20 tests / 4740 assertions passed; editor and template_debug headless startup passed; runtime API signatures and complete class reference XML validation passed",
+    "controlled_network_measurement": "Real ENet integration and the standalone three-process sample used 18 ms one-way base delay, plus or minus 7 ms jitter, and 1500 permyriad application-layer loss on each prediction adapter; the test converged at owner confirmation 29 with 1 correction, 1 expected server packet rejection, and 19 remote samples",
+    "sample_measurement": "Standalone headless server, Alice, and Bob moved and interpolated; Alice changed peer 1940011177 to 1374998476 while retaining PlayerState instance 28252833321; all four process stderr streams were empty",
+    "scope_stop": "Fix the combined GF-1 through GF-5 final candidate and stop without expanding the stated non-goals",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "b690948b05b859a4660a6c84ef0a060c3c4a34ec276d0a9dca30af4470c70d4c"
+}

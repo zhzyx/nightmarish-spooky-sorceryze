@@ -4,7 +4,7 @@
 		Headless ENet bootstrap for the gameplay session state machine.
 	</brief_description>
 	<description>
-		GameplayDedicatedServer accepts only the narrow GF-2 handshake: version, authentication, and join. The [member authenticator] must return a Dictionary containing [code]accepted[/code] and, on success, stable [code]user_id[/code], [code]session_id[/code], and opaque [code]reconnect_token[/code]. ENet does not encrypt these packets, so production deployments must use short-lived credentials and an appropriate secure network boundary. This class is not a general RPC or replication layer.
+		GameplayDedicatedServer owns the GF-2 version, authentication, and join handshake. The [member authenticator] must return a Dictionary containing [code]accepted[/code] and, on success, stable [code]user_id[/code], [code]session_id[/code], and opaque [code]reconnect_token[/code]. Optional [member replication] and [member prediction] adapters share the peer while retaining their own sender, ownership, and authority validation. ENet does not encrypt these packets, so production deployments must use short-lived credentials and an appropriate secure network boundary.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -96,6 +96,12 @@
 		</member>
 		<member name="running" type="bool" setter="" getter="is_running">
 			Whether the server listener is active.
+		</member>
+		<member name="replication" type="GameplayMultiplayerReplication" setter="set_replication" getter="get_replication">
+			Optional RPC and property replication adapter sharing the server peer.
+		</member>
+		<member name="prediction" type="GameplayNetworkPrediction" setter="set_prediction" getter="get_prediction">
+			Optional authoritative input and prediction snapshot adapter sharing the server peer.
 		</member>
 	</members>
 	<signals>

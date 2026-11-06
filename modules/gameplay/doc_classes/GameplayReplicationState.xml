@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayReplicationState" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Runtime values, revisions, dirty state, conditions, and RepNotify dispatch.
+	</brief_description>
+	<description>
+		GameplayReplicationState is independent of a concrete transport. An authority collects peer-specific update dictionaries, while a receiver applies only newer revisions. Object decoding is not allowed by the multiplayer adapter.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_property">
+			<return type="int" enum="Error" />
+			<param index="0" name="descriptor" type="GameplayReplicationProperty" />
+			<param index="1" name="initial_value" type="Variant" default="null" />
+			<description>Adds a unique descriptor and its current value.</description>
+		</method>
+		<method name="apply_updates">
+			<return type="int" enum="Error" />
+			<param index="0" name="updates" type="Array" />
+			<description>Applies known properties with newer positive revisions and dispatches RepNotify after a value change.</description>
+		</method>
+		<method name="collect_updates">
+			<return type="Array" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="owner_peer_id" type="int" />
+			<param index="2" name="now_msec" type="int" />
+			<description>Returns eligible dirty updates and records successful collection time for frequency throttling.</description>
+		</method>
+		<method name="get_property_descriptors" qualifiers="const">
+			<return type="Array" />
+			<description>Returns all registered descriptors.</description>
+		</method>
+		<method name="get_change_serial" qualifiers="const">
+			<return type="int" />
+			<description>Returns a monotonic local serial advanced by descriptor additions/removals and authoritative dirty value changes. The replication graph uses it to detect changes made after dormancy begins.</description>
+		</method>
+		<method name="get_property_value" qualifiers="const">
+			<return type="Variant" />
+			<param index="0" name="name" type="StringName" />
+			<description>Returns the current value.</description>
+		</method>
+		<method name="has_property" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<description>Returns whether the descriptor exists.</description>
+		</method>
+		<method name="is_property_dirty" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<description>Returns whether any registered peer still needs the current revision.</description>
+		</method>
+		<method name="is_property_dirty_for_peer" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<param index="1" name="peer_id" type="int" />
+			<description>Returns whether the peer still needs the current revision.</description>
+		</method>
+		<method name="mark_property_dirty">
+			<return type="int" enum="Error" />
+			<param index="0" name="name" type="StringName" />
+			<description>Advances the revision without changing the value.</description>
+		</method>
+		<method name="register_peer">
+			<return type="void" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Registers a recipient. Initial-only properties become eligible for a new peer ID.</description>
+		</method>
+		<method name="reset_peer_updates">
+			<return type="void" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="updates" type="Array" />
+			<description>Restores collected updates to dirty state after a transport or fragmentation failure.</description>
+		</method>
+		<method name="remove_property">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<description>Removes a descriptor and runtime history.</description>
+		</method>
+		<method name="set_property_value">
+			<return type="int" enum="Error" />
+			<param index="0" name="name" type="StringName" />
+			<param index="1" name="value" type="Variant" />
+			<description>Stores a changed value and advances its revision.</description>
+		</method>
+		<method name="unregister_peer">
+			<return type="void" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Removes all delivery history for a peer.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="rep_notify_handler" type="Callable" setter="set_rep_notify_handler" getter="get_rep_notify_handler" default="Callable()">
+			Optional callable receiving property name, old value, and new value.
+		</member>
+	</members>
+	<signals>
+		<signal name="property_rep_notified">
+			<param index="0" name="property" type="StringName" />
+			<param index="1" name="old_value" type="Variant" />
+			<param index="2" name="new_value" type="Variant" />
+			<description>Emitted when a RepNotify property changes from an accepted remote update.</description>
+		</signal>
+	</signals>
+</class>

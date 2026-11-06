@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-replication-policy-delivery-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-replication-policy-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:28:44.2710535Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/178",
+  "agent": {
+    "id": "codex-current-gameplay-gf3-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "intent": "Implement and validate GF-3 RPC authority and property replication policy on the staged GF-1/GF-2 candidate, then stop before GF-4",
+    "authorization": "Current user explicitly requested GF-3 implementation in this Codex chat on 2026-11-06",
+    "operator": "kaiyunxue",
+    "permission_readback": "WRITE",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+    "design_document": "design-docs/gameplay-framework-20261106.md",
+    "intake": "passed for Issue 178 at 2026-11-06T13:28:14Z",
+    "local_validation": "Windows editor tests=yes and template_debug builds passed; Gameplay headless 11 tests / 283 assertions passed; runtime API signatures and complete class reference XML validation passed",
+    "scope_stop": "Fix the combined GF-1 through GF-3 candidate and stop before GF-4",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "5ee265a8755b0a5a47aa50ea5f4b89c5caa0b6681d7292ea08b7dbe0d9695b91"
+}

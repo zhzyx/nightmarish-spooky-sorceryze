@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayNetworkSimulator" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Seeded application-layer latency, jitter, and loss adapter for tests.</brief_description>
+	<description>
+		GameplayNetworkSimulator queues transport dictionaries with deterministic seeded delay and loss. It is intended for controlled tests and samples, not as a replacement for transport-level network emulation. Queue size and all configured values are bounded.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear"><return type="void" /><description>Clears queued packets and drop counters while retaining configuration.</description></method>
+		<method name="drain"><return type="Array" /><param index="0" name="now_msec" type="int" /><description>Returns and removes every packet whose deterministic delivery time has arrived.</description></method>
+		<method name="discard_target"><return type="int" /><param index="0" name="target_peer_id" type="int" /><description>Removes delayed packets for a disconnected peer and returns the removed count.</description></method>
+		<method name="enqueue"><return type="Dictionary" /><param index="0" name="target_peer_id" type="int" /><param index="1" name="message" type="Dictionary" /><param index="2" name="now_msec" type="int" /><description>Queues, drops, or rejects a copied message and reports the outcome.</description></method>
+		<method name="get_dropped_packet_count" qualifiers="const"><return type="int" /><description>Returns simulated loss drops.</description></method>
+		<method name="get_overflow_packet_count" qualifiers="const"><return type="int" /><description>Returns packets rejected or trimmed by the queue limit.</description></method>
+		<method name="get_queued_packet_count" qualifiers="const"><return type="int" /><description>Returns the current bounded queue size.</description></method>
+		<method name="get_seed" qualifiers="const"><return type="int" /><description>Returns the current deterministic generator state.</description></method>
+		<method name="set_seed"><return type="void" /><param index="0" name="seed" type="int" /><description>Resets the deterministic generator; zero maps to a nonzero state.</description></method>
+	</methods>
+	<members>
+		<member name="jitter_msec" type="int" setter="set_jitter_msec" getter="get_jitter_msec" default="0">Symmetric delivery jitter bound.</member>
+		<member name="latency_msec" type="int" setter="set_latency_msec" getter="get_latency_msec" default="0">Base one-way application delay.</member>
+		<member name="loss_permyriad" type="int" setter="set_loss_permyriad" getter="get_loss_permyriad" default="0">Drop probability from 0 to 10000 permyriad.</member>
+		<member name="max_queued_packets" type="int" setter="set_max_queued_packets" getter="get_max_queued_packets" default="1024">Maximum delayed packets retained.</member>
+	</members>
+</class>
