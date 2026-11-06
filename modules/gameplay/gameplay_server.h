@@ -66,12 +66,17 @@ public:
 	Error apply_command_line(const PackedStringArray &p_arguments);
 };
 
+class GameplayMultiplayerReplication;
+class GameplayNetworkPrediction;
+
 class GameplayDedicatedServer : public Node {
 	GDCLASS(GameplayDedicatedServer, Node);
 
 	Ref<GameplayServerConfig> config;
 	Ref<MultiplayerPeer> multiplayer_peer;
 	ObjectID session_manager_id;
+	ObjectID replication_id;
+	ObjectID prediction_id;
 	Callable authenticator;
 	Callable admission_check;
 	HashSet<int> transport_peers;
@@ -110,6 +115,10 @@ public:
 	int get_transport_peer_count() const;
 	GameplaySessionManager *get_session_manager() const;
 	Ref<MultiplayerPeer> get_multiplayer_peer() const;
+	void set_replication(GameplayMultiplayerReplication *p_replication);
+	GameplayMultiplayerReplication *get_replication() const;
+	void set_prediction(GameplayNetworkPrediction *p_prediction);
+	GameplayNetworkPrediction *get_prediction() const;
 
 	~GameplayDedicatedServer();
 };
@@ -118,6 +127,8 @@ class GameplaySessionClient : public Node {
 	GDCLASS(GameplaySessionClient, Node);
 
 	Ref<MultiplayerPeer> multiplayer_peer;
+	ObjectID replication_id;
+	ObjectID prediction_id;
 	String protocol_version;
 	String auth_token;
 	String reconnect_token;
@@ -146,6 +157,10 @@ public:
 	String get_reconnect_token() const;
 	String get_rejection_reason() const;
 	Ref<MultiplayerPeer> get_multiplayer_peer() const;
+	void set_replication(GameplayMultiplayerReplication *p_replication);
+	GameplayMultiplayerReplication *get_replication() const;
+	void set_prediction(GameplayNetworkPrediction *p_prediction);
+	GameplayNetworkPrediction *get_prediction() const;
 
 	~GameplaySessionClient();
 };

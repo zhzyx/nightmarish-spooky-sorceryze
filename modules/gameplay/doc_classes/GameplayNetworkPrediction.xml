@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayNetworkPrediction" inherits="Node" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Godot MultiplayerPeer adapter for authoritative input and movement snapshots.</brief_description>
+	<description>
+		GameplayNetworkPrediction connects GF-5 prediction to the GF-2 session peer and optional GF-4 replication graph. The server reads the real transport sender, requires a spawned session, and accepts intent dictionaries only. Owner snapshots drive reconciliation; relevant non-owners receive interpolation samples. Unconfirmed client inputs are retried at a bounded interval so controlled loss eventually converges.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_transport"><return type="void" /><description>Detaches the peer and clears queued transport work without deleting registered movement objects.</description></method>
+		<method name="configure_client"><return type="void" /><param index="0" name="peer" type="MultiplayerPeer" /><description>Attaches a client peer.</description></method>
+		<method name="configure_server"><return type="void" /><param index="0" name="peer" type="MultiplayerPeer" /><param index="1" name="session_manager" type="GameplaySessionManager" /><description>Attaches an authority peer and session source.</description></method>
+		<method name="get_last_rejection_reason" qualifiers="const"><return type="String" /><description>Returns the latest packet or authority rejection reason.</description></method>
+		<method name="get_network_simulator" qualifiers="const"><return type="GameplayNetworkSimulator" /><description>Returns the controlled outgoing-network adapter.</description></method>
+		<method name="get_owned_client_object" qualifiers="const"><return type="GameplayClientPrediction" /><param index="0" name="object_id" type="int" /><description>Returns an owner predictor registered on a client.</description></method>
+		<method name="get_rejected_packet_count" qualifiers="const"><return type="int" /><description>Returns rejected prediction packets, including duplicates retried after a lost confirmation.</description></method>
+		<method name="get_remote_client_object" qualifiers="const"><return type="GameplayInterpolationBuffer" /><param index="0" name="object_id" type="int" /><description>Returns a remote interpolation buffer registered on a client.</description></method>
+		<method name="get_replication_graph" qualifiers="const"><return type="GameplayReplicationGraph" /><description>Returns the optional server relevancy source.</description></method>
+		<method name="get_server_object_state" qualifiers="const"><return type="GameplayPredictionState" /><param index="0" name="object_id" type="int" /><description>Returns an authoritative state on the server adapter.</description></method>
+		<method name="handles_message" qualifiers="const"><return type="bool" /><param index="0" name="message" type="Dictionary" /><description>Returns whether the dictionary is a GF-5 input or snapshot envelope.</description></method>
+		<method name="is_server" qualifiers="const"><return type="bool" /><description>Returns the configured role.</description></method>
+		<method name="peer_disconnected"><return type="void" /><param index="0" name="peer_id" type="int" /><description>Discards delayed packets and graph state for a disconnected server-side peer.</description></method>
+		<method name="poll"><return type="int" enum="Error" /><param index="0" name="now_msec" type="int" /><description>Schedules client retries and sends due simulated packets.</description></method>
+		<method name="receive_packet"><return type="int" enum="Error" /><param index="0" name="transport_sender_peer_id" type="int" /><param index="1" name="message" type="Dictionary" /><param index="2" name="now_msec" type="int" /><description>Validates and consumes a prediction envelope using the actual transport sender.</description></method>
+		<method name="register_owned_client_object"><return type="int" enum="Error" /><param index="0" name="object_id" type="int" /><param index="1" name="prediction" type="GameplayClientPrediction" /><description>Registers the locally owned object that receives correction snapshots.</description></method>
+		<method name="register_remote_client_object"><return type="int" enum="Error" /><param index="0" name="object_id" type="int" /><param index="1" name="buffer" type="GameplayInterpolationBuffer" /><description>Registers a non-owned object that receives relevant interpolation samples.</description></method>
+		<method name="register_server_object"><return type="int" enum="Error" /><param index="0" name="object_id" type="int" /><param index="1" name="owner_peer_id" type="int" /><param index="2" name="model" type="GameplayPredictionModel" /><param index="3" name="initial_state" type="GameplayPredictionState" default="null" /><description>Registers one authority object.</description></method>
+		<method name="set_replication_graph"><return type="void" /><param index="0" name="graph" type="GameplayReplicationGraph" /><description>Sets the graph whose current relevant sets select remote snapshot recipients.</description></method>
+		<method name="set_network_simulator"><return type="void" /><param index="0" name="simulator" type="GameplayNetworkSimulator" /><description>Sets a non-null controlled outgoing-network adapter.</description></method>
+		<method name="set_server_object_owner_peer_id"><return type="int" enum="Error" /><param index="0" name="object_id" type="int" /><param index="1" name="owner_peer_id" type="int" /><description>Rebinds an authority object after verified reconnect.</description></method>
+		<method name="submit_local_input"><return type="GameplayPredictionInput" /><param index="0" name="object_id" type="int" /><param index="1" name="movement_input" type="Vector3" /><param index="2" name="now_msec" type="int" /><description>Predicts and queues one owner input, or returns null when rejected.</description></method>
+	</methods>
+	<members>
+		<member name="resend_interval_msec" type="int" setter="set_resend_interval_msec" getter="get_resend_interval_msec" default="50">Retry interval for unconfirmed owner inputs.</member>
+	</members>
+</class>

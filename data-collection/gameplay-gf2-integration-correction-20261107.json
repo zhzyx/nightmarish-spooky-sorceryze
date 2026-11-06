@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-gf2-integration-correction-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-prediction-20261106",
+  "kind": "correction",
+  "occurred_at": "2026-11-06T17:10:54.1762146Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180",
+  "agent": {
+    "id": "codex-current-gameplay-gf5-host",
+    "version": "2026-11-07",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "status": "gf2_regression_coverage_restored_in_combined_candidate",
+    "trigger": "Readback of PR 187 and the GF-2 handoff identified five lifecycle and packet-order tests absent from the original PR 200 candidate.",
+    "restored_behavior": "Restore implicit world, subsystem, session, and dedicated-server teardown; callback-safe ordered subsystem lifecycle; old Pawn authority clearing; authentication and admission phase isolation; closed-admission rejection; and rejection of out-of-order packets before external authentication or admission callbacks.",
+    "preserved_scope": "Keep the GF-3 replication, GF-4 relevancy, and GF-5 prediction, interpolation, controlled-network, and sample integration code. PR 187 remains an independent read-only source and is not modified by this correction.",
+    "local_validation": "Windows x86_64 MSVC editor tests=yes incremental build passed. Gameplay regression passed 25 tests and 4812 assertions with zero failures. The same binary also passed the complete 1490-test, 433970-assertion suite; 3 tests were skipped by their existing conditions.",
+    "remote_state": "PR 187 GHA startup was restored by the scoped caller permissions fix, then exposed an unrelated strict MSVC baseline failure in editor/docks/ai_chat_gonggong.cpp. Issue 213 and PR 214 are the separately owned remediation; no unrelated editor change is added here.",
+    "operator": "kaiyunxue",
+    "usage": null
+  },
+  "evidence_refs": [
+    "gameplay-prediction-delivery-request-20261106"
+  ]
+}

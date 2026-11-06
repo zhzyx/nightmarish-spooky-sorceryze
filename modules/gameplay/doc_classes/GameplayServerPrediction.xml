@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayServerPrediction" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Server-authoritative validation and consumption of numbered inputs.</brief_description>
+	<description>
+		GameplayServerPrediction owns authoritative movement states. It accepts intent only from the server-recorded owner and rejects duplicate, older, excessive-gap, invalid-step, invalid-vector, and rate-limited commands. Clients cannot provide position or velocity through this API.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear"><return type="void" /><description>Removes registered objects and counters.</description></method>
+		<method name="consume_input">
+			<return type="Dictionary" />
+			<param index="0" name="transport_sender_peer_id" type="int" />
+			<param index="1" name="object_id" type="int" />
+			<param index="2" name="input" type="GameplayPredictionInput" />
+			<param index="3" name="now_msec" type="int" />
+			<description>Validates the real sender and command, advances authority, and returns an accepted snapshot or deterministic reason.</description>
+		</method>
+		<method name="get_last_rejection_reason" qualifiers="const"><return type="String" /><description>Returns the latest rejected input reason.</description></method>
+		<method name="get_object_owner_peer_id" qualifiers="const"><return type="int" /><param index="0" name="object_id" type="int" /><description>Returns the server-recorded gameplay owner.</description></method>
+		<method name="get_object_state" qualifiers="const"><return type="GameplayPredictionState" /><param index="0" name="object_id" type="int" /><description>Returns the current authoritative state.</description></method>
+		<method name="get_rejected_input_count" qualifiers="const"><return type="int" /><description>Returns the number of rejected commands.</description></method>
+		<method name="register_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="owner_peer_id" type="int" />
+			<param index="2" name="model" type="GameplayPredictionModel" />
+			<param index="3" name="initial_state" type="GameplayPredictionState" default="null" />
+			<description>Registers one authority-owned movement object.</description>
+		</method>
+		<method name="set_object_owner_peer_id"><return type="int" enum="Error" /><param index="0" name="object_id" type="int" /><param index="1" name="owner_peer_id" type="int" /><description>Rebinds authority to a new transport peer after a verified session reconnect.</description></method>
+		<method name="unregister_object"><return type="bool" /><param index="0" name="object_id" type="int" /><description>Removes an authority object.</description></method>
+	</methods>
+	<members>
+		<member name="max_inputs_per_second" type="int" setter="set_max_inputs_per_second" getter="get_max_inputs_per_second" default="120">Per-object accepted input limit in a one-second window.</member>
+		<member name="max_sequence_gap" type="int" setter="set_max_sequence_gap" getter="get_max_sequence_gap" default="32">Largest forward gap accepted to tolerate bounded packet loss.</member>
+	</members>
+</class>

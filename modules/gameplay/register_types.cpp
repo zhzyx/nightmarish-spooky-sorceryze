@@ -32,6 +32,9 @@
 
 #include "gameplay_entity.h"
 #include "gameplay_match.h"
+#include "gameplay_prediction.h"
+#include "gameplay_relevancy.h"
+#include "gameplay_replication.h"
 #include "gameplay_server.h"
 #include "gameplay_session.h"
 #include "gameplay_subsystem.h"
@@ -58,6 +61,22 @@ void initialize_gameplay_module(ModuleInitializationLevel p_level) {
 	GDREGISTER_CLASS(GameplayServerConfig);
 	GDREGISTER_CLASS(GameplayDedicatedServer);
 	GDREGISTER_CLASS(GameplaySessionClient);
+	GDREGISTER_CLASS(GameplayConnectionView);
+	GDREGISTER_CLASS(GameplayRelevancyObject);
+	GDREGISTER_CLASS(GameplayReplicationGraph);
+	GDREGISTER_CLASS(GameplayPredictionInput);
+	GDREGISTER_CLASS(GameplayPredictionState);
+	GDREGISTER_CLASS(GameplayPredictionModel);
+	GDREGISTER_CLASS(GameplayClientPrediction);
+	GDREGISTER_CLASS(GameplayServerPrediction);
+	GDREGISTER_CLASS(GameplayInterpolationBuffer);
+	GDREGISTER_CLASS(GameplayNetworkSimulator);
+	GDREGISTER_CLASS(GameplayNetworkPrediction);
+	GDREGISTER_CLASS(GameplayReplicationProperty);
+	GDREGISTER_CLASS(GameplayRPCConfig);
+	GDREGISTER_CLASS(GameplayReplicationState);
+	GDREGISTER_CLASS(GameplayReplicationFragmenter);
+	GDREGISTER_CLASS(GameplayMultiplayerReplication);
 }
 
 void uninitialize_gameplay_module(ModuleInitializationLevel p_level) {

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0381bbd09092615789d0f77b6a1095e45e16f378",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "flow-execute-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/246",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5e0a42d63e10eed37aeaff9f098c153d7623631071dc31c4d87a258f2775383e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/246",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/298",
+    "action": "delivery",
+    "detection_head": "035573f11d312681ec3e7e9bc2bfed462991be1b",
+    "context_sha256": "9f6db0754439f2d907af25a019ca7dc2ca905e8935bd53a9229dd88a95926d59",
+    "operator": "Sail-Li",
+    "worker": "codex-flow-release",
+    "authority_ref": "用户授权 #246 执行与发布",
+    "evidence": "Git push for the candidate failed to connect to github.com:443, exit 128; API readback showed no candidate ref. Verified ls-remote using the existing Windows proxy on the same account.",
+    "diagnosis": "Git HTTPS connectivity failed while the GitHub API remained reachable. Remote main advanced before signing could resume on the original head.",
+    "next_action": "Integrate current main, rerun checks, sign and read back a successor PR. Track original and successor receipts separately.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T19:48:00.992408+00:00",
+    "attempted": "Read branch and PR, retried original submission, reproduced Git transport failure, verified remote main via the configured system proxy.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Completed business checks and independent work remain available."
+  },
+  "occurred_at": "2026-11-06T19:55:18.590485+00:00",
+  "sha256": "42f38294d02b34619592f1ad026ff9479c0945ff5ccc428b038cd490d0717ca0"
+}

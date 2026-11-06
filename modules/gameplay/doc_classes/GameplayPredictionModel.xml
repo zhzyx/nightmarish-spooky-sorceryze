@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPredictionModel" inherits="Resource" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Fixed-step kinematic model shared by prediction and authority.</brief_description>
+	<description>
+		GameplayPredictionModel maps normalized movement intent directly to velocity and advances position for one fixed step. Running the same ordered commands from the same state produces the same result on client and server. Games can replace this bounded sample model instead of treating it as a general character or physics rollback system.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="simulate" qualifiers="const">
+			<return type="int" enum="Error" />
+			<param index="0" name="state" type="GameplayPredictionState" />
+			<param index="1" name="input" type="GameplayPredictionInput" />
+			<description>Validates and applies one command in place.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="fixed_step_msec" type="int" setter="set_fixed_step_msec" getter="get_fixed_step_msec" default="16">Required duration for every accepted input.</member>
+		<member name="max_speed" type="float" setter="set_max_speed" getter="get_max_speed" default="8.0">Movement speed for unit-length input.</member>
+	</members>
+</class>

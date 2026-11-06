@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayInterpolationBuffer" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Bounded, time-sorted buffer for remote movement snapshots.</brief_description>
+	<description>
+		GameplayInterpolationBuffer accepts out-of-order samples, orders them by server time, and linearly interpolates behind the latest time. With no sample it reports empty; with insufficient samples it holds a known state; after a long gap it deterministically reports stale_held without unbounded extrapolation.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_sample"><return type="int" enum="Error" /><param index="0" name="state" type="GameplayPredictionState" /><description>Inserts a finite sample by server time and evicts the oldest sample above the limit.</description></method>
+		<method name="clear"><return type="void" /><description>Removes all samples.</description></method>
+		<method name="get_sample_count" qualifiers="const"><return type="int" /><description>Returns the current bounded sample count.</description></method>
+		<method name="sample" qualifiers="const"><return type="Dictionary" /><param index="0" name="now_msec" type="int" /><description>Returns a status and, when available, a copied or interpolated state.</description></method>
+	</methods>
+	<members>
+		<member name="interpolation_delay_msec" type="int" setter="set_interpolation_delay_msec" getter="get_interpolation_delay_msec" default="100">Time kept behind the local clock when sampling.</member>
+		<member name="max_samples" type="int" setter="set_max_samples" getter="get_max_samples" default="32">Maximum retained remote snapshots.</member>
+		<member name="stale_after_msec" type="int" setter="set_stale_after_msec" getter="get_stale_after_msec" default="500">Gap after which the latest held state is reported stale.</member>
+	</members>
+</class>

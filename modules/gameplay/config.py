@@ -23,6 +23,22 @@ def get_doc_classes():
         "GameplayServerConfig",
         "GameplayDedicatedServer",
         "GameplaySessionClient",
+        "GameplayConnectionView",
+        "GameplayRelevancyObject",
+        "GameplayReplicationGraph",
+        "GameplayPredictionInput",
+        "GameplayPredictionState",
+        "GameplayPredictionModel",
+        "GameplayClientPrediction",
+        "GameplayServerPrediction",
+        "GameplayInterpolationBuffer",
+        "GameplayNetworkSimulator",
+        "GameplayNetworkPrediction",
+        "GameplayReplicationProperty",
+        "GameplayRPCConfig",
+        "GameplayReplicationState",
+        "GameplayReplicationFragmenter",
+        "GameplayMultiplayerReplication",
     ]
 
 

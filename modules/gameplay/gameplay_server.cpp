@@ -30,6 +30,9 @@
 
 #include "gameplay_server.h"
 
+#include "gameplay_prediction.h"
+#include "gameplay_replication.h"
+
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
@@ -178,10 +181,16 @@ void GameplayDedicatedServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_transport_peer_count"), &GameplayDedicatedServer::get_transport_peer_count);
 	ClassDB::bind_method(D_METHOD("get_session_manager"), &GameplayDedicatedServer::get_session_manager);
 	ClassDB::bind_method(D_METHOD("get_multiplayer_peer"), &GameplayDedicatedServer::get_multiplayer_peer);
+	ClassDB::bind_method(D_METHOD("set_replication", "replication"), &GameplayDedicatedServer::set_replication);
+	ClassDB::bind_method(D_METHOD("get_replication"), &GameplayDedicatedServer::get_replication);
+	ClassDB::bind_method(D_METHOD("set_prediction", "prediction"), &GameplayDedicatedServer::set_prediction);
+	ClassDB::bind_method(D_METHOD("get_prediction"), &GameplayDedicatedServer::get_prediction);
 
 	ADD_PROPERTY(PropertyInfo(Variant::CALLABLE, "authenticator"), "set_authenticator", "get_authenticator");
 	ADD_PROPERTY(PropertyInfo(Variant::CALLABLE, "admission_check"), "set_admission_check", "get_admission_check");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "is_running");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "replication", PROPERTY_HINT_NODE_TYPE, "GameplayMultiplayerReplication"), "set_replication", "get_replication");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "prediction", PROPERTY_HINT_NODE_TYPE, "GameplayNetworkPrediction"), "set_prediction", "get_prediction");
 
 	ADD_SIGNAL(MethodInfo("server_started", PropertyInfo(Variant::INT, "port")));
 	ADD_SIGNAL(MethodInfo("server_stopping"));
@@ -234,6 +243,12 @@ Error GameplayDedicatedServer::start(const Ref<GameplayServerConfig> &p_config, 
 	p_session_manager->set_accepting_connections(true);
 	multiplayer_peer->connect(SNAME("peer_connected"), callable_mp(this, &GameplayDedicatedServer::_peer_connected));
 	multiplayer_peer->connect(SNAME("peer_disconnected"), callable_mp(this, &GameplayDedicatedServer::_peer_disconnected));
+	if (GameplayMultiplayerReplication *replication = get_replication()) {
+		replication->configure_server(multiplayer_peer, p_session_manager);
+	}
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->configure_server(multiplayer_peer, p_session_manager);
+	}
 
 	Object *host = multiplayer_peer->call("get_host");
 	bound_port = host ? int(host->call("get_local_port")) : p_config->get_port();
@@ -271,6 +286,9 @@ void GameplayDedicatedServer::_peer_connected(int p_peer_id) {
 
 void GameplayDedicatedServer::_peer_disconnected(int p_peer_id) {
 	transport_peers.erase(p_peer_id);
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->peer_disconnected(p_peer_id);
+	}
 	GameplaySessionManager *manager = get_session_manager();
 	if (manager) {
 		manager->transport_disconnected(p_peer_id);
@@ -307,6 +325,16 @@ void GameplayDedicatedServer::_handle_packet(int p_peer_id, const Dictionary &p_
 	}
 	if (!manager->is_accepting_connections()) {
 		_reject_peer(p_peer_id, "server_not_accepting_connections");
+		return;
+	}
+	GameplayMultiplayerReplication *replication = get_replication();
+	if (replication && replication->handles_message(p_message)) {
+		replication->receive_packet(p_peer_id, p_message, OS::get_singleton()->get_ticks_msec());
+		return;
+	}
+	GameplayNetworkPrediction *prediction = get_prediction();
+	if (prediction && prediction->handles_message(p_message)) {
+		prediction->receive_packet(p_peer_id, p_message, OS::get_singleton()->get_ticks_msec());
 		return;
 	}
 	const String type = p_message.get("type", String());
@@ -418,6 +446,14 @@ Error GameplayDedicatedServer::poll() {
 		}
 		_handle_packet(peer_id, parsed);
 	}
+	if (GameplayMultiplayerReplication *replication = get_replication()) {
+		const uint64_t now = OS::get_singleton()->get_ticks_msec();
+		replication->expire_reassemblies(now);
+		replication->replicate(now);
+	}
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->poll(OS::get_singleton()->get_ticks_msec());
+	}
 	if (shutting_down && (transport_peers.is_empty() || OS::get_singleton()->get_ticks_msec() >= shutdown_deadline_msec)) {
 		_finish_shutdown();
 	}
@@ -457,6 +493,12 @@ void GameplayDedicatedServer::_finish_shutdown() {
 	}
 	if (multiplayer_peer.is_valid()) {
 		multiplayer_peer->close();
+	}
+	if (GameplayMultiplayerReplication *replication = get_replication()) {
+		replication->clear_transport();
+	}
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->clear_transport();
 	}
 	GameplaySessionManager *manager = get_session_manager();
 	if (manager) {
@@ -509,6 +551,28 @@ Ref<MultiplayerPeer> GameplayDedicatedServer::get_multiplayer_peer() const {
 	return multiplayer_peer;
 }
 
+void GameplayDedicatedServer::set_replication(GameplayMultiplayerReplication *p_replication) {
+	replication_id = p_replication ? p_replication->get_instance_id() : ObjectID();
+	if (p_replication && running && multiplayer_peer.is_valid()) {
+		p_replication->configure_server(multiplayer_peer, get_session_manager());
+	}
+}
+
+GameplayMultiplayerReplication *GameplayDedicatedServer::get_replication() const {
+	return Object::cast_to<GameplayMultiplayerReplication>(ObjectDB::get_instance(replication_id));
+}
+
+void GameplayDedicatedServer::set_prediction(GameplayNetworkPrediction *p_prediction) {
+	prediction_id = p_prediction ? p_prediction->get_instance_id() : ObjectID();
+	if (p_prediction && running && multiplayer_peer.is_valid()) {
+		p_prediction->configure_server(multiplayer_peer, get_session_manager());
+	}
+}
+
+GameplayNetworkPrediction *GameplayDedicatedServer::get_prediction() const {
+	return Object::cast_to<GameplayNetworkPrediction>(ObjectDB::get_instance(prediction_id));
+}
+
 GameplayDedicatedServer::~GameplayDedicatedServer() {
 	stop_now();
 }
@@ -525,11 +589,17 @@ void GameplaySessionClient::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_reconnect_token"), &GameplaySessionClient::get_reconnect_token);
 	ClassDB::bind_method(D_METHOD("get_rejection_reason"), &GameplaySessionClient::get_rejection_reason);
 	ClassDB::bind_method(D_METHOD("get_multiplayer_peer"), &GameplaySessionClient::get_multiplayer_peer);
+	ClassDB::bind_method(D_METHOD("set_replication", "replication"), &GameplaySessionClient::set_replication);
+	ClassDB::bind_method(D_METHOD("get_replication"), &GameplaySessionClient::get_replication);
+	ClassDB::bind_method(D_METHOD("set_prediction", "prediction"), &GameplaySessionClient::set_prediction);
+	ClassDB::bind_method(D_METHOD("get_prediction"), &GameplaySessionClient::get_prediction);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "state", PROPERTY_HINT_ENUM, "Transport Connected,Version Verified,Authenticated,Admitted,Player Created,Spawned,Disconnected,Rejected", PROPERTY_USAGE_NONE), "", "get_state");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "user_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_user_id");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "session_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_session_id");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "rejection_reason", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_rejection_reason");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "replication", PROPERTY_HINT_NODE_TYPE, "GameplayMultiplayerReplication"), "set_replication", "get_replication");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "prediction", PROPERTY_HINT_NODE_TYPE, "GameplayNetworkPrediction"), "set_prediction", "get_prediction");
 
 	ADD_SIGNAL(MethodInfo("state_changed", PropertyInfo(Variant::INT, "state")));
 }
@@ -562,6 +632,12 @@ Error GameplaySessionClient::connect_to_server(const String &p_address, int p_po
 	rejection_reason.clear();
 	state = GameplayConnection::STATE_DISCONNECTED;
 	version_sent = false;
+	if (GameplayMultiplayerReplication *replication = get_replication()) {
+		replication->configure_client(multiplayer_peer);
+	}
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->configure_client(multiplayer_peer);
+	}
 	return OK;
 }
 
@@ -617,15 +693,33 @@ Error GameplaySessionClient::poll() {
 		_send_message(request);
 	}
 	while (multiplayer_peer.is_valid() && multiplayer_peer->get_available_packet_count() > 0) {
+		const int sender_peer_id = multiplayer_peer->get_packet_peer();
 		const uint8_t *buffer = nullptr;
 		int size = 0;
 		if (multiplayer_peer->get_packet(&buffer, size) != OK) {
 			continue;
 		}
+		if (size > 4096) {
+			continue;
+		}
 		const Variant parsed = JSON::parse_string(String::utf8(reinterpret_cast<const char *>(buffer), size));
 		if (parsed.get_type() == Variant::DICTIONARY) {
-			_handle_message(parsed);
+			const Dictionary message = parsed;
+			GameplayMultiplayerReplication *replication = get_replication();
+			if (replication && replication->handles_message(message)) {
+				replication->receive_packet(sender_peer_id, message, OS::get_singleton()->get_ticks_msec());
+			} else if (GameplayNetworkPrediction *prediction = get_prediction(); prediction && prediction->handles_message(message)) {
+				prediction->receive_packet(sender_peer_id, message, OS::get_singleton()->get_ticks_msec());
+			} else {
+				_handle_message(message);
+			}
 		}
+	}
+	if (GameplayMultiplayerReplication *replication = get_replication()) {
+		replication->expire_reassemblies(OS::get_singleton()->get_ticks_msec());
+	}
+	if (GameplayNetworkPrediction *prediction = get_prediction()) {
+		prediction->poll(OS::get_singleton()->get_ticks_msec());
 	}
 	if (multiplayer_peer.is_valid() && multiplayer_peer->get_connection_status() == MultiplayerPeer::CONNECTION_DISCONNECTED && state != GameplayConnection::STATE_REJECTED) {
 		_set_state(GameplayConnection::STATE_DISCONNECTED);
@@ -635,6 +729,12 @@ Error GameplaySessionClient::poll() {
 
 void GameplaySessionClient::disconnect_from_server() {
 	if (multiplayer_peer.is_valid()) {
+		if (GameplayMultiplayerReplication *replication = get_replication()) {
+			replication->clear_transport();
+		}
+		if (GameplayNetworkPrediction *prediction = get_prediction()) {
+			prediction->clear_transport();
+		}
 		multiplayer_peer->close();
 		multiplayer_peer.unref();
 	}
@@ -674,6 +774,28 @@ String GameplaySessionClient::get_rejection_reason() const {
 
 Ref<MultiplayerPeer> GameplaySessionClient::get_multiplayer_peer() const {
 	return multiplayer_peer;
+}
+
+void GameplaySessionClient::set_replication(GameplayMultiplayerReplication *p_replication) {
+	replication_id = p_replication ? p_replication->get_instance_id() : ObjectID();
+	if (p_replication && multiplayer_peer.is_valid()) {
+		p_replication->configure_client(multiplayer_peer);
+	}
+}
+
+GameplayMultiplayerReplication *GameplaySessionClient::get_replication() const {
+	return Object::cast_to<GameplayMultiplayerReplication>(ObjectDB::get_instance(replication_id));
+}
+
+void GameplaySessionClient::set_prediction(GameplayNetworkPrediction *p_prediction) {
+	prediction_id = p_prediction ? p_prediction->get_instance_id() : ObjectID();
+	if (p_prediction && multiplayer_peer.is_valid()) {
+		p_prediction->configure_client(multiplayer_peer);
+	}
+}
+
+GameplayNetworkPrediction *GameplaySessionClient::get_prediction() const {
+	return Object::cast_to<GameplayNetworkPrediction>(ObjectDB::get_instance(prediction_id));
 }
 
 GameplaySessionClient::~GameplaySessionClient() {

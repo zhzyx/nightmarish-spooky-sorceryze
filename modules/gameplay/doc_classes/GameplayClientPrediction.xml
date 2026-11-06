@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayClientPrediction" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>Bounded owner prediction history with authoritative reconciliation.</brief_description>
+	<description>
+		GameplayClientPrediction numbers accepted local inputs and immediately simulates them. On an authority snapshot it discards confirmed history, restores the confirmed state, and replays only newer inputs. History and generation rate limits prevent unbounded client memory or input production.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="apply_authoritative_state">
+			<return type="Dictionary" />
+			<param index="0" name="state" type="GameplayPredictionState" />
+			<description>Reconciles to a non-stale confirmation and reports error, correction, replay, and remaining input counts. A confirmation newer than all local history establishes a reconnect baseline and advances the next local sequence.</description>
+		</method>
+		<method name="clear"><return type="void" /><description>Resets state, sequences, history, counters, and rejection information.</description></method>
+		<method name="get_correction_count" qualifiers="const"><return type="int" /><description>Returns the number of confirmations whose position error exceeded the threshold.</description></method>
+		<method name="get_last_confirmed_sequence" qualifiers="const"><return type="int" /><description>Returns the latest accepted authority confirmation.</description></method>
+		<method name="get_last_rejection_reason" qualifiers="const"><return type="String" /><description>Returns the latest local input or snapshot rejection reason.</description></method>
+		<method name="get_last_replayed_input_count" qualifiers="const"><return type="int" /><description>Returns how many unconfirmed commands the last reconciliation replayed.</description></method>
+		<method name="get_model" qualifiers="const"><return type="GameplayPredictionModel" /><description>Returns the movement model shared with the server.</description></method>
+		<method name="get_predicted_state" qualifiers="const"><return type="GameplayPredictionState" /><description>Returns the current owner-visible predicted state.</description></method>
+		<method name="get_unconfirmed_input_count" qualifiers="const"><return type="int" /><description>Returns the bounded history size.</description></method>
+		<method name="get_unconfirmed_inputs" qualifiers="const"><return type="Array" /><description>Returns inputs newer than the last confirmation in sequence order.</description></method>
+		<method name="predict_input">
+			<return type="GameplayPredictionInput" />
+			<param index="0" name="movement_input" type="Vector3" />
+			<param index="1" name="now_msec" type="int" />
+			<description>Creates, stores, and simulates the next command, or returns null when validation or a bound rejects it.</description>
+		</method>
+		<method name="set_initial_state"><return type="void" /><param index="0" name="state" type="GameplayPredictionState" /><description>Replaces the baseline and starts the next sequence after its confirmation.</description></method>
+		<method name="set_model"><return type="void" /><param index="0" name="model" type="GameplayPredictionModel" /><description>Sets the non-null movement model used for prediction and replay.</description></method>
+	</methods>
+	<members>
+		<member name="correction_threshold" type="float" setter="set_correction_threshold" getter="get_correction_threshold" default="0.001">Position error above which reconciliation counts as a correction. Reconciliation itself always uses authority.</member>
+		<member name="max_history" type="int" setter="set_max_history" getter="get_max_history" default="256">Maximum unconfirmed commands retained.</member>
+		<member name="max_inputs_per_second" type="int" setter="set_max_inputs_per_second" getter="get_max_inputs_per_second" default="120">Maximum locally generated inputs in a one-second window.</member>
+	</members>
+</class>

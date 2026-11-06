@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayReplicationGraph" inherits="RefCounted" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Server relevancy, spatial candidate, dormancy, and per-connection scheduling policy.
+	</brief_description>
+	<description>
+		Maintains authoritative connection views and object descriptors independently of ENet or another transport. Distance objects are indexed by a uniform three-dimensional grid; other policies use a nonspatial candidate set. [method plan_connection] applies exact policy, emits stable enter/leave sets, enforces update frequency and an estimated-byte budget, then orders due objects by base priority plus starvation credit and object ID. Selected IDs are handed to [GameplayMultiplayerReplication], which retains responsibility for property conditions, fragmentation, sender validation, and transport writes.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_connection">
+			<return type="int" enum="Error" />
+			<param index="0" name="view" type="GameplayConnectionView" />
+			<description>Copies a new authoritative connection view into the graph.</description>
+		</method>
+		<method name="add_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object" type="GameplayRelevancyObject" />
+			<description>Copies and indexes a new object descriptor.</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>Removes all connection, object, grid, schedule, and statistics state.</description>
+		</method>
+		<method name="get_connection_peer_ids" qualifiers="const">
+			<return type="Array" />
+			<description>Returns registered peer IDs in ascending order.</description>
+		</method>
+		<method name="get_last_plan_stats" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Returns the latest plan counts and byte statistics. [code]estimated_bytes[/code] is the current pass budget charge, [code]actual_bytes[/code] is the current pass's successful encoded transport bytes, and the [code]total_*[/code] fields accumulate only real sends and their configured estimates.</description>
+		</method>
+		<method name="get_relevant_object_ids" qualifiers="const">
+			<return type="Array" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Returns the connection's last exact relevant set in ascending order. Dormant objects remain relevant but are not scheduled.</description>
+		</method>
+		<method name="has_connection" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Returns whether a connection view exists.</description>
+		</method>
+		<method name="has_object" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="object_id" type="int" />
+			<description>Returns whether an object descriptor exists.</description>
+		</method>
+		<method name="is_object_dormant" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="object_id" type="int" />
+			<description>Returns whether scheduling is suspended for the object.</description>
+		</method>
+		<method name="notify_object_dirty">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="change_serial" type="int" />
+			<description>Wakes a dormant object only when the authoritative state serial is newer than the serial captured on entering dormancy.</description>
+		</method>
+		<method name="plan_connection">
+			<return type="Dictionary" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="now_msec" type="int" />
+			<description>Refreshes exact relevance and returns [code]entered[/code], [code]left[/code], [code]selected[/code], candidate/relevant/due/selected counts, the configured budget, and byte statistics. The caller must report each selected outcome with [method record_send_result].</description>
+		</method>
+		<method name="record_send_result">
+			<return type="int" enum="Error" />
+			<param index="0" name="peer_id" type="int" />
+			<param index="1" name="object_id" type="int" />
+			<param index="2" name="now_msec" type="int" />
+			<param index="3" name="actual_bytes" type="int" />
+			<param index="4" name="success" type="bool" />
+			<description>Commits successful pacing and measured encoded bytes, or adds starvation credit after failure. Transport adapters, rather than clients, call this method.</description>
+		</method>
+		<method name="remove_connection">
+			<return type="bool" />
+			<param index="0" name="peer_id" type="int" />
+			<description>Removes a connection view and its scheduling history.</description>
+		</method>
+		<method name="remove_object">
+			<return type="bool" />
+			<param index="0" name="object_id" type="int" />
+			<description>Removes an object from its index and all connection histories.</description>
+		</method>
+		<method name="set_object_dormant">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="dormant" type="bool" />
+			<param index="2" name="change_serial" type="int" default="0" />
+			<description>Starts or stops dormancy. When starting, captures the authoritative state serial used by dirty wake-up.</description>
+		</method>
+		<method name="set_object_owner_peer_id">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<param index="1" name="owner_peer_id" type="int" />
+			<description>Updates server-recorded gameplay ownership without changing network authority.</description>
+		</method>
+		<method name="update_connection">
+			<return type="int" enum="Error" />
+			<param index="0" name="view" type="GameplayConnectionView" />
+			<description>Replaces the copied position, team, and budget for an existing connection.</description>
+		</method>
+		<method name="update_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object" type="GameplayRelevancyObject" />
+			<description>Replaces and reindexes an existing descriptor while preserving dormancy.</description>
+		</method>
+		<method name="wake_object">
+			<return type="int" enum="Error" />
+			<param index="0" name="object_id" type="int" />
+			<description>Explicitly resumes scheduling for a dormant object.</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cell_size" type="float" setter="set_cell_size" getter="get_cell_size" default="100.0">
+			Uniform spatial grid cell edge length. Changing it rebuilds the object index.
+		</member>
+		<member name="max_spatial_distance" type="float" setter="set_max_spatial_distance" getter="get_max_spatial_distance" default="1000.0">
+			Maximum accepted distance-policy radius and connection query extent. This bounds ordinary-world candidate lookup; it is not a world streaming system.
+		</member>
+	</members>
+</class>
