@@ -23,6 +23,7 @@ func run():
 	var backend = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
+	chat.find_child("APIModel", true, false).text = "fixture"
 	chat.find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await panel.refresh()

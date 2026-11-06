@@ -248,7 +248,7 @@ bool AIChatDock::_direct_daqian_task() const {
 	const Dictionary entry = bindings.get(conversation_id, Dictionary());
 	const String request = entry.get("request_id", "");
 	const String number = entry.get("issue_number", "");
-	const String source = entry.get("source", "");
+	const String source = entry.get("issue_url", entry.get("source", ""));
 	return request.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request) && source.ends_with("/issues/" + number);
 }
 
@@ -1009,6 +1009,9 @@ void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id)
 	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
 	if (bindings.has(conversation_id)) {
 		Dictionary bound = bindings[conversation_id];
+		if (String(bound.get("issue_number", "")).to_int() != p_number || bound.get("request_id", "") != p_request_id) {
+			bound.erase("issue_url");
+		}
 		bound["issue_number"] = itos(p_number);
 		bound["request_id"] = p_request_id;
 		bindings[conversation_id] = bound;

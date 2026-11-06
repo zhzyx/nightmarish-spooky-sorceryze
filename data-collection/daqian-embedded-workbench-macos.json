@@ -1,0 +1,39 @@
+{
+  "issue_number": 218,
+  "request_id": "daqian-embedded-workbench-20261107",
+  "platform": "macOS arm64",
+  "signed_bundle_executable_sha256": "204f1282e0c4036c331610a8990af95d6e2420b5c6684a332169adc8020cdfe3",
+  "transport": "Isolated local model and work-order fixture, native editor and executed tool.",
+  "validated": [
+    "Workspace connection from an unbound board",
+    "Empty model opens the issue session inside Daqian",
+    "Inline HTTP settings, refresh model list, apply to the current issue and route",
+    "Start, read the approval node and anchored Markdown, confirm exactly once",
+    "Return to the bound conversation, send follow-up and receive reply, restore standalone chat"
+  ],
+  "native_approval": "DAQIAN_INLINE_APPROVAL_OK",
+  "regressions": [
+    {
+      "state": "passed",
+      "editor_sha256": "204f1282e0c4036c331610a8990af95d6e2420b5c6684a332169adc8020cdfe3",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "204f1282e0c4036c331610a8990af95d6e2420b5c6684a332169adc8020cdfe3",
+      "scenario": "publish",
+      "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "204f1282e0c4036c331610a8990af95d6e2420b5c6684a332169adc8020cdfe3",
+      "scenario": "direct",
+      "scope": "native editor to direct issue and Sinan admission subprocesses"
+    }
+  ],
+  "independent_native_probe": [
+    "Busy issue guard and restoration on standalone tab selection/host deletion",
+    "Account isolation, proven legacy history and draft promotion"
+  ]
+}
