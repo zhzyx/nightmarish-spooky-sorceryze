@@ -1,6 +1,7 @@
 @tool
 extends VBoxContainer
 
+signal workflow_reply_requested
 signal answer_requested(node_id: String, answer: String)
 signal debug_command(action: String, id: String, value: String)
 signal confirm_operation(token: String)
@@ -283,9 +284,12 @@ func _render_node(id: String, item: Dictionary) -> void:
 		if not recorded.is_empty() and not debug_active:
 			view.add_child(_label("已答复 · " + str(recorded.actor)))
 		else:
+			var send := Button.new()
+			send.disabled = str(answers.get(id, "")).strip_edges().is_empty()
 			var options: Array = request.get("options",[])
 			if not options.is_empty():
 				var choose := OptionButton.new()
+				choose.name = "ReplyInput"
 				choose.add_item("请选择")
 				for option in options:
 					choose.add_item(option)
@@ -293,18 +297,21 @@ func _render_node(id: String, item: Dictionary) -> void:
 						choose.select(choose.item_count-1)
 				choose.item_selected.connect(func(index):
 					answers[id] = choose.get_item_text(index) if index else ""
+					send.disabled = index == 0
 					draft_changed.emit())
 				view.add_child(choose)
 			else:
 				var answer := TextEdit.new()
+				answer.name = "ReplyInput"
 				answer.placeholder_text = "你的答复"
 				answer.text = answers.get(id,"")
 				answer.text_changed.connect(func():
 					answers[id] = answer.text
+					send.disabled = answer.text.strip_edges().is_empty()
 					draft_changed.emit())
 				answer.custom_minimum_size = Vector2(215,60)
 				view.add_child(answer)
-			var send := Button.new()
+			send.name = "SubmitReply"
 			send.text = "提交调试答复" if debug_active else "提交答复"
 			send.pressed.connect(func():
 				var value: String = answers.get(id,"")
@@ -639,6 +646,11 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	_add_state_row(view)
 	canvas.add_child(view)
 	_update_card(view)
+	if id.begins_with("wf-questions-") and workflow.get("phase") == "questions":
+		var reply := Button.new()
+		reply.text = "填写答复"
+		reply.pressed.connect(func(): workflow_reply_requested.emit())
+		view.add_child(reply)
 	if id == "wf-operation":
 		view.set_meta("ai_control_exclude", true)
 		if _node_state(id) == "awaiting_approval":

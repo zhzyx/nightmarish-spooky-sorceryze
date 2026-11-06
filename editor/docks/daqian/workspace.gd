@@ -16,7 +16,7 @@ var owner_filter: OptionButton
 var follow: SpinBox
 var board := {}
 var saved := {}
-var actions: HBoxContainer
+var actions: HFlowContainer
 var connection_button: Button
 var connection_panel := VBoxContainer.new()
 var workspace_path := LineEdit.new()
@@ -37,6 +37,8 @@ var watcher_buffer := ""
 var fresh_progress := false
 var refresh_pending := false
 var work_status := Label.new()
+var reply_button: Button
+var sending_answers := {}
 var operation_history := {}
 var flow_split := HSplitContainer.new()
 var details_panel := VBoxContainer.new()
@@ -71,7 +73,18 @@ var draft_menu: MenuButton
 var actor := {}
 var checking := false
 var offline := false
-var toolbar: HBoxContainer
+var toolbar: HFlowContainer
+var advanced_bar: HFlowContainer
+var advanced_button: Button
+var refresh_button: Button
+var empty_state: CenterContainer
+var empty_title: Label
+var empty_buttons: HBoxContainer
+var reset_filters: Button
+var empty_hint: Label
+var debug_start_button: Button
+var debug_stop_button: Button
+var debug_history_button: Button
 var return_button: Button
 var save_timer: Timer
 var picker_scope := ""
@@ -92,20 +105,13 @@ var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
 
 
 func _ready() -> void:
-	var row := HBoxContainer.new()
+	var row := HFlowContainer.new()
 	toolbar = row
 	add_child(row)
-	return_button = _button(row, "工单总图", _show_board)
-	_button(row, "新建需求", _compose_requirement)
-	draft_menu = MenuButton.new()
-	draft_menu.text = "个人草稿"
-	draft_menu.about_to_popup.connect(_list_drafts)
-	draft_menu.get_popup().id_pressed.connect(_restore_personal)
-	row.add_child(draft_menu)
-	_button(row, "刷新", refresh)
-	connection_button = _button(row, "工作区连接", _open_connection)
+	return_button = _button(row, "← 工单总图", _show_board)
+	_button(row, "＋ 新建需求", _compose_requirement)
 	search = LineEdit.new()
-	search.placeholder_text = "搜索编号或标题"
+	search.placeholder_text = "搜索工单编号或标题"
 	search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	search.text_changed.connect(func(_text): _filter_board())
 	row.add_child(search)
@@ -113,36 +119,64 @@ func _ready() -> void:
 	pending_menu.text = "待办"
 	pending_menu.get_popup().id_pressed.connect(_locate_pending)
 	row.add_child(pending_menu)
+	connection_button = _button(row, "工作区连接", _open_connection)
+	refresh_button = _button(row, "刷新", refresh)
+	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
+	advanced_bar = HFlowContainer.new()
+	advanced_bar.hide()
+	add_child(advanced_bar)
+	draft_menu = MenuButton.new()
+	draft_menu.text = "个人草稿"
+	draft_menu.about_to_popup.connect(_list_drafts)
+	draft_menu.get_popup().id_pressed.connect(_restore_personal)
+	advanced_bar.add_child(draft_menu)
 	status = OptionButton.new()
+	status.tooltip_text = "按工单状态筛选"
 	status.item_selected.connect(func(_index): _filter_board())
-	row.add_child(status)
+	advanced_bar.add_child(status)
 	owner_filter = OptionButton.new()
+	owner_filter.tooltip_text = "按负责人筛选"
 	owner_filter.item_selected.connect(func(_index): _filter_board())
-	row.add_child(owner_filter)
+	advanced_bar.add_child(owner_filter)
+	var follow_label := Label.new()
+	follow_label.text = "跟进 #"
+	advanced_bar.add_child(follow_label)
 	follow = SpinBox.new()
 	follow.min_value = 1
 	follow.max_value = 99999999
 	follow.tooltip_text = "要主动跟进的工单编号"
-	row.add_child(follow)
-	_button(row, "跟进", _follow)
+	advanced_bar.add_child(follow)
+	_button(advanced_bar, "跟进工单", _follow)
 	notice = Label.new()
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(notice)
+	notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var notice_panel := PanelContainer.new()
+	var notice_style := StyleBoxFlat.new()
+	notice_style.bg_color = get_theme_color("base_color", "Editor")
+	notice_style.border_color = get_theme_color("accent_color", "Editor")
+	notice_style.border_width_left = 3
+	notice_style.content_margin_left = 12
+	notice_style.content_margin_top = 7
+	notice_style.content_margin_bottom = 7
+	notice_panel.add_theme_stylebox_override("panel", notice_style)
+	notice_panel.add_child(notice)
+	add_child(notice_panel)
 	work_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	work_status.hide()
 	add_child(work_status)
-	actions = HBoxContainer.new()
-	add_child(actions)
+	actions = HFlowContainer.new()
+	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(actions)
 	_button(actions, "仅推演", _chat_action.bind("preview"))
 	publish_button = _button(actions, "发布需求…", _publish_or_follow)
 	_build_publish_dialog()
 	_build_clarification_dialog()
-	_button(actions, "推进模型", _open_issue_conversation)
-	_button(actions, "关联对话", _chat_action.bind("discuss"))
+	reply_button = _button(actions, "答复问题", _respond_to_wait)
+	_button(actions, "工单对话与模型", _open_issue_conversation)
 	_build_workbench()
-	_button(actions, "调试运行", _start_debug)
-	_button(actions, "结束调试", _stop_debug)
-	_button(actions, "调试记录", _show_debug_history)
+	debug_start_button = _button(actions, "调试运行", _start_debug)
+	debug_stop_button = _button(actions, "结束调试", _stop_debug)
+	debug_history_button = _button(actions, "调试记录", _show_debug_history)
 	history_dialog = AcceptDialog.new()
 	history_dialog.title = "此工单的本机调试记录"
 	history_view = TextEdit.new()
@@ -164,6 +198,35 @@ func _ready() -> void:
 	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
+	empty_state = CenterContainer.new()
+	empty_state.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var empty_content := VBoxContainer.new()
+	empty_content.alignment = BoxContainer.ALIGNMENT_CENTER
+	empty_state.add_child(empty_content)
+	empty_title = Label.new()
+	empty_title.text = "这里还没有在途工单"
+	empty_title.add_theme_font_size_override("font_size", 24)
+	empty_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	empty_content.add_child(empty_title)
+	empty_hint = Label.new()
+	empty_hint.text = "创建需求，或跟进已有工单，开始查看流程。"
+	empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	empty_content.add_child(empty_hint)
+	empty_buttons = HBoxContainer.new()
+	empty_buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	empty_content.add_child(empty_buttons)
+	_button(empty_buttons, "新建需求", _compose_requirement)
+	_button(empty_buttons, "跟进已有工单", func():
+		advanced_bar.show()
+		advanced_button.text = "收起筛选 ▴"
+		follow.get_line_edit().grab_focus())
+	reset_filters = _button(empty_content, "清除筛选", func():
+		status.select(0)
+		owner_filter.select(0)
+		search.clear()
+		_filter_board())
+	empty_state.hide()
+	add_child(empty_state)
 	editor = graph_script.new()
 	editor.rules = rules
 	editor.visible = false
@@ -177,6 +240,7 @@ func _ready() -> void:
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
+	editor.workflow_reply_requested.connect(_respond_to_wait)
 	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(flow_split)
 	flow_split.add_child(editor)
@@ -590,7 +654,11 @@ func _show_board() -> void:
 	editor.hide()
 	flow_split.hide()
 	actions.hide()
-	overview.show()
+	search.show()
+	pending_menu.show()
+	advanced_button.show()
+	advanced_bar.hide()
+	advanced_button.text = "筛选与跟进 ▾"
 	return_button.hide()
 	_draw_board()
 
@@ -645,7 +713,7 @@ func _draw_board() -> void:
 		if needs_approval:
 			label.text = "待你确认"
 			overview.mark_card(card, label, "awaiting_approval")
-		if item.decision or needs_approval:
+		if item.decision or needs_approval or _has_routing_questions(item):
 			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		var detail := VBoxContainer.new()
@@ -675,6 +743,7 @@ func _draw_board() -> void:
 			if by_url.has(dep):
 				overview.connect_flow(by_url[dep], 0, by_url[item.url], 0)
 	pending_menu.text = "待办 (%d)" % waiting_inputs
+	pending_menu.disabled = waiting_inputs == 0
 	var dock := get_parent() as EditorDock
 	if dock:
 		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
@@ -683,7 +752,8 @@ func _draw_board() -> void:
 	_fill_filter(status, statuses)
 	_fill_filter(owner_filter, owners)
 	_filter_board()
-	notice.text = "已核实 %s · %s 个工单" % [board.verified_at,rows.size()] if board.has("verified_at") else "跟进工单或创建需求以开始"
+	if current.is_empty():
+		notice.text = "已核实 %s · %s 个工单" % [board.verified_at,rows.size()] if board.has("verified_at") else "跟进工单或创建需求以开始"
 
 
 func _zoom_detail() -> void:
@@ -734,9 +804,12 @@ func _layout_board() -> void:
 
 func _locate_pending(number: int) -> void:
 	for item in board.get("issues", []):
-		if item.number == number and not _pending_operation(item).is_empty():
+		if item.number != number:
+			continue
+		if item.get("pending_count", 0) > 0 or item.status == "needs-decision" or not _pending_operation(item).is_empty() or _has_routing_questions(item):
 			await _open_issue(item)
-			_focus_operation()
+			if current == item.url:
+				await _respond_to_wait()
 			return
 	_show_board()
 	status.select(0)
@@ -761,15 +834,37 @@ func _fill_filter(control: OptionButton, values: Array) -> void:
 func _filter_board() -> void:
 	if not is_instance_valid(status) or not is_instance_valid(owner_filter):
 		return
+	var shown := 0
 	for item in board.get("issues", []):
 		var node := overview.get_node_or_null(NodePath("i_" + str(item.number))) as GraphNode
 		if not node:
 			continue
 		var query := search.text.strip_edges().to_lower().trim_prefix("#")
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
-		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and (item.decision or not _pending_operation(item).is_empty())) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
+		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and (item.decision or _has_routing_questions(item) or not _pending_operation(item).is_empty())) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
+		if node.visible:
+			shown += 1
 
 	overview.refresh_wires()
+	if current.is_empty() and not actor.is_empty():
+		empty_buttons.visible = board.get("issues", []).is_empty()
+		reset_filters.visible = not empty_buttons.visible
+		empty_state.visible = shown == 0
+		overview.visible = shown > 0
+		empty_title.text = "这里还没有在途工单" if board.get("issues", []).is_empty() else "没有匹配的工单"
+		empty_hint.text = "创建需求，或跟进已有工单，开始查看流程。" if board.get("issues", []).is_empty() else "调整搜索或筛选条件，再查看工单总图。"
+
+
+func _toggle_advanced() -> void:
+	advanced_bar.visible = not advanced_bar.visible
+	advanced_button.text = "收起筛选 ▴" if advanced_bar.visible else "筛选与跟进 ▾"
+
+
+func _sync_debug_actions() -> void:
+	var active := debug_sessions.has(current)
+	debug_start_button.visible = not active
+	debug_stop_button.visible = active
+	debug_history_button.visible = not saved.get("debug_receipts", {}).get(current, []).is_empty()
 
 
 func _follow() -> void:
@@ -785,10 +880,17 @@ func _follow() -> void:
 
 func _gate_visibility(opened: bool) -> void:
 	for child in toolbar.get_children():
-		child.visible = opened or child == connection_button or child is Button and child.text == "刷新"
+		child.visible = opened or child == refresh_button or child == connection_button
 	return_button.visible = opened and not current.is_empty()
+	search.visible = opened and current.is_empty()
+	pending_menu.visible = opened and current.is_empty()
+	advanced_button.visible = opened and current.is_empty()
+	advanced_bar.visible = opened and current.is_empty() and advanced_bar.visible
 	actions.visible = opened and not current.is_empty() and not conversation.visible
-	overview.visible = opened and current.is_empty()
+	overview.visible = opened and current.is_empty() and not board.get("issues", []).is_empty()
+	empty_state.visible = opened and current.is_empty() and board.get("issues", []).is_empty()
+	if opened and current.is_empty():
+		_filter_board()
 	editor.visible = opened and not current.is_empty()
 	flow_split.visible = editor.visible and not conversation.visible
 	if not opened:
@@ -915,6 +1017,8 @@ func refresh() -> void:
 			await get_tree().process_frame
 		return
 	checking = true
+	refresh_button.disabled = true
+	refresh_button.text = "刷新中…"
 	var root := _repo()
 	if actor.is_empty() or picker_scope != root:
 		_gate_visibility(false)
@@ -934,6 +1038,8 @@ func refresh() -> void:
 	if root != _repo():
 		_forget("工作区已切换")
 		checking = false
+		refresh_button.disabled = false
+		refresh_button.text = "刷新"
 		refresh.call_deferred()
 		return
 	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
@@ -959,6 +1065,8 @@ func refresh() -> void:
 			settings.set_project_metadata("daqian_access",_access_key(),{})
 			_forget(str(value.get("error","当前账号的仓库协作身份未核实")))
 	checking = false
+	refresh_button.disabled = false
+	refresh_button.text = "刷新"
 	if refresh_pending:
 		refresh_pending = false
 		refresh.call_deferred()
@@ -1037,10 +1145,11 @@ func _open_issue(item: Dictionary) -> void:
 	var plan: Dictionary = item.get("plan", rules.new_plan()).duplicate(true)
 	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":plan.nodes.get("requirement", {}).get("value", item.title)}
 	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":item.get("node_states", {}).duplicate()}
-	if item.decision:
+	if item.status == "needs-decision" and item.get("questions", {}).is_empty():
 		plan.nodes["decision"] = {"kind":"question","title":"待决定","value":""}
 		plan.edges.append({"from":"requirement","to":"decision","kind":"after"})
 		ctx.protected_nodes.append("decision")
+	ctx.questions = item.get("questions", {}).duplicate(true)
 	ctx.protected_edges = plan.edges.duplicate(true)
 	var snapshot := {"revision":item.updated,"plan":plan,"context":ctx}
 	selection_epoch += 1
@@ -1082,7 +1191,7 @@ func _open_issue(item: Dictionary) -> void:
 			editor.refresh_states()
 		_queue_save()
 	if live.has("source_mode"):
-		notice.text = item.url + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
+		notice.text = "#%s · %s" % [item.number, item.title] + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
 	if live.has("error"):
 		notice.text = str(live.error) + " · 显示最近工单快照"
 
@@ -1165,7 +1274,9 @@ func _build_clarification_dialog() -> void:
 	clarification_answer.text_changed.connect(func(): clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty() or clarification_answer.text.length() > 4000)
 	clarification_dialog.confirmed.connect(func():
 		if clarification_binding == _direct_binding() and _routing_receipt(clarification_binding).get("questions", []) == clarification_questions:
-			_judge_requirement(clarification_binding, clarification_answer.text, true))
+			_judge_requirement(clarification_binding, clarification_answer.text, true)
+		else:
+			notice.text = "工单或问题已更新，请重新打开「补充需求」核对后提交。")
 	add_child(clarification_dialog)
 
 
@@ -1288,6 +1399,17 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 		notice.text = "工单已更新，请重新确认。"
 		return
 	var url: String = binding.url
+	if _has_routing_questions(binding) and not saved.get("direct_started", {}).has(binding.url):
+		var decision := _routing_receipt(binding)
+		clarification_prompt.text = "\n".join(PackedStringArray(decision.questions))
+		if clarification_binding != binding or clarification_questions != decision.questions:
+			clarification_answer.text = ""
+		clarification_questions = decision.questions.duplicate()
+		clarification_binding = binding.duplicate(true)
+		clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty()
+		clarification_dialog.popup_centered_clamped(Vector2i(480, 300))
+		clarification_answer.grab_focus()
+		return
 	if not is_instance_valid(chat):
 		notice.text = "无法取得共工 AI 对话入口"
 		return
@@ -1312,15 +1434,7 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 		if decision.is_empty():
 			await _judge_requirement(binding, "", true)
 			return
-		if not decision.ready:
-			clarification_prompt.text = "\n".join(PackedStringArray(decision.questions))
-			if clarification_binding != binding or clarification_questions != decision.questions:
-				clarification_answer.text = ""
-			clarification_questions = decision.questions.duplicate()
-			clarification_binding = binding.duplicate(true)
-			clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty()
-			clarification_dialog.popup_centered_clamped(Vector2i(480, 300))
-			return
+
 	var message := "" if started else "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
 	if not started:
 		if starting_direct.has(url):
@@ -1593,9 +1707,23 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	publish_button.visible = id.begins_with("draft_")
 	publish_button.text = "查看分析进度" if saved.get("submitted", {}).has(id) or saved.get("linked", {}).has(id) else "发布需求…"
 	_update_direct_action()
+	_sync_debug_actions()
 	overview.hide()
+	empty_state.hide()
+	search.hide()
+	pending_menu.hide()
+	advanced_button.hide()
+	advanced_bar.hide()
 	return_button.show()
-	notice.text = id if id.begins_with("https://") else "个人需求草稿"
+	notice.text = "个人需求草稿"
+	notice.tooltip_text = ""
+	if id.begins_with("https://"):
+		notice.text = "工单 #" + id.get_file()
+		notice.tooltip_text = id
+		for item in board.get("issues", []):
+			if item.url == id and not str(item.get("title", "")).is_empty():
+				notice.text += " · " + str(item.title)
+				break
 
 
 func _update_direct_action() -> void:
@@ -1786,6 +1914,52 @@ func _chat_work_event(root: String, binding: Dictionary, worker: String, kind: S
 		return
 
 
+func _has_routing_questions(item: Dictionary) -> bool:
+	return item.get("status") == "planned" and not item.get("closed", false) and not _routing_receipt(item).get("questions", []).is_empty()
+
+
+func _next_question() -> String:
+	if editor.debug_active:
+		for id in debug_states:
+			if debug_states[id].get("state") == "waiting" and editor.draft.nodes.get(id, {}).get("kind") == "question":
+				return id
+		return ""
+	for id in editor.context.get("questions", {}):
+		if not editor.context.get("answers", {}).has(id) and editor.draft.nodes.has(id):
+			return id
+	return ""
+
+
+func _respond_to_wait() -> void:
+	var item := _conversation_binding()
+	var pending := _pending_operation(item)
+	if not pending.is_empty():
+		_show_operation_details(pending.token)
+		return
+	if _has_routing_questions(item) and not _direct_binding().is_empty():
+		await _start_or_view_direct(_direct_binding())
+		return
+	# A linked draft has a private graph. Submit structured answers only on the canonical issue.
+	if item.has("url") and current != item.url and item.get("pending_count", 0) > 0:
+		await _open_issue(item)
+		if current != item.url:
+			return
+	var id := _next_question()
+	if not id.is_empty() and not item.get("closed", false) and item.get("status") != "planned":
+		var card := editor.canvas.get_node_or_null(NodePath(id)) as GraphNode
+		if card:
+			var field := card.get_node_or_null("ReplyInput") as Control
+			if not field:
+				field = card.get_node_or_null("PickImage") as Control
+			if field:
+				editor.canvas.scroll_offset = (card.position_offset + card.size * 0.5) * editor.canvas.zoom - editor.canvas.size * 0.5
+				card.selected = true
+				field.grab_focus()
+				notice.text = str(editor.context.get("questions", {}).get(id, {}).get("prompt", editor.draft.nodes[id].get("value", "请填写答复")))
+				return
+	await _open_issue_conversation()
+
+
 func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 	var url: String = item.get("url", "")
 	if item.get("closed", false):
@@ -1807,9 +1981,9 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 		else:
 			names.append(role + (" · " + step if step != "chat" else ""))
 	if not names.is_empty():
-		return {"state":"running", "text":"正在工作 · " + "、".join(names + waiting)}
+		return {"state":"running", "text":"正在工作 · " + "、".join(names + waiting), "chat_waiting":not waiting.is_empty()}
 	if not waiting.is_empty():
-		return {"state":"waiting", "text":"、".join(waiting)}
+		return {"state":"waiting", "text":"、".join(waiting), "chat_waiting":true}
 	if routing_in_flight.has(key):
 		return {"state":"running", "text":"大千宿主 · 正在核对需求判断"}
 	if routing_errors.has(key) and judged.is_empty():
@@ -1899,6 +2073,12 @@ func _sync_workflow() -> void:
 		operation = {}
 	if not details_token.is_empty() and details_token != pending.get("token", ""):
 		_close_operation_details()
+	reply_button.visible = not item.get("closed", false) and (phase in ["questions", "blocked"] or progress.get("chat_waiting", false) or not pending.is_empty() or (item.get("status") != "planned" and not _next_question().is_empty()))
+	if direct and _has_routing_questions(item) and pending.is_empty():
+		reply_button.hide()
+	reply_button.text = "查看待确认操作" if not pending.is_empty() else ("讨论阻塞原因" if phase == "blocked" and _next_question().is_empty() else "答复问题")
+	if progress.get("chat_waiting", false) and pending.is_empty() and _next_question().is_empty():
+		reply_button.text = "进入待处理对话"
 	work_status.visible = not progress.is_empty()
 	if work_status.visible:
 		work_status.text = "当前工作者　" + str(progress.text)
@@ -1995,16 +2175,26 @@ func _preview_received(source: String, text: String) -> void:
 
 
 func _answer_question(id: String, answer: String) -> void:
-	if not await _fresh_access():
+	var target := current
+	var revision: String = editor.revision
+	var epoch := selection_epoch
+	var session: String = debug_sessions.get(target, {}).get("instance", "")
+	var key := [target, revision, session, id]
+	if sending_answers.has(key):
+		return
+	sending_answers[key] = true
+	notice.text = "正在核对身份并提交答复…"
+	var verified := await _fresh_access()
+	if not verified or current != target or selection_epoch != epoch or editor.revision != revision or session != debug_sessions.get(target, {}).get("instance", ""):
+		sending_answers.erase(key)
 		return
 	if debug_sessions.has(current):
-		_debug_command("answer",id,answer)
+		_debug_command("answer", id, answer)
+		sending_answers.erase(key)
 		return
-	if not editor.draft.nodes.has(id):
-		return
-	var target := current
-	var response: Dictionary = await _graph_command(target,"answer",{"revision":editor.revision,"node":id,"value":answer})
-	if current != target:
+	var response: Dictionary = await _graph_command(target, "answer", {"revision":revision, "node":id, "value":answer})
+	sending_answers.erase(key)
+	if current != target or epoch != selection_epoch:
 		return
 	if not response.get("ok",false):
 		notice.text = str(response.get("error","未收到答复回执，草稿已保留"))
@@ -2016,6 +2206,7 @@ func _answer_question(id: String, answer: String) -> void:
 			item.decision = item.pending_count>0
 	_draw_board()
 	editor.answers.erase(id)
+	_sync_workflow()
 	editor.draw_graph()
 	_save()
 	notice.text = "已按当前协作者身份记录答复 · " + id
@@ -2099,6 +2290,7 @@ func _start_debug() -> void:
 	_select_debug(target)
 	editor.debug_active = true
 	editor.draw_graph()
+	_sync_debug_actions()
 	debug_timer.start()
 	notice.text = "调试运行 · 仅使用本机协议夹具"
 
@@ -2140,6 +2332,10 @@ func _debug_update() -> void:
 				_queue_save()
 				if current == target:
 					editor.set_debug_state(event)
+					_sync_debug_actions()
+					if editor.debug_active:
+						reply_button.visible = not _next_question().is_empty()
+						reply_button.text = "答复调试问题"
 		elif event is Dictionary and event.has("error"):
 			notice.text = event.error
 		elif event is Dictionary and event.get("idle",false) and int(event.get("serial",-1)) == debug_serial:
@@ -2177,6 +2373,8 @@ func _stop_debug(redraw := true, all_issues := false) -> void:
 		editor.debug_states = debug_states.duplicate(true)
 		if redraw and editor.is_inside_tree():
 			editor.draw_graph()
+	if is_instance_valid(debug_start_button):
+		_sync_debug_actions()
 
 func _show_debug_history() -> void:
 	if actor.is_empty():
