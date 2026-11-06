@@ -1,3 +1,4 @@
+import importlib
 import json
 import sys
 import tempfile
@@ -5,10 +6,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import board
-
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/godot-host/daqian"))
+board = importlib.import_module("board")
 
 
 class BoardProjection(unittest.TestCase):
