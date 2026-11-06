@@ -5,6 +5,19 @@ import os from 'node:os';
 import path from 'node:path';
 import {repositoryWorker, advance} from './session.mjs';
 
+test('backfill intake failure preserves the original verified release', async () => {
+  const events = [];
+  const host = {reconcile:async()=>{events.push('released');return {state:'released'};},
+    run:async()=>assert.fail('work started after failed intake')};
+  const intake = async()=>{events.push('intake');throw Error('backfill issue closed');};
+  const config = {requests:[{ticket:'backfill'}],event:{type:'execution.finished',reference:'actual'}};
+  await assert.rejects(advance({...config,action:'reconcile'},host,{},intake),/issue closed/);
+  assert.deepEqual(events,['released','intake']);
+  events.length = 0;
+  await assert.rejects(advance(config,host,{},intake),/issue closed/);
+  assert.deepEqual(events,['intake']);
+});
+
 test('real verifier process and durable terminal match without native host callbacks', async t => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(),'repository-worker-'));
   t.after(() => fs.rmSync(dir,{recursive:true,force:true}));

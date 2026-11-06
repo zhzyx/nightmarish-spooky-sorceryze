@@ -1,0 +1,16 @@
+{
+  "issue_number": 239,
+  "request_id": "all-writers-framework-authority",
+  "tests": {
+    "github_blocker_routing": 20,
+    "writer_submit": 2,
+    "issue_workorder_suite": 91,
+    "node_dispatch_and_sinan": 63
+  },
+  "scope": "new and revoked writer roles, repository-scoped authorization; second-device validation tracked by #160",
+  "read_only_production_check": {
+    "workflow_run": 42266412195,
+    "verified_pr": 230,
+    "original_issue": 209
+  }
+}
