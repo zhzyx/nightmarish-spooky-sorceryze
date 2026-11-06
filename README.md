@@ -2,6 +2,17 @@
 
 [按平台查找共工接入子模块](customizations/platforms/README.md)
 
+## 轻量克隆共工框架与工单资料
+
+查阅框架、设计、谛听事件和来源回执时，可以只下载当前主线的相关目录。在新目录运行以下命令（需要 Git）：
+
+```sh
+git clone --depth 1 --single-branch --branch main --filter=blob:none --sparse https://github.com/zhzyx/nightmarish-spooky-sorceryze.git GongGong
+git -C GongGong sparse-checkout set framework customizations design-docs data-collection gonggong-diting-data tools
+```
+
+需要查阅退役的谛听原始记录时，运行 `git -C GongGong sparse-checkout add olympus-hermes-data`。需要查看完整主线历史或进行工单开发时，依次运行 `git -C GongGong fetch --unshallow origin main` 和 `git -C GongGong sparse-checkout disable`。首次取回省略的内容需要连接远端。[占用实测和历史文件恢复](design-docs/history-storage-20261107.md)
+
 当前版本和准入以 [框架登记表](framework/framework-manifest.json) 及其指向的逐项批准为准。0.10.0 的批准绑定五个 Agent 和工单协调技能；框架发现页开头保留的 0.9.2 字样属于旧版说明。
 
 
