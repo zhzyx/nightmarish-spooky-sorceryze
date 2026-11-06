@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-executor-codex-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-02-executor-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T00:15:30.014Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/143",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261106",
+    "origin": "external-authorized-host",
+    "definition_sha256": "4d1fc81cd1f9968b1b6e2783edec776c955352344ae0567c568136069d5cf8b6"
+  },
+  "payload": {
+    "request": "按已验收依赖接续#143持久工作流执行器",
+    "dependency": {
+      "issue": 142,
+      "pr": 161,
+      "main_commit": "fe4a8d3a80bde5413e330e9139d514103e225d81",
+      "state": "closed_completed"
+    },
+    "worker": "/root/sinan_359f40b2937fa9c1",
+    "dispatch_receipt": "1574e81e9126c8555bff8a2b1ed2e913b9942abc824932c8b24a0b85a9457d43",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "issue_number": 143
+}
