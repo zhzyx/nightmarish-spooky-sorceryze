@@ -273,19 +273,23 @@ func _render_node(id: String, item: Dictionary) -> void:
 		input.custom_minimum_size = Vector2(215, 78)
 		input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		input.placeholder_text = "任务说明" if item.kind == "task" else "输入文字"
-		input.name = "PlanText"
-		input.text = item.get("value","")
+		input.name = "PlanContent"
+		input.text = request.get("prompt", item.get("value","")) if item.kind == "question" else item.get("value","")
 		input.text_changed.connect(func():
 			draft.nodes[id].value = input.text
 			draft_changed.emit())
 		view.add_child(input)
-	if item.kind == "question" and (debug_active or issue_id.begins_with("https://")):
+	if item.kind == "question" and (debug_active or not request.is_empty()):
 		if not recorded.is_empty() and not debug_active:
-			view.add_child(_label("已答复 · " + str(recorded.actor)))
-		else:
+			var receipt := _label("已答复 · %s\n%s" % [recorded.actor, recorded.value])
+			receipt.custom_minimum_size.x = 215
+			receipt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			view.add_child(receipt)
+		elif debug_active or context.get("can_answer", false):
 			var options: Array = request.get("options",[])
 			if not options.is_empty():
 				var choose := OptionButton.new()
+				choose.name = "AnswerInput"
 				choose.add_item("请选择")
 				for option in options:
 					choose.add_item(option)
@@ -297,6 +301,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 				view.add_child(choose)
 			else:
 				var answer := TextEdit.new()
+				answer.name = "AnswerInput"
 				answer.placeholder_text = "你的答复"
 				answer.text = answers.get(id,"")
 				answer.text_changed.connect(func():
@@ -379,8 +384,11 @@ func _render_node(id: String, item: Dictionary) -> void:
 				button.pressed.connect(func(): set_image(id,clipboard_image.call()))
 			view.add_child(button)
 		if request.get("kind") == "image":
-			view.add_child(_label(str(request.prompt).left(36)))
-			if recorded.is_empty():
+			var prompt := _label(request.prompt)
+			prompt.custom_minimum_size.x = 215
+			prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			view.add_child(prompt)
+			if recorded.is_empty() and (debug_active or context.get("can_answer", false)):
 				var submit := Button.new()
 				submit.text = "提交图片"
 				submit.pressed.connect(func():
@@ -438,7 +446,6 @@ func _node_state(id: String) -> String:
 			if phase == "cancelled": return "cancelled"
 			if workflow.get("analyzed", false) or workflow.get("routing", {}).get("ready", false): return "completed"
 		"wf-blocked": return "blocked"
-		"decision": return "needs-decision"
 	return "pending"
 
 
@@ -453,14 +460,14 @@ func _update_card(view: GraphNode) -> void:
 	canvas.mark_card(view, label, state, suffix)
 	var id := String(view.name)
 	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
-	for field in ["PlanText", "Caption"]:
+	for field in ["PlanContent", "Caption"]:
 		if view.has_node(NodePath(field)):
 			view.get_node(NodePath(field)).editable = not locked
 	if view.has_node("PlanModel"):
 		view.get_node("PlanModel").disabled = locked
 		view.get_node("Attach").visible = not locked
 	if view.has_node("PickImage"):
-		var disabled: bool = locked and (not context.get("questions", {}).has(id) or context.get("answers", {}).has(id))
+		var disabled: bool = locked and (not context.get("can_answer", false) or not context.get("questions", {}).has(id) or context.get("answers", {}).has(id))
 		view.get_node("PickImage").disabled = disabled
 		view.get_node("PasteImage").disabled = disabled
 
@@ -582,7 +589,7 @@ func _display_plan() -> Dictionary:
 		var entries: Dictionary = {}
 		for id in source_nodes:
 			var node: Dictionary = source_nodes[id]
-			if node.title == titles[field] or (field == "questions" and item.get("questions", {}).has(id)):
+			if node.title == titles[field] or (field == "scope" and node.title == "范围与验收") or (field == "questions" and item.get("questions", {}).has(id)):
 				var value: String = str(item.get("questions", {}).get(id, {}).get("prompt", node.value))
 				entries[value] = id
 		var values: Array = design.get(field, entries.keys())
@@ -622,6 +629,24 @@ func _display_plan() -> Dictionary:
 	return plan
 
 
+func focus_flow_node(id: String) -> void:
+	var card := canvas.get_node_or_null(NodePath(id)) as GraphNode
+	if card:
+		canvas.scroll_offset = (card.position_offset + card.size * 0.5) * canvas.zoom - canvas.size * 0.5
+		card.selected = true
+		var field := card.get_node_or_null("AnswerInput") as Control
+		if field:
+			field.grab_focus()
+
+
+func pending_question() -> String:
+	if context.get("can_answer", false):
+		for id in context.get("questions", {}):
+			if not context.get("answers", {}).has(id) and draft.nodes.has(id):
+				return id
+	return ""
+
+
 func _render_stage(id: String, item: Dictionary) -> void:
 	var view := GraphNode.new()
 	view.name = id
@@ -639,6 +664,22 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	_add_state_row(view)
 	canvas.add_child(view)
 	_update_card(view)
+	if id == "wf-worker" and workflow.item.get("status") == "needs-decision":
+		var target := pending_question()
+		var caption := ""
+		if not target.is_empty():
+			caption = "前往待确认事项"
+		elif workflow.progress.state == "pending":
+			for key in draft.nodes:
+				if draft.nodes[key].title in ["预计任务", "范围与验收"]:
+					target = key
+					caption = "查看后续工作"
+					break
+		if not target.is_empty():
+			var navigate := Button.new()
+			navigate.text = caption
+			navigate.pressed.connect(focus_flow_node.bind(target))
+			view.add_child(navigate)
 	if id == "wf-operation":
 		view.set_meta("ai_control_exclude", true)
 		if _node_state(id) == "awaiting_approval":
