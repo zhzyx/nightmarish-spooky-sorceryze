@@ -1,0 +1,119 @@
+{
+  "path_base": "repository_root",
+  "purpose": "discovery_only",
+  "families": [
+    {
+      "id": "process-management",
+      "name": "过程管理平台",
+      "provider": "repository",
+      "directory": "customizations/platforms/process-management/repository",
+      "related_paths": [
+        "customizations/components/codex-dispatch",
+        "customizations/components/repository-dispatch",
+        "framework/modules/sinan",
+        "framework/agents/sinan/references/parallel-dispatch.md",
+        "customizations/components/issue-workorders/kuafu-routing.md",
+        ".github/workflows/kuafu-blockers.yml"
+      ]
+    },
+    {
+      "id": "document-management",
+      "name": "文档管理平台",
+      "provider": "git-markdown",
+      "directory": "customizations/platforms/document-management/git-markdown",
+      "related_paths": [
+        "design-docs",
+        "customizations/components/godot-host/requirements_agent.py",
+        "framework/integrations/yanshi-legacy",
+        "framework/agents/yanshi/references/tools.md"
+      ]
+    },
+    {
+      "id": "data-collection",
+      "name": "数据采集平台",
+      "provider": "git-files",
+      "directory": "customizations/platforms/data-collection/git-files",
+      "related_paths": [
+        "framework/extensions/diting-files",
+        "gonggong-diting-data",
+        "data-collection",
+        "customizations/components/issue-workorders/work_items.py"
+      ]
+    },
+    {
+      "id": "work-management",
+      "name": "开发工单及项目进度控制管理平台",
+      "provider": "github",
+      "directory": "customizations/platforms/work-management/github",
+      "related_paths": [
+        "work-items.json",
+        ".github/ISSUE_TEMPLATE",
+        ".github/labels.json",
+        ".github/status-labels.json",
+        "customizations/components/issue-workorders",
+        "customizations/components/godot-host/daqian/progress.py",
+        "customizations/components/godot-host/daqian/board.py",
+        "customizations/components/yanluo"
+      ]
+    },
+    {
+      "id": "development",
+      "name": "开发平台",
+      "provider": "git",
+      "directory": "customizations/platforms/development/git",
+      "related_paths": [
+        "framework/agents/heqi/references",
+        "framework/tools/git_batch.py",
+        "framework/tools/check_delivery.py",
+        "framework/templates/delivery.json",
+        "tools/run_issue_gate.ps1",
+        ".github/workflows",
+        "customizations/components/issue-workorders/writer_submit.py",
+        "customizations/components/issue-workorders/yanluo_host.py"
+      ]
+    },
+    {
+      "id": "game-engines",
+      "name": "游戏引擎",
+      "provider": "godot",
+      "directory": "customizations/platforms/game-engines/godot",
+      "related_paths": [
+        "integrations/godot",
+        "customizations/components/godot-host",
+        "editor",
+        "modules",
+        "tests/editor",
+        "tools/godot_parallel",
+        "tools/build_gonggong_editor.ps1",
+        "tools/gonggong_bridge.py",
+        "tools/ainative",
+        "samples"
+      ]
+    },
+    {
+      "id": "ai-models",
+      "name": "AI 模型适配",
+      "provider": "daqian",
+      "directory": "customizations/platforms/ai-models/daqian",
+      "related_paths": [
+        "customizations/components/godot-host/daqian/model_catalog.py",
+        "customizations/components/godot-host/daqian/local_models.py",
+        "framework/runtime/evaluate.py"
+      ]
+    },
+    {
+      "id": "ai-access",
+      "name": "AI 接入方式适配",
+      "provider": "daqian",
+      "directory": "customizations/platforms/ai-access/daqian",
+      "related_paths": [
+        "framework/runtime/adapters.py",
+        "customizations/components/godot-host/daqian/model_api.py",
+        "customizations/components/godot-host/daqian/credentials.py",
+        "tools/codex_cli",
+        "tools/codebuddy_cli",
+        "customizations/components/codex-dispatch"
+      ]
+    }
+  ]
+}
