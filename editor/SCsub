@@ -12,7 +12,12 @@ env.editor_sources = []
 if env.editor_build:
     env.CommandNoCache(
         "docks/daqian_scripts.gen.h",
-        ["docks/daqian/graph_rules.gd", "docks/daqian/issue_graph.gd", "docks/daqian/workspace.gd", "docks/daqian/model_settings.gd"],
+        [
+            "docks/daqian/graph_rules.gd",
+            "docks/daqian/issue_graph.gd",
+            "docks/daqian/workspace.gd",
+            "docks/daqian/model_settings.gd",
+        ],
         env.Run(editor_builders.daqian_scripts_builder),
     )
 
