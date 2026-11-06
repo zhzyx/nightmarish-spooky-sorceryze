@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "gameplay-core-delivery-request-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gameplay-core-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T13:12:14.2295761Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/176",
+  "agent": {
+    "id": "codex-current-gameplay-host",
+    "version": "2026-11-06",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "current-user-authorized-codex-session"
+  },
+  "payload": {
+    "intent": "Deliver the existing staged GF-1 foundation with the GF-2 dependent module candidate",
+    "authorization": "Current user requested phased implementation and resumed delivery after restoring gh on 2026-11-06",
+    "operator": "kaiyunxue",
+    "permission_readback": "WRITE",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175",
+    "design_document": "design-docs/gameplay-framework-20261106.md",
+    "intake": "passed before resumed implementation and review",
+    "prior_local_validation": "GF-1 baseline: 6 tests / 84 assertions passed; combined GF-1/GF-2 candidate: 8 tests / 151 assertions passed on Windows x86_64/MSVC",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "915b6daef8e202b6ab66f483fb2877cf0d4c95ca9c6e652c3fcfabacf06322b9"
+}
