@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-layering-equipment-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-09-layering-equipment-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:31:13.882694+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/150",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按已验收依赖接续本工单完整首版实现",
+    "dependencies": {
+      "github:zhzyx/nightmarish-spooky-sorceryze#148": {
+        "issue": 148,
+        "pr": 219,
+        "mergeCommit": "5a42d425b976057e9c531642b1659e5e01091c30"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze#149": {
+        "issue": 149,
+        "pr": 221,
+        "mergeCommit": "491888459dbb64c8130378d8dbb3649cc1fd6ac8"
+      }
+    },
+    "worker": "/root/sinan_c3db2194c46d999b",
+    "dispatch_receipt": "1a1115330ad9002ff3aae5cd93766f4df908642902449a5ff3b0945a71b2ca3e",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "b62af715b2de9ed6d3bafa91d1d275c48756805cec9b0cfe3d0fa2ad4feb6e7c"
+}
