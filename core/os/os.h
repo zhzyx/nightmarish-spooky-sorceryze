@@ -370,6 +370,7 @@ public:
 	void set_restart_on_exit(bool p_restart, const List<String> &p_restart_arguments);
 	// Only arm this during a committed editor shutdown, after save dialogs complete.
 	void set_restart_on_exit_executable(const String &p_executable) { restart_executable = p_executable; }
+	String get_restart_on_exit_executable() const { return restart_executable; }
 	bool is_restart_on_exit_set() const;
 	List<String> get_restart_on_exit_arguments() const;
 

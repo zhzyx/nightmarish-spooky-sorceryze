@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "macos-restart-executable-20261107",
+  "collected_at": "2026-11-06T17:33:26.631764+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/macos-restart-executable-20261107/handoff-macos-restart-executable-20261107.json",
+      "sha256": "a63518f95f2bf7eae03efe7eb11692b04a9e592c1cc694f02ae9f6eabea64cea",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "handoff-macos-restart-executable-20261107",
+      "origin": "codex"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/macos-restart-executable-20261107/request-macos-restart-executable-20261107.json",
+      "sha256": "387cc75d44f6c31c1161f23c254859955d8afd568c8d92fb275345b22d9cd112",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-macos-restart-executable-20261107",
+      "origin": "codex"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 212,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212"
+}

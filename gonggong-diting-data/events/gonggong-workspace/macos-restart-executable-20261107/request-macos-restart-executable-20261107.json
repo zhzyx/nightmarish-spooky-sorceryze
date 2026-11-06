@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-macos-restart-executable-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-restart-executable-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:05:24.518994+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "outcome": "Preserve explicitly configured restart executable on macOS while retaining normal app-bundle and headless creation behavior",
+    "state": "in_progress",
+    "issue_number": 212,
+    "source_ref": "data-collection/issue212-macos-restart-intake.json",
+    "scope": "isolated candidate and validation, pending responsible agent independent review",
+    "usage": null,
+    "usage_unknown_reason": "Host did not provide measured usage"
+  },
+  "evidence_refs": [],
+  "sha256": "8729c80c80fa77f298b2e6797953e8208f1d2f8856b2eb8adcec67ab97628950"
+}

@@ -36,6 +36,7 @@
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
+#include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/gonggong_panel.h"
 #include "editor/file_system/editor_paths.h"
@@ -566,25 +567,7 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	input_request["outcome"] = p_outcome;
 	// Intake runs before the normal model context. Preserve recent questions and
 	// corrections here too, including after an earlier model request failed.
-	Array requirement_context;
-	int context_chars = 0;
-	for (int i = transcript.size() - 1; i >= 0 && requirement_context.size() < 32 && context_chars < 16000; i--) {
-		const Dictionary record = transcript[i];
-		const String role = record.get("role", "");
-		if (role != "user" && role != "editor" && role != "assistant") {
-			continue;
-		}
-		const String text = record.get("content", "");
-		const String excerpt = text.left(MIN(4000, 16000 - context_chars));
-		if (excerpt.is_empty()) {
-			continue;
-		}
-		Dictionary entry;
-		entry["role"] = role;
-		entry["content"] = excerpt;
-		requirement_context.push_front(entry);
-		context_chars += excerpt.length();
-	}
+	const Array requirement_context = AIChatRequirementContext::select(transcript);
 	if (p_retry && issue_guide_fields.has("conversation_context")) {
 		// Reconcile the same journal even after progress/error messages appear.
 		input_request["conversation_context"] = issue_guide_fields["conversation_context"];
@@ -681,6 +664,9 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 			if (_direct_daqian_task()) {
 				_issue_guide_retry();
 				return;
+			}
+			if (AIChatRequirementContext::mark_transport_retry(transcript, _redact(p_text))) {
+				_queue_history_save();
 			}
 			_begin_issue_agent(issue_guide_outcome, true);
 		} else {
