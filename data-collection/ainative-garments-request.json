@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-garments-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-07-garments-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T16:21:11.316051+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/148",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按已验收依赖推进独立衣服盔甲生成、拟合和装配",
+    "dependency": {
+      "issue": 147,
+      "pr": 203,
+      "main_commit": "4934dcd836493366c89a93078596d53f41d2c6be",
+      "acceptance_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147#issuecomment-6689522215",
+      "state": "closed_completed"
+    },
+    "worker": "/root/sinan_d7b5852fd8149384",
+    "dispatch_receipt": "57cd8c9d07d7a5f6e05f64f0f919217f4370927ed1b92b3892bb7f338b71f340",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": []
+}
