@@ -87,41 +87,29 @@ for more information.
 
 # GongGong 工作区
 
-本仓库是共工（GongGong）的工作区。框架以共工为上游，保留共工名称体系；独立的谛听文件数据模块豁免同步覆盖。
+本仓库的有效框架由 [CURRENT_FRAMEWORK.json](CURRENT_FRAMEWORK.json) 定位。以下路径均相对仓库根。
 
 | 路径 | 用途 |
 | --- | --- |
-| `framework/` | 框架、Agent、skill、契约与同步工具 |
-| `gonggong-diting-data/` | 需求生产数据，独立命名，必须随需求产出合入 Git |
-| `gonggong-workspace.json` | 工作区约定与入口 |
-| `work-items.json` / `.github/ISSUE_TEMPLATE/` | GitHub Issue 工单约定及按任务类别预设标签的表单 |
-| `design-docs/` | Markdown 需求与设计文档，引用实际 Issue |
-| `data-collection/` | 谛听采集交接目录，保留真实事件来源与摘要 |
-| `tools/verify_workspace.py` | 全量同步检查与文件数据 Git 检查 |
-| `framework/modules/sinan/` | 已同步共工登记的事件驱动司南 0.4.0 模块，GongGong 名称为司南 |
+| `framework/framework-manifest.json` | 当前 Agent、Skill、版本和精确候选准入引用 |
+| `framework/modules/sinan/` | 司南的事件刷新、依赖判断与派发 |
+| `customizations/components/repository-dispatch/` | 协作者取得代码后使用的宿主派发入口 |
+| `work-items.json`、`design-docs/` | 真实 Issue 的仓库绑定、需求与验收 |
+| `data-collection/`、`gonggong-diting-data/` | 采集来源、回执与实际生产事件 |
+| `integrations/gonggong/frozen-distribution.json` | 经独立复核的离线分发文件登记 |
 
-当前分发基于有效共工 0.9.0 主线，Sinan 为事件驱动 0.4.0；3 个 Agent、10 个 skill。三个 GongGong 本地定义已获用户对精确摘要的批准，正式来源及本地准入验证通过。实际运行仍由宿主绑定权限及回执；模型流程按用户确认范围完成模拟服务验收。
+## 工作区自检
 
-Python 3.10+、Node.js、Git 可用于本地验证；谛听文件模式无需数据库。仓库初始化数据后，新需求按 `framework/extensions/diting-files/README.md` 生成真实事件。禁止将生产数据放入会随上游重建的 `framework/` 目录。
-
-## 验证与数据分析
-
-将 `GONGGONG_FRAMEWORK_SOURCE` 指向实际共工 `CURRENT_FRAMEWORK.json` 或有效框架根。仓库不提交机器本地源路径。上游缺失或不一致时，框架验证及 Agent 上下文装配会阻断；独立文件数据分析仍可执行。
+在仓库根使用 Python 3.11+、Node.js 和 Git 运行以下命令。第一条先核对当前框架指针，再离线核对分发文件及语法，随后校验框架包、准入文件与谛听数据的 Git 提交状态。第二条汇总当前租户已记录的事件。
 
 ```powershell
-$env:GONGGONG_FRAMEWORK_SOURCE = 'PATH/TO/CURRENT_FRAMEWORK.json'
 python tools/verify_workspace.py --require-committed
 python framework/extensions/diting-files/diting_files.py analyze --repo . --tenant gonggong-workspace
 ```
 
-文件数据记录须使用实际 Agent 快照、来源和时间。导入模板前填写真实字段；未知用量保持 null，不能伪造成 0。工具会保留历史版本，校验事件摘要及引用；Git 检查区分已记录、已跟踪、已提交，不能以本地提交冒充远程合并。
+更新分发登记时，将变动路径逐项对应到已复核的框架提交和包清单，单独审查登记差异。实际执行由当前宿主核实操作者、工单授权和工作者回执。协作与交付入口见 [AGENTS.md](AGENTS.md)。
 
-## 共工同步
-
-从本仓库当前的 `framework/sync/gonggong_sync.py` 发起同步，生成新的临时框架目录，完成全量验证后按 Git 变更流程替换 `framework/`。不可用共工原件直接覆盖共工目录。同步会逐字节携带现有 `extensions/diting-files/`，遇到上游占用豁免路径时拒绝继续；不得覆盖或删除仓库根 `gonggong-diting-data/`。
-
-完整规则见 `framework/sync/POLICY.md`。本仓库没有常驻同步服务。当前本地定义批准见 `framework/reviews/local-admission/`；它只绑定对应候选，不替代宿主运行授权或后续来源变更复核。
-
+谛听事件须记录实际 Agent 快照、来源和时间，未知用量保留为 null。远端交付结果按目标分支回读。
 
 ## 完整引擎交付
 
