@@ -28,17 +28,29 @@ func check():
 
 var child_pid := -1
 var scratch: DirAccess
+var entry_validation: Node
 
 
 func _ready() -> void:
+	if entry_validation:
+		var args := OS.get_cmdline_args()
+		if DisplayServer.get_name() == "headless" or "--script" in args or "-s" in args:
+			return
 	_verify.call_deferred()
 
 
 func _verify() -> void:
 	var binary := OS.get_executable_path()
-	var key := ("%s|%s|%s|%s" % [binary, FileAccess.get_modified_time(binary), Engine.get_version_info().hash, PROBE]).sha256_text()
+	var probe: String = entry_validation.probe_source if entry_validation else PROBE
+	var key := ("%s|%s|%s|%s" % [binary, FileAccess.get_modified_time(binary), Engine.get_version_info().hash, probe]).sha256_text()
 	var cache := EditorInterface.get_editor_paths().get_cache_dir().path_join("godot-silent-" + key + ".ok")
 	if FileAccess.file_exists(cache) and FileAccess.get_file_as_string(cache).strip_edges() == key:
+		if entry_validation:
+			print("GongGong macOS startup validation reused")
+		return
+	if entry_validation:
+		if await entry_validation.verify_entry():
+			_save_receipt(cache, key)
 		return
 	scratch = DirAccess.create_temp("godot-silent")
 	if not scratch:
@@ -69,6 +81,10 @@ func _verify() -> void:
 	if not passed:
 		push_warning("Godot 无窗口控件验证失败。请检查本机构建的 --headless 和 GDScript 支持，下次打开将重试。")
 		return
+	_save_receipt(cache, key)
+
+
+func _save_receipt(cache: String, key: String) -> void:
 	var receipt := FileAccess.open(cache, FileAccess.WRITE)
 	if receipt:
 		receipt.store_line(key)
