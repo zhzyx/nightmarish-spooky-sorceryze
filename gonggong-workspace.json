@@ -44,5 +44,6 @@
       ],
       "migration": "customizations/module-migration.json"
     }
-  ]
+  ],
+  "platform_catalog": "customizations/platforms/catalog.json"
 }

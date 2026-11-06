@@ -1,5 +1,8 @@
 # 共工接入与定制
 
+[按平台查找共工接入子模块](platforms/README.md)
+
+
 核心与接入的细粒度职责、当前实现映射及新平台／工具按需扩展流程见 [接入子模块边界](module-boundaries.md)。该文档定义职责结构；逻辑子模块不等于已拆分的代码或已启用能力，现有 registry.json 与有效发布继续表示实际状态。
 
 当前只有共工一个框架。framework/ 保存核心 Agent、治理、协调、采集及现有配套实现；目录存在不代表业务能力属于核心。Git 与 Godot 接入由本目录 components/ 管理，registry.json 声明实际归属、依赖和验证状态。
