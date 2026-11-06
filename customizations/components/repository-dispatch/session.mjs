@@ -6,7 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {execFile, spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
-import {issueSnapshot} from '../issue-workorders/github_source.mjs';
+import {issueSnapshot, readIssueWithDependencies} from '../issue-workorders/github_source.mjs';
 import {openSession, operatorStateRoot} from '../codex-dispatch/operator.mjs';
 import {create} from '../codex-dispatch/native-bridge.mjs';
 import {board} from '../../../framework/modules/sinan/coordinator.mjs';
@@ -202,8 +202,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const args = process.argv.slice(2);
   if (args.length === 3 && args[0] === 'inspect') {
     const c = await issueConfig(Number(args[1]),args[2]);
-    const {stdout} = await exec(c.gh,['api',`repos/${c.repository}/issues/${c.bindings[0].number}`]);
-    console.log(JSON.stringify(issueSnapshot(c.repository,c.bindings[0],JSON.parse(stdout),read(path.join(workspace,'.github/labels.json')).map(l=>l.name))));
+    const api = async endpoint => JSON.parse((await exec(c.gh, ['api', endpoint], {maxBuffer:4*1024*1024})).stdout);
+    const issue = await readIssueWithDependencies(api, c.repository, c.bindings[0].number);
+    console.log(JSON.stringify(issueSnapshot(c.repository,c.bindings[0],issue,read(path.join(workspace,'.github/labels.json')).map(l=>l.name))));
     process.exit(0);
   }
   let config;

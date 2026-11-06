@@ -1,0 +1,16 @@
+{
+  "request_id": "flow-dispatch-20261107",
+  "issue_number": 247,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/247",
+  "path_base": "repository_root",
+  "design": "design-docs/flow-dispatch-20261107.md",
+  "source_baseline": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+  "scoped_paths": [
+    "customizations/components/codex-dispatch/adapter.mjs",
+    "customizations/components/codex-dispatch/operator.mjs",
+    "customizations/components/codex-dispatch/adapter.test.mjs",
+    "customizations/components/issue-workorders/github_source.mjs",
+    "customizations/components/issue-workorders/github_source.test.mjs",
+    "customizations/components/repository-dispatch/session.mjs"
+  ]
+}

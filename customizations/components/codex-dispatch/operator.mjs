@@ -4,7 +4,7 @@ import path from 'node:path';
 import {execFile,spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
-import {GitHubIssueSource,issueSnapshot} from '../issue-workorders/github_source.mjs';
+import {GitHubIssueSource,issueSnapshot,readIssueWithDependencies} from '../issue-workorders/github_source.mjs';
 import {CodexDispatchHost} from './adapter.mjs';
 import {NativeToolBridge,create,digest} from './native-bridge.mjs';
 const exec=promisify(execFile), read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
@@ -89,7 +89,7 @@ export async function openSession(config,ports={}) {
   if(settings.repository!==config.repository||settings.tenant_id!=='gonggong-workspace')throw Error('Repository/tenant binding mismatch');
   const categories=read(path.join(workspace,'.github/labels.json')).map(l=>l.name);
   const readIssue=async(repo,n)=>{
-    const issue=await api(`repos/${repo}/issues/${n}`);
+    const issue = await readIssueWithDependencies(api, repo, n);
     if (ports.validateIssue) await ports.validateIssue(issue);
     return issue;
   };
@@ -120,7 +120,7 @@ export async function openSession(config,ports={}) {
     const result=await bridge.request('verify_setup',{event,pending,receipt},{assignmentKey:a.key,ticket:a.ticket});
     return result?.clientThreadId===pending.workerId&&result.threadId===receipt.workerId&&result.reference===event.reference;
   });
-  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:ports.worker ? {launchAgent:ports.worker.launch} : bridge.native(),policy:{defaultChatModel:config.defaultChatModel,inheritedAgentModel:config.inheritedAgentModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
+  const host=new CodexDispatchHost({stateRoot:path.join(root,'dispatch'),source,native:ports.worker ? {launchAgent:ports.worker.launch} : bridge.native(),policy:{localResources:true,defaultChatModel:config.defaultChatModel,inheritedAgentModel:config.inheritedAgentModel,chatCreationAuthorized:config.chatCreationAuthorized===true,threadTarget:config.threadTarget,explicitChatModels:config.explicitChatModels}});
   if (ports.worker?.revalidate) {
     const revalidate = host.revalidate.bind(host);
     host.revalidate = async a => await revalidate(a) && await ports.worker.revalidate(a);
