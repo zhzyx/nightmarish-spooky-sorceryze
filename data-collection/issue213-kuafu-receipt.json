@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "issue213-kuafu-msvc-receipt",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-editor-request-shadow",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:06:26.796133+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/213",
+  "agent": {
+    "id": "kuafu",
+    "version": "0.5.0",
+    "definition_sha256": "820d6cdc2a3fb4422c174a9ed329c0bc917227d5a052c47d98726c1d8b5832ac",
+    "origin": "Codex /root/authority under current task delegation"
+  },
+  "payload": {
+    "assignee": "/root/authority",
+    "github_actor": "Sail-Li",
+    "blocked_issue": 207,
+    "pr": 211,
+    "job_ids": [
+      128025967152,
+      128026028760
+    ],
+    "source": "GitHub check run annotations",
+    "diagnosis": "MSVC treats the two request locals hiding the AI chat member as errors",
+    "scope": "Rename the request ID and route request dictionary only",
+    "usage": null
+  },
+  "evidence_refs": []
+}

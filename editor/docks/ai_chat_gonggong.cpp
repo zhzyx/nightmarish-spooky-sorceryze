@@ -247,10 +247,10 @@ static String last_user_content(const Array &p_messages) {
 bool AIChatDock::_direct_daqian_task() const {
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
 	const Dictionary entry = bindings.get(conversation_id, Dictionary());
-	const String request = entry.get("request_id", "");
+	const String request_id = entry.get("request_id", "");
 	const String number = entry.get("issue_number", "");
 	const String source = entry.get("issue_url", entry.get("source", ""));
-	return request.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request) && source.ends_with("/issues/" + number);
+	return request_id.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request_id) && source.ends_with("/issues/" + number);
 }
 
 void AIChatDock::_begin_gonggong_context() {
@@ -524,15 +524,15 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		result["error"] = U"请配置共工工作区和 Python 后重试判断。";
 		return result;
 	}
-	Dictionary request = p_binding.duplicate();
-	_set_issue_model_config(request);
+	Dictionary route_request = p_binding.duplicate();
+	_set_issue_model_config(route_request);
 	if (!p_selection.is_empty()) {
 		if (int64_t(p_selection.get("backend", -1)) != backend->get_selected()) {
 			result["error"] = U"请切回需求模型所属后端，或重新选择模型。";
 			return result;
 		}
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
-		request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
+		route_request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
 	}
 	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-issue-route-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
 	const String input_path = stem + ".request";
@@ -542,7 +542,7 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		result["error"] = U"无法保存工单判断请求。";
 		return result;
 	}
-	file->store_string(JSON::stringify(request));
+	file->store_string(JSON::stringify(route_request));
 	file.unref();
 	List<String> args;
 	for (const String &arg : { bridge, String("issue-route"), String("--workspace"), workspace, String("--request"), input_path, String("--out"), output_path }) {
@@ -1067,9 +1067,9 @@ void AIChatDock::_igniter_prompt() {
 			names += String(U"`") + String(igniter_missing[i]) + U"`";
 		}
 		text = String(U"检测到本地环境配置缺失：") + names + U"。为避免把配置问题误判为系统阻塞，已进入本地配置点火器（编辑器本地处理，不调用模型或工具）。\n\n"
-			   U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
-			   U"- 放弃：回复 `取消`\n\n"
-			   U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
+															 U"- 回复要部署的组件（如 `node git`），或回复 `全部`\n"
+															 U"- 放弃：回复 `取消`\n\n"
+															 U"点火器不会自动安装；部署只会把你已安装或提供的可执行路径固定到所选位置，并记录回退入口。";
 	} else if (igniter_state == "python_path") {
 		text = U"Python 未配置，点火器无法通过桥接部署它。请回复 Python 可执行文件的绝对路径（例如 `/usr/bin/python3` 或 `/opt/homebrew/bin/python3`），编辑器会把它保存为 GongGong 的 Python 路径；回复 `取消` 放弃。";
 	} else if (igniter_state == "location") {
