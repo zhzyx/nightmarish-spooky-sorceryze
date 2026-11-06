@@ -41,6 +41,67 @@ def operation_folder(root, issue, request, action, parameters=None):
     return private_root(root) / "operations" / sha(json.dumps(operation).encode())
 
 
+def recovery_summary(folder, record):
+    """Summarize observed phases, including pre-upgrade original-operation receipts."""
+    rechecks = [read(p) for p in folder.glob("recheck-*.json")]
+    original = [
+        r["observed_at"]
+        for r in rechecks
+        if r.get("state") == "operation_reverified"
+        and r.get("head") == record["head"]
+        and r.get("index_delta_sha256") == record["index_delta_sha256"]
+    ]
+    condition = folder / "condition.json"
+    return {
+        "first_failure_at": record["occurred_at"],
+        "condition_observed_at": read(condition)["observed_at"] if condition.is_file() else None,
+        "reverified_at": min(original, default=None),
+    }
+
+
+def record_condition(folder, record, binding, evidence):
+    """Persist the bound handler's first observation that the dependency is ready."""
+    path = folder / "condition.json"
+    if path.exists():
+        receipt = read(path)
+        if (receipt["operator"], receipt["worker"], receipt["evidence"]) != (
+            binding["operator"],
+            binding["worker"],
+            evidence,
+        ):
+            raise ValueError("Reconcile the existing condition receipt")
+    else:
+        if not evidence.strip() or recovery_summary(folder, record)["reverified_at"]:
+            raise ValueError("Need fresh condition evidence before the original-operation recheck")
+        receipt = {
+            "state": "condition_observed",
+            "observed_at": datetime.now(timezone.utc).isoformat(),
+            "operator": binding["operator"],
+            "worker": binding["worker"],
+            "evidence": evidence,
+        }
+        write_new(path, receipt)
+    # Older hosts consumed the pending pointer even for a successor-only receipt.
+    # Restore only this authenticated incident, using the original operation parameters.
+    if not recovery_summary(folder, record)["reverified_at"]:
+        pending = operation_folder(
+            Path(record["worktree"]), record["issue"], record["request_id"], record["action"], record.get("parameters")
+        ) / (folder.name + ".pending")
+        if not pending.exists():
+            write_new(pending, {"incident": folder.name})
+    return receipt
+
+
+def validation_base(root, action, parameters):
+    if action != "validation" or not isinstance(parameters, str):
+        return None
+    try:
+        return git(root, "rev-parse", "--verify", "--end-of-options", parameters + "^{commit}").decode().strip()
+    except subprocess.CalledProcessError:
+        # A missing base can itself be the failure under investigation.
+        return None
+
+
 def observe_success(root, issue, request, action, result, parameters=None):
     """Attach a real successful invocation to matching incidents; never close an Issue."""
     try:
@@ -56,23 +117,31 @@ def observe_success(root, issue, request, action, result, parameters=None):
                 detected = read(folder / "detected.json")
                 head = git(root, "rev-parse", "HEAD").decode().strip()
                 index = sha(git(root, "diff", "--cached", "--raw", "-z", "--no-abbrev", "HEAD"))
-                state = (
-                    "operation_reverified"
-                    if (head, index) == (detected["head"], detected["index_delta_sha256"])
-                    else "recovery_candidate"
+                base = validation_base(root, action, parameters)
+                same_base = (
+                    action != "validation"
+                    or not isinstance(parameters, str)
+                    or (base is not None and base == detected.get("validation_base"))
                 )
+                exact = (head, index) == (detected["head"], detected["index_delta_sha256"]) and same_base
+                state = "operation_reverified" if exact else "recovery_candidate"
                 outcome = {
                     "incident": key,
                     "state": state,
                     "head": head,
                     "index_delta_sha256": index,
                     "operation": action,
+                    "validation_base": base,
                     "observed_at": datetime.now(timezone.utc).isoformat(),
                     "result_sha256": sha(json.dumps(result, sort_keys=True).encode()),
                 }
-                path = folder / ("recheck-" + sha(json.dumps(outcome).encode()) + ".json")
-                write_new(path, outcome)
-                entry.unlink()
+                path = folder / ("recheck-" + sha(json.dumps([head, index, base, state]).encode()) + ".json")
+                if not path.exists():
+                    write_new(path, outcome)
+                else:
+                    outcome = read(path)
+                if state == "operation_reverified":
+                    entry.unlink()
                 print(json.dumps(outcome), file=sys.stderr)
     except (ValueError, OSError, KeyError, subprocess.SubprocessError) as exc:
         print(json.dumps({"state": "kuafu_recheck_receipt_unavailable", "reason": type(exc).__name__}), file=sys.stderr)
@@ -94,15 +163,24 @@ def capture(root, issue, request, action, observation, parameters=None):
     }
     if parameters is not None:
         identity["parameters"] = parameters
+    if action == "validation" and isinstance(parameters, str):
+        identity["validation_base"] = validation_base(root, action, parameters)
     key = sha(json.dumps(identity, sort_keys=True).encode())
-    folder = private_root(root) / key
-    with event_lock(folder / "incident.lock"):
-        path = folder / "detected.json"
-        if not path.exists():
-            write_new(path, dict(identity, occurred_at=datetime.now(timezone.utc).isoformat()))
-        pending = operation_folder(root, issue, request, action, parameters) / (key + ".pending")
-        if not pending.exists():
-            write_new(pending, {"incident": key})
+    while True:
+        folder = private_root(root) / key
+        with event_lock(folder / "incident.lock"):
+            path = folder / "detected.json"
+            if path.exists() and recovery_summary(folder, read(path))["reverified_at"]:
+                # A new failure after a verified recovery starts a new episode. Concurrent
+                # reporters follow the same chain without changing immutable old receipts.
+                key = sha((key + ":recurrence").encode())
+                continue
+            if not path.exists():
+                write_new(path, dict(identity, occurred_at=datetime.now(timezone.utc).isoformat()))
+            pending = operation_folder(root, issue, request, action, parameters) / (key + ".pending")
+            if not pending.exists():
+                write_new(pending, {"incident": key})
+            break
     return {
         "incident": key,
         "state": "pending_kuafu_intake",
@@ -295,6 +373,16 @@ def publish(root, source, payload, receipt):
         f"证据 {payload['evidence']}",
         f"判断 {payload['diagnosis']}",
         f"下一步 {payload['next_action']}",
+        *(
+            [
+                f"首次失败记录 {payload['first_failure_at']}",
+                f"已试及结果 {payload['attempted'] or '待补证'}",
+                f"解除责任人 {payload['repair_owner'] or '待确认'}",
+                f"可继续的工作 {payload['continuable'] or '待判断'}",
+            ]
+            if "first_failure_at" in payload
+            else []
+        ),
         "原操作复验：待原责任者回读。",
     ])
 
@@ -333,6 +421,11 @@ def report(root, framework, folder, record, key, binding, args):
         "next_action": args.next_action,
         "original_operation_reverified": False,
     }
+    # Preserve already recorded legacy assessments when reconciling lost timeline receipts.
+    legacy_id = "kuafu-" + sha(json.dumps(payload, sort_keys=True).encode())[:40]
+    details = {"attempted": args.attempted, "repair_owner": args.repair_owner, "continuable": args.continuable}
+    if any(details.values()) or not (folder / (legacy_id + ".json")).exists():
+        payload.update(first_failure_at=record["occurred_at"], **details)
     eid = "kuafu-" + sha(json.dumps(payload, sort_keys=True).encode())[:40]
     event = {
         "schema_version": 1,
@@ -404,7 +497,7 @@ def main():
     for name in ("status", "forward"):
         child = commands.add_parser(name)
         child.add_argument("incident")
-    for name in ("receive", "assess"):
+    for name in ("receive", "assess", "condition"):
         child = commands.add_parser(name)
         child.add_argument("incident")
         child.add_argument("--bug", type=int, required=True)
@@ -413,6 +506,12 @@ def main():
         if name == "assess":
             for field in ("evidence", "diagnosis", "next-action"):
                 child.add_argument("--" + field, required=True)
+            for field in ("attempted", "repair-owner", "continuable"):
+                child.add_argument("--" + field, help="Public, evidence-backed observation; omit when unknown")
+        if name == "condition":
+            child.add_argument(
+                "--evidence", required=True, help="Verified evidence the blocked prerequisite is now ready"
+            )
     args = p.parse_args()
     root = args.repo.resolve()
     if args.command == "detect":
@@ -432,19 +531,23 @@ def main():
             json.dumps({
                 "incident": args.incident,
                 "detected": record,
+                "recovery": recovery_summary(folder, record),
+                "condition": read(folder / "condition.json") if (folder / "condition.json").exists() else None,
                 "received": (folder / "received.json").exists(),
                 "rechecks": [read(p) for p in sorted(folder.glob("recheck-*.json"))],
             })
         )
         return
     with event_lock(folder / "incident.lock"):
-        if args.command == "assess" and not (folder / "received.json").is_file():
+        if args.command in ("assess", "condition") and not (folder / "received.json").is_file():
             raise ValueError("Receive and read the admitted Kuafu mandate first")
         identity = issue_binding(root, record, args.bug)
         with trusted_framework(root, record["repository"]) as framework:
             context, binding = bind_context(framework, folder, record, args, identity)
             if args.command == "receive":
                 sys.stdout.buffer.write(context)
+            elif args.command == "condition":
+                print(json.dumps(record_condition(folder, record, binding, args.evidence)))
             else:
                 print(json.dumps(report(root, framework, folder, record, args.incident, binding, args)))
 

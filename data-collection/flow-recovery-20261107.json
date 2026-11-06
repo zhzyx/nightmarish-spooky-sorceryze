@@ -1,0 +1,14 @@
+{
+  "request_id": "flow-recovery-20261107",
+  "issue_number": 251,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/251",
+  "path_base": "repository_root",
+  "design": "design-docs/flow-recovery-20261107.md",
+  "source_baseline": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+  "scoped_paths": [
+    "customizations/components/issue-workorders/kuafu_github.py",
+    "customizations/components/issue-workorders/kuafu_incident.py",
+    "customizations/components/issue-workorders/test_kuafu_github.py",
+    "customizations/components/issue-workorders/test_kuafu_incident.py"
+  ]
+}

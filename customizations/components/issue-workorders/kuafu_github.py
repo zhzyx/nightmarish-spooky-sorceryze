@@ -254,6 +254,7 @@ def inspect_event(api, name, event):
         "candidate": run["head_sha"],
         "conclusion": run["conclusion"],
         "failed_jobs": jobs,
+        "first_failure_at": run.get("updated_at"),
         "diagnosis": diagnosis,
         "workflow_id": number(run["workflow_id"]),
         "pr": issue["verified_pr"] if issue else None,
@@ -295,14 +296,28 @@ def prior_reports(api, issue):
     """Only examine bot-owned intake records linked from this specific business issue."""
     n = number(issue["number"])
     comments = api.pages(f"issues/{n}/comments")
-    completed = {(c.get("body") or "").split("\n", 1)[0] for c in comments if c["user"]["login"] == BOT}
+    completed = set()
+    for comment in comments:
+        body = comment.get("body") or ""
+        if comment["user"]["login"] != BOT or not body.startswith("<!-- kuafu-recovery:"):
+            continue
+        # Older hosts used the same marker for descendant and exact-candidate results.
+        try:
+            proof = json.loads(body.split("\n```json\n", 1)[1].removesuffix("\n```"))
+        except (IndexError, ValueError):
+            continue
+        if isinstance(proof, dict) and proof.get("state") == "operation_reverified":
+            completed.add(body.split("\n", 1)[0])
     for comment in comments:
         body = comment.get("body") or ""
         marker = re.match(r"<!-- kuafu-(notice|report):run-([1-9][0-9]*)-attempt-([1-9][0-9]*) -->\n", body)
         if comment["user"]["login"] != BOT or not marker:
             continue
         rid, attempt = map(int, marker.groups()[1:])
-        if f"<!-- kuafu-recovery:run-{rid}-attempt-{attempt} -->" in completed:
+        if completed.intersection({
+            f"<!-- kuafu-recovery:run-{rid}-attempt-{attempt} -->",
+            f"<!-- kuafu-recovery:exact-run-{rid}-attempt-{attempt} -->",
+        }):
             continue
         bug = n
         if marker[1] == "notice":
@@ -373,12 +388,23 @@ def reverify(api, run, issue):
             "pr": issue["verified_pr"],
             "old_candidate": old["head_sha"],
             "new_candidate": run["head_sha"],
+            "old_pr_head": old_pr_head,
+            "new_pr_head": issue["verified_pr_head"],
             "failure": f"https://github.com/{api.repo}/{path}",
             "success": f"https://github.com/{api.repo}/{success_path}",
             "jobs": coverage,
+            "first_failure_at": report.get("first_failure_at") or old.get("updated_at"),
+            "condition_observed_at": None,
+            "reverified_at": run.get("updated_at") if not different_head else None,
             "state": "recovery_candidate" if different_head else "operation_reverified",
         }
-        marker = f"<!-- kuafu-recovery:run-{rid}-attempt-{attempt} -->"
+        # Each changed candidate has its own receipt and cannot consume the exact recheck.
+        # New exact receipts get a distinct marker to avoid colliding with legacy candidate comments.
+        prefix = "candidate" if different_head else "exact"
+        marker = f"<!-- kuafu-recovery:{prefix}-run-{rid}-attempt-{attempt}"
+        if different_head:
+            marker += f"-head-{run['head_sha']}-pr-head-{issue['verified_pr_head']}"
+        marker += " -->"
         text = (
             "夸父定向复验。业务验收由原工单责任人继续。\n\n```json\n" + json.dumps(proof, ensure_ascii=False) + "\n```"
         )

@@ -149,10 +149,11 @@ class KuafuGitHubTests(unittest.TestCase):
 
     def successful_retry(self, before, after, old_conclusion="failure", *, successor=False):
         self.api.jobs = before
+        self.api.run["updated_at"] = "2026-11-06T00:00:00Z"
         self.api.run["conclusion"] = old_conclusion
         self.api.route()
         failed = self.api.run.copy()
-        self.api.run.update(run_attempt=3, conclusion="success")
+        self.api.run.update(run_attempt=3, conclusion="success", updated_at="2026-11-07T01:00:00Z")
         success = self.api.run
         if successor:
             failed["updated_at"] = "2026-11-06T00:00:00Z"
@@ -206,6 +207,9 @@ class KuafuGitHubTests(unittest.TestCase):
         comments = self.successful_retry(old, new)
         proof = self.api.route()["reverification"][0]
         self.assertEqual(proof["state"], "operation_reverified")
+        self.assertEqual(proof["first_failure_at"], "2026-11-06T00:00:00Z")
+        self.assertEqual(proof["reverified_at"], "2026-11-07T01:00:00Z")
+        self.assertIsNone(proof["condition_observed_at"])
         self.assertEqual(proof["jobs"], [{"failed_job": 18, "successful_job": 23, "steps": [2]}])
         self.assertIsNone(self.api.route())
         self.assertEqual(len(comments), 1)
@@ -217,6 +221,26 @@ class KuafuGitHubTests(unittest.TestCase):
         proof = self.api.route()["reverification"][0]
         self.assertEqual(proof["state"], "recovery_candidate")
         self.assertEqual(proof["jobs"], [{"started_job": 23}])
+        self.assertIsNone(proof["reverified_at"])
+        # A legacy candidate receipt must not hide the still unverified original operation.
+        from kuafu_github import prior_reports
+
+        self.api.comments[-1]["body"] = self.api.comments[-1]["body"].replace(
+            self.api.comments[-1]["body"].splitlines()[0], "<!-- kuafu-recovery:run-18-attempt-2 -->"
+        )
+        self.assertEqual(len(list(prior_reports(self.api, self.api.issue))), 1)
+
+    def test_pr_target_successes_on_same_base_bind_distinct_pr_heads(self):
+        self.api.run.update(event="pull_request_target", pull_requests=[self.api.pr])
+        comments = self.successful_retry([], [{"id": 23, "conclusion": "success"}], "startup_failure")
+        for letter in ("c", "d", "d"):
+            self.api.pr["head"]["sha"] = letter * 40
+            proof = self.api.route()["reverification"][0]
+            self.assertEqual(proof["old_pr_head"], "b" * 40)
+            self.assertEqual(proof["new_pr_head"], letter * 40)
+            self.assertEqual(proof["new_candidate"], proof["old_candidate"])
+            self.assertEqual(proof["state"], "recovery_candidate")
+        self.assertEqual(len(comments), 2)
 
     def test_green_workflow_with_skipped_failed_step_keeps_pending(self):
         old = [
