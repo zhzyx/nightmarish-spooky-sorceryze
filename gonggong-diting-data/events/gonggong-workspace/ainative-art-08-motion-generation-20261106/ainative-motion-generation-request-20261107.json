@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-motion-generation-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-08-motion-generation-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T16:21:11.316051+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/149",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按已验收依赖推进本机文字与视频生成动画",
+    "dependency": {
+      "issue": 147,
+      "pr": 203,
+      "main_commit": "4934dcd836493366c89a93078596d53f41d2c6be",
+      "acceptance_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/147#issuecomment-6689522215",
+      "state": "closed_completed"
+    },
+    "worker": "/root/sinan_0c84c6288418c3d1",
+    "dispatch_receipt": "f426d26bb459b771b514500bdda5a147476e47e1e52b611ea31537816fdd3641",
+    "execution_state": "running",
+    "daqian_readback": "running",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "1765af720e33d183ebe874772fbe4fdd65af3993f29fe2e5c86662f19d085fab"
+}
