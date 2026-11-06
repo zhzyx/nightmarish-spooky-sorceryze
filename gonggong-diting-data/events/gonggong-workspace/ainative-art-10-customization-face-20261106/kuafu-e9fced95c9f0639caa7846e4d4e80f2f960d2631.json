@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e9fced95c9f0639caa7846e4d4e80f2f960d2631",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-10-customization-face-20261106",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.0",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8d5d551e7ad2c6b2c9ff99ce8056657ad32080d6e814c94a1fb8754384b32fd3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/243",
+    "action": "validation",
+    "detection_head": "b27b319817de68a5ced0de38224f46a570db1604",
+    "context_sha256": "ebbdcfce0c1d583c520e702ebb295b820fe6113271c1fcbbfa85e7413f79b6b5",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6672872239",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42270709096/job/128074214343",
+    "diagnosis": "PR240 exact signed candidate failed Python ruff formatting, five mypy errors and six Unreal Engine abbreviation spelling checks. Runtime visual and independent functional acceptance remain valid. Local report244 duplicates CI bug243.",
+    "next_action": "Original worker /root/sinan_54d783bf08d24eb0 fixes the three scoped Rain Python files; root fixes parent documentation abbreviations. Independently review semantic delta, update source hashes, sign a new candidate and require exact PR CI success before delivery.",
+    "original_operation_reverified": false
+  },
+  "occurred_at": "2026-11-06T18:30:17.715891+00:00",
+  "sha256": "ae978b890ef5644db84558f2280ab406a1cd67694307c9513e3663de6863cfea"
+}
