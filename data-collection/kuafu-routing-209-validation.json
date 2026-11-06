@@ -1,0 +1,8 @@
+{
+  "issue_number": 209,
+  "request_id": "kuafu-blocker-routing",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/209#issuecomment-6690608207",
+  "validation": {"issue_workorders_python_tests": 89, "dispatch_and_sinan_node_tests": 61, "ruff": "passed", "mypy": "passed"},
+  "role_report_sha256": "237b3bc6456f4e99c584adb49dc55e9cf1d270cc84ce80b4981961d583833736",
+  "limits": "Default-branch workflow dispatch requires verification after merge. Original PR ownership and revalidation remain with the publishers."
+}

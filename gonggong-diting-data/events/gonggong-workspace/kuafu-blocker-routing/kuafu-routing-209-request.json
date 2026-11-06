@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-routing-209-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-blocker-routing",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:17:24.503534+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/209",
+  "agent": {
+    "id": "codex-primary",
+    "version": "host-session",
+    "origin": "actual_codex_host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "issue_number": 209,
+    "request": "所有实际阻塞均需准确交给夸父介入排查并回读处置",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "f2ab88aa567d8225ea3ed52287c46a9c6a33cbe7ef457640eb3780bd24e091e8"
+}
