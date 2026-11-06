@@ -13,12 +13,12 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 | git-markdown-documents | 将偃师结构化需求／设计保存为仓库内 Markdown，返回文档引用、内容版本与写入回执 | customizations/components/godot-host/requirements_agent.py 中 design-docs 写入；design-docs/；work-items.json 的 requirements_root | 内容设计属偃师；Git 文档存储属本模块。写文件、提交、推送分别留证；与工单创建可组合但不可互代 |
 | github-workorders | 稳定需求标识查重、创建／回读 Issue、类别／状态映射、来源修订及幂等对账 | customizations/components/issue-workorders/work_items.py、issue_events.py、github_source.mjs；customizations/platforms/work-management/github/git-issue/；work-items.json；.github/ISSUE_TEMPLATE/、labels.json、status-labels.json | 两套入口需按宿主选择，不双重创建；来源状态以远端为准，司南协调职责不迁入本模块 |
 | github-workorder-relations | 将通用父子任务／依赖映射为远端子 Issue／关系，回读关系与修订 | 通用语义在 framework/specs/work-order-management.md；GitHub 生命周期在 customizations/components/issue-workorders/issue-lifecycle.md | 生命周期已定义原生关系及人工授权回读；当前自动适配器未实现关系迁移，不能宣称已自动接通；正文写“父单 #N”不证明 GitHub 原生关系存在，父单不得因子单完成自动关闭 |
-| git-change-integration | Git 身份映射、共同基准、工作树隔离、差异／冲突、commit/tree、贡献整合 | framework/agents/heqi/references/git-workflow.md、concurrent-issue.md；customizations/components/issue-workorders/git-workflow.md | 合契保留通用整合责任；认证 login 与实际执行者关联由宿主核验，提交作者字段本身不是认证 |
+| git-change-integration | Git 身份映射、共同基准、工作树隔离、差异／冲突、commit/tree、贡献整合 | customizations/platforms/development/git/heqi/git-workflow.md、concurrent-issue.md；customizations/components/issue-workorders/git-workflow.md | 合契保留通用整合责任；认证 login 与实际执行者关联由宿主核验，提交作者字段本身不是认证 |
 | github-pr-gates | PR 关联、Issue 回读门禁、分支保护与 CI 接入 | customizations/components/issue-workorders/issue_gate.py；.github/CONTRIBUTING.md、PULL_REQUEST_TEMPLATE.md、workflows/gonggong-issue-gate.yml | 本仓库入口约定仍有效；不升级为无 Git 项目的核心前置条件。CI 文件存在不证明远端保护已启用 |
 | git-delivery-evidence | commit/tree 与交付文件摘要、来源一致性、发布引用和回读 | customizations/platforms/development/git/delivery/check_delivery.py；customizations/platforms/development/git/delivery/templates/delivery.json；customizations/platforms/development/git/delivery/test_delivery.py | 现有检查器／模板是 Git 专用实现；核心只要求不可变候选、证据及实际交付回执，其他来源另行适配 |
 | github-delivery-lifecycle | main 接收、Issue 完成／结转及实际状态回读 | customizations/components/issue-workorders/yanluo_host.py、yanluo_progress.py、yanluo.md、issue-lifecycle.md；customizations/components/yanluo/ | 阎罗承担当前宿主交付；GitHub 写入与关系操作属接入实现，不改通用协调、整合责任，不扩大已准入 Agent 权限 |
 | git-file-telemetry | 事件文件持久化、只增不改、采集索引、index／HEAD 校验 | customizations/platforms/data-collection/git-files/storage/；issue_gate.py 的采集检查；work_items.py 的 collect；gonggong-diting-data/、data-collection/ | 共享谛听语义保留；文件落库、Git 跟踪、远端发布、消费分别证明，历史数据只读 |
-| yanshi-git-ledger | 兼容偃师 CLI 的本地文档、账本、工单及 Git 操作 | framework/integrations/yanshi-legacy/；framework/agents/yanshi/references/tools.md | 兼容接入组合，不是偃师本体；后续有真实替换需求时按文档、工单、版本能力继续拆实现 |
+| yanshi-git-ledger | 兼容偃师 CLI 的本地文档、账本、工单及 Git 操作 | customizations/platforms/document-management/git-markdown/yanshi-legacy/；framework/agents/yanshi/references/tools.md | 兼容接入组合，不是偃师本体；后续有真实替换需求时按文档、工单、版本能力继续拆实现 |
 
 一个文件承载多个职责时按函数／流程分别归属，不能仅迁移文件夹就宣称解耦完成。尤其 requirements_agent.py 当前同时承担需求模型调用、GitHub 身份／仓库检查、Markdown 保存与建单，本次只是把这些责任标清。
 
@@ -31,7 +31,7 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 | godot-build-delivery | tools/build_gonggong_editor.ps1、editor_self_build.py、install_gonggong_editor.ps1、launch_gonggong_editor.ps1；相关发布／自更新工具与 .github 构建工作流 | 编译、产物、安装、启动、更新／回退；OS、架构、编译器和设备验证按实际需求配置 |
 | host-runtime-provisioning | customizations/components/godot-host/environment_igniter.py；tools/install_gonggong_runtimes.py、configure_gonggong_runtime.ps1 | 发现并部署所选组合需要的运行依赖；Python／Node／Git 不是所有宿主的通用要求 |
 | host-agent-dispatch | customizations/components/codex-dispatch/；tools/godot_parallel/ | 现有司南委托到特定宿主实例的映射；核心协调与模型选择契约保持共享，不能把宿主 CLI 当核心前置条件 |
-| model-transport-adapters | framework/runtime/adapters.py；tools/codex_cli/、tools/codebuddy_cli/；requirements_agent.py 的传输部分 | API／CLI 协议及能力映射；供应商语法与工具限制留在接入，宿主统一治理权限 |
+| model-transport-adapters | customizations/platforms/ai-access/host-http/runtime/adapters.py；tools/codex_cli/、tools/codebuddy_cli/；requirements_agent.py 的传输部分 | API／CLI 协议及能力映射；供应商语法与工具限制留在接入，宿主统一治理权限 |
 
 此表列共工接入边界，不把上游 Godot 的全部引擎模块改为共工模块。Godot 源码继续在仓库根，外部引擎目录不变；已有实现的物理拆分、平台编译、工具安装均不在本次范围。
 

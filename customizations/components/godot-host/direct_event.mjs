@@ -1,7 +1,7 @@
 // Consume the verified GitHub readback. This event has no worker requests or execution runtime.
 import fs from 'node:fs';
 import {GitHubIssueSource} from '../issue-workorders/github_source.mjs';
-import {planDispatch} from '../../../framework/modules/sinan/dispatch.mjs';
+import {planDispatch} from '../../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 
 const {result, issue, repository, allowedCategories} = JSON.parse(fs.readFileSync(0, 'utf8'));
 const binding = {number: result.number, requestId: result.request_id};

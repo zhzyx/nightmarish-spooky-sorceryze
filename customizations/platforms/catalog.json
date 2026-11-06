@@ -10,10 +10,11 @@
       "related_paths": [
         "customizations/components/codex-dispatch",
         "customizations/components/repository-dispatch",
-        "framework/modules/sinan",
+        "customizations/platforms/process-management/yuanheng-local/sinan",
         "framework/agents/sinan/references/parallel-dispatch.md",
         "customizations/components/issue-workorders/kuafu-routing.md",
-        ".github/workflows/kuafu-blockers.yml"
+        ".github/workflows/kuafu-blockers.yml",
+        "customizations/platforms/process-management/yuanheng-local/sinan/module.json"
       ]
     },
     {
@@ -24,7 +25,7 @@
       "related_paths": [
         "design-docs",
         "customizations/components/godot-host/requirements_agent.py",
-        "framework/integrations/yanshi-legacy",
+        "customizations/platforms/document-management/git-markdown/yanshi-legacy",
         "framework/agents/yanshi/references/tools.md"
       ]
     },
@@ -37,7 +38,8 @@
         "customizations/platforms/data-collection/git-files/storage",
         "gonggong-diting-data",
         "data-collection",
-        "customizations/components/issue-workorders/work_items.py"
+        "customizations/components/issue-workorders/work_items.py",
+        "customizations/platforms/ai-access/host-http/runtime/diting.py"
       ]
     },
     {
@@ -53,7 +55,8 @@
         "customizations/components/issue-workorders",
         "customizations/components/godot-host/daqian/progress.py",
         "customizations/components/godot-host/daqian/board.py",
-        "customizations/components/yanluo"
+        "customizations/components/yanluo",
+        "customizations/platforms/work-management/github/follow_up.mjs"
       ]
     },
     {
@@ -62,14 +65,15 @@
       "provider": "git",
       "directory": "customizations/platforms/development/git",
       "related_paths": [
-        "framework/agents/heqi/references",
-        "framework/tools/git_batch.py",
+        "customizations/platforms/development/git/git_batch.py",
         "customizations/platforms/development/git/delivery/check_delivery.py",
         "customizations/platforms/development/git/delivery/templates/delivery.json",
         "tools/run_issue_gate.ps1",
         ".github/workflows",
         "customizations/components/issue-workorders/writer_submit.py",
-        "customizations/components/issue-workorders/yanluo_host.py"
+        "customizations/components/issue-workorders/yanluo_host.py",
+        "customizations/platforms/development/git/heqi",
+        "customizations/platforms/development/p4v"
       ]
     },
     {
@@ -98,7 +102,7 @@
       "related_paths": [
         "customizations/components/godot-host/daqian/model_catalog.py",
         "customizations/components/godot-host/daqian/local_models.py",
-        "framework/runtime/evaluate.py"
+        "customizations/platforms/ai-access/host-http/runtime/evaluate.py"
       ]
     },
     {
@@ -107,12 +111,13 @@
       "provider": "daqian",
       "directory": "customizations/platforms/ai-access/daqian",
       "related_paths": [
-        "framework/runtime/adapters.py",
+        "customizations/platforms/ai-access/host-http/runtime/adapters.py",
         "customizations/components/godot-host/daqian/model_api.py",
         "customizations/components/godot-host/daqian/credentials.py",
         "tools/codex_cli",
         "tools/codebuddy_cli",
-        "customizations/components/codex-dispatch"
+        "customizations/components/codex-dispatch",
+        "customizations/platforms/ai-access/host-http/runtime/runner.py"
       ]
     }
   ]

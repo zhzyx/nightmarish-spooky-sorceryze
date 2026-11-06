@@ -1,0 +1,22 @@
+{
+  "authority": "user-current-chat",
+  "issue": 257,
+  "recorded_at": "2026-11-06T19:16:50.776807+00:00",
+  "decision": "批准该精确候选合入",
+  "reviewed_tree": "b478454a3cfe07d6817636a2f27f3b6d232144b5",
+  "framework_version": "0.10.0",
+  "scope": "五个 Agent 与工单协调技能的定义及平台分离，合入 main。生产宿主调用另行授权。",
+  "agents": {
+    "yanshi": "a0ac6d16523065678b74ae61c4db8bd4a5ee2ce335e44bfe2437c9f3aa5a058b",
+    "kuafu": "7a430f23ecec70e9121727994d2dfae26fef30322940a4c6475091a78185e8fe",
+    "diting": "ff9b6b70f0318b53db57d38516c55a8f00ecf8ad50571bc39b03957de09a58f4",
+    "heqi": "010295a8d986db4ebce7be37693b72a9b6269012ccc2e22c1b80e144ae58ff92",
+    "sinan": "59d90f15b093ee20a8a72044165c51c403dd2ea924f1c83df38f1a87f0de80b9"
+  },
+  "skill": {
+    "id": "work-order-coordination",
+    "version": "0.4.3",
+    "entry_sha256": "026bdc5836cdc104e996890e9fc5c3cfebad84e762391f815a835d2bc1d0d71a"
+  },
+  "runtime_authority_granted": false
+}

@@ -43,8 +43,8 @@ def storage_entry():
     directory = checker["PLATFORM_PACKAGES"][0]
     lock = json.loads((installation / checker["REGISTRATION"]).read_text(encoding="utf-8"))
     checker["platform_inventory"](installation, directory, lock["platform_files"][directory])
-    batch = "tools/git_batch.py"
-    if hashlib.sha256((installation / "framework" / batch).read_bytes()).hexdigest() != lock["files"][batch]:
+    batch = "customizations/platforms/development/git/git_batch.py"
+    if hashlib.sha256((installation / batch).read_bytes()).hexdigest() != lock["host_files"][batch]:
         raise ValueError("Git storage dependency differs from its registered version")
     return str(installation / directory / "diting_files.py")
 
