@@ -1,0 +1,244 @@
+{
+  "request_id": "flow-execute-20261107",
+  "issue_number": 246,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/246",
+  "path_base": "repository_root",
+  "design": "design-docs/flow-execute-20261107.md",
+  "source_baseline": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+  "scoped_paths": [
+    "customizations/components/issue-workorders/work_items.py",
+    "customizations/components/issue-workorders/flow_views.py",
+    "customizations/components/issue-workorders/test_flow_views.py",
+    "customizations/components/issue-workorders/README.md"
+  ],
+  "turnaround": {
+    "repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "observed_at": "2026-11-06T18:46:03.718043+00:00",
+    "released_at": "2026-11-06T18:27:48+00:00",
+    "grouped_by_current_type": {
+      "type:bug": {
+        "baseline": {
+          "issues": [
+            3,
+            8,
+            11,
+            39,
+            50,
+            55,
+            106,
+            109,
+            168,
+            181,
+            184,
+            188,
+            189,
+            212
+          ],
+          "n": 14,
+          "median_minutes": 42.06,
+          "p90_minutes": 669.62
+        },
+        "after": {
+          "issues": [
+            248
+          ],
+          "n": 1,
+          "median_minutes": 2.27,
+          "p90_minutes": 2.27
+        }
+      },
+      "type:design": {
+        "baseline": {
+          "issues": [
+            32,
+            58
+          ],
+          "n": 2,
+          "median_minutes": 187.38,
+          "p90_minutes": 287.85
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      },
+      "type:development": {
+        "baseline": {
+          "issues": [
+            1,
+            2,
+            9,
+            22,
+            24,
+            25,
+            27,
+            35,
+            48,
+            53,
+            59,
+            72,
+            79,
+            90,
+            100,
+            103,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            127,
+            131,
+            133,
+            134,
+            138,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            156,
+            172,
+            174,
+            191,
+            196,
+            197,
+            204,
+            210,
+            218
+          ],
+          "n": 45,
+          "median_minutes": 132.02,
+          "p90_minutes": 1422.77
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      },
+      "type:documentation": {
+        "baseline": {
+          "issues": [
+            111
+          ],
+          "n": 1,
+          "median_minutes": 18.22,
+          "p90_minutes": 18.22
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      },
+      "type:maintenance": {
+        "baseline": {
+          "issues": [
+            5,
+            6,
+            7,
+            12,
+            13,
+            15,
+            41,
+            43,
+            84,
+            85,
+            88,
+            101
+          ],
+          "n": 12,
+          "median_minutes": 37.39,
+          "p90_minutes": 643.3
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      },
+      "type:requirement": {
+        "baseline": {
+          "issues": [
+            46
+          ],
+          "n": 1,
+          "median_minutes": 998.33,
+          "p90_minutes": 998.33
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      },
+      "type:test": {
+        "baseline": {
+          "issues": [
+            4,
+            125
+          ],
+          "n": 2,
+          "median_minutes": 85.53,
+          "p90_minutes": 166.4
+        },
+        "after": {
+          "issues": [],
+          "n": 0,
+          "median_minutes": null,
+          "p90_minutes": null
+        }
+      }
+    },
+    "unavailable_baseline_issues": [],
+    "public_recovery_receipts": [],
+    "substantive_concurrent_rework": null,
+    "user_reading_seconds": null,
+    "scope": "completed Issue wall time; after cohort starts at release"
+  },
+  "candidate_readback": {
+    "base": "81f19a1fdf708ec3128ea0ceb278b9b4429d7f53",
+    "main_observed": "37e3e59af604440e53f7b6ffc9f6a827878639b9",
+    "tree": "9914aeb576449ef22fbb2f7dee6ff49540715572",
+    "write_paths": [
+      "customizations/components/godot-host/requirements_agent.py",
+      "customizations/components/godot-host/test_requirements_agent.py",
+      "customizations/components/issue-workorders/execution-policy.md",
+      "data-collection/diting-flow-20261107.json",
+      "design-docs/diting-flow-20261107.md",
+      "design-docs/templates/requirement.md",
+      "gonggong-diting-data/events/gonggong-workspace/diting-flow-20261107/diting-flow-20261107-request.json"
+    ],
+    "base_advanced": true,
+    "overlapping_write_paths": [],
+    "substantive_rework": null,
+    "next_action": "Recheck delivered differences and acceptance on the merge result; do not republish.",
+    "current_main": "2f1074d316b10d85cd670b66f7f81d48799363fc",
+    "pr_state": "MERGED",
+    "merge_commit": "44d62e44bea1cd1207f0eff8fbfe2d5b0c4269ab",
+    "issue": 227,
+    "request_id": "diting-flow-20261107",
+    "writer": "Sail-Li",
+    "candidate": "b87834ee24fd5bed5bb8c7fd161b140fc0e86e98",
+    "signed_commit": "b31ae0d9864862c0a221ff4bd7ca65c750aba126",
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/235",
+    "repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "delivered_paths_differ": []
+  },
+  "reader_example": {
+    "issue": 58,
+    "observed": "A single brief returned the design statement placing AIChat left of 2D, the latest complete clarification and their source links.",
+    "user_reading_seconds": null
+  }
+}

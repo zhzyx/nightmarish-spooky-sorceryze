@@ -11,6 +11,37 @@ function persistNew(file, value) {
   finally {fs.closeSync(fd);}
 }
 function nonempty(value) {return typeof value === 'string' && !!value.trim();}
+// Uncreated output files inherit the real path of their nearest existing
+// ancestor. Resolve only native absolute paths in the bound operator process.
+function localResource(resource, held) {
+  const windows = process.platform === 'win32';
+  // Older planner records strip the trailing slash from a drive root.
+  if (held && windows && typeof resource === 'string' && /^[a-z]:$/i.test(resource)) resource += '/';
+  if (typeof resource !== 'string' || !path.isAbsolute(resource) ||
+      resource.split(/[\\/]/).some(part => part === '..' || part === '.')) throw Error('Expected a normalized absolute resource');
+  let current = path.normalize(resource);
+  const root = path.parse(current).root;
+  if (windows && !root.includes(':') && !root.startsWith('\\\\')) {
+    throw Error('Windows resources require an explicit drive or UNC share');
+  }
+  const missing = [];
+  for (;;) {
+    try {fs.lstatSync(current); break;}
+    catch (error) {
+      if (error.code !== 'ENOENT' || current === path.dirname(current)) throw error;
+      missing.unshift(path.basename(current));
+      current = path.dirname(current);
+    }
+  }
+  const ancestor = fs.realpathSync.native(current);
+  if (missing.length && !fs.statSync(ancestor).isDirectory()) throw Error('Resource ancestor is not a directory');
+  const resolved = path.join(ancestor, ...missing);
+  if (windows && !held && /^[a-z]:[\\/]$/i.test(resolved)) {
+    throw Error('Declare a directory under the drive root for this worker');
+  }
+  return resolved;
+}
+
 function handoff(a) {
   return `工单：${a.ticket}\n目标：${a.outcome}\n责任人：${a.owner}\n授权引用：${a.authorityRef}\n验收：${a.acceptance}\n` +
     `上下文引用：${JSON.stringify(a.contextRefs)}\n来源版本：${JSON.stringify(a.sourceSnapshot)}\n` +
@@ -46,6 +77,11 @@ export class CodexDispatchHost {
       .filter(n => !fs.existsSync(path.join(this.root, 'released', n)))
       .map(n => read(path.join(this.root, 'reservations', n)).assignment);
   }
+  resources(a, held = false) {
+    if (!this.policy.localResources) return a;
+    const resolve = resource => localResource(resource, held);
+    return {...a, reads:a.reads.map(resolve), writes:a.writes.map(resolve)};
+  }
   async inspect(event) {
     const value = await this.source.inspect(event);
     const active = new Map(value.environment.active.map(a => [a.ticket, a]));
@@ -58,7 +94,7 @@ export class CodexDispatchHost {
     const catalog = value.environment.catalog.map(model => inherited && model.id !== inherited && Array.isArray(model.targets)
       ? {...model, targets: model.targets.filter(target => target !== 'agent')}
       : model);
-    return {...value, environment: {...value.environment, catalog, active: [...active.values()],
+    return {...value, environment: {...value.environment, catalog, active: [...active.values()].map(a => this.resources(a, true)),
       chatCreationAuthorized: this.policy.chatCreationAuthorized === true && value.environment.chatCreationAuthorized === true}};
   }
   async revalidate(a) {
@@ -148,9 +184,27 @@ export class CodexDispatchHost {
   }
   async run(event, requests) {
     // Chat model overrides require an explicit user-selected model, per native tool policy.
-    const prepared = requests.map(r => r.target !== 'chat' ? r : {...r,
-      model: r.model ?? this.policy.explicitChatModels?.[r.ticket] ?? this.policy.defaultChatModel});
-    return await dispatchEvent(event, prepared, this);
+    const byTicket = new Map(requests.map(r => [r.ticket, r]));
+    if (byTicket.size !== requests.length) throw Error('Duplicate requested ticket');
+    const prepared = [];
+    const failures = [];
+    for (const request of requests) {
+      try {
+        const r = this.resources(request);
+        prepared.push(r.target !== 'chat' ? r : {...r,
+          model: r.model ?? this.policy.explicitChatModels?.[r.ticket] ?? this.policy.defaultChatModel});
+      } catch (error) {
+        failures.push({ticket:request.ticket, state:'validation_failed', stage:'resource_resolution', reason:error.message});
+      }
+    }
+    const batch = await dispatchEvent(event, prepared, this);
+    batch.results.push(...failures);
+    for (const row of batch.results) {
+      const request = byTicket.get(row.ticket);
+      row.owner = request.owner;
+      row.acceptance = request.acceptance;
+    }
+    return batch;
   }
   async reconcile(event, key, receipt) {
     if (!['execution.finished', 'execution.failed'].includes(event.type) || !nonempty(event.reference) || !/^[a-f0-9]{64}$/.test(key)) throw Error('Actual terminal event required');

@@ -10,7 +10,7 @@ import {issueSnapshot} from '../issue-workorders/github_source.mjs';
 function setup(t) {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'sinan-operator-'));
   t.after(()=>{assert.ok(root.startsWith(path.join(os.tmpdir(),'sinan-operator-')));fs.rmSync(root,{recursive:true,force:true});});
-  const issue={number:1,html_url:'https://github.com/test/repo/issues/1',title:'work',state:'open',updated_at:'2026-11-05T00:00:00Z',body:'<!-- gonggong-request:work -->',labels:['workspace:gonggong','type:development','status:in-progress'].map(name=>({name})),assignees:[]};
+  const issue={number:1,issue_dependencies_summary:{total_blocked_by:0},html_url:'https://github.com/test/repo/issues/1',title:'work',state:'open',updated_at:'2026-11-05T00:00:00Z',body:'<!-- gonggong-request:work -->',labels:['workspace:gonggong','type:development','status:in-progress'].map(name=>({name})),assignees:[]};
   const binding={number:1,requestId:'work'};
   const options={root:path.join(root,'sources'),repository:'test/repo',bindings:[binding],readIssue:async()=>issue,allowedCategories:['type:development'],operator:'actual-fixture-operator',catalog:[],capacity:2,authorityRef:'fixture-only',authorize:async()=>true,report:async()=>{},verifyWorker:async()=>true};
   const a={ticket:'github:test/repo#1',key:'a'.repeat(64),sourceSnapshot:issueSnapshot('test/repo',binding,issue,options.allowedCategories).sourceSnapshot,model:{id:'model'},target:'agent',reads:[],writes:[]};

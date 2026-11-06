@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "flow-dispatch-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "flow-dispatch-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:50:28.253343+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/247",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "5a810f5501eb0932bf640f19ee70d1b836262912df9f026948dd43877357e414"
+  },
+  "payload": {
+    "outcome": "将独立写入边界与汇合条件接入实际派发",
+    "parent_issue": 246,
+    "usage": null,
+    "usage_unknown_reason": "Host did not return measured usage"
+  },
+  "evidence_refs": [],
+  "sha256": "7c40208e5062bd2000d3db6bf9c90965ca6def6662a8252683493c0df36458fc"
+}
