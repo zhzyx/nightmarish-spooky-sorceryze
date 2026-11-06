@@ -110,3 +110,9 @@ python framework/extensions/diting-files/diting_files.py analyze --repo . --tena
 `work-items.json` 的兼容字段 `sinan_source_registered=false` 仅指通用框架旧 registry，不表示当次操作者宿主未接通；`sinan_source_binding` 显式记录当前接入入口、范围和证据。单次 `issue_events.py` 仍只接收与关联，不自行派发，因此它的布尔观测不代表整个执行宿主状态。两条入口共享真实 Issue 身份与谛听来源，不能用全局 true 替代实际绑定、准入或调用回执。
 
 接收责任随当前操作者交接；事件 actor、assignee 与接收者分别保留。旧 envelope/receipt 不更改归属；实际读取、文件送达、Git/main 接收与指定记录消费各有独立证据。无新事件不调用，不新增全局监听、定时扫描或后台服务。历史 Olympus 来源只读沿用，当前新增记录统一写入 GongGong 数据集。
+
+## 读取当前工单和复盘周转
+
+从仓库根运行 `python customizations/components/issue-workorders/work_items.py brief --issue 58`。它仅在本次读取时汇集 GitHub 正文、完整偃师澄清、最新评论、原生前置与子单，并链接当前检出提交的设计结论。各项标明来源；历史澄清保留当时范围，工作者仍需核对后续用户决定。新建工单正文提供直接打开主线设计的链接。
+
+复盘一个已发布版本时，运行 `python customizations/components/issue-workorders/work_items.py turnaround --baseline data-collection/diting-flow-20261107.json --released-at 2026-11-06T18:27:48Z`。替换为实际同仓基线索引和发布时间。按当前类别比较基线与发布后新建且已完成的工单，输出样本编号、中位数及 P90；另列同仓原单上的夸父公开复验回执。没有回执的人工阅读时长及实质并发返工保持未知。单个已签 PR 的基线移动、写入重叠及交付差异由 `writer_submit.py --inspect-pr <编号>` 回读。均由当次需求或事件触发。

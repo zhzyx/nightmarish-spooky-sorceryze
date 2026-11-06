@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "flow-execute-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "flow-execute-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T18:59:06.240803+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/246",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "3405f9710581b46c2274ef4c51a8ef59d61618398288152eb8e0e8fbbbab1918"
+  },
+  "payload": {
+    "outcome": "执行共工协作优化",
+    "parent_issue": 246,
+    "usage": null,
+    "usage_unknown_reason": "Host did not return measured usage"
+  },
+  "evidence_refs": [],
+  "sha256": "334dbbd0b03d7ef9f8f6e0d1a25d478e706e4df8bba2e3d7c6b4e7b96ad2d659"
+}

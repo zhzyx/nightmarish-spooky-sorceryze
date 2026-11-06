@@ -11,6 +11,7 @@ import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -138,7 +139,11 @@ def issue(root, document, title, category, request_id, apply=False, execution_au
     if doc.suffix != ".md" or not doc.is_file():
         raise ValueError("A Markdown requirement in design-docs is required")
     marker = "<!-- gonggong-request:" + request_id + " -->"
-    body = marker + "\n\n需求文档：`" + doc.relative_to(root).as_posix() + "`\n\n" + doc.read_text(encoding="utf-8")
+    relative = doc.relative_to(root).as_posix()
+    design_url = f"https://github.com/{settings['repository']}/blob/main/{quote(relative, safe='/')}"
+    body = f"{marker}\n\n需求文档：`{relative}`\n\n[查看主线设计（合入后可用）]({design_url})\n\n" + doc.read_text(
+        encoding="utf-8"
+    )
     if execution_authority_ref:
         body += "\n\n执行授权来源（由调用宿主核实，不代替候选准入）：" + execution_authority_ref + "\n"
     plan = {
@@ -279,9 +284,30 @@ def main():
     create.add_argument("--execution-authority-ref", help="Existing user/host mandate verified by caller; not a grant")
     collection = sub.add_parser("collect")
     collection.add_argument("--request-id", required=True)
+    brief = sub.add_parser(
+        "brief", help="Read the current Issue, its design, latest complete clarification and sub-issues"
+    )
+    brief.add_argument("--issue", type=int, required=True)
+    timing = sub.add_parser("turnaround", help="Compare completed Issue cohorts by type after a verified release")
+    timing.add_argument("--baseline", type=Path, required=True, help="Repository-relative or absolute scan index")
+    timing.add_argument("--released-at", required=True, help="Actual release timestamp with UTC offset")
     args = parser.parse_args()
     root = args.repo.resolve()
-    if args.command == "labels":
+    if args.command in {"brief", "turnaround"}:
+        import flow_views
+
+        repository = config(root)[0]["repository"]
+        if args.command == "brief":
+            print(flow_views.brief(gh, root, repository, args.issue))
+            return
+        baseline = read(root / args.baseline)
+        released = datetime.fromisoformat(args.released_at)
+        if released.tzinfo is None or not baseline.get("issue_url", "").startswith(
+            "https://github.com/" + repository + "/issues/"
+        ):
+            raise ValueError("Provide a same-repository baseline and a timezone-aware release time")
+        result = flow_views.turnaround(gh, repository, baseline, released)
+    elif args.command == "labels":
         result = labels(root, args.apply)
     elif args.command == "issue":
         result = issue(
