@@ -87,10 +87,7 @@ class FrozenDistributionTests(unittest.TestCase):
                 "schema_version": 1,
                 "scope": gate.SCOPE,
                 "exemption": None,
-                "files": {
-                    name: gate.digest(raw)
-                    for name, raw in gate.inventory(self.framework).items()
-                },
+                "files": {name: gate.digest(raw) for name, raw in gate.inventory(self.framework).items()},
             }),
             encoding="utf-8",
         )
@@ -102,6 +99,28 @@ class FrozenDistributionTests(unittest.TestCase):
         self.assertFalse(result["authority_authenticated"])
         self.assertFalse(result["agent_execution_authorized"])
         self.assertEqual(before, gate.inventory(self.framework))
+
+    def test_platform_packages_are_pinned_and_not_executed(self):
+        target = self.root / gate.REGISTRATION
+        lock = json.loads(target.read_bytes())
+        lock.update(schema_version=2, platform_files={})
+        for directory, names in zip(
+            gate.PLATFORM_PACKAGES, [["diting_files.py", "event.schema.json"], ["check_delivery.py"]]
+        ):
+            package = self.root / directory
+            package.mkdir(parents=True)
+            for name in names:
+                (package / name).write_bytes(b"{}" if name.endswith(".json") else b"raise AssertionError()")
+            lock["platform_files"][directory] = {k: gate.digest(v) for k, v in gate.inventory(package).items()}
+        target.write_text(json.dumps(lock))
+        self.assertTrue(gate.check(self.root)["ok"])
+        adapter = self.root / gate.PLATFORM_PACKAGES[0] / "diting_files.py"
+        adapter.write_text("pass")
+        with self.assertRaisesRegex(ValueError, "Platform file set or digest"):
+            gate.check(self.root)
+        adapter.unlink()
+        with self.assertRaisesRegex(ValueError, "Platform file set or digest"):
+            gate.check(self.root)
 
     def test_corrupt_missing_and_extra_are_rejected(self):
         for operation in ("corrupt", "missing", "extra"):

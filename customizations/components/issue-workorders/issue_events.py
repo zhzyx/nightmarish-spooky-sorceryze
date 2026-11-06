@@ -235,9 +235,10 @@ def intake(root, number, event_id, host_id, tenant, request_id, definition):
         result = subprocess.run(
             [
                 sys.executable,
+                "-I",
                 "-X",
                 "utf8",
-                str(root / "framework/extensions/diting-files/diting_files.py"),
+                str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
                 "record",
                 "--repo",
                 str(root),

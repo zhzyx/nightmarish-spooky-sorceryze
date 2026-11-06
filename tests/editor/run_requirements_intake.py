@@ -63,6 +63,9 @@ def main():
         shutil.copytree(ROOT / "customizations", root / "customizations", ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copytree(ROOT / ".github", root / ".github")
         (root / "tools").mkdir()
+        for relative in ("tools/check_gonggong_distribution.py", "integrations/gonggong/frozen-distribution.json"):
+            (root / relative).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / relative, root / relative)
         shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
         shutil.copyfile(ROOT / "tools/configure_gonggong_runtime.ps1", root / "tools/configure_gonggong_runtime.ps1")
         shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
@@ -91,7 +94,8 @@ def main():
         ])
         run([
             sys.executable,
-            str(root / "framework/extensions/diting-files/diting_files.py"),
+            "-I",
+            str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
             "init",
             "--repo",
             str(root),
@@ -251,7 +255,8 @@ def main():
         receipt = json.loads(
             run([
                 sys.executable,
-                str(root / "framework/extensions/diting-files/diting_files.py"),
+                "-I",
+                str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
                 "git-check",
                 "--repo",
                 str(root),

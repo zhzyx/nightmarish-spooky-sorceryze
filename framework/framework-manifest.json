@@ -751,8 +751,7 @@
   ],
   "delivery_verification": {
     "specification": "specs/delivery.md",
-    "checker": "tools/check_delivery.py",
-    "template": "templates/delivery.json",
+    "implementation": "selected_by_host_for_delivery_source",
     "review": "reviews/sinan/workflow-optimization-review.json",
     "invocation": "on_actual_delivery_or_dependency_event",
     "grants_authority": false

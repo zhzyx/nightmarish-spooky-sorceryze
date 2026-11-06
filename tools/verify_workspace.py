@@ -37,7 +37,8 @@ def main():
         [sys.executable, str(root / "framework/tools/verify_framework.py")],
         [
             sys.executable,
-            str(root / "framework/extensions/diting-files/diting_files.py"),
+            "-I",
+            str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
             "git-check",
             "--repo",
             str(root),

@@ -252,6 +252,13 @@ def check_pr_evidence(root, issue, request_id, tenant, base_ref):
     return {"base_commit": base, "matching_event": matching_event, "matching_collection": matching_collection}
 
 
+def verify_platform_adapter(root, directory, registration_root=None):
+    installation = Path(__file__).resolve().parents[3]
+    checker = runpy.run_path(str(installation / "tools/check_gonggong_distribution.py"))
+    registration = json.loads(((registration_root or root) / checker["REGISTRATION"]).read_text(encoding="utf-8"))
+    checker["platform_inventory"](root, directory, registration["platform_files"][directory])
+
+
 def gate(root, number, request_id, session=None, base_ref="origin/main"):
     if session is not None:
         session.check_runtime()
@@ -287,13 +294,15 @@ def gate(root, number, request_id, session=None, base_ref="origin/main"):
     )
     if framework.get("mode") != "approved_file_integrity":
         raise ValueError("Formal GongGong verification required; candidate mode is insufficient")
+    verify_platform_adapter(root, "customizations/platforms/data-collection/git-files/storage")
     if session is None:
         validate_command(
             [
                 sys.executable,
+                "-I",
                 "-X",
                 "utf8",
-                str(root / "framework/extensions/diting-files/diting_files.py"),
+                str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
                 "git-check",
                 "--repo",
                 str(root),
@@ -361,7 +370,7 @@ class VerificationSession:
             raise ValueError("Gate implementation changed; restart the verification session")
 
     def check_diting(self, root):
-        validator = root / "framework/extensions/diting-files/diting_files.py"
+        validator = root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
         batch = root / "framework/tools/git_batch.py"
         binding = (str(root.resolve()), validator.read_bytes(), batch.read_bytes(), sys.version)
         if binding != self.binding:

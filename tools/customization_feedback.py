@@ -51,7 +51,7 @@ def files(root, folder):
 
 
 def registry(root):
-    r = read(root / "customizations/registry.json")
+    r = read(root / "customizations/platforms/components.json")
     seen = set()
     paths = []
     if r.get("schema_version") != 1 or r.get("owner") != "gonggong":
@@ -64,8 +64,8 @@ def registry(root):
             raise ValueError("Invalid ownership")
         if c["path"] != "customizations/components/" + c["id"] and not (
             c["id"] == "diting-file-data"
-            and c["path"] == "framework/extensions/diting-files"
-            and c.get("placement") == "legacy_preserved"
+            and c["path"] == "customizations/platforms/data-collection/git-files/storage"
+            and c.get("placement") == "platform_adapter"
         ):
             raise ValueError("Customization cannot claim shared framework paths")
         for k in ["version", "framework_dependency", "validation", "rollback"]:
