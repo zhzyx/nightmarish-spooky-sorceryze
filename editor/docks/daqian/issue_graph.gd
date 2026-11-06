@@ -23,7 +23,8 @@ var draft := {"nodes": {}, "edges": []}
 var context := {}
 var answers := {}
 var positions := {}
-var auto_positions := {}
+var layout_columns: Array = []
+var layout_pending := false
 var host_apply: Callable
 var canvas: GraphEdit
 var notice: Label
@@ -147,16 +148,12 @@ func _render_node(id: String, item: Dictionary) -> void:
 	var tint: Color = {"text":Color("#375e72"),"image":Color("#655581"),"task":Color("#344f79"),"question":Color("#8a652b"),"join":Color("#37645e")}.get(item.kind,Color("#46515e"))
 	if not request.is_empty() and recorded.is_empty():
 		tint = Color("#8a652b")
-	for style in ["titlebar","titlebar_selected"]:
-		var original := get_theme_stylebox(style,"GraphNode")
-		if original is StyleBoxFlat:
-			var colored := original.duplicate() as StyleBoxFlat
-			colored.bg_color = tint.lightened(0.10) if style.ends_with("selected") else tint
-			view.add_theme_stylebox_override(style,colored)
+	_tint_header(view, tint)
 	view.resizable = false
-	view.position_offset = positions.get(id, auto_positions.get(id,menu_at))
+	view.position_offset = positions.get(id, menu_at)
 	view.dragged.connect(func(_from,to):
 		positions[id] = to
+		_queue_layout()
 		draft_changed.emit())
 	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
 	var accepts: bool = item.kind in ["task","join"]
@@ -442,11 +439,22 @@ func _display_plan() -> Dictionary:
 	return plan
 
 
+func _tint_header(view: GraphNode, tint: Color) -> void:
+	for style in ["titlebar","titlebar_selected"]:
+		var original := get_theme_stylebox(style,"GraphNode")
+		if original is StyleBoxFlat:
+			var colored := original.duplicate() as StyleBoxFlat
+			colored.bg_color = tint.lightened(0.10) if style.ends_with("selected") else tint
+			view.add_theme_stylebox_override(style,colored)
+
+
 func _render_stage(id: String, item: Dictionary) -> void:
 	var view := GraphNode.new()
 	view.name = id
 	view.title = item.title
 	view.draggable = false
+	view.tooltip_text = item.value
+	_tint_header(view, Color("#3d5964"))
 	var description := _label(item.value)
 	description.custom_minimum_size.x = 210
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -459,7 +467,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 
 func draw_graph() -> void:
 	var plan := _display_plan()
-	auto_positions.clear()
+	layout_columns.clear()
 	var counts := {}
 	var outgoing := {}
 	var depth := {}
@@ -499,8 +507,6 @@ func draw_graph() -> void:
 	for id in plan.nodes:
 		if counts[id] > 0:
 			ready.append(id)
-	var widths := {}
-	var offsets := {}
 	var last := 0
 	for id in ready:
 		var level: int = depth[id]
@@ -510,24 +516,64 @@ func draw_graph() -> void:
 	for id in ready:
 		if plan.nodes[id].kind == "join" and outgoing[id].is_empty() and depth[id] == 0:
 			depth[id] = last + 1
-		var view := canvas.get_node(NodePath(str(id))) as GraphNode
 		var level: int = depth[id]
-		widths[level] = maxf(widths.get(level,0.0),view.get_combined_minimum_size().x)
-	var left := 55.0
-	for level in range(last+2):
-		offsets[level] = left
-		left += float(widths.get(level,0.0)) + 105.0
-	var heights := {}
-	for id in ready:
+		while layout_columns.size() <= level:
+			layout_columns.append([])
 		var view := canvas.get_node(NodePath(str(id))) as GraphNode
-		var level: int = depth[id]
-		var top: float = heights.get(level,65.0)
-		auto_positions[id] = Vector2(offsets[level],top)
-		if not positions.has(id):
-			view.position_offset = auto_positions[id]
-		heights[level] = top + maxf(view.size.y,view.get_combined_minimum_size().y) + 72.0
+		layout_columns[level].append(view)
+		view.resized.connect(_queue_layout)
+	_layout_cards()
 	for edge in plan.edges:
 		_draw_edge(edge, plan.nodes)
+
+
+# Wrapping and theme changes can resize a card after GraphNode has sorted its children.
+func _queue_layout() -> void:
+	if not layout_pending:
+		layout_pending = true
+		_layout_cards.call_deferred()
+
+
+# Only manual positions obstruct the automatic lanes. Move down to the first clear interval.
+static func clear_pinned_space(rect: Rect2, obstacles: Array[Rect2], gap: float) -> Vector2:
+	for obstacle in obstacles:
+		if rect.intersects(obstacle.grow(gap)):
+			rect.position.y = obstacle.end.y + gap
+	return rect.position
+
+
+func _layout_cards() -> void:
+	layout_pending = false
+	if layout_columns.is_empty():
+		return
+	var scale_factor := canvas.get_theme_default_base_scale()
+	var gap := Vector2(88, 36) * scale_factor
+	var obstacles: Array[Rect2] = []
+	for id in positions:
+		var card := canvas.get_node_or_null(NodePath(str(id))) as GraphNode
+		if card:
+			obstacles.append(Rect2(positions[id], card.size.max(card.get_combined_minimum_size())))
+	obstacles.sort_custom(func(a: Rect2, b: Rect2): return a.position.y < b.position.y)
+	var x := 48.0 * scale_factor
+	var center_y := 64.0 * scale_factor
+	for level in layout_columns.size():
+		var column: Array = layout_columns[level]
+		var height := -gap.y
+		var width := 0.0
+		for card: GraphNode in column:
+			var extent := card.size.max(card.get_combined_minimum_size())
+			width = maxf(width, extent.x)
+			height += extent.y + gap.y
+		if level == 0:
+			center_y += height / 2.0
+		var y := center_y - height / 2.0
+		for card: GraphNode in column:
+			var extent := card.size.max(card.get_combined_minimum_size())
+			if not positions.has(String(card.name)):
+				card.position_offset = clear_pinned_space(Rect2(Vector2(x, y), extent), obstacles, gap.y)
+				y = card.position_offset.y
+			y += extent.y + gap.y
+		x += width + gap.x
 
 
 func _draw_edge(edge: Dictionary, nodes := {}) -> void:

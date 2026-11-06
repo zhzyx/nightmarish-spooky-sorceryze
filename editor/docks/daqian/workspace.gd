@@ -6,6 +6,8 @@ var graph_script: Script
 var models_script: Script
 var models_dialog: AcceptDialog
 var editor
+var board_cards: Array[GraphNode] = []
+var board_layout_pending := false
 var overview: GraphEdit
 var notice: Label
 var search: LineEdit
@@ -123,6 +125,10 @@ func _ready() -> void:
 	overview.zoom_min = 0.1
 	overview.zoom_max = 3.0
 	overview.minimap_enabled = true
+	_button(overview.get_menu_hbox(), "重排总图", func():
+		saved.erase("positions")
+		_layout_board()
+		_queue_save())
 	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
@@ -262,6 +268,7 @@ func _show_board() -> void:
 
 
 func _draw_board() -> void:
+	board_cards.clear()
 	for child in overview.get_children():
 		if child is GraphNode:
 			overview.remove_child(child)
@@ -276,14 +283,18 @@ func _draw_board() -> void:
 	for index in rows.size():
 		var item: Dictionary = rows[index]
 		var card := GraphNode.new()
+		card.set_meta("issue_url", item.url)
 		card.name = "i_" + str(item.number)
 		card.title = "#%s  %s" % [item.number, item.title]
-		card.tooltip_text = item.url
-		card.position_offset = saved.get("positions", {}).get(item.url, Vector2(38 + index % 5 * 375, 75 + index / 5 * 177))
-		card.position_offset_changed.connect(func():
+		card.tooltip_text = card.title + "\n" + item.url
+		card.custom_minimum_size.x = 280 * overview.get_theme_default_base_scale()
+		var title_label := card.get_titlebar_hbox().get_child(0) as Label
+		title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		card.dragged.connect(func(_from, to):
 			if not saved.has("positions"):
 				saved.positions = {}
-			saved.positions[item.url] = card.position_offset
+			saved.positions[item.url] = to
+			_queue_board_layout()
 			_queue_save())
 		var label := Label.new()
 		label.text = item.status + ("  ·  需要决定" if item.decision else "")
@@ -300,12 +311,15 @@ func _draw_board() -> void:
 				continue
 			var line := Label.new()
 			line.text = str(node.title) + " · " + str(node.value).left(32)
+			line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			line.tooltip_text = node.value
 			detail.add_child(line)
 		card.add_child(detail)
 		card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
 		_button(card, "查看流程", _open_issue.bind(item))
 		overview.add_child(card)
+		board_cards.append(card)
+		card.resized.connect(_queue_board_layout)
 		by_url[item.url] = card.name
 		if item.status not in statuses:
 			statuses.append(item.status)
@@ -321,6 +335,7 @@ func _draw_board() -> void:
 	if dock:
 		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
 	_zoom_detail()
+	_layout_board()
 	_fill_filter(status, statuses)
 	_fill_filter(owner_filter, owners)
 	_filter_board()
@@ -328,9 +343,49 @@ func _draw_board() -> void:
 
 
 func _zoom_detail() -> void:
-	for card in overview.get_children():
-		if card is GraphNode and card.has_node("StepDetails"):
-			card.get_node("StepDetails").visible = overview.zoom >= 1.2
+	var expanded := overview.zoom >= 1.2
+	for card in board_cards:
+		var detail := card.get_node("StepDetails") as VBoxContainer
+		if detail.visible != expanded:
+			detail.visible = expanded
+			card.reset_size()
+
+
+func _queue_board_layout() -> void:
+	if not board_layout_pending:
+		board_layout_pending = true
+		_layout_board.call_deferred()
+
+
+func _layout_board() -> void:
+	board_layout_pending = false
+	var scale_factor := overview.get_theme_default_base_scale()
+	var gap := Vector2(56, 36) * scale_factor
+	var origin := Vector2(38, 75) * scale_factor
+	var pinned: Dictionary = saved.get("positions", {})
+	var obstacles: Array[Rect2] = []
+	var widths := PackedFloat32Array([0, 0, 0, 0, 0])
+	for i in board_cards.size():
+		var card := board_cards[i]
+		var extent := card.size.max(card.get_combined_minimum_size())
+		var url: String = card.get_meta("issue_url")
+		if pinned.has(url):
+			card.position_offset = pinned[url]
+			obstacles.append(Rect2(card.position_offset, extent))
+		widths[i % widths.size()] = maxf(widths[i % widths.size()], extent.x)
+	obstacles.sort_custom(func(a: Rect2, b: Rect2): return a.position.y < b.position.y)
+	var y := origin.y
+	for start in range(0, board_cards.size(), widths.size()):
+		var x := origin.x
+		var bottom := y
+		for i in range(start, mini(start + widths.size(), board_cards.size())):
+			var card := board_cards[i]
+			var extent := card.size.max(card.get_combined_minimum_size())
+			if not pinned.has(card.get_meta("issue_url")):
+				card.position_offset = graph_script.clear_pinned_space(Rect2(Vector2(x, y), extent), obstacles, gap.y)
+				bottom = maxf(bottom, card.position_offset.y + extent.y)
+			x += widths[i - start] + gap.x
+		y = bottom + gap.y
 
 
 func _locate_pending(number: int) -> void:
