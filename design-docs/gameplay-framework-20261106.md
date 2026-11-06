@@ -1,4 +1,4 @@
-# Godot Gameplay Framework（UE 5.8.3 语义借鉴）
+# Godot Gameplay Framework（Unreal Engine 5.8.3 语义借鉴）
 
 ## 需求与授权
 
@@ -156,7 +156,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`gameplay-core-20261106` / #176](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/176) | #175 | GF-1 | 核心语义；不含网络 | 编译、单测、文档 | 无 | 当前 Codex 执行者 | 可独立合入的 C++ 模块 |
 | [`gameplay-ds-session-20261106` / #177](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/177) | #175 | GF-2 | DS/连接；不含账号后端 | headless 集成测试 | GF-1 | 当前 Codex 执行者 | DS 与会话闭环 |
-| [`gameplay-replication-policy-20261106` / #178](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/178) | #175 | GF-3 | RPC/复制策略；不兼容 UE 协议 | 双客户端权限/复制测试 | GF-1、GF-2 | 当前 Codex 执行者 | 可组合复制策略 |
+| [`gameplay-replication-policy-20261106` / #178](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/178) | #175 | GF-3 | RPC/复制策略；不兼容 Unreal Engine 协议 | 双客户端权限/复制测试 | GF-1、GF-2 | 当前 Codex 执行者 | 可组合复制策略 |
 | [`gameplay-relevancy-20261106` / #179](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/179) | #175 | GF-4 | 复制图；不含世界流送 | 功能与规模实测 | GF-3 | 当前 Codex 执行者 | 相关性调度层 |
 | [`gameplay-prediction-20261106` / #180](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/180) | #175 | GF-5 | 预测与样例；不承诺通用回滚 | 延迟/丢包收敛及启动文档 | GF-3、GF-4 | 当前 Codex 执行者 | 最终集成样例 |
 
