@@ -1,0 +1,18 @@
+{
+  "request_id": "godot-macos-headless-preset",
+  "issue_number": 226,
+  "platform": "macOS arm64",
+  "base": "81f19a1fdf708ec3128ea0ceb278b9b4429d7f53",
+  "build": "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no generate_bundle=yes -j8",
+  "probe_source_sha256": "8dfc3e3084cbb93717810ce512ec04425b3625ca2c0ffb80f4a1cad60bb85253",
+  "preset_sha256": "ea24029784eee4388818c4cdf9c267c1e9f35493ae024753e9e09c7d7929f0e6",
+  "tested_executable_sha256": "5378d79fc1e529565751b570903c06604d4d1dc101a84d0f383a626ab9a929f3",
+  "launch": "Two separate hidden LaunchServices launches of a locally ad-hoc signed copy, with isolated project and settings",
+  "successful_entry_checks_per_launch": [
+    1,
+    1
+  ],
+  "headless_negative": "Scripted headless run skipped automatic launch. Explicit probe exiting 0 without success marker produced warning; process ended and temporary directory removed.",
+  "limits": "Control state only. Parent logs also reported a JSON parse error and Metal fence warning. Overall editor health and physical display rendering were outside the probe.",
+  "independent_review": "Codex native read-only review with authenticated #226 dispatch and terminal receipts"
+}

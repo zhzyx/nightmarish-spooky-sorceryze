@@ -37,17 +37,42 @@
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
 
-static Ref<Script> load_editor_script(const char *const *p_source) {
-	Ref<Script> script = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
-	ERR_FAIL_COND_V(script.is_null(), Ref<Script>());
+#ifdef MACOS_ENABLED
+#include "core/config/engine.h"
+#include "editor/docks/gonggong_validation.gen.h"
+#include "main/main.h"
+#endif
+
+static String editor_script_source(const char *const *p_source) {
 	String source;
 	for (int i = 0; p_source[i]; i++) {
 		source += String::utf8(p_source[i]);
 	}
-	script->set_source_code(source);
+	return source;
+}
+
+static Ref<Script> load_editor_script(const char *const *p_source) {
+	Ref<Script> script = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	ERR_FAIL_COND_V(script.is_null(), Ref<Script>());
+	script->set_source_code(editor_script_source(p_source));
 	ERR_FAIL_COND_V(script->reload() != OK, Ref<Script>());
 	return script;
 }
+
+#ifdef MACOS_ENABLED
+void install_gonggong_startup_validation(Node *p_editor) {
+	if (Engine::get_singleton()->is_recovery_mode_hint() || Main::is_cmdline_tool()) {
+		return;
+	}
+	Ref<Script> validation = load_editor_script(daqian_macos_validation);
+	ERR_FAIL_COND(validation.is_null());
+	Node *preset = memnew(Node);
+	preset->set_name("GongGongStartupValidation");
+	preset->set_script(validation);
+	preset->set("probe_source", editor_script_source(daqian_daqian_ai_entry));
+	p_editor->add_child(preset);
+}
+#endif
 
 EditorDock *create_daqian_dock() {
 	EditorDock *dock = memnew(EditorDock);

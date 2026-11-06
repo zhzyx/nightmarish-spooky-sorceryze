@@ -16,6 +16,13 @@ if env.editor_build:
         env.Run(editor_builders.daqian_scripts_builder),
     )
 
+    if env["platform"] == "macos":
+        env.CommandNoCache(
+            "docks/gonggong_validation.gen.h",
+            ["../customizations/components/godot-host/macos_validation.gd", "../tests/editor/daqian_ai_entry.gd"],
+            env.Run(editor_builders.daqian_scripts_builder),
+        )
+
     # Generate doc data paths
     env.CommandNoCache(
         "doc/doc_data_class_path.gen.h",
