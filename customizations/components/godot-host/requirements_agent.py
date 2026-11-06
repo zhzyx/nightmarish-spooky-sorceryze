@@ -563,6 +563,8 @@ def _intake(root, request, bridge):
         "ok": True,
         **binding,
         "url": f"https://github.com/{settings['repository']}/issues/{issue_number}",
+        "scope": design["scope"],
+        "acceptance": design["acceptance"],
         "questions": design["questions"],
         "agent": "yanshi",
         "skill": "clarify-feature",

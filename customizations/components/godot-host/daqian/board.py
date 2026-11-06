@@ -87,6 +87,7 @@ def read_board(root, follows, actor=None):
             "number": number, "title": row["title"], "status": status, "url": row["html_url"],
             "updated": row["updated_at"], "owners": [x["login"] for x in row["assignees"]],
             "request": markers[0] if len(markers) == 1 else "", "dependencies": [],
+            "development": "type:development" in labels,
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
         item.update(source_plan(row, item["request"]))

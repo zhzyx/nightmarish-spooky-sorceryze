@@ -1699,7 +1699,7 @@ void AIChatDock::_send() {
 	}
 }
 
-bool AIChatDock::_start_message(const Dictionary &p_message) {
+bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection) {
 	if (!pending_external_editor_message.is_empty()) {
 		return false;
 	}
@@ -1765,6 +1765,10 @@ bool AIChatDock::_start_message(const Dictionary &p_message) {
 	snapshot_state["version"] = 1;
 	snapshot_state["conversation_id"] = conversation_id;
 	snapshot_state["id"] = snapshot_id;
+	if (!p_daqian_selection.is_empty()) {
+		// Environment setup and clarification can resume this intake after the model picker is edited.
+		snapshot_state["daqian_model"] = String(p_daqian_selection["id"]).strip_edges();
+	}
 	snapshot_state["summary"] = _redact(text.left(160));
 	snapshot_state["messages_before"] = JSON::parse_string(_redact(JSON::stringify(messages)));
 	snapshot_state["files"] = Array();
@@ -3042,17 +3046,75 @@ String AIChatDock::_work_order_binding(const String &p_field) const {
 }
 
 void AIChatDock::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview"), &AIChatDock::_open_daqian_chat);
+	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
+	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()));
+	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
 	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
 }
 
-String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview) {
-	if (busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || snapshot_restoring || !gonggong_recovered_result.is_empty()) {
+void AIChatDock::_emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design) {
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary binding = bindings.get(conversation_id, Dictionary());
+	const String source = binding.get("source", "");
+	if (!source.is_empty()) {
+		emit_signal("daqian_requirement_phase", source, p_phase, p_design);
+	}
+}
+
+Dictionary AIChatDock::_get_daqian_models() const {
+	Array options;
+	for (int i = 0; i < model_picker->get_item_count(); i++) {
+		if (model_picker->is_item_disabled(i)) {
+			continue;
+		}
+		Dictionary item;
+		item["id"] = model_picker->get_item_metadata(i);
+		item["label"] = model_picker->get_item_text(i);
+		options.push_back(item);
+	}
+	Dictionary result;
+	result["backend"] = backend->get_selected();
+	result["options"] = options;
+	result["current"] = _active_model_field()->get_text().strip_edges();
+	return result;
+}
+
+String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection) {
+	if (p_message.is_empty() && p_selection.is_empty() && !p_source.is_empty() && is_inside_tree()) {
+		const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+		const Dictionary active = bindings.get(conversation_id, Dictionary());
+		if (active.get("source", "") == p_source && String(active.get("issue_number", "")).to_int() == p_issue && String(active.get("request_id", "")) == p_request) {
+			make_visible();
+			return String();
+		}
+	}
+	if (!is_inside_tree() || history_restoring || busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {
 		return U"AI 对话正在处理另一项工作，请保留草稿稍后再试。";
 	}
 	if (p_source.is_empty() || p_issue < 0 || ((p_issue == 0) != p_request.is_empty())) {
 		return U"工单绑定不完整。";
+	}
+	const bool confirmed = !p_selection.is_empty();
+	String model_id;
+	if (confirmed) {
+		if (p_selection.get("backend", Variant()).get_type() != Variant::INT || p_selection.get("id", Variant()).get_type() != Variant::STRING) {
+			return U"模型选择无效，请重新选择。";
+		}
+		if (int64_t(p_selection["backend"]) != backend->get_selected()) {
+			return U"AI 对话的后端已改变，请重新选择模型。";
+		}
+		model_id = String(p_selection["id"]).strip_edges();
+		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
+		if ((!cli && model_id.is_empty()) || model_id.length() > 128 || model_id.contains("\n") || model_id.contains("\r")) {
+			return U"请填写有效的单行模型 ID（最多 128 字符）。";
+		}
+		if (p_message.strip_edges().is_empty() || p_message.length() > 16000) {
+			return U"请填写需求，正文最多 16000 个字符。";
+		}
+		if (gonggong_pid >= 0 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
+			return U"请先在 AI 对话中处理进行中的工单或环境配置。";
+		}
 	}
 	EditorSettings *settings = EditorSettings::get_singleton();
 	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
@@ -3062,6 +3124,9 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		const AgentSession *session = agent_sessions.getptr(id);
 		const String cid = id == active_agent ? conversation_id : (session ? session->conversation_id : String());
 		const Dictionary entry = bindings.get(cid, Dictionary());
+		if (confirmed && !p_preview && p_issue == 0 && entry.get("source", "") == p_source && !String(entry.get("issue_number", "")).is_empty()) {
+			return U"这份需求已关联工单，请打开关联会话查看进度。";
+		}
 		if (entry.get("source", "") == p_source || (p_issue > 0 && String(entry.get("request_id", "")) == p_request && String(entry.get("issue_number", "")).to_int() == p_issue)) {
 			index = i;
 			break;
@@ -3070,7 +3135,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	if (index < 0) {
 		const int before = agent_tabs->get_tab_count();
 		_add_agent();
-		if (agent_tabs->get_tab_count() == before) {
+		if (agent_tabs->get_tab_count() == before || active_agent != int(agent_tabs->get_tab_metadata(before))) {
 			return U"无法创建独立会话，请检查会话数量和当前工作状态。";
 		}
 		Dictionary entry;
@@ -3081,8 +3146,39 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		settings->set_project_metadata("daqian", "bindings", bindings);
 	} else {
 		agent_tabs->set_current_tab(index);
+		if (active_agent != int(agent_tabs->get_tab_metadata(index))) {
+			return U"无法切换到关联会话，请稍后再试。";
+		}
 	}
 	make_visible();
+	if (confirmed) {
+		// Restoring an associated session can restore a different backend.
+		if (backend->get_selected() != int64_t(p_selection["backend"])) {
+			return U"关联会话使用另一后端，请按该会话的配置重新选择模型。";
+		}
+		if (!input->get_text().strip_edges().is_empty() || !draft_images.is_empty() || !queued_messages.is_empty()) {
+			return U"关联会话中有草稿、附件或排队消息，请先处理后再发送。";
+		}
+		if (send_button->is_disabled()) {
+			return U"关联会话暂时无法发送需求，请稍后再试。";
+		}
+		_active_model_field()->set_text(model_id);
+		_apply_models(model_catalog);
+		daqian_preview_source = p_preview ? p_source : String();
+		daqian_preview_conversation = conversation_id;
+		consultation_only->set_pressed(p_preview);
+		Dictionary message = chat_message("user", _redact(p_message));
+		message["consultation_only"] = p_preview;
+		// Start the confirmed turn directly. A failed validation must not leave a
+		// queued copy that could run again when the user retries from Daqian.
+		if (!_start_message(message, p_selection)) {
+			daqian_preview_source = String();
+			return U"需求尚未发送，请在关联对话中检查模型与连接配置后重试。";
+		}
+		// The conversation owns this turn even when environment setup pauses it.
+		// Reporting it as unsent would let a second confirmation submit it again.
+		return String();
+	}
 	if (!p_message.is_empty()) {
 		if (!input->get_text().strip_edges().is_empty()) {
 			return U"关联会话中有未发送内容，请先处理已有草稿。";
@@ -3210,6 +3306,17 @@ void AIChatDock::_backend_changed(int p_backend) {
 	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
 }
 
+LineEdit *AIChatDock::_active_model_field() const {
+	switch (backend->get_selected()) {
+		case 1:
+			return cli_model;
+		case 2:
+			return codex_model;
+		default:
+			return model;
+	}
+}
+
 void AIChatDock::_sync_model_picker() {
 	_apply_models(Array());
 }
@@ -3217,10 +3324,7 @@ void AIChatDock::_sync_model_picker() {
 void AIChatDock::_apply_models(const Array &p_models) {
 	model_catalog = p_models.duplicate();
 	const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
-	const String current = (backend->get_selected() == 2 ? codex_model : cli ? cli_model
-																			 : model)
-								   ->get_text()
-								   .strip_edges();
+	const String current = _active_model_field()->get_text().strip_edges();
 	model_picker->clear();
 	if (cli) {
 		model_picker->add_item(U"跟随 CLI 默认模型");
@@ -3274,9 +3378,7 @@ void AIChatDock::_model_selected(int p_index) {
 	}
 	const String id = model_picker->get_item_metadata(p_index);
 	const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
-	(backend->get_selected() == 2 ? codex_model : cli ? cli_model
-													  : model)
-			->set_text(id);
+	_active_model_field()->set_text(id);
 	EditorSettings::get_singleton()->set_setting(backend->get_selected() == 2 ? "ai_chat/codex_model" : cli ? "ai_chat/cli_model"
 																											: "ai_chat/model",
 			id);

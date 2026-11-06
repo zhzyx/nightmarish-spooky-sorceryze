@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-requirement-send-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-requirement-send-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T12:35:03.272436+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/172",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "大千需求确认发送、选模、偃师分析与按共工流程自动创建和更新节点",
+    "document": "design-docs/daqian/requirement-send.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "b3dfaef162a751c84ba998fd12c16e37f912109a2dec81fc04f357023798b32c"
+}

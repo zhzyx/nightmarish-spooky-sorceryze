@@ -132,6 +132,7 @@ class AIChatDock : public EditorDock {
 	// Local environment igniter: python/node/git gaps become a host-local guide
 	// instead of a blocking "system blocked" reply; replies never reach a model.
 	String igniter_state;
+	bool igniter_for_intake = false;
 	String igniter_outcome;
 	Array igniter_missing;
 	Dictionary igniter_fields;
@@ -148,7 +149,7 @@ class AIChatDock : public EditorDock {
 	void _igniter_run(const String &p_action, const Dictionary &p_request);
 	void _poll_igniter();
 	void _clear_igniter_files();
-	void _cancel_igniter(const String &p_notice);
+	void _cancel_igniter(const String &p_notice, const String &p_phase = "cancelled");
 	void _igniter_resume();
 
 	Button *engine_build_button = nullptr;
@@ -276,7 +277,7 @@ class AIChatDock : public EditorDock {
 	void _remove_queued_message(int p_index);
 	void _resume_message_queue();
 	void _dispatch_queued_message(int p_agent);
-	bool _start_message(const Dictionary &p_message);
+	bool _start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection = Dictionary());
 	HTTPRequest *request = nullptr;
 	ConfirmationDialog *confirmation = nullptr;
 	ObjectID confirmation_id;
@@ -313,6 +314,7 @@ class AIChatDock : public EditorDock {
 	void _refresh_models();
 	void _models_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _apply_models(const Array &p_models);
+	LineEdit *_active_model_field() const;
 	void _sync_model_picker();
 	void _model_selected(int p_index);
 	void _model_edited(const String &p_text);
@@ -607,7 +609,9 @@ class AIChatDock : public EditorDock {
 	String daqian_preview_source;
 	String daqian_preview_conversation;
 	String _work_order_binding(const String &p_field) const;
-	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview);
+	Dictionary _get_daqian_models() const;
+	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());
+	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection);
 
 protected:
 	static void _bind_methods();
