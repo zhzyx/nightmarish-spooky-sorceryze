@@ -54,9 +54,6 @@ jobs:
 
   windows-build:
     name: 🏁 Windows
-    permissions:
-      contents: read
-      actions: read
     needs: static-checks
     permissions:
       contents: read
