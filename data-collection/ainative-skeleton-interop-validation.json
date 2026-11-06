@@ -1,0 +1,1409 @@
+{
+  "request_id": "ainative-art-06-skeleton-interop-20261106",
+  "issue_number": 147,
+  "date": "2026-11-07",
+  "worker": "/root/sinan_2b9618ddaed70881",
+  "worker_terminal_verified": true,
+  "dependency": {
+    "issue": 146,
+    "pr": 198,
+    "main_commit": "3003153c21cf42e865d39f06abb4115421046527"
+  },
+  "scope_decision": {
+    "quote": "首版先验收 UE4、Manny、Mixamo；Quinn 保留为明确待验收项",
+    "source": "actual user response 2026-11-07",
+    "remote_readback": [
+      140,
+      147
+    ],
+    "deferred_issue": 202,
+    "deferred_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/202",
+    "quinn_verified": false
+  },
+  "godot_engine": "4.8.beta.custom_build.ced0368bb",
+  "ue_engine": "5.8.3-0+UE5",
+  "python_tests_passed": 58,
+  "godot_contract_failures": [],
+  "review": {
+    "reviewer": "/root/review_contracts",
+    "state": "passed",
+    "actual_independent_cases": [
+      "robot to Mixamo",
+      "Samba to native UE4",
+      "Samba to native Manny"
+    ],
+    "profile_serialization_cycles_per_family": 10,
+    "checks": "58 Python tests; Godot contracts; actual rest/Skin/hierarchy/animations/root/finger/contact; exact UE output SHA readback; final UI two-time assertion and independent FBX provenance correction reviewed"
+  },
+  "fixtures": [
+    {
+      "name": "mixamo_samba.fbx",
+      "sha256": "b9003ee562c87bf03051c3a502411b0808d3513f1d74a2011f7530d9f067069f"
+    },
+    {
+      "name": "ue4-native.glb",
+      "sha256": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446"
+    },
+    {
+      "name": "ue5_manny-native.glb",
+      "sha256": "c9b00ff8479c7955f03821c4aa378d013ee810762a3cb0f0cfdcc39528ea01ab"
+    },
+    {
+      "name": "ue4_walk.fbx",
+      "sha256": "5def3d982586f6ede5817060230e6305bfe95478fe545b2d4750704a51c96f8f"
+    },
+    {
+      "name": "ue5_manny_walk.fbx",
+      "sha256": "667c83883346c770469c21994a334eef2e6e3d9559e83a7053fa901579911fa8"
+    }
+  ],
+  "fixture_rights": {
+    "ue": "User local UE5.8.3 original engine assets; only private test exports; no proprietary source or asset redistribution.",
+    "mixamo": "Pinned three.js example a75739a7ae5f2c08d1d9f3e2e4ac27fdceee83de, credited to Mixamo by its FBX example; private compatibility testing, not assumed MIT from code license.",
+    "mixamo_source": "https://github.com/mrdoob/three.js/blob/a75739a7ae5f2c08d1d9f3e2e4ac27fdceee83de/examples/models/fbx/Samba%20Dancing.fbx"
+  },
+  "actual_godot_acceptance": [
+    {
+      "name": "interop-mixamo.report.json",
+      "sha256": "f485dc827a43ae0ad86b6a38c2fca9f96390afc2d36658ddbc7b8cf7582017b4",
+      "result": {
+        "cases": [
+          {
+            "animations": {
+              "animations": {
+                "raise_arms": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 17,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0673389281447578,
+                  "unmapped_target_bones": 50
+                },
+                "squat": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "explicit planted intervals, analytic two-bone leg IK",
+                  "mapped_bones": 17,
+                  "max_contact_error_m": 2.986047320518992e-08,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0673389281447578,
+                  "unmapped_target_bones": 50
+                },
+                "turn": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 17,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0673389281447578,
+                  "unmapped_target_bones": 50
+                }
+              }
+            },
+            "binding": {
+              "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+              "binding": "target_bound",
+              "max_adaptation_m": 0.3500826060771942,
+              "max_rest_reconstruction_m": 8.001128298928961e-05,
+              "missing_source_fingers": [
+                "thumb_l",
+                "index_l",
+                "middle_l",
+                "ring_l",
+                "pinky_l",
+                "thumb_r",
+                "index_r",
+                "middle_r",
+                "ring_r",
+                "pinky_r"
+              ],
+              "unsupported": [
+                "MetaHuman Body"
+              ],
+              "vertices": 22897,
+              "weighted_finger_vertices": 0
+            },
+            "external_target_to_source_metrics": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.0,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 1.05598783493042,
+                "horizontal_root_displacement_m": 0.5210140943527222,
+                "max_bone_displacement_m": 1.747713327407837,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5210140943527222,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "forward_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5754039883613586,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 2.186923069302793e-07,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3349281847476959,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 2.154960441203002e-07,
+                "root_displacement_m": 0.2497572898864746,
+                "sole_drift_m": 2.4756764105404727e-07,
+                "sole_samples": 592,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.07395809888839722,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.7594038844108582,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "id": "robot-mixamo",
+            "motion_comparison": {
+              "raise_arms": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              },
+              "squat": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              },
+              "turn": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              }
+            },
+            "reverse_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3779006600379944,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 9.282553605771682e-07,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.30592629313468933,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 7.761488518553961e-07,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 9.594290304448805e-07,
+                "sole_samples": 727,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131844997406006,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471602082252502,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "roundtrip": {
+              "clips": [
+                "raise_arms",
+                "squat",
+                "turn"
+              ],
+              "max_animation_position_error_m": 1.6610784996373695e-06,
+              "max_animation_rotation_error_rad": 0.0006905339541845024,
+              "max_rest_translation_m": 0.0,
+              "max_skin_rest_error_m": 7.44118369766511e-05,
+              "vertices": 22897
+            },
+            "roundtrip_bones": 67,
+            "source_motion_reference": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3779003322124481,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0006816831883043051,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3059314489364624,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131846487522125,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471602082252502,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "source_revision": "ee04aa6283c4dafd364ca872076e5c8f2ed5f1e77c9c9a2a9c4d2b183491e8d3",
+            "target_bones": 67,
+            "target_motion_identity": {},
+            "target_revision": "c1e29a1d0ccd4ccdc4e471bf77081213d204428187967b0d27621bd9024cfb0e",
+            "target_tool_status": "pending_external_readback"
+          }
+        ],
+        "failures": [],
+        "schema_version": 1
+      }
+    },
+    {
+      "name": "interop-native.report.json",
+      "sha256": "8bbd86cf5c7e8c69cd55306d3e72d2cf3a442653443a6de750563a6434f9005f",
+      "result": {
+        "cases": [
+          {
+            "animations": {
+              "animations": {
+                "raise_arms": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0138931630180243,
+                  "unmapped_target_bones": 50
+                },
+                "squat": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "explicit planted intervals, analytic two-bone leg IK",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 3.332000986233652e-08,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0138931630180243,
+                  "unmapped_target_bones": 50
+                },
+                "turn": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0138931630180243,
+                  "unmapped_target_bones": 50
+                }
+              }
+            },
+            "binding": {
+              "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+              "binding": "target_bound",
+              "max_adaptation_m": 0.2205972969532013,
+              "max_rest_reconstruction_m": 8.231565880123526e-05,
+              "missing_source_fingers": [
+                "thumb_l",
+                "index_l",
+                "middle_l",
+                "ring_l",
+                "pinky_l",
+                "thumb_r",
+                "index_r",
+                "middle_r",
+                "ring_r",
+                "pinky_r"
+              ],
+              "unsupported": [
+                "MetaHuman Body"
+              ],
+              "vertices": 22897,
+              "weighted_finger_vertices": 0
+            },
+            "external_target_to_source_metrics": {},
+            "forward_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 30,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5359367728233337,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0006905339541845024,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 30,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 3.0944585205361363e-07,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.30356845259666443,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0006905339541845024,
+                "planted_ankle_error_m": 3.498601017781766e-07,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 4.109697613330354e-07,
+                "sole_samples": 255,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 30,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.14378410577774048,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5285319685935974,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0006905339541845024,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "id": "robot-native-ue4",
+            "motion_comparison": {
+              "raise_arms": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0006905339541845024,
+                "root_displacement_error_m": 0.0
+              },
+              "squat": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0006905339541845024,
+                "root_displacement_error_m": 0.0
+              },
+              "turn": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0006905339541845024,
+                "root_displacement_error_m": 0.0
+              }
+            },
+            "reverse_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.37790054082870483,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 8.979804420050641e-07,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3058947026729584,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 7.456538924088818e-07,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 9.941679763869615e-07,
+                "sole_samples": 727,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131850957870483,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471601486206055,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "roundtrip": {
+              "clips": [
+                "raise_arms",
+                "squat",
+                "turn"
+              ],
+              "max_animation_position_error_m": 1.4571362498827511e-06,
+              "max_animation_rotation_error_rad": 0.0009765625,
+              "max_rest_translation_m": 3.6148756521470204e-07,
+              "max_skin_rest_error_m": 7.825159264029935e-05,
+              "vertices": 22897
+            },
+            "roundtrip_bones": 68,
+            "source_motion_reference": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3779003322124481,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0006816831883043051,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3059314489364624,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131846487522125,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471602082252502,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "source_revision": "ee04aa6283c4dafd364ca872076e5c8f2ed5f1e77c9c9a2a9c4d2b183491e8d3",
+            "target_bones": 68,
+            "target_motion_identity": {},
+            "target_revision": "313c3b67006689358318104f7f4dbe30fc3d17f81a5f9a960a9ca87c5bb633b1",
+            "target_tool_status": "pending_external_readback"
+          },
+          {
+            "animations": {
+              "animations": {
+                "raise_arms": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0559416676301168,
+                  "unmapped_target_bones": 143
+                },
+                "squat": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "explicit planted intervals, analytic two-bone leg IK",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 2.986047320518992e-08,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0559416676301168,
+                  "unmapped_target_bones": 143
+                },
+                "turn": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 18,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 1.0559416676301168,
+                  "unmapped_target_bones": 143
+                }
+              }
+            },
+            "binding": {
+              "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+              "binding": "target_bound",
+              "max_adaptation_m": 0.40230679512023926,
+              "max_rest_reconstruction_m": 8.119613630697131e-05,
+              "missing_source_fingers": [
+                "thumb_l",
+                "index_l",
+                "middle_l",
+                "ring_l",
+                "pinky_l",
+                "thumb_r",
+                "index_r",
+                "middle_r",
+                "ring_r",
+                "pinky_r"
+              ],
+              "unsupported": [
+                "MetaHuman Body"
+              ],
+              "vertices": 22897,
+              "weighted_finger_vertices": 0
+            },
+            "external_target_to_source_metrics": {},
+            "forward_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 38,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.4571363031864166,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 38,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 3.818195466465113e-07,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.322285920381546,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0006905339541845024,
+                "planted_ankle_error_m": 3.901830325503397e-07,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 4.878992854173703e-07,
+                "sole_samples": 936,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 38,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.11264605820178986,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.45032885670661926,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "id": "robot-native-ue5_manny",
+            "motion_comparison": {
+              "raise_arms": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              },
+              "squat": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0006905339541845024,
+                "root_displacement_error_m": 0.0
+              },
+              "turn": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              }
+            },
+            "reverse_metrics": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.37790045142173767,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "checked ankle 3mm / sole 5mm",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 1.0147882676392328e-06,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3059355318546295,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 8.951870427154063e-07,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 1.051928848028183e-06,
+                "sole_samples": 727,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131844997406006,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471602082252502,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "roundtrip": {
+              "clips": [
+                "raise_arms",
+                "squat",
+                "turn"
+              ],
+              "max_animation_position_error_m": 3.6480769267654978e-06,
+              "max_animation_rotation_error_rad": 0.0009765625,
+              "max_rest_translation_m": 3.0555102057405747e-06,
+              "max_skin_rest_error_m": 7.656023080926389e-05,
+              "vertices": 22897
+            },
+            "roundtrip_bones": 161,
+            "source_motion_reference": {
+              "raise_arms": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3779003322124481,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "squat": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0006816831883043051,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.3059314489364624,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              },
+              "turn": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 0,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.13131846487522125,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.5471602082252502,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 0
+              }
+            },
+            "source_revision": "ee04aa6283c4dafd364ca872076e5c8f2ed5f1e77c9c9a2a9c4d2b183491e8d3",
+            "target_bones": 161,
+            "target_motion_identity": {},
+            "target_revision": "4858787952df88264bd06e1ca9bdbf357668ce7195c841a0da93261451840d0e",
+            "target_tool_status": "pending_external_readback"
+          }
+        ],
+        "failures": [],
+        "schema_version": 1
+      }
+    },
+    {
+      "name": "interop-cross-native.report.json",
+      "sha256": "cc6cc2e308031bb5bfb372df15e8700e75bf21893621dddb8321174fd99c4a5d",
+      "result": {
+        "cases": [
+          {
+            "animations": {
+              "animations": {
+                "Take 001": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 52,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 0.9499261539915607,
+                  "unmapped_target_bones": 16
+                },
+                "mixamo_com": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 52,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 0.9499261539915607,
+                  "unmapped_target_bones": 16
+                }
+              }
+            },
+            "binding": {
+              "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+              "binding": "target_bound",
+              "max_adaptation_m": 0.6008945107460022,
+              "max_rest_reconstruction_m": 7.290954818017781e-05,
+              "missing_source_fingers": [],
+              "unsupported": [
+                "MetaHuman Body"
+              ],
+              "vertices": 35455,
+              "weighted_finger_vertices": 11986
+            },
+            "external_target_to_source_metrics": {
+              "Unreal Take": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 0.6431093811988831,
+                "horizontal_root_displacement_m": 0.04632836580276489,
+                "max_bone_displacement_m": 0.8570900559425354,
+                "max_finger_skin_motion_m": 0.029771383851766586,
+                "max_local_finger_motion_rad": 0.44122928380966187,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.11370496451854706,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "forward_metrics": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 30,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 6.961011536077422e-07,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 30,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 1.0291320085525513,
+                "horizontal_root_displacement_m": 0.5282526612281799,
+                "max_bone_displacement_m": 1.7839473485946655,
+                "max_finger_skin_motion_m": 0.11366567760705948,
+                "max_local_finger_motion_rad": 0.8564513921737671,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5282526612281799,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "id": "mixamo-native-ue4",
+            "motion_comparison": {
+              "Take 001": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0,
+                "root_displacement_error_m": 0.0
+              },
+              "mixamo_com": {
+                "expected_horizontal_root_m": 0.5282526423019446,
+                "finger_motion_amplitude_error_rad": 2.980232238769531e-07,
+                "root_displacement_error_m": 1.8926235356708787e-08
+              }
+            },
+            "reverse_metrics": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 4.023313522338867e-07,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 0.9383322596549988,
+                "horizontal_root_displacement_m": 0.5560985803604126,
+                "max_bone_displacement_m": 2.1707818508148193,
+                "max_finger_skin_motion_m": 0.11257224529981613,
+                "max_local_finger_motion_rad": 0.8564523458480835,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5561960339546204,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "roundtrip": {
+              "clips": [
+                "Take 001",
+                "mixamo_com"
+              ],
+              "max_animation_position_error_m": 2.1838027350895572e-06,
+              "max_animation_rotation_error_rad": 0.0009765625,
+              "max_rest_translation_m": 3.6148756521470204e-07,
+              "max_skin_rest_error_m": 4.796220673597418e-05,
+              "vertices": 35455
+            },
+            "roundtrip_bones": 68,
+            "source_motion_reference": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.0,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 0.9383321404457092,
+                "horizontal_root_displacement_m": 0.5560986399650574,
+                "max_bone_displacement_m": 2.1707820892333984,
+                "max_finger_skin_motion_m": 0.11257227510213852,
+                "max_local_finger_motion_rad": 0.856451690196991,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5561960935592651,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "source_revision": "c1e29a1d0ccd4ccdc4e471bf77081213d204428187967b0d27621bd9024cfb0e",
+            "target_bones": 68,
+            "target_motion_identity": {
+              "skeleton_revision": "7a358a0f951ca751ca40505ca05c86c5389dccd4bff322701527bba0a16907ff",
+              "source": {
+                "authority": "asset:UE-FBXExporter/ue4/animation",
+                "sha256": "5def3d982586f6ede5817060230e6305bfe95478fe545b2d4750704a51c96f8f",
+                "version": "UE5.8.3-0+UE5"
+              }
+            },
+            "target_revision": "54b38dab0fb7fc5089061a9ddeaf51c9ca686b3b799707f6cb975581c6bba5c8",
+            "target_tool_status": "pending_external_readback"
+          },
+          {
+            "animations": {
+              "animations": {
+                "Take 001": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 52,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 0.9893217981522967,
+                  "unmapped_target_bones": 109
+                },
+                "mixamo_com": {
+                  "auxiliary_policy": "preserve_local_rest",
+                  "contact_policy": "no planted intervals supplied",
+                  "mapped_bones": 52,
+                  "max_contact_error_m": 0.0,
+                  "root_policy": "mapped root; hips fallback when root absent",
+                  "sample_rate": 30.0,
+                  "translation_ratio": 0.9893217981522967,
+                  "unmapped_target_bones": 109
+                }
+              }
+            },
+            "binding": {
+              "auxiliary_policy": "preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor",
+              "binding": "target_bound",
+              "max_adaptation_m": 0.7707062363624573,
+              "max_rest_reconstruction_m": 7.154275226639584e-05,
+              "missing_source_fingers": [],
+              "unsupported": [
+                "MetaHuman Body"
+              ],
+              "vertices": 35455,
+              "weighted_finger_vertices": 11986
+            },
+            "external_target_to_source_metrics": {
+              "Unreal Take": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 6.630804061889648,
+                "horizontal_root_displacement_m": 6.630804061889648,
+                "max_bone_displacement_m": 6.801353931427002,
+                "max_finger_skin_motion_m": 0.05218609422445297,
+                "max_local_finger_motion_rad": 0.3376736044883728,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 6.630804061889648,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "forward_metrics": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 38,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 3.6263745073483733e-07,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0006905339541845024,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 38,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 1.0219086408615112,
+                "horizontal_root_displacement_m": 0.5501605272293091,
+                "max_bone_displacement_m": 1.6550883054733276,
+                "max_finger_skin_motion_m": 0.0873323306441307,
+                "max_local_finger_motion_rad": 0.8564520478248596,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5501605272293091,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "id": "mixamo-native-ue5_manny",
+            "motion_comparison": {
+              "Take 001": {
+                "expected_horizontal_root_m": 0.0,
+                "finger_motion_amplitude_error_rad": 0.0006905339541845024,
+                "root_displacement_error_m": 0.0
+              },
+              "mixamo_com": {
+                "expected_horizontal_root_m": 0.5501605064402773,
+                "finger_motion_amplitude_error_rad": 3.5762786865234375e-07,
+                "root_displacement_error_m": 2.0789031829338e-08
+              }
+            },
+            "reverse_metrics": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 2.425733214295178e-07,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 0.938332200050354,
+                "horizontal_root_displacement_m": 0.5560986399650574,
+                "max_bone_displacement_m": 2.1707825660705566,
+                "max_finger_skin_motion_m": 0.11257234960794449,
+                "max_local_finger_motion_rad": 0.8564523458480835,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5561960935592651,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "roundtrip": {
+              "clips": [
+                "Take 001",
+                "mixamo_com"
+              ],
+              "max_animation_position_error_m": 3.492089490464423e-06,
+              "max_animation_rotation_error_rad": 0.0009765625,
+              "max_rest_translation_m": 3.0555102057405747e-06,
+              "max_skin_rest_error_m": 4.721466757473536e-05,
+              "vertices": 35455
+            },
+            "roundtrip_bones": 161,
+            "source_motion_reference": {
+              "Take 001": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "no demonstrated weighted finger articulation",
+                "foot_motion_from_first_frame_m": 0.0,
+                "horizontal_root_displacement_m": 0.0,
+                "max_bone_displacement_m": 0.0,
+                "max_finger_skin_motion_m": 0.0,
+                "max_local_finger_motion_rad": 0.0,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.0,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              },
+              "mixamo_com": {
+                "contact_status": "motion measured; planted intervals not supplied",
+                "finger_bones": 40,
+                "finger_status": "weighted articulated fingers measured",
+                "foot_motion_from_first_frame_m": 0.9383321404457092,
+                "horizontal_root_displacement_m": 0.5560986399650574,
+                "max_bone_displacement_m": 2.1707820892333984,
+                "max_finger_skin_motion_m": 0.11257227510213852,
+                "max_local_finger_motion_rad": 0.856451690196991,
+                "planted_ankle_error_m": 0.0,
+                "root_displacement_m": 0.5561960935592651,
+                "sole_drift_m": 0.0,
+                "sole_samples": 0,
+                "weighted_finger_vertices": 11986
+              }
+            },
+            "source_revision": "c1e29a1d0ccd4ccdc4e471bf77081213d204428187967b0d27621bd9024cfb0e",
+            "target_bones": 161,
+            "target_motion_identity": {
+              "skeleton_revision": "25900c1c256b3e5d24b04fa75331a8eb77c1cf249f572824c1cbbc326797b460",
+              "source": {
+                "authority": "asset:UE-FBXExporter/ue5_manny/animation",
+                "sha256": "667c83883346c770469c21994a334eef2e6e3d9559e83a7053fa901579911fa8",
+                "version": "UE5.8.3-0+UE5"
+              }
+            },
+            "target_revision": "91938b5e6b48aa52d79f5b67eef4b4b978436595cd492f1e51109da55cac79d0",
+            "target_tool_status": "pending_external_readback"
+          }
+        ],
+        "failures": [],
+        "schema_version": 1
+      }
+    }
+  ],
+  "actual_ue_readback": {
+    "failures": [],
+    "report_sha256": "c35853f67e8c4a2a6f610006f599c6f62311806ad5f8aee9f4bed83b4a833c04",
+    "cases": [
+      {
+        "id": "ue4_native_bound_v2",
+        "source_sha256": "fb7b4a50d17f097b5e257e2d87e78c8c59bd98ef3dc5ca4ec8e8c2654fab5a2d",
+        "vertices": 22897,
+        "bone_count": 68,
+        "native_comparison": {
+          "max_position_error_cm": 0.00011275749578553546,
+          "max_rotation_error_rad": 5.638864019043613e-07,
+          "hierarchy_errors": []
+        },
+        "actual_animation_evaluation": [
+          {
+            "name": "interop-native-ue4raise_arms",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 53.59368987989274,
+            "ankle_motion_from_first_frame_cm": 0.0,
+            "planted_assertion": "not a planted interval"
+          },
+          {
+            "name": "interop-native-ue4squat",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 30.357357858613394,
+            "ankle_motion_from_first_frame_cm": 0.0031239041575205325,
+            "planted_assertion": "<0.5cm"
+          },
+          {
+            "name": "interop-native-ue4turn",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 52.85232992405962,
+            "ankle_motion_from_first_frame_cm": 14.37899544087474,
+            "planted_assertion": "not a planted interval"
+          }
+        ]
+      },
+      {
+        "id": "manny_native_bound_v2",
+        "source_sha256": "fbad4f93d1782c15fd145a19db77050e2fbed42ad43745eeaccab5f26eb56b68",
+        "vertices": 22897,
+        "bone_count": 161,
+        "native_comparison": {
+          "max_position_error_cm": 7.198864139066926e-05,
+          "max_rotation_error_rad": 7.432677694165705e-07,
+          "hierarchy_errors": []
+        },
+        "actual_animation_evaluation": [
+          {
+            "name": "interop-native-ue5_mannyraise_arms",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 45.713635144340955,
+            "ankle_motion_from_first_frame_cm": 0.0,
+            "planted_assertion": "not a planted interval"
+          },
+          {
+            "name": "interop-native-ue5_mannysquat",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 32.228590061753145,
+            "ankle_motion_from_first_frame_cm": 0.0023886388707205198,
+            "planted_assertion": "<0.5cm"
+          },
+          {
+            "name": "interop-native-ue5_mannyturn",
+            "length_s": 2.0,
+            "sample_count": 5,
+            "motion_from_first_frame_cm": 45.03297715475762,
+            "ankle_motion_from_first_frame_cm": 11.264560920174324,
+            "planted_assertion": "not a planted interval"
+          }
+        ]
+      }
+    ]
+  },
+  "actual_ui_replays": [
+    {
+      "family": "ue4",
+      "result": {
+        "failures": [],
+        "inputs": {
+          "ue4-native.glb": "14c0f1b3fcc4101bd04b791ff8d1e6e9a282b7d43506a62987f9424b4baa2446",
+          "robot-v3.tscn": "d4282e1e8b14b9da89cceb9af19439ff9af9b4f6b18a976c8d50b81e7d1ca725"
+        },
+        "outputs": {
+          "glb": {
+            "sha256": "5da4b58bd6ee98cee1237f73d28c16d23ecd7c619f6a1aeb0d5e00f7579f1171"
+          },
+          "tscn": {
+            "sha256": "af6b705cbd130320a91f378121f3835ef4216c085ebce6009a62deb97a87b9cc"
+          }
+        },
+        "pose_motion_m": 0.3035687506198883,
+        "target_bones": 68,
+        "target_revision": "5cacc290b0bb7f0c3c319ebac16075a330351a119df1c600be92eddb86d6cef0"
+      },
+      "stdout_sha256": "b871eb97027c846284132471be671dc803a783b5867c9cccfa0747ffbd1f65a7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "screenshot_sha256": "1facef4ffdf66430c16b040d39e59023100119951bee0640b4a99cb4022af22d"
+    },
+    {
+      "family": "ue5_manny",
+      "result": {
+        "failures": [],
+        "inputs": {
+          "ue5_manny-native.glb": "c9b00ff8479c7955f03821c4aa378d013ee810762a3cb0f0cfdcc39528ea01ab",
+          "robot-v3.tscn": "d4282e1e8b14b9da89cceb9af19439ff9af9b4f6b18a976c8d50b81e7d1ca725"
+        },
+        "outputs": {
+          "glb": {
+            "sha256": "f9ec742697e38d946f701bed0abf174c6230cd705694497c9e844b3d0490d2ce"
+          },
+          "tscn": {
+            "sha256": "2c5a05e895ca39568437515f030e0902d44ed2854fc4be508166513660fffb82"
+          }
+        },
+        "pose_motion_m": 0.32228586077690125,
+        "target_bones": 161,
+        "target_revision": "f08439f11fda0328045c04055ef937dd6847d23f7145e7d5dea7b9d6d91cba94"
+      },
+      "stdout_sha256": "5499d29c6bb826c2a5dc83000963aeb8b24acb814ba07b4018218b561e83d101",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "screenshot_sha256": "27c0a81dd8d78ecd2cd2bc405e3ee70c87e0ed265920c984875ee8b20d58f898"
+    },
+    {
+      "family": "mixamo",
+      "result": {
+        "failures": [],
+        "inputs": {
+          "mixamo_samba.fbx": "b9003ee562c87bf03051c3a502411b0808d3513f1d74a2011f7530d9f067069f",
+          "robot-v3.tscn": "d4282e1e8b14b9da89cceb9af19439ff9af9b4f6b18a976c8d50b81e7d1ca725"
+        },
+        "outputs": {
+          "glb": {
+            "sha256": "789d55c921c1417c4e291f71ec2e0d1fb35debd8b50696992ecc0c3d80a58af6"
+          },
+          "tscn": {
+            "sha256": "7b880628e8a6b68936d36c4b490699d20fc2e89795b73cee9ffa4ecfc6f23322"
+          }
+        },
+        "pose_motion_m": 0.3349281847476959,
+        "target_bones": 67,
+        "target_revision": "c1e29a1d0ccd4ccdc4e471bf77081213d204428187967b0d27621bd9024cfb0e"
+      },
+      "stdout_sha256": "49eff6b255a3307255895044f917a5417d3a0c3d37df909cdf1efb61863a4ee0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "screenshot_sha256": "4a5947ac62285db53426b595882f81e9a0b099f3b4cf650d6734a22e364d9997"
+    }
+  ],
+  "fixes_and_failed_evidence": [
+    "Independent self-to-self inverse-bind probe initially displaced vertices 0.360555m; fixed to zero using actual source Skin.",
+    "Unbaked custom skeleton ancestor transforms rejected; imported positive uniform scale/rotation explicitly baked and recorded.",
+    "Original FBX exchange produced per-bone 90-degree rest-axis mismatch in UE despite correct positions; native UE GLB control and final native reference exports pass full hierarchy/rest comparison. No universal hardcoded bone-axis repair.",
+    "Manny head geometry previously followed native bone axes; fixed to anatomical frames and visually inspected.",
+    "161-bone Profile JSON decimal-rounding identity failed; float32-bit numeric canonicalization with type tags now passes real repeated save/reopen.",
+    "Final UI compares two actual animation times; independent FBX animation provenance is explicit and SHA-verified."
+  ],
+  "limits": [
+    "Quinn remains unverified in #202, outside explicitly agreed first version.",
+    "Generated robot has no finger geometry/weights; actual finger acceptance uses licensed external fixtures, never empty target bones.",
+    "Original generated holes and nonmanifold topology from #145/#146 remain; this work does not claim production-ready topology.",
+    "Exact native UE binding tested with original UE GLB reference; FBX frame conventions can differ and require an actual target-tool check.",
+    "Unmapped auxiliary bones preserve local rest; unmatched weighted source auxiliaries collapse to nearest mapped ancestor with diagnostics.",
+    "Only explicitly declared planted intervals assert contact; dance/walk measurements are not blanket foot-lock acceptance.",
+    "MetaHuman Body and facial animation are separate extensions.",
+    "Fit, retarget sampling, serialization and local publication are synchronous; large assets can pause the panel."
+  ],
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/interop.gd": "c681e9cd882ea8058624ff7bf4010eeda622983cf2d1053881cf483eae5c0093",
+    "samples/ainative-workbench/addons/ainative/interop_panel.gd": "fe0518257ffad98f9d95bc20b87f965eb43ea7c5bad414ffd0545d471106b252",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "e6f6111c5adef7daac3a925fed2840a1270e48f4ef1d1c7327933699fb3c36d7",
+    "samples/ainative-workbench/interop_acceptance.gd": "90651431c55f00c5b18813926466f70158e2305e25729af04bfeb74044d284be",
+    "samples/ainative-workbench/interop_contract_tests.gd": "dab5b19fcfeb535b7170b6b72dd9bf8c08161e92a6437986eece2b027eeb75c7",
+    "samples/ainative-workbench/interop_live_ui.gd": "e3e32614fd46349d6552f5758f8db430a83a865381014e937e3ee6ac21f3d7b2",
+    "tools/ainative/interop_publish.py": "acbf6d62511bedcc0ee84035a880214d7fc40c305ceb1d83cf6d89e4102f9a1d",
+    "tools/ainative/test_interop.py": "2cde8c09199ab5308b8e97cf1ebe81f3273cf622c4af0882de28c6233af70e0d"
+  },
+  "main_rebase": "Fast-forwarded to 146865d1; incoming changes only Daqian host/editor files, no AINative algorithm changes.",
+  "private_evidence_storage": "Ignored runtime and Godot cache retain exact references, assets, full pose samples, logs and screenshots; public evidence excludes machine paths and proprietary binary assets.",
+  "main_delivery": "pending",
+  "visual_layout": {
+    "resolution": [
+      1280,
+      720
+    ],
+    "publish_control_visible_after_scroll": true,
+    "screenshot_sha256": "145b342197822a01bde2dcc85b29ee113e4bc4e0fb8af589fb6d1c85a3233d30",
+    "root_observed": "All interop source/reference controls, actions and publication control reachable by vertical scroll."
+  }
+}

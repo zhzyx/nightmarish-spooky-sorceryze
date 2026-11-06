@@ -1,5 +1,5 @@
 """File based subprocess transport. Factory is trusted local CLI config, never graph data."""
-import argparse, base64, hashlib, importlib, json, os, struct
+import argparse, base64, hashlib, importlib, json, math, os, struct
 from pathlib import Path
 from executor import Executor, snapshot_file
 from extensions import NodeRegistry, publish_new, canonical
@@ -18,10 +18,11 @@ def compile_graph(model):
     for n in model['nodes']:
         inputs={}; context=[]
         for field in ('source','image_context'):
-            if n.get(field):
-                path=Path(n[field]); ext=path.suffix.lower()
+            if n.get(field) or n.get(field+'_snapshot'):
+                path=Path(n[field]) if n.get(field) else None
+                ext=path.suffix.lower() if path else n[field+'_snapshot']['extension']
                 if ext not in ('.png','.jpg','.jpeg','.glb','.gltf'): raise ValueError('unsupported asset')
-                payload=snapshot_file(path); payload['extension']=ext
+                payload=snapshot_file(path) if path else dict(n[field+'_snapshot']); payload['extension']=ext
                 # glTF must be self-contained; external buffers/textures are not snapshotted.
                 if field=='image_context' and ext not in ('.png','.jpg','.jpeg'): raise ValueError('image context required')
                 if ext in ('.gltf','.glb'):
@@ -46,9 +47,39 @@ def compile_graph(model):
         links={}
         for edge in model['edges']:
             if edge['to']==n['id']:
-                links['source']={'node':edge['from'],'port':'result'}; inputs.pop('source',None)
+                port=edge.get('input','source')
+                if port in links: raise ValueError('duplicate linked port')
+                links[port]={'node':edge['from'],'port':edge.get('output','result')}; inputs.pop(port,None)
         graph.append(dict(id=n['id'],provider=n.get('provider','local-copy'),request=dict(node=n.get('type','copy'),version=n.get('version','1'),inputs=inputs,parameters=n['parameters'],context=context),links=links))
     return graph,dict(schema_version=1,artifacts=assets)
+
+
+def normalize_editor_integers(graph, registry):
+    """Godot JSON numbers arrive as floats; normalize only schema integer fields.
+
+    This transport accepts integers exactly representable by JSON/IEEE doubles.
+    Executor and direct CLI contracts retain their strict original type rules.
+    """
+    maximum = 2**53 - 1
+    for node in graph:
+        request = node['request']
+        schema = registry.get(request['node'], request['version'])['parameters']
+        params = request['parameters']
+        if not isinstance(params, dict):
+            raise ValueError('parameters must be object')
+        params = dict(params)
+        for name, spec in schema.get('properties', {}).items():
+            if spec['type'] != 'integer' or name not in params:
+                continue
+            value = params[name]
+            if type(value) is int:
+                if abs(value) > maximum:
+                    raise ValueError('editor integer exceeds JSON safe range: ' + name)
+            elif type(value) is float and math.isfinite(value) and value.is_integer() and abs(value) <= maximum:
+                params[name] = int(value)
+            else:
+                raise ValueError('editor integer must be a finite JSON safe integer: ' + name)
+        request['parameters'] = params
 
 def selected(host, request):
     exported=host.export(request['run']); ref=exported['outputs'][request['node']]['result']
@@ -63,13 +94,21 @@ def dispatch(args,request):
     host=Executor(args.db,registry,providers)
     try:
         if args.command=='create':
-            graph,manifest=compile_graph(request['model']); return {'run_id':host.create(graph,manifest)}
+            graph,manifest=compile_graph(request['model'])
+            normalize_editor_integers(graph,registry)
+            return {'run_id':host.create(graph,manifest)}
         if args.command=='retry': host.retry(request['run'],request['node']); return host.status(request['run'])
         if args.command=='preview':
             exported,asset,token=selected(host,request)
             data=base64.b64decode(asset['payload']['content_base64'],validate=True)
             if hashlib.sha256(data).hexdigest()!=asset['payload']['content_sha256']: raise ValueError('digest')
-            path=Path(args.db).parent/(token+asset['payload']['extension']); path.write_bytes(data)
+            extension=asset['payload']['extension']
+            if extension not in ('.png','.jpg','.jpeg','.glb','.gltf'): raise ValueError('unsupported preview format')
+            path=Path(args.db).parent/(token+extension)
+            try:
+                with path.open('xb') as stream: stream.write(data)
+            except FileExistsError:
+                if path.read_bytes()!=data: raise ValueError('preview collision')
             return {'path':str(path),'token':token,'type':asset['type']}
         if args.command=='publish':
             exported,asset,token=selected(host,request)

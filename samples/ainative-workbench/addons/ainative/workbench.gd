@@ -1,6 +1,8 @@
 @tool
 extends VBoxContainer
 # Local machine settings are intentionally excluded from workflow serialization.
+var rigging_panel: VBoxContainer
+var generator_choice: OptionButton
 var graph: GraphEdit
 var status: Label
 var path_edit: LineEdit
@@ -14,6 +16,7 @@ var factory_edit: LineEdit
 var target_edit: LineEdit
 var texture: TextureRect
 var viewport: SubViewport
+var mesh_container: SubViewportContainer
 var preview_root: Node3D
 var dialog: ConfirmationDialog
 var nodes: Array = []
@@ -53,23 +56,38 @@ func button(parent: Node, label: String, action: Callable):
 
 func _ready():
 	custom_minimum_size = Vector2(900, 520)
+	var scroll = ScrollContainer.new()
+	scroll.name = 'WorkbenchScroll'
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
+	add_child(scroll)
+	var content = VBoxContainer.new()
+	content.name = 'WorkbenchContent'
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
 	state_dir = ProjectSettings.globalize_path("user://ainative")
 	DirAccess.make_dir_recursive_absolute(state_dir)
 	db = state_dir.path_join("executor.sqlite")
 	var settings = ConfigFile.new()
 	settings.load(state_dir.path_join("local.cfg"))
 	var machine = HBoxContainer.new()
-	add_child(machine)
-	python_edit = line(machine, "Trusted local Python executable", settings.get_value("host", "python", "python"))
+	content.add_child(machine)
+	python_edit = line(machine, "Trusted local Python executable", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", "python"))
 	host_edit = line(machine, "Trusted editor_host.py path", settings.get_value("host", "script", ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")))
-	factory_edit = line(machine, "Trusted provider factory", settings.get_value("host", "factory", "editor_demo:factory"))
+	factory_edit = line(machine, "Trusted provider factory", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(machine, "Save local settings", save_settings)
 	var bar = HBoxContainer.new()
-	add_child(bar)
+	content.add_child(bar)
 	path_edit = line(bar, "Workflow JSON path", ProjectSettings.globalize_path("user://workflow.json"))
 	button(bar, "Save graph", save_graph)
 	button(bar, "Open graph", open_graph)
 	button(bar, "+ Copy node", add_node)
+	generator_choice = OptionButton.new()
+	for kind in ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh"]: generator_choice.add_item(kind)
+	bar.add_child(generator_choice)
+	button(bar, "+ Generate", add_generator)
 	button(bar, "Delete selected", delete_node)
 	button(bar, "Run", start_run)
 	button(bar, "Cancel", cancel_run)
@@ -77,7 +95,7 @@ func _ready():
 	button(bar, "Resume run", resume_run)
 	var split = HSplitContainer.new()
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(split)
+	content.add_child(split)
 	graph = GraphEdit.new()
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -98,16 +116,20 @@ func _ready():
 	params_edit.custom_minimum_size.y = 55
 	inspector.add_child(params_edit)
 	button(inspector, "Apply selected fields", apply_fields)
+	button(inspector, "Clear embedded source / context", clear_embedded)
 	button(inspector, "Preview selected result", request_preview)
 	texture = TextureRect.new()
 	texture.custom_minimum_size = Vector2(240, 120)
 	texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	inspector.add_child(texture)
+	texture.hide()
 	var container = SubViewportContainer.new()
-	container.custom_minimum_size = Vector2(240, 140)
+	mesh_container = container
+	container.custom_minimum_size = Vector2(360, 280)
 	container.stretch = true
 	inspector.add_child(container)
+	container.hide()
 	viewport = SubViewport.new()
 	viewport.size = Vector2i(360, 160)
 	viewport.own_world_3d = true
@@ -122,16 +144,30 @@ func _ready():
 	var light = DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-35, -30, 0)
 	preview_root.add_child(light)
+	var environment = WorldEnvironment.new()
+	environment.environment = Environment.new()
+	environment.environment.background_mode = Environment.BG_COLOR
+	environment.environment.background_color = Color(0.08, 0.10, 0.13)
+	environment.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.environment.ambient_light_color = Color.WHITE
+	environment.environment.ambient_light_energy = 0.3
+	preview_root.add_child(environment)
+	rigging_panel = preload('res://addons/ainative/rigging_panel.gd').new()
+	content.add_child(rigging_panel)
+	rigging_panel.initialize(self)
+	var interop_panel = preload('res://addons/ainative/interop_panel.gd').new()
+	content.add_child(interop_panel)
+	interop_panel.initialize(self)
 	var publish_bar = HBoxContainer.new()
-	add_child(publish_bar)
+	content.add_child(publish_bar)
 	target_edit = line(publish_bar, "New .tres (image) or .tscn (mesh) absolute target", ProjectSettings.globalize_path("res://published.tres"))
 	button(publish_bar, "Review & publish", review_publish)
 	dialog = ConfirmationDialog.new()
 	add_child(dialog)
 	dialog.confirmed.connect(confirm_publish)
 	status = Label.new()
-	status.text = "LOCAL IMPORT / COPY DEMO — NOT AI GENERATION. No credentials in graphs."
-	add_child(status)
+	status.text = "Copy demo or ComfyUI generation. Configure local factory for generation."
+	content.add_child(status)
 	if FileAccess.file_exists(state_dir.path_join("last_run.txt")):
 		run_id = FileAccess.get_file_as_string(state_dir.path_join("last_run.txt"))
 	add_node()
@@ -149,6 +185,16 @@ func add_node():
 	rebuild()
 	select_node(id)
 
+func add_generator():
+	var kind = generator_choice.get_item_text(generator_choice.selected)
+	var id = "n" + str(Time.get_ticks_usec())
+	nodes.append({"id": id, "type": kind, "version": "1", "provider": "comfy", "source": "", "image_context": "", "text": "", "parameters": {"prompt": "a small stone sculpture on white background", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
+	rebuild()
+	select_node(id)
+
+func output_kind(data: Dictionary) -> int:
+	return 2 if data.get("type", "copy").ends_with("mesh") else 0 if data.get("type", "copy") == "copy" else 1
+
 func rebuild():
 	graph.clear_connections()
 	for child in graph.get_children():
@@ -161,9 +207,9 @@ func rebuild():
 		node.title = data.id + " / " + data.get("type", "copy")
 		node.position_offset = Vector2(data.x, data.y)
 		var label = Label.new()
-		label.text = "source → result\nLocal copy (not AI)"
+		label.text = "Local copy (not AI)" if data.get("type", "copy") == "copy" else data.type + " (ComfyUI)"
 		node.add_child(label)
-		node.set_slot(0, true, 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
+		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
 		graph.add_child(node)
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
@@ -203,9 +249,16 @@ func safe(value) -> bool:
 
 func connect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
 	if from == to: return
+	var source_node = nodes.filter(func(n): return n.id == from)
+	var target_node = nodes.filter(func(n): return n.id == to)
+	if source_node.is_empty() or target_node.is_empty(): return
+	if target_node[0].get("type", "copy").begins_with("text_"): return
+	if target_node[0].get("type", "copy") != "copy" and output_kind(source_node[0]) != 1:
+		status.text = "Generation source requires an image output"
+		return
 	for edge in edges:
 		if edge.to == to: return
-	edges.append({"from": str(from), "to": str(to)})
+	edges.append({"from": str(from), "to": str(to), "input": "source", "output": "result"})
 	rebuild()
 
 func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
@@ -230,9 +283,45 @@ func save_graph():
 		if path_edit.text.simplify_path() in [n.source.simplify_path(), n.image_context.simplify_path()]:
 			status.text = "Cannot overwrite an input asset"
 			return
-	var f = FileAccess.open(path_edit.text, FileAccess.WRITE)
-	if f: f.store_string(JSON.stringify(model(), "\t")); status.text = "Graph saved"
-	else: status.text = "Cannot save graph"
+	var portable = model().duplicate(true)
+	for n in portable.nodes:
+		for field in ["source", "image_context"]:
+			if not n[field].is_empty():
+				var input = FileAccess.open(n[field], FileAccess.READ)
+				if input == null:
+					status.text = "Cannot snapshot input; previous workflow preserved"
+					return
+				var bytes = input.get_buffer(input.get_length())
+				if bytes.is_empty() or input.get_error() != OK:
+					status.text = "Cannot read input; previous workflow preserved"
+					return
+				input.close()
+				var hash_context = HashingContext.new()
+				hash_context.start(HashingContext.HASH_SHA256)
+				hash_context.update(bytes)
+				n[field + "_snapshot"] = {"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + n[field].get_extension().to_lower()}
+				n[field] = ""
+	var temporary = path_edit.text + "." + str(Time.get_ticks_usec()) + ".tmp"
+	var f = FileAccess.open(temporary, FileAccess.WRITE)
+	if f == null:
+		status.text = "Cannot save graph"
+		return
+	f.store_string(JSON.stringify(portable, "\t"))
+	f.flush()
+	var failed = f.get_error() != OK
+	f.close()
+	if failed or DirAccess.rename_absolute(temporary, path_edit.text) != OK:
+		DirAccess.remove_absolute(temporary)
+		status.text = "Cannot replace workflow; previous workflow preserved"
+		return
+	status.text = "Graph saved with embedded input snapshots"
+
+func clear_embedded():
+	for data in nodes:
+		if data.id == selected_id:
+			data.erase("source_snapshot")
+			data.erase("image_context_snapshot")
+	status.text = "Embedded source/context removed; path fields still apply"
 
 func open_graph():
 	var value = JSON.parse_string(FileAccess.get_file_as_string(path_edit.text))
@@ -355,11 +444,14 @@ func load_preview(data: Dictionary, node_id: String):
 	if is_instance_valid(preview_scene): preview_scene.queue_free()
 	preview_scene = null
 	texture.texture = null
+	texture.hide()
+	mesh_container.hide()
 	if data.type == "image":
 		var image = Image.load_from_file(data.path)
 		if image == null: status.text = "Image preview failed"; return
 		preview_resource = ImageTexture.create_from_image(image)
 		texture.texture = preview_resource
+		texture.show()
 	else:
 		var document = GLTFDocument.new()
 		var state = GLTFState.new()
@@ -367,6 +459,8 @@ func load_preview(data: Dictionary, node_id: String):
 		preview_scene = document.generate_scene(state)
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
+		rigging_panel.set_source(data.path)
+		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token
 	preview_run = run_id
@@ -384,9 +478,10 @@ func frame_mesh():
 		found = true
 	if found:
 		var center = bounds.get_center()
-		var radius = maxf(bounds.size.length(), 0.1)
+		var radius = maxf(bounds.size.length() * 0.5, 0.05)
 		var camera = preview_root.get_child(0) as Camera3D
-		camera.position = center + Vector3(0.5, 0.3, 1).normalized() * radius * 1.5
+		var distance = radius / sin(deg_to_rad(camera.fov * 0.5)) * 1.15
+		camera.position = center + Vector3(0.5, 0.3, 1).normalized() * distance
 		camera.near = maxf(radius / 1000, 0.001)
 		camera.far = radius * 20
 		camera.look_at(center)

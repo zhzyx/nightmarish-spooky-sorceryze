@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-flow-state-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-flow-state-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T15:48:07.590689+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/197",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "intent": "显示大千工单及节点运行状态，为运行中的路径增加流向动效。",
+    "document": "design-docs/daqian/flow-state.md"
+  },
+  "evidence_refs": [],
+  "sha256": "d1320117662e27288a1e0f488440397b5210bf80cf57c04163b04a2603453cc7"
+}

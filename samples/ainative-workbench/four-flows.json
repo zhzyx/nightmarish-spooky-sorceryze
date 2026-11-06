@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "nodes": [
+    {
+      "id": "robot_image", "type": "text_to_image", "version": "1", "provider": "comfy",
+      "source": "", "image_context": "", "text": "",
+      "parameters": {"prompt": "A full body 3D render of a simple friendly humanoid robot, standing front view, arms spread apart, separated legs, entire figure visible, plain white background", "seed": 42},
+      "x": 30, "y": 40
+    },
+    {
+      "id": "armor_variant", "type": "image_to_image", "version": "1", "provider": "comfy",
+      "source": "", "image_context": "", "text": "",
+      "parameters": {"prompt": "A full body 3D render of a friendly humanoid robot with bright blue armor, standing front view, arms spread apart, plain white background", "seed": 42},
+      "x": 450, "y": 40
+    },
+    {
+      "id": "robot_mesh", "type": "image_to_mesh", "version": "1", "provider": "comfy",
+      "source": "", "image_context": "", "text": "",
+      "parameters": {"seed": 42},
+      "x": 450, "y": 200
+    },
+    {
+      "id": "helmet_mesh", "type": "text_to_mesh", "version": "1", "provider": "comfy",
+      "source": "", "image_context": "", "text": "",
+      "parameters": {"prompt": "A 3D render of a small medieval knight helmet, isolated object, plain white background", "seed": 42},
+      "x": 30, "y": 350
+    }
+  ],
+  "edges": [
+    {"from": "robot_image", "to": "armor_variant"},
+    {"from": "robot_image", "to": "robot_mesh"}
+  ]
+}

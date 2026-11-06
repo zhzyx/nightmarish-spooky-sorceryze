@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-generators-issue-source-20261106",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-04-generators-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T14:55:44.634854+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/145",
+  "agent": {
+    "id": "codex-ainative-art",
+    "version": "20261106",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "request": "按原授权交付 #145 本机生成节点，保留原决定事件并补充精确工单来源关联",
+    "decision_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/145#issuecomment-6685628673",
+    "validation_ref": "data-collection/ainative-generators-validation.json",
+    "main_delivery": "pending"
+  },
+  "evidence_refs": [],
+  "sha256": "e805bae07afeeea94790e3f9f6c05a44709ef3adab8ddce17183aa634bb81d6b"
+}

@@ -137,6 +137,13 @@
 
 ## 当前停止条件与风险
 
+### GF-2 恢复交付（2026-11-07）
+
+- #189 已由其他协作者经 [PR #206](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/206) 修复，实际合入 main `a870e312eed410c8f487075997297790016a001d`（北京时间 11 月 7 日 00:29）。此前 #205 是关闭且未合入的替代版本。本聊天只整合已接收主线，不重复修复或重写冻结登记。
+- 整合后离线快照检查实际通过（280 个冻结文件），正式框架校验为 `approved_file_integrity`，#177 intake 回读通过。Gameplay 树仍为 `e2139f2ebf54b32e450b1af0fb09a697aca4ba55`，底层 Node/MultiplayerPeer/Object 输入不变，保留既有 13 用例/236 断言、Windows 构建及脚本/三进程实测；不把它们冒称为新提交实跑。
+- Windows 可复用工作流的调用权限仅在 `windows-build` job 明确为 `contents: read` 与 `actions: read`，不改变全仓 job 默认权限，不增加写权限。受影响差异的独立复核无阻塞；新精确签发 head 的 CI 和 main 回读另按实际结果推进。
+- main 已包含历史日志的精确忽略例外，本候选移除重复条目，使 `.gitignore` 与当前主线一致。旧失败记录保持历史原样，恢复证据见 `data-collection/gameplay-gf2-resume-20261107.json`。
+
 - GF-1 与 GF-2 已形成同一隔离 worktree 的本地候选；本轮在 GF-2 验证后停止，不开始 GF-3。
 - 不修改原主工作树的未提交文件；全部生产写入隔离 worktree。
 - Unreal 源码版本、Godot 基线或公共接口发生变化时只复核受影响设计。

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-card-layout-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-card-layout-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T15:41:21.504238+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/196",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "改善 Godot 工单总图和详情图的卡片间距与排布",
+    "document": "design-docs/daqian-card-layout.md"
+  },
+  "evidence_refs": [],
+  "sha256": "a8c6b9651a593017fa7fb513233d81083fbe7ab1bd62ef9dcc3aedd043b3746c"
+}

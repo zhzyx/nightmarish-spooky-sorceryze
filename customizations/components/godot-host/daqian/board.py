@@ -1,12 +1,14 @@
 """Project existing GitHub Issue identities and dependency references into Godot UI data."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 from datetime import datetime, timezone
 import json
 import os
 import re
+import progress
 from pathlib import Path
-from repository_access import AccessDenied, collaborator, configured_login, work_items
+from repository_access import AccessDenied, SessionChanged, collaborator, configured_login, session_actor, session_path, work_items
 
 
 def source_plan(issue, request_id):
@@ -66,6 +68,8 @@ def read_board(root, follows, actor=None):
     repo = settings["repository"]
     base = f"repos/{repo}/issues"
     actor = actor or collaborator(root)
+    if actor["repo"] != repo:
+        raise AccessDenied("已绑定的仓库已切换")
     login = actor["login"]
 
     def pages(url):
@@ -78,15 +82,18 @@ def read_board(root, follows, actor=None):
         return row["number"]
 
     queue = {}
-    for role in ("assignee", "creator"):
-        for row in pages(f"{base}?{role}={login}&state=open&per_page=100"):
-            if "pull_request" not in row:
-                queue[local_number(row)] = row
+    urls = [f"{base}?{role}={login}&state=open&per_page=100" for role in ("assignee", "creator")]
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        for rows in pool.map(pages, urls):
+            for row in rows:
+                if "pull_request" not in row:
+                    queue[local_number(row)] = row
     for num in follows:
         if num not in queue:
             row = json.loads(work_items.gh("api", f"{base}/{num}"))
             local_number(row)
             queue[num] = row
+    receipts = progress.receipt_root(root)
     items = {}
     while queue:
         number, row = queue.popitem()
@@ -107,6 +114,8 @@ def read_board(root, follows, actor=None):
                                             re.MULTILINE))),
             "decision": status == "needs-decision", "closed": row["state"] == "closed",
         }
+        item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
+        item["workers"] = progress.workers_for_row(receipts, repo, row, item)
         item.update(source_plan(row, item["request"]))
         item["pending_count"] = len(item.get("questions",{})) if row["state"]=="open" else 0
         item["decision"] = item["decision"] or item["pending_count"]>0
@@ -126,18 +135,31 @@ def read_board(root, follows, actor=None):
             "verified_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
+def publish(path, value):
+    temporary = Path(str(path) + ".partial")
+    temporary.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    os.replace(temporary, path)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, required=True)
-    parser.add_argument("--result", type=Path, required=True)
+    parser.add_argument("--result", type=Path)
     parser.add_argument("--follow", nargs="*", type=int, default=[])
+    parser.add_argument("--editor-session", default="")
+    parser.add_argument("--end-session", action="store_true")
     parser.add_argument("--access-only",action="store_true")
     parser.add_argument("--expected-user",default="")
     args = parser.parse_args()
     try:
         if any(n <= 0 for n in args.follow):
             raise ValueError("工单编号必须为正整数")
-        actor=collaborator(args.repo)
+        if args.end_session:
+            session_path(args.editor_session).unlink(missing_ok=True)
+            return
+        if args.result is None:
+            parser.error("--result required")
+        actor = session_actor(args.repo, args.editor_session, allow_login=args.access_only and not args.expected_user)
         if args.expected_user and actor["user_id"]!=args.expected_user:
             raise AccessDenied("当前登录账号已切换")
         if args.access_only:
@@ -154,21 +176,37 @@ def main():
                                 "questions":item.get("questions",{}),"can_edit":False}
                         view=plan_store.snapshot(db,source)
                         ctx=view["context"]
+                        item["node_states"] = ctx["states"]
+                        nodes = view["plan"]["nodes"]
+                        item["running_titles"] = [
+                            (node.get("value") or node["title"]).partition("\n")[0][:48]
+                            if node["kind"] == "task" else node["title"]
+                            for key, node in nodes.items() if ctx["states"].get(key) == "running"
+                        ]
                         count=len(ctx["questions"])-len(ctx["answers"])
                         item["pending_count"]=count
                         item["decision"]=count>0 or (item["status"]=="needs-decision" and not ctx["answers"])
+            if args.editor_session and session_actor(args.repo, args.editor_session) != actor:
+                raise AccessDenied("读取工单期间 GitHub 账号已切换")
+            import bridge
+            receipts = progress.receipt_root(args.repo)
+            node = bridge._igniter.discover_node(args.repo, bridge.host_environment(args.repo))
             result={"board":board}
+            if receipts.is_dir() and node:
+                result["watch"] = {"node": node, "directory": str(receipts)}
     except AccessDenied as error:
-        result={"denied":True,"error":str(error)}
+        if args.editor_session:
+            session_path(args.editor_session).unlink(missing_ok=True)
+        result={"denied":True,"session_changed":isinstance(error, SessionChanged),"error":str(error)}
     except work_items.GitHubCommandError as error:
+        if args.editor_session and error.http_status in (401, 403):
+            session_path(args.editor_session).unlink(missing_ok=True)
         reason=str(error)
         offline=reason.startswith(("GITHUB_NETWORK","GITHUB_TIMEOUT"))
         result={"denied":not offline,"offline_login":configured_login() if offline else "","error":reason}
-    except (ValueError, OSError, KeyError) as error:
+    except (ValueError, TypeError, OSError, KeyError) as error:
         result = {"denied":True,"error":"读取工单来源失败"}
-    temporary = args.result.with_suffix(".partial")
-    temporary.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
-    os.replace(temporary, args.result)
+    publish(args.result, result)
 
 
 if __name__ == "__main__":

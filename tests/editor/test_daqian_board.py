@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -10,6 +11,31 @@ import board
 
 
 class BoardProjection(unittest.TestCase):
+    def test_private_workers_match_current_source_until_terminal(self):
+        repo = "fixture/board"
+        row = dict(number=2, title="Review", state="open", updated_at="rev1",
+                   labels=[], assignees=[], body="")
+        item = dict(number=2, request="work-2", url="https://github.com/fixture/board/issues/2", closed=False)
+        ticket = "github:fixture/board#2"
+        key = "a" * 64
+        snapshot = dict(requestId=item["request"], authority=item["url"], sha256=board.progress.dispatch_revision(row))
+        assign = dict(ticket=ticket, key=key, sourceSnapshot=snapshot)
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            folder = base / "codex-dispatch/sources"
+            folder.mkdir(parents=True)
+            stem = board.progress.issue_route.digest(ticket) + "-" + key
+            (folder / (stem + ".claim.json")).write_text(json.dumps(dict(assignment=assign)))
+            packet = dict(key=key, receipt=dict(workerId="reviewer", setupPending=False))
+            (folder / (stem + ".worker.json")).write_text(json.dumps(packet))
+            project = lambda: board.progress.workers_for_row(base, repo, row, item)
+            self.assertEqual(project(), ["reviewer"])
+            row["updated_at"] = "rev2"
+            self.assertEqual(project(), [])
+            row["updated_at"] = "rev1"
+            (folder / (stem + ".terminal.json")).write_text("{}")
+            self.assertEqual(project(), [])
+
     def test_follow_and_history_are_deduplicated(self):
         repo="zhzyx/nightmarish-spooky-sorceryze"
         def issue(number,state="open"):

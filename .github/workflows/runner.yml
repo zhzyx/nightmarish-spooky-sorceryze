@@ -10,10 +10,6 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: read
-  actions: read
-
 concurrency:
   group: ${{ github.workflow }}|${{ github.ref_name }}
   cancel-in-progress: true
@@ -58,6 +54,9 @@ jobs:
 
   windows-build:
     name: 🏁 Windows
+    permissions:
+      contents: read
+      actions: read
     needs: static-checks
     if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
     uses: ./.github/workflows/windows_builds.yml

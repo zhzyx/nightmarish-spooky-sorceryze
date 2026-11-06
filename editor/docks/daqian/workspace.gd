@@ -6,6 +6,8 @@ var graph_script: Script
 var models_script: Script
 var models_dialog: AcceptDialog
 var editor
+var board_cards: Array[GraphNode] = []
+var board_layout_pending := false
 var overview: GraphEdit
 var notice: Label
 var search: LineEdit
@@ -19,6 +21,13 @@ var publish_button: Button
 var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
 var routing_in_flight := {}
+var routing_errors := {}
+var chat_work := {}
+var watcher := {}
+var watcher_buffer := ""
+var fresh_progress := false
+var refresh_pending := false
+var work_status := Label.new()
 var clarification_dialog := ConfirmationDialog.new()
 var clarification_prompt := Label.new()
 var clarification_answer := TextEdit.new()
@@ -60,6 +69,7 @@ var debug_serial := 0
 const DEBUG_MODELS := ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]
 var host: Object
 var selection_epoch := 0
+var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
 
 
 func _ready() -> void:
@@ -98,6 +108,9 @@ func _ready() -> void:
 	notice = Label.new()
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(notice)
+	work_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	work_status.hide()
+	add_child(work_status)
 	actions = HBoxContainer.new()
 	add_child(actions)
 	_button(actions, "仅推演", _chat_action.bind("preview"))
@@ -116,12 +129,16 @@ func _ready() -> void:
 	history_view.custom_minimum_size = Vector2(560,320)
 	history_dialog.add_child(history_view)
 	add_child(history_dialog)
-	overview = GraphEdit.new()
+	overview = graph_script.FlowCanvas.new()
 	overview.name = "IssueOverview"
 	overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	overview.zoom_min = 0.1
 	overview.zoom_max = 3.0
 	overview.minimap_enabled = true
+	_button(overview.get_menu_hbox(), "重排总图", func():
+		saved.erase("positions")
+		_layout_board()
+		_queue_save())
 	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
@@ -130,8 +147,10 @@ func _ready() -> void:
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
+	models_dialog.editor_session = editor_session
 	add_child(models_dialog)
 	models_dialog.connect("catalog_changed",_catalog_changed)
+	models_dialog.connect("access_denied",_access_denied)
 	editor.debug_command.connect(_debug_command)
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
@@ -151,7 +170,7 @@ func _ready() -> void:
 	_gate_visibility(false)
 	notice.text = "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
-	_opened.call_deferred()
+	_start_session.call_deferred()
 
 
 func _button(parent: Control, title: String, action: Callable) -> Button:
@@ -160,6 +179,11 @@ func _button(parent: Control, title: String, action: Callable) -> Button:
 	button.pressed.connect(action)
 	parent.add_child(button)
 	return button
+
+
+func _start_session() -> void:
+	if not _repo().is_empty() and not checking:
+		refresh()
 
 
 func _opened() -> void:
@@ -227,12 +251,22 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
+	_stop_progress_watch()
+	if not picker_scope.is_empty():
+		var bridge := picker_scope.path_join("customizations/components/godot-host/daqian/board.py")
+		var settings := EditorInterface.get_editor_settings()
+		var python := str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+		if FileAccess.file_exists(bridge):
+			if python.is_empty():
+				python = "python" if OS.has_feature("windows") else "python3"
+			OS.execute(python,[bridge,"--repo",picker_scope,"--end-session","--editor-session",editor_session])
 	_stop_debug(false,true)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
 
 
 func _show_board() -> void:
+	work_status.hide()
 	selection_epoch += 1
 	if not current.is_empty():
 		_save()
@@ -246,11 +280,12 @@ func _show_board() -> void:
 
 
 func _draw_board() -> void:
+	board_cards.clear()
 	for child in overview.get_children():
 		if child is GraphNode:
 			overview.remove_child(child)
 			child.queue_free()
-	overview.clear_connections()
+	overview.clear_flow()
 	var statuses := ["全部状态", "待我处理"]
 	var owners := ["全部负责人"]
 	var rows: Array = board.get("issues", [])
@@ -260,20 +295,36 @@ func _draw_board() -> void:
 	for index in rows.size():
 		var item: Dictionary = rows[index]
 		var card := GraphNode.new()
+		card.set_meta("issue_url", item.url)
 		card.name = "i_" + str(item.number)
 		card.title = "#%s  %s" % [item.number, item.title]
-		card.tooltip_text = item.url
-		card.position_offset = saved.get("positions", {}).get(item.url, Vector2(38 + index % 5 * 375, 75 + index / 5 * 177))
-		card.position_offset_changed.connect(func():
+		card.tooltip_text = card.title + "\n" + item.url
+		card.custom_minimum_size.x = 280 * overview.get_theme_default_base_scale()
+		var title_label := card.get_titlebar_hbox().get_child(0) as Label
+		title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		card.dragged.connect(func(_from, to):
 			if not saved.has("positions"):
 				saved.positions = {}
-			saved.positions[item.url] = card.position_offset
+			saved.positions[item.url] = to
+			_queue_board_layout()
 			_queue_save())
 		var label := Label.new()
-		label.text = item.status + ("  ·  需要决定" if item.decision else "")
-		if item.decision:
-			label.modulate = Color("#edbe66")
+		var issue_state: String = item.status
+		if item.get("closed", false) and issue_state not in ["done", "cancelled"]:
+			issue_state = "closed"
+		overview.mark_card(card, label, issue_state, " · 需要决定" if item.decision and issue_state != "needs-decision" else "")
 		card.add_child(label)
+		var running := PackedStringArray(item.get("running_titles", [])) if fresh_progress else PackedStringArray()
+		if fresh_progress:
+			running.append_array(PackedStringArray(item.get("workers", [])))
+		if not running.is_empty():
+			var active := Label.new()
+			active.text = "运行中 · " + "、".join(running)
+			active.tooltip_text = active.text
+			active.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			active.custom_minimum_size.x = 190
+			active.add_theme_color_override("font_color", graph_script.FlowCanvas.COLORS.running)
+			card.add_child(active)
 		if item.decision:
 			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
@@ -284,12 +335,15 @@ func _draw_board() -> void:
 				continue
 			var line := Label.new()
 			line.text = str(node.title) + " · " + str(node.value).left(32)
+			line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			line.tooltip_text = node.value
 			detail.add_child(line)
 		card.add_child(detail)
 		card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
 		_button(card, "查看流程", _open_issue.bind(item))
 		overview.add_child(card)
+		board_cards.append(card)
+		card.resized.connect(_queue_board_layout)
 		by_url[item.url] = card.name
 		if item.status not in statuses:
 			statuses.append(item.status)
@@ -299,12 +353,13 @@ func _draw_board() -> void:
 	for item in rows:
 		for dep in item.dependencies:
 			if by_url.has(dep):
-				overview.connect_node(by_url[dep], 0, by_url[item.url], 0)
+				overview.connect_flow(by_url[dep], 0, by_url[item.url], 0)
 	pending_menu.text = "待办 (%d)" % waiting_inputs
 	var dock := get_parent() as EditorDock
 	if dock:
 		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
 	_zoom_detail()
+	_layout_board()
 	_fill_filter(status, statuses)
 	_fill_filter(owner_filter, owners)
 	_filter_board()
@@ -312,9 +367,49 @@ func _draw_board() -> void:
 
 
 func _zoom_detail() -> void:
-	for card in overview.get_children():
-		if card is GraphNode and card.has_node("StepDetails"):
-			card.get_node("StepDetails").visible = overview.zoom >= 1.2
+	var expanded := overview.zoom >= 1.2
+	for card in board_cards:
+		var detail := card.get_node("StepDetails") as VBoxContainer
+		if detail.visible != expanded:
+			detail.visible = expanded
+			card.reset_size()
+
+
+func _queue_board_layout() -> void:
+	if not board_layout_pending:
+		board_layout_pending = true
+		_layout_board.call_deferred()
+
+
+func _layout_board() -> void:
+	board_layout_pending = false
+	var scale_factor := overview.get_theme_default_base_scale()
+	var gap := Vector2(56, 36) * scale_factor
+	var origin := Vector2(38, 75) * scale_factor
+	var pinned: Dictionary = saved.get("positions", {})
+	var obstacles: Array[Rect2] = []
+	var widths := PackedFloat32Array([0, 0, 0, 0, 0])
+	for i in board_cards.size():
+		var card := board_cards[i]
+		var extent := card.size.max(card.get_combined_minimum_size())
+		var url: String = card.get_meta("issue_url")
+		if pinned.has(url):
+			card.position_offset = pinned[url]
+			obstacles.append(Rect2(card.position_offset, extent))
+		widths[i % widths.size()] = maxf(widths[i % widths.size()], extent.x)
+	obstacles.sort_custom(func(a: Rect2, b: Rect2): return a.position.y < b.position.y)
+	var y := origin.y
+	for start in range(0, board_cards.size(), widths.size()):
+		var x := origin.x
+		var bottom := y
+		for i in range(start, mini(start + widths.size(), board_cards.size())):
+			var card := board_cards[i]
+			var extent := card.size.max(card.get_combined_minimum_size())
+			if not pinned.has(card.get_meta("issue_url")):
+				card.position_offset = graph_script.clear_pinned_space(Rect2(Vector2(x, y), extent), obstacles, gap.y)
+				bottom = maxf(bottom, card.position_offset.y + extent.y)
+			x += widths[i - start] + gap.x
+		y = bottom + gap.y
 
 
 func _locate_pending(number: int) -> void:
@@ -349,6 +444,8 @@ func _filter_board() -> void:
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
 		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and item.decision) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
 
+	overview.refresh_wires()
+
 
 func _follow() -> void:
 	if actor.is_empty():
@@ -380,7 +477,16 @@ func _gate_visibility(opened: bool) -> void:
 		draft_menu.get_popup().hide()
 
 
+func _access_denied(root: String, user_id: String, reason: String) -> void:
+	if root == _repo() and not actor.is_empty() and actor.user_id == user_id:
+		_forget(reason)
+
+
 func _forget(reason: String) -> void:
+	_stop_progress_watch()
+	work_status.hide()
+	if not picker_scope.is_empty():
+		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",picker_scope.sha256_text(),{})
 	selection_epoch += 1
 	_stop_debug(false,true)
 	_save()
@@ -416,6 +522,7 @@ func _board_command(access_only: bool, expected := "") -> Dictionary:
 		python = "python" if OS.has_feature("windows") else "python3"
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
 	var args := PackedStringArray([bridge,"--repo",root,"--result",path])
+	args.append_array(["--editor-session",editor_session])
 	if access_only:
 		args.append("--access-only")
 	else:
@@ -458,34 +565,11 @@ func _open_models() -> void:
 		models_dialog.popup_centered()
 
 
-func refresh() -> void:
-	if checking:
-		while checking:
-			await get_tree().process_frame
-		return
-	checking = true
-	var previous := actor.duplicate()
-	_gate_visibility(false)
-	notice.text = "正在核对当前仓库的协作资格…"
-	var response: Dictionary = await _board_command(true)
-	var settings := EditorInterface.get_editor_settings()
-	var auth: Dictionary = response.get("access",{})
-	offline = false
-	if auth.is_empty():
-		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
-		var last_login: String = response.get("offline_login","")
-		if not response.get("denied",true) and not last_login.is_empty() and prior.get("actor",{}).get("login","")==last_login and Time.get_unix_time_from_system()-float(prior.get("checked",0)) < 86400:
-			auth = prior.actor
-			offline = true
-		else:
-			settings.set_project_metadata("daqian_access",_access_key(),{})
-			_forget(str(response.get("error","当前账号的仓库协作身份未核实")))
-			checking = false
-			return
-	else:
-		settings.set_project_metadata("daqian_access",_access_key(),{"actor":auth,"checked":Time.get_unix_time_from_system()})
-	if previous != auth or picker_scope != _repo():
+func _use_personal_board(auth: Dictionary) -> void:
+	if actor != auth or picker_scope != _repo():
+		_stop_progress_watch()
 		_stop_debug(false,true)
+		_save()
 		current = ""
 		actor = auth
 		_load_personal()
@@ -495,22 +579,126 @@ func refresh() -> void:
 			var prior: Dictionary = saved.drafts[last]
 			_show_issue(last,{"revision":prior.revision,"plan":prior.baseline,"context":prior.get("context",{})})
 	_gate_visibility(true)
-	if offline:
-		notice.text = "离线个人快照 · " + str(actor.login) + " · 上次核实 " + str(board.get("verified_at","未知"))
+
+
+func refresh() -> void:
+	if checking:
+		while checking:
+			await get_tree().process_frame
+		return
+	checking = true
+	var root := _repo()
+	if actor.is_empty() or picker_scope != root:
+		_gate_visibility(false)
+		notice.text = "正在核对当前仓库的协作资格…"
+	offline = false
+	var expected := str(actor.get("user_id","")) if picker_scope == root else ""
+	var value: Dictionary = await _board_command(true,expected)
+	if value.get("session_changed",false) and root == _repo():
+		_forget("工作区或账号已切换，正在重新核实身份…")
+		value = await _board_command(true)
+	if root == _repo() and value.has("access"):
+		_use_personal_board(value.access)
+		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",_access_key(),{"actor":actor,"checked":actor.get("verified_at_unix",Time.get_unix_time_from_system())})
+		notice.text = "正在更新工单 · 上次核实 " + str(board.get("verified_at","暂无快照"))
+		value = await _board_command(false,actor.user_id)
+	var settings := EditorInterface.get_editor_settings()
+	if root != _repo():
+		_forget("工作区已切换")
+		checking = false
+		refresh.call_deferred()
+		return
+	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
+		board = value.board
+		fresh_progress = true
+		_start_progress_watch(value.get("watch", {}))
+		_draw_board()
+		_sync_workflow()
+		await _refresh_open_states()
+		_queue_save()
 	else:
-		var value: Dictionary = await _board_command(false,actor.user_id)
-		if value.has("board") and value.board.user_id == actor.get("user_id",""):
-			board = value.board
+		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
+		var last_login: String = value.get("offline_login","")
+		if not value.get("denied",true) and not last_login.is_empty() and prior.get("actor",{}).get("login","")==last_login and Time.get_unix_time_from_system()-float(prior.get("checked",0)) < 86400:
+			fresh_progress = false
+			offline = true
+			_use_personal_board(prior.actor)
 			_draw_board()
 			_sync_workflow()
-			_queue_save()
-		elif value.get("denied",true):
-			settings.set_project_metadata("daqian_access",_access_key(),{})
-			_forget(str(value.get("error","仓库协作身份已变更")))
+			notice.text = "离线个人快照 · " + str(actor.login) + " · 上次核实 " + str(board.get("verified_at","未知"))
 		else:
-			offline = true
-			notice.text = "工单来源暂不可用 · 最近核实 " + str(board.get("verified_at","未知"))
+			settings.set_project_metadata("daqian_access",_access_key(),{})
+			_forget(str(value.get("error","当前账号的仓库协作身份未核实")))
 	checking = false
+	if refresh_pending:
+		refresh_pending = false
+		refresh.call_deferred()
+
+
+func _stop_progress_watch() -> void:
+	if not watcher.is_empty() and OS.is_process_running(watcher.pid):
+		OS.kill(watcher.pid)
+	watcher = {}
+	watcher_buffer = ""
+	fresh_progress = false
+	refresh_pending = false
+	chat_work.clear()
+	routing_errors.clear()
+
+
+func _start_progress_watch(config: Dictionary) -> void:
+	if not watcher.is_empty() or config.is_empty():
+		return
+	var entry := _repo().path_join("customizations/components/godot-host/daqian/watch_progress.mjs")
+	if FileAccess.file_exists(entry):
+		watcher = OS.execute_with_pipe(config.node, [entry, config.directory], false)
+
+
+func _process(_delta: float) -> void:
+	if watcher.is_empty():
+		return
+	var stream: FileAccess = watcher.stdio
+	var size := stream.get_length()
+	if size == 0:
+		return
+	watcher_buffer += stream.get_buffer(size).get_string_from_ascii()
+	var lines := watcher_buffer.split("\n")
+	watcher_buffer = lines[-1]
+	var changed := false
+	for i in lines.size() - 1:
+		if lines[i] == "ready":
+			changed = true # Close the race between reading the board and attaching its watcher.
+		for row in board.get("issues", []):
+			var ticket := "github:%s#%d" % [actor.get("repo", ""), row.number]
+			if lines[i] == row.get("request", "") or lines[i] == JSON.stringify(ticket).sha256_text():
+				changed = true
+	if changed:
+		if checking:
+			refresh_pending = true
+		else:
+			refresh()
+
+
+func _refresh_open_states() -> void:
+	var target_url: String = saved.get("linked", {}).get(current, {}).get("url", current)
+	if not target_url.begins_with("https://"):
+		return
+	for item in board.get("issues", []):
+		if item.url == target_url and item.has("node_states"):
+			editor.context.states = item.node_states.duplicate()
+			editor.refresh_states()
+			return
+	if target_url != current:
+		return
+	var target := current
+	var epoch := selection_epoch
+	var principal := actor.duplicate()
+	var scope := _repo()
+	var port: Object = host if is_instance_valid(host) else self
+	var fresh: Dictionary = await port.read_graph(target)
+	if current == target and epoch == selection_epoch and principal == actor and scope == _repo() and fresh.has("context"):
+		editor.context = fresh.context.duplicate(true)
+		editor.refresh_states()
 
 
 func _open_issue(item: Dictionary) -> void:
@@ -518,7 +706,7 @@ func _open_issue(item: Dictionary) -> void:
 		return
 	var plan: Dictionary = item.get("plan", rules.new_plan()).duplicate(true)
 	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":plan.nodes.get("requirement", {}).get("value", item.title)}
-	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":{"requirement":item.status}}
+	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":item.get("node_states", {}).duplicate()}
 	if item.decision:
 		plan.nodes["decision"] = {"kind":"question","title":"待决定","value":""}
 		plan.edges.append({"from":"requirement","to":"decision","kind":"after"})
@@ -527,17 +715,42 @@ func _open_issue(item: Dictionary) -> void:
 	var snapshot := {"revision":item.updated,"plan":plan,"context":ctx}
 	selection_epoch += 1
 	var epoch := selection_epoch
-	notice.text = "正在读取 #" + str(item.number) + " 的最新流程…"
+	var scope := _repo()
+	var principal := actor.duplicate()
+	_show_issue(item.url, snapshot)
+	var revision: String = editor.revision
+	notice.text = "已显示快照，正在读取 #" + str(item.number) + " 的最新流程…"
 	var port: Object = host if is_instance_valid(host) else self
 	var live: Dictionary = await port.read_graph(item.url)
-	if epoch != selection_epoch:
+	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
 		return
 	if live.get("denied",false):
 		_forget(str(live.error))
 		return
-	if live.has("plan"):
-		snapshot = live
-	_show_issue(item.url, snapshot)
+	if live.has("plan") and editor.revision == revision and not editor.applying:
+		var clean: bool = editor.draft == editor.baseline and editor.answers.is_empty()
+		var next_plan: Dictionary = live.plan.duplicate(true)
+		if not clean and revision == item.updated:
+			for key in editor.draft.nodes:
+				if not editor.baseline.nodes.has(key):
+					next_plan.nodes[key] = editor.draft.nodes[key]
+			for edge in editor.draft.edges:
+				if edge not in editor.baseline.edges and edge not in next_plan.edges:
+					if not next_plan.nodes.has(edge.from) or not next_plan.nodes.has(edge.to):
+						notice.text = "流程端点已变更，已保留草稿。请移除失效连线后重新打开工单。"
+						return
+					next_plan.edges.append(edge)
+		if clean or revision == item.updated:
+			editor.revision = live.revision
+			editor.baseline = live.plan.duplicate(true)
+			editor.draft = next_plan
+		editor.context = live.context.duplicate(true)
+		if clean:
+			_sync_workflow()
+			editor.draw_graph()
+		else:
+			editor.refresh_states()
+		_queue_save()
 	if live.has("source_mode"):
 		notice.text = item.url + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
 	if live.has("error"):
@@ -626,7 +839,15 @@ func _build_clarification_dialog() -> void:
 	add_child(clarification_dialog)
 
 
+func _routing_key(binding: Dictionary) -> String:
+	return JSON.stringify([_repo(), actor.get("user_id"), binding.get("url"), binding.get("request"),
+		binding.get("updated", binding.get("revision", ""))])
+
+
 func _routing_receipt(binding: Dictionary) -> Dictionary:
+	var verified: Dictionary = binding.get("routing_receipt", {})
+	if binding.has("routing_receipt"):
+		return verified
 	var result: Dictionary = saved.get("routing", {}).get(binding.get("url", ""), {})
 	var revision: String = binding.get("updated", binding.get("revision", ""))
 	if result.get("revision", "") != revision or result.get("request_id", "") != binding.get("request", ""):
@@ -636,11 +857,14 @@ func _routing_receipt(binding: Dictionary) -> Dictionary:
 
 func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> void:
 	var url: String = binding.url
-	if routing_in_flight.has(url) or binding.get("closed", false) or binding.status != "planned":
+	var key := _routing_key(binding)
+	if routing_in_flight.has(key) or binding.get("closed", false) or binding.status != "planned":
 		return
 	var user := actor.duplicate()
 	var root := _repo()
-	routing_in_flight[url] = true
+	routing_in_flight[key] = true
+	routing_errors.erase(key)
+	_sync_workflow()
 	_update_direct_action()
 	var request := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
 		"expected_revision":binding.get("updated", binding.get("revision", ""))}
@@ -659,8 +883,10 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 			saved.execution_models[url] = selection
 			_save()
 		var process: Dictionary = chat.launch_daqian_routing(request, selection)
+		if process.has("pid"):
+			routing_in_flight[key] = process.pid
 		result = await _host_result(process.pid, process.input, process.output) if process.has("pid") else process
-	routing_in_flight.erase(url)
+	routing_in_flight.erase(key)
 	if user != actor or root != _repo():
 		return
 	if not answer.is_empty() and result.get("ok") != true:
@@ -678,7 +904,12 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 		if not saved.has("routing"):
 			saved.routing = {}
 		saved.routing[url] = result
+		for item in board.get("issues", []):
+			if item.url == url and item.request == binding.request and item.updated == request.expected_revision:
+				item.routing_receipt = result
 		_save()
+	else:
+		routing_errors[key] = str(result.get("error", "判断回执待核对"))
 	_sync_workflow()
 	if _direct_binding().get("url", "") == url:
 		notice.text = ("#%d · %s" % [binding.number, result.reason]) if verified else ("工单 #%d 已建立 · %s" % [binding.number, result.get("error", "尚未取得框架判断回执")])
@@ -750,6 +981,10 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 		selection = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
 		if selection.backend != catalog.backend:
 			notice.text = "推进模型所属的后端已改变，请切回创建时选择的 AI 后端后开始。"
+			return
+		if selection.backend in [0, 3] and str(selection.id).strip_edges().is_empty():
+			notice.text = "需求判断已就绪。请在 AI Chat 选择用于开工的模型后重试。"
+			work_status.text = "当前工作者　等待选择开工模型"
 			return
 		if starting_direct.has(url):
 			return
@@ -1029,7 +1264,7 @@ func _update_direct_action() -> void:
 	elif binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]:
 		publish_button.text = "工单已关闭" if binding.get("closed", false) else "等待工单就绪"
 		publish_button.disabled = true
-	elif routing_in_flight.has(binding.url):
+	elif routing_in_flight.has(_routing_key(binding)):
 		publish_button.text = "框架判断中…"
 		publish_button.disabled = true
 	elif binding.status == "planned" and _routing_receipt(binding).is_empty():
@@ -1078,8 +1313,13 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var path := _repo().path_join("customizations/components/godot-host/daqian/graph_host.py")
 	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
 		return {"error":"未连接工单流程宿主"}
-	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,action])
-	return await _host_command(args, "--result", request)
+	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--editor-session",editor_session,action])
+	var root := _repo()
+	var principal := actor.duplicate()
+	var response: Dictionary = await _host_command(args, "--result", request)
+	if response.get("denied",false) and principal == actor:
+		_access_denied(root,principal.user_id,str(response.get("error","工单访问已失效")))
+	return response
 
 
 func _host_command(args: PackedStringArray, output_flag: String, request: Dictionary) -> Dictionary:
@@ -1120,6 +1360,8 @@ func _attach_chat() -> void:
 	if chat and chat.has_signal("daqian_issue_bound"):
 		chat.connect("daqian_issue_bound",_issue_bound)
 		chat.connect("daqian_requirement_phase",_requirement_phase)
+		if chat.has_signal("daqian_work_event"):
+			chat.connect("daqian_work_event", _chat_work_event)
 		chat.connect("daqian_preview_received",_preview_received)
 
 
@@ -1139,6 +1381,73 @@ func _requirement_phase(source: String, phase: String, design: Dictionary) -> vo
 	_save()
 
 
+func _chat_work_event(root: String, binding: Dictionary, worker: String, kind: String, stage: String, state: String) -> void:
+	var url: String = binding.get("source_ref", "")
+	if root != _repo() or actor.is_empty() or binding.get("actor") != actor.user_id:
+		return
+	var active: Dictionary = chat_work.get(url, {})
+	var version: String = binding.get("source_sha256", "")
+	if version.is_empty():
+		return
+	for row in board.get("issues", []):
+		if row.url != url or row.request != binding.get("request_ref"):
+			continue
+		if kind == "request_end":
+			if active.get(worker, {}).get("version") == version:
+				active.erase(worker)
+		elif row.get("source_sha256", "") == version and (kind == "request" or active.get(worker, {}).get("version") == version):
+			active[worker] = {"version":version, "step":stage if state in ["running", "waiting"] else "chat"}
+		chat_work[url] = active
+		_sync_workflow()
+		if kind == "request_end":
+			if checking:
+				refresh_pending = true
+			else:
+				refresh.call_deferred()
+		return
+
+
+func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
+	var url: String = item.get("url", "")
+	if item.get("closed", false):
+		return {"state":"completed", "text":"工单已关闭"}
+	var names := PackedStringArray(item.get("workers", [])) if fresh_progress else PackedStringArray()
+	var waiting := PackedStringArray()
+	var key := _routing_key(item)
+	var attempt: Dictionary = item.get("judgment_attempt", {})
+	if fresh_progress and not attempt.is_empty() and typeof(routing_in_flight.get(key)) == TYPE_INT and routing_in_flight[key] == int(attempt.pid) and OS.is_process_running(int(attempt.pid)):
+		names.append(("司南" if attempt.agent == "sinan" else "偃师") + " · 需求判断")
+	for worker in chat_work.get(url, {}):
+		var activity: Dictionary = chat_work[url][worker]
+		if item.get("source_sha256") != activity.version:
+			continue
+		var step: String = activity.step
+		var role := str(worker).replace("sinan ·", "司南 ·").replace("yanshi ·", "偃师 ·")
+		if step == "confirmation":
+			waiting.append(role + " · 等待操作确认")
+		else:
+			names.append(role + (" · " + step if step != "chat" else ""))
+	if not names.is_empty():
+		return {"state":"running", "text":"正在工作 · " + "、".join(names + waiting)}
+	if not waiting.is_empty():
+		return {"state":"waiting", "text":"、".join(waiting)}
+	if routing_in_flight.has(key):
+		return {"state":"running", "text":"大千宿主 · 正在核对需求判断"}
+	if routing_errors.has(key) and judged.is_empty():
+		return {"state":"failed", "text":"判断受阻 · " + str(routing_errors[key])}
+	if not fresh_progress and not board.is_empty():
+		return {"state":"waiting", "text":"正在核实当前进度" if not offline else "离线 · 当前工作者待核实"}
+	match item.get("status"):
+		"blocked": return {"state":"blocked", "text":"工单受阻 · 等待处理"}
+		"needs-decision": return {"state":"waiting", "text":"等待用户决定"}
+		"in-review": return {"state":"waiting", "text":"等待审查结果"}
+	if item.get("status") == "planned":
+		if judged.is_empty():
+			return {"state":"waiting", "text":"等待司南判断回执"}
+		return {"state":"waiting", "text":"判断完成 · 等待开始推进" if judged.ready else "偃师已提出问题 · 等待答复"}
+	return {"state":"waiting", "text":"等待工作者回执"}
+
+
 func _sync_workflow() -> void:
 	if current.is_empty() or not editor.draft.nodes.has("requirement"):
 		return
@@ -1147,11 +1456,13 @@ func _sync_workflow() -> void:
 	var item: Dictionary = {}
 	for row in board.get("issues", []):
 		if (row.url == current and binding.is_empty()) or (row.number == binding.get("number", 0) and (not str(binding.get("request","")).begins_with("daqian-direct-") or row.get("request","") == binding.request)):
-			item = row
+			item = row.duplicate()
+			item.erase("node_states")
+			item.erase("running_titles")
 			break
 	if current.begins_with("https://") and not item.is_empty():
 		for key in saved.get("linked", {}):
-			if saved.linked[key].number == item.number:
+			if saved.linked[key].number == item.number and saved.linked[key].request == item.request:
 				source = key
 				break
 	var receipt: Dictionary = saved.get("intake", {}).get(source, {})
@@ -1189,20 +1500,21 @@ func _sync_workflow() -> void:
 			design.questions = clauses.questions
 	var direct: bool = str(binding.get("request", item.get("request", ""))).begins_with("daqian-direct-")
 	if direct and item.is_empty() and binding.has("status") and not _direct_binding().has("error"):
-		item = {"status":binding.status}
+		item = binding.duplicate()
 		phase = "bound"
 	var judged := _routing_receipt(_direct_binding()) if direct else {}
-	if direct and judged.is_empty() and item.get("status") != "planned":
-		var original: Dictionary = saved.get("routing", {}).get(item.get("url", binding.get("url", "")), {})
-		if original.get("request_id", "") == item.get("request", binding.get("request", "")):
-			judged = original
 	var analyzed: bool = not direct and (item.get("analyzed", false) or not receipt.is_empty())
 	if direct and not judged.is_empty():
 		design = judged
 	if direct and phase not in ["closed", "blocked"] and item.get("status") == "planned":
 		phase = "routing" if judged.is_empty() else ("bound" if judged.ready else "questions")
+	var progress := _work_summary(item, judged) if not item.is_empty() else {}
+	work_status.visible = not progress.is_empty()
+	if work_status.visible:
+		work_status.text = "当前工作者　" + str(progress.text)
 	_update_direct_action()
-	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged}
+	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
+		"progress":progress, "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()

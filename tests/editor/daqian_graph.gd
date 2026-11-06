@@ -4,6 +4,8 @@ extends SceneTree
 var failures := []
 var state := {}
 var writes := 0
+var delay_detail := false
+signal release_detail
 
 
 func _initialize() -> void:
@@ -16,7 +18,26 @@ func check(value: bool, reason: String) -> void:
 		push_error(reason)
 
 
+func check_spacing(canvas: GraphEdit, scenario: String) -> void:
+	var bounds: Array[Rect2] = []
+	for card in canvas.get_children():
+		if card is GraphNode:
+			var rect := Rect2(card.position_offset, card.size)
+			for other in bounds:
+				if rect.grow(8).intersects(other):
+					check(false, "%s: %s overlaps another card" % [scenario, card.name])
+					return
+			bounds.append(rect)
+
+
+func settle_layout() -> void:
+	for frame in 5:
+		await process_frame
+
+
 func read_graph(_id):
+	if delay_detail:
+		await release_detail
 	return state.duplicate(true)
 
 
@@ -65,6 +86,33 @@ func run() -> void:
 	graph.connect_ports(left,0,merge,0)
 	graph.connect_ports(right,0,merge,0)
 	check(graph.draft.edges.size() == 4, "fan out and join")
+	var left_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(left), 0]]
+	var right_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(right), 0]]
+	var left_card: GraphNode = graph.canvas.get_node(NodePath(left))
+	var right_card: GraphNode = graph.canvas.get_node(NodePath(right))
+	var editor_field: TextEdit = left_card.get_node("PlanText")
+	graph.context.states = {source:"completed", left:"running"}
+	graph.refresh_states()
+	check(left_card.get_node("FlowState").text == "运行中" and not editor_field.editable, "active state and edit lock")
+	check(right_card.get_node("FlowState").text == "待制作" and graph.running_nodes.visible, "pending parallel branch")
+	check(left_wire.material == graph.canvas.materials.running and right_wire.material == graph.canvas.materials.pending, "per-branch wire materials")
+	var draft_before: Dictionary = graph.draft.duplicate(true)
+	graph.debug_active = true
+	graph.refresh_states()
+	graph.set_debug_state({"id":source, "state":"completed"})
+	graph.set_debug_state({"id":left, "state":"running"})
+	graph.set_debug_state({"id":right, "state":"running"})
+	check(graph.running_nodes.text.begins_with("调试运行中（2）") and right_wire.material == left_wire.material, "two simultaneous debug branches")
+	graph.set_debug_state({"id":left, "state":"completed"})
+	check(left_wire.material == graph.canvas.materials.done and right_wire.material == graph.canvas.materials.running, "completed branch stopped flowing")
+	graph.set_debug_state({"id":right, "state":"failed"})
+	check(right_wire.material == graph.canvas.materials.failed and not graph.running_nodes.visible, "failure stopped activity")
+	graph.debug_active = false
+	graph.refresh_states()
+	check(left_card.get_node("PlanText") == editor_field and graph.draft == draft_before and left_wire.material == graph.canvas.materials.running, "debug isolated from editing and production")
+	graph.context.states.clear()
+	graph.refresh_states()
+	check(editor_field.editable and left_wire.material == graph.canvas.materials.pending, "clear state restores draft control")
 	check(graph.preview_edge(source,0,left,0).contains("相同"),"duplicate accepted")
 	check(graph.preview_edge(merge,1,left,1).contains("循环"),"mixed cycle accepted")
 	check(graph.preview_edge(source,0,left,1).contains("不匹配"),"mixed ports accepted")
@@ -81,24 +129,107 @@ func run() -> void:
 	var edge = graph.draft.edges[0]
 	graph.disconnect_ports(edge.from,0,edge.to,0)
 	check(graph.draft.edges.size()==3,"removed protected connection")
+	graph.positions.clear()
+	graph.draft.edges.append({"from":source, "to":left, "kind":"data"})
+	graph.draw_graph()
+	await settle_layout()
+	check_spacing(graph.canvas, "parallel tasks")
+	var first := graph.canvas.get_node(NodePath(left)) as GraphNode
+	var second := graph.canvas.get_node(NodePath(right)) as GraphNode
+	var join := graph.canvas.get_node(NodePath(merge)) as GraphNode
+	var midpoint := (minf(first.position_offset.y, second.position_offset.y)
+		+ maxf(first.position_offset.y + first.size.y, second.position_offset.y + second.size.y)) / 2.0
+	check(absf(join.position_offset.y + join.size.y / 2.0 - midpoint) < 2, "join misaligned with branches")
+	var previous := first.position_offset
+	first.position_offset = second.position_offset
+	first.dragged.emit(previous, first.position_offset)
+	await settle_layout()
+	check_spacing(graph.canvas, "drag onto automatic task")
+	graph.draw_graph()
+	await settle_layout()
+	check_spacing(graph.canvas, "restored drag position")
+	check(graph.canvas.get_node(NodePath(left)).position_offset == graph.positions[left], "moved pinned task")
+	graph.draft = {"nodes":{"requirement":{"kind":"text","title":"需求","value":"布局验证"}}, "edges":[]}
+	graph.workflow = {"phase":"ready", "item":{}, "design":{"scope":["步骤一", "包含换行的阶段描述".repeat(40), "步骤三"], "acceptance":["验收"]}}
+	graph.draw_graph()
+	await settle_layout()
+	check(graph.canvas.has_node("wf-verify"), "missing generated verification stage")
+	check_spacing(graph.canvas, "generated workflow with wrapped stages")
+	var original: Vector2 = graph.canvas.get_node("wf-verify").position_offset
+	graph.draw_graph()
+	await settle_layout()
+	check(graph.canvas.get_node("wf-verify").position_offset == original, "unstable generated layout")
+	graph.workflow = {}
 	var issues := []
 	for i in range(55):
 		var url := "https://github.com/fixture/board/issues/" + str(i+1)
 		issues.append({"number":i+1,"url":url,"title":"需求 " + str(i+1),"owners":["tester"],
 			"status":"in-progress","closed":false,"request":"test","updated":"fixture","decision":i==50,
 			"dependencies":[issues[i-1].url] if i>0 else [],"plan":{"nodes":{},"edges":[]}})
+	issues[0].title = "包含长标题的工单".repeat(20)
+	for step in 12:
+		issues[0].plan.nodes[str(step)] = {"kind":"task","title":"预计任务","value":"详细步骤".repeat(12)}
+	issues[0].status = "done"
+	issues[2].closed = true
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
+	await settle_layout()
+	check_spacing(workspace.overview, "board overview")
+	workspace.overview.zoom = 1.4
+	workspace._zoom_detail()
+	await settle_layout()
+	check_spacing(workspace.overview, "expanded board")
+	var pinned := workspace.overview.get_node("i_1") as GraphNode
+	previous = pinned.position_offset
+	pinned.position_offset = workspace.overview.get_node("i_2").position_offset
+	pinned.dragged.emit(previous, pinned.position_offset)
+	await settle_layout()
+	check_spacing(workspace.overview, "drag onto automatic issue")
+	check(workspace.saved.positions[issues[0].url] == pinned.position_offset, "board drag was not saved")
 	check(workspace.overview.get_connection_list().size()==54,"historical dependency chain")
+	var board_wire: Line2D = workspace.overview.lines[[&"i_1", 0, &"i_2", 0]]
+	check(board_wire.material == workspace.overview.materials.running, "board dependency flows toward active Issue")
+	check(workspace.overview.get_node("i_3").get_meta("flow_state") == "closed", "closed Issue kept open status")
 	workspace.search.text = "#50"
 	workspace._filter_board()
 	check(workspace.overview.get_node("i_50").visible and not workspace.overview.get_node("i_5").visible,"large board search")
+	check(not board_wire.visible, "filtered wire visible without endpoints")
 	workspace._locate_pending(51)
 	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
+	state.plan = {"nodes":{},"edges":[]}
+	state.context = {}
+	workspace.host = self
+	delay_detail = true
+	workspace._open_issue(issues[0])
+	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
+	workspace._open_issue(issues[1])
+	var edited = graph.add_node("text",Vector2.ZERO)
+	var input: TextEdit = graph.canvas.get_node(NodePath(edited)).find_children("*","TextEdit",false,false)[0]
+	input.grab_focus()
+	input.text = "草稿输入"
+	input.text_changed.emit()
+	release_detail.emit()
+	check(workspace.current == issues[1].url and graph.draft.nodes.has(edited), "late reply replaced selection or erased edits")
+	check(is_instance_valid(input) and input.has_focus(), "background reply stole draft input focus")
+	delay_detail = false
+	await graph.apply_draft()
+	check(state.plan.nodes.has(edited) and state.plan.nodes[edited].value == "草稿输入", "edits made before source read could not be applied")
+	delay_detail = true
+	workspace._show_board()
+	workspace._open_issue(issues[2])
+	release_detail.emit()
+	check(graph.revision == state.revision and graph.draft == state.plan, "clean snapshot did not advance to live plan")
+	workspace._show_board()
+	workspace.host = null
+	delay_detail = false
 	workspace.board = {}
 	workspace._show_board()
 	var access_path = OS.get_environment("DAQIAN_TEST_ACCESS_FILE")
 	if not access_path.is_empty():
+		var calls := access_path.get_base_dir().path_join("daqian-auth-calls")
+		var before := FileAccess.get_file_as_string(calls)
+		await workspace.refresh()
+		check("verify" in before and FileAccess.get_file_as_string(calls) == before,"warm refresh repeated remote verification")
 		var access_file = FileAccess.open(access_path,FileAccess.WRITE)
 		access_file.store_string("switch")
 		access_file.close()
