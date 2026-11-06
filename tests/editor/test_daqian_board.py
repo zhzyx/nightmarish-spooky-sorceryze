@@ -17,21 +17,30 @@ class BoardProjection(unittest.TestCase):
                     "labels":[],"assignees":[],"html_url":f"https://github.com/{repo}/issues/{number}",
                     "repository_url":f"https://api.github.com/repos/{repo}"}
         a,b,old=issue(1),issue(2),issue(3,"closed")
+        mine = issue(5)
+        mine["issue_dependencies_summary"] = {"total_blocked_by": 0}
+        assigned_only = dict(issue(7), issue_dependencies_summary={"total_blocked_by": 0})
+        pull = dict(issue(6), pull_request={"url":"fixture"})
         additional=issue(4)
         additional["issue_dependencies_summary"]={"total_blocked_by":0}
         rows={1:[old],2:[old],3:[additional]}
         def gh(command,path,*flags):
             self.assertEqual(command,"api")
             if "?assignee=" in path:
-                self.assertIn("assignee=team-user",path)
-                return json.dumps([[a]])
+                self.assertEqual(path, f"repos/{repo}/issues?assignee=team-user&state=open&per_page=100")
+                self.assertEqual(flags, ("--paginate", "--slurp"))
+                return json.dumps([[a], [assigned_only]])
+            if "?creator=" in path:
+                self.assertEqual(path, f"repos/{repo}/issues?creator=team-user&state=open&per_page=100")
+                self.assertEqual(flags, ("--paginate", "--slurp"))
+                return json.dumps([[pull, a], [mine]])
             if path.endswith("/2"):
                 return json.dumps(b)
             n=int(path.split("/issues/")[1].split("/")[0])
             return json.dumps([rows[n]])
         with patch.object(board.work_items,"gh",side_effect=gh):
             projection=board.read_board(ROOT,[1,2,2],{"login":"team-user","user_id":"42","repo":repo,"repo_id":"7"})
-        self.assertEqual([item["number"] for item in projection["issues"]],[1,2,3,4])
+        self.assertEqual([item["number"] for item in projection["issues"]],[1,2,3,4,5,7])
         self.assertTrue(projection["issues"][2]["closed"])
         self.assertEqual(projection["issues"][2]["dependencies"],[additional["html_url"]])
 

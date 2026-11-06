@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-my-open-20261106-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-my-open-20261106",
+  "kind": "request",
+  "occurred_at": "2026-11-06T14:07:27.275191+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/188",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3",
+    "origin": "user-authorized-codex-chat"
+  },
+  "payload": {
+    "intent": "大千默认展示本人创建或获指派的开放工单",
+    "document": "design-docs/daqian/my-open-issues.md"
+  },
+  "evidence_refs": [],
+  "sha256": "2627af1fd0eb774bd8bee41a55ab0af51c1c4b0b39fa769662ea2337b07e1bc8"
+}
