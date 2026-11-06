@@ -534,6 +534,14 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
 		route_request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
 	}
+	if (backend->get_selected() == 2 && !FileAccess::exists(codex_entry->get_text().strip_edges())) {
+		result["error"] = U"Codex 可执行文件路径已失效；请在工单对话与模型中更新路径，再选择司南模型重试。";
+		return result;
+	}
+	if ((backend->get_selected() == 1 || backend->get_selected() == 2) && !FileAccess::exists(cli_node->get_text().strip_edges())) {
+		result["error"] = U"Node 可执行文件路径已失效；请在工单对话与模型中更新路径后重试。";
+		return result;
+	}
 	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-issue-route-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
 	const String input_path = stem + ".request";
 	const String output_path = stem + ".result";

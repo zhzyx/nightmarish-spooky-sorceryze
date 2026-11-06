@@ -189,10 +189,21 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             if result["finish_reason"] != "stop":
                 raise ValueError("模型响应不完整")
             value = decision(result["text"], agent, private_key)
-        except (OSError, RuntimeError, KeyError, IndexError, ValueError, TypeError, subprocess.SubprocessError):
+        except (OSError, RuntimeError, KeyError, IndexError, ValueError, TypeError, subprocess.SubprocessError) as error:
             attempt["outcome"] = "no_valid_decision"
+            if isinstance(error, subprocess.TimeoutExpired):
+                reason = "模型调用超时"
+            elif "Repair Node/CLI installation" in str(error):
+                reason = "模型 CLI 或 Node 路径已失效"
+            elif "failed in CLI" in str(error):
+                reason = "模型 CLI 调用失败，请检查登录和所选模型"
+            elif isinstance(error, (json.JSONDecodeError, KeyError, IndexError, TypeError)):
+                reason = "模型返回格式无效"
+            else:
+                reason = "模型结论未通过校验"
+            attempt["reason"] = reason
             requirements_agent.save(journal, state)
-            raise ValueError("模型未返回可用的推进判断；工单已保留，可核实模型后显式重试") from None
+            raise ValueError(reason + "；工单已保留，可选择模型后显式重试") from None
         finally:
             if previous is None:
                 os.environ.pop("GONGGONG_REQUIREMENTS_KEY", None)
