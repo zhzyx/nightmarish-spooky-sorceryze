@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-embedded-workbench-20261107-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-embedded-workbench-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-06T17:26:01.569512+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/218",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "session",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "intent": "在大千内完成连接、选择模型、判断、开工和关联对话。",
+    "document": "design-docs/daqian/embedded-workbench.md"
+  },
+  "evidence_refs": [],
+  "sha256": "3bc4c669518cbb859c3f4e8f6f46ed3a5b58260ab088cb5d1be4edeeb2b0c34e"
+}
