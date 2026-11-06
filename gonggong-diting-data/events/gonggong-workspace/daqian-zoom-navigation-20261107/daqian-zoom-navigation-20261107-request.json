@@ -1,0 +1,21 @@
+{
+  "payload": {
+    "intent": "修复大千层级缩放回程与光标定位",
+    "document": "design-docs/daqian/zoom-navigation-20261107.md"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/352",
+  "tenant_id": "gonggong-workspace",
+  "event_id": "daqian-zoom-navigation-20261107-request",
+  "agent": {
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "id": "daqian-current-operator",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat"
+  },
+  "kind": "request",
+  "request_id": "daqian-zoom-navigation-20261107",
+  "occurred_at": "2026-11-06T23:27:07.8831744+00:00",
+  "evidence_refs": [],
+  "schema_version": 1,
+  "sha256": "a7ca4d41b80559a092cd6b9c8362f89f5a391b44f8f04b75fd39ae3ea9712f34"
+}

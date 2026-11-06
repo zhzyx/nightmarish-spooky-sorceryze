@@ -113,6 +113,7 @@ var debug_start_button: Button
 var debug_stop_button: Button
 var debug_history_button: Button
 var return_button: Button
+var project_graph_button: Button
 var save_timer: Timer
 var picker_scope := ""
 var debug_process := {}
@@ -172,6 +173,8 @@ func _ready() -> void:
 		_queue_save())
 	row.add_child(board_views)
 	row.move_child(board_views, 0)
+	project_graph_button = _button(row, "← 项目全图", _return_project_graph)
+	project_graph_button.tooltip_text = "返回全部创建人的工单图（Alt + 滚轮向下）"
 	scope_picker.add_item("个人工单")
 	scope_picker.add_item("项目工单")
 	scope_picker.tooltip_text = "切换画板范围"
@@ -295,6 +298,10 @@ func _ready() -> void:
 		if selected and selected.visible and selected.get_metadata(0) is Dictionary:
 			_open_issue(selected.get_metadata(0))
 			return_button.grab_focus())
+	issue_list.gui_input.connect(func(event):
+		if project_mode and creator_filter.selected > 0 and event is InputEventMouseButton and event.pressed and event.alt_pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_return_project_graph()
+			issue_list.accept_event())
 	add_child(issue_list)
 	_style_board_controls()
 	empty_state = CenterContainer.new()
@@ -1279,6 +1286,7 @@ func _filter_board() -> void:
 	var total: int = board.get("issues", []).size()
 	result_count.text = "%d 项" % total if shown == total else "%d / %d 项" % [shown, total]
 	if current.is_empty() and not actor.is_empty():
+		project_graph_button.visible = project_mode and board_views.current_tab == 0 and creator_filter.selected > 0
 		empty_buttons.visible = board.get("issues", []).is_empty()
 		reset_filters.visible = not empty_buttons.visible
 		empty_state.visible = shown == 0 and far_depth <= 0.0
@@ -1552,7 +1560,7 @@ func _start_progress_watch(config: Dictionary) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not project_mode or not overview.is_visible_in_tree():
+	if not overview.is_visible_in_tree():
 		return
 	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP) or event is InputEventMagnifyGesture:
 		var pointer: Vector2 = overview.get_global_transform_with_canvas().affine_inverse() * event.position
@@ -1687,18 +1695,20 @@ func _check_canvas_zoom() -> void:
 					overview.zoom = ZOOM_TO_ISSUE / overview.zoom_step
 				zoom_anchor = Vector2.INF
 			return
-		var center := (overview.scroll_offset + overview.size * 0.5) / overview.zoom
+		var center := zoom_anchor if zoom_anchor.is_finite() else (overview.scroll_offset + overview.get_local_mouse_position()) / overview.zoom
+		zoom_anchor = Vector2.INF
 		var nearest: GraphNode
 		var distance := INF
 		for card in board_cards:
 			if not card.visible:
 				continue
 			var d := center.distance_squared_to(card.position_offset + card.size * 0.5)
-			if card.selected or d < distance:
+			if Rect2(card.position_offset, card.size).has_point(center):
+				nearest = card
+				break
+			if d < distance:
 				nearest = card
 				distance = d
-				if card.selected:
-					break
 		overview.zoom = 1.0
 		if nearest:
 			for item in board.get("issues", []):
@@ -1712,6 +1722,18 @@ func _open_creator_at(point: Vector2) -> bool:
 	for creator: String in creator_sections:
 		var frame: GraphFrame = creator_sections[creator]
 		if frame.visible and Rect2(frame.position_offset, frame.size).has_point(point):
+			var nearest_url := ""
+			var distance := INF
+			for card in board_cards:
+				if not card.visible or card.get_meta("creator_region") != creator:
+					continue
+				var squared := point.distance_squared_to(card.position_offset + card.size * 0.5)
+				if Rect2(card.position_offset, card.size).has_point(point):
+					nearest_url = card.get_meta("issue_url")
+					break
+				if squared < distance:
+					distance = squared
+					nearest_url = card.get_meta("issue_url")
 			for index in creator_filter.item_count:
 				if creator_filter.get_item_text(index) == creator:
 					creator_filter.select(index)
@@ -1719,8 +1741,31 @@ func _open_creator_at(point: Vector2) -> bool:
 					board_views.current_tab = 0
 					advanced_bar.show()
 					advanced_button.text = "收起筛选 ▴"
+					if issue_rows.has(nearest_url):
+						var row: TreeItem = issue_rows[nearest_url]
+						row.select(0)
+						issue_list.scroll_to_item.call_deferred(row)
 					return true
 	return false
+
+
+func _return_project_graph() -> void:
+	if not project_mode:
+		return
+	var creator := creator_filter.text if creator_filter.selected > 0 else ""
+	creator_filter.select(0)
+	board_views.current_tab = 1
+	far_depth = 0.0
+	project_anchor.hide()
+	_draw_board()
+	overview.zoom = 0.85
+	_center_creator.call_deferred(creator)
+
+
+func _center_creator(creator: String) -> void:
+	if creator_sections.has(creator):
+		var frame: GraphFrame = creator_sections[creator]
+		overview.scroll_offset = (frame.position_offset + frame.size * 0.5) * overview.zoom - overview.size * 0.5
 
 
 func _refresh_open_states() -> void:
