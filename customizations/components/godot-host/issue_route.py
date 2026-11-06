@@ -21,6 +21,10 @@ def digest(value):
 
 def issue_source(work, settings, number, key):
     row = json.loads(work.gh("api", f"repos/{settings['repository']}/issues/{number}"))
+    return source_from_row(work, settings, number, key, row)
+
+
+def source_from_row(work, settings, number, key, row):
     url = f"https://github.com/{settings['repository']}/issues/{number}"
     body = row.get("body") or ""
     text = body.replace("\r\n", "\n")
@@ -168,7 +172,7 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             raise ValueError("上次模型调用未取得可用结论，请核实后显式重试本工单")
         if request.get("_cancel_path") and not Path(request["_cancel_path"]).is_file():
             raise ValueError("已取消本次路由")
-        attempt = {"id": uuid.uuid4().hex, "at": datetime.now(timezone.utc).isoformat()}
+        attempt = {"id": uuid.uuid4().hex, "agent": agent, "pid": os.getpid(), "at": datetime.now(timezone.utc).isoformat()}
         call.setdefault("attempts", []).append(attempt)
         state["calls"][key] = call
         bridge.flush(root)
@@ -318,5 +322,6 @@ def chat_context(root, request, bridge):
         raise ValueError("工单原文与已确认的推进回执不符，请核对后继续")
     if direct_issue.collaborator(root)["user_id"] != saved["binding"]["actor"]:
         raise ValueError("推进回执与当前账号不符，请核对交接")
-    return {"original": original, "source_ref": binding["url"], "planned_revision": saved["binding"]["revision"],
+    return {"original": original, "source_ref": binding["url"], "actor": saved["binding"]["actor"],
+            "source_sha256": binding["source_sha256"], "planned_revision": saved["binding"]["revision"],
             "decision": saved["result"], "clarifications": saved["clarifications"]}

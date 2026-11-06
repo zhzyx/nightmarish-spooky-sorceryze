@@ -26,7 +26,8 @@ var positions := {}
 var layout_columns: Array = []
 var layout_pending := false
 var host_apply: Callable
-var canvas: GraphEdit
+var canvas: IssueCanvas
+var running_nodes: Label
 var notice: Label
 var add_menu: MenuButton
 var apply_button: Button
@@ -39,7 +40,107 @@ var generation := 0
 var applying := false
 
 
-class IssueCanvas extends GraphEdit:
+# Keep the GraphEdit wire for hit testing, dragging, zoom and the minimap.
+# Only its material changes. A shared static shader lets idle graphs stop repainting.
+class FlowCanvas extends GraphEdit:
+	const COLORS := {"pending": Color("#8290a5"), "running": Color("#45c9ff"),
+		"done": Color("#69d5a3"), "waiting": Color("#efbf70"), "failed": Color("#f18e87"),
+		"cancelled": Color("#ad9bb5"), "unknown": Color("#a5a6b3")}
+	const LABELS := {"pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
+		"open":"待制作", "in-progress":"进行中", "in-review":"待验收", "completed":"已完成",
+		"dispatched":"已派发", "reserved":"已预留", "waiting":"等待输入或证据", "answered":"已答复",
+		"needs-decision":"待决定", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
+		"closed":"已关闭", "stopping":"正在停止", "reconcile_required":"待核实"}
+	const WIRE := """
+shader_type canvas_item;
+render_mode unshaded;
+uniform vec4 ink : source_color;
+void fragment() {
+	float rim = abs(UV.y * 2.0 - 1.0);
+	float coverage = 1.0 - smoothstep(0.52, 1.0, rim);
+	vec3 hue = ink.rgb;
+	FLOW
+	COLOR = vec4(hue, ink.a * coverage);
+}"""
+	var materials := {}
+	var lines := {}
+
+	static func category(state: String) -> String:
+		match state:
+			"running", "in-progress": return "running"
+			"done", "completed", "answered": return "done"
+			"reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
+			"blocked", "failed": return "failed"
+			"cancelled", "closed": return "cancelled"
+			"planned", "pending", "open": return "pending"
+		return "unknown"
+
+	static func state_text(state: String) -> String:
+		return LABELS.get(state, "待核实 · " + state)
+
+	func mark_card(view: GraphNode, label: Label, state: String, suffix := "") -> void:
+		var color: Color = COLORS[category(state)]
+		view.set_meta("flow_state", state)
+		label.text = state_text(state) + suffix
+		label.add_theme_color_override("font_color", color)
+		for style in ["titlebar", "titlebar_selected"]:
+			var base := get_theme_stylebox(style, "GraphNode") as StyleBoxFlat
+			if base:
+				var tinted := base.duplicate() as StyleBoxFlat
+				tinted.bg_color = base.bg_color.lerp(color.darkened(0.52), 0.75)
+				tinted.border_color = color
+				tinted.border_width_left = 4
+				view.add_theme_stylebox_override(style, tinted)
+
+	func connect_flow(source: StringName, output: int, target: StringName, input: int) -> void:
+		var key := [source, output, target, input]
+		if lines.has(key) or connect_node(source, output, target, input) != OK:
+			return
+		# This engine creates one native Line2D synchronously for each new connection.
+		var line := get_node("_connection_layer").get_child(-1) as Line2D
+		lines[key] = line
+		_style_wire(key)
+
+	func _style_wire(key: Array) -> void:
+		var source := get_node(NodePath(key[0])) as GraphNode
+		var target := get_node(NodePath(key[2])) as GraphNode
+		var state := category(target.get_meta("flow_state", "pending"))
+		var upstream := category(source.get_meta("flow_state", "pending"))
+		if state == "running" and upstream != "done":
+			state = "pending" if upstream == "running" else upstream
+		if not materials.has(state):
+			var shader := Shader.new()
+			var flow := ""
+			if state == "running":
+				flow = """
+				float wave = fract(UV.x * 3.0 - TIME * 0.85);
+				float pulse = smoothstep(0.35, 0.91, wave) * (1.0 - smoothstep(0.91, 1.0, wave));
+				hue = mix(ink.rgb * 0.65, vec3(1.0), pulse);"""
+			elif state == "pending":
+				flow = "coverage *= mix(0.26, 0.82, smoothstep(0.12, 0.22, fract(UV.x * 14.0)));"
+			shader.code = WIRE.replace("FLOW", flow)
+			var wire := ShaderMaterial.new()
+			wire.shader = shader
+			wire.set_shader_parameter("ink", COLORS[state])
+			materials[state] = wire
+		lines[key].material = materials[state]
+		lines[key].visible = source.visible and target.visible
+
+	func refresh_wires(id := &"") -> void:
+		for key in lines:
+			if id == &"" or key[0] == id or key[2] == id:
+				_style_wire(key)
+
+	func clear_flow() -> void:
+		lines.clear()
+		clear_connections()
+
+	func disconnect_flow(source: StringName, output: int, target: StringName, input: int) -> void:
+		lines.erase([source, output, target, input])
+		disconnect_node(source, output, target, input)
+
+
+class IssueCanvas extends FlowCanvas:
 	var controller
 	func _is_node_hover_valid(a: StringName, ap: int, b: StringName, bp: int) -> bool:
 		return controller.preview_edge(a, ap, b, bp) == ""
@@ -69,6 +170,11 @@ func _ready() -> void:
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	toolbar.add_child(notice)
+	running_nodes = Label.new()
+	running_nodes.name = "RunningNodes"
+	running_nodes.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	running_nodes.add_theme_color_override("font_color", FlowCanvas.COLORS.running)
+	add_child(running_nodes)
 	canvas = IssueCanvas.new()
 	canvas.controller = self
 	canvas.name = "IssueCanvas"
@@ -145,17 +251,12 @@ func _render_node(id: String, item: Dictionary) -> void:
 	view.tooltip_text = str(context.get("sources", {}).get(id, ""))
 	var request: Dictionary = context.get("questions",{}).get(id,{})
 	var recorded: Dictionary = context.get("answers",{}).get(id,{})
-	var tint: Color = {"text":Color("#375e72"),"image":Color("#655581"),"task":Color("#344f79"),"question":Color("#8a652b"),"join":Color("#37645e")}.get(item.kind,Color("#46515e"))
-	if not request.is_empty() and recorded.is_empty():
-		tint = Color("#8a652b")
-	_tint_header(view, tint)
 	view.resizable = false
 	view.position_offset = positions.get(id, menu_at)
 	view.dragged.connect(func(_from,to):
 		positions[id] = to
 		_queue_layout()
 		draft_changed.emit())
-	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
 	var accepts: bool = item.kind in ["task","join"]
 	var data_row := _label("输入数据   ◉   输出数据" if accepts else "输出数据   ◉")
 	view.add_child(data_row)
@@ -169,7 +270,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		input.custom_minimum_size = Vector2(215, 78)
 		input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		input.placeholder_text = "任务说明" if item.kind == "task" else "输入文字"
-		input.editable = not locked
+		input.name = "PlanText"
 		input.text = item.get("value","")
 		input.text_changed.connect(func():
 			draft.nodes[id].value = input.text
@@ -220,7 +321,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 			if not context.get("models",{}).has(model):
 				models.add_item(str(context.model_names[model]) + " · 待评测")
 				models.set_item_disabled(models.item_count-1,true)
-		models.disabled = locked
+		models.name = "PlanModel"
 		models.item_selected.connect(func(index):
 			draft.nodes[id].model = models.get_item_metadata(index)
 			draft_changed.emit())
@@ -229,11 +330,11 @@ func _render_node(id: String, item: Dictionary) -> void:
 		configure.text = "添加供应商 API"
 		configure.pressed.connect(func(): configure_model.emit())
 		view.add_child(configure)
-		if not locked:
-			var attach := Button.new()
-			attach.text = "补充图片输入"
-			attach.pressed.connect(func(): add_image_for_task(id))
-			view.add_child(attach)
+		var attach := Button.new()
+		attach.name = "Attach"
+		attach.text = "补充图片输入"
+		attach.pressed.connect(func(): add_image_for_task(id))
+		view.add_child(attach)
 		var choose := OptionButton.new()
 		choose.add_item("调试 · 自动分配")
 		for model in ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]:
@@ -266,7 +367,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		for title in ["选择图片","粘贴截图"]:
 			var button := Button.new()
 			button.text = title
-			button.disabled = locked and (request.is_empty() or not recorded.is_empty())
+			button.name = "PickImage" if title == "选择图片" else "PasteImage"
 			if title == "选择图片":
 				button.pressed.connect(func():
 					pending_image = id
@@ -286,7 +387,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		else:
 			var caption := LineEdit.new()
 			caption.placeholder_text = "图片说明（可选）"
-			caption.editable = not locked
+			caption.name = "Caption"
 			caption.text = item.get("caption","")
 			caption.text_changed.connect(func(value):
 				draft.nodes[id].caption = value
@@ -297,15 +398,86 @@ func _render_node(id: String, item: Dictionary) -> void:
 		criterion.custom_minimum_size.x = 210
 		criterion.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		view.add_child(criterion)
-	if context.get("states", {}).has(id):
-		view.add_child(_label(context.states[id]))
-	if debug_active:
-		var state_label := _label("")
-		state_label.name = "DebugState"
-		view.add_child(state_label)
+	_add_state_row(view)
 	canvas.add_child(view)
-	if debug_states.has(id):
-		set_debug_state(debug_states[id])
+	_update_card(view)
+
+
+func _add_state_row(view: GraphNode) -> void:
+	var label := Label.new()
+	label.name = "FlowState"
+	view.add_child(label)
+
+
+func _node_state(id: String) -> String:
+	if debug_active:
+		return debug_states.get(id, {}).get("state", "pending")
+	if context.get("states", {}).has(id):
+		return context.states[id]
+	if context.get("answers", {}).has(id):
+		return "answered"
+	if context.get("questions", {}).has(id):
+		return "waiting"
+	var phase: String = workflow.get("phase", "draft")
+	match id:
+		"wf-worker": return workflow.get("progress", {}).get("state", "waiting")
+		"requirement", "wf-workorder":
+			return "completed" if phase != "draft" or issue_id.begins_with("https://") else "pending"
+		"wf-routing":
+			if workflow.get("judging", false): return "running"
+			if not workflow.get("routing", {}).is_empty(): return "completed"
+		"wf-analysis":
+			if phase == "analyzing": return "running"
+			if phase in ["questions", "submitted", "waiting_environment"]: return "waiting"
+			if phase == "error": return "failed"
+			if phase == "cancelled": return "cancelled"
+			if workflow.get("analyzed", false) or workflow.get("routing", {}).get("ready", false): return "completed"
+		"wf-blocked": return "blocked"
+		"decision": return "needs-decision"
+	return "pending"
+
+
+func _update_card(view: GraphNode) -> void:
+	var state := _node_state(view.name)
+	var event: Dictionary = debug_states.get(String(view.name), {}) if debug_active else {}
+	var suffix := " · 调试" if debug_active else ""
+	if event.has("model"):
+		suffix += " · " + str(event.model)
+	var label: Label = view.get_node("FlowState")
+	label.tooltip_text = str(event.get("result", event.get("reason", "")))
+	canvas.mark_card(view, label, state, suffix)
+	var id := String(view.name)
+	var locked: bool = id in context.get("protected_nodes", []) or context.get("states", {}).get(id, "") in rules.ACTIVE
+	for field in ["PlanText", "Caption"]:
+		if view.has_node(NodePath(field)):
+			view.get_node(NodePath(field)).editable = not locked
+	if view.has_node("PlanModel"):
+		view.get_node("PlanModel").disabled = locked
+		view.get_node("Attach").visible = not locked
+	if view.has_node("PickImage"):
+		var disabled: bool = locked and (not context.get("questions", {}).has(id) or context.get("answers", {}).has(id))
+		view.get_node("PickImage").disabled = disabled
+		view.get_node("PasteImage").disabled = disabled
+
+
+func _update_running_nodes() -> void:
+	var names := PackedStringArray()
+	for child in canvas.get_children():
+		if child is GraphNode and FlowCanvas.category(child.get_meta("flow_state", "pending")) == "running":
+			var item: Dictionary = draft.nodes.get(String(child.name), {})
+			var title: String = item.get("value", "").get_slice("\n", 0).left(40) if item.get("kind") == "task" else ""
+			names.append(title if not title.is_empty() else child.title)
+	running_nodes.visible = not names.is_empty()
+	running_nodes.text = ("调试运行中" if debug_active else "运行中") + "（%d）  " % names.size() + "、".join(names)
+	running_nodes.tooltip_text = running_nodes.text
+
+
+func refresh_states() -> void:
+	for child in canvas.get_children():
+		if child is GraphNode:
+			_update_card(child)
+	canvas.refresh_wires()
+	_update_running_nodes()
 
 
 func add_image_for_task(id: String) -> String:
@@ -391,6 +563,9 @@ func _display_plan() -> Dictionary:
 			var id := "wf-dep-" + str(dep).sha256_text().left(20)
 			_stage(plan, id, "前置工单", str(dep), "")
 			_stage_edge(plan, id, "wf-prepare")
+	var progress: Dictionary = workflow.get("progress", {})
+	if not progress.is_empty():
+		_stage(plan, "wf-worker", "当前工作者", progress.text, "wf-prepare" if prepare else intake)
 	var tasks := []
 	var criteria := []
 	var titles := {"scope":"预计任务", "acceptance":"验收条件", "questions":"待确认"}
@@ -439,22 +614,12 @@ func _display_plan() -> Dictionary:
 	return plan
 
 
-func _tint_header(view: GraphNode, tint: Color) -> void:
-	for style in ["titlebar","titlebar_selected"]:
-		var original := get_theme_stylebox(style,"GraphNode")
-		if original is StyleBoxFlat:
-			var colored := original.duplicate() as StyleBoxFlat
-			colored.bg_color = tint.lightened(0.10) if style.ends_with("selected") else tint
-			view.add_theme_stylebox_override(style,colored)
-
-
 func _render_stage(id: String, item: Dictionary) -> void:
 	var view := GraphNode.new()
 	view.name = id
 	view.title = item.title
 	view.draggable = false
 	view.tooltip_text = item.value
-	_tint_header(view, Color("#3d5964"))
 	var description := _label(item.value)
 	description.custom_minimum_size.x = 210
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -462,7 +627,9 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	view.add_child(Control.new())
 	view.set_slot(0, true, 0, DATA, true, 0, DATA)
 	view.set_slot(1, true, 1, AFTER, true, 1, AFTER)
+	_add_state_row(view)
 	canvas.add_child(view)
+	_update_card(view)
 
 
 func draw_graph() -> void:
@@ -493,7 +660,7 @@ func draw_graph() -> void:
 			counts[next] -= 1
 			if counts[next] == 0:
 				ready.append(next)
-	canvas.clear_connections()
+	canvas.clear_flow()
 	for child in canvas.get_children():
 		if child is GraphNode:
 			canvas.remove_child(child)
@@ -525,6 +692,7 @@ func draw_graph() -> void:
 	_layout_cards()
 	for edge in plan.edges:
 		_draw_edge(edge, plan.nodes)
+	_update_running_nodes()
 
 
 # Wrapping and theme changes can resize a card after GraphNode has sorted its children.
@@ -583,7 +751,7 @@ func _draw_edge(edge: Dictionary, nodes := {}) -> void:
 	var input := 0
 	if edge.kind == "after" and nodes[edge.to].kind in ["task","join","stage"]:
 		input = 1
-	canvas.connect_node(edge.from, output, edge.to, input)
+	canvas.connect_flow(edge.from, output, edge.to, input)
 
 
 func _edge(a: StringName, ap: int, b: StringName, bp: int) -> Dictionary:
@@ -625,7 +793,7 @@ func disconnect_ports(a: StringName, ap: int, b: StringName, bp: int) -> void:
 		return
 	if edge in draft.edges:
 		draft.edges.erase(edge)
-		canvas.disconnect_node(a,ap,b,bp)
+		canvas.disconnect_flow(a,ap,b,bp)
 		draft_changed.emit()
 
 
@@ -669,16 +837,18 @@ func apply_draft() -> void:
 	revision = result.revision
 	baseline = candidate
 	context = result.context
+	refresh_states()
 	notice.text = "已应用" if baseline == draft else "已应用提交版本；后续编辑仍在草稿中"
 	applied.emit(issue_id, revision)
 
 func set_debug_state(event: Dictionary) -> void:
 	debug_states[event.id] = event
-	var view := canvas.get_node_or_null(NodePath(str(event.id) + "/DebugState")) as Label
-	if view:
-		var labels := {"reserved":"已预留","running":"运行中","completed":"已完成","failed":"失败","waiting":"等待输入或证据","cancelled":"已取消","stopping":"正在停止"}
-		view.text = str(labels.get(event.state,event.state)) + (" · " + str(event.model) if event.has("model") else " · 调试")
-		view.tooltip_text = str(event.get("result",event.get("reason","")))
+	var view := canvas.get_node_or_null(NodePath(str(event.id))) as GraphNode
+	if debug_active and view:
+		_update_card(view)
+		canvas.refresh_wires(view.name)
+		_update_running_nodes()
+
 
 func _mark_targets(start: StringName, port: int, output: bool) -> void:
 	for child in canvas.get_children():

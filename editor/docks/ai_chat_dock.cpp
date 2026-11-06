@@ -2508,6 +2508,10 @@ void AIChatDock::_show_confirmation() {
 	}
 	confirmation->popup_centered(Size2(760, 540) * EDSCALE);
 	if (confirmation->is_visible() && (confirmation->is_embedded() || confirmation->get_window_id() != DisplayServerEnums::INVALID_WINDOW_ID)) {
+		if (busy && !gonggong_reporting.is_empty() && !pending_action.is_empty()) {
+			const Dictionary agent = gonggong_reporting["agent"];
+			emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), "step", "confirmation", "waiting");
+		}
 		return;
 	}
 	confirmation->hide();
@@ -3051,6 +3055,7 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()));
 	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
+	ADD_SIGNAL(MethodInfo("daqian_work_event", PropertyInfo(Variant::STRING, "workspace"), PropertyInfo(Variant::DICTIONARY, "binding"), PropertyInfo(Variant::STRING, "worker"), PropertyInfo(Variant::STRING, "kind"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::STRING, "status")));
 	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
 }
 
@@ -4614,6 +4619,10 @@ void AIChatDock::_start_process() {
 	process_timed_out = false;
 	process_started = OS::get_singleton()->get_ticks_msec();
 	set_process(true);
+	if (!gonggong_reporting.is_empty()) {
+		const Dictionary agent = gonggong_reporting["agent"];
+		emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), "step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "running");
+	}
 	_set_activity(pending_action == "run_command" ? String(U"正在执行已确认的命令") : String(U"正在运行已确认的脚本检查或测试"));
 	_append(U"进度", pending_action == "run_command" ? String(U"已开始执行命令，工作目录：") + pending_cwd : String(U"已开始检查或测试脚本：") + pending_path);
 }

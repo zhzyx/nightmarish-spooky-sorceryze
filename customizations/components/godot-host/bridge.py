@@ -332,7 +332,10 @@ def chat(root, request, tenant):
     }
     if request["request_id"].startswith("daqian-direct-"):
         routing, api = direct_adapter()
-        mandate["bound_requirement"] = routing.chat_context(root, request, api)
+        requirement = routing.chat_context(root, request, api)
+        mandate["bound_requirement"] = requirement
+        binding["actor"] = requirement["actor"]
+        binding["source_sha256"] = requirement["source_sha256"]
     env = host_environment(root)
     environment_missing = _igniter.missing_components(root, env)
     with tempfile.TemporaryDirectory() as temporary:
