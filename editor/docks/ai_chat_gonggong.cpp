@@ -239,12 +239,22 @@ static String last_user_content(const Array &p_messages) {
 	return String();
 }
 
+bool AIChatDock::_direct_daqian_task() const {
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const String request = entry.get("request_id", "");
+	const String number = entry.get("issue_number", "");
+	const String source = entry.get("source", "");
+	return request.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request) && source.ends_with("/issues/" + number);
+}
+
 void AIChatDock::_begin_gonggong_context() {
 	const String outcome = last_user_content(messages);
 	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
 	// a child inherits the real Issue its parent's finalized design was bound to.
-	const bool needs_intake = tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
+	const bool direct = _direct_daqian_task() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent);
+	const bool needs_intake = !direct && tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
 	if (gonggong_pid >= 0) {
 		if (needs_intake) {
 			_emit_daqian_requirement_phase("error");
@@ -325,7 +335,7 @@ void AIChatDock::_begin_gonggong_context() {
 	host["kind"] = "engine";
 	context_input["protocol_version"] = 1;
 	context_input["host"] = host;
-	context_input["agent_id"] = "yanshi";
+	context_input["agent_id"] = direct ? "sinan" : "yanshi";
 	context_input["issue_number"] = bound_issue;
 	context_input["request_id"] = bound_request;
 	context_input["outcome"] = outcome;
@@ -417,7 +427,7 @@ void AIChatDock::_poll_gonggong_context() {
 			_set_busy(false);
 			return;
 		}
-		if (AIChatIssueGuide::is_binding_error(error) && _start_issue_guide()) {
+		if (!_direct_daqian_task() && AIChatIssueGuide::is_binding_error(error) && _start_issue_guide()) {
 			return;
 		}
 		set_meta("gonggong_status", "blocked");
@@ -468,6 +478,78 @@ bool AIChatDock::_start_issue_guide() {
 	return true;
 }
 
+void AIChatDock::_set_issue_model_config(Dictionary &r_request) const {
+	r_request["endpoint"] = endpoint->get_text().strip_edges();
+	r_request["model"] = model->get_text().strip_edges();
+	static const char *backend_names[] = { "http", "codebuddy", "codex", "responses" };
+	r_request["backend"] = backend_names[backend->get_selected()];
+	r_request["cli_node"] = cli_node->get_text().strip_edges();
+	r_request["cli_entry"] = (backend->get_selected() == 2 ? codex_entry : cli_entry)->get_text().strip_edges();
+	r_request["cli_model"] = (backend->get_selected() == 2 ? codex_model : cli_model)->get_text().strip_edges();
+}
+
+static ProcessID launch_issue_model(const String &p_python, const List<String> &p_args, const String &p_api_key) {
+	Dictionary process = OS::get_singleton()->execute_with_pipe(p_python, p_args, false);
+	ProcessID pid = int64_t(process.get("pid", 0));
+	Ref<FileAccess> pipe = process.get("stdio", Variant());
+	if (pid <= 0 || pipe.is_null()) {
+		if (pid > 0) {
+			OS::get_singleton()->kill(pid);
+		}
+		return -1;
+	}
+	Dictionary credentials;
+	credentials["api_key"] = p_api_key;
+	pipe->store_string(JSON::stringify(credentials) + "\n");
+	pipe->flush();
+	return pid;
+}
+
+Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const {
+	Dictionary result;
+	const String workspace = EDITOR_GET("gonggong/workspace");
+	const String python = EDITOR_GET("gonggong/python");
+	const String bridge = workspace.path_join("tools/gonggong_bridge.py");
+	if (workspace.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
+		result["error"] = U"请配置共工工作区和 Python 后重试判断。";
+		return result;
+	}
+	Dictionary request = p_binding.duplicate();
+	_set_issue_model_config(request);
+	if (!p_selection.is_empty()) {
+		if (int64_t(p_selection.get("backend", -1)) != backend->get_selected()) {
+			result["error"] = U"请切回需求模型所属后端，或重新选择模型。";
+			return result;
+		}
+		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
+		request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
+	}
+	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-issue-route-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
+	const String input_path = stem + ".request";
+	const String output_path = stem + ".result";
+	Ref<FileAccess> file = FileAccess::open(input_path, FileAccess::WRITE);
+	if (file.is_null()) {
+		result["error"] = U"无法保存工单判断请求。";
+		return result;
+	}
+	file->store_string(JSON::stringify(request));
+	file.unref();
+	List<String> args;
+	for (const String &arg : { bridge, String("issue-route"), String("--workspace"), workspace, String("--request"), input_path, String("--out"), output_path }) {
+		args.push_back(arg);
+	}
+	const ProcessID pid = launch_issue_model(python, args, api_key->get_text().strip_edges());
+	if (pid <= 0) {
+		DirAccess::remove_absolute(input_path);
+		result["error"] = U"无法启动共工判断，请检查 Python 配置。";
+		return result;
+	}
+	result["pid"] = int64_t(pid);
+	result["input"] = input_path;
+	result["output"] = output_path;
+	return result;
+}
+
 void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool p_clarifying) {
 	issue_guide_outcome = p_outcome;
 	issue_guide_state = "agent_pending";
@@ -506,13 +588,7 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	issue_guide_fields["initial_request"] = _work_order_binding("request_id");
 	input_request["issue_number"] = int64_t(String(_work_order_binding("issue_number")).to_int());
 	input_request["request_id"] = String(_work_order_binding("request_id"));
-	input_request["endpoint"] = endpoint->get_text().strip_edges();
-	input_request["model"] = model->get_text().strip_edges();
-	static const char *backend_names[] = { "http", "codebuddy", "codex", "responses" };
-	input_request["backend"] = backend_names[backend->get_selected()];
-	input_request["cli_node"] = cli_node->get_text().strip_edges();
-	input_request["cli_entry"] = (backend->get_selected() == 2 ? codex_entry : cli_entry)->get_text().strip_edges();
-	input_request["cli_model"] = (backend->get_selected() == 2 ? codex_model : cli_model)->get_text().strip_edges();
+	_set_issue_model_config(input_request);
 	if (snapshot_state.has("daqian_model")) {
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
 		if (p_retry) {
@@ -593,6 +669,10 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 	}
 	if (issue_guide_state == "agent_error") {
 		if (AIChatIssueGuide::is_retry(p_text)) {
+			if (_direct_daqian_task()) {
+				_issue_guide_retry();
+				return;
+			}
 			_begin_issue_agent(issue_guide_outcome, true);
 		} else {
 			_append(TTR("Editor"), U"请先修复 GongGong 页的环境、需求会话的 HTTP/CLI 模型配置或 GitHub 访问，再回复“重试”；工单尚未完成绑定，不会进入开发执行。");
@@ -712,17 +792,8 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	ProcessID pid = 0;
 	Error process_error = OK;
 	if (p_action == "issue-agent") {
-		Dictionary process = OS::get_singleton()->execute_with_pipe(python, args, false);
-		pid = int64_t(process.get("pid", 0));
-		Ref<FileAccess> pipe = process.get("stdio", Variant());
-		if (pid <= 0 || pipe.is_null()) {
-			process_error = ERR_CANT_FORK;
-		} else {
-			Dictionary credentials;
-			credentials["api_key"] = api_key->get_text().strip_edges();
-			pipe->store_string(JSON::stringify(credentials) + "\n");
-			pipe->flush();
-		}
+		pid = launch_issue_model(python, args, api_key->get_text().strip_edges());
+		process_error = pid > 0 ? OK : ERR_CANT_FORK;
 	} else {
 		process_error = OS::get_singleton()->create_process(python, args, &pid);
 	}

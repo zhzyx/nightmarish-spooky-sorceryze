@@ -45,3 +45,13 @@ gh 查找顺序：`GONGGONG_GH`，`PATH`，再依次是 `~/.local/bin/gh`、`/op
 前置阶段只验证环境及仓库访问、装配已批准 Yanshi+ClarifyFeature 上下文并生成结构化需求，不运行生产工具。Agent 输出 decision/title/category/goal/scope/acceptance/questions，宿主不相信输出自带的身份或权限。真正未知写 questions；工单可先以 needs-decision 跟踪，已具备行动条件的用户需求按本次自动流程授权转 in-progress。返回 ready 后仍须原正常 chat intake 回读仓库、租户、类别、状态、工作区标签和准入。
 
 失败保留原需求和尝试；修复后明确重试。模型结果未知不自动重复付费调用；发布结果未知只查询原稳定ID，未发现唯一单据则保持待对账。取消不撤销已提交远端请求，只停止本地后续步骤和迟到绑定。需求阶段 journal 与正式Diting回执分开，真实Issue创建后将真实需求调用/用量绑定并投递；夹具数据不得导入生产。
+
+## 大千已建工单的推进判断
+
+在大千工作区确认需求时，`issue-direct` 先发布或对账一张 `planned` 工单，回读编号、稳定需求 ID、URL 与版本。若收到 `ok:true, coordination_pending:true`，保留这份绑定，后续路由会补投建单事件。
+
+对已绑定的工单调用 `issue-route --workspace <仓库> --request <JSON文件> --out <回执文件>`。请求包含 `issue_number, request_id, expected_user, expected_revision` 及现有编辑器模型选项 `backend, endpoint, model, cli_node, cli_entry, cli_model`。私有 stdin 只接收一行 `{"api_key":"..."}`。宿主回读权威原文并加载当前准入的司南，司南判定需要分析时才调用偃师。两者均以禁用工具的模型配置工作。
+
+成功回执含 `number, request_id, url, revision, route, reason, scope, acceptance, questions, ready`。答复时附上 `answer` 和该轮的确切 `expected_questions` 数组。收到 `refresh_routing:true` 时用原绑定重新读取判断，省略答复。回执不明时保留尝试，只有显式重试才附加 `retry_authorized:true`。已完成的模型轮次按来源、账号、版本、框架候选和答复重放。
+
+在同一来源版本上取得就绪判断后，用户确认开始才调用 `issue-start`，携带四个绑定字段。直接工单的 `chat` 会从 GitHub 原文与本地已确认的推进回执装配任务上下文。回执位于以 Git 公共目录的父目录为基准的 `data-collection/receipts/daqian-direct/<request_id>/`。更换安装后，计划中的工单可按实时来源重新判断，已开始的工单需先从原安装环境核对并交接回执。模型步的真实用量、来源版本及结论摘要由谛听记录。

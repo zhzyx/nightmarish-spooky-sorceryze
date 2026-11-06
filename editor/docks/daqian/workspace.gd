@@ -18,6 +18,17 @@ var actions: HBoxContainer
 var publish_button: Button
 var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
+var routing_in_flight := {}
+var clarification_dialog := ConfirmationDialog.new()
+var clarification_prompt := Label.new()
+var clarification_answer := TextEdit.new()
+var clarification_binding := {}
+var clarification_questions := []
+var category: OptionButton
+var choose_execution_model := CheckButton.new()
+var model_label: Label
+var direct_in_flight := {}
+var starting_direct := {}
 var model_options: OptionButton
 var manual_model: LineEdit
 var publish_status: Label
@@ -92,6 +103,7 @@ func _ready() -> void:
 	_button(actions, "仅推演", _chat_action.bind("preview"))
 	publish_button = _button(actions, "发布需求…", _publish_or_follow)
 	_build_publish_dialog()
+	_build_clarification_dialog()
 	_button(actions, "关联对话", _chat_action.bind("discuss"))
 	_button(actions, "调试运行", _start_debug)
 	_button(actions, "结束调试", _stop_debug)
@@ -358,6 +370,10 @@ func _gate_visibility(opened: bool) -> void:
 	editor.visible = opened and not current.is_empty()
 	if not opened:
 		models_dialog.hide()
+		clarification_dialog.hide()
+		clarification_binding.clear()
+		clarification_questions.clear()
+		clarification_answer.clear()
 		publish_dialog.hide()
 		history_dialog.hide()
 		history_view.clear()
@@ -501,7 +517,7 @@ func _open_issue(item: Dictionary) -> void:
 	if actor.is_empty():
 		return
 	var plan: Dictionary = item.get("plan", rules.new_plan()).duplicate(true)
-	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":item.title}
+	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":plan.nodes.get("requirement", {}).get("value", item.title)}
 	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":{"requirement":item.status}}
 	if item.decision:
 		plan.nodes["decision"] = {"kind":"question","title":"待决定","value":""}
@@ -553,10 +569,14 @@ func _build_publish_dialog() -> void:
 	publish_dialog = ConfirmationDialog.new()
 	publish_dialog.title = "发布需求"
 	publish_dialog.dialog_hide_on_ok = false
-	publish_dialog.get_ok_button().text = "确认发送并开始分析"
+	publish_dialog.get_ok_button().text = "确认需求并建单"
 	publish_dialog.get_cancel_button().text = "保存为草稿"
 	var fields := VBoxContainer.new()
 	publish_dialog.add_child(fields)
+	category = OptionButton.new()
+	category.tooltip_text = "工单类别"
+	category.item_selected.connect(func(_index): _update_publish_form())
+	fields.add_child(category)
 	var prompt := Label.new()
 	prompt.text = "需求内容"
 	fields.add_child(prompt)
@@ -567,9 +587,12 @@ func _build_publish_dialog() -> void:
 	requirement_input.placeholder_text = "描述你希望完成的需求"
 	requirement_input.text_changed.connect(_edit_requirement)
 	fields.add_child(requirement_input)
-	var label := Label.new()
-	label.text = "偃师分析模型"
-	fields.add_child(label)
+	choose_execution_model.text = "指定需求判断和推进模型"
+	choose_execution_model.toggled.connect(func(_on): _update_publish_controls())
+	fields.add_child(choose_execution_model)
+	model_label = Label.new()
+	model_label.text = "模型"
+	fields.add_child(model_label)
 	model_options = OptionButton.new()
 	model_options.item_selected.connect(_select_publish_model)
 	fields.add_child(model_options)
@@ -586,11 +609,176 @@ func _build_publish_dialog() -> void:
 	publish_dialog.visibility_changed.connect(_publish_visibility_changed)
 
 
+func _build_clarification_dialog() -> void:
+	clarification_dialog.title = "补充工单需求"
+	clarification_dialog.get_ok_button().text = "提交补充"
+	var fields := VBoxContainer.new()
+	clarification_dialog.add_child(fields)
+	clarification_prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	fields.add_child(clarification_prompt)
+	clarification_answer.custom_minimum_size = Vector2(400, 120)
+	clarification_answer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	fields.add_child(clarification_answer)
+	clarification_answer.text_changed.connect(func(): clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty() or clarification_answer.text.length() > 4000)
+	clarification_dialog.confirmed.connect(func():
+		if clarification_binding == _direct_binding() and _routing_receipt(clarification_binding).get("questions", []) == clarification_questions:
+			_judge_requirement(clarification_binding, clarification_answer.text, true))
+	add_child(clarification_dialog)
+
+
+func _routing_receipt(binding: Dictionary) -> Dictionary:
+	var result: Dictionary = saved.get("routing", {}).get(binding.get("url", ""), {})
+	var revision: String = binding.get("updated", binding.get("revision", ""))
+	if result.get("revision", "") != revision or result.get("request_id", "") != binding.get("request", ""):
+		return {}
+	return result
+
+
+func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> void:
+	var url: String = binding.url
+	if routing_in_flight.has(url) or binding.get("closed", false) or binding.status != "planned":
+		return
+	var user := actor.duplicate()
+	var root := _repo()
+	routing_in_flight[url] = true
+	_update_direct_action()
+	var request := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
+		"expected_revision":binding.get("updated", binding.get("revision", ""))}
+	request.retry_authorized = retry
+	if not answer.is_empty():
+		request.answer = answer
+		request.expected_questions = clarification_questions.duplicate()
+	var result := {"error":"请配置 AI 对话模型后重试框架判断。"}
+	if is_instance_valid(chat) and await _fresh_access() and user == actor and root == _repo():
+		var selection: Dictionary = saved.get("execution_models", {}).get(url, {})
+		if retry and answer.is_empty():
+			var catalog: Dictionary = chat.get_daqian_models()
+			selection = {"backend":catalog.backend, "id":catalog.current}
+			if not saved.has("execution_models"):
+				saved.execution_models = {}
+			saved.execution_models[url] = selection
+			_save()
+		var process: Dictionary = chat.launch_daqian_routing(request, selection)
+		result = await _host_result(process.pid, process.input, process.output) if process.has("pid") else process
+	routing_in_flight.erase(url)
+	if user != actor or root != _repo():
+		return
+	if not answer.is_empty() and result.get("ok") != true:
+		saved.get("routing", {}).erase(url)
+		_save()
+	if not answer.is_empty() and result.get("refresh_routing") == true:
+		# Reload the current question set without resubmitting the stale answer.
+		await _judge_requirement(binding)
+		return
+	var verified: bool = (result.get("ok") == true and result.get("url") == url and result.get("number") == binding.number
+		and result.get("request_id") == binding.request and result.get("revision") == request.expected_revision
+		and result.get("route") in ["sinan", "yanshi"] and result.get("reason") is String and result.get("ready") is bool
+		and result.get("scope") is Array and result.get("acceptance") is Array and result.get("questions") is Array)
+	if verified:
+		if not saved.has("routing"):
+			saved.routing = {}
+		saved.routing[url] = result
+		_save()
+	_sync_workflow()
+	if _direct_binding().get("url", "") == url:
+		notice.text = ("#%d · %s" % [binding.number, result.reason]) if verified else ("工单 #%d 已建立 · %s" % [binding.number, result.get("error", "尚未取得框架判断回执")])
+
+
 func _publish_or_follow() -> void:
-	if saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current):
+	var binding := _direct_binding()
+	if not binding.is_empty():
+		_start_or_view_direct(binding)
+	elif saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current):
 		_chat_action("discuss")
 	else:
 		_open_publish()
+
+
+func _direct_binding() -> Dictionary:
+	var binding: Dictionary = saved.get("linked", {}).get(current, {})
+	if binding.is_empty():
+		for row in board.get("issues", []):
+			if row.url == current:
+				binding = row
+				break
+	if not str(binding.get("request", "")).begins_with("daqian-direct-"):
+		return {}
+	for row in board.get("issues", []):
+		if row.url == binding.get("url", ""):
+			if row.get("request", "") != binding.request or row.number != binding.number:
+				return {"error":"工单绑定已改变，请核对原始需求标识。"}
+			return row
+	return binding
+
+
+func _start_or_view_direct(binding: Dictionary) -> void:
+	if binding.has("error"):
+		notice.text = binding.error
+		return
+	var source := current
+	if not await _fresh_access() or source != current:
+		return
+	if binding != _direct_binding():
+		notice.text = "工单已更新，请重新确认。"
+		return
+	var url: String = binding.url
+	if not is_instance_valid(chat):
+		notice.text = "无法取得共工 AI 对话入口"
+		return
+	var started: bool = saved.get("direct_started", {}).has(url)
+	if not started and (binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]):
+		notice.text = "当前工单状态不支持开始推进，请先处理待决定或阻塞事项。"
+		return
+	if not started and binding.status == "planned":
+		var decision := _routing_receipt(binding)
+		if decision.is_empty():
+			await _judge_requirement(binding, "", true)
+			return
+		if not decision.ready:
+			clarification_prompt.text = "\n".join(PackedStringArray(decision.questions))
+			if clarification_binding != binding or clarification_questions != decision.questions:
+				clarification_answer.text = ""
+			clarification_questions = decision.questions.duplicate()
+			clarification_binding = binding.duplicate(true)
+			clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty()
+			clarification_dialog.popup_centered_clamped(Vector2i(480, 300))
+			return
+	var message := "" if started else "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
+	var selection := {}
+	if not started:
+		var catalog: Dictionary = chat.get_daqian_models()
+		selection = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
+		if selection.backend != catalog.backend:
+			notice.text = "推进模型所属的后端已改变，请切回创建时选择的 AI 后端后开始。"
+			return
+		if starting_direct.has(url):
+			return
+		var user := actor.duplicate()
+		var root := _repo()
+		var start := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
+			"expected_revision":binding.get("updated", binding.get("revision", ""))}
+		starting_direct[url] = true
+		var args := PackedStringArray([root.path_join("tools/gonggong_bridge.py"), "issue-start", "--workspace", root])
+		var result: Dictionary = await _host_command(args, "--out", start)
+		starting_direct.erase(url)
+		if source != current or user != actor or root != _repo():
+			return
+		if result.get("ok") != true or result.get("status") not in ["status:in-progress","status:in-review"]:
+			if result.get("refresh_routing") == true:
+				saved.get("routing", {}).erase(url)
+				_save()
+				_sync_workflow()
+			notice.text = str(result.get("error", "未取得开始推进回执，请刷新后核对。"))
+			return
+	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection)
+	if not error.is_empty():
+		notice.text = error
+		return
+	if not saved.has("direct_started"):
+		saved.direct_started = {}
+	saved.direct_started[url] = true
+	publish_button.text = "查看推进对话"
+	_save()
 
 
 func _open_publish() -> void:
@@ -599,15 +787,29 @@ func _open_publish() -> void:
 	if not editor.draft.nodes.has("requirement"):
 		notice.text = "草稿缺少需求节点"
 		return
-	if not is_instance_valid(chat) or not chat.has_method("get_daqian_models"):
-		notice.text = "无法取得共工 AI 对话入口"
-		return
-	var catalog: Dictionary = chat.get_daqian_models()
+	var available := is_instance_valid(chat) and chat.has_method("get_daqian_models")
+	var catalog: Dictionary = chat.get_daqian_models() if available else {"backend":-1, "options":[], "current":""}
 	publish_backend = catalog.backend
-	var stored: Dictionary = saved.get("publish_models", {}).get(current, {})
-	var chosen: String = stored.id if stored.get("backend", -1) == publish_backend else catalog.current
+	var pending: Dictionary = saved.get("direct_pending", {}).get(current, {})
+	category.clear()
+	var labels_path := _repo().path_join(".github/labels.json")
+	if FileAccess.file_exists(labels_path):
+		var labels = JSON.parse_string(FileAccess.get_file_as_string(labels_path))
+		if labels is Array:
+			for item in labels:
+				var name_text := str(item.get("name", ""))
+				if name_text.begins_with("type:"):
+					var kind := name_text.trim_prefix("type:")
+					category.add_item(str(item.get("description", kind)))
+					category.set_item_metadata(category.item_count - 1, kind)
+					if kind == pending.get("category", saved.get("categories", {}).get(current, "development")):
+						category.select(category.item_count - 1)
+	var execution_model: Dictionary = saved.get("execution_models", {}).get(current, {})
+	choose_execution_model.set_pressed_no_signal(not execution_model.is_empty() and execution_model.get("backend") == publish_backend)
+	var stored: Dictionary = execution_model
+	var chosen: String = stored.get("id", catalog.current) if stored.get("backend", -1) == publish_backend else catalog.current
 	publish_source = current
-	requirement_input.text = str(editor.draft.nodes.requirement.value)
+	requirement_input.text = pending.get("outcome", str(editor.draft.nodes.requirement.value))
 	model_options.clear()
 	var selected := -1
 	for option in catalog.options:
@@ -619,10 +821,22 @@ func _open_publish() -> void:
 	model_options.add_item("手动填写模型 ID")
 	model_options.select(selected if selected >= 0 else model_options.item_count - 1)
 	manual_model.text = chosen
-	publish_status.text = "确认后由偃师分析需求，并在关联对话中继续推进。"
-	_select_publish_model(model_options.selected)
+	_update_publish_controls()
 	publish_dialog.popup_centered_clamped(Vector2i(540, 360))
 	requirement_input.grab_focus()
+
+
+func _update_publish_controls() -> void:
+	choose_execution_model.visible = publish_backend >= 0
+	model_label.visible = choose_execution_model.visible and choose_execution_model.button_pressed
+	model_options.visible = model_label.visible
+	var pending: bool = saved.get("direct_pending", {}).has(current)
+	category.disabled = pending
+	requirement_input.editable = not pending
+	publish_dialog.get_ok_button().text = "核对建单回执" if pending else "确认需求并建单"
+	publish_status.text = "将按原需求标识核对上次建单结果。" if pending else "确认后创建工单，再由共工判断是否需要偃师。"
+	_select_publish_model(model_options.selected)
+	_sync_workflow()
 
 
 func _selected_model() -> String:
@@ -632,24 +846,30 @@ func _selected_model() -> String:
 
 
 func _select_publish_model(index: int) -> void:
-	manual_model.visible = index == model_options.item_count - 1
+	manual_model.visible = model_options.visible and index == model_options.item_count - 1
 	_update_publish_form()
 
 
 func _update_publish_form() -> void:
 	var message := requirement_input.text.strip_edges()
-	var missing_model := manual_model.visible and manual_model.text.strip_edges().is_empty()
-	var too_long := message.length() > 16000
+	var too_long := requirement_input.text.length() > 16000
 	const LIMIT_HINT := "需求正文最多 16000 个字符，请缩短后发送。"
 	if too_long:
 		publish_status.text = LIMIT_HINT
 	elif publish_status.text == LIMIT_HINT:
-		publish_status.text = "确认后由偃师分析需求，并在关联对话中继续推进。"
-	publish_dialog.get_ok_button().disabled = submitting or message.is_empty() or too_long or missing_model
+		publish_status.text = "确认后创建工单，再由共工判断是否需要偃师。"
+	publish_dialog.get_ok_button().disabled = submitting or message.is_empty() or too_long or category.selected < 0 or direct_in_flight.has(current)
 	if publish_source == current and not current.is_empty():
-		if not saved.has("publish_models"):
-			saved.publish_models = {}
-		saved.publish_models[current] = {"backend":publish_backend, "id":_selected_model()}
+		if category.selected >= 0:
+			if not saved.has("execution_models"):
+				saved.execution_models = {}
+			if model_options.visible:
+				saved.execution_models[current] = {"backend":publish_backend, "id":_selected_model()}
+			elif choose_execution_model.visible:
+				saved.execution_models.erase(current)
+			if not saved.has("categories"):
+				saved.categories = {}
+			saved.categories[current] = category.get_selected_metadata()
 		_queue_save()
 
 
@@ -676,7 +896,9 @@ func _confirm_publish() -> void:
 	var generation := publish_generation
 	var source := publish_source
 	var selected := {"backend":publish_backend, "id":_selected_model()}
-	var message := requirement_input.text.strip_edges()
+	var model_chosen := model_options.visible
+	var kind := str(category.get_selected_metadata()) if category.selected >= 0 else ""
+	var message := requirement_input.text
 	var epoch := selection_epoch
 	publish_dialog.get_ok_button().disabled = true
 	publish_status.text = "正在核对协作者身份…"
@@ -688,22 +910,63 @@ func _confirm_publish() -> void:
 	if not allowed or epoch != selection_epoch or source != current or saved.get("linked", {}).has(source):
 		publish_status.text = "发送已中止，请回到草稿核对工单和协作者身份。"
 		return
-	if selected.id != _selected_model() or message != requirement_input.text.strip_edges():
+	if model_chosen != model_options.visible or (model_chosen and selected.id != _selected_model()) or kind != category.get_selected_metadata() or message != requirement_input.text:
 		publish_status.text = "需求或模型已变更，请重新确认。"
 		return
-	_save()
-	var error: String = chat.open_daqian_chat(source, 0, "", message, false, selected)
-	if not error.is_empty():
-		publish_status.text = error
+	await _publish_direct(source, message, kind)
+
+
+func _publish_direct(source: String, message: String, kind: String) -> void:
+	if direct_in_flight.has(source):
 		return
-	if not saved.has("submitted"):
-		saved.submitted = {}
-	saved.submitted[source] = true
-	_sync_workflow()
-	publish_button.text = "查看分析进度"
-	publish_dialog.hide()
+	var user: Dictionary = actor.duplicate()
+	var root := _repo()
+	var request := {"draft_id":source, "expected_user":user.user_id, "category":kind,
+		"title":message.strip_edges().get_slice("\n", 0).strip_edges().left(120), "outcome":message}
+	var settings := EditorInterface.get_editor_settings()
+	var node_runtime := str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""
+	if node_runtime.is_absolute_path():
+		request.node_runtime = node_runtime
+	if not saved.has("direct_pending"):
+		saved.direct_pending = {}
+	saved.direct_pending[source] = request
+	direct_in_flight[source] = true
+	_update_publish_controls()
+	publish_status.text = "正在创建或核对工单…"
 	_save()
-	notice.text = "已发送至偃师，请在关联对话中查看分析进度。"
+	var args := PackedStringArray([root.path_join("tools/gonggong_bridge.py"), "issue-direct", "--workspace", root])
+	var result: Dictionary = await _host_command(args, "--out", request)
+	direct_in_flight.erase(source)
+	if user != actor or root != _repo():
+		return
+	var number := int(result.get("number", 0))
+	var request_id := "daqian-direct-" + source.trim_prefix("draft_")
+	var url := "https://github.com/%s/issues/%d" % [user.repo, number]
+	var verified: bool = (result.get("ok") == true and number > 0
+		and result.get("request_id") == request_id and result.get("url") == url
+		and result.get("status") in ["planned", "needs-decision", "in-progress", "in-review", "blocked"]
+		and result.get("revision") is String and not result.revision.is_empty())
+	if not verified:
+		if result.get("reconcile_required", true) == false:
+			saved.direct_pending.erase(source)
+		if publish_source == source and publish_dialog.visible:
+			_update_publish_controls()
+			publish_status.text = str(result.get("error", "未取得完整建单回执，请核对原请求。"))
+		_save()
+		return
+	saved.direct_pending.erase(source)
+	if saved.get("execution_models", {}).has(source):
+		saved.execution_models[url] = saved.execution_models[source].duplicate()
+	if publish_source == source:
+		publish_dialog.hide()
+	_issue_bound(source, number, request_id, {"url":url,"revision":result.revision,"status":result.status})
+	_sync_workflow()
+	_save()
+	if current == source:
+		notice.text = "已创建工单 #%d，正在判断是否需要偃师。" % number
+	var binding: Dictionary = saved.get("linked", {}).get(source, {})
+	if not binding.is_empty():
+		await _judge_requirement(binding)
 
 
 func _new_requirement() -> void:
@@ -746,9 +1009,35 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	actions.get_child(0).visible = id.begins_with("draft_")
 	publish_button.visible = id.begins_with("draft_")
 	publish_button.text = "查看分析进度" if saved.get("submitted", {}).has(id) or saved.get("linked", {}).has(id) else "发布需求…"
+	_update_direct_action()
 	overview.hide()
 	return_button.show()
 	notice.text = id if id.begins_with("https://") else "个人需求草稿"
+
+
+func _update_direct_action() -> void:
+	var binding := _direct_binding()
+	publish_button.disabled = false
+	if binding.is_empty():
+		return
+	publish_button.show()
+	if binding.has("error"):
+		publish_button.text = "需求标识已改变"
+		publish_button.disabled = true
+	elif saved.get("direct_started", {}).has(binding.url):
+		publish_button.text = "查看推进对话"
+	elif binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]:
+		publish_button.text = "工单已关闭" if binding.get("closed", false) else "等待工单就绪"
+		publish_button.disabled = true
+	elif routing_in_flight.has(binding.url):
+		publish_button.text = "框架判断中…"
+		publish_button.disabled = true
+	elif binding.status == "planned" and _routing_receipt(binding).is_empty():
+		publish_button.text = "用当前模型重试判断"
+	elif binding.status == "planned" and not _routing_receipt(binding).ready:
+		publish_button.text = "补充需求"
+	else:
+		publish_button.text = "开始推进"
 
 
 func _drop_images(paths: PackedStringArray) -> void:
@@ -789,6 +1078,11 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var path := _repo().path_join("customizations/components/godot-host/daqian/graph_host.py")
 	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
 		return {"error":"未连接工单流程宿主"}
+	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,action])
+	return await _host_command(args, "--result", request)
+
+
+func _host_command(args: PackedStringArray, output_flag: String, request: Dictionary) -> Dictionary:
 	var settings := EditorInterface.get_editor_settings()
 	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
 	if python.is_empty():
@@ -796,8 +1090,8 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var stem := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode())
 	var result_path := stem + ".result"
 	var req_path := stem + ".request"
-	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--result",result_path,action])
-	if action in ["apply","answer"]:
+	args.append_array([output_flag, result_path])
+	if not request.is_empty():
 		var f := FileAccess.open(req_path,FileAccess.WRITE)
 		if not f:
 			return {"error":"无法保存本次提交请求"}
@@ -805,6 +1099,10 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 		f.close()
 		args.append_array(["--request",req_path])
 	var pid := OS.create_process(python,args)
+	return await _host_result(pid, req_path, result_path)
+
+
+func _host_result(pid: int, req_path: String, result_path: String) -> Dictionary:
 	if pid >= 0:
 		while not FileAccess.file_exists(result_path) and OS.is_process_running(pid):
 			await get_tree().create_timer(0.12).timeout
@@ -848,7 +1146,7 @@ func _sync_workflow() -> void:
 	var binding: Dictionary = saved.get("linked", {}).get(source, {})
 	var item: Dictionary = {}
 	for row in board.get("issues", []):
-		if row.url == current or row.number == binding.get("number", 0):
+		if (row.url == current and binding.is_empty()) or (row.number == binding.get("number", 0) and (not str(binding.get("request","")).begins_with("daqian-direct-") or row.get("request","") == binding.request)):
 			item = row
 			break
 	if current.begins_with("https://") and not item.is_empty():
@@ -889,18 +1187,34 @@ func _sync_workflow() -> void:
 		elif receipt.get("observed_decision", false) and phase == "questions" and item.get("status") == "in-progress" and not item.get("decision", false):
 			phase = "bound"
 			design.questions = clauses.questions
-	var facts := {"phase":phase, "design":design, "item":item}
+	var direct: bool = str(binding.get("request", item.get("request", ""))).begins_with("daqian-direct-")
+	if direct and item.is_empty() and binding.has("status") and not _direct_binding().has("error"):
+		item = {"status":binding.status}
+		phase = "bound"
+	var judged := _routing_receipt(_direct_binding()) if direct else {}
+	if direct and judged.is_empty() and item.get("status") != "planned":
+		var original: Dictionary = saved.get("routing", {}).get(item.get("url", binding.get("url", "")), {})
+		if original.get("request_id", "") == item.get("request", binding.get("request", "")):
+			judged = original
+	var analyzed: bool = not direct and (item.get("analyzed", false) or not receipt.is_empty())
+	if direct and not judged.is_empty():
+		design = judged
+	if direct and phase not in ["closed", "blocked"] and item.get("status") == "planned":
+		phase = "routing" if judged.is_empty() else ("bound" if judged.ready else "questions")
+	_update_direct_action()
+	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()
 
 
-func _issue_bound(source: String, number: int, request_id: String) -> void:
+func _issue_bound(source: String, number: int, request_id: String, details := {}) -> void:
 	if actor.is_empty() or picker_scope != _repo() or (source != current and not saved.get("drafts", {}).has(source)):
 		return
 	if not saved.has("linked"):
 		saved.linked = {}
 	saved.linked[source] = {"number":number,"request":request_id}
+	saved.linked[source].merge(details)
 	var numbers: Array = saved.get("following",[])
 	if number not in numbers:
 		numbers.append(number)
@@ -930,7 +1244,7 @@ func _chat_action(action: String) -> void:
 	if action == "preview":
 		message = "仅推演。按共工偃师的需求结构整理以下需求，只输出 JSON 对象，scope、acceptance、questions 各为字符串数组。列出适用步骤和真实需要决定的问题。\n" + message
 	_save()
-	var error: String = chat.open_daqian_chat(current, int(binding.get("number",0)),str(binding.get("request","")),message,action=="preview")
+	var error: String = chat.open_daqian_chat(binding.get("url", current), int(binding.get("number",0)),str(binding.get("request","")),message,action=="preview")
 	if not error.is_empty():
 		notice.text = error
 

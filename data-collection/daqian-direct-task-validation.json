@@ -1,0 +1,37 @@
+{
+  "request_id": "daqian-direct-task-20261106",
+  "issue_number": 174,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/174",
+  "platform": "macOS arm64",
+  "native": [
+    {
+      "state": "passed",
+      "editor_sha256": "d80b6ee40c07325d518cb123d131558796deba90ca01d3dd5a64356d3dfeee50",
+      "scenario": "direct",
+      "scope": "native editor to direct issue and Sinan admission subprocesses"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "d80b6ee40c07325d518cb123d131558796deba90ca01d3dd5a64356d3dfeee50",
+      "scenario": "publish",
+      "scope": "native editor to Yanshi subprocess with fixture receipt"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "d80b6ee40c07325d518cb123d131558796deba90ca01d3dd5a64356d3dfeee50",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  ],
+  "tests": {
+    "godot_host": 87,
+    "daqian": 19,
+    "work_items": 13
+  },
+  "independent_review": {
+    "worker": "/root/sinan_98dac697da7f6345",
+    "conclusion": "accepted after planned-only creation, explicit start, closed-source and identity drift fixes. Verified read-only preparation."
+  },
+  "scope": "Native dialogs and chat admission subprocesses, actual Sinan and Diting components. Test doubles for GitHub issue mutations and model calls.",
+  "integration_base": "c21ce691ca2dc50de90985d9fdd5dfbbf5e64a40"
+}

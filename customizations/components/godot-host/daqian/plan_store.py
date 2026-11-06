@@ -133,7 +133,8 @@ def read_source(root, number):
     statuses=[x for x in labels if x.startswith("status:")]
     decision_only=statuses==["status:needs-decision"]
     historical=obj.get("state")=="closed"
-    if decision_only or historical:
+    planned = statuses == ["status:planned"] and req.startswith("daqian-direct-")
+    if decision_only or historical or planned:
         # Closed dependencies can be inspected; pending decisions can be answered before intake.
         categories=[x for x in labels if x.startswith("type:")]
         if (obj.get("number")!=number or obj.get("html_url")!=f"https://github.com/{repo}/issues/{number}" or
@@ -154,7 +155,7 @@ def read_source(root, number):
             "model_names":{k: v["name"]+" · "+v["model"] for k,v in profiles.items()},
             "issue":obj["html_url"], "source_revision":digest([req,{"plan":projection["plan"],"sources":projection["sources"]}]),
             "issue_revision":obj["updated_at"], "base":projection["plan"], "sources":projection["sources"], "actor":principal["login"],"principal":principal,
-            "questions":projection.get("questions",{}),"can_answer":not historical,"can_edit":not historical and not decision_only}
+            "questions":projection.get("questions",{}),"can_answer":not (historical or planned),"can_edit":not (historical or decision_only or planned)}
 
 
 def snapshot(db, source):

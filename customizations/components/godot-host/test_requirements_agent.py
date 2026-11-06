@@ -338,6 +338,7 @@ class RequirementsTests(unittest.TestCase):
             endpoint="",
             model="",
         )
+        expected_agent = "yanshi"
         original = module.subprocess.run.side_effect
 
         def transport(args, **kwargs):
@@ -345,7 +346,7 @@ class RequirementsTests(unittest.TestCase):
                 payload = json.loads(Path(args[-1]).read_text(encoding="utf-8"))
                 self.assertEqual(payload["available_tools"], [])
                 self.assertFalse(payload["tool_context"]["permission_enabled"])
-                self.assertEqual(payload["agent_id"], "yanshi")
+                self.assertEqual(payload["agent_id"], expected_agent)
                 return subprocess.CompletedProcess(
                     args,
                     0,
@@ -358,6 +359,10 @@ class RequirementsTests(unittest.TestCase):
 
         module.subprocess.run.side_effect = transport
         self.assertTrue(self.invoke()["ready"])
+        expected_agent = "sinan"
+        routed = module.complete(self.root, self.request, {}, [{"role": "system", "content": "registered sinan"}],
+                                 {}, agent_id="sinan")
+        self.assertEqual(routed["finish_reason"], "stop")
         self.adapter.call.assert_not_called()
 
 

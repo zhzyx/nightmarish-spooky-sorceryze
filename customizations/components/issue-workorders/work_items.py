@@ -114,7 +114,7 @@ def labels(root, apply=False):
     return {"state": "labels_ensured", "count": len(definitions)}
 
 
-def issue(root, document, title, category, request_id, apply=False, execution_authority_ref=None):
+def issue(root, document, title, category, request_id, apply=False, execution_authority_ref=None, *, planned=False):
     # Trace the caller's existing mandate; this is not a governance grant.
     if execution_authority_ref is not None and (
         not isinstance(execution_authority_ref, str)
@@ -123,6 +123,10 @@ def issue(root, document, title, category, request_id, apply=False, execution_au
     ):
         raise ValueError("Execution authority reference must be nonempty single-line text")
     initial_status = "status:in-progress" if execution_authority_ref else "status:needs-decision"
+    if planned:
+        if execution_authority_ref:
+            raise ValueError("A planned Issue must await a separate execution decision")
+        initial_status = "status:planned"
     settings, definitions = config(root)
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id):
         raise ValueError("Invalid stable request ID")
