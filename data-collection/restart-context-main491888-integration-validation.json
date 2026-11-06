@@ -1,0 +1,55 @@
+{
+  "issue_number": 212,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "request_id": "macos-restart-executable-20261107",
+  "related_issue_number": 184,
+  "base_commit": "491888459dbb64c8130378d8dbb3649cc1fd6ac8",
+  "appends_to": "data-collection/restart-context-integration-validation.json",
+  "source_sha256": {
+    "core/os/os.h": "0a5870f74af29cb3e1f376a650063a6c57c637d60330510d415f65302801fe27",
+    "platform/macos/os_macos.mm": "4a08fec1fcaf7924b88ae408276ade9733a8f695be61578c2108485c45dc6947",
+    "tests/core/os/test_os.cpp": "fcdc77d75c2ff923f7a98b31995e82e0cff262691af463f4052e0b3dcdb773ea",
+    "editor/docks/ai_chat_gonggong.cpp": "6ce323d11cbab7e42d26df697638b6187e2e92cd6b62fa82667b0b178904bfbb",
+    "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+    "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+  },
+  "latest_native_evidence": {
+    "path": "data-collection/issue212-macos-restart-main491888-validation.json",
+    "sha256": "c5c33240a1b752e4d4c7be1e1f0aebb03c6d8e5bb1d64872176562a9b1ccf801"
+  },
+  "independent_review": {
+    "reviewer": "/root/review_codex_bridge",
+    "mode": "read-only independent review of the final six source files and e9dd-to-491888 integration",
+    "result": "No blocking findings",
+    "reviewed_source_sha256": {
+      "core/os/os.h": "0a5870f74af29cb3e1f376a650063a6c57c637d60330510d415f65302801fe27",
+      "platform/macos/os_macos.mm": "4a08fec1fcaf7924b88ae408276ade9733a8f695be61578c2108485c45dc6947",
+      "tests/core/os/test_os.cpp": "fcdc77d75c2ff923f7a98b31995e82e0cff262691af463f4052e0b3dcdb773ea",
+      "editor/docks/ai_chat_gonggong.cpp": "6ce323d11cbab7e42d26df697638b6187e2e92cd6b62fa82667b0b178904bfbb",
+      "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+      "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+    },
+    "parent_acceptance": "/root independently reviewed both child contributions, verified frozen patches and native source hashes, and accepted the combined candidate"
+  },
+  "upstream_integration": {
+    "mode": "Reversed only owned patches, fast-forwarded isolated parent branch, reapplied both frozen patches without conflicts",
+    "affected_scope": "Five daqian_bound lines in ai_chat_gonggong.cpp, plus upstream Daqian approval code in ai_chat_dock.h/cpp. Native incremental build and focused native regressions rerun on this exact base."
+  },
+  "live_source_application": {
+    "owner": "/root",
+    "files": [
+      "core/os/os.h",
+      "platform/macos/os_macos.mm",
+      "tests/core/os/test_os.cpp"
+    ],
+    "source_hashes_equal_to_candidate": true,
+    "pre_existing_modified_files_preserved_by_sha256": 6,
+    "running_binary_replaced": false,
+    "live_build_started": false
+  },
+  "limits": [
+    "Unbundled macOS arm64 native validation; no packaged .app or full patched GUI shutdown/watchdog/reopen run.",
+    "Current user editor remains the manually recovered self_update_a artifact; source fixes take effect after a later build and switch.",
+    "#165 and #217 product-feature acceptance remains outside this delivery."
+  ]
+}

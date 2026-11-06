@@ -1,0 +1,183 @@
+{
+  "request_id": "macos-restart-executable-20261107",
+  "issue_number": 212,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "recorded_at": "2026-11-06T17:29:36.099525+00:00",
+  "state": "native_validation_passed_delivery_pending_parent_review",
+  "path_base": "repository_root",
+  "candidate": {
+    "base_commit": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+    "identity_kind": "base_commit_plus_frozen_source_patches",
+    "source_patch_sha256": {
+      "212": "934c2fa0c00d94cd19d715ab2041654b660adb27ba72b20384cfc09e1aaa5391",
+      "184": "9536044d56996ad47c08833830e0ba069ac858d6f00aef406cc9cde22e6b3089"
+    },
+    "sources_sha256": {
+      "core/os/os.h": "0a5870f74af29cb3e1f376a650063a6c57c637d60330510d415f65302801fe27",
+      "platform/macos/os_macos.mm": "4a08fec1fcaf7924b88ae408276ade9733a8f695be61578c2108485c45dc6947",
+      "tests/core/os/test_os.cpp": "fcdc77d75c2ff923f7a98b31995e82e0cff262691af463f4052e0b3dcdb773ea",
+      "editor/docks/ai_chat_gonggong.cpp": "5a56e3a145b4b41c6c580598bd4c5d135e259a6f417ea813884bee9a8d844758",
+      "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+      "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+    },
+    "ownership": {
+      "212": [
+        "core/os/os.h",
+        "platform/macos/os_macos.mm",
+        "tests/core/os/test_os.cpp"
+      ],
+      "184": [
+        "editor/docks/ai_chat_gonggong.cpp",
+        "editor/docks/ai_chat_requirement_context.h",
+        "tests/editor/test_ai_chat_tools.cpp"
+      ]
+    },
+    "scope": "Combined native verification inputs, pending responsible agent integration; neither an independently committed #212-only tree nor an independently committed #184-only tree",
+    "working_index_changed_by_worker": false
+  },
+  "implementation": {
+    "target_selection": "An enabled restart with a nonempty explicit executable delegates to OS::create_instance before macOS headless/bundle fallback",
+    "fallback_production_source_unchanged": true,
+    "scripting_api_changed": false,
+    "python_or_argument_guessing_used": false
+  },
+  "environment": {
+    "platform": "macOS-15.3.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.16",
+    "scons": "4.11.1",
+    "zstandard": "0.25.0",
+    "clang": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "sdk": "15.5",
+    "build_flags": [
+      "platform=macos",
+      "arch=arm64",
+      "target=editor",
+      "tests=yes",
+      "use_volk=yes",
+      "accesskit=no",
+      "allow_unsupported_apple_clang=yes",
+      "-j2"
+    ]
+  },
+  "build": {
+    "precompile": "core/scene/servers tests=yes libraries completed successfully",
+    "full_build_exit_code": 0,
+    "full_build_elapsed": "00:11:53.91",
+    "final_incremental_exit_code": 0,
+    "final_incremental_elapsed": "00:00:10.13",
+    "final_incremental_scope": "Recompiled only tests/editor/test_ai_chat_tools.cpp and relinked tests archive and executable, ensuring final v4 bytes after a test-only delta during the full build",
+    "binary": {
+      "path": "bin/godot.macos.editor.arm64",
+      "sha256": "b77a6506d2ea8c77867742e02fe1c41458c582b0568a2f73fc6f160d7dced2ef",
+      "size_bytes": 120451016,
+      "scope": "Combined #212 and #184 native verification artifact"
+    },
+    "binary_unchanged_after_tests": true
+  },
+  "native_runs": [
+    {
+      "name": "issue212-macos-process",
+      "command": [
+        "bin/godot.macos.editor.arm64",
+        "--headless",
+        "--test",
+        "--test-case=[OS][MacOS]*"
+      ],
+      "working_directory": "fresh temporary directory with isolated repository test fixtures; outside the user project",
+      "expected_tests": 2,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.656,
+      "test_cases": [
+        2,
+        2,
+        0
+      ],
+      "assertions": [
+        30,
+        30,
+        0
+      ],
+      "passed": true,
+      "log_sha256": "863cc98ccdec95d5f6b90f813ce983e40e0f3dba9f4767a8fd970c2cfeae5b31"
+    },
+    {
+      "name": "issue184-requirement-context",
+      "command": [
+        "bin/godot.macos.editor.arm64",
+        "--headless",
+        "--test",
+        "--test-case=*Requirement context*"
+      ],
+      "working_directory": "fresh temporary directory with isolated repository test fixtures; outside the user project",
+      "expected_tests": 5,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.092,
+      "test_cases": [
+        5,
+        5,
+        0
+      ],
+      "assertions": [
+        207,
+        207,
+        0
+      ],
+      "passed": true,
+      "log_sha256": "398662e9f3f2a3cfb96db96a5b56c9d5e80b8d66d055551cb535da4382fe16fa"
+    }
+  ],
+  "macos_coverage": [
+    "Explicit /bin/sh executable starts, preserving spaces/Unicode argument bytes and the actual returned child process ID",
+    "Enabled restart with an empty explicit executable self-launches the ordinary headless engine and runs an isolated script",
+    "Disabled restart ignores a configured /usr/bin/false target and self-launches the ordinary headless engine",
+    "RAII restores enabled flag, argument list and explicit executable before assertions and test-runner shutdown"
+  ],
+  "static_checks": {
+    "issue212_clang_format_22_1_5": "passed",
+    "issue212_include_paths": "passed",
+    "issue212_copyright_headers": "passed",
+    "combined_diff_whitespace": "passed",
+    "context_helper_tests_and_changed_cpp_ranges_clang_format": "passed",
+    "context_entire_cpp_clang_format": {
+      "state": "pre_existing_baseline_failure",
+      "scope": "Three adjacent ignition strings outside the #184 patch; current lines 1061-1063",
+      "baseline_reproduction": "Unmodified e9dd3931 ai_chat_gonggong.cpp fails the same clang-format 22.1.5 check at lines 1075-1077",
+      "unrelated_source_modified": false
+    }
+  },
+  "earlier_attempts": [
+    {
+      "state": "resolved_before_final_source_freeze",
+      "scope": "Initial test object compile used nonexistent OS::ProcessID; corrected to the existing global ProcessID typedef"
+    },
+    {
+      "state": "resolved_in_isolated_runtime",
+      "scope": "First library precompile stopped because Python 3.12 lacked zstandard; installed SCons 4.11.1 and zstandard 0.25.0 only in this worktree runtime"
+    },
+    {
+      "state": "superseded_by_context_v4",
+      "scope": "A context v3 test hardcoded a record count of five despite a valid sixth truncated excerpt; v4 changes that test assertion only, with both context production source hashes unchanged"
+    },
+    {
+      "state": "not_counted_as_passed",
+      "scope": "First native runs used an empty temporary cwd without required tests/data. Assertions passed, but test_setup failed and cleanup aborted with signal 6. Final runs use fresh temporary cwd with fixtures from the isolated repository, and both exit 0"
+    }
+  ],
+  "independent_review": {
+    "reviewer": "current responsible parent agent",
+    "production_and_initial_raii_regression": "no blocking findings reported",
+    "final_combined_candidate_acceptance": "pending parent review and explicit integration receipt"
+  },
+  "limitations": [
+    "Unbundled native arm64 process tests only; the ordinary app-bundle fallback is mechanically unchanged and was not packaged or launched",
+    "This worker did not execute an editor compile-exit-watchdog-new-editor GUI end-to-end cycle",
+    "The parent separately restored the live session with the existing detached Python watchdog; that observation is not treated as execution of this new C++ branch",
+    "The context selector tests are native deterministic tests; live editor request capture is outside this run",
+    "No live engine/project update, Git commit, push, formal delivery gate, main merge or Issue closure was performed by this worker; the responsible parent will integrate the exact shared source inputs and public evidence"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "Measured host/model usage was not supplied; no estimate"
+}

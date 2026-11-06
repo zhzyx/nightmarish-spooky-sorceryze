@@ -1,0 +1,39 @@
+{
+  "request_id": "macos-restart-executable-20261107",
+  "issue_number": 212,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "recorded_at": "2026-11-06T17:05:24.518994+00:00",
+  "source": "Codex user report: mac build finishes, editor closes without restarting",
+  "authorization": "Current responsible agent delegated an isolated macOS fix and candidate validation; independent parent review and no live application or main merge by this worker",
+  "execution_owner": "Codex macOS restart worker",
+  "github_operator": "kaiyunxue",
+  "deduplication": {
+    "queries": [
+      "macOS restart",
+      "in:title restart",
+      "in:title 重启"
+    ],
+    "same_fault_found": false,
+    "related_issue": 95,
+    "related_issue_scope": "a/b artifact reception; not the explicit executable dispatch fault"
+  },
+  "isolation": {
+    "base_ref": "origin/main",
+    "base_commit": "e9dd3931",
+    "branch": "codex/fix-macos-restart-target",
+    "other_worktrees_modified": false
+  },
+  "intake_only": {
+    "result": "passed",
+    "issue_number": 212,
+    "request_id": "macos-restart-executable-20261107",
+    "tenant_id": "gonggong-workspace",
+    "remote_state": "OPEN",
+    "type": "bug",
+    "status": "in-progress",
+    "workspace": "gonggong",
+    "remote_updated_at": "2026-11-06T17:01:44Z"
+  },
+  "usage": null,
+  "usage_unknown_reason": "Host did not provide measured usage"
+}

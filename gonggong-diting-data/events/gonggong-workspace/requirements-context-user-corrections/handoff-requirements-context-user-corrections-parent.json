@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "handoff-requirements-context-user-corrections-parent",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirements-context-user-corrections",
+  "kind": "handoff",
+  "occurred_at": "2026-11-06T17:33:25.667742+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/184",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "from_worker": "/root/review_codex_bridge",
+    "accepted_by": "/root",
+    "state": "accepted_for_integration",
+    "source_patch_sha256": "9536044d56996ad47c08833830e0ba069ac858d6f00aef406cc9cde22e6b3089",
+    "validation_ref": "data-collection/requirements-context-user-corrections-native-validation.json",
+    "native_tests": 5,
+    "native_assertions": 207,
+    "remote_merge_verified": false
+  },
+  "evidence_refs": [
+    "request-requirements-context-user-corrections"
+  ],
+  "sha256": "b924f1effa5ac2b648c7251258562c63a9520f5dd1f4956906a0c8488cdf2b72"
+}

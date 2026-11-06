@@ -1,0 +1,66 @@
+{
+  "request_id": "macos-restart-executable-20261107",
+  "issue_number": 212,
+  "related_issue_number": 184,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/212",
+  "recorded_at": "2026-11-06T17:48:05.720031+00:00",
+  "record_kind": "append_only_native_revalidation_after_concurrent_main_advance",
+  "append_to": [
+    "data-collection/issue212-macos-restart-validation.json",
+    "data-collection/issue212-macos-restart-main491888-validation.json"
+  ],
+  "base_commit": "ab029a263c88c415fbcf648b4d505f18f85885c4",
+  "source_patch_sha256": {
+    "212": "934c2fa0c00d94cd19d715ab2041654b660adb27ba72b20384cfc09e1aaa5391",
+    "184": "9536044d56996ad47c08833830e0ba069ac858d6f00aef406cc9cde22e6b3089"
+  },
+  "sources_sha256": {
+    "core/os/os.h": "0a5870f74af29cb3e1f376a650063a6c57c637d60330510d415f65302801fe27",
+    "platform/macos/os_macos.mm": "4a08fec1fcaf7924b88ae408276ade9733a8f695be61578c2108485c45dc6947",
+    "tests/core/os/test_os.cpp": "fcdc77d75c2ff923f7a98b31995e82e0cff262691af463f4052e0b3dcdb773ea",
+    "editor/docks/ai_chat_gonggong.cpp": "b15dae8187351b086bff75a95f439487f77eec4164c06f23518dc667de796707",
+    "editor/docks/ai_chat_requirement_context.h": "1e5e11ca93438cb251171b885c795724a36e219feec1cb6a1a7fe6df1b5dc267",
+    "tests/editor/test_ai_chat_tools.cpp": "c42fa4bc62c411fd781479619a0bdae43627d2adc13d0624cee3deb179a09aef"
+  },
+  "upstream_native_dependencies_sha256": {
+    "editor/docks/ai_chat_dock.h": "f2d0ebedbaa66792c16c11344747b3379c18e59cc5e77d7c6a9e4aa3058fcfbb",
+    "editor/docks/ai_chat_dock.cpp": "6932ee6eb12e4dbf449304e4766e2619291f02f58fa0414eaf09478b27c3be7a"
+  },
+  "build": {
+    "mode": "affected incremental using existing objects",
+    "exit_code": 0,
+    "elapsed": "00:00:17.17",
+    "log_sha256": "ab6f01042f476cee61c2c8a2febd1f8c8f5990f536d08763fe2dba128fee7b7b",
+    "flags": "platform=macos arch=arm64 target=editor tests=yes use_volk=yes accesskit=no allow_unsupported_apple_clang=yes -j2"
+  },
+  "binary": {
+    "path": "bin/godot.macos.editor.arm64",
+    "sha256": "a1360bbccf29a1a8995addc1deb1041148606af0760ae55a873b7c9df81533ce",
+    "size_bytes": 120500648,
+    "scope": "Combined #212 and #184 native verification artifact"
+  },
+  "runtime_version_observed": "Godot Engine v4.8.beta.custom_build.ab029a263",
+  "binary_unchanged_after_tests": true,
+  "native_runs": {
+    "macos": {
+      "filter": "--test-case=[OS][MacOS]*",
+      "tests": 2,
+      "assertions": 30,
+      "exit_code": 0,
+      "log_sha256": "d5244d45cdc5ea40e0ec2a548b2d64aeb3ff395501e25781e9d5dcc35680bbe0"
+    },
+    "requirement_context": {
+      "filter": "--test-case=*Requirement context*",
+      "tests": 5,
+      "assertions": 207,
+      "exit_code": 0,
+      "log_sha256": "398662e9f3f2a3cfb96db96a5b56c9d5e80b8d66d055551cb535da4382fe16fa"
+    }
+  },
+  "private_native_result_sha256": "c09017f70c6fee1c274987792eaa4b1b9df6a600dfa791d8fbfc011e47a7a4a5",
+  "old_public_records_and_binary_backups_unchanged": true,
+  "new_diting_events_or_collect_calls": false,
+  "limitations": "Unbundled arm64 native regression only; no additional app-bundle, live UI, or compile-exit-watchdog-new-GUI end-to-end claim. Upstream Daqian UI/account changes compiled for compatibility; no new business UI acceptance claimed.",
+  "worker_parent_or_live_edits": false,
+  "usage": null
+}
