@@ -1,0 +1,18 @@
+{
+  "state": "passed",
+  "editor_sha256": "1fe9ec84a7390a4626048d39082a515d82b6312dd4649a37d66c6938ef902a78",
+  "scenario": "graph",
+  "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board",
+  "request_id": "daqian-flow-state-20261106",
+  "issue_number": 197,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/197",
+  "baseline": "1675fa9f72b7847e1acb274a04c085dc749d873a",
+  "platform": "macOS arm64",
+  "verified": [
+    "Native graph, 55-card layout, zoom, pinning and filtered dependencies",
+    "Production and debug state changes, independent parallel branches, edit lock and control identity",
+    "Native loopback parallel, inputs and multi_issue scenarios",
+    "16 native rendered frames; only the incoming active wire changed between frames 0 and 3"
+  ],
+  "review": "Independent read-only review completed after updates to shared-host refresh, draft focus, submitted inputs and edit locks."
+}

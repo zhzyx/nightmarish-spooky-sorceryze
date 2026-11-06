@@ -119,7 +119,7 @@ func _ready() -> void:
 	history_view.custom_minimum_size = Vector2(560,320)
 	history_dialog.add_child(history_view)
 	add_child(history_dialog)
-	overview = GraphEdit.new()
+	overview = graph_script.FlowCanvas.new()
 	overview.name = "IssueOverview"
 	overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	overview.zoom_min = 0.1
@@ -273,7 +273,7 @@ func _draw_board() -> void:
 		if child is GraphNode:
 			overview.remove_child(child)
 			child.queue_free()
-	overview.clear_connections()
+	overview.clear_flow()
 	var statuses := ["全部状态", "待我处理"]
 	var owners := ["全部负责人"]
 	var rows: Array = board.get("issues", [])
@@ -297,10 +297,20 @@ func _draw_board() -> void:
 			_queue_board_layout()
 			_queue_save())
 		var label := Label.new()
-		label.text = item.status + ("  ·  需要决定" if item.decision else "")
-		if item.decision:
-			label.modulate = Color("#edbe66")
+		var issue_state: String = item.status
+		if item.get("closed", false) and issue_state not in ["done", "cancelled"]:
+			issue_state = "closed"
+		overview.mark_card(card, label, issue_state, " · 需要决定" if item.decision and issue_state != "needs-decision" else "")
 		card.add_child(label)
+		var running := PackedStringArray(item.get("running_titles", []))
+		if not running.is_empty():
+			var active := Label.new()
+			active.text = "运行中 · " + "、".join(running)
+			active.tooltip_text = active.text
+			active.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			active.custom_minimum_size.x = 190
+			active.add_theme_color_override("font_color", graph_script.FlowCanvas.COLORS.running)
+			card.add_child(active)
 		if item.decision:
 			waiting_inputs += maxi(1,int(item.get("pending_count",1)))
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
@@ -329,7 +339,7 @@ func _draw_board() -> void:
 	for item in rows:
 		for dep in item.dependencies:
 			if by_url.has(dep):
-				overview.connect_node(by_url[dep], 0, by_url[item.url], 0)
+				overview.connect_flow(by_url[dep], 0, by_url[item.url], 0)
 	pending_menu.text = "待办 (%d)" % waiting_inputs
 	var dock := get_parent() as EditorDock
 	if dock:
@@ -419,6 +429,8 @@ func _filter_board() -> void:
 		var query := search.text.strip_edges().to_lower().trim_prefix("#")
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
 		node.visible = matches and (status.selected <= 0 or (status.selected == 1 and item.decision) or status.text == item.status) and (owner_filter.selected <= 0 or owner_filter.text in item.owners)
+
+	overview.refresh_wires()
 
 
 func _follow() -> void:
@@ -583,6 +595,7 @@ func refresh() -> void:
 		board = value.board
 		_draw_board()
 		_sync_workflow()
+		await _refresh_open_states()
 		_queue_save()
 	else:
 		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
@@ -597,12 +610,31 @@ func refresh() -> void:
 	checking = false
 
 
+func _refresh_open_states() -> void:
+	if not current.begins_with("https://"):
+		return
+	for item in board.get("issues", []):
+		if item.url == current and item.has("node_states"):
+			editor.context.states = item.node_states.duplicate()
+			editor.refresh_states()
+			return
+	var target := current
+	var epoch := selection_epoch
+	var principal := actor.duplicate()
+	var scope := _repo()
+	var port: Object = host if is_instance_valid(host) else self
+	var fresh: Dictionary = await port.read_graph(target)
+	if current == target and epoch == selection_epoch and principal == actor and scope == _repo() and fresh.has("context"):
+		editor.context = fresh.context.duplicate(true)
+		editor.refresh_states()
+
+
 func _open_issue(item: Dictionary) -> void:
 	if actor.is_empty():
 		return
 	var plan: Dictionary = item.get("plan", rules.new_plan()).duplicate(true)
 	plan.nodes["requirement"] = {"kind":"text","title":"需求 · #" + str(item.number),"value":plan.nodes.get("requirement", {}).get("value", item.title)}
-	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":{"requirement":item.status}}
+	var ctx := {"protected_nodes":plan.nodes.keys(),"sources":item.get("sources", {}),"states":item.get("node_states", {}).duplicate()}
 	if item.decision:
 		plan.nodes["decision"] = {"kind":"question","title":"待决定","value":""}
 		plan.edges.append({"from":"requirement","to":"decision","kind":"after"})
@@ -644,6 +676,8 @@ func _open_issue(item: Dictionary) -> void:
 		if clean:
 			_sync_workflow()
 			editor.draw_graph()
+		else:
+			editor.refresh_states()
 		_queue_save()
 	if live.has("source_mode"):
 		notice.text = item.url + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
@@ -748,6 +782,7 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	var user := actor.duplicate()
 	var root := _repo()
 	routing_in_flight[url] = true
+	_sync_workflow()
 	_update_direct_action()
 	var request := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
 		"expected_revision":binding.get("updated", binding.get("revision", ""))}
@@ -1259,7 +1294,9 @@ func _sync_workflow() -> void:
 	var item: Dictionary = {}
 	for row in board.get("issues", []):
 		if (row.url == current and binding.is_empty()) or (row.number == binding.get("number", 0) and (not str(binding.get("request","")).begins_with("daqian-direct-") or row.get("request","") == binding.request)):
-			item = row
+			item = row.duplicate()
+			item.erase("node_states")
+			item.erase("running_titles")
 			break
 	if current.begins_with("https://") and not item.is_empty():
 		for key in saved.get("linked", {}):
@@ -1314,7 +1351,8 @@ func _sync_workflow() -> void:
 	if direct and phase not in ["closed", "blocked"] and item.get("status") == "planned":
 		phase = "routing" if judged.is_empty() else ("bound" if judged.ready else "questions")
 	_update_direct_action()
-	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged}
+	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
+		"judging":routing_in_flight.has(item.get("url", binding.get("url", "")))}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()

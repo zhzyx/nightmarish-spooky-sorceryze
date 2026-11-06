@@ -86,6 +86,33 @@ func run() -> void:
 	graph.connect_ports(left,0,merge,0)
 	graph.connect_ports(right,0,merge,0)
 	check(graph.draft.edges.size() == 4, "fan out and join")
+	var left_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(left), 0]]
+	var right_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(right), 0]]
+	var left_card: GraphNode = graph.canvas.get_node(NodePath(left))
+	var right_card: GraphNode = graph.canvas.get_node(NodePath(right))
+	var editor_field: TextEdit = left_card.get_node("PlanText")
+	graph.context.states = {source:"completed", left:"running"}
+	graph.refresh_states()
+	check(left_card.get_node("FlowState").text == "运行中" and not editor_field.editable, "active state and edit lock")
+	check(right_card.get_node("FlowState").text == "待制作" and graph.running_nodes.visible, "pending parallel branch")
+	check(left_wire.material == graph.canvas.materials.running and right_wire.material == graph.canvas.materials.pending, "per-branch wire materials")
+	var draft_before: Dictionary = graph.draft.duplicate(true)
+	graph.debug_active = true
+	graph.refresh_states()
+	graph.set_debug_state({"id":source, "state":"completed"})
+	graph.set_debug_state({"id":left, "state":"running"})
+	graph.set_debug_state({"id":right, "state":"running"})
+	check(graph.running_nodes.text.begins_with("调试运行中（2）") and right_wire.material == left_wire.material, "two simultaneous debug branches")
+	graph.set_debug_state({"id":left, "state":"completed"})
+	check(left_wire.material == graph.canvas.materials.done and right_wire.material == graph.canvas.materials.running, "completed branch stopped flowing")
+	graph.set_debug_state({"id":right, "state":"failed"})
+	check(right_wire.material == graph.canvas.materials.failed and not graph.running_nodes.visible, "failure stopped activity")
+	graph.debug_active = false
+	graph.refresh_states()
+	check(left_card.get_node("PlanText") == editor_field and graph.draft == draft_before and left_wire.material == graph.canvas.materials.running, "debug isolated from editing and production")
+	graph.context.states.clear()
+	graph.refresh_states()
+	check(editor_field.editable and left_wire.material == graph.canvas.materials.pending, "clear state restores draft control")
 	check(graph.preview_edge(source,0,left,0).contains("相同"),"duplicate accepted")
 	check(graph.preview_edge(merge,1,left,1).contains("循环"),"mixed cycle accepted")
 	check(graph.preview_edge(source,0,left,1).contains("不匹配"),"mixed ports accepted")
@@ -142,6 +169,8 @@ func run() -> void:
 	issues[0].title = "包含长标题的工单".repeat(20)
 	for step in 12:
 		issues[0].plan.nodes[str(step)] = {"kind":"task","title":"预计任务","value":"详细步骤".repeat(12)}
+	issues[0].status = "done"
+	issues[2].closed = true
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
 	await settle_layout()
@@ -158,9 +187,13 @@ func run() -> void:
 	check_spacing(workspace.overview, "drag onto automatic issue")
 	check(workspace.saved.positions[issues[0].url] == pinned.position_offset, "board drag was not saved")
 	check(workspace.overview.get_connection_list().size()==54,"historical dependency chain")
+	var board_wire: Line2D = workspace.overview.lines[[&"i_1", 0, &"i_2", 0]]
+	check(board_wire.material == workspace.overview.materials.running, "board dependency flows toward active Issue")
+	check(workspace.overview.get_node("i_3").get_meta("flow_state") == "closed", "closed Issue kept open status")
 	workspace.search.text = "#50"
 	workspace._filter_board()
 	check(workspace.overview.get_node("i_50").visible and not workspace.overview.get_node("i_5").visible,"large board search")
+	check(not board_wire.visible, "filtered wire visible without endpoints")
 	workspace._locate_pending(51)
 	check(workspace.overview.get_node("i_51").selected,"waiting issue navigation")
 	state.plan = {"nodes":{},"edges":[]}

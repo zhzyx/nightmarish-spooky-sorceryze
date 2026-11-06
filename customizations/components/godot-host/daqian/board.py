@@ -172,6 +172,13 @@ def main():
                                 "questions":item.get("questions",{}),"can_edit":False}
                         view=plan_store.snapshot(db,source)
                         ctx=view["context"]
+                        item["node_states"] = ctx["states"]
+                        nodes = view["plan"]["nodes"]
+                        item["running_titles"] = [
+                            (node.get("value") or node["title"]).partition("\n")[0][:48]
+                            if node["kind"] == "task" else node["title"]
+                            for key, node in nodes.items() if ctx["states"].get(key) == "running"
+                        ]
                         count=len(ctx["questions"])-len(ctx["answers"])
                         item["pending_count"]=count
                         item["decision"]=count>0 or (item["status"]=="needs-decision" and not ctx["answers"])
