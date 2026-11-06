@@ -1,0 +1,24 @@
+{
+  "request_id": "daqian-my-open-20261106",
+  "issue": 188,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/188",
+  "verified_at": "2026-11-06T14:06:56+00:00",
+  "verified_actor": "Sail-Li",
+  "initial_open_authored": 11,
+  "initial_open_assigned": 0,
+  "readback_including_open_delivery_issue": [
+    49,
+    51,
+    56,
+    83,
+    91,
+    92,
+    93,
+    94,
+    95,
+    158,
+    160,
+    188
+  ],
+  "tests": "19 Daqian tests passed; live board read with no manual follows matched the union."
+}
