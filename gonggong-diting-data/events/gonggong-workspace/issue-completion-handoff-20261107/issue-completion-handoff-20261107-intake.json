@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "payload": {
+    "document": "design-docs/execution-efficiency-20261103.md",
+    "intent": "工单交付后持续验收、关单，必要时引入人工判断与提醒"
+  },
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/354",
+  "agent": {
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "id": "current-workspace-operator",
+    "version": "host-version-unreported"
+  },
+  "occurred_at": "2026-11-06T23:49:55.7048754+00:00",
+  "request_id": "issue-completion-handoff-20261107",
+  "event_id": "issue-completion-handoff-20261107-intake",
+  "kind": "request",
+  "sha256": "8038abec59f4fbfed7d2db56b373ee3d3b13157a0b539cd09fc70e1d451e8f9f"
+}

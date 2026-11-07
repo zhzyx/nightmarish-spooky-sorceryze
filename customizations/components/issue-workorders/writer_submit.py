@@ -148,7 +148,7 @@ def handoff(repo, base, tree, main):
     ]
     advanced = main != base and git(repo, "merge-base", base, main) == base
     if main == base:
-        action = "合入前回读精确签发 head、当前 main、CI 与验收。"
+        action = "回读签发 head、main、CI 与验收，合入后继续逐项实测并办理关联工单关单回读。"
     elif not advanced:
         action = "目标历史与签发基线分离；核对目标和主线历史，重新整合、验证及签发。"
     elif overlap:
@@ -278,7 +278,20 @@ def inspect_pr(repo, repository, pr_number):
     if pr["state"] == "MERGED":
         landed_diff = set(changed_paths(repo, tree, merge))
         report["delivered_paths_differ"] = sorted(landed_diff.intersection(report["write_paths"]))
-        report["next_action"] = "回读已合入文件及原验收；已有 main 回执，继续处理验收。"
+        receipt = json.loads(work_items.gh("issue", "view", issue, "-R", remote, "--json", "state,stateReason,labels"))
+        labels = {label["name"] for label in receipt["labels"]}
+        report["issue_receipt"] = {
+            "state": receipt["state"],
+            "reason": receipt["stateReason"],
+            "labels": sorted(labels),
+        }
+        if receipt["state"] == "OPEN":
+            action = "逐项执行可做的验收，修复后复验；通过后关闭对应 Issue 并回读。实际受阻或需人工判断时提醒责任人。"
+        elif receipt["stateReason"] == "COMPLETED" and "status:done" in labels:
+            action = "目标单已有完成回执，核对原验收证据及其余关联工单的结束回执。"
+        else:
+            action = "核对关闭原因、标签及尾项承接证据，沿原生命周期处理。"
+        report["next_action"] = "已有 main 回执。" + action
     elif pr["state"] == "CLOSED":
         report["next_action"] = "核对旧 PR 的关闭原因及接替候选后再推进。"
     if comparison and comparison != base:
