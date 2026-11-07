@@ -55,6 +55,10 @@ jobs:
       - name: Setup Python and SCons
         uses: ./.github/actions/godot-deps
 
+      - name: Active provenance process ownership
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        run: python tools/test_editor_provenance_process.py
+
       - name: Download Direct3D 12 SDK components
         shell: sh
         id: d3d12-sdk

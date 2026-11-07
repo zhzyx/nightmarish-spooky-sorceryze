@@ -1,6 +1,7 @@
 """Offline native editor acceptance for Issue-bound source candidates and command writes."""
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
@@ -9,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -17,14 +19,17 @@ REQUEST = "runtime-candidate-fixture"
 OTHER_REQUEST = "runtime-candidate-other"
 STAGES = [
     "CANDIDATE_BOUNDARY_OK",
+    "CANDIDATE_CANCEL_OK",
     "CANDIDATE_SECOND_OK",
     "CANDIDATE_OTHER_OK",
     "CANDIDATE_RESUMED_OK",
     "CANDIDATE_CHILD_OK",
 ]
 BRIDGE = r"""
-import json,os,sys
+import importlib.util,json,os,sys
 from pathlib import Path
+storage_path=Path(os.environ['CANDIDATE_FIXTURE_SOURCE'])/'customizations/platforms/data-collection/git-files/storage/diting_files.py'
+spec=importlib.util.spec_from_file_location('fixture_storage',storage_path); storage=importlib.util.module_from_spec(spec); spec.loader.exec_module(storage)
 args=sys.argv[1:]; action=args[0]; root=Path(args[args.index('--workspace')+1]); out=Path(args[args.index('--out')+1])
 request=json.loads(Path(args[args.index('--request')+1]).read_text()) if '--request' in args else {}
 (root/'node-used.txt').write_text(os.environ.get('GONGGONG_NODE',''))
@@ -32,11 +37,13 @@ outcome=request.get('outcome','')
 other='CANDIDATE_OTHER' in outcome or request.get('request_id')=='runtime-candidate-other'
 number=391 if other else 390
 request_id='runtime-candidate-other' if other else 'runtime-candidate-fixture'
-reporting={'tenant_id':'fixture','request_ref':request_id,'source_ref':'https://github.com/example/test/issues/'+str(number),'agent':{'id':'yanshi','version':'1','candidate_digest':'fixture'}}
+reporting={'tenant_id':'fixture','request_ref':request_id,'source_ref':'https://github.com/example/test/issues/'+str(number),'agent':{'id':'yanshi','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}
 if action=='issue-agent':
  (root/'design-docs').mkdir(exist_ok=True)
  revision='OTHER' if other else 'RESUME' if 'CANDIDATE_RESUME' in outcome else 'SECOND' if 'CANDIDATE_SECOND' in outcome else 'START'
  document='# Fixture requirement\nREVISION_'+revision+'\n'
+ previous=root/'design-docs'/ (request_id+'.md')
+ if previous.exists() and 'DESIGN_EDIT_ALLOWED' in previous.read_text(): document+='DESIGN_EDIT_ALLOWED\n'
  if revision=='RESUME':
   document+='SECOND_TURN_PRESERVED\n## 设计定版确认\nFixture finalized.\n## 生产工单\n1. CANDIDATE_CHILD validates latest requirement\n'
  (root/'design-docs'/ (request_id+'.md')).write_text(document)
@@ -44,9 +51,7 @@ if action=='issue-agent':
 elif action=='chat': value={'ok':True,'context':'Offline fixture context; no production framework admission claimed.','reporting':reporting}
 elif action=='flush':
  for path in (root/'.gonggong-outbox/chat').glob('*.json'):
-  event=json.loads(path.read_text())
-  folder=root/'gonggong-diting-data/events/fixture'/event['request_id']; folder.mkdir(parents=True,exist_ok=True)
-  (folder/path.name).write_bytes(path.read_bytes()); path.unlink()
+  storage.record(root,path); path.unlink()
  value={'ok':True}
 else: value={'ok':False,'error':'fixture_unknown'}
 out.write_text(json.dumps(value))
@@ -86,6 +91,17 @@ def main():
         (original / "editor").mkdir()
         protected = original / "editor/source.cpp"
         protected.write_text("ORIGINAL_SOURCE\n")
+        dataset = original / "gonggong-diting-data"
+        dataset.mkdir()
+        (dataset / "dataset.json").write_text(
+            json.dumps({
+                "schema_version": 1,
+                "dataset_id": "00000000-0000-4000-8000-000000000423",
+                "name": "gonggong-diting-data",
+                "origin_framework": "gonggong",
+            })
+        )
+        (dataset / ".gitattributes").write_text("* text eol=lf\n")
         git(original, "add", ".")
         git(original, "commit", "-m", "fixture")
         git(original, "push", "origin", "main")
@@ -128,6 +144,7 @@ def main():
         if subprocess.run(["cp", "-c", str(args.godot.resolve()), str(binary)]).returncode:
             shutil.copy2(args.godot, binary)
         (isolated / "_sc_").touch()
+        artifact_sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
         errors, calls, completed = [], [], []
         targets, owners, stage_calls = {}, {}, {}
 
@@ -165,7 +182,7 @@ def main():
                     stage = next(
                         (
                             name
-                            for name in ["CHILD", "RESUME", "OTHER", "SECOND", "START"]
+                            for name in ["CHILD", "RESUME", "OTHER", "SECOND", "CANCEL", "START"]
                             if "CANDIDATE_" + name in prompt
                         ),
                         None,
@@ -188,7 +205,10 @@ def main():
                                 "run_command",
                                 {"command": "printf PROJECT_OK > " + shlex.quote(str(project / "allowed.txt"))},
                             ),
-                            ("run_command", {"command": "printf CANDIDATE_FILE > candidate.txt"}),
+                            (
+                                "run_command",
+                                {"command": "git stash push --include-untracked -m isolated-active-provenance"},
+                            ),
                         ]
                         message = {
                             "role": "assistant",
@@ -202,8 +222,7 @@ def main():
                                 for i, (name, value) in enumerate(commands)
                             ],
                         }
-                    elif stage == "START":
-                        assert stage_calls[stage] == 2, "boundary tools were unexpectedly retried"
+                    elif stage == "START" and stage_calls[stage] == 2:
                         tools = {x["tool_call_id"]: x["content"] for x in body["messages"] if x["role"] == "tool"}
                         assert len(tools) >= 7, tools
                         assert str(targets[390]) in tools["boundary-0"]
@@ -212,11 +231,108 @@ def main():
                         assert "workspace_mismatch" in tools["boundary-3"]
                         assert json.loads(tools["boundary-4"])["exit_code"] != 0, tools["boundary-4"]
                         assert json.loads(tools["boundary-5"])["exit_code"] == 0
-                        assert json.loads(tools["boundary-6"])["exit_code"] == 0
+                        assert json.loads(tools["boundary-6"])["exit_code"] != 0
+                        event = next((targets[390] / f"gonggong-diting-data/events/fixture/{REQUEST}").glob("*.json"))
+                        alias = targets[390] / "evidence-alias.json"
+                        alias.symlink_to(event)
+                        source_alias = targets[390] / "other-source-alias.cpp"
+                        source_alias.symlink_to(protected)
+                        commands = [
+                            {"command": "printf CANDIDATE_FILE > candidate.txt"},
+                            {
+                                "command": "printf '\\nDESIGN_EDIT_ALLOWED\\n' >> design-docs/"
+                                + REQUEST
+                                + ".md && tail -n 1 design-docs/"
+                                + REQUEST
+                                + ".md"
+                            },
+                            {
+                                "command": "printf SOURCE_PATCH > editor/source.cpp && git stash push -- editor/source.cpp && git stash apply"
+                            },
+                        ]
+                        message = {
+                            "role": "assistant",
+                            "content": "Checking normal source integration and design edits",
+                            "tool_calls": [
+                                {
+                                    "id": "boundary-" + str(i + 7),
+                                    "type": "function",
+                                    "function": {"name": "run_command", "arguments": json.dumps(value)},
+                                }
+                                for i, value in enumerate(commands)
+                            ]
+                            + [
+                                {
+                                    "id": "evidence-alias",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "write_file",
+                                        "arguments": json.dumps({"path": str(alias), "content": "BAD_EVIDENCE"}),
+                                    },
+                                },
+                                {
+                                    "id": "evidence-case",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "write_file",
+                                        "arguments": json.dumps({
+                                            "path": str(event).replace("gonggong-diting-data", "GONGGONG-DITING-DATA")
+                                            if sys.platform == "darwin"
+                                            else str(event),
+                                            "content": "BAD_EVIDENCE",
+                                        }),
+                                    },
+                                },
+                                {
+                                    "id": "source-alias",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "write_file",
+                                        "arguments": json.dumps({"path": str(source_alias), "content": "BAD_SOURCE"}),
+                                    },
+                                },
+                            ],
+                        }
+                    elif stage == "START":
+                        assert stage_calls[stage] == 3, "boundary tools were unexpectedly retried"
+                        tools = {x["tool_call_id"]: x["content"] for x in body["messages"] if x["role"] == "tool"}
+                        assert len(tools) >= 10, tools
+                        assert "active_provenance_is_host_owned" in tools["evidence-alias"]
+                        assert "active_provenance_is_host_owned" in tools["evidence-case"]
+                        assert "workspace_mismatch" in tools["source-alias"]
+                        for index in [7, 8, 9]:
+                            assert json.loads(tools["boundary-" + str(index)])["exit_code"] == 0, tools[
+                                "boundary-" + str(index)
+                            ]
+                        assert "DESIGN_EDIT_ALLOWED" in json.loads(tools["boundary-8"])["stdout"]
+                        assert (targets[390] / "editor/source.cpp").read_text() == "SOURCE_PATCH"
                         assert protected.read_text() == "ORIGINAL_SOURCE\n"
                         assert (project / "allowed.txt").read_text() == "PROJECT_OK"
                         assert (targets[390] / "candidate.txt").read_text() == "CANDIDATE_FILE"
                         message = done("CANDIDATE_BOUNDARY_OK")
+                    elif stage == "CANCEL":
+                        assert stage_calls[stage] == 1, "cancelled command was unexpectedly resumed"
+                        code = (
+                            "import os,time; from pathlib import Path; Path("
+                            + repr(str(project / "cancel-ready"))
+                            + ").write_text(str(os.getpid())); time.sleep(30)"
+                        )
+                        message = {
+                            "role": "assistant",
+                            "content": "Checking host cancellation",
+                            "tool_calls": [
+                                {
+                                    "id": "cancel-running-command",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "run_command",
+                                        "arguments": json.dumps({
+                                            "command": shlex.quote(sys.executable) + " -c " + shlex.quote(code)
+                                        }),
+                                    },
+                                }
+                            ],
+                        }
                     elif stage == "SECOND":
                         parent_binding(390)
                         assert len(bindings_for(390)) == 1, "second turn created another source candidate"
@@ -284,6 +400,7 @@ def main():
                     self.wfile.write(data)
                 except Exception as error:
                     errors.append(repr(error))
+                    traceback.print_exc()
                     print("FIXTURE_ERROR", repr(error), flush=True)
                     self.send_error(500)
 
@@ -315,13 +432,21 @@ def main():
             else {}
         )
         node = (original / "node-used.txt").read_text() if (original / "node-used.txt").exists() else ""
+        cancelled_command_exited = False
+        if (project / "cancel-ready").exists():
+            try:
+                os.kill(int((project / "cancel-ready").read_text()), 0)
+            except ProcessLookupError:
+                cancelled_command_exited = True
         outcome = {
             "ok": result.returncode == 0
             and report.get("ok")
             and not errors
             and node == str(args.node.resolve())
-            and completed == STAGES
+            and completed == [stage for stage in STAGES if stage != "CANDIDATE_CANCEL_OK"]
             and report.get("stages") == STAGES,
+            "cancelled_command_exited": cancelled_command_exited,
+            "artifact_sha256": artifact_sha256,
             "errors": errors,
             "requests": len(calls),
             "stages": completed,
@@ -331,6 +456,7 @@ def main():
             "stdout": result.stdout[-8000:],
             "stderr": result.stderr[-8000:],
         }
+        outcome["ok"] = outcome["ok"] and cancelled_command_exited
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(outcome, ensure_ascii=False, indent=2))
         print(json.dumps({k: v for k, v in outcome.items() if k not in ["editor", "stdout", "stderr"]}))

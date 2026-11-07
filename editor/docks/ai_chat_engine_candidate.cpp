@@ -51,6 +51,49 @@ String AIChatDock::_workflow_root(int p_agent) const {
 	return candidate.get("source_root", state.get("requirement_workspace", EDITOR_GET("gonggong/workspace")));
 }
 
+bool AIChatDock::_recover_active_provenance(String &r_error) const {
+	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	if (candidate.is_empty()) {
+		return true;
+	}
+	const String pending = String(candidate.get("common_dir", "")).path_join("gonggong-provenance-guards").path_join(String(candidate.get("binding_path", "")).get_file().get_basename()).path_join("pending");
+	if (!DirAccess::dir_exists_absolute(pending)) {
+		if (FileAccess::exists(pending)) {
+			r_error = "active_provenance_pending_path_invalid";
+			return false;
+		}
+		return true;
+	}
+	Ref<DirAccess> directory = DirAccess::open(pending);
+	if (directory.is_null() || directory->get_current_dir().replace("\\", "/").simplify_path() != pending.replace("\\", "/").simplify_path()) {
+		r_error = "active_provenance_pending_path_unreadable";
+		return false;
+	}
+	if (directory->get_files().is_empty()) {
+		return true;
+	}
+	if (!_validate_engine_candidate(r_error)) {
+		return false;
+	}
+	const Dictionary guard = AIChatHostRuntime::command_guard(candidate, EDITOR_GET("gonggong/python"), _engine_root(), r_error);
+	if (guard.is_empty()) {
+		return false;
+	}
+	List<String> args;
+	for (const String &arg : { String(guard["worker"]), String("--binding"), String(guard["binding"]), String("--recover") }) {
+		args.push_back(arg);
+	}
+	String output;
+	int code = -1;
+	const Error error = OS::get_singleton()->execute(guard["python"], args, &output, &code);
+	const Variant parsed = JSON::parse_string(output.strip_edges());
+	if (error != OK || code != 0 || parsed.get_type() != Variant::DICTIONARY || !bool(Dictionary(parsed).get("ok", false))) {
+		r_error = "active_provenance_recovery_failed: " + (parsed.get_type() == Variant::DICTIONARY ? JSON::stringify(parsed).left(1000) : String("guard did not return a verified result"));
+		return false;
+	}
+	return true;
+}
+
 bool AIChatDock::_validate_engine_candidate(String &r_error) const {
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {

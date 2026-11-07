@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "request_id": "active-work-order-provenance-20261107",
+  "issue_number": 423,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "kind": "observed_native_provenance_loss",
+  "observed_at": "2026-11-07T09:18:44.517728+00:00",
+  "original_issue": 387,
+  "original_request": "requirement-3c4dad533276a0226cd3b226c90d8123",
+  "native_host_pid": 28304,
+  "original_owner": "e73c8031319dedc65a2e8947eb4662e5",
+  "source_history": {
+    "relative_to_original_worktree": "samples/gonggong-workbench/.godot/editor/ai_chat_history.json",
+    "captured_sha256": "b54b87d1ff2ba649e44c46c6c65cf38a4d02cf9fc0c94892e4340bbd71e72115",
+    "matching_commands": [],
+    "matching_receipt_errors": [
+      {
+        "transcript_index": 269,
+        "content": "GongGong 文件回执失败，队列已保留，后续模型及工具执行已阻止。"
+      },
+      {
+        "transcript_index": 270,
+        "content": "GongGong 文件回执失败，队列已保留，后续模型及工具执行已阻止。"
+      }
+    ]
+  },
+  "stash": {
+    "oid": "877bfa1c373847041cf4b79fc1860c2d5b4e9d3a",
+    "untracked_parent": "a459367e2a5f91a04d2caad50eb4ee6cf6212ab8",
+    "untracked_inventory_sha256": "d3eccfc7af81b2ea340a5ee5053ddcb121271a9c6d1db51e850790a5057037e7",
+    "file_count": 397
+  },
+  "root_recovery": {
+    "receipt_sha256": "d2e649144d87224a373cbc75d9dfe4f36b8e521318cc8d025d64490b18bba8c8",
+    "kind": "native_387_stash_recovery",
+    "candidate": "/Users/kevinxue/Documents/ChatGPT/newage/godot-candidate-3324aad62d10f5458c29e166",
+    "old_stash": "877bfa1c373847041cf4b79fc1860c2d5b4e9d3a",
+    "source_only_stash": "1e47fbecfd4b86642a91d77d9281184150f9abf3",
+    "untracked_host_provenance_files_restored_exactly": 397,
+    "after_main": "208e6cc8fcd7072084ad2a6151a19083ab3aff4e",
+    "includes_pr422": true,
+    "stashes_retained": true,
+    "feature_modified_by_root": false,
+    "native_host_stopped_before_recovery": true
+  },
+  "scope": "Read-only observation of original task and exact immutable Git objects; no original worktree, app, history, configuration or model process was modified by this task.",
+  "business_accepted": false,
+  "usage": null
+}

@@ -2,6 +2,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
 const { spawn, execFile } = require('node:child_process');
 const { randomUUID } = require('node:crypto');
 
@@ -98,6 +99,28 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
     };
     const kill = async terminal => {
         if (terminal.status) return;
+        if (terminal.cancelFile) {
+            try {
+                fs.writeFileSync(terminal.cancelFile, 'cancel\n', { mode: 0o600 });
+            } catch (_) {
+                // The Python wrapper handles TERM by stopping its separately
+                // owned command group. Windows falls through to tree kill;
+                // closing the wrapper also closes its kill-on-close Job.
+                if (process.platform === 'win32') terminal.cancelFile = null;
+                else {
+                    try { process.kill(-terminal.child.pid, 'SIGTERM'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+                }
+            }
+        }
+        if (terminal.cancelFile) {
+            let cleanupTimer;
+            const completed = await Promise.race([
+                terminal.exit.then(() => true),
+                new Promise(resolve => { cleanupTimer = setTimeout(() => resolve(false), 20000); }),
+            ]);
+            clearTimeout(cleanupTimer);
+            if (completed) return;
+        }
         if (process.platform === 'win32') {
             await new Promise((resolve, reject) => execFile(path.join(env.SystemRoot || 'C:/Windows', 'System32/taskkill.exe'), ['/PID', String(terminal.child.pid), '/T', '/F'], { windowsHide: true }, error => {
                 if (error && !terminal.status) reject(new Error('Could not terminate terminal process tree.')); else resolve();
@@ -139,8 +162,18 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
             const id = 'godot_terminal_' + randomUUID();
             const restricted = process.platform === 'darwin' && workspace.command_profile;
             if (restricted && (typeof approved.command_profile !== 'string' || !approved.command_profile)) throw new Error('Godot did not refresh candidate command protection. No command was executed.');
-            const child = spawn(restricted ? '/usr/bin/sandbox-exec' : executable, [...(restricted ? ['-p', approved.command_profile, executable] : []), '--noprofile', '--norc', '-c', args.command], { cwd: args.cwd, env: { ...env, CHERE_INVOKING: '1', GODOT_AI_CHAT_PROGRESS: '1' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, detached: process.platform !== 'win32' });
-            const terminal = { child, output: Buffer.alloc(0), truncated: false, status: null, timedOut: false, timer: null, progressTimer: null, started: Date.now(), lastOutput: Date.now(), bytes: 0, build: createBuildProgress() };
+            let commandExecutable = restricted ? '/usr/bin/sandbox-exec' : executable;
+            let commandArguments = [...(restricted ? ['-p', approved.command_profile, executable] : []), '--noprofile', '--norc', '-c', args.command];
+            let cancelFile;
+            if (workspace.provenance_guard_required) {
+                const guard = approved.provenance_guard;
+                if (!guard || guard.protocol !== 1 || ['python', 'worker', 'binding'].some(key => typeof guard[key] !== 'string' || !path.isAbsolute(guard[key]) || !fs.statSync(guard[key]).isFile())) throw new Error('Godot did not provide the active work-order provenance guard. No command was executed.');
+                commandExecutable = guard.python;
+                cancelFile = path.join(fs.realpathSync(os.tmpdir()), 'godot-provenance-cancel-' + randomUUID());
+                commandArguments = [guard.worker, '--binding', guard.binding, '--run', '--cancel-file', cancelFile, '--timeout-seconds', String(timeoutMs / 1000), ...(restricted ? ['--profile', approved.command_profile] : []), '--', executable, '--noprofile', '--norc', '-c', args.command];
+            }
+            const child = spawn(commandExecutable, commandArguments, { cwd: args.cwd, env: { ...env, CHERE_INVOKING: '1', GODOT_AI_CHAT_PROGRESS: '1' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, detached: process.platform !== 'win32' });
+            const terminal = { child, cancelFile, output: Buffer.alloc(0), truncated: false, status: null, timedOut: false, timer: null, progressTimer: null, started: Date.now(), lastOutput: Date.now(), bytes: 0, build: createBuildProgress() };
             terminals.set(id, terminal);
             const report = () => progress({ terminal_id: id, elapsed_ms: Date.now() - terminal.started, idle_ms: Date.now() - terminal.lastOutput, output_bytes: terminal.bytes, running: [...terminals.values()].filter(item => !item.status).length, ...terminal.build.snapshot() });
             terminal.exit = new Promise(resolve => {
@@ -157,9 +190,12 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
                 child.once('close', (exitCode, signal) => {
                     clearTimeout(terminal.timer);
                     clearInterval(terminal.progressTimer);
+                    if (cancelFile) {
+                        try { fs.rmSync(cancelFile, { force: true }); } catch (_) { terminal.cancelCleanupFailed = true; }
+                    }
                     terminal.build.append(Buffer.from('\n'), 'stdout');
                     terminal.build.append(Buffer.from('\n'), 'stderr');
-                    terminal.status = { ...(Number.isInteger(exitCode) && !terminal.startFailed ? { exitCode } : {}), ...(signal ? { signal } : {}), _meta: { timed_out: terminal.timedOut, start_failed: !!terminal.startFailed } };
+                    terminal.status = { ...(Number.isInteger(exitCode) && !terminal.startFailed ? { exitCode } : {}), ...(signal ? { signal } : {}), _meta: { timed_out: terminal.timedOut, start_failed: !!terminal.startFailed, ...(terminal.cancelCleanupFailed ? { cancel_cleanup_failed: true } : {}) } };
                     report();
                     stateChanged();
                     finished({ terminalId: id, exit_status: terminal.status, timed_out: terminal.timedOut, output_truncated: terminal.truncated, output: redactOutput(terminal.output.toString('utf8'), env) });

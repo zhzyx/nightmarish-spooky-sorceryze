@@ -16,6 +16,12 @@ func _send(dock, text: String):
 	dock.find_child("ChatInput", true, false).text = text
 	dock.find_child("Send", true, false).pressed.emit()
 
+func _command_is_running(pid: int) -> bool:
+	# The command is a child of the guard, so Godot's child-only PID table
+	# cannot answer this. Signal zero checks the actual OS process instead.
+	var output: Array = []
+	return OS.execute("/bin/kill", PackedStringArray(["-0", str(pid)]), output, true) == 0
+
 func _wait_reply(dock, marker: String) -> bool:
 	for attempt in range(1500):
 		await create_timer(0.1).timeout
@@ -23,7 +29,7 @@ func _wait_reply(dock, marker: String) -> bool:
 		if marker in text and dock.find_child("Stop", true, false).disabled and dock.get_meta("gonggong_reporting", "") == "recorded_file":
 			stages.append(marker)
 			return true
-		if ("未通过" in text or "The service did not" in text or "candidate_issue_mismatch" in text) and dock.find_child("Stop", true, false).disabled:
+		if ("未通过" in text or "The service did not" in text or "candidate_issue_mismatch" in text or "AI request failed" in text or "GongGong 文件回执失败" in text) and dock.find_child("Stop", true, false).disabled:
 			break
 	push_error("Missing candidate fixture stage: " + marker)
 	return false
@@ -66,6 +72,26 @@ func _run():
 	if not await _wait_reply(dock, "CANDIDATE_BOUNDARY_OK"):
 		_finish(dock, false, "initial tool boundaries")
 		return
+	_send(dock, "CANDIDATE_CANCEL")
+	for attempt in range(200):
+		if FileAccess.file_exists("res://cancel-ready"):
+			break
+		await create_timer(0.1).timeout
+	if not FileAccess.file_exists("res://cancel-ready"):
+		_finish(dock, false, "guarded command did not start for cancellation")
+		return
+	var command_pid := FileAccess.get_file_as_string("res://cancel-ready").to_int()
+	dock.find_child("Stop", true, false).pressed.emit()
+	for attempt in range(50):
+		if not _command_is_running(command_pid):
+			break
+		await create_timer(0.1).timeout
+	if _command_is_running(command_pid):
+		_finish(dock, false, "Stop left the guarded command running")
+		return
+	# Allow the same guard to finish source verification and receipt delivery.
+	await create_timer(0.5).timeout
+	stages.append("CANDIDATE_CANCEL_OK")
 	_send(dock, "CANDIDATE_SECOND")
 	if not await _wait_reply(dock, "CANDIDATE_SECOND_OK"):
 		_finish(dock, false, "same Issue second-turn intake")

@@ -2025,6 +2025,9 @@ void AIChatDock::_send_completion_after_receipt() {
 	instructions += "\nAuthoritative work-order workspace and default command directory: " + production_root;
 	instructions += "\nRunning editor installation source root: " + _engine_root();
 	instructions += "\nHost-bound build source root: " + _candidate_root();
+	if (snapshot_state.has("engine_candidate")) {
+		instructions += "\nActive work-order provenance must remain available during every command. Do not stash, delete or move the active design document, event history, collection receipts or pending outbox. Stash only explicit source paths when integrating main; preserve stash OIDs and inspect partial Git effects after a failed command. The design document may be edited normally; append new evidence rather than changing existing records.";
+	}
 	instructions += "\nOpen project directory (assets and res:// paths, may belong to a different checkout): " + ProjectSettings::get_singleton()->get_resource_path();
 	instructions += "\nImplement and submit work-order source changes in the authoritative workspace. Do not infer the engine source from the open project or edit another engine checkout. The host prepared an isolated candidate for this Issue before model execution. build_engine builds that same candidate source root, preserving the running editor for rollback. Do not create a second worktree or switch this branch; the host owns the candidate binding. Read other checkouts only for reference. Project assets remain accessible using res:// or absolute paths.";
 	instructions += "\nEditor executable: " + OS::get_singleton()->get_executable_path();
@@ -2498,6 +2501,10 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		return;
 	}
 	if (name == "run_command") {
+		if (backend->get_selected() == 1 && snapshot_state.has("engine_candidate") && double(arguments.get("_godot_provenance_guard", 0)) != 1.0) {
+			_finish_tool("Error: active_provenance_protocol_missing: use the native CLI bridge shipped with this editor; no command was approved.");
+			return;
+		}
 		Variant command = arguments.get("command", Variant());
 		const String workspace = _candidate_root();
 		Variant cwd = arguments.get("cwd", workspace);
@@ -2577,7 +2584,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	process_timeout_seconds = 120;
 	if (name == "write_script" || name == "write_file") {
 		const String workspace = _candidate_root();
-		if (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(pending_path, workspace, ProjectSettings::get_singleton()->get_resource_path(), error)) {
+		if (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(pending_path, workspace, ProjectSettings::get_singleton()->get_resource_path(), error) || !AIChatHostRuntime::evidence_write_allowed(pending_path, snapshot_state.get("engine_candidate", Dictionary()), error)) {
 			_finish_tool("Error: " + error);
 			return;
 		}
@@ -3184,6 +3191,14 @@ void AIChatDock::_confirm_action() {
 		if (backend->get_selected() == 1) {
 			Dictionary approval;
 			approval["approved"] = true;
+			if (snapshot_state.has("engine_candidate")) {
+				const Dictionary guard = AIChatHostRuntime::command_guard(snapshot_state["engine_candidate"], EDITOR_GET("gonggong/python"), _engine_root(), error);
+				if (guard.is_empty()) {
+					_finish_tool("Error: " + error);
+					return;
+				}
+				approval["provenance_guard"] = guard;
+			}
 #ifdef MACOS_ENABLED
 			if (snapshot_state.has("engine_candidate")) {
 				const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
@@ -3202,7 +3217,7 @@ void AIChatDock::_confirm_action() {
 	}
 	String absolute;
 	String error;
-	if (!_resolve(pending_path, absolute, error) || _has_unsaved_script(pending_path) || (pending_action == "write_script" && (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(absolute, _candidate_root(), ProjectSettings::get_singleton()->get_resource_path(), error)))) {
+	if (!_resolve(pending_path, absolute, error) || _has_unsaved_script(pending_path) || (pending_action == "write_script" && (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(absolute, _candidate_root(), ProjectSettings::get_singleton()->get_resource_path(), error) || !AIChatHostRuntime::evidence_write_allowed(absolute, snapshot_state.get("engine_candidate", Dictionary()), error)))) {
 		if (error.is_empty()) {
 			error = "The script has unsaved editor changes.";
 		}
@@ -4514,6 +4529,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 	payload["tool_context"] = tool_context(allow_tools->is_pressed(), tool_rounds, auto_apply_file_changes->is_pressed(), auto_execute_commands->is_pressed(), engine_auto_restart->is_pressed());
 	payload["project_root"] = ProjectSettings::get_singleton()->get_resource_path();
 	payload["workspace_root"] = _candidate_root();
+	payload["provenance_guard_required"] = snapshot_state.has("engine_candidate");
 #ifdef MACOS_ENABLED
 	if (snapshot_state.has("engine_candidate")) {
 		const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
@@ -5468,6 +5484,7 @@ void AIChatDock::_show_engine_log() {
 void AIChatDock::_start_process() {
 	List<String> arguments;
 	String executable = OS::get_singleton()->get_executable_path();
+	process_guard_result_path = String();
 	if (pending_action == "run_command") {
 #ifdef WINDOWS_ENABLED
 		executable = OS::get_singleton()->get_environment("SystemRoot").path_join("System32/WindowsPowerShell/v1.0/powershell.exe");
@@ -5487,19 +5504,6 @@ void AIChatDock::_start_process() {
 		arguments.push_back(CryptoCore::b64_encode_str(bytes.ptr(), bytes.size()));
 #else
 		executable = "/bin/sh";
-#ifdef MACOS_ENABLED
-		if (snapshot_state.has("engine_candidate")) {
-			const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
-			if (profile.is_empty()) {
-				_finish_tool("Error: candidate_protection_refresh_failed; no command was started.");
-				return;
-			}
-			executable = "/usr/bin/sandbox-exec";
-			arguments.push_back("-p");
-			arguments.push_back(profile);
-			arguments.push_back("/bin/sh");
-		}
-#endif
 		arguments.push_back("-c");
 		arguments.push_back("cd '" + pending_cwd.replace("'", "'\\''") + "' || exit 1\n" + pending_command);
 #endif
@@ -5512,6 +5516,40 @@ void AIChatDock::_start_process() {
 		if (pending_action == "check_script") {
 			arguments.push_back("--check-only");
 		}
+	}
+	if (snapshot_state.has("engine_candidate")) {
+		String error;
+		if (!_validate_engine_candidate(error)) {
+			_finish_tool("Error: " + error);
+			return;
+		}
+		const Dictionary candidate = snapshot_state["engine_candidate"];
+		const Dictionary guard = AIChatHostRuntime::command_guard(candidate, EDITOR_GET("gonggong/python"), _engine_root(), error);
+		if (guard.is_empty()) {
+			_finish_tool("Error: " + error);
+			return;
+		}
+		process_guard_result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("provenance-guard-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
+		List<String> guarded;
+		for (const String &arg : { String("-u"), String(guard["worker"]), String("--binding"), String(guard["binding"]), String("--run"), String("--result"), process_guard_result_path, String("--cancel-file"), process_guard_result_path + ".cancel", String("--timeout-seconds"), itos(process_timeout_seconds) }) {
+			guarded.push_back(arg);
+		}
+#ifdef MACOS_ENABLED
+		const String profile = AIChatHostRuntime::command_profile(candidate, ProjectSettings::get_singleton()->get_resource_path());
+		if (profile.is_empty()) {
+			_finish_tool("Error: candidate_protection_refresh_failed; no command was started.");
+			return;
+		}
+		guarded.push_back("--profile");
+		guarded.push_back(profile);
+#endif
+		guarded.push_back("--");
+		guarded.push_back(executable);
+		for (const String &arg : arguments) {
+			guarded.push_back(arg);
+		}
+		executable = guard["python"];
+		arguments = guarded;
 	}
 	Dictionary process = OS::get_singleton()->execute_with_pipe(executable, arguments, false);
 	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
@@ -5533,6 +5571,33 @@ void AIChatDock::_start_process() {
 	}
 	_set_activity(pending_action == "run_command" ? String(U"正在执行已确认的命令") : String(U"正在运行已确认的脚本检查或测试"));
 	_append(U"进度", pending_action == "run_command" ? String(U"已开始执行命令，工作目录：") + pending_cwd : String(U"已开始检查或测试脚本：") + pending_path);
+}
+
+void AIChatDock::_cancel_process() {
+	if (process_id < 0) {
+		return;
+	}
+	if (!process_guard_result_path.is_empty()) {
+		// The wrapper owns a separate command process group. Let it terminate
+		// that group and verify provenance before releasing its journal.
+		const Ref<FileAccess> cancel = FileAccess::open(process_guard_result_path + ".cancel", FileAccess::WRITE);
+		if (cancel.is_valid()) {
+			cancel->store_string("cancel\n");
+			return;
+		}
+#ifndef WINDOWS_ENABLED
+		List<String> args;
+		args.push_back("-TERM");
+		args.push_back(itos(process_id));
+		int code = -1;
+		if (OS::get_singleton()->execute("/bin/kill", args, nullptr, &code) == OK && code == 0) {
+			return;
+		}
+#endif
+	}
+	// If cancellation cannot be delivered, recovery retains the unresolved
+	// child journal and refuses to claim a successful command or receipt.
+	OS::get_singleton()->kill(process_id);
 }
 
 bool AIChatDock::_drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output) {
@@ -5565,6 +5630,10 @@ void AIChatDock::_poll_process() {
 	process_timed_out = OS::get_singleton()->get_ticks_msec() - process_started > uint64_t(process_timeout_seconds) * 1000;
 	if (process_timed_out) {
 		if (running) {
+			_cancel_process();
+			if (!process_guard_result_path.is_empty() && OS::get_singleton()->get_ticks_msec() - process_started <= uint64_t(process_timeout_seconds + 20) * 1000) {
+				return;
+			}
 			OS::get_singleton()->kill(process_id);
 		}
 		output_truncated = output_truncated || read_stdout || read_stderr;
@@ -5582,6 +5651,30 @@ void AIChatDock::_poll_process() {
 	result["output_truncated"] = output_truncated;
 	result["stdout"] = _redact(String::utf8(reinterpret_cast<const char *>(stdout_output.ptr()), stdout_output.size()));
 	result["stderr"] = _redact(String::utf8(reinterpret_cast<const char *>(stderr_output.ptr()), stderr_output.size()));
+	if (!process_guard_result_path.is_empty()) {
+		Ref<FileAccess> file = FileAccess::open(process_guard_result_path, FileAccess::READ);
+		const Variant parsed = file.is_valid() && file->get_length() <= 128 * 1024 ? JSON::parse_string(file->get_as_text()) : Variant();
+		file.unref();
+		if (parsed.get_type() == Variant::DICTIONARY && Dictionary(parsed).get("ok", Variant()).get_type() == Variant::BOOL) {
+			result["provenance_guard"] = parsed;
+			if (!bool(Dictionary(parsed)["ok"]) && exit_code == 0) {
+				result["exit_code"] = 76;
+			}
+		} else {
+			result["exit_code"] = 76;
+			Dictionary missing;
+			missing["ok"] = false;
+			missing["error"] = "active_provenance_result_missing";
+			result["provenance_guard"] = missing;
+		}
+		if (FileAccess::exists(process_guard_result_path)) {
+			DirAccess::remove_absolute(process_guard_result_path);
+		}
+		if (FileAccess::exists(process_guard_result_path + ".cancel")) {
+			DirAccess::remove_absolute(process_guard_result_path + ".cancel");
+		}
+		process_guard_result_path = String();
+	}
 	_finish_tool(JSON::stringify(result));
 }
 
@@ -5657,7 +5750,7 @@ void AIChatDock::_stop() {
 	model_request_key = String();
 	confirmation->hide();
 	if (process_id >= 0) {
-		OS::get_singleton()->kill(process_id);
+		_cancel_process();
 		process_id = -1;
 	}
 	process_stdout.unref();
@@ -5758,7 +5851,7 @@ void AIChatDock::_notification(int p_what) {
 		model_request_key = String();
 		_set_busy(false);
 		if (process_id >= 0) {
-			OS::get_singleton()->kill(process_id);
+			_cancel_process();
 			process_id = -1;
 		}
 	}
@@ -7174,6 +7267,6 @@ AIChatDock::~AIChatDock() {
 	}
 	_cancel_all_agents();
 	if (process_id >= 0) {
-		OS::get_singleton()->kill(process_id);
+		_cancel_process();
 	}
 }
