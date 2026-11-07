@@ -40,6 +40,7 @@
 #include "core/io/resource_saver.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
+#include "core/object/message_queue.h"
 #include "core/object/script_language.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
@@ -3156,6 +3157,9 @@ void EditorHelp::_gen_doc_thread(void *p_udata) {
 }
 
 void EditorHelp::_gen_extensions_docs() {
+	if (_script_doc_shutdown.is_set() || !doc) {
+		return;
+	}
 	doc->generate((DocTools::GENERATE_FLAG_SKIP_BASIC_TYPES | DocTools::GENERATE_FLAG_EXTENSION_CLASSES_ONLY));
 
 	// Append extra doc data, as it gets overridden by the generation step.
@@ -3168,6 +3172,9 @@ static void _load_script_doc_cache(bool p_changes) {
 }
 
 void EditorHelp::load_script_doc_cache() {
+	if (_script_doc_shutdown.is_set() || !EditorNode::get_singleton() || !EditorFileSystem::get_singleton()) {
+		return;
+	}
 	if (!ProjectSettings::get_singleton()->is_project_loaded()) {
 		print_verbose("Skipping loading script doc cache since no project is open.");
 		return;
@@ -3242,6 +3249,9 @@ static void _regenerate_script_doc_cache(bool p_changes) {
 }
 
 void EditorHelp::regenerate_script_doc_cache() {
+	if (_script_doc_shutdown.is_set() || !EditorNode::get_singleton() || !EditorFileSystem::get_singleton()) {
+		return;
+	}
 	if (EditorFileSystem::get_singleton()->is_scanning()) {
 		// Wait until EditorFileSystem scanning is complete to use updated filesystem structure.
 		EditorFileSystem::get_singleton()->connect(SNAME("sources_changed"), callable_mp_static(_regenerate_script_doc_cache), CONNECT_ONE_SHOT);
@@ -3250,12 +3260,14 @@ void EditorHelp::regenerate_script_doc_cache() {
 
 	_wait_for_thread(worker_thread);
 	_wait_for_thread(loader_thread);
-	loader_thread.start(_regen_script_doc_thread, EditorFileSystem::get_singleton()->get_filesystem());
+	Vector<String> *paths = memnew(Vector<String>);
+	_collect_scripts_documentation(EditorFileSystem::get_singleton()->get_filesystem(), *paths);
+	_script_doc_loader_running.set();
+	loader_thread.start(_regen_script_doc_thread, paths);
 }
 
 // Runs on worker_thread since it writes to DocData.
 void EditorHelp::_finish_regen_script_doc_thread(void *p_udata) {
-	loader_thread.wait_to_finish();
 	_process_postponed_docs();
 	_script_docs_loaded.set();
 
@@ -3267,7 +3279,7 @@ void EditorHelp::_finish_regen_script_doc_thread(void *p_udata) {
 void EditorHelp::_regen_script_doc_thread(void *p_udata) {
 	OS::get_singleton()->benchmark_begin_measure("EditorHelp", "Generate Script Documentation");
 
-	EditorFileSystemDirectory *dir = static_cast<EditorFileSystemDirectory *>(p_udata);
+	Vector<String> *paths = static_cast<Vector<String> *>(p_udata);
 	_script_docs_loaded.set_to(false);
 
 	// Ignore changes from filesystem scan since script docs will be now.
@@ -3275,27 +3287,36 @@ void EditorHelp::_regen_script_doc_thread(void *p_udata) {
 	_docs_to_remove.clear();
 	_docs_to_remove_by_path.clear();
 
-	_reload_scripts_documentation(dir);
+	for (const String &path : *paths) {
+		if (_script_doc_shutdown.is_set()) {
+			break;
+		}
+		Ref<Script> scr = ResourceLoader::load(path);
+		if (scr.is_valid()) {
+			for (const DocData::ClassDoc &cd : scr->get_documentation()) {
+				_docs_to_add.push_back(cd);
+			}
+		}
+	}
+	memdelete(paths);
 
-	// All ResourceLoader::load() calls are done, so we can no longer deadlock with main thread.
-	// Switch to back to worker_thread from loader_thread to resynchronize access to DocData.
-	worker_thread.start(_finish_regen_script_doc_thread, nullptr);
+	// Resource loading is complete before the worker updates DocData.
+	if (!_script_doc_shutdown.is_set()) {
+		worker_thread.start(_finish_regen_script_doc_thread, nullptr);
+	}
+	_script_doc_loader_running.set_to(false);
 }
 
-void EditorHelp::_reload_scripts_documentation(EditorFileSystemDirectory *p_dir) {
-	// Recursively force compile all scripts, which should generate their documentation.
-	for (int i = 0; i < p_dir->get_subdir_count(); i++) {
-		_reload_scripts_documentation(p_dir->get_subdir(i));
+void EditorHelp::_collect_scripts_documentation(EditorFileSystemDirectory *p_dir, Vector<String> &r_paths) {
+	if (!p_dir) {
+		return;
 	}
-
+	for (int i = 0; i < p_dir->get_subdir_count(); i++) {
+		_collect_scripts_documentation(p_dir->get_subdir(i), r_paths);
+	}
 	for (int i = 0; i < p_dir->get_file_count(); i++) {
 		if (ClassDB::is_parent_class(p_dir->get_file_type(i), SNAME("Script"))) {
-			Ref<Script> scr = ResourceLoader::load(p_dir->get_file_path(i));
-			if (scr.is_valid()) {
-				for (const DocData::ClassDoc &cd : scr->get_documentation()) {
-					_docs_to_add.push_back(cd);
-				}
-			}
+			r_paths.push_back(p_dir->get_file_path(i));
 		}
 	}
 }
@@ -3327,6 +3348,9 @@ void EditorHelp::save_script_doc_cache() {
 }
 
 void EditorHelp::generate_doc(bool p_use_cache, bool p_use_script_cache) {
+	if (_script_doc_shutdown.is_set()) {
+		return;
+	}
 	doc_generation_count++;
 	OS::get_singleton()->benchmark_begin_measure("EditorHelp", vformat("Generate Documentation (Run %d)", doc_generation_count));
 
@@ -3444,7 +3468,19 @@ Dictionary EditorHelp::get_state() {
 	return state;
 }
 
+void EditorHelp::stop_script_doc_cache() {
+	_script_doc_shutdown.set();
+	// ResourceLoader may dispatch work to the main thread. Keep it serviced while
+	// the loader exits, before EditorFileSystem releases its directory tree.
+	while (_script_doc_loader_running.is_set()) {
+		MessageQueue::get_main_singleton()->flush();
+		OS::get_singleton()->delay_usec(1000);
+	}
+	_wait_for_thread(loader_thread);
+}
+
 void EditorHelp::cleanup_doc() {
+	stop_script_doc_cache();
 	_wait_for_thread();
 	memdelete(doc);
 	doc = nullptr;

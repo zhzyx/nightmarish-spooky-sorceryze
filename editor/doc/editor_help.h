@@ -189,6 +189,8 @@ class EditorHelp : public VBoxContainer {
 	inline static String doc_version_hash;
 	inline static Thread worker_thread;
 	inline static Thread loader_thread; // Only load scripts here to avoid deadlocking with main thread.
+	inline static SafeFlag _script_doc_shutdown = SafeFlag(false);
+	inline static SafeFlag _script_doc_loader_running = SafeFlag(false);
 
 	inline static SafeFlag _script_docs_loaded = SafeFlag(false);
 	inline static LocalVector<DocData::ClassDoc> _docs_to_add;
@@ -203,7 +205,7 @@ class EditorHelp : public VBoxContainer {
 	static void _load_script_doc_cache_thread(void *p_udata);
 	static void _regen_script_doc_thread(void *p_udata);
 	static void _finish_regen_script_doc_thread(void *p_udata);
-	static void _reload_scripts_documentation(EditorFileSystemDirectory *p_dir);
+	static void _collect_scripts_documentation(EditorFileSystemDirectory *p_dir, Vector<String> &r_paths);
 	static void _delete_script_doc_cache();
 	static void _compute_doc_version_hash();
 
@@ -226,6 +228,7 @@ protected:
 public:
 	static void generate_doc(bool p_use_cache = true, bool p_use_script_cache = true);
 	static void cleanup_doc();
+	static void stop_script_doc_cache();
 	static void load_script_doc_cache();
 	static void regenerate_script_doc_cache();
 	static void save_script_doc_cache();

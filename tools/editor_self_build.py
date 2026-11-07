@@ -363,18 +363,9 @@ def main(argv=None):
         def step(cmd, timeout=3600):
             log.write(("\nCOMMAND: " + subprocess.list2cmdline(cmd) + "\n").encode("utf-8"))
             log.flush()
-            child = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-            def capture_log():
-                for line in child.stdout:
-                    try:
-                        text = line.decode("utf-8")
-                    except UnicodeDecodeError:
-                        text = line.decode("mbcs" if os.name == "nt" else "utf-8", errors="replace")
-                    log.write(text.encode("utf-8"))
-
-            reader = threading.Thread(target=capture_log)
-            reader.start()
+            # Write directly to the log. Descendants may inherit stdout, so waiting
+            # for pipe EOF would outlive the child and could block indefinitely.
+            child = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
             deadline = time.monotonic() + timeout
             try:
                 while child.poll() is None:
@@ -395,8 +386,6 @@ def main(argv=None):
                     else:
                         child.kill()
                     child.wait()
-                reader.join()
-                child.stdout.close()
 
         with log_path.open("wb", buffering=0) as log:
             try:
