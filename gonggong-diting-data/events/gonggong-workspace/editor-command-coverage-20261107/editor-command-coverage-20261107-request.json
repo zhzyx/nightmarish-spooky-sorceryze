@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-command-coverage-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T06:04:29.585137+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Audit F01-F15 and deliver controlled semantic interfaces with isolated validation",
+    "authorization_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "state": "in_progress",
+    "usage": null,
+    "agent_definition_basis": "sha256 of repository AGENTS.md read by this host"
+  },
+  "evidence_refs": [],
+  "sha256": "7ffd289e5800c4d502d62dcfb0abe94b486e94e3abca9c546173be963d03a0d3"
+}

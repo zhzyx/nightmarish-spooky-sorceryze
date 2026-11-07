@@ -12,6 +12,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from editor_test_isolation import copy_editor
 from run_requirements_intake import GH_FIXTURE
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -97,17 +98,20 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix="codex-lifetime-", dir=args.out.parent.resolve()) as folder:
             root = Path(folder)
-            (root / "bin").mkdir()
-            editor = args.godot.resolve().with_name(args.godot.name.replace(".console.exe", ".exe"))
-            shutil.copyfile(editor, root / "bin" / editor.name)
-            if args.godot.resolve() != editor:
-                shutil.copyfile(args.godot.resolve(), root / "bin" / args.godot.name)
-            assert (
-                hashlib.sha256((root / "bin" / editor.name).read_bytes()).digest()
-                == hashlib.sha256(editor.read_bytes()).digest()
-            )
-            isolated_editor = root / "bin" / args.godot.name
-            (root / "bin/_sc_").write_text("")
+            if sys.platform == "darwin":
+                isolated_editor = copy_editor(args.godot, root / "bin")
+            else:
+                (root / "bin").mkdir()
+                editor = args.godot.resolve().with_name(args.godot.name.replace(".console.exe", ".exe"))
+                shutil.copyfile(editor, root / "bin" / editor.name)
+                if args.godot.resolve() != editor:
+                    shutil.copyfile(args.godot.resolve(), root / "bin" / args.godot.name)
+                assert (
+                    hashlib.sha256((root / "bin" / editor.name).read_bytes()).digest()
+                    == hashlib.sha256(editor.read_bytes()).digest()
+                )
+                isolated_editor = root / "bin" / args.godot.name
+                (root / "bin/_sc_").write_text("")
             (root / "SConstruct").write_text("# Isolated engine root for native subprocess fixture.")
             for name in ["framework", "customizations", ".github"]:
                 shutil.copytree(ROOT / name, root / name, ignore=shutil.ignore_patterns("__pycache__"))

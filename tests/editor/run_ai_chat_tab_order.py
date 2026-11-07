@@ -10,6 +10,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from editor_test_isolation import copy_editor
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -46,11 +48,8 @@ def main():
             prefix="issue58-order-", dir=ROOT / "bin", ignore_cleanup_errors=os.name == "nt"
         ) as directory:
             base = Path(directory)
-            engine = base / "engine"
-            engine.mkdir()
-            isolated_binary = engine / binary.name
-            shutil.copy2(binary, isolated_binary)
-            (engine / "_sc_").write_text("", encoding="utf-8")
+            isolated_binary = copy_editor(binary, base / "engine")
+            engine = isolated_binary.parent
             project = base / "project"
             project.mkdir()
             (project / "project.godot").write_text(

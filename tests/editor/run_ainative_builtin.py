@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from editor_test_isolation import copy_editor
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -43,11 +45,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="ainative-native-", ignore_cleanup_errors=os.name == "nt") as temporary:
         base = Path(temporary).resolve()
         engine = base / "engine"
-        engine.mkdir()
-        isolated_binary = engine / binary.name
-        shutil.copy2(binary, isolated_binary)
-        # Godot's own self-contained mode isolates editor data/settings on macOS too.
-        (engine / "_sc_").write_text("", encoding="utf-8")
+        isolated_binary = copy_editor(binary, engine)
         projects = [base / "project-a", base / "project-b"]
         definition = 'config_version=5\n[application]\nconfig/name="AINative Native Acceptance"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         for project in projects:

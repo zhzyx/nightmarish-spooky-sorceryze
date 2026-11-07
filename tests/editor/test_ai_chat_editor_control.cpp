@@ -215,5 +215,47 @@ TEST_CASE("[AIChat] Project setting save rejects a stale parsed snapshot") {
 	DirAccess::remove_absolute(path);
 	DirAccess::remove_absolute(directory->get_current_dir());
 }
+TEST_CASE("[SceneTree][AIChat] Routed receipts enforce capacity and bounded event recovery") {
+	AIChatEditorControl *control = memnew(AIChatEditorControl);
+	Dictionary operation;
+	operation["action"] = "clear_highlight";
+	Dictionary message;
+	message["intent"] = "engine_operation";
+	message["source"] = "capacity-test";
+	message["operation"] = operation;
+	for (int i = 0; i < 256; i++) {
+		message["request_id"] = "request-" + itos(i);
+		REQUIRE(bool(control->route_message(message, true, false)["ok"]));
+	}
+	message["request_id"] = "overflow";
+	CHECK(control->route_message(message, true, false)["error"] == Variant("route_capacity_exceeded"));
+	Dictionary events = control->route_events(0, 100);
+	CHECK(Array(events["events"]).size() == 100);
+	CHECK(int64_t(events["next_cursor"]) == 100);
+	CHECK(int64_t(events["latest_cursor"]) == 256);
+	CHECK(bool(events["has_more"]));
+	CHECK_FALSE(bool(events["gap"]));
+	CHECK(Array(control->route_events(200, 100)["events"]).size() == 56);
+	CHECK(control->route_events(257, 100)["error"] == Variant("invalid_event_cursor"));
+	message["request_id"] = "request-0";
+	control->cancel_route(message, "test-cancelled");
+	CHECK(bool(control->route_events(0, 100)["gap"]));
+	CHECK(control->route_message(message, true, false)["routing_status"] == Variant("cancelled"));
+	operation["action"] = "focus";
+	message["operation"] = operation;
+	CHECK(control->route_message(message, true, false)["error"] == Variant("request_id_conflict"));
+	message["request"] = String("x").repeat(32768);
+	CHECK(control->route_message(message, true, false)["error"] == Variant("message_too_large"));
+	Dictionary chat;
+	chat["action"] = "chat_send_request";
+	CHECK(control->execute(chat, true, false)["error"] == Variant("host_only_action"));
+	CHECK(control->execute(chat, true, false, true)["error"] == Variant("host_only_action"));
+	Dictionary observe_args;
+	observe_args["action"] = "start_guidance";
+	observe_args["steps"] = JSON::parse_string("[{\"target\":\"scene_tree\",\"observe\":{\"type\":\"project_setting\",\"setting\":\"custom/api_key\"}}]");
+	CHECK(control->execute(observe_args, true, false)["error"] == Variant("invalid_guidance_steps"));
+	memdelete(control);
+}
+
 } //namespace TestAIChatEditorControl
 #endif

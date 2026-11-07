@@ -46,11 +46,14 @@ func _run():
 	dock.find_child("APIModel", true, false).text = "fixture"
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
 		dock.find_child(name, true, false).button_pressed = true
+	# The deployment dialog is a Windows host feature; macOS rejects missing workspace configuration.
+	var gate_text = "已触发本地配置点火器" if OS.has_feature("windows") else "GongGong 未配置"
 	_send(dock, "INITIAL_DEVELOPMENT_MUST_GATE")
-	if not await _wait(dock, "已触发本地配置点火器"):
+	if not await _wait(dock, gate_text):
 		quit(1)
 		return
-	assert(dock.find_child("GongGongRuntimeSetup", true, false).visible)
+	if OS.has_feature("windows"):
+		assert(dock.find_child("GongGongRuntimeSetup", true, false).visible)
 	dock.find_child("GongGongRuntimeSetup", true, false).hide()
 	check.button_pressed = true
 	_send(dock, "CONSULTATION_ATTACK")
@@ -76,10 +79,10 @@ func _run():
 		return
 	await create_timer(0.2).timeout
 	check.button_pressed = false
-	var previous_gate = _count(dock, "已触发本地配置点火器")
+	var previous_gate = _count(dock, gate_text)
 	_send(dock, "DEVELOPMENT_MUST_GATE")
 	await create_timer(2).timeout
-	if _count(dock, "已触发本地配置点火器") <= previous_gate:
+	if _count(dock, gate_text) <= previous_gate:
 		push_error("Development did not re-enter its gate after consultation")
 		quit(1)
 		return

@@ -6,12 +6,13 @@ import json
 import os
 import shutil
 import subprocess
-import sys
 import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+from editor_test_isolation import copy_editor
 
 MOCK_CODEX = r"""
 // Offline Codex JSONL fixture. Uses only the test loopback server.
@@ -71,17 +72,7 @@ def main():
             encoding="utf-8",
         )
         # Per-process self-contained settings also isolate macOS, which ignores XDG.
-        editor_folder = project / "isolated-editor"
-        editor_folder.mkdir()
-        isolated_editor = editor_folder / args.godot.name
-        cloned = (
-            subprocess.run(["cp", "-c", str(args.godot.resolve()), str(isolated_editor)], capture_output=True)
-            if sys.platform == "darwin"
-            else None
-        )
-        if cloned is None or cloned.returncode != 0:
-            shutil.copy2(args.godot, isolated_editor)
-        (editor_folder / "_sc_").touch()
+        isolated_editor = copy_editor(args.godot, project / "isolated-editor")
         fixture = Path(__file__).with_name("ai_chat_steering.gd")
         shutil.copyfile(fixture, project / "gate.gd")
         entry = project / "offline-codex.js"

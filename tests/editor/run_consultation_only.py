@@ -11,6 +11,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from editor_test_isolation import macos_editor
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -22,6 +24,7 @@ def main():
     failures, observed = [], []
     with tempfile.TemporaryDirectory(prefix="consultation-native-") as temporary:
         root = Path(temporary)
+        isolated_editor = macos_editor(args.godot, root / "isolated-editor")
         project = root / "project"
         project.mkdir()
         (project / "project.godot").write_text('[application]\nconfig/name="Consultation fixture"\n')
@@ -37,7 +40,14 @@ def main():
                 try:
                     request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                     names = {x["function"]["name"] for x in request["tools"]}
-                    assert names == {"get_editor_state", "read_file", "read_script", "read_logs", "list_scripts", "list_directory"}, names
+                    assert names == {
+                        "get_editor_state",
+                        "read_file",
+                        "read_script",
+                        "read_logs",
+                        "list_scripts",
+                        "list_directory",
+                    }, names
                     messages = request["messages"]
                     assert all("consultation_only" not in m for m in messages)
                     latest = max(i for i, m in enumerate(messages) if m["role"] == "user")
@@ -113,7 +123,7 @@ def main():
         try:
             result = subprocess.run(
                 [
-                    str(args.godot.resolve()),
+                    str(isolated_editor),
                     "--headless",
                     "--editor",
                     "--path",

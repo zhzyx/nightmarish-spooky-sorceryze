@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ae0adc22fee637ed17c6d55fcb661a7df1d01861",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e95741c6433c204324e55c8d3b0a538d93f16ece3e67b47a7500ef5507f4b7c1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "delivery",
+    "detection_head": "1d080f6554668b720347bfcd222e527a9a7541f3",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "diagnosis": "Independent worker reconciliation appended a real Diting dispatch event after staging. Trusted validator identified precisely that untracked event; no implementation failure. Root retained and staged it.",
+    "next_action": "Stage the incident assessment event and rerun the same official submission gate; no rule bypass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T07:59:41.317118+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T08:01:45.917097+00:00",
+  "sha256": "3c4490aacb9bb05c75bd571effbed7946d417475235cde2d35b58c49f4283004"
+}

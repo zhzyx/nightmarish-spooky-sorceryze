@@ -52,6 +52,14 @@ class AIChatEditorRegistry : public Object {
 	mutable bool dirty = true;
 	mutable bool truncated = false;
 	mutable uint64_t revision = 0;
+	mutable int scanned_nodes = 0;
+	mutable int queued_nodes = 0;
+	struct TextUndo {
+		String before;
+		String after;
+		uint32_t version = 0;
+	};
+	HashMap<ObjectID, TextUndo> text_undo;
 
 	void _tree_changed(Node *p_node);
 	void _refresh() const;
@@ -60,8 +68,10 @@ class AIChatEditorRegistry : public Object {
 public:
 	Control *resolve(const String &p_id) const;
 	Array find(const String &p_query, int p_limit) const;
+	Dictionary find_page(const String &p_query, int p_limit = 20, int p_offset = 0) const;
 	Dictionary describe(const String &p_id) const;
 	Dictionary status() const;
+	Dictionary inspect_tree(int p_limit, int p_offset) const;
 	Dictionary perform(Control *p_control, const String &p_id, const Dictionary &p_args, bool p_confirmed);
 	static Array actions(Control *p_control);
 	static bool supported(const String &p_action);
