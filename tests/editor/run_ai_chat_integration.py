@@ -17,10 +17,10 @@ BEFORE = "extends SceneTree\n\nfunc _initialize():\n\tquit(0)\n"
 AFTER = (
     'extends SceneTree\n\nfunc _initialize():\n\tprint("AI_CHAT_RUN_OK")\n\tprinterr("AI_CHAT_STDERR_OK")\n\tquit(0)\n'
 )
-ERRORS = []
-SEEN = set()
+ERRORS: list[str] = []
+SEEN: set[str] = set()
 EXTERNAL = None
-TRANSPORTS = {}
+TRANSPORTS: dict[str, list[dict[str, object]]] = {}
 
 
 def tool(name, arguments, identifier):
@@ -208,7 +208,7 @@ class Handler(BaseHTTPRequestHandler):
                 response = completion("SNAPSHOT_SEED_OK")
             elif case in {"snapshot_follow", "snapshot_verify"}:
                 assert any(message.get("content") == "case:snapshot_multi" for message in messages), (
-                    "Version restore erased historical dialogue instead of recording a new turn"
+                    "Version restore erased historical dialog instead of recording a new turn"
                 )
                 notices = [
                     message

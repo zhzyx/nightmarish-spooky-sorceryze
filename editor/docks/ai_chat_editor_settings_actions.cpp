@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  ai_chat_editor_settings_actions.cpp                                            */
+/*  ai_chat_editor_settings_actions.cpp                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,8 +30,8 @@
 
 #include "ai_chat_editor_settings_actions.h"
 
-#include "ai_chat_editor_control.h"
-#include "ai_chat_tools.h"
+#include "editor/docks/ai_chat_editor_control.h"
+#include "editor/docks/ai_chat_tools.h"
 
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"

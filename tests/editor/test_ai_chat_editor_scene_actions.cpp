@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  test_ai_chat_editor_scene_actions.cpp                                       */
+/*  test_ai_chat_editor_scene_actions.cpp                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
