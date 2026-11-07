@@ -1,6 +1,12 @@
 @tool
 extends SceneTree
 
+func _chat_setting(chat: Node, name: String) -> Control:
+	for section in [chat.get_ai_settings_control(), chat.get_environment_settings_control()]:
+		var control = section.find_child(name, true, false)
+		if control != null: return control
+	return null
+
 func _initialize():
 	_run.call_deferred()
 
@@ -20,10 +26,10 @@ func _run():
 	settings.set_setting("gonggong/issue_number", "90")
 	settings.set_setting("gonggong/request_id", request_id)
 	settings.set_setting("ai_chat/parallel_work_orders_config", OS.get_environment("ISSUE72_PARALLEL_CONFIG"))
-	dock.find_child("CLINode", true, false).text = OS.get_environment("ISSUE72_NODE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("ISSUE72_NODE")
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
 	for control in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands"]:
-		dock.find_child(control, true, false).button_pressed = true
+		_chat_setting(dock, control).button_pressed = true
 	dock.find_child("SpawnWorkOrderAgents", true, false).pressed.emit()
 	var result_path = ""
 	var deadline = Time.get_ticks_msec() + 600000

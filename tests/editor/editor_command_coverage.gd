@@ -32,8 +32,8 @@ func run() -> void:
 		write_json("res://ready.json", {"errors": errors})
 		quit(1)
 		return
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
 	var gradient := Gradient.new()
 	check(ResourceSaver.save(gradient, "res://fixture-gradient.tres") == OK, "resource fixture saved")
@@ -75,14 +75,14 @@ func run() -> void:
 					ProjectSettings.set_setting("editor/run/main_run_args", "--headless --max-fps 30 --quit-after 180")
 					ProjectSettings.save()
 				"models":
-					var picker := dock.find_child("ModelPicker", true, false) as OptionButton
+					var picker := dock.get_ai_settings_control().find_child("ModelPicker", true, false) as OptionButton
 					picker.clear()
 					for i in 150:
 						picker.add_item("Fixture model %d" % i)
 						picker.set_item_metadata(i, "fixture-%d" % i)
 					picker.select(0)
 				"model_replace":
-					var picker := dock.find_child("ModelPicker", true, false) as OptionButton
+					var picker := dock.get_ai_settings_control().find_child("ModelPicker", true, false) as OptionButton
 					picker.set_item_metadata(125, "changed-model")
 				"animation":
 					var scene := EditorInterface.get_edited_scene_root()
@@ -136,7 +136,7 @@ func run() -> void:
 					dialog.hide()
 					dialog.confirmed.emit()
 				"auto":
-					dock.find_child("AutoExecuteCommands", true, false).button_pressed = cmd.value
+					dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = cmd.value
 				"draft":
 					dock.find_child("ChatInput", true, false).text = cmd.value
 				"disk_change":

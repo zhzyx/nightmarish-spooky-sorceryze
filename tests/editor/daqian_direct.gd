@@ -33,10 +33,10 @@ func run() -> void:
 	check(panel.editor.canvas.has_node("wf-workorder") and not panel.editor.canvas.has_node("wf-analysis"), "Direct draft incorrectly attributed to Yanshi")
 	panel.publish_dialog.hide()
 	panel.chat = chat
-	var backend = chat.find_child("AIBackend", true, false)
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	chat.find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
+	chat.get_ai_settings_control().find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
 	panel.publish_button.pressed.emit()
 	check(panel.model_options.visible, "Configured backend must expose its model picker in Tianshu")
 	panel.model_options.select(panel.model_options.item_count - 1)
@@ -96,7 +96,7 @@ func run() -> void:
 	panel.current = source
 	panel.board.issues = previous
 	panel._update_direct_action()
-	chat.find_child("APIModel", true, false).text = "different-current-model"
+	chat.get_ai_settings_control().find_child("APIModel", true, false).text = "different-current-model"
 	await panel._start_or_view_direct(binding)
 	check(panel.publish_button.text == "重试开工" and panel.work_status.text.contains("fixture start unavailable"), "Lost distinct start retry")
 	check(panel._routing_receipt(binding).get("ready", false), "Failed start erased ready decision")

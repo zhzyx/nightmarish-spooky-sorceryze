@@ -1,6 +1,12 @@
 @tool
 extends SceneTree
 
+func _chat_setting(chat: Node, name: String) -> Control:
+	for section in [chat.get_ai_settings_control(), chat.get_environment_settings_control()]:
+		var control = section.find_child(name, true, false)
+		if control != null: return control
+	return null
+
 var dock
 
 func _initialize():
@@ -32,14 +38,14 @@ func _run():
 	settings.set_setting("gonggong/python", "missing-python")
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(2)
 	backend.item_selected.emit(2)
-	dock.find_child("CLIBridge", true, false).text = OS.get_environment("CONSULT_BRIDGE")
-	dock.find_child("CLINode", true, false).text = OS.get_environment("CONSULT_NODE")
-	dock.find_child("CodexEntry", true, false).text = OS.get_environment("CONSULT_ENTRY")
+	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("CONSULT_BRIDGE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("CONSULT_NODE")
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("CONSULT_ENTRY")
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
-		dock.find_child(name, true, false).button_pressed = true
+		_chat_setting(dock, name).button_pressed = true
 	var check = dock.find_child("ConsultationOnly", true, false)
 	assert(not check.button_pressed)
 	assert(check.get_index() + 1 == dock.find_child("Send", true, false).get_index())

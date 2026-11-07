@@ -1219,8 +1219,10 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 		}
 	} else if (igniter_state == "python_path") {
 		if (FileAccess::exists(text)) {
-			EditorSettings::get_singleton()->set("gonggong/python", text);
-			EditorSettings::get_singleton()->save();
+			if (!gonggong_panel->set_environment_python(text)) {
+				_append(TTR("Editor"), U"当前任务或运行库部署仍在执行；Python 路径尚未更改，请结束后重试。");
+				return;
+			}
 			Array selected = igniter_fields["components"];
 			selected.erase("python");
 			if (selected.is_empty()) {

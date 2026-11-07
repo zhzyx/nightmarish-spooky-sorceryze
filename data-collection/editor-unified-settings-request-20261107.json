@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "scope": "Native Settings workspace with AI and Environment categories; unique actual AI Chat, Maliang and personal model forms; preserve values, roles, task snapshots and credentials boundaries.",
+  "platform": "Windows x64",
+  "base_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "dispatch": {
+    "assignment_key": "0f9b4e968c2be2ba920e02bd6865723a23d05465d812fcf465aa4eeae66ad544",
+    "receipt": {
+      "workerId": "/root/sinan_04e371495ed9733d",
+      "reference": "agent:/root/sinan_04e371495ed9733d",
+      "target": "agent",
+      "model": "gpt-6.1-sol",
+      "requestedModel": null,
+      "observedModel": null,
+      "modelEvidence": "host_inheritance_not_observed",
+      "setupPending": false,
+      "hostId": null
+    },
+    "state_at_actual_dispatch": "running"
+  },
+  "business_accepted": false,
+  "usage": null
+}

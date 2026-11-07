@@ -117,5 +117,11 @@ func _process(delta):
 		output.flush()
 		output.close()
 
-func _exit_tree():
+func release_connection():
 	if not lease_path.is_empty(): DirAccess.remove_absolute(lease_path)
+	lease_path = ''
+
+func _notification(what):
+	# Moving the settings control between containers must not release its host's
+	# lease. The workbench explicitly releases on exit; deletion is a fallback.
+	if what == NOTIFICATION_PREDELETE: release_connection()

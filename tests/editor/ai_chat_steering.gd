@@ -51,24 +51,24 @@ func _run():
 	if setup != null:
 		setup.hide()
 	EditorInterface.set_main_screen_editor("AI Chat")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
-	dock.find_child("APIKey", true, false).text = "isolated-fixture-key"
-	dock.find_child("APIModel", true, false).text = "fixture"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "isolated-fixture-key"
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
 	if OS.get_environment("STEERING_CODEX") == "1":
 		backend.select(2)
 		backend.item_selected.emit(2)
-		dock.find_child("CLINode", true, false).text = OS.get_environment("STEERING_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("STEERING_BRIDGE")
-		dock.find_child("CodexEntry", true, false).text = OS.get_environment("STEERING_CODEX_ENTRY")
-		dock.find_child("CodexModel", true, false).text = "fixture"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("STEERING_NODE")
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("STEERING_BRIDGE")
+		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("STEERING_CODEX_ENTRY")
+		dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "fixture"
 	var consultation = dock.find_child("ConsultationOnly", true, false)
 	consultation.button_pressed = true
-	dock.find_child("AllowTools", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	var mode := OS.get_environment("STEERING_CASE")
-	dock.find_child("AllowTools", true, false).button_pressed = mode == "tools"
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = mode == "tools"
 	if mode == "restore":
 		await create_timer(0.5).timeout
 		report["restored_count"] = dock.get_meta("queued_message_count", -1)

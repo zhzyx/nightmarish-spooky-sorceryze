@@ -391,10 +391,13 @@ class AIChatDock : public EditorDock {
 	void _draft_changed();
 	void _update_composer_height();
 	void _toggle_chat_settings(bool p_visible);
-	AcceptDialog *chat_settings_dialog = nullptr;
+	void _request_settings(const String &p_section);
+	void _save_chat_settings();
+	void _update_settings_summary();
 	Button *settings_button = nullptr;
-	VBoxContainer *settings_layout = nullptr;
-	ScrollContainer *settings_scroll = nullptr;
+	Label *settings_summary = nullptr;
+	VBoxContainer *ai_settings_control = nullptr;
+	VBoxContainer *environment_settings_control = nullptr;
 	void _save_history();
 	static void _write_history(void *p_job);
 	void _poll_history_save();
@@ -700,6 +703,9 @@ protected:
 	void _notification(int p_what);
 
 public:
+	Control *get_ai_settings_control() const;
+	Control *get_environment_settings_control() const;
+	void set_environment_changing_handler(const Callable &p_handler);
 	AIChatDock();
 	~AIChatDock();
 };

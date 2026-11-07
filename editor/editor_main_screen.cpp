@@ -92,7 +92,7 @@ void EditorMainScreen::update_window_fill() {
 	// Docks are added while the editor is being constructed, before the first real selection.
 	if (is_inside_tree()) {
 		const EditorDock *dock = get_dock(get_current_tab());
-		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen" || dock->get_layout_key() == "AINativeMainScreen"));
+		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen" || dock->get_layout_key() == "AINativeMainScreen" || dock->get_layout_key() == "UnifiedSettingsMainScreen"));
 	}
 }
 

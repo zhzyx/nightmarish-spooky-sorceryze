@@ -57,30 +57,60 @@ GongGongPanel::GongGongPanel() {
 		python_default = workspace_default.path_join("project/runtime/python/python.exe");
 	}
 	EDITOR_DEF("gonggong/python", python_default);
+	EDITOR_DEF("gonggong/tenant", "gonggong-workspace");
 	const String saved_python = EDITOR_GET("gonggong/python");
 	const bool explicit_runtime = !OS::get_singleton()->get_environment("GONGGONG_PYTHON").is_empty();
 	if (!python_default.is_empty() && (explicit_runtime || saved_python.is_empty() || !FileAccess::exists(saved_python))) {
-		EditorSettings::get_singleton()->set("gonggong/python", python_default);
+		apply_environment_settings(EDITOR_GET("gonggong/workspace"), python_default, EDITOR_GET("gonggong/tenant"));
 	}
-	EDITOR_DEF("gonggong/tenant", "gonggong-workspace");
 	EDITOR_DEF("gonggong/issue_number", "");
 	EDITOR_DEF("gonggong/request_id", "");
 	Label *notice = memnew(Label);
 	notice->set_text(U"GongGong · 框架与谛听数据\n接入检查不代表 Agent 已获准启用。配置保存于本机编辑器设置。");
 	notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	add_child(notice);
+	environment_settings_control = memnew(VBoxContainer);
+	environment_settings_control->set_name("GongGongEnvironmentSettings");
+	environment_settings_control->set_meta("ai_control_page_only", true);
+	environment_settings_control->hide();
+	add_child(environment_settings_control);
+	Label *environment_title = memnew(Label);
+	environment_title->set_text(U"共工 · 宿主环境与运行库");
+	environment_settings_control->add_child(environment_title);
+	auto add_environment_label = [this](const String &p_text) {
+		Label *label = memnew(Label);
+		label->set_text(p_text);
+		label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+		environment_settings_control->add_child(label);
+	};
+	add_environment_label(U"共工工作区根目录");
 	workspace = memnew(LineEdit);
+	workspace->set_name("GongGongWorkspace");
 	workspace->set_placeholder(U"GongGong 工作区根目录");
 	workspace->set_text(EDITOR_GET("gonggong/workspace"));
-	add_child(workspace);
+	environment_settings_control->add_child(workspace);
+	add_environment_label(U"共工框架 Python（桥接与数据校验，与 SCons / 模型推理 Python 独立）");
 	python = memnew(LineEdit);
+	python->set_name("GongGongPython");
 	python->set_placeholder(U"Python 可执行文件路径");
 	python->set_text(EDITOR_GET("gonggong/python"));
-	add_child(python);
+	environment_settings_control->add_child(python);
+	add_environment_label(U"共工数据租户");
 	tenant = memnew(LineEdit);
+	tenant->set_name("GongGongTenant");
 	tenant->set_placeholder(U"数据租户");
 	tenant->set_text(EDITOR_GET("gonggong/tenant"));
-	add_child(tenant);
+	environment_settings_control->add_child(tenant);
+	Button *save_environment = memnew(Button);
+	save_environment->set_name("SaveGongGongEnvironment");
+	save_environment->set_text(U"保存共工环境设置");
+	save_environment->connect("pressed", callable_mp(this, &GongGongPanel::save_environment_settings));
+	environment_settings_control->add_child(save_environment);
+	Button *environment_button = memnew(Button);
+	environment_button->set_name("GongGongEnvironmentSettingsButton");
+	environment_button->set_text(U"环境设置");
+	environment_button->connect("pressed", callable_mp(this, &GongGongPanel::request_environment_settings));
+	add_child(environment_button);
 	issue_number = memnew(LineEdit);
 	issue_number->set_placeholder(U"开发工单 Issue 编号（先创建或复用真实工单）");
 	issue_number->set_text(EDITOR_GET("gonggong/issue_number"));
@@ -97,26 +127,27 @@ GongGongPanel::GongGongPanel() {
 		Button *button = memnew(Button);
 		button->set_text(labels[i]);
 		button->connect("pressed", callable_mp(this, &GongGongPanel::run_action).bind(String(actions[i])));
-		add_child(button);
+		(i == 5 ? environment_settings_control : this)->add_child(button);
 	}
 	Button *setup_button = memnew(Button);
 	setup_button->set_name("GongGongEnvironmentSetup");
 	setup_button->set_text(U"本地配置点火器（Python / Node / Git）");
 	setup_button->connect("pressed", callable_mp(this, &GongGongPanel::open_setup));
-	add_child(setup_button);
+	environment_settings_control->add_child(setup_button);
 	setup_rollback = memnew(Button);
 	setup_rollback->set_text(U"回退本次运行库部署");
 	setup_rollback->set_disabled(true);
 	setup_rollback->connect("pressed", callable_mp(this, &GongGongPanel::rollback_setup));
-	add_child(setup_rollback);
+	environment_settings_control->add_child(setup_rollback);
 	setup_dialog = memnew(ConfirmationDialog);
 	setup_dialog->set_name("GongGongRuntimeSetup");
 	// Keep configuration available alongside independent editor approvals.
 	setup_dialog->set_exclusive(false);
 	setup_dialog->set_title(U"共工本地配置点火器");
 	setup_dialog->set_ok_button_text(U"部署并自检，完成后继续原需求");
+	setup_dialog->set_text(U"按环境设置中选择的组件与来源部署本地运行库并自检；仅确认后执行。");
 	VBoxContainer *setup_fields = memnew(VBoxContainer);
-	setup_dialog->add_child(setup_fields);
+	environment_settings_control->add_child(setup_fields);
 	Label *setup_notice = memnew(Label);
 	setup_notice->set_text(U"选择需要部署的组件。优先复用本机已有运行库；缺失时可从已解压的共工完整包选择 project/runtime 目录。\n部署仅写当前工作区，不修改系统环境变量；失败保留日志并回退本次文件变更。");
 	setup_notice->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
@@ -207,25 +238,90 @@ bool GongGongPanel::ensure_environment() {
 	workspace->set_text(root);
 	python->set_text(current_python);
 	if (output) {
-		output->set_text(U"检测到本地运行环境缺失，已打开配置点火器。原需求保留，完成部署与自检后继续；取消不会安装任何组件。");
+		output->set_text(U"检测到本地运行环境缺失。请到“设置 → 环境 → 共工”补齐配置或使用本地配置点火器；原需求保留，只有确认部署才安装组件。");
 	}
 	if (is_inside_tree() && worker < 0) {
-		setup_dialog->popup_centered(Size2i(640, 360));
+		request_environment_settings();
 	}
 	return false;
 }
 
+void GongGongPanel::request_environment_settings() {
+	if (settings_requested.is_valid()) {
+		settings_requested.call(String("environment"));
+	}
+}
+
+void GongGongPanel::save_environment_settings() {
+	if (worker >= 0 || task_locked) {
+		return;
+	}
+	apply_environment_settings(workspace->get_text().strip_edges(), python->get_text().strip_edges(), tenant->get_text().strip_edges());
+	EditorSettings::save();
+}
+
+bool GongGongPanel::set_environment_python(const String &p_python) {
+	if (worker >= 0 || task_locked) {
+		return false;
+	}
+	if (!apply_environment_settings(EDITOR_GET("gonggong/workspace"), p_python, EDITOR_GET("gonggong/tenant"))) {
+		return false;
+	}
+	python->set_text(p_python);
+	EditorSettings::save();
+	return true;
+}
+
+bool GongGongPanel::apply_environment_settings(const String &p_workspace, const String &p_python, const String &p_tenant) {
+	if (task_locked) {
+		return false;
+	}
+	EditorSettings *settings = EditorSettings::get_singleton();
+	const bool changed = String(settings->get_setting("gonggong/workspace")) != p_workspace || String(settings->get_setting("gonggong/python")) != p_python || String(settings->get_setting("gonggong/tenant")) != p_tenant;
+	if (changed && environment_changing.is_valid()) {
+		// Actor/watch cleanup must still see the old workspace and Python here.
+		environment_changing.call();
+	}
+	settings->set("gonggong/workspace", p_workspace);
+	settings->set("gonggong/python", p_python);
+	settings->set("gonggong/tenant", p_tenant);
+	return true;
+}
+
+void GongGongPanel::set_task_locked(bool p_locked) {
+	task_locked = p_locked;
+	update_environment_controls();
+}
+
+void GongGongPanel::update_environment_controls() {
+	const bool idle = worker < 0 && !task_locked;
+	workspace->set_editable(idle);
+	python->set_editable(idle);
+	tenant->set_editable(idle);
+	setup_source->set_editable(idle);
+	for (const Variant &value : environment_settings_control->find_children("*", "Button", true, false)) {
+		Object::cast_to<Button>(static_cast<Object *>(value))->set_disabled(!idle);
+	}
+	setup_rollback->set_disabled(!idle || setup_receipt.is_empty());
+}
+
 void GongGongPanel::open_setup() {
-	if (worker < 0) {
+	if (worker < 0 && !task_locked) {
 		setup_dialog->popup_centered(Size2i(640, 360));
 	}
 }
 
 void GongGongPanel::open_setup_source() {
+	if (worker >= 0 || task_locked) {
+		return;
+	}
 	setup_source_dialog->popup_centered_ratio();
 }
 
 void GongGongPanel::choose_setup_source(const String &p_directory) {
+	if (worker >= 0 || task_locked) {
+		return;
+	}
 	setup_source->set_text(p_directory);
 }
 
@@ -238,7 +334,7 @@ void GongGongPanel::rollback_setup() {
 }
 
 void GongGongPanel::run_setup(bool p_rollback) {
-	if (worker >= 0) {
+	if (worker >= 0 || task_locked) {
 		return;
 	}
 	const String root = workspace->get_text().strip_edges();
@@ -288,6 +384,7 @@ void GongGongPanel::run_setup(bool p_rollback) {
 	worker = pid;
 	setup_running = true;
 	setup_rolling_back = p_rollback;
+	update_environment_controls();
 	output->set_text(p_rollback ? U"正在回退本次运行库部署…" : U"正在部署选定的本地运行库并执行共工自检…");
 	timer->start();
 }
@@ -304,7 +401,7 @@ void GongGongPanel::save_issue_binding(const String &p_text) {
 }
 
 void GongGongPanel::run_action(const String &p_action) {
-	if (worker >= 0) {
+	if (worker >= 0 || task_locked) {
 		return;
 	}
 	const String script = workspace->get_text().path_join("tools/gonggong_bridge.py");
@@ -312,9 +409,7 @@ void GongGongPanel::run_action(const String &p_action) {
 		output->set_text(U"请填写工作区、Python 路径，并确认引擎 tools/gonggong_bridge.py 已安装。");
 		return;
 	}
-	EditorSettings::get_singleton()->set("gonggong/workspace", workspace->get_text());
-	EditorSettings::get_singleton()->set("gonggong/python", python->get_text());
-	EditorSettings::get_singleton()->set("gonggong/tenant", tenant->get_text());
+	apply_environment_settings(workspace->get_text(), python->get_text(), tenant->get_text());
 	EditorSettings::save();
 	result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
 	List<String> args;
@@ -333,16 +428,20 @@ void GongGongPanel::run_action(const String &p_action) {
 		return;
 	}
 	worker = pid;
+	update_environment_controls();
 	output->set_text(U"正在执行检查…");
 	timer->start();
 }
 
 void GongGongPanel::poll() {
-	if (OS::get_singleton()->is_process_running(worker)) {
+	// A deployment may finish after a new chat turn has acquired the task lock.
+	// Keep its result and configuration pending until that turn releases it.
+	if (OS::get_singleton()->is_process_running(worker) || task_locked) {
 		return;
 	}
 	timer->stop();
 	worker = -1;
+	update_environment_controls();
 	if (setup_running) {
 		setup_running = false;
 		Dictionary result;
@@ -357,8 +456,7 @@ void GongGongPanel::poll() {
 			return;
 		}
 		if (setup_rolling_back) {
-			EditorSettings::get_singleton()->set("gonggong/workspace", setup_previous.get("workspace", String()));
-			EditorSettings::get_singleton()->set("gonggong/python", setup_previous.get("python", String()));
+			apply_environment_settings(setup_previous.get("workspace", String()), setup_previous.get("python", String()), EDITOR_GET("gonggong/tenant"));
 			for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("PATH") }) {
 				OS::get_singleton()->set_environment(name, setup_previous.get(name, String()));
 			}
@@ -375,8 +473,7 @@ void GongGongPanel::poll() {
 			output->set_text(U"点火器返回的运行库路径无效，未恢复原需求。");
 			return;
 		}
-		EditorSettings::get_singleton()->set("gonggong/workspace", workspace->get_text().strip_edges());
-		EditorSettings::get_singleton()->set("gonggong/python", deployed_python);
+		apply_environment_settings(workspace->get_text().strip_edges(), deployed_python, EDITOR_GET("gonggong/tenant"));
 		OS::get_singleton()->set_environment("GONGGONG_PYTHON", deployed_python);
 		OS::get_singleton()->set_environment("GONGGONG_NODE", deployed_node);
 		OS::get_singleton()->set_environment("GONGGONG_GIT", deployed_git);

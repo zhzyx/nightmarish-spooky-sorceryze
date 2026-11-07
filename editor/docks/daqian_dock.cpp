@@ -111,6 +111,7 @@ EditorDock *create_daqian_dock() {
 	VBoxContainer *content = memnew(VBoxContainer);
 	content->set_name("DaqianWorkspace");
 	content->set_script(workspace);
+	content->set_meta("unified_settings", true);
 	content->set("rules", rules);
 	content->set("graph_layout", layout);
 	content->set("graph_script", graph);

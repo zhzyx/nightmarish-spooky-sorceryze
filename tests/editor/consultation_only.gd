@@ -1,6 +1,12 @@
 @tool
 extends SceneTree
 
+func _chat_setting(chat: Node, name: String) -> Control:
+	for section in [chat.get_ai_settings_control(), chat.get_environment_settings_control()]:
+		var control = section.find_child(name, true, false)
+		if control != null: return control
+	return null
+
 func _initialize():
 	_run.call_deferred()
 
@@ -39,22 +45,25 @@ func _run():
 	settings.set_setting("gonggong/python", "missing-python")
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "fixture"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
-		dock.find_child(name, true, false).button_pressed = true
-	# The deployment dialog is a Windows host feature; macOS rejects missing workspace configuration.
+		_chat_setting(dock, name).button_pressed = true
+	# Windows guides to central environment settings; macOS rejects missing workspace configuration.
 	var gate_text = "已触发本地配置点火器" if OS.has_feature("windows") else "GongGong 未配置"
 	_send(dock, "INITIAL_DEVELOPMENT_MUST_GATE")
 	if not await _wait(dock, gate_text):
 		quit(1)
 		return
 	if OS.has_feature("windows"):
-		assert(dock.find_child("GongGongRuntimeSetup", true, false).visible)
-	dock.find_child("GongGongRuntimeSetup", true, false).hide()
+		var settings_page = root.find_child("UnifiedSettings", true, false)
+		assert(settings_page.is_visible_in_tree() and settings_page.find_child("UnifiedSettingsCategories", true, false).current_tab == 1)
+		assert(not dock.find_child("GongGongRuntimeSetup", true, false).visible)
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await process_frame
 	check.button_pressed = true
 	_send(dock, "CONSULTATION_ATTACK")
 	# Changing the next-message checkbox cannot upgrade the active turn.

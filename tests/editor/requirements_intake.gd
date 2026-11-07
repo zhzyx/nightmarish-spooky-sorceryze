@@ -38,12 +38,12 @@ func _run():
 	settings.set_setting("gonggong/python", OS.get_environment("GONGGONG_PYTHON"))
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "fixture"
-	dock.find_child("APIKey", true, false).text = "intake-unit-session-secret"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "intake-unit-session-secret"
 	var runtime_source = OS.get_environment("GONGGONG_TEST_RUNTIME_SOURCE")
 	if not runtime_source.is_empty():
 		settings.set_setting("gonggong/python", folder.path_join("missing-python.exe"))
@@ -51,15 +51,23 @@ func _run():
 	if not runtime_source.is_empty():
 		await create_timer(0.2).timeout
 		var setup = dock.find_child("GongGongRuntimeSetup", true, false)
-		if not setup.visible:
-			push_error("Missing Python did not open the local environment igniter")
+		var settings_page = root.find_child("UnifiedSettings", true, false)
+		var categories = settings_page.find_child("UnifiedSettingsCategories", true, false)
+		var environment = dock.get_environment_settings_control()
+		if not settings_page.is_visible_in_tree() or categories.current_tab != 1 or not environment.is_visible_in_tree() or setup.visible:
+			push_error("Missing Python did not navigate to central environment settings before deployment confirmation")
 			quit(1)
 			return
-		if "Python" not in setup.find_child("GongGongMissingComponents", true, false).text:
+		if "Python" not in environment.find_child("GongGongMissingComponents", true, false).text:
 			push_error("Igniter did not list the missing component")
 			quit(1)
 			return
-		setup.find_child("GongGongRuntimeSource", true, false).text = runtime_source
+		environment.find_child("GongGongRuntimeSource", true, false).text = runtime_source
+		environment.find_child("GongGongEnvironmentSetup", true, false).pressed.emit()
+		if not setup.visible:
+			push_error("Explicit environment deployment did not open its confirmation")
+			quit(1)
+			return
 		setup.get_ok_button().pressed.emit()
 	var intake_waiting := false
 	for attempt in range(1000):
@@ -142,7 +150,9 @@ func _run():
 	if not await _wait_reply(dock, 7):
 		quit(1)
 		return
-	dock.find_child("GongGongEnvironmentSetup", true, false).pressed.emit()
+	dock.find_child("EnvironmentSettings", true, false).pressed.emit()
+	await process_frame
+	dock.get_environment_settings_control().find_child("GongGongEnvironmentSetup", true, false).pressed.emit()
 	if not dock.find_child("GongGongRuntimeSetup", true, false).visible:
 		push_error("Manual environment repair is unavailable after setup")
 		quit(1)

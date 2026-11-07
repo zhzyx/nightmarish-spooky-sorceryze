@@ -7,19 +7,19 @@ is touched. The restart test uses the normal EditorNode save/restart path.
 
 import argparse
 import ctypes
-from ctypes import wintypes
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
+from ctypes import wintypes
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-MOCK = r'''
+MOCK = r"""
 import argparse, json, time
 from pathlib import Path
 p = argparse.ArgumentParser()
@@ -47,9 +47,9 @@ if mode == 'fail':
     raise SystemExit(7)
 artifact = Path(__file__).resolve().parents[1] / 'bin/godot.windows.editor.dev.x86_64.self_update_b.mono.exe'
 state(stage='ready', percent=100, exit_code=0, executable=str(artifact))
-'''
+"""
 
-SCRIPT = r'''
+SCRIPT = r"""
 @tool
 extends SceneTree
 
@@ -69,17 +69,17 @@ func _run():
     var dock = root.find_child("AI Chat", true, false)
     if not _check(dock != null, "AI Chat dock missing"):
         return
-    var build = dock.find_child("BuildEngine", true, false)
-    var restart = dock.find_child("RestartUpdatedEngine", true, false)
+    var build = dock.get_environment_settings_control().find_child("BuildEngine", true, false)
+    var restart = dock.get_environment_settings_control().find_child("RestartUpdatedEngine", true, false)
     var cancel = dock.find_child("CancelEngineBuild", true, false)
     var progress = dock.find_child("EngineBuildProgress", true, false)
     var status = dock.find_child("EngineBuildStatus", true, false)
     var approval = dock.find_child("EngineBuildApproval", true, false)
-    dock.find_child("CLIBridge", true, false).text = OS.get_environment("SELF_UPDATE_TEST_ENGINE") + "/tools/codebuddy_cli/godot_bridge.js"
-    dock.find_child("EngineBuildPython", true, false).text = OS.get_environment("SELF_UPDATE_TEST_PYTHON")
-    dock.find_child("AllowTools", true, false).button_pressed = true
-    dock.find_child("AutoExecuteCommands", true, false).button_pressed = false
-    dock.find_child("EngineAutoRestart", true, false).button_pressed = false
+    dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("SELF_UPDATE_TEST_ENGINE") + "/tools/codebuddy_cli/godot_bridge.js"
+    dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = OS.get_environment("SELF_UPDATE_TEST_PYTHON")
+    dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+    dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
+    dock.get_environment_settings_control().find_child("EngineAutoRestart", true, false).button_pressed = false
     build.pressed.emit()
     if not _check(approval.visible and cancel.disabled, "Missing build approval or started without approval"):
         return
@@ -114,7 +114,7 @@ func _run():
         await process_frame
     if not _check(restart.disabled and "取消" in status.text, "Cancellation updated editor or timed out"):
         return
-    dock.find_child("EngineAutoRestart", true, false).button_pressed = true
+    dock.get_environment_settings_control().find_child("EngineAutoRestart", true, false).button_pressed = true
     build.pressed.emit()
     approval.hide()
     approval.confirmed.emit()
@@ -123,9 +123,9 @@ func _run():
         await process_frame
     push_error("Successful build did not automatically restart")
     quit(1)
-'''
+"""
 
-PLUGIN = r'''
+PLUGIN = r"""
 @tool
 extends EditorPlugin
 
@@ -146,40 +146,40 @@ func _ready_check():
     receipt.close()
     DirAccess.rename_absolute("res://receipt.tmp", "res://receipt.json")
     get_tree().quit(0 if ok else 1)
-'''
+"""
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--godot', type=Path, required=True)
+    parser.add_argument("--godot", type=Path, required=True)
     args = parser.parse_args()
-    if os.name != 'nt':
-        parser.error('This self-update test targets Windows')
-    with tempfile.TemporaryDirectory(prefix='self_update_test_', dir=ROOT / 'bin') as directory:
+    if os.name != "nt":
+        parser.error("This self-update test targets Windows")
+    with tempfile.TemporaryDirectory(prefix="self_update_test_", dir=ROOT / "bin") as directory:
         base = Path(directory)
-        engine = base / 'engine'
-        project = base / 'project'
-        (engine / 'tools/codebuddy_cli').mkdir(parents=True)
-        (engine / 'bin').mkdir()
+        engine = base / "engine"
+        project = base / "project"
+        (engine / "tools/codebuddy_cli").mkdir(parents=True)
+        (engine / "bin").mkdir()
         # Current hosts locate sources from the executable before consulting CLI
         # settings. Keep both the initial executable and source marker isolated.
-        (engine / 'SConstruct').write_text('# Isolated mock build fixture\n', encoding='utf-8')
+        (engine / "SConstruct").write_text("# Isolated mock build fixture\n", encoding="utf-8")
         source_editor = args.godot.resolve()
-        if source_editor.name.endswith('.console.exe'):
-            source_editor = source_editor.with_name(source_editor.name.replace('.console.exe', '.exe'))
-        initial = engine / 'bin/godot.windows.editor.dev.x86_64.self_update_a.mono.exe'
+        if source_editor.name.endswith(".console.exe"):
+            source_editor = source_editor.with_name(source_editor.name.replace(".console.exe", ".exe"))
+        initial = engine / "bin/godot.windows.editor.dev.x86_64.self_update_a.mono.exe"
         os.link(source_editor, initial)
-        (project / 'addons/restart_receipt').mkdir(parents=True)
-        (engine / 'tools/editor_self_build.py').write_text(MOCK, encoding='utf-8')
-        (engine / 'tools/mode').write_text('fail', encoding='utf-8')
+        (project / "addons/restart_receipt").mkdir(parents=True)
+        (engine / "tools/editor_self_build.py").write_text(MOCK, encoding="utf-8")
+        (engine / "tools/mode").write_text("fail", encoding="utf-8")
         # The real watchdog, so the supervised handoff is exercised. Without it
         # the host silently falls back to an unsupervised restart and a broken
         # watchdog invocation would never be noticed here.
-        shutil.copyfile(ROOT / 'tools/editor_restart_watchdog.py', engine / 'tools/editor_restart_watchdog.py')
+        shutil.copyfile(ROOT / "tools/editor_restart_watchdog.py", engine / "tools/editor_restart_watchdog.py")
         # A distinct executable proves the actual process was switched, not just reopened.
-        artifact = engine / 'bin/godot.windows.editor.dev.x86_64.self_update_b.mono.exe'
+        artifact = engine / "bin/godot.windows.editor.dev.x86_64.self_update_b.mono.exe"
         os.link(source_editor, artifact)
-        for name in ['GodotSharp', 'D3D12Core.dll', 'd3d12SDKLayers.dll']:
+        for name in ["GodotSharp", "D3D12Core.dll", "d3d12SDKLayers.dll"]:
             source = args.godot.resolve().parent / name
             destination = artifact.parent / name
             if source.is_dir():
@@ -187,24 +187,30 @@ def main():
                 shutil.copytree(source, destination)
             elif source.is_file():
                 os.link(source, destination)
-        (project / 'project.godot').write_text('config_version=5\n[application]\nconfig/name="Self Update Test"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[editor_plugins]\nenabled=PackedStringArray("res://addons/restart_receipt/plugin.cfg")\n', encoding='utf-8')
-        (project / 'integration.gd').write_text(SCRIPT, encoding='utf-8')
-        (project / 'addons/restart_receipt/plugin.gd').write_text(PLUGIN, encoding='utf-8')
-        (project / 'addons/restart_receipt/plugin.cfg').write_text('[plugin]\nname="Restart Receipt"\ndescription="Integration fixture"\nauthor="Godot"\nversion="1"\nscript="plugin.gd"\n', encoding='utf-8')
+        (project / "project.godot").write_text(
+            'config_version=5\n[application]\nconfig/name="Self Update Test"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[editor_plugins]\nenabled=PackedStringArray("res://addons/restart_receipt/plugin.cfg")\n',
+            encoding="utf-8",
+        )
+        (project / "integration.gd").write_text(SCRIPT, encoding="utf-8")
+        (project / "addons/restart_receipt/plugin.gd").write_text(PLUGIN, encoding="utf-8")
+        (project / "addons/restart_receipt/plugin.cfg").write_text(
+            '[plugin]\nname="Restart Receipt"\ndescription="Integration fixture"\nauthor="Godot"\nversion="1"\nscript="plugin.gd"\n',
+            encoding="utf-8",
+        )
         env = os.environ.copy()
-        env['SELF_UPDATE_TEST_ENGINE'] = str(engine)
-        env['SELF_UPDATE_TEST_PROJECT'] = str(project)
-        env['SELF_UPDATE_TEST_PYTHON'] = sys.executable
-        env['APPDATA'] = str(base / 'appdata')
-        env['LOCALAPPDATA'] = str(base / 'localappdata')
-        env['DOTNET_ROOT'] = str(ROOT / '.dotnet')
-        env['DOTNET_ROOT_X64'] = str(ROOT / '.dotnet')
-        env['PATH'] = str(ROOT / '.dotnet') + os.pathsep + env.get('PATH', '')
-        command = [str(initial), '--headless', '--editor', '--path', str(project), '--script', 'res://integration.gd']
+        env["SELF_UPDATE_TEST_ENGINE"] = str(engine)
+        env["SELF_UPDATE_TEST_PROJECT"] = str(project)
+        env["SELF_UPDATE_TEST_PYTHON"] = sys.executable
+        env["APPDATA"] = str(base / "appdata")
+        env["LOCALAPPDATA"] = str(base / "localappdata")
+        env["DOTNET_ROOT"] = str(ROOT / ".dotnet")
+        env["DOTNET_ROOT_X64"] = str(ROOT / ".dotnet")
+        env["PATH"] = str(ROOT / ".dotnet") + os.pathsep + env.get("PATH", "")
+        command = [str(initial), "--headless", "--editor", "--path", str(project), "--script", "res://integration.gd"]
         # Native create_instance() does not promise inherited captured pipes.
         # Watch the atomic startup receipt instead of mistaking old-process exit
         # for new-process readiness, without racing fixture cleanup against startup.
-        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
         kernel.FindFirstChangeNotificationW.argtypes = [wintypes.LPCWSTR, wintypes.BOOL, wintypes.DWORD]
         kernel.FindFirstChangeNotificationW.restype = wintypes.HANDLE
         kernel.FindNextChangeNotification.argtypes = [wintypes.HANDLE]
@@ -213,9 +219,11 @@ def main():
         change = kernel.FindFirstChangeNotificationW(str(project), False, 0x001 | 0x010)
         if change == ctypes.c_void_p(-1).value:
             raise ctypes.WinError(ctypes.get_last_error())
-        receipt = project / 'receipt.json'
+        receipt = project / "receipt.json"
         try:
-            result = subprocess.run(command, env=env, capture_output=True, encoding='utf-8', errors='replace', timeout=70)
+            result = subprocess.run(
+                command, env=env, capture_output=True, encoding="utf-8", errors="replace", timeout=70
+            )
             print(result.stdout)
             print(result.stderr)
             deadline = time.monotonic() + 20
@@ -228,26 +236,30 @@ def main():
         finally:
             kernel.FindCloseChangeNotification(change)
         if result.returncode or not receipt.is_file():
-            print('SELF_UPDATE_UI_RESTART_FAILED', result.returncode)
+            print("SELF_UPDATE_UI_RESTART_FAILED", result.returncode)
             return 1
-        data = json.loads(receipt.read_text(encoding='utf-8'))
+        data = json.loads(receipt.read_text(encoding="utf-8"))
         kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
         kernel.OpenProcess.restype = wintypes.HANDLE
         kernel.CloseHandle.argtypes = [wintypes.HANDLE]
-        child = kernel.OpenProcess(0x00100000, False, data['pid'])
+        child = kernel.OpenProcess(0x00100000, False, data["pid"])
         if child:
             try:
                 if kernel.WaitForSingleObject(child, 20000) != 0:
-                    raise RuntimeError('Restarted test editor did not exit; fixture retained')
+                    raise RuntimeError("Restarted test editor did not exit; fixture retained")
             finally:
                 kernel.CloseHandle(child)
         elif ctypes.get_last_error() != 87:
             raise ctypes.WinError(ctypes.get_last_error())
-        ok = data['ok'] and '.self_update_b.' in data['executable'] and Path(data['project']).resolve() == project.resolve()
-        print('RESTART_RECEIPT', json.dumps(data, ensure_ascii=False))
-        print('SELF_UPDATE_UI_RESTART_OK' if ok else 'SELF_UPDATE_UI_RESTART_FAILED')
+        ok = (
+            data["ok"]
+            and ".self_update_b." in data["executable"]
+            and Path(data["project"]).resolve() == project.resolve()
+        )
+        print("RESTART_RECEIPT", json.dumps(data, ensure_ascii=False))
+        print("SELF_UPDATE_UI_RESTART_OK" if ok else "SELF_UPDATE_UI_RESTART_FAILED")
         return 0 if ok else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raise SystemExit(main())

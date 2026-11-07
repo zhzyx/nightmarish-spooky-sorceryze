@@ -1,6 +1,11 @@
 @tool
 extends VBoxContainer
 
+signal settings_requested(section: String)
+var observed_environment := ""
+var environment_reset_pending := false
+var environment_check_queued := false
+
 var canvas_bar := HBoxContainer.new()
 var canvas_message := LineEdit.new()
 var canvas_models := OptionButton.new()
@@ -370,10 +375,13 @@ func _ready() -> void:
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
+	models_dialog.set_meta("unified_settings", get_meta("unified_settings", false))
 	models_dialog.editor_session = editor_session
 	add_child(models_dialog)
 	models_dialog.connect("catalog_changed",_catalog_changed)
 	models_dialog.connect("access_denied",_access_denied)
+	if models_dialog.has_signal("access_requested"):
+		models_dialog.connect("access_requested", _open_models)
 	editor.debug_command.connect(_debug_command)
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
@@ -403,9 +411,43 @@ func _ready() -> void:
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
 	_gate_visibility(false)
+	if get_meta("unified_settings", false):
+		observed_environment = _environment_signature()
+		EditorInterface.get_editor_settings().settings_changed.connect(_queue_environment_check)
 	notice.text = "点击「工作区连接」绑定共工仓库。" if _repo().is_empty() else "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
 	_start_session.call_deferred()
+
+
+func _environment_signature() -> String:
+	var settings := EditorInterface.get_editor_settings()
+	var values := []
+	for setting in ['gonggong/workspace', 'gonggong/python', 'gonggong/tenant']:
+		values.append(str(settings.get_setting(setting)) if settings.has_setting(setting) else '')
+	return JSON.stringify(values)
+
+
+func prepare_environment_change() -> void:
+	# Called synchronously before the shared settings are changed, so cleanup
+	# still uses the old workspace and Python executable.
+	environment_reset_pending = true
+	_forget("运行环境已改变，已释放旧工作区连接。")
+
+
+func _queue_environment_check() -> void:
+	if environment_check_queued: return
+	environment_check_queued = true
+	_check_environment_changed.call_deferred()
+
+
+func _check_environment_changed() -> void:
+	environment_check_queued = false
+	var current_environment := _environment_signature()
+	if current_environment == observed_environment: return
+	if not environment_reset_pending:
+		_forget("运行环境已改变，请重新核对当前工作区身份。")
+	observed_environment = current_environment
+	environment_reset_pending = false
 
 
 func _style_board_controls() -> void:
@@ -639,6 +681,7 @@ func _build_workbench() -> void:
 		label.text = entry[0]
 		connection_panel.add_child(label)
 		connection_panel.add_child(entry[1])
+		entry[1].editable = not get_meta("unified_settings", false)
 	var buttons := HBoxContainer.new()
 	connection_panel.add_child(buttons)
 	_button(buttons, "保存并连接", _save_connection)
@@ -659,6 +702,9 @@ func _build_workbench() -> void:
 
 
 func _open_connection() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("environment")
+		return
 	var settings := EditorInterface.get_editor_settings()
 	workspace_path.text = _repo()
 	python_path.text = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
@@ -667,6 +713,9 @@ func _open_connection() -> void:
 
 
 func _save_connection() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("environment")
+		return
 	var path := workspace_path.text.strip_edges().simplify_path()
 	var python := python_path.text.strip_edges()
 	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
@@ -1572,6 +1621,7 @@ func _gate_visibility(opened: bool) -> void:
 	if not opened:
 		_close_operation_details()
 		models_dialog.hide()
+		if get_meta("unified_settings", false): models_dialog.clear_embedded_access()
 		clarification_dialog.hide()
 		clarification_binding.clear()
 		clarification_questions.clear()
@@ -1688,10 +1738,25 @@ func _fresh_access() -> bool:
 
 
 func _open_models() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("ai")
+		models_dialog.info.text = "正在核对模型库访问身份…"
+		if actor.is_empty():
+			await refresh()
 	if await _fresh_access():
 		models_dialog.user_id = actor.user_id
 		models_dialog.chat = chat
-		models_dialog.popup_centered()
+		if get_meta("unified_settings", false):
+			models_dialog.authorize_embedded(_repo())
+		else:
+			models_dialog.popup_centered()
+	elif get_meta("unified_settings", false):
+		models_dialog.clear_embedded_access()
+		models_dialog.info.text = "请先在环境页配置工作区及 Python，并核对仓库身份。"
+
+
+func get_model_settings_control() -> Control:
+	return models_dialog.get_settings_control() if is_instance_valid(models_dialog) and models_dialog.has_method("get_settings_control") else null
 
 
 func _use_personal_board(auth: Dictionary) -> void:

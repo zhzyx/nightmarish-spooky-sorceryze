@@ -1,5 +1,18 @@
 @tool
 extends SceneTree
+
+func _refresh_models(chat: Node):
+	# A real connection edit now replaces the removed manual refresh action.
+	# Normalization retains the fixture credential/executable used on the wire.
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var field = chat.get_environment_settings_control().find_child("CLINode", true, false) if backend.selected in [1, 2] else chat.get_ai_settings_control().find_child("APIKey", true, false)
+	field.text = field.text.get_base_dir() + "/./" + field.text.get_file() if backend.selected in [1, 2] else field.text + " "
+	var status = chat.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var previous_status = status.text
+	field.text_changed.emit(field.text)
+	var deadline = Time.get_ticks_msec() + 5000
+	while not backend.disabled and status.text == previous_status and Time.get_ticks_msec() < deadline:
+		await process_frame
 var dock: Node
 var checks: Array = []
 func finish(ok: bool, reason := ""):
@@ -15,15 +28,15 @@ func _run():
 	if dock == null:
 		finish(false, "missing dock")
 		return
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(2)
 	backend.item_selected.emit(2)
-	dock.find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
-	dock.find_child("CodexEntry", true, false).text = OS.get_environment("MODEL_TEST_CODEX")
-	dock.find_child("RefreshModels", true, false).pressed.emit()
-	var picker = dock.find_child("ModelPicker", true, false)
-	var status = dock.find_child("ModelStatus", true, false)
-	var refresh = dock.find_child("RefreshModels", true, false)
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("MODEL_TEST_CODEX")
+	await _refresh_models(dock)
+	var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
+	var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var refresh = backend # Backend is disabled while the automatic model query owns the controls.
 	var until = Time.get_ticks_msec() + 40000
 	while refresh.disabled and Time.get_ticks_msec() < until:
 		await create_timer(0.05).timeout
@@ -33,7 +46,7 @@ func _run():
 	checks.append("live Codex model/list populated picker")
 	picker.select(1)
 	picker.item_selected.emit(1)
-	var effort = dock.find_child("ReasoningEffort", true, false)
+	var effort = dock.get_ai_settings_control().find_child("ReasoningEffort", true, false)
 	if effort.disabled or effort.is_item_disabled(3):
 		finish(false, "high unavailable for live default model")
 		return
@@ -58,7 +71,7 @@ func _run():
 			checks.append("unsupported ultra disabled, new model uses default")
 			break
 	# Bad path must leave refresh retryable and keep chat untouched.
-	dock.find_child("CodexEntry", true, false).text = "/nonexistent/codex"
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = "/nonexistent/codex"
 	refresh.pressed.emit()
 	if refresh.disabled or not "路径" in status.text:
 		finish(false, "invalid path cannot retry")
@@ -67,8 +80,8 @@ func _run():
 	for api_backend in [0, 3]:
 		backend.select(api_backend)
 		backend.item_selected.emit(api_backend)
-		dock.find_child("APIEndpoint", true, false).text = OS.get_environment("MODEL_TEST_ENDPOINT") + ("/responses" if api_backend == 3 else "/chat/completions")
-		dock.find_child("APIModel", true, false).text = "fixture-reasoner"
+		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("MODEL_TEST_ENDPOINT") + ("/responses" if api_backend == 3 else "/chat/completions")
+		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture-reasoner"
 		refresh.pressed.emit()
 		until = Time.get_ticks_msec() + 5000
 		while refresh.disabled and Time.get_ticks_msec() < until:
