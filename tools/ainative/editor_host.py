@@ -197,6 +197,10 @@ def selected(host, request, preview=False):
 
 
 def dispatch(args, request):
+    if args.command == "managed-comfy":
+        from managed_comfy import manage
+
+        return manage(request)
     if args.command == "service-check":
         return check_service(request.get("service", {}))
     registry, providers = NodeRegistry(), {}
@@ -277,7 +281,8 @@ def dispatch(args, request):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument(
-        "command", choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check"]
+        "command",
+        choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check", "managed-comfy"],
     )
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")

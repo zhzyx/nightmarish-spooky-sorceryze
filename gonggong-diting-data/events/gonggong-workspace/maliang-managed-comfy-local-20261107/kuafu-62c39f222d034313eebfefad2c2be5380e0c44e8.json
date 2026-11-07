@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-62c39f222d034313eebfefad2c2be5380e0c44e8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "992171ec1a8c0eb92b54ab1c908f1c176d67704886c1277c2c6aa6ab473bf352",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/429",
+    "action": "validation",
+    "detection_head": "d16199d586f0641e74599697f195a8fd7a51157e",
+    "context_sha256": "300e9fad917d3b7fd2ab8f307ffbcebf26a952daae7535a0405ae32a5411761e",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "evidence": "formal gate v2 exact-byte collection check; staged LF-normalized candidate evidence files",
+    "diagnosis": "Git normalized new evidence JSON to LF in the candidate index while Windows source files still had CRLF. Exact-byte collection validation correctly rejected the mismatch. Normalized the five new evidence source files to LF; semantic content, recorded canonical Diting events and business sources are unchanged.",
+    "next_action": "Stage assessment and rerun exact formal gate, then signed PR and CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T11:33:23.432187+00:00",
+    "attempted": "Compared index/worktree bytes and normalized only current task evidence; issue binding digest already targets normalized candidate bytes.",
+    "repair_owner": "/root",
+    "continuable": "Native and business results retain the same source hashes; production code frozen."
+  },
+  "occurred_at": "2026-11-07T11:34:50.547431+00:00",
+  "sha256": "2b3eef696bf5ff321e7b475f93bc8bfa31d2076153dfcf004ae8e72b8df1182c"
+}

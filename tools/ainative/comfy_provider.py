@@ -6,6 +6,7 @@ POST from this storage; unknown receipts are reconciled from queue/history only.
 
 import base64
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -153,7 +154,12 @@ class ComfyProvider:
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs (key TEXT PRIMARY KEY, body TEXT NOT NULL)")
         self.fingerprint = digest([config, hashlib.sha256(Path(__file__).read_bytes()).hexdigest()])
-        self.http = urllib.request.build_opener(NoRedirect())
+        try:
+            local = ipaddress.ip_address(url.hostname).is_loopback
+        except ValueError:
+            local = url.hostname == "localhost"
+        handlers = [urllib.request.ProxyHandler({})] if local else []
+        self.http = urllib.request.build_opener(*handlers, NoRedirect())
 
     @contextmanager
     def db(self):

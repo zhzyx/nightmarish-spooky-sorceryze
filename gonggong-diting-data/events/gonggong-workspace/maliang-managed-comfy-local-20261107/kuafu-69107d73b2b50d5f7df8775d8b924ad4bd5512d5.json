@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-69107d73b2b50d5f7df8775d8b924ad4bd5512d5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5b1974d57673821f4345b0a6f2b750123470e786d157cbee298ce568a98dd513",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/429",
+    "action": "validation",
+    "detection_head": "5026ac8f3466503974eac93161fc0797c714a286",
+    "context_sha256": "300e9fad917d3b7fd2ab8f307ffbcebf26a952daae7535a0405ae32a5411761e",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "evidence": "private real-ui-v3 events.jsonl and worker.log; shared UI managed-Comfy health result",
+    "diagnosis": "Managed local Mesh service starts and reports CUDA/model/queue health. Actual restricted CLI turn completed without an image: imagegen execution requires code-mode host, which provider disabled. Earlier capability probes generated real PNGs but allowed shell copying and do not prove this provider. WebSocket retries still fall back to HTTPS; exact network cause remains unknown.",
+    "next_action": "Unique provider worker corrects minimal tool host and inherited environment; root repeats real UI generation/edit/local Mesh acceptance, independent reviewer checks exact candidate before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T10:15:57.388311+00:00",
+    "attempted": "Preserved failed v1/v2/v3 receipts; stopped only failed owned Godot runner; no automatic retry of unknown requests.",
+    "repair_owner": "/root/sinan_c1d8d6deadbbaec2 for provider; /root for integration",
+    "continuable": "Native entry and lifecycle regression proceed; business acceptance remains incomplete."
+  },
+  "occurred_at": "2026-11-07T10:57:01.752335+00:00",
+  "sha256": "7a42bd454f6d1ce315b248dde906c8c56f24e35a0516df80ed62458da16fafa5"
+}

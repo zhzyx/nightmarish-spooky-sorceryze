@@ -99,6 +99,12 @@ func run():
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
 	details.state_key = panel.state_dir.get_file()
 	details.host_sha256 = FileAccess.get_sha256(panel.host_edit.text)
+	var bundle = tools.get_base_dir()
+	details.bundle_version = bundle.get_file()
+	details.bundle_sha256 = {'manifest.json':FileAccess.get_sha256(bundle.path_join('manifest.json'))}
+	for folder in ['scripts', 'tools']:
+		for filename in DirAccess.get_files_at(bundle.path_join(folder)):
+			details.bundle_sha256[folder + '/' + filename] = FileAccess.get_sha256(bundle.path_join(folder).path_join(filename))
 	panel.save_settings()
 	var settings = ConfigFile.new()
 	settings.load(panel.state_dir.path_join('local.cfg'))
@@ -133,7 +139,8 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy"], 'bundled service picker preserves explicit offline, ComfyUI and legacy modes')
+	check(service_modes == ["offline", "comfy", "legacy", "codex"], 'bundled service picker preserves existing modes and adds current-login CLI generation')
+	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
 	var serial = panel.serial

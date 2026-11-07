@@ -6,11 +6,13 @@ GUI runs therefore use a persisted run-scoped provider identity, preventing
 cross-run reuse under an unverified model identity.
 """
 
+import ipaddress
 import json
 import sqlite3
 import urllib.error
 import urllib.parse
 import urllib.request
+from contextlib import closing
 from pathlib import Path
 
 KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh")
@@ -28,6 +30,11 @@ MESH_NODES = {
     "SaveGLB",
 }
 MESSAGES = {
+    "cli_missing": "未找到可用的 Codex CLI。请选择本机已安装的 Codex 程序。",
+    "cli_check_failed": "无法检测 Codex CLI，请检查程序路径和本机运行环境。",
+    "cli_image_unavailable": "当前 Codex CLI 未提供内置图像生成能力，请更新或检查已有账号的功能。",
+    "cli_unavailable": "未找到可用的 Codex CLI。请选择本机已安装的 Codex 程序。",
+    "cli_login_required": "Codex CLI 需要使用你已有的 ChatGPT 登录；请先完成 CLI 登录，再检测连接。",
     "service_not_configured": "尚未配置真实生成服务。请打开“本机设置”，选择 ComfyUI，检测连接并保存模型；离线复制仍可使用。",
     "service_config_invalid": "生成服务设置无效。请在“本机设置”重新填写服务类型、地址及模型并保存。",
     "service_address_invalid": "服务地址无效。请填写 http:// 或 https:// 服务根地址，不要包含账号、密码、查询参数或接口路径。",
@@ -62,14 +69,21 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def settings(value):
-    if not isinstance(value, dict) or set(value) - {"schema_version", "mode", "endpoint", "image_model", "mesh_model"}:
+    if not isinstance(value, dict) or set(value) - {
+        "schema_version",
+        "mode",
+        "endpoint",
+        "image_model",
+        "mesh_model",
+        "cli_path",
+    }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
     result.update(value)
     if (
         result["schema_version"] != 1
         or isinstance(result["schema_version"], bool)
-        or result["mode"] not in ("offline", "comfy")
+        or result["mode"] not in ("offline", "comfy", "codex")
     ):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
@@ -80,7 +94,13 @@ def settings(value):
             name.startswith(("/", "\\")) or ".." in name.replace("\\", "/").split("/") or any(ord(c) < 32 for c in name)
         ):
             raise ServiceError("service_config_invalid")
-    if result["mode"] == "comfy":
+    if result["mode"] == "codex":
+        result.setdefault("cli_path", "codex")
+        if not isinstance(result["cli_path"], str) or not result["cli_path"].strip():
+            raise ServiceError("cli_unavailable")
+    elif "cli_path" in result:
+        raise ServiceError("service_config_invalid")
+    if result["mode"] in ("comfy", "codex"):
         try:
             url = urllib.parse.urlsplit(result["endpoint"].strip())
             valid = (
@@ -98,6 +118,10 @@ def settings(value):
         if not valid:
             raise ServiceError("service_address_invalid")
         result["endpoint"] = result["endpoint"].strip().rstrip("/")
+        if result["mode"] == "codex" and (
+            url.hostname not in ("127.0.0.1", "localhost", "::1") or url.scheme != "http"
+        ):
+            raise ServiceError("service_address_invalid")
     return result
 
 
@@ -115,7 +139,13 @@ def load_settings(path):
 def read_endpoint(endpoint, route):
     try:
         request = urllib.request.Request(endpoint + route, method="GET")
-        with urllib.request.build_opener(NoRedirect()).open(request, timeout=8) as response:
+        host = urllib.parse.urlsplit(endpoint).hostname
+        try:
+            local = ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            local = host == "localhost"
+        handlers = [urllib.request.ProxyHandler({})] if local else []
+        with urllib.request.build_opener(*handlers, NoRedirect()).open(request, timeout=8) as response:
             data = response.read(16 * 1024 * 1024 + 1)
         if len(data) > 16 * 1024 * 1024:
             raise ServiceError("service_protocol_invalid")
@@ -165,6 +195,8 @@ def capability(kind, config, info, models, extra_image=False):
 def _probe_service(value):
     try:
         config = settings(value)
+        if config["mode"] == "codex":
+            return _probe_codex(config)
         if config["mode"] == "offline":
             return dict(
                 mode="offline",
@@ -217,6 +249,48 @@ def check_service(value):
     return _probe_service(value)[0]
 
 
+def _probe_codex(config):
+    from codex_provider import check_cli
+
+    cli = check_cli(config["cli_path"])
+    mesh_config = {k: v for k, v in config.items() if k != "cli_path"}
+    mesh_config.update(mode="comfy", image_model="")
+    mesh_report, info = _probe_service(mesh_config)
+    image_ready = bool(cli.get("connected") and cli.get("image_generation"))
+    mesh_ready = (
+        capability("image_to_mesh", mesh_config, info, mesh_report.get("models", {}))
+        if info
+        else dict(
+            ready=False, code="service_unreachable", message="本机网格模型尚未连接，请启动本机模型。", missing_nodes=[]
+        )
+    )
+    image = dict(
+        ready=image_ready,
+        code=cli.get("code", "cli_unavailable"),
+        message=cli.get("message", MESSAGES["cli_unavailable"]),
+        missing_nodes=[],
+    )
+    combined = mesh_ready if image_ready else image
+    report = dict(
+        mode="codex",
+        connected=image_ready,
+        cli=cli,
+        models=dict(image=["builtin"], mesh=mesh_report.get("models", {}).get("mesh", [])),
+        capabilities={
+            "text_to_image": image,
+            "image_to_image": image,
+            "image_to_mesh": mesh_ready,
+            "text_to_mesh": combined,
+        },
+        variants={"image_to_mesh_redraw": combined},
+        backend_revision=cli.get("version", "") + "|local-mesh:" + mesh_report.get("backend_revision", ""),
+        message="Codex CLI 图像能力已连接；图像使用当前登录额度，网格由本机模型执行。"
+        if image_ready
+        else image["message"],
+    )
+    return report, info
+
+
 def check_inputs(model):
     for node in model["nodes"]:
         kind = node.get("type", "copy")
@@ -245,6 +319,36 @@ def prepare_provider(config, model, database, run_id):
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
     if not generated:
         return registry, providers, {"mode": "offline"}
+    if config["mode"] == "codex":
+        from codex_provider import CodexProvider
+
+        report, info = _probe_codex(config)
+        for node in generated:
+            kind = node["type"]
+            ready = report["capabilities"][kind]
+            prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
+            if kind == "image_to_mesh" and prompt.strip():
+                ready = report["variants"]["image_to_mesh_redraw"]
+            if not ready["ready"]:
+                raise ServiceError(
+                    ready.get("code", "service_not_configured"), missing_nodes=ready.get("missing_nodes", ())
+                )
+        mesh = None
+        if any(node["type"].endswith("mesh") for node in generated):
+            mesh = dict(
+                endpoint=config["endpoint"],
+                storage=str(Path(database).resolve().parent / "comfy-state"),
+                checkpoints={"image": dict(name="", sha256=None), "mesh": dict(name=config["mesh_model"], sha256=None)},
+                backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
+            )
+        provider_config = dict(
+            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=mesh
+        )
+        register(registry)
+        providers["codex"] = CodexProvider(provider_config)
+        for node in generated:
+            node["provider"] = "codex"
+        return registry, providers, dict(mode="codex", provider=provider_config)
     if config["mode"] != "comfy":
         raise ServiceError("service_not_configured")
     report, info = _probe_service(config)
@@ -271,13 +375,13 @@ def prepare_provider(config, model, database, run_id):
 
 
 def save_run_service(database, run_id, snapshot):
-    with sqlite3.connect(database) as db:
+    with closing(sqlite3.connect(database)) as db, db:
         db.execute("CREATE TABLE IF NOT EXISTS editor_run_services(run_id TEXT PRIMARY KEY, body TEXT NOT NULL)")
         db.execute("INSERT INTO editor_run_services VALUES(?,?)", (run_id, json.dumps(snapshot, ensure_ascii=False)))
 
 
 def run_service(database, run_id):
-    with sqlite3.connect(database) as db:
+    with closing(sqlite3.connect(database)) as db, db:
         table = db.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='editor_run_services'"
         ).fetchone()
@@ -295,6 +399,11 @@ def restore_provider(snapshot):
     if snapshot["mode"] == "comfy":
         register(registry)
         providers["comfy"] = ComfyProvider(snapshot["provider"])
+    elif snapshot["mode"] == "codex":
+        from codex_provider import CodexProvider
+
+        register(registry)
+        providers["codex"] = CodexProvider(snapshot["provider"])
     return registry, providers
 
 

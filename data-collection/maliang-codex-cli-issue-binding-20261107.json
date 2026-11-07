@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "issue_number": 428,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "validation_ref": "data-collection/maliang-codex-cli-final-validation-20261107.json",
+  "validation_sha256": "8ae33e4896ed5df2475bfd1cd988cc6988898d4669f9cd6782adb5b11646a83e",
+  "scope": "Bind immutable validation and recorded Diting coverage to the actual work order; original wrapped request events retain their history.",
+  "digest_representation": "Git candidate index normalized bytes"
+}
