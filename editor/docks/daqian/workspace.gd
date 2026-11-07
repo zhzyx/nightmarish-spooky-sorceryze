@@ -1488,7 +1488,7 @@ func _gate_visibility(opened: bool) -> void:
 	if opened:
 		_sync_canvas_scope()
 	board_heading.visible = opened
-	move_child(notice_panel, -1 if opened and current.is_empty() else toolbar.get_index() + 1)
+	move_child.call_deferred(notice_panel, -1 if opened and current.is_empty() else toolbar.get_index() + 1)
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
@@ -1576,7 +1576,7 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	var settings := EditorInterface.get_editor_settings()
 	var runtime := _runtime_paths()
 	if runtime.get("_environment_changed", false):
-		return {"error":"运行环境已改变，请重新核对工作区身份。"}
+		return {"environment_changed":true,"error":"运行环境已改变，请重新核对工作区身份。"}
 	var python: String = str(runtime.get("workflow_python", ""))
 	if python.is_empty():
 		return {"error":"工作流 Python 路径未配置或无效"}
@@ -1610,6 +1610,8 @@ func _fresh_access() -> bool:
 	if actor.is_empty():
 		return false
 	var check: Dictionary = await _board_command(true,actor.user_id)
+	if check.get("environment_changed", false):
+		return false
 	if not check.has("access"):
 		if check.get("denied",true):
 			EditorInterface.get_editor_settings().set_project_metadata("daqian_access",_access_key(),{})
@@ -2711,6 +2713,8 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 
 func _host_command(args: PackedStringArray, output_flag: String, request: Dictionary) -> Dictionary:
 	var runtime := _runtime_paths()
+	if runtime.get("_environment_changed", false):
+		return {"environment_changed":true,"error":"运行环境已改变，请重新核对工作区身份。"}
 	var python: String = str(runtime.get("workflow_python", ""))
 	if python.is_empty():
 		return {"error":"工作流 Python 路径未配置或无效"}

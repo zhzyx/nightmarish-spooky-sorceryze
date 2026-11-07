@@ -1,0 +1,128 @@
+{
+  "issue": 459,
+  "reviewer": "/root/unified_settings_review",
+  "scope": "Read-only verification of the one-line node-approval fixture correction and the primary worker final full regression; separate addendum preserving the earlier v11 review and 119-check receipt.",
+  "recommendation": "pass",
+  "findings": [],
+  "binary_sha256": "c3c76c3f61aa51f09b46c56c34b3eed102eeed363ec0ca158599de1d5079e198",
+  "build_head": "ff76a0c0b68466cdecfa2ab0cd1a4cc0efd456af",
+  "build_evidence": {
+    "path": "runtime/unified-settings/build-evidence-v11.json",
+    "sha256": "a82480ec560592f0ca5c26ada4c053ef52e1b8e93e6556762cd874371ca583ab"
+  },
+  "source_sha256": {
+    "editor/SCsub": "94153c14e7c5062dc5f853b3ac2b2c0b03b454ab102f1eecac8fc560dd17e93a",
+    "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+    "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+    "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+    "editor/plugins/unified_settings_editor_plugin.cpp": "083e3d14323f372e765ec3d30be66775ac937a5fed8da215460fcb760d356671",
+    "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+    "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+    "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+    "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+    "editor/docks/ai_chat_dock.cpp": "e77208d77dd27d06eb92687c2511b21012632e027891aaf6479399aa93decd18",
+    "editor/docks/ai_chat_dock.h": "7cfa78986e4518a920a45c919e2c2336022c5620f09ae0b1b23ecbdc0ea4f728",
+    "editor/docks/ai_chat_gonggong.cpp": "a002fea4433d6302721f76e27471fbdb68039a5716893522d1dd3aed5b44e3ae",
+    "editor/docks/gonggong_panel.cpp": "01fd0aa0b9bfaf3b535ebd4ea2d8b26b2c89030ab1e859f99fbfe840f354d83f",
+    "editor/docks/gonggong_panel.h": "fc2b32ce4d39c11075a268a0d610c9bd7f5541fb550d8fcf307b93a434c0fc96",
+    "editor/docks/daqian/workspace.gd": "45306c029daf32d98dc6878b7d59a639715369faa6932bab41cd098eb72ab7b2",
+    "editor/docks/daqian/model_settings.gd": "25eed76e5e785893696fd7f652f2a5c25482a73bf3be9f34df3b38389cfb5396",
+    "editor/docks/daqian_dock.cpp": "cce8c56356a021dbb421ec8e4815a9dc1bf22bd72a49e7ddc0bd8e4963ba081d",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+    "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+  },
+  "source_count": 19,
+  "source_mismatches": [],
+  "fixture_change": {
+    "path": "tests/editor/daqian_node_approval.gd",
+    "before_sha256": "f1eb721ae4d2c82d696f92efa55a6543a93f09403b1980cf926e108e47ae7447",
+    "after_sha256": "ad8d7d318e79aaa95fcc2ab49479f990cb38768904daacbd9ff951714dc06b51",
+    "only_expected_second_start_argument_changed": true,
+    "first_missing_model_path_preserved": true,
+    "all_other_fixture_text_and_assertions_preserved": true,
+    "production_current_binding_guard_preserved": true,
+    "matches_production_publish_entry_binding_selection": true,
+    "reason": "Applying the issue model produces a routing receipt and updates the live binding. The second start now reads that live binding, matching the production entry. A previously captured row can be stale and is correctly rejected by the existing guard."
+  },
+  "actual_regression": {
+    "path": "runtime/unified-settings/node-approval-v11-final.json",
+    "sha256": "ee280237f2ca262387712942fb088d08c16ab4104713fecacbb5c4a03040d8b2",
+    "log": {
+      "path": "runtime/unified-settings/node-approval-v11-final.log",
+      "sha256": "44c629f2bbc7601b2c14339957c8e3974b7147082ede2aedcfd3e8358344927c"
+    },
+    "executed_by": "primary worker regression agent; reviewer read the completed report and raw log, and did not rerun this regression",
+    "behavioral_pass": true,
+    "native_exit_codes": [
+      0
+    ],
+    "driver_exit_code": 0,
+    "outer_exit_code": 0,
+    "full_success_marker": "DAQIAN_INLINE_APPROVAL_OK",
+    "marker_observed": true,
+    "static_assertion_strings_in_report": 28,
+    "script_error_count": 0,
+    "nonresource_error_count": 0,
+    "loopback_get_count": 1,
+    "loopback_post_count": 4,
+    "fixture_matches_current": true,
+    "runner_matches_current": true,
+    "fixture_unchanged_during_run": true,
+    "source_matches_before_and_after": true
+  },
+  "covered_behavior": "Central navigation and model application, native task continuation, replacement or closed detail button safety, token and source freshness, exactly one approved command execution, consumed-token rejection, and canvas reply scope isolation all remain in the completed fixture.",
+  "resource_diagnostics": {
+    "strict_exit_diagnostics_clean": false,
+    "retained_resource_diagnostic_lines": 10,
+    "interpretation": "Behavior passed with all resource diagnostics preserved. This larger flow is not claimed to have the same resource counts as the 119-check fixture or an established zero-error baseline."
+  },
+  "safety": {
+    "real_model_or_account_used": false,
+    "real_gh_resolvable": false,
+    "native_log_captured_without_filtering": true,
+    "profile": "private HOME/USERPROFILE/APPDATA/LOCALAPPDATA/XDG_CONFIG_HOME/XDG_DATA_HOME/TEMP/TMP",
+    "command_scope": "Only the temporary fixture execution marker is written by the approved command."
+  },
+  "earlier_review_and_119_preserved": {
+    "review": {
+      "path": "runtime/unified-settings/review/final-review-v11.json",
+      "sha256": "b291312e94f8013db322ed89a05ffe49665e37cc724d3be8ba0bfe5971cbcd0d",
+      "unchanged": true
+    },
+    "native_119": {
+      "path": "runtime/unified-settings/review/native-independent-v11.json",
+      "sha256": "c934c2523b1abf4d4671305d60552f02c10c3051d8be70d4cff5d02b056dcebf",
+      "unchanged": true
+    }
+  },
+  "earlier_failed_and_diagnostic_attempts": {
+    "retained_files": [
+      {
+        "path": "runtime/unified-settings/node-approval-v11.json",
+        "sha256": "3babe6d90fdfe19593191060accf3d9996a0d79e9acdc8a6791ae55b1073b09a"
+      },
+      {
+        "path": "runtime/unified-settings/node-approval-v11.log",
+        "sha256": "8c9389a653dd279c392485356a5daa10cab457fea2365545f1fbdbc0e8f50832"
+      },
+      {
+        "path": "runtime/unified-settings/node-approval-v11-diagnostic.json",
+        "sha256": "46188732831cc7de5d8a460b1f6ca1c075c4011c1c12d635ba0c505b7fc0a27c"
+      },
+      {
+        "path": "runtime/unified-settings/node-approval-v11-diagnostic.log",
+        "sha256": "c8800453cc8ee9055f2c7739a3745f4cd466855497e900b192dda3c2b2863f94"
+      }
+    ],
+    "original_failure_remains_failed": true,
+    "diagnostic_remains_non_acceptance": true
+  },
+  "diff_check_passed": true,
+  "reviewer_changed_product_test_or_old_evidence": false,
+  "reviewer_reran_119_or_node_regression": false,
+  "remaining_delivery": "Parent appends this verification to the public coverage and continues exact-candidate gates, signing and CI/main readback. The earlier v11 reports and failed attempts remain historical.",
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459"
+}

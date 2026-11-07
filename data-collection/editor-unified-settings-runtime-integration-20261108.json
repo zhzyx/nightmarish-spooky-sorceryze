@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "state": "local_business_verified_exact_head_delivery_pending",
+  "integrated_main": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+  "build_head": "bb4512ee54bab58828a4acf070df895a9e8e4623",
+  "editor_sha256": "01d137fdaf32480e149581566aac0f6ba74f7af2b59ca14f458a3849b32064a5",
+  "build": {
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes angle=no use_llvm=no msvc_version=14.5 mssdk_version=10.0.26100.0 -j8",
+    "build_result": "passed",
+    "build_log": "runtime/unified-settings/build-v15.log",
+    "source_sha256": {
+      "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+      "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+      "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+      "editor/docks/ai_chat_host_runtime.h": "47765b31a5202f90de201b7c7d0df53f8242ac8f9bec29b8007a8763a06859f6",
+      "editor/docks/gonggong_engine_origin.cpp": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+      "editor/docks/gonggong_engine_origin.h": "1eda707229a9a8d5afe55ebd7f92868123e3d466425142bcd1c71ab17859c7e9",
+      "editor/SCsub": "94153c14e7c5062dc5f853b3ac2b2c0b03b454ab102f1eecac8fc560dd17e93a",
+      "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+      "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+      "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+      "editor/plugins/unified_settings_editor_plugin.cpp": "7e8ca9a4aaeb4681c224a1191a325689adb545f231cfe301a4efc7e2d22c425d",
+      "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+      "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+      "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+      "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+      "editor/docks/ai_chat_dock.cpp": "fdec4aa874f0614633d69131dd4ba4f4e1e1f812dee44ba3ee23de854dc2fc9e",
+      "editor/docks/ai_chat_dock.h": "2cd3a993402086b8be239a2146dd4a82122caf5aba64c961d102c98f3c4bebbe",
+      "editor/docks/ai_chat_gonggong.cpp": "327a6c877d585fd85454599175d98d0436099babd48817eb668f391436e07e23",
+      "editor/docks/gonggong_panel.cpp": "95f4e01b3cac7d908e7592534575c2afa0593142d5ea1aa45c8665bfac8b003e",
+      "editor/docks/gonggong_panel.h": "4b18bb9e673a0a727021bb120f5d9f078b3504b4090b3ab684916dde4298a40f",
+      "editor/docks/daqian/workspace.gd": "bf18f90ac8149d92d2f1ab14d87ed1e20279b4fce8e613bebba277d6a4056fd1",
+      "editor/docks/daqian/model_settings.gd": "9c1cb9bb4b515e02d1c5e9ea82c3f46cbd611f18ab4edeeb0267c1e70f9594a9",
+      "editor/docks/daqian_dock.cpp": "cce8c56356a021dbb421ec8e4815a9dc1bf22bd72a49e7ddc0bd8e4963ba081d",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+      "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+    }
+  },
+  "integration": [
+    "Preserve main #462 canonical runtime JSON, effective/configured distinction, environment overrides and atomic single-field updates. Refresh existing unique controls without reverse-persisting startup overrides.",
+    "External workflow runtime changes invalidate actor, catalog, pending selection and canvas context exactly once before another subprocess can start. Cleanup uses the old validated executable snapshot.",
+    "Preserve the physical deployment receipt and rollback action before subsequent runtime validation or JSON writes can fail.",
+    "Defer only notice visual ordering during embedded-conversation teardown; authorization and actor cleanup remain synchronous.",
+    "Preserve main #442 pending-action counting and filtering, and earlier separate canvas/details/approval freshness guards.",
+    "Make native fixture file IO explicitly UTF-8, verified with UTF-8 mode disabled under Windows cp936."
+  ],
+  "native": {
+    "behavior_passed": true,
+    "checks": [
+      {
+        "mode": "full",
+        "passed": 107,
+        "failures": []
+      },
+      {
+        "mode": "reopen",
+        "passed": 41,
+        "failures": []
+      }
+    ],
+    "strict_runner_state": "failed",
+    "strict_shutdown_errors_preserved": true
+  },
+  "layout": {
+    "passed": true,
+    "widths": [
+      640,
+      960,
+      1440
+    ],
+    "scale": 1.0,
+    "mode": "headless_geometry"
+  },
+  "art": {
+    "state": "passed",
+    "bundle_matches_source": true,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ]
+  },
+  "model_startup": {
+    "passed": true,
+    "source_unchanged": true,
+    "cases": [
+      {
+        "case": "api-chat-startup",
+        "passed": true
+      },
+      {
+        "case": "api-responses-startup",
+        "passed": true
+      },
+      {
+        "case": "codebuddy-startup",
+        "passed": true
+      }
+    ],
+    "native_exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "node_approval": {
+    "passed": true,
+    "assertion_count": 29,
+    "native_exit_codes": [
+      0
+    ],
+    "http_get": 1,
+    "http_post": 4
+  },
+  "early_close_probe": {
+    "passed": true,
+    "probe_only": true,
+    "full_29_assertions_covered": false,
+    "native_exit_codes": [
+      0
+    ],
+    "expected_complete_suite_marker_absence_preserved": true,
+    "nonresource_errors": [],
+    "script_errors": []
+  },
+  "rollback_receipt": {
+    "passed": true,
+    "checks": 17,
+    "native_exit_code": 0,
+    "simulated_only": true,
+    "strict_clean_shutdown": false
+  },
+  "static": {
+    "passed": true,
+    "files_checked": 84,
+    "checks": [
+      {
+        "check": "clang-format-22.1.5",
+        "exit_code": 0
+      },
+      {
+        "check": "ruff-check",
+        "exit_code": 0
+      },
+      {
+        "check": "ruff-format",
+        "exit_code": 0
+      },
+      {
+        "check": "mypy",
+        "exit_code": 0
+      },
+      {
+        "check": "codespell",
+        "exit_code": 0
+      },
+      {
+        "check": "codeowners",
+        "exit_code": 0
+      },
+      {
+        "check": "includes",
+        "exit_code": 0
+      },
+      {
+        "check": "diff-check",
+        "exit_code": 0
+      }
+    ]
+  },
+  "review": {
+    "path": "data-collection/editor-unified-settings-runtime-integration-review-20261108.json",
+    "sha256": "d4d04b004ec268cb6efcad24236f333594bdd8a650d1c2569f20185019695772",
+    "reviewer": "/root/unified_settings_review",
+    "findings": []
+  },
+  "previous_snapshots": [
+    "data-collection/editor-unified-settings-detail-context-integration-20261108.json",
+    "data-collection/editor-unified-settings-ci-recovery-20261108.json"
+  ],
+  "historical_review_preserved": true,
+  "receipt_sha256": {
+    "build-evidence-v15.json": "515896965b4f997f07f9cee81d5d01632cc83a6c3be821766d1d7b2207635ef0",
+    "review/native-independent-v15.json": "40f56ce6af337ae3a3fd11594b1cf7e36b79dbc2a8fa23424de047003db03818",
+    "review/final-review-v15.json": "de1be9a1443159eb3d024fd7748e019e9a6be357f77bf22628aec9ee1988ffa2",
+    "native-art-v15.json": "d9a296a0569030ef9a27871174bfcd16b10f0a243a77c498e36c6c36aaff7dee",
+    "layout-v15/summary.json": "a174a760fda5fa488255de5897bd9c1821d645acf2b02cc4487671aac5d3190f",
+    "autofetch-integration-v15.json": "dc6ed8f616f072b21ce78bd8964512e10d31f3189b98f17b4f3d0380a2e5b4b5",
+    "node-approval-v15-final.json": "e10331ff8837a9f3916f832f3876832399f0070866a0e0b924c9432f4faa015d",
+    "node-approval-v15-early-exit.json": "8b528863dbf212630d99b0b5b4f167c83599edf230885d364b995b2556a2ce39",
+    "receipt-retention-v15-final.json": "248d1026bb9fd9dad54f93fa323517f18550f49feb8c5202764bec959c23f0cd",
+    "static-v15.json": "a9bfa429374baba3858b743d57c5d92f1fbdecb957cbb3a41c9cba6a93dd9e40"
+  },
+  "acceptance": [
+    {
+      "item": 1,
+      "state": "passed",
+      "evidence": "Actual isolated native behavior, source-bound review and regression reports above; exact-head CI/main/issue closure follows the signed delivery."
+    },
+    {
+      "item": 2,
+      "state": "passed",
+      "evidence": "Actual isolated native behavior, source-bound review and regression reports above; exact-head CI/main/issue closure follows the signed delivery."
+    },
+    {
+      "item": 3,
+      "state": "passed",
+      "evidence": "Actual isolated native behavior, source-bound review and regression reports above; exact-head CI/main/issue closure follows the signed delivery."
+    },
+    {
+      "item": 4,
+      "state": "passed",
+      "evidence": "Actual isolated native behavior, source-bound review and regression reports above; exact-head CI/main/issue closure follows the signed delivery."
+    },
+    {
+      "item": 5,
+      "state": "delivery_pending",
+      "evidence": "Actual isolated native behavior, source-bound review and regression reports above; exact-head CI/main/issue closure follows the signed delivery."
+    }
+  ],
+  "scope_limits": [
+    "Windows x64 only; no real user credentials or paid generation.",
+    "Native behavior passes. Headless resource shutdown diagnostics remain recorded separately; clean shutdown is not claimed.",
+    "The POSIX-only full runtime suite and the full request-lifetime suite were adapted but not executed on Windows."
+  ],
+  "usage": null
+}

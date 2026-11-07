@@ -188,7 +188,7 @@ state = Path(__STATE__)
 case = __CASE__
 def event(kind):
     fd = os.open(state / 'events.jsonl', os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600)
-    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid()})+'\n').encode()); os.close(fd)
+    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid()})+'\n').encode('utf-8')); os.close(fd)
 a=sys.argv[1:]
 if a[:2]==['login','status']:
     event('codex-login-status')
@@ -299,9 +299,10 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
         (project / "project.godot").write_text(
             "config_version=5\n[application]\nconfig/name="
             + json.dumps(project_name)
-            + '\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
+            + '\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
+            encoding="utf-8",
         )
-        (project / "accept.gd").write_text(GDSCRIPT)
+        (project / "accept.gd").write_text(GDSCRIPT, encoding="utf-8")
         if case not in ["codex-login", "codex-busy-login", "codex-status-login-race"]:
             (state / "logged-in").touch()
         codex = root / "fake-codex"
@@ -309,7 +310,8 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             "#!"
             + sys.executable
             + "\n"
-            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr(case))
+            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr(case)),
+            encoding="utf-8",
         )
         codex.chmod(0o755)
         alt_codex = root / "fake-codex-fixed"
@@ -317,11 +319,12 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             "#!"
             + sys.executable
             + "\n"
-            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr("codex-startup"))
+            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr("codex-startup")),
+            encoding="utf-8",
         )
         alt_codex.chmod(0o755)
         codebuddy = root / "fake-codebuddy.js"
-        codebuddy.write_text(FAKE_CODEBUDDY.replace("__STATE__", json.dumps(str(state))))
+        codebuddy.write_text(FAKE_CODEBUDDY.replace("__STATE__", json.dumps(str(state))), encoding="utf-8")
         lock = threading.Lock()
 
         class Handler(BaseHTTPRequestHandler):
@@ -330,9 +333,9 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
 
             def do_GET(self):
                 with lock:
-                    with (state / "events.jsonl").open("a") as stream:
+                    with (state / "events.jsonl").open("a", encoding="utf-8") as stream:
                         stream.write(json.dumps({"kind": "api-model-list"}) + "\n")
-                body = json.dumps({"data": [{"id": "fixture-api"}]}).encode()
+                body = json.dumps({"data": [{"id": "fixture-api"}]}).encode("utf-8")
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(body)))
@@ -373,7 +376,8 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
         settings.write_text(
             '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
             + "\n".join(k + " = " + json.dumps(v, ensure_ascii=False) for k, v in values.items())
-            + "\n"
+            + "\n",
+            encoding="utf-8",
         )
         output = root / "result.json"
         environment = {

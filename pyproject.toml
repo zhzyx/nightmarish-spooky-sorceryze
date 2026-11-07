@@ -71,6 +71,8 @@ skip = [
 	"COPYRIGHT.txt",
 	"core/input/gamecontrollerdb.txt",
 	"core/string/locales.h",
+	# Preserve this immutable receipt; its corrected prose is appended separately.
+	"data-collection/editor-unified-settings-main-integration-review-20261108.json",
 	"DONORS.md",
 	"editor/import/unicode_ranges.inc",
 	"editor/project_converter_3_to_4.cpp",

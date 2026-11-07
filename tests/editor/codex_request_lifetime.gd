@@ -50,21 +50,26 @@ func _run():
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "fixture-key"
 	backend.select(2)
 	backend.item_selected.emit(2)
-	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("LIFETIME_NODE")
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = folder.path_join("entry.js")
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
 	dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "lifetime-fixture"
 	for name in ["success", "failure", "cancel", "start_failure"]:
+		if name == "start_failure":
+			# Configure an invalid executable while idle. A consultation skips the
+			# earlier requirements intake so failure reaches native chat launch.
+			dock.find_child("ConsultationOnly", true, false).button_pressed = true
+			var error: String = dock.set_runtime_field("node", folder.path_join("not-executable.exe"))
+			if not error.is_empty():
+				finish(false, "cannot prepare isolated launch failure: " + error)
+				return
 		dock.find_child("ChatInput", true, false).text = name
 		dock.find_child("Send", true, false).pressed.emit()
 		var deadline = Time.get_ticks_msec() + 20000
 		var wire = folder.path_join("wire/" + name + ".json")
 		while Time.get_ticks_msec() < deadline:
 			await create_timer(0.02).timeout
-			# Let requirements intake start with a valid Node, then fail only the native chat launch.
-			if name == "start_failure" and FileAccess.file_exists(folder.path_join("wire/intake-start_failure.json")):
-				dock.get_environment_settings_control().find_child("CLINode", true, false).text = folder.path_join("not-executable.exe")
 			if FileAccess.file_exists(folder.path_join("wire/missing.json")):
 				var failure = JSON.parse_string(FileAccess.get_file_as_string(folder.path_join("wire/missing.json")))
 				if not failure is Dictionary:

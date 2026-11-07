@@ -507,6 +507,10 @@ void GongGongPanel::poll() {
 			output->set_text(String(U"已回退本次部署并恢复编辑器会话环境；日志和文件恢复副本保留。\n") + result_path);
 			return;
 		}
+		// Physical deployment can succeed even when canonical configuration cannot
+		// be saved. Keep its rollback receipt before any later validation or write.
+		setup_receipt = result.get("receipt", String());
+		setup_rollback->set_disabled(setup_receipt.is_empty());
 		const String deployed_python = result.get("python", String());
 		const String deployed_node = result.get("node", String());
 		const String deployed_git = result.get("git", String());
@@ -539,8 +543,6 @@ void GongGongPanel::poll() {
 		}
 		OS::get_singleton()->set_environment("PATH", child_path);
 		refresh_runtime_controls(runtime);
-		setup_receipt = result.get("receipt", String());
-		setup_rollback->set_disabled(setup_receipt.is_empty());
 		EditorSettings::save();
 		output->set_text(String(U"本地运行库与共工自检通过。正在恢复原需求；模型连接与 GitHub 登录仍由实际请求验证。\n") + result_path);
 		if (setup_completed.is_valid()) {

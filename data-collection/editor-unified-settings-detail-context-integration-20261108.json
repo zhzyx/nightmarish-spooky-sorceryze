@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "state": "local_business_verified_exact_head_delivery_pending",
+  "integrated_main": "b5d66c00b3a6f7a32bc9ff637c2d28ba2c908f0a",
+  "build_head": "ff76a0c0b68466cdecfa2ab0cd1a4cc0efd456af",
+  "editor_sha256": "c3c76c3f61aa51f09b46c56c34b3eed102eeed363ec0ca158599de1d5079e198",
+  "build": {
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes angle=no use_llvm=no msvc_version=14.5 mssdk_version=10.0.26100.0 -j8",
+    "build_result": "passed",
+    "build_log": "runtime/unified-settings/build-v11.log",
+    "source_sha256": {
+      "editor/SCsub": "94153c14e7c5062dc5f853b3ac2b2c0b03b454ab102f1eecac8fc560dd17e93a",
+      "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+      "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+      "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+      "editor/plugins/unified_settings_editor_plugin.cpp": "083e3d14323f372e765ec3d30be66775ac937a5fed8da215460fcb760d356671",
+      "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+      "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+      "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+      "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+      "editor/docks/ai_chat_dock.cpp": "e77208d77dd27d06eb92687c2511b21012632e027891aaf6479399aa93decd18",
+      "editor/docks/ai_chat_dock.h": "7cfa78986e4518a920a45c919e2c2336022c5620f09ae0b1b23ecbdc0ea4f728",
+      "editor/docks/ai_chat_gonggong.cpp": "a002fea4433d6302721f76e27471fbdb68039a5716893522d1dd3aed5b44e3ae",
+      "editor/docks/gonggong_panel.cpp": "01fd0aa0b9bfaf3b535ebd4ea2d8b26b2c89030ab1e859f99fbfe840f354d83f",
+      "editor/docks/gonggong_panel.h": "fc2b32ce4d39c11075a268a0d610c9bd7f5541fb550d8fcf307b93a434c0fc96",
+      "editor/docks/daqian/workspace.gd": "45306c029daf32d98dc6878b7d59a639715369faa6932bab41cd098eb72ab7b2",
+      "editor/docks/daqian/model_settings.gd": "25eed76e5e785893696fd7f652f2a5c25482a73bf3be9f34df3b38389cfb5396",
+      "editor/docks/daqian_dock.cpp": "cce8c56356a021dbb421ec8e4815a9dc1bf22bd72a49e7ddc0bd8e4963ba081d",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+      "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+    }
+  },
+  "integration": "Preserve main #478/#457 extracted canvas and operation details, independent approval receipt token and late-response guards; combine script injection with unified-settings metadata before source startup.",
+  "conflicts_resolved": [
+    "editor/docks/daqian/workspace.gd",
+    "editor/docks/daqian_dock.cpp",
+    "tests/editor/daqian_node_approval.gd"
+  ],
+  "native": {
+    "behavior_passed": true,
+    "checks": [
+      {
+        "mode": "full",
+        "passed": 78,
+        "failures": []
+      },
+      {
+        "mode": "reopen",
+        "passed": 41,
+        "failures": []
+      }
+    ],
+    "strict_runner_state": "failed",
+    "strict_shutdown_errors_preserved": true
+  },
+  "layout": {
+    "passed": true,
+    "widths": [
+      640,
+      960,
+      1440
+    ],
+    "scale": 1.0
+  },
+  "art": {
+    "state": "passed",
+    "bundle_matches_source": true,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ]
+  },
+  "model_startup": {
+    "passed": true,
+    "source_unchanged": true,
+    "cases": [
+      {
+        "case": "api-chat-startup",
+        "passed": true
+      },
+      {
+        "case": "api-responses-startup",
+        "passed": true
+      },
+      {
+        "case": "codebuddy-startup",
+        "passed": true
+      }
+    ]
+  },
+  "node_approval": {
+    "report_sha256": "ee280237f2ca262387712942fb088d08c16ab4104713fecacbb5c4a03040d8b2",
+    "passed": true,
+    "scope": "Real native unified-settings navigation, separate canvas and approval context, delayed receipt acceptance under private synthetic fixtures."
+  },
+  "review": {
+    "path": "data-collection/editor-unified-settings-detail-context-review-20261108.json",
+    "sha256": "8fe9405d43e4230bcd29282aef9e5906c8a1e8bbdf690ef2510283f4acb57998",
+    "reviewer": "/root/unified_settings_review",
+    "findings": []
+  },
+  "previous_snapshots": [
+    "data-collection/editor-unified-settings-main-integration-20261108.json",
+    "data-collection/editor-unified-settings-ci-recovery-20261108.json"
+  ],
+  "historical_review_preserved": true,
+  "receipt_sha256": {
+    "build-evidence-v11.json": "a82480ec560592f0ca5c26ada4c053ef52e1b8e93e6556762cd874371ca583ab",
+    "review/native-independent-v11.json": "c934c2523b1abf4d4671305d60552f02c10c3051d8be70d4cff5d02b056dcebf",
+    "native-art-v11.json": "a410ee7b5c086607a36cc22201ac8cfe691edfedf23c3f4865be0d914823a992",
+    "layout-v11/summary.json": "883eb8e1806ee7dd71f3b2312be4ac4a106ecdccc68c00079fe466f69fef49d7",
+    "autofetch-integration-v11.json": "5f16a074a02f31e85dc7d6370a552ebe286dec3faff130266ecf0c93c0649767",
+    "node-approval-v11-final.json": "ee280237f2ca262387712942fb088d08c16ab4104713fecacbb5c4a03040d8b2"
+  },
+  "scope_limits": [
+    "Windows x64 only; no real user credentials or paid model generation.",
+    "Native behavioral assertions pass; existing headless resource shutdown diagnostics remain separately recorded."
+  ],
+  "usage": null
+}

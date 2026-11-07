@@ -93,7 +93,7 @@ func run() -> void:
 	await panel._apply_issue_model()
 	check(panel.saved.get("execution_models", {}).get(row.url, {}).get("id") == "fixture", "Issue model was not saved")
 	check(panel.publish_button.text == "开始推进", "Bound model was not used for the requirement decision")
-	await panel._start_or_view_direct(row)
+	await panel._start_or_view_direct(panel._direct_binding())
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Starting the issue left Tianshu")
 	var deadline := Time.get_ticks_msec() + 20000
 	while chat.get_daqian_approval().is_empty() and Time.get_ticks_msec() < deadline:
