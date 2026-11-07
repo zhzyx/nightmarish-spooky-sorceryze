@@ -89,6 +89,8 @@ var connection_button: Button
 var connection_panel := VBoxContainer.new()
 var workspace_path := LineEdit.new()
 var python_path := LineEdit.new()
+var inspector_split := HSplitContainer.new()
+var canvas_column := VBoxContainer.new()
 var conversation := VBoxContainer.new()
 var conversation_host := VBoxContainer.new()
 var conversation_title := Label.new()
@@ -324,7 +326,7 @@ func _ready() -> void:
 		_layout_board()
 		_queue_save())
 	overview.popup_request.connect(func(_position): _compose_requirement())
-	add_child(overview)
+	canvas_column.add_child(overview)
 	overview.resized.connect(_queue_board_layout)
 	var center := CenterContainer.new()
 	overview.add_child(center)
@@ -357,7 +359,7 @@ func _ready() -> void:
 			_open_board_url(selected.get_metadata(0).url)
 			return_button.grab_focus())
 	issue_list.gui_input.connect(_list_zoom_input)
-	add_child(issue_list)
+	canvas_column.add_child(issue_list)
 	_style_board_controls()
 	empty_state = CenterContainer.new()
 	empty_state.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -397,7 +399,7 @@ func _ready() -> void:
 		search.clear()
 		_filter_board())
 	empty_state.hide()
-	add_child(empty_state)
+	canvas_column.add_child(empty_state)
 	editor = graph_script.new()
 	editor.rules = rules
 	editor.graph_layout = graph_layout
@@ -424,13 +426,14 @@ func _ready() -> void:
 			editor.clarification_draft = text)
 	editor.clarification_submitted.connect(_submit_inline_answer)
 	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(flow_split)
+	canvas_column.add_child(flow_split)
 	flow_split.add_child(editor)
 	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow_split.hide()
 	_build_operation_details(flow_split)
 	add_child(notice_panel)
 	resized.connect(_adapt_layout)
+	canvas_column.resized.connect(_adapt_layout)
 	_adapt_layout()
 	editor.confirm_operation.connect(_confirm_operation)
 	editor.show_operation_details.connect(_show_operation_details)
@@ -749,16 +752,32 @@ func _build_workbench() -> void:
 	_button(buttons, "返回", func(): connection_panel.hide())
 	connection_panel.hide()
 	conversation.set_meta("ai_control_exclude", true)
-	conversation.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(conversation)
-	var bar := HBoxContainer.new()
-	conversation.add_child(bar)
-	_button(bar, "返回工单", _leave_conversation)
+	inspector_split.name = "InspectorSplit"
+	inspector_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(inspector_split)
+	canvas_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inspector_split.add_child(canvas_column)
+	conversation.name = "ConversationInspector"
+	conversation.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inspector_split.add_child(conversation)
+	var header := HBoxContainer.new()
+	conversation.add_child(header)
+	conversation_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	conversation_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	bar.add_child(conversation_title)
-	apply_model = _button(bar, "应用推进模型", _apply_issue_model)
+	header.add_child(conversation_title)
+	var close := _button(header, "", _leave_conversation)
+	close.name = "CloseInspector"
+	close.icon = get_theme_icon("Close", "EditorIcons")
+	close.tooltip_text = "收起工单对话"
+	close.accessibility_name = close.tooltip_text
+	apply_model = _button(conversation, "应用推进模型", _apply_issue_model)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	conversation.add_child(scroll)
+	conversation_host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	conversation_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	conversation.add_child(conversation_host)
+	scroll.add_child(conversation_host)
 	conversation.hide()
 
 
@@ -836,11 +855,8 @@ func _mount_conversation(binding: Dictionary, next := "") -> void:
 	apply_model.show()
 	resume_action = next
 	apply_model.text = "前往司南卡选择模型" if not _direct_binding().is_empty() else ("应用推进模型" if next.is_empty() else "应用模型并继续")
-	conversation_title.text = "工单 #%d" % int(binding.number) if binding.get("number", 0) else "需求草稿"
+	conversation_title.text = "工单 #%d · 推进对话" % int(binding.number) if binding.get("number", 0) else "需求草稿 · 推进对话"
 	connection_panel.hide()
-	flow_split.hide()
-	actions.hide()
-	toolbar.hide()
 	canvas_panel.hide()
 	conversation.show()
 
@@ -864,9 +880,8 @@ func _leave_conversation() -> void:
 
 func _conversation_unmounted() -> void:
 	conversation.hide()
-	toolbar.show()
 	resume_action = ""
-	_gate_visibility(not actor.is_empty())
+	canvas_panel.visible = not actor.is_empty()
 
 
 func _needs_model(catalog: Dictionary, selection: Dictionary) -> bool:
@@ -886,10 +901,20 @@ func _card_binding_matches(card: GraphNode, key: String, epoch: int) -> bool:
 	return is_instance_valid(card) and card.get_parent() == editor.canvas and epoch == selection_epoch and not binding.is_empty() and not binding.has("error") and key == _routing_key(binding)
 
 
+func _issue_action_stage(kind: String) -> String:
+	match kind:
+		"judge", "retry":
+			return "wf-routing"
+		"start", "resume", "view":
+			return "wf-prepare" if editor.has_preparation_stage() else "wf-routing"
+	return ""
+
+
 func _attach_stage_controls(id: String, card: GraphNode) -> void:
 	if id == "wf-workorder" and current.begins_with("draft_") and not saved.get("linked", {}).has(current) and not saved.get("submitted", {}).has(current):
 		var open := _button(card, "填写并确认建单", _open_publish)
 		open.name = "OpenPublish"
+		editor.mark_action(open, true)
 		if publish_source == current:
 			_mount_publish_form(card)
 		return
@@ -903,13 +928,13 @@ func _attach_stage_controls(id: String, card: GraphNode) -> void:
 	var action := _issue_action(binding)
 	if id == "wf-routing" and binding.get("status") in ["planned", "in-progress", "in-review"] and is_instance_valid(chat) and chat.has_method("get_daqian_models"):
 		_add_card_model(card, binding, key, epoch)
-	var available: Array = ["judge", "retry"] if id == "wf-routing" else ["start", "resume", "view"]
-	if action.get("kind") not in available:
+	if id != _issue_action_stage(action.get("kind", "")):
 		return
 	var button := Button.new()
 	button.name = "IssueAction"
 	button.text = action.text
 	card.add_child(button)
+	editor.mark_action(button, action.kind != "view" or editor.workflow.get("progress", {}).get("state") == "failed")
 	button.pressed.connect(func():
 		if not _card_binding_matches(card, key, epoch) or _issue_action(_direct_binding()).get("kind") != action.kind:
 			return
@@ -937,6 +962,15 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 	apply.name = "ApplyModel"
 	apply.text = "应用模型"
 	card.add_child(apply)
+	var style_model := func():
+		var action := _issue_action(binding)
+		var catalog: Dictionary = chat.get_daqian_models()
+		var selection: Dictionary = saved.get("execution_models", {}).get(binding.url, {"backend":catalog.backend, "id":catalog.current})
+		var required: bool = action.get("kind") in ["judge", "retry", "resume", "start"] and _needs_model(catalog, selection)
+		if required or editor._node_state(card.name) == "completed" or saved.get("execution_models", {}).has(binding.url):
+			for control in [picker, manual, apply]:
+				editor.mark_action(control, required)
+	style_model.call()
 	var populate := func():
 		var catalog: Dictionary = chat.get_daqian_models()
 		var stored: Dictionary = saved.get("execution_models", {}).get(binding.url, {})
@@ -971,6 +1005,9 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 			return
 		saved.get_or_add("execution_models", {})[binding.url] = {"backend":backend, "id":model_id}
 		_save()
+		style_model.call()
+		editor._update_card(card)
+		editor.canvas.refresh_wires(card.name)
 		notice.text = "已应用推进模型 · " + (model_id if not model_id.is_empty() else "CLI 默认模型"))
 
 
@@ -1021,7 +1058,10 @@ func _build_operation_details(split: SplitContainer) -> void:
 
 
 func _adapt_layout() -> void:
-	var columns := 4 if size.x >= 860 * get_theme_default_base_scale() else 3
+	var inspector_width := minf(size.x * 0.38, 420 * get_theme_default_base_scale())
+	canvas_column.size_flags_stretch_ratio = maxf(1.0, size.x / maxf(inspector_width, 1.0) - 1.0)
+	var canvas_width := minf(canvas_column.size.x, size.x) if conversation.visible else size.x
+	var columns := 4 if canvas_width >= 860 * get_theme_default_base_scale() else 3
 	if issue_list.columns != columns:
 		issue_list.columns = columns
 		if columns == 4:
@@ -1032,7 +1072,7 @@ func _adapt_layout() -> void:
 			issue_list.set_column_custom_minimum_width(3, roundi(132 * get_theme_default_base_scale()))
 			for item: TreeItem in issue_rows.values():
 				_set_owner_cell(item, item.get_metadata(0))
-	var narrow := size.x < 720.0 * get_theme_default_base_scale()
+	var narrow := canvas_width < 720.0 * get_theme_default_base_scale()
 	flow_split.vertical = narrow
 	details_panel.custom_minimum_size.x = 0 if narrow else 320 * get_theme_default_base_scale()
 
@@ -1970,7 +2010,7 @@ func _gate_visibility(opened: bool) -> void:
 	pending_menu.visible = opened and current.is_empty()
 	advanced_button.visible = opened and current.is_empty()
 	advanced_bar.visible = opened and current.is_empty() and advanced_bar.visible
-	actions.visible = opened and not current.is_empty() and not conversation.visible
+	actions.visible = opened and not current.is_empty()
 	scope_picker.visible = opened and current.is_empty()
 	board_views.visible = opened and current.is_empty()
 	issue_list.visible = false
@@ -1979,7 +2019,7 @@ func _gate_visibility(opened: bool) -> void:
 	if opened and current.is_empty():
 		_filter_board()
 	editor.visible = opened and not current.is_empty()
-	flow_split.visible = editor.visible and not conversation.visible
+	flow_split.visible = editor.visible
 	if not opened:
 		details_panel.dismiss()
 		models_dialog.hide()
@@ -3385,7 +3425,7 @@ func _publish_or_follow() -> void:
 		"clarify":
 			_start_or_view_direct(binding)
 		"judge", "retry", "start", "view", "resume":
-			var id := "wf-routing" if _issue_action(binding).kind in ["judge", "retry"] else "wf-prepare"
+			var id := _issue_action_stage(_issue_action(binding).kind)
 			var button := editor.canvas.get_node_or_null(NodePath(id + "/IssueAction")) as Button
 			if button:
 				editor.focus_flow_node(id)
@@ -3638,6 +3678,9 @@ func _sync_requirement_preview() -> void:
 
 
 func _mount_publish_form(card: GraphNode) -> void:
+	if not publish_confirm.has_theme_stylebox_override("normal"):
+		for control in [category, requirement_input, model_options, manual_model, publish_confirm]:
+			editor.mark_action(control, true)
 	if publish_form.get_parent() != card:
 		publish_form.reparent(card, false)
 	publish_form.show()

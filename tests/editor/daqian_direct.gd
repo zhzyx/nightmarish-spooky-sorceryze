@@ -123,6 +123,8 @@ func run() -> void:
 	check(panel._routing_receipt(binding).get("ready", false), "Failed start erased ready decision")
 	panel.publish_button.pressed.emit()
 	var start_button: Button = panel.editor.canvas.get_node("wf-prepare/IssueAction")
+	check(start_button.get_parent().get_meta("flow_state") == "action_required" and start_button.get_parent().get_node("FlowState").text == "待你操作", "Start card presented its required action as pending")
+	check(start_button.get_theme_stylebox("normal").border_color == Color.WHITE and start_button.get_theme_stylebox("focus").border_width_left > start_button.get_theme_stylebox("normal").border_width_left, "Required start action lacks its keyboard-visible priority")
 	check(start_button.has_focus() and FileAccess.get_file_as_string(calls).strip_edges().split("\n").size()==4, "Toolbar locator launched work")
 	start_button.pressed.emit()
 	start_button.pressed.emit()
@@ -166,9 +168,29 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	check(JSON.stringify(started[1]).contains("核验导入的材质颜色"), "Bound execution discarded the requested operation")
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Start left Tianshu")
 	check(chat.get_daqian_models().current == "card-chosen-model", "Start ignored model chosen at creation")
-	panel._leave_conversation()
+	for i in 3: await process_frame
+	var graph_rect: Rect2 = panel.editor.get_global_rect()
+	var inspector_rect: Rect2 = panel.conversation.get_global_rect()
+	check(panel.editor.is_visible_in_tree() and panel.toolbar.is_visible_in_tree(), "Inspector covered the workflow or navigation")
+	check(inspector_rect.position.x >= graph_rect.end.x - 1 and inspector_rect.size.x > 100 and graph_rect.size.x > 100, "Inspector is not beside the graph")
+	check(inspector_rect.size.x < graph_rect.size.x, "Inspector took more space than the workflow")
+	var split := panel.inspector_split as HSplitContainer
+	var old_offset := split.split_offset
+	split.split_offset = old_offset - 32
+	for i in 3: await process_frame
+	check(panel.conversation.size.x > inspector_rect.size.x, "Dragging the inspector divider cannot increase its width")
+	split.split_offset -= roundi(panel.canvas_column.size.x - 600 * panel.get_theme_default_base_scale())
+	for i in 4: await process_frame
+	check(panel.flow_split.vertical and panel.details_panel.custom_minimum_size.x == 0, "Narrow canvas still reserves a second side inspector")
+	split.split_offset = old_offset
+	var same_card: GraphNode = panel.editor.canvas.get_node("wf-prepare")
+	panel.conversation.find_child("CloseInspector",true,false).pressed.emit()
+	check(not panel.conversation.visible and panel.editor.is_visible_in_tree() and panel.editor.canvas.get_node("wf-prepare") == same_card, "Closing the inspector destroyed or hid its workflow")
 	panel._update_direct_action()
 	check(panel.publish_button.text == "查看推进对话", "Existing chat cannot be reopened")
+	var restored: Button = same_card.get_node("IssueAction")
+	check(same_card.get_meta("flow_state") == "revisitable", "Existing session highlighted as a new task")
+	check(restored.text == panel.publish_button.text and restored.get_theme_stylebox("normal").border_color == Color("#a8e1b9"), "Completed session lacks matching revisitable action")
 	var closed := binding.duplicate()
 	closed.closed = true
 	panel.board.issues = [closed]
@@ -188,7 +210,12 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	panel.current = source
 	panel.fresh_progress = true
 	panel._sync_workflow()
+	await panel.editor.await_graph_projection()
 	check(panel.editor.canvas.has_node("wf-prepare") and panel.editor.canvas.has_node("wf-worker"), "Receipt projection missing from linked draft")
+	var worker: GraphNode = panel.editor.canvas.get_node("wf-worker")
+	check(worker.get_node("FlowState").text == "等待回执" and worker.get_meta("flow_state") == "awaiting_receipt", "Passive worker claims an input while Sinan owns the start button")
+	var wire: Line2D = panel.editor.canvas.lines.get([&"wf-prepare", 1, &"wf-worker", 1])
+	check(wire != null and wire.material.get_shader_parameter("ink") == panel.editor.canvas.COLORS.receipt, "Passive worker incoming receipt wire missing or decision-colored")
 	check(panel.work_status.text.contains("等待开始推进"), "Readiness incorrectly implied execution")
 	var provenance := {"actor":panel.actor.user_id, "request_ref":row.request, "source_ref":row.url, "source_sha256":row.source_sha256}
 	panel._chat_work_event(repo, provenance, "sinan · AI Chat #1", "request", "chat", "running")

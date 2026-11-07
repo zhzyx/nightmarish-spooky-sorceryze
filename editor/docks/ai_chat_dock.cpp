@@ -483,7 +483,7 @@ void AIChatDock::_update_settings_summary() {
 	if (current.is_empty()) {
 		current = backend->get_selected() == 1 || backend->get_selected() == 2 ? String(U"CLI 默认模型") : String(U"尚未配置模型");
 	}
-	settings_summary->set_text(backend->get_item_text(backend->get_selected()) + " · " + current + " · " + reasoning_picker->get_item_text(reasoning_picker->get_selected()));
+	settings_summary->set_text(backend->get_item_text(backend->get_selected()) + U" · " + current + U" · " + reasoning_picker->get_item_text(reasoning_picker->get_selected()));
 }
 
 void AIChatDock::_save_history() {

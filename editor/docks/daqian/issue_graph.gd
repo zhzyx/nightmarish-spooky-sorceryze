@@ -58,10 +58,10 @@ const GRAPH_SLICE_US := 3000
 # Keep the GraphEdit wire for hit testing, dragging, zoom and the minimap.
 # Only its material changes. A shared static shader lets idle graphs stop repainting.
 class FlowCanvas extends GraphEdit:
-	const COLORS := {"pending": Color("#8290a5"), "running": Color("#45c9ff"),
+	const COLORS := {"receipt": Color("#92969b"), "action": Color("#59e47c"), "revisit": Color("#aecfb7"), "pending": Color("#8290a5"), "running": Color("#45c9ff"),
 		"done": Color("#69d5a3"), "waiting": Color("#efbf70"), "failed": Color("#f18e87"),
 		"cancelled": Color("#ad9bb5"), "unknown": Color("#a5a6b3")}
-	const LABELS := {"awaiting_answer":"待你答复", "open_question":"待确认", "awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
+	const LABELS := {"awaiting_receipt":"等待回执", "action_required":"待你操作", "revisitable":"可再查看", "awaiting_answer":"待你答复", "open_question":"待确认", "awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
 		"open":"待制作", "in-progress":"进行中", "in-review":"待验收", "completed":"已完成",
 		"dispatched":"已派发", "reserved":"已预留", "waiting":"等待输入或证据", "answered":"已答复",
 		"needs-decision":"待决策", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
@@ -86,6 +86,9 @@ void fragment() {
 
 	static func category(state: String) -> String:
 		match state:
+			"awaiting_receipt": return "receipt"
+			"action_required": return "action"
+			"revisitable": return "revisit"
 			"running", "in-progress": return "running"
 			"done", "completed", "answered": return "done"
 			"open_question", "awaiting_answer", "awaiting_approval", "reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
@@ -134,7 +137,7 @@ void fragment() {
 				box.bg_color = surface.lerp(color, 0.12 if style.begins_with("titlebar") else 0.045)
 				box.border_color = get_theme_color("accent_color", "Editor") if selected else surface.lerp(color, 0.28)
 				box.set_border_width_all(roundi((2 if selected else 1) * get_theme_default_base_scale()))
-				if state == "awaiting_answer":
+				if state in ["awaiting_answer", "action_required"]:
 					box.border_color = color
 					box.set_border_width_all(maxi(2, roundi(3 * get_theme_default_base_scale())))
 				view.add_theme_stylebox_override(style, box)
@@ -345,6 +348,34 @@ func _label(value: String) -> Label:
 	return label
 
 
+# Style only controls backed by a user action. Disabled/read-only states keep their native styles.
+func mark_action(control: Control, current: bool) -> void:
+	control.set_meta("action_priority", "action_required" if current else "revisitable")
+	var button := control is BaseButton
+	var states := ["normal", "hover", "pressed", "hover_pressed", "focus"] if button else ["normal", "focus"]
+	for state: String in states:
+		var base := control.get_theme_stylebox(state)
+		var box := StyleBoxFlat.new()
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			box.set_content_margin(side, base.get_margin(side))
+		var scale_factor := control.get_theme_default_base_scale()
+		box.set_corner_radius_all(maxi(2, roundi(4 * scale_factor)))
+		box.set_border_width_all(maxi(1, roundi((3 if state == "focus" else 2) * scale_factor)))
+		box.draw_center = state != "focus"
+		box.border_color = Color.WHITE if current or state == "focus" else Color("#a8e1b9")
+		if current:
+			box.bg_color = Color("#87f69b") if state == "hover" else Color("#59e47c")
+			if state in ["pressed", "hover_pressed"]: box.bg_color = Color("#45c968")
+		else:
+			box.bg_color = Color("#cee9d4") if state == "hover" else Color("#aecfb7")
+		control.add_theme_stylebox_override(state, box)
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+		control.add_theme_color_override(key, Color("#102819"))
+	if not button:
+		control.add_theme_color_override("font_placeholder_color", Color("#30553b"))
+		control.add_theme_color_override("caret_color", Color("#142f1b"))
+
+
 func _render_node(id: String, item: Dictionary) -> void:
 	var view := SizeableCard.new()
 	view.name = id
@@ -407,6 +438,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 					send.disabled = index == 0
 					draft_changed.emit())
 				view.add_child(choose)
+				mark_action(choose, true)
 			else:
 				var answer := TextEdit.new()
 				answer.name = "AnswerInput"
@@ -420,6 +452,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 				answer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 				answer.scroll_fit_content_height = true
 				view.add_child(answer)
+				mark_action(answer, true)
 			send.name = "SubmitReply"
 			send.text = "提交调试答复" if debug_active else "提交答复"
 			send.pressed.connect(func():
@@ -427,6 +460,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 				if view.get_parent() == canvas and not value.strip_edges().is_empty() and (options.is_empty() or value in options):
 					answer_requested.emit(id,value))
 			view.add_child(send)
+			mark_action(send, true)
 	if item.kind == "task":
 		var models := OptionButton.new()
 		models.add_item("司南自动分配")
@@ -494,6 +528,8 @@ func _render_node(id: String, item: Dictionary) -> void:
 			else:
 				button.pressed.connect(func(): set_image(id,clipboard_image.call()))
 			view.add_child(button)
+			if request.get("kind") == "image" and recorded.is_empty() and (debug_active or context.get("can_answer", false)):
+				mark_action(button, true)
 		if request.get("kind") == "image":
 			var prompt := _label(request.prompt)
 			prompt.custom_minimum_size.x = 215
@@ -501,11 +537,14 @@ func _render_node(id: String, item: Dictionary) -> void:
 			view.add_child(prompt)
 			if recorded.is_empty() and (debug_active or context.get("can_answer", false)):
 				var submit := Button.new()
+				submit.name = "SubmitImage"
+				submit.disabled = str(answers.get(id, "")).is_empty()
 				submit.text = "提交图片"
 				submit.pressed.connect(func():
 					if not str(answers.get(id,"")).is_empty():
 						answer_requested.emit(id,answers[id]))
 				view.add_child(submit)
+				mark_action(submit, true)
 		else:
 			var caption := LineEdit.new()
 			caption.placeholder_text = "图片说明（可选）"
@@ -558,7 +597,13 @@ func _node_state(id: String) -> String:
 		return "waiting"
 	var phase: String = workflow.get("phase", "draft")
 	match id:
-		"wf-worker": return workflow.get("progress", {}).get("state", "waiting")
+		"wf-worker":
+			var progress: Dictionary = workflow.get("progress", {})
+			var state: String = progress.get("state", "waiting")
+			var human_wait: bool = progress.get("chat_waiting", false) or workflow.get("operation", {}).get("state") == "awaiting_approval" or workflow.get("item", {}).get("status") == "needs-decision" or phase == "questions"
+			if state == "waiting" and not human_wait:
+				return "awaiting_receipt"
+			return state
 		"requirement", "wf-workorder":
 			return "completed" if phase != "draft" or issue_id.begins_with("https://") else "pending"
 		"wf-routing":
@@ -578,6 +623,12 @@ func _node_state(id: String) -> String:
 
 func _update_card(view: GraphNode) -> void:
 	var state := _node_state(view.name)
+	if view.name in [&"wf-routing", &"wf-prepare", &"wf-workorder"]:
+		for path in [^"IssueAction", ^"RouteModel", ^"OpenPublish"]:
+			var button := view.get_node_or_null(path) as BaseButton
+			if button and not button.disabled and button.has_meta("action_priority"):
+				state = button.get_meta("action_priority")
+				if state == "action_required": break
 	var event: Dictionary = debug_states.get(String(view.name), {}) if debug_active else {}
 	var suffix := " · 调试" if debug_active else ""
 	if event.has("model"):
@@ -651,6 +702,8 @@ func set_image(id: String, image: Image) -> void:
 		if context.get("answers",{}).has(id):
 			return
 		answers[id] = Marshalls.raw_to_base64(bytes)
+		var submit := canvas.get_node_or_null(NodePath(id + "/SubmitImage")) as Button
+		if submit: submit.disabled = false
 	else:
 		draft.nodes[id].value = Marshalls.raw_to_base64(bytes)
 	canvas.get_node(NodePath(id + "/Preview")).texture = ImageTexture.create_from_image(image)
@@ -681,6 +734,10 @@ func _clarification_round(plan: Dictionary, upstream: String, index: int, questi
 		_stage(plan, id, "偃师提问", questions[i], upstream)
 		_stage_edge(plan, id, destination)
 	return destination
+
+
+func has_preparation_stage() -> bool:
+	return workflow.get("phase") == "ready" or (workflow.get("phase") == "bound" and workflow.get("item", {}).get("status") in ["planned", "in-progress", "in-review"])
 
 
 func _display_plan() -> Dictionary:
@@ -723,7 +780,7 @@ func _display_plan() -> Dictionary:
 				intake = _clarification_round(plan, intake, history.size(), decision.questions, "")
 	var item: Dictionary = workflow.item
 	var design: Dictionary = workflow.design
-	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["planned", "in-progress", "in-review"])
+	var prepare := has_preparation_stage()
 	if item.get("status") == "blocked":
 		_stage(plan, "wf-blocked", "夸父 · 阻塞处置", "工单已标记阻塞，等待处置回执", intake)
 	if prepare:
@@ -850,6 +907,7 @@ func _add_answer_choices(card: GraphNode, input: TextEdit) -> void:
 			picker.add_item(value)
 			if prefix + value in input.text.split("\n"): picker.select(picker.item_count - 1)
 		choices.add_child(picker)
+		mark_action(picker, true)
 		picker.item_selected.connect(func(index):
 			var lines := input.text.split("\n", false)
 			for i in range(lines.size() - 1, -1, -1):
@@ -876,6 +934,7 @@ func _add_clarification_editor(card: GraphNode) -> void:
 	input.text = clarification_draft
 	_add_answer_choices(card, input)
 	card.add_child(input)
+	mark_action(input, true)
 	var actions := HBoxContainer.new()
 	actions.name = "AnswerActions"
 	card.add_child(actions)
@@ -883,6 +942,7 @@ func _add_clarification_editor(card: GraphNode) -> void:
 	submit.name = "SubmitAnswer"
 	submit.text = "提交答复"
 	actions.add_child(submit)
+	mark_action(submit, true)
 	var cancel := Button.new()
 	cancel.name = "CancelAnswer"
 	cancel.text = "取消"
@@ -937,6 +997,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		reply.custom_minimum_size.x = 210
 		reply.pressed.connect(focus_clarification)
 		view.add_child(reply)
+		mark_action(reply, true)
 	else:
 		var description := _label(item.value)
 		description.custom_minimum_size.x = 210
@@ -955,8 +1016,8 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		positions[id] = view.position_offset
 		_queue_layout()
 		draft_changed.emit())
-	_update_card(view)
 	stage_controls_requested.emit(id, view)
+	_update_card(view)
 	if id == "wf-clarification":
 		_add_clarification_editor(view)
 	if id == "wf-worker" and workflow.item.get("status") == "needs-decision":
@@ -981,6 +1042,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		reply.text = "填写答复"
 		reply.pressed.connect(func(): workflow_reply_requested.emit())
 		view.add_child(reply)
+		mark_action(reply, true)
 	if id == "wf-operation":
 		view.set_meta("ai_control_exclude", true)
 		if _node_state(id) == "awaiting_approval":
@@ -997,11 +1059,13 @@ func _add_approval_actions(view: GraphNode, token: String) -> void:
 	decision.add_item("查看详情")
 	decision.add_item("执行已预览的操作")
 	row.add_child(decision)
+	mark_action(decision, true)
 	var confirm := Button.new()
 	confirm.name = "Confirm"
 	confirm.text = "确认"
 	confirm.disabled = true
 	row.add_child(confirm)
+	mark_action(confirm, true)
 	decision.item_selected.connect(func(index): confirm.disabled = index == 0)
 	confirm.pressed.connect(func():
 		if view.get_parent() != canvas: return
