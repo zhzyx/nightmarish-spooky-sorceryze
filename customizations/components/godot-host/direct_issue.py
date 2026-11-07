@@ -1,12 +1,13 @@
-"""A user-confirmed Daqian draft creates one GitHub Issue and signals Sinan."""
+"""A user-confirmed Tianshu draft creates one GitHub Issue and signals Sinan."""
+
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
-import time
 import tempfile
+import time
+from pathlib import Path
 
 from daqian.repository_access import collaborator
 
@@ -27,15 +28,20 @@ def check_text(request):
         r"\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|github_pat_\w+)"
         r"|-----BEGIN [A-Z ]*PRIVATE KEY-----|(?:/Users/|/home/|[A-Za-z]:[\\/]Users[\\/])"
         r"|<!--\s*(?:gonggong|olympus)-|^### 稳定需求 ID\s*$|[\x00-\x08\x0b\x0c\x0e-\x1f]",
-        text, re.IGNORECASE | re.MULTILINE,
+        text,
+        re.IGNORECASE | re.MULTILINE,
     ):
         raise ValueError("请先移除凭据、私人路径或宿主保留的工单标记")
 
 
 def existing(work, repository, request_id):
     pages = json.loads(work.gh("api", f"repos/{repository}/issues?state=all&per_page=100", "--paginate", "--slurp"))
-    matches = [row for page in pages for row in page
-               if "pull_request" not in row and request_id in work.request_ids(row.get("body"))]
+    matches = [
+        row
+        for page in pages
+        for row in page
+        if "pull_request" not in row and request_id in work.request_ids(row.get("body"))
+    ]
     if len(matches) != 1:
         raise ValueError("发布回执待核实，请按稳定需求 ID 对账；当前不会再次建单")
     return matches[0]["html_url"]
@@ -52,18 +58,35 @@ def readback(work, url, plan, principal):
     expected = plan["body"] + "\n\n<!-- gonggong-host-git:" + principal["login"] + " -->"
     labels = [item["name"] for item in row["labels"]]
     statuses = [name[7:] for name in labels if name.startswith("status:")]
-    if (row.get("html_url") != url or row.get("number") != number or row.get("state") != "open"
-            or "pull_request" in row or str(row["user"]["id"]) != principal["user_id"]
-            or row["title"] != plan["title"] or body.rstrip("\n") != expected
-            or work.request_ids(body) != {plan["request_id"]} or "workspace:gonggong" not in labels
-            or [name for name in labels if name.startswith("type:")] != [plan["labels"][0]]
-            or len(statuses) != 1 or statuses[0] not in {"in-progress", "in-review", "blocked", "needs-decision", "planned"}
-            or not row.get("updated_at") or not row.get("created_at")):
+    if (
+        row.get("html_url") != url
+        or row.get("number") != number
+        or row.get("state") != "open"
+        or "pull_request" in row
+        or str(row["user"]["id"]) != principal["user_id"]
+        or row["title"] != plan["title"]
+        or body.rstrip("\n") != expected
+        or work.request_ids(body) != {plan["request_id"]}
+        or "workspace:gonggong" not in labels
+        or [name for name in labels if name.startswith("type:")] != [plan["labels"][0]]
+        or len(statuses) != 1
+        or statuses[0] not in {"in-progress", "in-review", "blocked", "needs-decision", "planned"}
+        or not row.get("updated_at")
+        or not row.get("created_at")
+    ):
         raise ValueError("工单来源、创建者、原文或当前状态不符，请按原工单核对")
     if work.gh("api", "user", "--jq", ".id").strip() != principal["user_id"]:
         raise ValueError("发布期间 GitHub 账号已切换，请切回原账号核对")
-    return ({"number": number, "url": url, "request_id": plan["request_id"], "status": statuses[0],
-             "revision": row["updated_at"]}, row)
+    return (
+        {
+            "number": number,
+            "url": url,
+            "request_id": plan["request_id"],
+            "status": statuses[0],
+            "revision": row["updated_at"],
+        },
+        row,
+    )
 
 
 def write_requirement(path, raw, saved):
@@ -91,22 +114,38 @@ def refresh(root, result, row, allowed_types, repository, node_runtime, bridge):
     node = bridge.discover_node(root, env)
     if not node:
         path = Path(node_runtime or "")
-        if not (path.is_absolute() and path.name.lower() in {"node", "node.exe"}
-                and path.is_file() and os.access(path, os.X_OK)):
+        if not (
+            path.is_absolute()
+            and path.name.lower() in {"node", "node.exe"}
+            and path.is_file()
+            and os.access(path, os.X_OK)
+        ):
             raise ValueError("工单已回读；请配置可执行的 Node.js，再用原草稿刷新司南")
         node = str(path)
     command = [node, str(Path(__file__).with_name("direct_event.mjs"))]
     payload = {"result": result, "issue": row, "allowedCategories": allowed_types, "repository": repository}
-    process = subprocess.run(command, cwd=root, env=env, input=json.dumps(payload), capture_output=True,
-                             text=True, encoding="utf-8", timeout=30)
+    process = subprocess.run(
+        command,
+        cwd=root,
+        env=env,
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=30,
+    )
     if process.returncode:
         raise ValueError("工单已回读；司南事件未取得匹配的来源回执，请按原草稿重试")
     receipt = json.loads(process.stdout)
     source = receipt["sourceSnapshot"]
-    if (receipt["event"] != {"type": "request.created", "reference": result["url"]}
-            or source["authority"] != result["url"] or source["requestId"] != result["request_id"]
-            or not re.fullmatch(r"[a-f0-9]{64}", source["sha256"]) or receipt["revision"] != result["revision"]
-            or receipt["execution"] != "not_dispatched"):
+    if (
+        receipt["event"] != {"type": "request.created", "reference": result["url"]}
+        or source["authority"] != result["url"]
+        or source["requestId"] != result["request_id"]
+        or not re.fullmatch(r"[a-f0-9]{64}", source["sha256"])
+        or receipt["revision"] != result["revision"]
+        or receipt["execution"] != "not_dispatched"
+    ):
         raise ValueError("司南刷新回执待核实")
     return receipt
 
@@ -128,8 +167,12 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
             if args[:2] != ("issue", "create"):
                 response = gh(*args)
                 if args[:2] == ("api", f"repos/{plan['repository']}/issues?state=all&per_page=100"):
-                    if any(key in work.request_ids(row.get("body")) for page in json.loads(response)
-                           for row in page if "pull_request" not in row):
+                    if any(
+                        key in work.request_ids(row.get("body"))
+                        for page in json.loads(response)
+                        for row in page
+                        if "pull_request" not in row
+                    ):
                         saved["pending"] = True
                         save(journal, saved)
                 return response
@@ -158,9 +201,14 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
 
 def receipt_folder(root, key):
     if not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key):
-        raise ValueError("无效的大千需求标识")
-    common = subprocess.run(["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
-                            text=True, capture_output=True, check=True, timeout=15).stdout.strip()
+        raise ValueError("无效的天枢需求标识")
+    common = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=15,
+    ).stdout.strip()
     return Path(common).parent / "data-collection/receipts/daqian-direct" / key
 
 
@@ -169,8 +217,9 @@ def finish_coordination(root, result, row, work, repository, node, bridge, journ
         bridge.enqueue(root, saved["event"])
         bridge.flush(root)
         _, definitions = work.config(root)
-        saved["coordination"] = refresh(root, result, row, [label["name"] for label in definitions],
-                                        repository, node, bridge)
+        saved["coordination"] = refresh(
+            root, result, row, [label["name"] for label in definitions], repository, node, bridge
+        )
         save(journal, saved)
 
 
@@ -187,10 +236,12 @@ def create_locked(root, request, bridge, journal, saved):
     principal = collaborator(root)
     if principal["user_id"] != expected_user or principal["repo"] != settings["repository"]:
         raise ValueError("当前仓库协作者与草稿账号不匹配")
-    content = (f"# {fields['title']}\n\n<!-- gonggong-intake:daqian-direct -->\n\n"
-               f"需求 ID：`{key}`\n\n类别：`type:{fields['category']}`\n\n"
-               f"来源：Godot 大千草稿 `{request['draft_id']}`，GitHub 用户 ID `{expected_user}`。\n\n"
-               "## 原始需求\n\n" + request["outcome"] + "\n")
+    content = (
+        f"# {fields['title']}\n\n<!-- gonggong-intake:daqian-direct -->\n\n"
+        f"需求 ID：`{key}`\n\n类别：`type:{fields['category']}`\n\n"
+        f"来源：Godot 天枢草稿 `{request['draft_id']}`，GitHub 用户 ID `{expected_user}`。\n\n"
+        "## 原始需求\n\n" + request["outcome"] + "\n"
+    )
     digest = hashlib.sha256(content.encode()).hexdigest()
     document = root / fields["document"]
     if saved.get("pending") and saved["digest"] != digest:
@@ -203,19 +254,37 @@ def create_locked(root, request, bridge, journal, saved):
     result, row = readback(work, url, plan, principal)
     if "event" not in saved:
         saved["event"] = {
-            "schema_version": 1, "event_id": key + "-created", "tenant_id": settings["tenant_id"],
-            "request_id": key, "kind": "request", "occurred_at": row["created_at"], "source_ref": url,
-            "agent": {"id": "godot-daqian", "version": "1", "origin": "external-authorized-host",
-                      "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()},
-            "payload": {"event": "request.created", "draft_id": request["draft_id"], "actor_id": expected_user,
-                        "document": fields["document"], "document_sha256": digest, "path_base": "repository_root",
-                        "status": result["status"], "revision": result["revision"], "execution": "not_dispatched"},
+            "schema_version": 1,
+            "event_id": key + "-created",
+            "tenant_id": settings["tenant_id"],
+            "request_id": key,
+            "kind": "request",
+            "occurred_at": row["created_at"],
+            "source_ref": url,
+            "agent": {
+                "id": "godot-daqian",
+                "version": "1",
+                "origin": "external-authorized-host",
+                "definition_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            },
+            "payload": {
+                "event": "request.created",
+                "draft_id": request["draft_id"],
+                "actor_id": expected_user,
+                "document": fields["document"],
+                "document_sha256": digest,
+                "path_base": "repository_root",
+                "status": result["status"],
+                "revision": result["revision"],
+                "execution": "not_dispatched",
+            },
             "evidence_refs": [],
         }
         save(journal, saved)
     try:
-        finish_coordination(root, result, row, work, settings["repository"], request.get("node_runtime"),
-                            bridge, journal, saved)
+        finish_coordination(
+            root, result, row, work, settings["repository"], request.get("node_runtime"), bridge, journal, saved
+        )
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         # GitHub already confirmed the binding. Only the creation event needs reconciliation.
         return {"ok": True, **result, "coordination_pending": True, "execution": "not_dispatched"}
@@ -228,7 +297,7 @@ def create(root, request, bridge):
     try:
         draft = request.get("draft_id")
         if not isinstance(draft, str) or not re.fullmatch(r"draft_[a-f0-9]{20}", draft):
-            raise ValueError("无效的大千草稿标识")
+            raise ValueError("无效的天枢草稿标识")
         key = "daqian-direct-" + draft[6:]
         folder = receipt_folder(root, key)
         journal = folder / "state.json"
@@ -239,5 +308,9 @@ def create(root, request, bridge):
             uncertain = False
             return create_locked(root, request, bridge, journal, saved)
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
-        return {"ok": False, "error": str(error), "reconcile_required": uncertain or saved.get("pending", False),
-                "execution": "not_dispatched"}
+        return {
+            "ok": False,
+            "error": str(error),
+            "reconcile_required": uncertain or saved.get("pending", False),
+            "execution": "not_dispatched",
+        }

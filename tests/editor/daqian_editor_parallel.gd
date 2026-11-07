@@ -17,7 +17,7 @@ func run():
 	settings.set_setting("gonggong/python",OS.get_environment("DAQIAN_TEST_PYTHON"))
 	var dock = root.find_child("Daqian",true,false)
 	if not dock:
-		fail("Missing Daqian tab")
+		fail("Missing Tianshu tab")
 		return
 	var tabs = dock.get_parent()
 	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
@@ -43,7 +43,7 @@ func run():
 	graph.debug_models[b] = "调试 · Gemini"
 	await panel._start_debug()
 	if panel.debug_process.is_empty():
-		fail("Daqian debug launch failed: " + panel.notice.text + " · " + graph.notice.text)
+		fail("Tianshu debug launch failed: " + panel.notice.text + " · " + graph.notice.text)
 		return
 	var diagnostic_pipe: FileAccess = panel.debug_process.stderr
 	var deadline = Time.get_ticks_msec()+45000

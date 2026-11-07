@@ -1,6 +1,6 @@
 # AI 对话入口 · 猪头图标与强调色
 
-大千单人验收案例，来自用户本轮明确需求：给 Godot 的 AI 对话入口按钮加酷炫颜色，并在文字前放一个猪头标记。关联 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/125 。由当前操作者完成，稳定需求 ID 为 daqian-ai-entry-pig-20261105。此单可独立交付，图标和入口配色一起验收。
+天枢单人验收案例，来自用户本轮明确需求：给 Godot 的 AI 对话入口按钮加酷炫颜色，并在文字前放一个猪头标记。关联 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/125 。由当前操作者完成，稳定需求 ID 为 daqian-ai-entry-pig-20261105。此单可独立交付，图标和入口配色一起验收。
 
 ## 验收条件
 - 在现有 Godot 编辑器主屏入口文字前放原创猪头图标，小尺寸可辨认双耳、眼睛和鼻子。

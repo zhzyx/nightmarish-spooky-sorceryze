@@ -100,7 +100,7 @@ func _run(action: String, input: Dictionary) -> void:
 	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
 	var entry := root.path_join("customizations/components/godot-host/daqian/models_cli.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(entry):
-		info.text = "请绑定包含大千模型接入的共工仓库"
+		info.text = "请绑定包含天枢模型接入的共工仓库"
 		return
 	if python.is_empty():
 		python = "python" if OS.has_feature("windows") else "python3"

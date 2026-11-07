@@ -12,7 +12,7 @@ on:
         type: boolean
         default: false
       daqian_build_run:
-        description: Existing MSVC editor artifact for test-only Daqian changes
+        description: Existing MSVC editor artifact for test-only Tianshu changes
         type: string
         default: ""
       consultation_build_run:
@@ -120,14 +120,14 @@ jobs:
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
 
-      - name: Daqian native editor graph
+      - name: Tianshu native editor graph
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         run: |
           python tests/editor/run_daqian_graph.py --godot ${{ matrix.bin }} --report daqian-native.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/editor/run_ai_chat_tab_order.py --godot ${{ matrix.bin }} --report daqian-tabs.json
 
-      - name: Daqian cross-provider loopback in the editor
+      - name: Tianshu cross-provider loopback in the editor
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         run: |
           python tests/editor/run_daqian_graph.py --scenario parallel --godot ${{ matrix.bin }} --report daqian-parallel.json
@@ -136,7 +136,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/editor/run_daqian_graph.py --scenario entry --godot ${{ matrix.bin }} --report daqian-entry.json
 
-      - name: Upload Daqian editor results
+      - name: Upload Tianshu editor results
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         uses: actions/upload-artifact@v7
         with:

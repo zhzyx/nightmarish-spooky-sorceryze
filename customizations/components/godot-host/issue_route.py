@@ -1,4 +1,4 @@
-"""Read-only, model-backed coordination for an already verified planned Daqian Issue."""
+"""Read-only, model-backed coordination for an already verified planned Tianshu Issue."""
 
 import hashlib
 import json
@@ -77,7 +77,7 @@ def source_from_row(work, settings, number, key, row):
 def planned_source(root, request, bridge):
     number, key = request.get("issue_number"), request.get("request_id")
     if type(number) is not int or number < 1 or not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key or ""):
-        raise ValueError("请先绑定已创建的大千工单")
+        raise ValueError("请先绑定已创建的天枢工单")
     _, error = bridge.gh_state(root)
     if error:
         raise ValueError(error)
