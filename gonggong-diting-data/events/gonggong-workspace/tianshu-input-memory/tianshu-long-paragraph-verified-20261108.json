@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-long-paragraph-verified-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T21:15:25.159459+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "codex-511-text",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "verified": "Bounded Windows OpenGL task-card input benchmark and native TextEdit unit tests",
+    "receipt": "data-collection/issue511-long-paragraph.json",
+    "whole_machine_oom_reproduced": false
+  },
+  "evidence_refs": [
+    "tianshu-input-memory-intake"
+  ],
+  "sha256": "1cced75426528fd6e9c8f61341685b4088a9eb4624af2aad65119f2337ee7ec7"
+}

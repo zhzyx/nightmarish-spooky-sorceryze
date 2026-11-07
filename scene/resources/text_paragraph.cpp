@@ -780,6 +780,30 @@ Size2 TextParagraph::get_line_size(int p_line) const {
 	return TS->shaped_text_get_size(lines_rid[p_line]);
 }
 
+// Validate the paragraph once when measuring all of its wrapped lines.
+real_t TextParagraph::get_max_line_height() const {
+	_THREAD_SAFE_METHOD_
+
+	_shape_lines();
+	real_t height = 0.0;
+	for (const RID &line : lines_rid) {
+		height = MAX(height, TS->shaped_text_get_size(line).y);
+	}
+	return height;
+}
+
+Vector<Vector2i> TextParagraph::get_line_ranges() const {
+	_THREAD_SAFE_METHOD_
+
+	_shape_lines();
+	Vector<Vector2i> ranges;
+	ranges.reserve_exact(lines_rid.size());
+	for (const RID &line : lines_rid) {
+		ranges.push_back(TS->shaped_text_get_range(line));
+	}
+	return ranges;
+}
+
 Vector2i TextParagraph::get_line_range(int p_line) const {
 	_THREAD_SAFE_METHOD_
 

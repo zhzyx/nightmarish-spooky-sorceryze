@@ -151,6 +151,8 @@ public:
 	Array get_line_objects(int p_line) const;
 	Rect2 get_line_object_rect(int p_line, Variant p_key) const;
 	Size2 get_line_size(int p_line) const;
+	real_t get_max_line_height() const;
+	Vector<Vector2i> get_line_ranges() const;
 	float get_line_ascent(int p_line) const;
 	float get_line_descent(int p_line) const;
 	float get_line_width(int p_line) const;

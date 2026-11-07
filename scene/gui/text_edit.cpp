@@ -179,16 +179,8 @@ int TextEdit::Text::get_line_wrap_amount(int p_line) const {
 }
 
 Vector<Vector2i> TextEdit::Text::get_line_wrap_ranges(int p_line) const {
-	Vector<Vector2i> ret;
-	ERR_FAIL_INDEX_V(p_line, (int)text.size(), ret);
-
-	Ref<TextParagraph> data_buf = text[p_line].data_buf;
-	int line_count = data_buf->get_line_count();
-	ret.reserve_exact(line_count);
-	for (int i = 0; i < line_count; i++) {
-		ret.push_back(data_buf->get_line_range(i));
-	}
-	return ret;
+	ERR_FAIL_INDEX_V(p_line, (int)text.size(), Vector<Vector2i>());
+	return text[p_line].data_buf->get_line_ranges();
 }
 
 const Ref<TextParagraph> TextEdit::Text::get_line_data(int p_line) const {
@@ -369,10 +361,7 @@ void TextEdit::Text::invalidate_cache(int p_line, bool p_text_changed) {
 
 	// Update height.
 	const int old_height = text_line.height;
-	text_line.height = font_height;
-	for (int i = 0; i < text_line.line_count; i++) {
-		text_line.height = MAX(text_line.height, text_line.data_buf->get_line_size(i).y);
-	}
+	text_line.height = MAX(font_height, text_line.data_buf->get_max_line_height());
 
 	// If this line has shrunk, this may no longer be the tallest line.
 	if (!text_line.hidden) {
