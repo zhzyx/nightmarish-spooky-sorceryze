@@ -222,7 +222,28 @@ def request_identity(request):
 
 def intake_failure_reason(stderr):
     """Classify trusted gate output without reflecting arbitrary stderr in the UI."""
-    match = re.match(r"GITHUB_(HTTP_\d{3}|NETWORK|TIMEOUT|RUNTIME|COMMAND)\b", stderr.strip())
+    reason = stderr.strip()
+    lines = reason.splitlines()
+    if len(lines) == 2:
+        try:
+            prefix = json.loads(lines[0])
+        except (ValueError, TypeError):
+            prefix = None
+        if (
+            isinstance(prefix, dict)
+            and set(prefix) == {"incident", "state", "issue", "action", "next_action", "dispatch"}
+            and isinstance(prefix["incident"], str)
+            and re.fullmatch(r"[a-f0-9]{64}", prefix["incident"])
+            and prefix["state"] == "pending_kuafu_intake"
+            and type(prefix["issue"]) is int
+            and prefix["issue"] > 0
+            and prefix["action"] == "intake"
+            and prefix["next_action"]
+            == "The active host must invoke Kuafu now: receive, investigate, then assess with the actual worker and bug."
+            and isinstance(prefix["dispatch"], dict)
+        ):
+            reason = lines[1].strip()
+    match = re.match(r"GITHUB_(HTTP_\d{3}|NETWORK|TIMEOUT|RUNTIME|COMMAND)\b", reason)
     if match:
         code = "GITHUB_" + match[1]
         transient = code in {"GITHUB_NETWORK", "GITHUB_TIMEOUT", "GITHUB_HTTP_429"}
@@ -239,8 +260,8 @@ def intake_failure_reason(stderr):
         "Issue requires exactly one active status label",
         "Issue stable request ID does not match unambiguously",
     }
-    if stderr.strip() in binding_errors:
-        return "ISSUE_BINDING", False, stderr.strip()
+    if reason in binding_errors:
+        return "ISSUE_BINDING", False, reason
     return "INTAKE_LOCAL_FAILURE", False, "INTAKE_LOCAL_FAILURE (see private intake diagnostics)"
 
 

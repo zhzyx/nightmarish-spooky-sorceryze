@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "kind": "component_validation",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "verified_at": "2026-11-07T16:29:11.266006+00:00",
+  "pending_dependency_source_commit": "1a8e08a9dbba7c2e79b9809961fecdf988780893",
+  "compiled_at": "1600f40c56194fd3f0b4fc99a2ef2e7cdafd0596 plus exact frozen origin fbabe0bd overlay; subsequent ff1a8 changes only evidence and same origin bytes",
+  "source_snapshot_digest": "3a6327912e9390065ab252052a00a05e9b667a285e37d52f7cf31e1adc237def",
+  "source_input_count": 16460,
+  "source_hashes": {
+    "editor/docks/ai_chat_delivery.cpp": "cae92c27b591df7a7ac439cfd7f343a7ce9c9e07e84be5f49c53828ae4f459df",
+    "editor/docks/ai_chat_delivery_receipt.h": "3da10bcbd778da6af10fcc955bcf19e501f14abdd26cf7117fed74171a6fcf0d",
+    "editor/docks/ai_chat_dock.cpp": "9674f2e75cd67830540f2dc7965076f0b4ee5d65f8f8b02fd5fb3332aa31e7fb",
+    "editor/docks/ai_chat_dock.h": "837b4cd41f7209abf811486bc5ed3eb64e397112773ed78d0986c679a4580a7b",
+    "editor/docks/gonggong_engine_origin.cpp": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+    "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+    "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+    "editor/docks/ai_chat_host_runtime.h": "47765b31a5202f90de201b7c7d0df53f8242ac8f9bec29b8007a8763a06859f6",
+    "editor/docks/ai_chat_gonggong.cpp": "62a4b33f440b9356198f0db70d12b754deaedfcd4d31dd614374ac3146a96bfc",
+    "editor/docks/ai_chat_sub_agents.cpp": "1177732c369f349ce4cfb2199a8e7c13f151862570c7242bda25a71c298fd856",
+    "tools/editor_delivery_finalize.py": "8de3815c84ba8062f88a72be245495b41512194f1fe7378b1c493e003f1f8277",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/codebuddy_cli/godot_acp.js": "72c47c86adf85db3724e7b20d37fa0eed500aa523c8c88c2da5e311bead98603",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31",
+    "tools/codebuddy_cli/godot_terminal.js": "560ce1936ee8031e691af75fee0bd287310299d3616d7e8673cf7ada44829683",
+    "tests/editor/run_delivery_complete.py": "92aae55751ddab6af929e8815ff84ebbfc3efffc720379fd4b30be120b748dac",
+    "tests/editor/delivery_complete.gd": "1640adadde0fee30bdf9b0d463db2ec85d17b106d12946990c281903a9502f02"
+  },
+  "artifact_sha256": "d25d45fa61e7102c7005f2afd2d65db7be47a1909460dcfd883a9bf502ee01be",
+  "single_artifact_suite": true,
+  "native_cases": [
+    {
+      "case": "normal",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "delivery_completed",
+      "fixture_issue_state": "closed",
+      "private_report_sha256": "f6eb902ea19d0d5bd71a96d7813ccfa5b20463aa729075c92ceb7a182d7af607"
+    },
+    {
+      "case": "cold",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "delivery_completed",
+      "fixture_issue_state": "closed",
+      "private_report_sha256": "69888580ed6498d608f5b24fcb9b586e7c9470aa19b6f8f1d14814388657161d"
+    },
+    {
+      "case": "receipt-failure",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "closed",
+      "private_report_sha256": "13cf60037cb03808b5fa301024c8608877c979c78176fefc9d9b718d12e5e94a"
+    },
+    {
+      "case": "stop",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "d162c6f0122bea35b7b261c53e7d9b8819d52c11f255a90bfbec1b24de2c7040"
+    },
+    {
+      "case": "partial-failure",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "delivery_pending",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "d4d837dfcbdef36236a57d3f54db50b4d9c0ff150b0000ce44703e5b154c8067"
+    },
+    {
+      "case": "activation-pending",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "delivery_pending",
+      "fixture_issue_state": "closed",
+      "private_report_sha256": "e81a883bc4b4a6ade18edff5535cd77a441ea78937dcbbf8d666d8371816daad"
+    },
+    {
+      "case": "reject-before-mutation",
+      "passed": true,
+      "model_requests": 2,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "6c58178841f93f6c008ea5ee0addc1b044559368b0c0672831961dbc04bbcfd5"
+    },
+    {
+      "case": "forged-stdout",
+      "passed": true,
+      "model_requests": 2,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "4af0a4e9a64c7390e8370141e1b8bf63d57741e7eaf0c3213d540091261184ba"
+    },
+    {
+      "case": "approval",
+      "passed": true,
+      "model_requests": 2,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "ca47b9d3554feefa628a0856a9290364d01d29bad1aba108f2f73d47ac3e6634"
+    },
+    {
+      "case": "inline-approval",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "db1a2ae3b5b625840c19e7ea79e4af9d6eca42fe32290ba22d99fe033bf47a33"
+    },
+    {
+      "case": "consultation",
+      "passed": true,
+      "model_requests": 2,
+      "editor_status": "consultation_only",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "cf6bd06385753726818e55a6af5283ab9645e71cd13e62030d4b2110fb4d96fc"
+    },
+    {
+      "case": "disabled",
+      "passed": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "fixture_issue_state": "open",
+      "private_report_sha256": "5241ec0c622317b8f4a456969358247c164f62c570113f280a986d9b807fe584"
+    }
+  ],
+  "central_workflow_python_proof": "Private schema1 central JSON was preseeded before startup; GONGGONG overrides removed; legacy gonggong/python deliberately set to a nonexistent private path. Native candidate, provenance guard and fixed finalizer all ran successfully from the shared operation effective snapshot.",
+  "checks": {
+    "native_case_count_passed": 12,
+    "production_macos_arm64_build_seconds": 15.52,
+    "unit_macos_arm64_build_seconds": 27.21,
+    "cpp_aichat_cases_passed": 59,
+    "cpp_aichat_assertions_passed": 1343,
+    "cpp_unit_source_inputs_match_current_native": true,
+    "backend_python_tests_passed": 15,
+    "bridge_python_tests_passed": 27,
+    "codex_bridge_tests_passed": 15,
+    "codebuddy_bridge_tests_passed": 36,
+    "codebuddy_acp_tests_passed": 10,
+    "codebuddy_terminal_tests_passed": 15
+  },
+  "scope": [
+    "Actual native editor and fixed tools, isolated system-temp self-contained config, private synthetic GitHub and local bare Git only.",
+    "Same product artifact used for all twelve listed scenarios; C++ unit artifact separate with same implementation and test input bytes.",
+    "No production GitHub signature, provider/model business acceptance, user App installation or user configuration/history mutation claimed.",
+    "Dependency is a pending frozen candidate, not main. Actual main will be integrated and source hash differences reviewed; only necessary changed-path verification is then required."
+  ],
+  "git_delivery": "pending actual #462 main, normal formal gate, exact signed CI, PR merge and Issue reconciliation",
+  "usage": null
+}

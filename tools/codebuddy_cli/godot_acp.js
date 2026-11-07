@@ -213,7 +213,7 @@ function createTraceLog(directory, maxBytes = 8 * 1024 * 1024) {
     const enums = {
         direction: ['incoming', 'outgoing'],
         stage: ['connecting', 'waiting', 'analyzing', 'responding', 'tool_pending', 'searching', 'executing'],
-        operation: ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'read_file', 'write_file', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine'],
+        operation: ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'read_file', 'write_file', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'],
         decision: ['allow_once', 'reject_once', 'cancelled'],
         kind_source: ['permission', 'notification', 'missing'],
         native_tool: ['Glob', 'Grep'],
@@ -495,7 +495,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         if (reason !== 'none') {
             return deny(reason, api.bridgeError(reason === 'round_limit_reached' ? 'TOOL_ROUND_LIMIT_REACHED' : 'TOOLS_DISABLED').message);
         }
-        if (!active.input.available_tools.some(tool => tool.function?.name === name) || pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
+        if (!active.input.available_tools.some(tool => tool.function?.name === name) || pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
         let args;
         try {
             args = fileArguments(params, writing);
@@ -534,7 +534,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         validate: validateTerminal,
         hostAction,
         approve: args => {
-            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
+            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
             reportProgress('tool_pending');
             return new Promise((resolve, reject) => {
                 const id = 'acp_command_' + randomUUID();
@@ -649,7 +649,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 const item = pending.get(result.tool_call_id);
                 pending.delete(result.tool_call_id);
                 record('host_file_result', { operation: item.name, success: result.godot_file_success === true, content_bytes: Buffer.byteLength(result.content), call_hash: createHash('sha256').update(result.tool_call_id).digest('hex').slice(0, 16), pending_count: pending.size });
-                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine'].includes(item.name)) {
+                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name)) {
                     try {
                         const actionResult = JSON.parse(result.content);
                         if (!actionResult || typeof actionResult.ok !== 'boolean') throw new Error('Invalid host action result');

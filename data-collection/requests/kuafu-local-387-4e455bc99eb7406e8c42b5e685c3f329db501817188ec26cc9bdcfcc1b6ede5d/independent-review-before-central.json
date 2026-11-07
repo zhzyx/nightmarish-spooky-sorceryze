@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "independent_component_review",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "recorded_at": "2026-11-07T16:10:54.421493+00:00",
+  "reviewer": "/root/delivery_terminal_fix/review_finalizer",
+  "status": "passed_for_reviewed_snapshots; narrow later changes pending independent parent review",
+  "checks_actual": [
+    "Isolated python -I CLI --help exit0",
+    "Finalizer Python14/14",
+    "Bridge Python27/27",
+    "CodeBuddy ACP9/9",
+    "git diff --check passed"
+  ],
+  "scope": [
+    "Fixed installed worker; private nonce and owner/snapshot/generation receipt; exact Issue/request/base/source/candidate/signed/PR binding",
+    "Terminal facts do not grant new production; ordinary closed intake unchanged",
+    "Queue paused and live batch cancelled only after current scope verification; no automatic child spawn from terminal receipt",
+    "Private bounded partial failure diagnostics preserved; arbitrary stdout cannot set terminal state",
+    "Followup reviewed preparation receipt version/origin compatibility without widening candidate authority",
+    "Followup reviewed automatic Issue binding falling back to normal confirmation, with explicit-source Tianshu inline guards unchanged"
+  ],
+  "reviewed_latest_snapshot_hashes": {
+    "editor/docks/ai_chat_delivery.cpp": "b1e9077e07b843baf50709841990281f3eeb51e626a05d867d8f1796ca4d47cf",
+    "tools/editor_delivery_finalize.py": "b52a66c101f907eb19dc32c760515a6aa57d11602c93afa64f66058199e2179d",
+    "editor/docks/ai_chat_dock.cpp": "0d88c468f1e2fff81228d3818f8e74641b71401ba67c05aae77a93a16d4422d6",
+    "editor/docks/ai_chat_delivery_receipt.h": "3da10bcbd778da6af10fcc955bcf19e501f14abdd26cf7117fed74171a6fcf0d"
+  },
+  "not_claimed": [
+    "Reviewer did not run native GUI or production GitHub/model traffic",
+    "Final #462 central snapshot integration not yet available",
+    "Later Python loader type guards, stricter active-status retry and CodeBuddy reserved parser/instructions delta await narrow parent review; followup dispatch hit host agent thread limit",
+    "Unknown receipt recovery uses fixed finalizer authoritative readback; no automatic chat recovery promise"
+  ],
+  "remaining_review_request_sent_to_parent": true,
+  "usage": null
+}
