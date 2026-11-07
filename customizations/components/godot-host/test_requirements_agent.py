@@ -145,6 +145,53 @@ class RequirementsTests(unittest.TestCase):
         self.assertIn("输入反馈", self.comments[0])
         self.assertLess(self.comments[0].index("## 待确认"), self.comments[0].index("## 范围"))
 
+    def test_steering_new_scope_pauses_without_publication_or_rebinding(self):
+        self.request.update(issue_number=17, request_id="bound-req", continuation_only=True)
+        first = self.invoke()
+        second = self.invoke()
+        self.assertEqual(first, second)
+        self.assertEqual(first["error"], "steering_requires_separate_task")
+        self.assertFalse(first["remote_created"])
+        self.work.issue.assert_not_called()
+        self.bridge.issue_start.assert_not_called()
+        self.bridge.enqueue.assert_not_called()
+        self.assertEqual(self.comments, [])
+        self.assertEqual(self.adapter.call.call_count, 1)
+
+    def test_steering_continuation_keeps_exact_bound_issue(self):
+        self.design["decision"] = "continue"
+        self.request.update(issue_number=17, request_id="bound-req", continuation_only=True)
+        result = self.invoke()
+        self.assertEqual((result["issue_number"], result["request_id"]), (17, "bound-req"))
+        self.work.issue.assert_not_called()
+        self.assertEqual(len(self.comments), 1)
+
+    def test_steering_validates_binding_and_host_flag_before_model(self):
+        for flag in [1, "true", None]:
+            self.request.update(continuation_only=flag)
+            with self.assertRaisesRegex(ValueError, "continuation-only host state"):
+                self.invoke()
+        self.request.update(issue_number=17, request_id="other-req", continuation_only=True)
+        with self.assertRaisesRegex(ValueError, "same real open bound Issue"):
+            self.invoke()
+        self.request.update(request_id="bound-req")
+        self.existing["state"] = "closed"
+        with self.assertRaisesRegex(ValueError, "same real open bound Issue"):
+            self.invoke()
+        self.adapter.call.assert_not_called()
+        self.work.issue.assert_not_called()
+
+    def test_steering_does_not_reuse_normal_intake_publication(self):
+        self.request.update(issue_number=17, request_id="bound-req")
+        published = self.invoke()
+        self.assertEqual(published["issue_number"], 18)
+        self.work.issue.reset_mock()
+        self.request["continuation_only"] = True
+        paused = self.invoke()
+        self.assertEqual(paused["error"], "steering_requires_separate_task")
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.adapter.call.call_count, 2)
+
     def test_long_followup_resumes_after_first_part(self):
         self.design.update(decision="continue", questions=["问" * 1999 + str(i % 10) for i in range(20)])
         self.request.update(issue_number=17, request_id="bound-req")

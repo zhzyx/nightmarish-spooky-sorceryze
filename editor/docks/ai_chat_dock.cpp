@@ -269,6 +269,9 @@ bool valid_history(const Dictionary &p_data) {
 		}
 		for (const Variant &value : Array(queued)) {
 			const Dictionary message = value;
+			if (message.has("steering") && message["steering"].get_type() != Variant::BOOL) {
+				return false;
+			}
 			if (message["role"] != "user" || message.has("tool_calls") || String(message["content"]).utf8().length() > 256 * 1024) {
 				return false;
 			}
@@ -334,7 +337,11 @@ Array completed_history(const Array &p_records, bool p_visible) {
 	Array kept;
 	for (int start = 0; start < p_records.size();) {
 		int end = start + 1;
-		while (end < p_records.size() && String(Dictionary(p_records[end])["role"]) != "user") {
+		while (end < p_records.size()) {
+			const Dictionary next = p_records[end];
+			if (next["role"] == "user" && !bool(next.get("steering", false))) {
+				break;
+			}
 			end++;
 		}
 		int final = -1;
@@ -348,7 +355,7 @@ Array completed_history(const Array &p_records, bool p_visible) {
 		for (int i = start; i < end; i++) {
 			const Dictionary record = p_records[i];
 			const String role = record["role"];
-			if (final < 0 || role == "user" || (!p_visible && role == "system") || i == final) {
+			if (final < 0 || role == "user" || bool(record.get("steering_applied", false)) || (!p_visible && role == "system") || i == final) {
 				kept.push_back(record);
 			}
 		}
@@ -625,11 +632,12 @@ void AIChatDock::_replay_transcript(const Array &p_transcript) {
 	for (const Variant &value : p_transcript) {
 		const Dictionary record = value;
 		const String role = record["role"];
-		if (role == "user") {
+		const bool steering = role == "user" && bool(record.get("steering", false));
+		if (role == "user" && !steering) {
 			_add_snapshot_button(message_list, turn_snapshot);
 			turn_snapshot = record.get("snapshot_id", String());
 		}
-		if (role == "user" || role == "editor" || role == "error") {
+		if ((role == "user" && !steering) || role == "editor" || role == "error") {
 			if (active_reply) {
 				work_toggle->set_text(U"工作过程 · 历史记录");
 				work_toggle->set_pressed(false);
@@ -1488,10 +1496,10 @@ void AIChatDock::_set_busy(bool p_busy) {
 	model_picker->set_disabled(busy || models_loading);
 	_sync_reasoning_picker();
 	refresh_models->set_disabled(busy || models_loading);
-	// Sending while busy enqueues a new turn; it never mutates the active request.
+	// Accept corrections while busy; apply them only at a host-owned safe boundary.
 	send_button->set_disabled(!pending_external_editor_message.is_empty() || snapshot_restoring || snapshot_transaction_failed || models_loading || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
-	send_button->set_text(busy || !queued_messages.is_empty() ? U"加入队列" : U"发送");
-	send_button->set_tooltip_text(U"回车发送；执行中加入本会话队列，当前任务完成后按顺序执行。Shift+回车换行。");
+	send_button->set_text(busy ? U"补充要求" : U"发送");
+	send_button->set_tooltip_text(U"回车发送；执行中补充当前任务，在安全边界应用。切换咨询模式的消息单独排队。Shift+回车换行。");
 	backend->set_disabled(locked);
 	// Leave tabs enabled so their close buttons remain usable during a request.
 	// _agent_selected rejects switches while the shared request state is locked.
@@ -1563,7 +1571,9 @@ void AIChatDock::_refresh_message_queue() {
 	set_meta("queued_message_count", queued_messages.size());
 	set_meta("queue_paused", queue_paused);
 	message_queue->set_visible(!queued_messages.is_empty());
-	queue_status->set_text(vformat(queue_paused ? U"待执行 · %d 条 · 已暂停（停止、失败或重启后需确认继续）" : U"待执行 · %d 条 · 当前任务完成后按顺序执行", queued_messages.size()));
+	queue_status->set_text(vformat(queue_paused ? U"已收到 · %d 条 · 已暂停（停止、失败或重启后需确认继续）" : _has_pending_steering() ? U"已收到 · %d 条 · 等待安全边界应用到当前任务"
+																																	   : U"待执行 · %d 条 · 将作为独立任务执行",
+			queued_messages.size()));
 	queue_resume->set_visible(queue_paused);
 	queue_resume->set_disabled(busy || models_loading || engine_build_pid >= 0 || engine_restart_requested);
 	while (queue_list->get_child_count()) {
@@ -1590,7 +1600,7 @@ void AIChatDock::_refresh_message_queue() {
 		row->add_child(remove);
 	}
 	if (send_button) {
-		send_button->set_text(busy || !queued_messages.is_empty() ? U"加入队列" : U"发送");
+		send_button->set_text(busy ? U"补充要求" : U"发送");
 	}
 }
 
@@ -1643,6 +1653,25 @@ void AIChatDock::_send() {
 		_set_busy(false);
 		return;
 	}
+	const String command = input->get_text().strip_edges();
+	if (busy && draft_images.is_empty() && (AIChatIssueGuide::is_cancel(command) || command == U"停止" || command.to_lower() == "stop")) {
+		input->set_text(String());
+		_append(TTR("You"), _redact(command));
+		if (!daqian_approval_running && (confirmation->is_visible() || engine_approval->is_visible() || !_get_daqian_approval().is_empty())) {
+			confirmation->hide();
+			_end_daqian_approval("cancelled");
+			if (engine_dialog_action.begins_with("tool_")) {
+				engine_approval->hide();
+				_reject_engine_action();
+			} else {
+				_reject_action();
+			}
+		} else {
+			_stop();
+		}
+		return;
+	}
+
 	if (consultation_only->is_pressed() && !gonggong_recovered_result.is_empty()) {
 		_append(TTR("Error"), U"仍有旧开发结果待恢复。请先按停止放弃恢复，再发送仅咨询消息；本次未恢复或执行任何操作。");
 		return;
@@ -1699,12 +1728,29 @@ void AIChatDock::_send() {
 		message["images"] = draft_images.duplicate(true);
 	}
 	message["consultation_only"] = consultation_only->is_pressed();
+	// Intake, setup and recovery own their input. A mode change is a separate
+	// task and must never expand the active turn's permission scope.
+	message["steering_snapshot"] = snapshot_id;
+	message["steering"] = busy && bool(message["consultation_only"]) == consultation_turn && gonggong_recovered_result.is_empty();
 	queued_messages.push_back(message);
 	input->set_text(String());
 	draft_images.clear();
 	_refresh_images();
 	_refresh_message_queue();
 	_queue_history_save();
+	_save_history();
+	if (_has_pending_steering() && !daqian_approval_running && (confirmation->is_visible() || engine_approval->is_visible() || !_get_daqian_approval().is_empty())) {
+		// A correction invalidates an unexecuted proposal, including a Daqian
+		// approval token. Never use that old approval for the revised operation.
+		confirmation->hide();
+		_end_daqian_approval("cancelled");
+		if (engine_dialog_action.begins_with("tool_")) {
+			engine_approval->hide();
+			_reject_engine_action();
+		} else {
+			_reject_action();
+		}
+	}
 	if (!busy && !queue_paused) {
 		_dispatch_queued_message(active_agent);
 	}
@@ -1798,7 +1844,10 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	turn_record["snapshot_id"] = snapshot_id;
 	draft_images = attachments;
 	_begin_reply();
-	messages.push_back(p_message.duplicate(true));
+	Dictionary initial_message = p_message.duplicate(true);
+	initial_message.erase("steering");
+	initial_message.erase("steering_snapshot");
+	messages.push_back(initial_message);
 	turn_completed = false;
 	tool_rounds = 0;
 	turn_model_requests = 0;
@@ -1810,9 +1859,68 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	return true;
 }
 
+bool AIChatDock::_has_pending_steering() const {
+	if (!busy || queue_paused) {
+		return false;
+	}
+	for (const Variant &value : queued_messages) {
+		const Dictionary message = value;
+		if (bool(message.get("steering", false)) && message.get("steering_snapshot", "") == snapshot_id && bool(message.get("consultation_only", false)) == consultation_turn) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void AIChatDock::_apply_pending_steering() {
+	// The revised Issue may have a new source revision after scope intake.
+	// Finish the old reporting segment without replacing the turn or snapshot.
+	_end_gonggong("superseded");
+	// A native CodeBuddy prompt can be suspended waiting for tool results and
+	// does not accept user input there. Restore it from paired host history.
+	if (backend->get_selected() == 1) {
+		cli_steering_reset = cli_session;
+	}
+	for (int i = 0; i < queued_messages.size();) {
+		const Dictionary message = queued_messages[i];
+		if (!bool(message.get("steering", false)) || message.get("steering_snapshot", "") != snapshot_id || bool(message.get("consultation_only", false)) != consultation_turn) {
+			i++;
+			continue;
+		}
+		queued_messages.remove_at(i);
+		messages.push_back(message.duplicate(true));
+		const Array attachments = draft_images;
+		draft_images = message.get("images", Array());
+		_append(TTR("You"), message["content"]);
+		Dictionary record = transcript[transcript.size() - 1];
+		record["steering"] = true;
+		record["snapshot_id"] = snapshot_id;
+		draft_images = attachments;
+	}
+	if (active_reply) {
+		Node *row = active_reply;
+		while (row && row->get_parent() != message_list) {
+			row = row->get_parent();
+		}
+		if (row) {
+			message_list->move_child(row, message_list->get_child_count() - 1);
+		}
+	}
+	_append_work(U"已应用补充要求，保留原任务、工单与快照；重新核对范围并继续。已完成操作不会自动撤销。");
+	Dictionary acknowledgement = transcript[transcript.size() - 1];
+	acknowledgement["steering_applied"] = true;
+	_refresh_message_queue();
+	_queue_history_save();
+	_save_history();
+}
+
 void AIChatDock::_request_completion() {
 	if (!busy) {
 		return;
+	}
+	if (_has_pending_steering()) {
+		_apply_pending_steering();
+		gonggong_resume = false;
 	}
 	if (consultation_turn) {
 		gonggong_context = "Consultation only: read code and answer questions. No writes, execution, builds or Issue operations are permitted.";
@@ -1833,6 +1941,10 @@ void AIChatDock::_request_completion() {
 }
 
 void AIChatDock::_send_completion_after_receipt() {
+	if (_has_pending_steering()) {
+		_request_completion();
+		return;
+	}
 	Array context_messages;
 	Dictionary context_stats;
 	if (!AIChatTools::compact_context(messages, context_messages, context_stats)) {
@@ -1920,6 +2032,8 @@ void AIChatDock::_send_completion_after_receipt() {
 		// Internal transaction metadata is stored locally, not sent as unsupported
 		// chat-completions fields. The notice content remains in the request.
 		message.erase("consultation_only");
+		message.erase("steering");
+		message.erase("steering_snapshot");
 		message.erase("godot_snapshot_restore");
 		message.erase("snapshot_id");
 		message.erase("target_snapshot");
@@ -2064,7 +2178,7 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 	if (calls_value.get_type() == Variant::ARRAY) {
 		tool_calls = calls_value;
 	}
-	if (!content.is_empty()) {
+	if (!content.is_empty() && !_has_pending_steering()) {
 		if (tool_calls.is_empty()) {
 			_append(TTR("AI"), content);
 		} else {
@@ -2110,6 +2224,10 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 				Dictionary visible_message = transcript[transcript.size() - 1];
 				visible_message["incomplete"] = true;
 			}
+		}
+		if (_has_pending_steering()) {
+			_request_completion();
+			return;
 		}
 		messages.push_back(final);
 		if (complete) {
@@ -2217,6 +2335,10 @@ void AIChatDock::_next_tool(uint64_t p_session) {
 
 void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	if (!busy || p_session != session_generation) {
+		return;
+	}
+	if (_has_pending_steering()) {
+		_finish_tool("Error: Skipped unexecuted proposal because the user supplied new instructions. Replan using the updated scope.");
 		return;
 	}
 	Dictionary call = tool_calls[tool_index];
@@ -2457,6 +2579,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 }
 
 void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
+	pending_action = String();
 	_daqian_tool_result(p_result, p_file_success);
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
 		_set_busy(false);
@@ -2782,6 +2905,9 @@ void AIChatDock::_cancel_external_editor_request(const String &p_reason) {
 }
 
 void AIChatDock::_confirm_action() {
+	if (_has_pending_steering() && pending_external_editor_message.is_empty() && !snapshot_restoring) {
+		return;
+	}
 	if (!pending_external_editor_message.is_empty()) {
 		if (!allow_tools->is_pressed() || consultation_only->is_pressed()) {
 			_get_editor_control()->cancel_route(pending_external_editor_message, "permission_denied");
@@ -2795,7 +2921,7 @@ void AIChatDock::_confirm_action() {
 		_confirm_snapshot_restore();
 		return;
 	}
-	if (!busy) {
+	if (!busy || pending_action.is_empty()) {
 		return;
 	}
 	if (!allow_tools->is_pressed()) {
@@ -2859,7 +2985,7 @@ void AIChatDock::_reject_action() {
 		_cancel_external_editor_request("user_rejected");
 	} else if (snapshot_restoring) {
 		_reject_snapshot_restore();
-	} else if (busy) {
+	} else if (busy && !pending_action.is_empty()) {
 		if (pending_action == "route_engine_message") {
 			const Dictionary result = _get_editor_control()->cancel_route(pending_editor_action, "user_rejected");
 			pending_editor_action.clear();
@@ -4092,13 +4218,17 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 		current.push_back(JSON::stringify(records[i]));
 	}
 	const String configuration = cli_node->get_text() + "\n" + cli_bridge->get_text() + "\n" + cli_entry->get_text() + "\n" + (allow_tools->is_pressed() ? "tools_enabled" : "tools_disabled") + "\n" + gonggong_context.sha256_text();
-	bool incremental = cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id) && configuration == cli_configuration && cli_sent_messages.size() <= current.size();
+	const bool reset = cli_steering_reset && cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id);
+	cli_steering_reset = false;
+	bool incremental = !reset && cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id) && configuration == cli_configuration && cli_sent_messages.size() <= current.size();
 	for (int i = 0; incremental && i < cli_sent_messages.size(); i++) {
 		incremental = cli_sent_messages[i] == current[i];
 	}
 	if (!incremental) {
 		const bool rebuilding = cli_session;
-		_cancel_cli();
+		if (!reset) {
+			_cancel_cli();
+		}
 		if (rebuilding) {
 			_append_work(U"CLI 连接已失效或入口配置变化：创建原生会话并附带一次性恢复快照。正常续聊和模型切换不会重发历史。");
 		}
@@ -4158,7 +4288,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 		_set_busy(false);
 		return;
 	}
-	if (!incremental) {
+	if (!incremental && !reset) {
 		List<String> arguments;
 		arguments.push_back(cli_bridge->get_text().strip_edges());
 		arguments.push_back("session");
@@ -4178,12 +4308,14 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 	}
 	Dictionary submission;
 	submission["path"] = cli_input_path;
+	submission["reset"] = reset;
 	if (!cli_stdout->store_string(JSON::stringify(submission) + "\n")) {
 		_cancel_cli();
 		_append(TTR("Error"), U"CLI 增量请求提交失败，已停止会话；没有自动重试。");
 		_set_busy(false);
 		return;
 	}
+	cli_configuration = configuration;
 	cli_sent_messages = current;
 	cli_waiting = true;
 	turn_model_requests++;
@@ -4216,6 +4348,7 @@ void AIChatDock::_cancel_cli() {
 	cli_stdout.unref();
 	cli_stderr.unref();
 	cli_session = false;
+	cli_steering_reset = false;
 	cli_waiting = false;
 	cli_configuration = String();
 	cli_sent_messages.clear();
@@ -4527,6 +4660,9 @@ void AIChatDock::_reject_engine_action() {
 }
 
 void AIChatDock::_confirm_engine_action() {
+	if (_has_pending_steering()) {
+		return;
+	}
 	const String action = engine_dialog_action;
 	engine_dialog_action = String();
 	if (!allow_tools->is_pressed()) {

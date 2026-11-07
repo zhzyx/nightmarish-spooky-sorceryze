@@ -275,6 +275,9 @@ def _intake(root, request, bridge):
         raise ValueError("Requirements intake cancelled before processing")
     outcome = request.get("outcome")
     conversation = request.get("conversation_id")
+    continuation_only = request.get("continuation_only", False)
+    if type(continuation_only) is not bool:
+        raise ValueError("Invalid continuation-only host state")
     if not isinstance(outcome, str) or not outcome.strip() or len(outcome) > 16000:
         raise ValueError("A bounded user requirement is required")
     if not isinstance(conversation, str) or not conversation or len(conversation) > 200:
@@ -326,7 +329,19 @@ def _intake(root, request, bridge):
         existing = json.loads(work.gh("api", f"repos/{settings['repository']}/issues/{number}"))
         if "pull_request" in existing:
             raise ValueError("A pull request cannot be a requirements Issue")
+    if continuation_only and (
+        not existing
+        or existing.get("state") != "open"
+        or not isinstance(request.get("request_id"), str)
+        or not request["request_id"]
+        or work.request_ids(existing.get("body", "")) != {request["request_id"]}
+    ):
+        raise ValueError("A steering correction requires the same real open bound Issue")
     digest = hashlib.sha256((conversation + "\0" + str(number) + "\0" + outcome).encode()).hexdigest()
+    if continuation_only:
+        # A normal intake journal may already have published a new Issue.
+        # Never reuse its authority or publication receipt for an amendment.
+        digest = hashlib.sha256((digest + "\0continuation-only").encode()).hexdigest()
     if conversation_context:
         digest = hashlib.sha256(
             (digest + "\0" + json.dumps(conversation_context, ensure_ascii=False, sort_keys=True)).encode()
@@ -419,6 +434,12 @@ def _intake(root, request, bridge):
             "Return only JSON with exactly decision(new|continue), title, category, goal, scope(string[]), "
             "acceptance(string[]), questions(string[]). Categories: " + ",".join(categories)
         )
+        if continuation_only:
+            instruction += (
+                " This is an amendment to the bound active task. Preserve that Issue identity. "
+                "If it requires a separate task, return decision=new for the host to pause; "
+                "the host will not publish or switch Issues from this amendment."
+            )
         profile = {
             "protocol": "chat-completions",
             "endpoint": request.get("endpoint", ""),
@@ -502,6 +523,13 @@ def _intake(root, request, bridge):
             raise ValueError("Requirements intake cancelled; reconcile any previously submitted remote request")
 
     check_cancel()
+    if continuation_only and design["decision"] != "continue":
+        return {
+            "ok": False,
+            "error": "steering_requires_separate_task",
+            "phase": "requirements_scope",
+            "remote_created": False,
+        }
     if design["decision"] == "continue":
         if not existing or existing.get("state") != "open" or len(work.request_ids(existing.get("body", ""))) != 1:
             saved["phase"] = "proposal_invalid"

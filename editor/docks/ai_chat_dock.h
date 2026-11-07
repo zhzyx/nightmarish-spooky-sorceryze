@@ -418,6 +418,7 @@ class AIChatDock : public EditorDock {
 	String cli_input_path;
 	bool cli_truncated = false;
 	bool cli_session = false;
+	bool cli_steering_reset = false;
 	bool cli_waiting = false;
 	String cli_configuration;
 	Vector<String> cli_sent_messages;
@@ -604,6 +605,8 @@ class AIChatDock : public EditorDock {
 	void _set_busy(bool p_busy);
 	void _automation_toggled(bool p_enabled);
 	void _send();
+	bool _has_pending_steering() const;
+	void _apply_pending_steering();
 	void _request_completion();
 	void _request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _stop();

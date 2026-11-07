@@ -12,9 +12,9 @@ const { createInterface } = require('node:readline');
 const root = path.resolve(__dirname, '../..');
 const definitions = [{ type: 'function', function: { name: 'read_file', description: 'Read a file through Godot', parameters: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } } }];
 
-async function bridge(t, url, agentId) {
+async function bridge(t, url, agentId, options = {}) {
     const directory = fs.mkdtempSync(path.join(root, 'tests/editor/acp-test-'));
-    const child = spawn(process.execPath, [path.join(root, 'tools/codebuddy_cli/godot_bridge.js'), 'session', path.join(__dirname, 'mock_codebuddy_cli.js')], { cwd: root, env: { ...process.env, AI_CHAT_TEST_URL: url, GODOT_ACP_LOG_DIRECTORY: path.join(directory, 'logs') }, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [path.join(root, 'tools/codebuddy_cli/godot_bridge.js'), 'session', options.entry || path.join(__dirname, 'mock_codebuddy_cli.js')], { cwd: root, env: { ...process.env, ...options.env, AI_CHAT_TEST_URL: url, GODOT_ACP_LOG_DIRECTORY: path.join(directory, 'logs') }, stdio: ['pipe', 'pipe', 'pipe'] });
     const closed = once(child, 'close');
     let stderr = '';
     child.stderr.on('data', chunk => { stderr += chunk; });
@@ -25,12 +25,12 @@ async function bridge(t, url, agentId) {
         await closed;
         fs.rmSync(directory, { recursive: true, force: true });
     });
-    const submit = async (messages, rounds = 0, model = 'mock-model', legacyEncoding = false, expectError = false) => {
+    const submit = async (messages, rounds = 0, model = 'mock-model', legacyEncoding = false, expectError = false, reset = false) => {
         const file = path.join(directory, ++number + '.json');
-        let body = JSON.stringify({ messages, model, agent_id: agentId, available_tools: definitions, tool_definitions: definitions, tool_context: { permission_enabled: true, tool_rounds: rounds, max_tool_rounds: null } });
+        let body = JSON.stringify({ messages, model, agent_id: agentId, available_tools: options.tools || definitions, tool_definitions: options.tools || definitions, tool_context: { permission_enabled: true, tool_rounds: rounds, max_tool_rounds: null } });
         if (legacyEncoding) body = body.replace(/\\u001b/g, '\x1b').replace(/\\u000b/g, '\\v');
         fs.writeFileSync(file, body);
-        child.stdin.write(JSON.stringify({ path: file }) + '\n');
+        child.stdin.write(JSON.stringify({ path: file, ...(reset ? { reset: true } : {}) }) + '\n');
         for (;;) {
             const next = await lines.next();
             assert(!next.done, stderr);
@@ -183,4 +183,72 @@ test('ACP sessions keep exact user text, native tools and per-agent memory', { t
     assert.equal(seen.at(-1).cli_transport.new_users, 0);
     assert.equal(seen.at(-1).messages.filter(message => message.role === 'user').length, 3);
     assert(seen.every(body => body.messages.filter(message => message.role === 'user').every(message => message.content.startsWith('case:'))));
+});
+
+test('ACP steering reset closes detached commands and isolates old prompt and pipe callbacks', { timeout: 15000 }, async t => {
+    const directory = fs.mkdtempSync(path.join(root, 'tests/editor/acp-reset-'));
+    const entry = path.join(directory, 'fixture.js');
+    const pidFile = path.join(directory, 'terminal.pid');
+    const sdk = require('node:url').pathToFileURL(path.join(root, 'tools/codebuddy_cli/node_modules/@agentclientprotocol/sdk/dist/acp.js')).href;
+    fs.writeFileSync(entry, `
+        const fs = require('node:fs');
+        const { Readable, Writable } = require('node:stream');
+        (async () => {
+            const acp = await import(${JSON.stringify(sdk)});
+            const sessionId = 'reset-fixture'; // Deliberately reused across CLI instances.
+            let connection;
+            connection = new acp.AgentSideConnection(() => ({
+                initialize: async () => ({ protocolVersion: acp.PROTOCOL_VERSION, agentCapabilities: { promptCapabilities: { embeddedContext: true } } }),
+                newSession: async () => ({ sessionId }),
+                prompt: async params => {
+                    const text = params.prompt[0].text;
+                    if (text === 'case:steering_background') {
+                        await connection.createTerminal({ sessionId, command: 'echo $$ > "' + process.env.AI_CHAT_TEST_PID_FILE + '"; exec sleep 60' });
+                        try { await connection.readTextFile({ sessionId, path: process.env.AI_CHAT_TEST_PID_FILE }); }
+                        catch (_) {
+                            await connection.sessionUpdate({ sessionId, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'STALE_RESET_REPLY' } } });
+                        }
+                    } else {
+                        const recovery = params.prompt.find(block => block.resource?.uri === 'godot://conversation/recovery');
+                        if (text === 'case:steering_revised' && !recovery) throw Error('Missing paired host recovery');
+                        await connection.sessionUpdate({ sessionId, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'RESET_OK' } } });
+                    }
+                    return { stopReason: 'end_turn' };
+                },
+                cancel: async () => {},
+            }), acp.ndJsonStream(Writable.toWeb(process.stdout), Readable.toWeb(process.stdin)));
+        })().catch(() => { process.exitCode = 1; });
+    `);
+    const tools = [...definitions, { type: 'function', function: { name: 'run_command', parameters: { type: 'object' } } }];
+    const submit = await bridge(t, '', 'steering-reset', { entry, tools, env: { AI_CHAT_TEST_PID_FILE: pidFile } });
+    // Register after the bridge cleanup so its fixture remains until shutdown.
+    t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+    const user = { role: 'user', content: 'case:steering_background' };
+    const approval = await submit([user]);
+    const command = approval.choices[0].message.tool_calls[0];
+    assert.equal(command.function.name, 'run_command');
+    const approved = { role: 'tool', tool_call_id: command.id, content: '{"approved":true}', godot_file_success: true };
+    const proposal = await submit([approval.choices[0].message, approved], 1);
+    const read = proposal.choices[0].message.tool_calls[0];
+    assert.equal(read.function.name, 'read_file');
+    const deadline = Date.now() + 2000;
+    while (!fs.existsSync(pidFile) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10));
+    assert(fs.existsSync(pidFile));
+    const terminalPid = Number(fs.readFileSync(pidFile, 'utf8').trim());
+    process.kill(terminalPid, 0);
+    const history = [user, approval.choices[0].message, approved, proposal.choices[0].message,
+        { role: 'tool', tool_call_id: read.id, content: 'Skipped old proposal', godot_file_success: false },
+        { role: 'user', content: 'case:steering_revised' }];
+    const revised = await submit(history, 2, 'mock-model', false, false, true);
+    assert.equal(revised.choices[0].message.content, 'RESET_OK');
+    assert.equal(revised.transport.mode, 'bootstrap');
+    assert.equal(revised.transport.session_id, proposal.transport.session_id, 'Fixture must reuse IDs to exercise process-generation isolation');
+    assert.throws(() => process.kill(terminalPid, 0), { code: 'ESRCH' });
+    const spawnRecords = submit.trace().filter(row => row.event === 'cli_spawned');
+    assert.equal(spawnRecords.length, 2);
+    assert.throws(() => process.kill(spawnRecords[0].child_pid, 0), { code: 'ESRCH' });
+    const idle = await submit([...history, revised.choices[0].message, { role: 'user', content: 'case:steering_idle' }], 2, 'mock-model', false, false, true);
+    assert.equal(idle.choices[0].message.content, 'RESET_OK');
+    assert.equal(idle.transport.session_id, revised.transport.session_id);
+    assert(!submit.trace().some(row => row.event === 'request_failed'));
 });
