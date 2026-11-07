@@ -48,8 +48,8 @@ func run() -> void:
 	if dock == null:
 		quit(1)
 		return
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
 	var fs := EditorInterface.get_resource_filesystem()
 	while fs.is_scanning() or fs.is_importing():
@@ -148,7 +148,7 @@ func run() -> void:
 					elif command.value == "cycle":
 						gradient.set_meta("nested", [gradient])
 				"tools":
-					dock.find_child("AllowTools", true, false).button_pressed = command.value
+					dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = command.value
 				"consultation":
 					dock.find_child("ConsultationOnly", true, false).button_pressed = command.value
 				"snapshot":

@@ -54,19 +54,20 @@ func _run():
 	if not _check(dock != null, "AI chat dock missing"):
 		return
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(1 if cli else 0)
 	if cli:
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	else:
-		dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-		dock.find_child("APIModel", true, false).text = "mock-model"
-		dock.find_child("APIKey", true, false).text = "test-secret"
-	dock.find_child("AllowTools", true, false).button_pressed = true
+		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	chat_input = dock.find_child("ChatInput", true, false)
 	send_button = dock.find_child("Send", true, false)
 	messages = dock.find_child("Messages", true, false)
@@ -104,14 +105,14 @@ func _run():
 	if not _check(preview.visible and view.texture != null, "Conversation image preview failed"):
 		return
 	preview.hide()
-	dock.find_child("AllowTools", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	_select([image_path])
 	if not await _send("", "IMAGE_ONLY_OK"):
 		return
 	if not await _send("case:image_follow", "IMAGE_FOLLOW_OK"):
 		return
 	if cli:
-		var entry = dock.find_child("CLIEntry", true, false)
+		var entry = dock.get_environment_settings_control().find_child("CLIEntry", true, false)
 		entry.text = entry.text.get_base_dir() + "/./" + entry.text.get_file()
 		if not await _send("case:image_recovery", "IMAGE_RECOVERY_OK"):
 			return

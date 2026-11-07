@@ -42,6 +42,7 @@
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/editor_node.h"
 #include "editor/file_system/editor_paths.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
@@ -79,6 +80,13 @@ void AINativeEditorPlugin::_open_workbench() {
 	if (initialized || !dock->is_visible_in_tree()) {
 		return;
 	}
+	_prepare_workbench();
+}
+
+void AINativeEditorPlugin::_prepare_workbench() {
+	if (initialized) {
+		return;
+	}
 	if (!ClassDB::class_exists("GDScript")) {
 		notice->set_text(U"马良需要此编辑器启用 GDScript 支持。");
 		return;
@@ -106,6 +114,14 @@ void AINativeEditorPlugin::_open_workbench() {
 	initialized = true;
 	notice->queue_free();
 	dock->add_child(workbench);
+	if (EditorDock *settings = Object::cast_to<EditorDock>(EditorNode::get_singleton()->find_child("UnifiedSettings", true, false))) {
+		if (settings->has_meta("settings_source_ready")) {
+			Callable ready = settings->get_meta("settings_source_ready");
+			if (ready.is_valid()) {
+				ready.call();
+			}
+		}
+	}
 }
 
 AINativeEditorPlugin::AINativeEditorPlugin() {
@@ -116,6 +132,7 @@ AINativeEditorPlugin::AINativeEditorPlugin() {
 	dock->set_icon_name("MeshInstance3D");
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
+	dock->set_meta("settings_initializer", callable_mp(this, &AINativeEditorPlugin::_prepare_workbench));
 	notice = memnew(Label);
 	notice->set_text(U"马良 · 网格生成与骨骼绑定");
 	dock->add_child(notice);

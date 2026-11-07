@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-361e7b1e292da3a9a972d2564160910f8caa52bb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f028bff323903393d4dd5758520e849126a6d280bd32da60ba2d7e6d8078d774",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "intake",
+    "detection_head": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "intake-only initial tenant mismatch; successful real issue readback after explicit repository tenant",
+    "diagnosis": "Initial intake invocation omitted the host tenant parameter. The same authorized source passed after supplying the repository tenant gonggong-workspace. No production implementation preceded successful intake.",
+    "next_action": "Continue scoped native dispatch and central settings implementation; retain this intake failure and final delivery verification.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T14:55:05.378442+00:00",
+    "attempted": "Read work-items tenant, supplied --tenant, reran actual remote Issue intake successfully.",
+    "repair_owner": "/root",
+    "continuable": "Current intake passed; no user credential or decision required."
+  },
+  "occurred_at": "2026-11-07T15:03:12.484932+00:00",
+  "sha256": "21864f2e5cfa14b7edeac8bb166c6a9206ccf221e64e4d42e8f6dde7d3b64e24"
+}

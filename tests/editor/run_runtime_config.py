@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -56,7 +57,7 @@ func run():
         if not await wait_file(OS.get_environment("A_OPEN")):
             finish(false,"original window did not open its connection page")
             return
-        var field = dock.find_child("CLINode",true,false)
+        var field = dock.get_environment_settings_control().find_child("CLINode",true,false)
         var deadline := Time.get_ticks_msec()+20000
         while not field.editable and Time.get_ticks_msec()<deadline:
             await create_timer(0.04).timeout
@@ -65,7 +66,7 @@ func run():
             return
         field.text = OS.get_environment("NODE_B")
         field.text_changed.emit(field.text)
-        var workflow = dock.find_child("WorkflowPython",true,false)
+        var workflow = dock.get_environment_settings_control().find_child("GongGongPython",true,false)
         workflow.text = OS.get_environment("PYTHON_B")
         workflow.text_changed.emit(workflow.text)
         FileAccess.open(OS.get_environment("B_SAVED"), FileAccess.WRITE).store_string("saved")
@@ -82,15 +83,16 @@ func run():
             finish(false,"other window did not save")
             return
         runtime = dock.get_runtime_configuration()
-        if runtime.paths.node != OS.get_environment("NODE_B") or dock.find_child("CLINode",true,false).text != OS.get_environment("NODE_A"):
+        if runtime.paths.node != OS.get_environment("NODE_B") or dock.get_environment_settings_control().find_child("CLINode",true,false).text != OS.get_environment("NODE_A"):
             finish(false,"fixture did not retain stale UI while reading fresh config")
             return
         checks.append("other window edit read despite stale local LineEdit")
-        if connection.get("python_path").text != OS.get_environment("VALID_PYTHON"):
-            finish(false,"connection fixture did not retain its original Python draft")
+        var environment = dock.get_environment_settings_control()
+        if environment.find_child("GongGongPython",true,false).text != OS.get_environment("VALID_PYTHON"):
+            finish(false,"central environment fixture did not retain its original Python draft")
             return
-        connection.get("workspace_path").text = OS.get_environment("OTHER_WORKSPACE")
-        connection.call("_save_connection")
+        environment.find_child("GongGongWorkspace",true,false).text = OS.get_environment("OTHER_WORKSPACE")
+        environment.find_child("SaveGongGongEnvironment",true,false).pressed.emit()
         await create_timer(0.5).timeout
         if dock.get_runtime_configuration().configured.workflow_python != OS.get_environment("PYTHON_B"):
             finish(false,"connection save overwrote another window's Python")
@@ -114,7 +116,7 @@ func run():
             finish(false,"real Codex bridge did not finish using the new Node")
             return
         checks.append("consultation works without build Python and uses actual CLI bridge")
-        var build = dock.find_child("EngineBuildPython",true,false)
+        var build = dock.get_environment_settings_control().find_child("EngineBuildPython",true,false)
         build.text = OS.get_environment("VALID_PYTHON")
         build.text_changed.emit(build.text)
         runtime = dock.get_runtime_configuration()
@@ -123,13 +125,13 @@ func run():
             return
         checks.append("single field merge retains concurrent Node update")
         dock.set_runtime_field("node", "relative-node-draft")
-        dock.find_child("CLIBridge",true,false).text = "/missing/bridge.js"
-        dock.find_child("CLIEntry",true,false).text = "/missing/codebuddy.js"
-        var backend = dock.find_child("AIBackend",true,false)
+        dock.get_environment_settings_control().find_child("CLIBridge",true,false).text = "/missing/bridge.js"
+        dock.get_environment_settings_control().find_child("CLIEntry",true,false).text = "/missing/codebuddy.js"
+        var backend = dock.get_ai_settings_control().find_child("AIBackend",true,false)
         backend.select(1)
         backend.item_selected.emit(1)
-        dock.find_child("CLILogin",true,false).pressed.emit()
-        var login_error: String = dock.find_child("CLILoginStatus",true,false).text
+        dock.get_ai_settings_control().find_child("CLILogin",true,false).pressed.emit()
+        var login_error: String = dock.get_ai_settings_control().find_child("CLILoginStatus",true,false).text
         if not "Node.js" in login_error or not "Godot 对话桥接脚本" in login_error or not "CodeBuddy CLI 入口" in login_error:
             finish(false,"invalid CodeBuddy login did not report all runtime paths")
             return
@@ -272,7 +274,12 @@ def run(args):
         sentinel.write_text('{"schema_version":999}')
         sentinel_bytes = sentinel.read_bytes()
         environment = {
-            **{key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},
+            **{
+                key: value
+                for key, value in os.environ.items()
+                if not re.search(r"KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|AUTH", key, re.IGNORECASE)
+                and not key.upper().startswith(("GONGGONG_", "AINATIVE_", "OPENAI_", "ANTHROPIC_", "CODEX_"))
+            },
             **{
                 name: ""
                 for name in (
@@ -296,6 +303,20 @@ def run(args):
             "OPENAI_API_KEY": "",
             "GODOT_AI_API_KEY": "",
         }
+        for name in (
+            "HOME",
+            "USERPROFILE",
+            "APPDATA",
+            "LOCALAPPDATA",
+            "XDG_CONFIG_HOME",
+            "XDG_DATA_HOME",
+            "TMP",
+            "TEMP",
+        ):
+            private_path = root / "private-home" / name.lower()
+            private_path.mkdir(parents=True, exist_ok=True)
+            environment[name] = str(private_path)
+        environment["PYTHONNOUSERSITE"] = "1"
         launched = []
 
         def launch(role):
@@ -319,6 +340,7 @@ def run(args):
             stderr = (root / (role + ".stderr")).open("wb")
             process = subprocess.Popen(
                 [str(binary), "--headless", "--editor", "--path", str(project), "--script", "res://check.gd"],
+                cwd=project,
                 env=env,
                 stdout=stdout,
                 stderr=stderr,
@@ -380,12 +402,6 @@ def run(args):
                     process.wait(timeout=10)
                 stdout.close()
                 stderr.close()
-            if sys.platform == "darwin":
-                userdata = Path.home() / "Library/Application Support/Godot/app_userdata"
-                for role in ("A", "B", "override", "cold", "invalid-override"):
-                    own = userdata / ("RuntimeConfigAcceptance-" + root.name + "-" + role)
-                    if own.is_dir():
-                        shutil.rmtree(own)
 
 
 def main():

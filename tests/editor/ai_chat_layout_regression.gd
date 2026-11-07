@@ -14,6 +14,10 @@ func _check(ok: bool, reason: String):
 		failures.append(reason)
 
 func _control(name: String) -> Control:
+	if name == "AISettingsPage":
+		return root.find_child("UnifiedSettings", true, false).find_child(name, true, false) as Control
+	if name in ["AIBackend", "APIEndpoint", "APIKey", "APIModel", "ModelPicker", "ReasoningEffort", "SelectorRow", "SaveChatSettings"]:
+		return dock.get_ai_settings_control().find_child(name, true, false) as Control
 	return dock.find_child(name, true, false) as Control
 
 func _settle():
@@ -29,7 +33,7 @@ func _visible_rect(control: Control) -> Rect2:
 		parent = parent.get_parent()
 	return rect.intersection(Rect2(Vector2.ZERO, Vector2(root.size)))
 
-func _sample(label: String):
+func _sample(label: String, settings_mode := false):
 	var item := {"case": label, "window": [root.size.x, root.size.y], "controls": {}}
 	item["ancestors"] = []
 	var ancestor: Node = dock
@@ -48,7 +52,10 @@ func _sample(label: String):
 	if sub_agents != null:
 		var minimum := sub_agents.get_combined_minimum_size()
 		item["sub_agent_minimum"] = [minimum.x, minimum.y]
-	for name in ["ModelPicker", "ChatInput", "Send", "Stop", "AddImage", "AdvancedToggle", "ChatScroll", "AgentTabs", "SelectorRow", "ActionRow", "ChatComposerPanel"]:
+	var names = ["ChatInput", "Send", "Stop", "AddImage", "AdvancedToggle", "ChatScroll", "AgentTabs", "CurrentAIConfiguration", "ActionRow", "ChatComposerPanel"]
+	if settings_mode:
+		names = ["AISettingsPage"] if "scrolled" in label else ["AIBackend", "ModelPicker", "ReasoningEffort", "SelectorRow"]
+	for name in names:
 		var control := _control(name)
 		_check(control != null, label + ": missing " + name)
 		if control == null:
@@ -59,9 +66,10 @@ func _sample(label: String):
 		item.controls[name] = {"rect": [rect.position.x, rect.position.y, rect.size.x, rect.size.y], "visible": [visible.size.x, visible.size.y], "minimum": [minimum.x, minimum.y]}
 		_check(control.is_visible_in_tree() and rect.size.x > 0 and rect.size.y > 0, label + ": hidden or empty " + name)
 		_check(visible.size.x >= rect.size.x - 2 and visible.size.y >= rect.size.y - 2, label + ": clipped " + name)
-	var input := _control("ChatInput")
-	_check(input.size.y >= 3 * input.get_line_height(), label + ": input lost three visible lines")
-	_check(_control("ChatScroll").get_global_rect().end.y <= input.get_global_rect().position.y + 2, label + ": messages overlap composer")
+	if not settings_mode:
+		var input := _control("ChatInput")
+		_check(input.size.y >= 3 * input.get_line_height(), label + ": input lost three visible lines")
+		_check(_control("ChatScroll").get_global_rect().end.y <= input.get_global_rect().position.y + 2, label + ": messages overlap composer")
 	samples.append(item)
 	if OS.get_environment("AI_LAYOUT_SCREENSHOTS") == "1" and ("collapsed" in label or "attachments" in label or "long draft" in label):
 		var output := OS.get_environment("AI_LAYOUT_RESULT").get_basename() + "-" + label.replace(" ", "_")
@@ -69,11 +77,6 @@ func _sample(label: String):
 		_check(rendered != null and not rendered.is_empty(), "Native viewport screenshot unavailable")
 		if rendered != null and not rendered.is_empty():
 			_check(rendered.save_png(output + ".png") == OK, "Cannot save native screenshot")
-		var popup := dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
-		if popup != null and popup.visible:
-			var settings_image := popup.get_texture().get_image()
-			if settings_image != null and not settings_image.is_empty():
-				_check(settings_image.save_png(output + "-settings.png") == OK, "Cannot save settings screenshot")
 
 func _text() -> String:
 	var result := ""
@@ -98,6 +101,14 @@ func _run():
 	_control("APIEndpoint").text = OS.get_environment("AI_LAYOUT_ENDPOINT")
 	_control("APIKey").text = "layout-fixture"
 	_control("APIModel").text = "layout-model"
+	_control("APIKey").text_changed.emit(_control("APIKey").text)
+	# Configuration changes refresh the catalog asynchronously. Wait for that
+	# real operation before testing composer actions, which are locked meanwhile.
+	await create_timer(0.8).timeout
+	var catalog_deadline := Time.get_ticks_msec() + 15000
+	while backend.disabled and Time.get_ticks_msec() < catalog_deadline:
+		await create_timer(0.025).timeout
+	_check(not backend.disabled, "Automatic model discovery did not finish before composer checks")
 	_control("ConsultationOnly").button_pressed = true
 	var picker := _control("ModelPicker") as OptionButton
 	picker.clear()
@@ -106,6 +117,12 @@ func _run():
 	var input := _control("ChatInput") as TextEdit
 	var tabs := _control("AgentTabs") as TabBar
 	var toggle := _control("AdvancedToggle") as Button
+	var settings_page := root.find_child("UnifiedSettings", true, false) as Control
+	var categories := settings_page.find_child("UnifiedSettingsCategories", true, false) as TabContainer if settings_page != null else null
+	_check(settings_page != null and categories != null and dock.find_child("ChatSettingsDialog", true, false) == null, "Native settings page/categories missing or legacy editable dialog remains")
+	if settings_page == null or categories == null:
+		quit(1)
+		return
 	var image := Image.create(64, 64, false, Image.FORMAT_RGB8)
 	image.fill(Color.CORNFLOWER_BLUE)
 	var paths := PackedStringArray()
@@ -123,36 +140,31 @@ func _run():
 		picker.clear()
 		picker.add_item("Long model name ".repeat(25))
 		picker.select(0)
-		toggle.button_pressed = false
+		dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 		await _settle()
 		_sample("%d collapsed" % width)
-		toggle.button_pressed = true
+		var before := input.get_global_rect()
+		toggle.pressed.emit()
 		await _settle()
-		_sample("%d settings" % width)
-		var settings := _control("AdvancedSettingsScroll") as ScrollContainer
+		_check(settings_page.is_visible_in_tree() and categories.current_tab == 0 and not input.is_visible_in_tree(), "AI navigation must switch to the independent settings page")
+		_sample("%d settings" % width, true)
+		var settings := settings_page.find_child("AISettingsPage", true, false) as ScrollContainer
 		_check(settings != null and settings.is_visible_in_tree(), "Settings scroll missing/hidden")
 		if settings != null:
 			_check(settings.get_v_scroll_bar().max_value > settings.size.y, "Settings do not have an independent scroll range")
 			settings.scroll_vertical = int(settings.get_v_scroll_bar().max_value)
 			await _settle()
-			_sample("%d settings scrolled" % width)
-		var popup := dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
-		if popup != null:
-			var before := input.get_global_rect()
-			_check(popup.visible and not popup.exclusive, "Settings popup must be visible and nonexclusive")
-			popup.hide()
-			popup.canceled.emit()
-			await _settle()
-			_check(not toggle.button_pressed and not popup.visible, "Cancel left settings toggle latched")
-			_check(input.get_global_rect() == before, "Settings popup changed composer rectangle")
-			toggle.button_pressed = true
-			await _settle()
-			popup.hide()
-			popup.confirmed.emit()
-			await _settle()
-			_check(not toggle.button_pressed, "Done left settings toggle latched")
-			toggle.button_pressed = true
-			await _settle()
+			_sample("%d settings scrolled" % width, true)
+		dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+		await _settle()
+		_check(not settings_page.is_visible_in_tree() and not toggle.toggle_mode, "Returning from settings left its navigation latched")
+		_check(input.get_global_rect() == before, "Central settings navigation changed composer rectangle")
+		_control("EnvironmentSettings").pressed.emit()
+		await _settle()
+		_check(settings_page.is_visible_in_tree() and categories.current_tab == 1 and dock.get_environment_settings_control().is_visible_in_tree(), "Environment navigation did not reveal the shared environment form")
+		dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+		await _settle()
+		_check(input.get_global_rect() == before, "Returning from environment changed composer rectangle")
 		input.text = ("Long draft wraps within the composer. ".repeat(12) + "\n").repeat(25)
 		input.text_changed.emit()
 		await _settle()
@@ -177,7 +189,7 @@ func _run():
 			if not buttons.is_empty():
 				buttons[0].pressed.emit()
 		await _settle()
-		toggle.button_pressed = false
+		dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 		input.text = "layout-response"
 		_control("Send").pressed.emit()
 		var deadline := Time.get_ticks_msec() + 10000

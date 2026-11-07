@@ -12,8 +12,6 @@ from pathlib import Path
 
 from editor_test_isolation import copy_editor
 
-ROOT = Path(__file__).resolve().parents[2]
-
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -42,11 +40,8 @@ def main():
         engine = binary.with_name(binary.name.replace(".console.exe", ".exe"))
         assert sha(engine) == expected["engine_sha256"], "Engine binary changed"
         report["engine_sha256"] = sha(engine)
-    (ROOT / "bin").mkdir(exist_ok=True)
     try:
-        with tempfile.TemporaryDirectory(
-            prefix="issue58-order-", dir=ROOT / "bin", ignore_cleanup_errors=os.name == "nt"
-        ) as directory:
+        with tempfile.TemporaryDirectory(prefix="issue58-order-", ignore_cleanup_errors=os.name == "nt") as directory:
             base = Path(directory)
             isolated_binary = copy_editor(binary, base / "engine")
             engine = isolated_binary.parent

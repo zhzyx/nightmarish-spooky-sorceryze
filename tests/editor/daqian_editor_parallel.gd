@@ -14,7 +14,7 @@ func run():
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace",OS.get_environment("DAQIAN_TEST_REPO"))
 	settings.set_setting("ai_chat/cli_node",OS.get_environment("DAQIAN_TEST_NODE"))
-	settings.set_setting("gonggong/python",OS.get_environment("DAQIAN_TEST_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("DAQIAN_TEST_PYTHON"))
 	var dock = root.find_child("Daqian",true,false)
 	if not dock:
 		fail("Missing Tianshu tab")

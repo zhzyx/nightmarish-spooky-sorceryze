@@ -1,6 +1,25 @@
 @tool
 extends SceneTree
 
+func _refresh_models(chat: Node):
+	# A real connection edit now replaces the removed manual refresh action.
+	# Normalization retains the fixture credential/executable used on the wire.
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var field = chat.get_environment_settings_control().find_child("CLINode", true, false) if backend.selected in [1, 2] else chat.get_ai_settings_control().find_child("APIKey", true, false)
+	field.text = field.text.get_base_dir() + "/./" + field.text.get_file() if backend.selected in [1, 2] else field.text + " "
+	var status = chat.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var previous_status = status.text
+	field.text_changed.emit(field.text)
+	var deadline = Time.get_ticks_msec() + 5000
+	while not backend.disabled and status.text == previous_status and Time.get_ticks_msec() < deadline:
+		await process_frame
+
+func _chat_setting(chat: Node, name: String) -> Control:
+	for section in [chat.get_ai_settings_control(), chat.get_environment_settings_control()]:
+		var control = section.find_child(name, true, false)
+		if control != null: return control
+	return null
+
 const BEFORE = "extends SceneTree\n\nfunc _initialize():\n\tquit(0)\n"
 const AFTER = "extends SceneTree\n\nfunc _initialize():\n\tprint(\"AI_CHAT_RUN_OK\")\n\tprinterr(\"AI_CHAT_STDERR_OK\")\n\tquit(0)\n"
 
@@ -442,7 +461,7 @@ func _run_history_performance():
 		print("AI_CHAT_HISTORY_PERFORMANCE_RESTORE_OK")
 		quit(0)
 		return
-	dock.find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	# Drain startup persistence before measuring saves caused by user input.
 	if not await _wait_saved_history(dock):
 		quit(1)
@@ -520,16 +539,17 @@ func _run_cleanup():
 		print("AI_CHAT_CLEANUP_RESTORE_OK")
 		quit(0)
 		return
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(1 if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli" else 0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.find_child("APIModel", true, false).text = "mock-model"
-	dock.find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	if backend.selected == 1:
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	chat_input.text = "case:cleanup_round"
 	send_button.pressed.emit()
 	var deadline = Time.get_ticks_msec() + 25000
@@ -573,7 +593,7 @@ func _run_history():
 	stop_button = dock.find_child("Stop", true, false)
 	dialog = dock.find_child("AIFileApproval", true, false)
 	progress_status = dock.find_child("AIProgressStatus", true, false)
-	var key = dock.find_child("APIKey", true, false)
+	var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
 	var history_path = "res://.godot/editor/ai_chat_history.json"
 	var thumbnails = dock.find_child("ImageAttachments", true, false)
 	if stage == "corrupt":
@@ -601,9 +621,9 @@ func _run_history():
 			quit(1)
 			return
 	key.text = "test-secret"
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.find_child("APIModel", true, false).text = "mock-model"
-	var backend = dock.find_child("AIBackend", true, false)
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	var expected_backend = 1 if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli" else 0
 	if stage == "seed":
 		backend.select(expected_backend)
@@ -613,11 +633,12 @@ func _run_history():
 			quit(1)
 			return
 	if expected_backend == 1:
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
-	dock.find_child("AllowTools", true, false).button_pressed = true
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	if stage == "seed":
 		var image = Image.create(16, 8, false, Image.FORMAT_RGB8)
 		image.fill(Color(0.2, 0.4, 0.6))
@@ -716,17 +737,18 @@ func _run_agent_close():
 		quit(0)
 		return
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(backend.selected)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.find_child("APIModel", true, false).text = "mock-model"
-	dock.find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	if cli:
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	if not await _phase("agent_a_seed", "AGENT_A_SECRET"):
 		quit(1)
 		return
@@ -863,20 +885,21 @@ func _run():
 	if not _check(agent_panel.get_theme_stylebox("panel") == dock.get_theme_stylebox("tabbar_background", "TabContainer") and agent_tabs.get_theme_stylebox("tab_selected") == dock.get_theme_stylebox("tab_selected", "TabBar") and agent_tabs.get_theme_color("font_selected_color") == dock.get_theme_color("accent_color", "Editor"), "Agent tabs must reuse scene-tab styles and the editor accent color"):
 		quit(1)
 		return
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.find_child("APIModel", true, false).text = "mock-model"
-	dock.find_child("APIKey", true, false).text = "test-secret"
-	var backend = dock.find_child("AIBackend", true, false)
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli":
 		backend.select(1)
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	else:
 		backend.select(0)
 	backend.item_selected.emit(backend.selected)
-	tools = dock.find_child("AllowTools", true, false)
+	tools = dock.get_ai_settings_control().find_child("AllowTools", true, false)
 	if not _check(tools.button_pressed, "Local tools must be enabled for the unrestricted development mode"):
 		quit(1)
 		return
@@ -902,34 +925,35 @@ func _run():
 	if not _check_chat_keys():
 		quit(1)
 		return
-	if not _check(not dock.find_child("AdvancedSettings", true, false).visible, "Advanced settings should start collapsed"):
-		quit(1)
-		return
-	var settings_window = dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
+	var settings_page = root.find_child("UnifiedSettings", true, false) as Control
+	var categories = settings_page.find_child("UnifiedSettingsCategories", true, false) as TabContainer if settings_page != null else null
 	var settings_toggle = dock.find_child("AdvancedToggle", true, false) as Button
-	if not _check(settings_window != null and settings_window.is_ancestor_of(dock.find_child("AdvancedSettings", true, false)) and not settings_window.is_ancestor_of(chat_input), "Settings must occupy a separate window without moving the composer"):
+	var ai_settings = dock.get_ai_settings_control()
+	var environment_settings = dock.get_environment_settings_control()
+	if not _check(settings_page != null and categories != null and settings_page.is_ancestor_of(ai_settings) and settings_page.is_ancestor_of(environment_settings) and not settings_page.is_ancestor_of(chat_input) and dock.find_child("ChatSettingsDialog", true, false) == null, "Settings must own the unique forms on its native page without moving the composer"):
 		quit(1)
 		return
-	for close_signal in ["canceled", "confirmed"]:
-		settings_toggle.button_pressed = true
+	for section in ["ai", "environment", "ai"]:
+		var navigation = settings_toggle if section == "ai" else dock.find_child("EnvironmentSettings", true, false)
+		navigation.pressed.emit()
 		await process_frame
-		if not _check(settings_window.visible and dock.find_child("AdvancedSettings", true, false).visible, "Settings must reopen after closing"):
+		if not _check(settings_page.is_visible_in_tree() and categories.current_tab == (0 if section == "ai" else 1) and (ai_settings if section == "ai" else environment_settings).is_visible_in_tree(), "Settings navigation did not reveal the requested category: " + section):
 			quit(1)
 			return
-		settings_window.emit_signal(close_signal)
+		dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 		await process_frame
-		if not _check(not settings_window.visible and not settings_toggle.button_pressed, "Closing settings must reset its toolbar toggle"):
+		if not _check(not settings_page.is_visible_in_tree() and not settings_toggle.toggle_mode and chat_input.is_visible_in_tree() and dock.get_ai_settings_control() == ai_settings, "Returning from settings must restore the composer and retain the same form"):
 			quit(1)
 			return
-	var picker = dock.find_child("ModelPicker", true, false)
-	dock.find_child("RefreshModels", true, false).pressed.emit()
-	if not await _wait_idle() or not _check("已获取" in dock.find_child("ModelStatus", true, false).text, "Model enumeration failed"):
+	var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
+	await _refresh_models(dock)
+	if not await _wait_idle() or not _check("已获取" in dock.get_ai_settings_control().find_child("ModelStatus", true, false).text, "Model enumeration failed"):
 		quit(1)
 		return
 	if not _check(picker.get_item_count() >= 2 and picker.get_item_metadata(picker.selected) == "mock-model", "Model list or retained selection is incorrect"):
 		quit(1)
 		return
-	var model_field = dock.find_child("CLIModel", true, false) if backend.selected == 1 else dock.find_child("APIModel", true, false)
+	var model_field = dock.get_ai_settings_control().find_child("CLIModel", true, false) if backend.selected == 1 else dock.get_ai_settings_control().find_child("APIModel", true, false)
 	var catalog_size = picker.item_count
 	for manual_id in ["a", "ab", "abc"]:
 		model_field.text = manual_id
@@ -946,7 +970,7 @@ func _run():
 		if picker.get_item_metadata(i) == "mock-alternative":
 			picker.select(i)
 			picker.item_selected.emit(i)
-			if not _check((dock.find_child("CLIModel", true, false) if backend.selected == 1 else dock.find_child("APIModel", true, false)).text == "mock-alternative", "Model selection did not update the request configuration"):
+			if not _check((dock.get_ai_settings_control().find_child("CLIModel", true, false) if backend.selected == 1 else dock.get_ai_settings_control().find_child("APIModel", true, false)).text == "mock-alternative", "Model selection did not update the request configuration"):
 				quit(1)
 				return
 	for i in picker.item_count:
@@ -954,11 +978,11 @@ func _run():
 			picker.select(i)
 			picker.item_selected.emit(i)
 	if backend.selected == 0:
-		var endpoint = dock.find_child("APIEndpoint", true, false)
+		var endpoint = dock.get_ai_settings_control().find_child("APIEndpoint", true, false)
 		var configured_url = endpoint.text
 		endpoint.text = configured_url.replace("/v1/chat/", "/v1/no-list/chat/")
-		dock.find_child("RefreshModels", true, false).pressed.emit()
-		if not await _wait_idle() or not _check("失败" in dock.find_child("ModelStatus", true, false).text and picker.get_item_metadata(picker.selected) == "mock-model" and not "private-model-error" in _chat_text(), "Model enumeration fallback did not preserve selection or leaked diagnostics"):
+		await _refresh_models(dock)
+		if not await _wait_idle() or not _check("失败" in dock.get_ai_settings_control().find_child("ModelStatus", true, false).text and picker.get_item_metadata(picker.selected) == "mock-model" and not "private-model-error" in _chat_text(), "Model enumeration fallback did not preserve selection or leaked diagnostics"):
 			quit(1)
 			return
 		endpoint.text = configured_url
@@ -974,7 +998,7 @@ func _run():
 	push_warning("AI_CHAT_LOG_SENTINEL test-secret")
 	# File changes apply automatically by default (documented in the dock); this
 	# workflow verifies the per-change approval path, so opt out explicitly.
-	var auto_apply = dock.find_child("AutoApplyFileChanges", true, false) as CheckBox
+	var auto_apply = dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false) as CheckBox
 	if not _check(auto_apply != null and auto_apply.button_pressed, "File changes must apply automatically by default"):
 		quit(1)
 		return
@@ -1036,13 +1060,13 @@ func _run():
 			quit(1)
 			return
 	var old_chat = _chat_text()
-	var query_endpoint = dock.find_child("APIEndpoint", true, false)
+	var query_endpoint = dock.get_ai_settings_control().find_child("APIEndpoint", true, false)
 	var previous_endpoint = query_endpoint.text
 	if backend.selected == 0:
 		query_endpoint.text = previous_endpoint.replace("/v1/chat/", "/v1/slow-models/chat/")
-	dock.find_child("RefreshModels", true, false).pressed.emit()
+	await _refresh_models(dock)
 	for field in ["APIEndpoint", "APIKey", "APIModel", "CLINode", "CLIBridge", "CLIEntry", "CLIModel"]:
-		if not _check(not dock.find_child(field, true, false).editable, "Connection field remained editable during model refresh: " + field):
+		if not _check(not _chat_setting(dock, field).editable, "Connection field remained editable during model refresh: " + field):
 			quit(1)
 			return
 	if not _check(message_list.find_child("WorkProcess", true, false) == null, "Model refresh altered a finished work process"):
@@ -1050,11 +1074,11 @@ func _run():
 		return
 	await create_timer(0.1).timeout
 	stop_button.pressed.emit()
-	if not _check(_chat_text() == old_chat and message_list.find_child("WorkProcess", true, false) == null and query_endpoint.editable and model_field.editable, "Cancelling model refresh altered chat or did not unlock configuration"):
+	if not _check(_chat_text() == old_chat and message_list.find_child("WorkProcess", true, false) == null and query_endpoint.editable and model_field.editable, "Canceling model refresh altered chat or did not unlock configuration"):
 		quit(1)
 		return
 	query_endpoint.text = previous_endpoint
-	dock.find_child("RefreshModels", true, false).pressed.emit()
+	await _refresh_models(dock)
 	if not await _wait_idle() or not _check(message_list.find_child("WorkProcess", true, false) == null, "Completed model refresh changed historical work state"):
 		quit(1)
 		return
@@ -1090,7 +1114,7 @@ func _run():
 		quit(1)
 		return
 	auto_apply.button_pressed = false
-	var auto_execute = dock.find_child("AutoExecuteCommands", true, false) as CheckBox
+	var auto_execute = dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false) as CheckBox
 	if not _check(auto_execute != null and not auto_execute.button_pressed, "Automatic execution must require initial opt-in"):
 		quit(1)
 		return
@@ -1152,7 +1176,7 @@ func _run():
 		return
 	var approval_count = approvals
 	var chat_before_refresh = _chat_text()
-	dock.find_child("RefreshModels", true, false).pressed.emit()
+	await _refresh_models(dock)
 	stop_button.pressed.emit()
 	if not _check(not dock.get_node("AIToolDetails").visible and progress_status.text.begins_with("就绪") and approvals == approval_count and _chat_text() == chat_before_refresh, "Model refresh cancellation lost details, conversation or approval state"):
 		quit(1)

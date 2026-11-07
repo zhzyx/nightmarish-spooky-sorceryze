@@ -1,6 +1,19 @@
 @tool
 extends SceneTree
 
+func _refresh_models(chat: Node):
+	# A real connection edit now replaces the removed manual refresh action.
+	# Normalization retains the fixture credential/executable used on the wire.
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var field = chat.get_environment_settings_control().find_child("CLINode", true, false) if backend.selected in [1, 2] else chat.get_ai_settings_control().find_child("APIKey", true, false)
+	field.text = field.text.get_base_dir() + "/./" + field.text.get_file() if backend.selected in [1, 2] else field.text + " "
+	var status = chat.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var previous_status = status.text
+	field.text_changed.emit(field.text)
+	var deadline = Time.get_ticks_msec() + 5000
+	while not backend.disabled and status.text == previous_status and Time.get_ticks_msec() < deadline:
+		await process_frame
+
 var dock: Node
 var tracking := false
 var last_frame := 0
@@ -33,17 +46,17 @@ func _run():
 	if setup != null:
 		setup.hide()
 	EditorInterface.set_main_screen_editor("AI Chat")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("CANCEL_ENDPOINT")
-	dock.find_child("APIKey", true, false).text = "isolated-fixture-key"
-	dock.find_child("APIModel", true, false).text = "fixture"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("CANCEL_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "isolated-fixture-key"
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
 	dock.find_child("ConsultationOnly", true, false).button_pressed = true
-	dock.find_child("AllowTools", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	var mode := OS.get_environment("CANCEL_CASE")
 	if mode == "models":
-		dock.find_child("RefreshModels", true, false).pressed.emit()
+		await _refresh_models(dock)
 	else:
 		dock.find_child("ChatInput", true, false).text = "DELAYED_RESPONSE_MUST_NOT_APPEAR"
 		dock.find_child("Send", true, false).pressed.emit()
@@ -94,12 +107,12 @@ func _run():
 	if mode == "models":
 		while not stop.disabled and Time.get_ticks_msec() < deadline:
 			await process_frame
-		dock.find_child("RefreshModels", true, false).pressed.emit()
+		await _refresh_models(dock)
 		deadline = Time.get_ticks_msec() + 10000
-		var status = dock.find_child("ModelStatus", true, false)
+		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
 		while not "模型列表已获取" in status.text and Time.get_ticks_msec() < deadline:
 			await process_frame
-		var picker = dock.find_child("ModelPicker", true, false)
+		var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
 		var found := false
 		for index in picker.item_count:
 			found = found or "recovered-model" in picker.get_item_text(index)
@@ -114,12 +127,12 @@ func _run():
 	report["observed_server_release"] = FileAccess.file_exists("res://server-released")
 	report["stale_response_absent"] = not "STALE_CANCELLED_REPLY" in _text()
 	if mode == "models":
-		var picker = dock.find_child("ModelPicker", true, false)
+		var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
 		var final_models: Array[String] = []
 		for index in picker.item_count:
 			final_models.append(picker.get_item_text(index))
 		report["final_model_list"] = final_models
-		report["final_model_selection"] = dock.find_child("APIModel", true, false).text
+		report["final_model_selection"] = dock.get_ai_settings_control().find_child("APIModel", true, false).text
 		report["late_models_rejected"] = "recovered-model" in final_models and not "stale-model" in final_models and report["final_model_selection"] != "stale-model"
 	FileAccess.open("res://cancel-report.json", FileAccess.WRITE).store_string(JSON.stringify(report))
 	print("HTTP_CANCEL_REPORT=", JSON.stringify(report))

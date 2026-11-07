@@ -110,8 +110,8 @@ func run() -> void:
 	if not control or not dock:
 		quit(1)
 		return
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
 	page = VBoxContainer.new()
 	page.name = "ComplexPage"
 	page.set_meta("ai_control_page", true)
@@ -315,7 +315,7 @@ func run() -> void:
 					assert(script and script.can_instantiate())
 					curve.set_script(script)
 				"clear_curve_script": curve.set_script(null)
-				"permission": dock.find_child("AllowTools", true, false).button_pressed = cmd.value
+				"permission": dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = cmd.value
 				"consultation": dock.find_child("ConsultationOnly", true, false).button_pressed = cmd.value
 			await process_frame
 			await process_frame

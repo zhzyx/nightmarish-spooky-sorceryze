@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -96,22 +97,16 @@ def main():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        with tempfile.TemporaryDirectory(prefix="codex-lifetime-", dir=args.out.parent.resolve()) as folder:
+        with tempfile.TemporaryDirectory(prefix="codex-lifetime-") as folder:
             root = Path(folder)
-            if sys.platform == "darwin":
-                isolated_editor = copy_editor(args.godot, root / "bin")
-            else:
-                (root / "bin").mkdir()
-                editor = args.godot.resolve().with_name(args.godot.name.replace(".console.exe", ".exe"))
-                shutil.copyfile(editor, root / "bin" / editor.name)
-                if args.godot.resolve() != editor:
-                    shutil.copyfile(args.godot.resolve(), root / "bin" / args.godot.name)
-                assert (
-                    hashlib.sha256((root / "bin" / editor.name).read_bytes()).digest()
-                    == hashlib.sha256(editor.read_bytes()).digest()
+            binding = os.environ.pop("GONGGONG_WORKSPACE", None)
+            try:
+                isolated_editor = copy_editor(
+                    args.godot.resolve().with_name(args.godot.name.replace(".console.exe", ".exe")), root / "bin"
                 )
-                isolated_editor = root / "bin" / args.godot.name
-                (root / "bin/_sc_").write_text("")
+            finally:
+                if binding is not None:
+                    os.environ["GONGGONG_WORKSPACE"] = binding
             (root / "SConstruct").write_text("# Isolated engine root for native subprocess fixture.")
             for name in ["framework", "customizations", ".github"]:
                 shutil.copytree(ROOT / name, root / name, ignore=shutil.ignore_patterns("__pycache__"))
@@ -182,13 +177,38 @@ def main():
                 (root / name).mkdir()
             (root / "not-executable.exe").write_text("Deliberately invalid executable for launch failure.")
             (root / "entry.js").write_text("// Native bridge replacement does not launch this entry.")
+            (root / "entry.js").chmod(0o700)
+            (root / "not-executable.exe").chmod(0o700)
+            (root / "bin/editor_data/editor_settings-4.8.tres").write_text(
+                '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+                + '\nai_chat/backend = 0\nai_chat/endpoint = ""\n'
+                + "ai_chat/cli_node = "
+                + json.dumps(str(args.node.resolve()))
+                + "\n"
+                + "ai_chat/codex_entry = "
+                + json.dumps(str(root / "entry.js"))
+                + "\n"
+                + "gonggong/python = "
+                + json.dumps(sys.executable)
+                + "\n"
+                + "gonggong/workspace = "
+                + json.dumps(str(root))
+                + "\n"
+                + "ai_chat/editor_control_bridge_enabled = false\n",
+                encoding="utf-8",
+            )
             (project / "project.godot").write_text(
                 'config_version=5\n[application]\nconfig/name="Codex lifetime fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
                 encoding="utf-8",
             )
             shutil.copyfile(Path(__file__).with_name("codex_request_lifetime.gd"), project / "test.gd")
             env = {
-                **os.environ,
+                **{
+                    key: value
+                    for key, value in os.environ.items()
+                    if not re.search(r"KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|AUTH", key, re.IGNORECASE)
+                    and not key.upper().startswith(("GONGGONG_", "AINATIVE_", "OPENAI_", "ANTHROPIC_", "CODEX_"))
+                },
                 "APPDATA": str(root / "appdata"),
                 "LOCALAPPDATA": str(root / "localappdata"),
                 "TEMP": str(root / "temp"),
@@ -198,10 +218,15 @@ def main():
                 "GONGGONG_WORKSPACE": folder,
                 "GONGGONG_PYTHON": sys.executable,
                 "GONGGONG_GH": sys.executable,
-                "GONGGONG_NODE": str(args.node.resolve()),
+                "LIFETIME_NODE": str(args.node.resolve()),
                 "LIFETIME_ENDPOINT": f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
                 "LIFETIME_EXPECT_MISSING": "1" if args.expect_missing else "",
             }
+            for name in ("HOME", "USERPROFILE", "XDG_CONFIG_HOME", "XDG_DATA_HOME"):
+                private_path = root / "private-home" / name.lower()
+                private_path.mkdir(parents=True, exist_ok=True)
+                env[name] = str(private_path)
+            env["PYTHONNOUSERSITE"] = "1"
             env.pop("NODE_OPTIONS", None)
             run = subprocess.run(
                 [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fc393c9e33ae42fafeeaa57a86e2c3a06a228b7c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "023d524923bd78fe9f198b3f6ce6d388edcc4a84e6e0b00c21c72706b755ca55",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "delivery",
+    "detection_head": "6c7ffc530e08ebda6de59557e53721f08114ecd4",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42390015898 ; runtime/unified-settings/ci477-failed.log",
+    "diagnosis": "Static check failed on three British-spelling cancel strings and the new sample Python runner missing the required buildsystem CODEOWNERS match. Root normalized prose/assertion-message spelling and added an exact single-file owner rule retaining the repository owner. Product source and tested binary are unchanged; targeted codespell and owner validation now pass.",
+    "next_action": "Read independent correction review, append correction evidence, rerun formal gate and issue a new signed candidate; reconcile the prior failed PR and verify exact-head CI before merging.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:13:47.718637+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:16:32.387288+00:00",
+  "sha256": "721b8b7c41ba5f749cef859c5d94366a226f99b1f9314866658148059a143c99"
+}

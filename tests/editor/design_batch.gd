@@ -81,7 +81,7 @@ func _file(name: String, content := "ready"):
 	FileAccess.open("res://" + name, FileAccess.WRITE).store_string(content)
 
 func _change_model_source():
-	var field = dock.find_child("APIEndpoint", true, false)
+	var field = dock.get_ai_settings_control().find_child("APIEndpoint", true, false)
 	model_source_changed_idle = field.editable and dock.find_child("Stop", true, false).disabled and not dock.find_child("Send", true, false).disabled
 	if not _check(model_source_changed_idle, "Model source change did not occur at a legal idle control boundary"):
 		return
@@ -116,7 +116,7 @@ func _observe_models(mode: String):
 			_check(tabs.tab_count == 1 and dock.get_meta("queued_message_count", -1) == 0, "Model-list completion manufactured work without a live batch")
 	else:
 		await _wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK")
-	var status: String = dock.find_child("ModelStatus", true, false).text
+	var status: String = dock.get_ai_settings_control().find_child("ModelStatus", true, false).text
 	if mode.ends_with("-fail"):
 		_check("获取失败" in status, "Model-list failure was not retained in native status")
 	elif mode != "models-initial-stop":
@@ -159,7 +159,7 @@ func _finish():
 		"terminal_receipt_recorded_during_models": terminal_receipt_recorded_during_models,
 		"models_stall_observed": models_stall_observed,
 		"models_stop_applied": models_stop_applied,
-		"model_status": dock.find_child("ModelStatus", true, false).text,
+		"model_status": dock.get_ai_settings_control().find_child("ModelStatus", true, false).text,
 		"queue_paused": dock.get_meta("queue_paused", false), "queued_count": dock.get_meta("queued_message_count", -1),
 		"tabs": children, "text": _text(), "reporting": dock.get_meta("gonggong_reporting", ""),
 	}
@@ -202,22 +202,22 @@ func _run():
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup != null:
 		setup.hide()
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	if backend.selected != 0:
 		backend.select(0)
 		backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "design-batch-fixture"
-	dock.find_child("APIKey", true, false).text = "design-batch-isolated-secret"
-	dock.find_child("CLINode", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
-	dock.find_child("CLIBridge", true, false).text = OS.get_environment("DESIGN_BATCH_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
-	dock.find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
-	dock.find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_PYTHON")
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoApplyFileChanges", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "design-batch-fixture"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
+	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("DESIGN_BATCH_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
+	dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_PYTHON")
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
-	if dock.find_child("RefreshModels", true, false) == null:
+	if dock.get_ai_settings_control().find_child("RefreshModels", true, false) == null:
 		# The private settings file already binds READY to the loopback server.
 		# Wait for that startup query instead of losing the warmup queue behind it.
 		if not await _wait_file("models-v1-finished"):
@@ -239,9 +239,9 @@ func _run():
 	if mode.begins_with("models-initial-"):
 		_change_model_source()
 	if mode == "no-tools":
-		dock.find_child("AllowTools", true, false).button_pressed = false
+		dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	if mode == "approval-stop":
-		dock.find_child("AutoExecuteCommands", true, false).button_pressed = false
+		dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
 	if mode == "consultation":
 		dock.find_child("ConsultationOnly", true, false).button_pressed = true
 	if mode == "unknown-runtime":
@@ -249,9 +249,9 @@ func _run():
 		settings.set_setting("gonggong/python", "")
 		for name in ["node", "workflow_python", "build_python", "codex"]:
 			_check(dock.set_runtime_field(name, "").is_empty(), "Cannot clear private runtime field")
-		dock.find_child("CLINode", true, false).text = ""
-		dock.find_child("CodexEntry", true, false).text = ""
-		dock.find_child("EngineBuildPython", true, false).text = ""
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = ""
+		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = ""
+		dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = ""
 	if mode == "runtime-invalid":
 		dock.find_child("ConsultationOnly", true, false).button_pressed = true
 		settings.set_setting("gonggong/python", "res://fake")
@@ -259,9 +259,9 @@ func _run():
 		_check(dock.set_runtime_field("workflow_python", "res://fake").is_empty(), "Cannot seed invalid Python draft")
 		_check(dock.set_runtime_field("codex", OS.get_environment("DESIGN_BATCH_ROOT")).is_empty(), "Cannot seed non-file Codex draft")
 		_check(dock.set_runtime_field("build_python", OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")).is_empty(), "Cannot seed missing Python draft")
-		dock.find_child("CLINode", true, false).text = "relative-node"
-		dock.find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT")
-		dock.find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = "relative-node"
+		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT")
+		dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")
 	_send("DESIGN_BATCH_START")
 	if mode.begins_with("models-"):
 		await _observe_models(mode)

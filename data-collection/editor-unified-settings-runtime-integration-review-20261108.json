@@ -1,0 +1,397 @@
+{
+  "issue": 459,
+  "reviewer": "/root/unified_settings_review",
+  "phase": "final v15 integration of canonical runtime settings, main #486 pending-action counts, and the deferred notice-order teardown fix",
+  "recommendation": "No actionable P1/P2 findings remain within the reviewed scope. Canonical runtime settings and the scoped native behavior checks passed; exit-resource diagnostics remain separately recorded.",
+  "findings": [],
+  "build_head": "bb4512ee54bab58828a4acf070df895a9e8e4623",
+  "integrated_main": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+  "build_evidence": {
+    "path": "runtime/unified-settings/build-evidence-v15.json",
+    "sha256": "515896965b4f997f07f9cee81d5d01632cc83a6c3be821766d1d7b2207635ef0"
+  },
+  "binary_sha256": "01d137fdaf32480e149581566aac0f6ba74f7af2b59ca14f458a3849b32064a5",
+  "binary_matches_build": true,
+  "source_sha256": {
+    "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+    "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+    "editor/docks/ai_chat_host_runtime.h": "47765b31a5202f90de201b7c7d0df53f8242ac8f9bec29b8007a8763a06859f6",
+    "editor/docks/gonggong_engine_origin.cpp": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+    "editor/docks/gonggong_engine_origin.h": "1eda707229a9a8d5afe55ebd7f92868123e3d466425142bcd1c71ab17859c7e9",
+    "editor/SCsub": "94153c14e7c5062dc5f853b3ac2b2c0b03b454ab102f1eecac8fc560dd17e93a",
+    "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+    "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+    "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+    "editor/plugins/unified_settings_editor_plugin.cpp": "7e8ca9a4aaeb4681c224a1191a325689adb545f231cfe301a4efc7e2d22c425d",
+    "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+    "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+    "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+    "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+    "editor/docks/ai_chat_dock.cpp": "fdec4aa874f0614633d69131dd4ba4f4e1e1f812dee44ba3ee23de854dc2fc9e",
+    "editor/docks/ai_chat_dock.h": "2cd3a993402086b8be239a2146dd4a82122caf5aba64c961d102c98f3c4bebbe",
+    "editor/docks/ai_chat_gonggong.cpp": "327a6c877d585fd85454599175d98d0436099babd48817eb668f391436e07e23",
+    "editor/docks/gonggong_panel.cpp": "95f4e01b3cac7d908e7592534575c2afa0593142d5ea1aa45c8665bfac8b003e",
+    "editor/docks/gonggong_panel.h": "4b18bb9e673a0a727021bb120f5d9f078b3504b4090b3ab684916dde4298a40f",
+    "editor/docks/daqian/workspace.gd": "bf18f90ac8149d92d2f1ab14d87ed1e20279b4fce8e613bebba277d6a4056fd1",
+    "editor/docks/daqian/model_settings.gd": "9c1cb9bb4b515e02d1c5e9ea82c3f46cbd611f18ab4edeeb0267c1e70f9594a9",
+    "editor/docks/daqian_dock.cpp": "cce8c56356a021dbb421ec8e4815a9dc1bf22bd72a49e7ddc0bd8e4963ba081d",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+    "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+  },
+  "source_count": 25,
+  "source_mismatches": [],
+  "pinned_upstream_components_match_original_bytes": {
+    "editor/docks/gonggong_runtime_config.cpp": true,
+    "editor/docks/gonggong_runtime_config.h": true,
+    "editor/docks/gonggong_host_paths.h": true,
+    "editor/docks/ai_chat_host_runtime.h": true,
+    "editor/docks/gonggong_engine_origin.cpp": true,
+    "editor/docks/gonggong_engine_origin.h": true,
+    "editor/SCsub": true,
+    "editor/docks/daqian/canvas_context.gd": true,
+    "editor/docks/daqian/operation_details.gd": true
+  },
+  "static_contract_checks": {
+    "save_does_not_write_runtime_group": true,
+    "runtime_refresh_blocks_signals_without_writing": true,
+    "workflow_cleanup_before_atomic_write_and_notification_after_success": true,
+    "deployment_receipt_saved_before_validation_and_runtime_write": true,
+    "external_environment_guard_reaches_fresh_access_and_host_command": true,
+    "cleanup_uses_old_observed_snapshot": true
+  },
+  "runtime_integration_review": [
+    "Canonical updates lock and reread the latest JSON, merge only the named field and atomically replace the file. Save actions never rebuild a runtime group from displayed fields.",
+    "Legacy migration reads existing valid EditorSettings values. Control initialization sets text before connecting edit signals. Explicit settings refresh preserves blocked signals and only displays one effective snapshot.",
+    "Startup environment overrides remain separate from configured JSON values. Derived child-environment exports are tagged so they are not recaptured as new startup overrides; unrelated edits and Save do not persist effective overrides.",
+    "Workflow updates invoke synchronous cleanup before the canonical write when the effective path can change. Busy or worker locks reject runtime edits before persistence; successful writes emit the dedicated runtime-change signal.",
+    "Cleanup uses the observed old executable snapshot without recursively preparing another runtime. Each new operation captures one canonical snapshot; external workflow changes revoke old actor, watch, debug, canvas and catalog context before any stale request is launched.",
+    "Explicit environment_changed results make both real operation entries reject once. The fresh-access path no longer treats that result as another access denial and resets the same context a second time.",
+    "Personal-model operations bind authorization to workflow Python, combine live unsaved model fields with canonical Node/Codex, and reject late results after runtime or generation changes.",
+    "Canceling model enumeration and the extracted detail/canvas helpers retain their prior authority and receipt boundaries. Central presentation still borrows the same live controls and preserves page-only protection.",
+    "The latest main pending-action count, board ordering and filtering methods are preserved exactly. They read task state and do not change runtime configuration or authorization.",
+    "Only visual notice-panel ordering is deferred during conversation unmount. The dedicated early-close native probe validates teardown independently from the complete node-approval flow."
+  ],
+  "resolved_review_findings": [
+    {
+      "priority": 2,
+      "title": "Deployment rollback receipt was lost after a canonical save failure",
+      "source_fix": "The successful physical receipt and rollback action are retained before subsequent path validation or canonical writes.",
+      "verification": {
+        "path": "runtime/unified-settings/receipt-retention-v15-final.json",
+        "sha256": "248d1026bb9fd9dad54f93fa323517f18550f49feb8c5202764bec959c23f0cd"
+      },
+      "checks": 17,
+      "result": "Actual native UI and poll flow passed with a fake successful deployment, a corrupted private JSON file, and a real rollback subprocess receiving the exact retained synthetic receipt."
+    },
+    {
+      "priority": 2,
+      "title": "Conversation teardown attempted a synchronous child reorder while its parent was busy",
+      "source_fix": "Notice-panel sorting uses move_child.call_deferred; visibility and authorization cleanup remain synchronous.",
+      "verification": {
+        "path": "runtime/unified-settings/node-approval-v15-early-exit.json",
+        "sha256": "8b528863dbf212630d99b0b5b4f167c83599edf230885d364b995b2556a2ce39"
+      },
+      "result": "The private probe exits at the first missing-model embedded conversation and observes native exit zero without script or non-resource errors. It is not the complete 29-assertion regression."
+    }
+  ],
+  "native_independent": {
+    "path": "runtime/unified-settings/review/native-independent-v15.json",
+    "sha256": "40f56ce6af337ae3a3fd11594b1cf7e36b79dbc2a8fa23424de047003db03818",
+    "log": "runtime/unified-settings/review/native-independent-v15.log",
+    "behavior_passed": true,
+    "checks": [
+      107,
+      41
+    ],
+    "total_checks": 148,
+    "process_exit_codes": [
+      0,
+      0
+    ],
+    "strict_runner_state": "failed",
+    "strict_runner_exit_code": 1,
+    "strict_resource_error_counts": [
+      7,
+      5
+    ],
+    "strict_error_signatures_same_as_v11": true,
+    "session_key_not_persisted": true,
+    "project_sources_unchanged": true,
+    "synthetic_chat_requests": 1,
+    "fixture_sha256": "5624d9cd303119acb4ff1d1f2d8b214b98e996c868b3eddaba0699aa2e707840",
+    "fixture_matches_current": true
+  },
+  "independent_native_coverage": "107 full and 41 reopen checks include canonical field edits, stale-display Save protection, read-only refresh, model snapshots, busy locks and 20 checks through the real fresh-access/host-command entries after external JSON changes.",
+  "parent_run_evidence_readback": {
+    "attribution": "The reviewer independently executed the 148-check native settings fixture. Root executed layout and artist runs. The primary team executed startup, node approval and deployment-receipt probes; the reviewer read their final reports.",
+    "layout": {
+      "path": "runtime/unified-settings/layout-v15/summary.json",
+      "sha256": "a174a760fda5fa488255de5897bd9c1821d645acf2b02cc4487671aac5d3190f",
+      "passed": true,
+      "binary_matches": true,
+      "width_reports": [
+        {
+          "path": "runtime/unified-settings/layout-v15/layout-1.0-640.json",
+          "sha256": "742a3c62bf11aec2ad77dfd74e75dc3f2a055fed2ebf72e516832a29059bf176",
+          "width": 640,
+          "failures": []
+        },
+        {
+          "path": "runtime/unified-settings/layout-v15/layout-1.0-960.json",
+          "sha256": "160888f6b313b4455edbebcc45c01d35788b700242d8e920fc22e1ac40ab5139",
+          "width": 960,
+          "failures": []
+        },
+        {
+          "path": "runtime/unified-settings/layout-v15/layout-1.0-1440.json",
+          "sha256": "ef31be17ad762cd6fc5be4d21ded0918e53946181c69f3252e90f54b53610c4f",
+          "width": 1440,
+          "failures": []
+        }
+      ]
+    },
+    "artist": {
+      "path": "runtime/unified-settings/native-art-v15.json",
+      "sha256": "d9a296a0569030ef9a27871174bfcd16b10f0a243a77c498e36c6c36aaff7dee",
+      "passed": true,
+      "binary_matches": true,
+      "installed_bundle_matches_source": true,
+      "runs": [
+        {
+          "name": "mesh-and-rig",
+          "exit_code": 0,
+          "checks": 102
+        },
+        {
+          "name": "independent-project",
+          "exit_code": 0,
+          "checks": 58
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "exit_code": 0,
+          "checks": 22
+        },
+        {
+          "name": "relocated-runtime",
+          "exit_code": 0,
+          "checks": 5
+        }
+      ]
+    },
+    "startup": {
+      "path": "runtime/unified-settings/autofetch-integration-v15.json",
+      "sha256": "dc6ed8f616f072b21ce78bd8964512e10d31f3189b98f17b4f3d0380a2e5b4b5",
+      "passed": true,
+      "binary_matches": true,
+      "source_hashes_match_current": true,
+      "source_unchanged": true,
+      "cases": [
+        {
+          "case": "api-chat-startup",
+          "exit_code": 0,
+          "list_events": 1
+        },
+        {
+          "case": "api-responses-startup",
+          "exit_code": 0,
+          "list_events": 1
+        },
+        {
+          "case": "codebuddy-startup",
+          "exit_code": 0,
+          "list_events": 1
+        }
+      ]
+    },
+    "node_approval": {
+      "path": "runtime/unified-settings/node-approval-v15-final.json",
+      "sha256": "e10331ff8837a9f3916f832f3876832399f0070866a0e0b924c9432f4faa015d",
+      "behavior_passed": true,
+      "binary_matches": true,
+      "source_matches_before_and_after": true,
+      "source_count": 25,
+      "static_assertion_strings": 29,
+      "marker": "DAQIAN_INLINE_APPROVAL_OK",
+      "fixture_matches_current": true,
+      "strict_diagnostics_clean": false,
+      "full_regression": true,
+      "probe_only": false,
+      "reported_assertion_count": 29,
+      "loopback_get_count": 1,
+      "loopback_post_count": 4
+    },
+    "deployment_receipt": {
+      "path": "runtime/unified-settings/receipt-retention-v15-final.json",
+      "sha256": "248d1026bb9fd9dad54f93fa323517f18550f49feb8c5202764bec959c23f0cd",
+      "behavior_passed": true,
+      "binary_matches": true,
+      "source_matches_before_and_after": true,
+      "source_count": 25,
+      "checks": 17,
+      "strict_diagnostics_clean": false,
+      "resource_diagnostic_lines": 8,
+      "safety": {
+        "private_system_temp_editor_and_profile": true,
+        "child_cwd": "system temporary directory",
+        "provider_endpoint": "empty; no provider requests are initiated",
+        "fake_setup": "writes synthetic receipt/output and corrupts only the private canonical JSON",
+        "real_install_download_network_or_user_config": false,
+        "approved_rollback": "same fake script only records the received synthetic receipt"
+      }
+    },
+    "early_exit_probe": {
+      "path": "runtime/unified-settings/node-approval-v15-early-exit.json",
+      "sha256": "8b528863dbf212630d99b0b5b4f167c83599edf230885d364b995b2556a2ce39",
+      "log": {
+        "path": "runtime/unified-settings/node-approval-v15-early-exit.log",
+        "sha256": "9763accccfd87445f5e7f4bbc8070a98c7aa426d37ef7c6ad5461f42a227d108"
+      },
+      "probe_passed": true,
+      "binary_matches": true,
+      "native_exit_codes": [
+        0
+      ],
+      "driver_exit_code": 1,
+      "expected_full_driver_marker_failure": true,
+      "probe_only": true,
+      "full_29_assertions_covered": false,
+      "marker": "DAQIAN_MISSING_MODEL_EARLY_EXIT_OK",
+      "source_count": 25,
+      "source_matches_before_and_after": true,
+      "strict_diagnostics_clean": false
+    },
+    "static": {
+      "path": "runtime/unified-settings/static-v15.json",
+      "sha256": "a9bfa429374baba3858b743d57c5d92f1fbdecb957cbb3a41c9cba6a93dd9e40",
+      "passed": true,
+      "check_count": 8,
+      "checks": [
+        {
+          "name": "clang-format-22.1.5",
+          "exit_code": 0
+        },
+        {
+          "name": "ruff-check",
+          "exit_code": 0
+        },
+        {
+          "name": "ruff-format",
+          "exit_code": 0
+        },
+        {
+          "name": "mypy",
+          "exit_code": 0
+        },
+        {
+          "name": "codespell",
+          "exit_code": 0
+        },
+        {
+          "name": "codeowners",
+          "exit_code": 0
+        },
+        {
+          "name": "includes",
+          "exit_code": 0
+        },
+        {
+          "name": "diff-check",
+          "exit_code": 0
+        }
+      ],
+      "candidate_files_at_that_run": 84,
+      "source_unchanged": true,
+      "attribution": "Root-run check report read back by the reviewer; parent still gates the final staged candidate after appending this review."
+    }
+  },
+  "exit_diagnostic_interpretation": "The 148-check fixture retains the same seven/full and five/reopen resource ERROR signatures as the earlier native fixture. Larger node and deployment probes retain their own diagnostics separately; no zero-error or zero-leak claim is made.",
+  "current_ci_correction_state": {
+    "immutable_original": {
+      "path": "data-collection/editor-unified-settings-main-integration-review-20261108.json",
+      "sha256": "038d359add09ca4648d285e400fc93509f3f36c86b33f0d346bcafdf7fac89f7",
+      "matches_original": true
+    },
+    "appended_corrected": {
+      "path": "data-collection/editor-unified-settings-ci-corrected-review-20261108.json",
+      "sha256": "e83bbdaa09764937cd22b43ec95494fbbf1eb088a0d61207365b91a1a9be6378",
+      "matches_reviewed_copy": true
+    },
+    "only_added_skip_is_exact_history_path": true,
+    "new_exact_skip_does_not_match_code_or_corrected_copy": true,
+    "other_codespell_settings_unchanged": true,
+    "standard_fixes_match_reviewed_bytes": {
+      ".github/CODEOWNERS": true,
+      "tests/editor/ai_chat_integration.gd": false,
+      "tests/editor/ai_chat_native_files.gd": false
+    },
+    "historical_collection_modifications": []
+  },
+  "historical_evidence_preserved": {
+    "final-review-v10.json": {
+      "path": "runtime/unified-settings/review/final-review-v10.json",
+      "sha256": "31363479bd8667caf3623c839c268d7007cf65de59c81c64d2f73508cf64f6c2",
+      "unchanged": true
+    },
+    "final-review-v11.json": {
+      "path": "runtime/unified-settings/review/final-review-v11.json",
+      "sha256": "b291312e94f8013db322ed89a05ffe49665e37cc724d3be8ba0bfe5971cbcd0d",
+      "unchanged": true
+    },
+    "final-review-v11-node-verified.json": {
+      "path": "runtime/unified-settings/review/final-review-v11-node-verified.json",
+      "sha256": "28e1865d9ddda88157485616cfa27b3e0836130f22747e1458e5b2ac40fb3f05",
+      "unchanged": true
+    },
+    "native-independent-v11.json": {
+      "path": "runtime/unified-settings/review/native-independent-v11.json",
+      "sha256": "c934c2523b1abf4d4671305d60552f02c10c3051d8be70d4cff5d02b056dcebf",
+      "unchanged": true
+    },
+    "ci-correction-review-v2.json": {
+      "path": "runtime/unified-settings/review/ci-correction-review-v2.json",
+      "sha256": "294a3af65437e2eb33c0eefc7c683bccc5ead00d16785a97f9e1680dbefb2320",
+      "unchanged": true
+    },
+    "runtime-config-integration-initial-review.json": {
+      "path": "runtime/unified-settings/review/runtime-config-integration-initial-review.json",
+      "sha256": "4da510bfb4be257984420a6fec171a7559c03dd367dcbf8cdf3c4740c76b2fd7",
+      "unchanged": true
+    },
+    "native-independent-v13.json": {
+      "path": "runtime/unified-settings/review/native-independent-v13.json",
+      "sha256": "4b52b18fbfe01a4d589ac28ec4172165bb5c7113b42c5c460f8759e368fdb56c",
+      "unchanged": true,
+      "status": "historical independent behavioral run"
+    },
+    "final-review-v13.json": {
+      "path": "runtime/unified-settings/review/final-review-v13.json",
+      "sha256": "4e6b80f6a0c616c684725cd19e5f4ca9d8302e3e1592913a4719ccb8c0f2319a",
+      "unchanged": true,
+      "status": "unapproved source-drift draft; not acceptance"
+    }
+  },
+  "diff_check_passed": true,
+  "reviewer_product_public_or_old_evidence_edits": false,
+  "actual_user_settings_or_credentials_access": false,
+  "real_provider_or_account_cli_probes": 0,
+  "desktop_control": false,
+  "proof_limits": "The reviewer independently reran all 148 native settings checks and reviewed the source. The 17-check deployment probe, complete node regression, distinct early-close probe, startup cases, layout, artist and static reports were executed by the primary/root team and read back here. Their resource diagnostics are retained; the early-close probe is not counted as a complete node regression.",
+  "remaining_parent_delivery": "Append the current integration evidence, gate and sign the exact staged candidate, then verify CI/main and issue closure. No further product or fixture change is recommended by this review.",
+  "latest_main_counting_helpers_preserved": {
+    "_draw_board": true,
+    "_pending_action_count": true,
+    "_filter_board": true
+  },
+  "deferred_notice_order_review": {
+    "only_notice_order_is_deferred": true,
+    "visibility_and_authorization_gate_remains_synchronous": true,
+    "interpretation": "The queued operation only moves the existing notice panel within its owning workspace. Actor, context, token, catalog and visibility updates still complete synchronously. It neither restores old authorization nor starts a request. A destroyed target is not used by the deferred call."
+  },
+  "review_acceptance_complete": true,
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459"
+}

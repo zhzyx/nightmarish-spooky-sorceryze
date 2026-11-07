@@ -106,25 +106,27 @@ func _run():
 		return
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", OS.get_environment("GONGGONG_TEST_WORKSPACE"))
-	settings.set_setting("gonggong/python", OS.get_environment("GONGGONG_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
 	settings.set_setting("gonggong/issue_number", "6")
 	settings.set_setting("gonggong/request_id", "isolated-gate")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.find_child("APIModel", true, false).text = "mock-semantic"
-	dock.find_child("APIKey", true, false).text = "mock-key"
-	dock.find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-semantic"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "mock-key"
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	if OS.get_environment("SEMANTIC_MANUAL_STOP") == "1":
 		await manual_stop()
 		return
 	if not OS.get_environment("SEMANTIC_CODEX_ENTRY").is_empty():
 		backend.select(2)
 		backend.item_selected.emit(2)
-		dock.find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
-		dock.find_child("CodexEntry", true, false).text = OS.get_environment("SEMANTIC_CODEX_ENTRY")
-		dock.find_child("CodexModel", true, false).text = "mock-semantic"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("SEMANTIC_CODEX_ENTRY")
+		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
+		dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "mock-semantic"
 	if OS.get_environment("SEMANTIC_BOUNDS") == "1":
 		if not await phase("state_empty") or not await phase("open_scene"):
 			quit(1)
@@ -182,7 +184,7 @@ func _run():
 			await create_timer(0.2).timeout
 			for i in range(14):
 				selection.add_node(nodes[i])
-			dock.find_child("APIKey", true, false).text = key
+			dock.get_ai_settings_control().find_child("APIKey", true, false).text = key
 			if not await phase(pair[1]):
 				quit(1)
 				return
@@ -266,7 +268,7 @@ func _run():
 		quit(1)
 		return
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
-	dock.find_child("AllowTools", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	if not await phase("permission_off"):
 		quit(1)
 		return

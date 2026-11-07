@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import runpy
 import shutil
 import subprocess
@@ -55,18 +56,43 @@ def main():
         base = Path(temporary).resolve()
         engine = base / "engine"
         isolated_binary = copy_editor(binary, engine)
+        (engine / "editor_data/editor_settings-4.8.tres").write_text(
+            '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+            'ai_chat/backend = 0\nai_chat/endpoint = "http://127.0.0.1:9/v1/chat/completions"\n'
+            'gonggong/workspace = ""\ngonggong/python = ""\n',
+            encoding="utf-8",
+        )
         projects = [base / "project-a", base / "project-b"]
         definition = 'config_version=5\n[application]\nconfig/name="AINative Native Acceptance"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         for project in projects:
             project.mkdir()
             (project / "project.godot").write_text(definition, encoding="utf-8")
+            shutil.copy2(script, project / "acceptance.gd")
             for extension in ["png", "glb"]:
                 shutil.copy2(
                     repository / "samples/ainative-workbench/fixtures" / ("sample." + extension),
                     project / ("fixture." + extension),
                 )
         transfer = base / "portable-transfer"
-        environment = os.environ.copy()
+        environment = {
+            key: value
+            for key, value in os.environ.items()
+            if not re.search(r"(?:KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD)", key, re.IGNORECASE)
+            and not key.upper().startswith(("GONGGONG_", "AINATIVE_", "CODEX_"))
+        }
+        for name in (
+            "HOME",
+            "USERPROFILE",
+            "APPDATA",
+            "LOCALAPPDATA",
+            "XDG_CONFIG_HOME",
+            "XDG_DATA_HOME",
+            "TMP",
+            "TEMP",
+        ):
+            private_path = base / "private-home" / name.lower()
+            private_path.mkdir(parents=True, exist_ok=True)
+            environment[name] = str(private_path)
         environment["AINATIVE_PYTHON"] = sys.executable
         environment["AINATIVE_TEST_TRANSFER"] = str(transfer)
         # Provider selection is explicitly offline for this test, regardless of the user's environment.
@@ -85,10 +111,10 @@ def main():
                 env["AINATIVE_TEST_CAPTURE"] = str(screenshot)
             if editor:
                 command.append("--editor")
-            command += ["--path", str(project), "--script", str(script)]
+            command += ["--path", str(project), "--script", "res://acceptance.gd"]
             try:
                 process = subprocess.run(
-                    command, env=env, capture_output=True, text=True, timeout=180, errors="replace"
+                    command, cwd=project, env=env, capture_output=True, text=True, timeout=180, errors="replace"
                 )
                 log = process.stdout + process.stderr
                 try:
@@ -131,6 +157,7 @@ def main():
             result["same_engine_bundle"] = first["details"]["host_sha256"] == second["details"]["host_sha256"]
             sample = base / "sample-addon-compatibility"
             sample.mkdir()
+            shutil.copy2(script, sample / "acceptance.gd")
             (sample / "project.godot").write_text(
                 definition + '[editor_plugins]\nenabled=PackedStringArray("res://addons/ainative/plugin.cfg")\n',
                 encoding="utf-8",

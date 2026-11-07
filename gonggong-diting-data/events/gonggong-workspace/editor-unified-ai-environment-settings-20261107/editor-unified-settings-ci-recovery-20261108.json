@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-unified-settings-ci-recovery-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "correction",
+  "occurred_at": "2026-11-07T16:18:33.531462+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "codex-unified-settings",
+    "origin": "external-authorized-host",
+    "version": "20261108",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "issue_number": 459,
+    "source_ref": "data-collection/editor-unified-settings-ci-recovery-20261108.json",
+    "product_source_unchanged": true,
+    "exact_head_ci_pending": true,
+    "usage": null
+  },
+  "evidence_refs": [
+    "editor-unified-settings-main-integration-20261108"
+  ],
+  "sha256": "095ea74d01e58e81211ca3c783e3029070e9c57e68ffae22eebeff2ce08b178f"
+}

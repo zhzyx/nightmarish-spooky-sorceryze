@@ -87,12 +87,12 @@ func _run():
 		return
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", OS.get_environment("GONGGONG_TEST_WORKSPACE"))
-	settings.set_setting("gonggong/python", OS.get_environment("GONGGONG_PYTHON"))
-	var backend = dock.find_child("AIBackend", true, false)
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "isolated-test"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "isolated-test"
 	process_frame.connect(_measure_frame)
 	var mode = OS.get_environment("GONGGONG_TEST_MODE")
 	if not mode.begins_with("issue_guide"):
