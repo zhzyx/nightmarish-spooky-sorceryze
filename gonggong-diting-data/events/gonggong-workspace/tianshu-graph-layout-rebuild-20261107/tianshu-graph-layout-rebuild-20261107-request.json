@@ -1,0 +1,22 @@
+{
+  "evidence_refs": [],
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "payload": {
+    "parent": 442,
+    "document": "design-docs/daqian/graph-layout-rebuild.md",
+    "intent": "重做画布布局与指针定位并核对桌面原生交互"
+  },
+  "occurred_at": "2026-11-07T13:36:42.9041948Z",
+  "agent": {
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "id": "current-workspace-operator"
+  },
+  "request_id": "tianshu-graph-layout-rebuild-20261107",
+  "event_id": "tianshu-graph-layout-rebuild-20261107-request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/446",
+  "schema_version": 1,
+  "sha256": "3ca7b51b0dc56621a70a8e64bba49a12657dca8edc8bd809033f38f658991e29"
+}

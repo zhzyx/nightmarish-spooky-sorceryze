@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-aa0802d35188796b5cf391c18c202e3ae0e6a414",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-graph-layout-rebuild-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/446",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a67e8373698493923ab75d887a6b96325cbeff38abe75f4066c57256e469b905",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/446",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/448",
+    "action": "delivery",
+    "detection_head": "5e038bbf52ef0b7a5e55a6454037165007f0a3e0",
+    "context_sha256": "c1b054ea4c759808c5a202c067744dd784d82f6ea7b9cd14bf266b47fbed8d53",
+    "operator": "Sail-Li",
+    "worker": "Codex当前会话-442",
+    "authority_ref": "仓库AGENTS.md的原发布者当次夸父排障授权",
+    "evidence": "原候选5e038bbf已在远端同名分支，查无该分支PR，GraphQL签发请求TLS握手超时",
+    "diagnosis": "传输层超时，签发结果需按远端引用核对。已确认引用仍在候选提交。",
+    "next_action": "同一工作树按原候选、原工单与原说明复验签发，随后核对PR与CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T13:39:00.637407+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T13:41:39.393011+00:00",
+  "sha256": "d5f05a8f0804e8a219f0a61c8e5cc0d4d7cc9789471503d27819eb022b7e5251"
+}
