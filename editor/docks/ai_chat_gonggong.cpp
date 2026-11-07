@@ -53,6 +53,7 @@ bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, c
 		return true;
 	}
 	if (gonggong_reporting.is_empty()) {
+		_design_reporting_blocked();
 		return false;
 	}
 	Dictionary event;
@@ -94,6 +95,7 @@ bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, c
 		stored = stored && DirAccess::rename_absolute(pending + ".tmp", pending) == OK;
 	}
 	if (!stored) {
+		_design_reporting_blocked();
 		_append(TTR("Error"), U"GongGong 事件无法持久保存，后续模型及工具执行已阻止。");
 		return false;
 	}
@@ -145,14 +147,27 @@ void AIChatDock::_poll_gonggong_receipt() {
 	Callable continuation = gonggong_receipt_continuation;
 	gonggong_receipt_continuation = Callable();
 	const bool current = busy && gonggong_continuation_generation == session_generation;
+	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	if (!ok) {
+		_design_reporting_blocked(gonggong_receipt_generation);
+	}
 	if (gonggong_receipt_reflush) {
 		gonggong_receipt_reflush = false;
+		if (gonggong_receipt_generation != session_generation) {
+			// The old source has no final acknowledgment. Another workspace's
+			// fresh flush cannot release that live batch's completion event.
+			_design_reporting_blocked(gonggong_receipt_generation);
+			_resume_design_completions(gonggong_receipt_generation);
+		}
 		// A previous flush cannot acknowledge envelopes queued after it started.
 		// Terminal envelopes also require a fresh flush, but never resume work.
 		_flush_gonggong(current ? continuation : Callable());
 		return;
 	}
-	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	_resume_design_completions(gonggong_receipt_generation);
+	if (design_batches.has(active_agent) || _design_child_parent(active_agent) >= 0) {
+		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+	}
 	if (gonggong_receipt_generation != session_generation) {
 		return;
 	}
@@ -192,6 +207,7 @@ void AIChatDock::_start_gonggong_flush() {
 	}
 	String provenance_error;
 	if (!_recover_active_provenance(provenance_error)) {
+		_design_reporting_blocked();
 		set_meta("gonggong_reporting", "pending_retry");
 		_append(TTR("Error"), provenance_error);
 		gonggong_receipt_continuation = Callable();
@@ -205,6 +221,7 @@ void AIChatDock::_start_gonggong_flush() {
 	}
 	ProcessID pid = 0;
 	if (OS::get_singleton()->create_process(gonggong_report_python, arguments, &pid) != OK) {
+		_design_reporting_blocked();
 		set_meta("gonggong_reporting", "pending_retry");
 		if (gonggong_receipt_continuation.is_valid()) {
 			gonggong_receipt_continuation = Callable();

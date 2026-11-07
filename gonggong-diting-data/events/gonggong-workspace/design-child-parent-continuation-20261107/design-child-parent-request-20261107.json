@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "design-child-parent-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "design-child-parent-continuation-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T13:02:29.707681+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "agent": {
+    "id": "codex-child-parent-resume",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3cf54ab89d91ca7487248be238af9e425cb286c5fcbf3cdc16697451df814992"
+  },
+  "payload": {
+    "request": "Repair live serial design child batch evidence handoff and continuation under original parent authorization",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "worker": "/root/runtime_entry_fix",
+    "original_issue": 387,
+    "related_issues": [
+      390,
+      386
+    ],
+    "observation": "data-collection/design-child-parent-continuation-observation-20261107.json",
+    "original_business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "6b8543ff583eb3768ef21a7d311f9672ffd661e48459515c2f7ac02452624040"
+}

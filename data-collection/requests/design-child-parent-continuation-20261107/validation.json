@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "kind": "component_validation",
+  "verified_at": "2026-11-07T13:13:42.378950+00:00",
+  "base_sha": "0c548aa94ed6ffbd34839a3e728f934a3ede9cbc",
+  "production_source": {
+    "sha256": "4f19950c5418b2f8eb6888a822bc041b5d1c538f77f76dfc670cd304a84e3c6e",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "bf9a5265e3438509d78b0257dc9b649cea2143f8e2584b78054c564b5e7a9812",
+      "editor/docks/ai_chat_dock.h": "ecbcaae43fd05f9a39b02cbab5233075b53bb9f2250c895774cd5df715dd46f0",
+      "editor/docks/ai_chat_sub_agents.cpp": "90532136553a10bf7164bdae7822165d531d96a2483a0ae500894e06d0be6114",
+      "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+      "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+    }
+  },
+  "checks": {
+    "native_typed_loop_cases_passed": 20,
+    "single_artifact_suite": false,
+    "native_suite_summary": "data-collection/requests/design-child-parent-continuation-20261107/native-suite-summary.json",
+    "native_receipt_unit_cases_passed": 5,
+    "native_receipt_unit_assertions_passed": 167,
+    "native_ai_chat_tools_cases_passed": 31,
+    "native_ai_chat_tools_assertions_passed": 644,
+    "unit_report_sha256": "802835c20307db57ddcda0bbd18307cfb4382a5b0433ceabd5e9fecfcfb6becd",
+    "http_steering_regression_passed": true,
+    "codex_bridge_offline_mode_regression_passed": true,
+    "final_artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+    "macos_arm64_build": "passed",
+    "static": "Ruff, Mypy, clang-format, includes, copyright, header guards, file-format, codespell and diff-check passed",
+    "independent_reviews": [
+      "independent-livebatch-review.json",
+      "independent-runtime-receipt-review.json"
+    ],
+    "business_accepted": false,
+    "usage": null
+  },
+  "scope_notes": [
+    "Actual Godot and host tools used with isolated synthetic model/Issue bridge; no real provider/model traffic in these fixtures.",
+    "Tests cover ordinary execution failure and timeout separately from mandatory child and terminal receipt failures; approvals/transport/exit status are never business acceptance.",
+    "Original Issue387 GUI/main business acceptance remains with its parent executor; this task did not modify original app/config/history or run that model.",
+    "Runtime metadata comes from current host configured fields only; no central persistent config implemented.",
+    "Final comment-only spelling/header alignment changes were reviewed without repeating unaffected runtime tests."
+  ],
+  "source_observation": "data-collection/design-child-parent-continuation-observation-20261107.json",
+  "git_delivery": "pending formal writer, exact-head CI and authoritative main readback; coordinated hold for original Issue387 PR439",
+  "usage": null
+}
