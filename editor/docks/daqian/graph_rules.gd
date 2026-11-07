@@ -12,6 +12,36 @@ static func new_plan() -> Dictionary:
 	return {"nodes": {}, "edges": []}
 
 
+## Reapply local edits made while the authoritative graph was loading.
+## An overlapping source change leaves the entire draft at its original revision.
+static func reconcile_snapshot(base: Dictionary, draft: Dictionary, live: Dictionary) -> Dictionary:
+	var merged := live.duplicate(true)
+	var keys: Dictionary = base.nodes.duplicate()
+	keys.merge(draft.nodes)
+	for key in keys:
+		var before = base.nodes.get(key)
+		var local = draft.nodes.get(key)
+		if local == before:
+			continue
+		var remote = live.nodes.get(key)
+		if remote != before and remote != local:
+			return {"error": "节点 %s 在来源和草稿中同时变更" % key}
+		if local == null:
+			merged.nodes.erase(key)
+		else:
+			merged.nodes[key] = local.duplicate(true)
+	for edge in base.edges:
+		if edge not in draft.edges:
+			merged.edges.erase(edge)
+	for edge in draft.edges:
+		if edge not in base.edges and edge not in merged.edges:
+			merged.edges.append(edge.duplicate())
+	for edge in merged.edges:
+		if not merged.nodes.has(edge.from) or not merged.nodes.has(edge.to):
+			return {"error": "流程端点已变更"}
+	return {"plan": merged}
+
+
 static func output_type(kind: String) -> String:
 	return {"image": "image", "text": "text", "question": "text"}.get(kind, "result")
 

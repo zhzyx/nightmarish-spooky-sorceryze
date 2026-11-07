@@ -18,6 +18,20 @@ func check(value: bool, reason: String) -> void:
 		push_error(reason)
 
 
+func check_snapshot_edits(rules: Script) -> void:
+	var edge := {"from": "a", "to": "b", "kind": "after"}
+	var base := {"nodes": {"a": {"value": "old"}, "b": {}}, "edges": [edge]}
+	var local := base.duplicate(true)
+	local.nodes.a.value = "new"
+	local.edges.clear()
+	var live := base.duplicate(true)
+	live.nodes.c = {}
+	var result: Dictionary = rules.reconcile_snapshot(base, local, live)
+	check(result.get("plan") == {"nodes": {"a": {"value": "new"}, "b": {}, "c": {}}, "edges": []}, "late source update discarded a local edit or disconnect")
+	live.nodes.a.value = "other"
+	check(rules.reconcile_snapshot(base, local, live).has("error") and local.nodes.a.value == "new", "overlapping edits did not preserve the draft")
+
+
 func check_spacing(canvas: GraphEdit, scenario: String) -> void:
 	var bounds: Array[Rect2] = []
 	for card in canvas.get_children():
@@ -69,6 +83,7 @@ func run() -> void:
 	await workspace.refresh()
 	check(workspace.actor.get("user_id","")=="42","fixture collaborator membership was not verified")
 	var graph = workspace.editor
+	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()
 	state = {"plan":{"nodes":{},"edges":[]},"revision":"0","execution_revision":"0",
 		"context":{"models":{"vision":["image"],"text":["text"]},"states":{}}, "can_edit":true}
@@ -209,6 +224,10 @@ func run() -> void:
 	enter.pressed = true
 	workspace.get_viewport().push_input(enter, true)
 	check(workspace.current == issues[49].url and not workspace.issue_list.visible, "Enter did not open the selected issue")
+	workspace.editor.canvas.zoom = 0.29
+	workspace._check_canvas_zoom()
+	check(workspace.board_views.current_tab == 0 and workspace.search.text == "#50" and workspace.issue_rows[issues[49].url].is_selected(0), "zoom return lost the filtered list or selected issue")
+	workspace.get_viewport().push_input(enter, true)
 	workspace.return_button.pressed.emit()
 	check(workspace.search.text == "#50" and workspace.issue_list.has_focus() and workspace.issue_list.get_selected() == workspace.issue_rows[issues[49].url], "return lost filter, selection or keyboard focus")
 	workspace.search.grab_focus()
@@ -273,7 +292,11 @@ func run() -> void:
 		workspace.overview.zoom = 1.65
 		workspace._open_creator_at(Vector2(-100000, -100000))
 		check(workspace.board_views.current_tab == 1, "background zoom selected an owner")
-		var region: GraphFrame = workspace.creator_sections[creator]
+		var region: GraphFrame = workspace.creator_sections.get(creator)
+		if not is_instance_valid(region):
+			check(false, "missing creator %s; sections=%s filter=%s tab=%d" % [creator, workspace.creator_sections.keys(), workspace.creator_filter.text, workspace.board_views.current_tab])
+			quit(1)
+			return
 		var pointer: Vector2 = workspace.overview.size * 0.5
 		workspace.overview.scroll_offset = (region.position_offset + Vector2(22, 22)) * workspace.overview.zoom - pointer
 		await settle_layout()
