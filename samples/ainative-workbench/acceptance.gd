@@ -77,7 +77,7 @@ func run():
 	var published_hash = FileAccess.get_sha256(panel.target_edit.text)
 	panel.review_publish(); panel.confirm_publish(); panel.dialog.hide()
 	await wait_idle()
-	check(FileAccess.get_sha256(panel.target_edit.text) == published_hash and panel.status.text.contains("failed"), "existing target cannot be overwritten")
+	check(FileAccess.get_sha256(panel.target_edit.text) == published_hash and panel.status.text.contains("失败"), "existing target cannot be overwritten")
 	panel.nodes = []; panel.edges = []; panel.add_node()
 	panel.source_edit.text = mesh
 	panel.params_edit.text = '{"delay":0,"fail":false}'

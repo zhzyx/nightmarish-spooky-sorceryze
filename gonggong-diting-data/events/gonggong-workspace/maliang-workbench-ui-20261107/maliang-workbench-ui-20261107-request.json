@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-workbench-ui-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-workbench-ui-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T05:49:10.862601+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/385",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Rename the built-in art workbench to 马良, place it after AI Chat, fill the editor workspace, and translate owned interface messages to Chinese while retaining machine contracts",
+    "authorization_ref": "codex:user:20261107:maliang-workbench-ui",
+    "state": "in_progress",
+    "usage": null,
+    "agent_definition_basis": "sha256 of repository AGENTS.md read by this host",
+    "native_workers": [
+      "/root/maliang_panels_zh",
+      "/root/maliang_core_messages",
+      "/root/maliang_ui_review"
+    ],
+    "dispatch_scope": "actual native workers with isolated write sets and independent read-only review; no standing scheduler claimed"
+  },
+  "evidence_refs": [],
+  "sha256": "38ebc05305fe129f78fbce3001c8aaa18c2fa5218c72f7aca323b716e012bc7c"
+}

@@ -6,7 +6,7 @@ func _enter_tree():
 	if ClassDB.class_exists("AINativeEditorPlugin"):
 		return
 	panel = preload("workbench.gd").new()
-	add_control_to_bottom_panel(panel, "AINative")
+	add_control_to_bottom_panel(panel, "马良")
 func _exit_tree():
 	if panel == null:
 		return

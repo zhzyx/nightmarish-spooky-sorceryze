@@ -77,10 +77,8 @@ void LegacyMainScreenContainer::add_child_notify(Node *p_child) {
 #endif
 
 void EditorMainScreen::_set_window_fill(bool p_fill) {
-	if (window_filled == p_fill) {
-		return;
-	}
-	window_filled = p_fill;
+	// Distraction-free settings may have changed dock visibility since the last
+	// tab switch, including when switching between two full-workspace pages.
 	EditorNode::get_bottom_panel()->set_hidden_by_main_screen(p_fill);
 	EditorSceneTabs::get_singleton()->set_visible(!p_fill);
 	EditorDockManager::get_singleton()->set_docks_visible(!p_fill && !EditorNode::get_singleton()->is_distraction_free_mode_enabled());
@@ -94,7 +92,7 @@ void EditorMainScreen::update_window_fill() {
 	// Docks are added while the editor is being constructed, before the first real selection.
 	if (is_inside_tree()) {
 		const EditorDock *dock = get_dock(get_current_tab());
-		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen"));
+		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen" || dock->get_layout_key() == "AINativeMainScreen"));
 	}
 }
 

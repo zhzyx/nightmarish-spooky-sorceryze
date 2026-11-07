@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-workbench-ui-20261107-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-workbench-ui-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T05:54:47.722252+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/385",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "state": "passed",
+    "issue_number": 385,
+    "validation_ref": "data-collection/maliang-workbench-ui-validation-20261107.json",
+    "validation_sha256": "d14cdc5d2698e67b4dabd605148e130b79c64ea83f5b7ba827cab2f8d10b2920",
+    "checks": {
+      "native": 147,
+      "packaged_app": 147,
+      "tab_order_phases": 6,
+      "python": 26
+    },
+    "independent_review": "actual completion of /root/maliang_ui_review",
+    "usage": null,
+    "scope": "Renamed and translated native UI, workspace visibility, legacy layouts, offline pipeline and publication; no AI inference"
+  },
+  "evidence_refs": []
+}

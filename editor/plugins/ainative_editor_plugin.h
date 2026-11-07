@@ -46,7 +46,7 @@ class AINativeEditorPlugin : public EditorPlugin {
 	void _open_workbench();
 
 public:
-	virtual String get_plugin_name() const override { return "AINative"; }
+	virtual String get_plugin_name() const override { return U"马良"; }
 
 	AINativeEditorPlugin();
 };

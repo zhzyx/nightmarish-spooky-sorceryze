@@ -553,7 +553,7 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 		dock_map[dock->get_effective_layout_key()] = dock;
 	}
 
-	int daqian_inserted_at = -1;
+	int main_screen_selected_tab_idx = -1;
 	// Load docks by slot. Index -1 is for docks that have no slot.
 	for (int i = -1; i < EditorDock::DOCK_SLOT_MAX; i++) {
 		const String key = DockTabContainer::get_config_key(i);
@@ -562,13 +562,21 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 		}
 
 		Vector<String> names = String(p_layout->get_value(p_section, key)).split(",");
-		if (i == EditorDock::DOCK_SLOT_MAIN_SCREEN && dock_map.has("DaqianMainScreen") && !names.has("DaqianMainScreen")) {
-			// Older layouts know all previous peers; restoring them otherwise appends the new tab last.
-			const int chat = names.find("AIChatMainScreen");
-			if (chat >= 0) {
-				daqian_inserted_at = chat + 1;
-				names.insert(daqian_inserted_at, "DaqianMainScreen");
+		if (i == EditorDock::DOCK_SLOT_MAIN_SCREEN) {
+			// Remember the selected page by identity when migrating older tab orders.
+			const int selected = p_layout->get_value(p_section, key + "_selected_tab_idx", -1);
+			const String selected_name = selected >= 0 && selected < names.size() ? names[selected] : String();
+			if (dock_map.has("DaqianMainScreen") && !names.has("DaqianMainScreen")) {
+				const int chat = names.find("AIChatMainScreen");
+				if (chat >= 0) {
+					names.insert(chat + 1, "DaqianMainScreen");
+				}
 			}
+			if (dock_map.has("AINativeMainScreen") && names.has("AIChatMainScreen")) {
+				names.erase("AINativeMainScreen");
+				names.insert(names.find("AIChatMainScreen") + 1, "AINativeMainScreen");
+			}
+			main_screen_selected_tab_idx = names.find(selected_name);
 		}
 		for (int j = names.size() - 1; j >= 0; j--) {
 			const String &name = names[j];
@@ -609,8 +617,8 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 	// Set the selected tabs.
 	for (int i = 0; i < EditorDock::DOCK_SLOT_MAX; i++) {
 		int selected_tab_idx = p_layout->get_value(p_section, DockTabContainer::get_config_key(i) + "_selected_tab_idx", -1);
-		if (i == EditorDock::DOCK_SLOT_MAIN_SCREEN && daqian_inserted_at >= 0 && selected_tab_idx >= daqian_inserted_at) {
-			selected_tab_idx++;
+		if (i == EditorDock::DOCK_SLOT_MAIN_SCREEN && main_screen_selected_tab_idx >= 0) {
+			selected_tab_idx = main_screen_selected_tab_idx;
 		}
 		dock_slots[i]->load_selected_tab(selected_tab_idx);
 	}

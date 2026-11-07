@@ -36,15 +36,15 @@ static func positions(frame: Dictionary, profile: String) -> Array:
 	return out
 
 static func build(doc: Dictionary, source_hash: String, in_place: bool = false, loop: bool = false, smoothing: float = 0.0) -> Dictionary:
-	if doc.get('schema')!='ainative.motion.v1': return {'error':'Invalid motion contract'}
+	if doc.get('schema')!='ainative.motion.v1': return {'error':'动作数据契约无效'}
 	var frames = doc.get('streams',{}).get('body',{}).get('frames',[])
-	if frames.size()<2: return {'error':'At least two body frames required'}
+	if frames.size()<2: return {'error':'至少需要两帧身体数据'}
 	var profile_id = str(doc.get('source_profile',{}).get('id',''))
 	var rest = []
 	for frame in frames:
 		rest = positions(frame,profile_id)
 		if rest.size()==22: break
-	if rest.size()!=22: return {'error':'No complete body observation'}
+	if rest.size()!=22: return {'error':'未找到完整的身体观测数据'}
 	# Derive measured segment lengths, then establish a declared anatomical
 	# T-rest. Treating frame zero as rest would erase the initial action pose.
 	var measured = rest.duplicate(true)
@@ -99,7 +99,7 @@ static func build(doc: Dictionary, source_hash: String, in_place: bool = false, 
 			if gap_start<0: gap_start = float(frame.timestamp_ms)
 			continue
 		if gap_start>=0:
-			missing_intervals.append({'start_ms':gap_start,'end_ms':frame.timestamp_ms,'policy':'interpolated; inspect before use'})
+			missing_intervals.append({'start_ms':gap_start,'end_ms':frame.timestamp_ms,'policy':'已插值；使用前请检查'})
 			gap_start = -1
 		if first.is_empty(): first = points.duplicate(true)
 		last = points.duplicate(true)
@@ -134,7 +134,7 @@ static func build(doc: Dictionary, source_hash: String, in_place: bool = false, 
 			animation.rotation_track_insert_key(tracks[i][1],time,rotation.get_rotation_quaternion())
 		if first_rotations.is_empty(): first_rotations = rotations
 		last_rotations = rotations
-	if gap_start>=0: missing_intervals.append({'start_ms':gap_start,'end_ms':frames[-1].timestamp_ms,'policy':'held last observation; inspect before use'})
+	if gap_start>=0: missing_intervals.append({'start_ms':gap_start,'end_ms':frames[-1].timestamp_ms,'policy':'已保持最后一次观测；使用前请检查'})
 	var seam = 0.0
 	for i in 22: seam = maxf(seam,first_rotations[i].angle_to(last_rotations[i]))
 	var library = AnimationLibrary.new()
@@ -150,10 +150,10 @@ static func build(doc: Dictionary, source_hash: String, in_place: bool = false, 
 	scene.set_meta('motion_context',doc.get('context',[]))
 	scene.set_meta('motion_context_bundle',doc.get('context_bundle',[]))
 	scene.set_meta('motion_revision_chain',{'parent_revision':doc.get('parent_revision',''),'derived_source_sha256':source_hash})
-	scene.set_meta('motion_rest_policy','anatomical T-rest with segment lengths from first complete observation; no axial twist estimate')
-	scene.set_meta('motion_processing',{'smoothing':smoothing,'in_place':in_place,'loop':loop,'missing_body_frames':missing,'missing_intervals':missing_intervals,'raw_root_displacement_m':v(last[0]).distance_to(v(first[0])),'processed_root_displacement_m':processed_last.distance_to(processed_first),'loop_root_seam_m':processed_last.distance_to(processed_first),'loop_max_joint_seam_radians':seam,'twist_policy':'position-only swing; axial twist unobserved'})
+	scene.set_meta('motion_rest_policy','采用解剖 T 形静止姿势，骨段长度取自首次完整观测；未估计轴向扭转')
+	scene.set_meta('motion_processing',{'smoothing':smoothing,'in_place':in_place,'loop':loop,'missing_body_frames':missing,'missing_intervals':missing_intervals,'raw_root_displacement_m':v(last[0]).distance_to(v(first[0])),'processed_root_displacement_m':processed_last.distance_to(processed_first),'loop_root_seam_m':processed_last.distance_to(processed_first),'loop_max_joint_seam_radians':seam,'twist_policy':'仅根据位置估计摆动；无法观测轴向扭转'})
 	var processing = scene.get_meta('motion_processing')
 	processing['processed_root_horizontal_displacement_m'] = Vector2(processed_last.x-processed_first.x,processed_last.z-processed_first.z).length()
 	processing['smoothing_max_displacement_m'] = cleanup_max_displacement
-	processing['root_policy'] = 'horizontal in-place; retain vertical pose' if in_place else doc.source_profile.get('root_motion','model_generated')
+	processing['root_policy'] = '水平原地移动；保留垂直姿势' if in_place else doc.source_profile.get('root_motion','model_generated')
 	return {'scene':scene,'profile':extracted.profile,'animation':animation}

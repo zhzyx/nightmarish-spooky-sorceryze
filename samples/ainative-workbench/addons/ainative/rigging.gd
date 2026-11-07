@@ -11,18 +11,18 @@ static func geometry_key(p: Dictionary) -> String:
 	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,'anatomical-segments-v1']).sha256_text()
 
 static func build(path: String, p: Dictionary) -> Dictionary:
-	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != p.get('source_sha256',''): return {'error':'Source hash mismatch; reopen the source.'}
-	if p.get('route') not in ['standard','free'] or p.get('reference_pose') not in ['T','marked']: return {'error':'Choose standard/free route and a Y-up T reference pose.'}
+	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != p.get('source_sha256',''): return {'error':'源文件哈希不匹配；请重新打开源文件。'}
+	if p.get('route') not in ['standard','free'] or p.get('reference_pose') not in ['T','marked']: return {'error':'请选择标准或自由路线，并使用 Y 轴向上的 T 形参考姿势。'}
 	for key in ['height_m','yaw_degrees','crop_below_y']:
-		if not (p.get(key) is float or p.get(key) is int) or not is_finite(float(p[key])): return {'error':'Invalid finite numeric parameter: '+key}
-	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'Height must be 0.2–4 meters.'}
-	if not p.get('joints') is Dictionary or not p.get('weights') is Dictionary: return {'error':'Joint and weight corrections must be objects.'}
-	if not p.weights.is_empty() and p.get('weights_geometry','')!=geometry_key(p): return {'error':'Weight corrections belong to a different derived geometry; clear weights and load new marker IDs.'}
+		if not (p.get(key) is float or p.get(key) is int) or not is_finite(float(p[key])): return {'error':'参数必须为有限数值：'+key}
+	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'身高必须在 0.2–4 米之间。'}
+	if not p.get('joints') is Dictionary or not p.get('weights') is Dictionary: return {'error':'关节和权重修正必须为对象。'}
+	if not p.weights.is_empty() and p.get('weights_geometry','')!=geometry_key(p): return {'error':'权重修正属于另一份派生几何；请清除权重并载入新的标记 ID。'}
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
-	if doc.append_from_file(path,state) != OK: return {'error':'Cannot decode GLB/glTF'}
+	if doc.append_from_file(path,state) != OK: return {'error':'无法解析 GLB/glTF'}
 	var imported = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
-	if imported == null: return {'error':'No scene'}
+	if imported == null: return {'error':'未找到场景'}
 	var surfaces = []
 	var bounds = AABB()
 	var first = true
@@ -99,8 +99,8 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 				first = false
 			surfaces.append({'arrays':a,'material':mi.mesh.surface_get_material(si)})
 	imported.free()
-	if first or bounds.size.y < 0.0001: return {'error':'Cleanup removed all geometry','diagnostics':report}
-	if report.boundary_edges or report.nonmanifold_edges: report.warnings.append('Open/nonmanifold edges: inspect the preview; no watertight repair is claimed.')
+	if first or bounds.size.y < 0.0001: return {'error':'清理后没有剩余几何','diagnostics':report}
+	if report.boundary_edges or report.nonmanifold_edges: report.warnings.append('检测到开放边或非流形边；请检查预览，当前处理不保证修复为封闭网格。')
 	var scale_factor = p.height_m/bounds.size.y
 	var offset = Vector3(bounds.get_center().x,bounds.position.y,bounds.get_center().z)
 	var h: float = p.height_m
@@ -119,9 +119,9 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 			positions[bi].z = candidates[candidates.size()/2]
 	for name in p.joints:
 		var xyz = p.joints[name]
-		if not name in NAMES or not xyz is Array or xyz.size()!=3: return {'error':'Invalid joint correction '+str(name)}
+		if not name in NAMES or not xyz is Array or xyz.size()!=3: return {'error':'关节修正无效：'+str(name)}
 		for n in xyz:
-			if not (n is float or n is int) or not is_finite(float(n)) or absf(n)>h*2: return {'error':'Joint must contain finite meter coordinates'}
+			if not (n is float or n is int) or not is_finite(float(n)) or absf(n)>h*2: return {'error':'关节必须包含以米为单位的有限坐标'}
 		positions[NAMES.find(name)] = Vector3(xyz[0],xyz[1],xyz[2])
 	var root = Node3D.new()
 	root.name = 'Character'
@@ -175,12 +175,12 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 						if key!=str(foot_index) and (smallest=='' or values[key]<values[smallest]): smallest = key
 					values.erase(smallest)
 			if p.weights.has(str(vertex_id)): values = p.weights[str(vertex_id)]
-			if not values is Dictionary or values.is_empty() or values.size()>4: root.free(); return {'error':'Weight override requires 1–4 bone-index:weight entries'}
+			if not values is Dictionary or values.is_empty() or values.size()>4: root.free(); return {'error':'权重覆盖需要 1–4 个“骨骼索引:权重”条目'}
 			var total = 0.0
 			for key in values:
-				if not str(key).is_valid_int() or int(key)<0 or int(key)>=NAMES.size() or not (values[key] is float or values[key] is int) or not is_finite(float(values[key])) or values[key]<0: root.free(); return {'error':'Invalid weight/index'}
+				if not str(key).is_valid_int() or int(key)<0 or int(key)>=NAMES.size() or not (values[key] is float or values[key] is int) or not is_finite(float(values[key])) or values[key]<0: root.free(); return {'error':'权重或索引无效'}
 				total += values[key]
-			if total<=0: root.free(); return {'error':'Zero weight sum'}
+			if total<=0: root.free(); return {'error':'权重总和为零'}
 			for key in values: bones.append(int(key)); weights.append(values[key]/total)
 			for k in range(values.size(),4): bones.append(0); weights.append(0)
 			vertex_id += 1
@@ -190,7 +190,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,a)
 		mesh.surface_set_material(mesh.get_surface_count()-1,surface.material)
 	for key in p.weights:
-		if not str(key).is_valid_int() or int(key)<0 or int(key)>=vertex_id: root.free(); return {'error':'Weight correction vertex ID outside derived geometry'}
+		if not str(key).is_valid_int() or int(key)<0 or int(key)>=vertex_id: root.free(); return {'error':'权重修正的顶点 ID 超出派生几何范围'}
 	var instance = MeshInstance3D.new()
 	instance.name = 'Body'
 	instance.mesh = mesh
@@ -198,7 +198,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	instance.skeleton = NodePath('../Skeleton3D')
 	root.add_child(instance)
 	var accepted = p.confirmed_humanoid and (p.route=='standard' or p.joints.size()>=NAMES.size()-1)
-	if bounds.size.x/bounds.size.y<.65 and p.reference_pose!='marked': accepted = false; report.warnings.append('T pose requires separated arms, width/height >= 0.65.')
+	if bounds.size.x/bounds.size.y<.65 and p.reference_pose!='marked': accepted = false; report.warnings.append('T 形姿势需要双臂分开，宽高比不小于 0.65。')
 	if p.reference_pose=='marked' or p.route=='free':
 		for bone in NAMES:
 			if bone!='root' and not p.joints.has(bone): accepted = false
@@ -220,7 +220,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 		var knee = positions[NAMES.find('shin_'+side)]
 		var foot = positions[NAMES.find('foot_'+side)]
 		if hip.y<=knee.y or knee.y<=foot.y or absf(hip.x-knee.x)>h*.05 or absf(knee.x-foot.x)>h*.05: accepted = false
-	if not accepted: report.warnings.append('Needs human T-pose review; free mesh requires all 17 joint landmarks. This preview is not a successful character binding.')
+	if not accepted: report.warnings.append('需要人工检查 T 形姿势；自由网格必须标记全部 17 个关节点。当前预览尚未通过角色绑定验收。')
 	root.set_meta('rigging',{'source_sha256':p.source_sha256,'parameters':p,'algorithm':'anatomical-segments-v1','status':'reviewed_template' if accepted else 'needs_landmarks','diagnostics':report,'height_m':h,'vertex_count':vertex_id,'geometry_key':geometry_key(p),'compatibility':'unbound','axes':'Y up, +Z forward; identity rest axes; not SkeletonProfileHumanoid','reference_pose':p.reference_pose})
 	var revision = JSON.stringify(p).sha256_text()
 	var manifest = {'schema_version':1,'artifacts':[
@@ -282,9 +282,9 @@ static func owners(node: Node, root: Node):
 	for child in node.get_children(): child.owner = root; owners(child,root)
 
 static func stage(scene: Node3D, target: String) -> String:
-	if FileAccess.file_exists(target) or target.get_extension()!='tscn': return 'Choose a new .tscn version; existing files are immutable.'
+	if FileAccess.file_exists(target) or target.get_extension()!='tscn': return '请选择新的 .tscn 版本；现有文件不可覆盖。'
 	var metadata = scene.get_meta('rigging',{})
-	if metadata.get('status')!='reviewed_template': return 'Review T pose / complete free-mesh landmarks before publishing.'
+	if metadata.get('status')!='reviewed_template': return '发布前请检查 T 形姿势，或补全自由网格的关节标记。'
 
 	var snapshot = scene.duplicate()
 	snapshot.get_node('AnimationPlayer').stop()
@@ -293,5 +293,5 @@ static func stage(scene: Node3D, target: String) -> String:
 	var packed = PackedScene.new()
 	var error = packed.pack(snapshot)
 	snapshot.free()
-	if error!=OK or ResourceSaver.save(packed,target)!=OK: return 'Cannot save scene'
+	if error!=OK or ResourceSaver.save(packed,target)!=OK: return '无法保存场景'
 	return ''

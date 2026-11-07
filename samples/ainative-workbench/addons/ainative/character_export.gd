@@ -13,24 +13,24 @@ static func visible_part(part: Node3D, root: Node3D) -> bool:
 	return false
 
 static func frozen_mesh(part: MeshInstance3D) -> Dictionary:
-	if not part.mesh is ArrayMesh: return {'error':'Compatibility export requires an ArrayMesh: '+str(part.name)}
+	if not part.mesh is ArrayMesh: return {'error':'兼容导出需要 ArrayMesh：'+str(part.name)}
 	var output = ArrayMesh.new()
 	for surface in part.mesh.get_surface_count():
 		if part.mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
-			return {'error':'Only triangle surfaces can be projected'}
+			return {'error':'仅支持投射三角形表面'}
 		var arrays = part.mesh.surface_get_arrays(surface).duplicate(true)
 		var base: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX].duplicate()
 		var vertices = base.duplicate()
 		var shapes = part.mesh.surface_get_blend_shape_arrays(surface)
-		if shapes.size() != part.get_blend_shape_count(): return {'error':'Morph surface count differs'}
+		if shapes.size() != part.get_blend_shape_count(): return {'error':'形变的表面数量不一致'}
 		var normal_base = arrays[Mesh.ARRAY_NORMAL]
 		var normals = normal_base.duplicate() if normal_base != null else null
 		for shape in shapes.size():
 			var weight = part.get_blend_shape_value(shape)
-			if not is_finite(weight): return {'error':'Nonfinite morph weight'}
+			if not is_finite(weight): return {'error':'形变权重包含非有限数值'}
 			if weight == 0: continue
 			var points = shapes[shape][Mesh.ARRAY_VERTEX]
-			if points == null or points.size() != base.size(): return {'error':'Morph topology differs'}
+			if points == null or points.size() != base.size(): return {'error':'形变拓扑不一致'}
 			var normal_shape = shapes[shape][Mesh.ARRAY_NORMAL]
 			var normalized = part.mesh.blend_shape_mode == Mesh.BLEND_SHAPE_MODE_NORMALIZED
 			for vertex in base.size():
@@ -38,10 +38,10 @@ static func frozen_mesh(part: MeshInstance3D) -> Dictionary:
 				if normals != null and normal_shape != null and normal_shape.size() == normals.size():
 					normals[vertex] += (normal_shape[vertex]-normal_base[vertex] if normalized else normal_shape[vertex])*weight
 		for point in vertices:
-			if not point.is_finite(): return {'error':'Nonfinite projected vertex'}
+			if not point.is_finite(): return {'error':'投射后的顶点包含非有限数值'}
 		if normals != null:
 			for vertex in normals.size():
-				if not normals[vertex].is_finite(): return {'error':'Nonfinite projected normal'}
+				if not normals[vertex].is_finite(): return {'error':'投射后的法线包含非有限数值'}
 				normals[vertex] = normals[vertex].normalized()
 		arrays[Mesh.ARRAY_VERTEX] = vertices
 		arrays[Mesh.ARRAY_NORMAL] = normals
@@ -53,18 +53,18 @@ static func frozen_mesh(part: MeshInstance3D) -> Dictionary:
 # The public boundary reloads the frozen publication rather than trusting a
 # mutable live scene paired with the hash of an unrelated saved version.
 static func project(publication_path: String, expected_sha256: String, source: Dictionary, target: Dictionary, final_animation: Animation) -> Dictionary:
-	if expected_sha256.length() != 64 or not expected_sha256.is_valid_hex_number(false): return {'error':'A frozen character publication SHA256 is required'}
+	if expected_sha256.length() != 64 or not expected_sha256.is_valid_hex_number(false): return {'error':'必须提供已冻结角色发布版本的 SHA256'}
 	if publication_path.get_extension().to_lower() != 'tscn' or not FileAccess.file_exists(publication_path) or FileAccess.get_sha256(publication_path) != expected_sha256:
-		return {'error':'Published character missing or changed; save a new version before export'}
+		return {'error':'已发布角色缺失或已改变；导出前请保存新版本'}
 	if final_animation == null or final_animation.get_meta('character_publication_sha256','') != expected_sha256:
-		return {'error':'Final body bake must be produced from this exact published character'}
+		return {'error':'最终身体烘焙必须来自此处完全相同的已发布角色'}
 	var loaded = Interop.load_scene(publication_path)
 	if loaded.has('error'): return loaded
 	var result = _project_loaded(loaded.scene,source,target,final_animation,expected_sha256)
 	loaded.scene.free()
 	if FileAccess.get_sha256(publication_path) != expected_sha256:
 		if result.has('scene'): result.scene.free()
-		return {'error':'Published character changed during export'}
+		return {'error':'导出期间已发布角色发生改变'}
 	return result
 
 # final_animation is sampled from the final body pose, including layers/IK and
@@ -72,40 +72,40 @@ static func project(publication_path: String, expected_sha256: String, source: D
 # a matching hash annotation alone is not proof of final-pose equivalence.
 static func _project_loaded(character: Node3D, source: Dictionary, target: Dictionary, final_animation: Animation, published_sha256: String) -> Dictionary:
 	if target.get('family') not in ['ue4','ue5_manny','mixamo']:
-		return {'error':'First-version compatibility targets are UE4, Manny and Mixamo; Quinn is unvalidated'}
+		return {'error':'首版兼容目标为 UE4、Manny 和 Mixamo；Quinn 尚未验证'}
 	if published_sha256.length() != 64 or not published_sha256.is_valid_hex_number(false):
-		return {'error':'A frozen character publication SHA256 is required'}
+		return {'error':'必须提供已冻结角色发布版本的 SHA256'}
 	for profile in [source,target]:
 		var invalid = Interop.validate(profile)
 		if invalid: return {'error':invalid}
 	var body = Interop.skeleton(character)
-	if body == null or body.get_bone_count() != source.bones.size(): return {'error':'Source profile must include the actual body skeleton and equipment extensions'}
-	if not Interop.node_transform(body).is_equal_approx(Transform3D.IDENTITY): return {'error':'Normalize body skeleton transforms before export'}
+	if body == null or body.get_bone_count() != source.bones.size(): return {'error':'源骨架配置必须包含实际身体骨架和装备扩展'}
+	if not Interop.node_transform(body).is_equal_approx(Transform3D.IDENTITY): return {'error':'导出前请规范化身体骨架变换'}
 	for bone in body.get_bone_count():
 		if str(body.get_bone_name(bone)) != source.bones[bone].name or body.get_bone_parent(bone) != int(source.bones[bone].parent) or not body.get_bone_rest(bone).is_equal_approx(Interop.decode(source.bones[bone].local_rest)):
-			return {'error':'Current skeleton differs from source profile'}
+			return {'error':'当前骨架与源骨架配置不同'}
 	if final_animation == null or not is_finite(final_animation.length) or final_animation.length <= 0:
-		return {'error':'A finite final body animation is required'}
+		return {'error':'必须提供时长为有限数值的最终身体动画'}
 	var captured = {}
 	for track in final_animation.get_track_count():
 		var path = final_animation.track_get_path(track)
 		var kind = final_animation.track_get_type(track)
 		if path.get_subname_count() != 1 or body.find_bone(str(path.get_subname(0))) < 0 or kind not in [Animation.TYPE_POSITION_3D,Animation.TYPE_ROTATION_3D,Animation.TYPE_SCALE_3D] or not final_animation.track_is_enabled(track) or final_animation.track_get_key_count(track) < 2:
-			return {'error':'Final body bake must contain sampled bone TRS tracks only'}
+			return {'error':'最终身体烘焙只能包含已采样的骨骼位移、旋转和缩放轨道'}
 		var key = str(path.get_subname(0))+':'+str(kind)
-		if captured.has(key): return {'error':'Duplicate final body track'}
+		if captured.has(key): return {'error':'最终身体轨道重复'}
 		captured[key] = true
 		var previous_time = -1.0
 		for index in final_animation.track_get_key_count(track):
 			var time = final_animation.track_get_key_time(track,index)
 			var value = final_animation.track_get_key_value(track,index)
 			if not is_finite(time) or time < 0 or time <= previous_time or time > final_animation.length+.00001:
-				return {'error':'Invalid sampled body key times'}
+				return {'error':'身体采样关键帧的时间无效'}
 			previous_time = time
 			if kind == Animation.TYPE_ROTATION_3D:
-				if not value is Quaternion or not value.is_finite() or not is_equal_approx(value.length(),1.0): return {'error':'Invalid sampled body rotation'}
-			elif not value is Vector3 or not value.is_finite(): return {'error':'Invalid sampled body vector'}
-	if captured.size() != body.get_bone_count()*3: return {'error':'Final bake must cover every current body bone'}
+				if not value is Quaternion or not value.is_finite() or not is_equal_approx(value.length(),1.0): return {'error':'身体采样旋转无效'}
+			elif not value is Vector3 or not value.is_finite(): return {'error':'身体采样向量无效'}
+	if captured.size() != body.get_bone_count()*3: return {'error':'最终烘焙必须覆盖当前身体的全部骨骼'}
 	var projection = Node3D.new()
 	projection.name = 'CompatibilitySource'
 	var projected_skeleton = Interop.make_skeleton(source)
@@ -115,7 +115,7 @@ static func _project_loaded(character: Node3D, source: Dictionary, target: Dicti
 		'published_character_sha256':published_sha256,'source_profile_revision':source.revision,
 		'target_profile_revision':target.revision,'target_family':target.family,
 		'included':[],'excluded':[],
-		'static_morph_policy':'Current body/face morph values baked into rest geometry; editable morph channels and facial animation excluded',
+		'static_morph_policy':'当前身体和面部形变值已烘焙到静止几何；不包含可编辑形变通道和面部动画',
 		'excluded_runtime':['character_editing','face_animation','weapon_attachment','cloth_simulation_and_cache','hair_guides_and_dynamics'],
 		'compatibility':'target_bound; external roundtrip evidence required'
 	}
@@ -123,27 +123,27 @@ static func _project_loaded(character: Node3D, source: Dictionary, target: Dicti
 	# not exist yet on this non-running frozen instance, so name the geometry
 	# omission explicitly rather than reporting only lost simulation settings.
 	if character.has_node('ClothSolver'):
-		report.excluded.append({'part':'ClothSolver/SimulatedClothRender','reason':'Runtime-generated cloth surface geometry and cache are excluded; any retained main-Skin waist is listed separately'})
+		report.excluded.append({'part':'ClothSolver/SimulatedClothRender','reason':'不包含运行时生成的布料表面几何和缓存；保留的主蒙皮腰部将单独列出'})
 	if character.has_node('IndependentHair'):
-		report.excluded.append({'part':'IndependentHair','reason':'Independent hair geometry, scalp cap and guide dynamics are excluded from this body compatibility projection'})
+		report.excluded.append({'part':'IndependentHair','reason':'此身体兼容投射不包含独立头发几何、头皮盖和引导线动力学'})
 	for part in character.find_children('*','MeshInstance3D',true,false):
 		var label = str(character.get_path_to(part))
 		if not visible_part(part,character):
-			report.excluded.append({'part':label,'reason':'hidden geometry'})
+			report.excluded.append({'part':label,'reason':'已隐藏的几何'})
 			continue
 		if part.skin == null:
-			report.excluded.append({'part':label,'reason':'no body Skin; rigid props and runtime surfaces are not projected'})
+			report.excluded.append({'part':label,'reason':'没有身体蒙皮；不投射刚性道具和运行时表面'})
 			continue
 		var actual_skeleton = part.get_node_or_null(part.skeleton)
 		if actual_skeleton == null:
 			projection.free()
-			return {'error':'Unresolved Skin skeleton: '+label}
+			return {'error':'无法解析蒙皮骨架：'+label}
 		if actual_skeleton != body:
-			report.excluded.append({'part':label,'reason':'independent auxiliary skeleton; never interpret its indices as body bones'})
+			report.excluded.append({'part':label,'reason':'独立辅助骨架；其索引不能作为身体骨骼索引解释'})
 			continue
 		if not Interop.node_transform(part).is_equal_approx(Transform3D.IDENTITY):
 			projection.free()
-			return {'error':'Normalize skinned mesh transforms before projection: '+label}
+			return {'error':'投射前请规范化蒙皮网格变换：'+label}
 		var frozen = frozen_mesh(part)
 		if frozen.has('error'):
 			projection.free()
