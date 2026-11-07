@@ -1,0 +1,76 @@
+{
+  "request_id": "daqian-direct-9196000e1a2d3352e6a1",
+  "issue_number": 494,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+  "recorded_at": "2026-11-07T18:24:27.219504+00:00",
+  "path_base": "repository_root",
+  "state": "local_checks_passed_pending_independent_review_and_delivery",
+  "source_base": "4bae490b4284cb2bf23beb7c16a1ac8ed1e12c7a",
+  "files": {
+    "editor/icons/StarryNight.svg": "0420ef9ec0102cb984f94a91b5bac6b7f61a2cc6443d8d5da6d3557b5828421c",
+    "editor/docks/daqian_dock.cpp": "94681464d350a03bdc616e97ffdf0632be7923d7beff631f891cd495d857b300"
+  },
+  "checks": {
+    "svg_xml_and_16px_viewbox": "passed",
+    "svgo": "passed: SVGO 4.0.1 with repository misc/utility/svgo.config.mjs; normalized SVG rerendered and regenerated",
+    "git_diff_check": "passed",
+    "entry_call_chain": "editor/editor_node.cpp:9589 adds create_daqian_dock(); editor/docks/daqian_dock.cpp sets 天枢 title, DaqianMainScreen key and StarryNight icon",
+    "native_editor_icon_builder": "passed: actual make_editor_icons_action executed across all editor/icons/*.svg",
+    "tianshu_entry_reference": "passed: create_daqian_dock title 天枢 uses StarryNight",
+    "theme_palette": "passed: all SVG colors absent from EditorColorMap remapping keys",
+    "rasterization": [
+      {
+        "size": 16,
+        "svg_rasterized": true,
+        "theme_background": "292d3eff"
+      },
+      {
+        "size": 24,
+        "svg_rasterized": true,
+        "theme_background": "292d3eff"
+      },
+      {
+        "size": 32,
+        "svg_rasterized": true,
+        "theme_background": "292d3eff"
+      },
+      {
+        "size": 48,
+        "svg_rasterized": true,
+        "theme_background": "292d3eff"
+      },
+      {
+        "size": 16,
+        "svg_rasterized": true,
+        "theme_background": "e0e0e0ff"
+      },
+      {
+        "size": 24,
+        "svg_rasterized": true,
+        "theme_background": "e0e0e0ff"
+      },
+      {
+        "size": 32,
+        "svg_rasterized": true,
+        "theme_background": "e0e0e0ff"
+      },
+      {
+        "size": 48,
+        "svg_rasterized": true,
+        "theme_background": "e0e0e0ff"
+      }
+    ],
+    "preview_visual_review": "passed: crescent, yellow stars, blue sky swirl, outlined cypress visible at 16/24/32/48px on dark/light backgrounds"
+  },
+  "tool": {
+    "name": "Godot",
+    "version": "4.8.beta.custom_build.4bae490b4",
+    "mode": "--headless --path work/issue494 --script render.gd"
+  },
+  "preview": "data-collection/issue494-starry-night-preview.png",
+  "limits": [
+    "Existing executable used only as SVG renderer; native editor not rebuilt.",
+    "C++ entry reference and generated icon registration checked from candidate source, not a running rebuilt editor.",
+    "Remote delivery and original Issue business acceptance remain with parent publisher."
+  ]
+}

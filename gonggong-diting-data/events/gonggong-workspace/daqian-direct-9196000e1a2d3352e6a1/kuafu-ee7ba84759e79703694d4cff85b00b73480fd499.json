@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ee7ba84759e79703694d4cff85b00b73480fd499",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-9196000e1a2d3352e6a1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2bb76092f7e1d0f91d7b9cff941c43b8707570e3b13eb7798b947d0ea2e4ac10",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/499",
+    "action": "dispatch",
+    "detection_head": "4bae490b4284cb2bf23beb7c16a1ac8ed1e12c7a",
+    "context_sha256": "6cc4b4db2a4bf397e12214831b3f722df17bc6a7578c55b91871b80296631ffd",
+    "operator": "Sail-Li",
+    "worker": "codex/root",
+    "authority_ref": "user-chat-20261108-continue-Sail-Li-open-issues",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+    "diagnosis": "Both implementation and read-only reviewer reached actual native completed callbacks. Host terminal verification released both original reservations. Dispatch events recorded and staged. No pending worker remains; reconcile request list now empty.",
+    "next_action": "Verify formal submission, committed Diting events and main readback, then close recovered report tracker.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:13:52.788200+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:31:42.465151+00:00",
+  "sha256": "8b00b2012e87d28bc30becb2def7b1971b0a84b80749c7aa70a16867a38da691"
+}
