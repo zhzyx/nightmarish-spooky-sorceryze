@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-00d021250e3828f0ca364e2040cc071f21b8e256",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f1349f25c4752f3f4fb0a28627290f4f21d6cbc22390bbf6e67db9097d55a843",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "action": "delivery",
+    "detection_head": "98fe83d3f258d5b000a0384a475480cc26747c1d",
+    "context_sha256": "e72ded64f12e7219386b787e6caf55928645d5a4d4887e3b1f4715e8f7e0969a",
+    "operator": "Sail-Li",
+    "worker": "codex-511-text",
+    "authority_ref": "user-request",
+    "evidence": "Git transport exited 128 during fresh upstream read. Read-back found no new signed branch or PR. Authenticated ls-remote subsequently returned ab24a0be.",
+    "diagnosis": "Transient Git HTTPS connection failure during the new signature attempt; no new publication was observed.",
+    "next_action": "Retry the authenticated submit command after canonical main readback and check the new signed head.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T21:36:18.748220+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T21:37:55.742776+00:00",
+  "sha256": "ac95b3122a051bba59de5ec453ef7ab96d03d8646f97611a5f31d189492f274f"
+}

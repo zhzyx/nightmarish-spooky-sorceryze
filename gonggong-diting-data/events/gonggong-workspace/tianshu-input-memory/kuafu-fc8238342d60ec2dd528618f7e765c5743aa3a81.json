@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fc8238342d60ec2dd528618f7e765c5743aa3a81",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "550a56d787c0809ec50c1943fbf84cb85178066522590ccf7a9474228f5b0040",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "action": "validation",
+    "detection_head": "d4e1d8a34a02562849c9eb765c44ed8b5bd3634e",
+    "context_sha256": "e72ded64f12e7219386b787e6caf55928645d5a4d4887e3b1f4715e8f7e0969a",
+    "operator": "Sail-Li",
+    "worker": "codex-511-text",
+    "authority_ref": "user-request",
+    "evidence": "issue_gate: Collection source/receipt must be staged with current bytes; git ls-files --eol showed i/lf w/crlf.",
+    "diagnosis": "Windows evidence file had CRLF before Git normalized the index to LF.",
+    "next_action": "Restored the staged LF bytes and rerunning the same formal gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T21:16:00.444277+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T21:17:12.148797+00:00",
+  "sha256": "748119271022220260ef3944251919c92c22b82f7d1333f7f8f65c6d8bae74a0"
+}

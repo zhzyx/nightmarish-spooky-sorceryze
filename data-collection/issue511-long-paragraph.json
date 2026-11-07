@@ -1,0 +1,164 @@
+{
+  "issue_number": 511,
+  "request_id": "tianshu-input-memory",
+  "design": "design-docs/tianshu-input-memory.md",
+  "scope": "Typing into the existing task graph's PlanContent TextEdit. This is an isolated reproduction of long-paragraph latency. The user's original whole-machine memory exhaustion has no reproduction receipt here.",
+  "protocol": {
+    "project": "Private copy of samples/gonggong-workbench on a noninteractive Win32 desktop, real Windows editor, authenticated fixture board containing 144 synthetic issues.",
+    "limits": "1600 MiB process-tree Job Object limit, 110 s per editor. Clipboard and live user desktop unused.",
+    "measurement": "Editors ran sequentially. Each case used a fresh graph task, 215 px field width, at zoom 1 and 14 px font. Twelve Chinese key events passed through the viewport, one per process frame. Input time covers push_input through return; frame intervals include drawing and scheduling. Measurements are samples, not latency guarantees.",
+    "samples": {
+      "short": "普通任务说明，添加文字。",
+      "lines": "108 repetitions of a 100-character Chinese line and newline, then 92 Chinese characters (11,000 code points including newlines).",
+      "one": "需求说明 repeated 2750 times (11,000 consecutive Chinese characters).",
+      "ascii": "11,000 ASCII characters including spaces.",
+      "mixed": "English/Chinese/Hebrew/Arabic/emoji, 70 repetitions."
+    },
+    "sustained": "Synthetic 30 insertions per batch, with a frame between batches. Start with the same 11,000-character unbroken Chinese task, stop after 3,000 appended characters or 35 s. None of the measured runs exhausted memory. This stress loop differs from natural keyboard timing.",
+    "comparison": "The matched baseline and matched candidate share e5ed0be0 apart from the text measurement change; installed_before and integrated_candidate include the #526 task-card layout."
+  },
+  "runs": {
+    "installed_before": {
+      "executable_sha256": "9679260c88bdd9272b0d646e730e4012c0723486db75b9be0c6163dd8de82032",
+      "graphics": {
+        "default_fit": true,
+        "dpi": 96,
+        "font": 14,
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "renderer": "opengl3",
+        "zoom": 1.0
+      },
+      "peak_process_private_bytes": 1092706304,
+      "peak_tree_commit_bytes": 1114976256,
+      "sample_columns": ["median_key_ms", "max_key_ms", "max_frame_ms", "static_delta_bytes"],
+      "cases": {
+        "ascii-fit": [27.896, 28.793, 76.547, 354182],
+        "ascii-scroll": [27.773, 28.942, 52.232, 434506],
+        "lines-fit": [0.308, 0.396, 20.066, 156596],
+        "lines-scroll": [0.31, 0.413, 7.556, 214126],
+        "mixed-fit": [3.881, 4.721, 8.654, 49982],
+        "mixed-scroll": [3.754, 4.43, 8.249, 58726],
+        "one-fit": [80.814, 82.242, 222.791, 679218],
+        "one-scroll": [93.226, 94.382, 171.126, 759102],
+        "short-fit": [0.259, 0.405, 7.535, 8182],
+        "short-scroll": [0.258, 0.296, 8.52, 11190]
+      },
+      "unbroken_chinese_scroll_key_ms": [93.805, 94.325, 92.132, 93.457, 92.995, 91.368, 94.382, 93.949, 91.572, 91.724, 91.456, 93.851],
+      "sustained": {
+        "appended": 396,
+        "correct": true,
+        "elapsed_ms": 35113,
+        "max_batch_ms": 2581.738,
+        "target": 3000,
+        "time_budget_ms": 35000
+      }
+    },
+    "matched_baseline": {
+      "executable_sha256": "4f891c36dd251faa7bb61abbc93a0030a50887ecc7d5eabdce7cf2d943fc6f64",
+      "graphics": {
+        "default_fit": false,
+        "dpi": 96,
+        "font": 14,
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "renderer": "opengl3",
+        "zoom": 1.0
+      },
+      "peak_process_private_bytes": 1079504896,
+      "peak_tree_commit_bytes": 1101946880,
+      "sample_columns": ["median_key_ms", "max_key_ms", "max_frame_ms", "static_delta_bytes"],
+      "cases": {
+        "ascii-fit": [27.474, 29.506, 74.264, 354182],
+        "ascii-scroll": [27.563, 29.152, 51.526, 434506],
+        "lines-fit": [0.307, 0.4, 19.985, 156692],
+        "lines-scroll": [0.309, 0.395, 7.643, 214054],
+        "mixed-fit": [3.695, 4.134, 7.97, 49982],
+        "mixed-scroll": [3.715, 4.07, 7.891, 58726],
+        "one-fit": [80.911, 83.937, 222.149, 679218],
+        "one-scroll": [94.336, 102.753, 178.202, 759102],
+        "short-fit": [0.282, 0.389, 7.633, 8182],
+        "short-scroll": [0.255, 0.305, 8.609, 11190]
+      },
+      "unbroken_chinese_scroll_key_ms": [90.72, 93.495, 94.258, 95.38, 96.497, 94.414, 102.753, 92.37, 91.629, 91.821, 94.541, 97.267],
+      "sustained": {
+        "appended": 359,
+        "correct": true,
+        "elapsed_ms": 35156,
+        "max_batch_ms": 3038.953,
+        "target": 3000,
+        "time_budget_ms": 35000
+      }
+    },
+    "matched_candidate": {
+      "executable_sha256": "e1c132be36574c9717a8b4be30605431949bfa88bb58853f1b37d9711e65f2c4",
+      "graphics": {
+        "default_fit": false,
+        "dpi": 96,
+        "font": 14,
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "renderer": "opengl3",
+        "zoom": 1.0
+      },
+      "peak_process_private_bytes": 1089359872,
+      "peak_tree_commit_bytes": 1112600576,
+      "sample_columns": ["median_key_ms", "max_key_ms", "max_frame_ms", "static_delta_bytes"],
+      "cases": {
+        "ascii-fit": [8.252, 8.972, 35.765, 354182],
+        "ascii-scroll": [8.193, 9.036, 21.943, 434506],
+        "lines-fit": [0.296, 0.417, 20.187, 156692],
+        "lines-scroll": [0.283, 0.522, 9.047, 214054],
+        "mixed-fit": [3.372, 3.725, 8.434, 49982],
+        "mixed-scroll": [3.284, 3.45, 7.504, 58726],
+        "one-fit": [23.734, 25.75, 104.994, 679218],
+        "one-scroll": [23.453, 25.821, 64.344, 759102],
+        "short-fit": [0.269, 0.403, 8.118, 8182],
+        "short-scroll": [0.243, 0.295, 7.655, 11190]
+      },
+      "unbroken_chinese_scroll_key_ms": [24.107, 23.845, 24.041, 21.401, 22.894, 23.098, 22.578, 22.636, 23.872, 23.533, 23.373, 25.821],
+      "sustained": {
+        "appended": 1253,
+        "correct": true,
+        "elapsed_ms": 35066,
+        "max_batch_ms": 897.001,
+        "target": 3000,
+        "time_budget_ms": 35000
+      }
+    },
+    "integrated_candidate": {
+      "executable_sha256": "546c2b5c334aecc8ca1f1ffd19c844fdd2007ba4f4eeb183348155ff1df2fdec",
+      "graphics": {
+        "default_fit": true,
+        "dpi": 96,
+        "font": 14,
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "renderer": "opengl3",
+        "zoom": 1.0
+      },
+      "peak_process_private_bytes": 1088897024,
+      "peak_tree_commit_bytes": 1110114304,
+      "sample_columns": ["median_key_ms", "max_key_ms", "max_frame_ms", "static_delta_bytes"],
+      "cases": {
+        "ascii-fit": [8.013, 8.694, 36.813, 354182],
+        "ascii-scroll": [8.348, 8.972, 23.123, 434506],
+        "lines-fit": [0.303, 0.393, 20.105, 156596],
+        "lines-scroll": [0.291, 0.426, 7.75, 214126],
+        "mixed-fit": [3.318, 3.441, 7.948, 49982],
+        "mixed-scroll": [3.449, 4.563, 9.533, 58726],
+        "one-fit": [23.947, 28.642, 113.198, 679218],
+        "one-scroll": [25.14, 26.998, 68.75, 759102],
+        "short-fit": [0.253, 0.323, 7.523, 8182],
+        "short-scroll": [0.279, 0.499, 8.038, 11190]
+      },
+      "unbroken_chinese_scroll_key_ms": [22.789, 24.202, 24.511, 24.944, 24.189, 26.559, 25.817, 24.776, 26.718, 26.038, 26.998, 25.336],
+      "sustained": {
+        "appended": 1288,
+        "correct": true,
+        "elapsed_ms": 35120,
+        "max_batch_ms": 850.461,
+        "target": 3000,
+        "time_budget_ms": 35000
+      }
+    }
+  },
+  "verified_layout": "All ten cases in each matched pair preserved the full wrapped-string SHA-256, line counts, caret, dimensions, focus, and final text.",
+  "native_tests": "Windows [SceneTree][TextEdit], 13 cases and 4220 assertions passed"
+}
