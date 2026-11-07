@@ -55,17 +55,64 @@ func run():
 	await panel._start_or_view_direct(binding)
 	check(graph.canvas.has_node("wf-analysis") and graph.canvas.has_node("wf-routing") and not graph.canvas.has_node("wf-prepare"), "Delegation missing or awaiting answer already runnable")
 	check(panel.publish_button.text == "补充需求", "Missing bound clarification action")
+	await panel._respond_to_wait()
+	var card := graph.canvas.get_node("wf-clarification") as GraphNode
+	var inline := card.get_node("AnswerInput") as TextEdit
+	check(inline.visible and not panel.clarification_dialog.visible, "Clarification action did not open the graph editor")
+	inline.insert_text_at_caret("  The current")
+	await process_frame
+	card.get_node("AnswerActions/CancelAnswer").pressed.emit()
+	check(not inline.visible and not panel.clarification_dialog.visible, "Cancel left the inline editor open")
+	card.get_node("FillAnswer").pressed.emit()
+	check(inline.visible and inline.text == "  The current", "Reopening the same question lost its draft")
+	graph.draw_graph()
+	await panel._respond_to_wait()
+	card = graph.canvas.get_node("wf-clarification")
+	inline = card.get_node("AnswerInput")
+	check(inline.text == "  The current", "A graph redraw lost the current answer")
+	# Exercise the fallback separately from the normal graph interaction.
+	var many := []
+	for i in 20:
+		many.append("问题 %d：" % i + "请说明需要实现的目标与验收方式。".repeat(12))
+	panel._open_clarification(binding, many)
+	for i in 4:
+		await process_frame
+	var dialog: ConfirmationDialog = panel.clarification_dialog
+	check(panel.get_mouse_filter_with_override() == Control.MOUSE_FILTER_IGNORE and panel.clarification_answer.get_mouse_filter_with_override() != Control.MOUSE_FILTER_IGNORE, "Modal hover reached the workspace or disabled its answer field")
+	var previous_zoom: float = graph.canvas.zoom
+	graph.canvas.zoom = panel.ZOOM_TO_PARENT
+	panel._check_canvas_zoom()
+	check(panel.current == source, "Background zoom left the draft while its modal was open")
+	graph.canvas.zoom = previous_zoom
+	var viewport_rect := Rect2(Vector2.ZERO, Vector2(dialog.size))
+	var scrollbar: VScrollBar = panel.clarification_scroll.get_v_scroll_bar()
+	check(scrollbar.max_value > scrollbar.page and viewport_rect.encloses(dialog.get_ok_button().get_global_rect()) and viewport_rect.encloses(dialog.get_cancel_button().get_global_rect()), "Long clarification questions pushed dialog actions offscreen")
+	panel.clarification_answer.text = "待补充的草稿"
+	dialog.get_cancel_button().pressed.emit()
+	await process_frame
+	panel._open_clarification(binding, many)
+	check(not dialog.get_ok_button().disabled and panel.clarification_answer.text == "待补充的草稿", "Cancel lost the unsent answer")
+	dialog.notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	await process_frame
+	check(not dialog.visible, "Title-bar close did not dismiss clarification")
+	check(panel.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED, "Closing the modal left workspace controls disabled")
 	await panel._start_or_view_direct(binding)
-	check(panel.clarification_dialog.visible and panel.clarification_prompt.text == "Which target?", "Actual question not presented")
-	panel.clarification_answer.text = "The current target"
-	panel.clarification_answer.text_changed.emit()
-	panel.clarification_dialog.get_ok_button().pressed.emit()
+	check(not dialog.visible and inline.visible and inline.text == "  The current", "Toolbar did not return to the same inline draft")
+	inline.text = "  The current target  "
+	inline.text_changed.emit()
+	card.get_node("AnswerActions/SubmitAnswer").pressed.emit()
+	panel._submit_inline_answer("The current target") # Race a second click against the same in-flight judgment.
 	var deadline := Time.get_ticks_msec() + 10000
 	while panel.publish_button.text != "用当前模型重试判断" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
-	check(panel.publish_button.text == "用当前模型重试判断", "Failed processing of accepted answer left stale question cached")
+	check(panel.publish_button.text == "用当前模型重试判断" and graph.workflow.clarification_history.is_empty(), "Failed answer was represented as completed")
 	await panel._start_or_view_direct(binding)
 	check(graph.canvas.has_node("wf-prepare") and graph.canvas.has_node("wf-verify"), "Answered requirement did not become ready")
+	var expected_history := [{"questions":["Which target?"], "answer":"The current target"}]
+	check(graph.workflow.clarification_history == expected_history, "Verified retry did not recover the answered question")
+	var other_revision := binding.duplicate()
+	other_revision.revision = "another-revision"
+	check(panel._confirmed_clarifications(other_revision, {}).is_empty(), "A different requirement revision inherited the answer")
 	var records := FileAccess.get_file_as_string(calls).strip_edges().split("\n")
 	var actions := []
 	for line in records:
@@ -83,6 +130,7 @@ func run():
 	panel._show_board()
 	panel._show_issue(source, {"revision":"", "plan":graph.rules.new_plan(), "context":{}})
 	check(graph.draft.nodes.has(custom) and graph.canvas.has_node("wf-analysis") and graph.canvas.has_node("wf-routing"), "Reopening lost personal nodes or real framework decision")
+	check(graph.workflow.clarification_history == expected_history, "Reopening the draft lost its confirmed answer")
 	if errors.is_empty():
 		print("DAQIAN_PUBLISH_OK")
 	quit(0 if errors.is_empty() else 1)

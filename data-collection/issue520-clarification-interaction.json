@@ -1,0 +1,101 @@
+{
+  "issue_number": 520,
+  "request_id": "tianshu-routing-stage",
+  "design": "design-docs/tianshu-routing-stage.md",
+  "original_issue": 518,
+  "live_route": {
+    "start_local": "2026-11-08 03:33:25",
+    "sinan_received_and_yanshi_started_local": "2026-11-08 03:35:40",
+    "terminal_local": "2026-11-08 03:37:49",
+    "timezone": "Asia/Shanghai",
+    "ready": false,
+    "questions_count": 1,
+    "editor_cache_received": true
+  },
+  "clarification_window": {
+    "platform": "Windows OpenGL, private desktop",
+    "original_question_characters": 113,
+    "work_area": [
+      0.0,
+      0.0,
+      2560.0,
+      1392.0
+    ],
+    "old_outer": [
+      1032.0,
+      -31.0,
+      1528.0,
+      2741.0
+    ],
+    "new_outer": [
+      932.0,
+      450.0,
+      1628.0,
+      919.0
+    ],
+    "old_actions_visible": false,
+    "new_actions_visible": true,
+    "escape_closes": true
+  },
+  "modal_events": {
+    "probe": "native Windows hit test and isolated viewport regression",
+    "background_click_through_reproduced": false,
+    "verified_background_paths": [
+      "hover",
+      "zoom navigation",
+      "file drop"
+    ]
+  },
+  "live_issue_submission_during_probes": false,
+  "inline_editor": {
+    "entry": "Highlighted answer card / local toolbar action",
+    "verified": [
+      "native question-to-input connections",
+      "click to focus",
+      "typing, backspace and cancel without submitting a live issue",
+      "draft and caret survive same-question redraw",
+      "confirmed answer branches to two parallel tasks",
+      "stale binding/failed answer not admitted"
+    ],
+    "additional_native_windows": 0,
+    "repetitions": 3,
+    "all_opened_and_focused": true,
+    "new_native_windows": 0,
+    "max_frame_ms": [
+      9.3,
+      10.32,
+      9.5
+    ],
+    "synthetic_parallel_tasks_verified": 2
+  },
+  "font_comparison": {
+    "renderer": "OpenGL3",
+    "dpi": 96,
+    "font_size": 14,
+    "scales": [
+      0.85,
+      1.0,
+      1.2
+    ],
+    "unit_scale_graph_pixels_match_baseline": true,
+    "toolbar_pixels_match_baseline_at_all_scales": true,
+    "fractional_scales_have_distinct_glyph_rasters": true,
+    "actual_glyph_sampling_levels": [
+      0.84375,
+      1,
+      1.1875
+    ],
+    "stable_p95_ms": [
+      8.46,
+      8.21,
+      8.05
+    ],
+    "cold_scale_change_extra_ms": [
+      5,
+      8
+    ],
+    "thread_group_regression": "passed",
+    "note": "At 85% 14px source glyphs occupy about 12px on this 96 DPI screen. Some strokes remain soft."
+  },
+  "editor_sha256": "c0771fdf8ceb8b8a9ca153d56814592f9697e02ca57f286c9f1ccc98832c21dd"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2b0e181cd34b51e71c122f671d274ef2532cb23d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-routing-stage",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/520",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "56fb42489e3d1576580c08e43ca537628b3e88a1ec95290397b6dbdd94faad1c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/520",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/520",
+    "action": "user-report",
+    "detection_head": "30fa482e39c5e18e2966b5f5c94916da97a07fde",
+    "context_sha256": "1c612b99e120073c3d09c7bfe1194836ab0e4119eebc0c772c78b96d43b0e0df",
+    "operator": "Sail-Li",
+    "worker": "codex-520",
+    "authority_ref": "user-request",
+    "evidence": "Live modal owned by editor PID 132240: rect (1032,-31)-(1528,2741). Only the clarification modal was dismissed. Parent remained enabled and responsive. Existing #518 journal contains one question; Sinan and Yanshi both returned.",
+    "diagnosis": "Unbounded wrapped label imposes excessive minimum dialog height, preventing access to window title and buttons. In-flight card lacks a reliable local handoff indicator.",
+    "next_action": "Bound clarification content inside a scroll area, verify controls in real graphical editor at multiple sizes, and verify intermediate progress from the existing receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T19:42:39.433740+00:00",
+    "attempted": null,
+    "repair_owner": "codex-520",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T19:45:43.749007+00:00",
+  "sha256": "a2e4676935078848154dfa328328c744dc471232fd523565b3f05d5042c3cf28"
+}

@@ -413,7 +413,12 @@ def route(root, request, bridge):
         state["candidates"] = candidates
         state["result"] = {**result, "ready": not result["questions"]}
         requirements_agent.save(journal, state)
-        return {"ok": True, **{k: binding[k] for k in ("number", "request_id", "url", "revision")}, **state["result"]}
+        return {
+            "ok": True,
+            **{k: binding[k] for k in ("number", "request_id", "url", "revision")},
+            **state["result"],
+            "clarification_history": state["answers"],
+        }
 
 
 def registered_candidates(root, route):

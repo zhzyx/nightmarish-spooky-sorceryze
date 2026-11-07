@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-routing-stage-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-routing-stage",
+  "kind": "request",
+  "occurred_at": "2026-11-07T19:46:43.726047+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/520",
+  "agent": {
+    "id": "codex-520",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Fix offscreen clarification dialog and stale routing stage",
+    "design_document": "design-docs/tianshu-routing-stage.md"
+  },
+  "evidence_refs": [],
+  "sha256": "6dc7fbb56999cd71bb0979eb4539f39608b11e9cbf83564625952ccb3096ed25"
+}

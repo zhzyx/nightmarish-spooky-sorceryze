@@ -182,6 +182,8 @@ elif action == 'issue-route':
     reply = dict(ok=True, number=124, url=url, revision='fixture-revision', request_id=request['request_id'],
                  route='sinan' if direct else 'yanshi', reason='fixture content judgment', scope=['Implement'],
                  acceptance=['Verify'], questions=[] if ready else ['Which target?'], ready=ready)
+    if not direct:
+        reply['clarification_history'] = [dict(questions=['Which target?'], answer='The current target')] if earlier_answer else []
     if not direct and (request.get('answer') or not any(json.loads(line)[0] == 'issue-route' for line in previous)):
         reply = dict(ok=False, error='fixture model unavailable')
 elif action == 'issue-start':

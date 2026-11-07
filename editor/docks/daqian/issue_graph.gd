@@ -2,6 +2,8 @@
 extends VBoxContainer
 
 signal workflow_reply_requested
+signal clarification_draft_changed(text: String)
+signal clarification_submitted(text: String)
 signal answer_requested(node_id: String, answer: String)
 signal debug_command(action: String, id: String, value: String)
 signal confirm_operation(token: String)
@@ -15,6 +17,7 @@ const DATA := Color("#64c6e8")
 const AFTER := Color("#eecb86")
 
 var workflow := {}
+var clarification_draft := ""
 var expanded_approval := ""
 var debug_active := false
 var debug_states := {}
@@ -52,7 +55,7 @@ class FlowCanvas extends GraphEdit:
 	const COLORS := {"pending": Color("#8290a5"), "running": Color("#45c9ff"),
 		"done": Color("#69d5a3"), "waiting": Color("#efbf70"), "failed": Color("#f18e87"),
 		"cancelled": Color("#ad9bb5"), "unknown": Color("#a5a6b3")}
-	const LABELS := {"awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
+	const LABELS := {"awaiting_answer":"待你答复", "open_question":"待确认", "awaiting_approval":"待你确认", "unknown":"执行结果待核实", "pending":"待制作", "running":"运行中", "done":"已完成", "planned":"待制作",
 		"open":"待制作", "in-progress":"进行中", "in-review":"待验收", "completed":"已完成",
 		"dispatched":"已派发", "reserved":"已预留", "waiting":"等待输入或证据", "answered":"已答复",
 		"needs-decision":"待决策", "failed":"失败", "blocked":"已阻塞", "cancelled":"已取消",
@@ -71,11 +74,15 @@ void fragment() {
 	var materials := {}
 	var lines := {}
 
+	func _init() -> void:
+		# GraphEdit scales its cards; rasterize their glyphs at the resulting viewport scale.
+		oversampling_with_scale = CanvasItem.OVERSAMPLING_WITH_SCALE_ENABLED
+
 	static func category(state: String) -> String:
 		match state:
 			"running", "in-progress": return "running"
 			"done", "completed", "answered": return "done"
-			"awaiting_approval", "reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
+			"open_question", "awaiting_answer", "awaiting_approval", "reserved", "dispatched", "stopping", "waiting", "needs-decision", "in-review", "reconcile_required": return "waiting"
 			"blocked", "failed": return "failed"
 			"cancelled", "closed": return "cancelled"
 			"planned", "pending", "open": return "pending"
@@ -121,6 +128,9 @@ void fragment() {
 				box.bg_color = surface.lerp(color, 0.12 if style.begins_with("titlebar") else 0.045)
 				box.border_color = get_theme_color("accent_color", "Editor") if selected else surface.lerp(color, 0.28)
 				box.set_border_width_all(roundi((2 if selected else 1) * get_theme_default_base_scale()))
+				if state == "awaiting_answer":
+					box.border_color = color
+					box.set_border_width_all(maxi(2, roundi(3 * get_theme_default_base_scale())))
 				view.add_theme_stylebox_override(style, box)
 
 
@@ -512,6 +522,13 @@ func _add_state_row(view: GraphNode) -> void:
 
 
 func _node_state(id: String) -> String:
+	if id == "wf-clarification":
+		return "awaiting_answer"
+	if id.begins_with("wf-clarification-answer-"):
+		return "answered"
+	if id.begins_with("wf-clarification-question-"):
+		var current_round: int = workflow.get("clarification_history", []).size()
+		return "open_question" if id.begins_with("wf-clarification-question-%d-" % current_round) else "completed"
 	if id == "wf-operation":
 		return workflow.get("operation", {}).get("state", "pending")
 	if debug_active:
@@ -528,13 +545,15 @@ func _node_state(id: String) -> String:
 		"requirement", "wf-workorder":
 			return "completed" if phase != "draft" or issue_id.begins_with("https://") else "pending"
 		"wf-routing":
+			if workflow.get("routing_stage") == "yanshi": return "completed"
 			if workflow.get("judging", false): return "running"
 			if not workflow.get("routing", {}).is_empty(): return "completed"
 		"wf-analysis":
-			if phase == "analyzing": return "running"
+			if phase == "analyzing" or workflow.get("routing_stage") == "yanshi": return "running"
 			if phase in ["questions", "submitted", "waiting_environment"]: return "waiting"
 			if phase == "error": return "failed"
 			if phase == "cancelled": return "cancelled"
+			if not workflow.get("clarification_history", []).is_empty(): return "completed"
 			if workflow.get("analyzed", false) or workflow.get("routing", {}).get("ready", false): return "completed"
 		"wf-blocked": return "blocked"
 	return "pending"
@@ -629,9 +648,22 @@ func _stage(plan: Dictionary, id: String, title: String, value: String, upstream
 
 
 func _stage_edge(plan: Dictionary, source: String, target: String) -> void:
+	if not plan.nodes.has(source) or not plan.nodes.has(target):
+		return
 	var link := {"from":source, "to":target, "kind":"after"}
 	if link not in plan.edges:
 		plan.edges.append(link)
+
+
+func _clarification_round(plan: Dictionary, upstream: String, index: int, questions: Array, answer: String) -> String:
+	var answered := not answer.is_empty()
+	var destination := "wf-clarification-answer-%d" % index if answered else "wf-clarification"
+	_stage(plan, destination, "需求答复" if answered else "填写答复", answer if answered else "", "")
+	for i in questions.size():
+		var id := "wf-clarification-question-%d-%d" % [index, i]
+		_stage(plan, id, "偃师提问", questions[i], upstream)
+		_stage_edge(plan, id, destination)
+	return destination
 
 
 func _display_plan() -> Dictionary:
@@ -643,18 +675,35 @@ func _display_plan() -> Dictionary:
 		"questions":"等待答复", "ready":"分析完成，需求已就绪", "error":"处理受阻，请查看关联对话",
 		"cancelled":"已停止", "waiting_environment":"等待本地环境配置", "bound":"已关联工单",
 		"blocked":"关联工单受阻", "closed":"关联工单已关闭"}
-	var intake := "wf-analysis" if workflow.get("analyzed", false) else "wf-workorder"
+	var intake := "wf-analysis" if workflow.get("analyzed", false) and not workflow.get("direct", false) else "wf-workorder"
 	if intake == "wf-analysis":
 		_stage(plan, intake, "偃师 · 需求分析", labels.get(phase, "等待分析回执"), "requirement")
 	else:
 		_stage(plan, intake, "工单登记", "等待确认创建" if phase == "draft" else "已关联工单", "requirement")
 	if workflow.get("direct", false) and phase != "draft":
 		var decision: Dictionary = workflow.get("routing", {})
-		_stage(plan, "wf-routing", "司南 · 需求判断", decision.get("reason", "等待框架判断回执"), intake)
+		var stage: String = workflow.get("routing_stage", "")
+		var waiting := "司南正在判断需求" if stage == "sinan" else "等待框架判断回执"
+		if stage == "yanshi":
+			waiting = "已转交偃师分析"
+		_stage(plan, "wf-routing", "司南 · 需求判断", waiting if not stage.is_empty() else decision.get("reason", waiting), intake)
 		intake = "wf-routing"
-		if decision.get("route") == "yanshi":
-			_stage(plan, "wf-analysis", "偃师 · 需求分析", "等待补充需求" if not decision.ready else "需求已整理", intake)
+		var history: Array = workflow.get("clarification_history", [])
+		if stage == "yanshi" or decision.get("route") == "yanshi" or not history.is_empty():
+			var detail := "已记录需求答复"
+			if stage == "yanshi":
+				detail = "偃师正在分析需求"
+			elif decision.get("ready", false):
+				detail = "需求已整理"
+			elif not decision.get("questions", []).is_empty():
+				detail = "等待补充需求"
+			_stage(plan, "wf-analysis", "偃师 · 需求分析", detail, intake)
 			intake = "wf-analysis"
+			for i in history.size():
+				var turn: Dictionary = history[i]
+				intake = _clarification_round(plan, intake, i, turn.questions, turn.answer)
+			if phase == "questions" and not workflow.get("judging", false) and not decision.get("questions", []).is_empty() and workflow.item.get("status") == "planned" and not workflow.item.get("closed", false):
+				intake = _clarification_round(plan, intake, history.size(), decision.questions, "")
 	var item: Dictionary = workflow.item
 	var design: Dictionary = workflow.design
 	var prepare: bool = phase == "ready" or (phase == "bound" and item.get("status") in ["planned", "in-progress", "in-review"])
@@ -677,6 +726,8 @@ func _display_plan() -> Dictionary:
 	var titles := {"scope":"预计任务", "acceptance":"验收条件", "questions":"待确认"}
 	var source_nodes: Dictionary = item.get("plan", {}).get("nodes", {})
 	for field in titles:
+		if field == "questions" and workflow.get("direct", false):
+			continue
 		var entries: Dictionary = {}
 		for id in source_nodes:
 			var node: Dictionary = source_nodes[id]
@@ -694,6 +745,8 @@ func _display_plan() -> Dictionary:
 			if field == "scope":
 				tasks.append(key)
 				_stage_edge(plan, "wf-prepare" if prepare else intake, key)
+				if prepare and intake.begins_with("wf-clarification-answer-"):
+					_stage_edge(plan, intake, key)
 			elif field == "questions":
 				_stage_edge(plan, intake, key)
 			else:
@@ -726,8 +779,77 @@ func focus_flow_node(id: String) -> void:
 		canvas.scroll_offset = (card.position_offset + card.size * 0.5) * canvas.zoom - canvas.size * 0.5
 		card.selected = true
 		var field := card.get_node_or_null("AnswerInput") as Control
-		if field:
+		if field and field.is_visible_in_tree():
 			field.grab_focus()
+
+
+func focus_clarification() -> bool:
+	if not is_instance_valid(canvas):
+		return false
+	var card := canvas.get_node_or_null("wf-clarification") as GraphNode
+	if not card:
+		return false
+	_set_clarification_open(card, true)
+	focus_flow_node("wf-clarification")
+	return true
+
+
+func _set_clarification_open(card: GraphNode, opened: bool) -> void:
+	card.get_node("FillAnswer").visible = not opened
+	card.get_node("AnswerInput").visible = opened
+	card.get_node("AnswerActions").visible = opened
+	card.reset_size()
+	_queue_layout()
+
+
+func _clarification_scope() -> Array:
+	var item: Dictionary = workflow.get("item", {})
+	return [issue_id, item.get("url", ""), item.get("request", ""), item.get("updated", item.get("revision", "")), workflow.get("routing", {}).get("questions", [])]
+
+
+func _add_clarification_editor(card: GraphNode) -> void:
+	card.set_meta("clarification_scope", _clarification_scope().duplicate(true))
+	var input := TextEdit.new()
+	input.name = "AnswerInput"
+	input.placeholder_text = "填写对本轮问题的答复"
+	input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	input.custom_minimum_size = Vector2(280, 100) * get_theme_default_base_scale()
+	input.text = clarification_draft
+	card.add_child(input)
+	var actions := HBoxContainer.new()
+	actions.name = "AnswerActions"
+	card.add_child(actions)
+	var submit := Button.new()
+	submit.name = "SubmitAnswer"
+	submit.text = "提交答复"
+	actions.add_child(submit)
+	var cancel := Button.new()
+	cancel.name = "CancelAnswer"
+	cancel.text = "取消"
+	actions.add_child(cancel)
+	var update := func(text: String):
+		submit.disabled = text.length() > 4000 or text.strip_edges().is_empty()
+	update.call(input.text)
+	# TextEdit emits text_changed deferred; navigation can replace this card in the same frame.
+	input.lines_edited_from.connect(func(_from: int, _to: int):
+		if card.get_parent() == canvas:
+			clarification_draft = input.text
+			update.call(clarification_draft)
+			clarification_draft_changed.emit(clarification_draft))
+	var close_editor := func():
+		_set_clarification_open(card, false)
+		card.get_node("FillAnswer").grab_focus()
+	cancel.pressed.connect(close_editor)
+	input.gui_input.connect(func(event: InputEvent):
+		if event is InputEventKey and event.pressed and not input.has_ime_text() and event.keycode == KEY_ESCAPE:
+			input.accept_event()
+			close_editor.call())
+	submit.pressed.connect(func():
+		var text := input.text
+		if card.get_parent() == canvas and text.length() <= 4000 and not text.strip_edges().is_empty():
+			clarification_submitted.emit(text))
+	input.hide()
+	actions.hide()
 
 
 func pending_question() -> String:
@@ -744,11 +866,22 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	view.title = item.title
 	view.draggable = false
 	view.tooltip_text = item.value
-	var description := _label(item.value)
-	description.custom_minimum_size.x = 210
-	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	description.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	view.add_child(description)
+	if id == "wf-clarification":
+		var reply := Button.new()
+		reply.name = "FillAnswer"
+		reply.text = "填写答复"
+		reply.custom_minimum_size.x = 210
+		reply.pressed.connect(focus_clarification)
+		view.add_child(reply)
+	else:
+		var description := _label(item.value)
+		description.custom_minimum_size.x = 210
+		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if id.begins_with("wf-clarification-"):
+			description.max_lines_visible = 4
+			description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		view.add_child(description)
 	view.add_child(Control.new())
 	view.set_slot(0, true, 0, DATA, true, 0, DATA)
 	view.set_slot(1, true, 1, AFTER, true, 1, AFTER)
@@ -762,6 +895,8 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		_queue_layout()
 		draft_changed.emit())
 	_update_card(view)
+	if id == "wf-clarification":
+		_add_clarification_editor(view)
 	if id == "wf-worker" and workflow.item.get("status") == "needs-decision":
 		var target := pending_question()
 		var caption := ""
@@ -780,6 +915,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 			view.add_child(navigate)
 	if id.begins_with("wf-questions-") and workflow.get("phase") == "questions":
 		var reply := Button.new()
+		reply.name = "FillAnswer"
 		reply.text = "填写答复"
 		reply.pressed.connect(func(): workflow_reply_requested.emit())
 		view.add_child(reply)
@@ -819,6 +955,15 @@ func _add_approval_actions(view: GraphNode, token: String) -> void:
 
 func draw_graph() -> void:
 	var plan := _display_plan()
+	var old := canvas.get_node_or_null("wf-clarification") as GraphNode
+	var reopen := false
+	var refocus := false
+	var caret := Vector2i.ZERO
+	if old and plan.nodes.has("wf-clarification") and old.get_meta("clarification_scope") == _clarification_scope():
+		var field := old.get_node("AnswerInput") as TextEdit
+		reopen = field.visible
+		refocus = field.has_focus()
+		caret = Vector2i(field.get_caret_column(), field.get_caret_line())
 	layout_columns.clear()
 	var counts := {}
 	var outgoing := {}
@@ -878,6 +1023,14 @@ func draw_graph() -> void:
 	for edge in plan.edges:
 		_draw_edge(edge, plan.nodes)
 	_update_running_nodes()
+	if reopen:
+		var card := canvas.get_node("wf-clarification") as GraphNode
+		_set_clarification_open(card, true)
+		var field := card.get_node("AnswerInput") as TextEdit
+		field.set_caret_line(caret.y)
+		field.set_caret_column(caret.x)
+		if refocus:
+			field.grab_focus()
 
 
 # Wrapping and theme changes can resize a card after GraphNode has sorted its children.
