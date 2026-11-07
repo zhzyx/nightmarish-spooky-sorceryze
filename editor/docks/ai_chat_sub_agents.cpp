@@ -30,11 +30,11 @@
 
 #include "editor/docks/ai_chat_sub_agents.h"
 
-#include "core/io/file_access.h"
 #include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/json.h"
-#include "core/os/os.h"
 #include "core/object/callable_mp.h"
+#include "core/os/os.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/settings/editor_settings.h"
@@ -134,6 +134,7 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 	}
 	const int id = next_agent++;
 	AgentSession session;
+	session.snapshot_state["requirement_workspace"] = _workflow_root(p_parent);
 	if (p_parent != active_agent && agent_sessions.has(p_parent)) {
 		const AgentSession &parent = agent_sessions[p_parent];
 		session.model = parent.model;
@@ -230,7 +231,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	if (!p_explicit && sub_agent_spawned.has(request_id)) {
 		return false;
 	}
-	const String root = EDITOR_GET("gonggong/workspace");
+	const String root = _workflow_root(p_parent);
 	const String path = root.path_join("design-docs").path_join(request_id + ".md");
 	Ref<FileAccess> file = root.is_empty() ? Ref<FileAccess>() : FileAccess::open(path, FileAccess::READ);
 	if (file.is_null() || file->get_length() > MAX_DESIGN_DOCUMENT_BYTES) {
@@ -372,9 +373,9 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	if (sub_agent_parallel_pid >= 0) {
 		return true;
 	}
-	const String workspace = EDITOR_GET("gonggong/workspace");
 	const String request_id = _work_order_binding("request_id");
 	const int dispatch_parent = _sub_agent_root(active_agent);
+	const String workspace = _workflow_root(dispatch_parent);
 	Array workers;
 	for (const KeyValue<int, Dictionary> &entry : sub_agents) {
 		if (int(entry.value.get("parent", -1)) != dispatch_parent || String(entry.value.get("source", "")) != "design" || String(entry.value.get("state", "")) != "waiting" || String(entry.value.get("request_id", "")) != request_id) {
