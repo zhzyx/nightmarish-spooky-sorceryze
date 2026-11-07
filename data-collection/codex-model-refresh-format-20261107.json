@@ -1,0 +1,10 @@
+{
+  "issue_number": 165,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+  "request_id": "requirement-13b6a81d39da6eda5d701ce459961679",
+  "source_pr": 375,
+  "failure_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42333613236/job/128285450779",
+  "cause": "Ruff import ordering and Python formatting in the new headless test runner",
+  "repair": "Applied Ruff 0.17.1 import ordering and formatting; runtime implementation unchanged",
+  "validation": {"ruff_check": "passed", "ruff_format": "passed", "diff_check": "passed"}
+}
