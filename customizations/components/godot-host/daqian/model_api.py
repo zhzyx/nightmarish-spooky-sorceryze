@@ -10,7 +10,7 @@ from pathlib import Path
 _protocol_path = Path(__file__).resolve().parents[3] / "platforms/ai-access/daqian/http_protocols.py"
 _spec = importlib.util.spec_from_file_location("daqian_http_protocols", _protocol_path)
 if _spec is None or _spec.loader is None:
-    raise ImportError("Cannot load the Daqian HTTP protocol adapter")
+    raise ImportError("Cannot load the Tianshu HTTP protocol adapter")
 _protocols = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_protocols)
 PROTOCOLS = _protocols.PROTOCOLS

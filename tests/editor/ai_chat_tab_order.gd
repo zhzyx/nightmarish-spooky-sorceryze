@@ -16,7 +16,7 @@ func _run():
 		labels.append(tabs.get_tab_title(index))
 	assert(tabs.get_tab_control(0) == dock, "AI Chat is not first")
 	assert(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not left of Maliang")
-	assert(labels[1] == "马良" and labels[2] == "大千" and labels[3] == "2D", "Main screens must begin AI Chat, Maliang, Daqian, 2D")
+	assert(labels[1] == "马良" and labels[2] == "天枢" and labels[3] == "2D", "Main screens must begin AI Chat, Maliang, Tianshu, 2D")
 	assert(labels.find("3D") > 1 and labels.find("Script") > labels.find("3D"), "Other built-in tabs changed order")
 	var selected_dock = tabs.get_current_tab_control()
 	var selected_key = selected_dock.get_layout_key()

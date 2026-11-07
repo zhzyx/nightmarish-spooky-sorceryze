@@ -158,6 +158,7 @@ class DirectIssueTests(unittest.TestCase):
         )
         self.assertNotIn("执行授权来源", self.rows[0]["body"])
         self.assertIn(self.request["outcome"], self.rows[0]["body"])
+        self.assertIn("来源：Godot 天枢草稿", self.rows[0]["body"])
         self.assertIn("<!-- gonggong-intake:daqian-direct -->", self.rows[0]["body"])
         self.assertEqual(self.enqueue.call_args.args[1]["source_ref"], URL)
         self.assertEqual(self.enqueue.call_args.args[1]["payload"]["event"], "request.created")
@@ -168,6 +169,95 @@ class DirectIssueTests(unittest.TestCase):
             (repeated["status"], repeated["revision"], self.writes), ("blocked", self.rows[0]["updated_at"], 1)
         )
         self.refresh.assert_called_once()
+
+    def test_recover_pre_rename_draft_after_lost_create_receipt(self):
+        render = direct_issue.requirement_bytes
+
+        def old_renderer(*args, product):
+            return render(*args, product="大千")
+
+        self.lose_receipt = True
+        with patch.object(direct_issue, "requirement_bytes", side_effect=old_renderer):
+            self.assertTrue(self.submit()["reconcile_required"])
+        self.assertIn("来源：Godot 大千草稿", self.rows[0]["body"])
+        self.assertFalse(self.submit(outcome="不同的需求")["ok"])
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual(self.writes, 1)
+
+    def test_recover_old_remote_issue_without_local_journal_or_document(self):
+        render = direct_issue.requirement_bytes
+        with patch.object(
+            direct_issue, "requirement_bytes", side_effect=lambda *a, product: render(*a, product="大千")
+        ):
+            original = self.submit()
+        self.assertTrue(original["ok"])
+        key = original["request_id"]
+        journal = direct_issue.receipt_folder(self.root, key) / "state.json"
+        doc = self.root / "design-docs" / (key + ".md")
+        original_doc = doc.read_bytes()
+        journal.unlink()
+        doc.unlink()
+        self.assertFalse(self.submit(outcome="不同的需求")["ok"])
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual(doc.read_bytes(), original_doc)
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual(self.writes, 1)
+
+    def test_remote_only_retries_from_another_worktree(self):
+        render = direct_issue.requirement_bytes
+        with patch.object(
+            direct_issue, "requirement_bytes", side_effect=lambda *a, product: render(*a, product="大千")
+        ):
+            original = self.submit()
+        self.assertTrue(original["ok"])
+        key = original["request_id"]
+        (direct_issue.receipt_folder(self.root, key) / "state.json").unlink()
+        doc = Path("design-docs") / (key + ".md")
+        expected = (self.root / doc).read_bytes()
+        (self.root / doc).unlink()
+        self.assertFalse(self.submit(outcome="A 的错误输入")["ok"])
+        other = self.root / "second-worktree"
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=test@example.com",
+                "commit",
+                "--allow-empty",
+                "-qm",
+                "fixture",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.root), "worktree", "add", "--detach", str(other)], check=True, capture_output=True
+        )
+        shutil.copytree(self.root / ".github", other / ".github")
+        shutil.copy(self.root / "work-items.json", other)
+        self.root = other
+        self.assertFalse(self.submit(outcome="B 的错误输入")["ok"])
+        self.assertFalse((other / doc).exists())
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual((other / doc).read_bytes(), expected)
+        self.assertEqual(self.writes, 1)
+
+    def test_confirmed_new_issue_rejects_remote_edit_to_old_name(self):
+        created = self.submit()
+        self.assertTrue(created["ok"])
+        key = created["request_id"]
+        doc = self.root / "design-docs" / (key + ".md")
+        journal = direct_issue.receipt_folder(self.root, key) / "state.json"
+        original_state = journal.read_bytes()
+        original_doc = doc.read_bytes()
+        self.rows[0]["body"] = self.rows[0]["body"].replace("来源：Godot 天枢草稿", "来源：Godot 大千草稿")
+        self.assertFalse(self.submit()["ok"])
+        self.assertEqual(journal.read_bytes(), original_state)
+        self.assertEqual(doc.read_bytes(), original_doc)
+        self.assertEqual(self.writes, 1)
 
     def test_only_start_can_activate_exact_planned_issue(self):
         bound = self.submit()

@@ -1,13 +1,14 @@
-"""Daqian access belongs to authenticated collaborators of the bound Git origin."""
+"""Tianshu access belongs to authenticated collaborators of the bound Git origin."""
+
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import shutil
+import sys
 import tempfile
 import time
-import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "issue-workorders"))
 import issue_gate
@@ -24,12 +25,12 @@ class SessionChanged(AccessDenied):
 
 if not os.environ.get("GONGGONG_GH") and not shutil.which("gh"):
     if os.name == "nt":
-        candidates = [Path(os.environ.get("ProgramFiles","C:/Program Files"))/"GitHub CLI"/"gh.exe"]
+        candidates = [Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "GitHub CLI" / "gh.exe"]
     else:
-        candidates = [Path.home()/".local/bin/gh",Path("/opt/homebrew/bin/gh"),Path("/usr/local/bin/gh")]
+        candidates = [Path.home() / ".local/bin/gh", Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")]
     for candidate in candidates:
-        if candidate.is_file() and os.access(candidate,os.X_OK):
-            os.environ["GONGGONG_GH"]=str(candidate)
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            os.environ["GONGGONG_GH"] = str(candidate)
             break
 
 
@@ -39,7 +40,7 @@ def configured_login():
     if os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN"):
         return ""
     try:
-        return work_items.gh("config","get","user","--host","github.com").strip()
+        return work_items.gh("config", "get", "user", "--host", "github.com").strip()
     except work_items.GitHubCommandError:
         return ""
 
@@ -76,7 +77,12 @@ def refresh_collaborator(root):
         repos = viewer["repositories"]
         for row in repos["nodes"]:
             if row["nameWithOwner"].casefold() == repo.casefold() and type(row["databaseId"]) is int:
-                return {"login": viewer["login"], "user_id": str(user_id), "repo": repo, "repo_id": str(row["databaseId"])}
+                return {
+                    "login": viewer["login"],
+                    "user_id": str(user_id),
+                    "repo": repo,
+                    "repo_id": str(row["databaseId"]),
+                }
         page = repos["pageInfo"]
         if not page["hasNextPage"]:
             raise AccessDenied("当前账号未获此仓库的协作资格")
@@ -92,7 +98,11 @@ def session_path(nonce):
         raise AccessDenied("编辑器会话无效")
     # Local user-owned state, outside the repository. A fresh capability is minted
     # in memory by each editor. Only its direct children share the same receipt.
-    cache = Path(os.environ.get("LOCALAPPDATA") or os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "gonggong" / "editor-sessions"
+    cache = (
+        Path(os.environ.get("LOCALAPPDATA") or os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+        / "gonggong"
+        / "editor-sessions"
+    )
     cache.mkdir(mode=0o700, parents=True, exist_ok=True)
     return cache / f"{os.getppid()}-{nonce}.json"
 
@@ -121,27 +131,28 @@ def session_actor(root, nonce, *, allow_login=False):
         raise AccessDenied("核验期间 GitHub 账号已切换")
     actor["verified_at_unix"] = time.time()
     with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False, encoding="utf-8") as stream:
-        json.dump({"binding":binding,"actor":actor}, stream)
+        json.dump({"binding": binding, "actor": actor}, stream)
     os.replace(stream.name, path)
     return actor
 
 
 def collaborator(root):
-    root=Path(root).resolve()
-    repo=work_items.config(root)[0]["repository"]
-    issue_gate.check_repository(root,repo)
-    user=json.loads(work_items.gh("api","user"))
-    if not isinstance(user.get("login"),str) or not user["login"] or type(user.get("id")) is not int:
+    root = Path(root).resolve()
+    repo = work_items.config(root)[0]["repository"]
+    issue_gate.check_repository(root, repo)
+    user = json.loads(work_items.gh("api", "user"))
+    if not isinstance(user.get("login"), str) or not user["login"] or type(user.get("id")) is not int:
         raise AccessDenied("无法核实当前 GitHub 账号")
     # /user/repos enumerates explicitly accessible repos including inherited team
     # membership. Public read access, watchers and prior authorship do not grant entry.
     # Unlike checking /collaborators/:username this works for read-only collaborators.
-    query='.[] | select((.full_name | ascii_downcase) == '+json.dumps(repo.lower())+') | .id'
-    matched=work_items.gh("api","user/repos?affiliation=owner,collaborator,organization_member&per_page=100",
-                          "--paginate","--jq",query)
-    ids=[json.loads(line) for line in matched.splitlines() if line.strip()]
-    if not isinstance(ids,list) or len(ids)!=1 or type(ids[0]) is not int:
+    query = ".[] | select((.full_name | ascii_downcase) == " + json.dumps(repo.lower()) + ") | .id"
+    matched = work_items.gh(
+        "api", "user/repos?affiliation=owner,collaborator,organization_member&per_page=100", "--paginate", "--jq", query
+    )
+    ids = [json.loads(line) for line in matched.splitlines() if line.strip()]
+    if not isinstance(ids, list) or len(ids) != 1 or type(ids[0]) is not int:
         raise AccessDenied("当前账号未获此仓库的协作资格")
-    if work_items.gh("api","user","--jq",".id").strip()!=str(user["id"]):
+    if work_items.gh("api", "user", "--jq", ".id").strip() != str(user["id"]):
         raise AccessDenied("核验期间 GitHub 账号已切换")
-    return {"login":user["login"],"user_id":str(user["id"]),"repo":repo,"repo_id":str(ids[0])}
+    return {"login": user["login"], "user_id": str(user["id"]), "repo": repo, "repo_id": str(ids[0])}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-eaf674f8a4a70e2cc265f47b3165e84bfd6b14d8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-product-rename",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/365",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b3173e5aa91f2d5209ecc3d71fbf4a1812a8544c692e7aeb95f85acbd1d38569",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/365",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/404",
+    "action": "delivery",
+    "detection_head": "fca60ad9d79b2b0fbb688fdda8cba55082f16f0b",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "local-tianshu-integration",
+    "authority_ref": "codex-user-takeover-365-tianshu",
+    "evidence": "GitHub remote rejected the Windows Actions metadata-only change for missing workflow scope",
+    "diagnosis": "当前仓库写入有效，工作流文件有额外授权要求。仅四处 CI 展示文案受阻。",
+    "next_action": "引擎、文档及测试独立签发；工作流显示名称转关联工单由有权发布者接续。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T11:26:35.274660+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T11:32:11.416511+00:00",
+  "sha256": "22eab5b569d2c7f6a6d12bb120ead953ebf84f383a1163607dc76f03b399eb08"
+}

@@ -28,14 +28,14 @@ func run() -> void:
 	await panel._save_connection()
 	var row: Dictionary = panel.board.issues[0]
 	await panel._open_issue(row)
-	# Reset the editor's remembered default. From this point every user action is inside Daqian.
+	# Reset the editor's remembered default. From this point every user action is inside Tianshu.
 	var backend = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	chat.find_child("APIModel", true, false).text = ""
 	await panel._start_or_view_direct(row)
 	if not panel.conversation.is_visible_in_tree() or not dock.is_visible_in_tree():
-		push_error("Missing model did not open a configuration surface inside Daqian: " + panel.notice.text)
+		push_error("Missing model did not open a configuration surface inside Tianshu: " + panel.notice.text)
 		quit(1)
 		return
 	var view = panel.conversation
@@ -60,7 +60,7 @@ func run() -> void:
 	check(panel.saved.get("execution_models", {}).get(row.url, {}).get("id") == "fixture", "Issue model was not saved")
 	check(panel.publish_button.text == "开始推进", "Bound model was not used for the requirement decision")
 	await panel._start_or_view_direct(row)
-	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Starting the issue left Daqian")
+	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Starting the issue left Tianshu")
 	var deadline := Time.get_ticks_msec() + 20000
 	while chat.get_daqian_approval().is_empty() and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
@@ -119,7 +119,7 @@ func run() -> void:
 		for label in view.find_children("*", "RichTextLabel", true, false):
 			if label.get_parsed_text().contains("Receipt rechecked"):
 				replied = true
-	check(replied and dock.is_visible_in_tree(), "Follow-up did not return in the bound Daqian conversation")
+	check(replied and dock.is_visible_in_tree(), "Follow-up did not return in the bound Tianshu conversation")
 	panel._leave_conversation()
 	check(panel.flow_split.is_visible_in_tree() and chat.find_child("AIWorkspacePages", true, false) != null, "Normal editor views were not restored")
 	if not failed:

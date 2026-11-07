@@ -2676,7 +2676,7 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 	callable_mp(this, &AIChatDock::_next_tool).call_deferred(session_generation);
 }
 
-// Only a model tool in a conversation explicitly bound by Daqian can offer a
+// Only a model tool in a conversation explicitly bound by Tianshu can offer a
 // node approval. Manual editor actions and external bridge requests use their dialogs.
 bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 	if (!busy || consultation_turn || snapshot_restoring || !pending_external_editor_message.is_empty() || tool_index >= tool_calls.size()) {
@@ -2716,7 +2716,7 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 	daqian_approval["detail"] = _redact(p_detail);
 	if (_get_daqian_approval().is_empty()) {
 		daqian_approval.clear();
-		const String error = "Error: The Daqian approval could not be bound to this tool and Issue. No action was executed.";
+		const String error = "Error: The Tianshu approval could not be bound to this tool and Issue. No action was executed.";
 		if (engine_dialog_action.begins_with("tool_")) {
 			engine_dialog_action = String();
 			Dictionary result;
@@ -3759,7 +3759,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	const String user_id = actor.get("user_id", "");
 	const String scope = !workspace.is_empty() && !user_id.is_empty() && !repo_id.is_empty() ? (workspace + "|" + repo_id + "|" + user_id).sha256_text() : String();
 	if (p_embedded && scope.is_empty()) {
-		return U"请先在大千核实当前仓库和账号。";
+		return U"请先在天枢核实当前仓库和账号。";
 	}
 	const String issue_url = "https://github.com/" + String(actor.get("repo", "")) + "/issues/" + itos(p_issue);
 	bool unverified_legacy = false;
@@ -3911,7 +3911,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		Dictionary message = chat_message("user", _redact(p_message));
 		message["consultation_only"] = p_preview;
 		// Start the confirmed turn directly. A failed validation must not leave a
-		// queued copy that could run again when the user retries from Daqian.
+		// queued copy that could run again when the user retries from Tianshu.
 		if (!_start_message(message, p_selection)) {
 			daqian_preview_source = String();
 			return U"需求尚未发送，请在关联对话中检查模型与连接配置后重试。";

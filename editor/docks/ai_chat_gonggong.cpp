@@ -928,7 +928,7 @@ void AIChatDock::_poll_issue_guide() {
 			issue_guide_state = "agent_error";
 			_emit_daqian_requirement_phase("error");
 			if (error == "steering_requires_separate_task") {
-				_append(TTR("Editor"), U"这条补充被识别为独立需求，当前任务已暂停；未新建或切换工单。请先停止当前任务，再通过新会话或大千的新需求入口办理。");
+				_append(TTR("Editor"), U"这条补充被识别为独立需求，当前任务已暂停；未新建或切换工单。请先停止当前任务，再通过新会话或天枢的新需求入口办理。");
 				_set_busy(false);
 				return;
 			}

@@ -10,8 +10,8 @@
 | [工单及项目进度](work-management/github/issue-lifecycle.md) | GitHub Issue、子项、状态、回读。目录内有来源适配器与可选建单器。 |
 | [开发平台](development/git/git-workflow.md) | Git 版本、工作树、协作者身份和 GitHub PR/CI。[交付检查器](development/git/delivery/check_delivery.py)核验清单和证据。 |
 | [游戏引擎](game-engines/godot/host.md) | Godot 编辑器、桥接、场景、构建及安装。引擎原生代码按构建系统布局。 |
-| [AI 模型](ai-models/daqian/environment-providers.json) | 大千用环境变量发现供应商型号，本机模型库维护能力、评测和选择。 |
-| [AI 接入方式](ai-access/daqian/http_protocols.py) | 大千 HTTP 请求与响应协议。CLI、HTTP 与宿主派发可服务于同一模型。 |
+| [AI 模型](ai-models/daqian/environment-providers.json) | 天枢用环境变量发现供应商型号，本机模型库维护能力、评测和选择。 |
+| [AI 接入方式](ai-access/daqian/http_protocols.py) | 天枢 HTTP 请求与响应协议。CLI、HTTP 与宿主派发可服务于同一模型。 |
 
 ## 主线文件归属
 
