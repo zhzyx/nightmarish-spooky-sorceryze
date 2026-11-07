@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-issue-actions-20261107-request",
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-issue-actions-20261107",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/452",
+  "occurred_at": "2026-11-07T14:19:39.421891+00:00",
+  "agent": {
+    "id": "current-workspace-operator",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "parent": 442,
+    "document": "design-docs/daqian/issue-action-rebuild.md",
+    "intent": "天枢工单详情动作与原位恢复，核对重试、绑定与重启"
+  },
+  "evidence_refs": [],
+  "sha256": "28fb1cb28f16a78cb59d6f4d77eb5edc6767961a0ff2cc33af5f8ce9eed51142"
+}
