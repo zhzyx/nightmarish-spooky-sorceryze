@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e626325bfc52bbd41e4c4d743197bbdfa187cfd2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-issue-actions-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/452",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "132e2d4556ea1a8729c113bdb0b6fb8bc71c5095e213c9f7df0172f3eb3f12e1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/452",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/454",
+    "action": "validation",
+    "detection_head": "db2031f10241e55da105f56bcea99e07c0ce7137",
+    "context_sha256": "648a6a256333ebeae15ac2b957d0b121252aa94fa208ed881f99646cdf955cbf",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_7994d70c9f1c0aae",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42380829779",
+    "diagnosis": "独立工作树仅有派发交接记录，未采集已回读的本次需求来源，正式门禁因此拒绝。",
+    "next_action": "由本工单责任者记录精确需求来源、重新采集索引并按同一门禁复验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T14:16:30.202389+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T14:19:31.850044+00:00",
+  "sha256": "c75b9a13b02d3d92e337dbc3ade21836d57b919e04031fafd5cdc6ade019cd7f"
+}

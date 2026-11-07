@@ -1,0 +1,29 @@
+{
+  "request_id": "tianshu-issue-actions-20261107",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/452",
+  "parent_issue": 442,
+  "base": "db2031f10241e55da105f56bcea99e07c0ce7137",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/tianshu-issue-actions-20261107/dispatch-19d535ec24a545058fbbfe381f7d568e.json",
+  "build": "Windows x86_64 editor; tests=yes accesskit=no d3d12=no angle=no",
+  "verification": [
+    {
+      "state": "passed",
+      "editor_sha256": "a17815e2668391163f89e8f8a80878bda3e81a9ffebac7559231204a45d007d8",
+      "scenario": "direct",
+      "scope": "native editor controls, unknown publication replay, switched selection during start and recovery in a second editor process"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "a17815e2668391163f89e8f8a80878bda3e81a9ffebac7559231204a45d007d8",
+      "scenario": "publish",
+      "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "a17815e2668391163f89e8f8a80878bda3e81a9ffebac7559231204a45d007d8",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  ],
+  "recovery": "Primary issue actions use the same receipt decision at display and invocation. A host start receipt survives switching drafts and a second editor process. The test records one failed start, one successful retry, and one initial chat request for the bound issue. Cross-device live business acceptance belongs to #442."
+}

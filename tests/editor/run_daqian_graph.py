@@ -147,7 +147,17 @@ elif action == 'issue-route':
     if not direct and (request.get('answer') or not any(json.loads(line)[0] == 'issue-route' for line in previous)):
         reply = dict(ok=False, error='fixture model unavailable')
 elif action == 'issue-start':
+    first_start = not any(json.loads(line)[0] == "issue-start" for line in previous)
+    if direct and not first_start:
+        import time
+        release = Path(__file__).with_name('release-start')
+        deadline = time.monotonic() + 15
+        while not release.exists() and time.monotonic() < deadline:
+            time.sleep(.05)
+        assert release.exists()
     reply = dict(ok=True, status='status:in-progress') if direct else dict(ok=False, refresh_routing=True, error='工单内容已更新')
+    if direct and first_start:
+        reply = dict(ok=False, error="fixture start unavailable")
 else:
     assert action == 'chat'
     reply = dict(ok=False, error='fixture stops at the execution admission boundary')
@@ -160,23 +170,30 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
         'config_version=5\n[application]\nconfig/name="Tianshu graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
     )
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
-    result = subprocess.run(
-        [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
-        env=env,
-        capture_output=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=120,
-    )
-    log = result.stdout + result.stderr
-    passed = result.returncode == 0 and marker in log and "SCRIPT ERROR" not in log
+    phases = ["DAQIAN_DIRECT_RESTART_READY", marker] if args.scenario == "direct" else [marker]
+    passed = True
+    log = ""
+    for phase, expected_marker in enumerate(phases):
+        result = subprocess.run(
+            [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
+            env={**env, "DAQIAN_TEST_RESTART": str(phase)},
+            capture_output=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=120,
+        )
+        phase_log = result.stdout + result.stderr
+        log += phase_log
+        if result.returncode or expected_marker not in phase_log or "SCRIPT ERROR" in phase_log:
+            passed = False
+            break
     report = {
         "state": "passed" if passed else "failed",
         "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "scenario": args.scenario,
         "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
         if args.scenario == "publish"
-        else "native editor to direct issue and Sinan admission subprocesses"
+        else "native editor controls, unknown publication replay, switched selection during start and recovery in a second editor process"
         if args.scenario == "direct"
         else "native editor; fixture graph source, execution state, model catalog and 55-issue board",
     }

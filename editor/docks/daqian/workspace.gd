@@ -73,7 +73,6 @@ var publish_button: Button
 var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
 var routing_in_flight := {}
-var routing_errors := {}
 var chat_work := {}
 var watcher := {}
 var watcher_buffer := ""
@@ -1787,7 +1786,6 @@ func _stop_progress_watch() -> void:
 	refresh_pending = false
 	chat_work.clear()
 	operation_history.clear()
-	routing_errors.clear()
 
 
 func _start_progress_watch(config: Dictionary) -> void:
@@ -2044,11 +2042,10 @@ func _open_issue(item: Dictionary) -> void:
 	ctx.questions = item.get("questions", {}).duplicate(true)
 	ctx.protected_edges = plan.edges.duplicate(true)
 	var snapshot := {"revision":item.updated,"plan":plan,"context":ctx}
-	selection_epoch += 1
-	var epoch := selection_epoch
 	var scope := _repo()
 	var principal := actor.duplicate()
 	_show_issue(item.url, snapshot)
+	var epoch := selection_epoch
 	var revision: String = editor.revision
 	notice.text = "已显示快照，正在读取 #" + str(item.number) + " 的最新流程…"
 	var port: Object = host if is_instance_valid(host) else self
@@ -2173,6 +2170,10 @@ func _routing_key(binding: Dictionary) -> String:
 		binding.get("updated", binding.get("revision", ""))])
 
 
+func _start_key(binding: Dictionary) -> String:
+	return JSON.stringify([_repo(), actor.get("user_id"), binding.url, binding.request])
+
+
 func _routing_receipt(binding: Dictionary) -> Dictionary:
 	var verified: Dictionary = binding.get("routing_receipt", {})
 	if binding.has("routing_receipt"):
@@ -2184,6 +2185,16 @@ func _routing_receipt(binding: Dictionary) -> Dictionary:
 	return result
 
 
+func _discard_routing(binding: Dictionary) -> void:
+	var key := _routing_key(binding)
+	var cached: Dictionary = saved.get("routing", {}).get(binding.url, {})
+	if cached.get("revision") == binding.get("updated", binding.get("revision")) and cached.get("request_id") == binding.request:
+		saved.routing.erase(binding.url)
+	for row in board.get("issues", []):
+		if _routing_key(row) == key:
+			row.routing_receipt = {}
+
+
 func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> void:
 	var url: String = binding.url
 	var key := _routing_key(binding)
@@ -2192,7 +2203,7 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	var user := actor.duplicate()
 	var root := _repo()
 	routing_in_flight[key] = true
-	routing_errors.erase(key)
+	saved.get("routing_errors", {}).erase(key)
 	_sync_workflow()
 	_update_direct_action()
 	var request := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
@@ -2224,7 +2235,7 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	if user != actor or root != _repo():
 		return
 	if not answer.is_empty() and result.get("ok") != true:
-		saved.get("routing", {}).erase(url)
+		_discard_routing(binding)
 		_save()
 	if not answer.is_empty() and result.get("refresh_routing") == true:
 		# Reload the current question set without resubmitting the stale answer.
@@ -2243,20 +2254,67 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 				item.routing_receipt = result
 		_save()
 	else:
-		routing_errors[key] = str(result.get("error", "判断回执待核对"))
+		saved.get_or_add("routing_errors", {})[key] = str(result.get("error", "判断回执待核对"))
+		_save()
 	_sync_workflow()
 	if _direct_binding().get("url", "") == url:
 		notice.text = ("#%d · %s" % [binding.number, result.reason]) if verified else ("工单 #%d 已建立 · %s" % [binding.number, result.get("error", "尚未取得框架判断回执")])
 
 
+# Resolve the primary action once for both presentation and execution.
+func _issue_action(binding: Dictionary) -> Dictionary:
+	if binding.is_empty():
+		if current.begins_with("draft_") and (saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current)):
+			return {"kind":"discuss", "text":"查看分析进度"}
+		if not current.begins_with("draft_"):
+			return {}
+		if direct_in_flight.has(current):
+			return {"kind":"wait", "text":"正在核对建单回执…"}
+		return {"kind":"publish", "text":"核对建单回执" if saved.get("direct_pending", {}).has(current) else "发布需求…"}
+	if binding.has("error"):
+		return {"kind":"wait", "text":"需求标识已改变"}
+	if binding.get("closed", false):
+		return {"kind":"wait", "text":"工单已关闭"}
+	var key := _routing_key(binding)
+	if starting_direct.has(_start_key(binding)):
+		return {"kind":"wait", "text":"正在核对开工回执…"}
+	var started = saved.get("direct_started", {}).get(binding.url)
+	if started is bool and started:
+		# Older versions stored a URL-only flag. Recover its request from the original draft.
+		for original in saved.get("linked", {}).values():
+			if original.get("url") == binding.url and original.get("request") == binding.request and original.get("number") == binding.number:
+				started = binding.request
+				break
+	if started is String and started == binding.request:
+		return {"kind":"view", "text":"查看推进对话"}
+	if binding.get("status") not in ["planned", "in-progress", "in-review"]:
+		return {"kind":"wait", "text":"等待工单就绪"}
+	if saved.get("direct_start_receipts", {}).get(binding.url) == binding.request:
+		return {"kind":"resume", "text":"继续推进对话"}
+	if routing_in_flight.has(key):
+		return {"kind":"wait", "text":"框架判断中…"}
+	if binding.status == "planned":
+		var decision := _routing_receipt(binding)
+		if decision.is_empty():
+			if saved.get("routing_errors", {}).has(key):
+				return {"kind":"retry", "text":"用当前模型重试判断"}
+			return {"kind":"judge", "text":"判断需求"}
+		if not decision.ready:
+			return {"kind":"clarify", "text":"补充需求"}
+	if saved.get("start_errors", {}).has(key):
+		return {"kind":"start", "text":"重试开工", "detail":saved.start_errors[key]}
+	return {"kind":"start", "text":"开始推进"}
+
+
 func _publish_or_follow() -> void:
 	var binding := _direct_binding()
-	if not binding.is_empty():
-		_start_or_view_direct(binding)
-	elif saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current):
-		_chat_action("discuss")
-	else:
-		_open_publish()
+	match _issue_action(binding).get("kind"):
+		"publish":
+			_open_publish()
+		"discuss":
+			_chat_action("discuss")
+		"judge", "retry", "clarify", "start", "view", "resume":
+			_start_or_view_direct(binding)
 
 
 func _direct_binding() -> Dictionary:
@@ -2281,13 +2339,19 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 		notice.text = binding.error
 		return
 	var source := current
-	if not await _fresh_access() or source != current:
+	var epoch := selection_epoch
+	var user := actor.duplicate()
+	var root := _repo()
+	var action: String = _issue_action(binding).get("kind", "")
+	if action not in ["judge", "retry", "clarify", "start", "view", "resume"]:
 		return
-	if binding != _direct_binding():
-		notice.text = "工单已更新，请重新确认。"
+	binding = binding.duplicate(true)
+	if not await _fresh_access() or source != current or epoch != selection_epoch or user != actor or root != _repo():
+		return
+	if binding != _direct_binding() or action != _issue_action(binding).get("kind"):
 		return
 	var url: String = binding.url
-	if _has_routing_questions(binding) and not saved.get("direct_started", {}).has(binding.url):
+	if action == "clarify":
 		var decision := _routing_receipt(binding)
 		clarification_prompt.text = "\n".join(PackedStringArray(decision.questions))
 		if clarification_binding != binding or clarification_questions != decision.questions:
@@ -2301,10 +2365,7 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	if not is_instance_valid(chat):
 		notice.text = "无法取得共工 AI 对话入口"
 		return
-	var started: bool = saved.get("direct_started", {}).has(url)
-	if not started and (binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]):
-		notice.text = "当前工单状态不支持开始推进，请先处理待决定或阻塞事项。"
-		return
+	var started := action == "view"
 	var bind_error := _bind_conversation(binding)
 	if not bind_error.is_empty():
 		notice.text = bind_error
@@ -2317,32 +2378,41 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 			_mount_conversation(binding, "direct")
 			notice.text = "请为此工单选择后端和推进模型，然后点击「应用模型并继续」。"
 			return
-	if not started and binding.status == "planned":
-		var decision := _routing_receipt(binding)
-		if decision.is_empty():
-			await _judge_requirement(binding, "", true)
-			return
+	if action in ["judge", "retry"]:
+		await _judge_requirement(binding, "", action == "retry")
+		return
 
 	var message := "" if started else "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
-	if not started:
-		if starting_direct.has(url):
-			return
-		var user := actor.duplicate()
-		var root := _repo()
+	if action == "start":
+		var key := _routing_key(binding)
+		var start_key := _start_key(binding)
 		var start := {"issue_number":int(binding.number), "request_id":binding.request, "expected_user":user.user_id,
 			"expected_revision":binding.get("updated", binding.get("revision", ""))}
-		starting_direct[url] = true
+		starting_direct[start_key] = true
+		_update_direct_action()
 		var args := PackedStringArray([root.path_join("tools/gonggong_bridge.py"), "issue-start", "--workspace", root])
 		var result: Dictionary = await _host_command(args, "--out", start)
-		starting_direct.erase(url)
-		if source != current or user != actor or root != _repo():
+		starting_direct.erase(start_key)
+		if user != actor or root != _repo():
 			return
 		if result.get("ok") != true or result.get("status") not in ["status:in-progress","status:in-review"]:
+			saved.get_or_add("start_errors", {})[key] = str(result.get("error", "未取得开始推进回执"))
 			if result.get("refresh_routing") == true:
-				saved.get("routing", {}).erase(url)
-				_save()
-				_sync_workflow()
-			notice.text = str(result.get("error", "未取得开始推进回执，请刷新后核对。"))
+				saved.get_or_add("routing_errors", {})[key] = str(result.get("error", "判断回执待核对"))
+				_discard_routing(binding)
+			_save()
+			_sync_workflow()
+			_update_direct_action()
+			if source == current and epoch == selection_epoch:
+				notice.text = str(result.get("error", "未取得开始推进回执，请刷新后核对。"))
+			return
+		if not saved.has("direct_start_receipts"):
+			saved.direct_start_receipts = {}
+		saved.get("start_errors", {}).erase(key)
+		saved.direct_start_receipts[url] = binding.request
+		_save()
+		_update_direct_action()
+		if source != current or epoch != selection_epoch or _direct_binding().get("request") != binding.request or _issue_action(_direct_binding()).get("kind") != "resume":
 			return
 	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection, true)
 	if not error.is_empty():
@@ -2353,8 +2423,8 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	_mount_conversation(binding)
 	if not saved.has("direct_started"):
 		saved.direct_started = {}
-	saved.direct_started[url] = true
-	publish_button.text = "查看推进对话"
+	saved.direct_started[url] = binding.request
+	_update_direct_action()
 	_save()
 	if not started and binding.status == "planned":
 		if checking:
@@ -2513,6 +2583,7 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 		saved.direct_pending = {}
 	saved.direct_pending[source] = request
 	direct_in_flight[source] = true
+	_update_direct_action()
 	_update_publish_controls()
 	publish_status.text = "正在创建或核对工单…"
 	_save()
@@ -2531,6 +2602,7 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 	if not verified:
 		if result.get("reconcile_required", true) == false:
 			saved.direct_pending.erase(source)
+		_update_direct_action()
 		if publish_source == source and publish_dialog.visible:
 			_update_publish_controls()
 			publish_status.text = str(result.get("error", "未取得完整建单回执，请核对原请求。"))
@@ -2547,14 +2619,13 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 	if current == source:
 		notice.text = "已创建工单 #%d，正在判断是否需要偃师。" % number
 	var binding: Dictionary = saved.get("linked", {}).get(source, {})
-	if not binding.is_empty():
+	if current == source and not binding.is_empty():
 		await _judge_requirement(binding)
 
 
 func _new_requirement() -> void:
 	if actor.is_empty():
 		return
-	selection_epoch += 1
 	var plan: Dictionary = rules.new_plan()
 	plan.nodes["requirement"] = {"kind":"text","title":"需求","value":""}
 	var key := "draft_" + Crypto.new().generate_random_bytes(10).hex_encode()
@@ -2563,6 +2634,7 @@ func _new_requirement() -> void:
 
 
 func _show_issue(id: String, snapshot: Dictionary) -> void:
+	selection_epoch += 1
 	_leave_conversation()
 	if not current.is_empty():
 		_save()
@@ -2595,8 +2667,6 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	editor.show()
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
-	publish_button.visible = id.begins_with("draft_")
-	publish_button.text = "查看分析进度" if saved.get("submitted", {}).has(id) or saved.get("linked", {}).has(id) else "发布需求…"
 	_update_direct_action()
 	_sync_debug_actions()
 	overview.hide()
@@ -2624,28 +2694,11 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 
 
 func _update_direct_action() -> void:
-	var binding := _direct_binding()
-	publish_button.disabled = false
-	if binding.is_empty():
-		return
-	publish_button.show()
-	if binding.has("error"):
-		publish_button.text = "需求标识已改变"
-		publish_button.disabled = true
-	elif saved.get("direct_started", {}).has(binding.url):
-		publish_button.text = "查看推进对话"
-	elif binding.get("closed", false) or binding.get("status") not in ["planned","in-progress","in-review"]:
-		publish_button.text = "工单已关闭" if binding.get("closed", false) else "等待工单就绪"
-		publish_button.disabled = true
-	elif routing_in_flight.has(_routing_key(binding)):
-		publish_button.text = "框架判断中…"
-		publish_button.disabled = true
-	elif binding.status == "planned" and _routing_receipt(binding).is_empty():
-		publish_button.text = "用当前模型重试判断"
-	elif binding.status == "planned" and not _routing_receipt(binding).ready:
-		publish_button.text = "补充需求"
-	else:
-		publish_button.text = "开始推进"
+	var action := _issue_action(_direct_binding())
+	publish_button.visible = not action.is_empty()
+	publish_button.disabled = action.get("kind") == "wait"
+	publish_button.text = action.get("text", "")
+	publish_button.tooltip_text = action.get("detail", "")
 
 
 func _drop_images(paths: PackedStringArray) -> void:
@@ -2880,8 +2933,12 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 		return {"state":"waiting", "text":"、".join(waiting), "chat_waiting":true}
 	if routing_in_flight.has(key):
 		return {"state":"running", "text":"天枢宿主 · 正在核对需求判断"}
-	if routing_errors.has(key) and judged.is_empty():
-		return {"state":"failed", "text":"判断受阻 · " + str(routing_errors[key])}
+	if not judged.is_empty() and saved.get("start_errors", {}).has(key):
+		return {"state":"failed", "text":"开工受阻 · " + str(saved.start_errors[key])}
+	if item.get("status") == "planned" and saved.get("direct_start_receipts", {}).get(url, "") == item.get("request", "missing"):
+		return {"state":"waiting", "text":"已取得开工回执 · 查看推进对话"}
+	if saved.get("routing_errors", {}).has(key) and judged.is_empty():
+		return {"state":"failed", "text":"判断受阻 · " + str(saved.routing_errors[key])}
 	if not fresh_progress and not board.is_empty():
 		return {"state":"waiting", "text":"正在核实当前进度" if not offline else "离线 · 当前工作者待核实"}
 	match item.get("status"):
@@ -3018,7 +3075,7 @@ func _issue_bound(source: String, number: int, request_id: String, details := {}
 		numbers.append(number)
 	saved.following = numbers
 	if current == source:
-		publish_button.text = "查看分析进度"
+		_update_direct_action()
 	_save()
 	refresh()
 
