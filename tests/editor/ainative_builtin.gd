@@ -51,6 +51,10 @@ func run():
 	if not check(dock.get_parent() is TabContainer,'AINative is an editor main-screen tab'):
 		finish(); return
 	var tabs: TabContainer = dock.get_parent()
+	await create_timer(1).timeout
+	check(dock.title=='马良','native workbench is displayed as 马良')
+	var chat = root.find_child('AI Chat',true,false)
+	check(chat!=null and tabs.get_tab_idx_from_control(dock)==tabs.get_tab_idx_from_control(chat)+1,'马良 is immediately after AI Chat')
 	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
 	deadline = Time.get_ticks_msec()+30000
 	while panel==null and Time.get_ticks_msec()<deadline:
@@ -59,6 +63,7 @@ func run():
 	if not check(panel!=null and panel.get_meta('ainative_builtin',false),'native tab opens the bundled workbench without addons'):
 		finish(); return
 	await process_frame
+	await verify_workspace(dock,tabs)
 	if OS.get_environment('AINATIVE_TEST_MODE')=='sample':
 		await create_timer(.3).timeout
 		var copies = 0
@@ -77,8 +82,16 @@ func run():
 		check(panel.native_buttons.has(section),'navigation: '+section)
 	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
 	var kinds = []
-	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_text(i))
+	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_metadata(i))
 	check(kinds==['text_to_image','image_to_image','image_to_mesh','text_to_mesh'],'all four generation node kinds are available')
+	for i in panel.generator_choice.item_count:
+		panel.generator_choice.select(i)
+		panel.add_generator()
+		check(panel.nodes.back().type==kinds[i],'Chinese generator option preserves protocol: '+kinds[i])
+		panel.delete_node()
+	panel.generator_choice.select(2)
+	panel.select_node(panel.nodes[0].id)
+	verify_chinese_controls()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
@@ -113,6 +126,68 @@ func run():
 		await RenderingServer.frame_post_draw
 		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')
 	finish()
+
+func settle():
+	for i in 8: await process_frame
+
+func verify_workspace(dock: Control,tabs: TabContainer):
+	var scenes = root.find_children('*','SceneTreeDock',true,false)
+	var inspectors = root.find_children('*','InspectorDock',true,false)
+	var scene = scenes[0] as Control if scenes.size()==1 else null
+	var inspector = inspectors[0] as Control if inspectors.size()==1 else null
+	var scene_tabs = root.find_children('*','EditorSceneTabs',true,false)
+	var bottom = root.find_children('*','EditorBottomPanel',true,false)
+	details.layout_lookup = {'scene':scene!=null,'inspector':inspector!=null,'scene_tabs':scene_tabs.size(),'bottom':bottom.size()}
+	check(scene!=null and inspector!=null and scene_tabs.size()==1 and bottom.size()==1,'real editor layout controls are available for geometry checks')
+	if scene==null or inspector==null or scene_tabs.size()!=1 or bottom.size()!=1: return
+	for screen in ['2D','3D','Script']:
+		EditorInterface.set_main_screen_editor(screen)
+		await settle()
+		check(scene.is_visible_in_tree() and inspector.is_visible_in_tree() and scene_tabs[0].is_visible_in_tree() and bottom[0].is_visible_in_tree(),'normal editor layout restored on '+screen)
+		tabs.current_tab = tabs.get_tab_idx_from_control(dock)
+		await settle()
+		check(not scene.is_visible_in_tree() and not inspector.is_visible_in_tree() and not scene_tabs[0].is_visible_in_tree() and not bottom[0].is_visible_in_tree(),'马良 hides side docks, scene tabs and bottom panel after '+screen)
+		var rect = dock.get_global_rect()
+		check(rect.position.x<20 and rect.size.x>root.size.x-40 and rect.end.y>root.size.y-20,'马良 fills the available editor workspace after '+screen)
+	EditorInterface.set_main_screen_editor('AI Chat')
+	await settle()
+	check(not scene.is_visible_in_tree() and not inspector.is_visible_in_tree() and not bottom[0].is_visible_in_tree(),'AI Chat keeps its full workspace')
+	var settings = EditorInterface.get_editor_settings()
+	settings.set_setting('interface/editor/behavior/separate_distraction_mode',true)
+	for key in ['AINativeMainScreen','DaqianMainScreen','AIChatMainScreen','AINativeMainScreen']:
+		for i in tabs.get_tab_count():
+			if tabs.get_tab_control(i).get_layout_key()==key: tabs.current_tab = i; break
+		await settle()
+		check(not scene.is_visible_in_tree() and not inspector.is_visible_in_tree() and not scene_tabs[0].is_visible_in_tree() and not bottom[0].is_visible_in_tree(),'direct full-workspace switch with separate distraction settings: '+key)
+	settings.set_setting('interface/editor/behavior/separate_distraction_mode',false)
+	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
+	await settle()
+
+func verify_chinese_controls():
+	var han = RegEx.new()
+	han.compile('\\p{Han}')
+	var leftovers: Array = []
+	var proper_names = ['UE4','Manny','Mixamo','UE5 Manny','UE5 Quinn']
+	for control in panel.find_children('*','Control',true,false):
+		var ancestor = control.get_parent()
+		var engine_popup = false
+		while ancestor!=panel and ancestor!=null:
+			if ancestor is FileDialog or ancestor is PopupMenu: engine_popup = true; break
+			ancestor = ancestor.get_parent()
+		if engine_popup: continue
+		var texts: Array = []
+		if control is Label or control is Button: texts.append(control.text)
+		if control is LineEdit or control is TextEdit: texts.append(control.placeholder_text)
+		if control is OptionButton:
+			for i in control.item_count: texts.append(control.get_item_text(i))
+		for value in texts:
+			var text = str(value).strip_edges()
+			if not text.is_empty() and han.search(text)==null and not text in proper_names and not text.trim_suffix('%').is_valid_float():
+				leftovers.append(text)
+	details.untranslated_controls = leftovers
+	check(leftovers.is_empty(),'workbench-owned labels, actions and placeholders are Chinese or proper names')
+	var error = panel.diagnostic_error('测试操作失败','FileNotFoundError: synthetic diagnostic')
+	check(error.contains('失败') and not error.contains('FileNotFoundError') and FileAccess.get_file_as_string(panel.state_dir.path_join('diagnostics.log')).contains('FileNotFoundError'),'raw external failure details are retained locally behind a Chinese summary')
 
 func verify_importer_conversion():
 	var converter = load(panel.get_script().resource_path.get_base_dir().path_join('runtime_mesh.gd'))
@@ -206,7 +281,7 @@ func verify_mesh():
 	panel.confirm_publish()
 	panel.dialog.hide()
 	if not await wait_idle(): return
-	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('failed'),'Mesh publication cannot overwrite an existing version')
+	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('失败'),'Mesh publication cannot overwrite an existing version')
 	check(FileAccess.get_sha256(source)==before,'offline run and publication preserve source Mesh bytes')
 	panel.native_buttons.other.pressed.emit()
 	await process_frame

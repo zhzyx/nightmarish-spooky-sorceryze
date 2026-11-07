@@ -73,46 +73,46 @@ func _ready():
 	initialize()
 func initialize() -> String:
 	initialized = false
-	if mode not in ['realtime','bake','replay']: return 'Unknown cloth mode'
-	if binding.get('schema')!=1 or binding.get('proxy',[]).is_empty(): return 'Missing cloth binding'
-	if binding_digest(binding)!=binding.get('binding_revision'): return 'Binding content hash mismatch'
+	if mode not in ['realtime','bake','replay']: return '未知的布料模式'
+	if binding.get('schema')!=1 or binding.get('proxy',[]).is_empty(): return '缺少布料绑定'
+	if binding_digest(binding)!=binding.get('binding_revision'): return '绑定内容哈希不匹配'
 	if not cache.is_empty():
-		if not cache.get('key') is String or cache.get('fps')!=60 or not cache.get('frames') is Array: return 'Malformed cache header'
+		if not cache.get('key') is String or cache.get('fps')!=60 or not cache.get('frames') is Array: return '缓存头格式无效'
 		for values in cache.frames:
-			if not values is Array or values.size()!=binding.proxy.size(): return 'Malformed cache particle count'
+			if not values is Array or values.size()!=binding.proxy.size(): return '缓存中的粒子数量无效'
 			for point in values:
-				if not point is Array or point.size()!=3: return 'Malformed cached point'
+				if not point is Array or point.size()!=3: return '缓存中的点数据格式无效'
 				for coordinate in point:
-					if not (coordinate is int or coordinate is float) or not is_finite(coordinate): return 'Nonfinite cache point'
+					if not (coordinate is int or coordinate is float) or not is_finite(coordinate): return '缓存中的点包含非有限数值'
 	# Freeze the evaluated binding. Editor mutations take effect only through validated initialize.
 	data = binding.duplicate(true)
-	if not profile.has('revision'): return 'Missing target Profile'
+	if not profile.has('revision'): return '缺少目标骨架配置'
 	var profile_problem = I.validate(profile)
 	if profile_problem: return profile_problem
 	runtime_profile = profile.duplicate(true)
 	for key in ['mass','compliance','pin_weight']:
-		if not settings.has(key) or not (settings[key] is int or settings[key] is float) or not is_finite(float(settings[key])): return 'Solver parameter must be a finite number: '+key
-	if settings.mass<.01 or settings.mass>10 or settings.compliance<0 or settings.compliance>.01 or settings.pin_weight<.5 or settings.pin_weight>1: return 'Solver parameter outside supported bounds'
-	if not (settings.get('lod') is int or settings.get('lod') is float) or settings.lod not in [0,1,2]: return 'LOD must be numeric integer 0, 1 or 2'
+		if not settings.has(key) or not (settings[key] is int or settings[key] is float) or not is_finite(float(settings[key])): return '求解器参数必须为有限数值：'+key
+	if settings.mass<.01 or settings.mass>10 or settings.compliance<0 or settings.compliance>.01 or settings.pin_weight<.5 or settings.pin_weight>1: return '求解器参数超出支持范围'
+	if not (settings.get('lod') is int or settings.get('lod') is float) or settings.lod not in [0,1,2]: return 'LOD 必须为整数 0、1 或 2'
 	pin_weights = PackedFloat32Array(binding.pins)
-	if not settings.get('pin_overrides',{}) is Dictionary: return 'Pin overrides must map top-boundary index to weight 0..1'
+	if not settings.get('pin_overrides',{}) is Dictionary: return '固定点覆盖必须将顶部边界索引映射到 0–1 范围内的权重'
 	for key in settings.get('pin_overrides',{}):
-		if not str(key).is_valid_int(): return 'Pin index must be an integer'
+		if not str(key).is_valid_int(): return '固定点索引必须为整数'
 		var index = int(key); var weight = settings.pin_overrides[key]
-		if index<0 or index>=pin_weights.size() or binding.pins[index]<1 or not (weight is int or weight is float) or not is_finite(weight) or weight<0 or weight>1: return 'Only declared top-boundary pins with finite weights 0..1 can be edited'
+		if index<0 or index>=pin_weights.size() or binding.pins[index]<1 or not (weight is int or weight is float) or not is_finite(weight) or weight<0 or weight>1: return '只能编辑已声明的顶部边界固定点，权重必须为 0–1 范围内的有限数值'
 		pin_weights[index] = weight
 	var anchors = 0
 	for weight in pin_weights:
 		if weight>0: anchors += 1
-	if anchors<2: return 'At least two top-boundary anchors required'
+	if anchors<2: return '顶部边界至少需要两个锚点'
 	var sk = get_node_or_null(skeleton_path) as Skeleton3D
-	if sk==null: return 'Missing skeleton'
-	if identity.get('dna_at_bind')!=I.revision(get_parent().get_meta('character_dna',{})): return 'DNA changed; binding must be refitted before initialize/reopen'
-	if sk.get_bone_count()!=profile.bones.size(): return 'Skeleton changed; refit binding'
+	if sk==null: return '缺少骨架'
+	if identity.get('dna_at_bind')!=I.revision(get_parent().get_meta('character_dna',{})): return 'DNA 已改变；初始化或重新打开前必须重新适配绑定'
+	if sk.get_bone_count()!=profile.bones.size(): return '骨架已改变；请重新适配绑定'
 	for i in sk.get_bone_count():
-		if sk.get_bone_name(i)!=profile.bones[i].name or sk.get_bone_parent(i)!=int(profile.bones[i].parent) or not sk.get_bone_rest(i).is_equal_approx(I.decode(profile.bones[i].local_rest)): return 'Skeleton rest changed; refit binding'
+		if sk.get_bone_name(i)!=profile.bones[i].name or sk.get_bone_parent(i)!=int(profile.bones[i].parent) or not sk.get_bone_rest(i).is_equal_approx(I.decode(profile.bones[i].local_rest)): return '骨架静止姿势已改变；请重新适配绑定'
 	var scale = sk.global_basis.get_scale()
-	if not scale.is_equal_approx(Vector3.ONE): return 'Cloth requires unit world scale; bake scale into meter rest data'
+	if not scale.is_equal_approx(Vector3.ONE): return '布料要求世界缩放为 1；请将缩放烘焙到以米为单位的静止数据中'
 	skeleton_revision = preload('res://addons/ainative/layering.gd').signature(sk)
 	rest.clear()
 	for p in binding.proxy: rest.append(Vector3(p[0],p[1],p[2]))
@@ -123,12 +123,12 @@ func initialize() -> String:
 	for i in rest.size(): invmass[i] = (1-pin_weights[i]*float(settings.pin_weight))/float(settings.mass)
 	observed_animations = animation_resources()
 	animation_content_revision = animation_fingerprint(observed_animations)
-	if observed_animations.is_empty() or animation_content_revision.is_empty(): return 'Missing animation content'
+	if observed_animations.is_empty() or animation_content_revision.is_empty(): return '缺少动画内容'
 	animation_mutated = false
 	for animation in observed_animations.values():
 		if not animation.changed.is_connected(invalidate_animation): animation.changed.connect(invalidate_animation)
 	expected_key = cache_key()
-	if mode=='replay' and cache.get('key')!=expected_key: return 'Saved replay cache is stale; rebuild/rebake required'
+	if mode=='replay' and cache.get('key')!=expected_key: return '已保存的回放缓存已过期；请重新构建并烘焙'
 	var runner = get_node_or_null(layering_path)
 	if runner:
 		var player = runner.get_node(runner.player_path)
@@ -159,16 +159,16 @@ func project(p: Vector3, margin: float = .015) -> Vector3:
 	return p
 func consume(pose: Dictionary):
 	var start = Time.get_ticks_usec()
-	if not initialized: result = {'error':'Cloth initialization failed; previous geometry retained, evaluation disabled'}; return
-	if animation_resources()!=observed_animations: result = {'error':'Animation resource replaced; rebuild/rebake required'}; return
-	if pose.get('schema')!='ainative.final_body_pose.v1': result = {'error':'Requires final_body_pose'}; return
+	if not initialized: result = {'error':'布料初始化失败；已保留原几何并停用求解'}; return
+	if animation_resources()!=observed_animations: result = {'error':'动画资源已替换；请重新构建并烘焙'}; return
+	if pose.get('schema')!='ainative.final_body_pose.v1': result = {'error':'需要 final_body_pose 最终身体姿势'}; return
 	if points.is_empty():
 		var error = initialize()
 		if error: result = {'error':error}; return
-	if animation_mutated or cache_key()!=expected_key or get_parent().get_meta('garment_fit_stale',false): result = {'error':'Body/Profile/solver/animation changed: binding and cache invalid; refit required'}; return
-	if pose.get('skeleton_revision')!=skeleton_revision: result = {'error':'Skeleton changed: binding/cache invalid'}; return
+	if animation_mutated or cache_key()!=expected_key or get_parent().get_meta('garment_fit_stale',false): result = {'error':'身体、骨架配置、求解器或动画已改变；绑定和缓存已失效，请重新适配'}; return
+	if pose.get('skeleton_revision')!=skeleton_revision: result = {'error':'骨架已改变；绑定和缓存已失效'}; return
 	var sk = get_node(skeleton_path) as Skeleton3D
-	if not sk.global_basis.get_scale().is_equal_approx(Vector3.ONE): result = {'error':'Nonunit/nonuniform world scale unsupported'}; return
+	if not sk.global_basis.get_scale().is_equal_approx(Vector3.ONE): result = {'error':'不支持世界缩放不为 1 或非均匀缩放'}; return
 	var global_poses = pose.global_bone_poses
 	var anchor = int(runtime_profile.mapping.hips if data.kind=='skirt' else runtime_profile.mapping.get('chest',runtime_profile.mapping.hips))
 	var transform = sk.global_transform*I.decode(global_poses[anchor])*I.decode(runtime_profile.bones[anchor].global_rest).affine_inverse()
@@ -188,7 +188,7 @@ func consume(pose: Dictionary):
 		var runner = get_node(layering_path)
 		var player = runner.get_node(runner.player_path)
 		var full_frames = ceili(player.get_animation(runner.animation_name).length*60)
-		if cache.get('key')!=expected_key or cache.get('frames',[]).size()!=full_frames: result = {'error':'No compatible complete baked cache'}; return
+		if cache.get('key')!=expected_key or cache.get('frames',[]).size()!=full_frames: result = {'error':'没有兼容且完整的烘焙缓存'}; return
 		var index = clampi(roundi(time*60),0,cache.frames.size()-1)
 		var values = cache.frames[index]
 		for i in points.size(): points[i] = sk.global_transform*Vector3(values[i][0],values[i][1],values[i][2])
@@ -242,7 +242,7 @@ func consume(pose: Dictionary):
 	var material = StandardMaterial3D.new(); material.albedo_color = Color(.38,.08,.11) if data.kind=='skirt' else Color(.07,.2,.32); material.cull_mode = BaseMaterial3D.CULL_DISABLED; material.roughness = .85
 	mesh.surface_set_material(0,material); visual.mesh = mesh
 	var ended = Time.get_ticks_usec()
-	result = {'solver_us':solved-start,'render_upload_us':ended-solved,'total_us':ended-start,'resets':resets,'mode':mode,'quality':'rigid fallback (simulation disabled)' if int(settings.lod)==2 else 'XPBD','particles':points.size(),'render_vertices':rendered.size()}
+	result = {'solver_us':solved-start,'render_upload_us':ended-solved,'total_us':ended-start,'resets':resets,'mode':mode,'quality':'刚性回退（已停用模拟）' if int(settings.lod)==2 else 'XPBD','particles':points.size(),'render_vertices':rendered.size()}
 	samples.append(result.duplicate()); frame += 1
 	if samples.size()>4096: samples.pop_front()
 	if mode=='bake':

@@ -57,8 +57,6 @@ private:
 	VBoxContainer *main_screen_vbox = nullptr;
 	Vector<EditorPlugin *> editor_table;
 #endif
-	bool window_filled = false;
-
 	void _on_tab_changed(int p_tab);
 	void _set_window_fill(bool p_fill);
 
@@ -81,7 +79,7 @@ public:
 	void select_next();
 	void select_prev();
 
-	// AI Chat fills everything below the title bar while it is the current main screen.
+	// Full-workspace pages fill everything below the title bar while selected.
 	void update_window_fill();
 	void suspend_window_fill();
 

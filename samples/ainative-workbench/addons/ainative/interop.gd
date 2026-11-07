@@ -33,28 +33,28 @@ static func hash_numbers(value):
 	return ['string',value] if value is String else ['literal',value]
 
 static func load_scene(path: String) -> Dictionary:
-	if not FileAccess.file_exists(path): return {'error':'Source file missing'}
+	if not FileAccess.file_exists(path): return {'error':'源文件不存在'}
 	if path.get_extension().to_lower() == 'tscn':
 		var packed = ResourceLoader.load(path,'PackedScene',ResourceLoader.CACHE_MODE_IGNORE)
 		if packed is PackedScene: return {'scene':packed.instantiate()}
-		return {'error':'Invalid packed scene'}
+		return {'error':'打包场景无效'}
 	var doc = FBXDocument.new() if path.get_extension().to_lower() == 'fbx' else GLTFDocument.new()
 	var state = FBXState.new() if path.get_extension().to_lower() == 'fbx' else GLTFState.new()
 	var err = doc.append_from_file(path,state)
-	if err != OK: return {'error':'Asset import failed: '+str(err)}
+	if err != OK: return {'error':'资源导入失败：'+str(err)}
 	var scene = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
-	if scene==null: return {'error':'No imported scene'}
+	if scene==null: return {'error':'未找到导入后的场景'}
 	var error = normalize_imported(scene)
 	if error: scene.free(); return {'error':error}
 	return {'scene':scene}
 
 static func normalize_imported(scene: Node3D) -> String:
 	var sk = skeleton(scene)
-	if sk==null: return 'Exactly one imported skeleton required'
+	if sk==null: return '导入的场景必须且只能包含一个骨架'
 	var transform = node_transform(sk)
 	if transform.is_equal_approx(Transform3D.IDENTITY): return ''
 	var scale = transform.basis.get_scale()
-	if absf(scale.x-scale.y)>.00001 or absf(scale.y-scale.z)>.00001 or scale.x<=0: return 'Bake nonuniform or mirrored skeleton ancestor scale before importing'
+	if absf(scale.x-scale.y)>.00001 or absf(scale.y-scale.z)>.00001 or scale.x<=0: return '导入前请将骨架祖先节点的非均匀或镜像缩放烘焙到资源中'
 	var roots = {}
 	for i in sk.get_bone_count():
 		if sk.get_bone_parent(i)>=0: continue
@@ -120,12 +120,12 @@ static func semantic(name: String, family: String) -> String:
 	return ''
 
 static func extract(scene: Node, family: String, source: Dictionary, corrections: Dictionary = {}) -> Dictionary:
-	if family not in FAMILIES: return {'error':'Unsupported profile family; MetaHuman Body is a separate extension'}
+	if family not in FAMILIES: return {'error':'不支持此骨架配置类型；MetaHuman Body 需要独立扩展'}
 	var sk = skeleton(scene)
-	if sk == null: return {'error':'Exactly one Skeleton3D is required'}
+	if sk == null: return {'error':'必须且只能包含一个 Skeleton3D'}
 	var ancestor = sk
 	while ancestor!=null and ancestor is Node3D:
-		if not ancestor.transform.is_equal_approx(Transform3D.IDENTITY): return {'error':'Bake skeleton ancestor transforms into the reference asset before extracting a meters profile'}
+		if not ancestor.transform.is_equal_approx(Transform3D.IDENTITY): return {'error':'提取以米为单位的骨架配置前，请将骨架祖先节点的变换烘焙到参考资源中'}
 		if ancestor==scene: break
 		ancestor = ancestor.get_parent()
 	var p = {'schema_version':1,'family':family,'rules_version':'1','source':source.duplicate(true),'coordinates':{'units':'metres','up':'+Y','forward':'+Z','space':'Godot imported skeleton local'},'bones':[],'mapping':{},'corrections':corrections.duplicate(true),'auxiliary_policy':'preserve_local_rest','binding':'semantic_mapped'}
@@ -135,59 +135,59 @@ static func extract(scene: Node, family: String, source: Dictionary, corrections
 		p.bones.append({'name':n,'parent':sk.get_bone_parent(i),'local_rest':encode(sk.get_bone_rest(i)),'global_rest':encode(sk.get_bone_global_rest(i))})
 		var meaning = semantic(n,family)
 		if meaning:
-			if p.mapping.has(meaning): return {'error':'Ambiguous semantic mapping: '+meaning}
+			if p.mapping.has(meaning): return {'error':'语义映射有歧义：'+meaning}
 			p.mapping[meaning] = i
 	for meaning in corrections:
 		var i = sk.find_bone(str(corrections[meaning]))
-		if i<0: return {'error':'Correction bone missing: '+str(corrections[meaning])}
+		if i<0: return {'error':'修正所需的骨骼不存在：'+str(corrections[meaning])}
 		p.mapping[meaning] = i
 	p.revision = revision(p)
 	var error = validate(p)
 	return {'error':error} if error else {'profile':p}
 
 static func validate(p: Dictionary) -> String:
-	if p.get('schema_version')!=1 or p.get('family') not in FAMILIES: return 'Unsupported profile schema/family'
-	if p.get('coordinates')!={'units':'metres','up':'+Y','forward':'+Z','space':'Godot imported skeleton local'}: return 'Unsupported profile coordinates; import and normalize the reference asset'
-	if not p.get('source') is Dictionary or str(p.source.get('sha256','')).length()!=64 or not p.source.get('version','') or not p.source.get('authority',''): return 'Immutable source hash, version and authority required'
+	if p.get('schema_version')!=1 or p.get('family') not in FAMILIES: return '不支持此骨架配置的结构或类型'
+	if p.get('coordinates')!={'units':'metres','up':'+Y','forward':'+Z','space':'Godot imported skeleton local'}: return '不支持此骨架配置的坐标系；请导入参考资源并规范化'
+	if not p.get('source') is Dictionary or str(p.source.get('sha256','')).length()!=64 or not p.source.get('version','') or not p.source.get('authority',''): return '必须提供不可变的源文件哈希、版本和权威来源'
 	for field in ['sha256','version','authority']:
-		if not p.source[field] is String: return 'Source identity fields must be strings'
-	if not p.source.sha256.is_valid_hex_number(false): return 'Source SHA256 must be hex'
+		if not p.source[field] is String: return '源标识字段必须为字符串'
+	if not p.source.sha256.is_valid_hex_number(false): return '源文件 SHA256 必须为十六进制字符串'
 	var authority = str(p.source.authority)
-	if authority.contains('\\') or authority.contains(':/') and not authority.begins_with('https://') and not authority.begins_with('http://'): return 'Source authority must be a portable URI, not a machine path'
-	if not p.get('bones') is Array or p.bones.is_empty() or not p.get('mapping') is Dictionary: return 'Bones and mapping required'
-	if p.get('revision','')!=revision(p): return 'Profile revision mismatch; regenerate after edits'
+	if authority.contains('\\') or authority.contains(':/') and not authority.begins_with('https://') and not authority.begins_with('http://'): return '权威来源必须为可移植 URI，不能使用本机路径'
+	if not p.get('bones') is Array or p.bones.is_empty() or not p.get('mapping') is Dictionary: return '必须提供骨骼和映射'
+	if p.get('revision','')!=revision(p): return '骨架配置修订不匹配；编辑后请重新生成'
 	var names = {}
 	for b in p.bones:
-		if not b is Dictionary or not (b.get('parent') is float or b.get('parent') is int): return 'Invalid bone/parent'
-		if b.parent != int(b.parent) or b.parent < -1 or b.parent >= p.bones.size(): return 'Invalid parent index'
+		if not b is Dictionary or not (b.get('parent') is float or b.get('parent') is int): return '骨骼或父级无效'
+		if b.parent != int(b.parent) or b.parent < -1 or b.parent >= p.bones.size(): return '父级索引无效'
 	for i in p.bones.size():
 		var b = p.bones[i]
-		if not b is Dictionary or not b.get('name') is String or names.has(b.name): return 'Invalid/duplicate bone name'
+		if not b is Dictionary or not b.get('name') is String or names.has(b.name): return '骨骼名称无效或重复'
 		names[b.name] = true
-		if not b.get('parent') is float and not b.get('parent') is int: return 'Invalid parent'
-		if b.parent != int(b.parent) or b.parent < -1 or b.parent >= p.bones.size(): return 'Invalid parent index'
+		if not b.get('parent') is float and not b.get('parent') is int: return '父级无效'
+		if b.parent != int(b.parent) or b.parent < -1 or b.parent >= p.bones.size(): return '父级索引无效'
 		var seen = {}
 		var parent = i
 		while parent>=0:
-			if seen.has(parent): return 'Hierarchy cycle'
+			if seen.has(parent): return '骨骼层级存在循环'
 			seen[parent] = true
 			parent = int(p.bones[parent].parent)
 		for field in ['local_rest','global_rest']:
-			if not b.get(field) is Array or b[field].size()!=12: return 'Invalid rest transform'
+			if not b.get(field) is Array or b[field].size()!=12: return '静止姿势变换无效'
 			for v in b[field]:
-				if not (v is float or v is int) or not is_finite(float(v)): return 'Nonfinite rest transform'
-			if absf(decode(b[field]).basis.determinant())<0.000001: return 'Singular rest transform'
+				if not (v is float or v is int) or not is_finite(float(v)): return '静止姿势变换包含非有限数值'
+			if absf(decode(b[field]).basis.determinant())<0.000001: return '静止姿势变换不可逆'
 	for meaning in p.mapping:
 		var i = p.mapping[meaning]
-		if not (i is int or i is float) or i!=int(i) or i<0 or i>=p.bones.size(): return 'Invalid semantic index'
+		if not (i is int or i is float) or i!=int(i) or i<0 or i>=p.bones.size(): return '语义索引无效'
 	for b in p.bones:
 		var expected = decode(b.local_rest)
 		if int(b.parent)>=0: expected = decode(p.bones[int(b.parent)].global_rest)*expected
-		if not expected.is_equal_approx(decode(b.global_rest)): return 'Local/global rest disagree'
+		if not expected.is_equal_approx(decode(b.global_rest)): return '局部和全局静止姿势不一致'
 	var required_indices = {}
 	for meaning in REQUIRED:
-		if not p.mapping.has(meaning): return 'Missing required semantic: '+meaning
-		if required_indices.has(int(p.mapping[meaning])): return 'Required anatomical semantics must use distinct bones'
+		if not p.mapping.has(meaning): return '缺少必需的语义：'+meaning
+		if required_indices.has(int(p.mapping[meaning])): return '必需的解剖语义必须对应不同骨骼'
 		required_indices[int(p.mapping[meaning])] = true
 	for side in ['_l','_r']:
 		for chain in [['thigh','shin','foot'],['upper_arm','forearm','hand']]:
@@ -195,7 +195,7 @@ static func validate(p: Dictionary) -> String:
 				var ancestor = int(p.mapping[chain[j]+side])
 				var child = int(p.mapping[chain[j+1]+side])
 				while child>=0 and child!=ancestor: child = int(p.bones[child].parent)
-				if child<0: return 'Semantic limb mapping must follow an ancestor chain'
+				if child<0: return '肢体语义映射必须沿同一祖先链排列'
 	return ''
 
 static func make_skeleton(p: Dictionary) -> Skeleton3D:
@@ -284,9 +284,9 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 		var error = validate(p)
 		if error: return {'error':error}
 	var old = skeleton(source_scene)
-	if old == null or old.get_bone_count()!=source.bones.size(): return {'error':'Source profile does not match skeleton'}
+	if old == null or old.get_bone_count()!=source.bones.size(): return {'error':'源骨架配置与骨架不匹配'}
 	for i in old.get_bone_count():
-		if old.get_bone_name(i)!=source.bones[i].name or not old.get_bone_rest(i).is_equal_approx(decode(source.bones[i].local_rest)): return {'error':'Source rest changed; create a new profile revision'}
+		if old.get_bone_name(i)!=source.bones[i].name or not old.get_bone_rest(i).is_equal_approx(decode(source.bones[i].local_rest)): return {'error':'源静止姿势已改变；请创建新的骨架配置修订'}
 	var pairs = pair_map(source,target)
 	var sf = frames(source)
 	var sg = globals(source)
@@ -299,7 +299,7 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 	sk.owner = scene
 	var skin = Skin.new()
 	for i in target.bones.size(): skin.add_bind(i,tg[i].affine_inverse())
-	var report = {'binding':'target_bound','vertices':0,'max_rest_reconstruction_m':0.0,'max_adaptation_m':0.0,'weighted_finger_vertices':0,'missing_source_fingers':[],'auxiliary_policy':'preserve_local_rest; missing weighted semantics collapse to nearest mapped ancestor','unsupported':['MetaHuman Body']}
+	var report = {'binding':'target_bound','vertices':0,'max_rest_reconstruction_m':0.0,'max_adaptation_m':0.0,'weighted_finger_vertices':0,'missing_source_fingers':[],'auxiliary_policy':'preserve_local_rest（保留局部静止姿势）；缺失语义的权重归并到最近的已映射祖先骨骼','unsupported':['MetaHuman Body']}
 	for side in ['_l','_r']:
 		for finger in ['thumb','index','middle','ring','pinky']:
 			if not source.mapping.has(finger+'_1'+side): report.missing_source_fingers.append(finger+side)
@@ -313,7 +313,7 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 			var vertices: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
 			var bones = a[Mesh.ARRAY_BONES]
 			var weights = a[Mesh.ARRAY_WEIGHTS]
-			if bones==null or weights==null or weights.size()==0: scene.free(); return {'error':'Weighted mesh required'}
+			if bones==null or weights==null or weights.size()==0: scene.free(); return {'error':'必须提供带蒙皮权重的网格'}
 			var influences = weights.size()/vertices.size()
 			for vi in vertices.size():
 				var out = Vector3.ZERO
@@ -325,15 +325,15 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 					var offset = vi*int(influences)+k
 					var w = weights[offset]
 					var bind_id = bones[offset]
-					if not is_finite(w) or w<0 or bind_id<0 or bind_id>=mi.skin.get_bind_count(): scene.free(); return {'error':'Invalid weight/bind index'}
+					if not is_finite(w) or w<0 or bind_id<0 or bind_id>=mi.skin.get_bind_count(): scene.free(); return {'error':'权重或绑定索引无效'}
 					var bi = mi.skin.get_bind_bone(bind_id)
 					if mi.skin.get_bind_name(bind_id)!='': bi = old.find_bone(mi.skin.get_bind_name(bind_id))
 					if w<=0: bones[offset] = 0; continue
-					if bi<0 or bi>=old.get_bone_count(): scene.free(); return {'error':'Invalid skin bone'}
+					if bi<0 or bi>=old.get_bone_count(): scene.free(); return {'error':'蒙皮骨骼无效'}
 					# Missing weighted auxiliaries follow the nearest mapped ancestor explicitly.
 					var mapped = bi
 					while mapped>=0 and not pairs.has(mapped): mapped = old.get_bone_parent(mapped)
-					if mapped<0: scene.free(); return {'error':'Weighted bone has no mapped ancestor: '+str(bi)}
+					if mapped<0: scene.free(); return {'error':'带权重的骨骼没有已映射的祖先：'+str(bi)}
 					var ti = pairs[mapped]
 					var warp = tf[ti]*sf[mapped].affine_inverse()
 					var source_rest = sg[bi]*mi.skin.get_bind_pose(bind_id)
@@ -343,7 +343,7 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 					bones[offset] = ti
 					sum += w
 					if str(target_semantic_by_id.get(ti,'')).split('_')[0] in ['thumb','index','middle','ring','pinky']: finger_weight += w
-				if absf(sum-1)>.001 or not out.is_finite(): scene.free(); return {'error':'Invalid weights or nonfinite deformation'}
+				if absf(sum-1)>.001 or not out.is_finite(): scene.free(); return {'error':'权重无效，或变形包含非有限数值'}
 				if finger_weight>0.001: report.weighted_finger_vertices += 1
 				report.max_adaptation_m = maxf(report.max_adaptation_m,out.distance_to(source_rest_vertex))
 				vertices[vi] = out
@@ -367,7 +367,7 @@ static func bind(source_scene: Node3D, source: Dictionary, target: Dictionary) -
 		scene.add_child(body)
 		body.skeleton = body.get_path_to(sk)
 		body.owner = scene
-	if report.vertices==0: scene.free(); return {'error':'No skinned geometry'}
+	if report.vertices==0: scene.free(); return {'error':'未找到蒙皮几何'}
 	scene.set_meta('interop',{'schema_version':1,'avatar_revision':revision({'source':source.revision,'target':target.revision,'algorithm':'geometric-rest-bind-2'}),'source_skeleton':source,'target_skeleton':target,'binding':'target_bound','diagnostics':report})
 	return {'scene':scene,'diagnostics':report}
 
@@ -383,16 +383,16 @@ static func retarget(animation: Animation, source: Dictionary, target: Dictionar
 	for p in [source,target]:
 		var error = validate(p)
 		if error: return {'error':error}
-	if not is_finite(fps) or fps<1 or fps>240: return {'error':'Sample rate must be finite 1..240'}
+	if not is_finite(fps) or fps<1 or fps>240: return {'error':'采样率必须为 1–240 之间的有限数值'}
 	for contact in contacts:
-		if not contact is Dictionary or contact.get('side') not in ['l','r']: return {'error':'Invalid contact declaration'}
+		if not contact is Dictionary or contact.get('side') not in ['l','r']: return {'error':'接触声明无效'}
 		for key in ['start','end']:
-			if not (contact.get(key) is int or contact.get(key) is float) or not is_finite(float(contact[key])): return {'error':'Finite contact interval required'}
-		if contact.start<0 or contact.end<contact.start or contact.end>animation.length+.00001: return {'error':'Contact interval outside clip'}
+			if not (contact.get(key) is int or contact.get(key) is float) or not is_finite(float(contact[key])): return {'error':'接触时间区间必须使用有限数值'}
+		if contact.start<0 or contact.end<contact.start or contact.end>animation.length+.00001: return {'error':'接触时间区间超出动画片段'}
 		if contact.has('position_m'):
-			if not contact.position_m is Array or contact.position_m.size()!=3: return {'error':'Contact position must have 3 coordinates'}
+			if not contact.position_m is Array or contact.position_m.size()!=3: return {'error':'接触位置必须包含 3 个坐标'}
 			for v in contact.position_m:
-				if not (v is float or v is int) or not is_finite(float(v)): return {'error':'Finite contact coordinates required'}
+				if not (v is float or v is int) or not is_finite(float(v)): return {'error':'接触坐标必须为有限数值'}
 	var ss = make_skeleton(source)
 	var ts = make_skeleton(target)
 	var sr = globals(source)
@@ -452,7 +452,7 @@ static func retarget(animation: Animation, source: Dictionary, target: Dictionar
 		for contact in contacts:
 			if time<float(contact.get('start',0)) or time>float(contact.get('end',animation.length)): continue
 			var side = str(contact.get('side','l'))
-			if side not in ['l','r']: ss.free(); ts.free(); return {'error':'Contact side must be l/r'}
+			if side not in ['l','r']: ss.free(); ts.free(); return {'error':'接触侧必须为 l 或 r'}
 			var foot = int(target.mapping['foot_'+side])
 			var goal = tr[foot].origin
 			if contact.has('position_m'):
@@ -467,7 +467,7 @@ static func retarget(animation: Animation, source: Dictionary, target: Dictionar
 			result.scale_track_insert_key(tracks[ti][2],time,local.basis.get_scale())
 	ss.free()
 	ts.free()
-	return {'animation':result,'diagnostics':{'sample_rate':fps,'translation_ratio':ratio,'mapped_bones':pairs.size(),'unmapped_target_bones':target.bones.size()-pairs.size(),'auxiliary_policy':'preserve_local_rest','root_policy':'mapped root; hips fallback when root absent','contact_policy':'explicit planted intervals, analytic two-bone leg IK' if not contacts.is_empty() else 'no planted intervals supplied','max_contact_error_m':contact_error}}
+	return {'animation':result,'diagnostics':{'sample_rate':fps,'translation_ratio':ratio,'mapped_bones':pairs.size(),'unmapped_target_bones':target.bones.size()-pairs.size(),'auxiliary_policy':'preserve_local_rest','root_policy':'使用已映射的根骨骼；缺少根骨骼时回退到髋部','contact_policy':'使用明确的脚部固定区间和解析式双骨骼腿部 IK' if not contacts.is_empty() else '未提供脚部固定区间','max_contact_error_m':contact_error}}
 
 static func solve_leg(poses: Dictionary, p: Dictionary, order: Array, side: String, goal: Vector3) -> float:
 	var a = int(p.mapping['thigh_'+side])
@@ -502,7 +502,7 @@ static func solve_leg(poses: Dictionary, p: Dictionary, order: Array, side: Stri
 
 static func attach_animations(scene: Node3D, source_scene: Node, source: Dictionary, target: Dictionary, contacts: Dictionary = {}) -> Dictionary:
 	for name in contacts:
-		if not contacts[name] is Array: return {'error':'Contact declarations must be arrays by animation name'}
+		if not contacts[name] is Array: return {'error':'接触声明必须按动画名称提供数组'}
 	var players = source_scene.find_children('*','AnimationPlayer',true,false)
 	var previous = scene.get_node_or_null('AnimationPlayer')
 	if previous!=null:
@@ -532,11 +532,11 @@ static func attach_animations(scene: Node3D, source_scene: Node, source: Diction
 
 static func stage_scene(scene: Node3D, path: String) -> String:
 	var packed = PackedScene.new()
-	if packed.pack(scene)!=OK: return 'Cannot pack avatar'
-	return '' if ResourceSaver.save(packed,path)==OK else 'Cannot stage scene'
+	if packed.pack(scene)!=OK: return '无法打包角色'
+	return '' if ResourceSaver.save(packed,path)==OK else '无法暂存场景'
 
 static func stage_glb(scene: Node3D, path: String) -> String:
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
-	if doc.append_from_scene(scene,state)!=OK: return 'Cannot encode GLB'
-	return '' if doc.write_to_filesystem(state,path)==OK else 'Cannot stage GLB'
+	if doc.append_from_scene(scene,state)!=OK: return '无法编码 GLB'
+	return '' if doc.write_to_filesystem(state,path)==OK else '无法暂存 GLB'

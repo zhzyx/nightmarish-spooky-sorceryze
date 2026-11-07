@@ -29,64 +29,67 @@ func initialize(workbench):
 	host = workbench
 	name = 'CharacterWorkbench'
 	var title = Label.new()
-	title.text = 'Character workbench · one character, one version'
+	title.text = '角色工作台 · 每个版本保存完整角色'
 	add_child(title)
-	source = host.line(self,'Character setup file')
+	source = host.line(self,'角色配置文件')
 	var settings = ConfigFile.new()
 	settings.load(host.state_dir.path_join('character.cfg'))
 	source.text = settings.get_value('character','setup','')
 	var chooser = FileDialog.new()
 	chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	chooser.title = '选择角色配置'
+	chooser.ok_button_text = '打开'
+	chooser.cancel_button_text = '取消'
 	chooser.access = FileDialog.ACCESS_FILESYSTEM
-	chooser.filters = PackedStringArray(['*.json ; Character setup'])
+	chooser.filters = PackedStringArray(['*.json ; 角色配置'])
 	add_child(chooser)
 	chooser.file_selected.connect(func(path): source.text = path; load_character())
-	host.button(self,'Browse characters',func(): chooser.popup_centered_ratio(.7))
-	host.button(self,'Choose character',load_character)
+	host.button(self,'浏览角色',func(): chooser.popup_centered_ratio(.7))
+	host.button(self,'载入角色',load_character)
 	var row = HBoxContainer.new()
 	add_child(row)
 	var controls = VBoxContainer.new()
 	controls.custom_minimum_size.x = 280
 	row.add_child(controls)
-	body = slider(controls,'Body width',.8,1.2,1.0)
-	face = slider(controls,'Face width',-.5,.5,0.0)
-	jaw_width = slider(controls,'Jaw width',-.5,.5,0.0)
-	nose_width = slider(controls,'Nose width',-.5,.5,0.0)
-	host.button(controls,'Apply body and face',apply_shape)
-	mouth = slider(controls,'Mouth opening',0,1,0)
-	gaze = slider(controls,'Look left / right',-1,1,0)
-	host.button(controls,'Apply mouth and gaze',apply_expression)
+	body = slider(controls,'体型宽度',.8,1.2,1.0)
+	face = slider(controls,'脸部宽度',-.5,.5,0.0)
+	jaw_width = slider(controls,'下颌宽度',-.5,.5,0.0)
+	nose_width = slider(controls,'鼻部宽度',-.5,.5,0.0)
+	host.button(controls,'应用体型和脸型',apply_shape)
+	mouth = slider(controls,'张嘴程度',0,1,0)
+	gaze = slider(controls,'视线左右偏移',-1,1,0)
+	host.button(controls,'应用口型和视线',apply_expression)
 	wardrobe = OptionButton.new()
-	wardrobe.add_item('Base character')
+	wardrobe.add_item('基础角色')
 	controls.add_child(wardrobe)
-	host.button(controls,'Change clothes',change_clothes)
+	host.button(controls,'更换服装',change_clothes)
 	hair_enabled = CheckBox.new()
-	hair_enabled.text = 'Independent hairstyle'
+	hair_enabled.text = '独立发型'
 	controls.add_child(hair_enabled)
 	hair_enabled.toggled.connect(func(_v): change_components())
 	cloth_enabled = CheckBox.new()
-	cloth_enabled.text = 'Cloth movement'
+	cloth_enabled.text = '布料动态'
 	controls.add_child(cloth_enabled)
 	cloth_enabled.toggled.connect(func(_v): change_components())
-	host.button(controls,'Play / pause animation',func(): session.playing = not session.playing)
-	host.button(controls,'Restart animation',func(): session.seek(0.0))
+	host.button(controls,'播放 / 暂停动画',func(): session.playing = not session.playing)
+	host.button(controls,'从头播放动画',func(): session.seek(0.0))
 	animation_choice = OptionButton.new()
-	animation_choice.add_item('Current animation')
+	animation_choice.add_item('当前动画')
 	controls.add_child(animation_choice)
-	host.button(controls,'Change animation',change_animation)
+	host.button(controls,'切换动画',change_animation)
 	hair_lod = OptionButton.new()
-	for label in ['Hair detail: full','Hair detail: medium','Hair detail: low']: hair_lod.add_item(label)
+	for label in ['头发细节：完整','头发细节：中等','头发细节：低']: hair_lod.add_item(label)
 	controls.add_child(hair_lod)
 	hair_lod.item_selected.connect(func(_i): hair_options())
 	hat = CheckBox.new()
-	hat.text = 'Wear hat'
+	hat.text = '佩戴帽子'
 	controls.add_child(hat)
 	hat.toggled.connect(func(_v): hair_options())
 	quality = OptionButton.new()
-	for label in ['Cloth: full simulation','Cloth: reduced simulation','Cloth: rigid preview']: quality.add_item(label)
+	for label in ['布料：完整模拟','布料：简化模拟','布料：刚性预览']: quality.add_item(label)
 	controls.add_child(quality)
 	quality.item_selected.connect(func(_i): cloth_quality())
-	host.button(controls,'Bake cloth for smooth playback',func(): report(await session.bake_cloth(),'Cloth baked; replay active.'))
+	host.button(controls,'烘焙布料以流畅回放',func(): report(await session.bake_cloth(),'布料已烘焙，正在使用缓存回放。'))
 	var container = SubViewportContainer.new()
 	container.custom_minimum_size = Vector2(620,600)
 	container.stretch = true
@@ -115,26 +118,27 @@ func initialize(workbench):
 	session = Session.new()
 	session.stage = stage
 	add_child(session)
-	destination = host.line(self,'New character version (.tscn)')
-	host.button(self,'Save character version',save)
-	host.button(self,'Reopen character version',reopen)
+	destination = host.line(self,'角色新版本路径（.tscn）')
+	host.button(self,'保存角色版本',save)
+	host.button(self,'重新打开角色版本',reopen)
 	var scope = Label.new()
-	scope.text = 'Compatibility copy: body, retained skinned clothing/waistband, static face shape and baked body motion.\nSimulated cloth surfaces, independent hair geometry, scalp cap, face animation and separate props are excluded; use the full character version for these.'
+	scope.text = '兼容副本包含：身体、保留的蒙皮服装与腰带、静态脸型和已烘焙的身体动画。\n布料模拟表面、独立头发、头皮盖、面部动画和独立道具请使用完整角色版本。'
 	scope.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(scope)
 	export_target = OptionButton.new()
 	for label in ['UE4','Manny','Mixamo']: export_target.add_item(label)
 	add_child(export_target)
-	export_path = host.line(self,'New compatibility copy (.glb)')
-	host.button(self,'Export saved character copy',export_character)
+	export_path = host.line(self,'兼容副本新路径（.glb）')
+	host.button(self,'导出已保存角色的兼容副本',export_character)
 	message = Label.new()
-	message.text = 'Browse to your character setup, then choose the character. Source assets stay unchanged.'
+	message.text = '请选择角色配置文件并载入角色。源资源保持不变。'
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(message)
 	var diagnostic = AcceptDialog.new()
-	diagnostic.title = 'Character operation details'
+	diagnostic.title = '角色操作详情'
+	diagnostic.ok_button_text = '确定'
 	add_child(diagnostic)
-	host.button(self,'Operation details',func(): diagnostic.dialog_text = last_error if not last_error.is_empty() else 'No failed operation.'; diagnostic.popup_centered(Vector2i(640,240)))
+	host.button(self,'操作详情',func(): diagnostic.dialog_text = last_error if not last_error.is_empty() else '暂无失败记录。'; diagnostic.popup_centered(Vector2i(640,240)))
 
 func slider(parent: Node, label: String, minimum: float, maximum: float, initial: float) -> HSlider:
 	var title = Label.new()
@@ -150,7 +154,7 @@ func slider(parent: Node, label: String, minimum: float, maximum: float, initial
 
 func report(error: String, success: String):
 	last_error = error
-	message.text = success if error.is_empty() else 'Operation could not finish; current character retained. See operation details.'
+	message.text = success if error.is_empty() else '操作未完成，已保留当前角色。请查看操作详情。'
 	if not error.is_empty():
 		var path = host.state_dir.path_join('character-diagnostics.log')
 		var output = FileAccess.open(path,FileAccess.READ_WRITE if FileAccess.file_exists(path) else FileAccess.WRITE)
@@ -168,20 +172,20 @@ func load_character():
 		settings.set_value('character','setup',source.text)
 		settings.save(host.state_dir.path_join('character.cfg'))
 		wardrobe.clear()
-		wardrobe.add_item('Base character')
+		wardrobe.add_item('基础角色')
 		for item in value.get('wardrobe',[]): wardrobe.add_item(item.spec.id)
 		animation_choice.clear()
 		for item in value.get('animations',[]): animation_choice.add_item(item.label)
 		hair_enabled.set_pressed_no_signal(false)
 		cloth_enabled.set_pressed_no_signal(false)
 		sync_controls_from_session()
-	report(error,'Character ready. Change shape, clothing and animation here.')
+	report(error,'角色已就绪，可以调整体型、服装和动画。')
 
 func apply_shape():
 	var value = session.recipe.duplicate(true)
 	value.body = {'chest':body.value,'waist':body.value,'hips':body.value,'depth':body.value}
 	value.face = {'face_width':face.value,'jaw_width':jaw_width.value,'nose_width':nose_width.value}
-	report(session.rebuild(value,session.generation),'Shape updated; clothing and bindings refreshed.')
+	report(session.rebuild(value,session.generation),'体型和脸型已更新，服装及绑定已刷新。')
 
 func change_clothes():
 	var value = session.recipe.duplicate(true)
@@ -190,28 +194,28 @@ func change_clothes():
 	value.cloth = {}
 	var error = session.rebuild(value,session.generation)
 	if error.is_empty(): cloth_enabled.set_pressed_no_signal(false)
-	report(error,'Clothing changed; animation, face and hairstyle retained.')
+	report(error,'服装已更换，动画、脸型和发型已保留。')
 
 func change_components():
 	var value = session.recipe.duplicate(true)
 	value.hair = local_config.get('hair',{}) if hair_enabled.button_pressed else {}
 	value.cloth = local_config.get('cloth',{}) if cloth_enabled.button_pressed else {}
 	var error = ''
-	if hair_enabled.button_pressed and value.hair.is_empty(): error = 'No hairstyle selected in the character setup.'
-	elif cloth_enabled.button_pressed and value.cloth.is_empty(): error = 'No cloth binding selected in the character setup.'
+	if hair_enabled.button_pressed and value.hair.is_empty(): error = '角色配置中尚未选择发型。'
+	elif cloth_enabled.button_pressed and value.cloth.is_empty(): error = '角色配置中尚未选择布料绑定。'
 	else: error = session.rebuild(value,session.generation)
 	if not error.is_empty() and is_instance_valid(session.live):
 		hair_enabled.set_pressed_no_signal(session.live.has_node('IndependentHair'))
 		cloth_enabled.set_pressed_no_signal(session.live.has_node('ClothSolver'))
-	report(error,'Character components updated.')
+	report(error,'角色组件已更新。')
 
 func save():
 	var error = session.save_version(destination.text,host.python_edit.text,host.host_edit.text.get_base_dir().path_join('interop_publish.py'))
-	report(error,'Character saved as a new version.')
+	report(error,'角色已保存为新版本。')
 
 func reopen():
-	report(session.reopen(destination.text,session.recipe),'Character version reopened.')
-	if session.recipe.get('read_only',false): message.text = 'Character reopened for playback. Original local sources are needed for editing.'
+	report(session.reopen(destination.text,session.recipe),'角色版本已重新打开。')
+	if session.recipe.get('read_only',false): message.text = '角色已重新打开，可直接回放；编辑时需要原始本地资源。'
 	sync_controls_from_session()
 
 func sync_controls_from_session():
@@ -229,7 +233,7 @@ func sync_controls_from_session():
 		var cloth = session.live.get_node_or_null('ClothSolver')
 		quality.select(int(cloth.settings.lod) if cloth else 0)
 		wardrobe.clear()
-		wardrobe.add_item('Base character')
+		wardrobe.add_item('基础角色')
 		var selected_garment = session.recipe.get('garment',{}).get('spec',{}).get('id','')
 		for item in local_config.get('wardrobe',[]):
 			wardrobe.add_item(item.spec.id)
@@ -247,7 +251,7 @@ func change_animation():
 	if local_config.get('animations',[]).is_empty(): return
 	var value = session.recipe.duplicate(true)
 	value.motion = local_config.animations[animation_choice.selected].path
-	report(session.rebuild(value,session.generation),'Animation changed; character components retained.')
+	report(session.rebuild(value,session.generation),'动画已切换，角色组件已保留。')
 
 func apply_expression():
 	if not is_instance_valid(session.live): return
@@ -256,7 +260,7 @@ func apply_expression():
 	if result.has('error'): report(result.error,''); return
 	session.recipe.face_layers = layers
 	session.evaluate(0.0)
-	report('','Mouth and gaze updated; hairstyle binding retained.')
+	report('','口型和视线已更新，发型绑定已保留。')
 
 func hair_options():
 	if not is_instance_valid(session.live): return
@@ -273,12 +277,12 @@ func cloth_quality():
 	cloth.settings.lod = quality.selected
 	cloth.mode = 'realtime'
 	cloth.cache = {}
-	report(cloth.initialize(),'Cloth quality updated; prior bake invalidated.')
+	report(cloth.initialize(),'布料质量已更新，之前的烘焙缓存已失效。')
 	session.recipe.cloth_settings = cloth.settings.duplicate(true)
 
 func export_character():
 	var profiles = local_config.get('target_profiles',[])
-	if profiles.size()!=3: report('Choose the three verified target profiles in the local recipe.',''); return
+	if profiles.size()!=3: report('请在本地角色配置中指定三个已验证的目标骨架配置。',''); return
 	var target = Session.read_object(profiles[export_target.selected])
 	var error = session.export_version(destination.text,target,export_path.text,host.python_edit.text,host.host_edit.text.get_base_dir().path_join('interop_publish.py'))
-	report(error,'Compatibility copy saved. See its report for included and excluded channels.')
+	report(error,'兼容副本已保存。所包含和省略的通道详见导出报告。')

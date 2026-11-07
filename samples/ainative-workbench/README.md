@@ -1,6 +1,8 @@
-# AINative Workbench (Godot 4)
+# 马良工作台（Godot 4）
 
-In this engine build, **AINative is a built-in editor page**. Open any project and click **AINative** in the editor's top workspace bar. No project plugin, `addons` copy, sample project, or plugin activation is needed. The page directly offers **Mesh 生成**, **骨骼绑定**, **角色工作台**, **其他工具**, and **本机设置**. Mesh generation is the initial page; preview a generated Mesh, then switch to rigging, or browse an existing local Mesh there. Actual inference still requires a configured backend; Copy remains an explicit offline demonstration.
+马良是此引擎内置的编辑器页面。用当前构建打开任意工程，点击顶部 **AI Chat 右侧的“马良”** 即可进入，无需安装或启用工程插件。马良占满工作区，进入时隐藏场景树、检查器、场景标签和底部面板，切回 2D、3D 或脚本页面时恢复编辑器布局；旧版 AINative 标签顺序在恢复布局时自动迁移，并保留原选中页面。
+
+页面提供 **网格生成、骨骼绑定、角色工作台、其他工具、本机设置**，默认打开网格生成。按钮、输入提示、确认与状态使用中文，ComfyUI、Python、GLB、UE4、Mixamo 等专名及 JSON 字段保留。生成选项通过 metadata 使用原英文类型，已有工作流与本机数据路径不变。先预览生成的网格，再切到骨骼绑定；也可在骨骼绑定页浏览本地网格。真实生成仍需配置模型服务，离线复制节点仅用于演示。外部工具的原始失败详情保留在本机诊断日志，可从“本机设置”打开。
 
 The built-in native plugin embeds the shared workbench scripts and Python tools into the editor binary and installs a content-versioned bundle in editor data on first use. The default local host follows the current engine bundle when upgrading; explicit custom host settings are retained. Task state and settings are isolated by the absolute project path, outside project source. The sample below remains a standalone/regression harness and compatibility addon for older engines; on current engines its addon does not register a duplicate panel. See [the built-in entry and acceptance scope](../../design-docs/ainative-engine-builtin-20261107.md).
 

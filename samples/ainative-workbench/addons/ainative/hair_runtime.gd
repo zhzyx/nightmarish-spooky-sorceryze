@@ -165,7 +165,7 @@ func rebuild():
 func _process(delta):
 	if not is_instance_valid(body) or head<0: return
 	if config.scalp_revision!=get_parent().get_meta('scalp_binding',{}).get('revision'):
-		set_meta('hair_error','Scalp changed; rebind hair.')
+		set_meta('hair_error','头皮已改变；请重新绑定头发。')
 		set_process(false)
 		return
 	var start = Time.get_ticks_usec()

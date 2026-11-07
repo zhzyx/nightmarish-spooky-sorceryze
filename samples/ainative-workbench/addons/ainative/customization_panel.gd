@@ -86,23 +86,28 @@ func frame_character():
 
 func _ready():
 	var title = Label.new()
-	title.text = 'Character customization / mapped face asset'
+	title.text = '角色定制 / 已映射的面部资源'
 	add_child(title)
 	source_path = LineEdit.new()
-	source_path.placeholder_text = 'Mapped Rain GLB / versioned scene path'
+	source_path.placeholder_text = '已映射的 Rain GLB / 已保存场景路径'
 	add_child(source_path)
 	binding_path = LineEdit.new()
-	binding_path.placeholder_text = 'FaceBinding JSON (asset-specific semantic mapping)'
+	binding_path.placeholder_text = '面部绑定 FaceBinding JSON（资源专用语义映射）'
 	add_child(binding_path)
 	base_source_path = LineEdit.new()
-	base_source_path.placeholder_text = 'Immutable base path for reopening (local setting only)'
+	base_source_path.placeholder_text = '重新打开时使用的原始模型路径（仅保存在本地设置中）'
 	add_child(base_source_path)
-	button('Load immutable source',load_source)
+	button('载入原始资源',load_source)
 	for key in ['chest','waist','hips','depth']+Customization.FACE_KEYS+['jawOpen','mouthSmile','mouthFrown','browDown','eyeBlink','lookLeft','lookRight','lookUp','lookDown']:
 		var row = HBoxContainer.new()
 		add_child(row)
 		var label = Label.new()
-		label.text = key
+		label.text = {
+			'chest':'胸部宽度','waist':'腰部宽度','hips':'臀部宽度','depth':'身体厚度',
+			'face_width':'脸部宽度','jaw_width':'下颌宽度','nose_width':'鼻部宽度',
+			'jawOpen':'张嘴','mouthSmile':'微笑','mouthFrown':'嘴角下垂','browDown':'压眉',
+			'eyeBlink':'眨眼','lookLeft':'向左看','lookRight':'向右看','lookUp':'向上看','lookDown':'向下看',
+		}.get(key,key)
 		label.custom_minimum_size.x = 125
 		row.add_child(label)
 		var slider = HSlider.new()
@@ -115,31 +120,31 @@ func _ready():
 		controls[key] = slider
 		slider.value_changed.connect(func(_v): apply())
 	destination = LineEdit.new()
-	destination.placeholder_text = 'New .tscn version (never overwrite)'
+	destination.placeholder_text = '新版本保存路径（.tscn，保留已有版本）'
 	add_child(destination)
-	button('Save version',save_version)
+	button('保存版本',save_version)
 	wardrobe_path = LineEdit.new()
-	wardrobe_path.placeholder_text = 'Independent garment config JSON'
+	wardrobe_path.placeholder_text = '独立服装配置 JSON'
 	add_child(wardrobe_path)
-	button('Refit independent garment from base',refit_garment)
+	button('从原始模型重新拟合独立服装',refit_garment)
 	body_motion_path = LineEdit.new()
-	body_motion_path.placeholder_text = 'Generated body scene with motion_target_profile'
+	body_motion_path.placeholder_text = '已生成的身体动画场景（含 motion_target_profile）'
 	add_child(body_motion_path)
-	button('Load and play body animation',load_body_motion)
-	button('Pause body animation',func():
+	button('载入并播放身体动画',load_body_motion)
+	button('暂停身体动画',func():
 		if is_instance_valid(body_player): body_player.pause())
 	face_stream_path = LineEdit.new()
-	face_stream_path.placeholder_text = 'MediaPipe face stream JSON'
+	face_stream_path.placeholder_text = 'MediaPipe 面部数据流 JSON'
 	add_child(face_stream_path)
-	button('Load captured expression',load_expression)
+	button('载入捕捉的表情',load_expression)
 	face_frame = SpinBox.new()
-	face_frame.prefix = 'Expression frame '
+	face_frame.prefix = '表情帧 '
 	face_frame.step = 1
 	add_child(face_frame)
 	face_frame.value_changed.connect(func(_v): apply())
 	message = Label.new()
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	message.text = 'Manual viseme / gaze controls. Audio AI is not implemented.'
+	message.text = '可手动调整口型和视线。语音 AI 功能尚未实现。'
 	add_child(message)
 
 func button(text: String, callback: Callable):
@@ -158,19 +163,19 @@ func load_source():
 	if not candidate.has_meta('face_binding'):
 		var binding = JSON.parse_string(FileAccess.get_file_as_string(binding_path.text))
 		if not binding is Dictionary or binding.get('asset_sha256')!=candidate_sha:
-			message.text = 'Mapped asset SHA mismatch or missing FaceBinding'
+			message.text = '映射资源校验值不匹配，或缺少面部绑定 FaceBinding'
 			candidate.free()
 			return
 		candidate.set_meta('face_binding',binding)
 		candidate_sha = binding.source_sha256
 	var candidate_binding = candidate.get_meta('face_binding',{})
 	if not candidate_binding is Dictionary:
-		message.text = 'FaceBinding must be an object; current source retained'
+		message.text = 'FaceBinding 必须为 JSON 对象，当前资源已保留'
 		candidate.free()
 		return
 	var candidate_dna = candidate.get_meta('character_dna',Customization.dna(candidate_binding.get('source_sha256',''),{}, {},candidate_binding.get('mapping_version','')))
 	if not candidate_dna is Dictionary or not candidate.get_meta('face_layers',[]) is Array:
-		message.text = 'Invalid saved DNA/layers; current source retained'
+		message.text = '已保存的角色参数或分层配置无效，当前资源已保留'
 		candidate.free()
 		return
 	var preflight = Customization.apply_face(candidate,candidate_dna,candidate.get_meta('face_layers',[]))
@@ -185,7 +190,7 @@ func load_source():
 		for i in mi.get_blend_shape_count(): available.append(str(mi.mesh.get_blend_shape_name(i)))
 	for key in controls:
 		if not candidate_binding.morphs.has(key) or not candidate_binding.morphs[key] in available:
-			message.text = 'Unsupported semantic morph: '+key+'; current source retained'
+			message.text = '不支持该语义形变：'+key+'；当前资源已保留'
 			candidate.free()
 			return
 	var base_path = source_path.text if FileAccess.get_sha256(source_path.text)==candidate_binding.get('asset_sha256') else base_source_path.text
@@ -193,7 +198,7 @@ func load_source():
 	if base_path!=source_path.text:
 		var base_result = Interop.load_scene(base_path)
 		if base_result.has('error') or FileAccess.get_sha256(base_path)!=candidate.get_meta('face_binding').asset_sha256:
-			message.text = 'Immutable base missing or changed; cannot reopen for refitting'
+			message.text = '原始模型不存在或已变化，无法重新打开并重新拟合'
 			if base_result.has('scene'): base_result.scene.free()
 			candidate.free()
 			return
@@ -230,7 +235,7 @@ func load_source():
 	# saved expression or its channel ownership while reopening an old version.
 	if not candidate_dna.body.is_empty() or not candidate_dna.face.is_empty():
 		last_result = Customization.apply_face(scene,candidate_dna,snapshot_layers)
-		message.text = 'Saved body, face and expression restored.'
+		message.text = '已恢复保存的体型、脸型和表情。'
 	frame_character()
 
 func apply():
@@ -255,13 +260,13 @@ func apply():
 	last_result = Customization.apply_face(scene,dna,layers)
 	if not last_result.has('error') and scene.has_meta('garment'):
 		scene.set_meta('garment_fit_stale',scene.get_meta('garment_dna_revision','')!=dna.revision)
-	message.text = last_result.error if last_result.has('error') else ('Body and face updated. Captured expression; manual mouth and gaze.' if not expression_frames.is_empty() else 'Body and face updated. Manual expression, mouth and gaze.')
-	if scene.get_meta('garment_fit_stale',false): message.text += ' Refit the garment before saving.'
+	message.text = last_result.error if last_result.has('error') else ('体型和脸型已更新。表情来自捕捉，口型和视线由手动控制。' if not expression_frames.is_empty() else '体型和脸型已更新。表情、口型和视线由手动控制。')
+	if scene.get_meta('garment_fit_stale',false): message.text += ' 保存前请重新拟合服装。'
 
 func save_version():
 	if not is_instance_valid(scene): return
 	if destination.text.get_extension()!='tscn' or FileAccess.file_exists(destination.text):
-		message.text = 'New .tscn version required; overwrite refused'
+		message.text = '请填写新的 .tscn 版本路径，已有版本不能覆盖'
 		return
 	var staged = host_node.state_dir.path_join('customization-'+str(Time.get_ticks_usec())+'.tscn')
 	var error = Customization.stage(scene,staged)
@@ -270,13 +275,13 @@ func save_version():
 		return
 	var output = []
 	var code = OS.execute(host_node.python_edit.text,[host_node.host_edit.text.get_base_dir().path_join('interop_publish.py'),staged,ProjectSettings.globalize_path(destination.text)],output,true)
-	message.text = 'Saved immutable version: '+destination.text if code==0 else 'Publication failed; source retained. '+str(output)
+	message.text = '新版本已保存：'+destination.text if code==0 else host_node.diagnostic_error('保存失败，源资源已保留',output)
 
 func refit_garment():
 	if not is_instance_valid(scene) or not is_instance_valid(immutable_base): return
 	var config = JSON.parse_string(FileAccess.get_file_as_string(wardrobe_path.text))
 	if not config is Dictionary or not config.get('garments') is Array or config.garments.is_empty():
-		message.text = 'Independent garment config required'
+		message.text = '请提供独立服装配置'
 		return
 	var binding = immutable_base.get_meta('face_binding',{})
 	var extracted = Interop.extract(immutable_base,'anatomical',{'sha256':binding.asset_sha256,'version':binding.mapping_version,'authority':binding.source_url},binding.get('body_mapping',{}))
@@ -310,7 +315,7 @@ func refit_garment():
 		body_player.play(playback.name)
 		body_player.seek(playback.time,true)
 		if not playback.playing: body_player.pause()
-	message.text = 'Independent garment refitted to the current body.'
+	message.text = '独立服装已按当前体型重新拟合。'
 
 func _exit_tree():
 	if is_instance_valid(immutable_base): immutable_base.free()
@@ -350,7 +355,7 @@ func load_body_motion():
 			library.add_animation(name.replace('/','_'),converted.animation)
 	source.free()
 	if library.get_animation_list().is_empty():
-		message.text = 'Body source contains no animation'
+		message.text = '身体动画源中没有可用动画'
 		return
 	if is_instance_valid(body_player):
 		body_player.get_parent().remove_child(body_player)
@@ -361,16 +366,16 @@ func load_body_motion():
 	body_player.add_animation_library('',library)
 	body_player.play(library.get_animation_list()[0])
 	scene.set_meta('body_motion_source',{'sha256':FileAccess.get_sha256(body_motion_path.text),'profile_revision':profile.revision})
-	message.text = 'Playing generated body animation with independent face channels.'
+	message.text = '正在播放生成的身体动画，面部通道独立保留。'
 
 func load_expression():
 	var document = JSON.parse_string(FileAccess.get_file_as_string(face_stream_path.text))
 	if not document is Dictionary or not document.get('streams') is Dictionary or not document.streams.get('face') is Dictionary or not document.streams.face.get('frames') is Array or document.streams.face.frames.is_empty():
-		message.text = 'Face stream contains no detected frames'
+		message.text = '面部数据流中没有检测到有效帧'
 		return
 	for frame in document.streams.face.frames:
 		if not frame is Dictionary or Customization.mediapipe_layer(frame).has('error'):
-			message.text = 'Face stream includes missing or invalid detection; valid source retained'
+			message.text = '面部数据流包含缺失或无效的检测结果，原有效资源已保留'
 			return
 	expression_frames = document.streams.face.frames
 	face_frame.max_value = expression_frames.size()-1

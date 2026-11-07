@@ -16,15 +16,15 @@ static func embedded_only(value) -> bool:
 
 static func source_bytes(path: String, expected: String) -> Dictionary:
 	var bytes = FileAccess.get_file_as_bytes(path)
-	if bytes.size()<20 or bytes.decode_u32(0)!=0x46546c67 or bytes.decode_u32(4)!=2 or bytes.decode_u32(8)!=bytes.size(): return {'error':'Invalid independent GLB header'}
+	if bytes.size()<20 or bytes.decode_u32(0)!=0x46546c67 or bytes.decode_u32(4)!=2 or bytes.decode_u32(8)!=bytes.size(): return {'error':'独立 GLB 文件头无效'}
 	var length = bytes.decode_u32(12)
-	if bytes.decode_u32(16)!=0x4e4f534a or length>bytes.size()-20: return {'error':'Invalid independent GLB JSON chunk'}
+	if bytes.decode_u32(16)!=0x4e4f534a or length>bytes.size()-20: return {'error':'独立 GLB 的 JSON 数据块无效'}
 	var document = JSON.parse_string(bytes.slice(20,20+length).get_string_from_utf8())
-	if not document is Dictionary or not embedded_only(document): return {'error':'Garment must be self-contained; external GLB dependencies refused'}
+	if not document is Dictionary or not embedded_only(document): return {'error':'服装 GLB 必须自包含，不能依赖外部文件'}
 	var digest = HashingContext.new()
 	digest.start(HashingContext.HASH_SHA256)
 	digest.update(bytes)
-	if digest.finish().hex_encode()!=expected: return {'error':'Garment source hash mismatch'}
+	if digest.finish().hex_encode()!=expected: return {'error':'服装源文件哈希不匹配'}
 	return {'bytes':bytes}
 
 static func normal_arrays(a: Array) -> Array:
@@ -46,9 +46,9 @@ static func normal_arrays(a: Array) -> Array:
 static func shape_error(shape: Dictionary) -> String:
 	for key in SHAPE_KEYS:
 		var v = shape.get(key,1.0)
-		if not (v is float or v is int) or not is_finite(float(v)) or v < .8 or v > 1.2: return 'Body shape outside calibrated 0.8–1.2 envelope: '+key
+		if not (v is float or v is int) or not is_finite(float(v)) or v < .8 or v > 1.2: return '体型超出已标定的 0.8–1.2 范围：'+key
 	for key in shape:
-		if not key in SHAPE_KEYS: return 'Unknown body dimension: '+key
+		if not key in SHAPE_KEYS: return '未知的体型维度：'+key
 	return ''
 
 static func shaped(v: Vector3, shape: Dictionary, hip: float, chest: float) -> Vector3:
@@ -91,30 +91,30 @@ static func intersection_diagnostics(body: ArrayMesh, garment: ArrayMesh) -> Dic
 			distances.append(distance)
 			if distance<.003: near_surface += 1
 	distances.sort()
-	return {'method':'actual triangle BVH edge intersections and bidirectional radial surface-distance samples','body_edges_tested':tested_edges,'crossing_edges':crossings,'garment_samples':samples,'radial_hits':distances.size(),'radial_min_distance_m':distances[0] if not distances.is_empty() else null,'radial_median_distance_m':distances[distances.size()/2] if not distances.is_empty() else null,'samples_under_3mm':near_surface,'status':'intersections_detected' if crossings>0 else 'no_intersections_in_sample','limitations':'Sampled, not exhaustive; radial distance is not shortest clearance; open/nonmanifold body prevents reliable inside/outside certification.'}
+	return {'method':'基于真实三角形 BVH 的边相交检测，以及双向径向表面距离采样','body_edges_tested':tested_edges,'crossing_edges':crossings,'garment_samples':samples,'radial_hits':distances.size(),'radial_min_distance_m':distances[0] if not distances.is_empty() else null,'radial_median_distance_m':distances[distances.size()/2] if not distances.is_empty() else null,'samples_under_3mm':near_surface,'status':'intersections_detected' if crossings>0 else 'no_intersections_in_sample','limitations':'检测采用采样，未穷举全部位置；径向距离不等于最短间隙；身体网格存在开放边或非流形结构时，无法可靠判定内外关系。'}
 
 static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Dictionary, shape: Dictionary) -> Dictionary:
-	if avatar.has_meta('garment'): return {'error':'Swap from the immutable base avatar, not a derived assembly; old garments and accessory bones must not accumulate'}
+	if avatar.has_meta('garment'): return {'error':'请从不可变的基础角色替换服装；不能在派生组合上叠加，以免累积旧服装和配件骨骼'}
 	var error = Interop.validate(profile)
 	if error: return {'error':error}
 	error = shape_error(shape)
 	if error: return {'error':error}
 	var captured = source_bytes(path,spec.get('source_sha256',''))
 	if captured.has('error'): return captured
-	if spec.get('kind') not in ['top','armor','skirt'] or not spec.get('id','') or not spec.get('version',''): return {'error':'Garment identity/version/kind required'}
-	if not spec.id is String or not spec.version is String or not spec.id.is_valid_identifier(): return {'error':'Garment ID must be an identifier and version a string'}
+	if spec.get('kind') not in ['top','armor','skirt'] or not spec.get('id','') or not spec.get('version',''): return {'error':'必须提供服装标识、版本和类型'}
+	if not spec.id is String or not spec.version is String or not spec.id.is_valid_identifier(): return {'error':'服装 ID 必须为有效标识符，版本必须为字符串'}
 	var yaw = spec.get('yaw_degrees',0.0)
-	if not (yaw is float or yaw is int) or not is_finite(float(yaw)): return {'error':'Finite garment orientation required'}
+	if not (yaw is float or yaw is int) or not is_finite(float(yaw)): return {'error':'服装朝向必须为有限数值'}
 	var original_sk = Interop.skeleton(avatar)
-	if original_sk==null or original_sk.get_bone_count()!=profile.bones.size(): return {'error':'Avatar skeleton differs from Profile'}
+	if original_sk==null or original_sk.get_bone_count()!=profile.bones.size(): return {'error':'角色骨架与骨架配置不同'}
 	for i in original_sk.get_bone_count():
-		if original_sk.get_bone_parent(i)!=int(profile.bones[i].parent) or not original_sk.get_bone_global_rest(i).is_equal_approx(Interop.decode(profile.bones[i].global_rest)): return {'error':'Avatar hierarchy/global rest does not match immutable Profile'}
-		if original_sk.get_bone_name(i)!=profile.bones[i].name or not original_sk.get_bone_rest(i).is_equal_approx(Interop.decode(profile.bones[i].local_rest)): return {'error':'Avatar rest does not match immutable Profile'}
+		if original_sk.get_bone_parent(i)!=int(profile.bones[i].parent) or not original_sk.get_bone_global_rest(i).is_equal_approx(Interop.decode(profile.bones[i].global_rest)): return {'error':'角色层级或全局静止姿势与不可变骨架配置不匹配'}
+		if original_sk.get_bone_name(i)!=profile.bones[i].name or not original_sk.get_bone_rest(i).is_equal_approx(Interop.decode(profile.bones[i].local_rest)): return {'error':'角色静止姿势与不可变骨架配置不匹配'}
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
-	if doc.append_from_buffer(captured.bytes,'',state)!=OK: return {'error':'Garment GLB import failed'}
+	if doc.append_from_buffer(captured.bytes,'',state)!=OK: return {'error':'服装 GLB 导入失败'}
 	var source = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
-	if source==null: return {'error':'Empty garment scene'}
+	if source==null: return {'error':'服装场景为空'}
 	var surfaces = []
 	var bounds = AABB()
 	var first = true
@@ -130,7 +130,7 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 			a[Mesh.ARRAY_VERTEX] = vertices
 			surfaces.append({'arrays':a,'material':mi.mesh.surface_get_material(si)})
 	source.free()
-	if first or minf(bounds.size.x,minf(bounds.size.y,bounds.size.z))<.0001: return {'error':'Degenerate garment cage'}
+	if first or minf(bounds.size.x,minf(bounds.size.y,bounds.size.z))<.0001: return {'error':'服装笼形几何已退化'}
 	var rest = Interop.globals(profile)
 	var hips = rest[int(profile.mapping.hips)].origin
 	var chest_bone = int(profile.mapping.get('chest',profile.mapping.hips))
@@ -144,11 +144,11 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 		target = AABB(Vector3(-shoulder_width*.7,knee_y,-shoulder_width*.4),Vector3(shoulder_width*1.4,waist_y-knee_y,shoulder_width*.8))
 	if spec.has('target_box'):
 		var b = spec.target_box
-		if not b is Array or b.size()!=6: return {'error':'target_box requires six meter coordinates'}
+		if not b is Array or b.size()!=6: return {'error':'target_box 需要 6 个以米为单位的坐标'}
 		for value in b:
-			if not (value is float or value is int) or not is_finite(float(value)): return {'error':'Nonfinite target cage'}
+			if not (value is float or value is int) or not is_finite(float(value)): return {'error':'目标笼形几何包含非有限数值'}
 		target = AABB(Vector3(b[0],b[1],b[2]),Vector3(b[3],b[4],b[5]))
-		if minf(target.size.x,minf(target.size.y,target.size.z))<=0: return {'error':'Invalid target cage dimensions'}
+		if minf(target.size.x,minf(target.size.y,target.size.z))<=0: return {'error':'目标笼形尺寸无效'}
 	# The authored cloth boundary is separate from the skeleton's hip joint.
 	# Deep poses can intersect a low hip-pinned boundary; refit the partition
 	# and cloth binding together instead of weakening prescribed waist pins.
@@ -156,7 +156,7 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 	if spec.has('cloth_start_y'):
 		var boundary = spec.cloth_start_y
 		if spec.kind != 'skirt' or not (boundary is int or boundary is float) or not is_finite(float(boundary)) or boundary <= target.position.y+.02 or boundary >= target.end.y-.01:
-			return {'error':'Skirt cloth_start_y must be finite inside the target cage with a retained waist band'}
+			return {'error':'裙装的 cloth_start_y 必须为目标笼形内部的有限数值，并保留腰带区域'}
 		cloth_start_y = float(boundary)
 	var scene = avatar.duplicate()
 	scene.name = 'GarmentAssembly'
@@ -256,7 +256,7 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 	return {'scene':scene,'manifest':manifest}
 
 static func stage(scene: Node3D, path: String) -> String:
-	if FileAccess.file_exists(path) or path.get_extension()!='tscn': return 'Choose a new .tscn version; never overwrite a source or derived version'
+	if FileAccess.file_exists(path) or path.get_extension()!='tscn': return '请选择新的 .tscn 版本；不能覆盖源文件或派生版本'
 	var snapshot = scene.duplicate()
 	for player in snapshot.find_children('*','AnimationPlayer',true,false): player.stop()
 	Interop.skeleton(snapshot).reset_bone_poses()
@@ -264,5 +264,5 @@ static func stage(scene: Node3D, path: String) -> String:
 	var packed = PackedScene.new()
 	var code = packed.pack(snapshot)
 	snapshot.free()
-	if code!=OK or ResourceSaver.save(packed,path)!=OK: return 'Cannot stage garment assembly'
+	if code!=OK or ResourceSaver.save(packed,path)!=OK: return '无法暂存服装组合'
 	return ''

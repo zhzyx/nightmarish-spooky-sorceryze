@@ -39,6 +39,7 @@
 #include "core/object/script_language.h"
 #include "core/os/os.h"
 #include "editor/ainative/bundle.gen.h"
+#include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/file_system/editor_paths.h"
@@ -79,18 +80,18 @@ void AINativeEditorPlugin::_open_workbench() {
 		return;
 	}
 	if (!ClassDB::class_exists("GDScript")) {
-		notice->set_text(U"AINative 需要此编辑器启用 GDScript 支持。");
+		notice->set_text(U"马良需要此编辑器启用 GDScript 支持。");
 		return;
 	}
 	const String editor_data_root = EditorPaths::get_singleton()->get_data_dir().path_join("ainative");
 	const String bundle = editor_data_root.path_join("bundles").path_join(ainative_bundle_version);
 	if (install_ainative_bundle(bundle) != OK) {
-		notice->set_text(U"无法准备内置 AINative 工具，请检查编辑器数据目录是否可写。");
+		notice->set_text(U"无法准备内置马良工具，请检查编辑器数据目录是否可写。");
 		return;
 	}
 	Ref<Script> script = ResourceLoader::load(bundle.path_join("scripts/workbench.gd"), "Script");
 	if (script.is_null() || !script->can_instantiate()) {
-		notice->set_text(U"无法加载内置 AINative 工作台，请检查编辑器错误日志。");
+		notice->set_text(U"无法加载内置马良工作台，请检查编辑器错误日志。");
 		return;
 	}
 	const String project_key = ProjectSettings::get_singleton()->get_resource_path().sha256_text();
@@ -110,15 +111,22 @@ void AINativeEditorPlugin::_open_workbench() {
 AINativeEditorPlugin::AINativeEditorPlugin() {
 	dock = memnew(EditorDock);
 	dock->set_name("AINative");
-	dock->set_title("AINative");
+	dock->set_title(U"马良");
 	dock->set_layout_key("AINativeMainScreen");
 	dock->set_icon_name("MeshInstance3D");
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
 	notice = memnew(Label);
-	notice->set_text(U"AINative · Mesh 生成与骨骼绑定");
+	notice->set_text(U"马良 · 网格生成与骨骼绑定");
 	dock->add_child(notice);
 	dock->connect("visibility_changed", callable_mp(this, &AINativeEditorPlugin::_open_workbench));
 	EditorDockManager::get_singleton()->add_dock(dock);
+	DockTabContainer *tabs = dock->get_parent_container();
+	for (int i = 0; i < tabs->get_tab_count(); i++) {
+		if (tabs->get_dock(i)->get_layout_key() == "AIChatMainScreen") {
+			dock->set_tab_index(i + 1, false);
+			break;
+		}
+	}
 	callable_mp(this, &AINativeEditorPlugin::_open_workbench).call_deferred();
 }

@@ -19,19 +19,19 @@ func _ready():
 func _process(delta):
 	if playing: sample(time_seconds+delta)
 func sample(time: float):
-	if not is_finite(time): result = {'error':'Finite timestamp required'}; return
+	if not is_finite(time): result = {'error':'时间戳必须为有限数值'}; return
 	var sk = get_node_or_null(skeleton_path) as Skeleton3D
 	var player = get_node_or_null(player_path) as AnimationPlayer
-	if sk==null or player==null or not player.has_animation(animation_name): result = {'error':'Missing skeleton or source animation'}; return
+	if sk==null or player==null or not player.has_animation(animation_name): result = {'error':'缺少骨架或源动画'}; return
 	var error = Layering.validate(sk,config)
 	if error: result = {'error':error}; return
 	for layer in config.get('layers',[]):
 		if not layer.has('clip'): continue
-		if not clips.has(layer.clip) or not clips[layer.clip] is Animation: result = {'error':'Layer clip missing'}; return
+		if not clips.has(layer.clip) or not clips[layer.clip] is Animation: result = {'error':'图层动画片段不存在'}; return
 		var candidate = clips[layer.clip] as Animation
 		for track in candidate.get_track_count():
 			var path = candidate.track_get_path(track)
-			if path.get_subname_count()!=1 or not str(path.get_subname(0)) in layer.mask or sk.find_bone(str(path.get_subname(0)))<0 or candidate.track_get_type(track) not in [Animation.TYPE_ROTATION_3D,Animation.TYPE_POSITION_3D,Animation.TYPE_SCALE_3D]: result = {'error':'Invalid layer track'}; return
+			if path.get_subname_count()!=1 or not str(path.get_subname(0)) in layer.mask or sk.find_bone(str(path.get_subname(0)))<0 or candidate.track_get_type(track) not in [Animation.TYPE_ROTATION_3D,Animation.TYPE_POSITION_3D,Animation.TYPE_SCALE_3D]: result = {'error':'图层轨道无效'}; return
 	var previous_pose = Layering.capture(sk)
 	var previous_time = time_seconds
 	time_seconds = fposmod(time,player.get_animation(animation_name).length)
@@ -43,23 +43,23 @@ func sample(time: float):
 	var sampled = config.duplicate(true)
 	for layer in sampled.get('layers',[]):
 		if not layer.has('clip'): continue
-		if not clips.has(layer.clip): result = {'error':'Layer clip missing'}; return
+		if not clips.has(layer.clip): result = {'error':'图层动画片段不存在'}; return
 		var clip = clips[layer.clip] as Animation
 		layer.pose = layer.get('pose',{}).duplicate(true)
 		for track in clip.get_track_count():
 			var path = clip.track_get_path(track)
-			if path.get_subname_count()!=1: result = {'error':'Layer tracks must target bones'}; return
+			if path.get_subname_count()!=1: result = {'error':'图层轨道必须指向骨骼'}; return
 			var bone = str(path.get_subname(0))
-			if not bone in layer.mask: result = {'error':'Clip writes outside mask'}; return
+			if not bone in layer.mask: result = {'error':'动画片段的写入超出遮罩范围'}; return
 			var i = sk.find_bone(bone)
-			if i<0: result = {'error':'Unknown clip bone'}; return
+			if i<0: result = {'error':'动画片段包含未知骨骼'}; return
 			var transform = Interop.decode(layer.pose[bone]) if layer.pose.has(bone) else sk.get_bone_pose(i)
 			var t = fposmod(time_seconds,clip.length)
 			match clip.track_get_type(track):
 				Animation.TYPE_ROTATION_3D: transform.basis = Basis(clip.rotation_track_interpolate(track,t))
 				Animation.TYPE_POSITION_3D: transform.origin = clip.position_track_interpolate(track,t)
 				Animation.TYPE_SCALE_3D: transform.basis = transform.basis.orthonormalized().scaled(clip.scale_track_interpolate(track,t))
-				_: result = {'error':'Unsupported layer track'}; return
+				_: result = {'error':'不支持此图层轨道'}; return
 			layer.pose[bone] = Interop.encode(transform)
 	result = Layering.evaluate(sk,Layering.capture(sk),sampled,time_seconds)
 	if result.has('error'):

@@ -19,7 +19,7 @@ func load_source():
 		snapshot = saved.get_meta('hair_data',{}).duplicate(true)
 		var error = Hair.runtime_error(candidate,snapshot,saved.get_meta('authored_scalp_cap',{}))
 		if error:
-			message.text = 'Saved hair source or scalp changed; current character retained.'
+			message.text = '已保存的头发源资源或头皮已变化，当前角色已保留。'
 			candidate.free()
 			return
 	candidate.free()
@@ -41,38 +41,38 @@ func _ready():
 	super._ready()
 	name = 'HairPanel'
 	var title = Label.new()
-	title.text = 'Independent hair / scalp binding / authored Cards and Mesh'
+	title.text = '独立头发 / 头皮绑定 / 人工制作的发片与网格'
 	add_child(title)
 	move_child(title,0)
 	hair_source = LineEdit.new()
-	hair_source.placeholder_text = 'Verified hair source manifest JSON'
+	hair_source.placeholder_text = '已验证的头发资源清单 JSON'
 	add_child(hair_source)
 	move_child(hair_source,1)
-	button('Bind independent hair to current scalp',bind_hair)
+	button('将独立头发绑定到当前头皮',bind_hair)
 	move_child(get_child(-1),2)
 	hair_lod = OptionButton.new()
-	for label in ['LOD 0','LOD 1','LOD 2']: hair_lod.add_item(label)
+	for label in ['完整细节（LOD 0）','中等细节（LOD 1）','低细节（LOD 2）']: hair_lod.add_item(label)
 	add_child(hair_lod)
 	move_child(hair_lod,3)
 	hair_lod.item_selected.connect(func(_i): update_representation())
 	hair_cards = CheckBox.new()
-	hair_cards.text = 'Authored guide Cards (Mesh fallback when off)'
+	hair_cards.text = '使用人工制作的导向发片（关闭后显示网格）'
 	add_child(hair_cards)
 	move_child(hair_cards,4)
 	hair_cards.toggled.connect(func(_v): update_representation())
 	hair_hat = CheckBox.new()
-	hair_hat.text = 'Hat with crown mask'
+	hair_hat.text = '佩戴帽子并遮挡帽顶区域'
 	add_child(hair_hat)
 	move_child(hair_hat,5)
 	hair_hat.toggled.connect(func(_v): update_representation())
 
 func bind_hair():
 	if not is_instance_valid(scene):
-		message.text = 'Load a mapped character first.'
+		message.text = '请先载入已完成骨骼映射的角色。'
 		return
 	var spec = JSON.parse_string(FileAccess.get_file_as_string(hair_source.text))
 	if not spec is Dictionary:
-		message.text = 'Select a valid hair source; current character retained.'
+		message.text = '请选择有效的头发资源，当前角色已保留。'
 		return
 	var result = Hair.bind(scene,spec)
 	last_result = result
@@ -81,7 +81,7 @@ func bind_hair():
 		return
 	current_hair_spec = spec.duplicate(true)
 	update_representation()
-	message.text = 'Independent rear hairstyle bound. Root surface and guides updated.'
+	message.text = '独立后发已绑定，发根表面和导向线已更新。'
 
 func apply():
 	var static_change = false
@@ -93,7 +93,7 @@ func apply():
 			if controls[key].value!=dna.get('body',{}).get(key,1.0): static_change = true
 	if static_change and not current_hair_spec.is_empty():
 		if not current_hair_spec.has('path'):
-			message.text = 'Select the original hair source to rebind this face shape; current character retained.'
+			message.text = '请选择原始头发资源以重新绑定当前脸型，当前角色已保留。'
 			return
 		var error = Hair.validate_source(current_hair_spec)
 		if error:
@@ -111,7 +111,7 @@ func apply():
 			message.text = result.error
 			return
 		update_representation()
-		message.text = 'Face shape updated; hair rebound to the revised scalp.'
+		message.text = '脸型已更新，头发已重新绑定到调整后的头皮。'
 
 func update_representation():
 	if not is_instance_valid(scene): return
@@ -121,7 +121,7 @@ func update_representation():
 func save_version():
 	if not is_instance_valid(scene): return
 	if destination.text.get_extension()!='tscn' or FileAccess.file_exists(destination.text):
-		message.text = 'Choose a new version filename.'
+		message.text = '请选择新的版本文件名。'
 		return
 	var staged = host_node.state_dir.path_join('hair-'+str(Time.get_ticks_usec())+'.tscn')
 	var error = Hair.stage(scene,staged)
@@ -130,5 +130,4 @@ func save_version():
 		return
 	var output = []
 	var code = OS.execute(host_node.python_edit.text,[host_node.host_edit.text.get_base_dir().path_join('interop_publish.py'),staged,ProjectSettings.globalize_path(destination.text)],output,true)
-	if code!=0: push_error('Hair publication failed: '+str(output))
-	message.text = 'Saved independent hair version.' if code==0 else 'Could not save; current character retained.'
+	message.text = '独立头发版本已保存。' if code==0 else host_node.diagnostic_error('保存未完成，当前角色已保留',output)

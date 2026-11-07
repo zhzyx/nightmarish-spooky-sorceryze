@@ -5,18 +5,18 @@ const C = preload('res://addons/ainative/customization.gd')
 
 static func validate_source(spec: Dictionary) -> String:
 	for key in ['path','sha256','mesh_path','source_sha256']:
-		if not spec.get(key) is String: return 'Select a hair source and its provenance.'
-	if FileAccess.get_sha256(spec.path)!=spec.sha256 or FileAccess.get_sha256(spec.mesh_path)!=spec.source_sha256: return 'Hair source changed; select the verified version again.'
+		if not spec.get(key) is String: return '请选择头发源文件并提供来源凭据。'
+	if FileAccess.get_sha256(spec.path)!=spec.sha256 or FileAccess.get_sha256(spec.mesh_path)!=spec.source_sha256: return '头发源文件已改变；请重新选择已验证的版本。'
 	var data = JSON.parse_string(FileAccess.get_file_as_string(spec.path))
-	if not data is Dictionary or data.get('source_sha256')!=spec.source_sha256: return 'Hair provenance does not match.'
-	if data.get('schema_version')!=1 or not data.get('vertices') is Array or not data.get('samples') is Array or data.vertices.size()!=data.samples.size(): return 'Unsupported hair surface.'
+	if not data is Dictionary or data.get('source_sha256')!=spec.source_sha256: return '头发来源凭据不匹配。'
+	if data.get('schema_version')!=1 or not data.get('vertices') is Array or not data.get('samples') is Array or data.vertices.size()!=data.samples.size(): return '不支持此头发表面类型。'
 	for key in ['columns','rows']:
-		if not (data.get(key) is int or data.get(key) is float) or not is_finite(float(data[key])) or data[key]!=int(data[key]) or data[key]<2 or data[key]>128: return 'Invalid guide layout.'
-	if data.columns*data.rows!=data.vertices.size(): return 'Invalid guide layout.'
+		if not (data.get(key) is int or data.get(key) is float) or not is_finite(float(data[key])) or data[key]!=int(data[key]) or data[key]<2 or data[key]>128: return '引导线布局无效。'
+	if data.columns*data.rows!=data.vertices.size(): return '引导线布局无效。'
 	for point in data.vertices:
-		if not point is Array or point.size()!=3: return 'Invalid hair point.'
+		if not point is Array or point.size()!=3: return '头发点数据无效。'
 		for v in point:
-			if not (v is float or v is int) or not is_finite(float(v)): return 'Invalid hair coordinate.'
+			if not (v is float or v is int) or not is_finite(float(v)): return '头发坐标无效。'
 	return verify_mapping(data,spec.mesh_path)
 
 static func accessor_offset(doc: Dictionary,index: int,element: int,expected: String,bytes: int,binary_size: int) -> int:
@@ -34,58 +34,58 @@ static func accessor_offset(doc: Dictionary,index: int,element: int,expected: St
 
 static func verify_mapping(data: Dictionary,path: String) -> String:
 	var raw = FileAccess.get_file_as_bytes(path)
-	if raw.size()<28 or raw.decode_u32(0)!=0x46546c67 or raw.decode_u32(4)!=2: return 'Unsupported original hair mesh.'
+	if raw.size()<28 or raw.decode_u32(0)!=0x46546c67 or raw.decode_u32(4)!=2: return '不支持此原始头发网格。'
 	var json_size = raw.decode_u32(12)
-	if json_size+28>raw.size(): return 'Invalid original hair mesh.'
+	if json_size+28>raw.size(): return '原始头发网格无效。'
 	var doc = JSON.parse_string(raw.slice(20,20+json_size).get_string_from_utf8())
-	if not doc is Dictionary or not doc.get('meshes') is Array or doc.meshes.is_empty(): return 'Invalid original hair mesh.'
+	if not doc is Dictionary or not doc.get('meshes') is Array or doc.meshes.is_empty(): return '原始头发网格无效。'
 	var primitives = doc.meshes[0].get('primitives',[])
-	if primitives.size()!=1: return 'This reviewed source adapter requires one mesh primitive.'
+	if primitives.size()!=1: return '此已审查的来源适配器要求网格仅含一个图元。'
 	var primitive = primitives[0]
 	var positions = int(primitive.get('attributes',{}).get('POSITION',-1))
 	var indices = int(primitive.get('indices',-1))
-	if positions<0 or indices<0 or positions>=doc.get('accessors',[]).size() or indices>=doc.accessors.size(): return 'Source position/index mapping missing.'
-	if int(doc.accessors[positions].get('componentType',0))!=5126 or not int(doc.accessors[indices].get('componentType',0)) in [5123,5125]: return 'Unsupported source accessor encoding.'
+	if positions<0 or indices<0 or positions>=doc.get('accessors',[]).size() or indices>=doc.accessors.size(): return '缺少源位置或索引映射。'
+	if int(doc.accessors[positions].get('componentType',0))!=5126 or not int(doc.accessors[indices].get('componentType',0)) in [5123,5125]: return '不支持此源访问器编码。'
 	var binary = raw.slice(28+json_size)
 	var index_bytes = 2 if doc.accessors[indices].componentType==5123 else 4
 	for i in data.samples.size():
 		var sample = data.samples[i]
-		if not sample is Dictionary: return 'Invalid source triangle mapping.'
+		if not sample is Dictionary: return '源三角形映射无效。'
 		var id = sample.get('source_triangle',-1)
-		if not (id is int or id is float) or not is_finite(float(id)) or id<0 or id!=int(id): return 'Invalid source triangle mapping.'
+		if not (id is int or id is float) or not is_finite(float(id)) or id<0 or id!=int(id): return '源三角形映射无效。'
 		var weights = sample.get('barycentric',[])
-		if not weights is Array or weights.size()!=3: return 'Invalid source barycentric mapping.'
+		if not weights is Array or weights.size()!=3: return '源重心坐标映射无效。'
 		var reconstructed = Vector3.ZERO
 		var sum = 0.0
 		for corner in 3:
 			var weight = weights[corner]
-			if not (weight is int or weight is float) or not is_finite(float(weight)) or weight<-.00001 or weight>1.00001: return 'Invalid source barycentric mapping.'
+			if not (weight is int or weight is float) or not is_finite(float(weight)) or weight<-.00001 or weight>1.00001: return '源重心坐标映射无效。'
 			sum += weight
 			var io = accessor_offset(doc,indices,int(id)*3+corner,'SCALAR',index_bytes,binary.size())
-			if io<0: return 'Source triangle is outside the original mesh.'
+			if io<0: return '源三角形超出原始网格范围。'
 			var vertex = binary.decode_u16(io) if index_bytes==2 else binary.decode_u32(io)
 			var po = accessor_offset(doc,positions,vertex,'VEC3',12,binary.size())
-			if po<0: return 'Source vertex is outside the original mesh.'
+			if po<0: return '源顶点超出原始网格范围。'
 			reconstructed += Vector3(binary.decode_float(po),binary.decode_float(po+4),binary.decode_float(po+8))*weight
 		var point = data.vertices[i]
-		if absf(sum-1.0)>.00001 or reconstructed.distance_to(Vector3(point[0],point[1],point[2]))>.00001: return 'Derived hair no longer matches its original source triangles.'
+		if absf(sum-1.0)>.00001 or reconstructed.distance_to(Vector3(point[0],point[1],point[2]))>.00001: return '派生头发与原始来源三角形已不匹配。'
 	return ''
 
 static func bind(scene: Node3D, spec: Dictionary) -> Dictionary:
 	var error = validate_source(spec)
 	if error: return {'error':error}
 	var scalp = scene.get_meta('scalp_binding',{})
-	if scalp.get('revision','').is_empty(): return {'error':'Apply the face shape before binding hair.'}
-	if spec.has('binding_revision') and spec.binding_revision!=scalp.revision: return {'error':'Scalp changed; rebind hair before loading this version.'}
+	if scalp.get('revision','').is_empty(): return {'error':'绑定头发前请先应用脸型。'}
+	if spec.has('binding_revision') and spec.binding_revision!=scalp.revision: return {'error':'头皮已改变；载入此版本前请重新绑定头发。'}
 	var sk = I.skeleton(scene)
 	var face_binding = scene.get_meta('face_binding',{})
-	if sk==null or not face_binding.get('body_mapping') is Dictionary: return {'error':'Mapped head skeleton required.'}
+	if sk==null or not face_binding.get('body_mapping') is Dictionary: return {'error':'必须提供已映射头部的骨架。'}
 	var head_index = sk.find_bone(face_binding.body_mapping.head)
-	if head_index<0: return {'error':'Mapped head bone is missing.'}
+	if head_index<0: return {'error':'已映射的头部骨骼不存在。'}
 	var head_mesh: MeshInstance3D
 	for mi in scene.find_children('*','MeshInstance3D',true,false):
 		if str(mi.name)=='GEO-rain-head': head_mesh = mi
-	if head_mesh==null: return {'error':'Reviewed scalp surface is missing.'}
+	if head_mesh==null: return {'error':'已审查的头皮表面不存在。'}
 	var points = head_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].duplicate()
 	for shape in head_mesh.get_blend_shape_count():
 		var amount = head_mesh.get_blend_shape_value(shape)
@@ -204,37 +204,37 @@ static func binding_digest(data: Dictionary,cap: Dictionary) -> String:
 	return I.revision({'scalp':data.get('scalp_revision'),'source':data.get('spec',{}).get('source_sha256'),'selection':data.get('spec',{}).get('sha256'),'head':data.get('head_bone'),'vertices':data.get('vertices'),'roots':data.get('roots'),'columns':data.get('columns'),'rows':data.get('rows'),'cap':cap,'source_record':data.get('source_record')})
 
 static func runtime_error(scene: Node3D,data,cap) -> String:
-	if not data is Dictionary or not cap is Dictionary: return 'Invalid saved hair binding.'
+	if not data is Dictionary or not cap is Dictionary: return '已保存的头发绑定无效。'
 	for key in ['columns','rows','lod']:
 		var v = data.get(key,-1)
-		if not (v is int or v is float) or not is_finite(float(v)) or v!=int(v): return 'Invalid saved hair layout.'
-	if data.lod<0 or data.lod>2 or data.columns<2 or data.columns>128 or data.rows<2 or data.rows>128: return 'Invalid saved hair layout.'
-	if not data.get('hat') is bool or not data.get('cards') is bool: return 'Invalid saved hair display settings.'
-	if not data.get('vertices') is Array or data.vertices.size()!=data.columns*data.rows or not data.get('roots') is Array or data.roots.size()!=data.columns: return 'Invalid saved hair guides.'
-	if not cap.get('vertices') is Array or not cap.get('indices') is Array or cap.indices.size()%3!=0: return 'Invalid saved scalp cap.'
+		if not (v is int or v is float) or not is_finite(float(v)) or v!=int(v): return '已保存的头发布局无效。'
+	if data.lod<0 or data.lod>2 or data.columns<2 or data.columns>128 or data.rows<2 or data.rows>128: return '已保存的头发布局无效。'
+	if not data.get('hat') is bool or not data.get('cards') is bool: return '已保存的头发显示设置无效。'
+	if not data.get('vertices') is Array or data.vertices.size()!=data.columns*data.rows or not data.get('roots') is Array or data.roots.size()!=data.columns: return '已保存的头发引导线无效。'
+	if not cap.get('vertices') is Array or not cap.get('indices') is Array or cap.indices.size()%3!=0: return '已保存的头皮盖无效。'
 	for points in [data.vertices,cap.vertices]:
 		for p in points:
-			if not p is Array or p.size()!=3: return 'Invalid saved hair point.'
+			if not p is Array or p.size()!=3: return '已保存的头发点数据无效。'
 			for v in p:
-				if not (v is int or v is float) or not is_finite(float(v)): return 'Invalid saved hair coordinate.'
+				if not (v is int or v is float) or not is_finite(float(v)): return '已保存的头发坐标无效。'
 	for i in cap.indices:
-		if not (i is int or i is float) or i!=int(i) or i<0 or i>=cap.vertices.size(): return 'Invalid saved scalp triangle.'
+		if not (i is int or i is float) or i!=int(i) or i<0 or i>=cap.vertices.size(): return '已保存的头皮三角形无效。'
 	var sk = I.skeleton(scene)
-	if sk==null or not data.get('head_bone') is String or sk.find_bone(data.head_bone)<0: return 'Saved head binding is missing.'
-	if not data.get('spec') is Dictionary or not data.get('source_record') is Dictionary: return 'Saved source provenance is missing.'
-	if data.get('scalp_revision')!=scene.get_meta('scalp_binding',{}).get('revision'): return 'Scalp changed; rebind hair.'
+	if sk==null or not data.get('head_bone') is String or sk.find_bone(data.head_bone)<0: return '缺少已保存的头部绑定。'
+	if not data.get('spec') is Dictionary or not data.get('source_record') is Dictionary: return '缺少已保存的来源凭据。'
+	if data.get('scalp_revision')!=scene.get_meta('scalp_binding',{}).get('revision'): return '头皮已改变；请重新绑定头发。'
 	var count = -1
 	for mi in scene.find_children('*','MeshInstance3D',true,false):
 		if str(mi.name)=='GEO-rain-head': count = mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size()
 	for root in data.roots:
-		if not root is Dictionary or not (root.get('scalp_vertex') is int or root.get('scalp_vertex') is float) or root.scalp_vertex!=int(root.scalp_vertex) or root.scalp_vertex<0 or root.scalp_vertex>=count: return 'Saved scalp root is invalid.'
-	if data.get('binding_digest')!=binding_digest(data,cap): return 'Saved hair binding integrity mismatch.'
+		if not root is Dictionary or not (root.get('scalp_vertex') is int or root.get('scalp_vertex') is float) or root.scalp_vertex!=int(root.scalp_vertex) or root.scalp_vertex<0 or root.scalp_vertex>=count: return '已保存的头皮根节点无效。'
+	if data.get('binding_digest')!=binding_digest(data,cap): return '已保存的头发绑定完整性校验不匹配。'
 	return ''
 
 static func stage(scene: Node3D, path: String) -> String:
-	if scene.get_meta('hair_binding',{}).get('scalp_revision')!=scene.get_meta('scalp_binding',{}).get('revision'): return 'Scalp changed; rebind before saving.'
+	if scene.get_meta('hair_binding',{}).get('scalp_revision')!=scene.get_meta('scalp_binding',{}).get('revision'): return '头皮已改变；保存前请重新绑定。'
 	var hair = scene.get_node_or_null('IndependentHair')
-	if hair==null: return 'Bind hair before saving.'
+	if hair==null: return '保存前请先绑定头发。'
 	var data = hair.get_meta('hair_data')
 	var error = runtime_error(scene,data,hair.get_meta('authored_scalp_cap'))
 	if error: return error

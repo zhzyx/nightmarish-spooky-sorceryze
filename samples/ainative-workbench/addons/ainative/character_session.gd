@@ -22,28 +22,28 @@ var last_expression_frame_index = -1
 signal changed
 
 func rebuild(value: Dictionary, expected: int = -1) -> String:
-	if expected!=-1 and expected!=generation: return 'Character changed; retry the operation.'
+	if expected!=-1 and expected!=generation: return '角色已改变；请重试此操作。'
 	for key in ['body','face','garment','hair','cloth','layers','cloth_settings']:
-		if value.has(key) and not value[key] is Dictionary: return 'Invalid character option: '+key
-	if value.has('face_layers') and not value.face_layers is Array: return 'Invalid expression layers.'
+		if value.has(key) and not value[key] is Dictionary: return '角色选项无效：'+key
+	if value.has('face_layers') and not value.face_layers is Array: return '表情图层无效。'
 	for key in ['binding','motion','expression','layer_template']:
-		if value.has(key) and not value[key] is String: return 'Invalid source locator: '+key
+		if value.has(key) and not value[key] is String: return '来源定位信息无效：'+key
 	if not value.get('garment',{}).is_empty():
-		if not value.garment.get('path') is String or not value.garment.get('spec') is Dictionary: return 'Choose a verified clothing source.'
+		if not value.garment.get('path') is String or not value.garment.get('spec') is Dictionary: return '请选择已验证的服装来源。'
 	if value.has('hair_display'):
 		var display = value.hair_display
-		if not display is Dictionary or display.get('lod') not in [0,1,2] or not display.get('cards') is bool or not display.get('hat') is bool: return 'Invalid hair display option.'
-	if not value.get('base') is String or not value.get('source_sha256') is String: return 'Select a verified character.'
-	if FileAccess.get_sha256(value.base)!=value.source_sha256: return 'Character source changed; previous character retained.'
+		if not display is Dictionary or display.get('lod') not in [0,1,2] or not display.get('cards') is bool or not display.get('hat') is bool: return '头发显示选项无效。'
+	if not value.get('base') is String or not value.get('source_sha256') is String: return '请选择已验证的角色。'
+	if FileAccess.get_sha256(value.base)!=value.source_sha256: return '角色源文件已改变；已保留原角色。'
 	var loaded = I.load_scene(value.base)
 	if loaded.has('error'): return loaded.error
 	var candidate = loaded.scene
 	if candidate.has_node('BodyMotion') or candidate.has_node('LayeringPlayer') or candidate.has_node('Garment'):
 		candidate.free()
-		return 'Choose an immutable base character, not a fitted or animated version.'
+		return '请选择不可变的基础角色；已适配或带动画的派生版本不能作为基础角色。'
 	if not candidate.has_meta('face_binding'):
 		var binding = read_object(value.get('binding',''))
-		if binding.get('asset_sha256')!=value.source_sha256: candidate.free(); return 'Face source does not match.'
+		if binding.get('asset_sha256')!=value.source_sha256: candidate.free(); return '面部来源不匹配。'
 		candidate.set_meta('face_binding',binding)
 	var binding = candidate.get_meta('face_binding',{})
 	var dna = C.dna(binding.get('source_sha256',''),value.get('body',{}),value.get('face',{}),binding.get('mapping_version',''))
@@ -67,7 +67,7 @@ func rebuild(value: Dictionary, expected: int = -1) -> String:
 		if template.has('error'): candidate.free(); return template.error
 		var original = template.scene.get_node_or_null('LayeringPlayer')
 		var runner = candidate.get_node_or_null('LayeringPlayer')
-		if original==null or runner==null: template.scene.free(); candidate.free(); return 'Layer template requires a body animation.'
+		if original==null or runner==null: template.scene.free(); candidate.free(); return '图层模板需要身体动画。'
 		runner.config = original.config.duplicate(true)
 		runner.config.skeleton_revision = L.signature(I.skeleton(candidate))
 		runner.clips = original.clips.duplicate(true)
@@ -85,7 +85,7 @@ func rebuild(value: Dictionary, expected: int = -1) -> String:
 	if value.get('expression','')!='':
 		var document = read_object(value.expression)
 		next_frames = document.get('streams',{}).get('face',{}).get('frames',[])
-		if next_frames.is_empty(): candidate.free(); return 'No detected face frames.'
+		if next_frames.is_empty(): candidate.free(); return '没有检测到面部帧。'
 		var error = validate_expression(next_frames)
 		if error: candidate.free(); return error
 	if value.get('hair',{})!={}:
@@ -105,7 +105,7 @@ func rebuild(value: Dictionary, expected: int = -1) -> String:
 		candidate.get_node('ClothSolver').settings = value.cloth_settings.duplicate(true)
 	var error = activate(candidate)
 	if error: candidate.free(); return error
-	if expected!=-1 and expected!=generation: candidate.free(); return 'A newer character is active.'
+	if expected!=-1 and expected!=generation: candidate.free(); return '当前已切换到更新的角色。'
 	var previous = live
 	live = candidate
 	recipe = value.duplicate(true)
@@ -142,7 +142,7 @@ func attach_motion(candidate: Node3D, path: String, profile: Dictionary, layers:
 				converted.animation.track_set_path(track,NodePath(str(candidate.get_path_to(sk))+':'+str(converted.animation.track_get_path(track).get_subname(0))))
 			library.add_animation(clip_name.replace('/','_'),converted.animation)
 	source.free()
-	if library.get_animation_list().is_empty(): return 'No playable animation in this source.'
+	if library.get_animation_list().is_empty(): return '此来源没有可播放的动画。'
 	var player = AnimationPlayer.new()
 	player.name = 'BodyMotion'
 	player.add_animation_library('',library)
@@ -194,11 +194,11 @@ func finish_bake(work: Node):
 	baking = false
 
 func bake_cloth() -> String:
-	if baking: return 'A cloth bake is already running.'
-	if not is_instance_valid(live): return 'Choose a character first.'
+	if baking: return '布料烘焙正在进行。'
+	if not is_instance_valid(live): return '请先选择角色。'
 	var cloth = live.get_node_or_null('ClothSolver')
 	var runner = live.get_node_or_null('LayeringPlayer')
-	if cloth==null or runner==null: return 'Enable cloth on an animated character first.'
+	if cloth==null or runner==null: return '请先为带动画的角色启用布料。'
 	baking = true
 	bake_epoch += 1
 	var ticket = bake_epoch
@@ -223,7 +223,7 @@ func bake_cloth() -> String:
 	for frame in count:
 		if generation!=expected or ticket!=bake_epoch or not is_instance_valid(cloth):
 			finish_bake(work)
-			return 'Character changed; old bake discarded.'
+			return '角色已改变；已丢弃旧烘焙结果。'
 		work.clock_seconds = frame/60.0
 		work.evaluate(1.0/60.0)
 		if work_cloth.result.has('error'):
@@ -233,7 +233,7 @@ func bake_cloth() -> String:
 		await get_tree().process_frame
 	if generation!=expected or ticket!=bake_epoch or not is_instance_valid(cloth) or cloth.expected_key!=work_cloth.expected_key:
 		finish_bake(work)
-		return 'Character changed; old bake discarded.'
+		return '角色已改变；已丢弃旧烘焙结果。'
 	cloth.cache = work_cloth.cache.duplicate(true)
 	cloth.mode = 'replay'
 	finish_bake(work)
@@ -279,10 +279,10 @@ func evaluate(delta: float):
 static func validate_expression(frames: Array) -> String:
 	var previous = -1.0
 	for frame in frames:
-		if not frame is Dictionary: return 'Invalid face frame.'
+		if not frame is Dictionary: return '面部帧无效。'
 		var timestamp = frame.get('timestamp_ms')
-		if not (timestamp is int or timestamp is float) or not is_finite(timestamp) or timestamp<0 or timestamp<=previous: return 'Face timestamps must be finite and strictly increasing.'
-		if C.mediapipe_layer(frame).has('error'): return 'Missing or invalid face detection; source retained.'
+		if not (timestamp is int or timestamp is float) or not is_finite(timestamp) or timestamp<0 or timestamp<=previous: return '面部时间戳必须为有限数值，并严格递增。'
+		if C.mediapipe_layer(frame).has('error'): return '面部检测数据缺失或无效；已保留源数据。'
 		previous = timestamp
 	return ''
 
@@ -298,9 +298,9 @@ func expression_index(time: float) -> int:
 	return maxi(0,low-1)
 
 func save_version(path: String, python: String, publisher: String) -> String:
-	if not is_instance_valid(live): return 'Choose a character first.'
-	if recipe.get('read_only',false): return 'Original local sources are required to save edited versions.'
-	if FileAccess.file_exists(path) or path.get_extension()!='tscn': return 'Choose a new version filename.'
+	if not is_instance_valid(live): return '请先选择角色。'
+	if recipe.get('read_only',false): return '保存编辑后的版本需要原始本地源文件。'
+	if FileAccess.file_exists(path) or path.get_extension()!='tscn': return '请为新版本选择文件名。'
 	live.set_meta('character_session',{'schema':1,'source_sha256':recipe.source_sha256,'generation':generation,'clock_seconds':clock_seconds})
 	live.set_meta('character_editing_state',portable_recipe(recipe))
 	var temporary = ProjectSettings.globalize_path('user://character-'+str(Time.get_ticks_usec())+'.tscn')
@@ -321,15 +321,15 @@ func save_version(path: String, python: String, publisher: String) -> String:
 	var packed = PackedScene.new()
 	var code_pack = packed.pack(live)
 	if hair: hair.set_meta('hair_data',hair_data)
-	if code_pack!=OK or ResourceSaver.save(packed,temporary)!=OK: return 'Could not encode character.'
+	if code_pack!=OK or ResourceSaver.save(packed,temporary)!=OK: return '无法编码角色。'
 	var output = []
 	var code = OS.execute(python,[publisher,temporary,ProjectSettings.globalize_path(path)],output,true)
 	if code==0:
 		var local = FileAccess.open(recipe_path(FileAccess.get_sha256(path)),FileAccess.WRITE)
-		if local==null: return 'Character saved; local editing recipe could not be recorded.'
+		if local==null: return '角色已保存，但无法记录本地编辑配方。'
 		local.store_string(JSON.stringify(recipe))
 		local.close()
-	return '' if code==0 else 'Could not publish; current character retained.'
+	return '' if code==0 else '发布失败；已保留当前角色。'
 
 static func clear_owners(node: Node):
 	node.owner = null
@@ -353,17 +353,17 @@ func reopen(path: String, local_recipe: Dictionary) -> String:
 	# The saved version's private editing recipe wins over the current UI state.
 	# It is keyed by the actual published bytes and never embedded as local paths.
 	local_recipe = read_object(recipe_path(FileAccess.get_sha256(path)))
-	if not local_recipe.is_empty() and FileAccess.get_sha256(local_recipe.get('base',''))!=local_recipe.get('source_sha256'): return 'Original character source changed.'
+	if not local_recipe.is_empty() and FileAccess.get_sha256(local_recipe.get('base',''))!=local_recipe.get('source_sha256'): return '原始角色源文件已改变。'
 	var loaded = I.load_scene(path)
 	if loaded.has('error'): return loaded.error
 	var candidate = loaded.scene
 	var metadata = candidate.get_meta('character_session',{})
-	if metadata.get('schema')!=1: candidate.free(); return 'Not a complete character version.'
+	if metadata.get('schema')!=1: candidate.free(); return '此文件不是完整的角色版本。'
 	var saved_expression = candidate.get_meta('session_expression_frames',[])
-	if not saved_expression is Array: candidate.free(); return 'Invalid saved expression stream.'
+	if not saved_expression is Array: candidate.free(); return '已保存的表情流无效。'
 	var expression_error = validate_expression(saved_expression)
 	if expression_error: candidate.free(); return expression_error
-	if not local_recipe.is_empty() and metadata.get('source_sha256')!=local_recipe.get('source_sha256'): candidate.free(); return 'Version belongs to another character.'
+	if not local_recipe.is_empty() and metadata.get('source_sha256')!=local_recipe.get('source_sha256'): candidate.free(); return '此版本属于另一个角色。'
 	if local_recipe.is_empty():
 		local_recipe = {'source_sha256':metadata.source_sha256,'face_layers':candidate.get_meta('face_layers',[]),'read_only':true}
 	stage.add_child(candidate)
@@ -387,8 +387,8 @@ static func recipe_path(sha: String) -> String:
 	return directory.path_join(sha+'.json')
 
 func export_version(publication: String, target: Dictionary, destination: String, python: String, publisher: String) -> String:
-	if not FileAccess.file_exists(publication): return 'Save a complete character version first.'
-	if FileAccess.file_exists(destination) or FileAccess.file_exists(destination+'.report.json') or destination.get_extension()!='glb': return 'Choose a new .glb filename.'
+	if not FileAccess.file_exists(publication): return '请先保存完整的角色版本。'
+	if FileAccess.file_exists(destination) or FileAccess.file_exists(destination+'.report.json') or destination.get_extension()!='glb': return '请为新的 .glb 文件选择文件名。'
 	var sha = FileAccess.get_sha256(publication)
 	var isolated = get_script().new()
 	isolated.stage = stage
@@ -396,11 +396,11 @@ func export_version(publication: String, target: Dictionary, destination: String
 	var error = isolated.reopen(publication,{})
 	if error: isolated.free(); return error
 	var runner = isolated.live.get_node_or_null('LayeringPlayer')
-	if runner==null: isolated.live.free(); isolated.free(); return 'Saved character needs body animation.'
+	if runner==null: isolated.live.free(); isolated.free(); return '已保存的角色需要身体动画。'
 	var player = runner.get_node(runner.player_path)
 	var baked = isolated.bake_body(player.get_animation(runner.animation_name).length)
 	if baked.has('error'): isolated.live.free(); isolated.free(); return baked.error
-	if FileAccess.get_sha256(publication)!=sha: isolated.live.free(); isolated.free(); return 'Published source changed during sampling.'
+	if FileAccess.get_sha256(publication)!=sha: isolated.live.free(); isolated.free(); return '采样期间已发布的源文件发生改变。'
 	baked.animation.set_meta('character_publication_sha256',sha)
 	var binding = isolated.live.get_meta('face_binding')
 	var profile = I.extract(isolated.live,'anatomical',{'sha256':sha,'version':'published-character','authority':'local-authorized'},binding.body_mapping)
@@ -416,22 +416,22 @@ func export_version(publication: String, target: Dictionary, destination: String
 	if error: return error
 	var report_staged = staged+'.report.json'
 	var report_file = FileAccess.open(report_staged,FileAccess.WRITE)
-	if report_file==null: return 'Could not stage the compatibility report.'
+	if report_file==null: return '无法暂存兼容性报告。'
 	report_file.store_string(JSON.stringify(projected.report,'\t'))
 	report_file.close()
 	var output = []
 	var pair_publisher = publisher.get_base_dir().path_join('character_publish.py')
-	if OS.execute(python,[pair_publisher,staged,report_staged,ProjectSettings.globalize_path(destination)],output,true)!=0: return 'Could not publish compatibility copy and report.'
+	if OS.execute(python,[pair_publisher,staged,report_staged,ProjectSettings.globalize_path(destination)],output,true)!=0: return '无法发布兼容副本和报告。'
 	return ''
 
 func bake_body(length: float, fps: int = 30) -> Dictionary:
-	if not is_instance_valid(live) or length<=0 or fps<1: return {'error':'Choose an animated character.'}
+	if not is_instance_valid(live) or length<=0 or fps<1: return {'error':'请选择带动画的角色。'}
 	var isolated = live.duplicate(14)
 	stage.add_child(isolated)
 	var error = activate(isolated)
 	if error: isolated.free(); return {'error':error}
 	var runner = isolated.get_node_or_null('LayeringPlayer')
-	if runner==null: isolated.free(); return {'error':'Body animation is required.'}
+	if runner==null: isolated.free(); return {'error':'必须提供身体动画。'}
 	var skeleton = I.skeleton(isolated)
 	var clip = Animation.new()
 	clip.length = length

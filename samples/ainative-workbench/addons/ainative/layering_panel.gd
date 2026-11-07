@@ -21,24 +21,24 @@ var weapon_mesh: Mesh
 var weapon_visual_transform: Transform3D
 func initialize(workbench):
 	host = workbench
-	config_path = host.line(self,'Layering configuration JSON')
-	host.button(self,'Load layering scene',load_configuration)
+	config_path = host.line(self,'动画分层配置 JSON')
+	host.button(self,'载入动画分层场景',load_configuration)
 	modes = OptionButton.new()
-	for name in ['Run + aim / two hand IK','Single hand sword','Original animation','Full body override']: modes.add_item(name)
+	for name in ['跑动与瞄准 / 双手 IK','单手持剑','原始动画','全身覆盖']: modes.add_item(name)
 	add_child(modes)
 	modes.item_selected.connect(set_mode)
 	garment = OptionButton.new()
-	garment.add_item('Base avatar')
+	garment.add_item('基础角色')
 	add_child(garment)
-	host.button(self,'Swap garment from original base',swap)
-	host.button(self,'Play / pause',func():
+	host.button(self,'从原始角色重新换装',swap)
+	host.button(self,'播放 / 暂停',func():
 		if is_instance_valid(runner): runner.playing = not runner.playing)
 	settings = TextEdit.new()
 	settings.custom_minimum_size.y = 100
 	add_child(settings)
-	host.button(self,'Apply masks / priorities / sockets / fingers JSON',apply_settings)
-	destination = host.line(self,'New .tscn destination')
-	host.button(self,'Save new version',save)
+	host.button(self,'应用遮罩、优先级、挂点和手指配置 JSON',apply_settings)
+	destination = host.line(self,'新版本保存路径（.tscn）')
+	host.button(self,'保存新版本',save)
 	message = Label.new()
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(message)
@@ -49,22 +49,22 @@ func initialize(workbench):
 	local_preview.texture = host.viewport.get_texture()
 	add_child(local_preview)
 func load_configuration():
-	if not FileAccess.file_exists(config_path.text): message.text = 'Configuration missing; previous scene retained'; return
+	if not FileAccess.file_exists(config_path.text): message.text = '配置文件不存在，原场景已保留'; return
 	var value = JSON.parse_string(FileAccess.get_file_as_string(config_path.text).trim_prefix('\ufeff'))
-	if not value is Dictionary or not value.has('scene') or not FileAccess.file_exists(value.scene): message.text = 'Invalid configuration; previous scene retained'; return
+	if not value is Dictionary or not value.has('scene') or not FileAccess.file_exists(value.scene): message.text = '配置无效，原场景已保留'; return
 	var loaded = I.load_scene(value.scene)
 	if loaded.has('error'): message.text = loaded.error; return
 	var control = loaded.scene.get_node_or_null('LayeringPlayer')
-	if control==null or L.validate(I.skeleton(loaded.scene),control.config): loaded.scene.free(); message.text = 'Invalid layering scene'; return
+	if control==null or L.validate(I.skeleton(loaded.scene),control.config): loaded.scene.free(); message.text = '动画分层场景无效'; return
 	config = value
 	source_sha = FileAccess.get_sha256(config.scene)
 	install(loaded.scene)
 	garment.clear()
-	garment.add_item('Base avatar')
+	garment.add_item('基础角色')
 	if config.has('wardrobe'):
 		var wardrobe = JSON.parse_string(FileAccess.get_file_as_string(config.wardrobe))
 		for item in wardrobe.garments: garment.add_item(item.spec.id)
-	message.text = 'Loaded. Locomotion MDM; aiming, sword, fingers and weapon are authored fixtures.'
+	message.text = '已载入。移动动画来自 MDM；瞄准、持剑、手指和武器为人工制作的测试资源。'
 func install(scene):
 	host.preview_token = ''
 	host.confirmation = {}
@@ -117,7 +117,7 @@ func set_mode(index):
 func apply_settings():
 	if not is_instance_valid(runner): return
 	var candidate = JSON.parse_string(settings.text)
-	if not candidate is Dictionary: message.text = 'Expected configuration object; previous pose retained'; return
+	if not candidate is Dictionary: message.text = '配置必须为 JSON 对象，原姿势已保留'; return
 	var error = L.validate(I.skeleton(built),candidate)
 	if error: message.text = error; return
 	var previous = runner.config
@@ -125,7 +125,7 @@ func apply_settings():
 	runner.sample(runner.time_seconds)
 	if runner.result.has('error'): runner.config = previous; message.text = runner.result.error; return
 	base_config = candidate.duplicate(true)
-	message.text = 'Configuration applied to current skeleton revision'
+	message.text = '配置已应用到当前骨架修订版本'
 func swap():
 	if config.is_empty(): return
 	# Every swap starts from the same pristine native avatar, never a garment assembly.
@@ -158,16 +158,16 @@ func swap():
 	control.config.skeleton_revision = L.signature(sk)
 	template.free()
 	install(fitted.scene)
-	message.text = 'Swapped '+item.spec.id+' from original base; '+str(sk.get_bone_count())+' bones.'
+	message.text = '已从原始角色换装：'+item.spec.id+'；'+str(sk.get_bone_count())+' 根骨骼。'
 func save():
 	if not is_instance_valid(built): return
-	if destination.text.get_extension()!='tscn' or FileAccess.file_exists(destination.text): message.text = 'Choose a new .tscn path; existing versions are retained'; return
+	if destination.text.get_extension()!='tscn' or FileAccess.file_exists(destination.text): message.text = '请选择新的 .tscn 路径，已有版本将保留'; return
 	M.own(built,built)
 	var packed = PackedScene.new()
 	packed.pack(built)
 	var staged = ProjectSettings.globalize_path('user://layering-'+str(Time.get_ticks_usec())+'.tscn')
 	var err = ResourceSaver.save(packed,staged)
-	if err!=OK: message.text = 'Save failed; source retained'; return
+	if err!=OK: message.text = '保存失败，源资源已保留'; return
 	var output = []
 	var code = OS.execute(host.python_edit.text,[host.host_edit.text.get_base_dir().path_join('interop_publish.py'),staged,ProjectSettings.globalize_path(destination.text)],output,true)
-	message.text = 'Saved '+destination.text if code==0 else 'Save failed; source retained: '+str(output)
+	message.text = '已保存：'+destination.text if code==0 else host.diagnostic_error('保存失败，源资源已保留',output)
