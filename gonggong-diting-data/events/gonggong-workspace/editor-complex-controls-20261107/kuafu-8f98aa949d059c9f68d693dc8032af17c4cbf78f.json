@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8f98aa949d059c9f68d693dc8032af17c4cbf78f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ddc843879c0f3a851dec1857241575d39474f8a21bb36a3e0ff21c4da46bc0f3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "diagnosis": "Integration-only Window metadata copy used an ambiguous Array position text boundary and inserted unrelated registry code into describe_node. Replaced the splice with explicit Window field statements; frozen producer source unaffected. Exact latest-main combined candidate rebuilt with exit zero; 20 command groups, 11 complex groups and 22 native cases 308 assertions passed locally and independently. Original failed build retained. Independent first parallel command run saw editor_busy and the unchanged candidate passed serial rerun; both retained.",
+    "next_action": "Normal PR gate, exact CI and main readback; close linked integration bug only after accepted delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T14:54:08.325275+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T14:58:48.879384+00:00",
+  "sha256": "50db88b82ae9bf68c7298f6ce37d2f553d6a08b36e575ba00323792195365e33"
+}

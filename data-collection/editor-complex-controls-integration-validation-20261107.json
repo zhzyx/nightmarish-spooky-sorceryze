@@ -1,0 +1,121 @@
+{
+  "issue_number": 407,
+  "request_id": "editor-complex-controls-20261107",
+  "related_issues": [
+    386,
+    388,
+    389,
+    461
+  ],
+  "base_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "6a1956eb9531a738e8faf81a997d2c6bb68e4f3cc2ca6e5515fb11bb962a3b91",
+    "editor/docks/ai_chat_editor_complex_actions.h": "af7159380f06a5f0ebe1673a2a329270bf56ff5c0c722d4456edbe01be9876e3",
+    "editor/docks/ai_chat_editor_control.cpp": "7229b7a3d0f71632b32b6e3d39d8177a5ede22bca9786b43072054541a77b808",
+    "editor/docks/ai_chat_editor_registry.cpp": "c84562bee007ac0287d4f884f03e26d9b339d879652fcc9e38f89e1c425fc8b0",
+    "editor/docks/ai_chat_editor_registry.h": "359e9895179e15ead49e893489daee0a3e5b9b1ad893de1ac45eb8cd5cf7907c",
+    "scene/gui/popup_menu.cpp": "c40bb45012a8efedde268bc12a906e763ced4f4af43cbdef6c3f2246910af922",
+    "scene/gui/popup_menu.h": "c943b8afb1b642108ef1995f94762459497518aaa4b44174aeeef3b727b2dbe1",
+    "tests/editor/editor_command_coverage.gd": "c7535b60dc4f203893e06a3d3f51a6801884762d7c62c63a14bbf5d124d7d1d3",
+    "tests/editor/editor_complex_controls.gd": "bb06309ff05c853e62a80b1d03bc9657b427d11a332396a1f3b46292af1460c3",
+    "tests/editor/editor_test_isolation.py": "d508bf1e7f4d6bc5da17adf1c49a60cc7f098897bb9c7de6342bcff7a2499131",
+    "tests/editor/run_editor_command_coverage.py": "0d7cc76978f4e603c53af2f317604d471eb80c8397ce2662b0a432e3a6349517",
+    "tests/editor/run_editor_complex_controls.py": "b561597d1c20ae9da744a799dd3545bf0b498f7ae19b886746c22da30221c090",
+    "tests/editor/test_ai_chat_editor_alias_metadata.cpp": "2488bfec1888a72bedea1655a442d12a2ae940f65eb82d1487a2f19aeb7daba3",
+    "tests/editor/test_ai_chat_editor_complex.cpp": "9d16950feb5b4df15af8691eefb4f4b368fb6749f7055e9b3d8e97ade888707c",
+    "tests/editor/test_editor_test_isolation.py": "60ea4f7566d85a2bb84a62415f79f790c5f0062d15f4a4cc8f2eddcaaf3b9de7"
+  },
+  "binary_sha256": "a429a5b8da8fc17d5387e6f3201a1dbf2fdf5c5ecbc6221cc41298f4c0a2f265",
+  "build_exit_code": 0,
+  "native": {
+    "test_cases": 22,
+    "assertions": 308,
+    "exit_code": 0
+  },
+  "command_runner": {
+    "passed": true,
+    "checks": [
+      "core and explicit alias metadata with live protection",
+      "dynamic screens",
+      "resource open/path rejection",
+      "scene pagination",
+      "target pagination",
+      "state endpoint",
+      "exact cancellation",
+      "session rejection",
+      "manual-only chat requests",
+      "stale draft rejection",
+      "typed settings and disk conflict",
+      "restart recovery without replay",
+      "corrupt receipts fail closed",
+      "8192 target and 50000 node boundaries",
+      "scene edits and selection",
+      "animation paths and undo",
+      "field and popup observations",
+      "model index beyond 100 stale binding",
+      "900 second restart expiry",
+      "headless scene run and stop"
+    ],
+    "visual_acceptance": "not performed"
+  },
+  "complex_runner": {
+    "ok": true,
+    "checks": [
+      "PopupMenu Window discovery, pagination, label/metadata/selection stale guards, native ID activation, deferred lifecycle",
+      "Popup native delayed submenu state machine opens persistent nested Window; replacement/reopen drift rejected; leaf business ID read back",
+      "PopupMenu replacement instance rejected",
+      "Graph ports/connections read, deferred native owner connect/disconnect, dragged owner model movement",
+      "Tree/ItemList native accept and context business handlers",
+      "Real Inspector CurveEdit resource preset and native UndoRedo state restoration",
+      "Curve add/delete/reorder/left-right tangents/modes: full point Undo/Redo, finite/range/order/stale/script rejection",
+      "Real Inspector GradientEdit add/remove/recolor/reverse, non-merging UndoRedo, unrelated history and stale resource guards",
+      "Gradient offset preserves point colors across sorted indices with complete Undo/Redo and duplicate/range/stale rejection",
+      "Built-in C++ VisualShader owner: native connect/disconnect/dragged update actual shader resource connections and node position",
+      "Tool permission and consultation denial retained"
+    ]
+  },
+  "producer_independent": {
+    "scope": "407 frozen binary only, before root F05 integration",
+    "report_sha256": "c9d8d19fefe5d1ed3c7291881fd4b82a30af0561f217ecad4c28a47926047465",
+    "business_groups": 11,
+    "native_cases": 18,
+    "native_assertions": 257,
+    "passed": true
+  },
+  "final_independent": {
+    "state": "passed",
+    "reviewer": "/root/sinan_a75885e6e79dd55e",
+    "report_sha256": "603ebea392e161d02301417a66e884572ba7a8b04af1e59da3996710432858dc",
+    "binary_sha256": "a429a5b8da8fc17d5387e6f3201a1dbf2fdf5c5ecbc6221cc41298f4c0a2f265",
+    "command_groups": 20,
+    "complex_groups": 11,
+    "native_cases": 22,
+    "native_assertions": 308,
+    "settings_before_after_identical": true,
+    "first_parallel_command_run": "startup editor_busy; retained; unchanged serial retry passed",
+    "runtime_user_directory": "headless scene process used; global runtime user directory not independently diffed; EditorSettings invariance does not imply zero other writes"
+  },
+  "static": {
+    "ruff": true,
+    "mypy": true,
+    "clang_format": "22.1.5",
+    "includes": true,
+    "copyright": true,
+    "header_guards_h_only": true
+  },
+  "known_diagnostics": [
+    "Native Registry theme settings are uninstantiated",
+    "Business editor exit RID/ObjectDB diagnostics retained, not claimed leak-free"
+  ],
+  "not_tested": [
+    "Desktop pixels, IME, OS dialogs, browser login",
+    "Real extension dynamic library"
+  ],
+  "overall_parent_complete": false,
+  "observed_at": "2026-11-07T14:56:39.253196+00:00",
+  "submission_base_commit": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+  "baseline_followup": {
+    "change": "Accepted isolation PR456 only; helper sources already identical to tested candidate",
+    "production_source_sha256_unchanged": true
+  }
+}

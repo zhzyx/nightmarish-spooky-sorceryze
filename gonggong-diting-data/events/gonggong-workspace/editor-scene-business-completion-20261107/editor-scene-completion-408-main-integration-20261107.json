@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-scene-completion-408-main-integration-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-scene-business-completion-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-07T14:59:08.431023+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/408",
+  "agent": {
+    "id": "codex-native-scene-worker",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "state": "local_candidate_validated_pending_parent_exact_candidate_review",
+    "issue_number": 408,
+    "authorization_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "validation_ref": "data-collection/issue408-scene-completion-main-integration-validation.json",
+    "validation_sha256": "4e0258bcb025fd39a52b42cf8b7679d167081dd5141b0938d0b33433b462e896",
+    "base_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "editor_sha256": "89f6c6db739359ee8ddf6b2bac1cc56b5e169415cc1b3c6760f36d2040281ec1",
+    "business_groups_passed": 25,
+    "native_cases_passed": 9,
+    "native_assertions": 129,
+    "original_408_source_hashes_unchanged": true,
+    "real_settings_unchanged": true,
+    "formal_delivery_state": "pending_parent_review_gates_and_delivery",
+    "event_prepared_only": true,
+    "diting_ingestion_confirmed": false,
+    "usage": null,
+    "usage_unknown_reason": "Provider metering not supplied; no estimate"
+  },
+  "evidence_refs": [
+    "dispatch-16aff161186840fabf0ae176253ca02d"
+  ],
+  "sha256": "432cf4cf6bf94c74f43dab360689bbe1b447e548000aeedd9cfe2148145b8787"
+}

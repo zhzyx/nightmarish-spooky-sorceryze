@@ -1,0 +1,55 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "pull_request": 421,
+  "merged_at": "2026-11-07T08:33:34Z",
+  "merged_by": "kaiyunxue",
+  "merge_commit": "208e6cc8fcd7072084ad2a6151a19083ab3aff4e",
+  "signed_head": "d7693851626f2e1952789ae52a6c14c791060466",
+  "signed_head_is_main_ancestor": true,
+  "pre_merge_ci": {
+    "head": "d7693851626f2e1952789ae52a6c14c791060466",
+    "reported_base": "2bbef6252de81196881ce9589e20b5debfc4da0a",
+    "all_applicable_passed": true,
+    "checks": 25
+  },
+  "actual_merge_delta": {
+    "note": "Main also accepted Maliang parameter forms and generation-service work while CI ran. No overlapping task write paths. Actual merged tree rebuilt and affected editor acceptance rerun; pre-merge CI is not claimed as a test of these later upstream bytes.",
+    "changed_files": 26
+  },
+  "post_merge_validation": {
+    "binary_sha256": "d8bcc27ee7348d333fecf880b9d71fc7e0ac1834cc6ff292dda2b6c144fa71a8",
+    "command_groups": 19,
+    "command_passed": true,
+    "native_entry_runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "returncode": 0
+      }
+    ]
+  },
+  "overall_parent_complete": false,
+  "remaining_issues": [
+    388,
+    407,
+    408
+  ],
+  "remaining": "Core/explicit alias metadata (F05), complex widgets (407), full scene/resource/signal/import/export (408); no visual/IME/native authentication acceptance.",
+  "observed_at": "2026-11-07T08:41:23.416761+00:00"
+}

@@ -34,7 +34,10 @@ TEST_FORCE_LINK(test_ai_chat_editor_scene_actions)
 
 #ifdef TOOLS_ENABLED
 #include "core/io/json.h"
+#include "core/object/class_db.h"
 #include "editor/docks/ai_chat_editor_scene_actions.h"
+#include "editor/docks/ai_chat_editor_scene_completion.h"
+#include "scene/resources/gradient.h"
 
 namespace TestAIChatEditorSceneActions {
 Dictionary args(const String &p_action) {
@@ -44,7 +47,7 @@ Dictionary args(const String &p_action) {
 }
 
 TEST_CASE("[AIChat][SceneActions] Commands have a closed action vocabulary") {
-	for (const String &action : { "scene_create_node", "scene_delete_node", "scene_rename_node", "scene_reparent_node", "scene_select_nodes", "scene_set_property", "scene_assign_resource", "scene_connect_signal", "run_project", "run_scene", "stop_project" }) {
+	for (const String &action : { "scene_create_node", "scene_delete_node", "scene_rename_node", "scene_reparent_node", "scene_select_nodes", "scene_set_property", "scene_assign_resource", "scene_connect_signal", "scene_disconnect_signal", "scene_import_resource", "scene_export_resource", "project_export", "run_project", "run_scene", "stop_project" }) {
 		CHECK(AIChatEditorSceneActions::supports(action));
 	}
 	CHECK_FALSE(AIChatEditorSceneActions::supports("execute_script"));
@@ -104,7 +107,7 @@ TEST_CASE("[AIChat][SceneActions] Selection and protected properties reject unsa
 	}
 	d = args("scene_connect_signal");
 	d["method"] = "execute_script";
-	CHECK(AIChatEditorSceneActions::perform(d, true)["error"] == Variant("script_capable_operation_not_supported"));
+	CHECK(AIChatEditorSceneActions::perform(d, true)["error"] == Variant("invalid_signal_arguments"));
 	d = args("scene_assign_resource");
 	d["resource_path"] = "res://../outside.tres";
 	CHECK(AIChatEditorSceneActions::perform(d, true)["error"] == Variant("invalid_project_path"));
@@ -155,5 +158,66 @@ TEST_CASE("[AIChat][SceneActions] JSON wire requests reject oversized and non JS
 	parsed["target"] = "../changed";
 	CHECK(AIChatEditorSceneActions::perform(parsed, true)["error"] == Variant("invalid_node_path"));
 }
+TEST_CASE("[AIChat][SceneActions] Resource snapshots bind content without edited versions") {
+	Ref<Gradient> gradient;
+	gradient.instantiate();
+	Dictionary before, after;
+	CHECK(AIChatEditorSceneCompletion::resource_snapshot(gradient, before));
+	const uint32_t version = gradient->get_edited_version();
+	Vector<Color> colors;
+	colors.push_back(Color(1, 0, 0));
+	colors.push_back(Color(0, 1, 0));
+	gradient->set_colors(colors);
+	CHECK(gradient->get_edited_version() == version);
+	CHECK(AIChatEditorSceneCompletion::resource_snapshot(gradient, after));
+	CHECK(before != after);
+	Array array;
+	Dictionary dictionary;
+	dictionary["gradient"] = gradient;
+	array.push_back(dictionary);
+	gradient->set_meta("cycle", array);
+	CHECK_FALSE(AIChatEditorSceneCompletion::resource_snapshot(gradient, after));
+	gradient->remove_meta("cycle");
+	gradient->set_meta("large", String("x").repeat(9000));
+	CHECK_FALSE(AIChatEditorSceneCompletion::resource_snapshot(gradient, after));
+	gradient->remove_meta("large");
+	Ref<Gradient> child;
+	child.instantiate();
+	dictionary["gradient"] = child;
+	gradient->set_meta("child", array);
+	CHECK(AIChatEditorSceneCompletion::resource_snapshot(gradient, before));
+	child->set_colors(colors);
+	CHECK(AIChatEditorSceneCompletion::resource_snapshot(gradient, after));
+	CHECK(before != after);
+}
+
+TEST_CASE("[AIChat][SceneActions] Synthetic extension placeholders reject native resource snapshots") {
+	// Exercise Object's actual placeholder state, without claiming that a
+	// separately compiled GDExtension library was loaded by this test.
+	Ref<Gradient> resource;
+	resource.instantiate();
+	ObjectGDExtension placeholder{};
+	placeholder.is_placeholder = true;
+	placeholder.class_name = "SyntheticGradientPlaceholder";
+	placeholder.gdtype = &Gradient::get_gdtype_static();
+	placeholder.recreate_instance = [](void *, GDExtensionObjectPtr p_object) -> GDExtensionClassInstancePtr { return p_object; };
+	resource->reset_internal_extension(&placeholder);
+	CHECK(resource->is_extension_placeholder());
+	CHECK(resource->get_class() == "Gradient");
+	CHECK(ClassDB::get_api_type(resource->get_class()) == ClassDB::API_CORE);
+	CHECK_FALSE(ClassDB::is_gdextension(resource->get_class()));
+	Dictionary state;
+	CHECK_FALSE(AIChatEditorSceneCompletion::resource_snapshot(resource, state));
+	Ref<Gradient> parent;
+	parent.instantiate();
+	Array nested;
+	nested.push_back(resource);
+	parent->set_meta("nested", nested);
+	CHECK_FALSE(AIChatEditorSceneCompletion::resource_snapshot(parent, state));
+	parent->remove_meta("nested");
+	resource->clear_internal_extension();
+	CHECK(AIChatEditorSceneCompletion::resource_snapshot(resource, state));
+}
+
 } // namespace TestAIChatEditorSceneActions
 #endif

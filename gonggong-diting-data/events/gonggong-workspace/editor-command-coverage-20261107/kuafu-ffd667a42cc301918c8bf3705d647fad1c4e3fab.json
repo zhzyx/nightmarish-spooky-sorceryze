@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ffd667a42cc301918c8bf3705d647fad1c4e3fab",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0c28fa59dcf7fdebce9dd18a18f28ff92959658a352c79fa1f0aa46e9548b07d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "f680e17b0e3909a957a36eea9c7f80011e198951",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/470",
+    "diagnosis": "Main advanced from3451 toff3ba749 via accepted PR470 (52paths: chat/subagent runtime/model-discovery and evidence), with no overlap in the25 command-interface source files. Preserved all upstream files in a fresh ff3 worktree; copied exact independently accepted407+408 composition and its two MSVC local-variable renames. Rebuilt exact4676837e binary. Root and independent reviewer each passed20command,11complex,25scene (native ZIP/app export) and74native1470; old472 exactCI also11success14skip but older base is not treated as current-main acceptance.",
+    "next_action": "Normal parent386 combined final candidate PR/CI/main readback; retain separate child implementation/independent evidence and superseded child PR history. No install or activation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:41:11.015136+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:46:59.833887+00:00",
+  "sha256": "74332cb49aa88438ec262dd797f340a064a6065d6f2f3af6447afb37893c69f8"
+}

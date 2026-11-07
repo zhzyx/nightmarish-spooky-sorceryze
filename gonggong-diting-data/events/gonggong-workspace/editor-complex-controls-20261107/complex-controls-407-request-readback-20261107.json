@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "complex-controls-407-request-readback-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T15:01:18.182182+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "title": "补齐菜单、曲线、渐变和图编辑器的受控语义接口",
+    "body_sha256": "28bc5ed395bba07f4d833d72b39d073470016147ee6547586449e8caabe71883",
+    "observation": "Actual source readback for existing authorized work; implementation and independent acceptance evidence separate"
+  },
+  "evidence_refs": [],
+  "sha256": "536d51756f51671c44147c722214d4abae3af33711a4baed5b063b0732ccdbac"
+}

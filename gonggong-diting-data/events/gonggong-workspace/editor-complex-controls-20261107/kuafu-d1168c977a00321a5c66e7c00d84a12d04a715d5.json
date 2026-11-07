@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d1168c977a00321a5c66e7c00d84a12d04a715d5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ad25d83582f5ca9351aa7a2f204353ea74c6b8325c6eecb66d8dfa29bccf3fc0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "f680e17b0e3909a957a36eea9c7f80011e198951",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42384514852/job/128438963744",
+    "diagnosis": "CI codespell en-GB_to_en-US attempted to rewrite the valid British spelling acknowledgement inside a recorded canonical event. History is immutable; its exact bytes and digest are preserved. Added this one valid word to the existing repository ignore-words-list and reran codespell on the affected event and correction evidence successfully. Production sources and prior exact binary acceptance unchanged.",
+    "next_action": "Submit corrected candidate normally and require exact new CI; retain failed464 and supersede it only after replacement PR readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:07:53.013661+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:10:18.432382+00:00",
+  "sha256": "44ed79f0a53be0e7bf5f78690c6f3ed12ea7e1f28b831332c5f1821ee94afca7"
+}

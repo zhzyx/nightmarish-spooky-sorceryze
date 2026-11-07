@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-scene-408-request-readback-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-scene-business-completion-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T15:04:37.368128+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/408",
+  "agent": {
+    "id": "codex-native-scene-worker",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "完善场景子树、资源赋值、信号及导入导出业务动作",
+    "authorization_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "readback": {
+      "issue_number": 408,
+      "issue_state": "open",
+      "issue_updated_at": "2026-11-07T09:04:03Z",
+      "issue_body_sha256": "69c0bf98570dcce02573d8a198e9937e9154ab99483cd702ccd78f2c8c0d0d77",
+      "remote_snapshot_sha256": "3b629ccae7eb474a4bf9ba4a8da0be3fc9d7bfa5599f122a120a20918ee947c3",
+      "labels": [
+        "status:in-progress",
+        "type:development",
+        "workspace:gonggong"
+      ],
+      "source_scope": "Actual explicitly requested GitHub Issue read at event occurrence, not reconstructed historical event"
+    },
+    "validation_ref": "data-collection/issue408-scene-completion-pr-validation.json",
+    "validation_sha256": "466a96536b59b89d259b334a827093b47dd9ebf694f0884e9b13812a4029ed8f",
+    "state": "in_progress_pending_pr_delivery",
+    "usage": null,
+    "usage_unknown_reason": "Provider metering not supplied; no estimate"
+  },
+  "evidence_refs": [
+    "dispatch-16aff161186840fabf0ae176253ca02d"
+  ],
+  "sha256": "6ca440b6008da1efbe0ac431c71440dc5809111d0d6faf11477fc12ae5c3fbcd"
+}

@@ -1,0 +1,93 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "related_issues": [
+    388,
+    389,
+    407,
+    408,
+    461
+  ],
+  "base_main": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "cea9b506553cf1448f65303e5e3896ec9dc4ba4c333085c50f88a2d414d54f76",
+    "editor/docks/ai_chat_editor_complex_actions.h": "af7159380f06a5f0ebe1673a2a329270bf56ff5c0c722d4456edbe01be9876e3",
+    "editor/docks/ai_chat_editor_control.cpp": "3f24e8c414e7fdf2d8f984a22b3b09d81d99acc003a8f6eee7d5c4a75dad31fa",
+    "editor/docks/ai_chat_editor_registry.cpp": "c84562bee007ac0287d4f884f03e26d9b339d879652fcc9e38f89e1c425fc8b0",
+    "editor/docks/ai_chat_editor_registry.h": "359e9895179e15ead49e893489daee0a3e5b9b1ad893de1ac45eb8cd5cf7907c",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+    "editor/docks/ai_chat_editor_scene_actions.h": "b98076ff07985ee58167436cf6ceacc9d015f2a1853cea87bd4fe4494709ce0c",
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "db6c62a65e315a9c47eddf57b4b3de380b568f1a891c31bcdefa55ac8fc7f9c0",
+    "editor/docks/ai_chat_editor_scene_completion.h": "4ddf54a4f769e385c9a0462b9a8332c99e6260972d77582685b96a88a2ab8878",
+    "editor/docks/scene_tree_dock.cpp": "d756c3d4186e759cac9eb11574a049fde3397631ba6eb61a4f89664409f69cda",
+    "editor/docks/scene_tree_dock.h": "8311c0f338eb6b3c4bd4737e99a43376c7788e8f70bb471aabd0551e00876807",
+    "scene/gui/popup_menu.cpp": "c40bb45012a8efedde268bc12a906e763ced4f4af43cbdef6c3f2246910af922",
+    "scene/gui/popup_menu.h": "c943b8afb1b642108ef1995f94762459497518aaa4b44174aeeef3b727b2dbe1",
+    "tests/editor/editor_command_coverage.gd": "c7535b60dc4f203893e06a3d3f51a6801884762d7c62c63a14bbf5d124d7d1d3",
+    "tests/editor/editor_complex_controls.gd": "bb06309ff05c853e62a80b1d03bc9657b427d11a332396a1f3b46292af1460c3",
+    "tests/editor/editor_scene_completion.gd": "ff6d38ec44e1709ed54ab0f3262d296989deef5eb46d6d02d4f9f8ebe7397902",
+    "tests/editor/editor_test_isolation.py": "d508bf1e7f4d6bc5da17adf1c49a60cc7f098897bb9c7de6342bcff7a2499131",
+    "tests/editor/run_editor_command_coverage.py": "7aace78499750e679e4265e2329814ccb6cd974450fe16b674c775b2e663482e",
+    "tests/editor/run_editor_complex_controls.py": "9da0d816bd8a2a45606a68781c8e929dd8184571f39feb45e5daf750bc3e25e1",
+    "tests/editor/run_editor_scene_completion.py": "2e21e90840d0b50f0f6ca3adabdbc3ecbe2c15a3a3726f7097d58f1977c08dec",
+    "tests/editor/test_ai_chat_editor_alias_metadata.cpp": "2488bfec1888a72bedea1655a442d12a2ae940f65eb82d1487a2f19aeb7daba3",
+    "tests/editor/test_ai_chat_editor_complex.cpp": "9d16950feb5b4df15af8691eefb4f4b368fb6749f7055e9b3d8e97ade888707c",
+    "tests/editor/test_ai_chat_editor_control.cpp": "a9b90244678ea08ffe47efb1f147f38e9ffd9e427358e1882ff66dc6cd91ddbd",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "6544c5e70a6d1d2ababcc354dfee9769ff041c22afae88162f3603055c5de92a",
+    "tests/editor/test_editor_test_isolation.py": "60ea4f7566d85a2bb84a62415f79f790c5f0062d15f4a4cc8f2eddcaaf3b9de7"
+  },
+  "binary_sha256": "4676837e794da41531f998137e2ebff9fb5e9fab1ff94c0ee9444ce043e22bd9",
+  "build_exit_code": 0,
+  "root_validation": {
+    "command_groups": 20,
+    "complex_groups": 11,
+    "scene_groups": 25,
+    "native_cases": 74,
+    "native_assertions": 1470,
+    "legacy_http_cli": true,
+    "all_exit_codes": 0
+  },
+  "independent_validation": {
+    "reviewer": "/root/sinan_a75885e6e79dd55e",
+    "report_sha256": "0b1b02b9d4f029066a53c452be523056fe5a0e7847d9820c8440cf25ed7c8975",
+    "same_counts_as_root": true,
+    "all_exit_codes": 0,
+    "binary_and_source_unchanged": true,
+    "real_editor_settings_unchanged": true,
+    "upstream_key_files_byte_equal_to_base_main": 6
+  },
+  "prior407_ci": {
+    "pr": 472,
+    "signed_head": "53733c5fb1904b56e15f76f3ee89b09d57661eca",
+    "success": 11,
+    "skipped": 14,
+    "scope": "Older3451base; proves MSVC407 repair only, not this final latest-main candidate"
+  },
+  "delivery_scope": "Final parent composition preserves independent407/408 implementation and review; shared control tool schema/description merged and latest accepted main preserved",
+  "matrix": "design-docs/editor-command-coverage-20261107.md",
+  "failures_preserved": [
+    "421foundation static retries",
+    "Original408 defects and rejected snapshots",
+    "Workspace ancestor isolation incident corrected by389",
+    "407 immutable-event spelling and MSVC C4456 failures",
+    "408 MSVC C4456 failure",
+    "Initial composition schema failure and read startup busy failures"
+  ],
+  "limits": [
+    "Bounded APIs reject unsafe script/metadata reference scopes and unsupported extension resource/export types",
+    "Visual pixels/IME/OS dialogs/external authentication untested",
+    "Exported app not run",
+    "Runtime user directory not separately diffed",
+    "Exit RID/ObjectDB diagnostics not attributed/resolved",
+    "No independent441live model batch rerun; upstream accepted source retained"
+  ],
+  "static": {
+    "cpp_includes_headers_format": true,
+    "ruff": true,
+    "mypy": true,
+    "codespell_events_unchanged": true
+  },
+  "remote_delivery": "Pending this exact new PR/CI/main readback",
+  "installed_or_activated": false,
+  "observed_at": "2026-11-07T15:48:07.698043+00:00"
+}

@@ -45,6 +45,7 @@
 #include "scene/gui/item_list.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
+#include "scene/gui/popup_menu.h"
 #include "scene/gui/scroll_bar.h"
 #include "scene/gui/scroll_container.h"
 #include "scene/gui/slider.h"
@@ -84,7 +85,7 @@ bool registry_integer(const Variant &p_value, int64_t p_min, int64_t p_max, int6
 	return true;
 }
 
-String control_name(Control *p_control) {
+String control_name(Node *p_control) {
 	if (Button *button = Object::cast_to<Button>(p_control); button && !button->get_text().is_empty()) {
 		return button->get_text().left(120);
 	}
@@ -283,6 +284,15 @@ bool AIChatEditorRegistry::_excluded(Node *p_node) {
 	return EditorNode::get_singleton() && editor && editor->get_edited_scene_root() == p_node;
 }
 
+bool AIChatEditorRegistry::is_protected(Node *p_node) {
+	for (Node *node = p_node; node; node = node->get_parent()) {
+		if (_excluded(node) || (node != p_node && bool(node->get_meta("ai_control_page_only", false)))) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void AIChatEditorRegistry::_tree_changed(Node *p_node) {
 	// Ignore the overlay's own attach/detach; it is never a capability target.
 	if (p_node->get_name() != StringName("AIEditorHighlight")) {
@@ -338,7 +348,7 @@ void AIChatEditorRegistry::_refresh() const {
 		const bool dock_page = Object::cast_to<EditorDock>(control);
 		const bool tab_page = control && Object::cast_to<TabContainer>(node->get_parent());
 		const bool window_page = control && Object::cast_to<Window>(node->get_parent()) && node->get_parent() != tree->get_root();
-		if (dock_page || tab_page || window_page || (control && node->has_meta("ai_control_page"))) {
+		if (dock_page || tab_page || window_page || (control && (node->has_meta("ai_control_page") || AIChatEditorComplexActions::target(control)))) {
 			page = control;
 			if (EditorDock *dock = Object::cast_to<EditorDock>(control)) {
 				key = "dock/" + dock->get_effective_layout_key();
@@ -346,14 +356,14 @@ void AIChatEditorRegistry::_refresh() const {
 				key = entry.key + "/" + (entry.page ? String(entry.page->get_path_to(node)) : String(editor->get_path_to(node)));
 			}
 		}
-		if (control && page && (control == page || Object::cast_to<BaseButton>(control) || Object::cast_to<LineEdit>(control) || Object::cast_to<TextEdit>(control) || Object::cast_to<SpinBox>(control) || Object::cast_to<Slider>(control) || Object::cast_to<Tree>(control) || Object::cast_to<ItemList>(control) || Object::cast_to<TabBar>(control) || Object::cast_to<ColorPicker>(control) || Object::cast_to<ScrollContainer>(control))) {
-			const String identity = key + "/" + String(page->get_path_to(control));
+		if ((Object::cast_to<PopupMenu>(node) || (control && page && (AIChatEditorComplexActions::target(control) || control == page || Object::cast_to<BaseButton>(control) || Object::cast_to<LineEdit>(control) || Object::cast_to<TextEdit>(control) || Object::cast_to<SpinBox>(control) || Object::cast_to<Slider>(control) || Object::cast_to<Tree>(control) || Object::cast_to<ItemList>(control) || Object::cast_to<TabBar>(control) || Object::cast_to<ColorPicker>(control) || Object::cast_to<ScrollContainer>(control))))) {
+			const String identity = key + "/" + (page ? String(page->get_path_to(node)) : String(editor->get_path_to(node)));
 			String id = "editor." + identity.sha256_text().left(32);
-			if (const String *previous = identities.getptr(control->get_instance_id())) {
+			if (const String *previous = identities.getptr(node->get_instance_id())) {
 				id = *previous;
 			}
-			if (control->has_meta("ai_control_id")) {
-				const String alias = control->get_meta("ai_control_id");
+			if (node->has_meta("ai_control_id")) {
+				const String alias = node->get_meta("ai_control_id");
 				if (!alias.is_empty() && alias.length() <= 96 && alias.is_valid_ascii_identifier()) {
 					id = "editor." + alias;
 				}
@@ -364,12 +374,12 @@ void AIChatEditorRegistry::_refresh() const {
 				ambiguous.insert(id);
 			}
 			if (!ambiguous.has(id)) {
-				found[id] = { control->get_instance_id(), control_name(control), control_name(page) };
-				found_identities[control->get_instance_id()] = id;
+				found[id] = { node->get_instance_id(), control_name(node), page ? control_name(page) : String("PopupMenu") };
+				found_identities[node->get_instance_id()] = id;
 			}
 		}
 		// Chat's authorization/composer controls are host state, not AI inputs.
-		if (control && bool(control->get_meta("ai_control_page_only", false))) {
+		if (bool(node->get_meta("ai_control_page_only", false))) {
 			continue;
 		}
 		for (int i = 0; i < node->get_child_count(); i++) {
@@ -388,9 +398,13 @@ void AIChatEditorRegistry::_refresh() const {
 }
 
 Control *AIChatEditorRegistry::resolve(const String &p_id) const {
+	return Object::cast_to<Control>(resolve_node(p_id));
+}
+
+Node *AIChatEditorRegistry::resolve_node(const String &p_id) const {
 	_refresh();
 	const Target *target = targets.getptr(p_id);
-	Control *control = target ? ObjectDB::get_instance<Control>(target->control) : nullptr;
+	Node *control = target ? ObjectDB::get_instance<Node>(target->control) : nullptr;
 	if (!control || !control->is_inside_tree()) {
 		return nullptr;
 	}
@@ -404,7 +418,7 @@ Control *AIChatEditorRegistry::resolve(const String &p_id) const {
 }
 
 Array AIChatEditorRegistry::actions(Control *p_control) {
-	Array result;
+	Array result = AIChatEditorComplexActions::actions(p_control);
 	for (const char *action : { "open_target", "reveal_target", "highlight" }) {
 		result.push_back(action);
 	}
@@ -457,19 +471,64 @@ Array AIChatEditorRegistry::actions(Control *p_control) {
 }
 
 Dictionary AIChatEditorRegistry::describe(const String &p_id) const {
-	Control *control = resolve(p_id);
+	Node *node = resolve_node(p_id);
+	return describe_node(node, p_id, targets.has(p_id) ? targets[p_id].page : String());
+}
+
+Dictionary AIChatEditorRegistry::describe_node(Node *node, const String &p_id, const String &p_owner_screen) {
+	if (!node || !node->is_inside_tree()) {
+		return registry_result(false, "target_unavailable");
+	}
+	if (is_protected(node)) {
+		return registry_result(false, "protected_target");
+	}
+	if (PopupMenu *menu = Object::cast_to<PopupMenu>(node)) {
+		Dictionary result = registry_result(true);
+		result["id"] = p_id;
+		result["display_name"] = control_name(menu);
+		result["owner_screen"] = p_owner_screen;
+		result["class"] = menu->get_class();
+		result["automatic"] = true;
+		result["available"] = true;
+		result["visible"] = menu->is_visible();
+		result["target_instance"] = int64_t(menu->get_instance_id());
+		result["window_instance"] = int64_t(menu->get_instance_id());
+		Array position;
+		position.push_back(menu->get_position().x);
+		position.push_back(menu->get_position().y);
+		Array size;
+		size.push_back(menu->get_size().x);
+		size.push_back(menu->get_size().y);
+		result["position"] = position;
+		result["size"] = size;
+		result["focused"] = menu->has_focus();
+		result["focusable"] = !menu->get_flag(Window::FLAG_NO_FOCUS);
+		result["readonly"] = false;
+		if (!menu->is_visible()) {
+			result["unavailable_reason"] = "not_visible";
+		}
+		result["actions"] = AIChatEditorComplexActions::actions(menu);
+		result["state"] = AIChatEditorComplexActions::state(menu);
+		const Variant status_value = menu->get_meta("_ai_complex_submenu_status", "idle");
+		const String submenu_status = status_value.get_type() == Variant::STRING ? String(status_value) : String("idle");
+		result["submenu_request_status"] = submenu_status == "queued" || submenu_status == "opened" || submenu_status == "stale" || submenu_status == "not_visible" ? submenu_status : String("idle");
+		return result;
+	}
+	Control *control = Object::cast_to<Control>(node);
 	if (!control) {
 		return registry_result(false, "target_unavailable");
 	}
-	const Target &target = targets[p_id];
 	Dictionary result = registry_result(true);
 	result["id"] = p_id;
 	result["display_name"] = control_name(control);
-	result["owner_screen"] = target.page;
+	result["owner_screen"] = p_owner_screen;
 	result["automatic"] = true;
 	result["available"] = true;
 	result["visible"] = control->is_visible_in_tree() && control->get_window()->is_visible();
 	result["actions"] = actions(control);
+	if (AIChatEditorComplexActions::target(control)) {
+		result["state"] = AIChatEditorComplexActions::state(control);
+	}
 	result["class"] = control->get_class();
 	result["target_instance"] = int64_t(control->get_instance_id());
 	const Rect2 rect = control->get_global_rect();
@@ -588,7 +647,7 @@ Dictionary AIChatEditorRegistry::find_page(const String &p_query, int p_limit, i
 	int total = 0, page_bytes = 0;
 	bool byte_truncated = false;
 	for (const String &id : ids) {
-		Control *control = resolve(id);
+		Node *control = resolve_node(id);
 		if (!control || (targets.has(p_query) ? id != p_query : !(query.is_empty() || id.contains(query) || control_name(control).to_lower().contains(query) || targets[id].page.to_lower().contains(query)))) {
 			continue;
 		}
@@ -709,20 +768,27 @@ Dictionary AIChatEditorRegistry::status() const {
 }
 
 bool AIChatEditorRegistry::supported(const String &p_action) {
-	return p_action == "read_items" || p_action == "select_text_range" || p_action == "read_text" || p_action == "append_text" || p_action == "replace_text_range" || p_action == "submit_text" || p_action == "undo_text" || p_action == "select_tree_item" || p_action == "expand_tree_item" || p_action == "select_item" || p_action == "select_tab" || p_action == "set_color" || p_action == "scroll_to" || p_action == "open_target" || p_action == "focus" || p_action == "set_text" || p_action == "set_value" || p_action == "select_option" || p_action == "press";
+	return AIChatEditorComplexActions::supports(p_action) || p_action == "read_items" || p_action == "select_text_range" || p_action == "read_text" || p_action == "append_text" || p_action == "replace_text_range" || p_action == "submit_text" || p_action == "undo_text" || p_action == "select_tree_item" || p_action == "expand_tree_item" || p_action == "select_item" || p_action == "select_tab" || p_action == "set_color" || p_action == "scroll_to" || p_action == "open_target" || p_action == "focus" || p_action == "set_text" || p_action == "set_value" || p_action == "select_option" || p_action == "press";
 }
 
-Dictionary AIChatEditorRegistry::perform(Control *p_control, const String &p_id, const Dictionary &p_args, bool p_confirmed) {
-	Control *control = p_control;
-	if (!control || !control->is_inside_tree()) {
+Dictionary AIChatEditorRegistry::perform(Node *p_node, const String &p_id, const Dictionary &p_args, bool p_confirmed) {
+	Node *target_node = p_node;
+	if (!target_node || !target_node->is_inside_tree()) {
 		return registry_result(false, "target_unavailable");
 	}
-	for (Node *node = control; node; node = node->get_parent()) {
-		if (_excluded(node) || (node != control && bool(node->get_meta("ai_control_page_only", false)))) {
+	for (Node *node = target_node; node; node = node->get_parent()) {
+		if (_excluded(node) || (node != target_node && bool(node->get_meta("ai_control_page_only", false)))) {
 			return registry_result(false, "protected_target");
 		}
 	}
 	const String action = p_args.get("action", "");
+	if (AIChatEditorComplexActions::supports(action)) {
+		return complex_actions.perform(p_node, p_id, p_args, p_confirmed);
+	}
+	Control *control = Object::cast_to<Control>(p_node);
+	if (!control) {
+		return registry_result(false, "unsupported_target_action");
+	}
 	if (!actions(control).has(action)) {
 		return registry_result(false, "unsupported_target_action");
 	}
@@ -742,7 +808,7 @@ Dictionary AIChatEditorRegistry::perform(Control *p_control, const String &p_id,
 					}
 				}
 			}
-			if (ScrollContainer *scroll = Object::cast_to<ScrollContainer>(node)) {
+			if (ScrollContainer *scroll = Object::cast_to<ScrollContainer>(node); scroll && scroll != control) {
 				scroll->call_deferred("ensure_control_visible", control);
 			}
 		}
