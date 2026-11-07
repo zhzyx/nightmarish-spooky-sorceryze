@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-394d185383c3d02acbd891155fda3ed2a8990779",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "design-child-parent-continuation-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5df130dc896b6156e06644ff2f707b84ede1e9d6733f0ada8ab1875f7081df5c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+    "action": "intake",
+    "detection_head": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "/root/runtime_entry_fix",
+    "authority_ref": "Issue441 authorized root delivery",
+    "evidence": "bin/issue441-isolation-intake.json",
+    "diagnosis": "Fresh isolated worktree intake invoked without required tenant argument; source is unchanged and work-items tenant is gonggong-workspace.",
+    "next_action": "Retry exact intake with configured tenant; no gate weakening.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:16:25.800801+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:16:57.278590+00:00",
+  "sha256": "b0be3b3aa45887176d0406a94f5257050ebc58083ca214b0dc48fcb6c1f583b3"
+}

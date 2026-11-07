@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "issue": 441,
+  "reviewer": "root independent of runtime metadata and receipt helper authors",
+  "scope": "read-only source/protocol/callsite review; not live-batch author review or runtime-test claim",
+  "time": "2026-11-07T13:00:17.925657+00:00",
+  "files": {
+    "editor/docks/ai_chat_dock.cpp": "798f63dd1f08994330ebac6554ebdc4b6efc8a2c4192ad0d82006d644adda9be",
+    "editor/docks/ai_chat_sub_agents.cpp": "d720a237275d2581c7eabee446041695468c8bb0384589cbff9fa4cee709f478",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "02a54e29722b7612767e7cc30fba2076ac757cc861656f9173dcc6e4f3ca6a32",
+    "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+  },
+  "findings": [],
+  "checks": [
+    "four current-host configured paths only; relative/missing/URI return null; version remains unknown; no credential read or permission grant",
+    "shared metadata appended after consultation reset, child get_parent_context and parent return use same getter",
+    "file contents treated as bytes and separate host success flag, never parsed into process/business verdict",
+    "approval distinct from execution; process exits finite signed32/unsigned32 integral values; native terminal uses actual exit_status and typed timeout/start-failure flags; signal prevents success",
+    "unknown/oversized/malformed results remain unknown; no raw output is in summary; business acceptance always null",
+    "host tool callback recorded before mandatory event flush, and native terminal callbacks gated by busy/waiting/request generation",
+    "per-child 24 receipts/12KiB and parent64KiB limits enforced by caller; inline snapshots point to bounded private receipt file"
+  ],
+  "limitations": [
+    "Scoped source/protocol review only; does not claim reviewer executed native tests or original Issue387 GUI acceptance.",
+    "Final live-batch implementation is independently reviewed by another author; final native acceptance records actual candidate SHAs separately."
+  ],
+  "final_scope_recheck": {
+    "header_only_format_difference": "standard copyright file-name comment alignment: one trailing space removed; receipt logic unchanged from reviewed and unit-tested 02a54e29722b7612767e7cc30fba2076ac757cc861656f9173dcc6e4f3ca6a32",
+    "current_header_sha256": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+    "runtime_metadata_getter_and_shared_injection": "unchanged since scoped independent review"
+  }
+}

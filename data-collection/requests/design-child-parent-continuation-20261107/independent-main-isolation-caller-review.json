@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "issue": 441,
+  "reviewer": "root independent caller review",
+  "time": "2026-11-07T15:18:48.675178+00:00",
+  "scope": "only the three-line caller adaptation to accepted main isolation rule; no new production source review or personal runtime test claim",
+  "files": {
+    "tests/editor/run_design_batch.py": "96645ba1b50327a0f5d9e12ef77808faf69cdbc1adc53708f3c13cab17ec2bb8"
+  },
+  "findings": [],
+  "checks": [
+    "diff exactly removes the report directory as temporary editor ancestor and clears inherited GONGGONG_WORKSPACE in the offline runner process before copy_editor",
+    "does not mutate the parent process environment or change production isolation guard",
+    "existing sealed fixture still defines its own workspace, fake bridge and actual native tool calls; output path only stores reports",
+    "production source unchanged from prior reviewed candidate is verified by implementation owner; runtime injection case remains a separate actual test receipt"
+  ]
+}

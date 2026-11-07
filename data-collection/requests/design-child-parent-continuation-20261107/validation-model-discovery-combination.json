@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "kind": "model_discovery_live_batch_combination_validation",
+  "verified_at": "2026-11-07T14:59:16.480274+00:00",
+  "base_sha": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "includes_original_feature_main": true,
+  "production_source": {
+    "sha256": "662945004ac01b543311a28e7e6f7db5f51a4f2b863568281fa0523c0790e3c0",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "a065c66bccfe301be46fadd5d35e57a8add4687f2e726f7a20aa26d8bb96e7f6",
+      "editor/docks/ai_chat_dock.h": "5e477762a88289e887afa345002fa0762ff0901f9494c6f14e9f62c532065f64",
+      "editor/docks/ai_chat_sub_agents.cpp": "6942064e7371c9d36095bcee6205a9d7dc66b728b62d734c236e626611881ab6",
+      "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+      "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+    }
+  },
+  "fixture_sources": {
+    "tests/editor/run_design_batch.py": "aae05dfdc5372e490fdeb5b4a9165f85cab7a8661756eee213941f293002e8a2",
+    "tests/editor/design_batch.gd": "cda26cd6a4ae5ca0990adeb8f12d03b0c4a493e674fde843c431d259afdce7e7"
+  },
+  "checks": {
+    "four_before_stalls_reproduced": true,
+    "before_feature_accepted": false,
+    "four_after_cases_passed": true,
+    "stop_and_no_live_guards_passed": true,
+    "combo_matrix": "model-discovery-wakeup-validation-summary.json",
+    "final_artifact_sha256": "597aa7692d607e193500570738e2f07de98b09356d61ebaf1c0f3498f99f4963",
+    "final_build": "macOS arm64 passed",
+    "final_failed_discovery_parent_return": {
+      "ok": true,
+      "requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_returns": 1,
+      "events": 117,
+      "small_receipts": 2,
+      "report_sha256": "2a950bbb4bab7a4372b1a76b7a024f9a7b2cdc329a2147e78e7a2c99d38e37c3"
+    },
+    "original_model_autofetch_cases": {
+      "passed": 11,
+      "total": 11,
+      "same_final_artifact": true,
+      "source_unchanged": true,
+      "real_inference": false,
+      "report_sha256": "a1602a15fd2f3218d24194ddd0b65ca849704c054a8763e2628dacac11e03aab"
+    },
+    "prior_live_batch_suite": "20 distinct logical cases; mixed artifacts explicitly recorded in prior summaries; unaffected evidence reused",
+    "prior_native_units": "31 cases /644 assertions including5 receipt cases /167 assertions; unchanged helper/test source",
+    "independent_review": "independent-model-discovery-wakeup-review.json",
+    "dynamic_cli_live_batch_combination": "not claimed; common callback source reviewed, original CLI model-autofetch cases actually rerun",
+    "user_assets_modified": false,
+    "central_persistent_config_implemented": false,
+    "new_head_CI": "pending actual exact signed head; prior450CI not substituted",
+    "usage": null
+  },
+  "delivery": "pending formal sign/exact CI/normal main merge and authoritative Issue closure; original450 preserved as superseded evidence",
+  "usage": null
+}

@@ -1,0 +1,64 @@
+{
+  "issue_number": 441,
+  "reviewer": "runtime_metadata_441",
+  "review_scope": "Independent read-only review of live serial design-batch implementation, source-bound terminal acknowledgment, pending completion release, queued handoff, permission/stop/deferred/cold-history boundaries. Runtime metadata getter and receipt helper authored by reviewer are excluded from the independent-review verdict.",
+  "status": "passed_static_review",
+  "remaining_findings": [],
+  "base_commit": "0c548aa94ed6ffbd34839a3e728f934a3ede9cbc",
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "bf9a5265e3438509d78b0257dc9b649cea2143f8e2584b78054c564b5e7a9812",
+    "editor/docks/ai_chat_dock.h": "ecbcaae43fd05f9a39b02cbab5233075b53bb9f2250c895774cd5df715dd46f0",
+    "editor/docks/ai_chat_sub_agents.cpp": "90532136553a10bf7164bdae7822165d531d96a2483a0ae500894e06d0be6114",
+    "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+    "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+  },
+  "resolved_findings": [
+    "Capture actual tool receipt metadata before reporting gates or turn cleanup.",
+    "Ignore stale or duplicate completion events without canceling newer batches.",
+    "Cancel the batch on recognized chat stop/cancel, including visible approvals.",
+    "Only live in-memory batches trigger dispatch from tab selection; cold parallel history is not retried by the new hook.",
+    "Wait for the source terminal acknowledgment before serial/parent handoff dispatch; attribute failures to the originating generation before reflush or generation rejection.",
+    "Retain true transport completion separately from reporting failure and prevent dependent children or parent model from running after a blocked gate.",
+    "Blocked dispatch waits for a running child completion to construct the single final local notice.",
+    "Explicit work-order retry refuses while a terminal receipt process is in flight, preserving the original live batch and its source generation; automatic initial spawn still registers and awaits that source acknowledgment."
+  ],
+  "checks": [
+    "git diff --check passed.",
+    "Source-bound pending completions are removed before a single deferred completion is queued.",
+    "The reporting blocker matches parent/child recorded generations rather than the currently visible workspace.",
+    "Blocked parent notices remain paused, and stale/cold ownership cannot release them.",
+    "Narrow v7 guard reviewed at _spawn_work_order_agents before _resume_work_order_agents: early return mutates no batch/child state and preserves subsequent failure attribution.",
+    "Final post-format source refresh: gonggong comment spelling acknowledgment and helper filename-banner alignment only; all six current source SHA-256s recorded, with independent scope explicitly separated from reviewer-authored helper/test context."
+  ],
+  "native_unit_results": {
+    "receipt_cases": 5,
+    "receipt_assertions": 167,
+    "ai_chat_tools_cases": 31,
+    "ai_chat_tools_assertions": 644,
+    "failures": 0,
+    "note": "Unit v2 exact sources are recorded separately. Test source is unchanged; the receipt helper differs only by one filename-banner whitespace alignment. No repeated unit run was requested for subsequent live-batch edits."
+  },
+  "native_terminal_fixture_status": "Parent and fixture agent own final candidate build and terminal-only-failure/other live-loop execution.",
+  "reported_terminal_validation": {
+    "source": "Parent execution report; reviewer did not rerun these fixtures.",
+    "candidate": "v5",
+    "cases": [
+      "child terminal-only failure after all tool-result flushes succeed",
+      "parent terminal-only failure before child dispatch"
+    ],
+    "outcome": "PASS: true child transport completion retained with reporting_blocked, no subsequent model HTTP calls, one paused local notice.",
+    "v6": "Parent reports guard-only incremental build passed; fixture agent owns normal/terminal rerun.",
+    "v7": "Parent reports the two targeted normal-gap-retry and terminal-failure-plus-gap-retry fixtures running; no code changes beyond comment formatting after the reviewed guard."
+  },
+  "independent_review_source_files": [
+    "editor/docks/ai_chat_dock.cpp",
+    "editor/docks/ai_chat_dock.h",
+    "editor/docks/ai_chat_sub_agents.cpp",
+    "editor/docks/ai_chat_gonggong.cpp"
+  ],
+  "authored_context_source_files": [
+    "editor/docks/ai_chat_sub_agent_receipts.h",
+    "tests/editor/test_ai_chat_tools.cpp"
+  ]
+}

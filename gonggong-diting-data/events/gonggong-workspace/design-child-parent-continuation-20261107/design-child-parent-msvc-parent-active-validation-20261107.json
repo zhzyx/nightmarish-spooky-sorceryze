@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "design-child-parent-msvc-parent-active-validation-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "design-child-parent-continuation-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-07T13:46:50.360920+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "agent": {
+    "id": "codex-child-parent-resume",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3cf54ab89d91ca7487248be238af9e425cb286c5fcbf3cdc16697451df814992"
+  },
+  "payload": {
+    "phase": "parent_active_local_name_msvc_repair_validation",
+    "status": "succeeded",
+    "production_source_sha256": "e274ebc8e7c8952620bb484a7cd482c1cd2f5915c06cd29902ad926bcfe520e7",
+    "artifact_sha256": "25166cefa3dc30d1a0aefbd1979dcd857a29415a3d8f5d0d298f15a5a7019b2d",
+    "actual_msvc": "pending new exact CI",
+    "native_normal": "passed; one parent return,117 real recorded events,2 small receipt files",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "de765b6335151f0a3ed2e4e1b609c0b99aa45dc7ed3f264d7917de0b00102276"
+}
