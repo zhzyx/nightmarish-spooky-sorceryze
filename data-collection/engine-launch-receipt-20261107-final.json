@@ -1,0 +1,45 @@
+{
+  "issue_number": 393,
+  "request_id": "engine-launch-receipt-20261107",
+  "validation": {
+    "activation_tests": {
+      "passed": 13,
+      "coverage": "Isolated actual Git repositories and owned signed macOS app bundles; activation, drift, recovery and pinned accepted-candidate provenance."
+    },
+    "writer_submit_regression": {
+      "passed": 7
+    },
+    "system_app_launch": {
+      "passed": true,
+      "target_arguments_verified": true,
+      "method": "Computer-use application launch of an isolated owned fixture; no-window process timed out in UI automation but wrote the expected execution proof."
+    },
+    "format": "ruff 0.17.1 check --no-fix and format --check passed",
+    "real_source_manifest": {
+      "source_inputs_match_real_candidate_commit": true,
+      "input_count": 16405,
+      "seconds": 1.65,
+      "candidate_commit": "1b0c0816125547c73e68b58dc147944fb5c22a1b"
+    }
+  },
+  "limitations": [
+    "Production workflow Issue 387 rerun and joint integration with Issue 390 remain pending.",
+    "System launch fixture does not claim the production user app was switched.",
+    "Startup pins the accepted candidate contained in main, not all later main commits."
+  ],
+  "source_sha256": {
+    "tools/editor_candidate_activation.py": "2fa52c9e2fa83ad257ebd009ea80eaaed287ae5e8490376414bd15e002d09deb",
+    "tools/test_editor_candidate_activation.py": "974785e08ffe7e76382d0d035a701ed964e5dfdb66dbf74753cb9607066d759e",
+    "customizations/components/issue-workorders/writer_submit.py": "4a9d9bc6c465dc4fc298c81af1d05c7f3c3db2053cd584be70c339e3e7e15aee"
+  },
+  "independent_review": {
+    "reviewer": "workflow_audit",
+    "result": "passed",
+    "reference": "workflow-audit-review-engine-launch-crlf-20261107",
+    "independently_executed_activation_tests": 13,
+    "additional_probe": "Two paths sharing one normalized Git blob with distinct LF/CRLF checkout rules passed.",
+    "scope": "CRLF delta; prior activation/install/recovery review remains valid. Production Issue 390/387 integration pending."
+  },
+  "supersedes_evidence": "data-collection/engine-launch-receipt-20261107.json",
+  "correction": "Full source integration found 27 CRLF checkout representations differed from normalized Git blobs; compare exact path checkout filters only after raw mismatch. Batch framing remains raw-size based."
+}
