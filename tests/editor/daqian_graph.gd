@@ -64,6 +64,13 @@ func apply_graph(_id, revision, execution_revision, draft):
 	return {"ok":true,"revision":state.revision,"context":state.context}
 
 
+func await_fixture_file(path: String) -> void:
+	var deadline := Time.get_ticks_msec() + 8000
+	while not FileAccess.file_exists(path) and Time.get_ticks_msec() < deadline:
+		await create_timer(0.025).timeout
+	check(FileAccess.file_exists(path), "fixture did not enter " + path.get_file())
+
+
 func run() -> void:
 	root.content_scale_size = Vector2i(1280, 900)
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
@@ -81,7 +88,10 @@ func run() -> void:
 	await process_frame
 	var workspace = dock.find_child("DaqianWorkspace", true, false)
 	await workspace.refresh()
-	check(workspace.actor.get("user_id","")=="42","fixture collaborator membership was not verified")
+	if workspace.actor.get("user_id", "") != "42":
+		push_error("fixture membership not verified: %s (pending=%s, checking=%s)" % [workspace.notice.text, workspace.refresh_pending, workspace.checking])
+		quit(1)
+		return
 	var graph = workspace.editor
 	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()
@@ -440,7 +450,33 @@ func run() -> void:
 		var before := FileAccess.get_file_as_string(calls)
 		await workspace.refresh()
 		check("verify" in before and FileAccess.get_file_as_string(calls) == before,"warm refresh repeated remote verification")
+		var personal: Dictionary = workspace.board.duplicate(true)
 		var access_file = FileAccess.open(access_path,FileAccess.WRITE)
+		access_file.store_string("overlap")
+		access_file.close()
+		var sync_dir: String = access_path.get_base_dir()
+		workspace._set_project(true)
+		await await_fixture_file(sync_dir.path_join("project-reading"))
+		workspace.refresh()
+		await await_fixture_file(sync_dir.path_join("personal-reading"))
+		FileAccess.open(sync_dir.path_join("project-release"), FileAccess.WRITE).close()
+		var deadline := Time.get_ticks_msec() + 8000
+		while not workspace.project_mode and Time.get_ticks_msec() < deadline:
+			await create_timer(0.025).timeout
+		FileAccess.open(sync_dir.path_join("personal-release"), FileAccess.WRITE).close()
+		await workspace.refresh()
+		check(workspace.project_mode and workspace.board.get("issues", []).size() == 3, "late personal read overwrote the active project board")
+		access_file = FileAccess.open(access_path,FileAccess.WRITE)
+		access_file.store_string("offline")
+		access_file.close()
+		await workspace.refresh()
+		check(workspace.offline and not workspace.project_mode and workspace.board == personal and workspace.actor.get("user_id") == "42", "transient network error lost the personal snapshot or exposed the project view")
+		access_file = FileAccess.open(access_path,FileAccess.WRITE)
+		access_file.store_string("member")
+		access_file.close()
+		await workspace.refresh()
+		check(not workspace.offline and not workspace.project_mode and workspace.actor.get("user_id") == "42", "personal board did not recover after reconnect")
+		access_file = FileAccess.open(access_path,FileAccess.WRITE)
 		access_file.store_string("switch")
 		access_file.close()
 		await workspace.refresh()

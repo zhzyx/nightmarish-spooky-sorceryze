@@ -2,6 +2,11 @@ name: 🍎 macOS Builds
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      tianshu_only:
+        description: Run the Tianshu arm64 editor acceptance suite
+        type: boolean
+        default: false
 
 # Global Settings
 env:
@@ -13,22 +18,16 @@ jobs:
   build-macos:
     # From https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job#choosing-github-hosted-runners
     runs-on: macos-26
-    name: ${{ matrix.name }}
+    name: ${{ matrix.target == 'editor' && 'Editor (target=editor)' || 'Template (target=template_release)' }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: Editor (target=editor)
-            cache-name: macos-editor
-            target: editor
-            bin: ./bin/godot.macos.editor.universal
-
-          - name: Template (target=template_release)
-            cache-name: macos-template
-            target: template_release
-            scons-flags: debug_symbols=no
-            bin: ./bin/godot.macos.template_release.universal
+        target: ${{ fromJSON(inputs.tianshu_only && '["editor"]' || '["editor", "template_release"]') }}
+    env:
+      CACHE_NAME: ${{ matrix.target == 'editor' && 'macos-editor' || 'macos-template' }}
+      EXTRA_FLAGS: ${{ matrix.target == 'template_release' && 'debug_symbols=no' || '' }}
+      UNIVERSAL_BIN: ./bin/godot.macos.${{ matrix.target }}.universal
 
     steps:
       - name: Checkout
@@ -39,7 +38,7 @@ jobs:
       - name: Restore Godot build cache
         uses: ./.github/actions/godot-cache-restore
         with:
-          cache-name: ${{ matrix.cache-name }}
+          cache-name: ${{ env.CACHE_NAME }}
         continue-on-error: true
 
       - name: Setup Python and SCons
@@ -79,27 +78,49 @@ jobs:
         continue-on-error: true
 
       - name: Compilation (x86_64)
+        if: ${{ !inputs.tianshu_only }}
         uses: ./.github/actions/godot-build
         with:
           # Silence warning about Metal not being supported in x86_64 builds using `metal=no`.
-          scons-flags: ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} arch=x86_64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} metal=no
+          scons-flags: ${{ env.SCONS_FLAGS }} ${{ env.EXTRA_FLAGS }} arch=x86_64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} metal=no
           platform: macos
           target: ${{ matrix.target }}
 
       - name: Compilation (arm64)
         uses: ./.github/actions/godot-build
         with:
-          scons-flags: ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} arch=arm64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}
+          scons-flags: ${{ env.SCONS_FLAGS }} ${{ env.EXTRA_FLAGS }} arch=arm64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}
           platform: macos
           target: ${{ matrix.target }}
 
+      - name: Verify Tianshu creator navigation on arm64
+        if: matrix.target == 'editor'
+        run: |
+          for attempt in 1 2 3; do
+            python3 tests/editor/run_daqian_graph.py --scenario graph --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-graph-$attempt.json"
+          done
+
+      - name: Verify Tianshu work-order interactions on arm64
+        if: inputs.tianshu_only
+        run: |
+          for scenario in direct publish parallel entry; do
+            python3 tests/editor/run_daqian_graph.py --scenario "$scenario" --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-$scenario.json"
+          done
+
+      - name: Verify automatic model discovery and cancellation
+        if: inputs.tianshu_only
+        run: |
+          python3 tests/editor/run_model_autofetch.py --godot ./bin/godot.macos.editor.arm64 --source . --node "$(command -v node)" --out "$RUNNER_TEMP/model-autofetch.json"
+
       - name: Save Godot build cache
+        if: ${{ !inputs.tianshu_only }}
         uses: ./.github/actions/godot-cache-save
         with:
-          cache-name: ${{ matrix.cache-name }}
+          cache-name: ${{ env.CACHE_NAME }}
         continue-on-error: true
 
       - name: Prepare artifact
+        if: ${{ !inputs.tianshu_only }}
         run: |
           lipo -create ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64 -output ./bin/godot.macos.${{ matrix.target }}.universal
           rm ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64
@@ -108,12 +129,14 @@ jobs:
           chmod +x bin/godot.*
 
       - name: Upload artifact
+        if: ${{ !inputs.tianshu_only }}
         uses: ./.github/actions/upload-artifact
         with:
-          name: ${{ matrix.cache-name }}
+          name: ${{ env.CACHE_NAME }}
 
       - name: Unit tests
+        if: ${{ !inputs.tianshu_only }}
         run: |
-          ${{ matrix.bin }} --version
-          ${{ matrix.bin }} --help
-          ${{ matrix.bin }} --test --force-colors
+          ${{ env.UNIVERSAL_BIN }} --version
+          ${{ env.UNIVERSAL_BIN }} --help
+          ${{ env.UNIVERSAL_BIN }} --test --force-colors
