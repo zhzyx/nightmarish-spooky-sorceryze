@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e3903bf56439fa29658528dcb8d9ed784e11fd3c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-fd4c296f776b137a4723",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1c9100c2ed31df27c318e3d729141bd7527efa398960f8d84cfa1533761b1ffe",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/498",
+    "action": "delivery",
+    "detection_head": "4bae490b4284cb2bf23beb7c16a1ac8ed1e12c7a",
+    "context_sha256": "811c3c71a9cfd095ff9768ad4aef02ea702ae5ce36fbbfd2121181af6a1a123f",
+    "operator": "Sail-Li",
+    "worker": "codex/root",
+    "authority_ref": "user-chat-20261108-continue-Sail-Li-open-issues",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "diagnosis": "Git fetch recovered. Formal gate now reports missing request-kind source event in prior staged candidate; quality_issue events alone do not satisfy request provenance. Recorded actual current request through Diting storage.",
+    "next_action": "Stage the new actual request receipt and rerun writer_submit, then verify CI and main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:13:21.189349+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:15:02.808773+00:00",
+  "sha256": "c44eb99fc64a0248c4b17d54a5bc59d3289e756b272782cd1f0498e1d38eb24c"
+}

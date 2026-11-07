@@ -1,0 +1,11 @@
+{
+  "request_id": "daqian-direct-fd4c296f776b137a4723",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+  "date": "2026-11-08",
+  "operator": "Sail-Li",
+  "scope": "Verify actual Issue creation and restore its missing design link",
+  "acceptance": {"remote_issue_readback": "passed", "request_and_draft_match": "passed", "independent_readonly_review": "passed"},
+  "reviewer": "/root/audit_dispatch",
+  "diting_event": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-fd4c296f776b137a4723/kuafu-259588e9df9a1c2def26227fe0fbbaaeb0658a83.json",
+  "main_delivery": "pending"
+}

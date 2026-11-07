@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fb6e99bed5c0df48e1f1faaa3df6904e7596adea",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-fd4c296f776b137a4723",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a931f8f4d5b11dfb771f93226576e0822a5806b3c2a5390a0af173674aa4e4c6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/495",
+    "action": "delivery",
+    "detection_head": "cef3a3af07168711b117e2947d0f86c012dba510",
+    "context_sha256": "59573270ed9f2fe8c2735f5c08a6a9e9ef1898696cfca52a893bbafb44b1eeed",
+    "operator": "Sail-Li",
+    "worker": "codex/root",
+    "authority_ref": "user-chat-20261108-advance-Sail-Li-open-issues",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "diagnosis": "Delivery writer_submit failed at authenticated Git operation exit 128. Two direct git fetch probes reported connection reset while gh API main readback succeeds. Candidate remains staged; no PR or main delivery. Intake previously recovered; this is a separate delivery failure.",
+    "next_action": "Restore Git HTTPS transport then rerun identical writer_submit candidate; read back any remote receipt before retry. Keep issue440 and tracker open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:02:46.878253+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:03:34.285198+00:00",
+  "sha256": "b63b2992c9a21c3da876988ee6eaad7542ceeef0d95f55ae2dadd2bbc6776e89"
+}
