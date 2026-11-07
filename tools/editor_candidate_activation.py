@@ -111,7 +111,7 @@ def source_matches(root, revision, inputs):
             continue
         if entry is None or entry[1] != "blob" or entry[0] != str(expected.get("mode")):
             raise ActivationError("activation_source_not_committed")
-        blobs.setdefault(entry[2], set()).add(expected.get("sha256"))
+        blobs.setdefault(entry[2], []).append((name, expected.get("sha256")))
     # A Godot tree has many thousands of files. Batch object reads into a
     # temporary stream rather than spawning one Git process per source file or
     # holding the complete source tree in memory.
@@ -126,7 +126,7 @@ def source_matches(root, revision, inputs):
         if result.returncode:
             raise ActivationError("activation_source_not_committed")
         output.seek(0)
-        for oid, expected_hashes in blobs.items():
+        for oid, expected_files in blobs.items():
             header = output.readline().decode().split()
             if len(header) != 3 or header[:2] != [oid, "blob"]:
                 raise ActivationError("activation_source_not_committed")
@@ -138,8 +138,20 @@ def source_matches(root, revision, inputs):
                     raise ActivationError("activation_source_not_committed")
                 remaining -= len(block)
                 value.update(block)
-            if output.read(1) != b"\n" or expected_hashes != {value.hexdigest()}:
+            if output.read(1) != b"\n":
                 raise ActivationError("activation_source_not_committed")
+            raw_hash = value.hexdigest()
+            for name, expected_hash in expected_files:
+                if raw_hash == expected_hash:
+                    continue
+                # Git stores normalized blobs while .gitattributes can check out
+                # CRLF build inputs, even on macOS. Ask Git for that exact path's
+                # checkout representation only on a raw-byte mismatch. Batch
+                # --filters reports unfiltered sizes, so it cannot frame this
+                # stream safely. The common case still uses one batched read.
+                converted = git(root, "cat-file", "--filters", "--path=" + name, oid, binary=True).stdout
+                if hashlib.sha256(converted).hexdigest() != expected_hash:
+                    raise ActivationError("activation_source_not_committed")
 
 
 def verified_manifest(manifest_path, report):
