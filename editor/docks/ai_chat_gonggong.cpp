@@ -35,6 +35,7 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/ai_chat_host_runtime.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
@@ -268,6 +269,7 @@ bool AIChatDock::_direct_daqian_task() const {
 }
 
 void AIChatDock::_begin_gonggong_context() {
+	AIChatHostRuntime::prepare_node(cli_node->get_text());
 	const String outcome = last_user_content(messages);
 	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
@@ -301,7 +303,13 @@ void AIChatDock::_begin_gonggong_context() {
 	}
 	gonggong_context = String();
 	gonggong_generation = session_generation;
-	const String root = EDITOR_GET("gonggong/workspace");
+	String candidate_error;
+	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+		_append(TTR("Error"), candidate_error);
+		_set_busy(false);
+		return;
+	}
+	const String root = _workflow_root();
 	const String python = EDITOR_GET("gonggong/python");
 	gonggong_report_root = root;
 	gonggong_report_python = python;
@@ -538,8 +546,14 @@ static ProcessID launch_issue_model(const String &p_python, const List<String> &
 }
 
 Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const {
+	AIChatHostRuntime::prepare_node(cli_node->get_text());
 	Dictionary result;
-	const String workspace = EDITOR_GET("gonggong/workspace");
+	String candidate_error;
+	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+		result["error"] = candidate_error;
+		return result;
+	}
+	const String workspace = _workflow_root();
 	const String python = EDITOR_GET("gonggong/python");
 	const String bridge = workspace.path_join("tools/gonggong_bridge.py");
 	if (workspace.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
@@ -728,7 +742,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 	const String text = p_text.strip_edges();
 	if (issue_guide_state == "choose") {
 		if (AIChatIssueGuide::is_create(text)) {
-			const String labels = String(EDITOR_GET("gonggong/workspace")).path_join(".github/labels.json");
+			const String labels = _workflow_root().path_join(".github/labels.json");
 			issue_guide_categories = AIChatIssueGuide::categories_from_labels(FileAccess::exists(labels) ? JSON::parse_string(FileAccess::get_file_as_string(labels)) : Variant());
 			if (issue_guide_categories.is_empty()) {
 				_append(TTR("Error"), U"无法从工作区 `.github/labels.json` 读取任务类别，不能在此新建工单；可回复 `#编号 需求ID` 复用已有工单。");
@@ -802,7 +816,13 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	if (p_action == "issue-agent") {
 		issue_guide_state = "agent_error"; // All early configuration/start failures remain retryable.
 	}
-	const String root = EDITOR_GET("gonggong/workspace");
+	String candidate_error;
+	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+		_append(TTR("Error"), candidate_error);
+		_set_busy(false);
+		return;
+	}
+	const String root = _workflow_root();
 	const String python = EDITOR_GET("gonggong/python");
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
@@ -1037,30 +1057,34 @@ void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 }
 
 void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
+	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	if (!candidate.is_empty() && (int64_t(candidate.get("issue", 0)) != p_number || candidate.get("request_id", "") != p_request_id)) {
+		// Intake for the new Issue was written here. Preserve that provenance route
+		// until the host transfers it to the new Issue's own isolated source tree.
+		snapshot_state["requirement_workspace"] = candidate["source_root"];
+		snapshot_state.erase("engine_candidate");
+	}
 	EditorSettings *settings = EditorSettings::get_singleton();
 	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
-	if (bindings.has(conversation_id)) {
-		Dictionary bound = bindings[conversation_id];
-		if (String(bound.get("issue_number", "")).to_int() != p_number || bound.get("request_id", "") != p_request_id) {
-			bound.erase("issue_url");
-		}
-		bound["issue_number"] = itos(p_number);
-		bound["request_id"] = p_request_id;
-		bindings[conversation_id] = bound;
-		settings->set_project_metadata("daqian", "bindings", bindings);
-		issue_guide_fields["issue_number"] = p_number;
-		issue_guide_fields["request_id"] = p_request_id;
-		emit_signal("daqian_issue_bound", bound["source"], p_number, p_request_id);
-		return;
+	Dictionary bound = bindings.get(conversation_id, Dictionary());
+	if (String(bound.get("issue_number", "")).to_int() != p_number || bound.get("request_id", "") != p_request_id) {
+		bound.erase("issue_url");
 	}
-	settings->set("gonggong/issue_number", itos(p_number));
-	EditorSettings::get_singleton()->set("gonggong/request_id", p_request_id);
-	EditorSettings::save();
-	if (gonggong_panel) {
-		gonggong_panel->reload_issue_binding();
+	bound["issue_number"] = itos(p_number);
+	bound["request_id"] = p_request_id;
+	bindings[conversation_id] = bound;
+	settings->set_project_metadata("daqian", "bindings", bindings);
+	if (sub_agents.has(active_agent)) {
+		Dictionary child = sub_agents[active_agent];
+		child["issue_number"] = p_number;
+		child["request_id"] = p_request_id;
+		sub_agents[active_agent] = child;
 	}
 	issue_guide_fields["issue_number"] = p_number;
 	issue_guide_fields["request_id"] = p_request_id;
+	if (bound.has("source")) {
+		emit_signal("daqian_issue_bound", bound["source"], p_number, p_request_id);
+	}
 }
 
 void AIChatDock::_issue_guide_retry() {
@@ -1206,7 +1230,7 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 
 void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_request) {
 	igniter_state = p_action == "environment-deploy" ? "deploying" : "checking";
-	const String root = EDITOR_GET("gonggong/workspace");
+	const String root = _workflow_root();
 	const String python = EDITOR_GET("gonggong/python");
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {

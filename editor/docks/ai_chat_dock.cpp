@@ -30,6 +30,7 @@
 
 #include "ai_chat_dock.h"
 
+#include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/input/input_event.h"
@@ -43,6 +44,7 @@
 #include "editor/docks/ai_chat_cli_login.h"
 #include "editor/docks/ai_chat_editor_bridge.h"
 #include "editor/docks/ai_chat_editor_control.h"
+#include "editor/docks/ai_chat_host_runtime.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_openai.h"
 #include "editor/docks/ai_chat_resume.h"
@@ -169,7 +171,7 @@ Array chat_tools() {
 			required.push_back("command");
 			Dictionary cwd;
 			cwd["type"] = "string";
-			cwd["description"] = "Existing working directory, defaults to the open project";
+			cwd["description"] = "Existing working directory, defaults to the host-bound candidate workspace; use res:// for the open project";
 			properties["cwd"] = cwd;
 			Dictionary timeout;
 			timeout["type"] = "integer";
@@ -838,6 +840,15 @@ void AIChatDock::_load_resume() {
 	}
 	const Dictionary restart = journal.get("restart", Dictionary());
 	const String current = OS::get_singleton()->get_executable_path().replace("\\", "/").simplify_path();
+	if (!restart.is_empty() && restart.has("engine_candidate")) {
+		const Dictionary candidate = restart["engine_candidate"];
+		String manifest_error;
+		if (current == String(restart.get("to_executable", "")) && (!AIChatHostRuntime::artifact_matches(current, restart.get("candidate_manifest", ""), candidate, manifest_error) || !AIChatHostRuntime::source_matches(EDITOR_GET("gonggong/python"), _engine_root().path_join("tools/editor_source_manifest.py"), restart.get("candidate_manifest", ""), candidate, manifest_error))) {
+			_append(TTR("Error"), manifest_error);
+			return; // No ack: the watchdog restores the known previous executable.
+		}
+		snapshot_state["engine_candidate"] = candidate;
+	}
 	if (!restart.is_empty()) {
 		// Written before anything else can fail: this is the proof of a working
 		// dock that the build check and the restart watchdog are waiting for.
@@ -863,6 +874,9 @@ void AIChatDock::_load_resume() {
 	const String status = has_report ? String(report.get("status", "")) : String();
 	Dictionary result;
 	result["restarted"] = true;
+	if (restart.has("candidate_manifest")) {
+		result["candidate_manifest"] = restart["candidate_manifest"];
+	}
 	result["executable"] = OS::get_singleton()->get_executable_path();
 	result["requested_executable"] = String(restart["to_executable"]);
 	result["previous_executable"] = String(restart["from_executable"]);
@@ -1780,11 +1794,15 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	snapshot_history_dialog->hide();
 	if (backend->get_selected() == 2) {
 		if (!_validate_cli()) {
-			_append(TTR("Error"), U"请配置有效的 Codex 原生可执行文件和 Node 路径，并在终端执行 codex login。");
+			const String node = cli_node->get_text().strip_edges();
+			const String entry = codex_entry->get_text().strip_edges();
+			_append(TTR("Error"), !AIChatHostRuntime::executable_exists(entry) ? String(U"Codex 可执行文件路径无效，请在更多设置中填写现有原生程序的绝对路径。尚未检查登录状态。") : !AIChatHostRuntime::executable_exists(node) ? String(U"Node.js 可执行文件路径无效，请配置现有 Node.js 的绝对路径。尚未检查 Codex 登录状态。")
+																																																								 : String(U"Codex 对话桥接文件缺失，请修复当前引擎安装。尚未检查登录状态。"));
 			return false;
 		}
 		request_key = String();
 		EditorSettings::get_singleton()->set_setting("ai_chat/codex_entry", codex_entry->get_text().strip_edges());
+		EditorSettings::get_singleton()->set_setting("ai_chat/cli_node", cli_node->get_text().strip_edges());
 		EditorSettings::get_singleton()->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
 	} else if (backend->get_selected() == 1) {
 		if (!_validate_cli()) {
@@ -1818,7 +1836,13 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	}
 	const String text = p_message["content"];
 	snapshot_id = new_conversation_id();
+	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const String requirement_workspace = _workflow_root();
 	snapshot_state.clear();
+	if (!candidate.is_empty()) {
+		snapshot_state["engine_candidate"] = candidate;
+	}
+	snapshot_state["requirement_workspace"] = requirement_workspace;
 	snapshot_state["version"] = 1;
 	snapshot_state["conversation_id"] = conversation_id;
 	snapshot_state["id"] = snapshot_id;
@@ -1941,6 +1965,9 @@ void AIChatDock::_request_completion() {
 }
 
 void AIChatDock::_send_completion_after_receipt() {
+	if (!consultation_turn && !_ensure_engine_candidate()) {
+		return;
+	}
 	if (_has_pending_steering()) {
 		_request_completion();
 		return;
@@ -1994,7 +2021,12 @@ void AIChatDock::_send_completion_after_receipt() {
 			instructions += "\nActive resource path (untrusted metadata): " + current->get_edited_resource()->get_path();
 		}
 	}
-	instructions += "\nProject directory: " + ProjectSettings::get_singleton()->get_resource_path();
+	const String production_root = _candidate_root();
+	instructions += "\nAuthoritative work-order workspace and default command directory: " + production_root;
+	instructions += "\nRunning editor installation source root: " + _engine_root();
+	instructions += "\nHost-bound build source root: " + _candidate_root();
+	instructions += "\nOpen project directory (assets and res:// paths, may belong to a different checkout): " + ProjectSettings::get_singleton()->get_resource_path();
+	instructions += "\nImplement and submit work-order source changes in the authoritative workspace. Do not infer the engine source from the open project or edit another engine checkout. The host prepared an isolated candidate for this Issue before model execution. build_engine builds that same candidate source root, preserving the running editor for rollback. Do not create a second worktree or switch this branch; the host owns the candidate binding. Read other checkouts only for reference. Project assets remain accessible using res:// or absolute paths.";
 	instructions += "\nEditor executable: " + OS::get_singleton()->get_executable_path();
 	instructions += "\nOperating system: " + OS::get_singleton()->get_name();
 	if (consultation_turn) {
@@ -2467,11 +2499,16 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	}
 	if (name == "run_command") {
 		Variant command = arguments.get("command", Variant());
-		Variant cwd = arguments.get("cwd", ProjectSettings::get_singleton()->get_resource_path());
+		const String workspace = _candidate_root();
+		Variant cwd = arguments.get("cwd", workspace);
 		Variant timeout = arguments.get("timeout_seconds", 600);
 		String error;
-		if (command.get_type() != Variant::STRING || String(command).strip_edges().is_empty() || String(command).length() > 12000 || cwd.get_type() != Variant::STRING || (timeout.get_type() != Variant::INT && timeout.get_type() != Variant::FLOAT) || double(timeout) != int(timeout) || int(timeout) < 1 || int(timeout) > 3600 || !AIChatTools::resolve_directory(cwd, ProjectSettings::get_singleton()->get_resource_path(), pending_cwd, error)) {
+		if (command.get_type() != Variant::STRING || String(command).strip_edges().is_empty() || String(command).length() > 12000 || cwd.get_type() != Variant::STRING || (timeout.get_type() != Variant::INT && timeout.get_type() != Variant::FLOAT) || double(timeout) != int(timeout) || int(timeout) < 1 || int(timeout) > 3600 || !AIChatTools::resolve_directory(cwd, String(cwd).begins_with("res://") ? ProjectSettings::get_singleton()->get_resource_path() : workspace, pending_cwd, error)) {
 			_finish_tool("Error: A command of at most 12,000 characters, an accessible working directory and a timeout from 1 to 3600 seconds are required. " + error);
+			return;
+		}
+		if (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(pending_cwd, workspace, ProjectSettings::get_singleton()->get_resource_path(), error)) {
+			_finish_tool("Error: " + error);
 			return;
 		}
 		pending_action = name;
@@ -2539,6 +2576,11 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	pending_action = name == "write_file" ? String("write_script") : name;
 	process_timeout_seconds = 120;
 	if (name == "write_script" || name == "write_file") {
+		const String workspace = _candidate_root();
+		if (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(pending_path, workspace, ProjectSettings::get_singleton()->get_resource_path(), error)) {
+			_finish_tool("Error: " + error);
+			return;
+		}
 		Variant content_value = arguments.get("content", Variant());
 		if (content_value.get_type() != Variant::STRING || String(content_value).utf8().length() > AIChatTools::MAX_SCRIPT_BYTES) {
 			_finish_tool("Error: A replacement script of at most 256 KiB is required.");
@@ -2702,13 +2744,17 @@ Dictionary AIChatDock::_get_daqian_approval() const {
 	const Dictionary function = call["function"];
 	const String tool = daqian_approval["tool"];
 	const bool engine = tool == "build_engine" || tool == "restart_engine" || tool == "rollback_engine";
+	String candidate_error;
+	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+		return Dictionary();
+	}
 	if (function.get("name", "") != tool || (engine ? engine_dialog_action != "tool_" + tool || engine_tool_call_id != String(call["id"]) : pending_action != (tool == "write_file" ? String("write_script") : tool))) {
 		return Dictionary();
 	}
 	if (source.is_empty() || (source.contains("://") && source != url) || !url.ends_with("/issues/" + number) ||
 			!AIChatIssueGuide::is_bound(number.to_int(), entry.get("request_id", "")) || entry.get("request_id", "") != daqian_approval["request"] ||
 			String(daqian_approval["token"]).is_empty() || String(daqian_approval["actor"]).is_empty() || version.length() != 64 || !version.is_valid_hex_number(false) ||
-			gonggong_report_root.is_empty() || gonggong_report_root != String(EDITOR_GET("gonggong/workspace")) || daqian_approval["root"] != gonggong_report_root ||
+			gonggong_report_root.is_empty() || gonggong_report_root != _workflow_root() || daqian_approval["root"] != gonggong_report_root ||
 			gonggong_reporting.get("source_ref", "") != url || gonggong_reporting.get("request_ref", "") != daqian_approval["request"] ||
 			gonggong_reporting.get("actor", "") != daqian_approval["actor"] || gonggong_reporting.get("source_sha256", "") != version ||
 			daqian_approval["step"] != "tool-" + itos(tool_rounds) + "-" + itos(tool_index)) {
@@ -2932,12 +2978,24 @@ void AIChatDock::_confirm_action() {
 	if (pending_action == "run_command") {
 		String directory;
 		String error;
-		if (!AIChatTools::resolve_directory(pending_cwd, ProjectSettings::get_singleton()->get_resource_path(), directory, error)) {
+		if (!_validate_engine_candidate(error) || !AIChatTools::resolve_directory(pending_cwd, ProjectSettings::get_singleton()->get_resource_path(), directory, error) || !AIChatHostRuntime::production_path(directory, _candidate_root(), ProjectSettings::get_singleton()->get_resource_path(), error)) {
 			_finish_tool("Error: " + error);
 			return;
 		}
 		if (backend->get_selected() == 1) {
-			_finish_tool("{\"approved\":true}", true);
+			Dictionary approval;
+			approval["approved"] = true;
+#ifdef MACOS_ENABLED
+			if (snapshot_state.has("engine_candidate")) {
+				const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
+				if (profile.is_empty()) {
+					_finish_tool("Error: candidate_protection_refresh_failed; no command was approved.");
+					return;
+				}
+				approval["command_profile"] = profile;
+			}
+#endif
+			_finish_tool(JSON::stringify(approval), true);
 		} else {
 			_start_process();
 		}
@@ -2945,7 +3003,7 @@ void AIChatDock::_confirm_action() {
 	}
 	String absolute;
 	String error;
-	if (!_resolve(pending_path, absolute, error) || _has_unsaved_script(pending_path)) {
+	if (!_resolve(pending_path, absolute, error) || _has_unsaved_script(pending_path) || (pending_action == "write_script" && (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(absolute, _candidate_root(), ProjectSettings::get_singleton()->get_resource_path(), error)))) {
 		if (error.is_empty()) {
 			error = "The script has unsaved editor changes.";
 		}
@@ -3332,6 +3390,12 @@ void AIChatDock::_close_agent() {
 }
 
 String AIChatDock::_work_order_binding(const String &p_field) const {
+	if (sub_agents.has(active_agent)) {
+		const Dictionary child = sub_agents[active_agent];
+		if (AIChatIssueGuide::is_bound(child.get("issue_number", 0), child.get("request_id", ""))) {
+			return p_field == "issue_number" ? itos(int64_t(child[p_field])) : String(child.get(p_field, ""));
+		}
+	}
 	EditorSettings *settings = EditorSettings::get_singleton();
 	const Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
 	if (bindings.has(conversation_id)) {
@@ -4250,7 +4314,19 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 	payload["available_tools"] = allow_tools->is_pressed() ? native_tools : Array();
 	payload["tool_context"] = tool_context(allow_tools->is_pressed(), tool_rounds, auto_apply_file_changes->is_pressed(), auto_execute_commands->is_pressed(), engine_auto_restart->is_pressed());
 	payload["project_root"] = ProjectSettings::get_singleton()->get_resource_path();
-	payload["engine_root"] = cli_bridge->get_text().strip_edges().get_base_dir().path_join("../..").simplify_path();
+	payload["workspace_root"] = _candidate_root();
+#ifdef MACOS_ENABLED
+	if (snapshot_state.has("engine_candidate")) {
+		const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
+		if (profile.is_empty()) {
+			_append(TTR("Error"), "candidate_protection_refresh_failed: no native model request was sent.");
+			_set_busy(false);
+			return;
+		}
+		payload["command_profile"] = profile;
+	}
+#endif
+	payload["engine_root"] = snapshot_state.has("engine_candidate") ? _candidate_root() : _engine_root();
 	if (!incremental) {
 		Dictionary initial = p_messages[0];
 		payload["instructions"] = initial["content"];
@@ -4790,7 +4866,12 @@ void AIChatDock::_start_engine_build() {
 	if (busy && engine_tool_call_id.is_empty()) {
 		return;
 	}
-	engine_build_root = _engine_root();
+	String binding_error;
+	if (!_validate_engine_candidate(binding_error)) {
+		engine_build_status->set_text(binding_error);
+		return;
+	}
+	engine_build_root = snapshot_state.has("engine_candidate") ? _candidate_root() : _engine_root();
 	const String worker = engine_build_root.path_join("tools/editor_self_build.py");
 	const String python = engine_python->get_text().strip_edges();
 	if (!FileAccess::exists(worker) || !FileAccess::exists(python)) {
@@ -4806,6 +4887,41 @@ void AIChatDock::_start_engine_build() {
 	List<String> args;
 	args.push_back("-u");
 	args.push_back(worker);
+	if (snapshot_state.has("engine_candidate")) {
+		const Dictionary candidate = snapshot_state["engine_candidate"];
+		args.push_back("--binding");
+		args.push_back(candidate["binding_path"]);
+		args.push_back("--project");
+		args.push_back(ProjectSettings::get_singleton()->get_resource_path());
+	}
+	Dictionary host_options;
+	host_options["platform"] = OS::get_singleton()->get_name() == "macOS" ? "macos" : OS::get_singleton()->get_name() == "Windows" ? "windows"
+																																   : "linuxbsd";
+	host_options["target"] = "editor";
+	host_options["arch"] = Engine::get_singleton()->get_architecture_name();
+#ifdef DEV_ENABLED
+	host_options["dev_build"] = "yes";
+#else
+	host_options["dev_build"] = "no";
+#endif
+#ifdef REAL_T_IS_DOUBLE
+	host_options["precision"] = "double";
+#else
+	host_options["precision"] = "single";
+#endif
+	host_options["module_mono_enabled"] = OS::get_singleton()->has_feature("mono") ? "yes" : "no";
+#ifdef USE_VOLK
+	host_options["use_volk"] = "yes";
+#else
+	host_options["use_volk"] = "no";
+#endif
+#ifdef ACCESSKIT_ENABLED
+	host_options["accesskit"] = "yes";
+#else
+	host_options["accesskit"] = "no";
+#endif
+	args.push_back("--host-build-options");
+	args.push_back(JSON::stringify(host_options));
 	args.push_back("--current");
 	args.push_back(OS::get_singleton()->get_executable_path());
 	args.push_back("--status");
@@ -4890,6 +5006,17 @@ void AIChatDock::_poll_engine_build() {
 	const String expected_dir = engine_build_root.path_join("bin").replace("\\", "/").simplify_path();
 	const String artifact_file = executable.get_file();
 	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.ends_with(".self_update_a") || executable.contains(".self_update_b.") || executable.ends_with(".self_update_b")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
+		if (snapshot_state.has("engine_candidate")) {
+			String manifest_error;
+			if (!AIChatHostRuntime::artifact_matches(executable, executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error)) {
+				Dictionary failure;
+				failure["ok"] = false;
+				failure["error"] = manifest_error;
+				_finish_engine_tool(failure);
+				engine_build_timer->stop();
+				return;
+			}
+		}
 		engine_updated_executable = executable;
 		engine_build_progress->set_value(100);
 		engine_build_status->set_text(U"编译与启动校验通过 · 100% · 新版本已就绪");
@@ -4904,6 +5031,7 @@ void AIChatDock::_poll_engine_build() {
 			result["restarted"] = false;
 			result["executable"] = executable;
 			result["build_log"] = engine_log_path;
+			result["candidate_manifest"] = status.get("candidate_manifest", Variant());
 			if (engine_tool_wants_restart) {
 				_end_daqian_approval("failed");
 			}
@@ -4957,6 +5085,15 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 	restart["token"] = token;
 	restart["attempt"] = p_attempt;
 	restart["log"] = engine_log_path;
+	if (snapshot_state.has("engine_candidate") && engine_tool_name != "rollback_engine") {
+		String manifest_error;
+		if (!_validate_engine_candidate(manifest_error) || !AIChatHostRuntime::artifact_matches(p_executable, p_executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error) || !AIChatHostRuntime::source_matches(EDITOR_GET("gonggong/python"), _engine_root().path_join("tools/editor_source_manifest.py"), p_executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error)) {
+			engine_build_status->set_text(manifest_error);
+			return false;
+		}
+		restart["engine_candidate"] = snapshot_state["engine_candidate"];
+		restart["candidate_manifest"] = p_executable + ".candidate.json";
+	}
 	Dictionary journal;
 	journal["version"] = AIChatResume::VERSION;
 	journal["agent"] = active_agent;
@@ -5151,6 +5288,19 @@ void AIChatDock::_start_process() {
 		arguments.push_back(CryptoCore::b64_encode_str(bytes.ptr(), bytes.size()));
 #else
 		executable = "/bin/sh";
+#ifdef MACOS_ENABLED
+		if (snapshot_state.has("engine_candidate")) {
+			const String profile = AIChatHostRuntime::command_profile(snapshot_state["engine_candidate"], ProjectSettings::get_singleton()->get_resource_path());
+			if (profile.is_empty()) {
+				_finish_tool("Error: candidate_protection_refresh_failed; no command was started.");
+				return;
+			}
+			executable = "/usr/bin/sandbox-exec";
+			arguments.push_back("-p");
+			arguments.push_back(profile);
+			arguments.push_back("/bin/sh");
+		}
+#endif
 		arguments.push_back("-c");
 		arguments.push_back("cd '" + pending_cwd.replace("'", "'\\''") + "' || exit 1\n" + pending_command);
 #endif
@@ -5237,6 +5387,7 @@ void AIChatDock::_poll_process() {
 }
 
 void AIChatDock::_stop() {
+	_cancel_engine_candidate();
 	_end_daqian_approval("cancelled");
 	if (engine_dialog_action.begins_with("tool_")) {
 		engine_dialog_action = String();
@@ -6801,6 +6952,7 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	_cancel_engine_candidate();
 	// A visible approval can still belong to a settings window during shutdown.
 	if (ConfirmationDialog *dialog = ObjectDB::get_instance<ConfirmationDialog>(confirmation_id); dialog && dialog->get_parent() != this) {
 		memdelete(dialog);

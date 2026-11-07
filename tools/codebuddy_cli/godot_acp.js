@@ -12,7 +12,10 @@ function workspacePaths(input, fallback) {
         if (!value || !path.isAbsolute(value) || !fs.statSync(value).isDirectory()) throw new Error('INVALID_REQUEST');
         return fs.realpathSync(value);
     };
-    return { project_root: resolve(input.project_root || fallback), engine_root: resolve(input.engine_root || path.resolve(__dirname, '../..')) };
+    const workspace = { project_root: resolve(input.project_root || fallback), engine_root: resolve(input.engine_root || path.resolve(__dirname, '../..')) };
+    if (input.workspace_root) workspace.workspace_root = resolve(input.workspace_root);
+    if (input.command_profile) workspace.command_profile = input.command_profile;
+    return workspace;
 }
 
 function promptBlocks(input, initial, imageSupported = true) {
@@ -547,7 +550,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     });
     const initialize = async input => {
         agentId = input.agent_id || 'default';
-        const instance = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled)], { cwd: input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+        const instance = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled)], { cwd: input.workspace.workspace_root || input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
         child = instance;
         const belongs = () => child === instance && !resetting && !stopped;
         const failInstance = error => { if (belongs()) fail(error); };
@@ -618,7 +621,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         imageSupported = handshake.agentCapabilities?.promptCapabilities?.image === true;
         record('initialize_completed', { protocol_version: handshake.protocolVersion, image_supported: imageSupported, embedded_context: handshake.agentCapabilities?.promptCapabilities?.embeddedContext === true });
         record('session_new_started');
-        const session = await connection.newSession({ cwd: input.workspace.project_root, mcpServers: [] });
+        const session = await connection.newSession({ cwd: input.workspace.workspace_root || input.workspace.project_root, mcpServers: [] });
         if (typeof session.sessionId !== 'string' || !session.sessionId) throw api.bridgeError('INVALID_RESPONSE');
         sessionId = session.sessionId;
         record('session_new_completed');

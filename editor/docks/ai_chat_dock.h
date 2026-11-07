@@ -169,6 +169,17 @@ class AIChatDock : public EditorDock {
 	int64_t engine_build_pid = -1;
 	uint64_t engine_build_started = 0;
 	String engine_build_root;
+	int64_t candidate_pid = -1;
+	uint64_t candidate_generation = 0;
+	String candidate_result_path;
+	Timer *candidate_timer = nullptr;
+	bool _ensure_engine_candidate();
+	void _poll_engine_candidate();
+	void _cancel_engine_candidate();
+	String _candidate_root() const;
+	String _workflow_root(int p_agent = -1) const;
+	bool _validate_engine_candidate(String &r_error) const;
+
 	String engine_status_path;
 	String engine_log_path;
 	String engine_cancel_path;

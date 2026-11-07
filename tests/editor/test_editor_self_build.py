@@ -14,6 +14,24 @@ spec.loader.exec_module(worker)
 
 
 class SelfBuildTests(unittest.TestCase):
+    def test_app_executable_uses_authoritative_compiled_features(self):
+        features = {
+            "platform": "macos",
+            "target": "editor",
+            "arch": "arm64",
+            "dev_build": "no",
+            "precision": "single",
+            "module_mono_enabled": "no",
+            "use_volk": "yes",
+            "accesskit": "no",
+        }
+        result = worker.build_options(Path("Example.app/Contents/MacOS/Godot"), [], features)
+        self.assertEqual(result["arch"], "arm64")
+        self.assertEqual(result["use_volk"], "yes")
+        self.assertEqual(result["extra_suffix"], "self_update_a")
+        with self.assertRaisesRegex(ValueError, "Invalid authoritative"):
+            worker.build_options(Path("Example.app/Contents/MacOS/Godot"), [], dict(features, arch="guessed"))
+
     def test_alternating_slots_preserve_configuration(self):
         first = worker.build_options(Path("godot.windows.editor.dev.x86_64.mono.exe"), ["msvc_version=14.3"])
         self.assertEqual(first["extra_suffix"], "self_update_a")
@@ -115,10 +133,9 @@ class SelfBuildTests(unittest.TestCase):
             self.assertFalse(ack.exists())
             self.assertGreater(json.loads(path.read_text(encoding="utf-8"))["uncompressed_bytes"], 64 * 1024 * 1024)
 
-    def test_failed_build_never_publishes_ready(self):
+    def test_fresh_candidate_creates_bin_and_failed_build_never_publishes_ready(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "bin").mkdir()
             status = root / "status.json"
             log = root / "build.log"
             current = root / "bin/godot.windows.editor.dev.x86_64.mono.exe"
@@ -158,6 +175,7 @@ class SelfBuildTests(unittest.TestCase):
             self.assertIn("exit 7", result["error"])
             self.assertNotIn("executable", result)
             self.assertEqual(len(calls), 2)
+            self.assertTrue((root / "bin").is_dir())
             self.assertFalse((root / "bin/editor_self_build.lock").exists())
 
 

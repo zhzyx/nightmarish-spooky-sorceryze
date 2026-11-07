@@ -10,13 +10,13 @@ import gzip
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import secrets
 import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -104,34 +104,80 @@ def acquire_lock(path):
     return False
 
 
-def build_options(current, extra):
+def build_options(current, extra, host_options=None):
     # Preserve the running editor's platform, architecture, dev and Mono flags.
     parts = current.name.split(".")
-    if len(parts) < 4 or parts[0] != "godot" or parts[2] != "editor":
-        raise ValueError("The current executable must be a source-built Godot editor")
-    platform = parts[1]
-    if platform not in {"windows", "macos", "linuxbsd"}:
-        raise ValueError(f"Side-by-side self-update does not support the {platform} editor")
-    arch = next((p for p in parts if p in {"x86_64", "x86_32", "arm64", "arm32"}), None)
-    if not arch:
-        raise ValueError("Cannot identify the current editor architecture")
-    options = dict(platform=platform, target="editor", arch=arch,
-                   dev_build="yes" if "dev" in parts else "no",
-                   precision="double" if "double" in parts else "single",
-                   module_mono_enabled="yes" if "mono" in parts else "no")
+    if host_options is not None:
+        fixed = {"platform", "target", "arch", "dev_build", "precision", "module_mono_enabled"}
+        if (
+            not isinstance(host_options, dict)
+            or not fixed.issubset(host_options)
+            or set(host_options) - fixed - {"use_volk", "accesskit", "vulkan", "metal", "opengl3"}
+            or not all(isinstance(value, str) for value in host_options.values())
+            or host_options["platform"] not in {"windows", "macos", "linuxbsd"}
+            or host_options["target"] != "editor"
+            or host_options["arch"] not in {"x86_64", "x86_32", "arm64", "arm32"}
+            or host_options["precision"] not in {"single", "double"}
+            or any(
+                host_options[key] not in {"yes", "no"}
+                for key in host_options
+                if key not in {"platform", "target", "arch", "precision"}
+            )
+        ):
+            raise ValueError("Invalid authoritative host build features")
+        options = dict(host_options)
+    else:
+        if len(parts) < 4 or parts[0] != "godot" or parts[2] != "editor":
+            raise ValueError(
+                "The current executable must be a source-built Godot editor or provide authoritative host build features"
+            )
+        platform = parts[1]
+        if platform not in {"windows", "macos", "linuxbsd"}:
+            raise ValueError(f"Side-by-side self-update does not support the {platform} editor")
+        arch = next((p for p in parts if p in {"x86_64", "x86_32", "arm64", "arm32"}), None)
+        if not arch:
+            raise ValueError("Cannot identify the current editor architecture")
+        options = dict(
+            platform=platform,
+            target="editor",
+            arch=arch,
+            dev_build="yes" if "dev" in parts else "no",
+            precision="double" if "double" in parts else "single",
+            module_mono_enabled="yes" if "mono" in parts else "no",
+        )
     previous = current.with_suffix(current.suffix + ".build.json")
     if previous.is_file():
         saved = json.loads(previous.read_text(encoding="utf-8"))
         if not isinstance(saved, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in saved.items()):
             raise ValueError("Invalid build configuration snapshot")
-        protected = {"platform", "target", "arch", "dev_build", "precision", "module_mono_enabled", "extra_suffix", "ninja"}
+        protected = {
+            "platform",
+            "target",
+            "arch",
+            "dev_build",
+            "precision",
+            "module_mono_enabled",
+            "extra_suffix",
+            "ninja",
+        }
         extra = [f"{k}={v}" for k, v in saved.items() if k not in protected] + extra
     for item in extra:
         key, separator, value = item.partition("=")
         if not separator or not re.fullmatch(r"[a-zA-Z_][a-zA-Z_0-9]*", key):
             raise ValueError("Additional SCons options must be key=value")
-        if key in {"platform", "target", "arch", "dev_build", "precision", "module_mono_enabled",
-                   "extra_suffix", "ninja", "compiledb", "vsproj", "object_prefix"}:
+        if key in {
+            "platform",
+            "target",
+            "arch",
+            "dev_build",
+            "precision",
+            "module_mono_enabled",
+            "extra_suffix",
+            "ninja",
+            "compiledb",
+            "vsproj",
+            "object_prefix",
+        }:
             raise ValueError("Cannot override protected self-update option: " + key)
         options[key] = value
     # Two reusable output slots keep subsequent updates incremental. Neither slot
@@ -163,8 +209,9 @@ def write_resume_fixture(project, current, artifact, storage_case="legacy"):
         # Acknowledge and stop: the check must not continue somebody's agent loop.
         "smoke_check": True,
         "messages": [],
-        "tool_calls": [{"id": "startup_check", "type": "function",
-                        "function": {"name": "build_engine", "arguments": "{}"}}],
+        "tool_calls": [
+            {"id": "startup_check", "type": "function", "function": {"name": "build_engine", "arguments": "{}"}}
+        ],
         "restart": {
             "tool_call_id": "startup_check",
             "tool_name": "build_engine",
@@ -183,8 +230,10 @@ def write_resume_fixture(project, current, artifact, storage_case="legacy"):
         if not 16 * 1024 * 1024 < len(raw) <= 64 * 1024 * 1024:
             raise RuntimeError("Compressed resume fixture does not exercise the size boundary")
         journal = {
-            "storage": "gzip-base64", "storage_version": 1,
-            "uncompressed_bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "storage": "gzip-base64",
+            "storage_version": 1,
+            "uncompressed_bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
             "payload": base64.b64encode(gzip.compress(raw, mtime=0)).decode("ascii"),
         }
         if storage_case == "oversized_declared":
@@ -241,20 +290,46 @@ def main(argv=None):
     parser.add_argument("--log", type=Path, required=True)
     parser.add_argument("--cancel", type=Path, required=True)
     parser.add_argument("--scons-arg", action="append", default=[])
+    parser.add_argument("--binding", type=Path)
+    parser.add_argument("--project", default="")
+    parser.add_argument("--host-build-options", type=json.loads)
     args = parser.parse_args(argv)
     status = args.status.resolve()
     log_path = args.log.resolve()
     if not all(p.parent.is_dir() for p in (status, log_path, args.cancel)):
         parser.error("Status, log and cancel parent directories must already exist")
     # An exclusive lock prevents two agents/editors from building into the same slot.
-    lock = ROOT / "bin" / "editor_self_build.lock"
+    output_root = ROOT / "bin"
+    if output_root.is_symlink() or (hasattr(output_root, "is_junction") and output_root.is_junction()):
+        write_status(
+            status, stage="failed", percent=0, error="Linked engine output directory is not allowed", exit_code=1
+        )
+        return 1
+    output_root.mkdir(exist_ok=True)
+    lock = output_root / "editor_self_build.lock"
     if not acquire_lock(lock):
         owner = lock_owner(lock).get("pid")
         held = f" (process {owner})" if isinstance(owner, int) else ""
         write_status(status, stage="failed", percent=0, error=f"Another self-build owns {lock}{held}", exit_code=1)
         return 1
     try:
-        options = build_options(args.current, args.scons_arg)
+        binding = None
+        before = None
+        if args.binding:
+            import editor_engine_candidate as candidates
+            from editor_source_manifest import source_snapshot
+
+            binding = json.loads(args.binding.read_text(encoding="utf-8"))
+            checked = candidates.prepare(
+                ROOT, binding["issue"], binding["request_id"], binding["owner"], validate_only=True
+            )
+            if (
+                Path(checked["source_root"]).resolve() != ROOT.resolve()
+                or Path(checked["binding_path"]).resolve() != args.binding.resolve()
+            ):
+                raise ValueError("candidate_build_binding_mismatch")
+            before = source_snapshot(ROOT)
+        options = build_options(args.current, args.scons_arg, args.host_build_options)
         artifact = artifact_path(options)
         if artifact.resolve() == args.current.resolve():
             raise ValueError("Refusing to overwrite the running editor")
@@ -272,6 +347,7 @@ def main(argv=None):
         write_status(status, stage="preparing", percent=0, log=str(log_path))
         # A monitor supplies cooperative cancellation without orphaning SCons.
         import threading
+
         cancelled = threading.Event()
         finished = threading.Event()
 
@@ -282,6 +358,7 @@ def main(argv=None):
                     break
 
         threading.Thread(target=watch_cancel, daemon=True).start()
+
         # Popen polling below uses an Event, rather than blocking editor frames.
         def step(cmd, timeout=3600):
             log.write(("\nCOMMAND: " + subprocess.list2cmdline(cmd) + "\n").encode("utf-8"))
@@ -309,8 +386,12 @@ def main(argv=None):
             finally:
                 if child.poll() is None:
                     if os.name == "nt":
-                        subprocess.run(["taskkill", "/PID", str(child.pid), "/T", "/F"],
-                                       stdout=log, stderr=subprocess.STDOUT, check=False)
+                        subprocess.run(
+                            ["taskkill", "/PID", str(child.pid), "/T", "/F"],
+                            stdout=log,
+                            stderr=subprocess.STDOUT,
+                            check=False,
+                        )
                     else:
                         child.kill()
                     child.wait()
@@ -345,31 +426,71 @@ def main(argv=None):
                     raise RuntimeError(f"New editor version check failed (exit {code})")
                 with tempfile.TemporaryDirectory(prefix="self_update_check_", dir=ROOT / "bin") as directory:
                     project = Path(directory)
-                    (project / "project.godot").write_text('config_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding="utf-8")
-                    for storage_case in ("legacy", "compressed", "oversized_declared", "corrupt_digest", "wrong_length"):
+                    (project / "project.godot").write_text(
+                        'config_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
+                        encoding="utf-8",
+                    )
+                    for storage_case in (
+                        "legacy",
+                        "compressed",
+                        "oversized_declared",
+                        "corrupt_digest",
+                        "wrong_length",
+                    ):
                         token = write_resume_fixture(project, args.current, artifact, storage_case)
                         # A first start in a fresh project pays for the initial scan.
-                        code = step([str(artifact), "--headless", "--editor", "--path", str(project), "--quit-after", "6"], timeout=240)
+                        code = step(
+                            [str(artifact), "--headless", "--editor", "--path", str(project), "--quit-after", "6"],
+                            timeout=240,
+                        )
                         if code:
                             raise RuntimeError(f"New editor startup failed for {storage_case} (exit {code})")
                         if storage_case in {"legacy", "compressed"}:
                             unacceptable = resume_ack_error(project, token, artifact)
                             if unacceptable:
                                 raise RuntimeError(f"Resume check {storage_case}: {unacceptable}")
-                        elif (project / ".godot/editor/ai_chat_restart_ack.json").exists() or (project / ".godot/editor/ai_chat_resume.json").exists():
-                            raise RuntimeError(f"Invalid resume check {storage_case} was acknowledged or retained for replay")
+                        elif (project / ".godot/editor/ai_chat_restart_ack.json").exists() or (
+                            project / ".godot/editor/ai_chat_resume.json"
+                        ).exists():
+                            raise RuntimeError(
+                                f"Invalid resume check {storage_case} was acknowledged or retained for replay"
+                            )
                         log.write(f"Resume startup check passed: {storage_case}\n".encode())
                 if cancelled.is_set():
                     raise InterruptedError("Build cancelled; current editor unchanged")
-                artifact.with_suffix(artifact.suffix + ".build.json").write_text(json.dumps(options, ensure_ascii=False), encoding="utf-8")
-                write_status(status, stage="ready", percent=100, executable=str(artifact),
-                             exit_code=0, log=str(log_path), configuration=options)
+                artifact.with_suffix(artifact.suffix + ".build.json").write_text(
+                    json.dumps(options, ensure_ascii=False), encoding="utf-8"
+                )
+                manifest = None
+                if binding:
+                    from editor_source_manifest import artifact_manifest
+
+                    manifest = artifact_manifest(ROOT, artifact, checked, args.project, options, before)
+                    recorded = json.loads(args.binding.read_text(encoding="utf-8"))
+                    recorded["artifact_manifest"] = manifest
+                    candidates.atomic_json(args.binding, recorded)
+                write_status(
+                    status,
+                    stage="ready",
+                    percent=100,
+                    executable=str(artifact),
+                    exit_code=0,
+                    log=str(log_path),
+                    configuration=options,
+                    candidate_manifest=manifest,
+                )
                 return 0
             finally:
                 finished.set()
     except Exception as error:
-        write_status(status, stage="cancelled" if isinstance(error, InterruptedError) else "failed",
-                     percent=0, exit_code=1, error=str(error), log=str(log_path))
+        write_status(
+            status,
+            stage="cancelled" if isinstance(error, InterruptedError) else "failed",
+            percent=0,
+            exit_code=1,
+            error=str(error),
+            log=str(log_path),
+        )
         print(error, file=sys.stderr)
         return 1
     finally:

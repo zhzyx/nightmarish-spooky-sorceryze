@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "request_id": "gui-runtime-node-20261107",
+  "issue_number": 390,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+  "recorded_at": "2026-11-07T06:56:39.194441+00:00",
+  "candidate_base": "d803fdeee5e9b3c04b77f120c31c6ec1489a2e88",
+  "production_files": {
+    "editor/docks/ai_chat_dock.cpp": "fa4c2d1325b2a19b025f201987155eef0d7ad953813271c80fa7cfbf93bcf481",
+    "editor/docks/ai_chat_dock.h": "03c3c90cece280775448174ecf833931b912123024a8db4aeb9720cb300f5c16",
+    "editor/docks/ai_chat_gonggong.cpp": "52c4a338c0c07e1509508c347c6fe62b3eef477e296be52f1b319ca875a90290",
+    "editor/docks/ai_chat_sub_agents.cpp": "cad4f5951f78ed9498fa41fdd2c5fbdd6351d79bd74f469ebb7d5c80dcd1c9f7",
+    "editor/docks/ai_chat_engine_candidate.cpp": "abdb68a8d3c0aea3e391a64254e98faf53c3700025bb8d774f9700edefcb6d82",
+    "editor/docks/ai_chat_host_runtime.h": "7e1102677998d8d3a7aa73e4c1757a38cd4aec6132bee32f83e6509a35b818d6",
+    "tools/codebuddy_cli/godot_acp.js": "bb32f50a485a6e06cbbf32f858bc11f4730fdc789915eb8ce5193285473418d2",
+    "tools/codebuddy_cli/godot_bridge.js": "5d90413a97ff4d8c26d81d62d4d6d033d650b04c18337018bec3c208c09ae320",
+    "tools/codebuddy_cli/godot_terminal.js": "c936a2b38636c4dd2a3ffb79561823cabcb8e1334e11fd25210f67aa42f1068f",
+    "tools/editor_self_build.py": "3f3f7c92246688b2f3c295841a59803ef4cce7d30d70e2acb1845b4d35a9aff5",
+    "tools/editor_engine_candidate.py": "94691f7799e18bd030983be7f7e32c7fa844e265dfc278fc7674d971e7d37436",
+    "tools/editor_source_manifest.py": "4cdfd578e48856237a715e3c3b13616cc41b310af9aea02a143fd99384c3727b"
+  },
+  "independent_review": {
+    "reviewer": "/root/runtime_entry_fix/runtime_review",
+    "state": "passed",
+    "production_digest": "a92ecb4f9e1398b666eb25c264b1625505628a861770d43baae84330ac3c7c61",
+    "scope": "Candidate lifecycle, runtime bindings, source manifests, native command protection; rebase main large-file reads retained"
+  },
+  "checks": {
+    "candidate_real_git": {
+      "passed": 37
+    },
+    "source_manifest": {
+      "passed": 8
+    },
+    "self_build": {
+      "passed": 8
+    },
+    "native_bridge_regression": {
+      "passed": 55
+    },
+    "native_editor_offline": {
+      "ok": true,
+      "requests": 7,
+      "stages": [
+        "CANDIDATE_BOUNDARY_OK",
+        "CANDIDATE_SECOND_OK",
+        "CANDIDATE_OTHER_OK",
+        "CANDIDATE_RESUMED_OK",
+        "CANDIDATE_CHILD_OK"
+      ],
+      "stage_requests": {
+        "START": 2,
+        "SECOND": 1,
+        "OTHER": 1,
+        "RESUME": 2,
+        "CHILD": 1
+      },
+      "node_reused": true
+    },
+    "macos_arm64_compile": {
+      "ok": true,
+      "options": {
+        "platform": "macos",
+        "arch": "arm64",
+        "target": "editor",
+        "module_mono_enabled": "no",
+        "use_volk": "yes",
+        "accesskit": "no"
+      },
+      "executable_sha256": "5ba0f27cc2a8b59666dca883e41d9c13a1cfe8aeffd26fc99812451a930a856d"
+    },
+    "clang_format_22_1_5": "passed",
+    "ruff_0_17_1": "passed",
+    "diff_check": "passed"
+  },
+  "scope": "Offline isolated fixtures and macOS arm64 build; no production model calls, no user app replacement. Parent /root continues real #387 end-to-end model and main-delivery acceptance.",
+  "business_accepted": false,
+  "diting_ingestion_confirmed": false,
+  "usage": null
+}

@@ -61,6 +61,22 @@ test('No process starts while confirmation is pending or rejected', async t => {
     assert(!fs.existsSync(path.join(directory, 'forbidden.txt')));
 });
 
+test('Candidate commands use freshly approved protection and reject a missing refresh', { skip: process.platform !== 'darwin' }, async t => {
+    const { directory, manager, workspace } = fixture(t, {
+        approve: async () => ({ approved: true, command_profile: '(version 1)(allow default)(deny file-write* (subpath ' + JSON.stringify(fs.realpathSync(directory)) + '))' }),
+    });
+    workspace.command_profile = '(version 1)(allow default)';
+    const terminal = await manager.create({ sessionId: 'test', command: 'printf forbidden > blocked.txt' }, workspace);
+    const params = { sessionId: 'test', terminalId: terminal.terminalId };
+    assert.notEqual((await manager.wait(params)).exitCode, 0);
+    assert(!fs.existsSync(path.join(directory, 'blocked.txt')));
+    await manager.release(params);
+    const missing = fixture(t);
+    missing.workspace.command_profile = '(version 1)(allow default)';
+    await assert.rejects(missing.manager.create({ sessionId: 'test', command: 'printf forbidden > missing.txt' }, missing.workspace), /did not refresh candidate/);
+    assert(!fs.existsSync(path.join(missing.directory, 'missing.txt')));
+});
+
 test('Reserved host actions never execute a shell and preserve success and refusal', async t => {
     for (const name of ['read_logs', 'build_engine', 'restart_engine', 'rollback_engine']) assert.equal(hostActionName('godot-host-action ' + name), name);
     assert.equal(hostActionName('printf ok'), null);
