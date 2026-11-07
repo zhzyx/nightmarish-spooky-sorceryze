@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4b23725ad6a4ee2bb02f8c2111f622c0d899486a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "421ce0a1e8f41b7a04566b3db6951acf32e26faaff173f019c037f5449fca741",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "delivery",
+    "detection_head": "5ea1e96d43908fdb48221e049269d484a497ec30",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/492",
+    "diagnosis": "Writer correctly rejected cef3 after main545 advanced. Preserve unified settings upstream and update moved fixture controls; no stale signing.",
+    "next_action": "Integrate current main, affected regression, exact gate/sign/CI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:02:14.373571+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:17:15.999860+00:00",
+  "sha256": "4f9cf71303016ffc24e17135c5fcced60ff2d9bec9025faa4d4754338fce510a"
+}

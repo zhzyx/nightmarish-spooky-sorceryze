@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1f7ab044a9eecb0c467d853466aae3d8174e09dc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "303c490f5d0252b42e7d88e710668643ff0aef63193aaae2e587b006bee6f216",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "9fb6ac9cde3979978fffa9ae9c1e8f81b9d3f7bd",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/475",
+    "diagnosis": "Last premerge readback showed main advanced fromff3 to a2cd8003 by PR475 with17paths including Tianshu UI/AIChatDock. Original476 exact CI passed11success14skip but was not merged on the stale base. Integrated upstream unchanged into own final tree, no overlap or drift in25 command-interface files. Initial merge lacked Git committer identity; retried with the existing verified candidate author only for that command, without global config changes. Local rebuild and20/11/25,74native1470 plus legacy routing passed. Fresh actual independent worker launched and acknowledged through native protocol for this new source event.",
+    "next_action": "Complete and reconcile new independent acceptance before committing, then run normal updated exact candidate CI and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:12:53.160741+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:18:10.683312+00:00",
+  "sha256": "d30cf7cfcbf1186baef02e77db69e1ff2545534abfe481923a21ececa04434d0"
+}

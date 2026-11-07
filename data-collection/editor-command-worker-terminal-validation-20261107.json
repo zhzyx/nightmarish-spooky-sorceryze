@@ -1,0 +1,39 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "scope": "Actual native worker terminal verification and claim release; business delivery retained by root pending CI/main",
+  "actual_host_observation": "collaboration.list_agents confirmed all three completed and actual final callbacks received",
+  "workers": [
+    {
+      "issue_number": 407,
+      "worker": "/root/sinan_a4e2aba067bc4bb5",
+      "state": "completed",
+      "reservation_state": "released",
+      "reservation_key": "fb5e6c10f82f41aaf46cd25799b51556ea5fdf867c3e59ea4825a727d4dfe459",
+      "evidence_ref": "collaboration.final:/root/sinan_a4e2aba067bc4bb5"
+    },
+    {
+      "issue_number": 408,
+      "worker": "/root/sinan_d370ca72abf64320",
+      "state": "completed",
+      "reservation_state": "released",
+      "reservation_key": "f1175a0635e89bff00a1a97cb303ba7847f090326818ed29a59b15ef8da4819d",
+      "evidence_ref": "collaboration.final:/root/sinan_d370ca72abf64320"
+    },
+    {
+      "issue_number": 386,
+      "worker": "/root/sinan_a75885e6e79dd55e",
+      "state": "completed",
+      "reservation_state": "released",
+      "reservation_key": "8106896e0a08cfecd62c986f19db99bdb3f8d7818279ed264dbb9192a32a5fb5",
+      "evidence_ref": "collaboration.final:/root/sinan_a75885e6e79dd55e"
+    }
+  ],
+  "source_and_binary_changed": false,
+  "installed_or_activated": false,
+  "events_sha256": {
+    "gonggong-diting-data/events/gonggong-workspace/editor-command-coverage-20261107/dispatch-d51667a4df394cdd868910b19761d2df.json": "260f32f5aef3dbd26ff568831ecebe3a28bed05b7714ed83bfe0be5790968405",
+    "gonggong-diting-data/events/gonggong-workspace/editor-complex-controls-20261107/dispatch-934dac37c10a4584a0c9056b67f2e865.json": "dc030ff8cb721194180bb44b3add841f486b4da9d64fbface65d72ff419bc09e",
+    "gonggong-diting-data/events/gonggong-workspace/editor-scene-business-completion-20261107/dispatch-1ada1ef4058a489897d3df99863bdb1d.json": "2eae1fcd65eb53ae3bf1f2b4f9feb0456e07e51cf790f6f89ed33478e9ba0311"
+  }
+}

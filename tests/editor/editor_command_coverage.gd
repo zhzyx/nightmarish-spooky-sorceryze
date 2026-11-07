@@ -60,6 +60,7 @@ func run() -> void:
 		page.add_child(added)
 		if i == 0:
 			line = added
+	check(control.register_target("plugin.coverage_alias", line, "Coverage alias", "Coverage page"), "explicit alias registered")
 	await process_frame
 	var found := control.find_targets("CoverageInput00", 1)
 	var id: String = found[0].id if not found.is_empty() else ""
@@ -121,6 +122,8 @@ func run() -> void:
 						capacity_page.free()
 				"line":
 					line.text = cmd.value
+				"alias_secret":
+					line.secret = cmd.value
 				"popup":
 					popup = Window.new()
 					popup.name = "CoveragePopup"

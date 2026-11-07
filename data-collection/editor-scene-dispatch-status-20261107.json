@@ -1,0 +1,8 @@
+{
+  "issue_number": 408,
+  "request_id": "editor-scene-business-completion-20261107",
+  "scope": "Dispatch and independent source-candidate acceptance progress only; no scene production source in this PR",
+  "state": "Final v3 source independently passed25business and8native103, latest-main schema wiring undergoing final acceptance; not yet published",
+  "source_candidate_binary_sha256": "d6ed6c857cd19adc000656765edbc20e5636410f7500ed6ca9b9b3833dbf8a89",
+  "main_delivery": false
+}

@@ -101,6 +101,14 @@ def main():
                     state = command(decision)
                     return state, client.status(message["request_id"], "acceptance")
 
+                # The fixture can publish ready before native startup work finishes.
+                # Probe read-only state; never replay a write or approval.
+                ready_deadline = time.monotonic() + 20
+                _, startup = route("describe_target")
+                while startup.get("error") == "editor_busy" and time.monotonic() < ready_deadline:
+                    time.sleep(0.05)
+                    _, startup = route("describe_target")
+                assert startup["ok"], startup
                 assert "set_text" in client.capabilities("FixtureInput")["targets"][0]["actions"]
                 assert route("set_text", value="hidden")[1]["error"] == "target_not_visible"
                 assert route("open_target", "FixturePage")[1]["ok"]

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_validation_evidence",
+  "request_id": "editor-scene-business-completion-20261107",
+  "issue_number": 408,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/408",
+  "append_to": "data-collection/issue408-scene-completion-main-integration-validation.json",
+  "append_to_sha256": "4e0258bcb025fd39a52b42cf8b7679d167081dd5141b0938d0b33433b462e896",
+  "base_commit": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+  "validated_binary_base_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "editor_sha256": "89f6c6db739359ee8ddf6b2bac1cc56b5e169415cc1b3c6760f36d2040281ec1",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+    "editor/docks/ai_chat_editor_scene_actions.h": "b98076ff07985ee58167436cf6ceacc9d015f2a1853cea87bd4fe4494709ce0c",
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "0b078bfb11c3088cfb88c28d82bb132291e0cc0bf996a90d96ce3ab6414d6ade",
+    "editor/docks/ai_chat_editor_scene_completion.h": "4ddf54a4f769e385c9a0462b9a8332c99e6260972d77582685b96a88a2ab8878",
+    "editor/docks/scene_tree_dock.cpp": "d756c3d4186e759cac9eb11574a049fde3397631ba6eb61a4f89664409f69cda",
+    "editor/docks/scene_tree_dock.h": "8311c0f338eb6b3c4bd4737e99a43376c7788e8f70bb471aabd0551e00876807",
+    "editor/docks/ai_chat_editor_control.cpp": "19f798e8dfa28fbc59ff750486bfce0ed8b9c9b74ad6196d9e6b1d0c15b52377",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "6544c5e70a6d1d2ababcc354dfee9769ff041c22afae88162f3603055c5de92a",
+    "tests/editor/test_ai_chat_editor_control.cpp": "a9b90244678ea08ffe47efb1f147f38e9ffd9e427358e1882ff66dc6cd91ddbd",
+    "tests/editor/editor_test_isolation.py": "d508bf1e7f4d6bc5da17adf1c49a60cc7f098897bb9c7de6342bcff7a2499131",
+    "tests/editor/test_editor_test_isolation.py": "60ea4f7566d85a2bb84a62415f79f790c5f0062d15f4a4cc8f2eddcaaf3b9de7",
+    "tests/editor/run_editor_scene_completion.py": "2e21e90840d0b50f0f6ca3adabdbc3ecbe2c15a3a3726f7097d58f1977c08dec",
+    "tests/editor/editor_scene_completion.gd": "ff6d38ec44e1709ed54ab0f3262d296989deef5eb46d6d02d4f9f8ebe7397902"
+  },
+  "original_408_nine_source_files_unchanged": true,
+  "baseline_transition": {
+    "stash_sha": "cc334625801bb8ebd651143704839a16e302c0b9",
+    "label": "408-reviewed-pre-389-main-9aa61168dcca4ed1abfd14f40880baa8",
+    "from": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "to": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+    "main_changed_files": [
+      "data-collection/editor-test-isolation-ancestor-validation-20261107.json",
+      "design-docs/editor-test-isolation-ancestor-20261107.md",
+      "gonggong-diting-data/events/gonggong-workspace/editor-test-isolation-20261107/kuafu-386703296b0660bc51df8ab01f2012477ba8f723.json",
+      "tests/editor/editor_test_isolation.py",
+      "tests/editor/test_editor_test_isolation.py"
+    ],
+    "all_preexisting_16_frozen_files_byte_identical_after_stash_apply": true,
+    "main_cpp_changes": false,
+    "helper_389_bytes_already_present_and_tested": true,
+    "full_25_repeated": false,
+    "validation_basis": "Only already-tested identical 389 helper bytes plus 389 documentation/evidence entered main. Parent explicitly authorized source-hash binding without repeating unchanged 25-group acceptance."
+  },
+  "independent_exact_candidate_review": {
+    "receipt_sha256": "be7d9336b5020803efda92f778100401ef201be3aea4007c7a15a56c072ab3cd",
+    "result": "PASS; no blocking finding in exact 89f6 delivery wiring scope",
+    "business_groups": 25,
+    "native_cases": 9,
+    "native_assertions": 129,
+    "editor_exit_code": 0,
+    "real_settings_unchanged": true,
+    "real_settings_sha256_before_after": "869970a00b6c9290d8df035522cef509036071bd4d3b3afaa5be40bb96e11ecc",
+    "exported_app_project_executed": false,
+    "source_wiring_review": "passed receiver/signal/method/resource_path/destination/preset/format strings and debug boolean; closed additionalProperties; no callable/code; fixed action dispatch"
+  },
+  "formal_delivery": {
+    "writer_submit": "authorized; pending",
+    "merge": "root only; not requested from this worker",
+    "issue_close": "root only; not requested from this worker",
+    "exact_head_ci": "pending",
+    "diting_ingestion_confirmed": false
+  },
+  "limitations": [
+    "Exported project actual execution",
+    "All resource whitelist and image-memory combinations; real independently compiled GDExtension library combinations",
+    "Debug/universal/x86_64 and other platform application export combinations; signing and notarization",
+    "Pixel/IME/native-window/desktop interaction and external authentication",
+    "Existing RID/ObjectDB/resource teardown leak diagnostics remain unattributed",
+    "407/F05 final combined candidate"
+  ]
+}

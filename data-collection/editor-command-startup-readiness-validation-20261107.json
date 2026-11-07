@@ -1,0 +1,17 @@
+{
+  "issue_number": 407,
+  "request_id": "editor-complex-controls-20261107",
+  "related_parent": 386,
+  "scope": "Fixture initial read readiness only",
+  "source_sha256": {
+    "tests/editor/run_editor_command_coverage.py": "7aace78499750e679e4265e2329814ccb6cd974450fe16b674c775b2e663482e",
+    "tests/editor/run_editor_complex_controls.py": "9da0d816bd8a2a45606a68781c8e929dd8184571f39feb45e5daf750bc3e25e1"
+  },
+  "behavior": "Retry only first describe_target/read_menu_items on exact editor_busy until monotonic20second deadline; no write or approval retry",
+  "root_ui_binary_sha256": "a429a5b8da8fc17d5387e6f3201a1dbf2fdf5c5ecbc6221cc41298f4c0a2f265",
+  "root_ui_command20_and_complex11_exit": 0,
+  "combined_binary_sha256": "6aa76549e559471072ffabb301b442471fc021aefead3eb33a34cfa572e411b1",
+  "combined_independent_report_sha256": "825fd276ea3407a561f131831f4287360d677bfe9e099c2b5eab4e367429e275",
+  "combined_command20_complex11_exit": 0,
+  "original_startup_failures_retained": true
+}

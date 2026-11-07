@@ -81,6 +81,7 @@ skip = [
 	"tools/codebuddy_cli/package-lock.json",
 ]
 ignore-words-list = [
+	"acknowledgement",
 	"breaked",
 	"cancelled",
 	"checkin",

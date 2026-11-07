@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8e5a075e5f3f23ade6bbf8093c0b3470e6841038",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bd1d01d6f35e8fce355852d38dd69c6f4797fe9bdafe9372233a6bafbb1fbffd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "delivery",
+    "detection_head": "600d2455f4ae6b7480d6988f982a74e8a062e9ac",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/500",
+    "diagnosis": "During signing PR504 main advanced again from18aed to64ec via PR500. Reconciliation guard worked. Six upstream paths include DaQian modal freeze state and fixture plus documents. Another unrelated Sail-Li PR502 is still in flight. Sole command owner preserves upstream and avoids stale merge; production command sources remain unchanged.",
+    "next_action": "Read current publisher completion, integrate latest main, build and verify affected host/business paths. Re-gate and sign exact final candidate; no blanket full-test repeat solely for documentation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:28:18.085037+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:29:51.070026+00:00",
+  "sha256": "684ca89a5438330e8d173fdc077f3e5d401f530c6e2bf1a06f23536be0cafdee"
+}

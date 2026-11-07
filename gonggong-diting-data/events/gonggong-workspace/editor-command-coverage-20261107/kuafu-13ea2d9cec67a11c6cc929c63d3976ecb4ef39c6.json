@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-13ea2d9cec67a11c6cc929c63d3976ecb4ef39c6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4c0e8e09616ed38ae242610fd5a517dc0a863de85a996cd3a27e6ddde54844ab",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "5ea1e96d43908fdb48221e049269d484a497ec30",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/492",
+    "diagnosis": "Unified settings main545 reparented AI settings. Complex fixture null at line113; scene fixture has same obsolete dock.find_child calls. Production command interface sources unchanged. Sole repair owner current command task: six fixture lookups through get_ai_settings_control, preserve permissions/aliases.",
+    "next_action": "Full local validation, retain original failure. Exact gate/sign/CI/main readback; new binary actual root runs not independent.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:15:32.835926+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:17:00.421253+00:00",
+  "sha256": "d1eb27358e958d0a44aaa9863bc3dc533a0161e91494b1cf6f5a9038b579539a"
+}
