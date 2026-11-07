@@ -60,6 +60,7 @@
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/color_rect.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/file_dialog.h"
 #include "scene/gui/flow_container.h"
@@ -79,7 +80,10 @@
 #include "scene/gui/tree.h"
 #include "scene/main/http_request.h"
 #include "scene/main/timer.h"
+#include "scene/main/viewport.h"
 #include "scene/resources/image_texture.h"
+#include "scene/resources/material.h"
+#include "scene/resources/shader.h"
 #include "scene/resources/style_box_flat.h"
 #include "scene/resources/text_file.h"
 #include "servers/display/display_server.h"
@@ -2522,7 +2526,8 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 		const Dictionary operation = tool == "route_engine_message" ? Dictionary(pending_editor_action["operation"]) : pending_editor_action;
 		summary = String(U"编辑器操作 · ") + String(operation.get("action", "")) + " " + String(operation.get("target", ""));
 	} else {
-		summary = tool == "build_engine" ? (engine_tool_wants_restart ? U"编译并重启引擎" : U"编译引擎") : tool == "restart_engine" ? U"重启引擎" : U"回退引擎";
+		summary = tool == "build_engine" ? (engine_tool_wants_restart ? U"编译并重启引擎" : U"编译引擎") : tool == "restart_engine" ? U"重启引擎"
+																																	: U"回退引擎";
 	}
 	daqian_approval_generation = session_generation;
 	daqian_approval["token"] = new_conversation_id();
@@ -5107,6 +5112,7 @@ void AIChatDock::_stop() {
 
 void AIChatDock::_notification(int p_what) {
 	if (p_what == NOTIFICATION_READY || p_what == NOTIFICATION_THEME_CHANGED) {
+		glow_material->set_shader_parameter("pig", get_editor_theme_icon(SNAME("AIChatPig")));
 		const bool light_text = get_theme_color(SNAME("font_color"), SNAME("Label")).get_luminance() > 0.5f;
 		set_title_color(light_text ? Color::html("#9ee9ee") : Color::html("#763a80"));
 	}
@@ -5256,6 +5262,55 @@ AIChatDock::AIChatDock() {
 	layout->set_v_size_flags(SIZE_EXPAND_FILL);
 	layout->add_theme_constant_override("separation", 6 * EDSCALE);
 	agents_page->add_child(layout);
+	ColorRect *chat_glow = memnew(ColorRect);
+	chat_glow->set_name("ChatGlow");
+	chat_glow->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	chat_glow->set_custom_minimum_size(Size2(0, 28 * EDSCALE));
+	Ref<Shader> glow_shader;
+	glow_shader.instantiate();
+	glow_shader->set_code(R"(
+shader_type canvas_item;
+render_mode unshaded;
+uniform sampler2D pig : source_color, filter_linear, repeat_disable;
+uniform float height;
+varying vec2 local_pos;
+
+void vertex() {
+	local_pos = VERTEX;
+}
+
+void fragment() {
+	float t = TIME * 0.65;
+	vec3 tint = 0.68 + 0.32 * cos(t + UV.x * 7.0 + vec3(0.0, 2.1, 4.2));
+	float line = exp(-abs(UV.y - 0.5) * 24.0);
+	float pulse = 0.80 + 0.09 * sin(t * 2.5);
+	vec2 icon_uv = (local_pos / height - vec2(0.5)) / pulse + 0.5;
+	vec4 icon = texture(pig, icon_uv);
+	float mask = step(0.0, icon_uv.x) * step(icon_uv.x, 1.0) * step(0.0, icon_uv.y) * step(icon_uv.y, 1.0) * icon.a;
+	COLOR = vec4(mix(tint, icon.rgb * (0.45 + tint), mask), max(mask, line * smoothstep(1.0, 1.4, local_pos.x / height)));
+}
+)");
+	glow_material.instantiate();
+	glow_material->set_shader(glow_shader);
+	glow_material->set_shader_parameter("height", 28 * EDSCALE);
+	chat_glow->set_material(glow_material);
+	layout->add_child(chat_glow);
+
+	// Render the same pulsing face into the existing dock tab at its native size.
+	SubViewport *pig_viewport = memnew(SubViewport);
+	const int icon_size = MAX(1, int(16 * EDSCALE));
+	pig_viewport->set_size(Size2i(icon_size, icon_size));
+	pig_viewport->set_transparent_background(true);
+	pig_viewport->set_disable_3d(true);
+	pig_viewport->set_update_mode(SubViewport::UPDATE_WHEN_VISIBLE);
+	add_child(pig_viewport);
+	ColorRect *pig_face = memnew(ColorRect);
+	pig_face->set_size(Size2(28, 28) * EDSCALE);
+	pig_face->set_scale(Vector2(1, 1) * icon_size / (28 * EDSCALE));
+	pig_face->set_material(glow_material);
+	pig_viewport->add_child(pig_face);
+	set_dock_icon(pig_viewport->get_texture());
+
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");
 	workspace_pages->add_child(timers_page);

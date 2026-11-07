@@ -65,6 +65,7 @@ class HFlowContainer;
 class Image;
 class InputEvent;
 class Texture2D;
+class ShaderMaterial;
 class TextureRect;
 
 class AIChatDock : public EditorDock {
@@ -469,6 +470,7 @@ class AIChatDock : public EditorDock {
 	bool _mount_daqian_chat(Control *p_host);
 	void _unmount_daqian_chat();
 	VBoxContainer *agents_page = nullptr;
+	Ref<ShaderMaterial> glow_material;
 	VBoxContainer *chat_layout = nullptr;
 	VBoxContainer *timer_chat_host = nullptr;
 	TabBar *timer_agent_tabs = nullptr;
