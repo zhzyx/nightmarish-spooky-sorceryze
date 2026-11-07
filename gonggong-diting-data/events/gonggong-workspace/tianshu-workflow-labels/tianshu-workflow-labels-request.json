@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-workflow-labels-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-workflow-labels",
+  "kind": "request",
+  "occurred_at": "2026-11-07T11:44:31.393835+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/432",
+  "agent": {
+    "id": "current-workspace-operator",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "document": "design-docs/daqian/product-name.md",
+    "scope": "Windows GitHub Actions 中的四处天枢英文展示名",
+    "definition_ref": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "73b3dd95a0e3016e3eded143d928437da0125b1cae1ef611d4bd1160d42e95a2"
+}
