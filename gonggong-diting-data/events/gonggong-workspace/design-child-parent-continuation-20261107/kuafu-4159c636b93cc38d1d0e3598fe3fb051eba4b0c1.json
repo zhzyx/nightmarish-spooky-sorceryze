@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4159c636b93cc38d1d0e3598fe3fb051eba4b0c1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "design-child-parent-continuation-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "aaf57a9b653c5b75a0e4a274ee80bd79d422b6a30b4bad4dd36180461780eb87",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+    "action": "delivery",
+    "detection_head": "571acafd62a01c32f647def1344bf2db62e716e3",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-agent:/root/runtime_entry_fix",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/443",
+    "diagnosis": "PR static rejects British spellings in newly introduced review prose; attempting to amend the already committed collection path was correctly rejected by immutable collection policy.",
+    "next_action": "Preserve PR443 and its exact source/signed snapshot. Build a fresh isolated candidate from the same main with corrected initial review prose and explicit provenance to the prior candidate. Reuse unchanged code/input-bound test evidence and rerun formal gate and exact-head CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T13:20:37.558452+00:00",
+    "attempted": "PR failure log isolates four spelling changes in review prose; no production code changes. Formal gate rejected modified committed collection evidence.",
+    "repair_owner": "codex-agent:/root/runtime_entry_fix",
+    "continuable": "Fresh main-based candidate retains the previous remote source history without changing policy or original task assets."
+  },
+  "occurred_at": "2026-11-07T13:22:34.430395+00:00",
+  "sha256": "d7ae5f4785cf1cfc63db55219f72d3115a771143cd7ba583d37ac11288f5f08d"
+}

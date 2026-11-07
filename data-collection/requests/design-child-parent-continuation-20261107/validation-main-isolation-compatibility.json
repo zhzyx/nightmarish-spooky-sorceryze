@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "kind": "new_main_private_editor_isolation_compatibility",
+  "verified_at": "2026-11-07T15:19:46.389717+00:00",
+  "base_sha": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+  "superseded_exact_candidate": {
+    "pr": 463,
+    "source": "3d3edfe8bf9e6d4b3fe4129bded18bbf5368e3ca",
+    "signed": "664c4a43e3fbc9de02968c7273055d2570ecabf3",
+    "exact_ci": "all applicable passed, retained as historical evidence"
+  },
+  "before": {
+    "reproduced": true,
+    "upstream": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+    "source_pr": 463,
+    "error": "Private editor destination inherits a GongGong workspace; use a system temporary directory",
+    "destination_created": false,
+    "GONGGONG_WORKSPACE_present": false
+  },
+  "minimal_fix": "Only offline fixture caller: use system TemporaryDirectory; remove live GONGGONG_WORKSPACE from this runner process before copy_editor. Main isolation helper is unchanged.",
+  "production_source": {
+    "sha256": "662945004ac01b543311a28e7e6f7db5f51a4f2b863568281fa0523c0790e3c0",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "a065c66bccfe301be46fadd5d35e57a8add4687f2e726f7a20aa26d8bb96e7f6",
+      "editor/docks/ai_chat_dock.h": "5e477762a88289e887afa345002fa0762ff0901f9494c6f14e9f62c532065f64",
+      "editor/docks/ai_chat_sub_agents.cpp": "6942064e7371c9d36095bcee6205a9d7dc66b728b62d734c236e626611881ab6",
+      "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+      "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+    }
+  },
+  "production_six_sources_byte_identical_to_pr463": true,
+  "runner_sha256": "96645ba1b50327a0f5d9e12ef77808faf69cdbc1adc53708f3c13cab17ec2bb8",
+  "validation": {
+    "injected_runner_environment": "GONGGONG_WORKSPACE=/offline-inherited-workspace",
+    "native_case": "models-return-fail",
+    "ok": true,
+    "startup_isolated": true,
+    "parent_return_count": 1,
+    "stage_requests": {
+      "warmup": 1,
+      "parent": 1,
+      "child1": 3,
+      "child2": 3,
+      "return": 3
+    },
+    "errors": [],
+    "artifact_sha256": "597aa7692d607e193500570738e2f07de98b09356d61ebaf1c0f3498f99f4963",
+    "report_sha256": "be4f1f6867969797ad301baa904aa7302f832e02cc6b8d4a72bd8639d8bcc3e0",
+    "main_isolation_helper_unit": "8 cases, 7 passed,1 platform-specific skipped",
+    "ruff": "check and format passed",
+    "previous_native_matrix": "Unchanged production artifact; earlier 4-axis before/after, two guards,20 live-batch cases and11 model-autofetch cases retained with original exact source/artifact scopes. No redundant rebuild or changed-test claims."
+  },
+  "independent_review": {
+    "file": "independent-main-isolation-caller-review.json",
+    "sha256": "fd29b827988c9892dbbad51158540c4e0f055aec9e4b8ac722cc1b4163db1acc",
+    "findings": 0,
+    "scope": "Three-line offline runner change only; no independent runtime rerun claimed"
+  },
+  "user_app_config_history_modified": false,
+  "delivery": "pending fresh exact signature, applicable CI and normal merge/main/Issue readback",
+  "usage": null
+}

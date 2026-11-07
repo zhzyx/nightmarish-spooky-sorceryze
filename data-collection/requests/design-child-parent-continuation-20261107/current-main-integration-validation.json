@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "kind": "current_main_integration_validation",
+  "verified_at": "2026-11-07T13:37:44.947297+00:00",
+  "base_sha": "1e7d7b0f4f6b8d96d0239d0d4fe127009a09daab",
+  "upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/444",
+  "upstream_changed_paths": [
+    "data-collection/requests/tianshu-workbench-rebuild-20261107/caf084fa-6ff9-4477-9e5b-7b45023f56ee.json",
+    "design-docs/daqian/rebuild-plan.md",
+    "editor/docks/daqian/graph_rules.gd",
+    "editor/docks/daqian/workspace.gd",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-workbench-rebuild-20261107/tianshu-workbench-rebuild-20261107-request.json",
+    "tests/editor/daqian_graph.gd"
+  ],
+  "overlapping_task_write_paths": [],
+  "production_source": {
+    "sha256": "861389588aa1aad145feb4039fd772919517c1b7720b63cc06934e4370719d6b",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "a4d5cfdc98f6b5ae04136aab982bc34996d8dbc67f29aeab434104bf2d720429",
+      "editor/docks/ai_chat_dock.h": "ecbcaae43fd05f9a39b02cbab5233075b53bb9f2250c895774cd5df715dd46f0",
+      "editor/docks/ai_chat_sub_agents.cpp": "90532136553a10bf7164bdae7822165d531d96a2483a0ae500894e06d0be6114",
+      "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+      "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+    }
+  },
+  "integration": "Complete Issue441 candidate applied to a fresh owned worktree from current main. Six reviewed source inputs remain byte-identical to the independently reviewed MSVC-name repair. Upstream Tianshu GDScript/docs/evidence are preserved; no C++ API changed.",
+  "macos_build": "passed",
+  "artifact_sha256": "30da2c17a444f55281e6fc7ba05657a9dfe04fe544f4273ddd0a9b5fdb541876",
+  "normal_native_case": {
+    "ok": true,
+    "request_counts": {
+      "warmup": 1,
+      "parent": 1,
+      "child1": 3,
+      "child2": 3,
+      "return": 3
+    },
+    "parent_returns": 1,
+    "actual_recorded_events": 117,
+    "small_receipt_files": 2,
+    "report_sha256": "c34b442414a416bd1daee390c0e78198e2a140d8884bf9e057c2bbc18f4c81d2"
+  },
+  "prior_validation": "validation-v2.json",
+  "remaining": "Actual signed-head MSVC and all applicable CI, coordinated main merge/readback. Prior CI failure is not counted as passed.",
+  "usage": null
+}
