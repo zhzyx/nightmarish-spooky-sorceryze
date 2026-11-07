@@ -104,12 +104,12 @@ func run():
 		if entry.source==case_url and entry.issue_number=="127" and entry.request_id=="daqian-ai-entry-pig-20261105":
 			bound=true
 	if not bound:
-		fail("Daqian context was not carried into the associated chat")
+		fail("Tianshu context was not carried into the associated chat")
 		return
 	dock.get_parent().current_tab=dock.get_parent().get_tab_idx_from_control(dock)
 	await panel.refresh()
 	if panel.current!=case_url:
-		fail("Returning to Daqian lost the originating issue")
+		fail("Returning to Tianshu lost the originating issue")
 		return
 	print("DAQIAN_NATIVE_INPUTS_OK picker=true paste_fixture=true drop_route=true fan_out=true answer_resume=true")
 	root.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)

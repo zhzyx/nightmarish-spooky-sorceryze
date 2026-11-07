@@ -1,4 +1,4 @@
-# 大千 · 单 Issue 图编排与原子应用
+# 天枢 · 单 Issue 图编排与原子应用
 
 需求 ID 为 daqian-graph-20261105。父级需求为 daqian-workflow-20261105，条款见 [完整设计](../daqian-workflow.md) 的「单 Issue 图编排」。相对路径以本文目录为基准。当前聊天负责本次实现与证据，交付目标为仓库 main。
 

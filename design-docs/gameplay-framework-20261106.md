@@ -4,12 +4,12 @@
 
 - 稳定需求 ID：`gameplay-framework-20261106`
 - 用户目标：把 Unreal Engine 的 Controller、PlayerState、Pawn、GameState、GameMode、Component、Subsystem，以及 DS、网络相关性、属性同步、RPC、专服启动和用户连接等 Gameplay Framework 思路落到当前 Godot 4.8 分支。
-- 授权来源：2026-11-06 用户明确要求“根据你的顺序落地”，随后要求“按大千系统拆分落地，并借鉴虚幻源码”。
+- 授权来源：2026-11-06 用户明确要求“根据你的顺序落地”，随后要求“按天枢系统拆分落地，并借鉴虚幻源码”。
 - 参考来源：本机 Unreal Engine 5.8.3 release 源码。仅研究公开类型职责、生命周期和交互关系；不复制 Unreal 实现代码、注释或受保护资产。
 - 目标平台与工具链：第一阶段 Windows x86_64、MSVC、Godot `tests=yes`；后续专服阶段覆盖 Windows/Linux headless，但只有实际构建过的平台才记为已验证。
 - 交付目标：当前 Godot 仓库内可选的 C++ Gameplay 模块、类文档、自动化测试、代表性联网示例与可追溯设计；不改变现有 `Node`、`SceneTree` 或 `SceneMultiplayer` 的兼容语义。
 
-## 大千模块边界
+## 天枢模块边界
 
 依照 `framework/specs/module-system.md`，拆为稳定核心契约、业务能力和接入子模块。模块是逻辑职责，不等于 Git submodule、独立进程或固定 Agent。
 
@@ -147,7 +147,7 @@
 
 - 原始需求 ID / 父 Issue URL：`gameplay-framework-20261106` / https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/175 。
 - 设计版本 / 文件与条款锚点 / Git 摘要：本文件 v1；当前隔离分支 `codex/gameplay-framework-20261106`。
-- 设计定版决定及实际责任人：用户于 2026-11-06 明确要求按既定顺序及大千系统拆分落地，并在依赖阶段完成后授权继续 GF-5；当前 Codex 执行者负责本地 GF-1～GF-5 最终候选，GitHub 操作者为已回读的 `kaiyunxue`。
+- 设计定版决定及实际责任人：用户于 2026-11-06 明确要求按既定顺序及天枢系统拆分落地，并在依赖阶段完成后授权继续 GF-5；当前 Codex 执行者负责本地 GF-1～GF-5 最终候选，GitHub 操作者为已回读的 `kaiyunxue`。
 - 父级整体/集成验收及主责：五阶段全部验收，GF-5 主责最终组合验证；各子项只对自身可独立交付行为负责。
 - 关系最后回读时间 / 来源 / 待同步项：2026-11-06，经 GitHub REST API 回读 #175 的全部五个 sub-issue 及每个子项的 parent 均一致；#180 已按父对话授权完成 intake-only 和本地候选验证，随后与 #176～#179 一并回读为 in-review。父项保持 in-progress；#180 仍是最终候选和未完成正式交付的主关联。
 - GF-1～GF-4 尚未单独发布；GF-5 基于这些未发布基础形成同一最终模块候选。本次跨子项候选以 #180 / `gameplay-prediction-20261106` 为唯一活动主关联，#176～#179 作为一并回归的基础贡献。分别复核和记录 GF-1～GF-5 验收；在正式门禁、PR、CI 与 main 回读完成前不能关闭 #175 或任一子项。
