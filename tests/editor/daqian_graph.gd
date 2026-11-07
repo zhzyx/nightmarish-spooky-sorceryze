@@ -94,6 +94,17 @@ func run() -> void:
 		return
 	# The next section supplies its own 55-row board; live receipts must not replace it.
 	workspace._stop_progress_watch()
+	var exited := OS.execute_with_pipe(OS.get_environment("DAQIAN_TEST_PYTHON"), ["-c", "pass"], false)
+	check(not exited.is_empty(), "failed to start watcher exit fixture")
+	if not exited.is_empty():
+		var deadline := Time.get_ticks_msec() + 5000
+		while OS.is_process_running(exited.pid) and Time.get_ticks_msec() < deadline:
+			await process_frame
+		workspace.watcher = exited
+		workspace.watcher_buffer = "partial"
+		workspace._process(0.0)
+		check(workspace.watcher.is_empty() and workspace.watcher_buffer.is_empty(), "exited watcher was polled or retained")
+		workspace._stop_progress_watch()
 	var graph = workspace.editor
 	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()
@@ -242,6 +253,9 @@ func run() -> void:
 	enter.pressed = true
 	workspace.get_viewport().push_input(enter, true)
 	check(workspace.current == issues[49].url and not workspace.issue_list.visible, "Enter did not open the selected issue")
+	var hidden_row: TreeItem = workspace.issue_rows[issues[49].url]
+	workspace._draw_board()
+	check(is_instance_valid(hidden_row), "Refreshing a requirement rebuilt the hidden overview")
 	workspace.editor.canvas.zoom = 0.29
 	workspace._check_canvas_zoom()
 	check(workspace.board_views.current_tab == 0 and workspace.search.text == "#50" and workspace.issue_rows[issues[49].url].is_selected(0), "zoom return lost the filtered list or selected issue")
