@@ -204,16 +204,27 @@ Dictionary AIChatEditorControl::describe_target(const String &p_id) const {
 	}
 	const bool core = target_ids().has(p_id);
 	const Target *entry = targets.getptr(p_id);
+	const String screen = entry ? entry->screen : p_id == "project_settings" || p_id == "editor_settings" ? p_id
+																										  : String("editor");
 	Dictionary result = outcome(core || entry, core || entry ? String() : String("unknown_target"));
+	Control *control = core || entry ? resolve_target(p_id) : nullptr;
+	if (control && control->is_inside_tree()) {
+		// Explicit aliases share the same live-state protection and byte budgets
+		// as discovered targets; registering an alias does not grant disclosure.
+		result = AIChatEditorRegistry::describe_node(control, p_id, screen);
+	}
 	result["id"] = p_id;
 	result["display_name"] = entry ? entry->name : p_id.replace("_", " ").capitalize();
-	result["owner_screen"] = entry ? entry->screen : p_id == "project_settings" || p_id == "editor_settings" ? p_id
-																											 : String("editor");
-	Control *control = resolve_target(p_id);
-	result["available"] = control && control->is_inside_tree();
-	result["visible"] = control && control->is_visible_in_tree() && control->get_window() && control->get_window()->is_visible();
-	Array actions = control ? AIChatEditorRegistry::actions(control) : Array();
-	result["actions"] = actions;
+	result["owner_screen"] = screen;
+	result["automatic"] = false;
+	if (!result.has("available")) {
+		result["available"] = false;
+		result["visible"] = false;
+		result["actions"] = Array();
+		if (result.has("error")) {
+			result["unavailable_reason"] = result["error"];
+		}
+	}
 	return result;
 }
 
@@ -1270,7 +1281,7 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return AIChatEditorSettingsActions::perform(p_args, p_confirmed);
 	}
 	if (AIChatEditorRegistry::supported(action)) {
-		return registry->perform(resolve_target(target), target, p_args, p_confirmed);
+		return registry->perform(target.begins_with("editor.") ? registry->resolve_node(target) : resolve_target(target), target, p_args, p_confirmed);
 	}
 	EditorInterface *editor = EditorInterface::get_singleton();
 	if (action == "project_settings" || action == "editor_settings") {
@@ -1595,7 +1606,7 @@ Array AIChatEditorControl::tool_definitions() {
 		parameters["required"] = required;
 		parameters["additionalProperties"] = false;
 		function["name"] = name;
-		function["description"] = name == "get_editor_state" ? "Read bounded editor state without changing it." : "Semantic editor action. Actions: project_settings, editor_settings, main_screen (discovered dock name), list_main_screens, open_scene, open_resource, open_script (1-based line/column), select_node, set_project_setting (value), clear_project_setting, reveal_target (expand ancestors, select tabs, scroll), highlight (optional hint), clear_highlight; find_targets(query,limit,offset) returns total/next_offset and scan truncation, describe_target(target); start_guidance(title,steps) creates a preview, then guidance_start, guidance_next, guidance_previous, guidance_relocate, guidance_execute, guidance_cancel, guidance_status. Steps: target, message, optional non-writing prepare action, optional execute action, observe object with type manual/control_pressed/target_visible/main_screen(value)/selected_node(path)/project_setting(setting,value)/field_value(value)/window_closed/request_completed(request_id,source). Core IDs: scene_tree, inspector, filesystem, main_screen_tabs, project_settings, editor_settings; discover plugin IDs first. Discover target actions; read_text, read_items(limit,offset), select_text_range(start,end), append_text(value), replace_text_range(start,end,value) use Unicode character offsets, submit_text, undo_text; select_tree_item/expand_tree_item(index), select_item/select_tab(index), set_color(value=[r,g,b,a]), scroll_to(value=[x,y]). inspect_scene/inspect_ui(limit,offset) read bounded scene/UI trees with explicit omission markers. get_project_setting/get_editor_setting(target), create_project_setting(target,value_type,value), update_project_setting(target,value), set_editor_setting/reset_editor_setting(target,value); EditorSettings limited to appearance preferences, no auth or tool policy. Scene actions: scene_create_node(target parent,type,name), scene_delete_node(target leaf), scene_rename_node(target,name), scene_reparent_node(target leaf,parent), scene_select_nodes(nodes), scene_set_property(target,property,value), run_project, run_scene(target resource path), stop_project; run always requires explicit human confirmation and returns only run_requested. Scripted/inherited/instanced scene writes and resource/signal assignment are currently refused. Writes including guidance_execute require host confirmation. Never claim completion on failure.";
+		function["description"] = name == "get_editor_state" ? "Read bounded editor state without changing it." : "Semantic editor action. Actions: project_settings, editor_settings, main_screen (discovered dock name), list_main_screens, open_scene, open_resource, open_script (1-based line/column), select_node, set_project_setting (value), clear_project_setting, reveal_target (expand ancestors, select tabs, scroll), highlight (optional hint), clear_highlight; find_targets(query,limit,offset) returns total/next_offset and scan truncation, describe_target(target); start_guidance(title,steps) creates a preview, then guidance_start, guidance_next, guidance_previous, guidance_relocate, guidance_execute, guidance_cancel, guidance_status. Steps: target, message, optional non-writing prepare action, optional execute action, observe object with type manual/control_pressed/target_visible/main_screen(value)/selected_node(path)/project_setting(setting,value)/field_value(value)/window_closed/request_completed(request_id,source). Core IDs: scene_tree, inspector, filesystem, main_screen_tabs, project_settings, editor_settings; discover plugin IDs first. Discover target actions; complex targets expose read_menu_items/activate_menu_item/open_menu_submenu(index), read_curve/curve_preset(value 0..4), curve_add_point(value=[offset,y]), curve_remove_point(index), curve_set_point(index,value=[offset,y]), curve_set_tangents(index,value=[left,right]), curve_set_tangent_modes(index,value=[left_mode,right_mode],0=free/1=linear), read_gradient/gradient_add_point(value=[offset,r,g,b,a])/gradient_set_color(index,value=[r,g,b,a])/gradient_remove_point(index)/gradient_reverse/gradient_set_offset(index,value=offset)/undo_resource_edit/redo_resource_edit, read_graph_nodes/read_graph_connections(limit,offset), read_graph_ports(value={node,direction:input/output},limit,offset), graph_connect/graph_disconnect(value={from,from_port,to,to_port}), graph_move_node(value={node,position:[x,y]}), activate_tree_item/tree_context_menu/activate_item/item_context_menu(index). requested:true and business_completed:false mean only the native business request was delivered; use readback and later reads to verify effects. Scripted and extension resources are refused; resource point edits and Undo/Redo require unchanged instances, resource state and bound history. read_text, read_items(limit,offset), select_text_range(start,end), append_text(value), replace_text_range(start,end,value) use Unicode character offsets, submit_text, undo_text; select_tree_item/expand_tree_item(index), select_item/select_tab(index), set_color(value=[r,g,b,a]), scroll_to(value=[x,y]). inspect_scene/inspect_ui(limit,offset) read bounded scene/UI trees with explicit omission markers. get_project_setting/get_editor_setting(target), create_project_setting(target,value_type,value), update_project_setting(target,value), set_editor_setting/reset_editor_setting(target,value); EditorSettings limited to appearance preferences, no auth or tool policy. Scene actions: scene_create_node(target parent,type,name), scene_delete_node(target leaf), scene_rename_node(target,name), scene_reparent_node(target leaf,parent), scene_select_nodes(nodes), scene_set_property(target,property,value), run_project, run_scene(target resource path), stop_project; run always requires explicit human confirmation and returns only run_requested. Scripted/inherited/instanced scene writes and resource/signal assignment are currently refused. Writes including guidance_execute require host confirmation. Never claim completion on failure.";
 		function["parameters"] = parameters;
 		tool["type"] = "function";
 		tool["function"] = function;

@@ -26,7 +26,7 @@
 | F02 | 新增 Tree/ItemList/TabBar/ColorPicker/ScrollContainer 发现、读取和语义动作；条目分页与JSON数字转换 | 原生与真实编辑器验证；PopupMenu、Curve/Gradient、GraphEdit 由 [#407](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407) 继续 |
 | F03 | 原有 reveal_target 已展开/选标签/滚入视口；新增 scroll_to 明确坐标语义 | 不新增任意OS键鼠绕过。激活、上下文和图拖放业务语义归 #407；焦点/IME/原生窗口像素仍未知 |
 | F04 | read_text、append_text、Unicode范围替换、选区/光标、LineEdit提交、有限撤销 | 确认/实例/旧文本与选区变化拒绝；8192 UTF8输入。TextEdit多光标选择拒绝；撤销只恢复最后本接口写入，最多128目标 |
-| F05 | 自动目标描述值/选区/范围/选项/禁用只读原因/窗口实例/几何/焦点 | 文本和条目/页面均有UTF8 JSON字节预算。核心/显式别名仍保留原摘要，详情可从自动目标、read_items及inspect_ui取得 |
+| F05 | 自动目标描述值/选区/范围/选项/禁用只读原因/窗口实例/几何/焦点 | 文本和条目/页面均有UTF8 JSON字节预算。核心/显式别名现复用同一受保护、有界的实时详情入口；新增别名secret/exclude/page_only/删除及PopupWindow几何原生测试，最终组合复验后留证 |
 | F06 | find_targets/HTTP/client支持offset/total/next_offset/has_more；区分扫描截断和分页字节截断 | 45字段无重漏分页；8192目标/50000节点真实构造与明确lower_bound；不得把截断时总数当真实全集 |
 | F07 | 基线已有树变化监听；BFS修复深层原生页先耗尽容量导致新页丢失 | 真实延迟Window/字段发现和关闭观察；PopupMenu原生Window专项归 #407 |
 | F08 | 动态列举主屏，按原生名称/显示标题/layout_key选择，歧义拒绝 | 最新马良/大千 main上的实际切换、6种布局/重启顺序均已验证 |

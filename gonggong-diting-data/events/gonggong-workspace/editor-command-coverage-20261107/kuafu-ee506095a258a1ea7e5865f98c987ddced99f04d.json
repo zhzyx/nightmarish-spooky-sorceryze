@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ee506095a258a1ea7e5865f98c987ddced99f04d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "43ac3a5ed62650c357cc95644271e5ec874a5d42d7afb4ff495f9705554f75c5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "dispatch",
+    "detection_head": "208e6cc8fcd7072084ad2a6151a19083ab3aff4e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "diagnosis": "A real native reviewer receipt existed, but a TLS read failure interrupted the original source acknowledgement. Terminal verification correctly refused the absent acknowledged worker record. Root retried the trusted host acknowledgement with the same actual receipt, verified the stored binding, then reconciled the actual failed reviewer turn without duplicate launch or never-launched release. The reviewer was interrupted by platform content filtering; confirmed functional findings remain, and no acceptance is claimed.",
+    "next_action": "Continue scoped normal editor corrections and arrange independent acceptance on the corrected frozen candidate. Preserve original transport and filter failure receipts.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:59:35.629101+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T09:19:45.579608+00:00",
+  "sha256": "93ac7bd81e2dfd1f93e4e65186d74da1211f5b8f1d013b2c2eca392111ce89f8"
+}

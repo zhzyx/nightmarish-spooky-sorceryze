@@ -90,6 +90,18 @@ def main():
                     }
                     return msg, client.route(msg)
 
+                alias = route_action("describe_target", target="plugin.coverage_alias")
+                assert alias["ok"] and alias["available"] and not alias["automatic"], alias
+                assert alias["class"] == "LineEdit" and alias["value"] == "original", alias
+                assert len(alias["position"]) == 2 and len(alias["size"]) == 2 and alias["window_instance"], alias
+                core = route_action("describe_target", target="inspector")
+                assert core["ok"] and core["available"] and not core["automatic"], core
+                assert core["class"] and core["target_instance"] and len(core["position"]) == 2, core
+                command("alias_secret", value=True)
+                redacted = route_action("describe_target", target="plugin.coverage_alias")
+                assert not redacted["ok"] and not redacted["available"] and "value" not in redacted, redacted
+                command("alias_secret", value=False)
+                assert route_action("describe_target", target="plugin.coverage_alias")["value"] == "original"
                 screens = route_action("list_main_screens")
                 assert screens["ok"] and len(screens["main_screens"]) > 5, screens
                 switched = 0
@@ -463,6 +475,7 @@ def main():
                         {
                             "passed": True,
                             "checks": [
+                                "core and explicit alias metadata with live protection",
                                 "dynamic screens",
                                 "resource open/path rejection",
                                 "scene pagination",
