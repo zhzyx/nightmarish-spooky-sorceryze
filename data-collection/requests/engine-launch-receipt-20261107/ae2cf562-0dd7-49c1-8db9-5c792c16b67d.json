@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-launch-receipt-20261107",
+  "collected_at": "2026-11-07T07:38:04.348663+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/engine-launch-receipt-20261107-request.json",
+      "sha256": "d4558f656f447fb4e4396f182777159a42f8aec43fdb813253ca6184eb3e52ac",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "engine-launch-receipt-20261107-request",
+      "origin": "codex"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/engine-launch-receipt-takeover-20261107.json",
+      "sha256": "f378050774b59fd0595d6960ba0249c1f89af06943a157dd99774316892dac8f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "engine-launch-receipt-takeover-20261107",
+      "origin": "codex"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/kuafu-71596bdbad4500e7034fd1a70e0b9b27ef51abfa.json",
+      "sha256": "552d71745705686eb95866e829d43d623f33c78b7ec9857f3593858e42758d20",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-71596bdbad4500e7034fd1a70e0b9b27ef51abfa",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 393,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393"
+}

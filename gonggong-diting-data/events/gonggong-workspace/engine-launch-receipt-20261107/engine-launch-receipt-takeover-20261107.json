@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "engine-launch-receipt-takeover-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-launch-receipt-20261107",
+  "kind": "handoff",
+  "occurred_at": "2026-11-07T07:38:03.498716+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 393,
+    "from": "root",
+    "to": "workflow_audit",
+    "authorization": "Root delegated this existing user-authorized task for submission, CI and main readback.",
+    "implementation_changed": false,
+    "validation_ref": "data-collection/engine-launch-receipt-20261107-main-integration.json",
+    "business_acceptance": "Issue 393 stays open until original Issue 387 real startup-entry acceptance.",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "882302ccd97467c8ca914b42791d4bd8c8cc26c508d4469a05c60263332106b6"
+}
