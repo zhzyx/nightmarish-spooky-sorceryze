@@ -253,6 +253,12 @@ func verify_importer_conversion():
 	converted_root.free()
 
 func verify_mesh():
+	check(panel.parameter_form != null and not panel.params_edit.is_visible_in_tree(), "bundled parameter form hides JSON by default")
+	check(panel.parameter_form.copy_hint.is_visible_in_tree() and not panel.parameter_form.advanced_toggle.visible, "bundled copy node hides test-only configuration")
+	panel.developer_mode.button_pressed = true
+	panel.parameter_form.developer_toggle.button_pressed = true
+	check(panel.params_edit.is_visible_in_tree(), "bundled developer mode explicitly reveals raw parameters")
+	panel.developer_mode.button_pressed = false
 	var source = ProjectSettings.globalize_path('res://fixture.glb')
 	var before = FileAccess.get_sha256(source)
 	panel.source_edit.text = source

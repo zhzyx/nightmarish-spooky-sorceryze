@@ -10,6 +10,8 @@ var source_edit: LineEdit
 var context_edit: LineEdit
 var text_edit: TextEdit
 var params_edit: TextEdit
+var parameter_form: VBoxContainer
+var developer_mode: CheckButton
 var python_edit: LineEdit
 var host_edit: LineEdit
 var factory_edit: LineEdit
@@ -109,6 +111,13 @@ func _ready():
 	python_edit = line(machine, "本机 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
 	host_edit = line(machine, "本机 editor_host.py 路径", configured_host)
 	factory_edit = line(machine, "本机生成服务入口", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
+	developer_mode = CheckButton.new()
+	developer_mode.text = "开发者模式"
+	developer_mode.button_pressed = settings.get_value("interface", "developer_mode", false)
+	machine.add_child(developer_mode)
+	developer_mode.toggled.connect(func(enabled):
+		if parameter_form != null: parameter_form.set_developer_mode(enabled)
+	)
 	button(machine, "保存本机设置", save_settings)
 	button(machine, "打开本机诊断日志", open_diagnostics)
 	var character_panel = preload('res://addons/ainative/character_panel.gd').new()
@@ -162,10 +171,10 @@ func _ready():
 	text_edit.placeholder_text = "文字说明（请勿填写凭据）"
 	text_edit.custom_minimum_size.y = 65
 	inspector.add_child(text_edit)
-	params_edit = TextEdit.new()
-	params_edit.placeholder_text = '参数 JSON：{"delay":2,"fail":false}'
-	params_edit.custom_minimum_size.y = 55
-	inspector.add_child(params_edit)
+	parameter_form = preload("res://addons/ainative/parameter_form.gd").new()
+	inspector.add_child(parameter_form)
+	params_edit = parameter_form.raw_edit
+	parameter_form.set_developer_mode(developer_mode.button_pressed)
 	button(inspector, "应用到选中节点", apply_fields)
 	button(inspector, "清除内嵌源文件和参考图像", clear_embedded)
 	button(inspector, "运行并预览选中节点", func(): run_node_preview(selected_id))
@@ -281,6 +290,7 @@ func save_settings():
 	c.set_value('host','use_bundled_script',bundled)
 	if not bundled: c.set_value("host", "script", host_edit.text)
 	c.set_value("host", "factory", factory_edit.text)
+	c.set_value("interface", "developer_mode", developer_mode.button_pressed)
 	c.save(state_dir.path_join("local.cfg"))
 
 func diagnostic_error(summary: String, raw_details) -> String:
@@ -343,7 +353,7 @@ func select_node(id: String):
 			source_edit.text = data.source
 			context_edit.text = data.image_context
 			text_edit.text = data.text
-			params_edit.text = JSON.stringify(data.parameters)
+			parameter_form.configure(data.get("type", "copy"), data.parameters)
 	refresh_history()
 	if changed:
 		clear_preview()
@@ -351,9 +361,9 @@ func select_node(id: String):
 			show_history(preview_history[id].size() - 1)
 
 func apply_fields() -> bool:
-	var params = JSON.parse_string(params_edit.text)
+	var params = parameter_form.parameters()
 	if not params is Dictionary or not safe(params):
-		status.text = "参数无效，或含有禁止填写的凭据字段"
+		status.text = parameter_form.error_label.text if not params is Dictionary else "参数含有禁止填写的凭据字段"
 		return false
 	for data in nodes:
 		if data.id == selected_id:
@@ -437,7 +447,7 @@ func save_graph():
 	if f == null:
 		status.text = "无法保存工作流"
 		return
-	f.store_string(JSON.stringify(portable, "\t"))
+	f.store_string(JSON.stringify(portable, "\t", true, true))
 	f.flush()
 	var failed = f.get_error() != OK
 	f.close()
@@ -550,7 +560,7 @@ func launch(command: String, spec: Dictionary):
 	serial += 1
 	var prefix = state_dir.path_join(str(OS.get_process_id()) + "-" + str(serial))
 	var f = FileAccess.open(prefix + ".json", FileAccess.WRITE)
-	f.store_string(JSON.stringify(spec))
+	f.store_string(JSON.stringify(spec, "", true, true))
 	f.close()
 	var pid = OS.create_process(python_edit.text, PackedStringArray([host_edit.text, command, "--db", db, "--factory", factory_edit.text, "--spec", prefix + ".json", "--result", prefix + ".result"]))
 	if pid < 0:

@@ -59,3 +59,9 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 右侧“本次会话版本”可切换该节点先前成功的预览，悬停查看当次参数；失败和取消保留已有版本。切换节点时分别显示各自结果。历史仅在当前工作台会话保留，打开另一个工作流会清空；运行途中先完成或取消，再打开工作流。预览不等于发布，发布仍需原确认步骤及整个对应运行成功。
 
 后台回归：设置 `AINATIVE_PYTHON` 后使用 `--headless --path samples/ainative-workbench --script node_preview_acceptance.gd`。该回归使用离线复制服务，不调用模型。
+
+## 生成参数表单
+
+正常模式通过提示词、图像宽高设置生成；“高级生成选项”包含随机种子及当前节点适用的采样/网格选项。修改后点击“应用到选中节点”或运行生效，不会自动调用模型。离线复制只预览输入，测试参数不进入正常界面。
+
+确需调试原始参数时，在“本机设置”启用“开发者模式”，再展开“原始参数 JSON（开发者）”。该设置仅保存在本机，不随工作流导出。旧工作流、未展示字段和有效整数种子原样保留；非法参数不会应用到节点。后台验收入口为 `parameter_form_acceptance.gd`，可设置 `AINATIVE_PARAMETER_FORM_REPORT` 保存结果。
