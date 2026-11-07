@@ -1,0 +1,21 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "base_main": "18aed482093b96d08f38a37262ed1014d114676b",
+  "upstream_document_paths_preserved": [
+    "data-collection/issue440-creation-acceptance.json",
+    "design-docs/daqian-direct-fd4c296f776b137a4723.md",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-direct-fd4c296f776b137a4723/kuafu-259588e9df9a1c2def26227fe0fbbaaeb0658a83.json",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-direct-fd4c296f776b137a4723/kuafu-e3903bf56439fa29658528dcb8d9ed784e11fd3c.json",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-direct-fd4c296f776b137a4723/kuafu-fb6e99bed5c0df48e1f1faaa3df6904e7596adea.json",
+    "gonggong-diting-data/events/gonggong-workspace/daqian-direct-fd4c296f776b137a4723/request-resume-440-20261108.json"
+  ],
+  "all_source_manifest_unchanged": true,
+  "exact_tested_binary_unchanged": true,
+  "validation_reference": "data-collection/editor-command-settings-main-validation-20261108.json",
+  "actual_tests": "20/11/25 and legacy;82native1552; unchanged exact binary and source after six upstream documentation files only",
+  "prior_pr503": "superseded solely after main documentation advance; old CI outcomes remain separate",
+  "remote_acceptance": "pending new exact CI/main",
+  "installed_or_activated": false,
+  "observed_at": "2026-11-07T18:26:57.277510+00:00"
+}

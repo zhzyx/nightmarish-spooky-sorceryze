@@ -1,0 +1,23 @@
+{
+  "request_id": "daqian-direct-fd4c296f776b137a4723",
+  "payload": {
+    "operator": "Sail-Li",
+    "usage": null,
+    "authority_ref": "user-chat-20261108-continue-Sail-Li-open-issues",
+    "scope": "Resume actual creation acceptance and missing design evidence delivery"
+  },
+  "evidence_refs": [],
+  "agent": {
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host",
+    "version": "0.1.0",
+    "id": "codex-current-operator-host"
+  },
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+  "occurred_at": "2026-11-07T18:14:35.1185829Z",
+  "schema_version": 1,
+  "event_id": "request-resume-440-20261108",
+  "sha256": "2742519d113169396601110189bee4988741c9ca6c38c32686ed5835bcf95ceb"
+}
