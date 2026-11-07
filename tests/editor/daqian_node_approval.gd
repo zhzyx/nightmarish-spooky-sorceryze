@@ -70,6 +70,7 @@ func run() -> void:
 		return
 	await panel._open_issue_conversation()
 	var view = panel.conversation
+	check(view.find_child("ChatLayout", true, false) != null and chat.find_child("TimersPage", true, false) != null and chat.find_child("AgentTabs", true, false) != null, "Mounting an issue must leave unrelated AI dock pages in their tree")
 	var advanced = view.find_child("AdvancedToggle", true, false)
 	advanced.pressed.emit()
 	await process_frame
