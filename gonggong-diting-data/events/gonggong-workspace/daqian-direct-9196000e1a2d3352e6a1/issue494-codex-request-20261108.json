@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue494-codex-request-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-9196000e1a2d3352e6a1",
+  "kind": "request",
+  "occurred_at": "2026-11-07T18:17:53.412716+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "execution_authority_ref": "user-chat-20261108-continue-Sail-Li-open-issues",
+    "scope": "Issue494 Tianshu StarryNight SVG and native entry reference",
+    "intake": "passed: tools/run_issue_gate.ps1 -Issue 494 -RequestId daqian-direct-9196000e1a2d3352e6a1 -IntakeOnly",
+    "source_revision_sha256": "c1bb6157b8210c6d2fd92b1c6d1e14c57f11bf54c741281b88111d28edb73971",
+    "usage": null,
+    "usage_unknown_reason": "native tool usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "a411139cb0b962a57bb5197838e8ccdc6d24aeab63d67ba7817104f1421e62eb"
+}

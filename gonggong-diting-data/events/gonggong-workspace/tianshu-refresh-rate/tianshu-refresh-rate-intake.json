@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-refresh-rate-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-refresh-rate",
+  "kind": "request",
+  "occurred_at": "2026-11-07T18:32:07.797074+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/505",
+  "agent": {
+    "id": "codex-505",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Reduce automatic Tianshu refresh frequency",
+    "design_document": "design-docs/tianshu-refresh-rate.md"
+  },
+  "evidence_refs": [],
+  "sha256": "a9ef594ff55e5d366223fffb251d1ef3f3e52b785f9ebe135e6b5bb9102315cb"
+}

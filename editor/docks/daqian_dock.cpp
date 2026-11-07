@@ -85,7 +85,7 @@ EditorDock *create_daqian_dock() {
 	dock->set_name("Daqian");
 	dock->set_title(U"天枢");
 	dock->set_layout_key("DaqianMainScreen");
-	dock->set_icon_name("GraphEdit");
+	dock->set_icon_name("StarryNight");
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
 #ifndef MACOS_ENABLED
