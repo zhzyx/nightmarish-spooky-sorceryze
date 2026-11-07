@@ -1,0 +1,13 @@
+{
+  "request_id": "tianshu-refresh-rate",
+  "issue_number": 505,
+  "watcher_interval_ms": 2000,
+  "automatic_board_refresh_interval_ms": 10000,
+  "platform": "Windows headless",
+  "verified": [
+    "WATCHER_INTERVAL_OK",
+    "AUTO_REFRESH_OK"
+  ],
+  "manual_refresh": "bypasses automatic cooldown",
+  "design_document": "design-docs/tianshu-refresh-rate.md"
+}

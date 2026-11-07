@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0f5ad1afdbb287e2070b3f148a5d1b49424942a9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-refresh-rate",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/505",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7782b8358fa0be39bec792b59a3cf384e56a67677daa96c5bb8cef1545f369f9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/505",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/508",
+    "action": "validation",
+    "detection_head": "64ec282e34ab3f72e0c9c7737a544631c2cc066f",
+    "context_sha256": "021b4bd115e7f73b32b717f393ceeb92657f1848c41abfff2a2fdf17761c3d8c",
+    "operator": "Sail-Li",
+    "worker": "codex-505",
+    "authority_ref": "user-request",
+    "evidence": "Headless direct diagnostic reproduced empty editor actor and environment-changed result after tab open. Graph timing regression passed.",
+    "diagnosis": "Initial workspace access was deferred together with ordinary tab reopen. An environment change invalidated the first access-only read.",
+    "next_action": "Keep initial identity verification immediate, re-read after environment reset, run direct/publish/graph on the rebuilt editor.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:35:51.059941+00:00",
+    "attempted": null,
+    "repair_owner": "codex-505",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:36:48.972144+00:00",
+  "sha256": "f6da2a69dfe81c1d2e6a6568b3fe544651e5219db46bdeead99d0758cfc745d9"
+}
