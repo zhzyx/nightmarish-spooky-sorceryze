@@ -1074,7 +1074,7 @@ func _run():
 		return
 	await create_timer(0.1).timeout
 	stop_button.pressed.emit()
-	if not _check(_chat_text() == old_chat and message_list.find_child("WorkProcess", true, false) == null and query_endpoint.editable and model_field.editable, "Cancelling model refresh altered chat or did not unlock configuration"):
+	if not _check(_chat_text() == old_chat and message_list.find_child("WorkProcess", true, false) == null and query_endpoint.editable and model_field.editable, "Canceling model refresh altered chat or did not unlock configuration"):
 		quit(1)
 		return
 	query_endpoint.text = previous_endpoint

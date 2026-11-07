@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-88cf26cc7c251dff33cb28672e03f415b5f81f08",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3f09d24aa5c98a4e9c50becc96c5ad70fd0210896e2a6d7b9eff69f3d1bce97d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "validation",
+    "detection_head": "ff76a0c0b68466cdecfa2ab0cd1a4cc0efd456af",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "runtime/unified-settings/node-approval-v15-final.json",
+    "diagnosis": "The original test reused a captured binding after model application changed the verified routing receipt. Production correctly rejected the stale binding. The second test entry now reads the live binding, matching the real production entry; all approval guards remain intact.",
+    "next_action": "Exact-head gate, signed PR, complete CI and main readback before closing issue 459 and linked blocker 460.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:38:53.790809+00:00",
+    "attempted": null,
+    "repair_owner": "/root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-07T17:25:23.197689+00:00",
+  "sha256": "aea73aabe3423f6f9af9a0c921154218a6bb13878b2650684f230d3bf9fda6f9"
+}

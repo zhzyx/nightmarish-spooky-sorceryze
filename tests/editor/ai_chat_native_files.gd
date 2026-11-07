@@ -114,7 +114,7 @@ func _check_agent_rename() -> bool:
 		return false
 	name_input.text = "Cancelled name"
 	rename.canceled.emit()
-	if not _check(not rename.visible and tabs.get_tab_title(0) == original, "Cancelling rename changed the title"):
+	if not _check(not rename.visible and tabs.get_tab_title(0) == original, "Canceling rename changed the title"):
 		return false
 	tabs.tab_rmb_clicked.emit(0)
 	menu.hide()

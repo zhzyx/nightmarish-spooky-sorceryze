@@ -127,6 +127,7 @@ func run():
 	await verify_model_catalog()
 	await verify_busy_lock()
 	await verify_scope_change()
+	await verify_cross_window_environment()
 	await verify_persistence()
 	if OS.get_environment('UNIFIED_SETTINGS_DIAGNOSTIC_SKIP_LIFETIME') == '1':
 		details.diagnostic_only = 'lifetime intentionally omitted for same-candidate shutdown comparison'
@@ -269,6 +270,83 @@ func verify_scope_change():
 	await process_frame
 	await process_frame
 	chat.set_environment_changing_handler(Callable(workspace, 'prepare_environment_change'))
+
+func write_external_workflow(configuration_path: String, value: String) -> bool:
+	var configuration = JSON.parse_string(FileAccess.get_file_as_string(configuration_path))
+	if not configuration is Dictionary or not configuration.get('runtimes') is Dictionary:
+		return false
+	configuration.runtimes.workflow_python = value
+	var output := FileAccess.open(configuration_path, FileAccess.WRITE)
+	if output == null: return false
+	output.store_string(JSON.stringify(configuration, '  '))
+	output.close()
+	return true
+
+func seed_cross_window_context() -> Dictionary:
+	workspace.actor = {'user_id':'fixture-user', 'repo_id':'fixture-repo'}
+	workspace.picker_scope = workspace._repo()
+	workspace.watcher = {'pid':99999999}
+	workspace.watcher_buffer = 'cross-window synthetic watch'
+	workspace.chat_work = {'old':{}}
+	workspace.debug_process = {'pid':99999999}
+	workspace.debug_sessions = {}
+	workspace.models_dialog.user_id = 'fixture-user'
+	workspace.models_dialog.authorize_embedded(workspace._repo())
+	return {'scope':workspace._canvas_scope(), 'root':workspace._repo(), 'actor':workspace.actor.duplicate(), 'generation':workspace.canvas_panel.canvas_generation, 'epoch':workspace.selection_epoch, 'board_epoch':workspace.scope_epoch}
+
+func verify_cross_window_environment():
+	var runtime: Dictionary = chat.get_runtime_configuration()
+	var configuration_path: String = runtime.config_path
+	var original_python: String = runtime.configured.workflow_python
+	var original_display: String = runtime.paths.workflow_python
+	# This existing +x file belongs to the runner's system-temp directory. It is
+	# deliberately not an executable program: neither guarded entry may run it.
+	var alternate_python := OS.get_environment('UNIFIED_BUILD_PYTHON')
+	if not check(FileAccess.file_exists(alternate_python) and alternate_python != original_python, 'cross-window runtime uses an existing private Python stub'):
+		return
+	var marker := ProjectSettings.globalize_path('res://unexpected-cross-window-request')
+	var bridge: String = workspace._repo().path_join('customizations/components/godot-host/daqian/board.py')
+	DirAccess.make_dir_recursive_absolute(bridge.get_base_dir())
+	var script := FileAccess.open(bridge, FileAccess.WRITE)
+	if not check(script != null, 'cross-window request sentinel belongs to the private workspace'):
+		return
+	script.store_string('from pathlib import Path\nPath(' + JSON.stringify(marker) + ').write_text("unexpected old request", encoding="utf-8")\n')
+	script.close()
+	var runtime_notifications := []
+	var edit_notifications := []
+	var runtime_observer := func(): runtime_notifications.append(true)
+	var edit_observer := func(_value): edit_notifications.append(true)
+	chat.connect('runtime_configuration_changed', runtime_observer)
+	field('GongGongPython').text_changed.connect(edit_observer)
+	for entry in ['fresh_access', 'host_command']:
+		# Re-establish the restored environment before authorizing this case.
+		workspace._check_environment_changed()
+		var old_context := seed_cross_window_context()
+		var epoch: int = workspace.scope_epoch
+		var selection_epoch: int = workspace.selection_epoch
+		check(workspace._canvas_matches(old_context) and not workspace.models_dialog.authorized_root.is_empty(), entry + ': old workspace context and catalog authorization start valid')
+		var wrote := write_external_workflow(configuration_path, alternate_python)
+		check(wrote and chat.get_runtime_configuration().configured.workflow_python == alternate_python and field('GongGongPython').text == original_display and runtime_notifications.is_empty() and edit_notifications.is_empty(), entry + ': another window changes canonical Python without a local edit or signal')
+		var args := PackedStringArray([bridge, '--synthetic-cross-window'])
+		if entry == 'fresh_access':
+			check(not await workspace._fresh_access(), entry + ': changed environment refuses the previous identity before starting a request')
+		else:
+			var response: Dictionary = await workspace._host_command(args, '--result', {'synthetic':'old scoped request'})
+			check(response.get('environment_changed', false) and args == PackedStringArray([bridge, '--synthetic-cross-window']), entry + ': changed environment returns its guard before preparing a host request')
+		check(workspace.actor.is_empty() and workspace.watcher.is_empty() and workspace.watcher_buffer.is_empty() and workspace.chat_work.is_empty() and workspace.debug_process.is_empty(), entry + ': cross-window detection releases old actor watch chat and debug state')
+		check(workspace.models_dialog.authorized_root.is_empty() and workspace.models_dialog.user_id.is_empty() and not workspace._canvas_matches(old_context), entry + ': cross-window detection revokes the catalog and rejects the old context')
+		check(workspace.scope_epoch == epoch + 1 and workspace.selection_epoch == selection_epoch + 1, entry + ': synchronous invalidation advances each old context epoch exactly once')
+		check(not FileAccess.file_exists(marker), entry + ': no stale workspace request reaches the private sentinel')
+		await process_frame
+		await process_frame
+		check(workspace.scope_epoch == epoch + 1 and workspace.selection_epoch == selection_epoch + 1 and not workspace.environment_reset_pending, entry + ': deferred observation does not invalidate the same context again')
+		var restored := write_external_workflow(configuration_path, original_python)
+		var before_refresh := FileAccess.get_file_as_string(configuration_path)
+		chat.refresh_runtime_controls()
+		check(restored and field('GongGongPython').text == original_display and FileAccess.get_file_as_string(configuration_path) == before_refresh and runtime_notifications.is_empty() and edit_notifications.is_empty(), entry + ': restoring external Python and refreshing only reads canonical settings')
+	chat.disconnect('runtime_configuration_changed', runtime_observer)
+	field('GongGongPython').text_changed.disconnect(edit_observer)
+	workspace._check_environment_changed()
 
 func verify_persistence():
 	field('APIKey').text = 'synthetic-session-only-key'
