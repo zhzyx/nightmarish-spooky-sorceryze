@@ -1005,13 +1005,16 @@ func _draw_board() -> void:
 	var creators := ["全部创建人"]
 	var rows: Array = board.get("issues", []).duplicate()
 	var keys := {}
+	var action_counts := {}
 	var groups := {}
 	for item: Dictionary in rows:
 		var state := _display_state(item)
 		var rank := STATE_ORDER.find(state)
 		var categories := PackedStringArray(item.get("categories", ["development"] if item.get("development", false) else []))
 		categories.sort()
-		keys[item.url] = [int(not _needs_decision(item, state)), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
+		action_counts[item.url] = _pending_action_count(item)
+		var decision_first: bool = action_counts[item.url] > 0 or state in ["needs-decision", "awaiting_approval"]
+		keys[item.url] = [int(not decision_first), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
 		groups[_creator(item)] = true
 	rows.sort_custom(func(a, b): return keys[a.url] < keys[b.url])
 	var names := groups.keys()
@@ -1048,9 +1051,9 @@ func _draw_board() -> void:
 		var needs_approval := not _pending_operation(item).is_empty()
 		if needs_approval:
 			issue_state = "awaiting_approval"
-		var actionable := _needs_decision(item, issue_state)
+		var actionable: bool = action_counts[item.url] > 0
 		if actionable:
-			waiting_inputs += maxi(1, int(item.get("pending_count", int(item.decision))) + int(needs_approval) + int(_has_routing_questions(item)))
+			waiting_inputs += action_counts[item.url]
 			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
 		if item.status not in statuses:
 			statuses.append(item.status)
@@ -1096,8 +1099,11 @@ func _display_state(item: Dictionary) -> String:
 	return item.status
 
 
-func _needs_decision(item: Dictionary, state: String) -> bool:
-	return not item.get("closed", false) and state not in ["done", "cancelled", "closed"] and (state in ["needs-decision", "awaiting_approval"] or item.get("decision", false) or _has_routing_questions(item) or not _pending_operation(item).is_empty())
+func _pending_action_count(item: Dictionary) -> int:
+	if item.get("closed", false) or item.status in ["done", "cancelled", "closed"]:
+		return 0
+	var questions := int(item.get("pending_count", int(item.get("decision", false))))
+	return maxi(0, questions) + int(_has_routing_questions(item)) + int(not _pending_operation(item).is_empty())
 
 
 func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
@@ -1345,7 +1351,7 @@ func _filter_board() -> void:
 	for item in board.get("issues", []):
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
 		var creator := _creator(item)
-		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _needs_decision(item, _display_state(item))) or status.text == item.status) and (creator_filter.selected <= 0 or creator_filter.text == creator)
+		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _pending_action_count(item) > 0) or status.text == item.status) and (creator_filter.selected <= 0 or creator_filter.text == creator)
 		matched[item.url] = included
 		if included:
 			shown += 1

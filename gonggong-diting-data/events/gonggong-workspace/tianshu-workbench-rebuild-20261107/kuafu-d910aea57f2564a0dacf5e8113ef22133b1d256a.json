@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d910aea57f2564a0dacf5e8113ef22133b1d256a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-workbench-rebuild-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ae3b6937e74d162db31a9c462f6212a9ccc12bff3d4cbcbf37f4322e0d53c44f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/484",
+    "action": "delivery",
+    "detection_head": "68fe8c9e0d77b5979b724ba483ccfb409e783e50",
+    "context_sha256": "a406870a501efe723097dc505e8008f22b3f204f5881ffdfd51e5a1013b8bccb",
+    "operator": "Sail-Li",
+    "worker": "Codex-442",
+    "authority_ref": "父项原操作者当次复验",
+    "evidence": "门禁明确指出 data-collection/tianshu-rebuild-validation.json 落盘字节与 index 不同。git ls-files --eol 核对换行并重新暂存。",
+    "diagnosis": "Windows JSON 输出换行自动规范化，导致来源字节与 Git 内容不一致。",
+    "next_action": "已将本地回执统一写为 LF，按原候选校验真实字节并复验交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:56:53.924309+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:59:25.563203+00:00",
+  "sha256": "3ea12a0e1701da6eb2e1b8ea7f0e7b31c3ca0e331add947d8c99916ff2c96838"
+}
