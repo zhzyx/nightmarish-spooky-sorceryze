@@ -1,5 +1,5 @@
 """Bridge regression tests: immutable sources, no-clobber and configuration isolation."""
-import argparse, hashlib, json, struct, tempfile, unittest, zlib
+import argparse, copy, hashlib, json, struct, tempfile, unittest, zlib
 from pathlib import Path
 from editor_host import dispatch, compile_graph
 
@@ -48,6 +48,92 @@ def integer_transport_factory():
     return registry, {'comfy': DescriptionOnly()}
 
 class BridgeTests(unittest.TestCase):
+    def test_target_runs_only_dependency_closure_and_ignores_unrelated_configuration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fixtures(root)
+            args = argparse.Namespace(db=str(root/'db'), factory='editor_demo:factory', command='create')
+            graph = model(root/'sample.png')
+            graph['nodes'].extend([
+                dict(id='second', parameters={'delay':0}, text='changed downstream prompt'),
+                dict(id='unrelated', source=str(root/'missing.png'), type='not-a-real-node', parameters={}),
+                dict(id='downstream', parameters={})])
+            graph['edges'] = [dict(**{'from':'first','to':'second'}), dict(**{'from':'second','to':'downstream'})]
+            original = copy.deepcopy(graph)
+            run = dispatch(args, {'model':graph, 'target':'second'})['run_id']
+            args.command = 'status'
+            self.assertEqual(set(dispatch(args, {'run':run})['nodes']), {'first','second'})
+            args.command = 'step'
+            self.assertEqual(dispatch(args, {'run':run})['nodes']['first']['state'], 'succeeded')
+            self.assertEqual(dispatch(args, {'run':run})['state'], 'succeeded')
+            args.command = 'preview'
+            preview = dispatch(args, {'run':run,'node':'second'})
+            self.assertEqual(Path(preview['path']).read_bytes(), (root/'sample.png').read_bytes())
+            self.assertEqual(graph, original)
+            args.command = 'create'
+            root_run = dispatch(args, {'model':graph, 'target':'first'})['run_id']
+            args.command = 'status'
+            self.assertEqual(set(dispatch(args, {'run':root_run})['nodes']), {'first'})
+
+    def test_target_invalid_identity_missing_dependency_and_cycle_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fixtures(root)
+            args = argparse.Namespace(db=str(root/'db'), factory='editor_demo:factory', command='create')
+            graph = model(root/'sample.png')
+            with self.assertRaisesRegex(ValueError, 'unknown target'):
+                dispatch(args, {'model':graph,'target':'missing'})
+            duplicate = copy.deepcopy(graph); duplicate['nodes'].append(copy.deepcopy(graph['nodes'][0]))
+            with self.assertRaisesRegex(ValueError, 'duplicate node'):
+                dispatch(args, {'model':duplicate,'target':'first'})
+            missing = copy.deepcopy(graph); missing['edges'] = [{'from':'missing','to':'first'}]
+            with self.assertRaisesRegex(ValueError, 'missing dependency'):
+                dispatch(args, {'model':missing,'target':'first'})
+            cycle = copy.deepcopy(graph); cycle['edges'] = [{'from':'first','to':'first'}]
+            with self.assertRaisesRegex(ValueError, 'cycle'):
+                dispatch(args, {'model':cycle,'target':'first'})
+
+    def test_preview_preserves_snapshot_and_rejects_tampered_materialization(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fixtures(root)
+            source = root/'sample.png'; original = source.read_bytes()
+            args = argparse.Namespace(db=str(root/'db'), factory='editor_demo:factory', command='create')
+            run = dispatch(args, {'model':model(source),'target':'first'})['run_id']
+            source.write_bytes(b'changed after create')
+            args.command = 'step'; dispatch(args, {'run':run})
+            args.command = 'preview'
+            preview = dispatch(args, {'run':run,'node':'first'})
+            self.assertEqual(Path(preview['path']).read_bytes(), original)
+            Path(preview['path']).write_bytes(b'tampered')
+            with self.assertRaisesRegex(ValueError, 'preview collision'):
+                dispatch(args, {'run':run,'node':'first'})
+
+    def test_completed_node_preview_before_full_run_and_after_other_branch_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fixtures(root)
+            args = argparse.Namespace(db=str(root/'db'), factory='editor_demo:factory', command='create')
+            graph = model(root/'sample.png')
+            other = copy.deepcopy(graph['nodes'][0]); other.update(id='other', parameters={'fail':True})
+            graph['nodes'].append(other)
+            run = dispatch(args, {'model':graph})['run_id']
+            request = {'run':run,'node':'first'}
+            args.command = 'preview'
+            with self.assertRaisesRegex(ValueError, 'successful result'): dispatch(args, request)
+            args.command = 'step'
+            self.assertEqual(dispatch(args, {'run':run})['state'], 'running')
+            args.command = 'preview'
+            preview = dispatch(args, request)
+            args.command = 'step'
+            self.assertEqual(dispatch(args, {'run':run})['state'], 'failed')
+            args.command = 'preview'
+            self.assertEqual(dispatch(args, request), preview)
+            with self.assertRaisesRegex(ValueError, 'successful result'):
+                dispatch(args, {'run':run,'node':'other'})
+            args.command = 'publish'
+            with self.assertRaisesRegex(ValueError, 'not publishable'):
+                dispatch(args, {**request,'confirmation':preview['token']})
+            args.command = 'cancel'; dispatch(args, {'run':run})
+            args.command = 'preview'
+            with self.assertRaisesRegex(ValueError, 'cancelled'): dispatch(args, request)
+
     def test_godot_float_integer_serialization_at_create_boundary(self):
         import subprocess, sys
         with tempfile.TemporaryDirectory() as tmp:

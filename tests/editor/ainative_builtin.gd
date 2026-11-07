@@ -259,10 +259,15 @@ func verify_mesh():
 	panel.params_edit.text = '{"delay":0.15,"fail":false}'
 	panel.factory_edit.text = 'editor_demo:factory'
 	var heartbeat = panel.heartbeat
-	panel.start_run()
+	var node_action: Button
+	for action in panel.graph.get_node(panel.selected_id).find_children("*", "Button", true, false):
+		if action.text == "运行并预览": node_action = action
+	if not check(node_action != null, "bundled graph has explicit node preview action"): return
+	node_action.pressed.emit()
 	if not await wait_idle(): return
 	if not check(panel.current.get('state')=='succeeded','offline Copy Mesh run reaches real Executor success'): return
 	check(panel.heartbeat>heartbeat+5,'editor heartbeat advances during provider execution')
+	check(panel.preview_node == panel.selected_id and panel.preview_history.get(panel.selected_id, []).size() == 1, "bundled node action automatically previews and records its result")
 	panel.request_preview()
 	if not await wait_idle(): return
 	if not check(is_instance_valid(panel.preview_scene),'actual GLB preview is decoded'): return

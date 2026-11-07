@@ -51,3 +51,11 @@ The first local model validation produced all four formats and passed Godot publ
 After previewing a generated Mesh, the Character panel offers anatomical template fitting, explicit cleanup, joint/weight correction, skeleton preview and three ROM clips. Standard mode requires a suitable T-pose humanoid; free mode requires the complete anatomical landmarks and can declare a manually marked source pose. Save a new character version and reopen its source-bound corrections. See [the rigging design and limits](../../design-docs/ainative-art/05-rigging.md). The workbench scrolls to keep controls accessible in smaller windows.
 
 `rigging_acceptance.gd -- source.glb new-character.tscn params.json` checks actual Skin/rest, weights, three animated deformations and sampled squat foot contact. `rigging_live_ui.gd -- live-runs.json params.json new-preview.png new-receipt.json` uses the same deployment environment as `live_acceptance.gd` to replay a real `image_to_mesh` output through fitting, publication, no-overwrite and reopen operations. The latter invokes actual panel methods and requires new screenshot/receipt paths; its confirmation is test-only. Neither script invokes an AI model.
+
+## 逐节点运行与预览
+
+节点上的“运行并预览”只执行该节点及其必要上游，成功后自动展示图片或网格。不运行后续节点或无关分支；相同输入沿用执行器缓存。修改提示词、参数或参考图后再次点击才会生成，运行中重复点击不会重复提交。
+
+右侧“本次会话版本”可切换该节点先前成功的预览，悬停查看当次参数；失败和取消保留已有版本。切换节点时分别显示各自结果。历史仅在当前工作台会话保留，打开另一个工作流会清空；运行途中先完成或取消，再打开工作流。预览不等于发布，发布仍需原确认步骤及整个对应运行成功。
+
+后台回归：设置 `AINATIVE_PYTHON` 后使用 `--headless --path samples/ainative-workbench --script node_preview_acceptance.gd`。该回归使用离线复制服务，不调用模型。

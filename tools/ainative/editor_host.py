@@ -12,6 +12,40 @@ def safe(value):
     elif isinstance(value,list):
         for child in value: safe(child)
 
+def target_graph(model, target):
+    """Select the target's dependency closure before reading files or node schemas.
+
+    Graph identity/edge structure is checked globally so ambiguous IDs cannot
+    change what is executed. Unrelated node configuration is not evaluated.
+    """
+    if not isinstance(model, dict) or not isinstance(model.get('nodes'), list) or not isinstance(model.get('edges'), list):
+        raise ValueError('invalid model')
+    nodes = {}
+    for node in model['nodes']:
+        if not isinstance(node, dict) or not isinstance(node.get('id'), str) or not node['id'] or node['id'] in nodes:
+            raise ValueError('invalid or duplicate node id')
+        nodes[node['id']] = node
+    if not isinstance(target, str) or target not in nodes:
+        raise ValueError('unknown target node')
+    incoming = {key: [] for key in nodes}
+    for edge in model['edges']:
+        if not isinstance(edge, dict) or not isinstance(edge.get('from'), str) or not isinstance(edge.get('to'), str):
+            raise ValueError('invalid edge')
+        if edge['to'] in incoming:
+            incoming[edge['to']].append(edge['from'])
+    required, pending = set(), [target]
+    while pending:
+        key = pending.pop()
+        if key in required:
+            continue
+        if key not in nodes:
+            raise ValueError('missing dependency')
+        required.add(key)
+        pending.extend(incoming[key])
+    return {**model, 'nodes': [node for node in model['nodes'] if node['id'] in required],
+            'edges': [edge for edge in model['edges'] if edge['to'] in required]}
+
+
 def compile_graph(model):
     safe(model)
     assets=[]; graph=[]
@@ -81,8 +115,9 @@ def normalize_editor_integers(graph, registry):
                 raise ValueError('editor integer must be a finite JSON safe integer: ' + name)
         request['parameters'] = params
 
-def selected(host, request):
-    exported=host.export(request['run']); ref=exported['outputs'][request['node']]['result']
+def selected(host, request, preview=False):
+    exported=host.export_node(request['run'], request['node']) if preview else host.export(request['run'])
+    ref=exported['outputs'][request['node']]['result']
     asset=next(a for a in exported['manifest']['artifacts'] if a['id']==ref['id'] and a['revision']==ref['revision'])
     token=hashlib.sha256(canonical([request['run'],ref,asset]).encode()).hexdigest()
     return exported,asset,token
@@ -94,12 +129,13 @@ def dispatch(args,request):
     host=Executor(args.db,registry,providers)
     try:
         if args.command=='create':
-            graph,manifest=compile_graph(request['model'])
+            model = target_graph(request['model'], request['target']) if 'target' in request else request['model']
+            graph,manifest=compile_graph(model)
             normalize_editor_integers(graph,registry)
             return {'run_id':host.create(graph,manifest)}
         if args.command=='retry': host.retry(request['run'],request['node']); return host.status(request['run'])
         if args.command=='preview':
-            exported,asset,token=selected(host,request)
+            exported,asset,token=selected(host,request,preview=True)
             data=base64.b64decode(asset['payload']['content_base64'],validate=True)
             if hashlib.sha256(data).hexdigest()!=asset['payload']['content_sha256']: raise ValueError('digest')
             extension=asset['payload']['extension']

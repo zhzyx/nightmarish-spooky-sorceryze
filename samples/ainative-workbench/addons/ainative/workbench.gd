@@ -30,6 +30,9 @@ var heartbeat = 0
 var auto_step = false
 var creating = false
 var cancel_create = false
+var preview_target = ""
+var preview_history: Dictionary = {}
+var history_choice: OptionButton
 var preview_token = ""
 var preview_run = ""
 var preview_node = ""
@@ -164,7 +167,12 @@ func _ready():
 	inspector.add_child(params_edit)
 	button(inspector, "应用到选中节点", apply_fields)
 	button(inspector, "清除内嵌源文件和参考图像", clear_embedded)
+	button(inspector, "运行并预览选中节点", func(): run_node_preview(selected_id))
 	button(inspector, "预览选中结果", request_preview)
+	history_choice = OptionButton.new()
+	history_choice.item_selected.connect(show_history)
+	inspector.add_child(history_choice)
+	refresh_history()
 	native_inspector_fields = inspector.get_children()
 	texture = TextureRect.new()
 	texture.custom_minimum_size = Vector2(240, 120)
@@ -320,12 +328,14 @@ func rebuild():
 		node.add_child(label)
 		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
 		graph.add_child(node)
+		button(node, "运行并预览", run_node_preview.bind(data.id))
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
 	for edge in edges:
 		graph.connect_node(edge.from, 0, edge.to, 0)
 
 func select_node(id: String):
+	var changed = selected_id != id
 	selected_id = id
 	for data in nodes:
 		if data.id == id:
@@ -333,6 +343,11 @@ func select_node(id: String):
 			context_edit.text = data.image_context
 			text_edit.text = data.text
 			params_edit.text = JSON.stringify(data.parameters)
+	refresh_history()
+	if changed:
+		clear_preview()
+		if not preview_history.get(id, []).is_empty():
+			show_history(preview_history[id].size() - 1)
 
 func apply_fields() -> bool:
 	var params = JSON.parse_string(params_edit.text)
@@ -375,9 +390,15 @@ func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
 	rebuild()
 
 func delete_node():
+	if creating or auto_step or not jobs.is_empty():
+		status.text = "请等待当前运行结束或先取消，再删除节点"
+		return
+	preview_history.erase(selected_id)
+	clear_preview()
 	nodes = nodes.filter(func(n): return n.id != selected_id)
 	edges = edges.filter(func(e): return e.from != selected_id and e.to != selected_id)
 	selected_id = ""
+	refresh_history()
 	rebuild()
 
 func model() -> Dictionary:
@@ -433,6 +454,9 @@ func clear_embedded():
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
 
 func open_graph():
+	if creating or auto_step or not jobs.is_empty():
+		status.text = "请等待当前运行结束或先取消，再打开工作流"
+		return
 	var value = JSON.parse_string(FileAccess.get_file_as_string(path_edit.text))
 	if not value is Dictionary or not safe(value) or value.get("format") != 1 or not value.get("nodes") is Array or not value.get("edges") is Array:
 		status.text = "工作流无效"
@@ -463,14 +487,37 @@ func open_graph():
 			status.text = "连接端点无效"
 			return
 		destinations.append(e.to)
+	preview_history.clear()
+	run_id = ""
+	current = {}
+	preview_target = ""
+	clear_preview()
 	nodes = value.nodes
 	edges = value.edges
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
 	status.text = "已重新打开工作流"
 
+func run_node_preview(id: String):
+	if creating or auto_step or not jobs.is_empty():
+		status.text = "正在运行，请等待结果或先取消"
+		return
+	if id.is_empty() or nodes.filter(func(n): return n.id == id).is_empty(): return
+	if not apply_fields(): return
+	if selected_id != id: select_node(id)
+	preview_target = id
+	current = {}
+	preview_token = ""
+	auto_step = true
+	creating = true
+	cancel_create = false
+	status.text = "正在运行选中节点及必要的上游节点…"
+	launch("create", {"model": model(), "target": id})
+
 func start_run():
-	if not apply_fields() or not jobs.is_empty(): return
+	if creating or auto_step or not jobs.is_empty() or not apply_fields(): return
+	preview_target = ""
+	current = {}
 	preview_token = ""
 	auto_step = true
 	creating = true
@@ -478,20 +525,23 @@ func start_run():
 	launch("create", {"model": model()})
 
 func resume_run():
-	if run_id == "" or not jobs.is_empty(): return
+	if creating or run_id == "" or not jobs.is_empty(): return
 	auto_step = true
 	launch("step", {"run": run_id})
 
 func cancel_run():
 	if creating:
 		cancel_create = true
+		preview_target = ""
 		auto_step = false
 		return
 	auto_step = false
+	preview_target = ""
 	preview_token = ""
 	if run_id != "": launch("cancel", {"run": run_id})
 
 func retry_node():
+	if creating or auto_step or not jobs.is_empty(): return
 	preview_token = ""
 	if run_id != "": launch("retry", {"run": run_id, "node": selected_id})
 
@@ -505,6 +555,9 @@ func launch(command: String, spec: Dictionary):
 	if pid < 0:
 		status.text = "无法启动本机 Python 服务"
 		auto_step = false
+		if command == "create":
+			creating = false
+			preview_target = ""
 		return
 	jobs[pid] = {"command": command, "prefix": prefix, "spec": spec}
 
@@ -520,7 +573,9 @@ func _process(_delta):
 		if not result is Dictionary or not result.get("ok", false):
 			status.text = "操作失败：" + {"create":"创建运行", "step":"执行节点", "cancel":"取消运行", "retry":"重试节点", "preview":"加载预览", "publish":"发布文件", "status":"查询状态"}.get(job.command,job.command) + "（源文件未改动）"
 			auto_step = false
-			if job.command == "create": creating = false
+			if job.command == "create":
+				creating = false
+				preview_target = ""
 			continue
 		var data = result.result
 		if job.command == "create":
@@ -530,7 +585,9 @@ func _process(_delta):
 			f.store_string(run_id)
 			if cancel_create: launch("cancel", {"run": run_id})
 		elif job.command == "preview":
-			if job.spec.run == run_id: load_preview(data, job.spec.node)
+			if job.spec.run == run_id:
+				remember_preview(data, job.spec.node, job.spec.run)
+				if job.spec.node == selected_id: load_preview(data, job.spec.node, job.spec.run)
 		elif job.command == "publish":
 			status.text = "已发布新文件：" + data.path
 			if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
@@ -541,20 +598,70 @@ func _process(_delta):
 				status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
 			if job.command == "retry": auto_step = true
 			if data.state != "running": auto_step = false
+			if not preview_target.is_empty() and data.nodes.has(preview_target) and data.nodes[preview_target].state == "succeeded":
+				var finished_target = preview_target
+				preview_target = ""
+				auto_step = false
+				launch("preview", {"run": run_id, "node": finished_target})
 			if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
 	if auto_step and jobs.is_empty() and run_id != "": launch("step", {"run": run_id})
 
 func request_preview():
-	preview_token = ""
+	if creating:
+		status.text = "正在创建运行，请稍候"
+		return
+	if run_id.is_empty() or selected_id.is_empty():
+		status.text = "请先点击节点的“运行并预览”"
+		return
+	if jobs.values().any(func(job): return job.command == "preview"): return
+	if not current.get("nodes", {}).has(selected_id) or current.nodes[selected_id].state != "succeeded":
+		status.text = "选中节点尚未生成成功，请点击“运行并预览”"
+		return
 	launch("preview", {"run": run_id, "node": selected_id})
 
-func load_preview(data: Dictionary, node_id: String):
+func refresh_history():
+	if history_choice == null: return
+	history_choice.clear()
+	var history: Array = preview_history.get(selected_id, [])
+	for i in history.size():
+		history_choice.add_item("本次会话版本 " + str(i + 1) + ("（最新）" if i == history.size() - 1 else ""))
+		history_choice.set_item_tooltip(i, history[i].get("description", ""))
+	history_choice.disabled = history.is_empty()
+	if history.is_empty(): history_choice.add_item("暂无预览版本")
+	else: history_choice.select(history.size() - 1)
+
+func remember_preview(data: Dictionary, node_id: String, result_run: String):
+	var history: Array = preview_history.get(node_id, [])
+	if not history.any(func(entry): return entry.token == data.token):
+		var entry = data.duplicate(true)
+		entry["run"] = result_run
+		entry["node"] = node_id
+		entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ")
+		history.append(entry)
+		preview_history[node_id] = history
+	if node_id == selected_id: refresh_history()
+
+func show_history(index: int):
+	var history: Array = preview_history.get(selected_id, [])
+	if index < 0 or index >= history.size(): return
+	var entry: Dictionary = history[index]
+	load_preview(entry, selected_id, entry.run)
+	history_choice.select(index)
+	status.text += " · 版本 " + str(index + 1)
+
+func clear_preview():
+	preview_token = ""
+	preview_run = ""
+	preview_node = ""
 	preview_resource = null
 	if is_instance_valid(preview_scene): preview_scene.queue_free()
 	preview_scene = null
 	texture.texture = null
 	texture.hide()
 	mesh_container.hide()
+
+func load_preview(data: Dictionary, node_id: String, result_run: String = ""):
+	clear_preview()
 	if data.type == "image":
 		var image = Image.load_from_file(data.path)
 		if image == null: status.text = "图像预览失败"; return
@@ -572,7 +679,7 @@ func load_preview(data: Dictionary, node_id: String):
 		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token
-	preview_run = run_id
+	preview_run = run_id if result_run.is_empty() else result_run
 	preview_node = node_id
 	status.text = "已加载" + {"image":"图像", "mesh":"网格"}.get(data.type,data.type) + "预览，请检查后再发布"
 

@@ -181,6 +181,21 @@ class Executor:
         require(run["state"] == "succeeded", "run is not publishable")
         return {"manifest": run["manifest"], "outputs": {k: n["job"]["outputs"] for k, n in run["nodes"].items()}}
 
+    def export_node(self, run_id, node_id):
+        """Read a successful node for preview without relaxing run publication."""
+        run = self.status(run_id)
+        require(not run["cancelled"], "run is cancelled")
+        require(node_id in run["nodes"], "unknown node")
+        node = run["nodes"][node_id]
+        require(node["state"] == "succeeded" and node["job"] is not None,
+                "node has no successful result")
+        registry = NodeRegistry()
+        registry.register(node["definition"])
+        validate_outputs(registry, node["request"]["node"], node["request"]["version"],
+                         node["job"]["outputs"], run["manifest"])
+        check_content(run["manifest"])
+        return {"manifest": run["manifest"], "outputs": {node_id: node["job"]["outputs"]}}
+
     def step(self, run_id):
         """Perform at most one external operation; transactions never cover provider I/O."""
         with self.transaction():

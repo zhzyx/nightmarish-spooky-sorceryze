@@ -104,6 +104,29 @@ class ExecutorTests(unittest.TestCase):
         self.finish(self.create())
         self.assertEqual(self.provider.submits, 1)
 
+    def test_node_preview_is_immutable_and_cache_survives_target_run(self):
+        second = copy.deepcopy(self.graph[0])
+        second['id'] = 'second'
+        second['request']['inputs'] = {}
+        second['links'] = {'source': {'node': 'first', 'port': 'result'}}
+        self.graph.append(second)
+        run = self.create()
+        with self.assertRaisesRegex(ValueError, 'successful result'):
+            self.executor.export_node(run, 'first')
+        self.executor.step(run); self.executor.step(run)
+        self.assertEqual(self.executor.status(run)['state'], 'running')
+        snapshot = self.executor.export_node(run, 'first')
+        self.finish(run)
+        self.assertEqual(self.executor.export_node(run, 'first')['outputs'], snapshot['outputs'])
+        submits = self.provider.submits
+        self.finish(self.create())
+        self.assertEqual(self.provider.submits, submits)
+        snapshot['manifest']['artifacts'].clear()
+        self.assertTrue(self.executor.export_node(run, 'first')['manifest']['artifacts'])
+        self.executor.cancel(run)
+        with self.assertRaisesRegex(ValueError, 'cancelled'):
+            self.executor.export_node(run, 'first')
+
     def test_unknown_submission_reconcile_never_replays(self):
         self.provider.lost_receipt = True
         self.provider.lookup_enabled = False
