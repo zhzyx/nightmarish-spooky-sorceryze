@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "issue_number": 441,
+  "reviewer": "codex-agent:/root/runtime_entry_fix/runtime_metadata_441",
+  "scope": "Independent read-only review of the two method-local visible to parent_active renames in live-batch code, plus remaining inherited direct-member names. No other metadata/helper code is independently approved by its own author.",
+  "result": "passed_narrow_review",
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "a4d5cfdc98f6b5ae04136aab982bc34996d8dbc67f29aeab434104bf2d720429",
+    "editor/docks/ai_chat_dock.h": "ecbcaae43fd05f9a39b02cbab5233075b53bb9f2250c895774cd5df715dd46f0",
+    "editor/docks/ai_chat_sub_agents.cpp": "6942064e7371c9d36095bcee6205a9d7dc66b728b62d734c236e626611881ab6",
+    "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+    "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+  },
+  "normalized_diff": "The complete source file equals HEAD after normalizing only these 11 identifier replacements in _design_parent_matches and _register_design_batch; conditions and ternaries are identical.",
+  "base_class_chain": "EditorDock, MarginContainer, Container, Control, CanvasItem, Node, Object",
+  "remaining_direct_member_collisions_found": false,
+  "actual_failure_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42377859517/job/128419128326",
+  "actual_msvc_recovery": "pending new exact CI; strict /WX unchanged",
+  "usage": null
+}

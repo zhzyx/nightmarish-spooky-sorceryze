@@ -94,12 +94,12 @@ bool AIChatDock::_design_parent_matches(int p_parent, const Dictionary &p_batch)
 	if (_agent_index(p_parent) < 0 || sub_agents.has(p_parent) || scheduled_agents.has(p_parent)) {
 		return false;
 	}
-	const bool visible = p_parent == active_agent;
-	if (!visible && !agent_sessions.has(p_parent)) {
+	const bool parent_active = p_parent == active_agent;
+	if (!parent_active && !agent_sessions.has(p_parent)) {
 		return false;
 	}
-	const String owner = visible ? conversation_id : agent_sessions[p_parent].conversation_id;
-	const String turn = visible ? snapshot_id : agent_sessions[p_parent].snapshot_id;
+	const String owner = parent_active ? conversation_id : agent_sessions[p_parent].conversation_id;
+	const String turn = parent_active ? snapshot_id : agent_sessions[p_parent].snapshot_id;
 	return !owner.is_empty() && owner == String(p_batch.get("conversation_id", "")) && turn == String(p_batch.get("snapshot_id", "")) &&
 			_work_order_binding("request_id", p_parent) == String(p_batch.get("request_id", "")) &&
 			_work_order_binding("issue_number", p_parent).to_int() == int64_t(p_batch.get("issue_number", 0)) &&
@@ -147,19 +147,19 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 	if (!String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty() || !allow_tools->is_pressed() || consultation_only->is_pressed() || consultation_turn || !history_writable || design_batches.has(p_parent)) {
 		return;
 	}
-	const bool visible = p_parent == active_agent;
-	if (!visible && (!sub_agents.has(active_agent) || _sub_agent_root(active_agent) != p_parent || !agent_sessions.has(p_parent))) {
+	const bool parent_active = p_parent == active_agent;
+	if (!parent_active && (!sub_agents.has(active_agent) || _sub_agent_root(active_agent) != p_parent || !agent_sessions.has(p_parent))) {
 		return;
 	}
-	if (visible ? queue_paused || !queued_messages.is_empty() : agent_sessions[p_parent].queue_paused || !agent_sessions[p_parent].queued_messages.is_empty()) {
+	if (parent_active ? queue_paused || !queued_messages.is_empty() : agent_sessions[p_parent].queue_paused || !agent_sessions[p_parent].queued_messages.is_empty()) {
 		return;
 	}
 	Dictionary batch;
 	batch["token"] = vformat("%d-%d", OS::get_singleton()->get_process_id(), OS::get_singleton()->get_ticks_usec());
-	batch["conversation_id"] = visible ? conversation_id : agent_sessions[p_parent].conversation_id;
-	batch["snapshot_id"] = visible ? snapshot_id : agent_sessions[p_parent].snapshot_id;
-	batch["parent_generation"] = visible ? int64_t(session_generation) : int64_t(-1);
-	batch["reporting_blocked"] = visible && design_last_blocked_generation == session_generation;
+	batch["conversation_id"] = parent_active ? conversation_id : agent_sessions[p_parent].conversation_id;
+	batch["snapshot_id"] = parent_active ? snapshot_id : agent_sessions[p_parent].snapshot_id;
+	batch["parent_generation"] = parent_active ? int64_t(session_generation) : int64_t(-1);
+	batch["reporting_blocked"] = parent_active && design_last_blocked_generation == session_generation;
 	batch["request_id"] = p_request_id;
 	batch["issue_number"] = p_issue;
 	batch["workspace"] = _workflow_root(p_parent);
