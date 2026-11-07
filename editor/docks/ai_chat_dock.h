@@ -305,6 +305,10 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *http_settings = nullptr;
 	VBoxContainer *cli_settings = nullptr;
 	OptionButton *model_picker = nullptr;
+	OptionButton *reasoning_picker = nullptr;
+	void _sync_reasoning_picker();
+	void _reasoning_selected(int p_index);
+	String _reasoning_effort() const;
 	Button *refresh_models = nullptr;
 	Label *model_status = nullptr;
 	HTTPRequest *model_request = nullptr;
@@ -432,6 +436,7 @@ class AIChatDock : public EditorDock {
 		String model;
 		String cli_model;
 		String codex_model;
+		Array model_catalog;
 		int backend = 1;
 		int scroll = 0;
 		bool follow_latest = true;

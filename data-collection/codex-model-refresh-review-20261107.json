@@ -1,0 +1,18 @@
+{
+  "reviewer": "/root/review_model_refresh",
+  "independent": true,
+  "status": "passed",
+  "resolved": [
+    "Session switch now preserves model capabilities and selected effort"
+  ],
+  "checks": {
+    "node_tests": 18,
+    "headless_editor_checks": 7,
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "No real inference request",
+    "CodeBuddy and unadvertised API effort support remain TODO",
+    "Codex custom provider configuration parity remains TODO"
+  ]
+}

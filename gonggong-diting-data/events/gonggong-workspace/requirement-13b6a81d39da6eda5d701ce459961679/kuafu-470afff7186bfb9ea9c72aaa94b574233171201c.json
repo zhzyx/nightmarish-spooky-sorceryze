@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-470afff7186bfb9ea9c72aaa94b574233171201c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-13b6a81d39da6eda5d701ce459961679",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cdc06a77807eac2778114492e4cd26613b0d0108a67c948feb63b95cf6526a5d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+    "action": "delivery",
+    "detection_head": "b38882870de10047fb1d14198c947608830dbd7b",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-model-refresh",
+    "authority_ref": "user-current-chat",
+    "evidence": "data-collection/codex-model-refresh-20261107.json",
+    "diagnosis": "Validation report used integer issue instead of required issue_number or issue_url; corrected metadata binding without changing implementation.",
+    "next_action": "Retry delivery gate with corrected evidence binding.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:17:41.681791+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T03:18:15.992792+00:00",
+  "sha256": "2f3b6f67fead047ab5e0de21ec0e669193985a77cebf7d8d32cab089501b9e8e"
+}

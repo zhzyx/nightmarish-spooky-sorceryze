@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-model-refresh-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-13b6a81d39da6eda5d701ce459961679",
+  "kind": "request",
+  "occurred_at": "2026-11-07T03:18:56.098774+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "scope": "Resume model refresh repair, reasoning strength selector and API capability mapping. Unknown CodeBuddy/API adaptations may remain TODO per user instruction.",
+    "authorization": "Current Codex user request",
+    "issue_number": 165,
+    "validation_ref": "data-collection/codex-model-refresh-20261107.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual usage not supplied by host"
+  },
+  "evidence_refs": [],
+  "sha256": "6e9515653bde3a1256172360554d6641b2685698f9c9a2eae176397e6d22720f"
+}

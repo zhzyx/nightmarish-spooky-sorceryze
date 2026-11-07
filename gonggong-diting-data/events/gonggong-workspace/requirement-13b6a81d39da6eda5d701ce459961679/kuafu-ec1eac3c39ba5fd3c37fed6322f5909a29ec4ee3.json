@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ec1eac3c39ba5fd3c37fed6322f5909a29ec4ee3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-13b6a81d39da6eda5d701ce459961679",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fc8611ef0f194cbde942055ec0ab3d918b9d781dd9cacafb89c943f2e2b5a54c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165",
+    "action": "user-report",
+    "detection_head": "b38882870de10047fb1d14198c947608830dbd7b",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-model-refresh",
+    "authority_ref": "user-current-chat",
+    "evidence": "editor/docks/ai_chat_dock.cpp",
+    "diagnosis": "Codex refresh had an unconditional early return and lacked effort selection and request mapping.",
+    "next_action": "Complete isolated model picker verification and deliver rebuilt editor.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:10:46.451458+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T03:15:01.631055+00:00",
+  "sha256": "502fa3195dfccc283a383ce4c147801f3f4596127858412b10d151cc1d0b2b73"
+}

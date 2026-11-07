@@ -21,6 +21,8 @@ function validateRequest(raw) {
             || input.available_tools.some(tool => !READ_TOOLS.has(tool.function.name))) throw bridgeError('INVALID_REQUEST');
         input.tool_context = { ...input.tool_context, consultation_only: true, writes_allowed: false, execution_allowed: false };
     }
+    if (raw.reasoning_effort !== undefined && !['', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(raw.reasoning_effort)) throw bridgeError('INVALID_REQUEST');
+    input.reasoning_effort = raw.reasoning_effort || '';
     return input;
 }
 const SCHEMA = {
@@ -34,12 +36,16 @@ const SCHEMA = {
     },
 };
 
-function argumentsFor(model, schema, images = []) {
+function argumentsFor(model, schema, images = [], effort = '') {
     const args = ['exec', '--json', '--ephemeral', '--ignore-user-config', '--ignore-rules',
         '--skip-git-repo-check', '--sandbox', 'read-only', '--color', 'never',
         '-c', 'approval_policy="never"', '-c', 'features.shell_tool=false', '-c', 'features.apply_patch_freeform=false',
         '-c', 'web_search="disabled"', '--output-schema', schema];
     if (model) args.push('--model', model);
+    if (effort) {
+        if (!['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(effort)) throw bridgeError('INVALID_REQUEST');
+        args.push('-c', 'model_reasoning_effort=' + JSON.stringify(effort));
+    }
     for (const image of images) args.push('--image', image);
     if (images.length) args.push('--');
     args.push('-');
@@ -161,7 +167,7 @@ async function run(entry, request) {
         const schema = path.join(directory, 'response.schema.json');
         fs.writeFileSync(schema, JSON.stringify(outputSchemaFor(input, SCHEMA)), { mode: 0o600 });
         const prepared = prepareImages(input, directory);
-        const args = argumentsFor(input.model, schema, prepared.images);
+        const args = argumentsFor(input.model, schema, prepared.images, input.reasoning_effort);
         // JS entry support is useful for npm installations and offline protocol tests.
         const javascript = entry.endsWith('.js') || entry.endsWith('.mjs');
         child = spawn(javascript ? process.execPath : entry, javascript ? [entry, ...args] : args,
@@ -222,13 +228,93 @@ async function run(entry, request) {
     }
 }
 
-module.exports = { prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
+
+// Read-only discovery: no thread, turn or inference request is created.
+// TODO: app-server lacks exec's --ignore-user-config flag. Verify provider
+// parity for custom CLI configurations before enabling non-default providers.
+async function listModels(entry, { timeoutMs = 30000 } = {}) {
+    if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
+    const child = spawn(entry, ['app-server'], { windowsHide: true, detached: process.platform !== 'win32',
+        cwd: os.tmpdir(), stdio: ['pipe', 'pipe', 'pipe'] });
+    const stop = () => {
+        if (!child.pid) return;
+        try {
+            if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
+            else process.kill(-child.pid, 'SIGKILL');
+        } catch (_) {}
+    };
+    const terminate = () => { stop(); process.exit(130); };
+    process.once('SIGTERM', terminate);
+    process.once('SIGINT', terminate);
+    process.once('exit', stop);
+    let timer;
+    try {
+        return await new Promise((resolve, reject) => {
+            let pending = '', size = 0, nextId = 1, expected = 0;
+            const models = [], ids = new Set(), cursors = new Set();
+            const send = packet => child.stdin.write(JSON.stringify(packet) + '\n');
+            const page = cursor => {
+                expected = nextId++;
+                send({ id: expected, method: 'model/list', params: { limit: 100, includeHidden: false, ...(cursor ? { cursor } : {}) } });
+            };
+            timer = setTimeout(() => reject(bridgeError('TIMEOUT')), timeoutMs);
+            child.once('error', () => reject(bridgeError('PROCESS_START')));
+            child.once('close', () => reject(bridgeError('PROCESS_EXIT')));
+            child.stdin.on('error', () => reject(bridgeError('PROCESS_EXIT')));
+            child.stderr.on('data', () => {}); // Never expose credentials or raw server diagnostics.
+            child.stdout.setEncoding('utf8');
+            child.stdout.on('data', chunk => {
+                size += Buffer.byteLength(chunk);
+                if (size > LIMIT) { reject(bridgeError('OUTPUT_LIMIT')); return; }
+                pending += chunk;
+                let end;
+                try {
+                    while ((end = pending.indexOf('\n')) >= 0) {
+                        const line = pending.slice(0, end); pending = pending.slice(end + 1);
+                        if (!line.trim()) continue;
+                        const packet = JSON.parse(line);
+                        if (packet.id !== expected) continue;
+                        if (packet.error) throw bridgeError('MODEL_UNAVAILABLE');
+                        if (!packet.result || typeof packet.result !== 'object') throw bridgeError('INVALID_RESPONSE');
+                        if (expected === 0) {
+                            send({ method: 'initialized', params: {} }); page(); continue;
+                        }
+                        if (!Array.isArray(packet.result.data)) throw bridgeError('INVALID_RESPONSE');
+                        for (const item of packet.result.data) {
+                            const id = item.model || item.id;
+                            if (item.hidden || typeof id !== 'string' || !id || id.length > 128 || /[\r\n]/.test(id) || ids.has(id)) continue;
+                            ids.add(id);
+                            models.push({ id, name: typeof item.displayName === 'string' ? item.displayName.slice(0, 128) : id,
+                                description: typeof item.description === 'string' ? item.description.slice(0, 512) : '',
+                                is_default: item.isDefault === true,
+                                reasoning_efforts: (item.supportedReasoningEfforts || []).map(x => x.reasoningEffort).filter(x => typeof x === 'string') });
+                        }
+                        const cursor = packet.result.nextCursor;
+                        if (cursor) {
+                            if (typeof cursor !== 'string' || cursors.has(cursor) || cursors.size >= 20) throw bridgeError('INVALID_RESPONSE');
+                            cursors.add(cursor); page(cursor);
+                        } else {
+                            if (!models.length) throw bridgeError('EMPTY_RESPONSE');
+                            resolve({ models });
+                        }
+                    }
+                } catch (error) { reject(error.bridgeCode ? error : bridgeError('INVALID_RESPONSE')); }
+            });
+            send({ id: 0, method: 'initialize', params: { clientInfo: { name: 'godot_model_picker', version: '1.0.0' } } });
+        });
+    } finally {
+        clearTimeout(timer); stop();
+        process.removeListener('SIGTERM', terminate); process.removeListener('SIGINT', terminate); process.removeListener('exit', stop);
+    }
+}
+
+module.exports = { listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
-    if (process.argv[2] !== 'chat') {
+    if (!['chat', 'models'].includes(process.argv[2])) {
         process.stdout.write(JSON.stringify({ error: { code: 'INVALID_REQUEST' } }));
         process.exitCode = 1;
     } else {
-        run(process.argv[3], process.argv[4]).then(
+        (process.argv[2] === 'models' ? listModels(process.argv[3]) : run(process.argv[3], process.argv[4])).then(
             result => process.stdout.write(JSON.stringify(result)),
             error => {
                 const safe = serializeError(error);
