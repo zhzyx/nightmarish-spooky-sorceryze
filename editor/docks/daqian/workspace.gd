@@ -15,11 +15,13 @@ var canvas_panel := VBoxContainer.new()
 
 var rules: Script
 var graph_script: Script
+var graph_layout: Script
 var models_script: Script
 var models_dialog: AcceptDialog
 var editor
 var board_cards: Array[GraphNode] = []
 var board_layout_pending := false
+var details_expanded := false
 const ZOOM_TO_PARENT := 0.32
 const ZOOM_TO_ISSUE := 1.66
 const PROJECT_FOLD := 0.045
@@ -286,7 +288,6 @@ func _ready() -> void:
 		saved.erase("positions")
 		_layout_board()
 		_queue_save())
-	overview.gui_input.connect(func(_event): _zoom_detail.call_deferred())
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	add_child(overview)
 	overview.resized.connect(_queue_board_layout)
@@ -364,6 +365,7 @@ func _ready() -> void:
 	add_child(empty_state)
 	editor = graph_script.new()
 	editor.rules = rules
+	editor.graph_layout = graph_layout
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
@@ -1217,7 +1219,7 @@ func _draw_board() -> void:
 	var dock := get_parent() as EditorDock
 	if dock:
 		dock.title = "天枢" if waiting_inputs == 0 else "天枢 (%d)" % waiting_inputs
-	_zoom_detail()
+	_zoom_detail(true)
 	_layout_board()
 	_fill_filter(status, statuses)
 	_fill_filter(creator_filter, creators)
@@ -1381,8 +1383,11 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	return card.name
 
 
-func _zoom_detail() -> void:
+func _zoom_detail(rebuilt := false) -> void:
 	var expanded := overview.zoom >= 1.2
+	if not rebuilt and details_expanded == expanded:
+		return
+	details_expanded = expanded
 	for card in board_cards:
 		var detail := card.get_node("StepDetails") as VBoxContainer
 		if detail.visible != expanded:
@@ -1402,57 +1407,10 @@ func _queue_board_layout() -> void:
 
 func _layout_board() -> void:
 	board_layout_pending = false
-	var scale_factor := overview.get_theme_default_base_scale()
-	var gap := Vector2(56, 36) * scale_factor
-	var origin := Vector2(38, 75) * scale_factor
 	if project_mode:
-		var x := origin.x
-		var y := origin.y
-		var bottom := y
-		for creator: String in creator_sections:
-			var frame: GraphFrame = creator_sections[creator]
-			if not frame.visible:
-				continue
-			var pad := 16 * scale_factor
-			var extent := Vector2(280 * scale_factor, 50 * scale_factor)
-			for card in board_cards:
-				if card.visible and card.get_meta("creator_region") == creator:
-					card.position_offset = Vector2(x + pad, y + extent.y)
-					extent.y += card.size.y + pad
-					extent.x = maxf(extent.x, card.size.x)
-			frame.position_offset = Vector2(x, y)
-			frame.size = Vector2(extent.x + 2 * pad, extent.y)
-			bottom = maxf(bottom, y + frame.size.y)
-			x += frame.size.x + gap.x
-			if x + 312 * scale_factor > overview.size.x:
-				x = origin.x
-				y = bottom + gap.y
-		return
-	var pinned: Dictionary = saved.get("positions", {})
-	var obstacles: Array[Rect2] = []
-	var widths := PackedFloat32Array()
-	widths.resize(clampi(floori((overview.size.x / scale_factor - 20) / 336.0), 1, 5))
-	for i in board_cards.size():
-		var card := board_cards[i]
-		var extent := card.size.max(card.get_combined_minimum_size())
-		var url: String = card.get_meta("issue_url")
-		if pinned.has(url):
-			card.position_offset = pinned[url]
-			obstacles.append(Rect2(card.position_offset, extent))
-		widths[i % widths.size()] = maxf(widths[i % widths.size()], extent.x)
-	obstacles.sort_custom(func(a: Rect2, b: Rect2): return a.position.y < b.position.y)
-	var y := origin.y
-	for start in range(0, board_cards.size(), widths.size()):
-		var x := origin.x
-		var bottom := y
-		for i in range(start, mini(start + widths.size(), board_cards.size())):
-			var card := board_cards[i]
-			var extent := card.size.max(card.get_combined_minimum_size())
-			if not pinned.has(card.get_meta("issue_url")):
-				card.position_offset = graph_script.clear_pinned_space(Rect2(Vector2(x, y), extent), obstacles, gap.y)
-				bottom = maxf(bottom, card.position_offset.y + extent.y)
-			x += widths[i - start] + gap.x
-		y = bottom + gap.y
+		graph_layout.arrange_creators(overview, board_cards, creator_sections)
+	else:
+		graph_layout.arrange_personal(overview, board_cards, saved.get("positions", {}))
 
 
 func _locate_pending(number: int) -> void:
@@ -1871,6 +1829,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
+	if overview.is_visible_in_tree():
+		_zoom_detail()
 	_check_canvas_zoom()
 	if watcher.is_empty():
 		return
@@ -1982,18 +1942,7 @@ func _check_canvas_zoom() -> void:
 			return
 		var center := zoom_anchor if zoom_anchor.is_finite() else (overview.scroll_offset + overview.get_local_mouse_position()) / overview.zoom
 		zoom_anchor = Vector2.INF
-		var nearest: GraphNode
-		var distance := INF
-		for card in board_cards:
-			if not card.visible:
-				continue
-			var d := center.distance_squared_to(card.position_offset + card.size * 0.5)
-			if Rect2(card.position_offset, card.size).has_point(center):
-				nearest = card
-				break
-			if d < distance:
-				nearest = card
-				distance = d
+		var nearest: GraphNode = graph_layout.nearest_card(board_cards, center)
 		overview.zoom = 1.0
 		if nearest:
 			for item in board.get("issues", []):
@@ -2007,18 +1956,8 @@ func _open_creator_at(point: Vector2) -> bool:
 	for creator: String in creator_sections:
 		var frame: GraphFrame = creator_sections[creator]
 		if frame.visible and Rect2(frame.position_offset, frame.size).has_point(point):
-			var nearest_url := ""
-			var distance := INF
-			for card in board_cards:
-				if not card.visible or card.get_meta("creator_region") != creator:
-					continue
-				var squared := point.distance_squared_to(card.position_offset + card.size * 0.5)
-				if Rect2(card.position_offset, card.size).has_point(point):
-					nearest_url = card.get_meta("issue_url")
-					break
-				if squared < distance:
-					distance = squared
-					nearest_url = card.get_meta("issue_url")
+			var nearest: GraphNode = graph_layout.nearest_card(board_cards, point, creator)
+			var nearest_url: String = nearest.get_meta("issue_url") if nearest else ""
 			for index in creator_filter.item_count:
 				if creator_filter.get_item_text(index) == creator:
 					creator_filter.select(index)
