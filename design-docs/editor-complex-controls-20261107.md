@@ -92,3 +92,7 @@ bin/godot.macos.editor.arm64 --headless --test --test-case='*[Complex]*,*[AIChat
 ## 最终整合接线
 
 #388 F05核心/插件显式别名与自动目标共享describe_node及同一祖先保护、文本预算；PopupMenu原生Window补位置/大小/焦点/可用原因，状态元数据类型检查后读取。4项AliasMetadata原生测试与20组command runner验证接线；本段结果以最终组合公开JSON为准。407独立冻结版本已由另一工作者实际通过11组HTTP业务及18例257断言，binary SHA349168bc568a8a10fe2dd93ff9003f9f61e34c63ea0a3854a4ba8ee6e55178e5，不能替代最终组合复验。
+
+## Windows严格编译纠正
+
+PR466的MSVC Editor实际失败：两个if/else链的GradientEdit局部edit遮蔽CurveEdit局部edit，C4456在W4/WX下阻塞编译。仅将两个Gradient分支变量及引用改gradient_edit，不关警告不改逻辑。本机重建及22例308断言、20通用/11复杂业务通过。两个fixture首次只读请求另加有界editor_busy等待；不重放写入/审批。新精确候选CI和独立接收以追加公开MSVC验证及PR回读为准，旧失败保留。

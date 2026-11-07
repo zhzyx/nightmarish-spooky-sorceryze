@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
@@ -83,7 +84,12 @@ def main():
                 if args.case == "all":
                     command("popup")
                     assert client.capabilities("ComplexMenu")["targets"][0]["class"] == "PopupMenu"
+                    # Wait for native startup work using a read-only request.
+                    ready_deadline = time.monotonic() + 20
                     _, read = route("read_menu_items", "ComplexMenu", limit=1, offset=0)
+                    while read.get("error") == "editor_busy" and time.monotonic() < ready_deadline:
+                        time.sleep(0.05)
+                        _, read = route("read_menu_items", "ComplexMenu", limit=1, offset=0)
                     assert read["items"][0]["id"] == 73 and read["next_offset"] == 1, read
                     message, preview = route("activate_menu_item", "ComplexMenu", index=0)
                     assert preview["confirmation_required"] and not command()["menu_ids"]

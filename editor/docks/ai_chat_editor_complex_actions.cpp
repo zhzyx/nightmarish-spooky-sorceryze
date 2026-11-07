@@ -311,8 +311,8 @@ Array entries(Node *p_node) {
 			d["right_mode"] = curve->get_point_right_mode(i);
 			a.push_back(d);
 		}
-	} else if (GradientEdit *edit = Object::cast_to<GradientEdit>(p_node); edit && edit->get_gradient().is_valid()) {
-		Ref<Gradient> gradient = edit->get_gradient();
+	} else if (GradientEdit *gradient_edit = Object::cast_to<GradientEdit>(p_node); gradient_edit && gradient_edit->get_gradient().is_valid()) {
+		Ref<Gradient> gradient = gradient_edit->get_gradient();
 		for (int i = 0; i < MIN(gradient->get_point_count(), 4096); i++) {
 			Dictionary d;
 			d["index"] = i;
@@ -919,15 +919,15 @@ Dictionary AIChatEditorComplexActions::perform(Node *p_node, const String &p_id,
 		}
 	} else if (CurveEdit *edit = Object::cast_to<CurveEdit>(p_node); edit && action == "curve_preset") {
 		edit->use_preset(preset);
-	} else if (GradientEdit *edit = Object::cast_to<GradientEdit>(p_node); edit && !resource_history) {
+	} else if (GradientEdit *gradient_edit = Object::cast_to<GradientEdit>(p_node); gradient_edit && !resource_history) {
 		if (action == "gradient_add_point") {
-			edit->add_point(offset, color);
+			gradient_edit->add_point(offset, color);
 		} else if (action == "gradient_remove_point") {
-			edit->remove_point(index);
+			gradient_edit->remove_point(index);
 		} else if (action == "gradient_set_color") {
-			edit->set_color(index, color);
+			gradient_edit->set_color(index, color);
 		} else {
-			edit->reverse_gradient();
+			gradient_edit->reverse_gradient();
 		}
 	} else if (resource_history) {
 		if (action == "undo_resource_edit") {

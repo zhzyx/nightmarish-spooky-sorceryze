@@ -90,7 +90,13 @@ def main():
                     }
                     return msg, client.route(msg)
 
+                # The fixture can publish ready while the native startup scan is busy.
+                # Retry only this read; no writes or approvals are replayed.
+                ready_deadline = time.monotonic() + 20
                 alias = route_action("describe_target", target="plugin.coverage_alias")
+                while alias.get("error") == "editor_busy" and time.monotonic() < ready_deadline:
+                    time.sleep(0.05)
+                    alias = route_action("describe_target", target="plugin.coverage_alias")
                 assert alias["ok"] and alias["available"] and not alias["automatic"], alias
                 assert alias["class"] == "LineEdit" and alias["value"] == "original", alias
                 assert len(alias["position"]) == 2 and len(alias["size"]) == 2 and alias["window_instance"], alias
