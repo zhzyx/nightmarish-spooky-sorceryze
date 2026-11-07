@@ -121,7 +121,9 @@ public:
 	static String command_profile(const Dictionary &p_candidate, const String &p_project) {
 		const String source = p_candidate.get("source_root", "");
 		List<String> args;
-		for (const String &arg : { String("-C"), source, String("worktree"), String("list"), String("--porcelain") }) {
+		// Keep non-ASCII paths readable; Godot strings cannot carry Git's NUL
+		// records, so decode the quoted forms still used for special characters.
+		for (const String &arg : { String("-c"), String("core.quotePath=false"), String("-C"), source, String("worktree"), String("list"), String("--porcelain") }) {
 			args.push_back(arg);
 		}
 		String output;
@@ -136,7 +138,14 @@ public:
 			if (!line.begins_with("worktree ")) {
 				continue;
 			}
-			const String path = line.trim_prefix("worktree ");
+			String path = line.trim_prefix("worktree ");
+			if (path.begins_with("\"")) {
+				const Variant decoded = JSON::parse_string(path);
+				if (decoded.get_type() != Variant::STRING) {
+					return String();
+				}
+				path = decoded;
+			}
 			const String root = canonical_directory(path);
 			if (root.is_empty() || path != root) {
 				return String();

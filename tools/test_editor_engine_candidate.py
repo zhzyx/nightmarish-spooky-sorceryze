@@ -1,6 +1,7 @@
 """Disposable Git integration tests for the editor-owned candidate lifecycle."""
 
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -65,6 +66,49 @@ class CandidateTests(unittest.TestCase):
         self.assertTrue(result["branch"].startswith("codex/engine-candidate/runtime-test-"))
         self.assertNotEqual(result["branch"], "main")
         self.verify.assert_called_once_with(self.root, 390, "runtime-test")
+
+    def special_workspace_candidate(self, component):
+        parent = self.folder / component
+        parent.mkdir()
+        workspace = parent / "workspace"
+        self.run_git(self.root, "worktree", "add", "-b", "special-workspace", str(workspace), "main")
+        workspace = workspace.resolve()
+        result = candidate.prepare(workspace, 390, "special-runtime-test", "special-chat")
+        target = Path(result["source_root"])
+        self.assertIn(workspace, candidate.registered_worktrees(self.root))
+        self.assertIn(target, candidate.registered_worktrees(self.root))
+        self.assertIn(str(workspace), result["protected_roots"])
+        self.assertIn(str(self.root), result["protected_roots"])
+        self.assertNotIn(str(target), result["protected_roots"])
+        self.assertEqual(
+            candidate.prepare(workspace, 390, "special-runtime-test", "special-chat", validate_only=True)["state"],
+            "validated",
+        )
+
+    def test_registered_unicode_and_space_worktree_uses_raw_paths(self):
+        self.special_workspace_candidate("工作区 with space")
+
+    @unittest.skipIf(os.name == "nt", "Windows filenames cannot contain newline characters")
+    def test_registered_newline_worktree_is_one_raw_path(self):
+        self.special_workspace_candidate("work\nspace")
+
+    def test_stale_reverse_registration_does_not_adopt_unregistered_worktree(self):
+        first = self.prepare()
+        target = Path(first["source_root"])
+        marker = (target / ".git").read_text().strip().removeprefix("gitdir: ")
+        metadata = Path(marker)
+        if not metadata.is_absolute():
+            metadata = target / metadata
+        reverse = metadata / "gitdir"
+        original = reverse.read_bytes()
+        try:
+            reverse.write_text(str(self.folder / "unregistered-worktree/.git") + "\n")
+            self.assertNotIn(target, candidate.registered_worktrees(self.root))
+            with self.assertRaisesRegex(candidate.CandidateError, "candidate_worktree_unregistered"):
+                self.prepare(validate_only=True)
+        finally:
+            reverse.write_bytes(original)
+        self.assertEqual(self.prepare(validate_only=True)["state"], "validated")
 
     def test_fetches_current_main_instead_of_callers_old_head(self):
         (self.root / "source.txt").write_text("new remote main\n")

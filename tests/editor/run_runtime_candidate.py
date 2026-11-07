@@ -68,7 +68,7 @@ def main():
     p.add_argument("--node", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
-    with tempfile.TemporaryDirectory(prefix="native-candidate-") as temp:
+    with tempfile.TemporaryDirectory(prefix="native-candidate-共工 space-") as temp:
         folder = Path(temp).resolve()
         original = folder / "original"
         original.mkdir()
@@ -192,7 +192,9 @@ def main():
                     if stage == "START" and stage_calls[stage] == 1:
                         parent_binding(390)
                         target = targets[390]
-                        assert str(target) in json.dumps(body), "candidate root absent from model context"
+                        assert str(target) in json.dumps(body, ensure_ascii=False), (
+                            "candidate root absent from model context"
+                        )
                         assert "REVISION_START" in (target / f"design-docs/{REQUEST}.md").read_text()
                         assert (target / f"gonggong-diting-data/events/fixture/{REQUEST}").is_dir()
                         commands = [
@@ -336,7 +338,7 @@ def main():
                     elif stage == "SECOND":
                         parent_binding(390)
                         assert len(bindings_for(390)) == 1, "second turn created another source candidate"
-                        assert str(targets[390]) in json.dumps(body)
+                        assert str(targets[390]) in json.dumps(body, ensure_ascii=False)
                         assert "REVISION_SECOND" in (targets[390] / f"design-docs/{REQUEST}.md").read_text()
                         assert "REVISION_START" in (original / f"design-docs/{REQUEST}.md").read_text(), (
                             "second intake wrote the original workspace"
@@ -345,13 +347,13 @@ def main():
                     elif stage == "OTHER":
                         parent_binding(391)
                         assert targets[391] != targets[390] and owners[391] != owners[390]
-                        assert str(targets[391]) in json.dumps(body)
+                        assert str(targets[391]) in json.dumps(body, ensure_ascii=False)
                         assert "REVISION_OTHER" in (targets[391] / f"design-docs/{OTHER_REQUEST}.md").read_text()
                         message = done("CANDIDATE_OTHER_OK")
                     elif stage == "RESUME":
                         parent_binding(390)
                         assert len(bindings_for(390)) == 1, "returning to first parent replaced its source ownership"
-                        assert str(targets[390]) in json.dumps(body)
+                        assert str(targets[390]) in json.dumps(body, ensure_ascii=False)
                         assert "REVISION_RESUME" in (targets[390] / f"design-docs/{REQUEST}.md").read_text()
                         assert "REVISION_START" in (original / f"design-docs/{REQUEST}.md").read_text()
                         assert "REVISION_OTHER" in (targets[391] / f"design-docs/{OTHER_REQUEST}.md").read_text()
@@ -383,7 +385,7 @@ def main():
                         assert len(children) == 1, ("child did not receive independent source ownership", children)
                         child_root = Path(children[0]["source_root"])
                         assert child_root not in targets.values()
-                        assert str(child_root) in json.dumps(body)
+                        assert str(child_root) in json.dumps(body, ensure_ascii=False)
                         assert (child_root / f"design-docs/{REQUEST}.md").read_bytes() == (
                             targets[390] / f"design-docs/{REQUEST}.md"
                         ).read_bytes(), "child inherited stale requirement document"
