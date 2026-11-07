@@ -11,3 +11,5 @@
 工单：[Issue #397](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/397)。
 
 当前候选已完成：逐节点按钮、必要上游裁剪、成功节点独立读取、图片/网格自动预览、会话历史及参数提示、重复触发/异步选择/打开工作流保护。后台验证：35 项新增交互、24 项 Python 桥与执行器、35 项旧交互、149 项内置编辑器及149项签名应用检查通过；独立审查通过。完整输入摘要及结果在 data-collection/maliang-node-preview-20261107-validation.json。未进行真实模型推理；已有 motion-provider 进程识别测试在主线基线同样失败，与本改动无关。历史不跨编辑器会话保存。
+
+远端 CI 发现原有压缩格式及导入类型注解问题，已按仓库要求统一五个 Python 模块；不改变预览业务行为。独立 AST 复查、36 项后端测试、Ruff、MyPy、最终内置149项再次通过。本机签名应用已更新到该候选。新证据见 data-collection/maliang-node-preview-20261107-final-validation.json。

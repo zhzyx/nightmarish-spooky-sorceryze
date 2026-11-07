@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-node-preview-20261107",
+  "issue_number": 397,
+  "state": "passed",
+  "recorded_at": "2026-11-07T06:49:43.653665+00:00",
+  "platform": "macOS arm64",
+  "base_commit": "b43872afedcf0dcb79feebee715be63b0742515e",
+  "input_sha256": {
+    "tools/ainative/editor_host.py": "6fa2c455223ee7f07a34f9564239a70685c145691d36c927450b1d108c0b4cdb",
+    "tools/ainative/executor.py": "13771345e66325b5f28866744a76b87c57583b86869703cacde7f3f952d8f64d",
+    "tools/ainative/extensions.py": "edc695c2555e905e4cf4af810dfbb5327ecac6055535ef772e46e83715362ce8",
+    "tools/ainative/test_editor_host.py": "ebe9a6f80b11a8fd6c7879a6a48e877b7db891a9973150dd7f64318d6482c4d0",
+    "tools/ainative/test_executor.py": "545b9a0e60043ea7f10481641efc8aafb59ef219b13cb6aa65d861b572278d29"
+  },
+  "prior_validation": "data-collection/maliang-node-preview-20261107-validation.json",
+  "reason": "CI requires legacy touched modules to satisfy repository formatting and type checking",
+  "checks": {
+    "ruff": "0.17.1 passed all five files",
+    "mypy": "2.4.0 passed all five files",
+    "python_tests": 36,
+    "native": {
+      "state": "passed",
+      "editor_sha256": "6815aed5d771363d0763aac119612f788e45f256d19ffface5a1aa490cbddd2e",
+      "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference",
+      "runs": [
+        {
+          "name": "mesh-and-rig",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade",
+              "bundled local GLTF runtime converter loads",
+              "local conversion produces actual runtime Mesh geometry",
+              "local conversion preserves transforms, Skin and skeleton binding",
+              "local conversion preserves node and mesh provenance metadata",
+              "local conversion preserves child relationships and scene ownership",
+              "local conversion preserves visibility, rendering layers and groups",
+              "local conversion preserves surface materials",
+              "animation target NodePaths still resolve after local conversion",
+              "local conversion supports an unparented importer root",
+              "root-owned descendants retain scene ownership through nested conversion",
+              "bundled graph has explicit node preview action",
+              "real host subprocess completed",
+              "offline Copy Mesh run reaches real Executor success",
+              "editor heartbeat advances during provider execution",
+              "bundled node action automatically previews and records its result",
+              "real host subprocess completed",
+              "actual GLB preview is decoded",
+              "decoded preview contains Mesh geometry",
+              "publication waits for explicit confirmation",
+              "real host subprocess completed",
+              "confirmed Mesh publication reloads",
+              "real host subprocess completed",
+              "Mesh publication cannot overwrite an existing version",
+              "offline run and publication preserve source Mesh bytes",
+              "other tools retain the shared Mesh preview viewport",
+              "shared preview rendering remains enabled",
+              "rigging navigation opens its controls directly",
+              "triangle fixture is not falsely accepted as a humanoid",
+              "unreviewed anatomy cannot be published",
+              "synthetic T-pose GLB fixture is encoded without AI inference",
+              "synthetic T-pose builds an actual bound character",
+              "suitable confirmed T-pose reaches the reviewed binding state",
+              "binding creates 18 real bones and Skin bind poses",
+              "Skin indices, normalized weights and rest geometry are valid",
+              "actual skinned ROM deformation: raise_arms",
+              "actual skinned ROM deformation: squat",
+              "actual skinned ROM deformation: turn",
+              "reviewed rig publishes a new character version",
+              "rig publication cannot overwrite an existing version",
+              "reopening a bound version restores both source model state and visible source input",
+              "binding, animation and publication preserve source GLB bytes",
+              "character with a real built-in runtime script stages successfully",
+              "bundled publisher creates a portable runtime dependency directory",
+              "portable scene uses relative script paths without an editor-cache reference"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "6fa2c455223ee7f07a34f9564239a70685c145691d36c927450b1d108c0b4cdb",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "rom_maximum_displacement": {
+                "raise_arms": 0.545059084892273,
+                "squat": 0.33388340473175,
+                "turn": 0.765170753002167
+              },
+              "state_key": "6dde8a31709578d36326996dcd7e6eae42b0571d1e0ecb419793e31b09af2681",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "independent-project",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "6fa2c455223ee7f07a34f9564239a70685c145691d36c927450b1d108c0b4cdb",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "state_key": "6348de8adba33faeb6f17fb2f94821240730cc47c13b27595f22a55e0c8f2930",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "enabled legacy sample addon does not create a second workbench",
+              "sample project retains exactly one native AINative editor dock"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              }
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "relocated-runtime",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "portable character loads in a different project without editor bundles",
+              "published runtime script and its preload dependencies load",
+              "runtime script resolves from the copied artifact directory",
+              "runtime exported properties survive publication and relocation",
+              "relocated character retains actual skeleton data"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference"
+            },
+            "failures": [],
+            "ok": true
+          }
+        }
+      ],
+      "project_state_isolated": true,
+      "same_engine_bundle": true,
+      "project_sources_unchanged": true
+    },
+    "independent_review": {
+      "reviewer": "/root/preview_review",
+      "state": "passed",
+      "scope": "AST comparison, script and package import paths, 36 Python regressions"
+    },
+    "signed_app": {
+      "state": "installed",
+      "signature": "ad-hoc codesign --verify --deep --strict passed",
+      "startup": "--headless --version exited 0",
+      "sha256": "cf983416cb4a6a9e7e19570b004fb0c4453fb2fd42402ab62578f6af1990bcbe"
+    }
+  },
+  "limitations": [
+    "No actual AI inference; real offline provider and actual Godot preview decoding tested.",
+    "UI source unchanged since independent 35-check pass; history is session-scoped."
+  ]
+}
