@@ -1755,6 +1755,7 @@ void EditorFileSystem::_notification(int p_what) {
 				set_process(false);
 			}
 
+			EditorHelp::stop_script_doc_cache();
 			memdelete(filesystem);
 			memdelete(new_filesystem);
 			filesystem = nullptr;

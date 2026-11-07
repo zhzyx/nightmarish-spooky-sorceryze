@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "request_id": "requirement-3c4dad533276a0226cd3b226c90d8123",
+  "issue_number": 387,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387",
+  "kind": "candidate_validation_evidence",
+  "design": "design-docs/requirement-3c4dad533276a0226cd3b226c90d8123.md",
+  "test_source": "tests/editor/run_model_autofetch.py",
+  "source_review": {
+    "base_commit": "4708b1b8413740dc0219eb7377e7e286599ecec7",
+    "receipt_sha256": "dbd204b201f5073c0899a264e8443243e3aae68d4edfe15a5aaf3cb0893815d9",
+    "result": "passed_pre_pr_source_review",
+    "scope": "Source review only; no new binary acceptance"
+  },
+  "previous_artifact": {
+    "base_commit": "d16199d586f0641e74599697f195a8fd7a51157e",
+    "binary_sha256": "74b962ca128654c1d3e189deb31577687075e2d429add90eff4c3804bec3ebb3",
+    "repo_11": {
+      "passed": 11,
+      "total": 11,
+      "private_receipt_sha256": "f6604321f778b89e1a3562cf5d4682e89e39909546e10a903f1ce4f3df3cf622"
+    },
+    "native_child_11": {
+      "passed": 11,
+      "total": 11,
+      "private_receipt_sha256": "46634aa7cf86988334fe7f722413c73142bc87eaae1269d69b8e9401988ed9d7"
+    },
+    "outer_independent_11": {
+      "passed": 11,
+      "total": 11,
+      "private_receipt_sha256": "d0203b05d7355dbac1a5691611322eff696088560dd4b68c38919e2a777e6663"
+    },
+    "outer_independent_exit": {
+      "passed": 4,
+      "total": 4
+    }
+  },
+  "signed_candidate_artifact_acceptance": "pending",
+  "gui_continuation_acceptance": "pending",
+  "exact_head_ci": "pending",
+  "main_delivery": "pending",
+  "diting_ingestion_confirmed": false,
+  "scope_note": "Previous artifact results and current source review have separate scopes. New binary acceptance remains pending. Private local receipts are referenced by digest only."
+}

@@ -1,0 +1,40 @@
+{
+  "agent": {
+    "definition_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+    "id": "yanshi",
+    "origin": "gonggong-framework",
+    "version": "0.4.2"
+  },
+  "event_id": "godot-event-21461-167764229",
+  "evidence_refs": [],
+  "kind": "message",
+  "occurred_at": "2026-11-07T08:12:35Z",
+  "payload": {
+    "binding": {
+      "agent": {
+        "definition_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+        "id": "yanshi",
+        "origin": "gonggong-framework",
+        "version": "0.4.2"
+      },
+      "agent_snapshot_ref": "yanshi@0.4.2#a0ac6d16523065678b74ae61c4db8bd4a5ee2ce335e44bfe2437c9f3aa5a058b",
+      "authority_ref": "godot-editor:user-chat:e73c8031319dedc65a2e8947eb4662e5",
+      "outbox_path": ".gonggong-outbox/chat",
+      "path_base": "workspace_root",
+      "request_ref": "requirement-3c4dad533276a0226cd3b226c90d8123",
+      "sink_ref": "gonggong-diting-data",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387",
+      "tenant_id": "gonggong-workspace"
+    },
+    "input_tokens": null,
+    "output_tokens": null,
+    "phase": "tool_result",
+    "reason": "Host lifecycle metadata only; provider token usage is not measured by this connector",
+    "status": "received_metadata_only"
+  },
+  "request_id": "requirement-3c4dad533276a0226cd3b226c90d8123",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387",
+  "tenant_id": "gonggong-workspace",
+  "sha256": "bf4bc856a4fa8f232fad035ffa7cd35d78da606a6452fbc26b370f699d344957"
+}

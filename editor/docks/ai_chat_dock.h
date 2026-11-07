@@ -321,7 +321,23 @@ class AIChatDock : public EditorDock {
 	void _sync_reasoning_picker();
 	void _reasoning_selected(int p_index);
 	String _reasoning_effort() const;
-	Button *refresh_models = nullptr;
+	Timer *codex_login_timer = nullptr;
+	Timer *model_config_timer = nullptr;
+	int64_t codex_login_pid = -1;
+	uint64_t codex_login_started = 0;
+	int64_t codex_status_pid = -1;
+	uint64_t codex_status_started = 0;
+	uint8_t codex_status_sources = 0;
+	String codex_status_config;
+	uint8_t pending_model_sources = 0;
+	uint8_t consumed_model_sources = 0;
+	int pending_model_backend = -1;
+	String pending_model_config;
+	void _request_model_refresh(uint8_t p_source);
+	void _try_pending_model_refresh();
+	void _model_config_changed(const String &p_text);
+	void _model_config_timeout();
+	String _model_config_signature() const;
 	Label *model_status = nullptr;
 	HTTPRequest *model_request = nullptr;
 	bool models_loading = false;
@@ -330,6 +346,9 @@ class AIChatDock : public EditorDock {
 	Array model_catalog;
 
 	void _refresh_models();
+	void _refresh_codex_models_on_start();
+	void _start_codex_status_check(uint8_t p_sources);
+	void _poll_codex_login();
 	void _models_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
 	void _apply_models(const Array &p_models);
 	LineEdit *_active_model_field() const;

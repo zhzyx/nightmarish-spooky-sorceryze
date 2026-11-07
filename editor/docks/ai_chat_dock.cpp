@@ -1509,7 +1509,6 @@ void AIChatDock::_set_busy(bool p_busy) {
 	cli_login->set_disabled(busy || models_loading);
 	model_picker->set_disabled(busy || models_loading);
 	_sync_reasoning_picker();
-	refresh_models->set_disabled(busy || models_loading);
 	// Accept corrections while busy; apply them only at a host-owned safe boundary.
 	send_button->set_disabled(!pending_external_editor_message.is_empty() || snapshot_restoring || snapshot_transaction_failed || models_loading || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
 	send_button->set_text(busy ? U"补充要求" : U"发送");
@@ -1567,6 +1566,9 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_refresh_schedule_agents();
 	}
 	_refresh_sub_agents();
+	if (!busy && !models_loading && pending_model_sources) {
+		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+	}
 }
 
 String AIChatDock::_agent_title(int p_agent) const {
@@ -4042,7 +4044,8 @@ void AIChatDock::_backend_changed(int p_backend) {
 	codex_settings->set_visible(p_backend == 2);
 	cli_settings->set_visible(p_backend == 1);
 	_sync_model_picker();
-	model_status->set_text(U"尚未获取模型列表。点击刷新；不支持枚举时可在高级设置填写模型 ID。");
+	model_status->set_text(U"连接已切换，正在准备获取模型列表；不支持枚举时可手动填写模型 ID。");
+	_request_model_refresh(2);
 	EditorSettings::get_singleton()->set_setting("ai_chat/backend", p_backend);
 	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
 }
@@ -4103,7 +4106,7 @@ void AIChatDock::_apply_models(const Array &p_models) {
 		model_picker->set_item_tooltip(selected, U"此模型 ID 来自你的配置，不代表已通过服务可用性验证。");
 	}
 	if (model_picker->get_item_count() == 0) {
-		model_picker->add_item(U"请刷新列表或手动填写模型 ID");
+		model_picker->add_item(U"暂无可选模型；可手动填写模型 ID");
 		model_picker->set_item_metadata(0, String());
 		model_picker->set_item_disabled(0, true);
 	}
@@ -4177,14 +4180,14 @@ void AIChatDock::_sync_reasoning_picker() {
 		reasoning_picker->set_item_metadata(index, String(ids[i]));
 		const bool available = supported.has(String(ids[i]));
 		reasoning_picker->set_item_disabled(index, !available);
-		reasoning_picker->set_item_tooltip(index, available ? String(ids[i]) : String(U"当前模型未声明支持此强度；请刷新模型列表。使用模型默认时不发送强度参数。"));
+		reasoning_picker->set_item_tooltip(index, available ? String(ids[i]) : String(U"当前模型未声明支持此强度；使用模型默认时不发送强度参数。"));
 		if (available && saved == ids[i]) {
 			selected = index;
 		}
 	}
 	reasoning_picker->select(selected);
 	reasoning_picker->set_disabled(busy || models_loading || supported.is_empty());
-	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息。请先刷新模型；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
+	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
 }
 
 String AIChatDock::_reasoning_effort() const {
@@ -4204,6 +4207,144 @@ void AIChatDock::_reasoning_selected(int p_index) {
 	preferences[key] = reasoning_picker->get_item_metadata(p_index);
 	EditorSettings::get_singleton()->set_setting("ai_chat/reasoning_preferences", preferences);
 	EditorSettings::save();
+}
+
+String AIChatDock::_model_config_signature() const {
+	const int selected = backend->get_selected();
+	if (selected == 2) {
+		return "2:" + codex_entry->get_text().strip_edges() + ":" + cli_node->get_text().strip_edges();
+	}
+	if (selected == 1) {
+		return "1:" + cli_node->get_text().strip_edges() + ":" + cli_bridge->get_text().strip_edges() + ":" + cli_entry->get_text().strip_edges();
+	}
+	return itos(selected) + ":" + endpoint->get_text().strip_edges() + ":" + api_key->get_text().sha256_text();
+}
+
+void AIChatDock::_model_config_changed(const String &p_text) {
+	if (model_config_timer && model_config_timer->is_inside_tree()) {
+		model_config_timer->start();
+	}
+}
+
+void AIChatDock::_model_config_timeout() {
+	_request_model_refresh(2);
+}
+
+void AIChatDock::_request_model_refresh(uint8_t p_source) {
+	const int selected = backend->get_selected();
+	const String signature = _model_config_signature();
+	if (selected != pending_model_backend || signature != pending_model_config) {
+		pending_model_backend = selected;
+		pending_model_config = signature;
+		pending_model_sources = 0;
+		consumed_model_sources = 0;
+	}
+	const uint8_t fresh = p_source & ~consumed_model_sources;
+	if (!fresh) {
+		return;
+	}
+	if (selected == 2) {
+		// A status check belongs to the configuration and event that launched it.
+		// A new login must be checked afresh even when an older check is running.
+		if (codex_status_pid >= 0 && (codex_status_config != signature || (fresh & 4))) {
+			OS::get_singleton()->kill(codex_status_pid);
+			codex_status_pid = -1;
+			codex_status_sources = 0;
+		}
+		_start_codex_status_check(fresh);
+		return;
+	}
+	pending_model_sources |= fresh;
+	callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+}
+
+void AIChatDock::_try_pending_model_refresh() {
+	if (!pending_model_sources || !is_inside_tree() || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {
+		return;
+	}
+	if (pending_model_backend != backend->get_selected() || pending_model_config != _model_config_signature()) {
+		pending_model_sources = 0;
+		return;
+	}
+	const uint8_t sources = pending_model_sources;
+	pending_model_sources = 0;
+	consumed_model_sources |= sources;
+	_refresh_models();
+}
+
+void AIChatDock::_refresh_codex_models_on_start() {
+	_request_model_refresh(1);
+}
+
+void AIChatDock::_start_codex_status_check(uint8_t p_sources) {
+	if (codex_status_pid >= 0) {
+		codex_status_sources |= p_sources;
+		return;
+	}
+	const String executable = codex_entry->get_text().strip_edges();
+	if (!executable.is_absolute_path() || !FileAccess::exists(executable)) {
+		consumed_model_sources |= p_sources;
+		model_status->set_text(U"请配置有效的 Codex 可执行文件路径；也可手动填写模型 ID。");
+		return;
+	}
+	List<String> arguments;
+	arguments.push_back("login");
+	arguments.push_back("status");
+	codex_status_sources = p_sources;
+	codex_status_config = _model_config_signature();
+	if (OS::get_singleton()->create_process(executable, arguments, &codex_status_pid) != OK) {
+		codex_status_pid = -1;
+		consumed_model_sources |= p_sources;
+		codex_status_sources = 0;
+		model_status->set_text(U"无法启动 Codex 登录状态检查；也可手动填写模型 ID。");
+		return;
+	}
+	codex_status_started = OS::get_singleton()->get_ticks_msec();
+	codex_login_timer->start();
+}
+
+void AIChatDock::_poll_codex_login() {
+	const uint64_t now = OS::get_singleton()->get_ticks_msec();
+	if (codex_status_pid >= 0) {
+		const bool timeout = now - codex_status_started > 10000;
+		if (timeout || !OS::get_singleton()->is_process_running(codex_status_pid)) {
+			const int code = timeout ? -1 : OS::get_singleton()->get_process_exit_code(codex_status_pid);
+			if (timeout) {
+				OS::get_singleton()->kill(codex_status_pid);
+			}
+			codex_status_pid = -1;
+			const uint8_t sources = codex_status_sources;
+			codex_status_sources = 0;
+			if (backend->get_selected() == 2 && codex_status_config == _model_config_signature()) {
+				if (code == 0) {
+					pending_model_sources |= sources & ~consumed_model_sources;
+					callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+				} else {
+					consumed_model_sources |= sources;
+					model_status->set_text(timeout ? String(U"Codex 登录状态检查超时；模型列表未刷新。") : String(U"Codex 尚未登录或状态检查失败；模型列表未刷新。"));
+				}
+			}
+		}
+	}
+	if (codex_login_pid >= 0) {
+		const bool timeout = now - codex_login_started > 300000;
+		if (timeout || !OS::get_singleton()->is_process_running(codex_login_pid)) {
+			const int code = timeout ? -1 : OS::get_singleton()->get_process_exit_code(codex_login_pid);
+			if (timeout) {
+				OS::get_singleton()->kill(codex_login_pid);
+			}
+			codex_login_pid = -1;
+			if (code == 0) {
+				consumed_model_sources &= ~uint8_t(4);
+				_request_model_refresh(4);
+			} else if (backend->get_selected() == 2 && !models_loading) {
+				model_status->set_text(timeout ? String(U"Codex 登录等待超时；模型列表未刷新。") : String(U"Codex 登录未完成；模型列表未刷新。"));
+			}
+		}
+	}
+	if (codex_login_pid < 0 && codex_status_pid < 0) {
+		codex_login_timer->stop();
+	}
 }
 
 void AIChatDock::_refresh_models() {
@@ -4292,6 +4433,9 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 	models_loading = false;
 	model_request_key = String();
 	_set_busy(false);
+	if (pending_model_sources) {
+		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+	}
 	JSON json;
 	if (p_result != HTTPRequest::RESULT_SUCCESS || p_code < 200 || p_code >= 300 || json.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) != OK || json.get_data().get_type() != Variant::DICTIONARY) {
 		String reason = U"模型列表获取失败或服务不支持枚举。可重试，或手动填写模型 ID。";
@@ -4326,13 +4470,19 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 void AIChatDock::_login_cli() {
 	if (backend->get_selected() == 2) {
 		const String executable = codex_entry->get_text().strip_edges();
-		if (busy || models_loading || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
+		if (busy || models_loading || codex_login_pid >= 0 || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
 			_append(TTR("Error"), U"请先填写有效的 Codex 原生可执行文件路径。");
 			return;
 		}
 		List<String> arguments;
 		arguments.push_back("login");
-		const Error error = OS::get_singleton()->create_process(executable, arguments, nullptr, true);
+		const Error error = OS::get_singleton()->create_process(executable, arguments, &codex_login_pid, true);
+		if (error == OK) {
+			codex_login_started = OS::get_singleton()->get_ticks_msec();
+			codex_login_timer->start();
+		} else {
+			codex_login_pid = -1;
+		}
 		_append(error == OK ? TTR("Editor") : TTR("Error"), error == OK ? String(U"已打开 Codex 登录终端，请完成官方认证。Godot 不读取或复制登录令牌。") : String(U"无法打开 Codex 登录终端。"));
 		return;
 	}
@@ -5788,6 +5938,7 @@ void AIChatDock::_notification(int p_what) {
 		_load_history();
 		_load_resume();
 		schedule_timer->start();
+		callable_mp(this, &AIChatDock::_refresh_codex_models_on_start).call_deferred();
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	} else if (p_what == NOTIFICATION_THEME_CHANGED) {
 		// Match the scene tabs, including their contrasting background strip.
@@ -5821,6 +5972,17 @@ void AIChatDock::_notification(int p_what) {
 			sub_agent_parallel_pid = -1;
 		}
 		schedule_timer->stop();
+		codex_login_timer->stop();
+		model_config_timer->stop();
+		if (codex_status_pid >= 0) {
+			OS::get_singleton()->kill(codex_status_pid);
+			codex_status_pid = -1;
+		}
+		if (codex_login_pid >= 0) {
+			OS::get_singleton()->kill(codex_login_pid);
+			codex_login_pid = -1;
+		}
+		pending_model_sources = 0;
 		_cancel_engine_build();
 		engine_build_timer->stop();
 		if (engine_restart_requested && OS::get_singleton()->is_restart_on_exit_set() && FileAccess::exists(engine_restart_target)) {
@@ -6106,11 +6268,6 @@ void fragment() {
 	model_picker->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
-	refresh_models = memnew(Button);
-	refresh_models->set_name("RefreshModels");
-	refresh_models->set_text(U"刷新模型");
-	refresh_models->connect("pressed", callable_mp(this, &AIChatDock::_refresh_models));
-	models->add_child(refresh_models);
 	Label *reasoning_label = memnew(Label);
 	reasoning_label->set_text(U"推理强度");
 	models->add_child(reasoning_label);
@@ -6156,9 +6313,11 @@ void fragment() {
 	http_settings = memnew(VBoxContainer);
 	settings->add_child(http_settings);
 	endpoint = add_field(http_settings, U"对话接口地址（HTTPS 或本机 HTTP）", "APIEndpoint", EDITOR_GET("ai_chat/endpoint"));
+	endpoint->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EDITOR_GET("ai_chat/model"));
 	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	api_key = add_field(http_settings, U"API 密钥（仅保留于本次会话）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
+	api_key->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	api_key->set_secret(true);
 	if (api_key->get_text().is_empty()) {
 		api_key->set_text(OS::get_singleton()->get_environment("OPENAI_API_KEY"));
@@ -6166,8 +6325,11 @@ void fragment() {
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
 	cli_node = add_field(cli_settings, U"Node.js 可执行文件路径", "CLINode", EDITOR_GET("ai_chat/cli_node"));
+	cli_node->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	cli_bridge = add_field(cli_settings, U"Godot 对话桥接脚本路径", "CLIBridge", EDITOR_GET("ai_chat/cli_bridge"));
+	cli_bridge->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	cli_entry = add_field(cli_settings, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
+	cli_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	String saved_model = EDITOR_GET("ai_chat/cli_model");
 	if (saved_model == "default-model") {
 		saved_model = "gpt-6.1-sol";
@@ -6189,6 +6351,7 @@ void fragment() {
 	codex_settings = memnew(VBoxContainer);
 	settings->add_child(codex_settings);
 	codex_entry = add_field(codex_settings, U"Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", EDITOR_GET("ai_chat/codex_entry"));
+	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EDITOR_GET("ai_chat/codex_model"));
 	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	Label *codex_help = memnew(Label);
@@ -6555,13 +6718,22 @@ void fragment() {
 	editor_bridge->set_name("AIEditorControlBridge");
 	editor_bridge->set_handler(callable_mp(this, &AIChatDock::_editor_bridge_request));
 	add_child(editor_bridge);
+	codex_login_timer = memnew(Timer);
+	codex_login_timer->set_wait_time(1.0);
+	codex_login_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_codex_login));
+	add_child(codex_login_timer);
+	model_config_timer = memnew(Timer);
+	model_config_timer->set_wait_time(0.5);
+	model_config_timer->set_one_shot(true);
+	model_config_timer->connect("timeout", callable_mp(this, &AIChatDock::_model_config_timeout));
+	add_child(model_config_timer);
 	set_process(false);
 	_set_busy(false);
 	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
 	codex_settings->set_visible(backend->get_selected() == 2);
 	cli_settings->set_visible(backend->get_selected() == 1);
 	_sync_model_picker();
-	model_status->set_text(U"尚未获取模型列表。点击刷新；不支持枚举时可在高级设置填写模型 ID。");
+	model_status->set_text(U"模型列表将在启动或连接配置变化后自动获取；服务不支持枚举时可手动填写模型 ID。");
 }
 
 void AIChatDock::_show_snapshot_changes(const String &p_id) {
