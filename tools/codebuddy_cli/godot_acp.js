@@ -15,6 +15,7 @@ function workspacePaths(input, fallback) {
     const workspace = { project_root: resolve(input.project_root || fallback), engine_root: resolve(input.engine_root || path.resolve(__dirname, '../..')) };
     if (input.workspace_root) workspace.workspace_root = resolve(input.workspace_root);
     if (input.command_profile) workspace.command_profile = input.command_profile;
+    if (input.provenance_guard_required === true) workspace.provenance_guard_required = true;
     return workspace;
 }
 
@@ -537,7 +538,8 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
             reportProgress('tool_pending');
             return new Promise((resolve, reject) => {
                 const id = 'acp_command_' + randomUUID();
-                pending.set(id, { resolve, reject, name: 'run_command', arguments: args, sent: false });
+                const argumentsForHost = active?.input.workspace.provenance_guard_required ? { ...args, _godot_provenance_guard: 1 } : args;
+                pending.set(id, { resolve, reject, name: 'run_command', arguments: argumentsForHost, sent: false });
                 record('host_command_queued', { operation: 'run_command', pending_count: pending.size });
                 if (!flushTimer && !active.yielded) flushTimer = setTimeout(flushTools, 10);
             });

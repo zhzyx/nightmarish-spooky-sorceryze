@@ -61,6 +61,76 @@ test('No process starts while confirmation is pending or rejected', async t => {
     assert(!fs.existsSync(path.join(directory, 'forbidden.txt')));
 });
 
+test('Active work orders require the host guard and wait for its actual result', async t => {
+    const missing = fixture(t);
+    missing.workspace.provenance_guard_required = true;
+    await assert.rejects(missing.manager.create({ sessionId: 'test', command: 'printf forbidden > missing.txt' }, missing.workspace), /did not provide/);
+    assert(!fs.existsSync(path.join(missing.directory, 'missing.txt')));
+    let guard;
+    const run = fixture(t, { approve: async () => ({ approved: true, provenance_guard: guard }) });
+    const worker = path.join(run.directory, 'guard.js');
+    const binding = path.join(run.directory, 'binding.json');
+    fs.writeFileSync(worker, "process.stderr.write('GONGGONG_PROVENANCE_GUARD {\\\"ok\\\":false}\\n');process.exit(76);\n");
+    fs.writeFileSync(binding, '{}');
+    guard = { protocol: 1, python: process.execPath, worker, binding };
+    run.workspace.provenance_guard_required = true;
+    const terminal = await run.manager.create({ sessionId: 'test', command: 'printf forbidden > blocked.txt' }, run.workspace);
+    const params = { sessionId: 'test', terminalId: terminal.terminalId };
+    assert.equal((await run.manager.wait(params)).exitCode, 76);
+    assert(run.manager.output(params).output.includes('GONGGONG_PROVENANCE_GUARD'));
+    assert(!fs.existsSync(path.join(run.directory, 'blocked.txt')));
+    await run.manager.release(params);
+});
+
+test('Cancel waits for the active provenance worker to acknowledge its marker', async t => {
+    let guard;
+    const run = fixture(t, { approve: async () => ({ approved: true, provenance_guard: guard }) });
+    const worker = path.join(run.directory, 'cancel-worker.js');
+    const binding = path.join(run.directory, 'binding.json');
+    const ready = path.join(run.directory, 'ready');
+    fs.writeFileSync(binding, '{}');
+    fs.writeFileSync(worker, `const fs=require('node:fs'); const args=process.argv; const marker=args[args.indexOf('--cancel-file')+1]; fs.writeFileSync(${JSON.stringify(ready)},'ready'); setInterval(()=>{if(fs.existsSync(marker)){process.stdout.write('cancel_verified');process.exit(143);}},20);`);
+    guard = { protocol: 1, python: process.execPath, worker, binding };
+    run.workspace.provenance_guard_required = true;
+    const terminal = await run.manager.create({ sessionId: 'test', command: 'sleep 20' }, run.workspace);
+    const params = { sessionId: 'test', terminalId: terminal.terminalId };
+    for (let attempt = 0; attempt < 100 && !fs.existsSync(ready); attempt++) await new Promise(resolve => setTimeout(resolve, 20));
+    assert(fs.existsSync(ready));
+    await run.manager.kill(params);
+    assert.equal((await run.manager.wait(params)).exitCode, 143);
+    assert(run.manager.output(params).output.includes('cancel_verified'));
+    await run.manager.release(params);
+});
+
+test('Cancel marker failures still terminate the worker and settle its result', async t => {
+    let guard;
+    const run = fixture(t, { approve: async () => ({ approved: true, provenance_guard: guard }) });
+    const worker = path.join(run.directory, 'cancel-failure-worker.js');
+    const binding = path.join(run.directory, 'binding.json');
+    const ready = path.join(run.directory, 'ready');
+    fs.writeFileSync(binding, '{}');
+    fs.writeFileSync(worker, `const fs=require('node:fs'); fs.writeFileSync(${JSON.stringify(ready)},'ready'); setInterval(()=>{},1000);`);
+    guard = { protocol: 1, python: process.execPath, worker, binding };
+    run.workspace.provenance_guard_required = true;
+    const terminal = await run.manager.create({ sessionId: 'test', command: 'sleep 20' }, run.workspace);
+    const params = { sessionId: 'test', terminalId: terminal.terminalId };
+    for (let attempt = 0; attempt < 100 && !fs.existsSync(ready); attempt++) await new Promise(resolve => setTimeout(resolve, 20));
+    assert(fs.existsSync(ready));
+    const write = fs.writeFileSync, remove = fs.rmSync;
+    try {
+        fs.writeFileSync = (file, ...args) => { if (String(file).includes('godot-provenance-cancel-')) throw new Error('injected marker write failure'); return write(file, ...args); };
+        fs.rmSync = (file, ...args) => { if (String(file).includes('godot-provenance-cancel-')) throw new Error('injected marker cleanup failure'); return remove(file, ...args); };
+        await run.manager.kill(params);
+        const result = await run.manager.wait(params);
+        assert.notEqual(result.exitCode, 0);
+        assert.equal(result._meta.cancel_cleanup_failed, true);
+    } finally {
+        fs.writeFileSync = write;
+        fs.rmSync = remove;
+    }
+    await run.manager.release(params);
+});
+
 test('Candidate commands use freshly approved protection and reject a missing refresh', { skip: process.platform !== 'darwin' }, async t => {
     const { directory, manager, workspace } = fixture(t, {
         approve: async () => ({ approved: true, command_profile: '(version 1)(allow default)(deny file-write* (subpath ' + JSON.stringify(fs.realpathSync(directory)) + '))' }),

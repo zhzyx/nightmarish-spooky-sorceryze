@@ -190,6 +190,14 @@ void AIChatDock::_start_gonggong_flush() {
 	if (gonggong_receipt_pid >= 0) {
 		return;
 	}
+	String provenance_error;
+	if (!_recover_active_provenance(provenance_error)) {
+		set_meta("gonggong_reporting", "pending_retry");
+		_append(TTR("Error"), provenance_error);
+		gonggong_receipt_continuation = Callable();
+		_set_busy(false);
+		return;
+	}
 	gonggong_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-receipt-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
 	List<String> arguments;
 	for (const String &arg : { gonggong_report_root.path_join("tools/gonggong_bridge.py"), String("flush"), String("--workspace"), gonggong_report_root, String("--out"), gonggong_receipt_path }) {
@@ -304,7 +312,7 @@ void AIChatDock::_begin_gonggong_context() {
 	gonggong_context = String();
 	gonggong_generation = session_generation;
 	String candidate_error;
-	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+	if (snapshot_state.has("engine_candidate") && (!_validate_engine_candidate(candidate_error) || !_recover_active_provenance(candidate_error))) {
 		_append(TTR("Error"), candidate_error);
 		_set_busy(false);
 		return;

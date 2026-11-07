@@ -121,7 +121,9 @@ public:
 	static String command_profile(const Dictionary &p_candidate, const String &p_project) {
 		const String source = p_candidate.get("source_root", "");
 		List<String> args;
-		for (const String &arg : { String("-C"), source, String("worktree"), String("list"), String("--porcelain") }) {
+		// Keep non-ASCII paths readable; Godot strings cannot carry Git's NUL
+		// records, so decode the quoted forms still used for special characters.
+		for (const String &arg : { String("-c"), String("core.quotePath=false"), String("-C"), source, String("worktree"), String("list"), String("--porcelain") }) {
 			args.push_back(arg);
 		}
 		String output;
@@ -136,7 +138,14 @@ public:
 			if (!line.begins_with("worktree ")) {
 				continue;
 			}
-			const String path = line.trim_prefix("worktree ");
+			String path = line.trim_prefix("worktree ");
+			if (path.begins_with("\"")) {
+				const Variant decoded = JSON::parse_string(path);
+				if (decoded.get_type() != Variant::STRING) {
+					return String();
+				}
+				path = decoded;
+			}
 			const String root = canonical_directory(path);
 			if (root.is_empty() || path != root) {
 				return String();
@@ -169,13 +178,94 @@ public:
 		return profile;
 	}
 
+	static Dictionary command_guard(const Dictionary &p_candidate, const String &p_python, const String &p_installation, String &r_error) {
+		Dictionary guard;
+		const String worker = p_installation.path_join("tools/editor_provenance_guard.py");
+		const String binding = p_candidate.get("binding_path", "");
+		if (!executable_exists(p_python) || !FileAccess::exists(worker) || !binding.is_absolute_path() || !FileAccess::exists(binding)) {
+			r_error = "active_provenance_guard_unavailable: command was not started.";
+			return guard;
+		}
+		guard["protocol"] = 1;
+		guard["python"] = p_python;
+		guard["worker"] = worker;
+		guard["binding"] = binding;
+		return guard;
+	}
+
+	static bool evidence_write_allowed(const String &p_path, const Dictionary &p_candidate, String &r_error) {
+		if (p_candidate.is_empty()) {
+			return true;
+		}
+		String source = p_candidate.get("source_root", "");
+		const Dictionary config = JSON::parse_string(FileAccess::get_file_as_string(source.path_join("work-items.json")));
+		const String tenant = config.get("tenant_id", "");
+		const String request = p_candidate.get("request_id", "");
+		if (tenant.is_empty() || request.is_empty()) {
+			r_error = "active_provenance_configuration_invalid";
+			return false;
+		}
+		String target = canonical_write_target(p_path);
+		if (target.is_empty()) {
+			r_error = "active_provenance_write_target_unresolved";
+			return false;
+		}
+#if defined(MACOS_ENABLED) || defined(WINDOWS_ENABLED)
+		// A differently cased spelling must not bypass a protected path on the
+		// default case-insensitive filesystems of these hosts.
+		source = source.to_lower();
+		target = target.to_lower();
+#endif
+		const String events = source.path_join("gonggong-diting-data/events").path_join(tenant).path_join(request);
+		if (contains(events, target) || contains(source.path_join(".gonggong-outbox/chat"), target) || target == source.path_join("gonggong-diting-data/dataset.json") || target == source.path_join("gonggong-diting-data/.gitattributes") || (contains(source.path_join("data-collection"), target) && FileAccess::exists(p_path))) {
+			r_error = "active_provenance_is_host_owned: preserve existing events and receipts; use the framework to append new evidence.";
+			return false;
+		}
+		return true;
+	}
+
+	static String canonical_write_target(const String &p_path) {
+		String path = p_path;
+		for (int depth = 0; depth < 32; depth++) {
+			String parent = path.get_base_dir();
+			String suffix = path.get_file();
+			Ref<DirAccess> directory = DirAccess::open(parent);
+			while (directory.is_null() && !parent.is_empty()) {
+				const String next = parent.get_base_dir();
+				if (next == parent) {
+					break;
+				}
+				suffix = parent.get_file().path_join(suffix);
+				parent = next;
+				directory = DirAccess::open(parent);
+			}
+			if (directory.is_null()) {
+				return String();
+			}
+			const String canonical = directory->get_current_dir();
+			if (!directory->is_link(suffix)) {
+				return canonical.path_join(suffix).simplify_path();
+			}
+			const String link = directory->read_link(suffix);
+			if (link.is_empty()) {
+				return String();
+			}
+			path = (link.is_absolute_path() ? link : canonical.path_join(link)).simplify_path();
+		}
+		return String();
+	}
+
 	static bool contains(const String &p_directory, const String &p_path) {
 		return !p_directory.is_empty() && (p_path == p_directory || p_path.begins_with(p_directory.path_join("")));
 	}
 
 	static bool production_path(const String &p_path, const String &p_workspace, const String &p_project, String &r_error) {
-		const String parent = DirAccess::dir_exists_absolute(p_path) ? p_path : p_path.get_base_dir();
-		const String canonical = canonical_directory(parent);
+		const String target = canonical_write_target(p_path);
+		if (target.is_empty()) {
+			r_error = "workspace_write_target_unresolved";
+			return false;
+		}
+		const String canonical = DirAccess::dir_exists_absolute(target) ? target : target.get_base_dir();
 		const String source = GongGongHostPaths::find_ancestor(canonical, "SConstruct");
 		const String bound = canonical_directory(p_workspace);
 		if (source.is_empty() || source == bound) {

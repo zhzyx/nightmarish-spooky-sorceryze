@@ -23,13 +23,13 @@ class CandidateError(ValueError):
     pass
 
 
-def git(root, *arguments, check=True):
+def git(root, *arguments, check=True, raw=False):
     try:
         result = subprocess.run(
             [os.environ.get("GONGGONG_GIT", "git"), "-C", str(root), *arguments],
             capture_output=True,
-            text=True,
-            encoding="utf-8",
+            text=not raw,
+            encoding=None if raw else "utf-8",
             timeout=120,
         )
     except (OSError, subprocess.TimeoutExpired):
@@ -37,6 +37,25 @@ def git(root, *arguments, check=True):
     if check and result.returncode:
         raise CandidateError("candidate_git_failed")
     return result
+
+
+def registered_worktrees(workspace):
+    # -z disables Git's C-style path quoting and keeps embedded newlines in a
+    # single field. Let the platform Path implementation handle Git's slash
+    # spelling and Windows case-insensitive equality after canonicalization.
+    output = git(workspace, "worktree", "list", "--porcelain", "-z", raw=True).stdout
+    roots = []
+    for field in output.split(b"\0"):
+        if not field.startswith(b"worktree "):
+            continue
+        try:
+            path = Path(os.fsdecode(field.removeprefix(b"worktree ")))
+            if not path.is_absolute():
+                raise ValueError
+            roots.append(path.resolve())
+        except (OSError, ValueError):
+            raise CandidateError("candidate_worktree_registry_invalid") from None
+    return roots
 
 
 def verify_work_order(workspace, issue, request_id):
@@ -155,8 +174,7 @@ def validate_source(workspace, binding, expected, require_clean=False):
     if require_clean and git(target, "status", "--porcelain", "--untracked-files=all").stdout:
         raise CandidateError("candidate_initial_tree_dirty")
     # A repository can keep stale .git metadata after worktree removal; require registration.
-    registered = git(workspace, "worktree", "list", "--porcelain").stdout.splitlines()
-    if "worktree " + str(target) not in registered:
+    if target not in registered_worktrees(workspace):
         raise CandidateError("candidate_worktree_unregistered")
 
 
@@ -312,11 +330,7 @@ def migrate_requirement(target, binding):
 
 
 def protected_roots(workspace, target):
-    return [
-        str(Path(line.removeprefix("worktree ")).resolve())
-        for line in git(workspace, "worktree", "list", "--porcelain").stdout.splitlines()
-        if line.startswith("worktree ") and Path(line.removeprefix("worktree ")).resolve() != target
-    ]
+    return [str(root) for root in registered_worktrees(workspace) if root != target]
 
 
 def finish_preparation(workspace, target, binding, binding_path):

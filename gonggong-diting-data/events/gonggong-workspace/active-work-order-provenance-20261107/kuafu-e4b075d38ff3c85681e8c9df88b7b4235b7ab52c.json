@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e4b075d38ff3c85681e8c9df88b7b4235b7ab52c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "active-work-order-provenance-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "80d2323746003a7e273ed1b176c5ba6932035a079f788d63cbc26ed99ecb60fa",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+    "action": "validation",
+    "detection_head": "a5bbb80f94581cc2654615b6c5c7fc2ded253f9e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex:runtime_entry_fix",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42365814017/job/128383648711",
+    "diagnosis": "Real Windows CI ran twelve ownership tests: eleven passed, while the integrated guard case failed during candidate.prepare because raw worktree registration strings compare Git forward-slash spelling against Windows Path backslash spelling. The same line parser quotes Unicode paths on POSIX. Preserve registration identity using raw NUL-delimited Git records and canonical platform Path comparison.",
+    "next_action": "Publish the narrowly corrected candidate after real Git path regressions and independent review, then rerun the six actual Windows runtime cases on the exact new signed head.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T10:58:40.419910+00:00",
+    "attempted": "Captured the failed job and reproduced the quoted-path boundary with real temporary Git worktrees; no binding validation was mocked away.",
+    "repair_owner": "codex:runtime_entry_fix",
+    "continuable": "Isolated source repair and acceptance are proceeding; original Issue 387 lifecycle remains with its parent executor."
+  },
+  "occurred_at": "2026-11-07T11:03:01.950475+00:00",
+  "sha256": "527d908702a8691d9a6a8a0327e846e859e93461e7b9c91c3bf3f4388ed848cf"
+}

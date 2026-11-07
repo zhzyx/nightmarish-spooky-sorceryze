@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "request_id": "active-work-order-provenance-20261107",
+  "issue_number": 423,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "kind": "component_validation",
+  "verified_at": "2026-11-07T10:52:02.964026+00:00",
+  "base_sha": "5026ac8f3466503974eac93161fc0797c714a286",
+  "production_source": {
+    "sha256": "007227332b4853b7c269459f233b0fa6ad77b07a3616188d26e28bbf4f35bdcf",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "b2d0976c4213446e17ed6c47b9c0b075828c65ec21313c9051e0462e0b08c8e5",
+      "editor/docks/ai_chat_dock.h": "03cb69e434520d66ead30905051793bd8d825d14b9c49cf99c2cb7c86e719e3a",
+      "editor/docks/ai_chat_engine_candidate.cpp": "635eba12022b964c622e6ee6451c75bc9d1c6ac7a8f0791a260ec5b5cd54f1ae",
+      "editor/docks/ai_chat_gonggong.cpp": "ba73ae6ddfc9423ee6626b1c25a23a8971999eb1dbf9eca1efdf51ee8611e511",
+      "editor/docks/ai_chat_host_runtime.h": "0f1e7d722b3699c2e04f833f8cd1a51807a4e841331b41ed915e50ce531cd9e5",
+      "tools/codebuddy_cli/godot_acp.js": "e961344621f7238234f354203b98955927df2bc2654de149f1886f0aaba68ed9",
+      "tools/codebuddy_cli/godot_terminal.js": "717cbca7a6c45ce1da0d84bb7470e6815b46e3387c8f9f42c7c9616b6f3cdbba",
+      "tools/editor_provenance_guard.py": "a55289fc852dc7b391eff19e33f088a470cc6219b831dc186f5e9c3b9266c2f6",
+      "tools/editor_provenance_process.py": "325f183196bf07bb3b8c6750062917f1f78e6b252a80930c5bcab9bb3b7c8687"
+    }
+  },
+  "checks": {
+    "phase": "component_local_validation",
+    "issue_number": 423,
+    "production_source_sha256": "007227332b4853b7c269459f233b0fa6ad77b07a3616188d26e28bbf4f35bdcf",
+    "core_tests": {
+      "total": 53,
+      "executed_passed": 47,
+      "windows_runtime_skipped_pending_ci": 6
+    },
+    "macos_policy_and_real_terminal_tests_passed": 6,
+    "node_tests_passed": 58,
+    "native_stages_passed": 6,
+    "native_command_cancelled_and_os_process_gone": true,
+    "artifact_sha256": "be05fde22178533ca259eefffe294beee888d8aebb307b20bd0af256634d28bd",
+    "independent_python_tests_passed": 17,
+    "independent_node_tests_passed": 3,
+    "original_issue_387_business_accepted": false,
+    "usage": null
+  },
+  "native_report_sha256": "e8bc682be7b1f262face4b5ffa1d514da4cb3116d02a62ef65e8452672b35234",
+  "native_editor_stages": [
+    "CANDIDATE_BOUNDARY_OK",
+    "CANDIDATE_CANCEL_OK",
+    "CANDIDATE_SECOND_OK",
+    "CANDIDATE_OTHER_OK",
+    "CANDIDATE_RESUMED_OK",
+    "CANDIDATE_CHILD_OK"
+  ],
+  "native_requests": 9,
+  "native_runtime_version": "Godot Engine v4.8.beta.custom_build.5026ac8f3 (2026-11-07 09:26:25 UTC) - https://godotengine.org",
+  "macos_build": "passed",
+  "format_static_checks": "passed: Ruff, Mypy, clang-format, includes, copyright, codespell, diff-check",
+  "independent_review": {
+    "reviewer": "codex-agent:/root/runtime_entry_fix/provenance_final_review",
+    "scope": "read-only production code and focused regression verification",
+    "production_source_sha256": "007227332b4853b7c269459f233b0fa6ad77b07a3616188d26e28bbf4f35bdcf",
+    "result": "passed; no unresolved P1/P2 findings",
+    "windows_runtime": "pending actual Windows CI; local skips do not count as acceptance"
+  },
+  "recorded_events": {
+    "gonggong-diting-data/events/gonggong-workspace/active-work-order-provenance-20261107/active-provenance-local-validation-20261107.json": "40a4b413e6b9ae2eac6e0e7f177ab6ba9ca6363251f7df99704d3161d9353df8",
+    "gonggong-diting-data/events/gonggong-workspace/active-work-order-provenance-20261107/active-provenance-request-20261107.json": "18a0744c2065f7382d1bd5959a84f23421232024ffe590603f201fa2afaa6bf6",
+    "gonggong-diting-data/events/gonggong-workspace/active-work-order-provenance-20261107/kuafu-ccd60d4d94d94cc5a74838f7eb124339cc254d85.json": "b247965b86ebf4044fced382123aba63166f4662854b38ceb23d37b961d5907d"
+  },
+  "source_failure_evidence": "data-collection/active-work-order-provenance-observation-20261107.json",
+  "original_issue_387_business_accepted": false,
+  "original_user_app_config_history_modified": false,
+  "git_delivery": "pending formal writer, CI and authoritative main readback",
+  "usage": null
+}

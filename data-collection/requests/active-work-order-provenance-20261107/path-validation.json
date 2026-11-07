@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "request_id": "active-work-order-provenance-20261107",
+  "issue_number": 423,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "kind": "component_path_revalidation",
+  "verified_at": "2026-11-07T11:07:10.142901+00:00",
+  "source_parent": "a5bbb80f94581cc2654615b6c5c7fc2ded253f9e",
+  "production_source": {
+    "sha256": "5495088635d5ac63845ee051fea60dfc80a77d8adb8c98b40b37c1302d9ccc02",
+    "files": {
+      "editor/docks/ai_chat_dock.cpp": "b2d0976c4213446e17ed6c47b9c0b075828c65ec21313c9051e0462e0b08c8e5",
+      "editor/docks/ai_chat_dock.h": "03cb69e434520d66ead30905051793bd8d825d14b9c49cf99c2cb7c86e719e3a",
+      "editor/docks/ai_chat_engine_candidate.cpp": "635eba12022b964c622e6ee6451c75bc9d1c6ac7a8f0791a260ec5b5cd54f1ae",
+      "editor/docks/ai_chat_gonggong.cpp": "ba73ae6ddfc9423ee6626b1c25a23a8971999eb1dbf9eca1efdf51ee8611e511",
+      "editor/docks/ai_chat_host_runtime.h": "31892749ef0c057b33500e30e6679c3346a69538dab02a58635c1395686911de",
+      "tools/codebuddy_cli/godot_acp.js": "e961344621f7238234f354203b98955927df2bc2654de149f1886f0aaba68ed9",
+      "tools/codebuddy_cli/godot_terminal.js": "717cbca7a6c45ce1da0d84bb7470e6815b46e3387c8f9f42c7c9616b6f3cdbba",
+      "tools/editor_engine_candidate.py": "a3907ef45f72e13f7f1f2a6ec32754407e4c37076e31a211376b784e56950d54",
+      "tools/editor_provenance_guard.py": "a55289fc852dc7b391eff19e33f088a470cc6219b831dc186f5e9c3b9266c2f6",
+      "tools/editor_provenance_process.py": "325f183196bf07bb3b8c6750062917f1f78e6b252a80930c5bcab9bb3b7c8687"
+    }
+  },
+  "checks": {
+    "phase": "cross_platform_path_revalidation",
+    "issue_number": 423,
+    "related_prerequisite_issue": 390,
+    "production_source_sha256": "5495088635d5ac63845ee051fea60dfc80a77d8adb8c98b40b37c1302d9ccc02",
+    "candidate_tests_passed": 40,
+    "core_tests": {
+      "total": 53,
+      "executed_passed": 47,
+      "windows_runtime_skipped_pending_ci": 6
+    },
+    "unicode_space_native_stages_passed": 6,
+    "native_os_cancellation_verified": true,
+    "artifact_sha256": "940572ed3b4ccce644c8d89d72ab2203b094493278f6276adb32f7115a77d2d0",
+    "independent_candidate_tests_passed": 8,
+    "original_issue_387_business_accepted": false,
+    "usage": null
+  },
+  "native_report_sha256": "5fa530245ad13b56e892a137296374ef8e8a272d806ca8cd6f565cf094f05950",
+  "native_editor_stages": [
+    "CANDIDATE_BOUNDARY_OK",
+    "CANDIDATE_CANCEL_OK",
+    "CANDIDATE_SECOND_OK",
+    "CANDIDATE_OTHER_OK",
+    "CANDIDATE_RESUMED_OK",
+    "CANDIDATE_CHILD_OK"
+  ],
+  "native_runtime_version": "Godot Engine v4.8.beta.custom_build.a5bbb80f9 (2026-11-07 10:52:42 UTC) - https://godotengine.org",
+  "failed_prior_candidate": {
+    "pr": 430,
+    "signed_head": "d4ed5c3a428d4422db4bbe722f70d3558fba42ae",
+    "ci_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42365814017/job/128383648711",
+    "result": "11/12 Windows ownership tests passed; integrated guard blocked by existing raw worktree path comparison",
+    "disposition": "superseded before merge; no binding gate bypass"
+  },
+  "independent_review": {
+    "reviewer": "codex-agent:/root/runtime_entry_fix/provenance_final_review",
+    "production_source_sha256": "5495088635d5ac63845ee051fea60dfc80a77d8adb8c98b40b37c1302d9ccc02",
+    "result": "passed; 8 actual Git focused tests passed; no unresolved P1/P2 findings"
+  },
+  "reused_unaffected_checks": {
+    "prior_validation": "data-collection/requests/active-work-order-provenance-20261107/validation.json",
+    "macos_policy_and_actual_js_terminal_tests_passed": 6,
+    "node_regressions_passed": 58,
+    "prior_independent_python_tests_passed": 17,
+    "prior_independent_node_tests_passed": 3
+  },
+  "macos_rebuild": "passed",
+  "windows_runtime": "pending exact new candidate CI: all six real cases must pass",
+  "git_delivery": "pending renewed writer, CI and authoritative main readback",
+  "original_issue_387_business_accepted": false,
+  "original_user_app_config_history_modified": false,
+  "usage": null
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "active-provenance-path-validation-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "active-work-order-provenance-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-07T11:07:09.743542+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "agent": {
+    "id": "codex-active-provenance-guard",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "phase": "cross_platform_path_revalidation",
+    "issue_number": 423,
+    "related_prerequisite_issue": 390,
+    "production_source_sha256": "5495088635d5ac63845ee051fea60dfc80a77d8adb8c98b40b37c1302d9ccc02",
+    "candidate_tests_passed": 40,
+    "core_tests": {
+      "total": 53,
+      "executed_passed": 47,
+      "windows_runtime_skipped_pending_ci": 6
+    },
+    "unicode_space_native_stages_passed": 6,
+    "native_os_cancellation_verified": true,
+    "artifact_sha256": "940572ed3b4ccce644c8d89d72ab2203b094493278f6276adb32f7115a77d2d0",
+    "independent_candidate_tests_passed": 8,
+    "original_issue_387_business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "active-provenance-local-validation-20261107"
+  ],
+  "sha256": "f0fad85152146cf1a7c482bf538d10d4b15aa52fcbadf9c06edd749cce2557c4"
+}

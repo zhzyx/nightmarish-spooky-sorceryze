@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "active-provenance-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "active-work-order-provenance-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T09:18:44.536495+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "agent": {
+    "id": "codex-active-provenance-guard",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "request": "Protect active work-order provenance during commands and Git integration after real Issue387 stash loss blocked receipts",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "worker": "/root/runtime_entry_fix",
+    "original_issue": 387,
+    "original_host_pid": 28304,
+    "original_stash": "877bfa1c373847041cf4b79fc1860c2d5b4e9d3a",
+    "observation": "data-collection/active-work-order-provenance-observation-20261107.json",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "877e2e06adec564fc662b9f9cc34ef27543a8a343ff0e9e251e8314cfb6ee6af"
+}

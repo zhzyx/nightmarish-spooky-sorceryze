@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ccd60d4d94d94cc5a74838f7eb124339cc254d85",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "active-work-order-provenance-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bdbd2ec685162701d61c715e0715a0b570cd0966e8d0161650299564bd5a2251",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/423",
+    "action": "intake",
+    "detection_head": "208e6cc8fcd7072084ad2a6151a19083ab3aff4e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex:runtime_entry_fix",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "evidence": "github:zhzyx/nightmarish-spooky-sorceryze:issue:423",
+    "diagnosis": "Initial manual intake omitted the repository tenant argument; the explicit gonggong-workspace intake succeeded in the same isolated task worktree. No user task or production configuration was changed.",
+    "next_action": "Continue the independently reviewed active provenance fix and formal delivery; preserve the original failed intake incident and exact recheck.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:51:03.452396+00:00",
+    "attempted": "Explicit tenant intake succeeded after the original invocation failure.",
+    "repair_owner": "codex:runtime_entry_fix",
+    "continuable": "Implementation and isolated acceptance are continuing."
+  },
+  "occurred_at": "2026-11-07T10:25:32.863603+00:00",
+  "sha256": "8ce3ce5e7f10e2a60fdf4d8ab330098aef96e5a672c8798d4f77f64d4cfc6826"
+}

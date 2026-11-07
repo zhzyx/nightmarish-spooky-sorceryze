@@ -179,6 +179,7 @@ class AIChatDock : public EditorDock {
 	String _candidate_root() const;
 	String _workflow_root(int p_agent = -1) const;
 	bool _validate_engine_candidate(String &r_error) const;
+	bool _recover_active_provenance(String &r_error) const;
 
 	String engine_status_path;
 	String engine_log_path;
@@ -403,6 +404,7 @@ class AIChatDock : public EditorDock {
 	void _cancel_external_editor_request(const String &p_reason);
 	String pending_action;
 	String pending_command;
+	String process_guard_result_path;
 	String pending_cwd;
 	int process_timeout_seconds = 120;
 	bool pending_existed = false;
@@ -633,6 +635,7 @@ class AIChatDock : public EditorDock {
 	bool _has_unsaved_script(const String &p_path) const;
 	void _refresh_script(const String &p_path);
 	void _start_process();
+	void _cancel_process();
 	void _poll_process();
 	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
