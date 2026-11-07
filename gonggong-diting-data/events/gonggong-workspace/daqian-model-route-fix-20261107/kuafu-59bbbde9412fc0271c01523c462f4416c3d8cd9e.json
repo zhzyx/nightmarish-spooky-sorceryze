@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-59bbbde9412fc0271c01523c462f4416c3d8cd9e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-model-route-fix-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/348",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1da93799e1b157a628c6adfea4dc30a8d73944f721107e3ac77317dd2f4eb05c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/348",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/348",
+    "action": "validation",
+    "detection_head": "9cd23a8a0c02983e7c96a133c2736a0f1dc20299",
+    "context_sha256": "52ad50fe0fe9d22e8e32241d264ce0e3a9310e9ebb3d4b0bc3bba8c0294bc7f1",
+    "operator": "Sail-Li",
+    "worker": "codex-daqian-model-route-current-operator",
+    "authority_ref": "用户本聊天要求修复",
+    "evidence": "Windows 初次测试未设 PYTHONUTF8，夹具子进程 GBK 解码失败；设置 PYTHONUTF8=1 后 16/16 通过，Godot 脚本语法通过",
+    "diagnosis": "测试进程环境编码与 UTF-8 输出不匹配，非此次代码行为失败",
+    "next_action": "保留通过的 UTF-8 环境复测结果并继续正式门禁",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-06T23:05:36.470145+00:00",
+    "attempted": "使用 PYTHONUTF8=1 重新执行直接工单测试",
+    "repair_owner": "codex-daqian-model-route-current-operator",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-06T23:06:33.317706+00:00",
+  "sha256": "7fd07c9a04faf3b4a8297cd8b682e8adc40079404edf15050131400ea2ac9fbe"
+}

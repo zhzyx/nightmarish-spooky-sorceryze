@@ -238,16 +238,19 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
         )
     if result.returncode:
         detail = ""
+        error_code = ""
         try:
             envelope = json.loads(result.stdout)
             if isinstance(envelope, dict) and isinstance(envelope.get("error"), dict):
                 detail = envelope["error"].get("message") or envelope["error"].get("code") or ""
+                error_code = envelope["error"].get("code") or ""
         except Exception:
             pass
         if not detail:
             detail = (result.stderr or result.stdout or "").strip()
         raise ValueError(
             "Requirements model API failed in CLI"
+            + (" [" + error_code + "]" if error_code else "")
             + (": " + detail if detail else "")
             + "; repair the CLI login, model or native dependencies before retrying"
         )
