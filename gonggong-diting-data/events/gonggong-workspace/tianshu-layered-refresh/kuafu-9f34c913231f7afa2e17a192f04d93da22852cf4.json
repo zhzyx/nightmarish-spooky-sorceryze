@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9f34c913231f7afa2e17a192f04d93da22852cf4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-layered-refresh",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/524",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ce0aaf86057b095dfa526cd713deb702c37b86ed137fe3a4e34be204ad33944c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/524",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/528",
+    "action": "validation",
+    "detection_head": "e5ed0be0393e1a910591186f56e5206edb8df98c",
+    "context_sha256": "31dc8f25c9c3bb02b4d2ddc8d424f0e30e9b782e826f0a1a32bc04d1732aa72f",
+    "operator": "Sail-Li",
+    "worker": "codex-524",
+    "authority_ref": "Sail-Li authenticated repository writer, explicit request #524",
+    "evidence": "Windows headless graph: missing q after awaited detail and hidden endpoint cache size zero",
+    "diagnosis": "Incremental detail returned before the requested control existed. Hidden endpoints do not expose visible GraphNode slots. The old full-poll fixture had not indexed its temporary source.",
+    "next_action": "Wait for the requested detail projection, defer hidden line geometry, use an indexed legacy poll fixture, re-run native graph and private desktop UI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T20:54:59.726895+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T20:56:42.375987+00:00",
+  "sha256": "0dd1d489faebb904b469f813153b140969e83b0a7979202b31d5968f709a2f28"
+}

@@ -144,5 +144,32 @@ def daqian_scripts_builder(target, source, env):
             # Split on Unicode code points so every chunk remains valid UTF-8.
             header.write(f"static constexpr const char *daqian_{path.stem}[] = {{\n")
             for offset in range(0, len(code), 1024):
-                header.write(f'R"DAQIAN({code[offset:offset + 1024]})DAQIAN",\n')
+                header.write(f'R"DAQIAN({code[offset : offset + 1024]})DAQIAN",\n')
             header.write("nullptr,\n};\n")
+
+
+def daqian_board_builder(target, source, env):
+    """Bind the optional read-only board adapter to this editor binary."""
+    import base64
+    import hashlib
+    import io
+    import zipfile
+    from pathlib import Path
+
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        for entry in source:
+            path = Path(str(entry))
+            name = "__main__.py" if path.name == "editor_board_entry.py" else path.name
+            member = zipfile.ZipInfo(name)
+            member.compress_type = zipfile.ZIP_DEFLATED
+            member.create_system = 0
+            archive.writestr(member, path.read_text(encoding="utf-8").encode("utf-8"))
+    payload = stream.getvalue()
+    encoded = base64.b64encode(payload).decode("ascii")
+    with methods.generated_wrapper(str(target[0])) as header:
+        header.write(f'static constexpr const char daqian_board_sha256[] = "{hashlib.sha256(payload).hexdigest()}";\n')
+        header.write("static constexpr const char *daqian_board_base64[] = {\n")
+        for offset in range(0, len(encoded), 1024):
+            header.write(f'"{encoded[offset : offset + 1024]}",\n')
+        header.write("nullptr,\n};\n")

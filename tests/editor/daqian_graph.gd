@@ -112,8 +112,11 @@ func check_auto_refresh_interval(workspace) -> void:
 	check(workspace.checking and not workspace.auto_refresh_pending, "queued automatic events did not start one board read")
 	check(workspace.auto_refresh_after >= started + 300_000 and workspace.auto_refresh_after <= Time.get_ticks_msec() + 300_000, "board refresh interval was not five minutes")
 	# A matching progress notification arrives after the active snapshot started.
-	var row := {"url":"fixture-issue", "request":"fixture-request"}
+	# Exercise the legacy watcher fallback with an indexed source, as on a board read.
+	var row := {"number":91, "url":"fixture-issue", "request":"fixture-request"}
 	workspace.board.issues.append(row)
+	workspace.delta_enabled[workspace.project_mode] = false
+	workspace._index_layer(workspace.project_mode, workspace.board)
 	workspace._chat_work_event(workspace._repo(), {"actor":workspace.actor.user_id, "source_ref":row.url,
 		"source_sha256":"test-revision", "request_ref":row.request}, "fixture", "request_end", "chat", "completed")
 	workspace.board.issues.pop_back()
@@ -130,6 +133,45 @@ func check_auto_refresh_interval(workspace) -> void:
 	check(completions[0] == 3, "manual refresh was throttled")
 	workspace.refresh_finished.disconnect(completed)
 	workspace._stop_progress_watch()
+
+
+func check_detail_projection(workspace) -> void:
+	var graph = workspace.graph_script.new()
+	graph.rules = workspace.rules
+	graph.graph_layout = workspace.graph_layout
+	root.add_child(graph)
+	var plan := {"nodes":{}, "edges":[]}
+	for i in 60:
+		plan.nodes["step%d" % i] = {"kind":"text","title":"步骤","value":"正文"}
+	graph.draft = plan
+	graph.draw_graph(true)
+	check(graph.graph_projection_pending and not graph.canvas.has_node("step59"), "large detail graph was built in one frame")
+	graph.draft = {"nodes":{"replacement":{"kind":"text","title":"当前流程","value":""}}, "edges":[]}
+	graph.draw_graph(true)
+	await graph.await_graph_projection()
+	await settle_layout()
+	check(graph.canvas.has_node("replacement") and not graph.canvas.has_node("step59"), "a superseded detail projection appended stale nodes")
+	graph.draft.nodes.target = {"kind":"task","title":"后续步骤","value":""}
+	graph.draft.edges = [{"from":"replacement","to":"target","kind":"after"}]
+	graph.draw_graph()
+	await settle_layout()
+	var target := graph.canvas.get_node("target") as GraphNode
+	var wire := graph.canvas.lines[[&"replacement", 1, &"target", 1]] as Line2D
+	for hidden in [target, wire]:
+		hidden.hide()
+		graph.positions.target = target.position_offset + Vector2(70, 40)
+		target.position_offset = graph.positions.target
+		await settle_layout()
+		hidden.show()
+		await settle_layout()
+		var endpoint: Vector2 = (target.position_offset + target.get_input_port_position(1)) * graph.canvas.zoom
+		check(wire.points[-1].is_equal_approx(endpoint), "reappearing connection retained obsolete endpoint geometry")
+	var editing := graph.canvas.get_node("replacement/PlanContent") as TextEdit
+	editing.grab_focus()
+	graph.update_workflow({"phase":"bound","design":{},"item":{}}, true)
+	await graph.await_graph_projection()
+	check(editing.has_focus() and editing == graph.canvas.get_node("replacement/PlanContent") and wire == graph.canvas.lines[[&"replacement", 1, &"target", 1]], "workflow event rebuilt the editing field or its unchanged wire")
+	graph.queue_free()
 
 
 func run() -> void:
@@ -172,6 +214,7 @@ func run() -> void:
 		workspace._stop_progress_watch()
 		check(not workspace.auto_refresh_pending and not workspace.watcher_exited, "watcher reset left stale reconciliation state")
 	var graph = workspace.editor
+	await check_detail_projection(workspace)
 	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()
 	state = {"plan":{"nodes":{},"edges":[]},"revision":"0","execution_revision":"0",
@@ -283,6 +326,7 @@ func run() -> void:
 	issues[8].categories = ["bug"]
 	workspace.board = {"repo":"fixture/board","issues":issues,"verified_at":"fixture"}
 	workspace._show_board()
+	await workspace.await_board_projection()
 	await settle_layout()
 	check(workspace.issue_list.visible and workspace.issue_rows.size() == 55 and workspace.board_cards.is_empty(), "list should show the 55 issues without building hidden graph cards")
 	var sorted: Array = workspace.issue_list.get_root().get_children()
@@ -336,6 +380,14 @@ func run() -> void:
 	check(workspace.search.text.is_empty() and workspace.issue_rows[issues[0].url].visible, "Escape did not clear the search")
 	workspace.board_views.current_tab = 1
 	check(workspace.saved.board_view == 1 and not workspace.issue_list.visible, "graph preference or view visibility lost")
+	check(workspace.board_cards.size() < issues.size() and workspace.board_projection_pending, "full board built in one frame")
+	workspace.board_views.current_tab = 0
+	await workspace.await_board_projection()
+	var interrupted_count: int = workspace.board_cards.size()
+	await settle_layout()
+	check(workspace.board_cards.size() == interrupted_count, "obsolete graph projection kept building behind the list")
+	workspace.board_views.current_tab = 1
+	await workspace.await_board_projection()
 	await settle_layout()
 	check_spacing(workspace.overview, "board overview")
 	workspace.overview.zoom = 1.4
@@ -355,6 +407,11 @@ func run() -> void:
 	check(workspace.saved.positions[issues[0].url] == pinned.position_offset, "board drag was not saved")
 	check(workspace.overview.get_connection_list().size()==54,"historical dependency chain")
 	var board_wire: Line2D = workspace.overview.lines[[&"i_1", 0, &"i_2", 0]]
+	var retained_card: int = workspace.overview.get_node("i_1").get_instance_id()
+	issues[17].title += "（已修订）"
+	workspace._draw_board()
+	await workspace.await_board_projection()
+	check(workspace.overview.get_node("i_1").get_instance_id() == retained_card and workspace.overview.lines[[&"i_1", 0, &"i_2", 0]] == board_wire, "one changed issue recreated unrelated cards or wires")
 	check(board_wire.material == workspace.overview.materials.running, "board dependency flows toward active Issue")
 	check(workspace.overview.get_node("i_3").get_meta("flow_state") == "closed", "closed Issue kept open status")
 	workspace.search.text = "#50"
@@ -379,6 +436,7 @@ func run() -> void:
 		await create_timer(0.025).timeout
 		if workspace.project_mode:
 			break
+	await workspace.await_board_projection()
 	check(workspace.project_mode and workspace.board_cards.size() == 3 and workspace.creator_sections.size() == 2 and workspace.overview.has_node("i_901"), "project board missed paginated non-personal issue or included PR")
 	workspace.overview.zoom = 0.04
 	await settle_layout()
@@ -416,6 +474,8 @@ func run() -> void:
 		workspace.board_views.current_tab = 1
 		await settle_layout()
 	await workspace._set_project(false)
+	await workspace.await_board_projection()
+	await settle_layout()
 	var resize_card = workspace.overview.get_node("i_5")
 	var before_rect := Rect2(resize_card.position_offset, resize_card.size)
 	workspace.overview.zoom = 1.0
@@ -547,6 +607,12 @@ func run() -> void:
 		access_file.store_string("overlap")
 		access_file.close()
 		var sync_dir: String = access_path.get_base_dir()
+		# A warm project layer is immediately available, without starting a source read.
+		await workspace._set_project(true)
+		check(workspace.project_mode and not FileAccess.file_exists(sync_dir.path_join("project-reading")), "cached project triggered another full read")
+		await workspace._set_project(false)
+		# Force cold discovery to exercise the overlapping responses below.
+		workspace.project_snapshot = {}
 		workspace._set_project(true)
 		await await_fixture_file(sync_dir.path_join("project-reading"))
 		workspace.refresh()
@@ -570,7 +636,8 @@ func run() -> void:
 		check(workspace.issue_rows[url].get_instance_id() == row_id and is_same(workspace.issue_rows[url].get_metadata(0), workspace.board.issues[0]), "identical refresh replaced a list row or detached its issue dictionary")
 		workspace.board.issues[0].title = "stale fixture"
 		await workspace.refresh()
-		check(workspace.issue_rows[url].get_instance_id() != row_id and workspace.issue_rows[url].get_text(1) != "stale fixture", "changed board missed a redraw")
+		await workspace.await_board_projection()
+		check(workspace.issue_rows[url].get_instance_id() == row_id and workspace.issue_rows[url].get_text(1) != "stale fixture", "changed board replaced its row or displayed stale data")
 		workspace.board_views.current_tab = 1
 		await settle_layout()
 		for query in ["P", "Pr", "#pr "]:
