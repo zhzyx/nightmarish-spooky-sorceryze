@@ -1064,6 +1064,13 @@ func _show_board() -> void:
 
 
 func _draw_board() -> void:
+	# Returning to the overview rebuilds it from the latest board snapshot.
+	if not current.is_empty():
+		var pending_count := 0
+		for item in board.get("issues", []):
+			pending_count += _pending_action_count(item)
+		_update_dock_title(pending_count)
+		return
 	board_cards.clear()
 	creator_sections.clear()
 	creator_rows.clear()
@@ -1153,9 +1160,7 @@ func _draw_board() -> void:
 	pending_menu.disabled = waiting_inputs == 0
 	pending_menu.flat = waiting_inputs == 0
 	pending_menu.icon = get_theme_icon("Notification", "EditorIcons") if waiting_inputs > 0 else null
-	var dock := get_parent() as EditorDock
-	if dock:
-		dock.title = "天枢" if waiting_inputs == 0 else "天枢 (%d)" % waiting_inputs
+	_update_dock_title(waiting_inputs)
 	_zoom_detail(true)
 	_layout_board()
 	_fill_filter(status, statuses)
@@ -1163,6 +1168,12 @@ func _draw_board() -> void:
 	_filter_board()
 	if current.is_empty():
 		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
+
+
+func _update_dock_title(waiting_inputs: int) -> void:
+	var dock := get_parent() as EditorDock
+	if dock:
+		dock.title = "天枢" if waiting_inputs == 0 else "天枢 (%d)" % waiting_inputs
 
 
 func _creator(item: Dictionary) -> String:
@@ -1795,6 +1806,12 @@ func _process(_delta: float) -> void:
 		_zoom_detail()
 	_check_canvas_zoom()
 	if watcher.is_empty():
+		return
+	if not OS.is_process_running(watcher.pid):
+		# A closed Windows pipe reports an engine error on every length query.
+		# The next board read can attach a new watcher; its ready event reconciles missed changes.
+		watcher = {}
+		watcher_buffer = ""
 		return
 	var stream: FileAccess = watcher.stdio
 	var size := stream.get_length()

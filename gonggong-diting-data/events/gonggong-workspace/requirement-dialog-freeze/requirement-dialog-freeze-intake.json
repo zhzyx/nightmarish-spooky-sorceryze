@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "requirement-dialog-freeze-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-dialog-freeze",
+  "kind": "request",
+  "occurred_at": "2026-11-07T18:10:32.977506+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/497",
+  "agent": {
+    "id": "codex-497",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Diagnose and repair requirement creation responsiveness",
+    "design_document": "design-docs/requirement-dialog-freeze.md"
+  },
+  "evidence_refs": [],
+  "sha256": "7307af39a45cfd7ef6bddbf87af200d5bda0273cd29f796a1fddfa7bafe91bac"
+}
