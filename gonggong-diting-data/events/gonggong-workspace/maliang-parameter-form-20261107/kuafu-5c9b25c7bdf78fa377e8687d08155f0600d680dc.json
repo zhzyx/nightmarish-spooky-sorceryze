@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5c9b25c7bdf78fa377e8687d08155f0600d680dc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-parameter-form-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/413",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f6db22172a0aa81c6a45b5144bb9116477e89c23cfd91542d9bbbdaedbeeb0f9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/413",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/415",
+    "action": "delivery",
+    "detection_head": "1d080f6554668b720347bfcd222e527a9a7541f3",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-side-host",
+    "authority_ref": "codex:side-user:20261107:maliang-parameter-form",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/416",
+    "diagnosis": "The first submission failed during a GitHub connection operation before any commit was created. Retrying the same staged candidate recovered: formal gate and committed-data verification passed and the signed PR416 was created. Static and Issue checks passed. Product review remains a separate prerequisite because this side-conversation prohibits sub-agents.",
+    "next_action": "Keep the corrected final candidate pending independent product review; preserve the main conversation editor and activation state.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T07:50:49.606698+00:00",
+    "attempted": null,
+    "repair_owner": "codex-side-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T07:55:38.771354+00:00",
+  "sha256": "833cb9b5b063a3a5aef15eb952eed428914b2f0dc287c3cee0b4ccbf98962923"
+}

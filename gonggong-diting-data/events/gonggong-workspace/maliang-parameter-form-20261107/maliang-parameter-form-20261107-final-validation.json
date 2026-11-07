@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-parameter-form-20261107-final-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-parameter-form-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T07:56:07.263221+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/413",
+  "agent": {
+    "id": "codex-side-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "state": "business_checks_passed_review_pending",
+    "issue_number": 413,
+    "validation_ref": "data-collection/maliang-parameter-form-20261107-final-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "c89418f28827f443e051fadcac515e9d91fc961a8d6314c17e9d8d93148366b6"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-parameter-form-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-parameter-form-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T07:50:30.750358+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/413",
+  "agent": {
+    "id": "codex-side-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Replace default raw parameter JSON with type-aware prompt and numeric forms; keep raw parameters under explicit local developer mode",
+    "authorization_ref": "codex:side-user:20261107:maliang-parameter-form:落地",
+    "state": "in_progress",
+    "usage": null,
+    "dispatch_scope": "Single side-conversation implementation; no sub-agents permitted or used"
+  },
+  "evidence_refs": [],
+  "sha256": "f9b07a74c04de99854406285ada63558773eecca7547f54d1ac99eb2fd6d1730"
+}

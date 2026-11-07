@@ -10,6 +10,8 @@ var source_edit: LineEdit
 var context_edit: LineEdit
 var text_edit: TextEdit
 var params_edit: TextEdit
+var parameter_form: VBoxContainer
+var developer_mode: CheckButton
 var python_edit: LineEdit
 var host_edit: LineEdit
 var factory_edit: LineEdit
@@ -63,6 +65,20 @@ var workflow_menu: MenuButton
 var workflow_dialog: ConfirmationDialog
 var workflow_mode = ""
 var inspector_fields: VBoxContainer
+var service_choice: OptionButton
+var endpoint_edit: LineEdit
+var image_model_choice: OptionButton
+var mesh_model_choice: OptionButton
+var service_status: Label
+var service_capability_labels: Dictionary = {}
+var service_config_path = ""
+var service_saved: Dictionary = {}
+var service_report: Dictionary = {}
+var service_report_draft = ""
+var service_config_link: Button
+var service_fields: VBoxContainer
+var service_advanced: VBoxContainer
+var service_ui_loading = false
 const CONTEXT_ADD = 1
 const CONTEXT_RUN = 2
 const CONTEXT_PREVIEW = 3
@@ -132,14 +148,28 @@ func _ready():
 	var machine = VBoxContainer.new()
 	machine.name = 'AINativeLocalSettings'
 	content.add_child(machine)
-	var default_python = 'python' if OS.get_name()=='Windows' or not builtin else 'python3'
+	var default_python = _default_python_path(builtin)
 	var bundled_host = str(get_meta('ainative_tools_dir','')).path_join('editor_host.py') if builtin else ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")
 	var configured_host = bundled_host if builtin and settings.get_value('host','use_bundled_script',true) else settings.get_value('host','script',bundled_host)
-	python_edit = line(machine, "本机 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
-	host_edit = line(machine, "本机 editor_host.py 路径", configured_host)
-	factory_edit = line(machine, "本机生成服务入口", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
-	button(machine, "保存本机设置", save_settings)
+	_setup_service_controls(machine, settings)
+	service_advanced = VBoxContainer.new()
+	machine.add_child(service_advanced)
+	service_advanced.hide()
+	button(machine, "高级运行环境与旧配置", func(): service_advanced.visible = not service_advanced.visible)
+	python_edit = line(service_advanced, "本机 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
+	host_edit = line(service_advanced, "本机 editor_host.py 路径", configured_host)
+	factory_edit = line(service_advanced, "旧生成服务入口（兼容已有配置）", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
+	button(service_advanced, "保存高级运行环境", save_settings)
 	button(machine, "打开本机诊断日志", open_diagnostics)
+	_restore_service_settings(settings)
+	factory_edit.text_changed.connect(_legacy_factory_changed)
+	developer_mode = CheckButton.new()
+	developer_mode.text = "开发者模式"
+	developer_mode.button_pressed = settings.get_value("interface", "developer_mode", false)
+	machine.add_child(developer_mode)
+	developer_mode.toggled.connect(func(enabled):
+		if parameter_form != null: parameter_form.set_developer_mode(enabled)
+	)
 	var character_panel = preload('res://addons/ainative/character_panel.gd').new()
 	content.add_child(character_panel)
 	character_panel.initialize(self)
@@ -218,10 +248,10 @@ func _ready():
 	text_edit.placeholder_text = "文字说明（请勿填写凭据）"
 	text_edit.custom_minimum_size.y = 65
 	inspector.add_child(text_edit)
-	params_edit = TextEdit.new()
-	params_edit.placeholder_text = '参数 JSON：{"delay":2,"fail":false}'
-	params_edit.custom_minimum_size.y = 55
-	inspector.add_child(params_edit)
+	parameter_form = preload("res://addons/ainative/parameter_form.gd").new()
+	inspector.add_child(parameter_form)
+	params_edit = parameter_form.raw_edit
+	parameter_form.set_developer_mode(developer_mode.button_pressed)
 	button(inspector, "应用到选中节点", apply_fields)
 	button(inspector, "清除内嵌源文件和参考图像", clear_embedded)
 	button(inspector, "运行并预览选中节点", func(): run_node_preview(selected_id))
@@ -301,8 +331,10 @@ func _ready():
 	add_child(dialog)
 	dialog.confirmed.connect(confirm_publish)
 	status = Label.new()
-	status.text = "可使用离线复制演示或 ComfyUI 生成；真实生成需要先配置本机服务。"
+	status.text = "右键节点运行；真实生成请先在“本机设置”连接服务并选择模型。"
 	content.add_child(status)
+	service_config_link = button(self, "配置生成服务", open_service_settings)
+	service_config_link.hide()
 	if builtin:
 		native_sections = {'machine':machine,'character':character_panel,'advanced':advanced,'title':diagnostics_title,'bar':bar,'split':split,'publish':publish_bar}
 		status.reparent(self)
@@ -332,11 +364,14 @@ func show_native_section(section: String):
 
 func save_settings():
 	var c = ConfigFile.new()
+	c.load(state_dir.path_join("local.cfg"))
 	c.set_value("host", "python", python_edit.text)
 	var bundled = get_meta('ainative_builtin',false) and host_edit.text==str(get_meta('ainative_tools_dir','')).path_join('editor_host.py')
 	c.set_value('host','use_bundled_script',bundled)
 	if not bundled: c.set_value("host", "script", host_edit.text)
 	c.set_value("host", "factory", factory_edit.text)
+	c.set_value("interface", "developer_mode", developer_mode.button_pressed)
+	if _using_legacy_service(): c.set_value("service", "mode", "legacy")
 	c.save(state_dir.path_join("local.cfg"))
 
 func diagnostic_error(summary: String, raw_details) -> String:
@@ -362,7 +397,7 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	nodes.append({"id": id, "type": kind, "version": "1", "provider": "comfy", "source": "", "image_context": "", "text": "", "parameters": {"prompt": "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
+	nodes.append({"id": id, "type": kind, "version": "1", "provider": "comfy", "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
 	rebuild()
 	select_node(id)
 
@@ -400,7 +435,7 @@ func select_node(id: String):
 			source_edit.text = data.source
 			context_edit.text = data.image_context
 			text_edit.text = data.text
-			params_edit.text = JSON.stringify(data.parameters)
+			parameter_form.configure(data.get("type", "copy"), data.parameters)
 	refresh_history()
 	if changed:
 		clear_preview()
@@ -408,9 +443,9 @@ func select_node(id: String):
 			show_history(preview_history[id].size() - 1)
 
 func apply_fields() -> bool:
-	var params = JSON.parse_string(params_edit.text)
+	var params = parameter_form.parameters()
 	if not params is Dictionary or not safe(params):
-		status.text = "参数无效，或含有禁止填写的凭据字段"
+		status.text = parameter_form.error_label.text if not params is Dictionary else "参数含有禁止填写的凭据字段"
 		return false
 	for data in nodes:
 		if data.id == selected_id:
@@ -456,6 +491,7 @@ func delete_node():
 	nodes = nodes.filter(func(n): return n.id != selected_id)
 	edges = edges.filter(func(e): return e.from != selected_id and e.to != selected_id)
 	selected_id = ""
+	parameter_form.configure("copy", {})
 	refresh_history()
 	rebuild()
 
@@ -494,7 +530,7 @@ func save_graph():
 	if f == null:
 		status.text = "无法保存工作流"
 		return
-	f.store_string(JSON.stringify(portable, "\t"))
+	f.store_string(JSON.stringify(portable, "\t", true, true))
 	f.flush()
 	var failed = f.get_error() != OK
 	f.close()
@@ -563,7 +599,12 @@ func run_node_preview(id: String):
 		return
 	if id.is_empty() or nodes.filter(func(n): return n.id == id).is_empty(): return
 	if not apply_fields(): return
+	var blocker = node_run_blocker(id)
+	if not blocker.is_empty():
+		_show_run_problem(blocker)
+		return
 	if selected_id != id: select_node(id)
+	if service_config_link != null: service_config_link.hide()
 	preview_target = id
 	current = {}
 	preview_token = ""
@@ -575,6 +616,12 @@ func run_node_preview(id: String):
 
 func start_run():
 	if creating or auto_step or not jobs.is_empty() or not apply_fields(): return
+	for data in nodes:
+		var blocker = node_run_blocker(data.id)
+		if not blocker.is_empty():
+			_show_run_problem(blocker)
+			return
+	if service_config_link != null: service_config_link.hide()
 	preview_target = ""
 	current = {}
 	preview_token = ""
@@ -605,14 +652,33 @@ func retry_node():
 	if run_id != "": launch("retry", {"run": run_id, "node": selected_id})
 
 func launch(command: String, spec: Dictionary):
+	# Empty executable paths abort on macOS before a child process can report an error.
+	# Reject them before writing a request or calling the operating system.
+	if python_edit.text.strip_edges().is_empty() or host_edit.text.strip_edges().is_empty():
+		var message = "运行环境为空。请在本机设置的高级运行环境中选择已安装的 Python 3.11 或更高版本。" if python_edit.text.strip_edges().is_empty() else "运行工具路径为空。请在本机设置的高级运行环境中恢复内置工具路径。"
+		_show_run_problem(message)
+		auto_step = false
+		creating = false
+		preview_target = ""
+		return
 	serial += 1
 	var prefix = state_dir.path_join(str(OS.get_process_id()) + "-" + str(serial))
 	var f = FileAccess.open(prefix + ".json", FileAccess.WRITE)
-	f.store_string(JSON.stringify(spec))
+	if f == null:
+		_show_run_problem("无法写入本机运行请求，请检查用户目录是否可写。")
+		auto_step = false
+		if command == "create":
+			creating = false
+			preview_target = ""
+		return
+	f.store_string(JSON.stringify(spec, "", true, true))
 	f.close()
-	var pid = OS.create_process(python_edit.text, PackedStringArray([host_edit.text, command, "--db", db, "--factory", factory_edit.text, "--spec", prefix + ".json", "--result", prefix + ".result"]))
+	var arguments = PackedStringArray([host_edit.text, command, "--db", db, "--factory", factory_edit.text, "--spec", prefix + ".json", "--result", prefix + ".result"])
+	if command in ["create", "step"] and _uses_gui_service():
+		arguments.append_array(PackedStringArray(["--service-config", service_config_path]))
+	var pid = OS.create_process(python_edit.text, arguments)
 	if pid < 0:
-		status.text = "无法启动本机 Python 服务"
+		_show_run_problem("无法启动本机运行环境。请在本机设置中选择已安装的 Python 3.11 或更高版本。")
 		auto_step = false
 		if command == "create":
 			creating = false
@@ -630,14 +696,21 @@ func _process(_delta):
 		DirAccess.remove_absolute(job.prefix + ".json")
 		DirAccess.remove_absolute(job.prefix + ".result")
 		if not result is Dictionary or not result.get("ok", false):
-			status.text = "操作失败：" + {"create":"创建运行", "step":"执行节点", "cancel":"取消运行", "retry":"重试节点", "preview":"加载预览", "publish":"发布文件", "status":"查询状态"}.get(job.command,job.command) + "（源文件未改动）"
+			var message = str(result.get("message", "")) if result is Dictionary else ""
+			if message.is_empty():
+				message = "本机运行环境未返回有效结果。请确认 Python 3.11 或更高版本可用，并检查本机设置。"
+			var details: Dictionary = result.get("diagnostic", {}) if result is Dictionary else {"code":"host_result_missing"}
+			_show_run_problem(diagnostic_error("操作失败：" + message, details))
+			if job.command == "service-check": service_status.text = message
 			auto_step = false
 			if job.command == "create":
 				creating = false
 				preview_target = ""
 			continue
 		var data = result.result
-		if job.command == "create":
+		if job.command == "service-check":
+			_apply_service_check(data, job.spec.service)
+		elif job.command == "create":
 			creating = false
 			run_id = data.run_id
 			var f = FileAccess.open(state_dir.path_join("last_run.txt"), FileAccess.WRITE)
@@ -695,7 +768,7 @@ func remember_preview(data: Dictionary, node_id: String, result_run: String):
 		var entry = data.duplicate(true)
 		entry["run"] = result_run
 		entry["node"] = node_id
-		entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ")
+		entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ", true, true)
 		history.append(entry)
 		preview_history[node_id] = history
 	if node_id == selected_id: refresh_history()
@@ -844,13 +917,13 @@ func _node_at_context(point: Vector2) -> String:
 	return ""
 
 func _remember_context():
-	context_model = JSON.stringify(model())
+	context_model = JSON.stringify(model(), "", true, true)
 	context_run = run_id
 	context_selection = _graph_selected_ids()
 	context_inspected_id = selected_id
 
 func _context_is_current() -> bool:
-	if context_model.is_empty() or context_model != JSON.stringify(model()) or context_run != run_id or context_inspected_id != selected_id or context_selection != _graph_selected_ids():
+	if context_model.is_empty() or context_model != JSON.stringify(model(), "", true, true) or context_run != run_id or context_inspected_id != selected_id or context_selection != _graph_selected_ids():
 		status.text = "编辑内容或运行已变化，请重新打开右键菜单"
 		return false
 	for id in context_node_ids:
@@ -896,6 +969,8 @@ func node_run_blocker(id: String) -> String:
 			return "请先填写生成提示词（" + str(next_id) + "）"
 		if not data.get("image_context", "").is_empty() and not FileAccess.file_exists(data.image_context):
 			return "参考图像不存在（" + str(next_id) + "）"
+		var service_reason = _service_blocker(kind, data)
+		if not service_reason.is_empty(): return service_reason
 	return ""
 
 func _retry_blocker(id: String) -> String:
@@ -989,7 +1064,8 @@ func _context_action(action: int):
 				status.text = "在预览历史子菜单或右侧版本列表选择结果"
 		CONTEXT_EDIT:
 			if context_node_ids.size() == 1:
-				text_edit.grab_focus()
+				if parameter_form.prompt_edit.is_visible_in_tree(): parameter_form.prompt_edit.grab_focus()
+				else: text_edit.grab_focus()
 				status.text = "在右侧编辑提示词与参数，完成后右键选择“运行并预览”"
 		CONTEXT_RETRY:
 			if context_node_ids.size() == 1:
@@ -1040,7 +1116,7 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else "comfy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else "comfy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
@@ -1094,7 +1170,7 @@ func delete_context_nodes():
 		source_edit.text = ""
 		context_edit.text = ""
 		text_edit.text = ""
-		params_edit.text = "{}"
+		parameter_form.configure("copy", {})
 		refresh_history()
 	rebuild()
 	status.text = "已删除 " + str(removed.size()) + " 个节点及关联连接"
@@ -1139,3 +1215,258 @@ func _workflow_action(action: int):
 func _workflow_confirmed():
 	if workflow_mode == "save": save_graph()
 	elif workflow_mode == "open": open_graph()
+
+func _default_python_path(builtin: bool) -> String:
+	if OS.get_name() == "Windows": return "python"
+	if builtin and OS.get_name() == "macOS":
+		var home = OS.get_environment("HOME")
+		for candidate in [home.path_join(".local/bin/python3.12"), "/opt/homebrew/bin/python3.13", "/opt/homebrew/bin/python3.12", "/usr/local/bin/python3.12"]:
+			if FileAccess.file_exists(candidate): return candidate
+	return "python3"
+
+func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
+	service_config_path = state_dir.path_join("generation-service.json")
+	service_fields = VBoxContainer.new()
+	machine.add_child(service_fields)
+	var title = Label.new()
+	title.text = "生成服务"
+	service_fields.add_child(title)
+	service_choice = OptionButton.new()
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"]]:
+		service_choice.add_item(choice[1])
+		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
+	service_fields.add_child(service_choice)
+	endpoint_edit = line(service_fields, "生成服务地址，如 http://127.0.0.1:8188", "http://127.0.0.1:8188")
+	var image_label = Label.new()
+	image_label.text = "图像模型"
+	service_fields.add_child(image_label)
+	image_model_choice = OptionButton.new()
+	image_model_choice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	service_fields.add_child(image_model_choice)
+	var mesh_label = Label.new()
+	mesh_label.text = "网格模型"
+	service_fields.add_child(mesh_label)
+	mesh_model_choice = OptionButton.new()
+	mesh_model_choice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	service_fields.add_child(mesh_model_choice)
+	_set_model_options(image_model_choice, [], "", false)
+	_set_model_options(mesh_model_choice, [], "", false)
+	var actions = HFlowContainer.new()
+	service_fields.add_child(actions)
+	button(actions, "检测连接与模型", check_service)
+	button(actions, "保存生成服务设置", save_service_settings)
+	service_status = Label.new()
+	service_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	service_status.text = "离线复制可用；真实生成需要运行中的服务和已安装的模型。"
+	service_fields.add_child(service_status)
+	for kind in NODE_KINDS:
+		var label = Label.new()
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		service_capability_labels[kind] = label
+		service_fields.add_child(label)
+	var guide = Label.new()
+	guide.text = "请先启动你已有的 ComfyUI 服务，再填写地址并检测。检测只查询连接、节点和模型列表，不生成内容、不下载模型。检测后选择模型并保存；图像生成网格需要源图与网格模型；填写可选重绘提示词后还需要图像模型。文字生成网格需要两类模型。"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	service_fields.add_child(guide)
+	service_choice.item_selected.connect(func(_index): _service_settings_changed())
+	endpoint_edit.text_changed.connect(func(_text): _service_settings_changed())
+	image_model_choice.item_selected.connect(func(_index): _service_settings_changed())
+	mesh_model_choice.item_selected.connect(func(_index): _service_settings_changed())
+	if settings.get_value("service", "mode", "") == "legacy": service_choice.select(2)
+
+func _restore_service_settings(settings: ConfigFile):
+	service_ui_loading = true
+	if FileAccess.file_exists(service_config_path):
+		var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_config_path))
+		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy"]:
+			service_saved = {"schema_version":1, "mode":loaded.mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
+			service_choice.select(1 if service_saved.mode == "comfy" else 0)
+			endpoint_edit.text = service_saved.endpoint
+			_set_model_options(image_model_choice, [], service_saved.image_model, false)
+			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
+		else:
+			service_status.text = "已保存的生成服务设置无效。请重新选择服务、检测并保存。"
+	if settings.get_value("service", "mode", "") == "legacy" or not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"] or (service_saved.is_empty() and OS.has_environment("AINATIVE_COMFY_CONFIG")):
+		service_choice.select(2)
+		if OS.has_environment("AINATIVE_COMFY_CONFIG") and factory_edit.text == "editor_demo:factory": factory_edit.text = "comfy_provider:factory"
+	service_ui_loading = false
+	_update_service_summary()
+
+func _service_mode() -> String:
+	if service_choice == null or service_choice.selected < 0: return "offline"
+	return str(service_choice.get_item_metadata(service_choice.selected))
+
+func _model_name(choice: OptionButton) -> String:
+	if choice.selected < 0: return ""
+	return str(choice.get_item_metadata(choice.selected))
+
+func service_draft() -> Dictionary:
+	return {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+
+func _set_model_options(choice: OptionButton, names: Array, selected_name: String, detected: bool):
+	choice.clear()
+	choice.add_item("请选择已安装模型" if detected else "请先检测模型")
+	choice.set_item_metadata(0, "")
+	var chosen = 0
+	for name in names:
+		choice.add_item(str(name))
+		choice.set_item_metadata(choice.item_count - 1, str(name))
+		if str(name) == selected_name: chosen = choice.item_count - 1
+	if not selected_name.is_empty() and chosen == 0:
+		choice.add_item(selected_name + ("（当前服务未提供）" if detected else "（已保存，待检测）"))
+		choice.set_item_metadata(choice.item_count - 1, selected_name)
+		chosen = choice.item_count - 1
+	choice.select(chosen)
+
+func _service_settings_changed():
+	if service_ui_loading: return
+	service_report = {}
+	service_report_draft = ""
+	_update_service_summary()
+
+func _update_service_summary():
+	if service_choice == null: return
+	var mode = _service_mode()
+	endpoint_edit.editable = mode == "comfy"
+	image_model_choice.disabled = mode != "comfy"
+	mesh_model_choice.disabled = mode != "comfy"
+	if mode == "offline":
+		service_status.text = "当前为离线复制演示；不提供图像或网格生成。选择 ComfyUI 并连接真实服务后才能生成。"
+	elif mode == "legacy":
+		service_status.text = "正在兼容已有的高级服务配置。新用户请使用 ComfyUI 选项完成界面配置。"
+	elif service_report.is_empty():
+		service_status.text = "已恢复服务设置，待检测；运行前会检查连接与模型。" if service_draft() == service_saved else "服务设置尚未保存。请检测连接、选择模型，再保存。"
+	for kind in service_capability_labels:
+		var label: Label = service_capability_labels[kind]
+		if kind == "copy": label.text = node_label(kind) + "：可用，不调用模型"
+		elif mode == "offline": label.text = node_label(kind) + "：不可用，尚未连接真实生成服务"
+		elif mode == "legacy": label.text = node_label(kind) + "：由已有高级配置检查"
+		else: label.text = node_label(kind) + "：待检测"
+
+func _using_legacy_service() -> bool:
+	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
+
+func _uses_gui_service() -> bool:
+	return not _using_legacy_service() and not service_saved.is_empty() and FileAccess.file_exists(service_config_path)
+
+func save_service_settings():
+	if is_graph_busy():
+		_show_run_problem("请等待当前操作结束或取消后，再保存生成服务设置。")
+		return
+	if _service_mode() == "legacy":
+		save_settings()
+		var legacy = ConfigFile.new()
+		legacy.load(state_dir.path_join("local.cfg"))
+		legacy.set_value("service", "mode", "legacy")
+		if legacy.save(state_dir.path_join("local.cfg")) != OK:
+			_show_run_problem("无法保存本机设置，请检查本机用户目录是否可写。")
+			return
+		service_status.text = "已保存旧配置兼容模式。已有服务仍由其高级配置提供。"
+		return
+	var draft = service_draft()
+	if draft.mode == "comfy" and not _valid_service_endpoint(draft.endpoint):
+		_show_run_problem("服务地址应为 http:// 或 https:// 加主机与端口，不可包含账号、密码、查询参数或路径。请修正后重新检测。")
+		return
+	var temporary = service_config_path + ".tmp-" + str(Time.get_ticks_usec())
+	var output = FileAccess.open(temporary, FileAccess.WRITE)
+	if output == null:
+		_show_run_problem("无法保存生成服务设置，请检查本机用户目录是否可写。")
+		return
+	output.store_string(JSON.stringify(draft, "  "))
+	output.flush()
+	var write_error = output.get_error()
+	output.close()
+	if write_error != OK or DirAccess.rename_absolute(temporary, service_config_path) != OK:
+		DirAccess.remove_absolute(temporary)
+		_show_run_problem("无法替换生成服务设置，已保留上一次配置。")
+		return
+	service_saved = draft.duplicate(true)
+	# An explicit GUI save chooses this service over legacy host configuration.
+	factory_edit.text = "editor_demo:factory"
+	save_settings()
+	var local = ConfigFile.new()
+	local.load(state_dir.path_join("local.cfg"))
+	local.set_value("service", "mode", draft.mode)
+	if local.save(state_dir.path_join("local.cfg")) != OK:
+		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
+		return
+	_update_service_summary()
+	service_status.text = "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	if status != null: status.text = service_status.text
+	if service_config_link != null: service_config_link.hide()
+
+func check_service():
+	if is_graph_busy():
+		_show_run_problem("正在处理其他操作，请结束后再检测生成服务。")
+		return
+	if _service_mode() == "legacy":
+		service_status.text = "旧配置由原服务适配器检查。选择 ComfyUI 可在本界面检测地址与模型。"
+		return
+	service_status.text = "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
+	launch("service-check", {"service":service_draft()})
+
+func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
+	if checked_draft != service_draft():
+		service_status.text = "检测期间设置已改变，请重新检测当前设置。"
+		return
+	service_ui_loading = true
+	var models: Dictionary = data.get("models", {})
+	_set_model_options(image_model_choice, models.get("image", []), checked_draft.image_model, true)
+	_set_model_options(mesh_model_choice, models.get("mesh", []), checked_draft.mesh_model, true)
+	service_report = data.duplicate(true)
+	service_report_draft = JSON.stringify(service_draft())
+	service_ui_loading = false
+	_update_service_summary()
+	service_status.text = str(data.get("message", "检测完成，请查看各类能力状态。"))
+	for kind in service_capability_labels:
+		if kind == "copy": continue
+		var capability: Dictionary = data.get("capabilities", {}).get(kind, {})
+		service_capability_labels[kind].text = node_label(kind) + "：" + ("就绪" if capability.get("ready", false) else "不可用") + " · " + str(capability.get("message", "服务未提供该能力"))
+	if status != null: status.text = service_status.text
+
+func _service_blocker(kind: String, data: Dictionary = {}) -> String:
+	if kind == "copy" or _using_legacy_service(): return ""
+	if _service_mode() != "comfy":
+		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
+	if service_saved.is_empty() or service_draft() != service_saved:
+		return "生成服务设置尚未保存。请在本机设置中检测连接、选择模型并保存。"
+	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
+	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty()
+	if (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
+		return "该节点的图像重绘需要图像模型，请检测模型并保存选择。" if redraw else "尚未选择图像模型，请检测当前服务中的模型并保存选择。"
+	if kind.ends_with("mesh") and service_saved.mesh_model.is_empty():
+		return "尚未选择网格模型，请检测当前服务中的模型并保存选择。"
+	if not service_report.is_empty() and service_report_draft == JSON.stringify(service_draft()):
+		if redraw:
+			var image_capability: Dictionary = service_report.get("variants", {}).get("image_to_mesh_redraw", service_report.get("capabilities", {}).get("image_to_image", {}))
+			if not image_capability.get("ready", false): return "该节点需要先重绘图像：" + str(image_capability.get("message", "当前服务的图像生成能力尚未就绪"))
+		var capability: Dictionary = service_report.get("capabilities", {}).get(kind, {})
+		if not capability.get("ready", false): return str(capability.get("message", "当前服务不具备该节点所需能力，请重新检测并修正设置。"))
+	return ""
+
+func _show_run_problem(message: String):
+	if status != null: status.text = message
+	if service_config_link != null: service_config_link.show()
+
+func open_service_settings():
+	if not native_sections.is_empty(): show_native_section("settings")
+	elif service_fields != null:
+		var current_parent: Node = service_fields
+		while current_parent != self and current_parent != null:
+			if current_parent is Control: current_parent.show()
+			current_parent = current_parent.get_parent()
+	if service_choice != null: service_choice.grab_focus()
+
+func _valid_service_endpoint(value: String) -> bool:
+	var pattern = RegEx.new()
+	pattern.compile("^https?://(\\[[0-9a-fA-F:]+\\]|[A-Za-z0-9.-]+)(:([0-9]{1,5}))?/?$")
+	var result = pattern.search(value)
+	if result == null: return false
+	var port = result.get_string(3)
+	return port.is_empty() or (port.to_int() > 0 and port.to_int() <= 65535)
+
+func _legacy_factory_changed(_text: String):
+	if service_ui_loading: return
+	if not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"]:
+		service_choice.select(2)
+		_service_settings_changed()

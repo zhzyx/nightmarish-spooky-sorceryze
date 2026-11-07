@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-generation-service-setup-bug-20261107-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-generation-service-setup-bug-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T08:21:32.957304+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/414",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 414,
+    "related_issue_number": 413,
+    "state": "partial_acceptance",
+    "validation_ref": "data-collection/maliang-generation-service-setup-bug-20261107-validation.json",
+    "validation_sha256": "3943a5ac88a575ffa78852032018ec1fb6f66e32124edb11f2dc1276bf5df56d",
+    "real_inference": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "61416b9703545653668eee439c204be43e8df105959bd022b493c37635a54d3d"
+}
