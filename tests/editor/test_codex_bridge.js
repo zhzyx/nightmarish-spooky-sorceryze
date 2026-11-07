@@ -169,6 +169,11 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"中文回复","actions":[]}' } },
                 { type: 'turn.completed', usage: {} },
             ], success: true },
+            { events: [
+                { type: 'error', message: 'Reconnecting... 2/5 (request timed out)' },
+                { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"中文回复","actions":[]}' } },
+                { type: 'turn.completed', usage: {} },
+            ], success: true },
             { events: [{ type: 'turn.failed', error: { message: 'authentication required' } }], success: false, exitCode: 23, errorCode: 'AUTH_REQUIRED' },
             { events: [{ type: 'error', message: 'private-token-must-not-leak' }], success: false, exitCode: 17, errorCode: 'PROCESS_EXIT' },
             { events: [{ type: 'item.completed', item: { type: 'agent_message', text: '{"content":"unfinished","actions":[]}' } }], success: false },
