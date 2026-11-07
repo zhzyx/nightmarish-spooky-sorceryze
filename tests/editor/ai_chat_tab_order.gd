@@ -15,8 +15,8 @@ func _run():
 	for index in tabs.get_tab_count():
 		labels.append(tabs.get_tab_title(index))
 	assert(tabs.get_tab_control(0) == dock, "AI Chat is not first")
-	assert(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not left of Daqian")
-	assert(labels[1] == "大千" and labels[2] == "2D", "Daqian must be between AI Chat and 2D")
+	assert(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not left of Tianshu")
+	assert(labels[1] == "天枢" and labels[2] == "2D", "Tianshu must be between AI Chat and 2D")
 	assert(labels.find("3D") > 1 and labels.find("Script") > labels.find("3D"), "Other built-in tabs changed order")
 	for index in tabs.get_tab_count():
 		tabs.set_current_tab(index)

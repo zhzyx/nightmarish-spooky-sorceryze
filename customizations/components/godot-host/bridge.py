@@ -738,7 +738,7 @@ def _issue_start(root, request, routing=None, api=None):
         if statuses == ["status:planned"] and (
             not value.get("updated_at") or request.get("expected_revision") != value["updated_at"]
         ):
-            raise ValueError("工单已更新，请刷新大千后重新确认开始")
+            raise ValueError("工单已更新，请刷新天枢后重新确认开始")
         if statuses == ["status:planned"]:
             if routing is None:
                 raise ValueError("Invalid direct Issue binding")

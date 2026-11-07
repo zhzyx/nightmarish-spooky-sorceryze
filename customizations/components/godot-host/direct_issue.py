@@ -1,4 +1,4 @@
-"""A user-confirmed Daqian draft creates one GitHub Issue and signals Sinan."""
+"""A user-confirmed Tianshu draft creates one GitHub Issue and signals Sinan."""
 import hashlib
 import json
 import os
@@ -158,7 +158,7 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
 
 def receipt_folder(root, key):
     if not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key):
-        raise ValueError("无效的大千需求标识")
+        raise ValueError("无效的天枢需求标识")
     common = subprocess.run(["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
                             text=True, capture_output=True, check=True, timeout=15).stdout.strip()
     return Path(common).parent / "data-collection/receipts/daqian-direct" / key
@@ -189,7 +189,7 @@ def create_locked(root, request, bridge, journal, saved):
         raise ValueError("当前仓库协作者与草稿账号不匹配")
     content = (f"# {fields['title']}\n\n<!-- gonggong-intake:daqian-direct -->\n\n"
                f"需求 ID：`{key}`\n\n类别：`type:{fields['category']}`\n\n"
-               f"来源：Godot 大千草稿 `{request['draft_id']}`，GitHub 用户 ID `{expected_user}`。\n\n"
+               f"来源：Godot 天枢草稿 `{request['draft_id']}`，GitHub 用户 ID `{expected_user}`。\n\n"
                "## 原始需求\n\n" + request["outcome"] + "\n")
     digest = hashlib.sha256(content.encode()).hexdigest()
     document = root / fields["document"]
@@ -228,7 +228,7 @@ def create(root, request, bridge):
     try:
         draft = request.get("draft_id")
         if not isinstance(draft, str) or not re.fullmatch(r"draft_[a-f0-9]{20}", draft):
-            raise ValueError("无效的大千草稿标识")
+            raise ValueError("无效的天枢草稿标识")
         key = "daqian-direct-" + draft[6:]
         folder = receipt_folder(root, key)
         journal = folder / "state.json"

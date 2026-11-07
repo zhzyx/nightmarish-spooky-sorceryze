@@ -474,7 +474,7 @@ func _save_connection() -> void:
 	var path := workspace_path.text.strip_edges().simplify_path()
 	var python := python_path.text.strip_edges()
 	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
-		notice.text = "请填写包含大千工单入口的共工仓库路径。"
+		notice.text = "请填写包含天枢工单入口的共工仓库路径。"
 		return
 	if not python.is_absolute_path() or not FileAccess.file_exists(python):
 		notice.text = "请填写本机 Python 可执行文件的绝对路径。"
@@ -952,7 +952,7 @@ func _draw_board() -> void:
 	pending_menu.icon = get_theme_icon("Notification", "EditorIcons") if waiting_inputs > 0 else null
 	var dock := get_parent() as EditorDock
 	if dock:
-		dock.title = "大千" if waiting_inputs == 0 else "大千 (%d)" % waiting_inputs
+		dock.title = "天枢" if waiting_inputs == 0 else "天枢 (%d)" % waiting_inputs
 	_zoom_detail()
 	_layout_board()
 	_fill_filter(status, statuses)
@@ -1392,7 +1392,7 @@ func _forget(reason: String) -> void:
 	editor.answers = {}
 	editor.draw_graph()
 	_gate_visibility(false)
-	get_parent().title = "大千"
+	get_parent().title = "天枢"
 	notice.text = reason
 
 
@@ -2681,7 +2681,7 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 	if not waiting.is_empty():
 		return {"state":"waiting", "text":"、".join(waiting), "chat_waiting":true}
 	if routing_in_flight.has(key):
-		return {"state":"running", "text":"大千宿主 · 正在核对需求判断"}
+		return {"state":"running", "text":"天枢宿主 · 正在核对需求判断"}
 	if routing_errors.has(key) and judged.is_empty():
 		return {"state":"failed", "text":"判断受阻 · " + str(routing_errors[key])}
 	if not fresh_progress and not board.is_empty():
@@ -2970,7 +2970,7 @@ func _start_debug() -> void:
 		return
 	var path := _repo().path_join("customizations/components/godot-host/daqian/debug_session.mjs")
 	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
-		notice.text = "请在「工作区连接」中绑定包含大千调试宿主的仓库。"
+		notice.text = "请在「工作区连接」中绑定包含天枢调试宿主的仓库。"
 		return
 	var settings := EditorInterface.get_editor_settings()
 	var node: String = str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""

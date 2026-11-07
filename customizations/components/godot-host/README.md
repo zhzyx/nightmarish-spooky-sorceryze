@@ -6,7 +6,7 @@
 
 首次启动带此接入的编辑器时，它用同一可执行文件和临时项目在后台实际运行 GDScript 控件探针。子进程成功退出并返回预期结果后，编辑器才在本机用户的编辑器缓存目录写入 `godot-silent-*.ok`。更换构建路径、构建版本、文件修改时间或探针内容时重新校验。失败、超时或启动中断会在下次打开时重试。修复宿主或可执行文件的 headless 支持后，应取得成功回执再使用该环境验收。
 
-探针验证后台运行能力。业务变更仍需跑对应场景。例如在仓库根运行 `python tests/editor/run_daqian_graph.py --godot <候选编辑器路径> --scenario graph --report <本机报告路径>`，检查大千入口、图交互和布局。
+探针验证后台运行能力。业务变更仍需跑对应场景。例如在仓库根运行 `python tests/editor/run_daqian_graph.py --godot <候选编辑器路径> --scenario graph --report <本机报告路径>`，检查天枢入口、图交互和布局。
 
 `bridge.py` 是唯一 Python 实现；引擎通过 `tools/gonggong_bridge.py` 调用。原生页面在 `editor/docks/gonggong_panel.*`，发送控制在 `editor/docks/ai_chat_gonggong.cpp`。
 

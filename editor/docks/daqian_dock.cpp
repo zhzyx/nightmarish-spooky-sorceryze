@@ -83,7 +83,7 @@ void install_gonggong_startup_validation(Node *p_editor) {
 EditorDock *create_daqian_dock() {
 	EditorDock *dock = memnew(EditorDock);
 	dock->set_name("Daqian");
-	dock->set_title(U"大千");
+	dock->set_title(U"天枢");
 	dock->set_layout_key("DaqianMainScreen");
 	dock->set_icon_name("GraphEdit");
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
@@ -103,7 +103,7 @@ EditorDock *create_daqian_dock() {
 	Ref<Script> models = load_editor_script(daqian_model_settings);
 	if (rules.is_null() || graph.is_null() || workspace.is_null() || models.is_null()) {
 		Label *message = memnew(Label);
-		message->set_text(U"加载大千失败，请核对编辑器的 GDScript 支持及错误日志。");
+		message->set_text(U"加载天枢失败，请核对编辑器的 GDScript 支持及错误日志。");
 		dock->add_child(message);
 		return dock;
 	}

@@ -75,7 +75,7 @@
 
 ## Codex 接续执行决定（2026-11-06）
 
-用户选择“由当前 Codex 按依赖执行，大千展示进度”。执行责任为当前 Codex 会话；大千计划、节点状态和 GitHub 工单显示实际进度，独立常驻生产宿主不作为前置。已真实登记并回读全部 GitHub blocked_by 关系及司南 gonggong-depends-on 来源标记。#142 剩余扩展契约先验收，然后依次解锁 #143、#144；有独立且已满足前置的子项才并行。仅在真实需要凭据或用户决定时通知，不因部分 PR 合入停止用户目标。
+用户选择“由当前 Codex 按依赖执行，天枢展示进度”。执行责任为当前 Codex 会话；天枢计划、节点状态和 GitHub 工单显示实际进度，独立常驻生产宿主不作为前置。已真实登记并回读全部 GitHub blocked_by 关系及司南 gonggong-depends-on 来源标记。#142 剩余扩展契约先验收，然后依次解锁 #143、#144；有独立且已满足前置的子项才并行。仅在真实需要凭据或用户决定时通知，不因部分 PR 合入停止用户目标。
 
 本次 #142 接续候选增加版本化 NodeRegistry、Provider 描述/调用/状态/输出验证及 PublishAdapter 编码与新文件原子发布契约。真实模型调用、异步持久执行器和 Godot 编辑器分别由后续子项验收。基础契约使用合成夹具验证，不将其作为真实 Unreal Engine/Mixamo 适配证明。发布回读及关单以 #142 时间线为准。
 
@@ -84,18 +84,18 @@
 | 子项 | 实际验收与交付 | 后续动作 |
 | --- | --- | --- |
 | #142 | PR #161；main 接收 fe4a8d3a80bde5413e330e9139d514103e225d81；22 项测试及独立复核通过；GitHub CLOSED / COMPLETED 已回读 | 解锁 #143 |
-| #143 | PR #162；main 接收 6e325eb90d8beda9fe84b713451b7aa30c2df623；37 项测试通过，独立审查通过；GitHub CLOSED / COMPLETED 已回读；大千保存完成回执 | 解锁 #144 |
+| #143 | PR #162；main 接收 6e325eb90d8beda9fe84b713451b7aa30c2df623；37 项测试通过，独立审查通过；GitHub CLOSED / COMPLETED 已回读；天枢保存完成回执 | 解锁 #144 |
 | #144 | PR #163；main 接收 b9433dcabe69be1a8850a42a9fe8b9234829b867；39 项 Python 测试、真实 Godot 回放和独立审查通过；GitHub CLOSED / COMPLETED 已回读 | 解锁 #145 |
-| #145 | PR #192；main 接收 f537f112ac3e8c8ed62b748f5f6fd4cf790d0867；53 项测试、四种实际生成、Godot 预览发布重载及上下文 Run 通过；独立审查、GitHub CLOSED / COMPLETED 与大千 completed 已回读 | 解锁 #146；原始 Mesh 质量限制保留 |
-| #146 | PR #198；main 接收 3003153c21cf42e865d39f06abb4115421046527；55 项测试、真实角色 18 骨蒙皮/三段 ROM/足底接触及工作台发布重开通过；GitHub CLOSED / COMPLETED 与大千 completed 已回读 | 解锁 #147；保留原始拓扑质量限制 |
-| #147 | PR #203；main 接收 4934dcd836493366c89a93078596d53f41d2c6be；58 项测试、真实三套骨架/根运动/手指/接触、完整 UI 和 Unreal Engine 回读通过；GitHub CLOSED / COMPLETED 与大千 completed 已回读 | 首版 UE4/Manny/Mixamo；Quinn 按范围决定留在 #202；解锁 #148/#149 |
-| #148 | 已交付：PR #219，main `5a42d425b976057e9c531642b1659e5e01091c30`；工单closed/completed，大千completed；65测试、12真实装配例及独立审查通过 | 生成表面层纹和裙摆蹲姿穿膝明确保留，布料碰撞由#152/#154验收 |
-| #149 | 已交付：PR #221，main `491888459dbb64c8130378d8dbb3649cc1fd6ac8`；真实CPU文字/视频生成，UE4/Manny重开204/483轨；独立审查、工单closed/completed和大千completed回读通过 | 旧缺动画场景撤销，手脸独立流及模型能力限制保留；解锁#150/#151 |
-| #150 | 已交付 PR #228，main `a61963195b3f75471be6e6a7f6ba05f6073db35d`；真实跑步、四种分层/持物模式、换装和正式面板保存重开通过；工单 closed/completed、大千 completed 已回读 | 武器/瞄准/挥剑/握姿是明确作者夹具；布料由 #152 验收 |
-| #151 | 初次交付后发现肩颈裁面缺陷，已撤回旧几何结论并经 #319 修复；PR #336，main `123e5f1e6b19d43a493e0dc71d975777402a0641`；明确拓扑遮罩、裸身真实动作、DNA/表情/换装保存重开及独立复核通过；closed/completed、大千 completed | Rain 是授权参考头部与作者绑定，非任意 AI 脸自动绑定；原始失败证据保留；生成身体组合由 #154 验收 |
-| #152 | PR #336，同一 main；真实披风 237 帧、裙摆 120 帧及指定身体三角带交叉检查通过；缓存、跳时、取消与保存重开经独立复核；closed/completed、大千 completed | 指定动作与采样范围内验证，非任意穿插保证；单件布料更新 p95 30.570/33.706 ms，不代表整角色 60 fps |
-| #153 | PR #336，同一 main；真实生成来源、825 表面采样点、25 发根、12 种 LOD/表现/帽子组合、动态与可迁移保存重开通过；closed/completed、大千 completed | Mesh/Cards 技术首版，非任意 Groom 或细纤维；真实 MDM 中无接触，13 次接触仅来自明确作者夹具 |
-| #154 | 本次集成候选完成同一角色、真实编辑器底栏、保存重开、异常恢复和三目标回读；UE4/Manny 已在 Unreal Engine 5.8.3 实际导入，Mixamo 完整蒙皮与 31 时刻动画回读通过；详细证据见 `data-collection/ainative-integration-validation.json` | 声明腿带范围内实时/回放各 425 帧交叉检查通过；整帧 p95 实时约 43 ms、回放约 23 ms，非稳定 60 fps；main、关单与大千 completed 必须以最终远端交付回执为准 |
+| #145 | PR #192；main 接收 f537f112ac3e8c8ed62b748f5f6fd4cf790d0867；53 项测试、四种实际生成、Godot 预览发布重载及上下文 Run 通过；独立审查、GitHub CLOSED / COMPLETED 与天枢 completed 已回读 | 解锁 #146；原始 Mesh 质量限制保留 |
+| #146 | PR #198；main 接收 3003153c21cf42e865d39f06abb4115421046527；55 项测试、真实角色 18 骨蒙皮/三段 ROM/足底接触及工作台发布重开通过；GitHub CLOSED / COMPLETED 与天枢 completed 已回读 | 解锁 #147；保留原始拓扑质量限制 |
+| #147 | PR #203；main 接收 4934dcd836493366c89a93078596d53f41d2c6be；58 项测试、真实三套骨架/根运动/手指/接触、完整 UI 和 Unreal Engine 回读通过；GitHub CLOSED / COMPLETED 与天枢 completed 已回读 | 首版 UE4/Manny/Mixamo；Quinn 按范围决定留在 #202；解锁 #148/#149 |
+| #148 | 已交付：PR #219，main `5a42d425b976057e9c531642b1659e5e01091c30`；工单closed/completed，天枢completed；65测试、12真实装配例及独立审查通过 | 生成表面层纹和裙摆蹲姿穿膝明确保留，布料碰撞由#152/#154验收 |
+| #149 | 已交付：PR #221，main `491888459dbb64c8130378d8dbb3649cc1fd6ac8`；真实CPU文字/视频生成，UE4/Manny重开204/483轨；独立审查、工单closed/completed和天枢completed回读通过 | 旧缺动画场景撤销，手脸独立流及模型能力限制保留；解锁#150/#151 |
+| #150 | 已交付 PR #228，main `a61963195b3f75471be6e6a7f6ba05f6073db35d`；真实跑步、四种分层/持物模式、换装和正式面板保存重开通过；工单 closed/completed、天枢 completed 已回读 | 武器/瞄准/挥剑/握姿是明确作者夹具；布料由 #152 验收 |
+| #151 | 初次交付后发现肩颈裁面缺陷，已撤回旧几何结论并经 #319 修复；PR #336，main `123e5f1e6b19d43a493e0dc71d975777402a0641`；明确拓扑遮罩、裸身真实动作、DNA/表情/换装保存重开及独立复核通过；closed/completed、天枢 completed | Rain 是授权参考头部与作者绑定，非任意 AI 脸自动绑定；原始失败证据保留；生成身体组合由 #154 验收 |
+| #152 | PR #336，同一 main；真实披风 237 帧、裙摆 120 帧及指定身体三角带交叉检查通过；缓存、跳时、取消与保存重开经独立复核；closed/completed、天枢 completed | 指定动作与采样范围内验证，非任意穿插保证；单件布料更新 p95 30.570/33.706 ms，不代表整角色 60 fps |
+| #153 | PR #336，同一 main；真实生成来源、825 表面采样点、25 发根、12 种 LOD/表现/帽子组合、动态与可迁移保存重开通过；closed/completed、天枢 completed | Mesh/Cards 技术首版，非任意 Groom 或细纤维；真实 MDM 中无接触，13 次接触仅来自明确作者夹具 |
+| #154 | 本次集成候选完成同一角色、真实编辑器底栏、保存重开、异常恢复和三目标回读；UE4/Manny 已在 Unreal Engine 5.8.3 实际导入，Mixamo 完整蒙皮与 31 时刻动画回读通过；详细证据见 `data-collection/ainative-integration-validation.json` | 声明腿带范围内实时/回放各 425 帧交叉检查通过；整帧 p95 实时约 43 ms、回放约 23 ms，非稳定 60 fps；main、关单与天枢 completed 必须以最终远端交付回执为准 |
 
 表格最后核实：2026-11-07。工作者完成、本地验收和远端交付分别记录，最终以PR/main及工单回读为准。
 

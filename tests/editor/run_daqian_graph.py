@@ -1,4 +1,4 @@
-"""Run the native Daqian tab and graph interaction test in an isolated Godot project."""
+"""Run the native Tianshu tab and graph interaction test in an isolated Godot project."""
 
 import argparse
 import hashlib
@@ -32,7 +32,7 @@ env = os.environ.copy()
 if args.scenario in {"parallel", "inputs", "multi_issue"}:
     node = env.get("DAQIAN_TEST_NODE") or shutil.which("node")
     if not node:
-        raise SystemExit("Node required for Daqian native parallel acceptance")
+        raise SystemExit("Node required for Tianshu native parallel acceptance")
     env.update(
         DAQIAN_TEST_REPO=str(Path(__file__).resolve().parents[2]),
         DAQIAN_TEST_NODE=node,
@@ -154,7 +154,7 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
         )
         env.update(DAQIAN_TEST_REPO=str(workspace), DAQIAN_TEST_PYTHON=sys.executable)
     (project / "project.godot").write_text(
-        'config_version=5\n[application]\nconfig/name="Daqian graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
+        'config_version=5\n[application]\nconfig/name="Tianshu graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
     )
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
     result = subprocess.run(

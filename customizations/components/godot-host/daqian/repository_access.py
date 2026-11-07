@@ -1,4 +1,4 @@
-"""Daqian access belongs to authenticated collaborators of the bound Git origin."""
+"""Tianshu access belongs to authenticated collaborators of the bound Git origin."""
 import hashlib
 import json
 import os
