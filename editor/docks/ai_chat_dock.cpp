@@ -3883,11 +3883,10 @@ bool AIChatDock::_mount_daqian_chat(Control *p_host) {
 	p_host->connect(SceneStringName(tree_exiting), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
 	connect(SceneStringName(tree_exited), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
 	workspace_pages->set_current_tab(0);
-	workspace_pages->set_tabs_visible(false);
-	session_navigation->hide();
-	// Settings stay on the unified page when the conversation view is embedded.
-	workspace_pages->reparent(p_host, false);
-	workspace_pages->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
+	workspace_pages->hide();
+	manual_schedule_notice->reparent(p_host, false);
+	// Leave timers, settings and session navigation in their original tree.
+	_route_chat_layout();
 	return true;
 }
 
@@ -3902,10 +3901,9 @@ void AIChatDock::_unmount_daqian_chat() {
 		host->disconnect(SceneStringName(tree_exiting), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
 	}
 	disconnect(SceneStringName(tree_exited), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
-	workspace_pages->reparent(this, false);
-	workspace_pages->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
-	session_navigation->show();
-	workspace_pages->set_tabs_visible(true);
+	manual_schedule_notice->reparent(agents_page, false);
+	_route_chat_layout();
+	workspace_pages->show();
 	emit_signal("daqian_chat_unmounted");
 	if (is_inside_tree() && !is_queued_for_deletion()) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();

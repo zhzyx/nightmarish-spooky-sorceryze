@@ -12,8 +12,11 @@ var observed_runtime: Dictionary = {}
 var canvas_script: Script
 var board_bundle_base64 := ""
 var board_bundle_sha256 := ""
-# Official pre-delta board shipped with the model-routing workspace. Custom helpers keep their original entry.
-const LEGACY_BOARD_SHA256 := "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5"
+# Reviewed pre-delta helpers: original model routing and the later offline/HTTP status fix.
+const LEGACY_BOARD_HASHES := [
+	"3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5",
+	"04c74f813447ac1af088473962e382f80634055eb7695fda04875e756a04f54b",
+]
 var canvas_panel
 
 var rules: Script
@@ -1301,6 +1304,14 @@ func _exit_tree() -> void:
 		_save()
 
 
+func _capture_before_navigation() -> void:
+	if current.begins_with("draft_"):
+		_save()
+	elif not current.is_empty():
+		_capture()
+		_queue_save()
+
+
 func _show_board() -> void:
 	_close_publish_form()
 	pending_model_operation.clear()
@@ -1310,8 +1321,7 @@ func _show_board() -> void:
 	work_status.hide()
 	issue_link.hide()
 	selection_epoch += 1
-	if not current.is_empty():
-		_save()
+	_capture_before_navigation()
 	current = ""
 	_sync_canvas_scope()
 	saved.last_view = ""
@@ -2085,7 +2095,8 @@ func _board_entry_args(script: String) -> PackedStringArray:
 	var original := PackedStringArray([script])
 	if board_bundle_base64.is_empty() or not FileAccess.file_exists(script) or FileAccess.file_exists(script.get_base_dir().path_join("board_delta.py")):
 		return original
-	if FileAccess.get_file_as_string(script).replace("\r\n", "\n").sha256_text() != LEGACY_BOARD_SHA256:
+	var digest := FileAccess.get_file_as_string(script).replace("\r\n", "\n").sha256_text()
+	if digest not in LEGACY_BOARD_HASHES:
 		return original
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("gonggong-board-" + board_bundle_sha256 + ".pyz")
 	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != board_bundle_sha256:
@@ -2099,7 +2110,7 @@ func _board_entry_args(script: String) -> PackedStringArray:
 			if FileAccess.file_exists(temporary):
 				DirAccess.remove_absolute(temporary)
 			return original
-	return PackedStringArray(["-I", "-B", path, "--workspace-board-sha256", LEGACY_BOARD_SHA256])
+	return PackedStringArray(["-I", "-B", path, "--workspace-board-sha256", digest])
 
 
 func _board_command(access_only: bool, expected := "", project := false) -> Dictionary:
@@ -2208,10 +2219,11 @@ func _use_personal_board(auth: Dictionary) -> void:
 		actor = auth
 		_load_personal()
 		var last: String = saved.get("last_view","")
-		_show_board()
 		if saved.get("drafts",{}).has(last):
 			var prior: Dictionary = saved.drafts[last]
 			_show_issue(last,{"revision":prior.revision,"plan":prior.baseline,"context":prior.get("context",{})})
+		else:
+			_show_board()
 	_gate_visibility(true)
 
 
@@ -2923,6 +2935,11 @@ func _open_issue(item: Dictionary) -> void:
 	var revision: String = editor.revision
 	notice.text = "已显示快照，正在读取 #" + str(item.number) + " 的最新流程…"
 	var port: Object = host if is_instance_valid(host) else self
+	# Present the local snapshot before starting another host process. Rapid
+	# navigation can retire this selection before it incurs any host work.
+	await get_tree().process_frame
+	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
+		return
 	var live: Dictionary = await port.read_graph(item.url)
 	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
 		return
@@ -3803,8 +3820,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	pending_model_operation.clear()
 	selection_epoch += 1
 	_leave_conversation()
-	if not current.is_empty():
-		_save()
+	_capture_before_navigation()
 	current = id
 	_sync_canvas_scope()
 	issue_link.hide()

@@ -1,0 +1,430 @@
+{
+  "issue_number": 533,
+  "request_id": "tianshu-real-issue-load",
+  "base": "7860c8146f9fd4512fdf661589a4751f29439b62",
+  "installed_comparison_sha256": "b154dc5d9649e6efca01203d55dcf15494b071c6c793e4d81cf3d971716508d6",
+  "candidate_editor_sha256": "615ec8206892611c100f763bdcf92905e2a87d95327be921ffa601d70c66110e",
+  "method": "Windows private desktop, self-contained Godot OpenGL editor, RTX 5080, process_frame monotonic clock, 1843 MiB job cap. Same project cache and saved failed #534 conversation, repeated transitions to real 12-node #56, 126 board rows. No synthetic rows, external writes or model calls. Read-only host calls used the normal current collaborator. Cold runs restored earlier copies of both real account-scoped caches (3 and 7 saved drafts).",
+  "columns": [
+    "synchronous_call_us_or_mount_total_elapsed_us",
+    "sampled_frames_including_10_settle_frames",
+    "frame_interval_p95_us",
+    "frame_interval_max_us",
+    "retained_overview_cards"
+  ],
+  "stages": {
+    "mount": "Open the native conversation; elapsed includes verified host access",
+    "unmount0": "Close the mounted #534 conversation to its own graph",
+    "unmount1": "Switch directly from the mounted conversation to #56",
+    "switch": "Change issue in the graph without a mounted conversation",
+    "detail_to_list": "Return from issue detail to the chosen overview",
+    "first": "Startup including authorization and live board refresh",
+    "first_overview": "First return from restored draft to the saved overview"
+  },
+  "runs": {
+    "stable-chat-graph": {
+      "first": [
+        670,
+        980,
+        8021,
+        45078,
+        1
+      ],
+      "mount0": [
+        1016903,
+        153,
+        7979,
+        35761,
+        126
+      ],
+      "unmount0": [
+        36738,
+        10,
+        7978,
+        42624,
+        126
+      ],
+      "board0": [
+        7276,
+        10,
+        7985,
+        25463,
+        126
+      ],
+      "mount1": [
+        1020580,
+        154,
+        8049,
+        32150,
+        126
+      ],
+      "unmount1": [
+        53047,
+        10,
+        11902,
+        66838,
+        126
+      ],
+      "board1": [
+        7257,
+        10,
+        7523,
+        26245,
+        126
+      ],
+      "list_to_detail_0": [
+        14896,
+        301,
+        8061,
+        24828,
+        126
+      ],
+      "switch_0": [
+        15555,
+        305,
+        8575,
+        26857,
+        126
+      ],
+      "detail_to_list_0": [
+        7606,
+        10,
+        7577,
+        26485,
+        126
+      ],
+      "list_to_detail_1": [
+        13626,
+        302,
+        8025,
+        27075,
+        126
+      ],
+      "switch_1": [
+        15353,
+        304,
+        8504,
+        25948,
+        126
+      ],
+      "detail_to_list_1": [
+        7406,
+        10,
+        8049,
+        25444,
+        126
+      ],
+      "list_to_detail_2": [
+        13971,
+        302,
+        8026,
+        26728,
+        126
+      ],
+      "switch_2": [
+        15092,
+        305,
+        8395,
+        24876,
+        126
+      ],
+      "detail_to_list_2": [
+        8230,
+        10,
+        8024,
+        27068,
+        126
+      ]
+    },
+    "candidate-chat-graph": {
+      "first": [
+        753,
+        1271,
+        8017,
+        36233,
+        0
+      ],
+      "mount0": [
+        1009484,
+        153,
+        7995,
+        25417,
+        126
+      ],
+      "unmount0": [
+        23868,
+        10,
+        7550,
+        29941,
+        126
+      ],
+      "board0": [
+        3693,
+        10,
+        7544,
+        23234,
+        126
+      ],
+      "mount1": [
+        1008631,
+        154,
+        8001,
+        21016,
+        126
+      ],
+      "unmount1": [
+        31665,
+        10,
+        17908,
+        44471,
+        126
+      ],
+      "board1": [
+        3561,
+        10,
+        7533,
+        22178,
+        126
+      ],
+      "list_to_detail_0": [
+        3962,
+        302,
+        8000,
+        15704,
+        126
+      ],
+      "switch_0": [
+        3885,
+        306,
+        8413,
+        17761,
+        126
+      ],
+      "detail_to_list_0": [
+        3736,
+        10,
+        7521,
+        21801,
+        126
+      ],
+      "list_to_detail_1": [
+        6614,
+        304,
+        7991,
+        17928,
+        126
+      ],
+      "switch_1": [
+        4000,
+        306,
+        8422,
+        17973,
+        126
+      ],
+      "detail_to_list_1": [
+        3561,
+        10,
+        7472,
+        22032,
+        126
+      ],
+      "list_to_detail_2": [
+        6939,
+        303,
+        8026,
+        19335,
+        126
+      ],
+      "switch_2": [
+        3872,
+        306,
+        8499,
+        17774,
+        126
+      ],
+      "detail_to_list_2": [
+        3841,
+        10,
+        7605,
+        23391,
+        126
+      ]
+    },
+    "candidate-chat-list": {
+      "first": [
+        496,
+        1129,
+        8051,
+        38288,
+        0
+      ],
+      "mount0": [
+        1015891,
+        154,
+        7720,
+        28001,
+        2
+      ],
+      "unmount0": [
+        27299,
+        10,
+        7551,
+        32001,
+        2
+      ],
+      "board0": [
+        3381,
+        10,
+        7593,
+        9068,
+        2
+      ],
+      "mount1": [
+        1012034,
+        154,
+        8006,
+        23062,
+        2
+      ],
+      "unmount1": [
+        31181,
+        10,
+        17743,
+        44459,
+        2
+      ],
+      "board1": [
+        3837,
+        10,
+        7543,
+        8569,
+        2
+      ],
+      "list_to_detail_0": [
+        4009,
+        302,
+        8025,
+        16109,
+        2
+      ],
+      "switch_0": [
+        4195,
+        307,
+        8322,
+        17467,
+        2
+      ],
+      "detail_to_list_0": [
+        3818,
+        10,
+        7579,
+        9058,
+        2
+      ],
+      "list_to_detail_1": [
+        7309,
+        303,
+        8022,
+        18770,
+        2
+      ],
+      "switch_1": [
+        4074,
+        305,
+        8525,
+        18111,
+        2
+      ],
+      "detail_to_list_1": [
+        3638,
+        10,
+        8017,
+        8386,
+        2
+      ],
+      "list_to_detail_2": [
+        6153,
+        304,
+        8023,
+        17594,
+        2
+      ],
+      "switch_2": [
+        4560,
+        306,
+        8539,
+        17809,
+        2
+      ],
+      "detail_to_list_2": [
+        4141,
+        10,
+        8294,
+        8765,
+        2
+      ]
+    },
+    "stable-cold-graph": {
+      "first": [
+        467,
+        976,
+        8018,
+        55961,
+        1
+      ],
+      "first_overview": [
+        10175,
+        66,
+        11791,
+        16885,
+        126
+      ]
+    },
+    "candidate-cold-graph": {
+      "first": [
+        609,
+        978,
+        8008,
+        47275,
+        0
+      ],
+      "first_overview": [
+        14274,
+        66,
+        12432,
+        18404,
+        126
+      ]
+    },
+    "candidate-cold-list": {
+      "first": [
+        563,
+        982,
+        7980,
+        48007,
+        0
+      ],
+      "first_overview": [
+        8252,
+        10,
+        7556,
+        26294,
+        0
+      ]
+    }
+  },
+  "profile": {
+    "full_private_cache_write_us": 3379,
+    "navigation_save_inclusive_us": 3830,
+    "unchanged_overview_projection_us": 3140,
+    "dto_sync_workflow_us": 217
+  },
+  "acceptance": [
+    "graph including superseded selection, restored editing, access revocation",
+    "direct and unknown receipt recovery across two processes",
+    "publish and bound clarification retry",
+    "inline approval, send follow-up, scheduler refresh while mounted and return to standalone chat",
+    "two known historical board hosts, SHA-256 verification, modern and modified host passthrough"
+  ],
+  "limits": "Initial real remote authorization and board reads remain asynchronous and take seconds. Reparenting the active conversation still incurs a native frame; personal unpublished drafts continue synchronously persisting on departure. Cold first full graph construction is sliced, and has no demonstrated acceleration in total construction time."
+}

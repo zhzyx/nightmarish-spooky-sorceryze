@@ -383,7 +383,11 @@ void AIChatDock::_route_chat_layout() {
 	if (scheduled) {
 		manual_schedule_notice->set_text(_agent_title(active_agent) + U" 正在定时器页执行／显示。任务结束后可切回普通会话；执行中仍可切页查看，普通会话草稿不会被使用。");
 	}
-	VBoxContainer *target = scheduled ? timer_chat_host : agents_page;
+	Control *target = scheduled ? timer_chat_host : agents_page;
+	if (!scheduled && daqian_chat_host.is_valid()) {
+		target = ObjectDB::get_instance<Control>(daqian_chat_host);
+		ERR_FAIL_NULL(target);
+	}
 	if (chat_layout->get_parent() != target) {
 		chat_layout->reparent(target);
 	}

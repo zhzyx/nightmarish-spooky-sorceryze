@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f20dead817002f34bd8ee15a231d6106e4af0d0e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-real-issue-load",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "465495850b4e9f26cd2d7fc6c1a92994aa65dba7c2f572d5b2b9ee6b83eb0165",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "action": "validation",
+    "detection_head": "7860c8146f9fd4512fdf661589a4751f29439b62",
+    "context_sha256": "e4d91919d099c13bfcd18b6b7425738bc33a2adcd81c4da7f3235e5511b8182d",
+    "operator": "Sail-Li",
+    "worker": "codex-533",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "evidence": "data-collection/issue533-real-navigation.json",
+    "diagnosis": "验收 JSON 把数值工单号放在仅接受 URL 的 issue 字段，已改为 issue_number 并重新暂存。",
+    "next_action": "在同一基线上重新核对正式门禁，由阎罗完成交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T22:24:23.436621+00:00",
+    "attempted": null,
+    "repair_owner": "codex-533",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T22:26:19.201572+00:00",
+  "sha256": "04fdb44bd8cc83c761929dd12b2749bb56402972ab10a7a9466d8e066a726621"
+}
