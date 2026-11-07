@@ -1,0 +1,21 @@
+{
+  "request_id": "requirement-dialog-freeze",
+  "issue_number": 497,
+  "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+  "platform": "Windows headless",
+  "watcher_exit": {
+    "candidate_errors": 0,
+    "polls": 10,
+    "baseline_errors": 10
+  },
+  "hidden_overview": {
+    "cards": 55,
+    "edges": 54,
+    "baseline_new_nodes": 165,
+    "refreshes": 3,
+    "candidate_total_ms": 0.163,
+    "baseline_total_ms": 156.956,
+    "candidate_new_nodes": 0
+  },
+  "direct_host_tests": 25
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-725d49e594cb228d0f9e5c2614e42560abbd234b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-dialog-freeze",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/497",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "42270f401e36732456011811a2f0a21f1d361953daaf91305b792aed49d47978",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/497",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/497",
+    "action": "user-report",
+    "detection_head": "cef3a3af07168711b117e2947d0f86c012dba510",
+    "context_sha256": "6d1b38dca6f9532f9683db5980d91032df56c1e9db605e95d41ceee2272e5f89",
+    "operator": "Sail-Li",
+    "worker": "codex-497",
+    "authority_ref": "user-request",
+    "evidence": "Windows headless: ten baseline polls after watcher exit logged ten pipe errors; candidate logged zero. GitHub confirms original issue 494.",
+    "diagnosis": "Editor continues polling closed stdout every frame and rebuilds the hidden board on refresh. The configured Codex executable was missing for post-create routing.",
+    "next_action": "Verify isolated editor create, reconcile and routing scenarios and deliver via PR.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:04:49.568314+00:00",
+    "attempted": null,
+    "repair_owner": "codex-497",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:09:37.404193+00:00",
+  "sha256": "f49be3ccf67a74003e8384049d020fa7568dc6ca49c4a05bf3ec64db638440f9"
+}
