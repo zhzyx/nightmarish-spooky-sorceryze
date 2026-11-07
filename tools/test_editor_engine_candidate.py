@@ -2,13 +2,17 @@
 
 import json
 import os
+import plistlib
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
 
 import editor_engine_candidate as candidate
+import editor_native_app as native
 from editor_source_manifest import artifact_manifest, source_snapshot
 
 
@@ -384,6 +388,78 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(result["initial_launch_executable"], str(initial))
         _, binding = self.journal(result)
         self.assertEqual(binding["initial_launch_inherited_from"], first["binding_path"])
+
+    def built_native_candidate(self):
+        initial_app = self.folder / "Original Native.app"
+        initial = initial_app / native.EXECUTABLE_RELATIVE
+        initial.parent.mkdir(parents=True)
+        shutil.copyfile("/usr/bin/true", initial)
+        initial.chmod(0o755)
+        (initial_app / "Contents/Resources").mkdir()
+        with (initial_app / "Contents/Info.plist").open("wb") as stream:
+            plistlib.dump(
+                {
+                    "CFBundleExecutable": "Godot",
+                    "CFBundleIdentifier": "local.gonggong.lineage",
+                    "CFBundleName": "Private fixture",
+                    "CFBundlePackageType": "APPL",
+                    "CFBundleVersion": "1",
+                },
+                stream,
+            )
+        (self.root / "project.godot").write_text("config_version=5\n")
+        result = candidate.prepare(self.root, 390, "runtime-test", "native-chat", launch_executable=initial)
+        target = Path(result["source_root"])
+        (target / "bin").mkdir()
+        app = target / "bin/godot.self_update_a.app"
+        native.package_app(target, "/usr/bin/true", result, self.root, app, initial_app)
+        manifest = artifact_manifest(
+            target,
+            app / native.EXECUTABLE_RELATIVE,
+            result,
+            self.root,
+            {"extra_suffix": "self_update_a"},
+            source_snapshot(target),
+            app,
+        )
+        binding_path, binding = self.journal(result)
+        binding["artifact_manifest"] = manifest
+        binding_path.write_text(json.dumps(binding))
+        return initial, result, app, Path(manifest)
+
+    @unittest.skipUnless(sys.platform == "darwin", "real native App lineage")
+    def test_native_candidate_nested_godot_inherits_original_entry(self):
+        initial, first, app, _ = self.built_native_candidate()
+        result = candidate.prepare(
+            self.root, 391, "next-request", "new-chat", launch_executable=app / native.EXECUTABLE_RELATIVE
+        )
+        self.assertEqual(result["initial_launch_executable"], str(initial))
+        self.assertEqual(self.journal(result)[1]["initial_launch_inherited_from"], first["binding_path"])
+
+    @unittest.skipUnless(sys.platform == "darwin", "real installed native App lineage")
+    def test_installed_exact_native_copy_inherits_external_manifest(self):
+        initial, first, app, _ = self.built_native_candidate()
+        shutil.rmtree(initial.parent.parent.parent)
+        shutil.copytree(app, initial.parent.parent.parent)
+        result = candidate.prepare(self.root, 391, "next-request", "new-chat", launch_executable=initial)
+        self.assertEqual(result["initial_launch_executable"], str(initial))
+        self.assertEqual(self.journal(result)[1]["initial_launch_inherited_from"], first["binding_path"])
+
+    @unittest.skipUnless(sys.platform == "darwin", "real installed native App refusal")
+    def test_installed_native_copy_requires_same_macho_and_sealed_locator(self):
+        initial, _, app, _ = self.built_native_candidate()
+        installed = initial.parent.parent.parent
+        shutil.rmtree(installed)
+        shutil.copytree(app, installed)
+        origin = installed / native.ORIGIN_RELATIVE
+        value = json.loads(origin.read_text())
+        value["project_root"] = str(self.folder / "redirected-project")
+        origin.write_text(json.dumps(value))
+        subprocess.run(
+            ["/usr/bin/codesign", "--force", "--deep", "--sign", "-", str(installed)], check=True, capture_output=True
+        )
+        with self.assertRaisesRegex(candidate.CandidateError, "candidate_inherited_artifact_invalid"):
+            candidate.prepare(self.root, 391, "next-request", "new-chat", launch_executable=initial)
 
     def test_new_issue_inherits_managed_entry_from_exact_candidate_workspace(self):
         initial, first, _, _ = self.built_candidate()

@@ -52,6 +52,7 @@
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/gonggong_host_paths.h"
 #include "editor/docks/gonggong_panel.h"
+#include "editor/docks/gonggong_runtime_config.h"
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
 #include "editor/file_system/editor_file_system.h"
@@ -840,6 +841,8 @@ void AIChatDock::_load_history() {
 
 // Answer the restart that the previous process issued, then continue its loop.
 void AIChatDock::_load_resume() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	Dictionary journal;
 	if (!AIChatResume::read_journal(journal)) {
 		// Unreadable or stale leftovers are removed instead of being replayed.
@@ -852,7 +855,7 @@ void AIChatDock::_load_resume() {
 	if (!restart.is_empty() && restart.has("engine_candidate")) {
 		const Dictionary candidate = restart["engine_candidate"];
 		String manifest_error;
-		if (current == String(restart.get("to_executable", "")) && (!AIChatHostRuntime::artifact_matches(current, restart.get("candidate_manifest", ""), candidate, manifest_error) || !AIChatHostRuntime::source_matches(EDITOR_GET("gonggong/python"), _engine_root().path_join("tools/editor_source_manifest.py"), restart.get("candidate_manifest", ""), candidate, manifest_error))) {
+		if (current == String(restart.get("to_executable", "")) && (!AIChatHostRuntime::artifact_matches(current, restart.get("candidate_manifest", ""), candidate, manifest_error) || !AIChatHostRuntime::source_matches(GongGongRuntimeConfig::path(runtime, "workflow_python"), _engine_root().path_join("tools/editor_source_manifest.py"), restart.get("candidate_manifest", ""), candidate, manifest_error))) {
 			_append(TTR("Error"), manifest_error);
 			return; // No ack: the watchdog restores the known previous executable.
 		}
@@ -942,7 +945,7 @@ void AIChatDock::_load_resume() {
 	// verification run. The HTTP key is never stored, so without it the result is
 	// recorded and the user resumes manually.
 	const bool interactive = DisplayServer::get_singleton() && DisplayServer::get_singleton()->get_name() != "headless";
-	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli() : !api_key->get_text().strip_edges().is_empty());
+	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !api_key->get_text().strip_edges().is_empty());
 	queue_paused = !can_send;
 	turn_completed = false;
 	session_generation++;
@@ -972,23 +975,7 @@ String AIChatDock::_redact(const String &p_text) const {
 }
 
 Dictionary AIChatDock::_current_host_runtime_metadata() const {
-	Dictionary runtimes;
-	auto add_runtime = [&runtimes](const String &p_name, const String &p_configured_path) {
-		const String path = p_configured_path.strip_edges();
-		Dictionary runtime;
-		runtime["path"] = path.is_absolute_path() && !path.contains("://") && FileAccess::exists(path) ? Variant(path) : Variant();
-		runtime["version"] = Variant();
-		runtime["source"] = "current_host";
-		runtimes[p_name] = runtime;
-	};
-	add_runtime("node", cli_node ? cli_node->get_text() : String());
-	add_runtime("workflow_python", EDITOR_GET("gonggong/python"));
-	add_runtime("build_python", engine_python ? engine_python->get_text() : String());
-	add_runtime("codex", codex_entry ? codex_entry->get_text() : String());
-	Dictionary host_metadata;
-	host_metadata["source"] = "current_host";
-	host_metadata["runtimes"] = runtimes;
-	return host_metadata;
+	return GongGongRuntimeConfig::metadata(GongGongRuntimeConfig::read_effective());
 }
 
 VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool p_error) {
@@ -1838,6 +1825,8 @@ void AIChatDock::_send() {
 }
 
 bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (!pending_external_editor_message.is_empty()) {
 		return false;
 	}
@@ -1860,24 +1849,23 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	}
 	snapshot_history_dialog->hide();
 	if (backend->get_selected() == 2) {
-		if (!_validate_cli()) {
-			const String node = cli_node->get_text().strip_edges();
-			const String entry = codex_entry->get_text().strip_edges();
+		if (!_validate_cli(runtime)) {
+			const String node = GongGongRuntimeConfig::path(runtime, "node");
+			const String entry = GongGongRuntimeConfig::path(runtime, "codex");
 			_append(TTR("Error"), !AIChatHostRuntime::executable_exists(entry) ? String(U"Codex 可执行文件路径无效，请在更多设置中填写现有原生程序的绝对路径。尚未检查登录状态。") : !AIChatHostRuntime::executable_exists(node) ? String(U"Node.js 可执行文件路径无效，请配置现有 Node.js 的绝对路径。尚未检查 Codex 登录状态。")
 																																																								 : String(U"Codex 对话桥接文件缺失，请修复当前引擎安装。尚未检查登录状态。"));
 			return false;
 		}
 		request_key = String();
-		EditorSettings::get_singleton()->set_setting("ai_chat/codex_entry", codex_entry->get_text().strip_edges());
-		EditorSettings::get_singleton()->set_setting("ai_chat/cli_node", cli_node->get_text().strip_edges());
+
 		EditorSettings::get_singleton()->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
 	} else if (backend->get_selected() == 1) {
-		if (!_validate_cli()) {
+		if (!_validate_cli(runtime)) {
 			_append(TTR("Error"), TTR("Set existing absolute Node, bridge and CodeBuddy CLI entry paths, then use CLI Login to authenticate."));
 			return false;
 		}
 		request_key = String();
-		EditorSettings::get_singleton()->set_setting("ai_chat/cli_node", cli_node->get_text().strip_edges());
+
 		EditorSettings::get_singleton()->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
 		EditorSettings::get_singleton()->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
 		EditorSettings::get_singleton()->set_setting("ai_chat/cli_model", cli_model->get_text().strip_edges());
@@ -3230,6 +3218,8 @@ void AIChatDock::_cancel_external_editor_request(const String &p_reason) {
 }
 
 void AIChatDock::_confirm_action() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (_has_pending_steering() && pending_external_editor_message.is_empty() && !snapshot_restoring) {
 		return;
 	}
@@ -3275,7 +3265,7 @@ void AIChatDock::_confirm_action() {
 			Dictionary approval;
 			approval["approved"] = true;
 			if (snapshot_state.has("engine_candidate")) {
-				const Dictionary guard = AIChatHostRuntime::command_guard(snapshot_state["engine_candidate"], EDITOR_GET("gonggong/python"), _engine_root(), error);
+				const Dictionary guard = AIChatHostRuntime::command_guard(snapshot_state["engine_candidate"], GongGongRuntimeConfig::path(runtime, "workflow_python"), _engine_root(), error);
 				if (guard.is_empty()) {
 					_finish_tool("Error: " + error);
 					return;
@@ -3343,11 +3333,15 @@ void AIChatDock::_reject_action() {
 	}
 }
 
-bool AIChatDock::_validate_cli() const {
+bool AIChatDock::_validate_cli(const Dictionary &p_runtime) const {
+	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
 	if (backend->get_selected() == 2) {
-		return codex_entry->get_text().strip_edges().is_absolute_path() && FileAccess::exists(codex_entry->get_text().strip_edges()) && FileAccess::exists(cli_node->get_text().strip_edges()) && FileAccess::exists(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+		return GongGongRuntimeConfig::path(runtime, "codex").is_absolute_path() && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "codex")) && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "node")) && FileAccess::exists(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
 	}
-	for (LineEdit *field : { cli_node, cli_bridge, cli_entry }) {
+	if (GongGongRuntimeConfig::path(runtime, "node").is_empty()) {
+		return false;
+	}
+	for (LineEdit *field : { cli_bridge, cli_entry }) {
 		const String path = field->get_text().strip_edges();
 		if (!path.is_absolute_path() || !FileAccess::exists(path)) {
 			return false;
@@ -3710,6 +3704,9 @@ String AIChatDock::_work_order_binding(const String &p_field, int p_agent) const
 }
 
 void AIChatDock::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_runtime_configuration"), &AIChatDock::get_runtime_configuration);
+	ClassDB::bind_method(D_METHOD("prepare_runtime_configuration"), &AIChatDock::prepare_runtime_configuration);
+	ClassDB::bind_method(D_METHOD("set_runtime_field", "field", "value"), &AIChatDock::set_runtime_field);
 	ClassDB::bind_method(D_METHOD("get_daqian_approval"), &AIChatDock::_get_daqian_approval);
 	ClassDB::bind_method(D_METHOD("confirm_daqian_approval", "token"), &AIChatDock::_confirm_daqian_approval);
 	ClassDB::bind_method(D_METHOD("render_daqian_markdown", "label", "text"), &AIChatDock::_render_markdown);
@@ -4302,15 +4299,42 @@ void AIChatDock::_reasoning_selected(int p_index) {
 	EditorSettings::save();
 }
 
-String AIChatDock::_model_config_signature() const {
+String AIChatDock::_model_config_signature(const Dictionary &p_runtime) const {
+	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
 	const int selected = backend->get_selected();
 	if (selected == 2) {
-		return "2:" + codex_entry->get_text().strip_edges() + ":" + cli_node->get_text().strip_edges();
+		return "2:" + GongGongRuntimeConfig::path(runtime, "codex") + ":" + GongGongRuntimeConfig::path(runtime, "node");
 	}
 	if (selected == 1) {
-		return "1:" + cli_node->get_text().strip_edges() + ":" + cli_bridge->get_text().strip_edges() + ":" + cli_entry->get_text().strip_edges();
+		return "1:" + GongGongRuntimeConfig::path(runtime, "node") + ":" + cli_bridge->get_text().strip_edges() + ":" + cli_entry->get_text().strip_edges();
 	}
 	return itos(selected) + ":" + endpoint->get_text().strip_edges() + ":" + api_key->get_text().sha256_text();
+}
+
+Dictionary AIChatDock::get_runtime_configuration() const {
+	Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	runtime["engine_origin"] = GongGongEngineOrigin::read();
+	return runtime;
+}
+
+Dictionary AIChatDock::prepare_runtime_configuration() const {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	return runtime;
+}
+
+String AIChatDock::set_runtime_field(const String &p_field, const String &p_value) {
+	String error;
+	GongGongRuntimeConfig::update_field(p_field, p_value, error);
+	return error;
+}
+
+void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_field) {
+	const String error = set_runtime_field(p_field, p_value);
+	if (!error.is_empty()) {
+		_append(TTR("Error"), String(U"运行路径未保存：") + error);
+	}
+	_model_config_changed(p_value);
 }
 
 void AIChatDock::_model_config_changed(const String &p_text) {
@@ -4370,11 +4394,13 @@ void AIChatDock::_refresh_codex_models_on_start() {
 }
 
 void AIChatDock::_start_codex_status_check(uint8_t p_sources) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (codex_status_pid >= 0) {
 		codex_status_sources |= p_sources;
 		return;
 	}
-	const String executable = codex_entry->get_text().strip_edges();
+	const String executable = GongGongRuntimeConfig::path(runtime, "codex");
 	if (!executable.is_absolute_path() || !FileAccess::exists(executable)) {
 		consumed_model_sources |= p_sources;
 		model_status->set_text(U"请配置有效的 Codex 可执行文件路径；也可手动填写模型 ID。");
@@ -4384,7 +4410,7 @@ void AIChatDock::_start_codex_status_check(uint8_t p_sources) {
 	arguments.push_back("login");
 	arguments.push_back("status");
 	codex_status_sources = p_sources;
-	codex_status_config = _model_config_signature();
+	codex_status_config = _model_config_signature(runtime);
 	if (OS::get_singleton()->create_process(executable, arguments, &codex_status_pid) != OK) {
 		codex_status_pid = -1;
 		consumed_model_sources |= p_sources;
@@ -4441,12 +4467,14 @@ void AIChatDock::_poll_codex_login() {
 }
 
 void AIChatDock::_refresh_models() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (busy || models_loading) {
 		return;
 	}
 	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
 	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
-		if (!_validate_cli()) {
+		if (!_validate_cli(runtime)) {
 			model_status->set_text(U"CLI 路径无效。请检查高级设置。");
 			return;
 		}
@@ -4459,8 +4487,8 @@ void AIChatDock::_refresh_models() {
 		List<String> arguments;
 		arguments.push_back(backend->get_selected() == 2 ? _engine_root().path_join("tools/codex_cli/godot_bridge.js") : cli_bridge->get_text().strip_edges());
 		arguments.push_back("models");
-		arguments.push_back(backend->get_selected() == 2 ? codex_entry->get_text().strip_edges() : cli_entry->get_text().strip_edges());
-		Dictionary process = OS::get_singleton()->execute_with_pipe(cli_node->get_text().strip_edges(), arguments, false);
+		arguments.push_back(backend->get_selected() == 2 ? GongGongRuntimeConfig::path(runtime, "codex") : cli_entry->get_text().strip_edges());
+		Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
 		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 			_restore_cli_after_models();
 			model_status->set_text(U"无法启动模型列表查询，可手动填写模型 ID。");
@@ -4566,8 +4594,10 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 }
 
 void AIChatDock::_login_cli() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (backend->get_selected() == 2) {
-		const String executable = codex_entry->get_text().strip_edges();
+		const String executable = GongGongRuntimeConfig::path(runtime, "codex");
 		if (busy || models_loading || codex_login_pid >= 0 || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
 			_append(TTR("Error"), U"请先填写有效的 Codex 原生可执行文件路径。");
 			return;
@@ -4594,11 +4624,14 @@ void AIChatDock::_login_cli() {
 		report(false, U"当前请求仍在进行，请等待完成或停止后再登录。");
 		return;
 	}
-	if (!_validate_cli()) {
-		const LineEdit *fields[] = { cli_node, cli_bridge, cli_entry };
-		const String names[] = { U"Node.js 可执行文件", U"Godot 对话桥接脚本", U"CodeBuddy CLI 入口" };
+	if (!_validate_cli(runtime)) {
+		const LineEdit *fields[] = { cli_bridge, cli_entry };
+		const String names[] = { U"Godot 对话桥接脚本", U"CodeBuddy CLI 入口" };
 		String problems;
-		for (int i = 0; i < 3; i++) {
+		if (GongGongRuntimeConfig::path(runtime, "node").is_empty()) {
+			problems += String(U"\n- Node.js 可执行文件：未设置或无效");
+		}
+		for (unsigned int i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
 			const String path = fields[i]->get_text().strip_edges();
 			if (!path.is_absolute_path() || !FileAccess::exists(path)) {
 				problems += "\n- " + names[i] + U"：" + (path.is_empty() ? String(U"未设置") : path);
@@ -4607,14 +4640,14 @@ void AIChatDock::_login_cli() {
 		report(false, String(U"无法登录：以下路径为空或文件不存在，请填写绝对路径。") + problems);
 		return;
 	}
-	EditorSettings::get_singleton()->set_setting("ai_chat/cli_node", cli_node->get_text().strip_edges());
+
 	EditorSettings::get_singleton()->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
 	EditorSettings::get_singleton()->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
 	_cancel_cli();
 	set_process(process_id >= 0);
 	List<String> arguments;
 #ifdef MACOS_ENABLED
-	const String node_path = cli_node->get_text().strip_edges();
+	const String node_path = GongGongRuntimeConfig::path(runtime, "node");
 	if ((uint32_t(FileAccess::get_unix_permissions(node_path)) & 0111) == 0) {
 		report(false, U"无法登录：Node.js 文件没有执行权限。");
 		return;
@@ -4641,12 +4674,14 @@ void AIChatDock::_login_cli() {
 	arguments.push_back(cli_bridge->get_text().strip_edges());
 	arguments.push_back("login");
 	arguments.push_back(cli_entry->get_text().strip_edges());
-	Error error = OS::get_singleton()->create_process(cli_node->get_text().strip_edges(), arguments, nullptr, true);
+	Error error = OS::get_singleton()->create_process(GongGongRuntimeConfig::path(runtime, "node"), arguments, nullptr, true);
 	report(error == OK, error == OK ? TTR("CLI login opened in a separate terminal. Choose the same CodeBuddy site/account and complete browser authentication. If already logged in, use /login to switch accounts. Godot does not read or copy your login token.") : TTR("Could not open the CodeBuddy login terminal."));
 #endif
 }
 
 void AIChatDock::_start_codex(const Array &p_messages) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	_cancel_cli();
 	Dictionary payload;
 	payload["messages"] = p_messages;
@@ -4697,9 +4732,9 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	List<String> arguments;
 	arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
 	arguments.push_back("chat");
-	arguments.push_back(codex_entry->get_text().strip_edges());
+	arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
 	arguments.push_back(cli_input_path);
-	Dictionary process = OS::get_singleton()->execute_with_pipe(cli_node->get_text().strip_edges(), arguments, false);
+	Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
 	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 		_release_cli_request();
 		_append(TTR("Error"), U"无法启动 Codex 桥接。");
@@ -4720,12 +4755,14 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 }
 
 void AIChatDock::_start_cli(const Array &p_messages) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (consultation_turn) {
 		_append(TTR("Error"), U"仅咨询不启动原生 CLI，请使用 API 后端。");
 		_set_busy(false);
 		return;
 	}
-	if (!_validate_cli()) {
+	if (!_validate_cli(runtime)) {
 		_append(TTR("Error"), TTR("CodeBuddy CLI configuration is invalid."));
 		_set_busy(false);
 		return;
@@ -4735,7 +4772,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 	for (int i = 0; i < records.size(); i++) {
 		current.push_back(JSON::stringify(records[i]));
 	}
-	const String configuration = cli_node->get_text() + "\n" + cli_bridge->get_text() + "\n" + cli_entry->get_text() + "\n" + (allow_tools->is_pressed() ? "tools_enabled" : "tools_disabled") + "\n" + gonggong_context.sha256_text();
+	const String configuration = GongGongRuntimeConfig::path(runtime, "node") + "\n" + cli_bridge->get_text() + "\n" + cli_entry->get_text() + "\n" + (allow_tools->is_pressed() ? "tools_enabled" : "tools_disabled") + "\n" + gonggong_context.sha256_text();
 	const bool reset = cli_steering_reset && cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id);
 	cli_steering_reset = false;
 	bool incremental = !reset && cli_session && cli_process_id >= 0 && OS::get_singleton()->is_process_running(cli_process_id) && configuration == cli_configuration && cli_sent_messages.size() <= current.size();
@@ -4824,7 +4861,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 		arguments.push_back(cli_bridge->get_text().strip_edges());
 		arguments.push_back("session");
 		arguments.push_back(cli_entry->get_text().strip_edges());
-		Dictionary process = OS::get_singleton()->execute_with_pipe(cli_node->get_text().strip_edges(), arguments, false);
+		Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
 		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 			_release_cli_request();
 			_append(TTR("Error"), TTR("Could not start the CodeBuddy CLI bridge."));
@@ -5135,11 +5172,7 @@ void AIChatDock::_poll_cli() {
 }
 
 String AIChatDock::_engine_root() const {
-	const String repository = GongGongHostPaths::find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
-	if (FileAccess::exists(repository.path_join("SConstruct"))) {
-		return repository;
-	}
-	return cli_bridge->get_text().strip_edges().get_base_dir().path_join("../..").simplify_path();
+	return GongGongHostPaths::engine_source();
 }
 
 String AIChatDock::_rollback_executable() const {
@@ -5322,6 +5355,8 @@ void AIChatDock::_finish_engine_tool(const Dictionary &p_result) {
 }
 
 void AIChatDock::_start_engine_build() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	// A tool-driven build runs inside a busy chat turn on purpose; only a second
 	// concurrent build or a pending restart is refused.
 	if (engine_build_pid >= 0 || engine_restart_armed || models_loading || !allow_tools->is_pressed()) {
@@ -5337,7 +5372,7 @@ void AIChatDock::_start_engine_build() {
 	}
 	engine_build_root = snapshot_state.has("engine_candidate") ? _candidate_root() : _engine_root();
 	const String worker = engine_build_root.path_join("tools/editor_self_build.py");
-	const String python = engine_python->get_text().strip_edges();
+	const String python = GongGongRuntimeConfig::path(runtime, "build_python");
 	if (!FileAccess::exists(worker) || !FileAccess::exists(python)) {
 		engine_build_status->set_text(U"无法开始：请检查引擎源码目录和包含 SCons 的 Python 路径。");
 		return;
@@ -5357,6 +5392,10 @@ void AIChatDock::_start_engine_build() {
 		args.push_back(candidate["binding_path"]);
 		args.push_back("--project");
 		args.push_back(ProjectSettings::get_singleton()->get_resource_path());
+#ifdef MACOS_ENABLED
+		args.push_back("--artifact-layout");
+		args.push_back("native_app");
+#endif
 	}
 	Dictionary host_options;
 	host_options["platform"] = OS::get_singleton()->get_name() == "macOS" ? "macos" : OS::get_singleton()->get_name() == "Windows" ? "windows"
@@ -5407,7 +5446,7 @@ void AIChatDock::_start_engine_build() {
 		args.push_back("--scons-arg");
 		args.push_back(String(value).strip_edges());
 	}
-	EditorSettings::get_singleton()->set_setting("ai_chat/build_python", python);
+
 	EditorSettings::get_singleton()->set_setting("ai_chat/build_arguments", engine_build_arguments->get_text());
 	EditorSettings::save();
 	ProcessID pid = -1;
@@ -5467,12 +5506,11 @@ void AIChatDock::_poll_engine_build() {
 	const int exit_code = OS::get_singleton()->get_process_exit_code(engine_build_pid);
 	engine_build_pid = -1;
 	const String executable = String(status.get("executable", "")).replace("\\", "/").simplify_path();
-	const String expected_dir = engine_build_root.path_join("bin").replace("\\", "/").simplify_path();
-	const String artifact_file = executable.get_file();
-	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && executable.get_base_dir().nocasecmp_to(expected_dir) == 0 && artifact_file.begins_with("godot.") && artifact_file.contains(".editor.") && (executable.contains(".self_update_a.") || executable.ends_with(".self_update_a") || executable.contains(".self_update_b.") || executable.ends_with(".self_update_b")) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
+	const String candidate_manifest = AIChatHostRuntime::candidate_manifest_path(executable);
+	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && AIChatHostRuntime::self_update_path_matches(executable, engine_build_root) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
 		if (snapshot_state.has("engine_candidate")) {
 			String manifest_error;
-			if (!AIChatHostRuntime::artifact_matches(executable, executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error)) {
+			if (String(status.get("candidate_manifest", "")) != candidate_manifest || !AIChatHostRuntime::artifact_matches(executable, candidate_manifest, snapshot_state["engine_candidate"], manifest_error)) {
 				Dictionary failure;
 				failure["ok"] = false;
 				failure["error"] = manifest_error;
@@ -5530,6 +5568,8 @@ void AIChatDock::_poll_engine_build() {
 // Persist the loop position, then let EditorNode perform its normal save/exit.
 // The successor process reads the journal and answers the waiting tool call.
 bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const String current = OS::get_singleton()->get_executable_path();
 	if (p_executable.is_empty() || !FileAccess::exists(p_executable) || p_attempt < 1 || p_attempt > AIChatResume::MAX_RESTART_ATTEMPTS) {
 		return false;
@@ -5551,12 +5591,13 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 	restart["log"] = engine_log_path;
 	if (snapshot_state.has("engine_candidate") && engine_tool_name != "rollback_engine") {
 		String manifest_error;
-		if (!_validate_engine_candidate(manifest_error) || !AIChatHostRuntime::artifact_matches(p_executable, p_executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error) || !AIChatHostRuntime::source_matches(EDITOR_GET("gonggong/python"), _engine_root().path_join("tools/editor_source_manifest.py"), p_executable + ".candidate.json", snapshot_state["engine_candidate"], manifest_error)) {
+		const String candidate_manifest = AIChatHostRuntime::candidate_manifest_path(p_executable);
+		if (!_validate_engine_candidate(manifest_error) || !AIChatHostRuntime::artifact_matches(p_executable, candidate_manifest, snapshot_state["engine_candidate"], manifest_error) || !AIChatHostRuntime::source_matches(GongGongRuntimeConfig::path(runtime, "workflow_python"), _engine_root().path_join("tools/editor_source_manifest.py"), candidate_manifest, snapshot_state["engine_candidate"], manifest_error)) {
 			engine_build_status->set_text(manifest_error);
 			return false;
 		}
 		restart["engine_candidate"] = snapshot_state["engine_candidate"];
-		restart["candidate_manifest"] = p_executable + ".candidate.json";
+		restart["candidate_manifest"] = candidate_manifest;
 	}
 	Dictionary journal;
 	journal["version"] = AIChatResume::VERSION;
@@ -5625,7 +5666,9 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 // nobody would notice a new binary that starts without a working AI dock. Hand
 // the launch to a small watchdog instead, so one process outlives the switch.
 void AIChatDock::_arm_restart_watchdog() {
-	const String python = engine_python->get_text().strip_edges();
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String watchdog = _engine_root().path_join("tools/editor_restart_watchdog.py");
 	const String cache = AIChatResume::global_dir();
 	if (python.is_empty() || !FileAccess::exists(python) || !FileAccess::exists(watchdog) || engine_restart_token.is_empty() || cache.is_empty()) {
@@ -5731,6 +5774,8 @@ void AIChatDock::_show_engine_log() {
 }
 
 void AIChatDock::_start_process() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	List<String> arguments;
 	String executable = OS::get_singleton()->get_executable_path();
 	process_guard_result_path = String();
@@ -5773,7 +5818,7 @@ void AIChatDock::_start_process() {
 			return;
 		}
 		const Dictionary candidate = snapshot_state["engine_candidate"];
-		const Dictionary guard = AIChatHostRuntime::command_guard(candidate, EDITOR_GET("gonggong/python"), _engine_root(), error);
+		const Dictionary guard = AIChatHostRuntime::command_guard(candidate, GongGongRuntimeConfig::path(runtime, "workflow_python"), _engine_root(), error);
 		if (guard.is_empty()) {
 			_finish_tool("Error: " + error);
 			return;
@@ -6136,6 +6181,19 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 }
 
 AIChatDock::AIChatDock() {
+	GongGongRuntimeConfig::initialize();
+	Dictionary legacy_runtime;
+	const char *legacy_names[] = { "ai_chat/cli_node", "gonggong/python", "ai_chat/build_python", "ai_chat/codex_entry" };
+	const char *runtime_names[] = { "node", "workflow_python", "build_python", "codex" };
+	for (int i = 0; i < 4; i++) {
+		if (EditorSettings::get_singleton()->has_setting(legacy_names[i])) {
+			legacy_runtime[runtime_names[i]] = EditorSettings::get_singleton()->get(legacy_names[i]);
+		}
+	}
+	String runtime_migration_error;
+	GongGongRuntimeConfig::migrate_legacy(legacy_runtime, runtime_migration_error);
+	const Dictionary initial_runtime = GongGongRuntimeConfig::read_effective();
+	const Dictionary initial_paths = initial_runtime.get("paths", Dictionary());
 	set_name(TTRC("AI Chat"));
 	set_meta("ai_control_page_only", true);
 	_get_editor_control();
@@ -6166,7 +6224,7 @@ AIChatDock::AIChatDock() {
 		}
 	}
 #endif
-	const String source_root = GongGongHostPaths::find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
+	const String source_root = GongGongHostPaths::engine_source();
 	const String cli_directory = source_root.path_join("tools/codebuddy_cli");
 	EDITOR_DEF("ai_chat/cli_node", node_path);
 	EDITOR_DEF("ai_chat/parallel_work_orders_config", "");
@@ -6430,8 +6488,8 @@ void fragment() {
 	}
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
-	cli_node = add_field(cli_settings, U"Node.js 可执行文件路径", "CLINode", EDITOR_GET("ai_chat/cli_node"));
-	cli_node->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
+	cli_node = add_field(cli_settings, U"Node.js 可执行文件路径", "CLINode", initial_paths.get("node", ""));
+	cli_node->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("node")));
 	cli_bridge = add_field(cli_settings, U"Godot 对话桥接脚本路径", "CLIBridge", EDITOR_GET("ai_chat/cli_bridge"));
 	cli_bridge->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	cli_entry = add_field(cli_settings, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
@@ -6456,8 +6514,8 @@ void fragment() {
 	cli_settings->add_child(cli_login_status);
 	codex_settings = memnew(VBoxContainer);
 	settings->add_child(codex_settings);
-	codex_entry = add_field(codex_settings, U"Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", EDITOR_GET("ai_chat/codex_entry"));
-	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
+	codex_entry = add_field(codex_settings, U"Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", initial_paths.get("codex", ""));
+	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("codex")));
 	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EDITOR_GET("ai_chat/codex_model"));
 	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	Label *codex_help = memnew(Label);
@@ -6500,7 +6558,8 @@ void fragment() {
 	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/bin/python"));
 #endif
 	EDITOR_DEF("ai_chat/build_arguments", "");
-	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", EDITOR_GET("ai_chat/build_python"));
+	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", initial_paths.get("build_python", ""));
+	engine_python->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("build_python")));
 	Label *build_args_label = memnew(Label);
 	build_args_label->set_text(U"额外 SCons 配置（每行 key=value，保留现有依赖/工具链设置）");
 	build_args_label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);

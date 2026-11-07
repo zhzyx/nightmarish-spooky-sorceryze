@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "base_head": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "observed_at": "2026-11-07T16:07:32.150104+00:00",
+  "checks": [
+    {
+      "check": "native_cross_window_runtime_and_invalid_external_child",
+      "result": "passed",
+      "receipt_sha256": "fbb87ee8d48b0bbd2fd86e22b5bd61dedc67aa1e74817e478b6730c358de4902",
+      "artifact_sha256": "55b2f392b6b2ff8266ee6188ac293fca09262046beeea235a9277e0be79c52a5",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "typed_design_parent_children_return",
+      "result": "passed",
+      "receipt_sha256": "a7dab6ffa570b46a8d48859748ab9c2891351a62d8507090f83dcb99a13de583",
+      "artifact_sha256": "3f486c8ed9bb08ffc2cf0bd1dc8d189ab84e50d63107f481787d0d7e56bcd034",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "unavailable_runtime_metadata",
+      "result": "passed",
+      "receipt_sha256": "a1f5ef56ecf6c43048a85a018544ce05156d7090e1f5e0c0751548eea15d468c",
+      "artifact_sha256": "3f486c8ed9bb08ffc2cf0bd1dc8d189ab84e50d63107f481787d0d7e56bcd034",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "models_initial_success_live_wakeup",
+      "result": "passed",
+      "receipt_sha256": "ae7d3d0efe845cc2a47765dbb3e11eaf480b72867cde9ced59c21a84a27508ab",
+      "artifact_sha256": "3f486c8ed9bb08ffc2cf0bd1dc8d189ab84e50d63107f481787d0d7e56bcd034",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "models_initial_failure_live_wakeup",
+      "result": "passed",
+      "receipt_sha256": "647cca8da872a2295a96caa0b252d54e40b977f27ca87836c046e4606ec4c0a3",
+      "artifact_sha256": "55b2f392b6b2ff8266ee6188ac293fca09262046beeea235a9277e0be79c52a5",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "models_return_success_live_wakeup",
+      "result": "passed",
+      "receipt_sha256": "381bbb5cf5874c50fb60ac630431ec94d3bd2a24b5297fa5aa9ce4e31094a532",
+      "artifact_sha256": "55b2f392b6b2ff8266ee6188ac293fca09262046beeea235a9277e0be79c52a5",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "models_return_failure_live_wakeup",
+      "result": "passed",
+      "receipt_sha256": "a4b8688a9f9860df8b88db6781242ef4ca46915bed0ee3f69ff43e2e43bc0af8",
+      "artifact_sha256": "55b2f392b6b2ff8266ee6188ac293fca09262046beeea235a9277e0be79c52a5",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    },
+    {
+      "check": "signed_app_offline_origin_and_same_byte_resume",
+      "result": "passed",
+      "receipt_sha256": "59bb57b9315fce9a474b1eea07961170bbbf7d80fb04bf65eac4cbdb1b053e92",
+      "artifact_sha256": "a4e54557105de4906a9df8f406d8b263abe829c0a2dde27868e347dc3c828299",
+      "scope": "Actual isolated native editor with offline providers/source fixtures; no user configuration, installed application, real model inference or production authority exercised."
+    }
+  ],
+  "unit_checks": [
+    {
+      "check": "native_Cpp_Python_OS_lock_atomic_merge_early_scope_default_project_artifact_layout",
+      "platform": "macOS arm64",
+      "tests_passed": 7,
+      "assertions_passed": 50,
+      "receipt_sha256": "f755c05ca7d18932f65214d87d07a1e8ecf8c5577f9d3fc1c64f233c63167c9a"
+    },
+    {
+      "check": "stdlib_runtime_reader_and_scoped_bridge",
+      "tests_passed": 9,
+      "receipt_sha256": "b8261ae6d035ae9fbcce3a4d0639ebbd9d11acd20d0fbe6168f641e9afda3fa5"
+    },
+    {
+      "check": "registered_profile_identity_alias_change_and_discovery_environment",
+      "tests_passed": 9,
+      "receipt_sha256": "e3b7ac98927d93c5049366afddf1dff7fbd41934eecdf747f68bf8f9fd6f71f2"
+    },
+    {
+      "check": "existing_bridge_regression_with_canonical_private_TMPDIR",
+      "tests_passed": 25,
+      "receipt_sha256": "178505adbb77372389fb7d0e9dfd72954ebdf7defc91011fc41e4ef08fdd7357"
+    }
+  ],
+  "entry_validation": "Real Python -I tools/gonggong_bridge.py --workspace . --help succeeded without cwd import bootstrap.",
+  "independent_review": "data-collection/issue462-runtime-consumer-review-20261108.json",
+  "remaining_verification": {
+    "windows_MSVC_and_lock": "required_exact_head_CI_pending",
+    "frozen_source_production_signed_app": "pending_source_freeze_and_parent_coordinated_build",
+    "user_install_and_zero_argument_icon_GUI": "parent_install_owner_retains_execution; not claimed by offline or explicit-headless fixtures"
+  },
+  "input_tokens": null,
+  "output_tokens": null,
+  "usage_reason": "Host did not report measured usage."
+}

@@ -120,5 +120,126 @@ class LocalModels(unittest.TestCase):
                 invoke(profile, "ping", [{}])
 
 
+class RuntimeProfileTransitions(unittest.TestCase):
+    def test_discovery_uses_one_runtime_for_arguments_and_child_environment(self):
+        with tempfile.TemporaryDirectory() as temporary, ExitStack() as stack:
+            folder = Path(temporary).resolve()
+            files = {}
+            for name in ("node-new", "codex-new", "buddy.js", "node-old"):
+                path = folder / name
+                path.touch()
+                path.chmod(0o700)
+                files[name] = str(path)
+            configuration = folder / "runtime.json"
+            configuration.write_text(
+                json.dumps({"schema_version": 1, "runtimes": {"node": files["node-new"], "codex": files["codex-new"]}})
+            )
+            stack.enter_context(
+                patch.dict(
+                    os.environ,
+                    {
+                        "CODEX_HOME": str(folder),
+                        "GONGGONG_RUNTIME_CONFIG": str(configuration),
+                        "GONGGONG_NODE": files["node-old"],
+                        "GONGGONG_RUNTIME_DERIVED_ENV": json.dumps({"node": files["node-old"]}),
+                    },
+                    clear=True,
+                )
+            )
+            read = stack.enter_context(
+                patch.object(local_models, "runtime_configuration", wraps=local_models.runtime_configuration)
+            )
+            calls = []
+
+            def reply(arguments, timeout, environment=None):
+                calls.append((arguments, environment))
+                self.assertEqual(environment["GONGGONG_NODE"], files["node-new"])
+                self.assertEqual(environment["GONGGONG_CODEX"], files["codex-new"])
+                return {"models": [{"slug": "current", "id": "current"}]}
+
+            stack.enter_context(patch.object(local_models, "run_json", side_effect=reply))
+            rows = list(local_models.discover_cli({"cli_entry": files["buddy.js"]}))
+            self.assertEqual(read.call_count, 1)
+            self.assertEqual(len(calls), 2)
+            self.assertEqual(calls[0][0][0], files["codex-new"])
+            self.assertEqual(calls[1][0][0], files["node-new"])
+            self.assertTrue(all(row[1] for row in rows))
+
+    def test_changed_runtime_requires_existing_connection_verification(self):
+        self.check_transition(False)
+
+    @unittest.skipIf(os.name == "nt", "This alias transition covers Unix executable symlinks")
+    def test_alias_target_change_requires_new_registered_identity(self):
+        self.check_transition(True)
+
+    def check_transition(self, use_alias):
+        with tempfile.TemporaryDirectory(prefix="runtime-model-profile-") as temporary, ExitStack() as stack:
+            folder = Path(temporary).resolve()
+            configuration = folder / "runtime.json"
+            entries = {}
+            for name in ("node-old", "node-new", "codex-old", "codex-new"):
+                path = folder / name
+                path.write_text("#!/bin/sh\nexit 99\n")
+                path.chmod(0o755)
+                entries[name] = str(path)
+
+            def save(suffix):
+                paths = {"node": entries["node-" + suffix], "codex": entries["codex-" + suffix]}
+                if use_alias:
+                    for field, target in list(paths.items()):
+                        alias = folder / (field + "-alias")
+                        alias.unlink(missing_ok=True)
+                        alias.symlink_to(target)
+                        paths[field] = str(alias)
+                configuration.write_text(json.dumps({"schema_version": 1, "runtimes": paths}))
+
+            save("old")
+            (folder / "models_cache.json").write_text('{"models":[{"slug":"runtime-model"}]}')
+            stack.enter_context(
+                patch.dict(
+                    os.environ, {"CODEX_HOME": str(folder), "GONGGONG_RUNTIME_CONFIG": str(configuration)}, clear=True
+                )
+            )
+            stack.enter_context(patch.object(catalog, "config_dir", return_value=folder))
+            database = stack.enter_context(closing(catalog.database(folder)))
+            calls = []
+
+            def bridge(arguments, timeout, environment=None):
+                calls.append(arguments)
+                self.assertEqual(arguments[2], "chat")
+                self.assertEqual(environment["GONGGONG_RUNTIME_CONFIG"], str(configuration))
+                payload = json.loads(arguments[4].read_text())
+                challenge = payload["messages"][0]["content"].split()[-1]
+                return {"choices": [{"message": {"content": challenge}, "finish_reason": "stop"}]}
+
+            stack.enter_context(patch.object(local_models, "run_json", side_effect=bridge))
+            catalog.connect_and_verify(database, {"backend": "2"})
+            original_profiles = catalog.profiles(database)
+            original_id = next(iter(original_profiles))
+            original = dict(original_profiles[original_id])
+            self.assertTrue(any(row["id"] == original_id for row in catalog.sinan_catalog(database, ["text"])))
+            self.assertEqual(calls[-1][0], entries["node-old"])
+            self.assertEqual(str(calls[-1][3]), entries["codex-old"])
+
+            before = configuration.read_bytes()
+            save("new")
+            if use_alias:
+                self.assertEqual(configuration.read_bytes(), before)
+            calls.clear()
+            with self.assertRaisesRegex(ValueError, "运行路径已更新"):
+                invoke(original, "do not execute stale runtime", [])
+            self.assertEqual(calls, [])
+            self.assertEqual(catalog.profiles(database)[original_id], original)
+
+            catalog.connect_and_verify(database, {"backend": "2"})
+            current = catalog.profiles(database)
+            new_id = next(key for key, value in current.items() if value["node"] == entries["node-new"])
+            self.assertNotEqual(new_id, original_id)
+            self.assertEqual(current[original_id], original)
+            self.assertTrue(any(row["id"] == new_id for row in catalog.sinan_catalog(database, ["text"])))
+            self.assertEqual(calls[-1][0], entries["node-new"])
+            self.assertEqual(str(calls[-1][3]), entries["codex-new"])
+
+
 if __name__ == "__main__":
     unittest.main()

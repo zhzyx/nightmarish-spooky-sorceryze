@@ -54,7 +54,7 @@ def source_snapshot(root):
     return {"source_digest": hashlib.sha256(canonical(inputs)).hexdigest(), "source_inputs": inputs}
 
 
-def artifact_manifest(root, artifact, binding, project, options, before):
+def artifact_manifest(root, artifact, binding, project, options, before, native_app=None):
     after = source_snapshot(root)
     if after != before:
         raise ValueError("candidate_source_changed_during_build")
@@ -69,6 +69,14 @@ def artifact_manifest(root, artifact, binding, project, options, before):
         "artifact_sha256": hashlib.sha256(Path(artifact).read_bytes()).hexdigest(),
     }
     path = Path(str(artifact) + ".candidate.json")
+    if native_app is not None:
+        from editor_native_app import descriptor, manifest_path, validate_native_app
+
+        value["native_app"] = descriptor(root, native_app)
+        path = manifest_path(native_app)
+        # Signing must have finished before hashing and publishing the sidecar.
+        # Validation reads the sealed locator, but never changes the App.
+        validate_native_app(root, value, path)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_bytes(canonical(value))
     temporary.replace(path)

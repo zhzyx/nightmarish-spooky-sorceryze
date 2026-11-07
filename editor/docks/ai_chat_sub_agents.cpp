@@ -38,6 +38,7 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_sub_agent_receipts.h"
+#include "editor/docks/gonggong_runtime_config.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
@@ -781,6 +782,8 @@ void AIChatDock::_sub_agent_dispatch() {
 }
 
 bool AIChatDock::_dispatch_parallel_sub_agents() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
 	if (config.is_empty()) {
 		return false;
@@ -838,7 +841,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	args.push_back(_engine_root().path_join("tools/godot_parallel/runner.mjs"));
 	args.push_back(request_file);
 	args.push_back(sub_agent_parallel_output);
-	if (OS::get_singleton()->create_process(cli_node->get_text().strip_edges(), args, &sub_agent_parallel_pid) != OK) {
+	if (OS::get_singleton()->create_process(GongGongRuntimeConfig::path(runtime, "node"), args, &sub_agent_parallel_pid) != OK) {
 		sub_agent_parallel_pid = -1;
 		_append(TTR("Error"), U"并行执行器未启动；派发意图已保留，需对账。");
 		return true;

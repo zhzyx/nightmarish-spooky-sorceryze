@@ -123,6 +123,7 @@
 #include "editor/doc/doc_data_class_path.gen.h"
 #include "editor/doc/doc_tools.h"
 #include "editor/doc/editor_help.h"
+#include "editor/docks/gonggong_engine_origin.h"
 #include "editor/editor_node.h"
 #include "editor/file_system/editor_file_system.h"
 #include "editor/file_system/editor_paths.h"
@@ -2051,6 +2052,17 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	}
 
 #ifdef TOOLS_ENABLED
+	if (GongGongEngineOrigin::uses_default_project(args)) {
+		const Dictionary origin = GongGongEngineOrigin::read();
+		if (bool(origin.get("managed", false))) {
+			if (!bool(origin.get("ok", false))) {
+				OS::get_singleton()->printerr("Installed engine origin verification failed. Preserve the candidate source and reinstall the accepted application.\n");
+				goto error;
+			}
+			project_path = origin["project_root"];
+			editor = true;
+		}
+	}
 	if (editor && project_manager) {
 		OS::get_singleton()->print(
 				"Error: Command line arguments implied opening both editor and project manager, which is not possible. Aborting.\n");

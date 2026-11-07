@@ -72,6 +72,25 @@ public:
 		return String();
 	}
 
+	static String native_app_for_executable(const String &p_executable) {
+		const String executable = p_executable.replace("\\", "/").simplify_path();
+		const String app = executable.get_base_dir().get_base_dir().get_base_dir();
+		return app.ends_with(".app") && executable == app.path_join("Contents/MacOS/Godot") ? app : String();
+	}
+
+	static String candidate_manifest_path(const String &p_executable) {
+		const String app = native_app_for_executable(p_executable);
+		return (app.is_empty() ? p_executable : app) + ".candidate.json";
+	}
+
+	static bool self_update_path_matches(const String &p_executable, const String &p_source) {
+		const String executable = p_executable.replace("\\", "/").simplify_path();
+		const String app = native_app_for_executable(executable);
+		const String output = app.is_empty() ? executable : app;
+		const String file = output.get_file();
+		return output.get_base_dir().nocasecmp_to(p_source.path_join("bin").replace("\\", "/").simplify_path()) == 0 && file.begins_with("godot.") && file.contains(".editor.") && (file.contains(".self_update_a.") || file.ends_with(".self_update_a") || file.contains(".self_update_b.") || file.ends_with(".self_update_b"));
+	}
+
 	static bool artifact_matches(const String &p_executable, const String &p_manifest, const Dictionary &p_binding, String &r_error) {
 		const Ref<FileAccess> file = FileAccess::open(p_manifest, FileAccess::READ);
 		if (file.is_null() || file->get_length() > 16 * 1024 * 1024) {
@@ -84,6 +103,18 @@ public:
 			return false;
 		}
 		const Dictionary manifest = parsed;
+		const String app = native_app_for_executable(p_executable);
+		if (!app.is_empty()) {
+			const Dictionary native_app = manifest.get("native_app", Dictionary());
+			const Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(p_binding.get("binding_path", "")));
+			if (native_app.size() != 3 || native_app.get("bundle_path", "") != app || native_app.get("executable_relative", "") != "Contents/MacOS/Godot" || native_app.get("origin_relative", "") != "Contents/Resources/gonggong_engine_origin.json" || p_manifest != candidate_manifest_path(p_executable) || recorded.get("artifact_manifest", "") != p_manifest) {
+				r_error = "candidate_native_artifact_layout_mismatch";
+				return false;
+			}
+		} else if (manifest.has("native_app")) {
+			r_error = "candidate_native_artifact_layout_mismatch";
+			return false;
+		}
 		const Dictionary binding = manifest.get("binding", Dictionary());
 		for (const String &key : { String("source_root"), String("issue"), String("request_id"), String("owner"), String("branch"), String("base_sha") }) {
 			if (!p_binding.has(key) || binding.get(key, Variant()) != p_binding[key]) {

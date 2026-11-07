@@ -97,13 +97,18 @@ func _run(action: String, input: Dictionary) -> void:
 		return
 	var settings := EditorInterface.get_editor_settings()
 	var root: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
-	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	var runtime: Dictionary = chat.prepare_runtime_configuration().get("executables", {}) if is_instance_valid(chat) else {}
+	var python: String = str(runtime.get("workflow_python", ""))
+	if action == "connect-local":
+		input.cli_node = str(runtime.get("node", ""))
+		input.codex_entry = str(runtime.get("codex", ""))
 	var entry := root.path_join("customizations/components/godot-host/daqian/models_cli.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(entry):
 		info.text = "请绑定包含天枢模型接入的共工仓库"
 		return
 	if python.is_empty():
-		python = "python" if OS.has_feature("windows") else "python3"
+		info.text = "请配置有效的工作流 Python 路径"
+		return
 	var user := user_id
 	var process := OS.execute_with_pipe(python,[entry,action,root,user,editor_session],false)
 	if process.is_empty():

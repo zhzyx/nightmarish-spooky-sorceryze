@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "reviewer": "/root/runtime_entry_fix independent conditional-compilation review",
+  "reviewed_at": "2026-11-07T16:21:39.914273+00:00",
+  "status": "pass",
+  "scope": "Only MACOS_ENABLED loop boundary and non-Mac uses_default_project predicate; not full origin/configuration implementation or new CI",
+  "source": "editor/docks/gonggong_engine_origin.cpp",
+  "source_sha256": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+  "base_head": "1600f40c56194fd3f0b4fc99a2ef2e7cdafd0596",
+  "findings": [],
+  "checks": [
+    {
+      "check": "macos_branch_exact_equivalence",
+      "result": "pass",
+      "basis": "Independently preprocessed original HEAD and fixed method with local clang -E -P -DMACOS_ENABLED; whitespace-normalized token output is identical. Empty/all-psn arguments still true; any real argument false."
+    },
+    {
+      "check": "non_macos_no_unused_loop_local",
+      "result": "pass",
+      "basis": "Independently preprocessed fixed method without MACOS_ENABLED; body is exactly return p_arguments.is_empty(), and contains no argument loop/local. Existing p_arguments remains used."
+    },
+    {
+      "check": "non_macos_predicate_equivalence",
+      "result": "pass_source",
+      "basis": "Previous non-Mac loop returned false on first element, true only when empty, equal to is_empty(). No locator, source digest or permission logic changed."
+    },
+    {
+      "check": "existing_unit_cases",
+      "result": "source_reviewed",
+      "basis": "Current test_runtime_config.cpp covers empty list; macOS -psn_ bookkeeping; --headless; explicit --path/project arguments. No Windows execution claimed."
+    }
+  ],
+  "preprocessor_outputs": {
+    "macos_before": "bool GongGongEngineOrigin::uses_default_project(const List<String> &p_arguments) {\n for (const String &argument : p_arguments) {\n  if (argument.begins_with(\"-psn_\")) {\n   continue;\n  }\n  return false;\n }\n return true;\n}\n",
+    "macos_after": "bool GongGongEngineOrigin::uses_default_project(const List<String> &p_arguments) {\n for (const String &argument : p_arguments) {\n  if (argument.begins_with(\"-psn_\")) {\n   continue;\n  }\n  return false;\n }\n return true;\n}\n",
+    "non_macos_after": "bool GongGongEngineOrigin::uses_default_project(const List<String> &p_arguments) {\n return p_arguments.is_empty();\n}\n"
+  },
+  "author_validation": {
+    "production_macos_incremental_build": "read successful,11.64seconds",
+    "native_unit": "read 7/7 cases and50/50assertions SUCCESS; author executed, this reviewer did not rerun",
+    "log_sha256": {
+      "bin/issue462-clang-conditional-fix-build.log": "b20a2351dd13f3eaa54f6a05b1a3a679b7d810985a564c2333551a04be9173c7",
+      "bin/issue462-unit-source/issue462-unit-results-conditional-fix.log": "35aa38365bf327d7c4d96b3b7e0e7cc4adbcd5bb5765a2e3a3bd3de638bb403c"
+    },
+    "new_exact_CI": "still required; no Windows run claimed by this reviewer"
+  },
+  "windows_execution_claimed": false,
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "private_original_sha256": "8ac7811ec7f3f149c1059e37a6fe20ffb9700995cd1018b1575e32b2e204f54b"
+}

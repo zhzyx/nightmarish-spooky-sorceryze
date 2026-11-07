@@ -32,6 +32,7 @@
 
 #include "core/io/file_access.h"
 #include "core/os/os.h"
+#include "editor/docks/gonggong_engine_origin.h"
 
 // Resolve from the installed executable, independently of the current directory.
 class GongGongHostPaths {
@@ -48,6 +49,14 @@ public:
 			directory = parent;
 		}
 		return String();
+	}
+
+	static String engine_source() {
+		const Dictionary origin = GongGongEngineOrigin::read();
+		if (bool(origin.get("managed", false))) {
+			return bool(origin.get("ok", false)) ? String(origin.get("source_root", "")) : String();
+		}
+		return find_ancestor(OS::get_singleton()->get_executable_path().get_base_dir(), "SConstruct");
 	}
 
 	static String workspace() {

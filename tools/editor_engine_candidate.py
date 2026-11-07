@@ -360,6 +360,17 @@ def candidate_digest(common, repository, issue, request_id, owner):
 
 def inherited_launch(workspace, common, repository, origin, folder, actual_launch):
     """Follow only a private binding tied to this source or this exact artifact."""
+    from editor_native_app import app_for_executable, read_locator, validate_native_app, verify_bundle
+
+    actual_locator = None
+    if app_for_executable(actual_launch):
+        try:
+            actual_locator = read_locator(actual_launch)
+        except FileNotFoundError:
+            pass  # Existing managed Apps predate the native resource locator.
+        except (OSError, ValueError, TypeError):
+            raise CandidateError("candidate_inherited_artifact_invalid") from None
+    located_manifest = actual_locator.get("candidate_manifest") if actual_locator else None
     proven = {}
     for path in sorted(folder.glob("*.json")):
         if path.is_symlink() or not re.fullmatch(r"[a-f0-9]{24}\.json", path.name):
@@ -373,7 +384,10 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
         except (OSError, ValueError, TypeError, KeyError):
             # An unrelated unfinished candidate is not evidence of a launch lineage.
             continue
-        if source != workspace and manifest_path != Path(str(actual_launch) + ".candidate.json"):
+        associated = (
+            manifest_path == Path(str(actual_launch) + ".candidate.json") or str(manifest_path) == located_manifest
+        )
+        if source != workspace and not associated:
             continue
         if (
             not source.is_absolute()
@@ -386,10 +400,16 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             executable = Path(manifest["executable"])
         except (OSError, ValueError, TypeError, KeyError):
-            if source == workspace or manifest_path == Path(str(actual_launch) + ".candidate.json"):
+            if source == workspace or associated:
                 raise CandidateError("candidate_inherited_artifact_invalid") from None
             continue
-        if source != workspace and executable != actual_launch:
+        native = "native_app" in manifest
+        installed_native = (
+            native
+            and str(manifest_path) == located_manifest
+            and actual_launch == Path(previous.get("initial_launch_executable", ""))
+        )
+        if source != workspace and executable != actual_launch and not installed_native:
             continue
         if (
             previous.get("state") != "prepared"
@@ -429,8 +449,8 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             or not executable.is_file()
             or executable.is_symlink()
             or executable.resolve() != executable
-            or executable.parent != source / "bin"
-            or manifest_path != Path(str(executable) + ".candidate.json")
+            or (not native and executable.parent != source / "bin")
+            or (not native and manifest_path != Path(str(executable) + ".candidate.json"))
         ):
             raise CandidateError("candidate_inherited_artifact_invalid")
         built_binding = manifest.get("binding")
@@ -453,6 +473,17 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             executable.read_bytes()
         ).hexdigest() != manifest.get("artifact_sha256"):
             raise CandidateError("candidate_inherited_artifact_invalid")
+        if native:
+            try:
+                validate_native_app(source, manifest, manifest_path)
+                if installed_native:
+                    # An installed entry may inherit only this exact accepted,
+                    # sealed artifact. No arbitrary nested executable is allowed.
+                    verify_bundle(
+                        app_for_executable(actual_launch), read_locator(executable), manifest["artifact_sha256"]
+                    )
+            except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+                raise CandidateError("candidate_inherited_artifact_invalid") from None
         initial = previous.get("initial_launch_executable")
         if (
             not isinstance(initial, str)

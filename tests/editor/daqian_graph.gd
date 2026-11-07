@@ -92,6 +92,8 @@ func run() -> void:
 		push_error("fixture membership not verified: %s (pending=%s, checking=%s)" % [workspace.notice.text, workspace.refresh_pending, workspace.checking])
 		quit(1)
 		return
+	# The next section supplies its own 55-row board; live receipts must not replace it.
+	workspace._stop_progress_watch()
 	var graph = workspace.editor
 	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()

@@ -71,10 +71,12 @@ class GongGongPanel : public VBoxContainer {
 	void run_action(const String &p_action);
 	void poll();
 	void save_issue_binding(const String &p_text);
+	void runtime_python_changed(const String &p_value);
 
 public:
 	GongGongPanel();
 	bool ensure_environment();
+	bool ensure_environment_with_snapshot(const Dictionary &p_runtime);
 	void set_setup_completed(const Callable &p_callback) { setup_completed = p_callback; }
 	// Reflect a binding saved elsewhere (the chat Issue guide) without re-saving it.
 	void reload_issue_binding();

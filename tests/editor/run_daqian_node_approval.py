@@ -64,12 +64,18 @@ class Model(BaseHTTPRequestHandler):
 
 
 def run(binary):
+    os.environ.pop("GONGGONG_WORKSPACE", None)
     with (
         tempfile.TemporaryDirectory(prefix="daqian-approval-", ignore_cleanup_errors=os.name == "nt") as tmp,
         ThreadingHTTPServer(("127.0.0.1", 0), Model) as server,
     ):
-        project = Path(tmp)
+        project = Path(tmp).resolve()
         isolated_editor = copy_editor(binary, project / "isolated-editor")
+        configuration = isolated_editor.parent / "editor_data/gonggong/config.json"
+        configuration.parent.mkdir(parents=True, exist_ok=True)
+        configuration.write_text(
+            json.dumps({"schema_version": 1, "runtimes": {"workflow_python": sys.executable}}), encoding="utf-8"
+        )
         # The editor enumerates models at startup, before the test can configure the inline form.
         (isolated_editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
             '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
@@ -150,7 +156,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result))
             + 'Path(sys.argv[sys.argv.index("--result")+1]).write_text(json.dumps(result))\n'
         )
         env = dict(
-            os.environ,
+            {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},
+            GONGGONG_RUNTIME_CONFIG=str(configuration),
             DAQIAN_TEST_REPO=str(workspace),
             DAQIAN_TEST_PYTHON=sys.executable,
             GODOT_AI_API_KEY="fixture-key",

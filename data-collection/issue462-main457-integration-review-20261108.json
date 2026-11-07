@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "reviewer": "/root/runtime_entry_fix independent main457 integration review",
+  "reviewed_at": "2026-11-07T16:28:54.120483+00:00",
+  "status": "pass_scoped_integration",
+  "base_head": "1a8e08a9dbba7c2e79b9809961fecdf988780893",
+  "merging_main": "b5d66c00b3a6f7a32bc9ff637c2d28ba2c908f0a",
+  "scope": "Only normal no-conflict main PR457 integration against fixed462 source, central-runtime consumption and preview receipt boundaries plus private runner adaptation; not full feature17-file re-review or product UI acceptance",
+  "findings": [],
+  "files_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "3f4f9138e93d4dff9185d1425c4975ea6d21ae871eb2567644871fa83398c8f0",
+    "editor/docks/ai_chat_dock.h": "40dc427c449408156436f1f3ae82af1c073cfb797f56174ff10193fb309275a8",
+    "editor/docks/daqian/workspace.gd": "21a35f385d3bb33242d44850d93d4537a723da53ee037bd2c5d5e807c460f602",
+    "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+    "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+    "tests/editor/run_daqian_node_approval.py": "b5d2a8e0671db80f25e3ea705439926c8602d77bb5a240e9aa7d4161267177c6"
+  },
+  "checks": [
+    {
+      "id": "central_runtime_consumer_unchanged",
+      "result": "pass",
+      "basis": "Programmatically compared the five workspace methods _runtime_paths,_save_runtime_python,_open_connection,_save_connection,_open_models against HEAD1a8: byte-equivalent. Fresh host configuration paths/executables and single-field workflow_python update remain; workspace-only connection save does not rewrite stale LineEdit runtime values."
+    },
+    {
+      "id": "new_ui_modules_do_not_read_runtime",
+      "result": "pass",
+      "basis": "Read both extracted GDScript modules completely; no OS, EditorSettings, legacy Python or runtime-path consumer. Model catalog still comes from chat.get_daqian_models; canvas stores scoped selections, drafts and bounded display history."
+    },
+    {
+      "id": "preview_receipt_and_stale_guard",
+      "result": "pass_scoped_source",
+      "basis": "C++ preview_receipt only decouples per-request return identity from stable conversation_source; default empty receipt retains existing source. Canvas tracks pending turns by random receipt, consumes once, checks session/root/actor, and execution routing still requires current scope/generation/selection epochs plus fresh access before/after await. Late answer writes original scope history only. Approval details retain exact root/actor/Issue/request/source digest/token matching and post-fetch binding snapshot equality."
+    },
+    {
+      "id": "private_offline_runner",
+      "result": "pass",
+      "basis": "Runner clears only its own inherited workspace and child GONGGONG runtime environment; creates private _sc_ central JSON before editor startup and binds GONGGONG_RUNTIME_CONFIG to it. No user configuration or source guard weakened."
+    }
+  ],
+  "author_receipts_read": {
+    "production_build": "bin/issue462-main457-build.log successful26.72seconds; author executed",
+    "approval": "bin/issue462-main457-approval.log contains DAQIAN_INLINE_APPROVAL_OK; author executed",
+    "runtime_five": {
+      "report": "bin/issue462-main457-runtime-five.json",
+      "ok": true,
+      "artifact_sha256": "292ad8d4ce6ee0687b5e6938de50543a13a16cb5ad5232b9f7de5178ec38a9ef",
+      "scope": "Actual private native roles with offline providers; includes other-window freshness and workspace-only save retaining remote Python; reviewer read reports, did not rerun"
+    }
+  },
+  "report_sha256": {
+    "bin/issue462-main457-build.log": "5f36729ad62a1738caaca1fe5ae401b0a441d04c4726dbcff016b296a0534e4b",
+    "bin/issue462-main457-approval.log": "274e33117ed4044afeba9c6dbbd347d15e418ee1f20de1318b4a14ce4d346461",
+    "bin/issue462-main457-runtime-five.json": "826e34b9defbf02ee3e2a420003fc027cca0694a5e479ad379ceab6261fadd82"
+  },
+  "excluded": [
+    "Full #457 business behavior",
+    "Production App install or zero-argument icon GUI",
+    "Actual Windows/MSVC execution",
+    "Re-review of unchanged18-file central configuration implementation"
+  ],
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "private_original_sha256": "3bed185f7f8ff06ea63467b2275e33ad39e33ad9185d362ded900f214ec7e58e"
+}

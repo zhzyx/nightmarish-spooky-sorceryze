@@ -207,6 +207,9 @@ def main():
         )
         git_wrapper.chmod(0o700)
         binary = copy_editor(args.godot, folder / "isolated-editor")
+        # The bare offline engine locates its read-only tools independently of CLI settings.
+        (folder / "SConstruct").touch()
+        (folder / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
         artifact_sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
         targets = {}
 
@@ -226,7 +229,7 @@ def main():
                 "codex": str(args.node.resolve()),
             }.items():
                 expected = None if empty else expected
-                assert runtimes[name] == {"source": "current_host", "version": None, "path": expected}, (
+                assert runtimes[name] == {"source": "configuration", "version": None, "path": expected}, (
                     name,
                     runtimes[name],
                 )
@@ -675,6 +678,9 @@ def main():
             + "\n"
         )
         env = dict(os.environ)
+        for key in list(env):
+            if key.startswith("GONGGONG_"):
+                env.pop(key)
         for key in [
             "OPENAI_API_KEY",
             "GODOT_AI_API_KEY",
