@@ -187,10 +187,24 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	panel.conversation.find_child("CloseInspector",true,false).pressed.emit()
 	check(not panel.conversation.visible and panel.editor.is_visible_in_tree() and panel.editor.canvas.get_node("wf-prepare") == same_card, "Closing the inspector destroyed or hid its workflow")
 	panel._update_direct_action()
-	check(panel.publish_button.text == "查看推进对话", "Existing chat cannot be reopened")
-	var restored: Button = same_card.get_node("IssueAction")
-	check(same_card.get_meta("flow_state") == "revisitable", "Existing session highlighted as a new task")
-	check(restored.text == panel.publish_button.text and restored.get_theme_stylebox("normal").border_color == Color("#a8e1b9"), "Completed session lacks matching revisitable action")
+	# The fixture rejects the first execution at admission; its session now requires attention.
+	var deadline_failure := Time.get_ticks_msec() + 10000
+	while panel.editor.workflow.get("progress", {}).get("state") != "failed" and Time.get_ticks_msec() < deadline_failure:
+		await create_timer(0.02).timeout
+	await panel.editor.await_graph_projection()
+	var prepare: GraphNode = panel.editor.canvas.get_node("wf-prepare")
+	var action: Button = prepare.get_node("IssueAction")
+	check(panel.editor.workflow.progress.state == "failed" and prepare.get_meta("flow_state") == "action_required", "Execution failure lost its actionable Sinan card")
+	check(action.text == panel.publish_button.text and action.get_theme_stylebox("normal").border_color == Color.WHITE, "Failed session has no matching highlighted action")
+	# A successful terminal callback for the same binding makes the session revisitable.
+	var execution_key: String = panel._execution_key(panel._direct_binding())
+	panel.execution_turns["verified-recovery"] = {"key":execution_key, "root":panel._repo(), "actor":panel.actor.duplicate()}
+	panel._execution_finished({"token":"verified-recovery"}, "", true)
+	await panel.editor.await_graph_projection()
+	prepare = panel.editor.canvas.get_node("wf-prepare")
+	action = prepare.get_node("IssueAction")
+	check(panel.publish_button.text == "查看推进对话" and prepare.get_meta("flow_state") == "revisitable", "Successful session highlighted as a new task")
+	check(action.text == panel.publish_button.text and action.get_theme_stylebox("normal").border_color == Color("#a8e1b9"), "Completed session lacks matching revisitable action")
 	var closed := binding.duplicate()
 	closed.closed = true
 	panel.board.issues = [closed]

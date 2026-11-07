@@ -106,6 +106,8 @@ var publish_confirm: Button
 var publish_cancel: Button
 var requirement_input: TextEdit
 var routing_in_flight := {}
+var execution_turns := {}
+var checked_execution := {}
 var routing_stages := {}
 var progress_directory := ""
 var legacy_route_path := ""
@@ -2357,6 +2359,8 @@ func _stop_progress_watch() -> void:
 	fresh_progress = false
 	refresh_pending = false
 	chat_work.clear()
+	execution_turns.clear()
+	checked_execution.clear()
 	operation_history.clear()
 
 
@@ -3388,6 +3392,112 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false, expec
 
 
 # Resolve the primary action once for both presentation and execution.
+func _execution_key(binding: Dictionary) -> String:
+	return JSON.stringify([_repo(), actor.get("user_id"), binding.get("url"), int(binding.get("number", 0)),
+		binding.get("request"), binding.get("source_sha256", binding.get("updated", binding.get("revision", "")))])
+
+
+# Legacy editors recorded the terminal lifecycle event even when they discarded the
+# worker from the view. Read only on opening the exact authenticated direct issue.
+func _restore_execution_failure(item: Dictionary) -> void:
+	if not fresh_progress or offline or not is_instance_valid(chat) or not chat.has_method("get_legacy_candidate_failure"):
+		return
+	var key := _execution_key(item)
+	var request := str(item.get("request", ""))
+	var suffix := request.trim_prefix("daqian-direct-")
+	if checked_execution.has(key) or item.get("status") not in ["in-progress", "in-review"] or request == suffix or suffix.length() != 20 or not suffix.is_valid_hex_number(false) or not item.get("source_sha256"):
+		return
+	checked_execution[key] = true
+	var settings := EditorInterface.get_editor_settings()
+	var tenant := str(settings.get_setting("gonggong/tenant")) if settings.has_setting("gonggong/tenant") else "gonggong-workspace"
+	if not tenant.is_valid_filename() or tenant in [".",".."]:
+		return
+	var folder := _repo().path_join("gonggong-diting-data/events").path_join(tenant).path_join(request)
+	var owner := await _legacy_failed_owner(folder, item, request)
+	if owner.is_empty() or not fresh_progress or offline or _execution_key(item) != key:
+		return
+	var error: String = chat.get_legacy_candidate_failure(owner, _repo(), int(item.number))
+	if not error.is_empty():
+		saved.get_or_add("execution_errors", {}).get_or_add(key, error)
+		if not current.is_empty() and _execution_key(_direct_binding()) == key:
+			_sync_workflow()
+
+
+
+func _legacy_failed_owner(folder: String, item: Dictionary, request: String) -> String:
+	var directory := DirAccess.open(folder)
+	if not directory or directory.list_dir_begin() != OK:
+		return ""
+	# Enumerate first. An omitted new receipt could supersede an old failure.
+	var names := PackedStringArray()
+	for i in 64:
+		var name := directory.get_next()
+		if name.is_empty():
+			break
+		if name.begins_with("godot-event-") and name.ends_with(".json"):
+			names.append(name)
+	if not directory.get_next().is_empty():
+		return ""
+	var latest := ""
+	var owner := ""
+	var total := 0
+	var slice := Time.get_ticks_usec()
+	var principal := actor.duplicate()
+	var root := _repo()
+	for name in names:
+		if Time.get_ticks_usec() - slice > 1500:
+			await get_tree().process_frame
+			if principal != actor or root != _repo() or not fresh_progress or offline:
+				return ""
+			slice = Time.get_ticks_usec()
+		var file := FileAccess.open(folder.path_join(name), FileAccess.READ)
+		if not file:
+			return ""
+		var length := file.get_length()
+		total += length
+		if length <= 0 or length > 32 * 1024 or total > 128 * 1024:
+			return ""
+		var event = JSON.parse_string(file.get_buffer(length).get_string_from_utf8())
+		if not event is Dictionary:
+			return ""
+		if event.get("kind") not in ["request", "request_end"] or event.get("request_id") != request or event.get("source_ref") != item.url:
+			continue
+		var payload = event.get("payload")
+		if not payload is Dictionary or not payload.get("binding") is Dictionary:
+			return ""
+		var binding: Dictionary = payload.binding
+		if binding.get("actor") != actor.user_id or binding.get("source_ref") != item.url or binding.get("request_ref") != request:
+			continue
+		var stamp := str(event.get("occurred_at", ""))
+		if stamp.is_empty():
+			return ""
+		if stamp == latest:
+			owner = "" # Receipts without a strict order cannot establish a terminal failure.
+		elif stamp > latest:
+			latest = stamp
+			var authority := str(binding.get("authority_ref", ""))
+			owner = authority.trim_prefix("godot-editor:user-chat:") if authority.begins_with("godot-editor:user-chat:") and event.kind == "request_end" and payload.get("status") == "failed" and binding.get("source_sha256") == item.source_sha256 else ""
+	if owner.length() != 32 or not owner.is_valid_hex_number(false):
+		return ""
+	return owner
+
+
+func _execution_finished(receipt: Dictionary, error: String, past_preflight: bool) -> void:
+	var token: String = receipt.get("token", "")
+	var turn: Dictionary = execution_turns.get(token, {})
+	if turn.is_empty():
+		return
+	execution_turns.erase(token)
+	if turn.root != _repo() or turn.actor != actor:
+		return
+	if not error.is_empty():
+		saved.get_or_add("execution_errors", {})[turn.key] = error if past_preflight else ("预检失败 · " + error)
+	elif past_preflight:
+		saved.get("execution_errors", {}).erase(turn.key)
+	_sync_workflow()
+	_queue_save()
+
+
 func _issue_action(binding: Dictionary) -> Dictionary:
 	if binding.is_empty():
 		if current.begins_with("draft_") and (saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current)):
@@ -3411,6 +3521,11 @@ func _issue_action(binding: Dictionary) -> Dictionary:
 			if original.get("url") == binding.url and original.get("request") == binding.request and original.get("number") == binding.number:
 				started = binding.request
 				break
+	for turn in execution_turns.values():
+		if turn.key == _execution_key(binding):
+			return {"kind":"view", "text":"查看推进对话"} if started == binding.request else {"kind":"wait", "text":"推进对话处理中…"}
+	if saved.get("execution_errors", {}).has(_execution_key(binding)) and binding.get("status") in ["in-progress", "in-review"]:
+		return {"kind":"resume", "text":"重试推进", "detail":saved.execution_errors[_execution_key(binding)]}
 	if started is String and started == binding.request:
 		return {"kind":"view", "text":"查看推进对话"}
 	if binding.get("status") not in ["planned", "in-progress", "in-review"]:
@@ -3555,8 +3670,16 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 		_update_direct_action()
 		if source != current or epoch != selection_epoch or _direct_binding().get("request") != binding.request or _issue_action(_direct_binding()).get("kind") != "resume":
 			return
+	var token := ""
+	if not message.is_empty() and not selection.is_empty():
+		token = Crypto.new().generate_random_bytes(16).hex_encode()
+		execution_turns[token] = {"root":root, "actor":user, "key":_execution_key(binding)}
+		selection = selection.duplicate()
+		selection.execution_receipt = {"token":token}
 	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection, true)
 	if not error.is_empty():
+		if not token.is_empty():
+			_execution_finished({"token":token}, error, false)
 		if _bind_conversation(binding).is_empty():
 			_mount_conversation(binding)
 		notice.text = error
@@ -3845,6 +3968,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.canvas.scroll_offset = stored.get("scroll",Vector2.ZERO)
 		editor.revision = stored.revision
 		editor.baseline = stored.baseline
+	_restore_execution_failure.call_deferred(_direct_binding())
 	_read_routing_stage(_direct_binding())
 	_sync_workflow(false)
 	flow_split.show()
@@ -3979,6 +4103,8 @@ func _attach_chat() -> void:
 		chat.connect("daqian_chat_unmounted", _conversation_unmounted)
 		chat.connect("daqian_issue_bound",_issue_bound)
 		chat.connect("daqian_requirement_phase",_requirement_phase)
+		if chat.has_signal("daqian_execution_finished"):
+			chat.connect("daqian_execution_finished", _execution_finished)
 		if chat.has_signal("daqian_work_event"):
 			chat.connect("daqian_work_event", _chat_work_event)
 		if chat.has_signal("daqian_approval_changed"):
@@ -4044,6 +4170,13 @@ func _chat_work_event(root: String, binding: Dictionary, worker: String, kind: S
 		if row.url != url or row.request != binding.get("request_ref"):
 			continue
 		if kind == "request_end":
+			if row.get("source_sha256") == version:
+				var key := _execution_key(row)
+				if state == "failed":
+					saved.get_or_add("execution_errors", {}).get_or_add(key, "关联推进对话报告本轮失败")
+					_queue_save()
+				elif state == "completed":
+					saved.get("execution_errors", {}).erase(key)
 			if active.get(worker, {}).get("version") == version:
 				active.erase(worker)
 		elif row.get("source_sha256", "") == version and (kind == "request" or active.get(worker, {}).get("version") == version):
@@ -4124,6 +4257,12 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 		return {"state":"running", "text":"正在工作 · " + "、".join(names + waiting), "chat_waiting":not waiting.is_empty()}
 	if not waiting.is_empty():
 		return {"state":"waiting", "text":"、".join(waiting), "chat_waiting":true}
+	for turn in execution_turns.values():
+		if turn.key == _execution_key(item):
+			return {"state":"running", "text":"推进对话处理中"}
+	var failure: String = saved.get("execution_errors", {}).get(_execution_key(item), "")
+	if not failure.is_empty():
+		return {"state":"failed", "text":"推进失败 · " + failure + " · 可在推进卡重试"}
 	if routing_in_flight.has(key):
 		return {"state":"running", "text":"天枢宿主 · 正在核对需求判断"}
 	if not judged.is_empty() and saved.get("start_errors", {}).has(key):

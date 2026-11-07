@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "request_id": "windows-candidate-preflight",
+  "issue": 535,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+  "original_issue": 534,
+  "operator": "Sail-Li",
+  "mode": "read-only preflight; no production model replay",
+  "verified": {
+    "original_branch_equal": true,
+    "old_native_path_string_equal": false,
+    "windows_separator_normalization_equal": true,
+    "original_host_validate_only": "validated",
+    "native_assertions": 10,
+    "historical_terminal_restored": true,
+    "changed_source_ignored": true,
+    "limited_event_history_refuses_partial_results": true,
+    "stale_callback_after_scope_change_ignored": true
+  },
+  "reports": {
+    "merged-legacy.log": {
+      "sha256": "76ec17cda537dfe535db7ae8fb9a3974e03796ed39134debf5abf47b267300a8"
+    },
+    "merged-native.log": {
+      "sha256": "7aad2977065ca539203ea02516fdc099734eeb3a6550a58aebb69414e7f5d1af"
+    },
+    "merged-scope.log": {
+      "sha256": "5a80197eea6b7c70ae9fd7de18efe695e4db7be46617c3612fd4b77a3f2b51c8"
+    }
+  }
+}

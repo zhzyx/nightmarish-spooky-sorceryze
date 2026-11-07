@@ -60,6 +60,62 @@ public:
 		return directory.is_valid() ? directory->get_current_dir() : String();
 	}
 
+	// Python records canonical native paths; DirAccess and Git report slash-separated paths on Windows.
+	static bool matches_recorded_directory(const String &p_actual, const String &p_recorded) {
+		if (p_actual.is_empty() || p_recorded.is_empty()) {
+			return false;
+		}
+#ifdef WINDOWS_ENABLED
+		return canonical_directory(p_actual) == p_recorded.replace_char('\\', '/');
+#else
+		return canonical_directory(p_actual) == p_recorded;
+#endif
+	}
+
+	static bool validate_candidate_checkout(const Dictionary &p_candidate, String &r_error) {
+		const String source = p_candidate["source_root"];
+		const String link = FileAccess::get_file_as_string(source.path_join(".git")).strip_edges();
+		if (!link.begins_with("gitdir: ")) {
+			r_error = "candidate_git_link_invalid: expected an owned Git worktree.";
+			return false;
+		}
+		String gitdir = link.trim_prefix("gitdir: ");
+		if (!gitdir.is_absolute_path()) {
+			gitdir = source.path_join(gitdir).simplify_path();
+		}
+		const String head = FileAccess::get_file_as_string(gitdir.path_join("HEAD")).strip_edges();
+		if (!AIChatHostRuntime::matches_recorded_directory(source, source) || !FileAccess::exists(source.path_join("SConstruct"))) {
+			r_error = "candidate_source_changed: the recorded source directory is no longer the engine source.";
+			return false;
+		}
+		if (head != "ref: refs/heads/" + String(p_candidate["branch"])) {
+			r_error = "candidate_branch_changed: the host-owned source branch is no longer active.";
+			return false;
+		}
+		const String git = OS::get_singleton()->get_environment("GONGGONG_GIT").is_empty() ? String("git") : OS::get_singleton()->get_environment("GONGGONG_GIT");
+		for (const bool ancestry : { false, true }) {
+			List<String> args;
+			args.push_back("-C");
+			args.push_back(source);
+			if (ancestry) {
+				for (const String &arg : { String("merge-base"), String("--is-ancestor"), String(p_candidate["base_sha"]), String("HEAD") }) {
+					args.push_back(arg);
+				}
+			} else {
+				args.push_back("rev-parse");
+				args.push_back("--path-format=absolute");
+				args.push_back("--git-common-dir");
+			}
+			String output;
+			int code = -1;
+			if (OS::get_singleton()->execute(git, args, &output, &code) != OK || code != 0 || (!ancestry && !AIChatHostRuntime::matches_recorded_directory(output.strip_edges(), p_candidate["common_dir"]))) {
+				r_error = "candidate_repository_or_base_changed: source identity must be revalidated.";
+				return false;
+			}
+		}
+		return true;
+	}
+
 	static String workspace(const String &p_bound, const String &p_engine, const String &p_project) {
 		for (const String &path : { p_bound, p_engine, p_project }) {
 			if (!path.is_empty()) {
