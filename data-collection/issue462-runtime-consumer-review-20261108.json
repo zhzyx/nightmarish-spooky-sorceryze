@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "reviewer": "native_app_packaging; independent from runtime-helper/consumer implementation",
+  "head": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "conclusion": "no_remaining_blockers_in_reviewed_scope",
+  "method": "Read-only source review; no App relaunch, user settings access, install, remote authority action, or tests added during final review. Python external-invalid child-export defect was reproduced only in SystemTemp before its fix; final correction was source-reviewed. Authors/root retain final C++/Python test execution responsibility.",
+  "closed_findings": [
+    "CodeBuddy login invalid-path error arrays now have matching length and separate effective Node validation.",
+    "Native App executable layout, external manifest, polling and restart journal use the common verified HostRuntime shape; old raw layout remains compatible.",
+    "GongGong flush takes one effective snapshot for environment, provenance helper and workflow Python argv.",
+    "Local model discovery takes one snapshot for executable resolution and all discovery child environments.",
+    "Bridge with an explicit runtime scope no longer revives unavailable Node through bundled/PATH fallbacks.",
+    "Native and Python child environment exporters preserve raw true-external invalid overrides so descendants keep them unavailable instead of silently using configuration."
+  ],
+  "verified_invariants": [
+    "Native helper initializes/locks/reads/writes without Python bootstrap.",
+    "Single-field locked atomic merges and fill-only legacy migration; no credential migration.",
+    "Self-contained paths precede ambient config locators; derived exports do not become startup external overrides.",
+    "Each reviewed runtime consumer uses current effective executables instead of stale runtime LineEdits.",
+    "Missing build Python is checked only for engine build, not chat/model operations.",
+    "GDScript local-model and issue-direct launch inputs share their operation snapshot.",
+    "Canonical registered CLI profiles are compared before execution; changed runtime bindings are rejected, registry/evaluation records are not silently rewritten; available_tools remains empty.",
+    "Engine source uses verified native origin or bare executable SConstruct ancestry; no old cli_bridge source fallback."
+  ],
+  "sha256": {
+    "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+    "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "editor/docks/ai_chat_dock.cpp": "b7efbb9d19919f892baf937fe4d98402f8f6426a00773e0b73cf31f9229303a7",
+    "editor/docks/ai_chat_dock.h": "a3794e6878eb1c0158a6cd708ad1f9991cc9e4b51ffac5dcc9671cbf3a7932af",
+    "editor/docks/ai_chat_engine_candidate.cpp": "f05e517c63c12b1e0e19c15f67b16bc7f20bd569c47f188008d84147bd3dcfb9",
+    "editor/docks/ai_chat_gonggong.cpp": "62a4b33f440b9356198f0db70d12b754deaedfcd4d31dd614374ac3146a96bfc",
+    "editor/docks/ai_chat_sub_agents.cpp": "1177732c369f349ce4cfb2199a8e7c13f151862570c7242bda25a71c298fd856",
+    "editor/docks/ai_chat_host_runtime.h": "47765b31a5202f90de201b7c7d0df53f8242ac8f9bec29b8007a8763a06859f6",
+    "editor/docks/gonggong_panel.cpp": "40c3452a338448aeccf39ff5a1bed2787dd1b3c32e498e924fe728913f8a20b9",
+    "editor/docks/gonggong_panel.h": "7a748456a7f39541d58f7c650551865652c6f9a665569f279c27dbd5f0d861e1",
+    "editor/docks/daqian/workspace.gd": "8d9bb4c6690b541a90166944b22450ce46d26c2c74a34c52dd9dfd9e173d3df4",
+    "editor/docks/daqian/model_settings.gd": "37a78e3915faa7a2c3f97acf7f0263f4a1db0b73c2ec775170dd23772ed4c40c",
+    "customizations/components/godot-host/bridge.py": "b4feed6473ffb291100c8849ead07dca57d7baa1e02afbcdf134fc4a9feecc66",
+    "customizations/components/godot-host/daqian/local_models.py": "49f519d42f925539aead6e477d73b93cad3f38ee336a04c061ca356e367988f8",
+    "customizations/components/godot-host/daqian/model_api.py": "879a145fe6b21792235a28f2029855c9c6287dace43b4c3cae97c2621f473487",
+    "customizations/components/godot-host/daqian/model_catalog.py": "470b156c834fad31874479d3d5e41592acbdb9e18fa0c90fed8c26b94f9e8fd0",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa"
+  }
+}

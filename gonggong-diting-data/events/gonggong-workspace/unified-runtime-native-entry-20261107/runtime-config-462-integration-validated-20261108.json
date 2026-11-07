@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "runtime-config-462-integration-validated-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-07T16:14:59.753540+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "codex-config-bootstrap",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "codex-native-subagent-authorized-parent-handoff"
+  },
+  "payload": {
+    "action": "current_main_integration_validation",
+    "result": "passed_local_scope",
+    "validation_source": "data-collection/issue462-main453-validation-20261108.json",
+    "validation_sha256": "fb9561e4c60e82c817e184cd07a943ca340b84b90da887a703ebc02926625803",
+    "production_install_owner": "root_coordinated_after_438_source_main",
+    "usage": null
+  },
+  "evidence_refs": [
+    "runtime-config-462-validation-observed-20261108"
+  ],
+  "sha256": "e6fcf9614fd1263a926879360784bba2bf784a7d71dfa2d2d11d1ebe8359fdba"
+}

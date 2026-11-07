@@ -1,5 +1,6 @@
 """Discover local CLI model IDs and invoke the editor's tool-disabled chat bridges."""
 
+import importlib.util
 import json
 import os
 import re
@@ -14,6 +15,15 @@ TOOLS = Path(__file__).resolve().parents[4] / "tools"
 BRIDGES = {name: TOOLS / (name + "_cli") / "godot_bridge.js" for name in ("codex", "codebuddy")}
 CHATGPT = Path("/Applications/ChatGPT.app/Contents/Resources")
 MODEL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}")
+
+
+def runtime_configuration():
+    if not os.environ.get("GONGGONG_RUNTIME_CONFIG"):
+        return None, None
+    spec = importlib.util.spec_from_file_location("gonggong_runtime_config", TOOLS / "gonggong_runtime_config.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module, module.read_effective()
 
 
 def installed(*candidates, executable=False):
@@ -39,7 +49,7 @@ def codex_entry(candidates):
     return None
 
 
-def installations(settings):
+def installations(settings, runtime_context=None):
     # An app launched from Finder may have neither npm nor the desktop Codex on PATH.
     mac = sys.platform == "darwin"
     windows = os.name == "nt"
@@ -71,12 +81,16 @@ def installations(settings):
         TOOLS / "codebuddy_cli" / buddy_package,
         npm_bin / buddy_package if os.name == "nt" else shutil.which("codebuddy"),
     )
+    runtime, snapshot = runtime_configuration() if runtime_context is None else runtime_context
+    if snapshot is not None:
+        node = installed(runtime.runtime_path(snapshot, "node"), executable=True)
+        codex = installed(runtime.runtime_path(snapshot, "codex"), executable=True)
     return node, {"codex": codex, "codebuddy": buddy}
 
 
-def run_json(args, timeout):
+def run_json(args, timeout, runtime_environment=None):
     try:
-        env = os.environ.copy()
+        env = os.environ.copy() if runtime_environment is None else runtime_environment
         if os.name == "nt" and not any(name.lower().endswith("_proxy") for name in env if name.lower() != "no_proxy"):
             # Native desktop apps see the Windows proxy. Child CLIs often only read the environment.
             for scheme, proxy in urllib.request.getproxies().items():
@@ -141,7 +155,7 @@ def codex_config(home):
     return config
 
 
-def codex_ids(node, entry, home):
+def codex_ids(node, entry, home, runtime_environment=None):
     cache = home / "models_cache.json"
     try:
         with cache.open("rb") as stream:
@@ -153,11 +167,17 @@ def codex_ids(node, entry, home):
     except (OSError, ValueError):
         pass
     command = [node, entry] if entry.endswith((".js", ".mjs")) else [entry]
-    return model_ids(run_json([*command, "debug", "models"], 25), "codex")
+    arguments = [*command, "debug", "models"]
+    packet = (
+        run_json(arguments, 25, runtime_environment) if runtime_environment is not None else run_json(arguments, 25)
+    )
+    return model_ids(packet, "codex")
 
 
 def discover_cli(settings):
-    node, entries = installations(settings)
+    runtime, snapshot = runtime_configuration()
+    node, entries = installations(settings, (runtime, snapshot)) if snapshot is not None else installations(settings)
+    environment = runtime.child_environment(snapshot) if snapshot is not None else None
     for backend, label, field in (("codex", "Codex", "codex_model"), ("codebuddy", "CodeBuddy", "cli_model")):
         entry = entries[backend]
         if not entry or not node:
@@ -175,11 +195,12 @@ def discover_cli(settings):
                     for value in (configured, config.get("model"))
                     if isinstance(value, str) and MODEL_ID.fullmatch(value)
                 )
-                ids.extend(codex_ids(node, entry, home))
+                ids.extend(codex_ids(node, entry, home, environment))
             else:
                 if MODEL_ID.fullmatch(configured):
                     ids.append(configured)
-                packet = run_json([node, BRIDGES[backend], "models", entry], 40)
+                arguments = [node, BRIDGES[backend], "models", entry]
+                packet = run_json(arguments, 40, environment) if environment is not None else run_json(arguments, 40)
                 ids.extend(model_ids(packet, backend))
         except ValueError as error:
             note = str(error)
@@ -194,11 +215,22 @@ def invoke_cli(profile, text, images):
     if images:
         raise ValueError("本地 CLI 文本桥接不支持图像")
     backend = profile["protocol"].removesuffix("-cli")
+    node, entry = profile["node"], profile["entry"]
+    runtime, snapshot = runtime_configuration()
+    environment = None
+    if snapshot is not None:
+        node = installed(runtime.runtime_path(snapshot, "node"), executable=True)
+        if backend == "codex":
+            entry = installed(runtime.runtime_path(snapshot, "codex"), executable=True)
+        if not node or not entry or node != profile["node"] or entry != profile["entry"]:
+            raise ValueError("运行路径已更新，请通过已有本地模型连接/验证入口重新验证")
+        environment = runtime.child_environment(snapshot)
     payload = {"messages": [{"role": "user", "content": text}], "available_tools": [], "model": profile["model"]}
     with tempfile.TemporaryDirectory() as directory:
         request = Path(directory) / "request.json"
         request.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-        packet = run_json([profile["node"], BRIDGES[backend], "chat", profile["entry"], request], 320)
+        arguments = [node, BRIDGES[backend], "chat", entry, request]
+        packet = run_json(arguments, 320, environment) if environment is not None else run_json(arguments, 320)
     try:
         choice = packet["choices"][0]
         if choice["finish_reason"] == "stop" and not choice["message"].get("tool_calls"):

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "reviewer": "/root/runtime_entry_fix independent Python App tools review",
+  "reviewed_at": "2026-11-07T16:12:11.469080+00:00",
+  "base_head": "a2cd8003a3f7ed651a3ed5cd62e669ecca3cc4fa",
+  "status": "pass_after_resolved_blocker",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "priority": "P1",
+      "title": "Failed repeated build overwrote an already referenced ready manifest",
+      "before": "Actual private Git/real artifact_manifest reproduction: existing binding already referenced the reusable inactive slot; forced startup failure returned failed but the formal sidecar was replaced and matched failed artifact bytes. Build subprocess mocked; no production binding or App was involved.",
+      "fix": "Formal artifact_manifest publication is now after all version/resume/cancel checks, adjacent to source verification and binding update. Failed retry preserves previous sidecar bytes; artifact mismatch keeps previous ready reference unusable for failed output.",
+      "after": "Independent same-path reproduction after fix: stage failed, binding and formal sidecar bytes unchanged; formal sidecar does not match failed artifact hash.",
+      "private_reference_sha256": [
+        "b8a9339e153ce02e86694a5a81b7a9696701aa09fcb19d40d52b747d76c6a439",
+        "9ea52b11754fac817ee3b78d5aed707dc30c391ed412c319300a9a07cf89ec50"
+      ]
+    }
+  ],
+  "files_sha256": {
+    "tools/editor_native_app.py": "2aa2779137ddd8af69772c07d871d422b51fdf75549863704f34857421819d6e",
+    "tools/editor_self_build.py": "71105d03239f55afcf2d75150208dd6958825864dfb7e680466f4b8f664b7407",
+    "tools/editor_source_manifest.py": "57b18fdf8076f6a4c03570309a45357028416486f0be55dddd4c515ea7b6d316",
+    "tools/editor_candidate_activation.py": "3b0b6c417cc99d3aac1ad3ef3102743b486e47d4f84d9b72f75f89e9e8a3297b",
+    "tools/editor_engine_candidate.py": "b662cfadbd966817626cb5754b5164d6b5c3f50b0ad46dff4d43d12239556961",
+    "tools/test_editor_native_app.py": "6acc0d52bc85337f60f1051c3cdfafa178ed19d4c7695b5bd45f9500a470626a",
+    "tests/editor/test_editor_self_build.py": "ea4ba3712cfbd6df26d1ca357cd4b2cc64fd0ad0170c7743d07b3b05862c7800",
+    "tools/test_editor_candidate_activation.py": "e1251f5590277797664c85d008eec0b5f007ef3633e02b5e860484561cfe2197",
+    "tools/test_editor_engine_candidate.py": "cf60604ee540b5242975ef25089e933267dfde5e5e01b1a3e4b8c1763a75028e",
+    "tests/editor/run_native_app.py": "333a9bb1d27c45456d6aa36806ef3495f1dd9295c0a1b4e9c314e459b4c34524"
+  },
+  "checks": [
+    {
+      "id": "immutable_signing_order",
+      "result": "pass",
+      "basis": "read complete packager/source_manifest: stage all App content and locator; codesign entire bundle; strict verify; only then compute signed Mach-O SHA and publish sidecar outside App; no manifest/snapshot written into sealed bundle"
+    },
+    {
+      "id": "macos_whole_bundle_activation",
+      "result": "pass",
+      "basis": "read native activation: ditto --rsrc --extattr to new sibling stage, verify copied seal/origin/digest, private journal before rename, retain backup and restore on failed swap; no re-sign accepted candidate"
+    },
+    {
+      "id": "native_lineage_binding",
+      "result": "pass",
+      "basis": "read inherited_launch/validate_source: native exception requires external expected source/bin sidecar + private same-repo/common-dir/Issue/request/owner/base/branch binding; installed entry must equal prior initial executable and match signed candidate digest and sealed locator; locator only locates existing authority"
+    },
+    {
+      "id": "raw_and_non_macos_compatibility",
+      "result": "pass_source_and_test_coverage",
+      "basis": "raw remains default for old host; native_app explicitly requires a bound macOS candidate; raw sidecar naming unchanged; non-Mac default path does not package/sign; current host opts into native_app only for macOS"
+    },
+    {
+      "id": "predictable_manifest_not_status_redirect",
+      "result": "pass_scoped_callsite",
+      "basis": "narrow callsite read: host computes candidate manifest from executable layout and compares returned status path before artifact validation; Python native validation fixes descriptor, source/bin bundle and outside sidecar. This is not a full C++ consumer review."
+    },
+    {
+      "id": "test_startup_isolation",
+      "result": "pass_source_and_test_coverage",
+      "basis": "same signed Mach-O bytes unpacked/copied into private _sc_ system temporary editor; scoped runtime config and no inherited GONGGONG environment during checks; ordinary user config/App/history not accessed"
+    }
+  ],
+  "independent_executed_tests": {
+    "selected_native_real_codesign_cases": {
+      "passed": 5,
+      "failed": 0,
+      "duration_seconds": 1.91,
+      "cases": [
+        "final_signature_precedes_external_manifest_and_digest",
+        "complete_distribution_template_keeps_signature_when_copied",
+        "native_activation_copies_whole_sealed_app_without_resigning",
+        "native_interrupted_swap_restores_original_and_retries",
+        "installed_native_copy_requires_same_macho_and_sealed_locator"
+      ],
+      "scope": "Actual macOS codesign/ditto/temporary Git paths, isolated Apps; never launched or modified user App"
+    },
+    "failed_retry_publication": {
+      "before_reproduced": true,
+      "after_fixed": true,
+      "scope": "Private Git and actual manifest publication; build process mocked; deliberately failed check, no actual engine build/startup claimed"
+    }
+  },
+  "author_report_coverage_reviewed": {
+    "self_build": {
+      "reported_passed": 13,
+      "reported_failed": 0,
+      "log_sha256": "8ab364d4671aecfb9d070b592b735ec7073fa62e0944003c9138ba9995cb4e6e",
+      "scope": "Read latest final author log and source assertions; author executed this 13-case run, not the independent reviewer. Correct PYTHONPATH entry; earlier failed command receipt retained."
+    },
+    "native_packager": "8 private codesign cases in source include full distribution template signature copy and tamper checks; this reviewer reran only selected subset",
+    "native_offline_fixture": "bin/issue462-native-app-reviewed.json explicitly offline_origin_fixture=true and zero_argument_launch_tested=false; signed offline origin/refusal and five same-byte resume cases are separate from actual production identity"
+  },
+  "excluded_scope": [
+    "Full central configuration C++/GDScript/Python consumers (separately reviewed by another reviewer)",
+    "Production frozen-source signed App build/install",
+    "Zero-argument icon GUI launch or real user App cold startup",
+    "Real model inference or production Issue candidate binding",
+    "Windows actual runtime or MSVC run in this review"
+  ],
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "private_original_sha256": "00b5c2f5682ef559df0a1ab6d0c6954305c1d567f7b7cef79d1bfa4f47f1a465",
+  "private_evidence_sha256": [
+    "b8a9339e153ce02e86694a5a81b7a9696701aa09fcb19d40d52b747d76c6a439",
+    "9ea52b11754fac817ee3b78d5aed707dc30c391ed412c319300a9a07cf89ec50",
+    "fde41ad3719586d72ab34202506602ef9b67e169f049600d280e1509657c09d5"
+  ]
+}

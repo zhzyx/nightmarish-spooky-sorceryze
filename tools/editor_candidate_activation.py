@@ -225,6 +225,13 @@ def verified_manifest(manifest_path, report):
         raise ActivationError("activation_artifact_changed")
     if not os.access(artifact, os.X_OK):
         raise ActivationError("activation_artifact_not_executable")
+    if "native_app" in manifest:
+        from editor_native_app import validate_native_app
+
+        try:
+            validate_native_app(root, manifest, manifest_path)
+        except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
+            raise ActivationError("activation_native_app_invalid: " + str(error)) from None
     project = Path(manifest["project_root"])
     if not project.is_absolute() or not (project / "project.godot").is_file():
         raise ActivationError("activation_project_missing")
@@ -252,6 +259,8 @@ def install_app(manifest, journal_path, prior=None):
     app = initial.parent.parent.parent
     if app.is_symlink() or initial.is_symlink():
         raise ActivationError("activation_original_entry_invalid")
+    if "native_app" in manifest:
+        return install_native_app(manifest, app, journal_path, prior)
     wanted = launcher_text(manifest["executable"], manifest["project_root"])
     if prior and prior.get("state") == "activated" and initial.is_file() and initial.read_bytes() == wanted.encode():
         command(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)])
@@ -301,6 +310,85 @@ def install_app(manifest, journal_path, prior=None):
         # Sign and verify our owned local bundle BEFORE replacing the working entry.
         command(["/usr/bin/codesign", "--force", "--deep", "--sign", "-", str(stage)])
         command(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(stage)])
+        atomic_json(journal_path, state)
+        os.replace(app, backup)
+        state["state"] = "old_saved"
+        atomic_json(journal_path, state)
+        os.replace(stage, app)
+        state["state"] = "activated"
+        atomic_json(journal_path, state)
+        return state
+    except Exception:
+        if not app.exists() and backup.exists():
+            os.replace(backup, app)
+        if stage.exists():
+            shutil.rmtree(stage)
+        raise
+
+
+def install_native_app(manifest, app, journal_path, prior=None):
+    """Swap a complete signed candidate; never write or re-sign its contents."""
+    from editor_native_app import EXECUTABLE_RELATIVE, copy_app, origin_value, verify_bundle
+
+    source = Path(manifest["native_app"]["bundle_path"])
+    expected = origin_value(manifest["binding"]["source_root"], manifest["binding"], manifest["project_root"], source)
+
+    def verified(target):
+        try:
+            verify_bundle(target, expected, manifest["artifact_sha256"])
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            raise ActivationError("activation_native_app_invalid: " + str(error)) from None
+
+    initial = app / EXECUTABLE_RELATIVE
+    if Path(manifest["binding"]["initial_launch_executable"]) != initial or source == app:
+        raise ActivationError("activation_original_entry_invalid")
+    if (
+        prior
+        and prior.get("state") == "activated"
+        and initial.is_file()
+        and digest(initial) == manifest["artifact_sha256"]
+    ):
+        verified(app)
+        return dict(prior, state="activated", reused=True)
+    if prior and prior.get("state") in ("prepared", "old_saved"):
+        backup, stage = Path(prior["backup"]), Path(prior["stage"])
+        if (
+            backup.parent != app.parent
+            or stage.parent != app.parent
+            or not backup.name.startswith(app.stem + "-previous-")
+            or not stage.name.startswith("." + app.stem + "-activate-")
+        ):
+            raise ActivationError("activation_recovery_record_invalid")
+        if not app.exists() and backup.exists():
+            os.replace(backup, app)
+        elif (
+            prior.get("state") == "old_saved"
+            and initial.is_file()
+            and digest(initial) == manifest["artifact_sha256"]
+            and backup.exists()
+        ):
+            verified(app)
+            result = dict(prior, state="activated", reused=True)
+            atomic_json(journal_path, result)
+            return result
+        if stage.exists():
+            shutil.rmtree(stage)
+    if not initial.is_file():
+        raise ActivationError("activation_original_entry_missing")
+    token = uuid.uuid4().hex
+    stage = app.with_name("." + app.stem + "-activate-" + token + ".app")
+    backup = app.with_name(app.stem + "-previous-" + token + ".app")
+    state = {
+        "state": "prepared",
+        "entry": str(app),
+        "stage": str(stage),
+        "backup": str(backup),
+        "artifact_sha256": manifest["artifact_sha256"],
+        "executable": manifest["executable"],
+    }
+    try:
+        copy_app(source, stage)
+        verified(stage)
         atomic_json(journal_path, state)
         os.replace(app, backup)
         state["state"] = "old_saved"

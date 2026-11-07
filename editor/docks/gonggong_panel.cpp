@@ -37,6 +37,7 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/gonggong_host_paths.h"
+#include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/button.h"
@@ -52,16 +53,8 @@ GongGongPanel::GongGongPanel() {
 	set_name("GongGongPage");
 	const String workspace_default = GongGongHostPaths::workspace();
 	EDITOR_DEF("gonggong/workspace", workspace_default);
-	String python_default = OS::get_singleton()->get_environment("GONGGONG_PYTHON");
-	if (python_default.is_empty() && FileAccess::exists(workspace_default.path_join("project/runtime/python/python.exe"))) {
-		python_default = workspace_default.path_join("project/runtime/python/python.exe");
-	}
-	EDITOR_DEF("gonggong/python", python_default);
-	const String saved_python = EDITOR_GET("gonggong/python");
-	const bool explicit_runtime = !OS::get_singleton()->get_environment("GONGGONG_PYTHON").is_empty();
-	if (!python_default.is_empty() && (explicit_runtime || saved_python.is_empty() || !FileAccess::exists(saved_python))) {
-		EditorSettings::get_singleton()->set("gonggong/python", python_default);
-	}
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	const Dictionary runtime_paths = runtime.get("paths", Dictionary());
 	EDITOR_DEF("gonggong/tenant", "gonggong-workspace");
 	EDITOR_DEF("gonggong/issue_number", "");
 	EDITOR_DEF("gonggong/request_id", "");
@@ -74,9 +67,11 @@ GongGongPanel::GongGongPanel() {
 	workspace->set_text(EDITOR_GET("gonggong/workspace"));
 	add_child(workspace);
 	python = memnew(LineEdit);
+	python->set_name("WorkflowPython");
 	python->set_placeholder(U"Python 可执行文件路径");
-	python->set_text(EDITOR_GET("gonggong/python"));
+	python->set_text(runtime_paths.get("workflow_python", ""));
 	add_child(python);
+	python->connect("text_changed", callable_mp(this, &GongGongPanel::runtime_python_changed));
 	tenant = memnew(LineEdit);
 	tenant->set_placeholder(U"数据租户");
 	tenant->set_text(EDITOR_GET("gonggong/tenant"));
@@ -177,16 +172,20 @@ static String gonggong_runtime_path(const String &p_root, const String &p_enviro
 }
 
 bool GongGongPanel::ensure_environment() {
+	return ensure_environment_with_snapshot(GongGongRuntimeConfig::read_effective());
+}
+
+bool GongGongPanel::ensure_environment_with_snapshot(const Dictionary &runtime) {
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (OS::get_singleton()->get_name() != "Windows") {
 		return true;
 	}
 	const String root = EDITOR_GET("gonggong/workspace");
-	const String current_python = EDITOR_GET("gonggong/python");
-	const String node = gonggong_runtime_path(root, "GONGGONG_NODE", "project/runtime/node/node.exe", "node.exe");
+	const String current_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
+	const String node = GongGongRuntimeConfig::path(runtime, "node");
 	const String git = gonggong_runtime_path(root, "GONGGONG_GIT", "project/runtime/git/cmd/git.exe", "git.exe");
 	const bool ready = !root.is_empty() && FileAccess::exists(root.path_join("tools/gonggong_bridge.py")) && FileAccess::exists(current_python) && !node.is_empty() && !git.is_empty();
 	if (ready) {
-		OS::get_singleton()->set_environment("GONGGONG_NODE", node);
 		OS::get_singleton()->set_environment("GONGGONG_GIT", git);
 		return true;
 	}
@@ -205,7 +204,7 @@ bool GongGongPanel::ensure_environment() {
 	}
 	setup_missing->set_text(String(U"缺失配置：") + String(", ").join(missing));
 	workspace->set_text(root);
-	python->set_text(current_python);
+	python->set_text(Dictionary(runtime.get("paths", Dictionary())).get("workflow_python", ""));
 	if (output) {
 		output->set_text(U"检测到本地运行环境缺失，已打开配置点火器。原需求保留，完成部署与自检后继续；取消不会安装任何组件。");
 	}
@@ -275,7 +274,10 @@ void GongGongPanel::run_setup(bool p_rollback) {
 			args.push_back(setup_source->get_text().strip_edges());
 		}
 		setup_previous["workspace"] = EDITOR_GET("gonggong/workspace");
-		setup_previous["python"] = EDITOR_GET("gonggong/python");
+		const Dictionary configured = GongGongRuntimeConfig::read_effective().get("configured", Dictionary());
+		setup_previous["python"] = configured.get("workflow_python", "");
+		setup_previous["node"] = configured.get("node", "");
+		setup_previous["runtime_components"] = components;
 		for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("PATH") }) {
 			setup_previous[name] = OS::get_singleton()->get_environment(name);
 		}
@@ -304,16 +306,18 @@ void GongGongPanel::save_issue_binding(const String &p_text) {
 }
 
 void GongGongPanel::run_action(const String &p_action) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	const String workflow_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	if (worker >= 0) {
 		return;
 	}
 	const String script = workspace->get_text().path_join("tools/gonggong_bridge.py");
-	if (workspace->get_text().is_empty() || python->get_text().is_empty() || !FileAccess::exists(script)) {
+	if (workspace->get_text().is_empty() || workflow_python.is_empty() || !FileAccess::exists(script)) {
 		output->set_text(U"请填写工作区、Python 路径，并确认引擎 tools/gonggong_bridge.py 已安装。");
 		return;
 	}
 	EditorSettings::get_singleton()->set("gonggong/workspace", workspace->get_text());
-	EditorSettings::get_singleton()->set("gonggong/python", python->get_text());
 	EditorSettings::get_singleton()->set("gonggong/tenant", tenant->get_text());
 	EditorSettings::save();
 	result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
@@ -327,7 +331,7 @@ void GongGongPanel::run_action(const String &p_action) {
 	args.push_back("--out");
 	args.push_back(result_path);
 	ProcessID pid = 0;
-	Error error = OS::get_singleton()->create_process(python->get_text(), args, &pid);
+	Error error = OS::get_singleton()->create_process(workflow_python, args, &pid);
 	if (error != OK) {
 		output->set_text(U"启动失败，请检查 Python 路径。");
 		return;
@@ -358,11 +362,17 @@ void GongGongPanel::poll() {
 		}
 		if (setup_rolling_back) {
 			EditorSettings::get_singleton()->set("gonggong/workspace", setup_previous.get("workspace", String()));
-			EditorSettings::get_singleton()->set("gonggong/python", setup_previous.get("python", String()));
+			String save_error;
+			const PackedStringArray selected_components = setup_previous.get("runtime_components", PackedStringArray());
+			if ((selected_components.has("python") && GongGongRuntimeConfig::update_field("workflow_python", setup_previous.get("python", String()), save_error) != OK) || (selected_components.has("node") && GongGongRuntimeConfig::update_field("node", setup_previous.get("node", String()), save_error) != OK)) {
+				output->set_text(String(U"部署已回退，但运行路径未保存：") + save_error);
+				return;
+			}
 			for (const String &name : { String("GONGGONG_PYTHON"), String("GONGGONG_NODE"), String("GONGGONG_GIT"), String("PATH") }) {
 				OS::get_singleton()->set_environment(name, setup_previous.get(name, String()));
 			}
-			python->set_text(EDITOR_GET("gonggong/python"));
+			GongGongRuntimeConfig::prepare_child_environment(GongGongRuntimeConfig::read_effective());
+			python->set_text(Dictionary(GongGongRuntimeConfig::read_effective().get("paths", Dictionary())).get("workflow_python", ""));
 			setup_rollback->set_disabled(true);
 			EditorSettings::save();
 			output->set_text(String(U"已回退本次部署并恢复编辑器会话环境；日志和文件恢复副本保留。\n") + result_path);
@@ -376,12 +386,16 @@ void GongGongPanel::poll() {
 			return;
 		}
 		EditorSettings::get_singleton()->set("gonggong/workspace", workspace->get_text().strip_edges());
-		EditorSettings::get_singleton()->set("gonggong/python", deployed_python);
-		OS::get_singleton()->set_environment("GONGGONG_PYTHON", deployed_python);
-		OS::get_singleton()->set_environment("GONGGONG_NODE", deployed_node);
+		String save_error;
+		const PackedStringArray selected_components = setup_previous.get("runtime_components", PackedStringArray());
+		if ((selected_components.has("python") && GongGongRuntimeConfig::update_field("workflow_python", deployed_python, save_error) != OK) || (selected_components.has("node") && GongGongRuntimeConfig::update_field("node", deployed_node, save_error) != OK)) {
+			output->set_text(String(U"运行库已部署，但路径未保存：") + save_error);
+			return;
+		}
+		GongGongRuntimeConfig::prepare_child_environment(GongGongRuntimeConfig::read_effective());
 		OS::get_singleton()->set_environment("GONGGONG_GIT", deployed_git);
 		OS::get_singleton()->set_environment("PATH", deployed_node.get_base_dir() + ";" + deployed_git.get_base_dir() + ";" + String(setup_previous.get("PATH", String())));
-		python->set_text(deployed_python);
+		python->set_text(Dictionary(GongGongRuntimeConfig::read_effective().get("paths", Dictionary())).get("workflow_python", ""));
 		setup_receipt = result.get("receipt", String());
 		setup_rollback->set_disabled(setup_receipt.is_empty());
 		EditorSettings::save();
@@ -396,5 +410,12 @@ void GongGongPanel::poll() {
 		DirAccess::remove_absolute(result_path);
 	} else {
 		output->set_text(U"检查进程未返回结果，请检查 Python 和工作区配置。");
+	}
+}
+
+void GongGongPanel::runtime_python_changed(const String &p_value) {
+	String error;
+	if (GongGongRuntimeConfig::update_field("workflow_python", p_value, error) != OK && output) {
+		output->set_text(String(U"运行路径未保存：") + error);
 	}
 }

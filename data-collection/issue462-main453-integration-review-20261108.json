@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "reviewer": "delivery_terminal_fix; independent read-only integration review",
+  "base_head": "a2cd8003a3f7ed651a3ed5cd62e669ecca3cc4fa",
+  "observed_at": "2026-11-07T16:14:24.898089+00:00",
+  "conclusion": "no_remaining_blockers",
+  "source": "Native collaboration message from the independent reviewer after read-before/read-after stable hashes.",
+  "scope": "Only three actual upstream overlap files after integrating PR475. Other consumer hashes remain covered by prior review; no new tool or Issue authority granted.",
+  "findings": [],
+  "verified": [
+    "Model-query cancellation increments generation, rejects late callbacks and restores deferred CLI before an explicit work-order action; existing pending refresh retains busy/signature guards.",
+    "Central effective runtime consumers remain unchanged by upstream cancellation/refresh sequencing; no stale runtime field persistence or path guessing restored.",
+    "refresh_finished releases waiters only after pending refreshes finish; scope_epoch invalidates an old project response.",
+    "Workspace connection save persists workspace alone and does not overwrite another window workflow Python."
+  ],
+  "files_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "aaabf381682393bf62b6d2366c0a37251be8764341c18b8006144dbb96575df2",
+    "editor/docks/ai_chat_dock.h": "117b0f1c535eb233730e80d426dcb1bf7d1d626a6ad5ed8426d208c514cafe7c",
+    "editor/docks/daqian/workspace.gd": "57bb5eacc4944622f3d9cabdacaff34b1cafff59893fe9e7c6b29ee3a82dc11a"
+  },
+  "tests_executed_by_reviewer": false,
+  "user_app_config_history_modified": false
+}

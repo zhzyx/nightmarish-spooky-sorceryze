@@ -634,6 +634,7 @@ func _build_workbench() -> void:
 	add_child(connection_panel)
 	workspace_path.placeholder_text = "共工仓库的绝对路径"
 	python_path.placeholder_text = "Python 可执行文件的绝对路径"
+	python_path.text_changed.connect(_save_runtime_python)
 	for entry in [["共工仓库", workspace_path], ["Python", python_path]]:
 		var label := Label.new()
 		label.text = entry[0]
@@ -658,17 +659,35 @@ func _build_workbench() -> void:
 	conversation.hide()
 
 
+func _runtime_paths(for_display := false) -> Dictionary:
+	if not is_instance_valid(chat):
+		chat = get_tree().root.find_child("AI Chat", true, false)
+	if not is_instance_valid(chat) or not chat.has_method("get_runtime_configuration"):
+		return {}
+	var configuration: Dictionary = chat.prepare_runtime_configuration()
+	return configuration.get("paths" if for_display else "executables", {}) if configuration.get("ok", false) else {}
+
+
+func _save_runtime_python(value: String) -> void:
+	if is_instance_valid(chat):
+		var error: String = chat.set_runtime_field("workflow_python", value)
+		if not error.is_empty():
+			notice.text = "运行路径未保存：" + error
+
+
 func _open_connection() -> void:
 	var settings := EditorInterface.get_editor_settings()
 	workspace_path.text = _repo()
-	python_path.text = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	python_path.set_block_signals(true)
+	python_path.text = str(_runtime_paths(true).get("workflow_python", ""))
+	python_path.set_block_signals(false)
 	connection_panel.show()
 	workspace_path.grab_focus()
 
 
 func _save_connection() -> void:
 	var path := workspace_path.text.strip_edges().simplify_path()
-	var python := python_path.text.strip_edges()
+	var python := str(_runtime_paths().get("workflow_python", ""))
 	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
 		notice.text = "请填写包含天枢工单入口的共工仓库路径。"
 		return
@@ -679,7 +698,6 @@ func _save_connection() -> void:
 		_forget("正在切换工作区")
 	var settings := EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", path)
-	settings.set_setting("gonggong/python", python)
 	connection_panel.hide()
 	await refresh()
 
@@ -1081,11 +1099,10 @@ func _exit_tree() -> void:
 	if not picker_scope.is_empty():
 		var bridge := picker_scope.path_join("customizations/components/godot-host/daqian/board.py")
 		var settings := EditorInterface.get_editor_settings()
-		var python := str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+		var python := str(_runtime_paths().get("workflow_python", ""))
 		if FileAccess.file_exists(bridge):
-			if python.is_empty():
-				python = "python" if OS.has_feature("windows") else "python3"
-			OS.execute(python,[bridge,"--repo",picker_scope,"--end-session","--editor-session",editor_session])
+			if not python.is_empty():
+				OS.execute(python,[bridge,"--repo",picker_scope,"--end-session","--editor-session",editor_session])
 	_stop_debug(false,true)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
@@ -1644,9 +1661,9 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
 		return {"denied":true,"error":"点击「工作区连接」，填写共工仓库和 Python 路径。"}
 	var settings := EditorInterface.get_editor_settings()
-	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	var python: String = str(_runtime_paths().get("workflow_python", ""))
 	if python.is_empty():
-		python = "python" if OS.has_feature("windows") else "python3"
+		return {"error":"工作流 Python 路径未配置或无效"}
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
 	var args := PackedStringArray([bridge,"--repo",root,"--result",path])
 	args.append_array(["--editor-session",editor_session])
@@ -2591,10 +2608,6 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 	var root := _repo()
 	var request := {"draft_id":source, "expected_user":user.user_id, "category":kind,
 		"title":message.strip_edges().get_slice("\n", 0).strip_edges().left(120), "outcome":message}
-	var settings := EditorInterface.get_editor_settings()
-	var node_runtime := str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""
-	if node_runtime.is_absolute_path():
-		request.node_runtime = node_runtime
 	if not saved.has("direct_pending"):
 		saved.direct_pending = {}
 	saved.direct_pending[source] = request
@@ -2765,10 +2778,13 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 
 
 func _host_command(args: PackedStringArray, output_flag: String, request: Dictionary) -> Dictionary:
-	var settings := EditorInterface.get_editor_settings()
-	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
+	var runtime := _runtime_paths()
+	var python: String = str(runtime.get("workflow_python", ""))
 	if python.is_empty():
-		python = "python" if OS.has_feature("windows") else "python3"
+		return {"error":"工作流 Python 路径未配置或无效"}
+	if args.size() > 1 and args[1] == "issue-direct":
+		request = request.duplicate(true)
+		request.node_runtime = str(runtime.get("node", ""))
 	var stem := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode())
 	var result_path := stem + ".result"
 	var req_path := stem + ".request"
@@ -3249,12 +3265,12 @@ func _start_debug() -> void:
 		notice.text = "请在「工作区连接」中绑定包含天枢调试宿主的仓库。"
 		return
 	var settings := EditorInterface.get_editor_settings()
-	var node: String = str(settings.get_setting("ai_chat/cli_node")) if settings.has_setting("ai_chat/cli_node") else ""
-	var python: String = str(settings.get_setting("gonggong/python")) if settings.has_setting("gonggong/python") else ""
-	if node.is_empty():
-		node = "node"
-	if python.is_empty():
-		python = "python" if OS.has_feature("windows") else "python3"
+	var runtime := _runtime_paths()
+	var node: String = str(runtime.get("node", ""))
+	var python: String = str(runtime.get("workflow_python", ""))
+	if node.is_empty() or python.is_empty():
+		notice.text = "请配置有效的 Node 和工作流 Python 路径"
+		return
 	var plan: Dictionary = editor.draft.duplicate(true)
 	for id in plan.nodes:
 		if plan.nodes[id].kind == "task":

@@ -38,7 +38,8 @@ scenarios = {
     "multi_issue": ("daqian_multi_issue.gd", "DAQIAN_MULTI_ISSUE_OK"),
 }
 script, marker = scenarios[args.scenario]
-env = os.environ.copy()
+os.environ.pop("GONGGONG_WORKSPACE", None)
+env = {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")}
 if args.scenario in {"parallel", "inputs", "multi_issue"}:
     node = env.get("DAQIAN_TEST_NODE") or shutil.which("node")
     if not node:
@@ -50,8 +51,27 @@ if args.scenario in {"parallel", "inputs", "multi_issue"}:
     )
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
-    project = Path(directory)
+    project = Path(directory).resolve()
     isolated_editor = macos_editor(binary, project / "isolated-editor")
+    configuration = (
+        isolated_editor.parent / "editor_data/gonggong/config.json"
+        if (isolated_editor.parent / "_sc_").is_file()
+        else project / "runtime-config.json"
+    )
+    configuration.parent.mkdir(parents=True, exist_ok=True)
+    configuration.write_text(
+        json.dumps({
+            "schema_version": 1,
+            "runtimes": {
+                "node": env.get("DAQIAN_TEST_NODE") or shutil.which("node") or "",
+                "workflow_python": sys.executable,
+                "build_python": "",
+                "codex": "",
+            },
+        }),
+        encoding="utf-8",
+    )
+    env["GONGGONG_RUNTIME_CONFIG"] = str(configuration)
     env["XDG_CACHE_HOME"] = str(project / "cache")
     if args.scenario in {"graph", "parallel", "inputs", "multi_issue"}:
         # The repository gate is exercised using the ordinary gh transport; no product bypass.

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "base_head": "a2cd8003a3f7ed651a3ed5cd62e669ecca3cc4fa",
+  "observed_at": "2026-11-07T16:14:59.753540+00:00",
+  "checks": [
+    {
+      "scope": "five native runtime roles and isolated Python child",
+      "state": "passed",
+      "artifact_sha256": "b39198241d173ad4ce01b6301600c365236198fc9175de155dbb1e626398e876",
+      "private_receipt_sha256": "b8ce662ac7a6d04a4dead9ce5da2eda7bba006873d72edef3ceeec4fdf600d75"
+    },
+    {
+      "scope": "native editor controls, unknown publication replay, switched selection during start and recovery in a second editor process",
+      "state": "passed",
+      "artifact_sha256": "b39198241d173ad4ce01b6301600c365236198fc9175de155dbb1e626398e876",
+      "private_receipt_sha256": "4f1c92650362bddd7ea6d23ad2b067f0107d8d41a4b4037ad51f7efeb8c44a32"
+    },
+    {
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board",
+      "state": "passed",
+      "artifact_sha256": "b39198241d173ad4ce01b6301600c365236198fc9175de155dbb1e626398e876",
+      "private_receipt_sha256": "1b6fee1f3c44b389e01b98cbb4d6ae82e841332c80a7985a408bd80a180f973e"
+    }
+  ],
+  "selfbuild_post_smoke_publication": {
+    "passed": 13,
+    "failed": 0,
+    "private_log_sha256": "8ab364d4671aecfb9d070b592b735ec7073fa62e0944003c9138ba9995cb4e6e"
+  },
+  "independent_reviews": [
+    "data-collection/issue462-runtime-consumer-review-20261108.json",
+    "data-collection/issue462-main453-integration-review-20261108.json",
+    "data-collection/issue462-python-app-independent-review-20261108.json"
+  ],
+  "resolved_isolation_failure": {
+    "before": "Native graph fixture enabled the valid Node progress watcher; its ready event could replace the manually supplied 55-row fixture board and make i_1 disappear. The failed receipt is retained privately.",
+    "fix": "Stop the existing watcher after initial membership verification and before supplying the fixture board; startup supplies only private central configuration. Production refresh/watch logic is unchanged.",
+    "after": "Actual native graph, personal/project overlap refresh, offline recovery and member switch scenario passed.",
+    "failed_private_receipt_sha256": "53e26c98a99090a61f7c5819954942dd292d21c366b50177ddb94ae5f2610cb4"
+  },
+  "preflight": "All applicable hooks passed on implementation files, including mypy, clang-format, Ruff, includes, header/file format, codespell and frozen distribution syntax. Node is provided only in the validator subprocess PATH.",
+  "remaining_verification": {
+    "exact_head_MSVC_OS_lock_CI": "pending",
+    "production_binding_signed_App_and_zero_argument_user_GUI": "Root accepted responsibility after both Issue462 and Issue438 source deliveries; Issue462 remains open."
+  },
+  "usage": null
+}

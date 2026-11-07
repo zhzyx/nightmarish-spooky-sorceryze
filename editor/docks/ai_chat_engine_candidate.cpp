@@ -35,6 +35,7 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_host_runtime.h"
 #include "editor/docks/ai_chat_tools.h"
+#include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
@@ -51,7 +52,9 @@ String AIChatDock::_workflow_root(int p_agent) const {
 	return candidate.get("source_root", state.get("requirement_workspace", EDITOR_GET("gonggong/workspace")));
 }
 
-bool AIChatDock::_recover_active_provenance(String &r_error) const {
+bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p_runtime) const {
+	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {
 		return true;
@@ -75,7 +78,7 @@ bool AIChatDock::_recover_active_provenance(String &r_error) const {
 	if (!_validate_engine_candidate(r_error)) {
 		return false;
 	}
-	const Dictionary guard = AIChatHostRuntime::command_guard(candidate, EDITOR_GET("gonggong/python"), _engine_root(), r_error);
+	const Dictionary guard = AIChatHostRuntime::command_guard(candidate, GongGongRuntimeConfig::path(runtime, "workflow_python"), _engine_root(), r_error);
 	if (guard.is_empty()) {
 		return false;
 	}
@@ -154,7 +157,9 @@ bool AIChatDock::_validate_engine_candidate(String &r_error) const {
 	return true;
 }
 
-bool AIChatDock::_ensure_engine_candidate() {
+bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
+	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (!allow_tools->is_pressed() || !FileAccess::exists(_workflow_root().path_join("SConstruct"))) {
 		return true;
 	}
@@ -171,7 +176,7 @@ bool AIChatDock::_ensure_engine_candidate() {
 		return true;
 	}
 	const String worker = _engine_root().path_join("tools/editor_engine_candidate.py");
-	const String python = EDITOR_GET("gonggong/python");
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	if (!FileAccess::exists(worker) || !FileAccess::exists(python)) {
 		_append(TTR("Error"), U"无法准备隔离源码候选：宿主候选管理器或工作流 Python 缺失，尚未执行生产修改。");
 		_set_busy(false);

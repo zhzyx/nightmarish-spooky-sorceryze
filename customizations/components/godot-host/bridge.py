@@ -27,6 +27,14 @@ _paths_module = importlib.util.module_from_spec(_paths_spec)
 _paths_spec.loader.exec_module(_paths_module)
 framework_root = _paths_module.framework_root
 
+_runtime_spec = importlib.util.spec_from_file_location(
+    "gonggong_runtime_config", Path(__file__).resolve().parents[3] / "tools/gonggong_runtime_config.py"
+)
+if _runtime_spec is None or _runtime_spec.loader is None:
+    raise ImportError("Cannot load runtime configuration reader")
+_runtime = importlib.util.module_from_spec(_runtime_spec)
+_runtime_spec.loader.exec_module(_runtime)
+
 _igniter_spec = importlib.util.spec_from_file_location(
     "gonggong_environment_igniter", Path(__file__).with_name("environment_igniter.py")
 )
@@ -166,17 +174,24 @@ def find_gh(env):
 
 
 def host_environment(root):
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1", GONGGONG_PYTHON=sys.executable)
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1")
+    snapshot = _runtime.read_effective(env=env) if env.get("GONGGONG_RUNTIME_CONFIG") else None
+    if snapshot is None:
+        env["GONGGONG_PYTHON"] = sys.executable
     # A retired external source locator must not propagate to child processes.
     env.pop("GONGGONG_FRAMEWORK_SOURCE", None)
     # A deployed local environment (the configuration igniter) is honored before
     # the host's own runtime discovery, but never grants admission by itself.
     env = _igniter.apply_state(root, env)
+    # Native callers pass their resolved scope, including self-contained tests.
+    # Never let a deployed legacy environment hide a later field edit.
+    if snapshot is not None:
+        env = _runtime.child_environment(snapshot, env)
     gh = find_gh(env)
     if gh:
         env["GONGGONG_GH"] = gh
     node = env.get("GONGGONG_NODE")
-    if not node and (root / "project/runtime/node/node.exe").is_file():
+    if snapshot is None and not node and (root / "project/runtime/node/node.exe").is_file():
         node = str(root / "project/runtime/node/node.exe")
         env["GONGGONG_NODE"] = node
     if node and Path(node).is_file():
@@ -375,13 +390,18 @@ def chat(root, request, tenant):
         binding["source_sha256"] = routing.digest([issue["url"], request["request_id"], issue["updated_at"]])
     env = host_environment(root)
     environment_missing = _igniter.missing_components(root, env)
+    node = env.get("GONGGONG_NODE", "" if env.get("GONGGONG_RUNTIME_CONFIG") else "node")
+    if not node and "node" not in environment_missing:
+        environment_missing.append("node")
     with tempfile.TemporaryDirectory() as temporary:
         mandate_file = Path(temporary) / "mandate.json"
         mandate_file.write_text(json.dumps(mandate, ensure_ascii=False), encoding="utf-8")
         try:
+            if not node:
+                raise ValueError("runtime_node_unavailable")
             process = subprocess.run(
                 [
-                    env.get("GONGGONG_NODE", "node"),
+                    node,
                     str(framework / "tools/agent-context.mjs"),
                     agent_id,
                     str(mandate_file),
@@ -401,7 +421,7 @@ def chat(root, request, tenant):
                 "context": process.stdout if ok else "",
                 "error": "" if ok else process.stderr.strip() or "Framework returned no context",
             }
-        except (OSError, subprocess.TimeoutExpired) as error:
+        except (OSError, ValueError, subprocess.TimeoutExpired) as error:
             result = {"ok": False, "agent_execution_enabled": False, "context": "", "error": str(error)}
         if not result["ok"] and environment_missing:
             # Environment gaps are a config problem, not a framework/admission/data
@@ -485,10 +505,12 @@ def diagnose(root):
     )
     checks["formal_framework_admission"] = run([sys.executable, str(framework / "tools/verify_framework.py")], root)
     manifest = json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))
-    node = env.get("GONGGONG_NODE", "node")
+    node = env.get("GONGGONG_NODE", "" if env.get("GONGGONG_RUNTIME_CONFIG") else "node")
     for agent in manifest["agents"]:
-        checks["local_admission:" + agent["id"]] = run(
-            [node, str(framework / "tools/admission.mjs"), str(framework), agent["id"]], root
+        checks["local_admission:" + agent["id"]] = (
+            run([node, str(framework / "tools/admission.mjs"), str(framework), agent["id"]], root)
+            if node
+            else {"ok": False, "error": "runtime_node_unavailable"}
         )
     checks["diting_data"] = run(
         [

@@ -191,6 +191,10 @@ func _run():
 		return
 	settings.set_setting("gonggong/workspace", OS.get_environment("DESIGN_BATCH_ROOT"))
 	settings.set_setting("gonggong/python", OS.get_environment("DESIGN_BATCH_PYTHON"))
+	_check(dock.set_runtime_field("node", OS.get_environment("DESIGN_BATCH_NODE")).is_empty(), "Cannot seed private Node configuration")
+	_check(dock.set_runtime_field("workflow_python", OS.get_environment("DESIGN_BATCH_PYTHON")).is_empty(), "Cannot seed private workflow Python")
+	_check(dock.set_runtime_field("build_python", OS.get_environment("DESIGN_BATCH_PYTHON")).is_empty(), "Cannot seed private build Python")
+	_check(dock.set_runtime_field("codex", OS.get_environment("DESIGN_BATCH_NODE")).is_empty(), "Cannot seed private Codex entry")
 	settings.set_setting("gonggong/issue_number", "999")
 	settings.set_setting("gonggong/request_id", "design-batch-global-sentinel")
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
@@ -243,12 +247,18 @@ func _run():
 	if mode == "unknown-runtime":
 		dock.find_child("ConsultationOnly", true, false).button_pressed = true
 		settings.set_setting("gonggong/python", "")
+		for name in ["node", "workflow_python", "build_python", "codex"]:
+			_check(dock.set_runtime_field(name, "").is_empty(), "Cannot clear private runtime field")
 		dock.find_child("CLINode", true, false).text = ""
 		dock.find_child("CodexEntry", true, false).text = ""
 		dock.find_child("EngineBuildPython", true, false).text = ""
 	if mode == "runtime-invalid":
 		dock.find_child("ConsultationOnly", true, false).button_pressed = true
 		settings.set_setting("gonggong/python", "res://fake")
+		_check(dock.set_runtime_field("node", "relative-node").is_empty(), "Cannot seed invalid Node draft")
+		_check(dock.set_runtime_field("workflow_python", "res://fake").is_empty(), "Cannot seed invalid Python draft")
+		_check(dock.set_runtime_field("codex", OS.get_environment("DESIGN_BATCH_ROOT")).is_empty(), "Cannot seed non-file Codex draft")
+		_check(dock.set_runtime_field("build_python", OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")).is_empty(), "Cannot seed missing Python draft")
 		dock.find_child("CLINode", true, false).text = "relative-node"
 		dock.find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT")
 		dock.find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")

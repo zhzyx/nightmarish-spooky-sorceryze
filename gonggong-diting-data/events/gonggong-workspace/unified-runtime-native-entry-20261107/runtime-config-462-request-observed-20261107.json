@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "runtime-config-462-request-observed-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T15:57:33.095562+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "codex-config-bootstrap",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "codex-native-subagent-authorized-parent-handoff"
+  },
+  "payload": {
+    "issue_number": 462,
+    "title": "统一持久运行配置并提供原生签名应用入口",
+    "observed_state": "open",
+    "issue_updated_at": "2026-11-07T15:00:39Z",
+    "issue_body_sha256": "c6cd8d959467a262e0be8d94e57e0e53c92d81c63f23e0abf24c9ab3a063052c",
+    "request_scope": "Persistent four-path runtime configuration and native signed app entry after Issue 387 completion. Parent authorized isolated implementation, validation and main delivery; final user installation remains parent/coordinator owned.",
+    "design_document": "design-docs/unified-runtime-native-entry-20261107.md",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Host did not provide measured usage."
+  },
+  "evidence_refs": [],
+  "sha256": "6f4116a588916bf932d1d7a023a4f6b132c0a05c72836b63af6d062672d6ef46"
+}

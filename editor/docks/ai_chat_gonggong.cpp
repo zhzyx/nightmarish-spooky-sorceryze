@@ -40,6 +40,7 @@
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/gonggong_panel.h"
+#include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
@@ -205,8 +206,11 @@ void AIChatDock::_start_gonggong_flush() {
 	if (gonggong_receipt_pid >= 0) {
 		return;
 	}
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	const String workflow_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	String provenance_error;
-	if (!_recover_active_provenance(provenance_error)) {
+	if (workflow_python.is_empty() || !_recover_active_provenance(provenance_error, runtime)) {
 		_design_reporting_blocked();
 		set_meta("gonggong_reporting", "pending_retry");
 		_append(TTR("Error"), provenance_error);
@@ -220,7 +224,7 @@ void AIChatDock::_start_gonggong_flush() {
 		arguments.push_back(arg);
 	}
 	ProcessID pid = 0;
-	if (OS::get_singleton()->create_process(gonggong_report_python, arguments, &pid) != OK) {
+	if (OS::get_singleton()->create_process(workflow_python, arguments, &pid) != OK) {
 		_design_reporting_blocked();
 		set_meta("gonggong_reporting", "pending_retry");
 		if (gonggong_receipt_continuation.is_valid()) {
@@ -294,7 +298,9 @@ bool AIChatDock::_direct_daqian_task() const {
 }
 
 void AIChatDock::_begin_gonggong_context() {
-	AIChatHostRuntime::prepare_node(cli_node->get_text());
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+
 	const String outcome = last_user_content(messages);
 	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
@@ -317,7 +323,7 @@ void AIChatDock::_begin_gonggong_context() {
 		_set_busy(false);
 		return;
 	}
-	if (gonggong_panel && !gonggong_panel->ensure_environment()) {
+	if (gonggong_panel && !gonggong_panel->ensure_environment_with_snapshot(runtime)) {
 		issue_guide_state = "environment_setup";
 		if (needs_intake) {
 			_emit_daqian_requirement_phase("waiting_environment");
@@ -329,13 +335,13 @@ void AIChatDock::_begin_gonggong_context() {
 	gonggong_context = String();
 	gonggong_generation = session_generation;
 	String candidate_error;
-	if (snapshot_state.has("engine_candidate") && (!_validate_engine_candidate(candidate_error) || !_recover_active_provenance(candidate_error))) {
+	if (snapshot_state.has("engine_candidate") && (!_validate_engine_candidate(candidate_error) || !_recover_active_provenance(candidate_error, runtime))) {
 		_append(TTR("Error"), candidate_error);
 		_set_busy(false);
 		return;
 	}
 	const String root = _workflow_root();
-	const String python = EDITOR_GET("gonggong/python");
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	gonggong_report_root = root;
 	gonggong_report_python = python;
 	const String bridge = gonggong_report_root.path_join("tools/gonggong_bridge.py");
@@ -543,13 +549,15 @@ bool AIChatDock::_start_issue_guide() {
 	return true;
 }
 
-void AIChatDock::_set_issue_model_config(Dictionary &r_request) const {
+void AIChatDock::_set_issue_model_config(Dictionary &r_request, const Dictionary &p_runtime) const {
+	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	r_request["endpoint"] = endpoint->get_text().strip_edges();
 	r_request["model"] = model->get_text().strip_edges();
 	static const char *backend_names[] = { "http", "codebuddy", "codex", "responses" };
 	r_request["backend"] = backend_names[backend->get_selected()];
-	r_request["cli_node"] = cli_node->get_text().strip_edges();
-	r_request["cli_entry"] = (backend->get_selected() == 2 ? codex_entry : cli_entry)->get_text().strip_edges();
+	r_request["cli_node"] = GongGongRuntimeConfig::path(runtime, "node");
+	r_request["cli_entry"] = backend->get_selected() == 2 ? GongGongRuntimeConfig::path(runtime, "codex") : cli_entry->get_text().strip_edges();
 	r_request["cli_model"] = (backend->get_selected() == 2 ? codex_model : cli_model)->get_text().strip_edges();
 }
 
@@ -571,7 +579,9 @@ static ProcessID launch_issue_model(const String &p_python, const List<String> &
 }
 
 Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const {
-	AIChatHostRuntime::prepare_node(cli_node->get_text());
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+
 	Dictionary result;
 	String candidate_error;
 	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
@@ -579,14 +589,14 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		return result;
 	}
 	const String workspace = _workflow_root();
-	const String python = EDITOR_GET("gonggong/python");
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String bridge = workspace.path_join("tools/gonggong_bridge.py");
 	if (workspace.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		result["error"] = U"请配置共工工作区和 Python 后重试判断。";
 		return result;
 	}
 	Dictionary route_request = p_binding.duplicate();
-	_set_issue_model_config(route_request);
+	_set_issue_model_config(route_request, runtime);
 	if (!p_selection.is_empty()) {
 		if (int64_t(p_selection.get("backend", -1)) != backend->get_selected()) {
 			result["error"] = U"请切回需求模型所属后端，或重新选择模型。";
@@ -595,11 +605,11 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
 		route_request[cli ? "cli_model" : "model"] = p_selection.get("id", "");
 	}
-	if (backend->get_selected() == 2 && !FileAccess::exists(codex_entry->get_text().strip_edges())) {
+	if (backend->get_selected() == 2 && !FileAccess::exists(GongGongRuntimeConfig::path(runtime, "codex"))) {
 		result["error"] = U"Codex 可执行文件路径已失效；请在工单对话与模型中更新路径，再选择司南模型重试。";
 		return result;
 	}
-	if ((backend->get_selected() == 1 || backend->get_selected() == 2) && !FileAccess::exists(cli_node->get_text().strip_edges())) {
+	if ((backend->get_selected() == 1 || backend->get_selected() == 2) && !FileAccess::exists(GongGongRuntimeConfig::path(runtime, "node"))) {
 		result["error"] = U"Node 可执行文件路径已失效；请在工单对话与模型中更新路径后重试。";
 		return result;
 	}
@@ -727,7 +737,8 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		return;
 	}
 	if (issue_guide_state == "environment_setup") {
-		if (gonggong_panel && gonggong_panel->ensure_environment()) {
+		const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+		if (gonggong_panel && gonggong_panel->ensure_environment_with_snapshot(runtime)) {
 			_environment_setup_completed();
 		} else {
 			_append(TTR("Editor"), U"原需求等待本地配置完成；补充输入保留为草稿，请先完成点火器。");
@@ -838,6 +849,8 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 }
 
 void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_request) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (p_action == "issue-agent") {
 		issue_guide_state = "agent_error"; // All early configuration/start failures remain retryable.
 	}
@@ -848,7 +861,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		return;
 	}
 	const String root = _workflow_root();
-	const String python = EDITOR_GET("gonggong/python");
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区和 Python。");
@@ -864,7 +877,14 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		_set_busy(false);
 		return;
 	}
-	file->store_string(JSON::stringify(p_request));
+	Dictionary runtime_request = p_request.duplicate(true);
+	if (runtime_request.has("cli_node")) {
+		runtime_request["cli_node"] = GongGongRuntimeConfig::path(runtime, "node");
+		if (runtime_request.get("backend", "") == Variant("codex")) {
+			runtime_request["cli_entry"] = GongGongRuntimeConfig::path(runtime, "codex");
+		}
+	}
+	file->store_string(JSON::stringify(runtime_request));
 	file.unref();
 	List<String> args;
 	for (const String &argument : { bridge, p_action, String("--workspace"), root, String("--tenant"), String(EDITOR_GET("gonggong/tenant")), String("--request"), issue_guide_input_path, String("--out"), issue_guide_output_path }) {
@@ -1185,6 +1205,8 @@ void AIChatDock::_igniter_prompt() {
 }
 
 void AIChatDock::_igniter_reply(const String &p_text) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (AIChatIssueGuide::is_cancel(p_text)) {
 		_cancel_igniter(U"已退出本地配置点火器。原消息仍保留；修复环境后再发送即可继续。");
 		return;
@@ -1212,14 +1234,15 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 			return;
 		}
 		igniter_fields["components"] = selected;
-		if (selected.has("python") && String(EDITOR_GET("gonggong/python")).strip_edges().is_empty()) {
+		if (selected.has("python") && String(GongGongRuntimeConfig::path(runtime, "workflow_python")).strip_edges().is_empty()) {
 			igniter_state = "python_path";
 		} else {
 			igniter_state = "location";
 		}
 	} else if (igniter_state == "python_path") {
 		if (FileAccess::exists(text)) {
-			EditorSettings::get_singleton()->set("gonggong/python", text);
+			String save_error;
+			GongGongRuntimeConfig::update_field("workflow_python", text, save_error);
 			EditorSettings::get_singleton()->save();
 			Array selected = igniter_fields["components"];
 			selected.erase("python");
@@ -1254,9 +1277,11 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 }
 
 void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_request) {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	igniter_state = p_action == "environment-deploy" ? "deploying" : "checking";
 	const String root = _workflow_root();
-	const String python = EDITOR_GET("gonggong/python");
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String bridge = root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"无法启动点火器：工作区或 Python 未配置，请在 GongGong 页设置后再试。");

@@ -12,6 +12,7 @@ import json
 import os
 import re
 import secrets
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,6 +20,27 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def configuration_snapshot(current):
+    """An App's build record is external; Godot itself has no slot in its name."""
+    from editor_native_app import app_for_executable, read_locator, validate_native_app, verify_bundle
+
+    app = app_for_executable(current)
+    previous = Path(str(app if app else current) + ".build.json")
+    if previous.is_file():
+        return json.loads(previous.read_text(encoding="utf-8"))
+    if app:
+        try:
+            locator = read_locator(current)
+        except FileNotFoundError:
+            return {}
+        manifest_path = Path(locator["candidate_manifest"])
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        validate_native_app(locator["source_root"], manifest, manifest_path)
+        verify_bundle(app, read_locator(manifest["executable"]), manifest["artifact_sha256"])
+        return manifest["build_options"]
+    return {}
 
 
 def write_status(path, **data):
@@ -145,11 +167,10 @@ def build_options(current, extra, host_options=None):
             precision="double" if "double" in parts else "single",
             module_mono_enabled="yes" if "mono" in parts else "no",
         )
-    previous = current.with_suffix(current.suffix + ".build.json")
-    if previous.is_file():
-        saved = json.loads(previous.read_text(encoding="utf-8"))
-        if not isinstance(saved, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in saved.items()):
-            raise ValueError("Invalid build configuration snapshot")
+    saved = configuration_snapshot(current)
+    if not isinstance(saved, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in saved.items()):
+        raise ValueError("Invalid build configuration snapshot")
+    if saved:
         protected = {
             "platform",
             "target",
@@ -182,7 +203,12 @@ def build_options(current, extra, host_options=None):
         options[key] = value
     # Two reusable output slots keep subsequent updates incremental. Neither slot
     # may overwrite the running editor. SCons itself reports other output locks.
-    slot = "self_update_b" if "self_update_a" in parts else "self_update_a"
+    from editor_native_app import app_for_executable
+
+    app = app_for_executable(current)
+    slot_parts = (app.name if app else current.name).split(".")
+    current_slot = saved.get("extra_suffix") if saved else None
+    slot = "self_update_b" if current_slot == "self_update_a" or "self_update_a" in slot_parts else "self_update_a"
     options["extra_suffix"] = slot
     options["ninja"] = "no"
     return options
@@ -283,6 +309,35 @@ def artifact_path(options):
     return ROOT / "bin" / (name + suffix)
 
 
+def private_check_editor(artifact, directory):
+    """Unpack the signed Mach-O before the isolation helper copies its bytes."""
+    import importlib.util
+
+    from editor_native_app import digest
+
+    spec = importlib.util.spec_from_file_location(
+        "editor_test_isolation", ROOT / "tests/editor/editor_test_isolation.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    unpacked = Path(directory) / "unpacked"
+    unpacked.mkdir()
+    bare = unpacked / artifact.name
+    shutil.copyfile(artifact, bare)
+    shutil.copymode(artifact, bare)
+    expected = digest(artifact)
+    # copy_editor intentionally consults the parent process environment.
+    inherited = os.environ.pop("GONGGONG_WORKSPACE", None)
+    try:
+        private = module.copy_editor(bare, Path(directory) / "private_sc_editor")
+    finally:
+        if inherited is not None:
+            os.environ["GONGGONG_WORKSPACE"] = inherited
+    if digest(bare) != expected or digest(private) != expected:
+        raise ValueError("candidate_isolated_artifact_changed")
+    return private
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--current", type=Path, required=True)
@@ -293,6 +348,7 @@ def main(argv=None):
     parser.add_argument("--binding", type=Path)
     parser.add_argument("--project", default="")
     parser.add_argument("--host-build-options", type=json.loads)
+    parser.add_argument("--artifact-layout", choices=("raw", "native_app"), default="raw")
     args = parser.parse_args(argv)
     status = args.status.resolve()
     log_path = args.log.resolve()
@@ -330,6 +386,8 @@ def main(argv=None):
                 raise ValueError("candidate_build_binding_mismatch")
             before = source_snapshot(ROOT)
         options = build_options(args.current, args.scons_arg, args.host_build_options)
+        if args.artifact_layout == "native_app" and (not binding or options["platform"] != "macos"):
+            raise ValueError("native_app_layout_requires_bound_macos_candidate")
         artifact = artifact_path(options)
         if artifact.resolve() == args.current.resolve():
             raise ValueError("Refusing to overwrite the running editor")
@@ -405,16 +463,34 @@ def main(argv=None):
                     raise RuntimeError(f"SCons build failed (exit {code}); see {log_path}")
                 if not artifact.is_file():
                     raise RuntimeError("SCons exited successfully but the expected editor is missing")
+                native_app = None
+                # Older running hosts understand only raw executables and their
+                # adjacent manifests. A native-aware caller explicitly opts in.
+                if args.artifact_layout == "native_app":
+                    from editor_native_app import EXECUTABLE_RELATIVE, app_for_executable, package_app
+
+                    native_app = Path(str(artifact) + ".app")
+                    running_app = app_for_executable(args.current.resolve())
+                    if running_app == native_app:
+                        raise ValueError("Refusing to overwrite the running editor App")
+                    package_app(ROOT, artifact, checked, args.project, native_app)
+                    artifact = native_app / EXECUTABLE_RELATIVE
+                snapshot = Path(str(native_app if native_app else artifact) + ".build.json")
+                snapshot.write_text(json.dumps(options, ensure_ascii=False), encoding="utf-8")
+                manifest = None
                 write_status(status, stage="checking", percent=99, executable=str(artifact))
-                # Validate both the executable and a real, isolated editor startup.
-                check_env = env.copy()
-                check_env.pop("GODOT_BUILD_PROGRESS_FILE", None)
-                env = check_env
-                code = step([str(artifact), "--headless", "--version"], timeout=60)
-                if code:
-                    raise RuntimeError(f"New editor version check failed (exit {code})")
-                with tempfile.TemporaryDirectory(prefix="self_update_check_", dir=ROOT / "bin") as directory:
-                    project = Path(directory)
+                # Exercise exactly the signed Mach-O bytes, copied to a private
+                # self-contained editor outside any source/workspace ancestor.
+                with tempfile.TemporaryDirectory(prefix="private_sc_self_update_") as directory:
+                    private_artifact = private_check_editor(artifact, directory)
+                    env = {key: value for key, value in env.items() if not key.startswith("GONGGONG_")}
+                    env.pop("GODOT_BUILD_PROGRESS_FILE", None)
+                    env["GONGGONG_RUNTIME_CONFIG"] = str(Path(directory) / "runtime-config.json")
+                    code = step([str(private_artifact), "--headless", "--version"], timeout=60)
+                    if code:
+                        raise RuntimeError(f"New editor version check failed (exit {code})")
+                    project = Path(directory) / "project"
+                    project.mkdir()
                     (project / "project.godot").write_text(
                         'config_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
                         encoding="utf-8",
@@ -426,16 +502,24 @@ def main(argv=None):
                         "corrupt_digest",
                         "wrong_length",
                     ):
-                        token = write_resume_fixture(project, args.current, artifact, storage_case)
+                        token = write_resume_fixture(project, args.current, private_artifact, storage_case)
                         # A first start in a fresh project pays for the initial scan.
                         code = step(
-                            [str(artifact), "--headless", "--editor", "--path", str(project), "--quit-after", "6"],
+                            [
+                                str(private_artifact),
+                                "--headless",
+                                "--editor",
+                                "--path",
+                                str(project),
+                                "--quit-after",
+                                "6",
+                            ],
                             timeout=240,
                         )
                         if code:
                             raise RuntimeError(f"New editor startup failed for {storage_case} (exit {code})")
                         if storage_case in {"legacy", "compressed"}:
-                            unacceptable = resume_ack_error(project, token, artifact)
+                            unacceptable = resume_ack_error(project, token, private_artifact)
                             if unacceptable:
                                 raise RuntimeError(f"Resume check {storage_case}: {unacceptable}")
                         elif (project / ".godot/editor/ai_chat_restart_ack.json").exists() or (
@@ -447,14 +531,13 @@ def main(argv=None):
                         log.write(f"Resume startup check passed: {storage_case}\n".encode())
                 if cancelled.is_set():
                     raise InterruptedError("Build cancelled; current editor unchanged")
-                artifact.with_suffix(artifact.suffix + ".build.json").write_text(
-                    json.dumps(options, ensure_ascii=False), encoding="utf-8"
-                )
-                manifest = None
                 if binding:
-                    from editor_source_manifest import artifact_manifest
+                    # Publish only after startup succeeds: an older ready
+                    # receipt may already point at this reusable output slot.
+                    from editor_source_manifest import artifact_manifest, verify_source
 
-                    manifest = artifact_manifest(ROOT, artifact, checked, args.project, options, before)
+                    manifest = artifact_manifest(ROOT, artifact, checked, args.project, options, before, native_app)
+                    verify_source(ROOT, manifest)
                     recorded = json.loads(args.binding.read_text(encoding="utf-8"))
                     recorded["artifact_manifest"] = manifest
                     candidates.atomic_json(args.binding, recorded)

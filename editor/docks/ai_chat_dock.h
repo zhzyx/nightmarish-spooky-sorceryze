@@ -173,13 +173,13 @@ class AIChatDock : public EditorDock {
 	uint64_t candidate_generation = 0;
 	String candidate_result_path;
 	Timer *candidate_timer = nullptr;
-	bool _ensure_engine_candidate();
+	bool _ensure_engine_candidate(const Dictionary &p_runtime = Dictionary());
 	void _poll_engine_candidate();
 	void _cancel_engine_candidate();
 	String _candidate_root() const;
 	String _workflow_root(int p_agent = -1) const;
 	bool _validate_engine_candidate(String &r_error) const;
-	bool _recover_active_provenance(String &r_error) const;
+	bool _recover_active_provenance(String &r_error, const Dictionary &p_runtime = Dictionary()) const;
 
 	String engine_status_path;
 	String engine_log_path;
@@ -335,9 +335,10 @@ class AIChatDock : public EditorDock {
 	String pending_model_config;
 	void _request_model_refresh(uint8_t p_source);
 	void _try_pending_model_refresh();
+	void _runtime_field_changed(const String &p_value, const String &p_field);
 	void _model_config_changed(const String &p_text);
 	void _model_config_timeout();
-	String _model_config_signature() const;
+	String _model_config_signature(const Dictionary &p_runtime = Dictionary()) const;
 	Label *model_status = nullptr;
 	HTTPRequest *model_request = nullptr;
 	bool models_loading = false;
@@ -623,7 +624,7 @@ class AIChatDock : public EditorDock {
 	void _update_agent_add_button();
 	void _cancel_all_agents();
 	void _release_cli_request();
-	bool _validate_cli() const;
+	bool _validate_cli(const Dictionary &p_runtime = Dictionary()) const;
 	void _backend_changed(int p_backend);
 	void _login_cli();
 	void _start_cli(const Array &p_messages);
@@ -691,7 +692,7 @@ class AIChatDock : public EditorDock {
 	String _work_order_binding(const String &p_field, int p_agent = -1) const;
 	Dictionary _get_daqian_models() const;
 	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
-	void _set_issue_model_config(Dictionary &r_request) const;
+	void _set_issue_model_config(Dictionary &r_request, const Dictionary &p_runtime = Dictionary()) const;
 	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());
 	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded);
 
@@ -700,6 +701,9 @@ protected:
 	void _notification(int p_what);
 
 public:
+	Dictionary get_runtime_configuration() const;
+	Dictionary prepare_runtime_configuration() const;
+	String set_runtime_field(const String &p_field, const String &p_value);
 	AIChatDock();
 	~AIChatDock();
 };
