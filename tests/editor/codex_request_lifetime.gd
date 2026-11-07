@@ -39,20 +39,22 @@ func _run():
 		return
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", folder)
-	settings.set_setting("gonggong/python", OS.get_environment("GONGGONG_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
 	settings.set_setting("gonggong/issue_number", "6")
 	settings.set_setting("gonggong/request_id", "isolated-gate")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("LIFETIME_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "lifetime-fixture"
-	dock.find_child("APIKey", true, false).text = "fixture-key"
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("LIFETIME_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "lifetime-fixture"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "fixture-key"
 	backend.select(2)
 	backend.item_selected.emit(2)
-	dock.find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
-	dock.find_child("CodexEntry", true, false).text = folder.path_join("entry.js")
-	dock.find_child("CodexModel", true, false).text = "lifetime-fixture"
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = folder.path_join("entry.js")
+	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
+	dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "lifetime-fixture"
 	for name in ["success", "failure", "cancel", "start_failure"]:
 		dock.find_child("ChatInput", true, false).text = name
 		dock.find_child("Send", true, false).pressed.emit()
@@ -62,7 +64,7 @@ func _run():
 			await create_timer(0.02).timeout
 			# Let requirements intake start with a valid Node, then fail only the native chat launch.
 			if name == "start_failure" and FileAccess.file_exists(folder.path_join("wire/intake-start_failure.json")):
-				dock.find_child("CLINode", true, false).text = folder.path_join("not-executable.exe")
+				dock.get_environment_settings_control().find_child("CLINode", true, false).text = folder.path_join("not-executable.exe")
 			if FileAccess.file_exists(folder.path_join("wire/missing.json")):
 				var failure = JSON.parse_string(FileAccess.get_file_as_string(folder.path_join("wire/missing.json")))
 				if not failure is Dictionary:

@@ -93,6 +93,7 @@ func run():
 	panel.select_node(panel.nodes[0].id)
 	await verify_context_controls()
 	verify_chinese_controls()
+	await verify_settings_navigation(dock)
 	await verify_generation_service_controls()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
@@ -207,12 +208,34 @@ func verify_workspace(dock: Control,tabs: TabContainer):
 	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
 	await settle()
 
+func verify_settings_navigation(dock: Control):
+	var settings_page = root.find_child('UnifiedSettings',true,false)
+	var sections: Dictionary = panel.get_settings_sections()
+	check(settings_page!=null and sections.keys().size()==2 and sections.has('ai') and sections.has('environment'),'马良 exposes the two native settings categories')
+	if settings_page==null or sections.size()!=2: return
+	var categories = settings_page.find_child('UnifiedSettingsCategories',true,false)
+	check(settings_page.is_ancestor_of(sections.ai) and settings_page.is_ancestor_of(sections.environment) and not panel.is_ancestor_of(sections.ai),'native settings owns the unique 马良 forms')
+	panel.native_buttons.settings.pressed.emit()
+	await settle()
+	check(settings_page.is_visible_in_tree() and categories.current_tab==1 and panel.python_edit.is_visible_in_tree() and sections.environment.is_ancestor_of(panel.cli_path_edit) and not panel.native_sections.machine.visible,'old local settings action navigates to central environment')
+	panel.service_settings_section = 'ai'
+	panel.open_service_settings()
+	await settle()
+	check(settings_page.is_visible_in_tree() and categories.current_tab==0 and panel.service_choice.is_visible_in_tree() and sections.ai==panel.service_fields,'service configuration navigates to the existing AI form')
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await settle()
+	check(panel.graph.is_visible_in_tree() and panel.native_buttons.mesh.button_pressed and not settings_page.is_visible_in_tree(),'returning from settings preserves the active business section')
+
 func verify_chinese_controls():
 	var han = RegEx.new()
 	han.compile('\\p{Han}')
 	var leftovers: Array = []
 	var proper_names = ['UE4','Manny','Mixamo','UE5 Manny','UE5 Quinn']
-	for control in panel.find_children('*','Control',true,false):
+	var controls = panel.find_children('*','Control',true,false)
+	for section in panel.get_settings_sections().values():
+		for control in section.find_children('*','Control',true,false):
+			if not controls.has(control): controls.append(control)
+	for control in controls:
 		var ancestor = control.get_parent()
 		var engine_popup = false
 		while ancestor!=panel and ancestor!=null:

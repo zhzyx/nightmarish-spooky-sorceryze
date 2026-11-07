@@ -42,6 +42,11 @@ class TextEdit;
 class Timer;
 
 class GongGongPanel : public VBoxContainer {
+	VBoxContainer *environment_settings_control = nullptr;
+	Callable settings_requested;
+	Callable environment_changing;
+	Callable runtime_changed;
+	bool task_locked = false;
 	LineEdit *workspace = nullptr;
 	LineEdit *python = nullptr;
 	LineEdit *tenant = nullptr;
@@ -72,11 +77,23 @@ class GongGongPanel : public VBoxContainer {
 	void poll();
 	void save_issue_binding(const String &p_text);
 	void runtime_python_changed(const String &p_value);
+	void save_environment_settings();
+	void request_environment_settings();
+	void update_environment_controls();
+	bool apply_environment_settings(const String &p_workspace, const String &p_tenant);
 
 public:
 	GongGongPanel();
 	bool ensure_environment();
 	bool ensure_environment_with_snapshot(const Dictionary &p_runtime);
+	Control *get_environment_settings_control() const { return environment_settings_control; }
+	void set_settings_requested(const Callable &p_callback) { settings_requested = p_callback; }
+	void set_environment_changing_handler(const Callable &p_callback) { environment_changing = p_callback; }
+	void set_runtime_changed_handler(const Callable &p_callback) { runtime_changed = p_callback; }
+	void set_task_locked(bool p_locked);
+	bool set_environment_python(const String &p_python);
+	String set_runtime_field(const String &p_field, const String &p_value);
+	void refresh_runtime_controls(const Dictionary &p_runtime);
 	void set_setup_completed(const Callable &p_callback) { setup_completed = p_callback; }
 	// Reflect a binding saved elsewhere (the chat Issue guide) without re-saving it.
 	void reload_issue_binding();

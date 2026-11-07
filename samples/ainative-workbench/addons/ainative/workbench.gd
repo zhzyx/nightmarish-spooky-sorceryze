@@ -1,6 +1,7 @@
 @tool
 extends VBoxContainer
 # Local machine settings are intentionally excluded from workflow serialization.
+signal settings_requested(section: String)
 var rigging_panel: VBoxContainer
 var generator_choice: OptionButton
 var graph: GraphEdit
@@ -49,6 +50,7 @@ var native_buttons: Dictionary = {}
 var native_scroll: ScrollContainer
 var native_inspector_fields: Array = []
 var native_other_panels: Array = []
+var settings_sections: Dictionary = {}
 var context_menu: PopupMenu
 var context_history_menu: PopupMenu
 var context_node_ids: Array = []
@@ -80,6 +82,7 @@ var service_saved: Dictionary = {}
 var service_report: Dictionary = {}
 var service_report_draft = ""
 var service_config_link: Button
+var service_settings_section = 'ai'
 var service_fields: VBoxContainer
 var service_advanced: VBoxContainer
 var service_ui_loading = false
@@ -129,8 +132,9 @@ func _ready():
 		for item in [['mesh','网格生成'],['rig','骨骼绑定'],['character','角色工作台'],['other','其他工具'],['settings','本机设置']]:
 			var action = button(navigation,item[1],show_native_section.bind(item[0]))
 			action.name = 'AINativeNav_'+item[0]
-			action.toggle_mode = true
-			action.button_group = group
+			if item[0] != 'settings':
+				action.toggle_mode = true
+				action.button_group = group
 			native_buttons[item[0]] = action
 	var scroll = ScrollContainer.new()
 	native_scroll = scroll
@@ -157,25 +161,39 @@ func _ready():
 	var bundled_host = str(get_meta('ainative_tools_dir','')).path_join('editor_host.py') if builtin else ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")
 	var configured_host = bundled_host if builtin and settings.get_value('host','use_bundled_script',true) else settings.get_value('host','script',bundled_host)
 	_setup_service_controls(machine, settings)
+	service_fields.name = 'AINativeAISettings'
+	var environment_settings = VBoxContainer.new()
+	environment_settings.name = 'AINativeEnvironmentSettings'
+	machine.add_child(environment_settings)
+	settings_sections = {'ai':service_fields, 'environment':environment_settings}
+	var environment_title = Label.new()
+	environment_title.text = '马良运行环境'
+	environment_settings.add_child(environment_title)
+	cli_fields.reparent(environment_settings)
 	service_advanced = VBoxContainer.new()
-	machine.add_child(service_advanced)
-	service_advanced.hide()
-	button(machine, "高级运行环境与旧配置", func(): service_advanced.visible = not service_advanced.visible)
-	python_edit = line(service_advanced, "本机 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
+	environment_settings.add_child(service_advanced)
+	if not builtin:
+		service_advanced.hide()
+		var advanced_button = button(environment_settings, "高级运行环境与旧配置", func(): service_advanced.visible = not service_advanced.visible)
+		environment_settings.move_child(advanced_button, service_advanced.get_index())
+	var runtime_label = Label.new()
+	runtime_label.text = '马良工具与本机模型 Python（3.11+，独立于引擎编译 Python）'
+	service_advanced.add_child(runtime_label)
+	python_edit = line(service_advanced, "马良 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
 	host_edit = line(service_advanced, "本机 editor_host.py 路径", configured_host)
 	factory_edit = line(service_advanced, "旧生成服务入口（兼容已有配置）", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(service_advanced, "保存高级运行环境", save_settings)
-	button(machine, "打开本机诊断日志", open_diagnostics)
+	button(environment_settings, "打开本机诊断日志", open_diagnostics)
 	_restore_service_settings(settings)
 	managed_comfy_panel = preload('res://addons/ainative/managed_comfy_panel.gd').new()
-	service_fields.add_child(managed_comfy_panel)
+	environment_settings.add_child(managed_comfy_panel)
 	managed_comfy_panel.initialize(self, settings)
 	_update_service_summary()
 	factory_edit.text_changed.connect(_legacy_factory_changed)
 	developer_mode = CheckButton.new()
 	developer_mode.text = "开发者模式"
 	developer_mode.button_pressed = settings.get_value("interface", "developer_mode", false)
-	machine.add_child(developer_mode)
+	environment_settings.add_child(developer_mode)
 	developer_mode.toggled.connect(func(enabled):
 		if parameter_form != null: parameter_form.set_developer_mode(enabled)
 	)
@@ -340,7 +358,7 @@ func _ready():
 	add_child(dialog)
 	dialog.confirmed.connect(confirm_publish)
 	status = Label.new()
-	status.text = "右键节点运行；真实生成请先在“本机设置”连接服务并选择模型。"
+	status.text = "右键节点运行；真实生成请先在“设置 → AI”连接服务并选择模型。" if builtin else "右键节点运行；真实生成请先在“本机设置”连接服务并选择模型。"
 	content.add_child(status)
 	service_config_link = button(self, "配置生成服务", open_service_settings)
 	service_config_link.hide()
@@ -355,9 +373,12 @@ func _ready():
 
 func show_native_section(section: String):
 	if native_sections.is_empty(): return
+	if section == 'settings':
+		settings_requested.emit('environment')
+		return
 	native_sections.character.visible = section=='character'
 	native_sections.advanced.visible = section!='character'
-	native_sections.machine.visible = section=='settings'
+	native_sections.machine.hide()
 	native_sections.bar.visible = section=='mesh'
 	native_sections.split.visible = section in ['mesh','rig','other']
 	graph.visible = section=='mesh'
@@ -370,6 +391,21 @@ func show_native_section(section: String):
 	native_sections.title.text = {'mesh':'网格生成 · 右键画布添加节点，右键节点编辑、预览和管理结果。','rig':'骨骼绑定 · 使用已预览的网格，或选择本地网格；检查姿势后拟合。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
 	for key in native_buttons: native_buttons[key].button_pressed = key==section
 	native_scroll.scroll_vertical = 0
+
+# The native settings page reparents these exact controls. Consumers keep their
+# original pointers and local.cfg / generation-service.json remain authoritative.
+func get_settings_sections() -> Dictionary:
+	return settings_sections.duplicate()
+
+# Called by the native host before removing this workbench. Reclaiming the
+# controls preserves their lifetime relationship with callbacks to this host.
+func reclaim_settings_sections():
+	for control in settings_sections.values():
+		if not is_instance_valid(control): continue
+		if control.get_parent() != self:
+			if control.get_parent() == null: add_child(control)
+			else: control.reparent(self)
+		control.hide()
 
 func save_settings():
 	var c = ConfigFile.new()
@@ -664,8 +700,8 @@ func launch(command: String, spec: Dictionary):
 	# Empty executable paths abort on macOS before a child process can report an error.
 	# Reject them before writing a request or calling the operating system.
 	if python_edit.text.strip_edges().is_empty() or host_edit.text.strip_edges().is_empty():
-		var message = "运行环境为空。请在本机设置的高级运行环境中选择已安装的 Python 3.11 或更高版本。" if python_edit.text.strip_edges().is_empty() else "运行工具路径为空。请在本机设置的高级运行环境中恢复内置工具路径。"
-		_show_run_problem(message)
+		var message = "运行环境为空。请在环境设置中选择马良使用的 Python 3.11 或更高版本。" if python_edit.text.strip_edges().is_empty() else "运行工具路径为空。请在环境设置中恢复马良内置工具路径。"
+		_show_run_problem(message, 'environment')
 		auto_step = false
 		creating = false
 		preview_target = ""
@@ -687,7 +723,7 @@ func launch(command: String, spec: Dictionary):
 		arguments.append_array(PackedStringArray(["--service-config", service_config_path]))
 	var pid = OS.create_process(python_edit.text, arguments)
 	if pid < 0:
-		_show_run_problem("无法启动本机运行环境。请在本机设置中选择已安装的 Python 3.11 或更高版本。")
+		_show_run_problem("无法启动本机运行环境。请在环境设置中选择马良使用的 Python 3.11 或更高版本。", 'environment')
 		auto_step = false
 		if command == "create":
 			creating = false
@@ -878,6 +914,7 @@ func confirm_publish():
 	confirmation = {}
 
 func _exit_tree():
+	if is_instance_valid(managed_comfy_panel): managed_comfy_panel.release_connection()
 	for pid in jobs:
 		if OS.is_process_running(pid): OS.kill(pid)
 
@@ -1250,7 +1287,10 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_fields.add_child(service_choice)
 	cli_fields = VBoxContainer.new()
 	service_fields.add_child(cli_fields)
-	cli_path_edit = line(cli_fields, '本机 Codex CLI 程序', str(settings.get_value('service', 'cli_path', 'codex')))
+	var cli_label = Label.new()
+	cli_label.text = '马良图像 Codex CLI（保留独立任务服务快照）'
+	cli_fields.add_child(cli_label)
+	cli_path_edit = line(cli_fields, '马良图像 Codex CLI 程序', str(settings.get_value('service', 'cli_path', 'codex')))
 	var cli_picker = FileDialog.new()
 	cli_picker.title = '选择已登录的 Codex CLI'
 	cli_picker.access = FileDialog.ACCESS_FILESYSTEM
@@ -1258,6 +1298,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	cli_picker.file_selected.connect(func(path): cli_path_edit.text = path)
 	cli_fields.add_child(cli_picker)
 	button(cli_fields, '选择 Codex CLI…', func(): cli_picker.popup_centered_ratio(0.7))
+	button(cli_fields, '保存 CLI 与生成服务设置', save_service_settings)
 	var billing = Label.new()
 	billing.text = '复用 Codex CLI 当前的 ChatGPT 登录；图像生成与编辑计入同一 Codex 额度。网格由本机模型执行。'
 	billing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -1471,7 +1512,7 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if _service_mode() not in ['comfy', 'codex']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
-		return "生成服务设置尚未保存。请在本机设置中检测连接、选择模型并保存。"
+		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
 	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty()
 	if _service_mode() != 'codex' and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
@@ -1486,18 +1527,24 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 		if not capability.get("ready", false): return str(capability.get("message", "当前服务不具备该节点所需能力，请重新检测并修正设置。"))
 	return ""
 
-func _show_run_problem(message: String):
+func _show_run_problem(message: String, section: String = 'ai'):
 	if status != null: status.text = message
-	if service_config_link != null: service_config_link.show()
+	service_settings_section = section
+	if service_config_link != null:
+		service_config_link.text = '配置运行环境' if section == 'environment' else '配置生成服务'
+		service_config_link.show()
 
 func open_service_settings():
-	if not native_sections.is_empty(): show_native_section("settings")
+	if get_meta('ainative_builtin', false):
+		settings_requested.emit(service_settings_section)
+		return
 	elif service_fields != null:
-		var current_parent: Node = service_fields
+		var current_parent: Node = python_edit if service_settings_section == 'environment' else service_fields
 		while current_parent != self and current_parent != null:
 			if current_parent is Control: current_parent.show()
 			current_parent = current_parent.get_parent()
-	if service_choice != null: service_choice.grab_focus()
+	var focus_control = python_edit if service_settings_section == 'environment' else service_choice
+	if focus_control != null: focus_control.grab_focus()
 
 func _valid_service_endpoint(value: String) -> bool:
 	var pattern = RegEx.new()

@@ -4,16 +4,16 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
-import sys
 import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -72,6 +72,14 @@ def main():
         def log_message(self, *_):
             pass
 
+        def do_GET(self):
+            body = json.dumps({"data": [{"id": "layout-model"}]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
         def do_POST(self):
             request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             if any(m.get("content") == "layout-stop" for m in request["messages"] if m["role"] == "user"):
@@ -104,9 +112,9 @@ def main():
     results = []
     try:
         for scale, setting, width in [(s, 2 if s == 1.0 else 4, w) for s in args.scales for w in args.widths]:
-            with tempfile.TemporaryDirectory(prefix="ai-layout-", dir=args.out.resolve()) as folder:
+            with tempfile.TemporaryDirectory(prefix="ai-layout-") as folder:
                 temporary = Path(folder)
-                isolated_editor = macos_editor(args.godot, temporary / "isolated-editor")
+                isolated_editor = copy_editor(args.godot, temporary / "isolated-editor")
                 project = temporary / "project"
                 project.mkdir()
                 (project / "project.godot").write_text(
@@ -115,22 +123,26 @@ def main():
                 )
                 shutil.copyfile(Path(__file__).with_name("ai_chat_layout_regression.gd"), project / "layout.gd")
                 test_digest = sha256(project / "layout.gd")
-                config = (
-                    isolated_editor.parent / "editor_data"
-                    if sys.platform == "darwin"
-                    else temporary / "appdata" / "Godot"
-                )
+                config = isolated_editor.parent / "editor_data"
                 config.mkdir(parents=True, exist_ok=True)
                 (config / "editor_settings-4.8.tres").write_text(
                     '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
                     f"interface/editor/appearance/display_scale = {setting}\n"
                     'interface/editor/editor_language = "en"\n'
+                    f'ai_chat/endpoint = "http://127.0.0.1:{server.server_port}/v1/chat/completions"\n'
+                    'ai_chat/model = "layout-model"\n'
+                    'gonggong/workspace = ""\ngonggong/python = ""\n'
                     "ai_chat/backend = 0\nai_chat/auto_execute_commands = false\n"
                     "ai_chat/auto_apply_file_changes = false\nai_chat/engine_auto_restart = false\n",
                     encoding="utf-8",
                 )
                 result = (args.out / f"layout-{scale:.1f}-{width}.json").resolve()
-                env = os.environ.copy()
+                env = {
+                    key: value
+                    for key, value in os.environ.items()
+                    if not re.search(r"KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD", key, re.IGNORECASE)
+                    and not key.upper().startswith(("GONGGONG_", "AINATIVE_", "CODEX_"))
+                }
                 env.update(
                     APPDATA=str(temporary / "appdata"),
                     LOCALAPPDATA=str(temporary / "localappdata"),
@@ -142,6 +154,10 @@ def main():
                     AI_LAYOUT_SCREENSHOTS="1" if args.visible else "0",
                     AI_LAYOUT_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
                 )
+                for name in ("HOME", "USERPROFILE", "XDG_DATA_HOME", "TMP", "TEMP"):
+                    private_path = temporary / "private-home" / name.lower()
+                    private_path.mkdir(parents=True, exist_ok=True)
+                    env[name] = str(private_path)
                 command = [
                     str(isolated_editor),
                     *([] if args.visible else ["--headless"]),
@@ -153,7 +169,9 @@ def main():
                 ]
                 with (args.out / f"layout-{scale:.1f}-{width}.log").open("w", encoding="utf-8") as log:
                     try:
-                        run = subprocess.run(command, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=90)
+                        run = subprocess.run(
+                            command, cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=90
+                        )
                         exit_code = run.returncode
                     except subprocess.TimeoutExpired:
                         exit_code = 124

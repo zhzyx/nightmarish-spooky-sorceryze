@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "integrated_main": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "platform": "Windows x64",
+  "state": "local_business_accepted_delivery_pending",
+  "editor_sha256": "45ade59084cd8dec24ee3d245c990ce023442646e3e63095d979b4b64989f4e6",
+  "build": {
+    "build_command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes angle=no use_llvm=no msvc_version=14.5 mssdk_version=10.0.26100.0 -j8",
+    "build_result": "passed",
+    "build_log": "runtime/unified-settings/build-v9.log",
+    "source_sha256": {
+      "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+      "editor/plugins/unified_settings_editor_plugin.cpp": "083e3d14323f372e765ec3d30be66775ac937a5fed8da215460fcb760d356671",
+      "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+      "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+      "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+      "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+      "editor/docks/ai_chat_dock.cpp": "72cb5c5baac8c28a96fad369c85f039eecf617d3c3c88dc96884fc58199d9d27",
+      "editor/docks/ai_chat_dock.h": "11618faaf121a3e286c4cac79550cf9adf5f8ebd29125443883ddbd1a5040622",
+      "editor/docks/ai_chat_gonggong.cpp": "a002fea4433d6302721f76e27471fbdb68039a5716893522d1dd3aed5b44e3ae",
+      "editor/docks/gonggong_panel.cpp": "01fd0aa0b9bfaf3b535ebd4ea2d8b26b2c89030ab1e859f99fbfe840f354d83f",
+      "editor/docks/gonggong_panel.h": "fc2b32ce4d39c11075a268a0d610c9bd7f5541fb550d8fcf307b93a434c0fc96",
+      "editor/docks/daqian/workspace.gd": "2c5060404077297dd99cf570f37cc30ed5abbac1ec4d33d519bcef5d944a8748",
+      "editor/docks/daqian/model_settings.gd": "25eed76e5e785893696fd7f652f2a5c25482a73bf3be9f34df3b38389cfb5396",
+      "editor/docks/daqian_dock.cpp": "7d9eba83ed8ca0bdf8923c19fd486d3c660eefab989e99be16536ed3f9aa9b90",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+      "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+    }
+  },
+  "native": {
+    "behavior_passed": true,
+    "checks": [
+      {
+        "mode": "full",
+        "passed": 78,
+        "failures": []
+      },
+      {
+        "mode": "reopen",
+        "passed": 41,
+        "failures": []
+      }
+    ],
+    "strict_shutdown_runner_state": "failed",
+    "strict_shutdown_errors_preserved": true,
+    "diagnostics": "Existing headless resource shutdown diagnostics are retained separately. Old binary baseline and current candidate with/without reclamation reproduce the same types; reclamation does not increase counts. Small resource-count differences are not assigned a speculative cause."
+  },
+  "layout": {
+    "mode": "headless_geometry",
+    "passed": true,
+    "widths": [
+      640,
+      960,
+      1440
+    ],
+    "scale": 1.0
+  },
+  "art_regressions": {
+    "state": "passed",
+    "installed_bundle_matches_source": true,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ]
+  },
+  "model_discovery": {
+    "passed": true,
+    "source_unchanged": true,
+    "cases": [
+      {
+        "case": "api-chat-startup",
+        "passed": true
+      },
+      {
+        "case": "api-responses-startup",
+        "passed": true
+      },
+      {
+        "case": "codebuddy-startup",
+        "passed": true
+      }
+    ]
+  },
+  "independent_review": {
+    "path": "data-collection/editor-unified-settings-independent-review-20261107.json",
+    "sha256": "99bcdf8120dab5426f60e134bdccc97d2e379c280622ed3374db03e3dbdc96ff",
+    "reviewer": "/root/unified_settings_review",
+    "findings": []
+  },
+  "acceptance": [
+    {
+      "id": 1,
+      "state": "done",
+      "result": "Addon-free native Settings main-screen with AI and Environment; all existing entries navigate to it."
+    },
+    {
+      "id": 2,
+      "state": "done",
+      "result": "Actual unique chat, art and personal-model forms moved; business retains navigation and task inputs."
+    },
+    {
+      "id": 3,
+      "state": "done",
+      "result": "Existing role-specific runtime paths and persistence retained; save/reopen tested; credentials remain transient or existing protected store."
+    },
+    {
+      "id": 4,
+      "state": "done",
+      "result": "Model discovery, snapshot/lock behavior, shared-scope cleanup, managed leases and local runtime configuration preserved with synthetic fixtures."
+    },
+    {
+      "id": 5,
+      "state": "pending_delivery",
+      "result": "Current-source MSVC build, isolated native controls, responsive geometry and independent review completed; exact-head CI, main and Issue closure will be verified separately after publication."
+    }
+  ],
+  "limits": [
+    "No real paid generation or user credentials were used for this settings refactor.",
+    "Windows x64 behavioral acceptance; no claim of macOS/Linux execution.",
+    "Codex model-discovery shebang-specific historical runner cases were not run on Windows; API Chat, Responses and CodeBuddy startup were exercised."
+  ],
+  "dispatch": {
+    "state": "completed_verified",
+    "worker": "/root/sinan_04e371495ed9733d",
+    "assignment_key": "0f9b4e968c2be2ba920e02bd6865723a23d05465d812fcf465aa4eeae66ad544"
+  },
+  "receipt_sha256": {
+    "build-evidence.json": "938203f78d7ba2ec31e3f42e3ddb708125bfd757f56cf6a38f62dbea6954ff9f",
+    "review/native-independent-v9.json": "b345f12c014c45df16a8222a6a7011174d76d2c4a214d37c9316fb6949634754",
+    "native-art-regressions-final.json": "71f32a8967e327fb65dfb69e90e2e58031cc32847ea2be313ea701683d16623e",
+    "layout-final-v2/summary.json": "5c9340b163ffeee08ad6fd2f91769cc9a764237409f726f937e0f6871ea9c57d",
+    "autofetch-final-v3.json": "f678b02d4f5fda468a18b7bbd4e5e5fa24396194a08c8e1dfb56d0fb19d9c132",
+    "reconcile459-result.json": "c0416c45277327f50cccd1dad8c5eaed748da1dbc3749837d578f83e24425fe1"
+  },
+  "usage": null
+}

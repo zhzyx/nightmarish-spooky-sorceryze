@@ -49,8 +49,8 @@ func run() -> void:
 	if not dock or not control:
 		quit(1)
 		return
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = false
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
 	tabs = TabContainer.new()
 	tabs.name = "CapabilityFixtureTabs"
 	tabs.size = Vector2(500, 500)
@@ -123,11 +123,11 @@ func run() -> void:
 				"stop":
 					dock.find_child("Stop", true, false).pressed.emit()
 				"permission":
-					dock.find_child("AllowTools", true, false).button_pressed = cmd.value
+					dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = cmd.value
 				"consultation":
 					dock.find_child("ConsultationOnly", true, false).button_pressed = cmd.value
 				"auto":
-					dock.find_child("AutoExecuteCommands", true, false).button_pressed = cmd.value
+					dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = cmd.value
 				"edit":
 					line.text = "user-changed"
 				"replace":
