@@ -1,0 +1,97 @@
+{
+  "request_id": "tianshu-workbench-rebuild-20261107",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+  "design_document": "design-docs/daqian/rebuild-plan.md",
+  "base_commit": "68fe8c9e0d77b5979b724ba483ccfb409e783e50",
+  "windows_editor_sha256": "fc8edaebc86af6109d701ac4cb9f221882f83e9a7f1ee58bb084b46195cbe0ae",
+  "windows_native_scenarios": [
+    "graph",
+    "direct",
+    "publish",
+    "parallel",
+    "inputs",
+    "multi_issue",
+    "entry",
+    "inline_approval"
+  ],
+  "live_github_windows": [
+    {
+      "closed": false,
+      "graph_loaded": true,
+      "linked": true,
+      "listed_todo": false,
+      "number": 83,
+      "offline": false,
+      "pending_count": 0.0,
+      "projected_nodes": 7,
+      "repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "returned": true,
+      "selected": true,
+      "source_updated": "2026-11-04T20:58:03Z",
+      "status": "needs-decision",
+      "verified_at": "2026-11-07T16:55:19+00:00"
+    },
+    {
+      "closed": true,
+      "graph_loaded": true,
+      "linked": true,
+      "listed_todo": false,
+      "number": 347,
+      "offline": false,
+      "pending_count": 0.0,
+      "projected_nodes": 1,
+      "repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "returned": true,
+      "selected": true,
+      "source_updated": "2026-11-07T01:12:27Z",
+      "status": "done",
+      "verified_at": "2026-11-07T16:55:35+00:00"
+    },
+    {
+      "closed": false,
+      "graph_loaded": true,
+      "linked": true,
+      "number": 457,
+      "offline": false,
+      "repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "returned": true,
+      "selected": true,
+      "source_updated": "2026-11-07T15:17:24Z",
+      "status": "in-progress",
+      "verified_at": "2026-11-07T15:36:41+00:00"
+    },
+    {
+      "closed": true,
+      "graph_loaded": true,
+      "linked": true,
+      "listed_todo": false,
+      "number": 457,
+      "offline": false,
+      "pending_count": 0.0,
+      "projected_nodes": 1,
+      "repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "returned": true,
+      "selected": true,
+      "source_updated": "2026-11-07T16:25:25Z",
+      "status": "done",
+      "verified_at": "2026-11-07T16:55:04+00:00"
+    }
+  ],
+  "macos_scope": {
+    "candidate": "32f0598cd5d8928d2d2eaf378f4995c18d19b977",
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42386884228",
+    "status": "success",
+    "separate_generic_engine_failures": 471
+  },
+  "child_issues": [
+    446,
+    452,
+    453,
+    457
+  ],
+  "deferred_by_user": [
+    "Cross-device continuation on the same live Issue",
+    "Four-provider live account evaluation from initial scope"
+  ],
+  "prior_integrated_editor_sha256": "86c2b97f07262b4fa4615e97daed00964757e3c17be12bc248e7ee80b8f90dc2"
+}

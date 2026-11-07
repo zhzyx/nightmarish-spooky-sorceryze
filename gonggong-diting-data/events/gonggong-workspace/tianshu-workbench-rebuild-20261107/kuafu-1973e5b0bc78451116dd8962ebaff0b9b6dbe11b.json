@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1973e5b0bc78451116dd8962ebaff0b9b6dbe11b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-workbench-rebuild-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5211a2f568219f3d1d2ef16a132069ada614302aa36ee7663b09034419a4f624",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/484",
+    "action": "delivery",
+    "detection_head": "b5d66c00b3a6f7a32bc9ff637c2d28ba2c908f0a",
+    "context_sha256": "6280302fdbd7c7ee6150428ec0d9c3982311c022aa9cf69b3911a20b5e9d7905",
+    "operator": "Sail-Li",
+    "worker": "Codex-442",
+    "authority_ref": "当前需求原发布者按仓库夸父职责排障",
+    "evidence": "前置 Git 命令退出 128，未产生该父项新提交或签发分支；随后认证 fetch 成功并发现远端 main 已接收 #462。",
+    "diagnosis": "发布前远端基线读取失败；连通恢复后上游已变化，需在新基线复验。",
+    "next_action": "已无冲突接收 68fe8c9e，在同一树回放图和工单主链，记录结果后正式签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:44:17.041536+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:49:08.276520+00:00",
+  "sha256": "2e216935798c10555fc128306a96fa9083b8eb4a85d588e990292d1a809f8d79"
+}
