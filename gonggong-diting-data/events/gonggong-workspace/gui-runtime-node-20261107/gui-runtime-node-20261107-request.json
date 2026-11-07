@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "gui-runtime-node-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gui-runtime-node-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T06:48:44.964185+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+  "agent": {
+    "id": "codex-gui-runtime-fix",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "request": "实际验证引擎聊天全流程，发现阻断立即修复；宿主自动保持真实工单、仓库、隔离源码候选、编译产物和运行版本一致",
+    "worker": "/root/runtime_entry_fix",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "definition_path": "AGENTS.md",
+    "observed_failures": [
+      "GUI共工子进程没有沿用已配置Node",
+      "生产源码默认项目旧checkout而编译固定运行二进制祖先checkout"
+    ],
+    "scope_document": "design-docs/gui-runtime-node-20261107.md",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "4824394ee7eb5044adf240af3fdea1d33c3341499764d9615fa4f1fb47d769a9"
+}

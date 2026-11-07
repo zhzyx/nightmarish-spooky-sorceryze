@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "request_id": "gui-runtime-node-20261107",
+  "issue_number": 390,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+  "recorded_at": "2026-11-07T07:01:13.730247+00:00",
+  "ci_failure": {
+    "pull_request": 401,
+    "run": 42349224593,
+    "job": 128333581899,
+    "check": "codespell",
+    "observed": "5 pre-existing British spelling occurrences in changed editor_self_build.py; comments and diagnostic text only"
+  },
+  "correction": {
+    "production_digest": "e5dea2b8841733826fde80dd9a470e23e35893e08a118a45d470408eba69073a",
+    "self_build_tests_passed": 8,
+    "full_changed_file_codespell": "passed",
+    "independent_review": {
+      "reviewer": "/root/runtime_entry_fix/runtime_review",
+      "state": "passed",
+      "scope": "Exactly five spelling-only changes; execution logic unchanged"
+    }
+  },
+  "remote_merge_verified": false,
+  "business_accepted": false,
+  "usage": null,
+  "integration": {
+    "new_base": "e061f84e2f2bab3272d533f9c5b074793f13eaf2",
+    "upstream_scope": "#397 Maliang node preview; no overlapping source paths",
+    "native_editor_offline": {
+      "ok": true,
+      "errors": [],
+      "requests": 7,
+      "stages": [
+        "CANDIDATE_BOUNDARY_OK",
+        "CANDIDATE_SECOND_OK",
+        "CANDIDATE_OTHER_OK",
+        "CANDIDATE_RESUMED_OK",
+        "CANDIDATE_CHILD_OK"
+      ],
+      "stage_requests": {
+        "START": 2,
+        "SECOND": 1,
+        "OTHER": 1,
+        "RESUME": 2,
+        "CHILD": 1
+      },
+      "node_reused": true
+    },
+    "macos_arm64_compile": "passed",
+    "rebase": "owned branch only; main unchanged",
+    "incident": "988acf0a5dd0c10aab748037ae4d8fc15c2818197eab30c5d2e905bd87328446"
+  }
+}

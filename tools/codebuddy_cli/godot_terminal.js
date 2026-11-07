@@ -19,7 +19,7 @@ function bashExecutable(env = process.env, platform = process.platform) {
 function terminalArguments(params, workspace) {
     if (!params || typeof params.command !== 'string' || !params.command.trim() || params.command.includes('\0') || params.command.length > 12000 || (params.args !== undefined && (!Array.isArray(params.args) || params.args.length))) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
     if (params.env !== undefined && (!Array.isArray(params.env) || params.env.length)) throw new Error('Terminal environment overrides are not supported.');
-    const cwd = params.cwd ?? workspace.project_root;
+    const cwd = params.cwd ?? workspace.workspace_root ?? workspace.project_root;
     if (typeof cwd !== 'string' || !path.isAbsolute(cwd) || cwd.includes('\0') || !fs.statSync(cwd).isDirectory()) throw new Error('An existing absolute terminal working directory is required.');
     const outputByteLimit = params.outputByteLimit ?? 32000;
     if (!Number.isSafeInteger(outputByteLimit) || outputByteLimit < 1 || outputByteLimit > 256 * 1024) throw new Error('Invalid terminal output limit.');
@@ -137,7 +137,9 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
             if (closed || approved?.approved !== true) throw new Error('User rejected command. No command was executed. Do not retry or bypass the rejection.');
             if (terminals.size >= 8) throw new Error('Godot terminal capacity exceeded. No command was executed.');
             const id = 'godot_terminal_' + randomUUID();
-            const child = spawn(executable, ['--noprofile', '--norc', '-c', args.command], { cwd: args.cwd, env: { ...env, CHERE_INVOKING: '1', GODOT_AI_CHAT_PROGRESS: '1' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, detached: process.platform !== 'win32' });
+            const restricted = process.platform === 'darwin' && workspace.command_profile;
+            if (restricted && (typeof approved.command_profile !== 'string' || !approved.command_profile)) throw new Error('Godot did not refresh candidate command protection. No command was executed.');
+            const child = spawn(restricted ? '/usr/bin/sandbox-exec' : executable, [...(restricted ? ['-p', approved.command_profile, executable] : []), '--noprofile', '--norc', '-c', args.command], { cwd: args.cwd, env: { ...env, CHERE_INVOKING: '1', GODOT_AI_CHAT_PROGRESS: '1' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, detached: process.platform !== 'win32' });
             const terminal = { child, output: Buffer.alloc(0), truncated: false, status: null, timedOut: false, timer: null, progressTimer: null, started: Date.now(), lastOutput: Date.now(), bytes: 0, build: createBuildProgress() };
             terminals.set(id, terminal);
             const report = () => progress({ terminal_id: id, elapsed_ms: Date.now() - terminal.started, idle_ms: Date.now() - terminal.lastOutput, output_bytes: terminal.bytes, running: [...terminals.values()].filter(item => !item.status).length, ...terminal.build.snapshot() });
