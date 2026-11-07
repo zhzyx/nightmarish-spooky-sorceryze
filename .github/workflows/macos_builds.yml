@@ -93,6 +93,13 @@ jobs:
           platform: macos
           target: ${{ matrix.target }}
 
+      - name: Verify Tianshu creator navigation on arm64
+        if: matrix.target == 'editor'
+        run: |
+          for attempt in 1 2 3; do
+            python3 tests/editor/run_daqian_graph.py --scenario graph --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-graph-$attempt.json"
+          done
+
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
         with:

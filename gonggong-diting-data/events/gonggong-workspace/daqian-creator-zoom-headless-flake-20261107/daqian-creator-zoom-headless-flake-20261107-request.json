@@ -1,0 +1,21 @@
+{
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "agent": {
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "version": "host-version-unreported",
+    "id": "current-workspace-operator",
+    "origin": "user-authorized-codex-chat"
+  },
+  "event_id": "daqian-creator-zoom-headless-flake-20261107-request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/427",
+  "occurred_at": "2026-11-07T13:51:36.5214283Z",
+  "request_id": "daqian-creator-zoom-headless-flake-20261107",
+  "payload": {
+    "intent": "按原工单在macOS复验创建人缩放和缺键诊断",
+    "document": "design-docs/daqian/creator-zoom-regression.md"
+  },
+  "schema_version": 1,
+  "evidence_refs": [],
+  "sha256": "1594b839e7bd8c7f8168a479209fa70f90ebba1a17030e58a54d13a2691d5ded"
+}
