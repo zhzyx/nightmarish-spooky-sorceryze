@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c2cd67d36729997c6cc21acbb809728f0a58e3f1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7726b20e285bd0f093c6a0b9e2281e67f5321d198d4ab85d41653a0af1d4f850",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "validation",
+    "detection_head": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "runtime/unified-settings/build-v4.log;build-v6.log: native MSVC editor linked successfully",
+    "diagnosis": "Native plugin missing direct includes and used display-title lookup for stable node IDs. Root corrected includes, stable node lookup and icon. Original smoke failed and remains retained; native revalidation pending.",
+    "next_action": "Run actual isolated unified controls and source-lifetime acceptance on corrected candidate, then independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:31:11.893992+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:37:38.983555+00:00",
+  "sha256": "372fc1c4987df5dd64af6af6cf19c7fd8fa3ef1f92773bbe59b7047733839766"
+}

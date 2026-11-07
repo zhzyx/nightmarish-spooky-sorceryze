@@ -1,6 +1,14 @@
 @tool
 extends VBoxContainer
 
+signal settings_requested(section: String)
+var observed_environment := ""
+var environment_reset_pending := false
+var environment_check_queued := false
+var environment_ready := false
+var environment_cleanup_active := false
+var observed_runtime: Dictionary = {}
+
 var canvas_script: Script
 var canvas_panel
 
@@ -355,10 +363,13 @@ func _ready() -> void:
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
+	models_dialog.set_meta("unified_settings", get_meta("unified_settings", false))
 	models_dialog.editor_session = editor_session
 	add_child(models_dialog)
 	models_dialog.connect("catalog_changed",_catalog_changed)
 	models_dialog.connect("access_denied",_access_denied)
+	if models_dialog.has_signal("access_requested"):
+		models_dialog.connect("access_requested", _open_models)
 	editor.debug_command.connect(_debug_command)
 	editor.configure_model.connect(_open_models)
 	editor.draft_changed.connect(_queue_save)
@@ -388,9 +399,64 @@ func _ready() -> void:
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
 	_gate_visibility(false)
+	if get_meta("unified_settings", false):
+		var initial_environment := _environment_state()
+		observed_environment = initial_environment.signature
+		observed_runtime = initial_environment.runtime
+		environment_ready = true
+		EditorInterface.get_editor_settings().settings_changed.connect(_queue_environment_check)
 	notice.text = "点击「工作区连接」绑定共工仓库。" if _repo().is_empty() else "等待核对当前仓库协作者身份"
 	_attach_chat.call_deferred()
 	_start_session.call_deferred()
+
+
+func _environment_state(configuration: Dictionary = {}) -> Dictionary:
+	var settings := EditorInterface.get_editor_settings()
+	var source = chat if is_instance_valid(chat) else get_tree().root.find_child("AI Chat", true, false)
+	if configuration.is_empty() and is_instance_valid(source) and source.has_method("get_runtime_configuration"):
+		configuration = source.get_runtime_configuration()
+	var paths: Dictionary = configuration.get("paths", {})
+	var workspace: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
+	var tenant: String = str(settings.get_setting("gonggong/tenant")) if settings.has_setting("gonggong/tenant") else ""
+	return {"signature":JSON.stringify([workspace, str(paths.get("workflow_python", "")), tenant]), "runtime":Dictionary(configuration.get("executables", {})).duplicate()}
+
+
+func _environment_signature() -> String:
+	return _environment_state().signature
+
+
+func prepare_environment_change() -> void:
+	if environment_reset_pending: return
+	environment_reset_pending = true
+	# Keep the old effective runtime for cleanup, including changes made by
+	# another editor that were discovered before starting this operation.
+	environment_cleanup_active = true
+	_forget("运行环境已改变，已释放旧工作区连接。")
+	environment_cleanup_active = false
+	_queue_environment_check()
+
+
+func _queue_environment_check() -> void:
+	if environment_check_queued: return
+	environment_check_queued = true
+	_check_environment_changed.call_deferred()
+
+
+func _check_environment_changed() -> void:
+	environment_check_queued = false
+	_observe_environment(_environment_state())
+
+
+func _observe_environment(state: Dictionary) -> bool:
+	if not environment_ready: return false
+	var changed: bool = state.signature != observed_environment
+	var forgot := changed and not environment_reset_pending
+	if forgot:
+		prepare_environment_change()
+	observed_environment = state.signature
+	observed_runtime = state.runtime
+	environment_reset_pending = false
+	return forgot
 
 
 func _style_board_controls() -> void:
@@ -582,6 +648,7 @@ func _build_workbench() -> void:
 		label.text = entry[0]
 		connection_panel.add_child(label)
 		connection_panel.add_child(entry[1])
+		entry[1].editable = not get_meta("unified_settings", false)
 	var buttons := HBoxContainer.new()
 	connection_panel.add_child(buttons)
 	_button(buttons, "保存并连接", _save_connection)
@@ -602,11 +669,15 @@ func _build_workbench() -> void:
 
 
 func _runtime_paths(for_display := false) -> Dictionary:
+	if environment_cleanup_active:
+		return observed_runtime.duplicate()
 	if not is_instance_valid(chat):
 		chat = get_tree().root.find_child("AI Chat", true, false)
 	if not is_instance_valid(chat) or not chat.has_method("get_runtime_configuration"):
 		return {}
-	var configuration: Dictionary = chat.prepare_runtime_configuration()
+	var configuration: Dictionary = chat.get_runtime_configuration() if for_display else chat.prepare_runtime_configuration()
+	if not for_display and get_meta("unified_settings", false) and _observe_environment(_environment_state(configuration)):
+		return {"_environment_changed":true}
 	return configuration.get("paths" if for_display else "executables", {}) if configuration.get("ok", false) else {}
 
 
@@ -618,6 +689,9 @@ func _save_runtime_python(value: String) -> void:
 
 
 func _open_connection() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("environment")
+		return
 	var settings := EditorInterface.get_editor_settings()
 	workspace_path.text = _repo()
 	python_path.set_block_signals(true)
@@ -628,6 +702,9 @@ func _open_connection() -> void:
 
 
 func _save_connection() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("environment")
+		return
 	var path := workspace_path.text.strip_edges().simplify_path()
 	var python := str(_runtime_paths().get("workflow_python", ""))
 	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
@@ -1434,6 +1511,7 @@ func _gate_visibility(opened: bool) -> void:
 	if not opened:
 		details_panel.dismiss()
 		models_dialog.hide()
+		if get_meta("unified_settings", false): models_dialog.clear_embedded_access()
 		clarification_dialog.hide()
 		clarification_binding.clear()
 		clarification_questions.clear()
@@ -1496,7 +1574,10 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
 		return {"denied":true,"error":"点击「工作区连接」，填写共工仓库和 Python 路径。"}
 	var settings := EditorInterface.get_editor_settings()
-	var python: String = str(_runtime_paths().get("workflow_python", ""))
+	var runtime := _runtime_paths()
+	if runtime.get("_environment_changed", false):
+		return {"error":"运行环境已改变，请重新核对工作区身份。"}
+	var python: String = str(runtime.get("workflow_python", ""))
 	if python.is_empty():
 		return {"error":"工作流 Python 路径未配置或无效"}
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
@@ -1540,10 +1621,25 @@ func _fresh_access() -> bool:
 
 
 func _open_models() -> void:
+	if get_meta("unified_settings", false):
+		settings_requested.emit("ai")
+		models_dialog.info.text = "正在核对模型库访问身份…"
+		if actor.is_empty():
+			await refresh()
 	if await _fresh_access():
 		models_dialog.user_id = actor.user_id
 		models_dialog.chat = chat
-		models_dialog.popup_centered()
+		if get_meta("unified_settings", false):
+			models_dialog.authorize_embedded(_repo())
+		else:
+			models_dialog.popup_centered()
+	elif get_meta("unified_settings", false):
+		models_dialog.clear_embedded_access()
+		models_dialog.info.text = "请先在环境页配置工作区及 Python，并核对仓库身份。"
+
+
+func get_model_settings_control() -> Control:
+	return models_dialog.get_settings_control() if is_instance_valid(models_dialog) and models_dialog.has_method("get_settings_control") else null
 
 
 func _use_personal_board(auth: Dictionary) -> void:
@@ -2651,6 +2747,8 @@ func _host_result(pid: int, req_path: String, result_path: String) -> Dictionary
 
 func _attach_chat() -> void:
 	chat = get_tree().root.find_child("AI Chat", true, false)
+	if get_meta("unified_settings", false) and is_instance_valid(chat) and chat.has_signal("runtime_configuration_changed"):
+		chat.connect("runtime_configuration_changed", _queue_environment_check)
 	if chat and chat.has_signal("daqian_issue_bound"):
 		chat.connect("daqian_chat_unmounted", _conversation_unmounted)
 		chat.connect("daqian_issue_bound",_issue_bound)

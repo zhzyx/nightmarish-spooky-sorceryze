@@ -15,6 +15,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from editor_test_isolation import copy_editor
+
 GDSCRIPT = r"""@tool
 extends SceneTree
 var dock: Node
@@ -34,7 +36,7 @@ func events(kind: String) -> int:
             total += 1
     return total
 func finish(ok: bool, reason := ""):
-    var status = dock.find_child("ModelStatus", true, false) if dock != null else null
+    var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false) if dock != null else null
     var result := {"ok": ok, "case": case_name, "error": reason, "checks": checks, "heartbeat": heartbeat, "model_status": status.text if status != null else "", "user_data": OS.get_user_data_dir()}
     FileAccess.open(OS.get_environment("ACCEPT_RESULT"), FileAccess.WRITE).store_string(JSON.stringify(result))
     print("MODEL_ACCEPTANCE_RESULT=", JSON.stringify(result))
@@ -48,17 +50,17 @@ func stable_count(kind: String, count: int) -> bool:
     await create_timer(1.5).timeout
     return events(kind) == count
 func selected_backend(value: int):
-    var backend = dock.find_child("AIBackend", true, false)
+    var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
     backend.select(value)
     backend.item_selected.emit(value)
 func catalog_has(id: String) -> bool:
-    var picker = dock.find_child("ModelPicker", true, false)
+    var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
     for i in range(picker.item_count):
         if str(picker.get_item_metadata(i)) == id:
             return true
     return false
 func wait_backend_ready(id: String, seconds := 15.0) -> bool:
-    var backend = dock.find_child("AIBackend", true, false)
+    var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
     var deadline := Time.get_ticks_msec() + int(seconds * 1000.0)
     while Time.get_ticks_msec() < deadline:
         if backend != null and not backend.disabled and catalog_has(id):
@@ -78,11 +80,11 @@ func _run():
         finish(false, "missing AI Chat")
         return
     EditorInterface.set_main_screen_editor("AI Chat")
-    if dock.find_child("RefreshModels", true, false) != null:
+    if dock.get_ai_settings_control().find_child("RefreshModels", true, false) != null:
         finish(false, "manual refresh button still exists (old binary or incomplete change)")
         return
     checks.append("manual refresh button absent")
-    var status = dock.find_child("ModelStatus", true, false)
+    var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
     if case_name == "codex-startup":
         if not await wait_count("codex-model-list", 1) or not await stable_count("codex-model-list", 1):
             finish(false, "Codex startup must enumerate exactly once")
@@ -96,10 +98,10 @@ func _run():
         if events("codex-model-list") != 0:
             finish(false, "logged-out startup unexpectedly enumerated models")
             return
-        dock.find_child("CodexLogin", true, false).pressed.emit()
+        dock.get_ai_settings_control().find_child("CodexLogin", true, false).pressed.emit()
         if case_name == "codex-busy-login":
             dock.find_child("ConsultationOnly", true, false).button_pressed = true
-            dock.find_child("AllowTools", true, false).button_pressed = false
+            dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
             dock.find_child("ChatInput", true, false).text = "offline busy acceptance"
             dock.find_child("Send", true, false).pressed.emit()
             if not await wait_count("codex-offline-chat", 1):
@@ -123,7 +125,7 @@ func _run():
         if not await wait_count("codex-login-status", 1):
             finish(false, "initial auth-status process did not start")
             return
-        var entry = dock.find_child("CodexEntry", true, false)
+        var entry = dock.get_environment_settings_control().find_child("CodexEntry", true, false)
         if not entry.editable:
             finish(false, "config-change fixture needs an editable field during auth-status check; review UI guard before judging product")
             return
@@ -249,22 +251,47 @@ CASES = [
 ]
 
 
-def run_case(binary, source, node, case):
+def private_editor(binary, directory):
+    # The child gets no inherited binding; copy_editor audits its ancestors too.
+    binding = os.environ.pop("GONGGONG_WORKSPACE", None)
+    try:
+        return copy_editor(binary, directory)
+    finally:
+        if binding is not None:
+            os.environ["GONGGONG_WORKSPACE"] = binding
+
+
+def run_case(binary, source, node, case, windows_job_boundary=None):
     with tempfile.TemporaryDirectory(prefix="issue387-independent-") as folder:
         root = Path(folder).resolve()
-        (root / "bin").mkdir()
         (root / "state").mkdir()
-        executable = root / "bin/godot"
-        copied = (
-            subprocess.run(["cp", "-c", str(binary), str(executable)], capture_output=True)
-            if sys.platform == "darwin"
-            else None
-        )
-        if copied is None or copied.returncode:
-            shutil.copy2(binary, executable)
-        (root / "bin/_sc_").touch()
+        executable = private_editor(binary, root / "bin")
         (root / "SConstruct").touch()
-        (root / "tools").symlink_to(source / "tools", target_is_directory=True)
+        # Copy only the fixture bridge implementations, never live CLI packages.
+        for name in ("codex_cli", "codebuddy_cli"):
+            target = root / "tools" / name
+            target.mkdir(parents=True)
+            for bridge in (source / "tools" / name).glob("*.js"):
+                shutil.copy2(bridge, target / bridge.name)
+        boundary_receipt = None
+        if os.name == "nt" and case in ("codebuddy-startup", "backend-switch"):
+            relative_boundary = Path(
+                "tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node"
+            )
+            installed_boundary = (windows_job_boundary or source / relative_boundary).resolve(strict=True)
+            private_boundary = root / relative_boundary
+            private_boundary.parent.mkdir(parents=True)
+            shutil.copy2(installed_boundary, private_boundary)
+            source_digest = hashlib.sha256(installed_boundary.read_bytes()).hexdigest()
+            private_digest = hashlib.sha256(private_boundary.read_bytes()).hexdigest()
+            if source_digest != private_digest:
+                raise RuntimeError("Private Windows process-boundary module differs from its installed source")
+            boundary_receipt = {
+                "module": "win32-x64/job-object.node",
+                "source_sha256": source_digest,
+                "temporary_sha256": private_digest,
+                "only_native_boundary_copied": True,
+            }
         state = root / "state"
         project = root / "project"
         project.mkdir()
@@ -328,18 +355,20 @@ def run_case(binary, source, node, case):
         )
         endpoint = f"http://127.0.0.1:{server.server_port}/v1/" + ("responses" if backend == 3 else "chat/completions")
         settings = root / "bin/editor_data/editor_settings-4.8.tres"
-        settings.parent.mkdir(parents=True)
+        settings.parent.mkdir(parents=True, exist_ok=True)
         values = {
             "ai_chat/backend": backend,
             "ai_chat/codex_entry": str(codex),
             "ai_chat/codex_model": "unlisted-codex",
             "ai_chat/cli_node": str(node),
-            "ai_chat/cli_bridge": str(source / "tools/codebuddy_cli/godot_bridge.js"),
+            "ai_chat/cli_bridge": str(root / "tools/codebuddy_cli/godot_bridge.js"),
             "ai_chat/cli_entry": str(codebuddy),
             "ai_chat/cli_model": "unlisted-codebuddy",
             "ai_chat/endpoint": endpoint,
             "ai_chat/model": "unlisted-api",
             "ai_chat/editor_control_bridge_enabled": False,
+            "gonggong/workspace": "",
+            "gonggong/python": "",
         }
         settings.write_text(
             '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
@@ -348,36 +377,79 @@ def run_case(binary, source, node, case):
         )
         output = root / "result.json"
         environment = {
-            **os.environ,
+            **{
+                key: value
+                for key, value in os.environ.items()
+                if not any(
+                    part in key.upper()
+                    for part in (
+                        "GONGGONG",
+                        "AINATIVE",
+                        "OPENAI",
+                        "ANTHROPIC",
+                        "CODEX",
+                        "API_KEY",
+                        "TOKEN",
+                        "SECRET",
+                        "CREDENTIAL",
+                    )
+                )
+            },
             "ACCEPT_CASE": case,
             "ACCEPT_ALT_CODEX": str(alt_codex),
             "ACCEPT_EVENTS": str(state / "events.jsonl"),
             "ACCEPT_RESULT": str(output),
-            "GONGGONG_NODE": str(node),
             "GODOT_AI_API_KEY": "offline-acceptance-key",
             "OPENAI_API_KEY": "",
+            "APPDATA": str(root / "appdata"),
+            "LOCALAPPDATA": str(root / "localappdata"),
+            "XDG_CONFIG_HOME": str(root / "config"),
+            "XDG_DATA_HOME": str(root / "data"),
+            "CODEX_HOME": str(root / "codex-home"),
         }
+        for key in (
+            "HOME",
+            "USERPROFILE",
+            "APPDATA",
+            "LOCALAPPDATA",
+            "XDG_CONFIG_HOME",
+            "XDG_DATA_HOME",
+            "CODEX_HOME",
+            "TMP",
+            "TEMP",
+        ):
+            if key not in environment or key in ("HOME", "USERPROFILE", "TMP", "TEMP"):
+                environment[key] = str(root / "private-profile" / key.lower())
+            Path(environment[key]).mkdir(parents=True, exist_ok=True)
+        environment["PYTHONNOUSERSITE"] = "1"
         try:
             run = subprocess.run(
                 [str(executable), "--headless", "--editor", "--path", str(project), "--script", "res://accept.gd"],
                 env=environment,
+                cwd=root,
+                creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
                 capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=60,
             )
             result = (
-                json.loads(output.read_text())
+                json.loads(output.read_text(encoding="utf-8"))
                 if output.exists()
                 else {"ok": False, "error": "No behavioral receipt; possible blocked main thread"}
             )
+            if boundary_receipt is not None:
+                result["windows_job_boundary"] = boundary_receipt
             result["returncode"] = run.returncode
             result["ok"] = result.get("ok", False) and run.returncode == 0
             result["events"] = (
-                [json.loads(line) for line in (state / "events.jsonl").read_text().splitlines()]
+                [json.loads(line) for line in (state / "events.jsonl").read_text(encoding="utf-8").splitlines()]
                 if (state / "events.jsonl").exists()
                 else []
             )
             if not result["ok"]:
-                result["diagnostic_tail"] = (run.stdout + run.stderr).decode(errors="replace")[-4000:]
+                result["diagnostic_tail"] = (run.stdout + run.stderr)[-4000:]
             return result
         except subprocess.TimeoutExpired:
             return {
@@ -395,7 +467,7 @@ def run_case(binary, source, node, case):
             # Kill only fixture children whose live command still contains this
             # unique temporary root. Never signal a real CLI or a reused PID.
             if (state / "events.jsonl").exists():
-                for line in (state / "events.jsonl").read_text().splitlines():
+                for line in (state / "events.jsonl").read_text(encoding="utf-8").splitlines():
                     try:
                         pid = json.loads(line).get("pid")
                         if not isinstance(pid, int):
@@ -416,6 +488,11 @@ def main():
     p.add_argument("--node", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--expected-sha")
+    p.add_argument(
+        "--windows-job-boundary",
+        type=Path,
+        help="Existing Windows x64 process-boundary module; only this file is copied into the private fixture bridge (defaults to the source tree module)",
+    )
     p.add_argument("--case", choices=CASES, action="append")
     a = p.parse_args()
     source = a.source.resolve()
@@ -430,19 +507,12 @@ def main():
     # Freeze one tested artifact before all cases, even if the native owner later
     # produces another binary at the same build output pathname.
     with tempfile.TemporaryDirectory(prefix="issue387-frozen-artifact-") as folder:
-        binary = Path(folder) / "godot"
-        clone = (
-            subprocess.run(["cp", "-c", str(a.godot.resolve()), str(binary)], capture_output=True)
-            if sys.platform == "darwin"
-            else None
-        )
-        if clone is None or clone.returncode:
-            shutil.copy2(a.godot, binary)
+        binary = private_editor(a.godot.resolve(), Path(folder) / "editor")
         binary_sha = hashlib.sha256(binary.read_bytes()).hexdigest()
         if a.expected_sha and a.expected_sha != binary_sha:
             raise RuntimeError("Host artifact digest changed before independent validation")
         for case in a.case or CASES:
-            result = run_case(binary, source, a.node.resolve(), case)
+            result = run_case(binary, source, a.node.resolve(), case, a.windows_job_boundary)
             results.append(result)
             print(json.dumps(result, ensure_ascii=False), flush=True)
             current = {name: hashlib.sha256((source / name).read_bytes()).hexdigest() for name in checked_sources}
@@ -455,9 +525,11 @@ def main():
                 "results": results,
                 "ok": all(r["ok"] for r in results) and current == hashes,
             }
-            a.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+            a.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return 0 if report["ok"] else 2
 
 
 if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     raise SystemExit(main())

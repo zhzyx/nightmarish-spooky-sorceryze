@@ -405,14 +405,51 @@ void AIChatDock::_update_composer_height() {
 }
 
 void AIChatDock::_toggle_chat_settings(bool p_visible) {
-	if (daqian_chat_host.is_valid()) {
-		return; // The same connection fields are already part of the embedded chat.
-	}
 	if (p_visible) {
-		chat_settings_dialog->popup_centered_clamped(Size2i(640, 520) * EDSCALE);
-	} else {
-		chat_settings_dialog->hide();
+		_request_settings("ai");
 	}
+}
+
+void AIChatDock::_request_settings(const String &p_section) {
+	emit_signal("settings_requested", p_section);
+}
+
+Control *AIChatDock::get_ai_settings_control() const {
+	return ai_settings_control;
+}
+
+Control *AIChatDock::get_environment_settings_control() const {
+	return environment_settings_control;
+}
+
+void AIChatDock::set_environment_changing_handler(const Callable &p_handler) {
+	gonggong_panel->set_environment_changing_handler(p_handler);
+}
+
+void AIChatDock::_save_chat_settings() {
+	EditorSettings *settings = EditorSettings::get_singleton();
+	settings->set_setting("ai_chat/backend", backend->get_selected());
+	settings->set_setting("ai_chat/endpoint", endpoint->get_text().strip_edges());
+	settings->set_setting("ai_chat/model", model->get_text().strip_edges());
+	settings->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
+	settings->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
+	settings->set_setting("ai_chat/cli_model", cli_model->get_text().strip_edges());
+	settings->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
+	settings->set_setting("ai_chat/build_arguments", engine_build_arguments->get_text());
+	// The API key remains on the existing session-only control, never in settings.
+	EditorSettings::save();
+	_update_settings_summary();
+}
+
+void AIChatDock::_update_settings_summary() {
+	if (!settings_summary || !codex_model) {
+		return;
+	}
+	String current = _active_model_field()->get_text().strip_edges();
+	if (current.is_empty()) {
+		current = backend->get_selected() == 1 || backend->get_selected() == 2 ? String(U"CLI 默认模型") : String(U"尚未配置模型");
+	}
+	settings_summary->set_text(backend->get_item_text(backend->get_selected()) + " · " + current + " · " + reasoning_picker->get_item_text(reasoning_picker->get_selected()));
 }
 
 void AIChatDock::_save_history() {
@@ -1506,6 +1543,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_refresh_sub_agents();
 	}
 	const bool locked = busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
+	gonggong_panel->set_task_locked(locked || engine_restart_requested);
 	snapshot_history_button->set_disabled(locked || engine_restart_requested);
 	_refresh_engine_controls();
 	stop_button->set_disabled(!busy && pending_external_editor_message.is_empty() && !models_loading && !snapshot_restoring && gonggong_recovered_result.is_empty());
@@ -1852,8 +1890,8 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 		if (!_validate_cli(runtime)) {
 			const String node = GongGongRuntimeConfig::path(runtime, "node");
 			const String entry = GongGongRuntimeConfig::path(runtime, "codex");
-			_append(TTR("Error"), !AIChatHostRuntime::executable_exists(entry) ? String(U"Codex 可执行文件路径无效，请在更多设置中填写现有原生程序的绝对路径。尚未检查登录状态。") : !AIChatHostRuntime::executable_exists(node) ? String(U"Node.js 可执行文件路径无效，请配置现有 Node.js 的绝对路径。尚未检查 Codex 登录状态。")
-																																																								 : String(U"Codex 对话桥接文件缺失，请修复当前引擎安装。尚未检查登录状态。"));
+			_append(TTR("Error"), !AIChatHostRuntime::executable_exists(entry) ? String(U"Codex 可执行文件路径无效，请在“设置 → 环境”填写现有原生程序的绝对路径。尚未检查登录状态。") : !AIChatHostRuntime::executable_exists(node) ? String(U"Node.js 可执行文件路径无效，请在“设置 → 环境”配置现有 Node.js 的绝对路径。尚未检查 Codex 登录状态。")
+																																																									: String(U"Codex 对话桥接文件缺失，请修复当前引擎安装。尚未检查登录状态。"));
 			return false;
 		}
 		request_key = String();
@@ -3707,6 +3745,12 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_runtime_configuration"), &AIChatDock::get_runtime_configuration);
 	ClassDB::bind_method(D_METHOD("prepare_runtime_configuration"), &AIChatDock::prepare_runtime_configuration);
 	ClassDB::bind_method(D_METHOD("set_runtime_field", "field", "value"), &AIChatDock::set_runtime_field);
+	ClassDB::bind_method(D_METHOD("refresh_runtime_controls"), &AIChatDock::refresh_runtime_controls);
+	ClassDB::bind_method(D_METHOD("get_ai_settings_control"), &AIChatDock::get_ai_settings_control);
+	ClassDB::bind_method(D_METHOD("get_environment_settings_control"), &AIChatDock::get_environment_settings_control);
+	ClassDB::bind_method(D_METHOD("set_environment_changing_handler", "handler"), &AIChatDock::set_environment_changing_handler);
+	ADD_SIGNAL(MethodInfo("settings_requested", PropertyInfo(Variant::STRING, "section")));
+	ADD_SIGNAL(MethodInfo("runtime_configuration_changed"));
 	ClassDB::bind_method(D_METHOD("get_daqian_approval"), &AIChatDock::_get_daqian_approval);
 	ClassDB::bind_method(D_METHOD("confirm_daqian_approval", "token"), &AIChatDock::_confirm_daqian_approval);
 	ClassDB::bind_method(D_METHOD("render_daqian_markdown", "label", "text"), &AIChatDock::_render_markdown);
@@ -3765,12 +3809,7 @@ bool AIChatDock::_mount_daqian_chat(Control *p_host) {
 	workspace_pages->set_current_tab(0);
 	workspace_pages->set_tabs_visible(false);
 	session_navigation->hide();
-	settings_button->set_text(U"连接设置");
-	settings_button->set_pressed(false);
-	chat_settings_dialog->hide();
-	settings_scroll->reparent(chat_layout, false);
-	chat_layout->move_child(settings_scroll, 2);
-	settings_scroll->set_custom_minimum_size(Size2(0, 150) * EDSCALE);
+	// Settings stay on the unified page when the conversation view is embedded.
 	workspace_pages->reparent(p_host, false);
 	workspace_pages->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
 	return true;
@@ -3787,10 +3826,6 @@ void AIChatDock::_unmount_daqian_chat() {
 		host->disconnect(SceneStringName(tree_exiting), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
 	}
 	disconnect(SceneStringName(tree_exited), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
-	settings_button->set_text(U"更多 / 设置");
-	settings_button->set_pressed(false);
-	settings_scroll->set_custom_minimum_size(Size2());
-	settings_scroll->reparent(settings_layout, false);
 	workspace_pages->reparent(this, false);
 	workspace_pages->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
 	session_navigation->show();
@@ -4278,6 +4313,7 @@ void AIChatDock::_sync_reasoning_picker() {
 	reasoning_picker->select(selected);
 	reasoning_picker->set_disabled(busy || models_loading || supported.is_empty());
 	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
+	_update_settings_summary();
 }
 
 String AIChatDock::_reasoning_effort() const {
@@ -4297,6 +4333,7 @@ void AIChatDock::_reasoning_selected(int p_index) {
 	preferences[key] = reasoning_picker->get_item_metadata(p_index);
 	EditorSettings::get_singleton()->set_setting("ai_chat/reasoning_preferences", preferences);
 	EditorSettings::save();
+	_update_settings_summary();
 }
 
 String AIChatDock::_model_config_signature(const Dictionary &p_runtime) const {
@@ -4324,9 +4361,26 @@ Dictionary AIChatDock::prepare_runtime_configuration() const {
 }
 
 String AIChatDock::set_runtime_field(const String &p_field, const String &p_value) {
-	String error;
-	GongGongRuntimeConfig::update_field(p_field, p_value, error);
-	return error;
+	return gonggong_panel->set_runtime_field(p_field, p_value);
+}
+
+void AIChatDock::refresh_runtime_controls() {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	const Dictionary paths = runtime.get("paths", Dictionary());
+	LineEdit *fields[] = { cli_node, codex_entry, engine_python };
+	const char *names[] = { "node", "codex", "build_python" };
+	for (unsigned int i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
+		const bool blocked = fields[i]->is_blocking_signals();
+		fields[i]->set_block_signals(true);
+		fields[i]->set_text(paths.get(names[i], ""));
+		fields[i]->set_block_signals(blocked);
+	}
+	gonggong_panel->refresh_runtime_controls(runtime);
+}
+
+void AIChatDock::_runtime_configuration_changed() {
+	_model_config_changed(String());
+	emit_signal("runtime_configuration_changed");
 }
 
 void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_field) {
@@ -4334,7 +4388,6 @@ void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_f
 	if (!error.is_empty()) {
 		_append(TTR("Error"), String(U"运行路径未保存：") + error);
 	}
-	_model_config_changed(p_value);
 }
 
 void AIChatDock::_model_config_changed(const String &p_text) {
@@ -4475,7 +4528,7 @@ void AIChatDock::_refresh_models() {
 	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
 	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
 		if (!_validate_cli(runtime)) {
-			model_status->set_text(U"CLI 路径无效。请检查高级设置。");
+			model_status->set_text(U"CLI 路径无效。请检查“设置 → 环境”。");
 			return;
 		}
 		if (cli_session && cli_process_id >= 0) {
@@ -4586,7 +4639,7 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 	Dictionary response = json.get_data();
 	const Variant entries = response.get("models", response.get("data", Variant()));
 	if (entries.get_type() != Variant::ARRAY || Array(entries).is_empty()) {
-		model_status->set_text(U"未返回可用模型列表。可在高级设置手动填写模型 ID。");
+		model_status->set_text(U"未返回可用模型列表。可在“设置 → AI”手动填写模型 ID。");
 		return;
 	}
 	_apply_models(entries);
@@ -6314,6 +6367,8 @@ void fragment() {
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel);
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
+	gonggong_panel->set_runtime_changed_handler(callable_mp(this, &AIChatDock::_runtime_configuration_changed));
+	gonggong_panel->set_settings_requested(callable_mp(this, &AIChatDock::_request_settings));
 	workspace_pages->add_child(gonggong_panel);
 	workspace_pages->set_tab_title(2, U"共工");
 	workspace_pages->set_current_tab(0);
@@ -6393,10 +6448,26 @@ void fragment() {
 	rename_layout->add_child(agent_name);
 	agent_rename_dialog->register_text_enter(agent_name);
 	add_child(agent_rename_dialog);
-	// 连接方式与对话模型并排，压缩顶部占用的行数。
+	// These are the single live forms. The unified settings dock takes ownership
+	// of their presentation; consumers and asynchronous callbacks retain the same controls.
+	ai_settings_control = memnew(VBoxContainer);
+	ai_settings_control->set_name("AIChatSettings");
+	ai_settings_control->set_meta("ai_control_page_only", true);
+	ai_settings_control->set_h_size_flags(SIZE_EXPAND_FILL);
+	ai_settings_control->hide();
+	add_child(ai_settings_control);
+	environment_settings_control = memnew(VBoxContainer);
+	environment_settings_control->set_name("AIChatEnvironmentSettings");
+	environment_settings_control->set_meta("ai_control_page_only", true);
+	environment_settings_control->set_h_size_flags(SIZE_EXPAND_FILL);
+	environment_settings_control->hide();
+	add_child(environment_settings_control);
+	Label *chat_settings_title = memnew(Label);
+	chat_settings_title->set_text(U"AI Chat · 模型与账号");
+	ai_settings_control->add_child(chat_settings_title);
 	HFlowContainer *selector_row = memnew(HFlowContainer);
 	selector_row->set_name("SelectorRow");
-	layout->add_child(selector_row);
+	ai_settings_control->add_child(selector_row);
 	HBoxContainer *connection = memnew(HBoxContainer);
 	connection->set_h_size_flags(SIZE_EXPAND_FILL);
 	selector_row->add_child(connection);
@@ -6443,25 +6514,7 @@ void fragment() {
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	model_status->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
-	chat_settings_dialog = memnew(AcceptDialog);
-	chat_settings_dialog->set_name("ChatSettingsDialog");
-	chat_settings_dialog->set_title(U"工具与设置");
-	chat_settings_dialog->set_ok_button_text(U"完成");
-	chat_settings_dialog->set_exclusive(false);
-	add_child(chat_settings_dialog);
-	settings_layout = memnew(VBoxContainer);
-	chat_settings_dialog->add_child(settings_layout);
-	settings_scroll = memnew(ScrollContainer);
-	settings_scroll->set_name("AdvancedSettingsScroll");
-	settings_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
-	settings_scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
-	settings_scroll->hide();
-	settings_layout->add_child(settings_scroll);
-	VBoxContainer *settings = memnew(VBoxContainer);
-	settings->set_name("AdvancedSettings");
-	settings->set_h_size_flags(SIZE_EXPAND_FILL);
-	settings->hide();
-	settings_scroll->add_child(settings);
+	VBoxContainer *settings = ai_settings_control;
 	auto add_field = [](VBoxContainer *p_parent, const String &p_title, const char *p_name, const String &p_value) {
 		Label *label = memnew(Label);
 		label->set_text(p_title);
@@ -6488,11 +6541,14 @@ void fragment() {
 	}
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
-	cli_node = add_field(cli_settings, U"Node.js 可执行文件路径", "CLINode", initial_paths.get("node", ""));
+	Label *environment_title = memnew(Label);
+	environment_title->set_text(U"AI Chat · CLI 与引擎编译环境");
+	environment_settings_control->add_child(environment_title);
+	cli_node = add_field(environment_settings_control, U"聊天 CLI 共用 Node.js 可执行文件路径（CodeBuddy / Codex）", "CLINode", initial_paths.get("node", ""));
 	cli_node->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("node")));
-	cli_bridge = add_field(cli_settings, U"Godot 对话桥接脚本路径", "CLIBridge", EDITOR_GET("ai_chat/cli_bridge"));
+	cli_bridge = add_field(environment_settings_control, U"Godot 对话桥接脚本路径（CodeBuddy）", "CLIBridge", EDITOR_GET("ai_chat/cli_bridge"));
 	cli_bridge->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
-	cli_entry = add_field(cli_settings, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
+	cli_entry = add_field(environment_settings_control, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
 	cli_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	String saved_model = EDITOR_GET("ai_chat/cli_model");
 	if (saved_model == "default-model") {
@@ -6514,7 +6570,7 @@ void fragment() {
 	cli_settings->add_child(cli_login_status);
 	codex_settings = memnew(VBoxContainer);
 	settings->add_child(codex_settings);
-	codex_entry = add_field(codex_settings, U"Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", initial_paths.get("codex", ""));
+	codex_entry = add_field(environment_settings_control, U"聊天 Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", initial_paths.get("codex", ""));
 	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("codex")));
 	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EDITOR_GET("ai_chat/codex_model"));
 	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
@@ -6558,28 +6614,31 @@ void fragment() {
 	EDITOR_DEF("ai_chat/build_python", build_root.path_join(".venv/bin/python"));
 #endif
 	EDITOR_DEF("ai_chat/build_arguments", "");
-	engine_python = add_field(settings, U"引擎编译 Python（需包含 SCons）", "EngineBuildPython", initial_paths.get("build_python", ""));
+	engine_python = add_field(environment_settings_control, U"引擎编译 Python（需包含 SCons，与图像 / 网格推理 Python 独立）", "EngineBuildPython", initial_paths.get("build_python", ""));
 	engine_python->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("build_python")));
 	Label *build_args_label = memnew(Label);
 	build_args_label->set_text(U"额外 SCons 配置（每行 key=value，保留现有依赖/工具链设置）");
 	build_args_label->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
-	settings->add_child(build_args_label);
+	environment_settings_control->add_child(build_args_label);
 	engine_build_arguments = memnew(TextEdit);
 	engine_build_arguments->set_name("EngineBuildArguments");
 	engine_build_arguments->set_custom_minimum_size(Size2(0, 65) * EDSCALE);
 	engine_build_arguments->set_text(EDITOR_GET("ai_chat/build_arguments"));
-	settings->add_child(engine_build_arguments);
-	// 模型状态与构建按钮、高级设置、快照还原并排成一行（小字体、小按钮）。
+	environment_settings_control->add_child(engine_build_arguments);
+	settings_summary = memnew(Label);
+	settings_summary->set_name("CurrentAIConfiguration");
+	settings_summary->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	layout->add_child(settings_summary);
+	// Keep task controls and settings navigation beside the session summary.
 	const int small_font_size = 12 * EDSCALE;
 	HFlowContainer *action_row = memnew(HFlowContainer);
 	action_row->set_name("ActionRow");
 	layout->add_child(action_row);
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
-	action_row->add_child(model_status);
+	ai_settings_control->add_child(model_status);
 	HFlowContainer *build_actions = memnew(HFlowContainer);
-	settings_layout->add_child(build_actions);
-	settings_layout->move_child(build_actions, 0);
+	environment_settings_control->add_child(build_actions);
 	engine_build_button = memnew(Button);
 	engine_build_button->set_name("BuildEngine");
 	engine_build_button->set_text(U"编译并更新引擎");
@@ -6606,15 +6665,16 @@ void fragment() {
 	build_actions->add_child(build_log_button);
 	settings_button = memnew(Button);
 	settings_button->set_name("AdvancedToggle");
-	settings_button->set_text(U"更多 / 设置");
-	settings_button->set_toggle_mode(true);
+	settings_button->set_text(U"AI 设置");
 	settings_button->add_theme_font_size_override("font_size", small_font_size);
 	action_row->add_child(settings_button);
-	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings), &CanvasItem::set_visible));
-	settings_button->connect("toggled", callable_mp(static_cast<CanvasItem *>(settings_scroll), &CanvasItem::set_visible));
-	settings_button->connect("toggled", callable_mp(this, &AIChatDock::_toggle_chat_settings));
-	chat_settings_dialog->connect("canceled", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
-	chat_settings_dialog->connect("confirmed", callable_mp(static_cast<BaseButton *>(settings_button), &BaseButton::set_pressed).bind(false));
+	settings_button->connect("pressed", callable_mp(this, &AIChatDock::_request_settings).bind(String("ai")));
+	Button *environment_button = memnew(Button);
+	environment_button->set_name("EnvironmentSettings");
+	environment_button->set_text(U"环境设置");
+	environment_button->add_theme_font_size_override("font_size", small_font_size);
+	environment_button->connect("pressed", callable_mp(this, &AIChatDock::_request_settings).bind(String("environment")));
+	action_row->add_child(environment_button);
 	// Keep the local file restore discoverable even for pre-snapshot history.
 	snapshot_history_button = memnew(Button);
 	snapshot_history_button->set_name("LocalSnapshotHistory");
@@ -6679,7 +6739,17 @@ void fragment() {
 	engine_auto_restart->set_pressed(EDITOR_GET("ai_chat/engine_auto_restart"));
 	engine_auto_restart->set_tooltip_text(U"同时启用自动执行命令后，AI 修改引擎 C++ 可调用宿主构建并在校验成功后自动重启续聊；无需手动点击构建或重启。构建失败不切换版本，未保存场景仍使用编辑器的保存确认。此设置会保存到编辑器设置。");
 	engine_auto_restart->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
-	settings->add_child(engine_auto_restart);
+	environment_settings_control->add_child(engine_auto_restart);
+	for (VBoxContainer *section : { ai_settings_control, environment_settings_control }) {
+		Button *save_settings = memnew(Button);
+		save_settings->set_name("SaveChatSettings");
+		save_settings->set_text(U"保存聊天与编译设置");
+		save_settings->connect("pressed", callable_mp(this, &AIChatDock::_save_chat_settings));
+		section->add_child(save_settings);
+	}
+	Control *gonggong_environment = gonggong_panel->get_environment_settings_control();
+	gonggong_environment->reparent(environment_settings_control, false);
+	gonggong_environment->show();
 	// Long option captions must not widen the scroll viewport. Their existing
 	// tooltips retain the full permission and restart explanations.
 	for (CheckBox *option : { allow_tools, auto_apply_file_changes, auto_execute_commands, engine_auto_restart }) {

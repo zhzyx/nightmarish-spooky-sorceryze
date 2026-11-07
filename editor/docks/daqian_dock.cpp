@@ -115,6 +115,7 @@ EditorDock *create_daqian_dock() {
 	content->set_script(workspace);
 	content->set("details_script", details);
 	content->set("canvas_script", canvas);
+	content->set_meta("unified_settings", true);
 	content->set("rules", rules);
 	content->set("graph_layout", layout);
 	content->set("graph_script", graph);
