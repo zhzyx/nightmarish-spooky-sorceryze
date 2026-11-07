@@ -41,7 +41,6 @@ TEST_FORCE_LINK(test_tcp_server)
 
 namespace TestTCPServer {
 
-const int PORT = 12345;
 const IPAddress LOCALHOST("127.0.0.1");
 const uint32_t SLEEP_DURATION = 1000;
 const uint64_t MAX_WAIT_USEC = 2000000;
@@ -53,24 +52,24 @@ void wait_for_condition(std::function<bool()> f_test) {
 	}
 }
 
-Ref<TCPServer> create_server(const IPAddress &p_address, int p_port) {
+Ref<TCPServer> create_server() {
 	Ref<TCPServer> server;
 	server.instantiate();
 
-	REQUIRE_EQ(server->listen(PORT, LOCALHOST), Error::OK);
+	REQUIRE_EQ(server->listen(0, LOCALHOST), Error::OK);
 	REQUIRE(server->is_listening());
 	CHECK_FALSE(server->is_connection_available());
 
 	return server;
 }
 
-Ref<StreamPeerTCP> create_client(const IPAddress &p_address, int p_port) {
+Ref<StreamPeerTCP> create_client(int p_port) {
 	Ref<StreamPeerTCP> client;
 	client.instantiate();
 
-	REQUIRE_EQ(client->connect_to_host(LOCALHOST, PORT), Error::OK);
+	REQUIRE_EQ(client->connect_to_host(LOCALHOST, p_port), Error::OK);
 	CHECK_EQ(client->get_connected_host(), LOCALHOST);
-	CHECK_EQ(client->get_connected_port(), PORT);
+	CHECK_EQ(client->get_connected_port(), p_port);
 	CHECK_EQ(client->get_status(), StreamPeerTCP::STATUS_CONNECTING);
 
 	return client;
@@ -99,8 +98,8 @@ TEST_CASE("[TCPServer] Instantiation") {
 }
 
 TEST_CASE("[TCPServer] Accept a connection and receive/send data") {
-	Ref<TCPServer> server = create_server(LOCALHOST, PORT);
-	Ref<StreamPeerTCP> client = create_client(LOCALHOST, PORT);
+	Ref<TCPServer> server = create_server();
+	Ref<StreamPeerTCP> client = create_client(server->get_local_port());
 	Ref<StreamPeerTCP> client_from_server = accept_connection(server);
 
 	wait_for_condition([&]() {
@@ -125,11 +124,11 @@ TEST_CASE("[TCPServer] Accept a connection and receive/send data") {
 }
 
 TEST_CASE("[TCPServer] Handle multiple clients at the same time") {
-	Ref<TCPServer> server = create_server(LOCALHOST, PORT);
+	Ref<TCPServer> server = create_server();
 
 	Vector<Ref<StreamPeerTCP>> clients;
 	for (int i = 0; i < 5; i++) {
-		clients.push_back(create_client(LOCALHOST, PORT));
+		clients.push_back(create_client(server->get_local_port()));
 	}
 
 	Vector<Ref<StreamPeerTCP>> clients_from_server;
@@ -172,8 +171,9 @@ TEST_CASE("[TCPServer] Handle multiple clients at the same time") {
 }
 
 TEST_CASE("[TCPServer] When stopped shouldn't accept new connections") {
-	Ref<TCPServer> server = create_server(LOCALHOST, PORT);
-	Ref<StreamPeerTCP> client = create_client(LOCALHOST, PORT);
+	Ref<TCPServer> server = create_server();
+	const int port = server->get_local_port();
+	Ref<StreamPeerTCP> client = create_client(port);
 	Ref<StreamPeerTCP> client_from_server = accept_connection(server);
 
 	wait_for_condition([&]() {
@@ -195,7 +195,7 @@ TEST_CASE("[TCPServer] When stopped shouldn't accept new connections") {
 	int timeout = ProjectSettings::get_singleton()->get_setting("network/limits/tcp/connect_timeout_seconds");
 	ProjectSettings::get_singleton()->set_setting("network/limits/tcp/connect_timeout_seconds", 1);
 
-	Ref<StreamPeerTCP> new_client = create_client(LOCALHOST, PORT);
+	Ref<StreamPeerTCP> new_client = create_client(port);
 
 	// Reset the timeout setting.
 	ProjectSettings::get_singleton()->set_setting("network/limits/tcp/connect_timeout_seconds", timeout);
@@ -214,8 +214,8 @@ TEST_CASE("[TCPServer] When stopped shouldn't accept new connections") {
 }
 
 TEST_CASE("[TCPServer] Should disconnect client") {
-	Ref<TCPServer> server = create_server(LOCALHOST, PORT);
-	Ref<StreamPeerTCP> client = create_client(LOCALHOST, PORT);
+	Ref<TCPServer> server = create_server();
+	Ref<StreamPeerTCP> client = create_client(server->get_local_port());
 	Ref<StreamPeerTCP> client_from_server = accept_connection(server);
 
 	wait_for_condition([&]() {

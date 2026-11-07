@@ -1,0 +1,49 @@
+{
+  "request_id": "macos-native-unit-failures-42379241429",
+  "issue_number": 471,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/471",
+  "base": "6418b639f5eaca7071e93fc1f3cd1ba14086137b",
+  "prior_signed_candidate": "cb452387e5864f664ce798c28e1afd1d2b025daf",
+  "prior_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42400699283",
+  "prior_outcome": "Hosted template still reported TCP STATUS_NONE instead of STATUS_ERROR with an ephemeral port. No ENet crash.",
+  "diagnostic_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42403579218",
+  "hosted_raw_observations": {
+    "system": "macos-26",
+    "port_cases": [
+      "original fixed 12345",
+      "kernel chosen ephemeral port"
+    ],
+    "per_port_repeat_connect_samples": 15,
+    "per_port_poll_only_samples": 15,
+    "first_connect_ex": "EINPROGRESS (36)",
+    "second_connect_ex": "EISCONN (56)",
+    "ready_poll_bits": 17,
+    "pending_SO_ERROR": "ECONNREFUSED (61)",
+    "getpeername": "EINVAL",
+    "recv": "EOF"
+  },
+  "implementation": "For pending nonblocking INET TCP, wait for completion events and query SOL_SOCKET/SO_ERROR; keep the original refusal assertion and reset pending state on close.",
+  "local_final": {
+    "editor": {
+      "version": "4.8.beta.custom_build.6418b639f",
+      "sha256": "9528595733e6bb0fd2fdbcea9ff3d3c725fcd7bd46c534c413a98c08201a3fee",
+      "result": [
+        "[doctest] test cases:   1534 |   1534 passed | 0 failed | 3 skipped",
+        "[doctest] assertions: 435438 | 435438 passed | 0 failed |"
+      ]
+    },
+    "template": {
+      "version": "4.8.beta.custom_build.6418b639f",
+      "sha256": "01b094b80796a9c017786f2fe71e961a6d8c69a11d7437d609a1677ee75b5e3a",
+      "result": [
+        "[doctest] test cases:   1445 |   1445 passed | 0 failed | 3 skipped",
+        "[doctest] assertions: 326865 | 326865 passed | 0 failed |"
+      ]
+    }
+  },
+  "network_source_blobs": {
+    "drivers/unix/net_socket_unix.cpp": "4f76fed62a8192432cca2c8e1f204f6895c52045",
+    "drivers/unix/net_socket_unix.h": "342a80b0f8bb10247870bb8878da96f84dfb7338"
+  },
+  "would_block": "On EAGAIN/EWOULDBLOCK retry connect. Only EINPROGRESS/EALREADY initiate the pending completion path for TCP."
+}
