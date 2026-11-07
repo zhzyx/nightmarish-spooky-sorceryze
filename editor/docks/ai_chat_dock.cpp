@@ -1486,6 +1486,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 	codex_model->set_editable(!locked);
 	cli_login->set_disabled(busy || models_loading);
 	model_picker->set_disabled(busy || models_loading);
+	_sync_reasoning_picker();
 	refresh_models->set_disabled(busy || models_loading);
 	// Sending while busy enqueues a new turn; it never mutates the active request.
 	send_button->set_disabled(!pending_external_editor_message.is_empty() || snapshot_restoring || snapshot_transaction_failed || models_loading || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
@@ -1946,6 +1947,10 @@ void AIChatDock::_send_completion_after_receipt() {
 	payload["model"] = model->get_text().strip_edges();
 	payload["messages"] = payload_messages;
 	payload["stream"] = false;
+	const String reasoning_effort = _reasoning_effort();
+	if (!reasoning_effort.is_empty()) {
+		payload["reasoning_effort"] = reasoning_effort;
+	}
 	if (allow_tools->is_pressed()) {
 		Array permitted_tools;
 		for (const Variant &entry : chat_tools()) {
@@ -1963,6 +1968,11 @@ void AIChatDock::_send_completion_after_receipt() {
 	}
 	if (backend->get_selected() == 3) {
 		payload = AIChatOpenAI::responses_payload(payload);
+		if (!reasoning_effort.is_empty()) {
+			Dictionary reasoning;
+			reasoning["effort"] = reasoning_effort;
+			payload["reasoning"] = reasoning;
+		}
 	}
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
@@ -2887,6 +2897,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.model = model->get_text();
 	state.cli_model = cli_model->get_text();
 	state.codex_model = codex_model->get_text();
+	state.model_catalog = model_catalog.duplicate(true);
 	state.backend = backend->get_selected();
 	state.scroll = chat_follow_latest ? chat_scroll->get_v_scroll() : chat_scroll_position;
 	state.follow_latest = chat_follow_latest;
@@ -2955,7 +2966,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	tool_rounds = 0;
 	details_dialog->hide();
 	details_text->set_text(String());
-	_sync_model_picker();
+	_apply_models(p_session.model_catalog);
 	_set_busy(false);
 	set_process(cli_process_id >= 0);
 }
@@ -3701,6 +3712,7 @@ void AIChatDock::_apply_models(const Array &p_models) {
 		model_picker->set_item_disabled(0, true);
 	}
 	model_picker->select(selected >= 0 ? selected : 0);
+	_sync_reasoning_picker();
 	if (!cli && current.is_empty() && !ids.is_empty()) {
 		_model_selected(0);
 	}
@@ -3716,6 +3728,7 @@ void AIChatDock::_model_selected(int p_index) {
 	EditorSettings::get_singleton()->set_setting(backend->get_selected() == 2 ? "ai_chat/codex_model" : cli ? "ai_chat/cli_model"
 																											: "ai_chat/model",
 			id);
+	_sync_reasoning_picker();
 	EditorSettings::save();
 }
 
@@ -3726,16 +3739,83 @@ void AIChatDock::_model_edited(const String &p_text) {
 	_apply_models(model_catalog);
 }
 
+// Codex capabilities come from model/list, never from a model-name guess.
+// TODO(CodeBuddy): its current model-list adapter only returns id/name/description.
+// Verify its ACP effort capability and update protocol before enabling controls.
+// TODO(API providers): /models has no universal effort metadata. Accept an explicit
+// reasoning_efforts extension; add documented provider adapters rather than infer
+// support from a model name. Unknown capabilities keep the model default.
+void AIChatDock::_sync_reasoning_picker() {
+	if (!reasoning_picker || !codex_model) {
+		return;
+	}
+	const String current = _active_model_field()->get_text().strip_edges();
+	Array supported;
+	if (backend->get_selected() != 1) {
+		for (const Variant &entry : model_catalog) {
+			if (entry.get_type() != Variant::DICTIONARY) {
+				continue;
+			}
+			const Dictionary item = entry;
+			if (String(item.get("id", "")) == current || (current.is_empty() && bool(item.get("is_default", false)))) {
+				const Variant efforts = item.get("reasoning_efforts", Array());
+				if (efforts.get_type() == Variant::ARRAY) {
+					supported = efforts;
+				}
+				break;
+			}
+		}
+	}
+	const Dictionary preferences = EDITOR_GET("ai_chat/reasoning_preferences");
+	const String key = itos(backend->get_selected()) + ":" + current;
+	const String saved = preferences.get(key, "");
+	reasoning_picker->clear();
+	reasoning_picker->add_item(U"模型默认");
+	reasoning_picker->set_item_metadata(0, String());
+	int selected = 0;
+	const char *ids[] = { "low", "medium", "high", "xhigh", "max", "ultra" };
+	const String names[] = { U"低", U"中", U"高", U"极高", "Max", "ultra" };
+	for (int i = 0; i < 6; i++) {
+		const int index = i + 1;
+		reasoning_picker->add_item(names[i]);
+		reasoning_picker->set_item_metadata(index, String(ids[i]));
+		const bool available = supported.has(String(ids[i]));
+		reasoning_picker->set_item_disabled(index, !available);
+		reasoning_picker->set_item_tooltip(index, available ? String(ids[i]) : String(U"当前模型未声明支持此强度；请刷新模型列表。使用模型默认时不发送强度参数。"));
+		if (available && saved == ids[i]) {
+			selected = index;
+		}
+	}
+	reasoning_picker->select(selected);
+	reasoning_picker->set_disabled(busy || models_loading || supported.is_empty());
+	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息。请先刷新模型；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
+}
+
+String AIChatDock::_reasoning_effort() const {
+	if (!reasoning_picker || reasoning_picker->get_selected() < 0 || reasoning_picker->is_item_disabled(reasoning_picker->get_selected())) {
+		return String();
+	}
+	return reasoning_picker->get_selected_metadata();
+}
+
+void AIChatDock::_reasoning_selected(int p_index) {
+	if (busy || models_loading || p_index < 0 || p_index >= reasoning_picker->get_item_count() || reasoning_picker->is_item_disabled(p_index)) {
+		_sync_reasoning_picker();
+		return;
+	}
+	Dictionary preferences = EDITOR_GET("ai_chat/reasoning_preferences");
+	const String key = itos(backend->get_selected()) + ":" + _active_model_field()->get_text().strip_edges();
+	preferences[key] = reasoning_picker->get_item_metadata(p_index);
+	EditorSettings::get_singleton()->set_setting("ai_chat/reasoning_preferences", preferences);
+	EditorSettings::save();
+}
+
 void AIChatDock::_refresh_models() {
 	if (busy || models_loading) {
 		return;
 	}
-	if (backend->get_selected() == 2) {
-		model_status->set_text(U"Codex exec 不提供模型枚举；可填写模型 ID，或留空使用 CLI 默认模型。");
-		return;
-	}
 	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
-	if (backend->get_selected() == 1) {
+	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
 		if (!_validate_cli()) {
 			model_status->set_text(U"CLI 路径无效。请检查高级设置。");
 			return;
@@ -3747,9 +3827,9 @@ void AIChatDock::_refresh_models() {
 		}
 		_cancel_cli();
 		List<String> arguments;
-		arguments.push_back(cli_bridge->get_text().strip_edges());
+		arguments.push_back(backend->get_selected() == 2 ? _engine_root().path_join("tools/codex_cli/godot_bridge.js") : cli_bridge->get_text().strip_edges());
 		arguments.push_back("models");
-		arguments.push_back(cli_entry->get_text().strip_edges());
+		arguments.push_back(backend->get_selected() == 2 ? codex_entry->get_text().strip_edges() : cli_entry->get_text().strip_edges());
 		Dictionary process = OS::get_singleton()->execute_with_pipe(cli_node->get_text().strip_edges(), arguments, false);
 		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 			_restore_cli_after_models();
@@ -3818,7 +3898,23 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 	_set_busy(false);
 	JSON json;
 	if (p_result != HTTPRequest::RESULT_SUCCESS || p_code < 200 || p_code >= 300 || json.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) != OK || json.get_data().get_type() != Variant::DICTIONARY) {
-		model_status->set_text(U"模型列表获取失败或服务不支持枚举。仍可使用当前配置，或在高级设置手动填写模型 ID。");
+		String reason = U"模型列表获取失败或服务不支持枚举。可重试，或手动填写模型 ID。";
+		JSON diagnostic;
+		if (diagnostic.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) == OK && diagnostic.get_data().get_type() == Variant::DICTIONARY) {
+			const Dictionary response = diagnostic.get_data();
+			const Variant error = response.get("error", Variant());
+			if (error.get_type() == Variant::DICTIONARY) {
+				const String code = Dictionary(error).get("code", "");
+				if (code == "CLI_NOT_FOUND" || code == "PROCESS_START") {
+					reason = U"无法启动 CLI，请检查可执行文件及 Node 路径后重试。";
+				} else if (code == "TIMEOUT") {
+					reason = U"获取模型列表超时，请检查网络后重试。";
+				} else if (code == "MODEL_UNAVAILABLE" || code == "AUTH_REQUIRED") {
+					reason = U"CLI 拒绝模型列表查询，请检查登录状态、服务配置或 CLI 版本后重试。";
+				}
+			}
+		}
+		model_status->set_text(reason);
 		return;
 	}
 	Dictionary response = json.get_data();
@@ -3911,6 +4007,7 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	Dictionary payload;
 	payload["messages"] = p_messages;
 	payload["model"] = codex_model->get_text().strip_edges();
+	payload["reasoning_effort"] = _reasoning_effort();
 	Array permitted_tools;
 	if (allow_tools->is_pressed()) {
 		for (const Variant &entry : chat_tools()) {
@@ -5238,6 +5335,7 @@ AIChatDock::AIChatDock() {
 	EDITOR_DEF("ai_chat/cli_model", "");
 	EDITOR_DEF("ai_chat/codex_entry", "");
 	EDITOR_DEF("ai_chat/codex_model", "");
+	EDITOR_DEF("ai_chat/reasoning_preferences", Dictionary());
 	// Recorded at every version switch so a bad rebuild has somewhere to go back to.
 	EDITOR_DEF("ai_chat/rollback_executable", "");
 
@@ -5441,6 +5539,13 @@ void fragment() {
 	refresh_models->set_text(U"刷新模型");
 	refresh_models->connect("pressed", callable_mp(this, &AIChatDock::_refresh_models));
 	models->add_child(refresh_models);
+	Label *reasoning_label = memnew(Label);
+	reasoning_label->set_text(U"推理强度");
+	models->add_child(reasoning_label);
+	reasoning_picker = memnew(OptionButton);
+	reasoning_picker->set_name("ReasoningEffort");
+	reasoning_picker->connect("item_selected", callable_mp(this, &AIChatDock::_reasoning_selected));
+	models->add_child(reasoning_picker);
 	model_status = memnew(Label);
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);

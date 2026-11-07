@@ -1,0 +1,29 @@
+{
+  "checks": [
+    "live Codex model/list populated picker",
+    "high effort selectable",
+    "session switch preserves model capabilities and high selection",
+    "unsupported ultra disabled, new model uses default",
+    "invalid path reports cause and allows retry",
+    "both API modes honor declared efforts and keep unknown models at default",
+    "CodeBuddy unknown capability uses default with TODO"
+  ],
+  "error": "",
+  "ok": true,
+  "request_id": "requirement-13b6a81d39da6eda5d701ce459961679",
+  "platform": "macos-arm64",
+  "build": "SCons Clang macOS editor: passed",
+  "node_tests": {
+    "passed": 18,
+    "failed": 0
+  },
+  "production_inference_executed": false,
+  "todos": [
+    "CodeBuddy ACP effort capabilities and update protocol",
+    "API providers lacking explicit reasoning_efforts metadata",
+    "Codex app-server custom-provider parity with exec --ignore-user-config"
+  ],
+  "binary_sha256": "a880c3545c9f3a79a55840cd1b5851b3c32f5b27a8ade28579233f333f9c77f8",
+  "issue_number": 165,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/165"
+}
