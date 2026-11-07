@@ -104,6 +104,7 @@ void CanvasItem::_handle_visibility_change(bool p_visible) {
 	notification(NOTIFICATION_VISIBILITY_CHANGED);
 
 	if (p_visible) {
+		_update_oversampling(false);
 		queue_redraw();
 	} else {
 		emit_signal(SceneStringName(hidden));
@@ -1151,7 +1152,13 @@ void CanvasItem::draw_char_outline(RequiredParam<Font> p_font, const Point2 &p_p
 }
 
 void CanvasItem::_notify_transform_deferred() {
-	if (is_inside_tree() && notify_transform && !xform_change.in_list()) {
+	if (!is_inside_tree()) {
+		return;
+	}
+	if (is_oversampling_with_scale_cache) {
+		_update_oversampling(false);
+	}
+	if (notify_transform && !block_transform_notify && !xform_change.in_list()) {
 		get_tree()->xform_change_list.add(&xform_change);
 	}
 }
@@ -1163,25 +1170,16 @@ void CanvasItem::_notify_transform(CanvasItem *p_node) {
 	 * notification anyway).
 	 */
 
-	_update_oversampling(false);
-
 	if (/*p_node->xform_change.in_list() &&*/ p_node->_is_global_invalid()) {
 		return; //nothing to do
 	}
 
 	p_node->_set_global_invalid(true);
-
-	if (p_node->notify_transform && !p_node->xform_change.in_list()) {
-		if (!p_node->block_transform_notify) {
-			if (p_node->is_inside_tree()) {
-				if (is_accessible_from_caller_thread()) {
-					get_tree()->xform_change_list.add(&p_node->xform_change);
-				} else {
-					// Should be rare, but still needs to be handled.
-					callable_mp(p_node, &CanvasItem::_notify_transform_deferred).call_deferred();
-				}
-			}
-		}
+	if (p_node->is_accessible_from_caller_thread()) {
+		p_node->_notify_transform_deferred();
+	} else {
+		// The child's draw state belongs to a different process thread group.
+		callable_mp(p_node, &CanvasItem::_notify_transform_deferred).call_deferred();
 	}
 
 	for (uint32_t n = 0; n < p_node->data.canvas_item_children.size(); n++) {

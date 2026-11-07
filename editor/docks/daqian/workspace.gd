@@ -73,6 +73,11 @@ var publish_button: Button
 var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
 var routing_in_flight := {}
+var routing_stages := {}
+var progress_directory := ""
+var legacy_route_path := ""
+var legacy_route_result := {}
+var legacy_route_turns := []
 var chat_work := {}
 const WATCHER_POLL_MS := 15_000
 const AUTO_REFRESH_INTERVAL_MS := 300_000
@@ -92,10 +97,14 @@ var flow_split := SplitContainer.new()
 var details_script: Script
 var details_panel
 var clarification_dialog := ConfirmationDialog.new()
+var clarification_scroll := ScrollContainer.new()
 var clarification_prompt := Label.new()
 var clarification_answer := TextEdit.new()
 var clarification_binding := {}
+var clarification_dialog_key := ""
 var clarification_questions := []
+var inline_answer_key := ""
+var inline_answer_drafts := {}
 var category: OptionButton
 var choose_execution_model := CheckButton.new()
 var model_label: Label
@@ -383,6 +392,11 @@ func _ready() -> void:
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
 	editor.workflow_reply_requested.connect(_respond_to_wait)
+	editor.clarification_draft_changed.connect(func(text: String):
+		if not inline_answer_key.is_empty():
+			inline_answer_drafts[inline_answer_key] = text
+			editor.clarification_draft = text)
+	editor.clarification_submitted.connect(_submit_inline_answer)
 	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(flow_split)
 	flow_split.add_child(editor)
@@ -406,6 +420,8 @@ func _ready() -> void:
 	theme_changed.connect(_update_board_theme, CONNECT_DEFERRED)
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
+	for dialog: Window in [publish_dialog, clarification_dialog, route_model_dialog, history_dialog, models_dialog, editor.picker]:
+		dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
 	_gate_visibility(false)
 	if get_meta("unified_settings", false):
 		var initial_environment := _environment_state()
@@ -1662,7 +1678,10 @@ func _gate_visibility(opened: bool) -> void:
 		if get_meta("unified_settings", false): models_dialog.clear_embedded_access()
 		clarification_dialog.hide()
 		clarification_binding.clear()
+		clarification_dialog_key = ""
 		clarification_questions.clear()
+		inline_answer_key = ""
+		inline_answer_drafts.clear()
 		clarification_answer.clear()
 		publish_dialog.hide()
 		history_dialog.hide()
@@ -1915,6 +1934,11 @@ func _refresh_board() -> void:
 
 
 func _stop_progress_watch() -> void:
+	progress_directory = ""
+	legacy_route_path = ""
+	legacy_route_result.clear()
+	legacy_route_turns = []
+	routing_stages.clear()
 	if not watcher.is_empty() and OS.is_process_running(watcher.pid):
 		OS.kill(watcher.pid)
 	watcher = {}
@@ -1933,6 +1957,7 @@ func _start_progress_watch(config: Dictionary) -> void:
 		return
 	var entry := _repo().path_join("customizations/components/godot-host/daqian/watch_progress.mjs")
 	if FileAccess.file_exists(entry):
+		progress_directory = config.directory
 		watcher = OS.execute_with_pipe(config.node, [entry, config.directory], false)
 
 
@@ -1992,13 +2017,20 @@ func _process(_delta: float) -> void:
 	var lines := watcher_buffer.split("\n")
 	watcher_buffer = lines[-1]
 	var changed := false
+	var binding := _direct_binding()
+	var route_changed := false
 	for i in lines.size() - 1:
+		if lines[i] == "ready" or lines[i] == binding.get("request"):
+			route_changed = true
 		if lines[i] == "ready":
 			changed = true # Close the race between reading the board and attaching its watcher.
 		for row in board.get("issues", []):
 			var ticket := "github:%s#%d" % [actor.get("repo", ""), row.number]
 			if lines[i] == row.get("request", "") or lines[i] == JSON.stringify(ticket).sha256_text():
 				changed = true
+	if route_changed:
+		legacy_route_path = ""
+		_read_routing_stage(binding)
 	if changed:
 		auto_refresh_pending = true
 
@@ -2060,8 +2092,17 @@ func _set_far_depth(depth: float, return_zoom := PROJECT_FOLD * 1.15) -> void:
 	_filter_board()
 
 
+func _sync_modal_input() -> void:
+	if not is_inside_tree():
+		return
+	# The parent viewport still computes hover outside an embedded modal. Its
+	# child Window has an independent control tree and keeps normal editing.
+	var modal := get_last_exclusive_window()
+	mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED if modal and is_ancestor_of(modal) else Control.MOUSE_BEHAVIOR_INHERITED
+
+
 func _check_canvas_zoom() -> void:
-	if actor.is_empty() or not is_visible_in_tree():
+	if actor.is_empty() or not is_visible_in_tree() or get_last_exclusive_window() != get_window():
 		return
 	if not current.is_empty():
 		if editor.canvas.is_visible_in_tree() and editor.canvas.zoom <= ZOOM_TO_PARENT:
@@ -2300,20 +2341,81 @@ func _build_publish_dialog() -> void:
 func _build_clarification_dialog() -> void:
 	clarification_dialog.title = "补充工单需求"
 	clarification_dialog.get_ok_button().text = "提交补充"
+	clarification_dialog.get_cancel_button().text = "取消"
 	var fields := VBoxContainer.new()
 	clarification_dialog.add_child(fields)
+	clarification_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	clarification_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	fields.add_child(clarification_scroll)
 	clarification_prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	fields.add_child(clarification_prompt)
-	clarification_answer.custom_minimum_size = Vector2(400, 120)
+	clarification_prompt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	clarification_scroll.add_child(clarification_prompt)
+	var answer_label := Label.new()
+	answer_label.text = "你的答复"
+	answer_label.add_theme_color_override("font_color", get_theme_color("accent_color", "Editor"))
+	fields.add_child(answer_label)
+	clarification_answer.placeholder_text = "在这里填写对以上问题的答复"
 	clarification_answer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	fields.add_child(clarification_answer)
-	clarification_answer.text_changed.connect(func(): clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty() or clarification_answer.text.length() > 4000)
+	clarification_answer.text_changed.connect(_update_clarification_answer)
 	clarification_dialog.confirmed.connect(func():
-		if clarification_binding == _direct_binding() and _routing_receipt(clarification_binding).get("questions", []) == clarification_questions:
-			_judge_requirement(clarification_binding, clarification_answer.text, true)
+		if clarification_dialog_key == _clarification_key(_direct_binding(), clarification_questions):
+			_submit_clarification(clarification_binding, clarification_questions, clarification_answer.text)
 		else:
-			notice.text = "工单或问题已更新，请重新打开「补充需求」核对后提交。")
+			notice.text = "工单或问题已更新，请重新核对。")
 	add_child(clarification_dialog)
+
+
+func _clarification_key(binding: Dictionary, questions: Array) -> String:
+	return _routing_key(binding) + JSON.stringify(questions).sha256_text()
+
+
+func _submit_inline_answer(text: String) -> void:
+	var binding := _direct_binding()
+	var questions: Array = editor.workflow.get("routing", {}).get("questions", [])
+	if _clarification_key(binding, questions) != inline_answer_key:
+		notice.text = "工单或问题已更新，请重新核对。"
+		return
+	_submit_clarification(binding, questions, text)
+
+
+func _submit_clarification(binding: Dictionary, questions: Array, text: String) -> void:
+	var live := _direct_binding()
+	if questions.is_empty() or binding.get("number") != live.get("number") or _routing_key(binding) != _routing_key(live) or _routing_receipt(live).get("questions", []) != questions:
+		notice.text = "工单或问题已更新，请重新打开「补充需求」核对后提交。"
+		return
+	var answer := text.strip_edges()
+	if answer.is_empty() or text.length() > 4000:
+		notice.text = "请输入 1 至 4000 字的答复。"
+		return
+	await _judge_requirement(live, answer, true, questions)
+
+
+func _update_clarification_answer() -> void:
+	var text := clarification_answer.text
+	clarification_dialog.get_ok_button().disabled = text.length() > 4000 or text.strip_edges().is_empty()
+
+
+func _open_clarification(binding: Dictionary, questions: Array) -> void:
+	var key := _clarification_key(binding, questions)
+	if clarification_dialog_key != key:
+		clarification_answer.clear()
+		clarification_answer.clear_undo_history()
+		clarification_scroll.scroll_vertical = 0
+	clarification_dialog_key = key
+	clarification_questions = questions.duplicate()
+	clarification_binding = binding.duplicate(true)
+	clarification_prompt.text = "\n".join(PackedStringArray(questions))
+	_update_clarification_answer()
+	var usable := Rect2i(get_viewport().get_visible_rect()) if clarification_dialog.is_embedded() else DisplayServer.screen_get_usable_rect(get_window().current_screen)
+	if not usable.has_area():
+		usable = Rect2i(get_viewport().get_visible_rect())
+	var scale_factor := get_theme_default_base_scale()
+	var extent := Vector2i(Vector2(680, 430) * scale_factor).min(Vector2i(Vector2(usable.size) * 0.85))
+	clarification_dialog.min_size = Vector2i(Vector2(360, 220) * scale_factor).min(extent)
+	clarification_answer.custom_minimum_size.y = minf(120 * scale_factor, extent.y * 0.34)
+	clarification_dialog.popup(Rect2i(usable.position + (usable.size - extent) / 2, extent))
+	clarification_answer.grab_focus()
 
 
 func _routing_key(binding: Dictionary) -> String:
@@ -2323,6 +2425,92 @@ func _routing_key(binding: Dictionary) -> String:
 
 func _start_key(binding: Dictionary) -> String:
 	return JSON.stringify([_repo(), actor.get("user_id"), binding.url, binding.request])
+
+
+# The watcher sends only invalidations. Match the local worker's journal to the
+# authenticated issue before showing its role. Decisions still use _host_result.
+func _read_routing_stage(binding: Dictionary) -> void:
+	var key := _routing_key(binding)
+	var pid = routing_in_flight.get(key)
+	if typeof(pid) != TYPE_INT or not OS.is_process_running(pid) or not fresh_progress or progress_directory.is_empty():
+		return
+	var request := str(binding.get("request", ""))
+	var suffix := request.trim_prefix("daqian-direct-")
+	if request == suffix or suffix.length() != 20 or not suffix.is_valid_hex_number(false):
+		return
+	var expected := {"actor":actor.user_id, "number":int(binding.number), "request_id":request, "url":binding.url,
+		"revision":binding.get("updated", binding.get("revision", ""))}
+	var folder := progress_directory.path_join("daqian-direct").path_join(request)
+	var files := PackedStringArray()
+	if binding.has("source_sha256"):
+		expected.source_sha256 = binding.source_sha256
+		files.append("route-" + JSON.stringify(expected).sha256_text() + ".json")
+	else:
+		# Before the first board row, probe a small request folder only. A verified
+		# source hash on the next board snapshot gives us the exact path.
+		var directory := DirAccess.open(folder)
+		if not directory or directory.list_dir_begin() != OK:
+			return
+		for i in 12:
+			var next := directory.get_next()
+			if next.is_empty():
+				break
+			files.append(next)
+		if not directory.get_next().is_empty():
+			return
+	for name in files:
+		if not name.begins_with("route-") or not name.ends_with(".json") or name.length() != 75:
+			continue
+		var path := folder.path_join(name)
+		var file := FileAccess.open(path, FileAccess.READ)
+		if not file:
+			continue
+		# Real journals are small; large histories can wait for normal verification.
+		var length := file.get_length()
+		if length <= 0 or length > 128 * 1024:
+			continue
+		var state = JSON.parse_string(file.get_buffer(length).get_string_from_utf8())
+		if not state is Dictionary or not state.get("binding") is Dictionary or not state.get("calls") is Dictionary:
+			continue
+		var source: Dictionary = state.binding.duplicate()
+		if source.get("number") != expected.number:
+			continue
+		source.number = expected.number # JSON parses numbers as floats; the journal hash uses integers.
+		if name != "route-" + JSON.stringify(source).sha256_text() + ".json":
+			continue
+		if not expected.has("source_sha256"):
+			source.erase("source_sha256")
+		if source != expected:
+			continue
+		var stage := ""
+		var matched_pid := false
+		for call in state.calls.values():
+			if not call is Dictionary or not call.get("attempts") is Array or call.attempts.is_empty():
+				continue
+			var attempt = call.attempts.back()
+			if attempt is Dictionary and attempt.get("pid") == pid and attempt.get("agent") in ["sinan", "yanshi"]:
+				matched_pid = true
+				if not attempt.has("outcome"):
+					stage = attempt.agent
+					break
+		if matched_pid:
+			if routing_stages.get(key) != stage:
+				routing_stages[key] = stage
+				_sync_workflow()
+			return
+
+
+func _routing_stage(item: Dictionary) -> String:
+	var key := _routing_key(item)
+	var pid = routing_in_flight.get(key)
+	if typeof(pid) != TYPE_INT or not fresh_progress or not OS.is_process_running(pid):
+		return ""
+	if routing_stages.has(key):
+		return routing_stages[key]
+	var attempt: Dictionary = item.get("judgment_attempt", {})
+	if attempt.get("pid") == pid and attempt.get("agent") in ["sinan", "yanshi"]:
+		return attempt.agent
+	return ""
 
 
 func _routing_receipt(binding: Dictionary) -> Dictionary:
@@ -2336,6 +2524,61 @@ func _routing_receipt(binding: Dictionary) -> Dictionary:
 	return result
 
 
+# Old workspace helpers return the verified decision without its conversation.
+# Recover only the corresponding journal's final result, never pending answers.
+func _legacy_clarifications(binding: Dictionary, decision: Dictionary) -> Array:
+	var stored: Array = saved.get("clarification_history", {}).get(_routing_key(binding), [])
+	if decision.get("route") != "yanshi" or not fresh_progress or progress_directory.is_empty() or not binding.has("source_sha256"):
+		return stored
+	var request := str(binding.get("request", ""))
+	var suffix := request.trim_prefix("daqian-direct-")
+	if request == suffix or suffix.length() != 20 or not suffix.is_valid_hex_number(false):
+		return stored
+	var expected := {"actor":actor.user_id, "number":int(binding.number), "request_id":request, "url":binding.url,
+		"revision":decision.revision, "source_sha256":binding.source_sha256}
+	var final_result := {}
+	for field in ["route", "reason", "scope", "acceptance", "questions", "ready"]:
+		final_result[field] = decision.get(field)
+	var planned: bool = binding.get("status") == "planned"
+	var name := ("route-" + JSON.stringify(expected).sha256_text() + ".json") if planned else "start.json"
+	var path := progress_directory.path_join("daqian-direct").path_join(request).path_join(name)
+	if legacy_route_path == path and legacy_route_result == final_result:
+		return legacy_route_turns
+	var file := FileAccess.open(path, FileAccess.READ)
+	if not file or file.get_length() > 8 * 1024 * 1024:
+		return stored
+	var state = JSON.parse_string(file.get_buffer(file.get_length()).get_string_from_utf8())
+	if not state is Dictionary or not state.get("binding") is Dictionary or state.get("result") != final_result:
+		return stored
+	var source: Dictionary = state.binding.duplicate()
+	if source.get("number") != expected.number:
+		return stored
+	source.number = expected.number
+	if source != expected:
+		return stored
+	var turns = state.get("answers" if planned else "clarifications")
+	if not turns is Array:
+		return stored
+	legacy_route_path = path
+	legacy_route_result = final_result
+	legacy_route_turns = turns
+	return turns
+
+
+func _confirmed_clarifications(binding: Dictionary, decision: Dictionary) -> Array:
+	var turns = decision.get("clarification_history")
+	if turns == null:
+		turns = _legacy_clarifications(binding, decision)
+	if not turns is Array or turns.size() > 32:
+		return []
+	for turn in turns:
+		if not turn is Dictionary or not turn.get("questions") is Array or turn.questions.is_empty() or not turn.get("answer") is String:
+			return []
+		if not turn.questions.all(func(question): return question is String):
+			return []
+	return turns
+
+
 func _discard_routing(binding: Dictionary) -> void:
 	var key := _routing_key(binding)
 	var cached: Dictionary = saved.get("routing", {}).get(binding.url, {})
@@ -2346,7 +2589,7 @@ func _discard_routing(binding: Dictionary) -> void:
 			row.routing_receipt = {}
 
 
-func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> void:
+func _judge_requirement(binding: Dictionary, answer := "", retry := false, expected_questions := []) -> void:
 	var url: String = binding.url
 	var key := _routing_key(binding)
 	if routing_in_flight.has(key) or binding.get("closed", false) or binding.status != "planned":
@@ -2362,11 +2605,15 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	request.retry_authorized = retry
 	if not answer.is_empty():
 		request.answer = answer
-		request.expected_questions = clarification_questions.duplicate()
+		request.expected_questions = expected_questions.duplicate()
+	var launched := false
 	var result := {"error":"请在工单内打开「推进模型」并配置连接，然后重试判断。"}
 	if is_instance_valid(chat) and await _fresh_access() and user == actor and root == _repo():
-		if _direct_binding().get("url") != url:
+		var live := _direct_binding()
+		if live.get("number") != binding.number or _routing_key(live) != key:
 			result.error = "回到此工单后，可继续需求判断。"
+		elif not answer.is_empty() and _routing_receipt(live).get("questions", []) != expected_questions:
+			result.error = "待答复问题已改变，请核对当前工单。"
 		else:
 			var error := _bind_conversation(binding)
 			if not error.is_empty():
@@ -2380,12 +2627,15 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 				else:
 					var process: Dictionary = chat.launch_daqian_routing(request, selection)
 					if process.has("pid"):
+						launched = true
 						routing_in_flight[key] = process.pid
 					result = await _host_result(process.pid, process.input, process.output) if process.has("pid") else process
 	routing_in_flight.erase(key)
+	routing_stages.erase(key)
+	legacy_route_path = ""
 	if user != actor or root != _repo():
 		return
-	if not answer.is_empty() and result.get("ok") != true:
+	if launched and not answer.is_empty() and result.get("ok") != true:
 		_discard_routing(binding)
 		_save()
 	if not answer.is_empty() and result.get("refresh_routing") == true:
@@ -2399,6 +2649,21 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false) -> vo
 	if verified:
 		if not saved.has("routing"):
 			saved.routing = {}
+		var history := _confirmed_clarifications(binding, result).duplicate(true)
+		# Older helpers acknowledge a submitted answer without returning the whole transcript.
+		if not result.has("clarification_history") and result.route == "yanshi" and request.has("answer"):
+			var turn := {"questions":request.expected_questions, "answer":request.answer}
+			if turn not in history:
+				history.append(turn)
+		if not history.is_empty():
+			saved.get_or_add("clarification_history", {})[key] = history
+		elif result.has("clarification_history"):
+			saved.get("clarification_history", {}).erase(key)
+		for turn in history:
+			var draft_key := _clarification_key(binding, turn.questions)
+			if str(inline_answer_drafts.get(draft_key, "")).strip_edges() == turn.answer:
+				inline_answer_drafts.erase(draft_key)
+		result.clarification_history = history
 		saved.routing[url] = result
 		for item in board.get("issues", []):
 			if item.url == url and item.request == binding.request and item.updated == request.expected_revision:
@@ -2497,21 +2762,19 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	if action not in ["judge", "retry", "clarify", "start", "view", "resume"]:
 		return
 	binding = binding.duplicate(true)
-	if not await _fresh_access() or source != current or epoch != selection_epoch or user != actor or root != _repo():
+	# Opening an already verified question is local; submitting its answer rechecks access.
+	var local_question := action == "clarify" and fresh_progress and not offline and user.has("user_id") and picker_scope == root and binding == _direct_binding()
+	if not local_question and not await _fresh_access():
+		return
+	if source != current or epoch != selection_epoch or user != actor or root != _repo():
 		return
 	if binding != _direct_binding() or action != _issue_action(binding).get("kind"):
 		return
 	var url: String = binding.url
 	if action == "clarify":
 		var decision := _routing_receipt(binding)
-		clarification_prompt.text = "\n".join(PackedStringArray(decision.questions))
-		if clarification_binding != binding or clarification_questions != decision.questions:
-			clarification_answer.text = ""
-		clarification_questions = decision.questions.duplicate()
-		clarification_binding = binding.duplicate(true)
-		clarification_dialog.get_ok_button().disabled = clarification_answer.text.strip_edges().is_empty()
-		clarification_dialog.popup_centered_clamped(Vector2i(480, 300))
-		clarification_answer.grab_focus()
+		if inline_answer_key != _clarification_key(binding, decision.questions) or not editor.focus_clarification():
+			_open_clarification(binding, decision.questions)
 		return
 	if not is_instance_valid(chat):
 		notice.text = "无法取得共工 AI 对话入口"
@@ -2813,6 +3076,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.revision = stored.revision
 		editor.baseline = stored.baseline
 		editor.draw_graph()
+	_read_routing_stage(_direct_binding())
 	_sync_workflow()
 	flow_split.show()
 	editor.show()
@@ -2853,7 +3117,7 @@ func _update_direct_action() -> void:
 
 
 func _drop_images(paths: PackedStringArray) -> void:
-	if not is_visible_in_tree() or not editor.is_visible_in_tree() or not editor.canvas.get_global_rect().has_point(editor.canvas.get_global_mouse_position()):
+	if get_last_exclusive_window() != get_window() or not is_visible_in_tree() or not editor.is_visible_in_tree() or not editor.canvas.get_global_rect().has_point(editor.canvas.get_global_mouse_position()):
 		return
 	insert_dropped_images(paths,(editor.canvas.get_local_mouse_position()+editor.canvas.scroll_offset)/editor.canvas.zoom)
 
@@ -3040,8 +3304,9 @@ func _respond_to_wait() -> void:
 	if not pending.is_empty():
 		_show_operation_details(pending.token)
 		return
-	if _has_routing_questions(item) and not _direct_binding().is_empty():
-		await _start_or_view_direct(_direct_binding())
+	var direct := _direct_binding()
+	if _has_routing_questions(direct):
+		await _start_or_view_direct(direct)
 		return
 	# A linked draft has a private graph. Submit structured answers only on the canonical issue.
 	if item.has("url") and current != item.url and item.get("pending_count", 0) > 0:
@@ -3071,9 +3336,9 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 	var names := PackedStringArray(item.get("workers", [])) if fresh_progress else PackedStringArray()
 	var waiting := PackedStringArray()
 	var key := _routing_key(item)
-	var attempt: Dictionary = item.get("judgment_attempt", {})
-	if fresh_progress and not attempt.is_empty() and typeof(routing_in_flight.get(key)) == TYPE_INT and routing_in_flight[key] == int(attempt.pid) and OS.is_process_running(int(attempt.pid)):
-		names.append(("司南" if attempt.agent == "sinan" else "偃师") + " · 需求判断")
+	var stage := _routing_stage(item)
+	if not stage.is_empty():
+		names.append("司南 · 需求判断" if stage == "sinan" else "偃师 · 需求分析")
 	for worker in chat_work.get(url, {}):
 		var activity: Dictionary = chat_work[url][worker]
 		if item.get("source_sha256") != activity.version:
@@ -3128,6 +3393,7 @@ func _set_issue_brief(item: Dictionary, progress: Dictionary) -> void:
 
 
 func _sync_workflow() -> void:
+	inline_answer_key = ""
 	if current.is_empty():
 		return
 	if not editor.draft.nodes.has("requirement"):
@@ -3213,8 +3479,12 @@ func _sync_workflow() -> void:
 		reply_button.text = "进入待处理对话"
 	_set_issue_brief(item, progress)
 	_update_direct_action()
+	if direct and phase == "questions" and not judged.get("questions", []).is_empty():
+		inline_answer_key = _clarification_key(item, judged.questions)
+		editor.clarification_draft = inline_answer_drafts.get(inline_answer_key, "")
 	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
-		"progress":progress, "operation":operation, "judging":routing_in_flight.has(_routing_key(item))}
+		"clarification_history":_confirmed_clarifications(item, judged) if direct else [],
+		"progress":progress, "operation":operation, "routing_stage":_routing_stage(item), "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:
 		editor.workflow = facts.duplicate(true)
 		editor.draw_graph()

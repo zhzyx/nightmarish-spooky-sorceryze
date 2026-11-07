@@ -334,6 +334,7 @@ class DirectIssueTests(unittest.TestCase):
         self.assertEqual([call.kwargs["agent_id"] for call in model.call_args_list], ["sinan", "yanshi", "yanshi"])
         data = json.loads(model.call_args.args[3][1]["content"])
         self.assertEqual(data["clarifications"], [{"questions": ["输出格式？"], "answer": "CSV"}])
+        self.assertEqual(last["clarification_history"], data["clarifications"])
         self.assertEqual(self.writes, 1)
 
     def test_concurrent_editors_answer_only_the_bound_questions(self):

@@ -59,7 +59,8 @@ def route_for_row(root, receipts, actor, row, item):
         issue_route.decision(json.dumps(decision), result["route"], "")
         if result["ready"] != (not result["questions"]):
             return {}
-        return {**decision, **{k: binding[k] for k in ("number", "request_id", "url", "revision")}, "ready": result["ready"]}
+        return {**decision, **{k: binding[k] for k in ("number", "request_id", "url", "revision")}, "ready": result["ready"],
+                "clarification_history": state.get("answers" if status == "planned" else "clarifications", [])}
     except (AttributeError, KeyError, OSError, TypeError, ValueError):
         return {}
 
