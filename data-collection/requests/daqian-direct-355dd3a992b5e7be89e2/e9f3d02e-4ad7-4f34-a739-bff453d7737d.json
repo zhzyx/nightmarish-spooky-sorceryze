@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "daqian-direct-355dd3a992b5e7be89e2",
+  "collected_at": "2026-11-07T19:33:44.354118+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-355dd3a992b5e7be89e2/daqian-direct-355dd3a992b5e7be89e2-created.json",
+      "sha256": "ea5c40c24fbc955bcf44fe9ba0ad68ba23c34392f8af339b38ae7dcddf1b186d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "daqian-direct-355dd3a992b5e7be89e2-created",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-355dd3a992b5e7be89e2/route-6fb96454a70a454caf01f55b24fda896.json",
+      "sha256": "d6290391fde36d617fcd20738e762159901b76ca10242ad03b8400b20c1c0330",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "route-6fb96454a70a454caf01f55b24fda896",
+      "origin": "gonggong-framework"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 516,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/516"
+}

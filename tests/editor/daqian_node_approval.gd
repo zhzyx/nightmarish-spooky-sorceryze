@@ -192,3 +192,21 @@ func check_native_canvas(panel, row: Dictionary) -> void:
 	check("Canvas fixture answer" not in canvas.canvas_log.text, "The Issue answer appeared on the board")
 	await panel._open_issue(row)
 	check(canvas.canvas_location == issue and "Canvas fixture answer" in canvas.canvas_log.text, "Returning to the Issue lost its native preview receipt")
+	canvas.canvas_message.text = "canvas fixture rejected"
+	canvas.canvas_message.text_submitted.emit(canvas.canvas_message.text)
+	deadline = Time.get_ticks_msec() + 10000
+	while canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	panel._draw_board()
+	check(canvas.waiting.visible, "Board refresh hid the pending model request")
+	while not canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	check(canvas.pending_turns.is_empty() and not canvas.waiting.visible and "401" in canvas.canvas_log.text, "Native HTTP failure did not reach the canvas")
+	canvas.canvas_message.text = "canvas fixture filtered"
+	canvas.canvas_message.text_submitted.emit(canvas.canvas_message.text)
+	deadline = Time.get_ticks_msec() + 10000
+	while canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	while not canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	check(not canvas.waiting.visible and "未收到完整答复" in canvas.canvas_log.text and "Unexpected filtered answer" not in canvas.canvas_log.text, "Filtered completion reached canvas routing")

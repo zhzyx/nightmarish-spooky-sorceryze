@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5ad03c3a4f2024fd2a63eb1d02da21a3f7154058",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-live-ai-path",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3e2a40b71e8da322f90cb10fa79cc8fe540ace3f6ab6cd69fcef3a60d68257a1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+    "action": "user-report",
+    "detection_head": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+    "context_sha256": "5e653d19b3771737a0d10219f2185470e3b9d5ae7cf0a539b9b904c6abd5231b",
+    "operator": "Sail-Li",
+    "worker": "codex-live-515",
+    "authority_ref": "Issue 515; current user request; verified Sail-Li push permission",
+    "evidence": "Installed Windows canvas log SHA256 B69EC5FC8A2A19405694043301D390DEA67E327D9FF5C34E206AFAF1267E8311; separate CLI diagnostic SHA256 38DEB50096488168F6D0DD29CA722205A508CF6AF5AB42556B8F12DC0949BF39; actual route #516.",
+    "diagnosis": "仓库鉴权通过，已安装编辑器画布约 120 秒后返回正确算术答案。单独 CLI 复现 WebSocket 超时重连五次后成功；本次未复现永久死锁或账号拒绝。等待期间看板同步覆盖进度。",
+    "next_action": "在独立候选修复画布等待及终态反馈，复验后独立审查交付。按实际模型和入口记录覆盖范围。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T19:10:53.345433+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T19:27:02.791753+00:00",
+  "sha256": "9a37098ea6aed86c4934985f365b0034e5c0dd51d2cfe8e6f49dd88470b3781a"
+}

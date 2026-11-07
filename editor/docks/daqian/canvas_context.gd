@@ -16,6 +16,7 @@ var canvas_drafts := {}
 var canvas_location := ""
 var canvas_generation := 0
 var canvas_log := RichTextLabel.new()
+var waiting := Label.new()
 
 
 func _button(parent: Control, title: String, action: Callable) -> Button:
@@ -32,6 +33,8 @@ func build() -> void:
 	canvas_log.selection_enabled = true
 	canvas_log.scroll_following = true
 	canvas_log.hide()
+	add_child(waiting)
+	waiting.hide()
 	add_child(canvas_bar)
 	canvas_bar.set_meta("ai_control_exclude", true)
 	canvas_message.placeholder_text = "询问当前画布，或描述要执行的操作"
@@ -75,6 +78,7 @@ func bind_scope(location: String) -> void:
 		remember_model()
 		canvas_drafts[canvas_location] = canvas_message.text
 	canvas_location = location
+	_update_waiting()
 	canvas_message.text = canvas_drafts.get(location, "")
 	canvas_log.text = canvas_history.get(location, "")
 	canvas_log.visible = not canvas_log.text.is_empty()
@@ -94,6 +98,7 @@ func clear_session() -> void:
 	canvas_message.clear()
 	session_epoch += 1
 	pending_turns.clear()
+	waiting.hide()
 	selections.clear()
 	canvas_backend = -1
 	canvas_location = ""
@@ -116,9 +121,20 @@ func sent(turn: Dictionary) -> void:
 		if canvas_message.text.strip_edges() == turn.question:
 			canvas_message.clear()
 	pending_turns[turn.source] = turn
+	_update_waiting()
 
 
 func take_reply(source: String) -> Dictionary:
 	var turn: Dictionary = pending_turns.get(source, {})
 	pending_turns.erase(source)
+	_update_waiting()
 	return turn
+
+
+func _update_waiting() -> void:
+	for turn in pending_turns.values():
+		if turn.scope == canvas_location:
+			waiting.text = "正在等待模型分析全项目…" if turn.project else "正在等待模型分析当前画布…"
+			waiting.show()
+			return
+	waiting.hide()

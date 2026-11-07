@@ -1409,11 +1409,6 @@ void AIChatDock::_append(const String &p_role, const String &p_text) {
 	const bool user = p_role == TTR("You");
 	_queue_chat_scroll_update();
 	const bool ai = p_role == TTR("AI");
-	if (ai && !history_restoring && consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id) {
-		const String source = daqian_preview_source;
-		daqian_preview_source = String();
-		emit_signal("daqian_preview_received", source, _redact(p_text));
-	}
 	if (!history_restoring) {
 		Dictionary record = chat_message(user ? "user" : ai ? "assistant"
 						: p_role == TTR("Error")			? "error"
@@ -1548,6 +1543,13 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_design_turn_started();
 	}
 	if (was_busy && !p_busy) {
+		if (consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id) {
+			const String source = daqian_preview_source;
+			daqian_preview_source = String();
+			const Dictionary last = transcript.is_empty() ? Dictionary() : Dictionary(transcript.back());
+			const String reason = last.get("role", "") == "error" ? String(last["content"]) : String(U"本次请求已结束，未收到完整答复，请重试。");
+			emit_signal("daqian_preview_failed", source, reason);
+		}
 		_end_daqian_approval(daqian_approval_running ? "unknown" : "cancelled");
 		_end_gonggong(turn_completed ? "completed" : "failed");
 	}
@@ -2397,7 +2399,9 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		_next_tool(session_generation);
 	} else {
 		Dictionary final = chat_message("assistant", _redact(content));
-		const bool complete = !content.is_empty() && String(choice.get("finish_reason", "")) != "length";
+		const String finish_reason = choice.get("finish_reason", "");
+		const bool preview = consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id;
+		const bool complete = !content.is_empty() && (preview ? finish_reason == "stop" : finish_reason != "length");
 		if (!complete) {
 			final["incomplete"] = true;
 			if (!content.is_empty() && !transcript.is_empty()) {
@@ -2411,6 +2415,11 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		}
 		messages.push_back(final);
 		if (complete) {
+			if (preview) {
+				const String source = daqian_preview_source;
+				daqian_preview_source = String();
+				emit_signal("daqian_preview_received", source, _redact(content));
+			}
 			turn_completed = true;
 			_cleanup_completed_turn();
 		}
@@ -3830,6 +3839,7 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
 	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
+	ADD_SIGNAL(MethodInfo("daqian_preview_failed", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "reason")));
 	ADD_SIGNAL(MethodInfo("daqian_work_event", PropertyInfo(Variant::STRING, "workspace"), PropertyInfo(Variant::DICTIONARY, "binding"), PropertyInfo(Variant::STRING, "worker"), PropertyInfo(Variant::STRING, "kind"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::STRING, "status")));
 	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
 }
@@ -4105,8 +4115,15 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		message["consultation_only"] = p_preview;
 		// Start the confirmed turn directly. A failed validation must not leave a
 		// queued copy that could run again when the user retries from Tianshu.
+		const int transcript_size = transcript.size();
 		if (!_start_message(message, p_selection)) {
 			daqian_preview_source = String();
+			if (transcript.size() > transcript_size) {
+				const Dictionary last = transcript.back();
+				if (last.get("role", "") == "error") {
+					return last["content"];
+				}
+			}
 			return U"需求尚未发送，请在关联对话中检查模型与连接配置后重试。";
 		}
 		// The conversation owns this turn even when environment setup pauses it.

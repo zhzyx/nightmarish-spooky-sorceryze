@@ -62,15 +62,18 @@ func run() -> void:
 	var source: String = chat.last[0]
 	var first_receipt: String = chat.last[7]
 	var local_ok: bool = chat.last[5].id == "second" and chat.last[4] and "#42" in chat.last[3]
+	panel.notice.text = "上次同步"
+	var waiting_ok: bool = canvas.waiting.visible and "当前画布" in canvas.waiting.text
 	panel._preview_received(first_receipt, '{"route":"execute","text":"执行"}')
 	await process_frame
+	waiting_ok = waiting_ok and not canvas.waiting.visible
 	var execute_ok: bool = chat.last[0] == issue and chat.last[1] == 42 and not chat.last[4]
 	canvas.canvas_message.text = "查看相关工单"
 	canvas.send_requested.emit()
 	local_ok = local_ok and chat.last[0] == source and chat.last[7] != first_receipt
 	panel._preview_received(chat.last[7], '{"route":"project","text":"跨工单"}')
 	await process_frame
-	var project_ok: bool = "全项目工单" in chat.last[3]
+	var project_ok: bool = "全项目工单" in chat.last[3] and canvas.waiting.visible and "全项目" in canvas.waiting.text
 	panel._preview_received(chat.last[7], '{"route":"requirement","text":"新的需求"}')
 	await process_frame
 	var draft_ok: bool = panel.new_drafts == 1 and panel.published_form and panel.editor.draft.nodes.requirement.value == "新的需求"
@@ -106,12 +109,24 @@ func run() -> void:
 	isolated = isolated and panel.canvas_panel.canvas_message.text == "工单草稿"
 	isolated = isolated and "延迟回复" in panel.canvas_panel.canvas_log.text and "重复回执" not in panel.canvas_panel.canvas_log.text
 	isolated = isolated and panel.canvas_panel.canvas_models.get_selected_metadata() == "second"
+	canvas.canvas_message.text = "检查连接"
+	canvas.send_requested.emit()
+	var failure: String = chat.last[7]
+	panel.current = ""
+	panel._sync_canvas_scope()
+	panel._preview_failed(failure, "HTTP 401")
+	panel._preview_failed(failure, "重复错误")
+	var failure_ok: bool = not canvas.waiting.visible and "HTTP 401" not in canvas.canvas_log.text
+	panel.current = issue
+	panel._sync_canvas_scope()
+	panel.notice.text = "上次同步"
+	failure_ok = failure_ok and canvas.pending_turns.is_empty() and not canvas.waiting.visible and "HTTP 401" in canvas.canvas_log.text and "重复错误" not in canvas.canvas_log.text
 	for id in Node.get_orphan_node_ids():
 		if not original_orphans.has(id) and is_instance_id_valid(id):
 			var node := instance_from_id(id) as Node
 			if node and not node.get_parent():
 				node.free()
-	if not (local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated):
+	if not (local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated and waiting_ok and failure_ok):
 		push_error("Canvas chat routing regression")
 		quit(1)
 	else:
