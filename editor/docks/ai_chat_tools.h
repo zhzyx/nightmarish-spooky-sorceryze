@@ -37,6 +37,7 @@
 class AIChatTools {
 public:
 	static constexpr int MAX_SCRIPT_BYTES = 256 * 1024;
+	static constexpr int MAX_READ_SCAN_BYTES = 16 * 1024 * 1024;
 	static constexpr int MAX_CONTEXT_BYTES = 384 * 1024;
 	static constexpr int MAX_REQUEST_BYTES = 1024 * 1024;
 
@@ -46,6 +47,7 @@ public:
 	static bool resolve_script_path(const String &p_path, const String &p_root, String &r_absolute, String &r_error);
 	static bool resolve_directory(const String &p_path, const String &p_root, String &r_absolute, String &r_error);
 	static bool read_script(const String &p_absolute, String &r_content, String &r_error);
+	static bool read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error);
 	static bool write_script(const String &p_absolute, const String &p_before, const String &p_after, bool p_existed, String &r_error, bool p_preserve_bom = true);
 	// Local, per-turn text snapshots. No repository or external process is used.
 	static bool save_snapshot(const String &p_path, const Dictionary &p_snapshot, String &r_error);

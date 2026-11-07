@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-037b175b1646d9f01486c8314a368c86e5ad5419",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "large-file-read-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/392",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "209c5ca0942778b541c1e5ac8a806360383550cadc6e0ea479f944ef73d41a79",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/392",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/392",
+    "action": "validation",
+    "detection_head": "e2a1d2b73767a9e86dbd48f8ae1e69f27a0d4464",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-large-file-read-agent",
+    "authority_ref": "user-authorized-engine-workflow-verification-and-repair-20261107",
+    "evidence": "data-collection/large-file-read-20261107.json",
+    "diagnosis": "Line-range reads were gated by the complete-file 256 KiB snapshot reader before slicing. A separate bounded streaming UTF-8 range reader fixes the reproduced engine-source failure.",
+    "next_action": "Submit the independently reviewed candidate and verify PR checks and main delivery, then rerun original Issue 387 workflow.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T06:01:08.436267+00:00",
+    "attempted": "Candidate arm64 editor build passed; 21 real editor-tool fixture cases passed.",
+    "repair_owner": "codex-large-file-read-agent",
+    "continuable": "Local fix validated; Git publication remains pending."
+  },
+  "occurred_at": "2026-11-07T06:02:56.846888+00:00",
+  "sha256": "41ae011d29a0a16ddcb5032b4f6838009f25ee938ed7830dbf2c10232415e949"
+}
