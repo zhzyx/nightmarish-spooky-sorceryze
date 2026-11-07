@@ -8,10 +8,11 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor
 
 
 class Model(BaseHTTPRequestHandler):
@@ -31,7 +32,10 @@ class Model(BaseHTTPRequestHandler):
             "Check the receipt again" in str(turn.get("content")) for turn in messages if turn["role"] == "user"
         )
         message = {"role": "assistant", "content": "Receipt rechecked" if followup else "Verified"}
-        if not followup and not any(turn["role"] == "tool" for turn in messages):
+        if any("canvas fixture question" in str(turn.get("content")) for turn in messages if turn["role"] == "user"):
+            time.sleep(0.4)  # Allow the real workspace to switch before the receipt arrives.
+            message["content"] = json.dumps({"route": "answer", "text": "Canvas fixture answer"})
+        elif not followup and not any(turn["role"] == "tool" for turn in messages):
             message.update(
                 content="",
                 tool_calls=[
@@ -41,7 +45,9 @@ class Model(BaseHTTPRequestHandler):
                         "function": {
                             "name": "run_command",
                             "arguments": json.dumps({
-                                "command": "echo once >> executions",
+                                "command": "Add-Content -Encoding ascii executions once"
+                                if os.name == "nt"
+                                else "echo once >> executions",
                                 "cwd": str(self.server.workspace),
                             }),
                         },
@@ -58,12 +64,24 @@ class Model(BaseHTTPRequestHandler):
 
 
 def run(binary):
+    os.environ.pop("GONGGONG_WORKSPACE", None)
     with (
-        tempfile.TemporaryDirectory(prefix="daqian-approval-") as tmp,
+        tempfile.TemporaryDirectory(prefix="daqian-approval-", ignore_cleanup_errors=os.name == "nt") as tmp,
         ThreadingHTTPServer(("127.0.0.1", 0), Model) as server,
     ):
-        project = Path(tmp)
-        isolated_editor = macos_editor(binary, project / "isolated-editor")
+        project = Path(tmp).resolve()
+        isolated_editor = copy_editor(binary, project / "isolated-editor")
+        configuration = isolated_editor.parent / "editor_data/gonggong/config.json"
+        configuration.parent.mkdir(parents=True, exist_ok=True)
+        configuration.write_text(
+            json.dumps({"schema_version": 1, "runtimes": {"workflow_python": sys.executable}}), encoding="utf-8"
+        )
+        # The editor enumerates models at startup, before the test can configure the inline form.
+        (isolated_editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
+            '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+            'ai_chat/backend = 0\nai_chat/endpoint = ""\nai_chat/model = ""\n',
+            encoding="utf-8",
+        )
         workspace = project / ".fixture"
         server.workspace = workspace
         threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -138,7 +156,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result))
             + 'Path(sys.argv[sys.argv.index("--result")+1]).write_text(json.dumps(result))\n'
         )
         env = dict(
-            os.environ,
+            {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},
+            GONGGONG_RUNTIME_CONFIG=str(configuration),
             DAQIAN_TEST_REPO=str(workspace),
             DAQIAN_TEST_PYTHON=sys.executable,
             GODOT_AI_API_KEY="fixture-key",
@@ -160,6 +179,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result))
                 env=env,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=70,
             )
         except subprocess.TimeoutExpired as exc:

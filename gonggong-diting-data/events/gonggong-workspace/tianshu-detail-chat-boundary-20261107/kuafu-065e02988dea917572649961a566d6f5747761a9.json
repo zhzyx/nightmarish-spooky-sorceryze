@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-065e02988dea917572649961a566d6f5747761a9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-detail-chat-boundary-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/457",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3b48095529047e36c2236d9b7cb3dab8eb82dedbfec4755683be91f7ed41493f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/457",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/469",
+    "action": "validation",
+    "detection_head": "3451c1ef9ced0311e95685a7bfae9dab3e24b01b",
+    "context_sha256": "68c8b29f4847e62638bdf02e674967fd615d116d1997bcbc96c3b85cfa875665",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_60da65b6f5b87a9a",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+    "evidence": "tests/editor/daqian_node_approval.gd and headless missing model configuration rejection: AI chat busy during startup model discovery",
+    "diagnosis": "The native fixture depended on the removed manual refresh button and an idle startup catalog. Automatic discovery can contact the default endpoint before the fixture connects. Configure the private fixture endpoint before editor startup and test the actual catalog receipt.",
+    "next_action": "Implement fixture setup, retest approval, publish and direct recovery against signed candidate; close after main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:15:19.852343+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:17:21.653484+00:00",
+  "sha256": "b0e87f22769f832fb31f7fa6b6d0f9a3a829932d50834ee26f917aeedc35b836"
+}

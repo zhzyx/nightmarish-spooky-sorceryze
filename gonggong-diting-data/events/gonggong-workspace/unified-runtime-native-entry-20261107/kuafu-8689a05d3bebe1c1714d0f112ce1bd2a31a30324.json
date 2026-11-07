@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8689a05d3bebe1c1714d0f112ce1bd2a31a30324",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c832af06e7cbe292ed3ce3b4e420a69b4808aa6bba52095cd7ab572e40f33213",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/480",
+    "action": "delivery",
+    "detection_head": "1a8e08a9dbba7c2e79b9809961fecdf988780893",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-config-bootstrap",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/481",
+    "diagnosis": "writer已签发修后PR481，但最终回读发现main在签发期间推进到真实PR478/#457的b5d66c00，入口正确要求reconciliation。属于并发上游变更整合条件，不是签名/App/权限恢复成功。",
+    "next_action": "保留481旧base精确CI诊断；正常整合b5主线新天枢拆分、只复验真实重叠与实际配置消费，再对最终整合tree执行正式门禁和新签发，实际main后继续根验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:24:15.391928+00:00",
+    "attempted": "已无冲突合入b5未提交，Mac增量编译26.72s、5角色配置回归、真实native节点审批场景均通过；独立窄整合审查进行中。",
+    "repair_owner": "codex-config-bootstrap",
+    "continuable": "继续整合后的源交付；不跳过当前main和精确CI门禁。"
+  },
+  "occurred_at": "2026-11-07T16:27:55.047336+00:00",
+  "sha256": "fc279364220c4d14a23e92841ca3368ee7fe72944902fe1548eaa2cfb2110c73"
+}
