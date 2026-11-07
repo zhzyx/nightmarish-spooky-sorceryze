@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-input-memory-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "request",
+  "occurred_at": "2026-11-07T19:15:00.653250+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "codex-511",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Investigate Tianshu input memory and responsiveness against the working AI Chat editor",
+    "design_document": "design-docs/tianshu-input-memory.md"
+  },
+  "evidence_refs": [],
+  "sha256": "5c0a7f8c7e25cb1f98ef7479331cf03aca35510218baa5513c0c7e8eb0958c48"
+}

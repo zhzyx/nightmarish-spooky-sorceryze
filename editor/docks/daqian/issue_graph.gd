@@ -163,6 +163,13 @@ void fragment() {
 			if id == &"" or key[0] == id or key[2] == id:
 				_style_wire(key)
 
+	func update_filtered_wires(changed_cards: Dictionary) -> void:
+		for key in lines:
+			if changed_cards.has(key[0]) or changed_cards.has(key[2]):
+				var included: bool = get_node(NodePath(key[0])).visible and get_node(NodePath(key[2])).visible
+				if lines[key].visible != included:
+					lines[key].visible = included
+
 	func clear_flow() -> void:
 		lines.clear()
 		clear_connections()
