@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1c8b432428b64880910eb5d0d06945c5b6f098fb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-node-preview-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/397",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8657a2f5d0b4d96eab5e7d5867bd105614b2680b36ed58a41ade0fcded6cee96",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/397",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/398",
+    "action": "delivery",
+    "detection_head": "d803fdeee5e9b3c04b77f120c31c6ec1489a2e88",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user:20261107:maliang-node-preview",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/399",
+    "diagnosis": "Node.js was missing from this process PATH. Adding the bundled runtime restored formal validation and the signed PR. Intermittent GitHub connection errors recovered. PR lint exposed legacy formatting/import annotations in touched Python modules; corrected candidate passes Ruff, MyPy and 36 backend tests.",
+    "next_action": "Verify the corrected bundle and exact candidate CI, then merge and close linked work.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T06:41:08.015203+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T06:49:21.428874+00:00",
+  "sha256": "93d2b66676f8257c8c86e958f6ce6cae78079331d48b62ed82859e778ff2314f"
+}
