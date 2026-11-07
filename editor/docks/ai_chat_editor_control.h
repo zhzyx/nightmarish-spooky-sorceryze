@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/templates/hash_map.h"
+#include "core/variant/callable.h"
 #include "scene/gui/control.h"
 
 class AIChatEditorRegistry;
@@ -47,12 +48,22 @@ class AIChatEditorControl : public Control {
 	static AIChatEditorControl *singleton;
 	HashMap<String, Target> targets;
 	AIChatEditorRegistry *registry = nullptr;
+	Callable chat_host_handler;
 	struct RoutedRequest {
 		String fingerprint;
 		Dictionary result;
 		uint64_t updated = 0;
 	};
 	HashMap<String, RoutedRequest> routed_requests;
+	uint64_t route_event_sequence = 0;
+	Array route_event_log;
+	void _publish_route_event(const Dictionary &p_result);
+	String routes_store_error;
+	bool routes_store_healthy = true;
+	bool routes_lock_owned = false;
+	bool _acquire_routes_lock();
+	bool _persist_routes() const;
+	void _restore_routes();
 	Dictionary workflow;
 	ObjectID guidance_timer;
 	ObjectID observed_button;
@@ -86,6 +97,7 @@ public:
 	static Dictionary bound_state(const Dictionary &p_state, const PackedStringArray &p_secrets = PackedStringArray());
 	static Array tool_definitions();
 	static bool handles(const String &p_name);
+	void set_chat_host_handler(const Callable &p_handler) { chat_host_handler = p_handler; }
 	static bool valid_project_path(const String &p_path);
 	static Array target_ids();
 	static bool save_setting_snapshot(const String &p_path, const String &p_original, const String &p_target, const Variant &p_value, String &r_error);
@@ -94,14 +106,16 @@ public:
 	bool register_target(const String &p_id, Control *p_control, const String &p_name, const String &p_screen = String());
 	bool unregister_target(const String &p_id);
 	Array find_targets(const String &p_query, int p_limit = 8) const;
+	Dictionary find_targets_page(const String &p_query, int p_limit = 20, int p_offset = 0) const;
 	Dictionary describe_target(const String &p_id) const;
 	Dictionary guidance_status() const;
 	void cancel_guidance();
 	void suspend_guidance();
 	Dictionary get_state(const PackedStringArray &p_secrets = PackedStringArray()) const;
-	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
-	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false);
+	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false);
+	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false);
 	Dictionary route_status(const String &p_request_id, const String &p_source) const;
+	Dictionary route_events(int64_t p_after, int p_limit = 100) const;
 	Dictionary cancel_route(const Dictionary &p_message, const String &p_reason);
 	void clear_highlight();
 	AIChatEditorControl();

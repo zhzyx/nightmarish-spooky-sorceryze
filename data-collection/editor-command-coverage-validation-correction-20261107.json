@@ -1,0 +1,48 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "source_base_commit": "1d080f6554668b720347bfcd222e527a9a7541f3",
+  "candidate_predecessor": "3a8a6c38f4d700e8351f1793a2babea4739fd7a1",
+  "corrects": "data-collection/editor-command-coverage-validation-20261107.json",
+  "observed_at": "2026-11-07T08:12:05.297091+00:00",
+  "changes": "Repository copyright formatting, equivalent include resolution, test empty-collection annotations and assertion spelling; production behavior unchanged.",
+  "changed_source_sha256": {
+    "editor/docks/ai_chat_editor_bridge.cpp": "d14c241dbe63c26a03fcc41fa3f92778cb38da9f8d627856ebd45fe5d99f8334",
+    "editor/docks/ai_chat_editor_registry.cpp": "2ebf1d76b6c14f349e34b64dc5ab63f27ff1c73b22e119de64d83da5ad1fbdc7",
+    "editor/docks/ai_chat_editor_registry.h": "afaf22451b8cf92a0759bbe0a1b6085f48a05a70a19d160729391a6d3119f961",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "ba00d30ef6110d18fb9f4c85b573caad712be12f4dc5d15d8adcc05356ab6f0b",
+    "editor/docks/ai_chat_editor_scene_actions.h": "bb61f453dc002924e46c1b80b7a8f5db19e1fd56cd18a48bedf6ac2cc9ebd9cf",
+    "editor/docks/ai_chat_editor_settings_actions.cpp": "02cace5650fcd386974522430ec1cff1b9d48c67ba27868ceb380b4d20da4f7c",
+    "editor/docks/ai_chat_editor_settings_actions.h": "6f59f77c068f1df0dd2bc1f6ab603ead1163f4c9a822f6f20ba1206d0d50f908",
+    "tests/editor/run_ai_chat_integration.py": "5ea48ddfff1ee16bfbf056dfd56876f9116387fc8b1ef104cfd70c4d4c1cda67",
+    "tests/editor/test_ai_chat_editor_registry_semantics.cpp": "f3f1e0e70db00d5d32a1af8eb867404e21791382c9b67fa6e94b9ed1d808a0a2",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "fa78f259451dc2f8ab3332f3fcf624e05070682ce72969724da40dc8c6f4ec78"
+  },
+  "build": {
+    "passed": true,
+    "binary_sha256": "4410e4bb52454593d1deb3b5c0e0fb841c2c02dbdbc650d317a2c3000a0f1f99"
+  },
+  "native_tests": {
+    "passed": true,
+    "cases": 53,
+    "assertions": 1144
+  },
+  "python_typing": {
+    "passed": true,
+    "files": 23,
+    "version": "mypy 2.4.0"
+  },
+  "local_static_checks": {
+    "copyright_headers": true,
+    "validate_includes": true,
+    "header_guards_headers_only": true,
+    "file_format": true,
+    "full_prek": "not completed: dependency installation cancelled; exact-head remote CI required"
+  },
+  "independent_acceptance": "19 command groups and 6 lock groups belong to predecessor source before mechanical static corrections, with actual binary hash in preserved report. No new independent run claimed.",
+  "remaining_issues": [
+    407,
+    408
+  ],
+  "overall_parent_complete": false
+}

@@ -5,13 +5,15 @@ import http.client
 import importlib.util
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
 import urllib.parse
+from pathlib import Path
+
+from editor_test_isolation import macos_editor
 
 
 def await_file(path, process, timeout=20):
@@ -33,11 +35,31 @@ def main():
     spec.loader.exec_module(module)
     with tempfile.TemporaryDirectory(prefix="godot-capability-") as folder:
         project = Path(folder)
-        (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Capability fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
+        isolated_editor = macos_editor(args.godot, project / "isolated-editor")
+        if sys.platform == "darwin":
+            (isolated_editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
+                '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+                "ai_chat/editor_control_bridge_enabled = true\n",
+                encoding="utf-8",
+            )
+        (project / "project.godot").write_text(
+            'config_version=5\n[application]\nconfig/name="Capability fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
+        )
         shutil.copyfile(Path(__file__).with_name("editor_capability_routing.gd"), project / "test.gd")
-        env = {**os.environ, "APPDATA": str(project / "appdata"), "LOCALAPPDATA": str(project / "localappdata"), "GODOT_AI_API_KEY": ""}
+        env = {
+            **os.environ,
+            "APPDATA": str(project / "appdata"),
+            "LOCALAPPDATA": str(project / "localappdata"),
+            "GODOT_AI_API_KEY": "",
+        }
         with (project / "editor.log").open("w", encoding="utf-8") as log:
-            process = subprocess.Popen([str(args.godot.resolve()), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"], cwd=project, env=env, stdout=log, stderr=log)
+            process = subprocess.Popen(
+                [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
+                cwd=project,
+                env=env,
+                stdout=log,
+                stderr=log,
+            )
             try:
                 ready = await_file(project / "ready.json", process)
                 ids = ready["ids"]
@@ -45,21 +67,32 @@ def main():
                 assert not ready["password_targets"] and not ready["protected_targets"]
                 client = module.EditorClient(project)
                 daqian = client.capabilities(ready["daqian_title"])
-                assert daqian["targets"], ("New mainline Dock did not register automatically", ascii(ready["daqian_title"]), daqian["registry"])
+                assert daqian["targets"], (
+                    "New mainline Dock did not register automatically",
+                    ascii(ready["daqian_title"]),
+                    daqian["registry"],
+                )
                 sequence = 0
+
                 def command(action="snapshot", **values):
                     nonlocal sequence
                     sequence += 1
                     pending_command = project / "command.pending"
-                    pending_command.write_text(json.dumps({"action": action, "id": sequence, **values}), encoding="utf-8")
+                    pending_command.write_text(
+                        json.dumps({"action": action, "id": sequence, **values}), encoding="utf-8"
+                    )
                     pending_command.replace(project / "command.json")
                     return await_file(project / f"ack-{sequence}.json", process)
 
                 def route(action, label="FixtureInput", value=None, request_id=None):
                     nonlocal sequence
                     sequence += 1
-                    message = {"intent": "engine_operation", "request_id": request_id or f"fixture-{sequence}", "source": "acceptance",
-                               "operation": {"action": action, "target": ids.get(label, label)}}
+                    message = {
+                        "intent": "engine_operation",
+                        "request_id": request_id or f"fixture-{sequence}",
+                        "source": "acceptance",
+                        "operation": {"action": action, "target": ids.get(label, label)},
+                    }
                     if value is not None:
                         message["operation"]["value"] = value
                     return message, client.route(message)
@@ -87,8 +120,11 @@ def main():
                 changed["operation"]["value"] = "different"
                 assert client.route(changed)["error"] == "request_id_conflict"
 
-                for action, label, value, field in [("set_text", "FixtureMultiline", "a\nb", "multiline"),
-                        ("set_value", "FixtureNumber", 42, "number"), ("select_option", "First", 1, "selected")]:
+                for action, label, value, field in [
+                    ("set_text", "FixtureMultiline", "a\nb", "multiline"),
+                    ("set_value", "FixtureNumber", 42, "number"),
+                    ("select_option", "First", 1, "selected"),
+                ]:
                     message, pending = route(action, label, value)
                     assert pending["confirmation_required"], pending
                     state, result = settle(message)
@@ -125,7 +161,12 @@ def main():
 
                 unrelated = client.route({"intent": "chat", "request_id": "chat", "source": "acceptance"})
                 assert unrelated["routing_status"] == "not_applicable" and not unrelated["routed"]
-                planning = client.route({"intent": "engine_operation", "request_id": "plan", "source": "acceptance", "request": "打开界面"})
+                planning = client.route({
+                    "intent": "engine_operation",
+                    "request_id": "plan",
+                    "source": "acceptance",
+                    "request": "打开界面",
+                })
                 assert planning["routing_status"] == "planning_required" and planning["next"]
                 command("permission", value=False)
                 assert not client.capabilities()["ok"]
@@ -141,9 +182,20 @@ def main():
                 assert client.status(message["request_id"], "acceptance")["error"] == "permission_denied"
 
                 def raw(headers=None, body=None):
-                    connection = http.client.HTTPConnection("127.0.0.1", urllib.parse.urlsplit(client.info["url"]).port, timeout=7)
-                    connection.request("POST" if body is not None else "GET", "/v1/messages" if body is not None else "/v1/capabilities", body,
-                                       {"Authorization": "Bearer " + client.info["token"], "X-Godot-Session": client.info["session"], "Content-Type": "application/json", **(headers or {})})
+                    connection = http.client.HTTPConnection(
+                        "127.0.0.1", urllib.parse.urlsplit(client.info["url"]).port, timeout=7
+                    )
+                    connection.request(
+                        "POST" if body is not None else "GET",
+                        "/v1/messages" if body is not None else "/v1/capabilities",
+                        body,
+                        {
+                            "Authorization": "Bearer " + client.info["token"],
+                            "X-Godot-Session": client.info["session"],
+                            "Content-Type": "application/json",
+                            **(headers or {}),
+                        },
+                    )
                     response = connection.getresponse()
                     result = (response.status, json.loads(response.read()))
                     connection.close()
@@ -160,12 +212,39 @@ def main():
                 assert client.capabilities("FixtureInput")["ok"], "Oversized request broke the next connection"
 
                 cli = [sys.executable, str(root / "tools/editor_control_client.py"), "--project", str(project)]
-                discovery = subprocess.run([*cli, "capabilities", "--query", "FixtureInput"], capture_output=True, text=True, encoding="utf-8", check=True)
+                discovery = subprocess.run(
+                    [*cli, "capabilities", "--query", "FixtureInput"],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    check=True,
+                )
                 assert json.loads(discovery.stdout)["targets"]
                 command("auto", value=True)
-                sent = subprocess.run([*cli, "route", "--source", "cli", "--request-id", "cli-input", "--operation", json.dumps({"action": "set_text", "target": ids["FixtureInput"], "value": "CLI input"})], capture_output=True, text=True, encoding="utf-8", check=True)
+                sent = subprocess.run(
+                    [
+                        *cli,
+                        "route",
+                        "--source",
+                        "cli",
+                        "--request-id",
+                        "cli-input",
+                        "--operation",
+                        json.dumps({"action": "set_text", "target": ids["FixtureInput"], "value": "CLI input"}),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    check=True,
+                )
                 assert json.loads(sent.stdout)["ok"] and command()["text"] == "CLI input"
-                recovered = subprocess.run([*cli, "status", "cli-input", "--source", "cli"], capture_output=True, text=True, encoding="utf-8", check=True)
+                recovered = subprocess.run(
+                    [*cli, "status", "cli-input", "--source", "cli"],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    check=True,
+                )
                 assert json.loads(recovered.stdout)["ok"]
                 assert client.info["token"] not in discovery.stdout + sent.stdout + recovered.stdout
                 descriptor = project / ".godot/editor/ai_control" / f"{client.info['pid']}.json"

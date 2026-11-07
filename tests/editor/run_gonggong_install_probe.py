@@ -7,6 +7,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from editor_test_isolation import macos_editor
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -14,8 +16,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     args = parser.parse_args()
-    with tempfile.TemporaryDirectory(prefix="gonggong-install-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="gonggong-install-", dir=Path(__file__).resolve().parent) as temporary:
         folder = Path(temporary)
+        isolated_editor = macos_editor(args.godot, folder / "isolated-editor")
         (folder / "project.godot").write_text('[application]\nconfig/name="Installation probe"\n', encoding="utf-8")
         shutil.copyfile(ROOT / "tests/editor/gonggong_install_probe.gd", folder / "probe.gd")
         env = dict(os.environ, GONGGONG_EXPECTED_WORKSPACE=str(ROOT))
@@ -27,7 +30,7 @@ def main():
             directory.mkdir()
             env[name] = str(directory)
         result = subprocess.run(
-            [str(args.godot.resolve()), "--headless", "--editor", "--path", str(folder), "--script", "res://probe.gd"],
+            [str(isolated_editor), "--headless", "--editor", "--path", str(folder), "--script", "res://probe.gd"],
             cwd=folder,
             env=env,
             capture_output=True,

@@ -13,6 +13,8 @@ import threading
 import time
 from pathlib import Path
 
+from editor_test_isolation import copy_editor
+
 ROOT = Path(__file__).resolve().parents[2]
 GH_FIXTURE = """import json,sys,re,os
 from pathlib import Path
@@ -100,17 +102,7 @@ def main():
             "--repo",
             str(root),
         ])
-        editor_folder = root / "isolated-editor"
-        editor_folder.mkdir()
-        isolated_editor = editor_folder / args.godot.name
-        cloned = (
-            subprocess.run(["cp", "-c", str(args.godot.resolve()), str(isolated_editor)], capture_output=True)
-            if sys.platform == "darwin"
-            else None
-        )
-        if cloned is None or cloned.returncode != 0:
-            shutil.copy2(args.godot, isolated_editor)
-        (editor_folder / "_sc_").touch()
+        isolated_editor = copy_editor(args.godot, root / "isolated-editor")
         project = root / "project"
         project.mkdir()
         # The editor changes cwd to the opened project before invoking Python.

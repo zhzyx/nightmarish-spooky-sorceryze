@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-813059999b584799cdd70a711496cbdf56b7619a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8b3cd5a846f14770788086547f6854cb84967015e1038f8d64bdf50cb289a119",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "delivery",
+    "detection_head": "3a8a6c38f4d700e8351f1793a2babea4739fd7a1",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/418",
+    "diagnosis": "Main advanced to 2bbef625 with Maliang context-menu-first changes in sample workbench and existing native fixture. No overlapping write paths. Root merged without conflicts and preserved upstream functionality. Rebuild and affected addon-free native editor runner validate integration before resubmission.",
+    "next_action": "Append integration evidence, stage corrections, rerun official gate and exact signed candidate CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:12:11.427286+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T08:13:52.792579+00:00",
+  "sha256": "751bde2a469092dce110810cd7bc9e4d953deb13e139d3698982a2114b3e2a0e"
+}

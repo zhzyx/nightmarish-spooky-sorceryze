@@ -11,6 +11,7 @@ import tempfile
 import threading
 from pathlib import Path
 
+from editor_test_isolation import macos_editor
 from run_requirements_intake import GH_FIXTURE
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -322,6 +323,7 @@ def main():
                 ],
                 check=True,
             )
+            isolated_editor = macos_editor(args.godot, root / "isolated-editor")
             project = root / "project"
             project.mkdir()
             if not guided:
@@ -355,7 +357,7 @@ def main():
                     "tool_calls": [call],
                     "restart": {
                         "from_executable": str(root / "old.exe"),
-                        "to_executable": str(args.godot.resolve()),
+                        "to_executable": str(isolated_editor),
                         "token": "abc12345",
                         "attempt": 1,
                         "tool_call_id": "pending-build",
@@ -382,7 +384,11 @@ def main():
             if not guided:
                 env["GONGGONG_GH"] = sys.executable
             if args.mode.startswith("recovery"):
-                settings_dir = Path(env["APPDATA"]) / "Godot"
+                settings_dir = (
+                    isolated_editor.parent / "editor_data"
+                    if sys.platform == "darwin"
+                    else Path(env["APPDATA"]) / "Godot"
+                )
                 settings_dir.mkdir(parents=True, exist_ok=True)
                 (settings_dir / "editor_settings-4.8.tres").write_text(
                     '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
@@ -397,7 +403,7 @@ def main():
                 env["GONGGONG_NODE"] = str(fixtures / "node")
             result = subprocess.run(
                 [
-                    str(args.godot.resolve()),
+                    str(isolated_editor),
                     "--headless",
                     "--editor",
                     "--path",

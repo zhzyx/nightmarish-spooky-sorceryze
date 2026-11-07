@@ -2416,7 +2416,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 			if (result.has("target_instance")) {
 				pending_editor_action["expected_target_instance"] = result["target_instance"];
 			}
-			if (auto_execute_commands->is_pressed()) {
+			if (auto_execute_commands->is_pressed() && !bool(result.get("manual_confirmation_required", false))) {
 				_confirm_action();
 			} else {
 				confirmation->set_title(TTR("Approve Editor Action"));
@@ -2867,6 +2867,176 @@ void AIChatDock::_restore_confirmation_parent() {
 	}
 }
 
+Dictionary AIChatDock::_chat_host_action(const Dictionary &p_args, bool p_confirmed) {
+	Dictionary result;
+	result["ok"] = false;
+	const String action = p_args.get("action", "");
+	if (!input || !backend || !model_picker || !agent_tabs) {
+		result["error"] = "chat_not_ready";
+		return result;
+	}
+	Dictionary state;
+	state["conversation_id"] = conversation_id;
+	state["generation"] = int64_t(session_generation);
+	state["active_agent"] = active_agent;
+	state["backend"] = backend->get_selected();
+	state["draft_hash"] = input->get_text().sha256_text();
+	state["endpoint_hash"] = endpoint->get_text().sha256_text();
+	state["queue_hash"] = JSON::stringify(queued_messages).sha256_text();
+	state["queue_count"] = queued_messages.size();
+	state["busy"] = busy;
+	int page_offset = 0, page_limit = 100;
+	if (action == "chat_state") {
+		const Variant offset = p_args.get("offset", 0), limit = p_args.get("limit", 100);
+		if (!offset.is_num() || !limit.is_num() || !Math::is_finite(double(offset)) || !Math::is_finite(double(limit)) || double(offset) < 0 || double(offset) > 100000 || double(offset) != Math::floor(double(offset)) || double(limit) < 1 || double(limit) > 100 || double(limit) != Math::floor(double(limit))) {
+			result["error"] = "invalid_chat_page";
+			return result;
+		}
+		page_offset = int(offset);
+		page_limit = int(limit);
+	}
+	Array sessions, models;
+	for (int i = page_offset; i < MIN(page_offset + page_limit, agent_tabs->get_tab_count()); i++) {
+		Dictionary entry;
+		entry["index"] = i;
+		entry["id"] = agent_tabs->get_tab_metadata(i);
+		entry["title"] = _redact(agent_tabs->get_tab_title(i)).left(120);
+		sessions.push_back(entry);
+	}
+	for (int i = page_offset; i < MIN(page_offset + page_limit, model_picker->get_item_count()); i++) {
+		Dictionary entry;
+		entry["index"] = i;
+		entry["id"] = _redact(String(model_picker->get_item_metadata(i))).left(256);
+		entry["disabled"] = model_picker->is_item_disabled(i);
+		models.push_back(entry);
+	}
+	state["sessions_hash"] = JSON::stringify(sessions).sha256_text();
+	state["models_hash"] = JSON::stringify(models).sha256_text();
+	state["model_index"] = model_picker->get_selected();
+	if (action == "chat_state") {
+		result = state.duplicate(true);
+		result["ok"] = true;
+		result["sessions"] = sessions;
+		result["models"] = models;
+		result["sessions_total"] = agent_tabs->get_tab_count();
+		result["models_total"] = model_picker->get_item_count();
+		result["offset"] = page_offset;
+		result["next_offset"] = page_offset + page_limit < MAX(agent_tabs->get_tab_count(), model_picker->get_item_count()) ? Variant(page_offset + page_limit) : Variant();
+		result["truncated"] = agent_tabs->get_tab_count() > 100 || model_picker->get_item_count() > 100 || input->get_text().utf8().length() > 8192;
+		if (input->get_text().utf8().length() <= 8192) {
+			result["draft"] = _redact(input->get_text());
+		}
+		return result;
+	}
+	if (action == "chat_stop") {
+		const Variant expected_value = p_args.get("value", Variant());
+		const Dictionary expected = expected_value.get_type() == Variant::DICTIONARY ? Dictionary(expected_value) : Dictionary();
+		const Variant generation = expected.get("generation", Variant());
+		if (expected.get("conversation_id", "") != conversation_id || !generation.is_num() || !Math::is_finite(double(generation)) || double(generation) < 0 || double(generation) > 9007199254740991.0 || Math::floor(double(generation)) != double(generation) || int64_t(generation) != int64_t(session_generation)) {
+			result["error"] = "chat_changed_since_observation";
+			return result;
+		}
+		_stop();
+		result["ok"] = true;
+		result["stop_requested"] = true;
+		return result;
+	}
+	if (busy || models_loading || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || daqian_chat_host.is_valid()) {
+		result["error"] = "editor_busy";
+		return result;
+	}
+	const bool known = action == "chat_compose" || action == "chat_send_request" || action == "chat_new_session" || action == "chat_select_session" || action == "chat_select_model" || action == "chat_set_backend" || action == "chat_set_endpoint" || action == "chat_show_connection" || action == "chat_login_request" || action == "chat_queue_remove" || action == "chat_queue_resume";
+	if (!known) {
+		result["error"] = "unknown_host_chat_action";
+		return result;
+	}
+	int index = -1;
+	if (action == "chat_select_session" || action == "chat_select_model" || action == "chat_queue_remove" || action == "chat_set_backend") {
+		const Variant raw = p_args.get(action == "chat_set_backend" ? "value" : "index", Variant());
+		const int count = action == "chat_select_session" ? agent_tabs->get_tab_count() : action == "chat_select_model" ? model_picker->get_item_count()
+				: action == "chat_queue_remove"																			? queued_messages.size()
+																														: backend->get_item_count();
+		if (!raw.is_num() || !Math::is_finite(double(raw)) || double(raw) != Math::floor(double(raw)) || double(raw) < 0 || double(raw) >= count || (action == "chat_select_model" && model_picker->is_item_disabled(int(raw)))) {
+			result["error"] = "invalid_chat_index";
+			return result;
+		}
+		index = int(raw);
+	}
+	const Variant value = p_args.get("value", Variant());
+	if (action == "chat_compose" && (value.get_type() != Variant::STRING || String(value).utf8().length() > 8192)) {
+		result["error"] = "invalid_input_value";
+		return result;
+	}
+	if (action == "chat_set_endpoint") {
+		const String url = value.get_type() == Variant::STRING ? String(value).strip_edges() : String();
+		if (url.length() > 2048 || url.contains("@") || url.contains("?") || url.contains("#") || url.contains("\n") || !(url.begins_with("https://") || url.begins_with("http://127.0.0.1:") || url.begins_with("http://localhost:"))) {
+			result["error"] = "invalid_chat_endpoint";
+			return result;
+		}
+	}
+	if ((action == "chat_send_request" && input->get_text().strip_edges().is_empty()) || (action == "chat_queue_resume" && queued_messages.is_empty()) || (action == "chat_new_session" && (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256)) || (action == "chat_login_request" && backend->get_selected() != 1 && backend->get_selected() != 2)) {
+		result["error"] = "chat_action_unavailable";
+		return result;
+	}
+	Dictionary proposal;
+	proposal["action"] = action;
+	if (index >= 0) {
+		proposal["index"] = index;
+		if (action == "chat_select_session") {
+			state["selected_target_hash"] = JSON::stringify(agent_tabs->get_tab_metadata(index)).sha256_text();
+			proposal["title"] = _redact(agent_tabs->get_tab_title(index)).left(120);
+		} else if (action == "chat_select_model") {
+			state["selected_target_hash"] = JSON::stringify(model_picker->get_item_metadata(index)).sha256_text();
+			proposal["model"] = _redact(String(model_picker->get_item_metadata(index))).left(256);
+		}
+	}
+	if (action == "chat_set_endpoint") {
+		proposal["endpoint"] = String(value).strip_edges();
+	}
+	result["old_value"] = state;
+	result["target_instance"] = int64_t(get_instance_id());
+	result["new_value"] = action == "chat_compose" ? value : Variant(proposal);
+	result["manual_confirmation_required"] = true;
+	if (!p_confirmed) {
+		result["confirmation_required"] = true;
+		return result;
+	}
+	if (p_args.get("expected_target_instance", Variant()).get_type() != Variant::INT || int64_t(p_args["expected_target_instance"]) != int64_t(get_instance_id()) || !p_args.has("expected_old_value") || p_args["expected_old_value"] != Variant(state)) {
+		result["error"] = "chat_changed_since_confirmation";
+		return result;
+	}
+	if (action == "chat_compose") {
+		input->set_text(value);
+	} else if (action == "chat_send_request") {
+		_send();
+		result["send_requested"] = true;
+	} else if (action == "chat_new_session") {
+		_add_agent();
+	} else if (action == "chat_select_session") {
+		_agent_selected(index);
+	} else if (action == "chat_select_model") {
+		model_picker->select(index);
+		_model_selected(index);
+	} else if (action == "chat_set_backend") {
+		backend->select(index);
+		_backend_changed(index);
+	} else if (action == "chat_set_endpoint") {
+		endpoint->set_text(String(value).strip_edges());
+		EditorSettings::get_singleton()->set_setting("ai_chat/endpoint", endpoint->get_text());
+		EditorSettings::save();
+	} else if (action == "chat_show_connection") {
+		_toggle_chat_settings(true);
+	} else if (action == "chat_login_request") {
+		_login_cli();
+	} else if (action == "chat_queue_remove") {
+		_remove_queued_message(index);
+	} else if (action == "chat_queue_resume") {
+		_resume_message_queue();
+	}
+	result["ok"] = true;
+	return result;
+}
+
 Dictionary AIChatDock::_editor_bridge_request(const Dictionary &p_envelope) {
 	Dictionary denied;
 	denied["ok"] = false;
@@ -2880,12 +3050,34 @@ Dictionary AIChatDock::_editor_bridge_request(const Dictionary &p_envelope) {
 		Dictionary args;
 		args["action"] = "find_targets";
 		args["query"] = p_envelope.get("query", "");
-		args["limit"] = 20;
+		args["limit"] = p_envelope.get("limit", 20);
+		args["offset"] = p_envelope.get("offset", 0);
 		Dictionary result = control->execute(args, true, false);
 		result["protocol_version"] = 1;
+		result["host_chat_actions"] = "External host only: chat_state(limit,offset); chat_compose(value), chat_send_request, chat_new_session, chat_select_session(index), chat_select_model(index), chat_set_backend(value), chat_set_endpoint(value), chat_show_connection, chat_login_request, chat_queue_remove(index), chat_queue_resume. State never exposes credentials. Mutations require a fresh explicit human confirmation even when auto execution is enabled. Auth/tool switches are unavailable.";
 		result["tools"] = AIChatEditorControl::tool_definitions();
 		result["routing"] = "Automatically route engine-operation intent via POST /v1/messages. Discover targets first; submit intent=engine_operation, request_id, source and operation. Wait for host confirmation and query /v1/requests; never treat awaiting_confirmation or planning_required as execution. Use a new request_id for a changed operation.";
 		return result;
+	}
+	if (kind == "events") {
+		return control->route_events(p_envelope.get("after", 0), p_envelope.get("limit", 100));
+	}
+	if (kind == "state") {
+		PackedStringArray secrets;
+		secrets.push_back(request_key);
+		secrets.push_back(api_key->get_text());
+		Dictionary result = control->get_state(secrets);
+		result["ok"] = true;
+		return result;
+	}
+	if (kind == "cancel") {
+		const String id = p_envelope.get("request_id", "");
+		const String source = "external." + String(p_envelope.get("source", "external-ai"));
+		// Only cancel the named external request; this cannot stop another chat or approve work.
+		if (!pending_external_editor_message.is_empty() && pending_external_editor_message.get("request_id", "") == id && pending_external_editor_message.get("source", "") == source) {
+			_cancel_external_editor_request("request_cancelled");
+		}
+		return control->route_status(id, source);
 	}
 	if (kind == "status") {
 		return control->route_status(p_envelope.get("request_id", ""), "external." + String(p_envelope.get("source", "external-ai")));
@@ -2898,13 +3090,18 @@ Dictionary AIChatDock::_editor_bridge_request(const Dictionary &p_envelope) {
 	message["source"] = "external." + String(message.get("source", "external-ai"));
 	const Dictionary previous = control->route_status(message.get("request_id", ""), message["source"]);
 	if (previous.get("error", "") != "unknown_request") {
-		return control->route_message(message, true, false);
+		return control->route_message(message, true, false, false, true);
+	}
+	const Variant operation_value = message.get("operation", Variant());
+	const Dictionary requested_operation = operation_value.get_type() == Variant::DICTIONARY ? Dictionary(operation_value) : Dictionary();
+	if (requested_operation.get("action", "") == "chat_state" || requested_operation.get("action", "") == "chat_stop") {
+		return control->route_message(message, true, false, false, true);
 	}
 	if (busy || !pending_external_editor_message.is_empty() || models_loading || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty()) {
 		denied["error"] = "editor_busy";
 		return denied;
 	}
-	Dictionary result = control->route_message(message, true, false);
+	Dictionary result = control->route_message(message, true, false, false, true);
 	if (result.get("confirmation_required", false)) {
 		pending_external_editor_message = message.duplicate(true);
 		pending_editor_action = message.duplicate(true);
@@ -2917,7 +3114,7 @@ Dictionary AIChatDock::_editor_bridge_request(const Dictionary &p_envelope) {
 		}
 		// External operations do not begin or finish a chat, work order or scheduled turn.
 		_set_busy(busy);
-		if (auto_execute_commands->is_pressed()) {
+		if (auto_execute_commands->is_pressed() && !bool(result.get("manual_confirmation_required", false))) {
 			_confirm_action();
 			result = control->route_status(message["request_id"], message["source"]);
 		} else {
@@ -2947,12 +3144,14 @@ void AIChatDock::_confirm_action() {
 		return;
 	}
 	if (!pending_external_editor_message.is_empty()) {
-		if (!allow_tools->is_pressed() || consultation_only->is_pressed()) {
-			_get_editor_control()->cancel_route(pending_external_editor_message, "permission_denied");
-		} else {
-			_get_editor_control()->route_message(pending_editor_action, true, false, true);
-		}
+		const Dictionary approved = pending_editor_action.duplicate(true);
+		// Clear the pending dialog before invoking the original host UI handlers.
 		_finish_external_editor_request();
+		if (!allow_tools->is_pressed() || consultation_only->is_pressed()) {
+			_get_editor_control()->cancel_route(approved, "permission_denied");
+		} else {
+			_get_editor_control()->route_message(approved, true, false, true, true);
+		}
 		return;
 	}
 	if (snapshot_restoring) {
@@ -5570,6 +5769,7 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 	if (!control) {
 		control = memnew(AIChatEditorControl);
 		editor_control_id = control->get_instance_id();
+		control->set_chat_host_handler(callable_mp(this, &AIChatDock::_chat_host_action));
 	}
 	return control;
 }
@@ -6082,6 +6282,7 @@ void fragment() {
 	build_row->add_child(engine_build_status);
 	engine_approval = memnew(ConfirmationDialog);
 	engine_approval->set_name("EngineBuildApproval");
+	engine_approval->set_meta("ai_control_exclude", true);
 	engine_approval->set_title(U"确认编译 / 重启引擎");
 	engine_approval->connect("confirmed", callable_mp(this, &AIChatDock::_confirm_engine_action));
 	engine_approval->connect("canceled", callable_mp(this, &AIChatDock::_reject_engine_action));

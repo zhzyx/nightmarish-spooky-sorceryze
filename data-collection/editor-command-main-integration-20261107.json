@@ -1,0 +1,48 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "source_base_commit": "2bbef6252de81196881ce9589e20b5debfc4da0a",
+  "observed_at": "2026-11-07T08:14:37.630513+00:00",
+  "upstream_pull_request": 418,
+  "overlapping_write_paths": [],
+  "integration": "Conflicts absent; upstream workbench/sample changes retained. No implementation changes after mechanical corrections.",
+  "build": {
+    "passed": true,
+    "binary_sha256": "6626fb3030e22b883ef37b8679b0230cf66e0af39917ad0960d0045543599f41"
+  },
+  "affected_acceptance": {
+    "passed": true,
+    "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference",
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "returncode": 0
+      }
+    ]
+  },
+  "prior_evidence": [
+    "data-collection/editor-command-coverage-validation-20261107.json",
+    "data-collection/editor-command-coverage-validation-correction-20261107.json"
+  ],
+  "remaining_issues": [
+    407,
+    408
+  ],
+  "overall_parent_complete": false
+}

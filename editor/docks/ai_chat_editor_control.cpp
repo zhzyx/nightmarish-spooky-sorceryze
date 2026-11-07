@@ -37,9 +37,13 @@
 #include "core/io/resource_loader.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
+#include "core/os/os.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_editor_registry.h"
+#include "editor/docks/ai_chat_editor_scene_actions.h"
+#include "editor/docks/ai_chat_editor_settings_actions.h"
 #include "editor/docks/ai_chat_tools.h"
+#include "editor/docks/editor_dock.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/scene_tree_dock.h"
 #include "editor/editor_data.h"
@@ -56,16 +60,63 @@
 #include "scene/gui/scroll_container.h"
 #include "scene/gui/tab_bar.h"
 #include "scene/gui/tab_container.h"
+#include "scene/main/scene_tree.h"
 #include "scene/main/timer.h"
 #include "scene/main/window.h"
 #include "scene/resources/packed_scene.h"
+
+#ifdef UNIX_ENABLED
+#include <signal.h>
+
+#include <cerrno>
+#endif
 
 namespace {
 const int MAX_WORKFLOW_BYTES = 16384;
 const int MAX_WORKFLOW_STEPS = 32;
 
+String routes_path() {
+	return ProjectSettings::get_singleton()->globalize_path("res://.godot/editor/ai_control_receipts.json");
+}
+
+bool receipt_owner_may_be_alive(int64_t p_pid) {
+#ifdef UNIX_ENABLED
+	if (p_pid <= 0 || p_pid > INT32_MAX) {
+		return true;
+	}
+	// OS::is_process_running can be child-only on Unix. Signal zero probes
+	// unrelated editor instances without sending a signal; unknown stays held.
+	if (::kill(static_cast<pid_t>(p_pid), 0) == 0) {
+		return true;
+	}
+	return errno != ESRCH;
+#else
+	// Without an authoritative non-child liveness probe, preserve the lock.
+	return true;
+#endif
+}
+
+uint64_t route_clock() {
+	return uint64_t(Time::get_singleton()->get_unix_time_from_system() * 1000);
+}
+
 String workflow_path() {
 	return ProjectSettings::get_singleton()->globalize_path("res://.godot/editor/ai_chat_guidance.json");
+}
+
+EditorDock *main_screen_dock(const String &p_name) {
+	EditorMainScreen *screen = EditorNode::get_editor_main_screen();
+	EditorDock *found = nullptr;
+	for (int i = 0; i < screen->get_tab_count(); i++) {
+		EditorDock *dock = screen->get_dock(i);
+		if (dock && (dock->get_name() == p_name || dock->get_display_title() == p_name || dock->get_effective_layout_key() == p_name)) {
+			if (found && found != dock) {
+				return nullptr;
+			}
+			found = dock;
+		}
+	}
+	return found;
 }
 
 bool preparation_action(const String &p_action) {
@@ -78,7 +129,7 @@ bool declarative_action(const Variant &p_value, bool p_writing) {
 	}
 	const Dictionary args = p_value;
 	for (const Variant &key : args.keys()) {
-		if (key != "action" && key != "target" && key != "line" && key != "column" && key != "value") {
+		if (key != "action" && key != "target" && key != "line" && key != "column" && key != "value" && key != "start" && key != "end" && key != "index" && key != "type" && key != "name" && key != "parent" && key != "property" && key != "nodes" && key != "value_type") {
 			return false;
 		}
 	}
@@ -86,7 +137,7 @@ bool declarative_action(const Variant &p_value, bool p_writing) {
 		return false;
 	}
 	const String action = args.get("action", "");
-	return preparation_action(action) || (p_writing && (action == "set_project_setting" || action == "clear_project_setting" || action == "set_text" || action == "set_value" || action == "select_option" || action == "press"));
+	return preparation_action(action) || (p_writing && (action == "set_project_setting" || action == "clear_project_setting" || action == "open_resource" || AIChatEditorRegistry::supported(action) || AIChatEditorSceneActions::supports(action) || AIChatEditorSettingsActions::supports(action)));
 }
 bool bounded_integer(const Variant &p_value, int64_t p_min, int64_t p_max) {
 	if (p_value.get_type() == Variant::INT) {
@@ -116,6 +167,7 @@ void AIChatEditorControl::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("register_target", "id", "control", "display_name", "owner_screen"), &AIChatEditorControl::register_target, DEFVAL(String()));
 	ClassDB::bind_method(D_METHOD("unregister_target", "id"), &AIChatEditorControl::unregister_target);
 	ClassDB::bind_method(D_METHOD("find_targets", "query", "limit"), &AIChatEditorControl::find_targets, DEFVAL(8));
+	ClassDB::bind_method(D_METHOD("find_targets_page", "query", "limit", "offset"), &AIChatEditorControl::find_targets_page, DEFVAL(20), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("describe_target", "id"), &AIChatEditorControl::describe_target);
 	ClassDB::bind_method(D_METHOD("guidance_status"), &AIChatEditorControl::guidance_status);
 }
@@ -191,6 +243,56 @@ Array AIChatEditorControl::find_targets(const String &p_query, int p_limit) cons
 	return result;
 }
 
+Dictionary AIChatEditorControl::find_targets_page(const String &p_query, int p_limit, int p_offset) const {
+	if (p_limit < 1 || p_limit > 20 || p_offset < 0 || p_offset > 8326 || p_query.length() > 128) {
+		return outcome(false, "invalid_target_page");
+	}
+	Array ids = target_ids();
+	for (const KeyValue<String, Target> &entry : targets) {
+		ids.push_back(entry.key);
+	}
+	ids.sort();
+	Array core;
+	const String query = p_query.strip_edges().to_lower();
+	const bool exact = ids.has(p_query);
+	for (const Variant &id : ids) {
+		Dictionary description = describe_target(id);
+		if (exact ? id == Variant(p_query) : query.is_empty() || String(id).contains(query) || String(description["display_name"]).to_lower().contains(query)) {
+			core.push_back(description);
+		}
+	}
+	Dictionary automatic = exact ? Dictionary() : registry->find_page(p_query, p_limit, MAX(0, p_offset - core.size()));
+	const int total = core.size() + int(automatic.get("total", 0));
+	Array page;
+	for (int i = p_offset; i < core.size() && page.size() < p_limit; i++) {
+		page.push_back(core[i]);
+	}
+	const Array found = automatic.get("targets", Array());
+	int page_bytes = JSON::stringify(page).utf8().length();
+	bool byte_truncated = automatic.get("byte_truncated", false);
+	for (int i = 0; i < found.size() && page.size() < p_limit; i++) {
+		const int bytes = JSON::stringify(found[i]).utf8().length();
+		if (!page.is_empty() && page_bytes + bytes > 30 * 1024) {
+			byte_truncated = true;
+			break;
+		}
+		page.push_back(found[i]);
+		page_bytes += bytes;
+	}
+	Dictionary result = outcome(true);
+	result["targets"] = page;
+	result["total"] = total;
+	result["offset"] = p_offset;
+	result["next_offset"] = p_offset + page.size() < total ? Variant(p_offset + page.size()) : Variant();
+	result["truncated"] = bool(automatic.get("truncated", false)) || byte_truncated;
+	result["has_more"] = p_offset + page.size() < total;
+	result["byte_truncated"] = byte_truncated;
+	result["scan_truncated"] = automatic.get("scan_truncated", false);
+	result["total_is_lower_bound"] = automatic.get("total_is_lower_bound", false);
+	result["registry"] = registry->status();
+	return result;
+}
+
 Dictionary AIChatEditorControl::guidance_status() const {
 	Dictionary result = outcome(true);
 	for (const String &key : { "status", "title", "current_step", "error", "last_observation", "restored" }) {
@@ -236,12 +338,18 @@ bool AIChatEditorControl::_valid_steps(const Array &p_steps) {
 		}
 		const Dictionary observe = step.get("observe", Dictionary());
 		for (const Variant &key : observe.keys()) {
-			if (key != "type" && key != "setting" && key != "path" && key != "value") {
+			if (key != "type" && key != "setting" && key != "path" && key != "value" && key != "request_id" && key != "source") {
 				return false;
 			}
 		}
 		const String type = observe.get("type", "manual");
-		if (type != "manual" && type != "control_pressed" && type != "target_visible" && type != "main_screen" && type != "selected_node" && type != "project_setting") {
+		if (type == "project_setting" && !AIChatEditorSettingsActions::allowed_project_key(observe.get("setting", ""))) {
+			return false;
+		}
+		if (type != "manual" && type != "control_pressed" && type != "target_visible" && type != "main_screen" && type != "selected_node" && type != "project_setting" && type != "field_value" && type != "window_closed" && type != "request_completed") {
+			return false;
+		}
+		if (type == "request_completed" && (observe.get("request_id", Variant()).get_type() != Variant::STRING || String(observe["request_id"]).is_empty() || String(observe["request_id"]).length() > 96 || observe.get("source", Variant()).get_type() != Variant::STRING || String(observe["source"]).is_empty() || String(observe["source"]).length() > 96)) {
 			return false;
 		}
 		for (const String &key : { "setting", "path", "value" }) {
@@ -366,6 +474,16 @@ void AIChatEditorControl::_activate_step(bool p_prepare) {
 			return;
 		}
 	}
+	if (type == "field_value" || type == "window_closed") {
+		Control *target = resolve_target(step["target"]);
+		const Dictionary description = describe_target(step["target"]);
+		if (!target || (type == "field_value" && (!description.has("value") || bool(description.get("value_omitted", false)))) || (type == "window_closed" && (!target->get_window() || target->get_window() == target->get_tree()->get_root() || !target->get_window()->is_visible()))) {
+			_set_guidance_status("failed", "observer_target_unavailable");
+			return;
+		}
+		workflow["observer_instance"] = int64_t(target->get_instance_id());
+		workflow["baseline"] = type == "field_value" ? description["value"] : Variant(int64_t(target->get_window()->get_instance_id()));
+	}
 	target_missing_since = 0;
 	_set_guidance_status("waiting_user");
 	Timer *timer = ObjectDB::get_instance<Timer>(guidance_timer);
@@ -397,8 +515,12 @@ void AIChatEditorControl::_advance(const String &p_observation) {
 		observation["value"] = get_state().get("main_screen", Variant());
 	} else if (p_observation == "selected_node") {
 		observation["path"] = observe.get("path", "");
-	} else if (p_observation == "control_pressed" || p_observation == "target_visible") {
+	} else if (p_observation == "control_pressed" || p_observation == "target_visible" || p_observation == "field_value" || p_observation == "window_closed") {
 		observation["target"] = step.get("target", "");
+	}
+	if (p_observation == "request_completed") {
+		observation["request_id"] = observe.get("request_id", "");
+		observation["source"] = observe.get("source", "");
 	}
 	workflow["last_observation"] = observation;
 	workflow["current_step"] = int(workflow.get("current_step", 0)) + 1;
@@ -425,6 +547,23 @@ void AIChatEditorControl::_poll_guidance() {
 	const Dictionary step = steps[int(workflow["current_step"])];
 	const String id = step["target"];
 	Control *target = resolve_target(id);
+	const Dictionary observe = step.get("observe", Dictionary());
+	const String type = observe.get("type", "manual");
+	if (type == "request_completed") {
+		const Dictionary request = route_status(observe["request_id"], observe["source"]);
+		if (bool(request.get("ok", false)) && request.get("routing_status", "") == "completed") {
+			_advance(type);
+		}
+		return;
+	}
+	if (type == "window_closed") {
+		if (!target || int64_t(target->get_instance_id()) != int64_t(workflow.get("observer_instance", 0)) || !target->get_window() || int64_t(target->get_window()->get_instance_id()) != int64_t(workflow.get("baseline", 0))) {
+			_set_guidance_status("failed", "observer_target_changed");
+		} else if (!target->get_window()->is_visible()) {
+			_advance(type);
+		}
+		return;
+	}
 	if (!target || !target->is_visible_in_tree() || !target->get_window()->is_visible()) {
 		_disconnect_observer();
 		if (target_missing_since == 0) {
@@ -444,8 +583,6 @@ void AIChatEditorControl::_poll_guidance() {
 		highlight["hint"] = step.get("message", "");
 		execute(highlight, true, false);
 	}
-	const Dictionary observe = step.get("observe", Dictionary());
-	const String type = observe.get("type", "manual");
 	const Variant baseline = workflow.get("baseline", Variant());
 	bool complete = false;
 	if (type == "control_pressed") {
@@ -457,6 +594,14 @@ void AIChatEditorControl::_poll_guidance() {
 			observed_button = button->get_instance_id();
 			button->connect("pressed", callable_mp(this, &AIChatEditorControl::_target_pressed));
 		}
+	} else if (type == "field_value") {
+		const Dictionary description = describe_target(id);
+		if (int64_t(target->get_instance_id()) != int64_t(workflow.get("observer_instance", 0)) || !description.has("value") || bool(description.get("value_omitted", false))) {
+			_set_guidance_status("failed", "observer_target_changed");
+			return;
+		}
+		const Variant value = description["value"];
+		complete = value != baseline && (!observe.has("value") || value == observe["value"]);
 	} else if (type == "target_visible") {
 		complete = baseline.get_type() == Variant::BOOL && !bool(baseline);
 	} else if (type == "project_setting") {
@@ -481,10 +626,11 @@ void AIChatEditorControl::_poll_guidance() {
 Dictionary AIChatEditorControl::_guidance_action(const Dictionary &p_args, bool p_confirmed) {
 	const String action = p_args["action"];
 	if (action == "find_targets") {
-		Dictionary result = outcome(true);
-		result["targets"] = find_targets(p_args.get("query", ""), p_args.get("limit", 8));
-		result["registry"] = registry->status();
-		return result;
+		const Variant limit = p_args.get("limit", 8), offset = p_args.get("offset", 0), query = p_args.get("query", "");
+		if (!bounded_integer(limit, 1, 20) || !bounded_integer(offset, 0, 8326) || query.get_type() != Variant::STRING) {
+			return outcome(false, "invalid_target_page");
+		}
+		return find_targets_page(query, int(limit), int(offset));
 	}
 	if (action == "describe_target") {
 		Dictionary result = describe_target(p_args.get("target", ""));
@@ -570,9 +716,218 @@ bool AIChatEditorControl::handles(const String &p_name) {
 	return p_name == "get_editor_state" || p_name == "editor_action" || p_name == "route_engine_message";
 }
 
+bool AIChatEditorControl::_acquire_routes_lock() {
+	if (!EditorNode::get_singleton()) {
+		return true;
+	}
+	const String path = routes_path(), lock = path + ".lock";
+	Ref<DirAccess> directory = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
+	String parent = ProjectSettings::get_singleton()->get_resource_path();
+	for (const String &part : { String(".godot"), String("editor") }) {
+		parent = parent.path_join(part);
+		if (directory->is_link(parent)) {
+			return false;
+		}
+	}
+	if (directory->is_link(path) || directory->is_link(path + ".pending") || directory->is_link(lock) || DirAccess::make_dir_recursive_absolute(parent) != OK) {
+		return false;
+	}
+	// Serialize observation + stale-lock replacement. Never reclaim this short
+	// acquisition lock automatically: an interrupted acquisition needs recovery.
+	const String arbitration = path + ".acquiring";
+	if (directory->is_link(arbitration) || DirAccess::make_dir_absolute(arbitration) != OK) {
+		return false;
+	}
+	struct AcquisitionGuard {
+		String path;
+		~AcquisitionGuard() { DirAccess::remove_absolute(path); }
+	} acquisition_guard{ arbitration };
+	if (DirAccess::dir_exists_absolute(lock)) {
+		const String previous = FileAccess::get_file_as_string(lock.path_join("owner"));
+		if (!previous.is_valid_int() || previous.to_int() <= 0 || receipt_owner_may_be_alive(previous.to_int())) {
+			return false;
+		}
+		// Reclaim only after the recorded OS process has ended, never by elapsed time.
+		const String stale = lock + ".stale-" + itos(OS::get_singleton()->get_process_id());
+		if (DirAccess::rename_absolute(lock, stale) != OK) {
+			return false;
+		}
+		DirAccess::remove_absolute(stale.path_join("owner"));
+		DirAccess::remove_absolute(stale);
+	}
+	if (DirAccess::make_dir_absolute(lock) != OK) {
+		return false;
+	}
+	Ref<FileAccess> owner = FileAccess::open(lock.path_join("owner"), FileAccess::WRITE_READ);
+	if (owner.is_null() || !owner->store_string(itos(OS::get_singleton()->get_process_id())) || owner->get_error() != OK) {
+		return false;
+	}
+	owner->close();
+	routes_lock_owned = true;
+	return true;
+}
+
+bool AIChatEditorControl::_persist_routes() const {
+	// Unit-only instances have no editor/project lifecycle and never touch user files.
+	if (!EditorNode::get_singleton()) {
+		return true;
+	}
+	Array records;
+	for (const KeyValue<String, RoutedRequest> &entry : routed_requests) {
+		Dictionary record, summary;
+		record["identity"] = entry.key;
+		record["fingerprint"] = entry.value.fingerprint;
+		record["updated"] = entry.value.updated;
+		// Persist outcome metadata, never composer text, prior values or credentials.
+		for (const String &field : { "ok", "error", "routing_status", "routed", "route", "request_id", "source", "idempotency_window_seconds" }) {
+			if (entry.value.result.has(field)) {
+				summary[field] = entry.value.result[field];
+			}
+		}
+		record["result"] = summary;
+		records.push_back(record);
+	}
+	Dictionary document;
+	document["version"] = 1;
+	document["records"] = records;
+	const String contents = JSON::stringify(document);
+	if (records.size() > 256 || contents.utf8().length() > 256 * 1024) {
+		return false;
+	}
+	if (!routes_lock_owned) {
+		return false;
+	}
+	const String path = routes_path(), pending = path + ".pending";
+	if (DirAccess::make_dir_recursive_absolute(path.get_base_dir()) != OK) {
+		return false;
+	}
+	Ref<FileAccess> file = FileAccess::open(pending, FileAccess::WRITE);
+	if (file.is_null()) {
+		return false;
+	}
+#ifndef WINDOWS_ENABLED
+	if (FileAccess::set_unix_permissions(file->get_path_absolute(), FileAccess::UNIX_READ_OWNER | FileAccess::UNIX_WRITE_OWNER) != OK) {
+		file->close();
+		return false;
+	}
+#endif
+	const bool stored = file->store_string(contents) && file->get_error() == OK;
+	file->close();
+	if (!stored || FileAccess::get_sha256(pending) != contents.sha256_text()) {
+		return false;
+	}
+	return DirAccess::rename_absolute(pending, path) == OK;
+}
+
+void AIChatEditorControl::_restore_routes() {
+	if (!EditorNode::get_singleton() || !FileAccess::exists(routes_path())) {
+		return;
+	}
+	Ref<FileAccess> file = FileAccess::open(routes_path(), FileAccess::READ);
+	if (file.is_null() || file->get_length() > 256 * 1024) {
+		routes_store_healthy = false;
+		routes_store_error = "record_file_unreadable_or_large";
+		return;
+	}
+	const Variant parsed = JSON::parse_string(file->get_as_text());
+	if (parsed.get_type() != Variant::DICTIONARY || !bounded_integer(Dictionary(parsed).get("version", Variant()), 1, 1) || Dictionary(parsed).get("records", Variant()).get_type() != Variant::ARRAY || Array(Dictionary(parsed)["records"]).size() > 256) {
+		routes_store_healthy = false;
+		routes_store_error = "invalid_record_document";
+		return;
+	}
+	const Array records = Dictionary(parsed)["records"];
+	HashMap<String, RoutedRequest> restored;
+	for (const Variant &value : records) {
+		if (value.get_type() != Variant::DICTIONARY) {
+			routes_store_healthy = false;
+			routes_store_error = "invalid_record_entry";
+			return;
+		}
+		const Dictionary record = value;
+		const String identity = record.get("identity", ""), fingerprint = record.get("fingerprint", "");
+		if (identity.is_empty() || identity.length() > 193 || restored.has(identity) || fingerprint.length() != 64 || !fingerprint.is_valid_hex_number(false) || !bounded_integer(record.get("updated", Variant()), 0, 9007199254740991LL) || record.get("result", Variant()).get_type() != Variant::DICTIONARY) {
+			routes_store_healthy = false;
+			routes_store_error = "invalid_record_fields";
+			return;
+		}
+		Dictionary result = Dictionary(record["result"]).duplicate(true);
+		const String id = result.get("request_id", ""), source = result.get("source", "");
+		if (id.is_empty() || source.is_empty() || identity != source + ":" + id) {
+			routes_store_healthy = false;
+			routes_store_error = "invalid_record_identity";
+			return;
+		}
+		const uint64_t updated = int64_t(record["updated"]);
+		if (route_clock() > updated && route_clock() - updated > 900000) {
+			continue;
+		}
+		const String status = result.get("routing_status", "");
+		if (status == "awaiting_confirmation") {
+			result["ok"] = false;
+			result["routing_status"] = "cancelled";
+			result["error"] = "interrupted_by_editor_restart";
+		} else if (status == "execution_interrupted") {
+			// The effect may have happened before the final receipt reached disk.
+			// Preserve uncertainty and never replay or claim it was cancelled.
+			result["ok"] = false;
+			result["routing_status"] = "execution_unknown";
+			result["error"] = "execution_result_unknown_after_restart";
+		}
+		result["receipt_restored"] = true;
+		result["result_details_omitted"] = true;
+		restored[identity] = { fingerprint, result, updated };
+	}
+	routed_requests = restored;
+	routes_store_healthy = _persist_routes();
+}
+
+void AIChatEditorControl::_publish_route_event(const Dictionary &p_result) {
+	Dictionary event;
+	event["cursor"] = int64_t(++route_event_sequence);
+	for (const String &field : { "ok", "error", "routing_status", "request_id", "source" }) {
+		if (p_result.has(field)) {
+			event[field] = p_result[field];
+		}
+	}
+	route_event_log.push_back(event);
+	if (route_event_log.size() > 256) {
+		route_event_log.remove_at(0);
+	}
+}
+
+Dictionary AIChatEditorControl::route_events(int64_t p_after, int p_limit) const {
+	if (p_after < 0 || uint64_t(p_after) > route_event_sequence || p_limit < 1 || p_limit > 100) {
+		return outcome(false, "invalid_event_cursor");
+	}
+	Dictionary result = outcome(true);
+	Array events;
+	int64_t next = p_after;
+	for (const Variant &value : route_event_log) {
+		const Dictionary event = value;
+		if (int64_t(event["cursor"]) > p_after && events.size() < p_limit) {
+			events.push_back(event);
+			next = event["cursor"];
+		}
+	}
+	result["events"] = events;
+	result["next_cursor"] = next;
+	result["latest_cursor"] = int64_t(route_event_sequence);
+	result["gap"] = !route_event_log.is_empty() && p_after < int64_t(Dictionary(route_event_log[0])["cursor"]) - 1;
+	result["has_more"] = uint64_t(next) < route_event_sequence;
+	result["transport"] = "bounded_poll";
+	return result;
+}
+
 Dictionary AIChatEditorControl::route_status(const String &p_request_id, const String &p_source) const {
 	const RoutedRequest *request = routed_requests.getptr(p_source + ":" + p_request_id);
-	return request ? request->result.duplicate(true) : outcome(false, "unknown_request");
+	if (request) {
+		return request->result.duplicate(true);
+	}
+	Dictionary result = outcome(false, routes_store_healthy ? "unknown_request" : "receipt_store_unavailable");
+	if (!routes_store_healthy) {
+		result["reason"] = routes_store_error;
+	}
+	return result;
 }
 
 Dictionary AIChatEditorControl::cancel_route(const Dictionary &p_message, const String &p_reason) {
@@ -580,14 +935,17 @@ Dictionary AIChatEditorControl::cancel_route(const Dictionary &p_message, const 
 	Dictionary result = outcome(false, p_reason);
 	result["routing_status"] = "cancelled";
 	result["request_id"] = p_message.get("request_id", "");
+	result["source"] = p_message.get("source", "internal-ai");
 	if (RoutedRequest *request = routed_requests.getptr(key)) {
 		request->result = result;
-		request->updated = Time::get_singleton()->get_ticks_msec();
+		request->updated = route_clock();
+		_publish_route_event(result);
+		routes_store_healthy = _persist_routes();
 	}
 	return result;
 }
 
-Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed) {
+Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context) {
 	if (!p_tools_allowed || p_consultation) {
 		return outcome(false, "permission_denied");
 	}
@@ -622,10 +980,13 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 	normalized["source"] = source;
 	const String key = String(source) + ":" + String(request_id);
 	const String fingerprint = JSON::stringify(normalized).sha256_text();
-	const uint64_t now = Time::get_singleton()->get_ticks_msec();
+	const uint64_t now = route_clock();
+	if (!routes_store_healthy) {
+		return outcome(false, "receipt_store_unavailable");
+	}
 	Vector<String> expired;
 	for (const KeyValue<String, RoutedRequest> &entry : routed_requests) {
-		if (now - entry.value.updated > 15 * 60 * 1000 && entry.value.result.get("routing_status", "") != "awaiting_confirmation") {
+		if (now > entry.value.updated && now - entry.value.updated > 15 * 60 * 1000 && entry.value.result.get("routing_status", "") != "awaiting_confirmation") {
 			expired.push_back(entry.key);
 		}
 	}
@@ -643,6 +1004,19 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 		}
 	} else if (p_confirmed || routed_requests.size() >= 256) {
 		return outcome(false, p_confirmed ? "unknown_confirmation" : "route_capacity_exceeded");
+	}
+	if ((!p_message.has("operation") && (p_message.get("request", Variant()).get_type() != Variant::STRING || String(p_message["request"]).length() > 8192)) || (p_message.has("operation") && p_message["operation"].get_type() != Variant::DICTIONARY)) {
+		return outcome(false, "invalid_engine_operation");
+	}
+	// Durable uncertainty precedes every effect. A crash never replays an approval.
+	Dictionary interrupted = outcome(false, "execution_result_unknown");
+	interrupted["routing_status"] = "execution_interrupted";
+	interrupted["request_id"] = request_id;
+	interrupted["source"] = source;
+	routed_requests[key] = { fingerprint, interrupted, now };
+	if (!_persist_routes()) {
+		routes_store_healthy = false;
+		return outcome(false, "receipt_store_unavailable");
 	}
 	Dictionary result;
 	if (!p_message.has("operation")) {
@@ -664,7 +1038,7 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 				operation[field] = p_message[field];
 			}
 		}
-		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed);
+		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed, p_host_context);
 		result["routing_status"] = bool(result.get("confirmation_required", false)) ? "awaiting_confirmation" : bool(result.get("ok", false)) ? "completed"
 																																			  : "failed";
 	}
@@ -674,6 +1048,14 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 	result["source"] = source;
 	result["idempotency_window_seconds"] = 900;
 	routed_requests[key] = { fingerprint, result.duplicate(true), now };
+	_publish_route_event(result);
+	if (!_persist_routes()) {
+		routes_store_healthy = false;
+		result["receipt_persistence_failed"] = true;
+		routes_store_error = "receipt_write_failed";
+		routed_requests[key].result["receipt_persistence_failed"] = true;
+	}
+
 	return result;
 }
 
@@ -858,7 +1240,7 @@ Dictionary AIChatEditorControl::get_state(const PackedStringArray &p_secrets) co
 	return bound_state(result, p_secrets);
 }
 
-Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed) {
+Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context) {
 	if (!p_tools_allowed || p_consultation) {
 		return outcome(false, "permission_denied");
 	}
@@ -866,6 +1248,13 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return outcome(false, "invalid_action");
 	}
 	const String action = p_args["action"];
+	if (action.begins_with("chat_")) {
+		if (!p_host_context || !chat_host_handler.is_valid()) {
+			return outcome(false, "host_only_action");
+		}
+		const Variant result = chat_host_handler.call(p_args, p_confirmed);
+		return result.get_type() == Variant::DICTIONARY ? Dictionary(result) : outcome(false, "host_action_unavailable");
+	}
 	if (action == "find_targets" || action == "describe_target" || action == "start_guidance" || action.begins_with("guidance_")) {
 		return _guidance_action(p_args, p_confirmed);
 	}
@@ -874,6 +1263,12 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return outcome(false, "invalid_target");
 	}
 	const String target = target_value;
+	if (AIChatEditorSceneActions::supports(action)) {
+		return AIChatEditorSceneActions::perform(p_args, p_confirmed);
+	}
+	if (AIChatEditorSettingsActions::supports(action)) {
+		return AIChatEditorSettingsActions::perform(p_args, p_confirmed);
+	}
 	if (AIChatEditorRegistry::supported(action)) {
 		return registry->perform(resolve_target(target), target, p_args, p_confirmed);
 	}
@@ -895,6 +1290,79 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		if (!found) {
 			return outcome(false, "unknown_settings_section");
 		}
+	}
+	if (action == "inspect_ui") {
+		const Variant limit = p_args.get("limit", 20), offset = p_args.get("offset", 0);
+		if (!bounded_integer(limit, 1, 100) || !bounded_integer(offset, 0, 50000)) {
+			return outcome(false, "invalid_ui_page");
+		}
+		return registry->inspect_tree(int(limit), int(offset));
+	}
+	if (action == "inspect_scene") {
+		const Variant limit = p_args.get("limit", 20), offset = p_args.get("offset", 0);
+		if (!bounded_integer(limit, 1, 100) || !bounded_integer(offset, 0, 50000)) {
+			return outcome(false, "invalid_scene_page");
+		}
+		Node *root = editor->get_edited_scene_root();
+		Dictionary result = outcome(true);
+		Array nodes;
+		LocalVector<Node *> stack;
+		if (root) {
+			stack.push_back(root);
+		}
+		int visited = 0, consumed = 0, omitted = 0, bytes = 0;
+		while (!stack.is_empty() && visited < 50000) {
+			Node *node = stack[stack.size() - 1];
+			stack.remove_at(stack.size() - 1);
+			const int index = visited++;
+			if (index >= int(offset) && consumed < int(limit)) {
+				Dictionary entry;
+				const String path = String(root->get_path_to(node));
+				entry["index"] = index;
+				entry["path"] = path;
+				entry["class"] = node->get_class();
+				entry["instance"] = int64_t(node->get_instance_id());
+				const int size = JSON::stringify(entry).utf8().length();
+				if (path.length() > 1024 || bytes + size > 14 * 1024) {
+					omitted++;
+				} else {
+					nodes.push_back(entry);
+					bytes += size;
+				}
+				consumed++;
+			}
+			for (int i = node->get_child_count() - 1; i >= 0; i--) {
+				stack.push_back(node->get_child(i));
+			}
+		}
+		result["nodes"] = nodes;
+		result["offset"] = offset;
+		result["total"] = visited;
+		result["next_offset"] = int(offset) + consumed < visited ? Variant(int(offset) + consumed) : Variant();
+		result["truncated"] = !stack.is_empty() || omitted > 0;
+		result["total_is_lower_bound"] = !stack.is_empty();
+		result["omitted_items"] = omitted;
+		return result;
+	}
+	if (action == "list_main_screens") {
+		Dictionary result = outcome(true);
+		Array screens;
+		EditorMainScreen *main_screen = EditorNode::get_editor_main_screen();
+		for (int i = 0; i < main_screen->get_tab_count(); i++) {
+			EditorDock *dock = main_screen->get_dock(i);
+			if (!dock) {
+				continue;
+			}
+			Dictionary entry;
+			entry["name"] = dock->get_name();
+			entry["title"] = dock->get_display_title();
+			entry["layout_key"] = dock->get_effective_layout_key();
+			entry["selected"] = main_screen->get_current_tab() == i;
+			entry["hidden"] = main_screen->is_tab_hidden(i);
+			screens.push_back(entry);
+		}
+		result["main_screens"] = screens;
+		return result;
 	}
 	if (action == "clear_highlight") {
 		clear_highlight();
@@ -947,10 +1415,10 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		EditorSettingsDialog::get_singleton()->popup_edit_settings();
 		EditorSettingsDialog::get_singleton()->show_general_section(target.to_lower());
 	} else if (action == "main_screen") {
-		if ((target != "2D" && target != "3D" && target != "Script" && target != "AssetLib" && target != "AI Chat") || !EditorNode::get_editor_main_screen()->get_dock_by_name(target)) {
+		if (target.is_empty() || !main_screen_dock(target)) {
 			return outcome(false, "unknown_main_screen");
 		}
-		editor->set_main_screen_editor(target);
+		main_screen_dock(target)->make_visible();
 	} else if (action == "select_node") {
 		Node *root = editor->get_edited_scene_root();
 		NodePath path(target);
@@ -964,7 +1432,7 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		editor->get_selection()->clear();
 		editor->get_selection()->add_node(node);
 		editor->edit_node(node);
-	} else if (action == "open_scene" || action == "open_script") {
+	} else if (action == "open_scene" || action == "open_script" || action == "open_resource") {
 		if (!valid_project_path(target)) {
 			return outcome(false, "invalid_project_path");
 		}
@@ -976,6 +1444,25 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 				return outcome(false, "linked_project_path");
 			}
 		}
+		if (action == "open_resource") {
+			if (!FileAccess::exists(target)) {
+				return outcome(false, "resource_load_failed");
+			}
+			Dictionary state;
+			state["path"] = target;
+			state["sha256"] = FileAccess::get_sha256(target);
+			Dictionary preview = outcome(false);
+			preview["old_value"] = state;
+			preview["new_value"] = "open_resource";
+			preview["target_instance"] = int64_t(editor->get_instance_id());
+			if (!p_confirmed) {
+				preview["confirmation_required"] = true;
+				return preview;
+			}
+			if (p_args.get("expected_target_instance", Variant()).get_type() != Variant::INT || int64_t(p_args["expected_target_instance"]) != int64_t(editor->get_instance_id()) || !p_args.has("expected_old_value") || p_args["expected_old_value"] != Variant(state)) {
+				return outcome(false, "resource_changed_since_confirmation");
+			}
+		}
 		Ref<Resource> resource = ResourceLoader::load(target);
 		if (action == "open_scene") {
 			Ref<PackedScene> scene = resource;
@@ -985,6 +1472,11 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 			if (EditorNode::get_singleton()->is_changing_scene() || EditorNode::get_singleton()->open_scene(target) != OK) {
 				return outcome(false, "scene_open_failed");
 			}
+		} else if (action == "open_resource") {
+			if (resource.is_null()) {
+				return outcome(false, "resource_load_failed");
+			}
+			editor->edit_resource(resource);
 		} else {
 			Ref<Script> script = resource;
 			Variant line = p_args.get("line", 1), column = p_args.get("column", 1);
@@ -997,6 +1489,9 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		}
 	} else if (action == "set_project_setting" || action == "clear_project_setting") {
 		ProjectSettings *settings = ProjectSettings::get_singleton();
+		if (!AIChatEditorSettingsActions::allowed_project_key(target)) {
+			return outcome(false, "protected_setting");
+		}
 		if (!settings->has_setting(target)) {
 			return outcome(false, "unknown_setting");
 		}
@@ -1045,7 +1540,7 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 	result["target"] = action == "project_settings" || action == "editor_settings" ? action : target;
 	Control *visible_target = resolve_target(result["target"]);
 	if (action == "main_screen") {
-		visible_target = EditorNode::get_editor_main_screen()->get_dock_by_name(target);
+		visible_target = main_screen_dock(target);
 	}
 	if (visible_target) {
 		result["visible"] = visible_target->is_visible_in_tree() && visible_target->get_window()->is_visible();
@@ -1074,16 +1569,22 @@ Array AIChatEditorControl::tool_definitions() {
 		Dictionary properties, parameters, function, tool;
 		Array required;
 		if (name == "editor_action") {
-			for (const String &key : { String("action"), String("target"), String("hint"), String("line"), String("column"), String("value"), String("query"), String("title"), String("limit"), String("steps") }) {
+			for (const String &key : { String("action"), String("target"), String("hint"), String("line"), String("column"), String("value"), String("query"), String("title"), String("limit"), String("offset"), String("index"), String("start"), String("end"), String("value_type"), String("type"), String("name"), String("parent"), String("property"), String("nodes"), String("steps") }) {
 				Dictionary schema;
-				if (key == "steps") {
+				if (key == "nodes") {
+					schema["type"] = "array";
+					Dictionary item;
+					item["type"] = "string";
+					schema["items"] = item;
+					schema["maxItems"] = 100;
+				} else if (key == "steps") {
 					schema["type"] = "array";
 					Dictionary step;
 					step["type"] = "object";
 					schema["items"] = step;
 					schema["maxItems"] = MAX_WORKFLOW_STEPS;
 				} else if (key != "value") {
-					schema["type"] = key == "line" || key == "column" || key == "limit" ? "integer" : "string";
+					schema["type"] = key == "line" || key == "column" || key == "limit" || key == "offset" || key == "index" || key == "start" || key == "end" ? "integer" : "string";
 				}
 				properties[key] = schema;
 			}
@@ -1094,7 +1595,7 @@ Array AIChatEditorControl::tool_definitions() {
 		parameters["required"] = required;
 		parameters["additionalProperties"] = false;
 		function["name"] = name;
-		function["description"] = name == "get_editor_state" ? "Read bounded editor state without changing it." : "Semantic editor action. Actions: project_settings, editor_settings, main_screen, open_scene, open_script (1-based line/column), select_node, set_project_setting (value), clear_project_setting, reveal_target (expand ancestors, select tabs, scroll), highlight (optional hint), clear_highlight; find_targets(query,limit), describe_target(target); start_guidance(title,steps) creates a preview, then guidance_start, guidance_next, guidance_previous, guidance_relocate, guidance_execute, guidance_cancel, guidance_status. Steps: target, message, optional non-writing prepare action, optional execute action, observe object with type manual/control_pressed/target_visible/main_screen(value)/selected_node(path)/project_setting(setting,value). Core IDs: scene_tree, inspector, filesystem, main_screen_tabs, project_settings, editor_settings; discover plugin IDs first. Writes including guidance_execute require host confirmation. Never claim completion on failure.";
+		function["description"] = name == "get_editor_state" ? "Read bounded editor state without changing it." : "Semantic editor action. Actions: project_settings, editor_settings, main_screen (discovered dock name), list_main_screens, open_scene, open_resource, open_script (1-based line/column), select_node, set_project_setting (value), clear_project_setting, reveal_target (expand ancestors, select tabs, scroll), highlight (optional hint), clear_highlight; find_targets(query,limit,offset) returns total/next_offset and scan truncation, describe_target(target); start_guidance(title,steps) creates a preview, then guidance_start, guidance_next, guidance_previous, guidance_relocate, guidance_execute, guidance_cancel, guidance_status. Steps: target, message, optional non-writing prepare action, optional execute action, observe object with type manual/control_pressed/target_visible/main_screen(value)/selected_node(path)/project_setting(setting,value)/field_value(value)/window_closed/request_completed(request_id,source). Core IDs: scene_tree, inspector, filesystem, main_screen_tabs, project_settings, editor_settings; discover plugin IDs first. Discover target actions; read_text, read_items(limit,offset), select_text_range(start,end), append_text(value), replace_text_range(start,end,value) use Unicode character offsets, submit_text, undo_text; select_tree_item/expand_tree_item(index), select_item/select_tab(index), set_color(value=[r,g,b,a]), scroll_to(value=[x,y]). inspect_scene/inspect_ui(limit,offset) read bounded scene/UI trees with explicit omission markers. get_project_setting/get_editor_setting(target), create_project_setting(target,value_type,value), update_project_setting(target,value), set_editor_setting/reset_editor_setting(target,value); EditorSettings limited to appearance preferences, no auth or tool policy. Scene actions: scene_create_node(target parent,type,name), scene_delete_node(target leaf), scene_rename_node(target,name), scene_reparent_node(target leaf,parent), scene_select_nodes(nodes), scene_set_property(target,property,value), run_project, run_scene(target resource path), stop_project; run always requires explicit human confirmation and returns only run_requested. Scripted/inherited/instanced scene writes and resource/signal assignment are currently refused. Writes including guidance_execute require host confirmation. Never claim completion on failure.";
 		function["parameters"] = parameters;
 		tool["type"] = "function";
 		tool["function"] = function;
@@ -1134,9 +1635,23 @@ AIChatEditorControl::AIChatEditorControl() {
 	set_z_index(4095);
 	clear_highlight();
 	_restore_guidance();
+	routes_store_healthy = _acquire_routes_lock();
+	if (!routes_store_healthy) {
+		routes_store_error = "receipt_store_locked_or_linked";
+	}
+	if (routes_store_healthy) {
+		_restore_routes();
+	}
 }
 
 AIChatEditorControl::~AIChatEditorControl() {
+	if (routes_lock_owned) {
+		const String lock = routes_path() + ".lock";
+		if (FileAccess::get_file_as_string(lock.path_join("owner")) == itos(OS::get_singleton()->get_process_id())) {
+			DirAccess::remove_absolute(lock.path_join("owner"));
+			DirAccess::remove_absolute(lock);
+		}
+	}
 	memdelete(registry);
 	_disconnect_observer();
 	if (Timer *timer = ObjectDB::get_instance<Timer>(guidance_timer)) {

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9878f622b03b9a6d9a1b1a7a9cc6f75eb58a1282",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "91ec7fa8d79d3110c86c74b0ea4cfb964354f90a79fe4afaf48e749755a07eff",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "delivery",
+    "detection_head": "1d080f6554668b720347bfcd222e527a9a7541f3",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "diagnosis": "GitHub read failed before candidate commit or publication. Current authenticated user and main readback succeed. No unknown mutation was retried; private host wrapper bounds transient read-only retries and leaves all mutations single-attempt.",
+    "next_action": "Stage actual assessment evidence and retry the same submission, preserving all prior failure records.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:02:29.621467+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T08:04:05.265715+00:00",
+  "sha256": "0b230e8323ebcb2069a84dbbdf48d0fa5188f2b9ea07d8b6b5123d43a0a01978"
+}

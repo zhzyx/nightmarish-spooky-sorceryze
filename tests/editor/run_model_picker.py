@@ -3,12 +3,13 @@
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 p = argparse.ArgumentParser()
@@ -38,10 +39,7 @@ server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 with tempfile.TemporaryDirectory(prefix="model-picker-") as folder:
     root = Path(folder)
-    (root / "bin").mkdir()
-    editor = root / "bin/godot"
-    shutil.copy2(a.godot, editor)
-    (root / "bin/_sc_").touch()
+    editor = copy_editor(a.godot, root / "bin")
     (root / "SConstruct").touch()
     (root / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
     project = root / "project"

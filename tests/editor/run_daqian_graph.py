@@ -11,6 +11,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from editor_test_isolation import macos_editor
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
@@ -41,6 +43,7 @@ if args.scenario in {"parallel", "inputs", "multi_issue"}:
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory)
+    isolated_editor = macos_editor(binary, project / "isolated-editor")
     env["XDG_CACHE_HOME"] = str(project / "cache")
     if args.scenario in {"graph", "parallel", "inputs", "multi_issue"}:
         # The repository gate is exercised using the ordinary gh transport; no product bypass.
@@ -158,7 +161,7 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
     )
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
     result = subprocess.run(
-        [str(binary), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
+        [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
         env=env,
         capture_output=True,
         encoding="utf-8",

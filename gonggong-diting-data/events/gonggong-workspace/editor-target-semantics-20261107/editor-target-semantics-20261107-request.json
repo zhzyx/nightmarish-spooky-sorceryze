@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-target-semantics-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-target-semantics-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T06:04:29.586087+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/388",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Discover, describe and operate bounded editor controls without coordinate takeover",
+    "authorization_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "state": "in_progress",
+    "usage": null,
+    "agent_definition_basis": "sha256 of repository AGENTS.md read by this host"
+  },
+  "evidence_refs": [],
+  "sha256": "cc9fa8442685a49afbfe307b0a4e4cdb5aa3a974b3aa3994019edccadec8bb3a"
+}

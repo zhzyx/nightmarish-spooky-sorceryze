@@ -1,0 +1,164 @@
+{
+  "issue_number": 386,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "request_id": "editor-command-coverage-20261107",
+  "validation_scope": "first_foundation_batch",
+  "overall_parent_complete": false,
+  "remaining_issues": [
+    407,
+    408
+  ],
+  "source_base_commit": "1d080f6554668b720347bfcd222e527a9a7541f3",
+  "platform": "macOS arm64",
+  "observed_at": "2026-11-07T07:58:19.714631+00:00",
+  "build": {
+    "passed": true,
+    "command": "scons platform=macos target=editor arch=arm64 dev_build=no debug_symbols=no vulkan=no accesskit=no tests=yes -j8",
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944",
+    "version_stamp": "base commit; tracked candidate source bytes below were compiled before submission"
+  },
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "8c194182a862a3999d35d91d219d3e78cfcf3f51428940c79cede2a96f2e402f",
+    "editor/docks/ai_chat_dock.h": "63f144451f10661d9991150f99999027668a82d3634d4ee27e1faa6ace8f2b67",
+    "editor/docks/ai_chat_editor_bridge.cpp": "970d4d3f90ec98a7f3ba876d2aeef1fb25486fcad2cb0fd53f8ec3831a596471",
+    "editor/docks/ai_chat_editor_control.cpp": "d4c7a760fdb932f5595f21d31c700016429da0c3b46d64a468e3a83ce8014959",
+    "editor/docks/ai_chat_editor_control.h": "d0c7557b9153c8d2615823b7bbb88043b4715ccd2dbf8bd71b1771d5d585027a",
+    "editor/docks/ai_chat_editor_registry.cpp": "3249f8e8707d2358511aba0e7497ebcbd184b2486c626532aeea37ef7b0ce398",
+    "editor/docks/ai_chat_editor_registry.h": "0b4fcdf734c7df86b19bcd2573683e67374823bf1d7a395d0f13a6a0be35b093",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "112cfa885c76eb0530a2553263ae03186f319b716c773a0e6c4e93a115ccd755",
+    "editor/docks/ai_chat_editor_scene_actions.h": "d4a37750b430480897b3bb81674b139fec0a183d595827d480d9d50ac087cf6a",
+    "editor/docks/ai_chat_editor_settings_actions.cpp": "41594a203be2459dc03089ad4b0359679d30ca1ef8d14cf382e74c42e5ed59a4",
+    "editor/docks/ai_chat_editor_settings_actions.h": "21c73d9984739773d9455a940bb1deb87066b78c689fb5ba358fe5844eb2071a",
+    "tests/editor/codex_consultation.gd": "aa3709c698ab36c54e2ad363ca1389b5db73a4b7f02e07b9c0a490a7e74f79d0",
+    "tests/editor/consultation_only.gd": "7afa3865fd82de0e19550ba720bd143f045cac6681dde18ed393fc6b9e5f9af6",
+    "tests/editor/editor_command_coverage.gd": "efe955558a0a72ff0356dd5adea073ef93a5c572084c9dd36bf4614c30e28988",
+    "tests/editor/editor_receipt_lock.gd": "a10598960fc2ea0ee5b5b3ca85ca62e35576f35ddf069e69cc5eb2a5f7c9b395",
+    "tests/editor/editor_test_isolation.py": "c461e77e48b942af22d86904d3a7afba221abd00f6e27d64a6b1b2a8e0300e7a",
+    "tests/editor/run_ai_chat_http_cancel.py": "4b860574f5fb1f9ebd3b19f875ed9b8e1bf50bbd6e7dad4ac6203ffcd30284c1",
+    "tests/editor/run_ai_chat_integration.py": "b9832322a99e4bd9267c01bea36da23c4da26efd136209dcbdedde5435450d36",
+    "tests/editor/run_ai_chat_layout.py": "8fa0209dc0031c9c29f573345c4235324e284910ac6c6352efb7545391f406a1",
+    "tests/editor/run_ai_chat_semantic.py": "c68b79960508bf1bde07016e59e72714fc6012de5df9fe3beea4f74cd3111371",
+    "tests/editor/run_ai_chat_steering.py": "2fccf222a36346d72c974b4ebdf7891e67194a9d2363473961d04bfa53b7aec7",
+    "tests/editor/run_ai_chat_tab_order.py": "02cc02e63eb0b013e3255a081371c2a1e680df139de6d2d2fbd7bda2921a3071",
+    "tests/editor/run_ainative_builtin.py": "23d6cd83154902f35dee7c81f144c98cb0b8bf6df36d65cec920a261428b3fc7",
+    "tests/editor/run_codebuddy_godot_probe.py": "9a6c66f60624b1416e598eeacba8379e629a4401f88e844f9f919269390db6ed",
+    "tests/editor/run_codex_consultation.py": "3d861ef7d9e885b805bcfb21e6aef7f8621e864ee197ff31ad3e10c61bfd7613",
+    "tests/editor/run_codex_request_lifetime.py": "7b9c4eb3a1b3a6eb33d1f186e348ae54919c8d12d68e7d3ece311a7c40e0deea",
+    "tests/editor/run_consultation_only.py": "5af7bfb1faf48d6c219c2276ebcbda57e6f15f28315f97daddc87669b880a8ad",
+    "tests/editor/run_daqian_graph.py": "9137912bbf4ced2b88eb08ccdf88ca8f6e492638e018727220a46dda10476df6",
+    "tests/editor/run_daqian_node_approval.py": "294c842c2ee20b624c690300f3bd4399e5c516f00c051fc404ba2cd47c7e3634",
+    "tests/editor/run_editor_capability_routing.py": "d2da93185d6a16b523c49dab56a0fc9dd2b34df9d5b142773a20fab72ff9e97e",
+    "tests/editor/run_editor_command_coverage.py": "a5cf8bcfed972151ac66589cacc357f4ce0acd0e98c58da18635cb664dd94a17",
+    "tests/editor/run_editor_receipt_lock.py": "73b52410294f3259973e4c3d410d543f15a8958e3ebafc968ad1149a3a4df9b7",
+    "tests/editor/run_gonggong_chat_gate.py": "7a8fec058a8f2de2d2a0587bf155eac0348b5c8ba6e53c10eb1079221af2080a",
+    "tests/editor/run_gonggong_install_probe.py": "116dd2f43448c1946c466a89115e38b62a5871ae77626b0af576a8c9273674c0",
+    "tests/editor/run_model_picker.py": "fb0be50fb93987cc029fa16158e21bd5d0a8b11b1e7b5b6feb07607bd62f752a",
+    "tests/editor/run_requirements_intake.py": "86b941940475ebf94134d568c39a4501075160bfa595502c6f3d23b6651d6eed",
+    "tests/editor/test_ai_chat_editor_control.cpp": "0744d99e05138e3a794664dfd9f4abab3c99448884b89492b298623d1f196e80",
+    "tests/editor/test_ai_chat_editor_registry_semantics.cpp": "1710e38ae75663f5314e19e27433cad2e9d84ee7bf11d06a86eb95cb22b3a142",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "167276c08c5519244cef72ec03753e6cbc35ff984c3df464d170d9dab63fed7d",
+    "tests/editor/test_editor_test_isolation.py": "632e6351897d08f89fb5e8d3d275271fd8bcae5eece6685783be3c4d7796d6dc",
+    "tools/editor_control_client.py": "703c326c9f455b3186160d1e9901474887bffb4de0421df26283fea53cb22246"
+  },
+  "native_tests": {
+    "passed": true,
+    "cases": 53,
+    "assertions": 1144,
+    "scope": "[AIChat], isolated executable, source-root test data",
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "independent_editor_acceptance": {
+    "passed": true,
+    "exit_code": 0,
+    "checks": [
+      "dynamic screens",
+      "resource open/path rejection",
+      "scene pagination",
+      "target pagination",
+      "state endpoint",
+      "exact cancellation",
+      "session rejection",
+      "manual-only chat requests",
+      "stale draft rejection",
+      "typed settings and disk conflict",
+      "restart recovery without replay",
+      "corrupt receipts fail closed",
+      "8192 target and 50000 node boundaries",
+      "scene edits and selection",
+      "animation paths and undo",
+      "field and popup observations",
+      "model index beyond 100 stale binding",
+      "900 second restart expiry",
+      "headless scene run and stop"
+    ],
+    "worker": "/root/sinan_10f40d99afa19521",
+    "binary_before_after_same": true,
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "independent_receipt_lock_acceptance": {
+    "passed": true,
+    "exit_code": 0,
+    "checks": [
+      "one writer across simultaneous editors",
+      "second editor fails closed",
+      "SIGKILL stale owner",
+      "one writer across simultaneous stale-lock recovery",
+      "owner marker retained",
+      "clean release"
+    ],
+    "worker": "/root/sinan_10f40d99afa19521",
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "isolation": {
+    "passed": true,
+    "unit_cases": 6,
+    "real_editor_restart_test": true,
+    "original_binary_unchanged": true,
+    "real_editor_settings_unchanged": true,
+    "settings_sha256": [
+      "6eec2d16db85fec5fac37ffef6e2c8eda9c405ec9a63706d1dc1db3acab5a490",
+      "8e9fc589cbd1bd0f6cfff4632bebceb3a5dc11f3aa6291326462043f60630bee",
+      "c863d1cb9a46891be672732d009705459ee8424454fb99751c7b2d6fea8ea02c"
+    ],
+    "scope": "18 runner migrations plus two platform/CLI fixtures; existing steering was already self-contained and remains isolated",
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "legacy_routing": {
+    "passed": true,
+    "marker": "EDITOR_CAPABILITY_ROUTING_HTTP_CLI_OK",
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "main_screen_layout": {
+    "passed": true,
+    "phases": [
+      "initial",
+      "legacy_maliang_last",
+      "legacy_maliang_selected",
+      "pre_daqian_layout",
+      "pre_maliang_layout",
+      "restart"
+    ],
+    "binary_sha256": "9752c777c01bf8d02077879176c2fbbd4e2082eea54b298be8f51b354351c944"
+  },
+  "independent_code_review": {
+    "passed": true,
+    "worker": "/root/sinan_10f40d99afa19521",
+    "scope": "foundation plus scene helper; targeted fixes rechecked; no remaining blocking findings; latest main candidate/runtime integration reviewed",
+    "findings_fixed": [
+      "stale-owner recovery race and non-child process liveness",
+      "model/session target identity beyond first 100",
+      "EditorSettings current-key appearance allowlist",
+      "native animation/NodePath rewrite in undo transaction",
+      "uncertain execution receipt distinct from cancelled approval",
+      "protected Inspector and setting-observer representations"
+    ],
+    "source_base_commit": "1d080f6554668b720347bfcd222e527a9a7541f3"
+  },
+  "limitations": [
+    "no pixel/IME/native file-dialog/browser-authentication acceptance; no user desktop control",
+    "complex widgets and complete scene business remain open in 407/408; parent and 388 not complete",
+    "53 native tests and isolated signals/metadata do not replace visual acceptance",
+    "receipt summaries exclude draft/prior values and credentials; no signed authority or power-loss guarantee",
+    "POSIX stale-owner recovery verified; non-POSIX crashed lock remains conservatively held"
+  ]
+}

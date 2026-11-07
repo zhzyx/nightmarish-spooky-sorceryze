@@ -12,6 +12,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from editor_test_isolation import macos_editor
 from run_requirements_intake import GH_FIXTURE
 
 CASES = {
@@ -269,6 +270,7 @@ def main():
                 ],
                 check=True,
             )
+            isolated_editor = macos_editor(args.godot, workspace / "isolated-editor")
             project = workspace / "project"
             project.mkdir()
             for base in [workspace, project]:
@@ -309,7 +311,7 @@ def main():
             display = [] if args.manual_stop else ["--headless"]
             print("SEMANTIC_PROJECT", project, flush=True)
             run = subprocess.run(
-                [str(args.godot.resolve()), *display, "--editor", "--path", str(project), "--script", "res://test.gd"],
+                [str(isolated_editor), *display, "--editor", "--path", str(project), "--script", "res://test.gd"],
                 env=env,
                 cwd=project,
                 capture_output=True,
@@ -340,7 +342,7 @@ def main():
                 shutil.copyfile(Path(__file__).with_name("editor_guided_workflows_restore.gd"), project / "restore.gd")
                 restored = subprocess.run(
                     [
-                        str(args.godot.resolve()),
+                        str(isolated_editor),
                         "--headless",
                         "--editor",
                         "--path",

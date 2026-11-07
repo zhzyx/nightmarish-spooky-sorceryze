@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  ai_chat_editor_bridge.cpp                                              */
+/*  ai_chat_editor_bridge.cpp                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -92,7 +92,9 @@ void AIChatEditorBridge::_start() {
 		return;
 	}
 #ifndef WINDOWS_ENABLED
-	if (FileAccess::set_unix_permissions(descriptor, FileAccess::UNIX_READ_OWNER | FileAccess::UNIX_WRITE_OWNER) != OK) {
+	// Safe-save writes a temporary file until close; secure that actual inode
+	// before writing the bearer token, rather than chmod-ing the future name.
+	if (FileAccess::set_unix_permissions(file->get_path_absolute(), FileAccess::UNIX_READ_OWNER | FileAccess::UNIX_WRITE_OWNER) != OK) {
 		file->close();
 		_stop();
 		return;
@@ -215,6 +217,28 @@ void AIChatEditorBridge::_dispatch(Client &p_client) {
 	if (request_line[0] == "GET" && body_length == 0 && path == "/v1/capabilities") {
 		envelope["kind"] = "capabilities";
 		envelope["query"] = parameter(query, "query");
+		const String limit = parameter(query, "limit", "20"), offset = parameter(query, "offset", "0");
+		if (!limit.is_valid_int() || !offset.is_valid_int() || limit.length() > 2 || offset.length() > 4) {
+			_respond(p_client, 400, bridge_error("invalid_target_page"));
+			return;
+		}
+		envelope["limit"] = limit.to_int();
+		envelope["offset"] = offset.to_int();
+	} else if (request_line[0] == "GET" && body_length == 0 && path == "/v1/events") {
+		const String after = parameter(query, "after", "0"), limit = parameter(query, "limit", "100");
+		if (!after.is_valid_int() || after.length() > 15 || !limit.is_valid_int() || limit.length() > 3) {
+			_respond(p_client, 400, bridge_error("invalid_event_cursor"));
+			return;
+		}
+		envelope["kind"] = "events";
+		envelope["after"] = after.to_int();
+		envelope["limit"] = limit.to_int();
+	} else if (request_line[0] == "GET" && body_length == 0 && path == "/v1/state") {
+		envelope["kind"] = "state";
+	} else if (request_line[0] == "POST" && body_length == 0 && path == "/v1/cancel") {
+		envelope["kind"] = "cancel";
+		envelope["request_id"] = parameter(query, "id");
+		envelope["source"] = parameter(query, "source", "external-ai");
 	} else if (request_line[0] == "GET" && body_length == 0 && path == "/v1/requests") {
 		envelope["kind"] = "status";
 		envelope["request_id"] = parameter(query, "id");

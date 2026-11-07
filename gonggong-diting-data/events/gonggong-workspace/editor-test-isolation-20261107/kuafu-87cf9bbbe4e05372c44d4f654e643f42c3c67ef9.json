@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-87cf9bbbe4e05372c44d4f654e643f42c3c67ef9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-test-isolation-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d32783c7d5969a0aa08b65dfd9b082cf1a83911dcd599ec7362c6ffddab1b2f6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "validation",
+    "detection_head": "e2a1d2b73767a9e86dbd48f8ae1e69f27a0d4464",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex:editor-command-coverage",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "tests/editor/run_editor_capability_routing.py:descriptor-fixed-registry-capacity-exposed",
+    "diagnosis": "FileAccess WRITE safe-save used a temporary inode; chmod of the future descriptor pathname failed before token write. Fixed chmod of actual file path before storing secrets. Real retry confirmed valid descriptor and progressed to separate registry capacity issue.",
+    "next_action": "Integrate registry BFS bounded discovery and rerun original routing acceptance; keep Issue open until business acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T06:06:13.569337+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T06:11:58.800174+00:00",
+  "sha256": "2e8c96ec42454a4b1dfab56452cee196c807280ff6cf7f307a7549a30a152c08"
+}

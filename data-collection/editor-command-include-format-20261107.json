@@ -1,0 +1,38 @@
+{
+  "issue_number": 386,
+  "request_id": "editor-command-coverage-20261107",
+  "source_base_commit": "2bbef6252de81196881ce9589e20b5debfc4da0a",
+  "predecessor": "0fe3f01b2b4b6c5e64b30b90b88f9a27a64d6808",
+  "changes": "Pinned clang-format regrouped equivalent include paths in settings_actions; no production behavior changed.",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_settings_actions.cpp": "51f79d1871f3db2d26dbd24874ac745994a16a3eaa904b6895e57759201e904e"
+  },
+  "build": {
+    "passed": true,
+    "binary_sha256": "9bb00f500d30cf4167942b63115f91c15eee0550408cf66d06542236340eef23"
+  },
+  "all_changed_cpp_clang_format": {
+    "passed": true,
+    "version": "22.1.5"
+  },
+  "include_validation": {
+    "passed": true
+  },
+  "prior_validation": [
+    "data-collection/editor-command-coverage-validation-20261107.json",
+    "data-collection/editor-command-coverage-validation-correction-20261107.json",
+    "data-collection/editor-command-main-integration-20261107.json"
+  ],
+  "remaining_dispatch": {
+    "407": {
+      "state": "read_only_preparation",
+      "worker": "/root/sinan_a4e2aba067bc4bb5"
+    },
+    "408": {
+      "state": "read_only_preparation",
+      "worker": "/root/sinan_acdd581b50b3f1e3"
+    }
+  },
+  "overall_parent_complete": false,
+  "observed_at": "2026-11-07T08:21:52.269122+00:00"
+}

@@ -35,6 +35,7 @@ func _run():
 	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(2)
 	backend.item_selected.emit(2)
+	dock.find_child("CLIBridge", true, false).text = OS.get_environment("CONSULT_BRIDGE")
 	dock.find_child("CLINode", true, false).text = OS.get_environment("CONSULT_NODE")
 	dock.find_child("CodexEntry", true, false).text = OS.get_environment("CONSULT_ENTRY")
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
@@ -64,7 +65,8 @@ func _run():
 		quit(1)
 		return
 	# Returning to development must invoke the Issue/environment gate again.
-	if not await send("DEVELOPMENT_MUST_GATE", "已触发本地配置点火器"):
+	var gate_text = "已触发本地配置点火器" if OS.has_feature("windows") else "GongGong 未配置"
+	if not await send("DEVELOPMENT_MUST_GATE", gate_text):
 		quit(1)
 		return
 	print("CODEX_CONSULTATION_NATIVE_OK")
