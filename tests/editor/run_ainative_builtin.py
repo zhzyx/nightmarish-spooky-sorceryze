@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import runpy
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,14 @@ def main():
         parser.error("Python 3.11+ is required for the deployed AINative tools")
     binary = args.godot.resolve(strict=True)
     repository = Path(__file__).resolve().parents[2]
+    sources = [
+        p for p in (repository / "samples/ainative-workbench/addons/ainative").glob("*.gd") if p.name != "plugin.gd"
+    ] + [p for p in (repository / "tools/ainative").glob("*.py") if not p.name.startswith("test_")]
+    expected_bundle = runpy.run_path(str(repository / "editor/ainative/builders.py"))["bundle_files"](sources)
+    expected_hashes = {name: hashlib.sha256(text.encode("utf-8")).hexdigest() for name, text in expected_bundle.items()}
+    bundle_digest = hashlib.sha256()
+    for name, text in expected_bundle.items():
+        bundle_digest.update(name.encode("utf-8") + b"\0" + text.encode("utf-8") + b"\0")
     script = Path(__file__).with_name("ainative_builtin.gd").resolve()
     capture = (
         None
@@ -108,6 +117,13 @@ def main():
                 return False, {}
 
         first_ok, first = run("mesh-and-rig", projects[0], "full", screenshot=capture)
+        bundle_details = first.get("details", {})
+        result["installed_bundle_matches_source"] = (
+            bundle_details.get("bundle_sha256") == expected_hashes
+            and bundle_details.get("bundle_version") == bundle_digest.hexdigest()
+        )
+        result["bundle_version"] = bundle_digest.hexdigest()
+        result["bundle_files_sha256"] = expected_hashes
         second_ok, second = run("independent-project", projects[1], "entry") if first_ok else (False, {})
         if first_ok and second_ok:
             isolated = first["details"]["state_key"] != second["details"]["state_key"]
@@ -135,7 +151,12 @@ def main():
             result["project_sources_unchanged"] = intact
             result["state"] = (
                 "passed"
-                if isolated and runtime_ok and sample_ok and intact and result["same_engine_bundle"]
+                if isolated
+                and runtime_ok
+                and sample_ok
+                and intact
+                and result["same_engine_bundle"]
+                and result["installed_bundle_matches_source"]
                 else "failed"
             )
     args.report.parent.mkdir(parents=True, exist_ok=True)

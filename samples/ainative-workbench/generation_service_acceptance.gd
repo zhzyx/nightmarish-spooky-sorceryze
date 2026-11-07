@@ -91,7 +91,7 @@ func run():
 		return
 	var available_modes: Array = []
 	for i in panel.service_choice.item_count: available_modes.append(panel.service_choice.get_item_metadata(i))
-	check(available_modes == ["offline","comfy","legacy"], "settings distinguish offline demonstration, ComfyUI, and legacy compatibility")
+	check(available_modes == ["offline","comfy","legacy","codex"], "settings distinguish existing services and current-login CLI generation")
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
 	check(panel.service_status.text.contains("离线") and panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show offline copying availability")
 	set_node("text_to_image", "", "fixture prompt; do not submit")

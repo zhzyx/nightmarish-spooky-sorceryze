@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3fa3a0faec295c6736d2a666a46edab764e0eb36",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5b1974d57673821f4345b0a6f2b750123470e786d157cbee298ce568a98dd513",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/429",
+    "action": "validation",
+    "detection_head": "5026ac8f3466503974eac93161fc0797c714a286",
+    "context_sha256": "300e9fad917d3b7fd2ab8f307ffbcebf26a952daae7535a0405ae32a5411761e",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "evidence": "private real-ui-v4 failure.json; mesh-executor-readonly-diagnosis.json; immutable generated GLB and Provider terminal",
+    "diagnosis": "Strict CLI generation and image editing succeeded and were previewed/published. Local Mesh inference succeeded with actual GLB, but Executor consumption fails because provenance stages use content_sha256 for a reference-only digest; recursive snapshot validation then requires content_base64. Whole v4 acceptance failed and its consumer was explicitly cancelled; successful model outputs and Provider terminal remain unchanged.",
+    "next_action": "Unique Provider owner renames stage digest keys and adds real Executor consumption regression. Root explicitly runs a new local Mesh task on the already generated red image under final code; no new CLI sampling, no terminal or database migration, no relaxed asset validation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T10:15:57.388311+00:00",
+    "attempted": "Read-only Provider/registry/job/output checks isolated check_content KeyError; preserved all real v4 receipts and cancelled only own failed consumer.",
+    "repair_owner": "/root/sinan_c1d8d6deadbbaec2 for Provider and regression; /root for real UI revalidation",
+    "continuable": "CLI image and native entry evidence retained with exact source hashes; Mesh consumption/publication still unaccepted."
+  },
+  "occurred_at": "2026-11-07T11:12:08.394291+00:00",
+  "sha256": "953ed0a1845a721dcfaa0168249724b0dc7790e12ddd862a1b3e515ea7e8c38e"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-codex-cli-final-validation-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T11:30:36.091943+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "state": "passed",
+    "issue_number": 428,
+    "validation_ref": "data-collection/maliang-codex-cli-final-validation-20261107.json",
+    "business_accepted": true,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "b725ef20fd65e368cb1e20a4a332017f5e2bd466dedeb35f81443f614c934b86"
+}

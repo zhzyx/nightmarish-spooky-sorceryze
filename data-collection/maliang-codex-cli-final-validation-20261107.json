@@ -1,0 +1,342 @@
+{
+  "state": "passed",
+  "issue_number": 428,
+  "bug_issue": 429,
+  "platform": "Windows x64, MSVC 14.5, Windows SDK 10.0.26100.0",
+  "base_commit": "d16199d586f0641e74599697f195a8fd7a51157e",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "e9f55ed3ed422a8e8df442a6f66d0eade76484e82751f97316dcf2ab97dfeae0",
+    "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "07c47cbbd1c873c0daf216486024741cc73f62c7174133d5bfc1675d84addd2d",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "6a1d3c8638d99dd17a127403cd4d851d045f4d0747143aff988b0339ff9d530b",
+    "samples/ainative-workbench/codex_cli_acceptance.gd": "6e6f9d9a8ae21a8c44e0fe6bf1ab94482fe0e7c91793c3d71f1f1de9d49c0095",
+    "samples/ainative-workbench/generation_service_acceptance.gd": "193c75f607b94e06a4fa3da210992a7dbd2e161d6f3a8777c0d6eb9cb3f64fa7",
+    "tests/editor/ainative_builtin.gd": "c3a8085d0500e742da4af474a2757ad9302a5266fdc254d1a149b146f619720d",
+    "tests/editor/run_ainative_builtin.py": "bf548e0595f14c725c354faa788983aee8e4d3c6ac8b6686dcf114946231618f",
+    "tools/ainative/codex_provider.py": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1",
+    "tools/ainative/test_codex_provider.py": "2f75d2c71335caf5009c14a5c37a006a598adec878eaf912990e29b66109ad75",
+    "tools/ainative/managed_comfy.py": "edaa73ee062ec6ac841c060264454265d9f871ffe84c6295b68442ad3f5845c8",
+    "tools/ainative/test_managed_comfy.py": "afa5512bfab307bd5b3447d632a3a88f85b4e5f3e5b182f181e1106ca0545242",
+    "tools/ainative/generation_service.py": "26907e80bd7c97f603fb8a42e5acccaf01b6bdc4b59151af076c856d60d421c9",
+    "tools/ainative/editor_host.py": "ea34c50c97b3ea32779fad679189d49d49a2276d6e8a05fd77092a8adaa5b813",
+    "tools/ainative/comfy_provider.py": "27861cd7003f095bc47bbf7206120e3f1f22906c5b53bdf3f81eab9e4c811cd6",
+    "samples/ainative-workbench/README.md": "237d5b6b057765af8e8813f243ac1a2963d292dcd105b6bf3dc9a6e5e1e4a49b",
+    "design-docs/maliang-managed-comfy-local-20261107.md": "77d8bccbaac36454bd919a3826ca002f222cd81961fb5a6aa90e642d17d1202d"
+  },
+  "scope": "Built-in 马良 uses current ChatGPT-authenticated Codex CLI images and local ComfyUI Mesh, with engine-owned local lifecycle. No separate API account or self-hosted cloud deployment.",
+  "cli_real": {
+    "candidate_source_sha256": "1ea521baee40f9406c1a83f4e00b906f6a1d9c84790b1339529cc63aeced6f03",
+    "phase_acceptance": "text-to-image and image editing, preview and two ImageTexture publications passed",
+    "artifacts": [
+      {
+        "kind": "text_to_image",
+        "asset_id": "codex-image-2b790c88546b0f38281408fd5d97e5a4c3fe378b185aaf179d5baa7bd7b07e26",
+        "revision": "c5e9e49d4b1e0c0f0599f46fb89568ac80993172bc0147be1b04aea2cc43b9a0",
+        "provenance": {
+          "auth_mode": "chatgpt",
+          "cli_controls_not_applied": {
+            "denoise": 0.65,
+            "seed": 0,
+            "steps": 1
+          },
+          "cli_events_sha256": "2d9b3964f86594c77edc4ab399b8c1f4ba8333e0ab6463d607b3cb3ab3a2b5cc",
+          "cli_turn_usage": {
+            "cache_write_input_tokens": 0,
+            "cached_input_tokens": 17920,
+            "input_tokens": 24081,
+            "output_tokens": 175,
+            "reasoning_output_tokens": 0
+          },
+          "cli_version": "0.166.0-alpha.6",
+          "constraint_interpretation": "natural_language_visual_requirements_not_pixel_guarantees",
+          "context_semantics": [
+            {
+              "role": "instruction",
+              "scope": "node",
+              "strength": "constraint"
+            }
+          ],
+          "dimensions": {
+            "height": 1254,
+            "width": 1254
+          },
+          "effective_prompt_sha256": "12f4f011b0fdc4d298c666580ec179cf6fef700a9136b8d21b9f835a7c38d1cb",
+          "image_cost": null,
+          "native_image_tool_event_available": false,
+          "origin": "new_png_in_completed_cli_thread",
+          "output_sha256": "c5e9e49d4b1e0c0f0599f46fb89568ac80993172bc0147be1b04aea2cc43b9a0",
+          "provider": "codex",
+          "receipt_sha256": "3ea4e3b2c02f8500d42c3a56c2e5dd8c01b67fcd527548dd15126839c7a530ff",
+          "requested_cli_policy": {
+            "actual_tool_catalog_verified": false,
+            "code_mode": false,
+            "code_mode_host": true,
+            "external_apps_plugins_browser_computer": false,
+            "parent_session_environment_inherited": false,
+            "sandbox": "read-only",
+            "shell_tool": false,
+            "transport": "CLI_native_transport_with_possible_WebSocket_to_HTTP_fallback",
+            "unified_exec": false
+          },
+          "requested_dimensions": {
+            "height": 512,
+            "width": 512
+          },
+          "source_sha256": null,
+          "thread_id": "01a1b5aa-4aa9-7413-aac4-2b65368e77be",
+          "unsupported_cli_controls": [
+            "seed",
+            "steps",
+            "denoise"
+          ]
+        }
+      },
+      {
+        "kind": "image_to_image",
+        "asset_id": "codex-image-efe944e8bbac3ae9b516fdfebab04394999896fa14c5eebc6677b879916d0a94",
+        "revision": "4b0ad2a37c6475cb001ac555cfcdfeadb73d83e520f9ffe7adced7766b57f84e",
+        "provenance": {
+          "auth_mode": "chatgpt",
+          "cli_controls_not_applied": {
+            "denoise": 0.65,
+            "seed": 0,
+            "steps": 1
+          },
+          "cli_events_sha256": "e44b2d4a04f80fbe0c31081a45f0c0b1caa71abc46e149fcd00bb6657c388b34",
+          "cli_turn_usage": {
+            "cache_write_input_tokens": 0,
+            "cached_input_tokens": 22016,
+            "input_tokens": 28173,
+            "output_tokens": 174,
+            "reasoning_output_tokens": 0
+          },
+          "cli_version": "0.166.0-alpha.6",
+          "constraint_interpretation": "natural_language_visual_requirements_not_pixel_guarantees",
+          "context_semantics": [
+            {
+              "role": "instruction",
+              "scope": "node",
+              "strength": "constraint"
+            }
+          ],
+          "dimensions": {
+            "height": 1254,
+            "width": 1254
+          },
+          "effective_prompt_sha256": "4f01068d9226206f83ba453c2178a9103edc66b1c5b54519bc38c0b78d895542",
+          "image_cost": null,
+          "native_image_tool_event_available": false,
+          "origin": "new_png_in_completed_cli_thread",
+          "output_sha256": "4b0ad2a37c6475cb001ac555cfcdfeadb73d83e520f9ffe7adced7766b57f84e",
+          "provider": "codex",
+          "receipt_sha256": "66ab17451c1c0a10e910d355f1127ec21b7f93eb34705dc41d650bf1909a56f1",
+          "requested_cli_policy": {
+            "actual_tool_catalog_verified": false,
+            "code_mode": false,
+            "code_mode_host": true,
+            "external_apps_plugins_browser_computer": false,
+            "parent_session_environment_inherited": false,
+            "sandbox": "read-only",
+            "shell_tool": false,
+            "transport": "CLI_native_transport_with_possible_WebSocket_to_HTTP_fallback",
+            "unified_exec": false
+          },
+          "requested_dimensions": {
+            "height": 512,
+            "width": 512
+          },
+          "source_sha256": "c5e9e49d4b1e0c0f0599f46fb89568ac80993172bc0147be1b04aea2cc43b9a0",
+          "thread_id": "01a1b5ac-c802-7e83-b7f2-fc66a6fe1a38",
+          "unsupported_cli_controls": [
+            "seed",
+            "steps",
+            "denoise"
+          ]
+        }
+      }
+    ],
+    "publications": [
+      {
+        "kind": "text_to_image",
+        "content_sha256": "c5e9e49d4b1e0c0f0599f46fb89568ac80993172bc0147be1b04aea2cc43b9a0",
+        "published_sha256": "63ff900df982bddc655fe255d8c66e10055ae518626837e0c2552ba8af3ee70f"
+      },
+      {
+        "kind": "image_to_image",
+        "content_sha256": "4b0ad2a37c6475cb001ac555cfcdfeadb73d83e520f9ffe7adced7766b57f84e",
+        "published_sha256": "eddce6b2fc6e392913315122b3f09d00dd47b16d3eedd4aced55898f8f714310"
+      }
+    ],
+    "original_whole_v4_acceptance": "failed; Mesh result handoff violated digest/snapshot contract; consumer cancelled, all successful model outputs and terminals retained",
+    "final_source_change": "Only three provenance stage digest keys changed to artifact_sha256; CLI execution path unchanged, independently reviewed. No repeated CLI inference.",
+    "image_cost": null,
+    "usage_scope": "Actual CLI successful-turn usage only. Capability probes and failed attempts excluded; no total billing estimate."
+  },
+  "final_native_mesh": {
+    "native_entry": true,
+    "provider_sha256": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1",
+    "bundle_version": "5fe5b966d04b541ea5e1a4d949c659de06e3e4393b60807bc1635e80cbbe3c40",
+    "source_sha256": "4b0ad2a37c6475cb001ac555cfcdfeadb73d83e520f9ffe7adced7766b57f84e",
+    "prior_cli_publications_reopened": 2,
+    "new_cli_generation_requests": 0,
+    "new_local_mesh_requests": 1,
+    "geometry": {
+      "indices": 100752,
+      "instances": 1,
+      "vertices": 14885
+    },
+    "published_sha256": "59e8db78406c623021f0ca4bb7dacfc79bf1817b3d0b194d4d85c3c59498bbd9",
+    "workflow_sha256": "5f759ec56e07f4e37e057f9cf1428713db22bb2e3ae30672f862f74262ad3dcd",
+    "execution_editor_sha256": "5769657d7ca47ef4827c31bb6d71c81228a919041fa7481e46bb200df45ccf50",
+    "final_editor_uses_identical_ainative_bundle": true,
+    "main_integration": "Latest upstream AI Chat C++ provenance changes integrated; no AINative source change; native four-run/file-hash acceptance repeated on rebuilt current-base editor without further inference."
+  },
+  "native": {
+    "state": "passed",
+    "editor_sha256": "c5919c9eb00f65de6365f3e20e37e7275f7f0584243dbee76600d8f1b769193d",
+    "installed_bundle_matches_source": true,
+    "bundle_version": "5fe5b966d04b541ea5e1a4d949c659de06e3e4393b60807bc1635e80cbbe3c40",
+    "bundle_files_sha256": {
+      "manifest.json": "54f166e376e605db21e56cd187ca2b360b2a137c05cd3d62cde931f36cbcb07f",
+      "scripts/character_export.gd": "e72e9d13d6965b4b4062b2811fbddcb4d173d75902042438ec861b225b334d6e",
+      "scripts/character_panel.gd": "23a5cb8396bbd8338996aebb06966a5f1fae7235bfb5587728639dedb5aec9b5",
+      "scripts/character_session.gd": "51b1639fe1d5c2e1dfb9878e07df94cb2b46876d9285a9c0e2ecce82d444fdff",
+      "scripts/cloth_panel.gd": "da8827e88557a4df4482796fe45149e15a547d97d159d96c4b134fb213e2d310",
+      "scripts/cloth_solver.gd": "43edb7a9ca144663447dd50fba2d52a6995ce5869801831e1184e339bf58373f",
+      "scripts/customization.gd": "de83a90b2bdea7825eb90bbc33448a28f120fd2fc9c8d8c8bb16c1ad2520bb2c",
+      "scripts/customization_panel.gd": "76f89074e78b7dbe7780a1c1e16295c2084212776f844c6efaf1a9d64cc004df",
+      "scripts/garments.gd": "48ed1beb2d0ad8568e6262581e27d0d03257a730aa8a22921e6d4610fad030e7",
+      "scripts/garments_panel.gd": "cdbe4af0b499835996a067f9af23f9b64fd3a360516a26b6a0e92228ecabcfae",
+      "scripts/hair.gd": "df91e1e9842f57fe6deb05dc5ad06cbf884dee050fbaa7f378f6c45af99e1941",
+      "scripts/hair_panel.gd": "99de3a30c033d351b55b317caf8a17aad1b5d535668de165617809131aa3c395",
+      "scripts/hair_runtime.gd": "671d31f1cadcf805ac501532b5e2feceb10c949cd6f2763ed5c32e60befc0aaf",
+      "scripts/interop.gd": "e2ff2969c6b5bfa5cd0f631777d75b56b3b1fb4101dad4444a59ee82f79416d2",
+      "scripts/interop_panel.gd": "e95dff924ab3e6128ca3f3c47950404b184e2a07f79dc155643b578aace49aa4",
+      "scripts/layering.gd": "3889a732875230612a70d75a2f2bc00a8fd0b3aeea8e555e42a6ae9cd25ea736",
+      "scripts/layering_panel.gd": "09bc7bfc6ea30d8180e48dd609b2020423cd0878650659ae29345bfafd9c1db2",
+      "scripts/layering_player.gd": "479d3819cd98a23d8c8558c2957b40a5c8196c64bef3b6f10d5da8c16da4d7e8",
+      "scripts/managed_comfy_panel.gd": "07c47cbbd1c873c0daf216486024741cc73f62c7174133d5bfc1675d84addd2d",
+      "scripts/motion.gd": "35e67b0af05325557a71fca8c2000fc9f5cf2974b0575db00490c3aa8a586790",
+      "scripts/motion_panel.gd": "7552948ccfb2e397200e16759f3fc379499e8a9f5d5360f92040dd974c4663ee",
+      "scripts/parameter_form.gd": "6a1d3c8638d99dd17a127403cd4d851d045f4d0747143aff988b0339ff9d530b",
+      "scripts/rigging.gd": "1efd37fba1845d08e4817895fb0fd52e1523ab8f7917a90fd63fbcca0fd5bb24",
+      "scripts/rigging_panel.gd": "0b17cef846cf323fe27cf916a88e3095f691ded93d622416e443af9fe44da86c",
+      "scripts/runtime_mesh.gd": "aa5623e6d565a395fcfd1b610154e4c08c9ec9745599ca35312e604362da291a",
+      "scripts/workbench.gd": "311a214672b96171fb15f9f3e9d123983c5934f6d3ca4a57df88b71a65ffce3e",
+      "tools/character_publish.py": "2420c366bccd93826edd5f4e76bdee6cfcf6ccb9e6eba7b77f845e40af258412",
+      "tools/cloth_anchor_metrics.py": "224248844a6fba8a01a536cc4ab318af54b17329183b7a2917b147996821c49e",
+      "tools/cloth_pin_fit.py": "b8f66c00f70c3857499dc4f751c7ac2276e59c6c199d2fab16e30e256d441738",
+      "tools/cloth_prepare.py": "e8f8aa7fec7f71d11ed6dbf83e50c11b6ebe3378ed9701f88427a57abd5de64a",
+      "tools/codex_provider.py": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1",
+      "tools/comfy_provider.py": "27861cd7003f095bc47bbf7206120e3f1f22906c5b53bdf3f81eab9e4c811cd6",
+      "tools/contracts.py": "bfc0c3a659b2501b8bf59554d754769aee0fce538ad48dd7b02dd49ebdd08035",
+      "tools/customization_publish.py": "b52e06468a0a1ce13858cafde053d363a1b6ed7f5850343e5f18ddfb479673ee",
+      "tools/editor_demo.py": "aff4c9e698cc4ca36c5b70cb71debf9eaf83fa07c356fd518c7185b44712a5ec",
+      "tools/editor_host.py": "ea34c50c97b3ea32779fad679189d49d49a2276d6e8a05fd77092a8adaa5b813",
+      "tools/executor.py": "13771345e66325b5f28866744a76b87c57583b86869703cacde7f3f952d8f64d",
+      "tools/executor_cli.py": "8b20e1aa69a3a3e8f9d045c33d6db7f7f486a9bebe3808fa24bc8481418e7561",
+      "tools/extensions.py": "edc695c2555e905e4cf4af810dfbb5327ecac6055535ef772e46e83715362ce8",
+      "tools/garment_generate.py": "3212edb2dbf8c65b0bbf6f8db8b657a919fe448cbbc0b72e415a6d5d14ee6903",
+      "tools/garment_prepare.py": "54432e79448674d1425a8d54696fa397cfbb3dee53d00d647d994ff174841d16",
+      "tools/generate.py": "51257010c1e96e47bc850e20662479f6d88763119a2dfbcc65e2c45f446f0686",
+      "tools/generation_service.py": "26907e80bd7c97f603fb8a42e5acccaf01b6bdc4b59151af076c856d60d421c9",
+      "tools/hair_select.py": "f224fc6ca3c0c13da1dfa24ff0c17fe8f375e750e9ab1f0193d3561008acf3af",
+      "tools/interop_publish.py": "0355d62825692729d2afd140ddcc85ebd1973ed85b436585dc261170badbdf15",
+      "tools/managed_comfy.py": "edaa73ee062ec6ac841c060264454265d9f871ffe84c6295b68442ad3f5845c8",
+      "tools/motion.py": "551c9899caba439c108d3897b2e27af6ff851a4a9a330db111008c7ea2430f20",
+      "tools/motion_jobs.py": "949a9d64bc75b5efd73b31be327502730501384f1aada052bcb5685dd26261dc",
+      "tools/motion_mdm.py": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+      "tools/motion_provider.py": "781c56bb3dc80e94d6c4b05fc83c6b58322e6cbf4b521de042c5d6034c9b059c",
+      "tools/motion_video.py": "3a144190ef87b07e185a4836aefa51154dd85c0233db0e9c7b4b569813fa691b",
+      "tools/portable_scene.py": "728ef1a0b4c1b7bdb6b915e4f353ba78efc6b60d6131d73b0b6e87cde117a7a4",
+      "tools/rain_convert.py": "3a2e2b46cb711d2c6ef3b79d3ac035420a6179f988439d9329cb2e93a9627395",
+      "tools/rain_inspect.py": "2ea27b34678c52834b74aa8da656b1b5eb6a98c439eadaafca32e463d3186642",
+      "tools/rain_probe.py": "b6ef91c0fcc70d2696af19d3b827cf248d1b9537696d9ed12e522ac2347bf443",
+      "tools/rigging_publish.py": "9a9ca6e6befca74054e2a669f6038850b35a5a9eeb11a1d332c0c3f09188a967"
+    },
+    "project_state_isolated": true,
+    "same_engine_bundle": true,
+    "project_sources_unchanged": true
+  },
+  "native_runs": [
+    {
+      "name": "mesh-and-rig",
+      "passed": true,
+      "returncode": 0,
+      "checks": 97
+    },
+    {
+      "name": "independent-project",
+      "passed": true,
+      "returncode": 0,
+      "checks": 53
+    },
+    {
+      "name": "sample-addon-compatibility",
+      "passed": true,
+      "returncode": 0,
+      "checks": 22
+    },
+    {
+      "name": "relocated-runtime",
+      "passed": true,
+      "returncode": 0,
+      "checks": 5
+    }
+  ],
+  "tests": {
+    "cli_provider": {
+      "run": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "elapsed_seconds": 51.235,
+      "exit_code": 0
+    },
+    "managed_comfy": 19,
+    "generation_service": {
+      "run": 11,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "895fe888282bd44a366f6a381db934c7bb764f289b430b4c595e3d49171fdb20"
+    },
+    "independent_gui_controls": 54,
+    "independent_review_reports_sha256": {
+      "review-receipt.json": "544aeaa5a9aa09ed8bf05c9aa1b03a608d6df5da6e56512069c3e25f54e79456",
+      "manager-launch-increment.json": "9cf06cb6b784c649c00685179d90694f56c288e83654eb2e4f3556b65efd1bd3",
+      "root-increment-review.json": "922d6e333cd55158fd652c69c68842f5132056fb29829fb6f922032b33cbd2c7",
+      "native-bundle-increment.json": "63bda1df32243f5b03ac155d9a9e670da39f88dba995442700b901e5187bc687",
+      "cli-policy-increment.json": "acdc4978206c3f088cd847979bd8a383fa58cf4e5803cd3c1d8c638a8890066d",
+      "mesh-contract-increment.json": "ac682241a302c908e8bef52dc4e594e478a27665d1405cb9a7e51c992a4d161f",
+      "final-business-readback.json": "9f4bc6af3314fd6a3308c73748d88157466ce17b0f40c3ee20111a99b9319ae2",
+      "main-integration-readback.json": "e33c9e2a823021b1b8a6090981376d4a75852beca734a8bb13d23a89f6912a35"
+    }
+  },
+  "retained_failures": [
+    "real-ui-v1: shared harness path normalization",
+    "real-ui-v2: missing managed Comfy startup flags",
+    "real-ui-v3: CLI image tool host disabled",
+    "real-ui-v4: provenance digest/snapshot key conflict; successful image phases retained",
+    "real-native-mesh-v1: deep portable test state path failed before worker/GPU; short isolated engine used for final replay"
+  ],
+  "limits": [
+    "One source or reference image; node-level text constraints only for this CLI adapter.",
+    "CLI uses nearest supported image size; image sampler seed/steps/denoise are not applied.",
+    "Mesh is local untextured geometry; ChatGPT is not claimed to generate arbitrary skinned Mesh or animation.",
+    "CLI native network retry can fall back from WebSockets to HTTPS; actual tool catalog verification remains unknown.",
+    "Windows validation only; other ownership/platform work in #414 not taken over. Quinn #202 remains unvalidated memo."
+  ],
+  "business_accepted": true,
+  "existing_external_services_killed": false,
+  "credentials_exported": false,
+  "official_references": [
+    "https://learn.chatgpt.com/docs/image-generation",
+    "https://learn.chatgpt.com/docs/pricing"
+  ],
+  "private_evidence_sha256": {
+    "native_mesh_acceptance": "9a29ec3a0f750b7fbc9b74ac35d131f7053f04e34e4bf839731b0c55de9a795a",
+    "native_mesh_runner": "46fcdf21488791b996ad2c66cf9ed2be9b7975692192a3a625421ad480a46653",
+    "native_mesh_launcher": "e7580dce1a354f17088f7ba9a1047315e547e2de354c4f419468c05bb3ea9987",
+    "cli_v4_failure_receipt": "55e8a171715f6f5a5b78f58cc146e3d9600517186003b1cd391c13eee08bb890"
+  },
+  "usage": null
+}

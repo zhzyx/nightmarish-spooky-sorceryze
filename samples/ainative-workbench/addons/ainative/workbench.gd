@@ -72,6 +72,10 @@ var mesh_model_choice: OptionButton
 var service_status: Label
 var service_capability_labels: Dictionary = {}
 var service_config_path = ""
+var cli_path_edit: LineEdit
+var cli_fields: VBoxContainer
+var managed_comfy_panel: VBoxContainer
+var service_guide: Label
 var service_saved: Dictionary = {}
 var service_report: Dictionary = {}
 var service_report_draft = ""
@@ -141,6 +145,7 @@ func _ready():
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(content)
 	if state_dir.is_empty(): state_dir = ProjectSettings.globalize_path("user://ainative")
+	state_dir = state_dir.replace('\\', '/')
 	DirAccess.make_dir_recursive_absolute(state_dir)
 	db = state_dir.path_join("executor.sqlite")
 	var settings = ConfigFile.new()
@@ -162,6 +167,10 @@ func _ready():
 	button(service_advanced, "保存高级运行环境", save_settings)
 	button(machine, "打开本机诊断日志", open_diagnostics)
 	_restore_service_settings(settings)
+	managed_comfy_panel = preload('res://addons/ainative/managed_comfy_panel.gd').new()
+	service_fields.add_child(managed_comfy_panel)
+	managed_comfy_panel.initialize(self, settings)
+	_update_service_summary()
 	factory_edit.text_changed.connect(_legacy_factory_changed)
 	developer_mode = CheckButton.new()
 	developer_mode.text = "开发者模式"
@@ -416,7 +425,7 @@ func rebuild():
 		node.title = data.id + " / " + node_label(data.get("type", "copy"))
 		node.position_offset = Vector2(data.x, data.y)
 		var label = Label.new()
-		label.text = "本机离线复制" if data.get("type", "copy") == "copy" else node_label(data.type) + "（ComfyUI）"
+		label.text = "本机离线复制" if data.get("type", "copy") == "copy" else node_label(data.type) + ('（Codex CLI / 本机模型）' if _service_mode() == 'codex' else '（ComfyUI）')
 		node.add_child(label)
 		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
 		graph.add_child(node)
@@ -702,13 +711,16 @@ func _process(_delta):
 			var details: Dictionary = result.get("diagnostic", {}) if result is Dictionary else {"code":"host_result_missing"}
 			_show_run_problem(diagnostic_error("操作失败：" + message, details))
 			if job.command == "service-check": service_status.text = message
+			if job.command == 'managed-comfy': managed_comfy_panel.failed(message)
 			auto_step = false
 			if job.command == "create":
 				creating = false
 				preview_target = ""
 			continue
 		var data = result.result
-		if job.command == "service-check":
+		if job.command == 'managed-comfy':
+			managed_comfy_panel.completed(data, job.spec)
+		elif job.command == "service-check":
 			_apply_service_check(data, job.spec.service)
 		elif job.command == "create":
 			creating = false
@@ -1232,10 +1244,25 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	title.text = "生成服务"
 	service_fields.add_child(title)
 	service_choice = OptionButton.new()
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"]]:
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
+	cli_fields = VBoxContainer.new()
+	service_fields.add_child(cli_fields)
+	cli_path_edit = line(cli_fields, '本机 Codex CLI 程序', str(settings.get_value('service', 'cli_path', 'codex')))
+	var cli_picker = FileDialog.new()
+	cli_picker.title = '选择已登录的 Codex CLI'
+	cli_picker.access = FileDialog.ACCESS_FILESYSTEM
+	cli_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	cli_picker.file_selected.connect(func(path): cli_path_edit.text = path)
+	cli_fields.add_child(cli_picker)
+	button(cli_fields, '选择 Codex CLI…', func(): cli_picker.popup_centered_ratio(0.7))
+	var billing = Label.new()
+	billing.text = '复用 Codex CLI 当前的 ChatGPT 登录；图像生成与编辑计入同一 Codex 额度。网格由本机模型执行。'
+	billing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	cli_fields.add_child(billing)
+	cli_path_edit.text_changed.connect(func(_text): _service_settings_changed())
 	endpoint_edit = line(service_fields, "生成服务地址，如 http://127.0.0.1:8188", "http://127.0.0.1:8188")
 	var image_label = Label.new()
 	image_label.text = "图像模型"
@@ -1265,6 +1292,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 		service_capability_labels[kind] = label
 		service_fields.add_child(label)
 	var guide = Label.new()
+	service_guide = guide
 	guide.text = "请先启动你已有的 ComfyUI 服务，再填写地址并检测。检测只查询连接、节点和模型列表，不生成内容、不下载模型。检测后选择模型并保存；图像生成网格需要源图与网格模型；填写可选重绘提示词后还需要图像模型。文字生成网格需要两类模型。"
 	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	service_fields.add_child(guide)
@@ -1278,9 +1306,12 @@ func _restore_service_settings(settings: ConfigFile):
 	service_ui_loading = true
 	if FileAccess.file_exists(service_config_path):
 		var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_config_path))
-		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy"]:
+		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy", 'codex']:
 			service_saved = {"schema_version":1, "mode":loaded.mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
-			service_choice.select(1 if service_saved.mode == "comfy" else 0)
+			service_choice.select(3 if service_saved.mode == 'codex' else 1 if service_saved.mode == "comfy" else 0)
+			if service_saved.mode == 'codex':
+				service_saved['cli_path'] = str(loaded.get('cli_path', 'codex'))
+				cli_path_edit.text = service_saved.cli_path
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1301,7 +1332,11 @@ func _model_name(choice: OptionButton) -> String:
 	return str(choice.get_item_metadata(choice.selected))
 
 func service_draft() -> Dictionary:
-	return {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+	var value = {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+	if value.mode == 'codex':
+		value['cli_path'] = cli_path_edit.text.strip_edges()
+		value.image_model = 'builtin'
+	return value
 
 func _set_model_options(choice: OptionButton, names: Array, selected_name: String, detected: bool):
 	choice.clear()
@@ -1309,7 +1344,7 @@ func _set_model_options(choice: OptionButton, names: Array, selected_name: Strin
 	choice.set_item_metadata(0, "")
 	var chosen = 0
 	for name in names:
-		choice.add_item(str(name))
+		choice.add_item('CLI 内置图像生成' if str(name) == 'builtin' else str(name))
 		choice.set_item_metadata(choice.item_count - 1, str(name))
 		if str(name) == selected_name: chosen = choice.item_count - 1
 	if not selected_name.is_empty() and chosen == 0:
@@ -1327,15 +1362,22 @@ func _service_settings_changed():
 func _update_service_summary():
 	if service_choice == null: return
 	var mode = _service_mode()
+	if parameter_form != null: parameter_form.set_cli_mode(mode == 'codex')
+	if cli_fields != null: cli_fields.visible = mode == 'codex'
+	if managed_comfy_panel != null: managed_comfy_panel.visible = mode == 'codex'
+	if service_guide != null: service_guide.visible = mode != 'codex'
+	if mode == 'codex' and _model_name(image_model_choice) != 'builtin':
+		_set_model_options(image_model_choice, ['builtin'], 'builtin', true)
+	endpoint_edit.visible = mode != 'codex'
 	endpoint_edit.editable = mode == "comfy"
 	image_model_choice.disabled = mode != "comfy"
-	mesh_model_choice.disabled = mode != "comfy"
+	mesh_model_choice.disabled = mode not in ['comfy', 'codex']
 	if mode == "offline":
 		service_status.text = "当前为离线复制演示；不提供图像或网格生成。选择 ComfyUI 并连接真实服务后才能生成。"
 	elif mode == "legacy":
 		service_status.text = "正在兼容已有的高级服务配置。新用户请使用 ComfyUI 选项完成界面配置。"
 	elif service_report.is_empty():
-		service_status.text = "已恢复服务设置，待检测；运行前会检查连接与模型。" if service_draft() == service_saved else "服务设置尚未保存。请检测连接、选择模型，再保存。"
+		service_status.text = ('图像使用当前 CLI 登录额度；网格需要本机模型。请检测并保存。' if mode == 'codex' else "已恢复服务设置，待检测；运行前会检查连接与模型。") if service_draft() == service_saved else "服务设置尚未保存。请检测连接、选择模型，再保存。"
 	for kind in service_capability_labels:
 		var label: Label = service_capability_labels[kind]
 		if kind == "copy": label.text = node_label(kind) + "：可用，不调用模型"
@@ -1364,7 +1406,7 @@ func save_service_settings():
 		service_status.text = "已保存旧配置兼容模式。已有服务仍由其高级配置提供。"
 		return
 	var draft = service_draft()
-	if draft.mode == "comfy" and not _valid_service_endpoint(draft.endpoint):
+	if draft.mode in ['comfy', 'codex'] and not _valid_service_endpoint(draft.endpoint):
 		_show_run_problem("服务地址应为 http:// 或 https:// 加主机与端口，不可包含账号、密码、查询参数或路径。请修正后重新检测。")
 		return
 	var temporary = service_config_path + ".tmp-" + str(Time.get_ticks_usec())
@@ -1391,7 +1433,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -1426,13 +1468,13 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
-	if _service_mode() != "comfy":
+	if _service_mode() not in ['comfy', 'codex']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在本机设置中检测连接、选择模型并保存。"
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
 	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty()
-	if (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
+	if _service_mode() != 'codex' and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
 		return "该节点的图像重绘需要图像模型，请检测模型并保存选择。" if redraw else "尚未选择图像模型，请检测当前服务中的模型并保存选择。"
 	if kind.ends_with("mesh") and service_saved.mesh_model.is_empty():
 		return "尚未选择网格模型，请检测当前服务中的模型并保存选择。"

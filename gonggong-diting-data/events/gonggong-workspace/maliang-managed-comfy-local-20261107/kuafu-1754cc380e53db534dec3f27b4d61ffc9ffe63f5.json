@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1754cc380e53db534dec3f27b4d61ffc9ffe63f5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5b1974d57673821f4345b0a6f2b750123470e786d157cbee298ce568a98dd513",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/429",
+    "action": "validation",
+    "detection_head": "5026ac8f3466503974eac93161fc0797c714a286",
+    "context_sha256": "300e9fad917d3b7fd2ab8f307ffbcebf26a952daae7535a0405ae32a5411761e",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "evidence": "Both actual CLI probes completed exit0 with built-in generated PNGs, 1254x1254; v2 SHA6d91843a4e8aa4a0961cb7cf95c34ee50e5a971bd9798248644ed304af76a442. Independent reviewer verified PNG, CLI events and current ChatGPT auth. Initial zero-byte redirected logs were buffered, not proof of no launch.",
+    "diagnosis": "CLI supports native image generation under current login. WebSocket connection attempts failed, but CLI HTTPS fallback completed both requests. No endpoint/credential change or desktop daemon restart was needed; exact network root cause remains unproven. New provider will use isolated CLI and per-process supported HTTPS configuration.",
+    "next_action": "Continue scoped Provider and UI integration; verify actual generation/edit plus local Mesh, cancellation and immutable receipts, then exact candidate CI/main. Bug closure waits for delivered integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T10:15:57.388311+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T10:31:04.442901+00:00",
+  "sha256": "c29edef4d83c9ba19cde44d4f69de769f0d521bd7e9a6591cd35813d7c85d9c4"
+}

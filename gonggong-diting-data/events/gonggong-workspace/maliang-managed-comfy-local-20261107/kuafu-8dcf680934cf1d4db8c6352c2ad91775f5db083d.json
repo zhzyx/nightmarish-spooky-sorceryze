@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8dcf680934cf1d4db8c6352c2ad91775f5db083d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "41e217ca586ed548396c55bbc0860c1646eec2f1759819934318a31e7df4f86b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/429",
+    "action": "validation",
+    "detection_head": "d16199d586f0641e74599697f195a8fd7a51157e",
+    "context_sha256": "300e9fad917d3b7fd2ab8f307ffbcebf26a952daae7535a0405ae32a5411761e",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+    "evidence": "formal gate first attempt PR_EVIDENCE_BINDING; staged explicit issue-binding JSON and immutable business validation",
+    "diagnosis": "Business validation and recorded Diting events were present, but their wrapped request fields did not provide the flat issue/request association required by PR gate. Added a separate explicit association file referencing the unchanged validation; no business code or historical event changed.",
+    "next_action": "Stage the real assessment event, rerun the exact formal gate, then signed PR delivery and exact-head CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T11:30:52.318941+00:00",
+    "attempted": "Read gate check_pr_evidence and inspected candidate index; added request_id/issue_number/issue_url with normalized candidate validation digest.",
+    "repair_owner": "/root",
+    "continuable": "All business evidence and independent technical review remain valid; only delivery evidence binding needed correction."
+  },
+  "occurred_at": "2026-11-07T11:32:38.141166+00:00",
+  "sha256": "e51c0b4bb6635965c0c66e77015a87c68ca70953d651db7ac3d42098fbb46f1b"
+}

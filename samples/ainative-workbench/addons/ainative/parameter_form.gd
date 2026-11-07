@@ -17,6 +17,7 @@ var developer_box: VBoxContainer
 var developer_toggle: Button
 var error_label: Label
 var copy_hint: Label
+var cli_hint: Label
 var controls: Dictionary = {}
 var rows: Dictionary = {}
 var kind = "copy"
@@ -25,6 +26,7 @@ var _developer = false
 var _display_text: Dictionary = {}
 var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
+var _cli_mode = false
 
 func _init():
 	name = "GenerationParameterForm"
@@ -42,6 +44,11 @@ func _init():
 	copy_hint.text = "直接预览输入图像或模型，无需生成参数。"
 	copy_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(copy_hint)
+	cli_hint = Label.new()
+	cli_hint.text = 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	cli_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	cli_hint.hide()
+	add_child(cli_hint)
 	for key in ["width", "height"]: _number_field(self, key)
 	advanced_toggle = Button.new()
 	advanced_toggle.text = "高级生成选项"
@@ -152,6 +159,21 @@ func configure(node_kind: String, parameters: Dictionary):
 	for key in ["mesh_steps", "mesh_resolution", "octree_resolution", "mesh_threshold", "mesh_algorithm"]:
 		rows[key].visible = kind.ends_with("mesh")
 	_raw_changed()
+	_apply_cli_controls()
+
+func set_cli_mode(enabled: bool):
+	_cli_mode = enabled
+	_apply_cli_controls()
+
+func _apply_cli_controls():
+	var generator = kind != 'copy'
+	cli_hint.visible = _cli_mode and generator
+	rows.seed.visible = generator and (not _cli_mode or kind.ends_with('mesh'))
+	rows.seed.get_child(0).text = '网格随机种子' if _cli_mode and kind.ends_with('mesh') else '随机种子'
+	rows.steps.visible = generator and not _cli_mode
+	rows.denoise.visible = not _cli_mode and kind in ['image_to_image', 'image_to_mesh']
+	advanced_toggle.visible = generator and (not _cli_mode or kind.ends_with('mesh'))
+	if not advanced_toggle.visible: advanced_box.hide()
 
 func set_developer_mode(enabled: bool):
 	_developer = enabled

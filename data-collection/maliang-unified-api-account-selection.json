@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-unified-api-account-selection-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-managed-comfy-local-20261107",
+  "kind": "correction",
+  "occurred_at": "2026-11-07T10:10:28.446618+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/428",
+  "agent": {
+    "id": "codex-maliang-comfy",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "user_decision": "生成也使用同一个API账号和额度",
+    "required_decision": "供应商名称和账号类型尚未提供",
+    "local_gpu_proposal": "superseded_before_implementation",
+    "workers": "actually_interrupted",
+    "service_processes_started": false,
+    "production_source_changed": false,
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-managed-comfy-local-request-20261107"
+  ]
+}
