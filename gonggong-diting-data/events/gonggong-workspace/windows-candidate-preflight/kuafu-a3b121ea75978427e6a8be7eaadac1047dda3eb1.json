@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a3b121ea75978427e6a8be7eaadac1047dda3eb1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-candidate-preflight",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f1d60a3dd5f82cd15ec07684bc1afc985adf832a91581eb1c06850b55f6a67d0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+    "action": "validation",
+    "detection_head": "7860c8146f9fd4512fdf661589a4751f29439b62",
+    "context_sha256": "cebded0456e90d4899f02838f1882a10fde03dae1fff463e0b40067d0bd7079d",
+    "operator": "Sail-Li",
+    "worker": "codex-native-preflight-535",
+    "authority_ref": "Issue #535 pre-delivery validation",
+    "evidence": "data-collection/windows-candidate-preflight-verified.json",
+    "diagnosis": "Missing request-bound verification JSON in the staged scope.",
+    "next_action": "Stage verified native and editor receipts then rerun delivery gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T22:30:45.025784+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T22:36:34.859044+00:00",
+  "sha256": "ea53a0bc49211972fb479c62e12b0a9a5ccbce27a63782131ac111df12f9afb4"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7dc3c5e2a5aa15b7df3d270bd0d6cb69b635c48c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-e7b19bb55d61d110914a",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/534",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c6fb1aadb9000eaf6b3a69a4aace7d10d7f4e63cd665c5129a94245b81aaee5d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/534",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+    "action": "user-report",
+    "detection_head": "ab24a0bedd74d70504d369d580acb619eb5ea942",
+    "context_sha256": "f92d32a71b01e7d95e9c33718506afd860b5b51ba47dd0bf429edb76aa678a1e",
+    "operator": "Sail-Li",
+    "worker": "codex-native-preflight-535",
+    "authority_ref": "Issue #535 and current collaborator authorization for #534 preflight diagnosis",
+    "evidence": "Original actor/owner validate-only passed; same registered branch and base; stable Windows editor returned BRANCH_EQUALS=true RAW_SOURCE_EQUALS=false NORMALIZED_SOURCE_EQUALS=true SOURCE_TREE=true.",
+    "diagnosis": "Python stores native Windows separators; C++ validated source_root/common_dir against Godot slash-normalized absolute paths and mislabeled that failure as a branch change. Legacy worker UI dropped the failed request_end; no execution model call was made.",
+    "next_action": "Normalize platform separators; preserve exact branch/base/repository/owner checks. Verify bound preflight feedback without model replay; deliver #535.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T21:59:14.677092+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T22:12:33.085986+00:00",
+  "sha256": "dc9a3cc2f0a5a3f948d4d5f42d36b6c60da4f3059afb9db2db97cdf278100b7b"
+}

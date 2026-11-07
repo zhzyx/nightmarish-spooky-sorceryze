@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-624f307e2bc4aaa4d89518119882db51fa69ba95",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-candidate-preflight",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6f5ee2610ee29b6613caae8fd8be6fc9470ca8182bb8104610cae2374a6bfc3d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+    "action": "delivery",
+    "detection_head": "aea1c4287a1d3f1b3ccefa8061d2f688dc841923",
+    "context_sha256": "5c2c45717e555b30f784a282a4b31509d8f8e895f976203a8c24b769e26f040e",
+    "operator": "Sail-Li",
+    "worker": "codex-native-preflight-535",
+    "authority_ref": "Issue #535 release checks",
+    "evidence": "data-collection/windows-candidate-preflight-verified.json",
+    "diagnosis": "Working receipt encoded CRLF despite an LF-only staged blob.",
+    "next_action": "Normalize receipt to LF, verify staged bytes and resubmit.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T22:46:51.061405+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T22:47:44.254985+00:00",
+  "sha256": "6895f24d223d6a7d9f6c31ff76936e90a20b4d0dbef7cfcc41912dee7cfa4742"
+}

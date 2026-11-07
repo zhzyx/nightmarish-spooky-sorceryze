@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "windows-candidate-preflight-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-candidate-preflight",
+  "kind": "request",
+  "occurred_at": "2026-11-07T22:23:21.653173Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/535",
+  "agent": {
+    "id": "codex-native-preflight-535",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "修复 Windows 候选路径误判和天枢失败状态；只读复核原工单候选。",
+    "design_document": "design-docs/windows-candidate-preflight.md"
+  },
+  "evidence_refs": [],
+  "sha256": "2862e852cffe612ff6797269734c849b1e0cc730922aeeb5226e00612f204c14"
+}

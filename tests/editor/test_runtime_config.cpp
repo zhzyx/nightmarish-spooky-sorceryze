@@ -43,6 +43,33 @@ TEST_FORCE_LINK(test_runtime_config)
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 
+TEST_CASE("[Editor][AIChat] Recorded candidate directory preserves identity across native path separators") {
+	const String path = AIChatHostRuntime::canonical_directory(OS::get_singleton()->get_executable_path().get_base_dir());
+	REQUIRE_FALSE(path.is_empty());
+	CHECK(AIChatHostRuntime::matches_recorded_directory(path, path));
+#ifdef WINDOWS_ENABLED
+	CHECK(AIChatHostRuntime::matches_recorded_directory(path, path.replace_char('/', '\\')));
+#endif
+	CHECK_FALSE(AIChatHostRuntime::matches_recorded_directory(path, path + "-another"));
+	CHECK_FALSE(AIChatHostRuntime::matches_recorded_directory(path, path.path_join("..")));
+
+	// An opt-in host receipt exercises the actual native checkout guard without dispatching a model.
+	const String receipt = OS::get_singleton()->get_environment("GONGGONG_TEST_CANDIDATE_RECEIPT");
+	if (!receipt.is_empty()) {
+		Dictionary candidate = JSON::parse_string(FileAccess::get_file_as_string(receipt));
+		String error;
+		REQUIRE_MESSAGE(AIChatHostRuntime::validate_candidate_checkout(candidate, error), error.utf8().get_data());
+		const String branch = candidate["branch"];
+		candidate["branch"] = branch + "-different";
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(candidate, error));
+		CHECK(error.begins_with("candidate_branch_changed"));
+		candidate["branch"] = branch;
+		candidate["common_dir"] = path;
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(candidate, error));
+		CHECK(error.begins_with("candidate_repository_or_base_changed"));
+	}
+}
+
 class RuntimeConfigTestAccess {
 public:
 	static Error update_file(const String &p_file, const String &p_field, const String &p_value) {

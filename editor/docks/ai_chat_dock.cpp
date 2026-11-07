@@ -1543,6 +1543,12 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_design_turn_started();
 	}
 	if (was_busy && !p_busy) {
+		const Dictionary execution = snapshot_state.get("daqian_execution", Dictionary());
+		if (!execution.is_empty() && !consultation_turn && snapshot_state.get("conversation_id", "") == conversation_id) {
+			const Dictionary last = transcript.is_empty() ? Dictionary() : Dictionary(transcript.back());
+			const String error = !turn_completed && last.get("role", "") == "error" ? String(last["content"]) : String();
+			emit_signal("daqian_execution_finished", execution, error, turn_completed || turn_model_requests > 0);
+		}
 		if (consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id) {
 			const String source = daqian_preview_source;
 			daqian_preview_source = String();
@@ -1982,6 +1988,9 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	if (!p_daqian_selection.is_empty()) {
 		// Environment setup and clarification can resume this intake after the model picker is edited.
 		snapshot_state["daqian_model"] = String(p_daqian_selection["id"]).strip_edges();
+		if (p_daqian_selection.has("execution_receipt")) {
+			snapshot_state["daqian_execution"] = p_daqian_selection["execution_receipt"];
+		}
 	}
 	snapshot_state["summary"] = _redact(text.left(160));
 	snapshot_state["messages_before"] = JSON::parse_string(_redact(JSON::stringify(messages)));
@@ -3832,6 +3841,7 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("daqian_approval_changed"));
 	ADD_SIGNAL(MethodInfo("daqian_approval_state", PropertyInfo(Variant::STRING, "token"), PropertyInfo(Variant::STRING, "state")));
 	ClassDB::bind_method(D_METHOD("launch_daqian_routing", "binding", "selection"), &AIChatDock::_launch_daqian_routing);
+	ClassDB::bind_method(D_METHOD("get_legacy_candidate_failure", "owner", "workspace", "issue"), &AIChatDock::_get_legacy_candidate_failure);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_daqian_chat);
@@ -3840,6 +3850,7 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_failed", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "reason")));
+	ADD_SIGNAL(MethodInfo("daqian_execution_finished", PropertyInfo(Variant::DICTIONARY, "receipt"), PropertyInfo(Variant::STRING, "error"), PropertyInfo(Variant::BOOL, "past_preflight")));
 	ADD_SIGNAL(MethodInfo("daqian_work_event", PropertyInfo(Variant::STRING, "workspace"), PropertyInfo(Variant::DICTIONARY, "binding"), PropertyInfo(Variant::STRING, "worker"), PropertyInfo(Variant::STRING, "kind"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::STRING, "status")));
 	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
 }
@@ -3851,6 +3862,41 @@ void AIChatDock::_emit_daqian_requirement_phase(const String &p_phase, const Dic
 	if (!source.is_empty()) {
 		emit_signal("daqian_requirement_phase", source, p_phase, p_design);
 	}
+}
+
+String AIChatDock::_get_legacy_candidate_failure(const String &p_owner, const String &p_workspace, int64_t p_issue) const {
+	if (p_issue <= 0 || p_workspace != String(EDITOR_GET("gonggong/workspace"))) {
+		return String();
+	}
+	// This diagnostic only recognizes a fixed old error, never returns conversation text.
+	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
+		const int id = agent_tabs->get_tab_metadata(i);
+		const AgentSession *session = agent_sessions.getptr(id);
+		if (id != active_agent && !session) {
+			continue;
+		}
+		const String owner = id == active_agent ? conversation_id : session->conversation_id;
+		if (owner != p_owner) {
+			continue;
+		}
+		const Dictionary snapshot = id == active_agent ? snapshot_state : session->snapshot_state;
+		const Array records = id == active_agent ? transcript : session->transcript;
+		if (snapshot.get("conversation_id", "") != owner || AIChatHostRuntime::canonical_directory(snapshot.get("requirement_workspace", "")) != AIChatHostRuntime::canonical_directory(p_workspace) || records.is_empty() || (id == active_agent && busy)) {
+			return String();
+		}
+		const Dictionary last = records.back();
+		if (last.get("role", "") != "error" || !String(last.get("content", "")).begins_with("candidate_branch_changed:")) {
+			return String();
+		}
+		const String start_message = vformat(U"核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。", p_issue);
+		for (int j = records.size() - 2; j >= 0; j--) {
+			const Dictionary message = records[j];
+			if (message.get("role", "") == "user") {
+				return message.get("snapshot_id", "") == snapshot.get("id", "") && message.get("content", "") == start_message ? String(U"candidate_branch_changed · 上一轮候选分支预检失败") : String();
+			}
+		}
+	}
+	return String();
 }
 
 Dictionary AIChatDock::_get_daqian_models() const {

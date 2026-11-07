@@ -118,43 +118,7 @@ bool AIChatDock::_validate_engine_candidate(String &r_error) const {
 		r_error = "candidate_issue_mismatch: active Issue or conversation changed.";
 		return false;
 	}
-	const String source = candidate["source_root"];
-	const String link = FileAccess::get_file_as_string(source.path_join(".git")).strip_edges();
-	if (!link.begins_with("gitdir: ")) {
-		r_error = "candidate_git_link_invalid: expected an owned Git worktree.";
-		return false;
-	}
-	String gitdir = link.trim_prefix("gitdir: ");
-	if (!gitdir.is_absolute_path()) {
-		gitdir = source.path_join(gitdir).simplify_path();
-	}
-	const String head = FileAccess::get_file_as_string(gitdir.path_join("HEAD")).strip_edges();
-	if (AIChatHostRuntime::canonical_directory(source) != source || head != "ref: refs/heads/" + String(candidate["branch"]) || !FileAccess::exists(source.path_join("SConstruct"))) {
-		r_error = "candidate_branch_changed: the host-owned source branch is no longer active.";
-		return false;
-	}
-	const String git = OS::get_singleton()->get_environment("GONGGONG_GIT").is_empty() ? String("git") : OS::get_singleton()->get_environment("GONGGONG_GIT");
-	for (const bool ancestry : { false, true }) {
-		List<String> args;
-		args.push_back("-C");
-		args.push_back(source);
-		if (ancestry) {
-			for (const String &arg : { String("merge-base"), String("--is-ancestor"), String(candidate["base_sha"]), String("HEAD") }) {
-				args.push_back(arg);
-			}
-		} else {
-			args.push_back("rev-parse");
-			args.push_back("--path-format=absolute");
-			args.push_back("--git-common-dir");
-		}
-		String output;
-		int code = -1;
-		if (OS::get_singleton()->execute(git, args, &output, &code) != OK || code != 0 || (!ancestry && (output.is_empty() || AIChatHostRuntime::canonical_directory(output.strip_edges()) != String(candidate["common_dir"])))) {
-			r_error = "candidate_repository_or_base_changed: source identity must be revalidated.";
-			return false;
-		}
-	}
-	return true;
+	return AIChatHostRuntime::validate_candidate_checkout(candidate, r_error);
 }
 
 bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
