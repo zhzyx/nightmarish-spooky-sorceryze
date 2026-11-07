@@ -33,6 +33,8 @@ const UNKNOWN_CREATOR := "未知创建人"
 const UNASSIGNED := "未指派"
 const STATE_ORDER := ["needs-decision", "awaiting_approval", "blocked", "in-progress", "in-review", "planned", "open", "done", "closed", "cancelled"]
 var issue_link := LinkButton.new()
+const LIST_ZOOM_CONTINUATION_MS := 650
+var list_zoom_until := 0
 var zoom_crossed := false
 var zoom_anchor := Vector2.INF
 var overview: GraphEdit
@@ -166,6 +168,7 @@ func _ready() -> void:
 	board_views.add_tab("列表", get_theme_icon("ListSelect", "EditorIcons"))
 	board_views.add_tab("依赖图", get_theme_icon("GraphEdit", "EditorIcons"))
 	board_views.tab_changed.connect(func(view):
+		list_zoom_until = 0
 		saved.board_view = view
 		far_depth = 0.0
 		project_anchor.hide()
@@ -280,6 +283,7 @@ func _ready() -> void:
 		_set_far_depth(0.0, 0.8)
 		overview.scroll_offset = Vector2.ZERO)
 	issue_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	issue_list.tooltip_text = "Alt + 滚轮向上或双指放大：打开指针所在工单"
 	issue_list.hide_root = true
 	issue_list.select_mode = Tree.SELECT_ROW
 	issue_list.columns = 3
@@ -298,10 +302,7 @@ func _ready() -> void:
 		if selected and selected.visible and selected.get_metadata(0) is Dictionary:
 			_open_issue(selected.get_metadata(0))
 			return_button.grab_focus())
-	issue_list.gui_input.connect(func(event):
-		if project_mode and creator_filter.selected > 0 and event is InputEventMouseButton and event.pressed and event.alt_pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_return_project_graph()
-			issue_list.accept_event())
+	issue_list.gui_input.connect(_list_zoom_input)
 	add_child(issue_list)
 	_style_board_controls()
 	empty_state = CenterContainer.new()
@@ -1559,6 +1560,27 @@ func _start_progress_watch(config: Dictionary) -> void:
 		watcher = OS.execute_with_pipe(config.node, [entry, config.directory], false)
 
 
+func _list_zoom_input(event: InputEvent) -> void:
+	var inward := false
+	if event is InputEventMouseButton and event.pressed:
+		if project_mode and creator_filter.selected > 0 and event.alt_pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			issue_list.accept_event()
+			_return_project_graph()
+			return
+		inward = event.button_index == MOUSE_BUTTON_WHEEL_UP and (event.alt_pressed or Time.get_ticks_msec() < list_zoom_until)
+		if not inward:
+			list_zoom_until = 0
+	elif event is InputEventMagnifyGesture:
+		inward = event.factor > 1.0
+	if inward:
+		var row := issue_list.get_item_at_position(event.position)
+		if row and row.get_metadata(0) is Dictionary:
+			list_zoom_until = 0
+			issue_list.accept_event()
+			row.select(0)
+			_open_issue(row.get_metadata(0))
+
+
 func _input(event: InputEvent) -> void:
 	if not overview.is_visible_in_tree():
 		return
@@ -1739,12 +1761,13 @@ func _open_creator_at(point: Vector2) -> bool:
 					creator_filter.select(index)
 					overview.zoom = 0.85
 					board_views.current_tab = 0
+					list_zoom_until = Time.get_ticks_msec() + LIST_ZOOM_CONTINUATION_MS
 					advanced_bar.show()
 					advanced_button.text = "收起筛选 ▴"
 					if issue_rows.has(nearest_url):
 						var row: TreeItem = issue_rows[nearest_url]
 						row.select(0)
-						issue_list.scroll_to_item.call_deferred(row)
+						issue_list.scroll_to_item.call_deferred(row, true)
 					return true
 	return false
 
