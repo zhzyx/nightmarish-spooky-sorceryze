@@ -11,6 +11,27 @@ func check(value: bool, message: String) -> void:
 		push_error(message)
 		failed = true
 
+func check_replaced_button(panel, row: Dictionary, op: Dictionary) -> void:
+	var details = panel.details_script.new()
+	root.add_child(details)
+	details.build()
+	var confirmed := []
+	details.confirmation_requested.connect(func(token): confirmed.append(token))
+	var item := {"number":row.number}
+	details.display(item, op, Callable())
+	var old_button: Button = details.details_confirm
+	var next := op.duplicate()
+	next.token = "replacement"
+	details.display(item, next, Callable())
+	old_button.pressed.emit()
+	details.details_confirm.pressed.emit()
+	var closed_button: Button = details.details_confirm
+	details.dismiss()
+	closed_button.pressed.emit()
+	check(confirmed == ["replacement"], "A replaced or closed detail button confirmed a different operation")
+	details.queue_free()
+
+
 func run() -> void:
 	await create_timer(1).timeout
 	var repo := OS.get_environment("DAQIAN_TEST_REPO")
@@ -46,7 +67,7 @@ func run() -> void:
 	endpoint.text = OS.get_environment("DAQIAN_TEST_ENDPOINT")
 	view.find_child("AutoExecuteCommands", true, false).button_pressed = false
 	view.find_child("AllowTools", true, false).button_pressed = true
-	view.find_child("RefreshModels", true, false).pressed.emit()
+	endpoint.text_changed.emit(endpoint.text)
 	var picker = view.find_child("ModelPicker", true, false)
 	var limit := Time.get_ticks_msec() + 10000
 	while not chat.get_daqian_models().options.any(func(option): return option.id == "fixture") and Time.get_ticks_msec() < limit:
@@ -88,8 +109,9 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	check(panel.details_panel.is_visible_in_tree() and panel.editor.canvas.is_visible_in_tree(), "Graph and details must coexist")
-	check(panel.details_document.get_parsed_text().contains("Bound section") and panel.details_document.get_v_scroll_bar().value > 0, "Document did not scroll to the bound section")
-	check(panel._document_anchor(PackedStringArray(["# Other"]), op) == -1, "Unbound prose should not be highlighted")
+	check(panel.details_panel.details_document.get_parsed_text().contains("Bound section") and panel.details_panel.details_document.get_v_scroll_bar().value > 0, "Document did not scroll to the bound section")
+	check(panel.details_panel._document_anchor(PackedStringArray(["# Other"]), op) == -1, "Unbound prose should not be highlighted")
+	check_replaced_button(panel, row, op)
 	var marker := repo.path_join("executions")
 	check(not FileAccess.file_exists(marker), "Reading details executed the tool")
 	check(not chat.confirm_daqian_approval("obsolete-token"), "Wrong token was accepted")
@@ -99,8 +121,8 @@ func run() -> void:
 	await panel._confirm_operation(op.token)
 	check(not FileAccess.file_exists(marker) and not chat.get_daqian_approval().is_empty(), "Stale source was approved")
 	DirAccess.remove_absolute(repo.path_join("changed"))
-	panel.details_confirm.pressed.emit()
-	panel.details_confirm.pressed.emit()
+	panel.details_panel.details_confirm.pressed.emit()
+	panel.details_panel.details_confirm.pressed.emit()
 	deadline = Time.get_ticks_msec() + 12000
 	while panel.editor.workflow.get("operation", {}).get("state") != "completed" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
@@ -109,6 +131,16 @@ func run() -> void:
 	check(not panel.details_panel.visible and panel.editor.workflow.get("operation", {}).get("state") == "completed", "Missing terminal state")
 	await panel._start_or_view_direct(panel._direct_binding())
 	check(panel.conversation.is_visible_in_tree(), "Unable to revisit the active Issue")
+	# A completed tool receipt precedes the assistant's final response.
+	# Sending before the response would steer the running turn.
+	deadline = Time.get_ticks_msec() + 12000
+	var verified := false
+	while not verified and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+		for label in view.find_children("*", "RichTextLabel", true, false):
+			if label.get_parsed_text().contains("Verified"):
+				verified = true
+	check(verified, "Tool continuation did not finish")
 	var input = view.find_child("ChatInput", true, false)
 	input.text = "Check the receipt again"
 	view.find_child("Send", true, false).pressed.emit()
@@ -119,10 +151,31 @@ func run() -> void:
 		for label in view.find_children("*", "RichTextLabel", true, false):
 			if label.get_parsed_text().contains("Receipt rechecked"):
 				replied = true
+	if not replied:
+		for label in view.find_children("*", "RichTextLabel", true, false):
+			print(label.get_parsed_text().right(350))
 	check(replied and dock.is_visible_in_tree(), "Follow-up did not return in the bound Tianshu conversation")
 	panel._leave_conversation()
 	check(panel.flow_split.is_visible_in_tree() and chat.find_child("AIWorkspacePages", true, false) != null, "Normal editor views were not restored")
+	await check_native_canvas(panel, row)
 	if not failed:
 		print("DAQIAN_INLINE_APPROVAL_OK")
 	await create_timer(0.8).timeout
 	quit(1 if failed else 0)
+
+func check_native_canvas(panel, row: Dictionary) -> void:
+	var canvas = panel.canvas_panel
+	var issue: String = panel.current
+	canvas.canvas_message.text = "canvas fixture question"
+	canvas.canvas_message.text_submitted.emit(canvas.canvas_message.text)
+	var deadline := Time.get_ticks_msec() + 10000
+	while canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	check(not canvas.pending_turns.is_empty(), "The native canvas did not start its scoped preview: " + panel.notice.text)
+	panel._show_board()
+	while not canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+	await process_frame
+	check("Canvas fixture answer" not in canvas.canvas_log.text, "The Issue answer appeared on the board")
+	await panel._open_issue(row)
+	check(canvas.canvas_location == issue and "Canvas fixture answer" in canvas.canvas_log.text, "Returning to the Issue lost its native preview receipt")

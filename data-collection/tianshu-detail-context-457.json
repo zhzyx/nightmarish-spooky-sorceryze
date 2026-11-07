@@ -1,0 +1,42 @@
+{
+  "request_id": "tianshu-detail-chat-boundary-20261107",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/457",
+  "parent_issue": 442,
+  "base": "a2cd8003a3f7ed651a3ed5cd62e669ecca3cc4fa",
+  "platform": "Windows x86_64, headless editor, tests=yes accesskit=no d3d12=no angle=no",
+  "verification": [
+    {
+      "state": "passed",
+      "editor_sha256": "e8881aea344e0834f19d2b36d6bcefb143e79a318f2c06570a68827806d9be43",
+      "scenario": "direct",
+      "scope": "native editor controls, unknown publication replay, switched selection during start and recovery in a second editor process"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "e8881aea344e0834f19d2b36d6bcefb143e79a318f2c06570a68827806d9be43",
+      "scenario": "publish",
+      "scope": "native editor from confirmed Issue to framework routing, failed model recovery and bound Yanshi clarification"
+    },
+    {
+      "state": "passed",
+      "editor_sha256": "e8881aea344e0834f19d2b36d6bcefb143e79a318f2c06570a68827806d9be43",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    {
+      "scenario": "approval",
+      "state": "passed",
+      "scope": "Native HTTP transport and editor controls. Replaced/closed approval buttons, changed issue revision, Markdown anchor, double confirmation producing one command, follow-up in the bound conversation, and an answer received on the board then read on the original issue.",
+      "marker": "DAQIAN_INLINE_APPROVAL_OK",
+      "editor_sha256": "e8881aea344e0834f19d2b36d6bcefb143e79a318f2c06570a68827806d9be43"
+    },
+    {
+      "scenario": "canvas",
+      "state": "passed",
+      "scope": "Project, creator and issue context changes; independent model and input restoration, stable conversation identity with one-shot receipts, stale action rejection, scoped execution and requirement routing.",
+      "marker": "DAQIAN_CANVAS_CHAT_OK",
+      "editor_sha256": "e8881aea344e0834f19d2b36d6bcefb143e79a318f2c06570a68827806d9be43"
+    }
+  ],
+  "followup": "Cross-device live business acceptance stays with #442."
+}
