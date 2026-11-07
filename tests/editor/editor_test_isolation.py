@@ -4,6 +4,9 @@ macos_editor leaves other platforms' existing runner behavior intact. copy_edito
 also serves runners which already require a private executable on every platform.
 A bare executable is supported; application bundles must be unpacked explicitly.
 Each copy requires its full logical size plus 64 MiB free, even on cloneable APFS.
+The destination must not inherit a GongGong workspace from its executable path
+or the current environment. Self-contained EditorSettings alone do not disable
+the host's workspace discovery or access-only helpers.
 The caller owns the enclosing TemporaryDirectory and its cleanup/lifetime.
 """
 
@@ -28,6 +31,14 @@ def copy_editor(source, directory):
     parent = directory.parent.resolve(strict=True)
     if directory.parent.is_symlink() or not parent.is_dir():
         raise ValueError("Isolation parent must be an existing directory without symlinks")
+    if os.environ.get("GONGGONG_WORKSPACE", ""):
+        raise ValueError("Inherited GONGGONG_WORKSPACE would bind the private editor; clear it in the test environment")
+    for ancestor in (parent, *parent.parents):
+        marker = ancestor / "gonggong-workspace.json"
+        if marker.exists() or marker.is_symlink():
+            raise ValueError(
+                "Private editor destination inherits a GongGong workspace; use a system temporary directory"
+            )
     directory = parent / directory.name
     required = source.stat().st_size + RESERVE_BYTES
     if shutil.disk_usage(parent).free < required:

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-386703296b0660bc51df8ab01f2012477ba8f723",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-test-isolation-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "290c22aef6a98e603f0ac085e6d731377e334bf848753f61160d3e1f7eca8749",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "validation",
+    "detection_head": "d16199d586f0641e74599697f195a8fd7a51157e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "diagnosis": "Private test executables nested under a workspace marker inherited host workspace discovery despite self-contained EditorSettings; inherited workspace environment was another binding path. Both paths now fail before cloning. Root and independent reviewer each ran all eight tests with real private editor seed and restart; global settings hashes unchanged. Earlier affected export trials excluded from isolation acceptance; no global cache records deleted.",
+    "next_action": "Deliver the independently validated two-file isolation correction through normal PR and exact CI, then use the corrected helper for remaining command-interface acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T14:44:34.006060+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T14:47:40.638825+00:00",
+  "sha256": "34a301e18be3bbc5ecc200fd2eb151879f7cbfdd2ac4ab979a18c64bc41ca86a"
+}

@@ -31,12 +31,38 @@ def digest_settings():
 
 class IsolationTests(unittest.TestCase):
     def setUp(self):
+        environment = patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""})
+        environment.start()
+        self.addCleanup(environment.stop)
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
         self.source = self.root / "editor"
         self.source.write_bytes(b"#!/bin/sh\nexit 0\n")
         self.source.chmod(0o755)
+
+    def test_workspace_ancestor_rejected_before_copy_or_directory_creation(self):
+        workspace = self.root / "workspace"
+        private_parent = workspace / "data-collection/receipts"
+        private_parent.mkdir(parents=True)
+        marker = workspace / "gonggong-workspace.json"
+        marker.write_text('{"fixture": true}')
+        target = private_parent / "private-editor"
+        with patch.object(isolation.subprocess, "run") as clone:
+            with self.assertRaisesRegex(ValueError, "inherits a GongGong workspace"):
+                isolation.copy_editor(self.source, target)
+            clone.assert_not_called()
+        self.assertFalse(target.exists())
+        self.assertEqual(marker.read_text(), '{"fixture": true}')
+        self.assertEqual(self.source.read_bytes(), b"#!/bin/sh\nexit 0\n")
+
+    def test_inherited_workspace_environment_rejected_without_disclosure(self):
+        target = self.root / "private-editor"
+        with patch.dict(os.environ, {"GONGGONG_WORKSPACE": "PRIVATE_WORKSPACE_SENTINEL"}):
+            with self.assertRaisesRegex(ValueError, "Inherited GONGGONG_WORKSPACE") as raised:
+                isolation.copy_editor(self.source, target)
+            self.assertNotIn("PRIVATE_WORKSPACE_SENTINEL", str(raised.exception))
+        self.assertFalse(target.exists())
 
     def test_copy_is_private_and_restart_settings_persist(self):
         editor = isolation.copy_editor(self.source, self.root / "private")

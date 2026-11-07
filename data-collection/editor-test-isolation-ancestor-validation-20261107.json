@@ -1,0 +1,27 @@
+{
+  "request_id": "editor-test-isolation-20261107",
+  "issue_number": 389,
+  "scope": "Reopened ancestor/environment workspace binding isolation correction",
+  "source_sha256": {
+    "tests/editor/editor_test_isolation.py": "d508bf1e7f4d6bc5da17adf1c49a60cc7f098897bb9c7de6342bcff7a2499131",
+    "tests/editor/test_editor_test_isolation.py": "60ea4f7566d85a2bb84a62415f79f790c5f0062d15f4a4cc8f2eddcaaf3b9de7"
+  },
+  "root_validation": {
+    "tests": 8,
+    "exit_code": 0,
+    "real_seed_restart": true,
+    "real_settings_unchanged": true
+  },
+  "independent_validation": {
+    "review": "pass; no blocking finding in two-file narrow scope",
+    "tests": 8,
+    "exit_code": 0,
+    "source_binary_sha256": "d6ed6c857cd19adc000656765edbc20e5636410f7500ed6ca9b9b3833dbf8a89",
+    "source_unchanged": true,
+    "real_settings_unchanged": true
+  },
+  "incident": "290c22aef6a98e603f0ac085e6d731377e334bf848753f61160d3e1f7eca8749",
+  "prior_affected_export_rounds_excluded": true,
+  "parent_386_complete": false,
+  "observed_at": "2026-11-07T14:49:25.778653+00:00"
+}
