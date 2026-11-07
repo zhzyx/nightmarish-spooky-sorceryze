@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fc948411a1d6e877bb823cd06d9ee2173089d220",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-9196000e1a2d3352e6a1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2bb76092f7e1d0f91d7b9cff941c43b8707570e3b13eb7798b947d0ea2e4ac10",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/499",
+    "action": "dispatch",
+    "detection_head": "4bae490b4284cb2bf23beb7c16a1ac8ed1e12c7a",
+    "context_sha256": "6cc4b4db2a4bf397e12214831b3f722df17bc6a7578c55b91871b80296631ffd",
+    "operator": "Sail-Li",
+    "worker": "codex/root",
+    "authority_ref": "user-chat-20261108-continue-Sail-Li-open-issues",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/494",
+    "diagnosis": "Native worker launch and receipt persisted. Initial record exceeded 15-second bridge budget; both actual dispatch event files are now recorded and no JSON remains in outbox. No worker reissued.",
+    "next_action": "Keep original reservation, verify terminal callback then reconcile and check committed Diting evidence during delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:13:52.788200+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:15:28.693552+00:00",
+  "sha256": "96ef41a93415c62562c15e124324b1273081b904007acb479d5a1818d8bf0e21"
+}
