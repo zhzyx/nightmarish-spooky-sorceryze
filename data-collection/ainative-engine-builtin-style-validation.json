@@ -1,0 +1,43 @@
+{
+  "request_id": "ainative-engine-builtin-20261107",
+  "issue_number": 374,
+  "state": "passed",
+  "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42334745859",
+  "failed_checks": [
+    "codespell",
+    "copyright-headers"
+  ],
+  "fix_scope": "Two filename header alignments and four unit-spelling occurrences only; no pipeline conditions, geometry, weights, publication or persistence changes.",
+  "changed_files": {
+    "editor/plugins/ainative_editor_plugin.cpp": {
+      "before_sha256": "746413e154e501134cdfd6c2ac424fe384f9aac185b7bdbf7b3bd56b8021064f",
+      "after_sha256": "5eb150873b0612bf1b5eab95a267dcba318190cfd676c8db84190b37e733e3ed"
+    },
+    "editor/plugins/ainative_editor_plugin.h": {
+      "before_sha256": "522fbee3afb8c393657c3b64f158e7572103738924d38847e92665a06fb378d3",
+      "after_sha256": "b745012d76abdd2ba58d92e87501112bae6ca2de27d95dd6b8343df12c970e57"
+    },
+    "samples/ainative-workbench/addons/ainative/rigging.gd": {
+      "before_sha256": "6cd2b95fb2df2ede3a98cbccaac70a249c7a9525dadb82aead91191112fe10d4",
+      "after_sha256": "f0816e7855c40d20a7aecf3fd973f4805ec629637bbe91d1d1dd29fb98ffe342"
+    },
+    "samples/ainative-workbench/addons/ainative/rigging_panel.gd": {
+      "before_sha256": "9a0f013d38be9f7ae1ff77e7e5eceeb484a77848368a3b71d7a242b03417023e",
+      "after_sha256": "0a3e2fb854bc9f4250595a2f4bf1aab47247e9012e7ff7a73d533e153f057ef3"
+    }
+  },
+  "checks": {
+    "copyright_headers": "normalized with existing repository script",
+    "codespell": "passed 2.4.2",
+    "clang_format": "passed 22.1.5",
+    "gdscript_check_only": "passed",
+    "git_diff_check": "passed"
+  },
+  "independent_review": {
+    "reviewer": "/root/ainative_native_review",
+    "state": "passed",
+    "business_evidence_reuse": "Previous 84 native checks and 26 Python tests remain evidence for their recorded source hashes; not represented as a rerun on the formatting-only successor."
+  },
+  "prior_validation": "data-collection/ainative-engine-builtin-validation.json",
+  "local_application": "The currently opened, verified application contains the same pipeline logic; only the normalized English unit spelling and filename header padding differ."
+}

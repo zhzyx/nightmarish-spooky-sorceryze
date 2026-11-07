@@ -49,7 +49,7 @@ func initialize(workbench: Control):
 	add_child(confirm)
 	corrections = TextEdit.new()
 	corrections.custom_minimum_size.y = 85
-	corrections.placeholder_text = 'Joint positions in normalized metres and vertex weight overrides'
+	corrections.placeholder_text = 'Joint positions in normalized meters and vertex weight overrides'
 	corrections.text = '{"joints":{},"weights":{},"yaw_degrees":0}'
 	add_child(corrections)
 	var actions = HBoxContainer.new()
@@ -171,7 +171,7 @@ func load_markers():
 		var v = sk.get_bone_global_rest(i).origin
 		joints[sk.get_bone_name(i)] = [v.x,v.y,v.z]
 	corrections.text = JSON.stringify({'joints':joints,'weights':stored.weights,'yaw_degrees':stored.yaw_degrees,'reference_pose':'marked','weights_geometry':stored.get('weights_geometry','') if not stored.weights.is_empty() else Rig.geometry_key(stored)},'  ')
-	message.text = 'Edit marker coordinates in metres, then Fit. Weight IDs use compacted surface order; changing cleanup changes IDs.'
+	message.text = 'Edit marker coordinates in meters, then Fit. Weight IDs use compacted surface order; changing cleanup changes IDs.'
 
 func _process(_delta):
 	if not is_instance_valid(built):
