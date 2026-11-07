@@ -117,6 +117,8 @@ var current := ""
 var pending_menu: MenuButton
 var draft_menu: MenuButton
 var actor := {}
+signal refresh_finished
+
 var checking := false
 var offline := false
 var toolbar: HFlowContainer
@@ -1711,41 +1713,53 @@ func _use_personal_board(auth: Dictionary) -> void:
 
 func refresh() -> void:
 	if checking:
-		while checking:
-			await get_tree().process_frame
+		await refresh_finished
 		return
 	checking = true
 	refresh_button.disabled = true
 	refresh_button.text = "刷新中…"
+	await _refresh_board()
+	while refresh_pending:
+		refresh_pending = false
+		await _refresh_board()
+	checking = false
+	refresh_button.disabled = false
+	refresh_button.text = "刷新"
+	refresh_finished.emit()
+
+
+func _refresh_board() -> void:
 	var root := _repo()
-	if actor.is_empty() or picker_scope != root:
+	var value := {}
+	offline = false
+	var has_session := not actor.is_empty() and picker_scope == root
+	if has_session:
+		# The board host verifies the session both before and after reading.
+		var before := scope_epoch
+		value = await _board_command(false, actor.user_id, project_mode)
+		if root == _repo() and before != scope_epoch:
+			refresh_pending = true
+			return
+		if value.get("session_changed", false) and root == _repo():
+			_forget("工作区或账号已切换，正在重新核实身份…")
+			has_session = false
+	var settings := EditorInterface.get_editor_settings()
+	if not has_session and root == _repo():
 		_gate_visibility(false)
 		notice.text = "正在核对当前仓库的协作资格…"
-	offline = false
-	var expected := str(actor.get("user_id","")) if picker_scope == root else ""
-	var value: Dictionary = await _board_command(true,expected)
-	if value.get("session_changed",false) and root == _repo():
-		_forget("工作区或账号已切换，正在重新核实身份…")
 		value = await _board_command(true)
-	if root == _repo() and value.has("access"):
-		_use_personal_board(value.access)
-		EditorInterface.get_editor_settings().set_project_metadata("daqian_access",_access_key(),{"actor":actor,"checked":actor.get("verified_at_unix",Time.get_unix_time_from_system())})
-		notice.text = "正在更新工单 · 上次核实 " + str(board.get("verified_at","暂无快照"))
-		var before := scope_epoch
-		value = await _board_command(false,actor.user_id,project_mode)
-		if before != scope_epoch:
-			checking = false
-			refresh_button.disabled = false
-			refresh_button.text = "刷新"
-			refresh.call_deferred()
-			return
-	var settings := EditorInterface.get_editor_settings()
+		if root == _repo() and value.has("access"):
+			_use_personal_board(value.access)
+			settings.set_project_metadata("daqian_access", _access_key(), {"actor":actor, "checked":actor.get("verified_at_unix",Time.get_unix_time_from_system())})
+			notice.text = "正在更新工单 · 上次核实 " + str(board.get("verified_at", "暂无快照"))
+			var before := scope_epoch
+			value = await _board_command(false, actor.user_id, project_mode)
+			if root == _repo() and before != scope_epoch:
+				refresh_pending = true
+				return
 	if root != _repo():
 		_forget("工作区已切换")
-		checking = false
-		refresh_button.disabled = false
-		refresh_button.text = "刷新"
-		refresh.call_deferred()
+		refresh_pending = true
 		return
 	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
 		board = value.board
@@ -1763,18 +1777,18 @@ func refresh() -> void:
 			fresh_progress = false
 			offline = true
 			_use_personal_board(prior.actor)
-			_draw_board()
+			if project_mode:
+				_set_project(false)
+				if not current.is_empty():
+					_show_board()
+			else:
+				_draw_board()
 			_sync_workflow()
 			notice.text = "离线个人快照 · " + str(actor.login) + " · 上次核实 " + str(board.get("verified_at","未知"))
 		else:
 			settings.set_project_metadata("daqian_access",_access_key(),{})
 			_forget(str(value.get("error","当前账号的仓库协作身份未核实")))
-	checking = false
-	refresh_button.disabled = false
-	refresh_button.text = "刷新"
-	if refresh_pending:
-		refresh_pending = false
-		refresh.call_deferred()
+
 
 
 func _stop_progress_watch() -> void:
@@ -1884,6 +1898,8 @@ func _set_project(enabled: bool) -> void:
 	else:
 		board = personal_snapshot
 		personal_snapshot = {}
+	# A refresh may have started against the old board during the project fetch.
+	scope_epoch += 1
 	project_mode = enabled
 	zoom_anchor = Vector2.INF
 	zoom_crossed = false

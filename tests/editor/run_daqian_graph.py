@@ -56,6 +56,16 @@ mode=mode_path.read_text() if mode_path.is_file() else "member"
 uid=84 if mode=="switch" else 42
 login="next" if mode=="switch" else "fixture"
 a=sys.argv[1:]
+if mode=="overlap" and a[0]=="api" and "/issues?" in a[1]:
+    import time
+    scope="project" if "?state=open" in a[1] else "personal"
+    (mode_path.parent/(scope+"-reading")).touch()
+    deadline=time.monotonic()+12
+    while not (mode_path.parent/(scope+"-release")).exists() and time.monotonic()<deadline:
+        time.sleep(0.02)
+if mode=="offline" and a[0]=="api":
+    print("net/http: TLS handshake timeout", file=sys.stderr)
+    sys.exit(1)
 if a[:2]==["api","graphql"]:
     with (mode_path.parent/"daqian-auth-calls").open("a") as log: print("verify", file=log)
     nodes=[] if mode=="denied" else [{"nameWithOwner":"zhzyx/nightmarish-spooky-sorceryze","databaseId":123}]
@@ -174,14 +184,22 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
     passed = True
     log = ""
     for phase, expected_marker in enumerate(phases):
-        result = subprocess.run(
-            [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
-            env={**env, "DAQIAN_TEST_RESTART": str(phase)},
-            capture_output=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=120,
-        )
+        try:
+            result = subprocess.run(
+                [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],
+                env={**env, "DAQIAN_TEST_RESTART": str(phase)},
+                capture_output=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=120,
+            )
+        except subprocess.TimeoutExpired as error:
+            for output in (error.stdout, error.stderr):
+                if output:
+                    log += output if isinstance(output, str) else output.decode("utf-8", errors="replace")
+            log += f"\n{args.scenario} phase {phase} timed out after {error.timeout}s"
+            passed = False
+            break
         phase_log = result.stdout + result.stderr
         log += phase_log
         if result.returncode or expected_marker not in phase_log or "SCRIPT ERROR" in phase_log:

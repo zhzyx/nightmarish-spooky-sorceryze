@@ -3814,7 +3814,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		show_session();
 		return String();
 	}
-	if (!is_inside_tree() || history_restoring || busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || (p_embedded && !current_matches && (!issue_guide_state.is_empty() || !igniter_state.is_empty() || gonggong_pid >= 0))) {
+	if (!is_inside_tree() || history_restoring || busy || !pending_external_editor_message.is_empty() || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || (p_embedded && !current_matches && (!issue_guide_state.is_empty() || !igniter_state.is_empty() || gonggong_pid >= 0))) {
 		return U"AI 对话正在处理另一项工作，请保留草稿稍后再试。";
 	}
 	if (daqian_chat_host.is_valid() && !current_matches) {
@@ -3869,10 +3869,15 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	if (index < 0 && !unverified_legacy) {
 		index = published_draft;
 	}
+	if (index < 0 && unverified_legacy) {
+		return U"找到旧版关联对话，但无法核实所属账号。请切回原工作区和账号后再打开；原对话仍可从 AI Chat 查看。";
+	}
+	if (models_loading) {
+		// Resume catalog discovery after the explicit work-order action.
+		pending_model_sources |= consumed_model_sources;
+		_cancel_model_query();
+	}
 	if (index < 0) {
-		if (unverified_legacy) {
-			return U"找到旧版关联对话，但无法核实所属账号。请切回原工作区和账号后再打开；原对话仍可从 AI Chat 查看。";
-		}
 		const int before = agent_tabs->get_tab_count();
 		_add_agent();
 		if (agent_tabs->get_tab_count() == before || active_agent != int(agent_tabs->get_tab_metadata(before))) {
@@ -5828,6 +5833,24 @@ void AIChatDock::_poll_process() {
 	_finish_tool(JSON::stringify(result));
 }
 
+void AIChatDock::_cancel_model_query() {
+	request_generation++;
+	if (model_request) {
+		model_request->cancel_request();
+		model_request->queue_free();
+		model_request = nullptr;
+	}
+	if (cli_listing_models) {
+		_cancel_cli();
+		_restore_cli_after_models();
+	}
+	models_loading = false;
+	cli_listing_models = false;
+	model_request_key = String();
+	model_status->set_text(U"模型列表查询已取消，保留当前选择与对话上下文。");
+	_set_busy(false);
+}
+
 void AIChatDock::_stop() {
 	_cancel_engine_candidate();
 	_end_daqian_approval("cancelled");
@@ -5853,23 +5876,11 @@ void AIChatDock::_stop() {
 	// Stop never starts another queued task, including a deferred completion.
 	queue_paused = !queued_messages.is_empty();
 	turn_completed = false;
-	request_generation++;
 	if (models_loading && !busy) {
-		if (model_request) {
-			model_request->cancel_request();
-			model_request->queue_free();
-			model_request = nullptr;
-		}
-		_cancel_cli();
-		_restore_cli_after_models();
-		set_process(cli_process_id >= 0);
-		models_loading = false;
-		cli_listing_models = false;
-		model_request_key = String();
-		model_status->set_text(U"模型列表查询已取消，保留当前选择与对话上下文。");
-		_set_busy(false);
+		_cancel_model_query();
 		return;
 	}
+	request_generation++;
 	if (!cli_partial.is_empty()) {
 		const String interrupted = _redact(cli_partial) + U"\n\n[回复未完成，以上仅为中断前收到的正文。]";
 		transcript.push_back(chat_message("assistant", interrupted));
