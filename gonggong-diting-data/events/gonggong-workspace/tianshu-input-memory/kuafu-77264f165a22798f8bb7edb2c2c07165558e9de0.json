@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-77264f165a22798f8bb7edb2c2c07165558e9de0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9c23bb957e95e7e13ebf22379077d76998e834a47fa79350e86107a6212c9480",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "action": "user-report",
+    "detection_head": "6418b639f5eaca7071e93fc1f3cd1ba14086137b",
+    "context_sha256": "b9ab3805f9d231a183fca52497e2f44cad7f31a52fb598800fb3c2365b2587dc",
+    "operator": "Sail-Li",
+    "worker": "codex-511",
+    "authority_ref": "user-request",
+    "evidence": "Baseline installed Windows/OpenGL 113-ticket board: same short input reached AI Chat, canvas and requirement. Long-draft viewport stress retained 63.1 MiB in old canvas. Four short edits with 28 MB historical drafts synchronously wrote whole cache.",
+    "diagnosis": "Unbounded full-string undo snapshots in the canvas LineEdit and complete personal-cache saves on requirement typing were reproduced. Original whole-machine freeze remains unconfirmed.",
+    "next_action": "Use the working AI Chat TextEdit and scoped atomic draft recovery. Compare baseline and repaired installed editor with real graphical workload.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T19:01:03.326078+00:00",
+    "attempted": null,
+    "repair_owner": "codex-511",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T19:15:29.172581+00:00",
+  "sha256": "8d8b0e26a14ee3a886ae77a10632d014960c3f21d1ddf7ce2127983a3e026d7b"
+}

@@ -345,6 +345,10 @@ Error DirAccessWindows::rename(String p_path, String p_new_path) {
 
 	} else {
 		if (file_exists(new_path)) {
+			if (path.get_base_dir() == new_path.get_base_dir() && !dir_exists(path)) {
+				// Keep the destination intact if the source disappears or the replacement fails.
+				return MoveFileExW((LPCWSTR)(path.utf16().get_data()), (LPCWSTR)(new_path.utf16().get_data()), MOVEFILE_REPLACE_EXISTING) != 0 ? OK : FAILED;
+			}
 			if (remove(new_path) != OK) {
 				return FAILED;
 			}

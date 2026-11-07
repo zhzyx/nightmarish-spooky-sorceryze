@@ -20,6 +20,7 @@ var models_dialog: AcceptDialog
 var editor
 var board_cards: Array[GraphNode] = []
 var board_layout_pending := false
+var last_search_query := ""
 var details_expanded := false
 const ZOOM_TO_PARENT := 0.32
 const ZOOM_TO_ISSUE := 1.66
@@ -73,8 +74,8 @@ var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
 var routing_in_flight := {}
 var chat_work := {}
-const WATCHER_POLL_MS := 2000
-const AUTO_REFRESH_INTERVAL_MS := 10000
+const WATCHER_POLL_MS := 15_000
+const AUTO_REFRESH_INTERVAL_MS := 300_000
 var watcher_poll_after := 0
 var watcher_exited := false
 var auto_refresh_after := 0
@@ -135,6 +136,7 @@ var debug_history_button: Button
 var return_button: Button
 var project_graph_button: Button
 var save_timer: Timer
+var requirement_save_only := false
 var picker_scope := ""
 var debug_process := {}
 var debug_timer: Timer
@@ -180,7 +182,7 @@ func _ready() -> void:
 	search.tooltip_text = "搜索工单编号或标题（%s+F）" % ("⌘" if OS.has_feature("macos") else "Ctrl")
 	search.gui_input.connect(_search_input)
 	search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	search.text_changed.connect(func(_text): _filter_board())
+	search.text_changed.connect(func(_text): _filter_board(true))
 	row.add_child(search)
 	board_views.clip_tabs = false
 	board_views.add_tab("列表", get_theme_icon("ListSelect", "EditorIcons"))
@@ -395,7 +397,7 @@ func _ready() -> void:
 	save_timer = Timer.new()
 	save_timer.one_shot = true
 	save_timer.wait_time = 0.4
-	save_timer.timeout.connect(_save)
+	save_timer.timeout.connect(_flush_queued_save)
 	add_child(save_timer)
 	debug_timer = Timer.new()
 	debug_timer.wait_time = 0.08
@@ -544,7 +546,7 @@ func _canvas_matches(turn: Dictionary) -> bool:
 
 func _send_canvas_message() -> void:
 	var question: String = canvas_panel.canvas_message.text.strip_edges()
-	if question.length() > 12000:
+	if question.length() > canvas_panel.QUESTION_LIMIT:
 		notice.text = "问题最多 12000 字符，请缩短后重试。"
 		return
 	if question.is_empty() or not is_instance_valid(chat) or actor.is_empty():
@@ -558,14 +560,34 @@ func _send_canvas_message() -> void:
 	var turn := {"session":canvas_panel.session_epoch, "generation":canvas_panel.canvas_generation, "scope":_canvas_scope(), "root":_repo(), "actor":actor.duplicate(), "epoch":selection_epoch, "board_epoch":scope_epoch, "question":question, "selection":selection}
 	if not await _fresh_access() or not _canvas_matches(turn):
 		return
-	var local := PackedStringArray()
-	for item in board.get("issues", []):
-		if current == item.url or (current.is_empty() and (creator_filter.selected <= 0 or _creator(item) == creator_filter.text)):
-			local.append("#%s %s %s %s" % [item.number, _creator(item), item.title, item.status])
-	turn.context = "当前层级：%s，工单：\n%s" % [turn.scope, "\n".join(local)]
-	if not current.is_empty():
-		turn.context += "\n当前流程：" + JSON.stringify(editor.draft)
+	turn.context = _canvas_context(turn, board, false)
 	_route_canvas(turn, false)
+
+
+func _canvas_context(turn: Dictionary, snapshot: Dictionary, project: bool) -> String:
+	var budget := 15500 - str(turn.question).length()
+	var context := ("原层级：%s，全项目工单：" if project else "当前层级：%s，工单：") % turn.scope
+	for item in snapshot.get("issues", []):
+		if not project and current != item.url and (not current.is_empty() or (creator_filter.selected > 0 and _creator(item) != creator_filter.text)):
+			continue
+		context += "\n#%s %s %s %s" % [item.number, _creator(item), str(item.title).left(budget), item.status]
+		if context.length() > budget:
+			return context
+	if project or current.is_empty():
+		return context
+	context += "\n当前流程："
+	for id in editor.draft.get("nodes", {}):
+		var node: Dictionary = editor.draft.nodes[id]
+		var description := str(node.get("caption", "")) if node.get("kind") == "image" else str(node.get("value", ""))
+		context += "\n%s %s %s %s %s" % [str(id).left(budget), str(node.get("kind", "")).left(budget),
+			str(node.get("title", "")).left(budget), str(node.get("model", "")).left(budget), description.left(budget)]
+		if context.length() > budget:
+			return context
+	for edge in editor.draft.get("edges", []):
+		context += "\n%s → %s (%s)" % [str(edge.from).left(budget), str(edge.to).left(budget), str(edge.kind).left(budget)]
+		if context.length() > budget:
+			break
+	return context
 
 
 func _route_canvas(turn: Dictionary, project: bool) -> void:
@@ -608,10 +630,7 @@ func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 		if full.get("repo_id") != actor.repo_id or full.get("user_id") != actor.user_id:
 			notice.text = str(response_board.get("error", "无法读取项目工单"))
 			return
-		var issues := PackedStringArray()
-		for item in full.get("issues", []):
-			issues.append("#%s %s %s %s" % [item.number, _creator(item), item.title, item.status])
-		turn.context = "原层级：%s，全项目工单：\n%s" % [turn.scope, "\n".join(issues)]
+		turn.context = _canvas_context(turn, full, true)
 		_route_canvas(turn, true)
 	elif result.get("route") == "requirement" and turn.project:
 		_new_requirement()
@@ -945,7 +964,7 @@ func _opened() -> void:
 		watcher_exited = false
 		if actor.is_empty() or picker_scope != _repo():
 			refresh()
-		else:
+		elif Time.get_ticks_msec() >= auto_refresh_after:
 			auto_refresh_pending = true
 
 
@@ -970,6 +989,7 @@ func _load_personal() -> void:
 			var value = file.get_var(false)
 			if value is Dictionary:
 				saved = value
+				_restore_requirement_text()
 	scope_epoch += 1
 	loading_project = false
 	project_mode = false
@@ -1002,21 +1022,102 @@ func _capture() -> void:
 
 
 func _queue_save() -> void:
+	requirement_save_only = false
 	if is_instance_valid(save_timer):
 		save_timer.start()
+
+
+func _queue_requirement_save() -> void:
+	if is_instance_valid(save_timer):
+		if save_timer.is_stopped():
+			requirement_save_only = true
+		save_timer.start()
+
+
+func _requirement_checkpoint_dir(generation: String) -> String:
+	return _private_path() + ".requirements-" + generation.sha256_text()
+
+
+func _requirement_checkpoint_path(generation: String, draft: String) -> String:
+	return _requirement_checkpoint_dir(generation).path_join(draft.sha256_text())
+
+
+func _restore_requirement_text(keep_current := false) -> PackedStringArray:
+	var generation: String = saved.get("cache_generation", "")
+	var directory := _requirement_checkpoint_dir(generation)
+	var applied := PackedStringArray()
+	if not DirAccess.dir_exists_absolute(directory):
+		return applied
+	for name in DirAccess.get_files_at(directory):
+		if name.length() != 64 or not name.is_valid_hex_number():
+			continue
+		var path := directory.path_join(name)
+		var file := FileAccess.open(path, FileAccess.READ)
+		if not file:
+			continue
+		var checkpoint = file.get_var(false)
+		file.close()
+		if not checkpoint is Dictionary or checkpoint.get("generation") != generation or not checkpoint.get("text") is String:
+			continue
+		var id: String = checkpoint.get("draft", "")
+		if id.sha256_text() != name:
+			continue
+		var draft: Dictionary = saved.get("drafts", {}).get(id, {})
+		var nodes: Dictionary = draft.get("graph", {}).get("nodes", {})
+		if nodes.has("requirement"):
+			if not keep_current or id != current:
+				nodes.requirement.value = checkpoint.text
+			applied.append(path)
+	return applied
+
+
+func _write_cache(path: String, value: Dictionary) -> bool:
+	var temporary := path + "." + Crypto.new().generate_random_bytes(16).hex_encode() + ".tmp"
+	var file := FileAccess.open(temporary, FileAccess.WRITE)
+	if not file:
+		return false
+	var written := file.store_var(value) and file.get_error() == OK
+	file.close()
+	if written and DirAccess.rename_absolute(temporary, path) == OK:
+		return true
+	DirAccess.remove_absolute(temporary)
+	return false
+
+
+func _flush_queued_save() -> void:
+	if not requirement_save_only or not current.begins_with("draft_") or not saved.get("drafts", {}).has(current):
+		_save()
+		return
+	requirement_save_only = false
+	if actor.is_empty() or picker_scope != _repo() or publish_source != current:
+		return
+	var generation: String = saved.get("cache_generation", "")
+	var path := _requirement_checkpoint_path(generation, current)
+	if DirAccess.make_dir_recursive_absolute(path.get_base_dir()) == OK:
+		if _write_cache(path, {"draft":current, "text":editor.draft.nodes.requirement.value, "generation":generation}):
+			return
+	notice.text = "需求草稿保存失败"
 
 
 func _save() -> void:
 	if actor.is_empty() or picker_scope != _repo():
 		return
 	_capture()
-	var path := _private_path()
-	var file := FileAccess.open(path + ".tmp", FileAccess.WRITE)
-	if file:
-		file.store_var(saved)
-		file.close()
-		if DirAccess.rename_absolute(path + ".tmp", path) != OK:
-			notice.text = "个人草稿保存失败"
+	var previous_generation: String = saved.get("cache_generation", "")
+	var checkpoints := _restore_requirement_text(true)
+	saved.cache_generation = Crypto.new().generate_random_bytes(16).hex_encode()
+	if _write_cache(_private_path(), saved):
+		if is_instance_valid(save_timer):
+			save_timer.stop()
+		requirement_save_only = false
+		for checkpoint in checkpoints:
+			DirAccess.remove_absolute(checkpoint)
+		var directory := _requirement_checkpoint_dir(previous_generation)
+		if DirAccess.dir_exists_absolute(directory) and DirAccess.get_files_at(directory).is_empty():
+			DirAccess.remove_absolute(directory)
+		return
+	saved.cache_generation = previous_generation
+	notice.text = "个人草稿保存失败"
 
 
 func _exit_tree() -> void:
@@ -1137,7 +1238,6 @@ func _draw_board() -> void:
 	var by_url := {}
 	for index in rows.size():
 		var item: Dictionary = rows[index]
-		item.number = int(item.number)
 		var issue_state := _display_state(item)
 		var running := PackedStringArray(item.get("running_titles", [])) if fresh_progress else PackedStringArray()
 		if fresh_progress:
@@ -1176,6 +1276,10 @@ func _draw_board() -> void:
 	_fill_filter(status, statuses)
 	_fill_filter(creator_filter, creators)
 	_filter_board()
+	_update_board_sync_notice()
+
+
+func _update_board_sync_notice() -> void:
 	if current.is_empty():
 		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
 
@@ -1438,14 +1542,17 @@ func _fill_filter(control: OptionButton, values: Array) -> void:
 			control.select(control.item_count-1)
 
 
-func _filter_board() -> void:
+func _filter_board(search_changed := false) -> void:
 	if not is_instance_valid(status) or not is_instance_valid(creator_filter):
 		return
+	var query := search.text.strip_edges().to_lower().trim_prefix("#")
+	if search_changed and query == last_search_query:
+		return
+	last_search_query = query
 	_sync_canvas_scope()
 	var shown := 0
 	var matched := {}
 	var counts := {}
-	var query := search.text.strip_edges().to_lower().trim_prefix("#")
 	for item in board.get("issues", []):
 		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
 		var creator := _creator(item)
@@ -1454,20 +1561,35 @@ func _filter_board() -> void:
 		if included:
 			shown += 1
 			counts[creator] = int(counts.get(creator, 0)) + 1
-		if issue_rows.has(item.url):
+		if issue_rows.has(item.url) and issue_rows[item.url].visible != included:
 			issue_rows[item.url].visible = included
 	for creator in creator_rows:
-		creator_rows[creator].visible = counts.has(creator)
-		creator_rows[creator].set_text(1, "创建人 · %s (%d)" % [creator, counts.get(creator, 0)])
+		var row: TreeItem = creator_rows[creator]
+		var heading := "创建人 · %s (%d)" % [creator, counts.get(creator, 0)]
+		if row.visible != counts.has(creator):
+			row.visible = counts.has(creator)
+		if row.get_text(1) != heading:
+			row.set_text(1, heading)
+	var sections_changed := false
 	for creator in creator_sections:
-		creator_sections[creator].visible = far_depth <= 0.0 and counts.has(creator)
-		creator_sections[creator].title = "创建人 · %s (%d)" % [creator, counts.get(creator, 0)]
+		var section: GraphFrame = creator_sections[creator]
+		var included := far_depth <= 0.0 and counts.has(creator)
+		if section.visible != included:
+			section.visible = included
+			sections_changed = true
+		var heading := "创建人 · %s (%d)" % [creator, counts.get(creator, 0)]
+		if section.title != heading:
+			section.title = heading
+	var changed_cards := {}
 	for card in board_cards:
-		card.visible = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0
-	if project_mode:
+		var included: bool = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0
+		if card.visible != included:
+			card.visible = included
+			changed_cards[card.name] = true
+	if not changed_cards.is_empty():
+		overview.update_filtered_wires(changed_cards)
+	if project_mode and (sections_changed or not changed_cards.is_empty()):
 		_queue_board_layout()
-
-	overview.refresh_wires()
 	var total: int = board.get("issues", []).size()
 	result_count.text = "%d 项" % total if shown == total else "%d / %d 项" % [shown, total]
 	if current.is_empty() and not actor.is_empty():
@@ -1624,6 +1746,9 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	DirAccess.remove_absolute(path)
 	if root != _repo() or not value is Dictionary:
 		return {"denied":true,"error":"工作区已切换或回执无效"}
+	if value.has("board"):
+		for item in value.board.get("issues", []):
+			item.number = int(item.number)
 	return value
 
 
@@ -1708,7 +1833,6 @@ func refresh(automatic := false) -> void:
 func _refresh_board() -> void:
 	var root := _repo()
 	var value := {}
-	offline = false
 	var has_session := not actor.is_empty() and picker_scope == root
 	if has_session:
 		# The board host verifies the session both before and after reading.
@@ -1742,14 +1866,28 @@ func _refresh_board() -> void:
 		refresh_pending = true
 		return
 	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
-		board = value.board
+		var incoming: Dictionary = value.board
+		var comparable := board.duplicate()
+		if incoming.has("verified_at"):
+			comparable.verified_at = incoming.verified_at
+		else:
+			comparable.erase("verified_at")
+		var unchanged := fresh_progress and not offline and comparable == incoming
+		offline = false
 		fresh_progress = true
 		_start_progress_watch(value.get("watch", {}))
-		_draw_board()
+		if unchanged:
+			# Keep the issue dictionaries that the visible rows and callbacks reference.
+			board = comparable
+			_update_board_sync_notice()
+		else:
+			board = incoming
+			_draw_board()
 		_sync_workflow()
 		_reveal_pending_operation()
 		await _refresh_open_states()
-		_queue_save()
+		if not unchanged or not current.is_empty():
+			_queue_save()
 	else:
 		var prior: Dictionary = settings.get_project_metadata("daqian_access",_access_key(),{})
 		var last_login: String = value.get("offline_login","")
@@ -1828,7 +1966,7 @@ func _process(_delta: float) -> void:
 		_zoom_detail()
 	_check_canvas_zoom()
 	var now := Time.get_ticks_msec()
-	if auto_refresh_pending and not checking and now >= auto_refresh_after:
+	if auto_refresh_pending and not checking and now >= auto_refresh_after and is_visible_in_tree():
 		refresh(true)
 	if watcher.is_empty() or now < watcher_poll_after:
 		return
@@ -2510,16 +2648,19 @@ func _select_publish_model(index: int) -> void:
 	_update_publish_form()
 
 
-func _update_publish_form() -> void:
-	var message := requirement_input.text.strip_edges()
-	var too_long := requirement_input.text.length() > 16000
+func _update_publish_form(text_only := false) -> void:
+	var message: String = editor.draft.nodes.requirement.value if text_only else requirement_input.text
+	var too_long := message.length() > 16000
 	const LIMIT_HINT := "需求正文最多 16000 个字符，请缩短后发送。"
 	if too_long:
 		publish_status.text = LIMIT_HINT
 	elif publish_status.text == LIMIT_HINT:
 		publish_status.text = "确认后创建工单，再由共工判断是否需要偃师。"
-	publish_dialog.get_ok_button().disabled = submitting or message.is_empty() or too_long or category.selected < 0 or direct_in_flight.has(current)
+	publish_dialog.get_ok_button().disabled = submitting or too_long or message.strip_edges().is_empty() or category.selected < 0 or direct_in_flight.has(current)
 	if publish_source == current and not current.is_empty():
+		if text_only:
+			_queue_requirement_save()
+			return
 		if category.selected >= 0:
 			if not saved.has("execution_models"):
 				saved.execution_models = {}
@@ -2536,7 +2677,7 @@ func _update_publish_form() -> void:
 func _edit_requirement() -> void:
 	if publish_source == current and editor.draft.nodes.has("requirement"):
 		editor.draft.nodes.requirement.value = requirement_input.text
-		_update_publish_form()
+		_update_publish_form(true)
 
 
 func _publish_visibility_changed() -> void:

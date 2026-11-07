@@ -1,0 +1,97 @@
+{
+  "issue_number": 511,
+  "request_id": "tianshu-input-memory",
+  "design": "design-docs/tianshu-input-memory.md",
+  "scope": "Isolated copy of GongGong Workbench, real Windows display driver and authenticated board; no issue creation or inference in the graphical input test.",
+  "baseline": {
+    "driver": "Windows",
+    "renderer": "opengl3",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "issues": 113,
+    "cards": 116,
+    "editor_sha256": "11552c53fe8b066182fa113eb23f703848756b61b1dbaf84cd61b3a803a23e68",
+    "controls": {
+      "ai": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 12.048,
+        "frame_p95_ms": 8.1
+      },
+      "canvas": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 203.892,
+        "frame_p95_ms": 8.294
+      },
+      "requirement": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 10.506,
+        "frame_p95_ms": 8.064
+      }
+    },
+    "canvas_card_replacements_during_input": 1
+  },
+  "long_draft": {
+    "initial_characters": 11000,
+    "key_events": 3000,
+    "baseline_extra_static_bytes": 66164336,
+    "text_edit_extra_static_bytes": 601236
+  },
+  "requirement_autosave": {
+    "history_cache_bytes": 28003856,
+    "baseline_ms_range": [
+      65,
+      97
+    ],
+    "checkpoint_ms_range": [
+      1.03,
+      1.34
+    ]
+  },
+  "original_system_oom_reproduced": false,
+  "automatic_refresh": {
+    "previous_interval_seconds": 10,
+    "interval_seconds": 300,
+    "previous_pipe_poll_seconds": 2,
+    "pipe_poll_seconds": 15,
+    "run_without_invalidation": false,
+    "queue_on_return_to_fresh_board": false,
+    "fetch_while_hidden_on_automatic_event": false
+  },
+  "candidate_before_frequency_change": {
+    "driver": "Windows",
+    "renderer": "opengl3",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "issues": 113,
+    "cards": 117,
+    "editor_sha256": "38bc667293e287f8890e1def30168d783801409bf033bae1552c65fa6b5929e0",
+    "controls": {
+      "ai": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 15.187,
+        "frame_p95_ms": 8.137
+      },
+      "canvas": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 17.475,
+        "frame_p95_ms": 8.174
+      },
+      "requirement": {
+        "typed": true,
+        "changes": 136,
+        "length": 8,
+        "max_frame_ms": 11.5,
+        "frame_p95_ms": 8.271
+      }
+    },
+    "canvas_card_replacements_during_input": 0
+  }
+}

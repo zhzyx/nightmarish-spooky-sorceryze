@@ -84,14 +84,14 @@ func check_watcher_poll_interval(workspace) -> void:
 	var size := stream.get_length()
 	check(size > 0, "watcher fixture produced no bytes")
 	workspace.watcher = child
-	workspace.watcher_poll_after = Time.get_ticks_msec() + 2000
+	workspace.watcher_poll_after = Time.get_ticks_msec() + 15_000
 	workspace._process(0.0)
 	check(stream.get_length() == size and workspace.watcher_buffer.is_empty(), "watcher read before its poll deadline")
 	workspace.watcher_poll_after = 0
 	var started := Time.get_ticks_msec()
 	workspace._process(0.0)
 	check(stream.get_length() == 0 and workspace.watcher_buffer == "partial", "watcher missed bytes at its poll deadline")
-	check(workspace.watcher_poll_after >= started + 2000 and workspace.watcher_poll_after <= Time.get_ticks_msec() + 2000, "watcher did not schedule its next two-second interval")
+	check(workspace.watcher_poll_after >= started + 15_000 and workspace.watcher_poll_after <= Time.get_ticks_msec() + 15_000, "watcher did not schedule its next 15-second interval")
 	check(not workspace.checking and not workspace.auto_refresh_pending and not workspace.refresh_pending, "unrelated watcher output triggered a refresh")
 	workspace._stop_progress_watch()
 
@@ -100,17 +100,23 @@ func check_auto_refresh_interval(workspace) -> void:
 	var completions := [0]
 	var completed := func(): completions[0] += 1
 	workspace.refresh_finished.connect(completed)
-	workspace.auto_refresh_after = Time.get_ticks_msec() + 10000
+	workspace.auto_refresh_after = Time.get_ticks_msec() + 300_000
 	for i in 3:
 		workspace._opened()
 		workspace._process(0.0)
-	check(workspace.auto_refresh_pending and not workspace.checking and completions[0] == 0, "automatic events rushed the refresh deadline")
+	check(not workspace.auto_refresh_pending and not workspace.checking and completions[0] == 0, "reopening a fresh board scheduled another remote read")
 	workspace.auto_refresh_after = 0
+	workspace._opened()
 	var started := Time.get_ticks_msec()
 	workspace._process(0.0)
 	check(workspace.checking and not workspace.auto_refresh_pending, "queued automatic events did not start one board read")
-	check(workspace.auto_refresh_after >= started + 10000 and workspace.auto_refresh_after <= Time.get_ticks_msec() + 10000, "board refresh interval was not ten seconds")
-	workspace._opened()
+	check(workspace.auto_refresh_after >= started + 300_000 and workspace.auto_refresh_after <= Time.get_ticks_msec() + 300_000, "board refresh interval was not five minutes")
+	# A matching progress notification arrives after the active snapshot started.
+	var row := {"url":"fixture-issue", "request":"fixture-request"}
+	workspace.board.issues.append(row)
+	workspace._chat_work_event(workspace._repo(), {"actor":workspace.actor.user_id, "source_ref":row.url,
+		"source_sha256":"test-revision", "request_ref":row.request}, "fixture", "request_end", "chat", "completed")
+	workspace.board.issues.pop_back()
 	if workspace.checking:
 		await workspace.refresh_finished
 	check(completions[0] == 1 and workspace.auto_refresh_pending, "last event during the active read was lost or replayed immediately")
@@ -119,7 +125,7 @@ func check_auto_refresh_interval(workspace) -> void:
 	if workspace.checking:
 		await workspace.refresh_finished
 	check(completions[0] == 2, "trailing board refresh did not complete")
-	workspace.auto_refresh_after = Time.get_ticks_msec() + 10000
+	workspace.auto_refresh_after = Time.get_ticks_msec() + 300_000
 	await workspace.refresh()
 	check(completions[0] == 3, "manual refresh was throttled")
 	workspace.refresh_finished.disconnect(completed)
@@ -548,6 +554,30 @@ func run() -> void:
 		FileAccess.open(sync_dir.path_join("personal-release"), FileAccess.WRITE).close()
 		await workspace.refresh()
 		check(workspace.project_mode and workspace.board.get("issues", []).size() == 3, "late personal read overwrote the active project board")
+		workspace.board_views.current_tab = 1
+		var card_id: int = workspace.board_cards[0].get_instance_id()
+		workspace.board.verified_at = "old"
+		await workspace.refresh()
+		check(workspace.board_cards[0].get_instance_id() == card_id and workspace.board.verified_at != "old", "timestamp-only refresh rebuilt the graph or missed the sync time")
+		workspace.board_views.current_tab = 0
+		var url: String = workspace.board.issues[0].url
+		var row_id: int = workspace.issue_rows[url].get_instance_id()
+		await workspace.refresh()
+		check(workspace.issue_rows[url].get_instance_id() == row_id and is_same(workspace.issue_rows[url].get_metadata(0), workspace.board.issues[0]), "identical refresh replaced a list row or detached its issue dictionary")
+		workspace.board.issues[0].title = "stale fixture"
+		await workspace.refresh()
+		check(workspace.issue_rows[url].get_instance_id() != row_id and workspace.issue_rows[url].get_text(1) != "stale fixture", "changed board missed a redraw")
+		workspace.board_views.current_tab = 1
+		await settle_layout()
+		for query in ["P", "Pr", "#pr "]:
+			workspace.search.text = query
+			workspace.search.text_changed.emit(query)
+			check(not workspace.board_layout_pending and workspace.result_count.text == "3 项", "unchanged search matches scheduled a graph layout")
+		workspace.search.text = "#901"
+		workspace.search.text_changed.emit(workspace.search.text)
+		check(workspace.result_count.text == "1 / 3 项" and workspace.board_layout_pending, "search did not immediately update the visible graph")
+		workspace.search.clear()
+		workspace._filter_board()
 		access_file = FileAccess.open(access_path,FileAccess.WRITE)
 		access_file.store_string("offline")
 		access_file.close()

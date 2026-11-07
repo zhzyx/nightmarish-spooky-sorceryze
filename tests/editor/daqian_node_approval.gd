@@ -180,7 +180,11 @@ func check_native_canvas(panel, row: Dictionary) -> void:
 	var canvas = panel.canvas_panel
 	var issue: String = panel.current
 	canvas.canvas_message.text = "canvas fixture question"
-	canvas.canvas_message.text_submitted.emit(canvas.canvas_message.text)
+	canvas.canvas_message.grab_focus()
+	var enter := InputEventKey.new()
+	enter.keycode = KEY_ENTER
+	enter.pressed = true
+	root.push_input(enter)
 	var deadline := Time.get_ticks_msec() + 10000
 	while canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
 		await create_timer(0.02).timeout

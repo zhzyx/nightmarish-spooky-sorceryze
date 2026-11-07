@@ -38,6 +38,29 @@ TEST_FORCE_LINK(test_file_access)
 
 namespace TestFileAccess {
 
+TEST_CASE("[FileAccess] Same-directory replacement preserves destination on failure") {
+	Error err;
+	Ref<FileAccess> dest = FileAccess::create_temp(FileAccess::WRITE, "replace_dest", "tmp", true, &err);
+	REQUIRE(err == OK);
+	REQUIRE(dest.is_valid());
+	const String path = dest->get_path_absolute();
+	REQUIRE(dest->store_string("old"));
+	dest->close();
+	const String staging = path + ".staging";
+	REQUIRE_FALSE(FileAccess::exists(staging));
+	CHECK(DirAccess::rename_absolute(staging, path) != OK);
+	CHECK(FileAccess::get_file_as_string(path) == "old");
+
+	Ref<FileAccess> source = FileAccess::open(staging, FileAccess::WRITE);
+	REQUIRE(source.is_valid());
+	REQUIRE(source->store_string("new"));
+	source->close();
+	CHECK(DirAccess::rename_absolute(staging, path) == OK);
+	CHECK_FALSE(FileAccess::exists(staging));
+	CHECK(FileAccess::get_file_as_string(path) == "new");
+	CHECK(DirAccess::remove_absolute(path) == OK);
+}
+
 TEST_CASE("[FileAccess] CSV read") {
 	Ref<FileAccess> f = FileAccess::open(TestUtils::get_data_path("testdata.csv"), FileAccess::READ);
 	REQUIRE(f.is_valid());

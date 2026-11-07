@@ -4,8 +4,9 @@ extends VBoxContainer
 signal send_requested
 signal models_requested
 
+const QUESTION_LIMIT := 12000
 var canvas_bar := HBoxContainer.new()
-var canvas_message := LineEdit.new()
+var canvas_message := TextEdit.new()
 var canvas_models := OptionButton.new()
 var canvas_backend := -1
 var pending_turns := {}
@@ -35,15 +36,29 @@ func build() -> void:
 	add_child(canvas_bar)
 	canvas_bar.set_meta("ai_control_exclude", true)
 	canvas_message.placeholder_text = "询问当前画布，或描述要执行的操作"
+	canvas_message.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	canvas_message.custom_minimum_size.y = 32 * get_theme_default_base_scale()
 	canvas_message.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	canvas_bar.add_child(canvas_message)
-	canvas_message.text_submitted.connect(func(_text): send_requested.emit())
+	canvas_message.gui_input.connect(_message_input)
 	canvas_models.item_selected.connect(func(_index): remember_model())
 	canvas_models.tooltip_text = "对话模型"
 	canvas_models.add_item("选择模型")
 	canvas_bar.add_child(canvas_models)
 	canvas_models.get_popup().about_to_popup.connect(models_requested.emit)
 	_button(canvas_bar, "发送", send_requested.emit)
+
+
+func _message_input(event: InputEvent) -> void:
+	if not event is InputEventKey or not event.pressed or canvas_message.has_ime_text():
+		return
+	if event.keycode not in [KEY_ENTER, KEY_KP_ENTER] or event.ctrl_pressed or event.alt_pressed or event.meta_pressed:
+		return
+	canvas_message.accept_event()
+	if event.shift_pressed:
+		canvas_message.insert_text_at_caret("\n")
+	elif not event.echo:
+		send_requested.emit()
 
 
 func load_models(catalog: Dictionary) -> void:
@@ -76,6 +91,7 @@ func bind_scope(location: String) -> void:
 		canvas_drafts[canvas_location] = canvas_message.text
 	canvas_location = location
 	canvas_message.text = canvas_drafts.get(location, "")
+	canvas_message.clear_undo_history()
 	canvas_log.text = canvas_history.get(location, "")
 	canvas_log.visible = not canvas_log.text.is_empty()
 	canvas_backend = -1
@@ -92,6 +108,7 @@ func append_line(scope: String, value: String) -> void:
 
 func clear_session() -> void:
 	canvas_message.clear()
+	canvas_message.clear_undo_history()
 	session_epoch += 1
 	pending_turns.clear()
 	selections.clear()
@@ -115,6 +132,7 @@ func sent(turn: Dictionary) -> void:
 		append_line(turn.scope, "你 · " + str(turn.question))
 		if canvas_message.text.strip_edges() == turn.question:
 			canvas_message.clear()
+			canvas_message.clear_undo_history()
 	pending_turns[turn.source] = turn
 
 
