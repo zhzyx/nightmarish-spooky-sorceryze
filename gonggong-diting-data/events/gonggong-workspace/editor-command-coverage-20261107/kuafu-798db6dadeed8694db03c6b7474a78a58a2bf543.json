@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-798db6dadeed8694db03c6b7474a78a58a2bf543",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "46e4df122452fa29a3fd049af11c0188bc125651e3eaf711ed8416658118511c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "validation",
+    "detection_head": "3a8a6c38f4d700e8351f1793a2babea4739fd7a1",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42354699640",
+    "diagnosis": "Follow-up exact-head CI passes typing, spelling, copyright, includes and all other static hooks; only clang-format regrouping of equivalent include paths remains in one file. Applied pinned clang-format22.1.5 after include normalization and verified includes are stable. No behavior change.",
+    "next_action": "Append exact corrected source digest, rerun official gate and await new exact-head CI; preserve earlier failed candidates.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:08:33.741624+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T08:20:46.878575+00:00",
+  "sha256": "adfc0b6ad4cd0604e8d909dc11fdb6b5868120d0f05fb5e06e9318fdd9269503"
+}

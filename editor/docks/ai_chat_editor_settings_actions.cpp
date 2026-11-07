@@ -30,15 +30,14 @@
 
 #include "ai_chat_editor_settings_actions.h"
 
-#include "editor/docks/ai_chat_editor_control.h"
-#include "editor/docks/ai_chat_tools.h"
-
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
 #include "core/io/resource_saver.h"
 #include "core/math/math_funcs.h"
+#include "editor/docks/ai_chat_editor_control.h"
+#include "editor/docks/ai_chat_tools.h"
 #include "editor/settings/editor_settings.h"
 
 namespace {
