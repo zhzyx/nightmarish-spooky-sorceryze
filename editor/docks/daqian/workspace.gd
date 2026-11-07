@@ -73,6 +73,12 @@ var publish_dialog: ConfirmationDialog
 var requirement_input: TextEdit
 var routing_in_flight := {}
 var chat_work := {}
+const WATCHER_POLL_MS := 2000
+const AUTO_REFRESH_INTERVAL_MS := 10000
+var watcher_poll_after := 0
+var watcher_exited := false
+var auto_refresh_after := 0
+var auto_refresh_pending := false
 var watcher := {}
 var watcher_buffer := ""
 var fresh_progress := false
@@ -936,7 +942,11 @@ func _start_session() -> void:
 
 func _opened() -> void:
 	if is_visible_in_tree():
-		refresh()
+		watcher_exited = false
+		if actor.is_empty() or picker_scope != _repo():
+			refresh()
+		else:
+			auto_refresh_pending = true
 
 
 func _repo() -> String:
@@ -1672,16 +1682,22 @@ func _use_personal_board(auth: Dictionary) -> void:
 	_gate_visibility(true)
 
 
-func refresh() -> void:
+func refresh(automatic := false) -> void:
+	if not automatic:
+		watcher_exited = false
 	if checking:
 		await refresh_finished
 		return
 	checking = true
+	auto_refresh_pending = false
+	auto_refresh_after = Time.get_ticks_msec() + AUTO_REFRESH_INTERVAL_MS
 	refresh_button.disabled = true
 	refresh_button.text = "刷新中…"
 	await _refresh_board()
 	while refresh_pending:
 		refresh_pending = false
+		auto_refresh_pending = false
+		auto_refresh_after = Time.get_ticks_msec() + AUTO_REFRESH_INTERVAL_MS
 		await _refresh_board()
 	checking = false
 	refresh_button.disabled = false
@@ -1709,6 +1725,9 @@ func _refresh_board() -> void:
 		_gate_visibility(false)
 		notice.text = "正在核对当前仓库的协作资格…"
 		value = await _board_command(true)
+		if value.get("environment_changed", false):
+			refresh_pending = true
+			return
 		if root == _repo() and value.has("access"):
 			_use_personal_board(value.access)
 			settings.set_project_metadata("daqian_access", _access_key(), {"actor":actor, "checked":actor.get("verified_at_unix",Time.get_unix_time_from_system())})
@@ -1757,6 +1776,9 @@ func _stop_progress_watch() -> void:
 		OS.kill(watcher.pid)
 	watcher = {}
 	watcher_buffer = ""
+	watcher_poll_after = 0
+	watcher_exited = false
+	auto_refresh_pending = false
 	fresh_progress = false
 	refresh_pending = false
 	chat_work.clear()
@@ -1764,7 +1786,7 @@ func _stop_progress_watch() -> void:
 
 
 func _start_progress_watch(config: Dictionary) -> void:
-	if not watcher.is_empty() or config.is_empty():
+	if watcher_exited or not watcher.is_empty() or config.is_empty():
 		return
 	var entry := _repo().path_join("customizations/components/godot-host/daqian/watch_progress.mjs")
 	if FileAccess.file_exists(entry):
@@ -1805,11 +1827,17 @@ func _process(_delta: float) -> void:
 	if overview.is_visible_in_tree():
 		_zoom_detail()
 	_check_canvas_zoom()
-	if watcher.is_empty():
+	var now := Time.get_ticks_msec()
+	if auto_refresh_pending and not checking and now >= auto_refresh_after:
+		refresh(true)
+	if watcher.is_empty() or now < watcher_poll_after:
 		return
+	watcher_poll_after = now + WATCHER_POLL_MS
 	if not OS.is_process_running(watcher.pid):
 		# A closed Windows pipe reports an engine error on every length query.
-		# The next board read can attach a new watcher; its ready event reconciles missed changes.
+		# Reconcile any unread final event once. Reopen or explicit refresh can reconnect.
+		watcher_exited = true
+		auto_refresh_pending = true
 		watcher = {}
 		watcher_buffer = ""
 		return
@@ -1829,10 +1857,7 @@ func _process(_delta: float) -> void:
 			if lines[i] == row.get("request", "") or lines[i] == JSON.stringify(ticket).sha256_text():
 				changed = true
 	if changed:
-		if checking:
-			refresh_pending = true
-		else:
-			refresh()
+		auto_refresh_pending = true
 
 
 func _set_project(enabled: bool) -> void:
@@ -2844,10 +2869,7 @@ func _chat_work_event(root: String, binding: Dictionary, worker: String, kind: S
 		chat_work[url] = active
 		_sync_workflow()
 		if kind == "request_end":
-			if checking:
-				refresh_pending = true
-			else:
-				refresh.call_deferred()
+			auto_refresh_pending = true
 		return
 
 

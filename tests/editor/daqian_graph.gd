@@ -71,6 +71,61 @@ func await_fixture_file(path: String) -> void:
 	check(FileAccess.file_exists(path), "fixture did not enter " + path.get_file())
 
 
+func check_watcher_poll_interval(workspace) -> void:
+	var child := OS.execute_with_pipe(OS.get_environment("DAQIAN_TEST_PYTHON"),
+		["-c", "import sys; sys.stdout.write('unrelated\\npartial'); sys.stdout.flush(); sys.stdin.readline()"], false)
+	check(not child.is_empty(), "failed to start watcher interval fixture")
+	if child.is_empty():
+		return
+	var stream: FileAccess = child.stdio
+	var deadline := Time.get_ticks_msec() + 5000
+	while stream.get_length() == 0 and Time.get_ticks_msec() < deadline:
+		await process_frame
+	var size := stream.get_length()
+	check(size > 0, "watcher fixture produced no bytes")
+	workspace.watcher = child
+	workspace.watcher_poll_after = Time.get_ticks_msec() + 2000
+	workspace._process(0.0)
+	check(stream.get_length() == size and workspace.watcher_buffer.is_empty(), "watcher read before its poll deadline")
+	workspace.watcher_poll_after = 0
+	var started := Time.get_ticks_msec()
+	workspace._process(0.0)
+	check(stream.get_length() == 0 and workspace.watcher_buffer == "partial", "watcher missed bytes at its poll deadline")
+	check(workspace.watcher_poll_after >= started + 2000 and workspace.watcher_poll_after <= Time.get_ticks_msec() + 2000, "watcher did not schedule its next two-second interval")
+	check(not workspace.checking and not workspace.auto_refresh_pending and not workspace.refresh_pending, "unrelated watcher output triggered a refresh")
+	workspace._stop_progress_watch()
+
+
+func check_auto_refresh_interval(workspace) -> void:
+	var completions := [0]
+	var completed := func(): completions[0] += 1
+	workspace.refresh_finished.connect(completed)
+	workspace.auto_refresh_after = Time.get_ticks_msec() + 10000
+	for i in 3:
+		workspace._opened()
+		workspace._process(0.0)
+	check(workspace.auto_refresh_pending and not workspace.checking and completions[0] == 0, "automatic events rushed the refresh deadline")
+	workspace.auto_refresh_after = 0
+	var started := Time.get_ticks_msec()
+	workspace._process(0.0)
+	check(workspace.checking and not workspace.auto_refresh_pending, "queued automatic events did not start one board read")
+	check(workspace.auto_refresh_after >= started + 10000 and workspace.auto_refresh_after <= Time.get_ticks_msec() + 10000, "board refresh interval was not ten seconds")
+	workspace._opened()
+	if workspace.checking:
+		await workspace.refresh_finished
+	check(completions[0] == 1 and workspace.auto_refresh_pending, "last event during the active read was lost or replayed immediately")
+	workspace.auto_refresh_after = 0
+	workspace._process(0.0)
+	if workspace.checking:
+		await workspace.refresh_finished
+	check(completions[0] == 2, "trailing board refresh did not complete")
+	workspace.auto_refresh_after = Time.get_ticks_msec() + 10000
+	await workspace.refresh()
+	check(completions[0] == 3, "manual refresh was throttled")
+	workspace.refresh_finished.disconnect(completed)
+	workspace._stop_progress_watch()
+
+
 func run() -> void:
 	root.content_scale_size = Vector2i(1280, 900)
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
@@ -94,6 +149,8 @@ func run() -> void:
 		return
 	# The next section supplies its own 55-row board; live receipts must not replace it.
 	workspace._stop_progress_watch()
+	await check_watcher_poll_interval(workspace)
+	await check_auto_refresh_interval(workspace)
 	var exited := OS.execute_with_pipe(OS.get_environment("DAQIAN_TEST_PYTHON"), ["-c", "pass"], false)
 	check(not exited.is_empty(), "failed to start watcher exit fixture")
 	if not exited.is_empty():
@@ -102,9 +159,12 @@ func run() -> void:
 			await process_frame
 		workspace.watcher = exited
 		workspace.watcher_buffer = "partial"
+		workspace.watcher_poll_after = 0
 		workspace._process(0.0)
 		check(workspace.watcher.is_empty() and workspace.watcher_buffer.is_empty(), "exited watcher was polled or retained")
+		check(workspace.auto_refresh_pending and workspace.watcher_exited, "watcher exit did not queue reconciliation and suppress automatic restart")
 		workspace._stop_progress_watch()
+		check(not workspace.auto_refresh_pending and not workspace.watcher_exited, "watcher reset left stale reconciliation state")
 	var graph = workspace.editor
 	check_snapshot_edits(workspace.rules)
 	workspace._new_requirement()
