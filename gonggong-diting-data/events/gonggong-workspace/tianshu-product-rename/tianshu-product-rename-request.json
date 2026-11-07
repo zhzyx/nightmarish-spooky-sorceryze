@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "payload": {
+    "document": "design-docs/daqian/product-name.md",
+    "intent": "将大千改名为天枢，同步所有已有和在途内容"
+  },
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/365",
+  "agent": {
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "bd773bda8175c0bb08c69b9033c94ffb83f457fc3b2936840a8166607246fe81",
+    "id": "current-workspace-operator",
+    "version": "host-version-unreported"
+  },
+  "occurred_at": "2026-11-07T00:19:53.462599+00:00",
+  "request_id": "tianshu-product-rename",
+  "event_id": "tianshu-product-rename-request",
+  "kind": "request",
+  "sha256": "7b59a8ba31567185ca252c18528aa003ca4769d7b8e6104803f643e419fe350c"
+}

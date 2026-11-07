@@ -1,4 +1,4 @@
-"""Provider HTTP request and completion mappings for the Daqian host."""
+"""Provider HTTP request and completion mappings for the Tianshu host."""
 
 import urllib.parse
 import urllib.request

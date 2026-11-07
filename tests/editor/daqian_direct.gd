@@ -34,8 +34,7 @@ func run() -> void:
 	backend.item_selected.emit(0)
 	chat.find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
 	panel.publish_button.pressed.emit()
-	check(panel.choose_execution_model.visible and not panel.model_options.visible, "Direct model selection must be optional")
-	panel.choose_execution_model.button_pressed = true
+	check(panel.model_options.visible, "Configured backend must expose its model picker in Tianshu")
 	panel.model_options.select(panel.model_options.item_count - 1)
 	panel.model_options.item_selected.emit(panel.model_options.selected)
 	panel.manual_model.text = "chosen-execution-model"
@@ -86,7 +85,7 @@ func run() -> void:
 	var decision: Array = JSON.parse_string(records[-2])
 	check(decision[0] == "issue-start" and decision[1].expected_revision == "fixture-revision" and decision[1].expected_user == "42", "Missing explicit start transition")
 	check(records.size() == 5 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
-	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Start left Daqian")
+	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Start left Tianshu")
 	check(chat.get_daqian_models().current == "chosen-execution-model", "Start ignored model chosen at creation")
 	# Replay an external route into the same linked draft without invoking a model.
 	var row: Dictionary = binding.duplicate()

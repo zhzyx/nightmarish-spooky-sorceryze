@@ -117,7 +117,18 @@ def labels(root, apply=False):
     return {"state": "labels_ensured", "count": len(definitions)}
 
 
-def issue(root, document, title, category, request_id, apply=False, execution_authority_ref=None, *, planned=False):
+def issue(
+    root,
+    document,
+    title,
+    category,
+    request_id,
+    apply=False,
+    execution_authority_ref=None,
+    *,
+    planned=False,
+    preview_text=None,
+):
     # Trace the caller's existing mandate; this is not a governance grant.
     if execution_authority_ref is not None and (
         not isinstance(execution_authority_ref, str)
@@ -138,14 +149,19 @@ def issue(root, document, title, category, request_id, apply=False, execution_au
         raise ValueError("Unknown task category")
     doc = (root / document).resolve()
     doc.relative_to((root / "design-docs").resolve())
-    if doc.suffix != ".md" or not doc.is_file():
+    if preview_text is not None and (apply or not planned):
+        raise ValueError("In-memory requirement text is only valid for a read-only planned Issue preview")
+    if doc.suffix != ".md" or (preview_text is None and not doc.is_file()):
         raise ValueError("A Markdown requirement in design-docs is required")
     marker = "<!-- gonggong-request:" + request_id + " -->"
     relative = doc.relative_to(root.resolve()).as_posix()
     design_url = f"https://github.com/{settings['repository']}/blob/main/{quote(relative, safe='/')}"
-    body = f"{marker}\n\n需求文档：`{relative}`\n\n[查看主线设计（合入后可用）]({design_url})\n\n" + doc.read_text(
-        encoding="utf-8"
+    content = (
+        doc.read_text(encoding="utf-8")
+        if preview_text is None
+        else preview_text.replace("\r\n", "\n").replace("\r", "\n")
     )
+    body = f"{marker}\n\n需求文档：`{relative}`\n\n[查看主线设计（合入后可用）]({design_url})\n\n" + content
     if execution_authority_ref:
         body += "\n\n执行授权来源（由调用宿主核实，不代替候选准入）：" + execution_authority_ref + "\n"
     plan = {

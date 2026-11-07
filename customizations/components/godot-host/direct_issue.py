@@ -1,4 +1,4 @@
-"""A user-confirmed Daqian draft creates one GitHub Issue and signals Sinan."""
+"""A user-confirmed Tianshu draft creates one GitHub Issue and signals Sinan."""
 
 import hashlib
 import json
@@ -84,7 +84,7 @@ def existing(work, repository, request_id):
     return matches[0]["html_url"]
 
 
-def readback(work, url, plan, principal):
+def readback(work, url, plan, principal, legacy_body=None):
     repository = plan["repository"]
     match = re.fullmatch(r"https://github\.com/" + re.escape(repository) + r"/issues/([1-9][0-9]*)", url)
     if not match:
@@ -92,7 +92,9 @@ def readback(work, url, plan, principal):
     number = int(match[1])
     row = json.loads(work.gh("api", f"repos/{repository}/issues/{number}"))
     body = (row.get("body") or "").replace("\r\n", "\n")
-    expected = plan["body"] + "\n\n<!-- gonggong-host-git:" + principal["login"] + " -->"
+    footer = "\n\n<!-- gonggong-host-git:" + principal["login"] + " -->"
+    expected = plan["body"] + footer
+    used_legacy = legacy_body is not None and body.rstrip("\n") == legacy_body + footer
     labels = [item["name"] for item in row["labels"]]
     statuses = [name[7:] for name in labels if name.startswith("status:")]
     if (
@@ -102,7 +104,7 @@ def readback(work, url, plan, principal):
         or "pull_request" in row
         or str(row["user"]["id"]) != principal["user_id"]
         or row["title"] != plan["title"]
-        or body.rstrip("\n") != expected
+        or (body.rstrip("\n") != expected and not used_legacy)
         or work.request_ids(body) != {plan["request_id"]}
         or "workspace:gonggong" not in labels
         or [name for name in labels if name.startswith("type:")] != [plan["labels"][0]]
@@ -123,6 +125,7 @@ def readback(work, url, plan, principal):
             "revision": row["updated_at"],
         },
         row,
+        used_legacy,
     )
 
 
@@ -216,6 +219,8 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
                 return response
             if github_read("核对发布账号", work.GitHubCommandError, gh, "api", "user", "--jq", ".id") != expected_user:
                 raise ValueError("建单前账号已切换")
+            # Once this host attempts creation, future readbacks must match its exact body.
+            saved.pop("recover_remote_name", None)
             saved["pending"] = True
             save(journal, saved)
             try:
@@ -239,7 +244,7 @@ def publish(work, issue_args, plan, expected_user, journal, saved):
 
 def receipt_folder(root, key):
     if not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key):
-        raise ValueError("无效的大千需求标识")
+        raise ValueError("无效的天枢需求标识")
     common = subprocess.run(
         ["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
         text=True,
@@ -261,6 +266,15 @@ def finish_coordination(root, result, row, work, repository, node, bridge, journ
         save(journal, saved)
 
 
+def requirement_bytes(fields, key, draft_id, expected_user, outcome, product):
+    return (
+        f"# {fields['title']}\n\n<!-- gonggong-intake:daqian-direct -->\n\n"
+        f"需求 ID：`{key}`\n\n类别：`type:{fields['category']}`\n\n"
+        f"来源：Godot {product}草稿 `{draft_id}`，GitHub 用户 ID `{expected_user}`。\n\n"
+        "## 原始需求\n\n" + outcome + "\n"
+    ).encode()
+
+
 def create_locked(root, request, bridge, journal, saved):
     expected_user = request.get("expected_user")
     if not isinstance(expected_user, str) or not re.fullmatch(r"[1-9][0-9]*", expected_user):
@@ -278,22 +292,53 @@ def create_locked(root, request, bridge, journal, saved):
     principal = github_read("核验仓库协作者身份", work_items.GitHubCommandError, publish_collaborator, root)
     if principal["user_id"] != expected_user or principal["repo"] != settings["repository"]:
         raise ValueError("当前仓库协作者与草稿账号不匹配")
-    content = (
-        f"# {fields['title']}\n\n<!-- gonggong-intake:daqian-direct -->\n\n"
-        f"需求 ID：`{key}`\n\n类别：`type:{fields['category']}`\n\n"
-        f"来源：Godot 大千草稿 `{request['draft_id']}`，GitHub 用户 ID `{expected_user}`。\n\n"
-        "## 原始需求\n\n" + request["outcome"] + "\n"
-    )
-    digest = hashlib.sha256(content.encode()).hexdigest()
     document = root / fields["document"]
-    if saved.get("pending") and saved["digest"] != digest:
+    args_for_document = (fields, key, request["draft_id"], expected_user, request["outcome"])
+    current = requirement_bytes(*args_for_document, product="天枢")
+    legacy = requirement_bytes(*args_for_document, product="大千")
+    current_digest = hashlib.sha256(current).hexdigest()
+    legacy_digest = hashlib.sha256(legacy).hexdigest()
+    remote_only = saved.get("pending") and saved.get("recover_remote_name") and not saved.get("event")
+    if saved.get("pending") and not remote_only and saved.get("digest") not in (current_digest, legacy_digest):
         raise ValueError("请用原草稿及原账号核对发布回执")
-    write_requirement(document, content.encode(), saved)
+
+    # Until a brand-new local draft has passed remote deduplication, the original
+    # Issue may be the only surviving source. Journal that distinction before writing.
+    if not saved and not document.exists():
+        saved["recover_remote_name"] = True
+        save(journal, saved)
+    # A replay keeps the exact bytes bound to its journal or surviving requirement.
+    old_document = (
+        (not saved.get("digest") or saved.get("recover_remote_name"))
+        and not document.parent.is_symlink()
+        and not document.is_symlink()
+        and document.is_file()
+        and document.read_bytes() == legacy
+    )
+    raw = legacy if old_document or saved.get("digest") == legacy_digest else current
+    # Recovery is read-only until the supplied original text matches the remote Issue.
+    # A second worktree can share the journal without having any local draft file.
+    if not remote_only:
+        write_requirement(document, raw, saved)
     args = (root, fields["document"], fields["title"], fields["category"], key)
-    plan = work.issue(*args, planned=True)
-    saved["digest"] = digest
+    plan = work.issue(*args, planned=True, preview_text=raw.decode() if remote_only else None)
+    digest = hashlib.sha256(raw).hexdigest()
+    if not remote_only:
+        saved["digest"] = digest
     url = publish(work, args, plan, expected_user, journal, saved)
-    result, row = github_read("回读已发布工单", work.GitHubCommandError, readback, work, url, plan, principal)
+
+    legacy_body = None
+    if saved.get("recover_remote_name") and not saved.get("event"):
+        legacy_body = work.issue(*args, planned=True, preview_text=legacy.decode())["body"]
+    result, row, used_legacy = github_read(
+        "回读已发布工单", work.GitHubCommandError, readback, work, url, plan, principal, legacy_body
+    )
+    if saved.pop("recover_remote_name", False):
+        if used_legacy:
+            raw, digest = legacy, legacy_digest
+        write_requirement(document, raw, {"digest": saved.get("digest")})
+        saved["digest"] = digest
+        save(journal, saved)
     if "event" not in saved:
         saved["event"] = {
             "schema_version": 1,
@@ -339,7 +384,7 @@ def create(root, request, bridge):
     try:
         draft = request.get("draft_id")
         if not isinstance(draft, str) or not re.fullmatch(r"draft_[a-f0-9]{20}", draft):
-            raise ValueError("无效的大千草稿标识")
+            raise ValueError("无效的天枢草稿标识")
         key = "daqian-direct-" + draft[6:]
         folder = receipt_folder(root, key)
         journal = folder / "state.json"

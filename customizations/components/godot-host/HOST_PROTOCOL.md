@@ -46,9 +46,9 @@ gh 查找顺序：`GONGGONG_GH`，`PATH`，再依次是 `~/.local/bin/gh`、`/op
 
 失败保留原需求和尝试；修复后明确重试。模型结果未知不自动重复付费调用；发布结果未知只查询原稳定ID，未发现唯一单据则保持待对账。取消不撤销已提交远端请求，只停止本地后续步骤和迟到绑定。需求阶段 journal 与正式Diting回执分开，真实Issue创建后将真实需求调用/用量绑定并投递；夹具数据不得导入生产。
 
-## 大千已建工单的推进判断
+## 天枢已建工单的推进判断
 
-在大千工作区确认需求时，`issue-direct` 先发布或对账一张 `planned` 工单，回读编号、稳定需求 ID、URL 与版本。若收到 `ok:true, coordination_pending:true`，保留这份绑定，后续路由会补投建单事件。
+在天枢工作区确认需求时，`issue-direct` 先发布或对账一张 `planned` 工单，回读编号、稳定需求 ID、URL 与版本。若收到 `ok:true, coordination_pending:true`，保留这份绑定，后续路由会补投建单事件。
 
 对已绑定的工单调用 `issue-route --workspace <仓库> --request <JSON文件> --out <回执文件>`。请求包含 `issue_number, request_id, expected_user, expected_revision` 及现有编辑器模型选项 `backend, endpoint, model, cli_node, cli_entry, cli_model`。私有 stdin 只接收一行 `{"api_key":"..."}`。宿主回读权威原文并加载当前准入的司南，司南判定需要分析时才调用偃师。两者均以禁用工具的模型配置工作。
 

@@ -1,0 +1,50 @@
+{
+  "request_id": "tianshu-product-rename",
+  "issue_number": 365,
+  "base": "5026ac8f3466503974eac93161fc0797c714a286",
+  "integrated_from": "e690b880d3ab77b53eaad1478acef574ac2e723d",
+  "host_tests": 107,
+  "platform": "macOS arm64",
+  "headless_editor_sha256": "322dd6405dd873121afe4eb5ae23613cf7bbe4bcc72deea8b79e261c84a83724",
+  "main_screen_order": [
+    "AI Chat",
+    "马良",
+    "天枢",
+    "2D",
+    "3D",
+    "Script",
+    "Game",
+    "Asset Store"
+  ],
+  "layout_phases": [
+    "initial",
+    "legacy_maliang_last",
+    "legacy_maliang_selected",
+    "pre_daqian_layout",
+    "pre_maliang_layout",
+    "restart"
+  ],
+  "direct_issue_and_coordination": "passed",
+  "independent_review": {
+    "source": "Codex native review for #365",
+    "result": "passed after fixes",
+    "regressions_verified": [
+      "lost create receipt for pre-rename drafts",
+      "exact matching of remote legacy issue without local receipts",
+      "reject altered remote body for confirmed new-name issues",
+      "recover the correct original draft after a wrong first attempt without deleting the journal or document",
+      "remote-only retries across worktrees with a shared journal, without leaving a provisional document in the second worktree"
+    ]
+  },
+  "publication_and_live_install": "tracked separately after merge",
+  "initial_reviewed_implementation_tree": "68ec469cbc223a2ae344f79880545c0bd88c3469",
+  "integrated_main": {
+    "base": "d16199d586f0641e74599697f195a8fd7a51157e",
+    "independently_reviewed_tree": "8599729194ddd92c2f941cbf1afe0fe3a338c5c5",
+    "contribution_patch_id": "c348232c43d7c7fefdb95dfd022ceb545baf39cd",
+    "host_tests": 107,
+    "editor_sha256": "300899aaf9163bc12dd26fa87e10cb339ebbfacc618ad7b75e6e302f59b286aa",
+    "tab_phases": 6,
+    "direct_issue_and_coordination": "passed"
+  }
+}

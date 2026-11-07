@@ -12,9 +12,9 @@
 
 证据：[原始需求与交接](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6665309133)、[首批剩余验收](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/142#issuecomment-6665047824)、[其他协作者合入](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/155)、[跟踪工单 #158](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158)。
 
-## 大千入口核查
+## 天枢入口核查
 
-大千的设计定位见 design-docs/daqian-workflow.md。editor/docks/daqian/workspace.gd 展示工单状态，经 graph_host.py 读写计划或答复，调试按钮另起 debug_session.mjs 并标注本机协议夹具。graph_host.py 的 read/apply/answer 路径均未启动工作者。计划库默认在当前 Git 安装的 data-collection/daqian.sqlite，也可以通过已经配置的 SSH 计划宿主访问。框架司南、Codex 派发入口、工单提交入口均可独立运行。#140 的公开记录支持“一次主动写入大千计划”，谁决定这次移交及其当时的内部理由未知。
+天枢的设计定位见 design-docs/daqian-workflow.md。editor/docks/daqian/workspace.gd 展示工单状态，经 graph_host.py 读写计划或答复，调试按钮另起 debug_session.mjs 并标注本机协议夹具。graph_host.py 的 read/apply/answer 路径均未启动工作者。计划库默认在当前 Git 安装的 data-collection/daqian.sqlite，也可以通过已经配置的 SSH 计划宿主访问。框架司南、Codex 派发入口、工单提交入口均可独立运行。#140 的公开记录支持“一次主动写入大千计划”，谁决定这次移交及其当时的内部理由未知。
 
 路径相对仓库根。核查为源码、工单和原生 Codex 运行回执复核，本次未启动 Godot。未获第二设备的实际终态回执，也未把在途业务从 kaiyunxue 转给本机。
 

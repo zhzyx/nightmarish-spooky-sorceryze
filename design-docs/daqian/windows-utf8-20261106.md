@@ -1,6 +1,6 @@
-# 大千 Windows 调试结果编码修复
+# 天枢 Windows 调试结果编码修复
 
-稳定需求 ID：daqian-windows-utf8-20261106。路径以仓库根目录为基准。用户要求编译、排查并提交大千编辑器问题，确保当前 main 的编辑器源码包含大千。
+稳定需求 ID：daqian-windows-utf8-20261106。路径以仓库根目录为基准。用户要求编译、排查并提交天枢编辑器问题，确保当前 main 的编辑器源码包含天枢。
 
 工单：[Issue #156](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/156)。
 

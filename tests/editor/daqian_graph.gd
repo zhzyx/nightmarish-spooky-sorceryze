@@ -60,7 +60,7 @@ func run() -> void:
 	settings.set_setting("gonggong/python",OS.get_environment("DAQIAN_TEST_PYTHON"))
 	var dock = root.find_child("Daqian", true, false)
 	if not dock:
-		push_error("Missing native Daqian editor tab")
+		push_error("Missing native Tianshu editor tab")
 		quit(1)
 		return
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)

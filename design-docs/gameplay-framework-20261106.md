@@ -9,7 +9,7 @@
 - 目标平台与工具链：第一阶段 Windows x86_64、MSVC、Godot `tests=yes`；后续专服阶段覆盖 Windows/Linux headless，但只有实际构建过的平台才记为已验证。
 - 交付目标：当前 Godot 仓库内可选的 C++ Gameplay 模块、类文档、自动化测试、代表性联网示例与可追溯设计；不改变现有 `Node`、`SceneTree` 或 `SceneMultiplayer` 的兼容语义。
 
-## 大千模块边界
+## 天枢模块边界
 
 依照 `framework/specs/module-system.md`，拆为稳定核心契约、业务能力和接入子模块。模块是逻辑职责，不等于 Git submodule、独立进程或固定 Agent。
 
