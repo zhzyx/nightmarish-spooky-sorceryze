@@ -104,9 +104,9 @@ func _run():
 	report["accepted_count"] = dock.get_meta("queued_message_count", -1)
 	report["received_status"] = dock.find_child("MessageQueueStatus", true, false).text
 	if mode in ["steering", "tools", "stop", "cancel"]:
-		_check("已收到" in report.received_status and "等待安全边界" in report.received_status, "Pending supplement is not labelled as received but not applied")
+		_check("已收到" in report.received_status and "等待安全边界" in report.received_status, "Pending supplement is not labeled as received but not applied")
 	elif mode == "mode":
-		_check("独立任务" in report.received_status, "Different-mode input is not labelled as a separate task")
+		_check("独立任务" in report.received_status, "Different-mode input is not labeled as a separate task")
 	var count_expected := 1 if mode == "mode" else 2
 	if not _check(report.accepted_count == count_expected, "Busy input was lost or not queued"):
 		_finish()
@@ -118,7 +118,7 @@ func _run():
 			await process_frame
 		_check(dock.find_child("Stop", true, false).disabled, "Steered task did not finish")
 		_check("STEERING_APPLIED_OK" in _text(), "Updated answer not displayed")
-		_check("已应用补充要求" in _text(), "Applied supplement acknowledgement missing")
+		_check("已应用补充要求" in _text(), "Applied supplement acknowledgment missing")
 		_check(not "STALE_ORIGINAL_REPLY" in _text(), "Superseded answer was displayed")
 		_check(dock.get_meta("queued_message_count", -1) == 0, "Applied inputs remain queued")
 		report["initial_reply_count"] = initial_reply_count

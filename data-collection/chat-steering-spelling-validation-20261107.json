@@ -1,0 +1,141 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/381",
+  "issue_number": 381,
+  "request_id": "chat-steering-20261107",
+  "base_commit": "1281719bb7453076a80770b39e65747c61405412",
+  "platform": "macOS arm64",
+  "build": "passed; SCons platform=macos target=editor arch=arm64 dev_build=no debug_symbols=no vulkan=no accesskit=no -j8",
+  "editor_sha256": "bfb6e34e9c00149064b6ac2f0a9c334b2c956b832f60d428e5ced6c0aa7cf635",
+  "source_sha256": {
+    "customizations/components/godot-host/requirements_agent.py": "44ed4f1d0a716d0950d360053ce7328c84d69824cd7f58ce808372d85b3b5eee",
+    "customizations/components/godot-host/test_requirements_agent.py": "bca41c38092ca9cdc017fb7e0f1f260fe3c222e67e2afad35ada334776838bd5",
+    "editor/docks/ai_chat_dock.cpp": "ec922f6f0c8e1f97a8fa40f474075118ccdb206a438833940640163bf4e90e2f",
+    "editor/docks/ai_chat_dock.h": "4548a6e7d94f2aaed71df8b960058750d6ce42677f5f5d6ff889cc7993044ad4",
+    "editor/docks/ai_chat_gonggong.cpp": "35b0435125412a3189c419fc00ceb291704edf2b51340c048309bbf55a3e6627",
+    "tests/editor/requirements_intake.gd": "15f5b72b755f85cc7fcdcec2f215d6db06941a86a941da4200f77e916b40c882",
+    "tests/editor/run_requirements_intake.py": "f09443fb727a2a1e677d950ba075c88c53bb428cd2fd4714fd11988a80045132",
+    "tests/editor/test_codebuddy_acp.js": "ca146fd7ab58a33518bf5b10b7ddb919126a2b97b04cfa414eb0c50d5b3c5417",
+    "tools/codebuddy_cli/godot_acp.js": "072adc661ab961a1975367777a3cef3c17abe93494b78dc25a02ba5f5a340a33",
+    "tests/editor/ai_chat_steering.gd": "50ec60fcd95481f3fd126e7c102a93c3d2673b0f4343dac27ce129dc9006d2e9",
+    "tests/editor/run_ai_chat_steering.py": "e4a2e2b0a7f8660cfde9805c4c962b6898f3b3a0d78015990ae234258916f34f"
+  },
+  "continuous_conversation": {
+    "passed": true,
+    "case_count": 10,
+    "editor_sha256": "bfb6e34e9c00149064b6ac2f0a9c334b2c956b832f60d428e5ced6c0aa7cf635",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "e4a2e2b0a7f8660cfde9805c4c962b6898f3b3a0d78015990ae234258916f34f",
+      "ai_chat_steering.gd": "50ec60fcd95481f3fd126e7c102a93c3d2673b0f4343dac27ce129dc9006d2e9"
+    },
+    "cases": {
+      "api-cancel": {
+        "passed": true,
+        "report_sha256": "54d9b41ca0d004d56354d50bd3d6d5ae617d71716aa9a6b102e574570d521daf"
+      },
+      "api-mode": {
+        "passed": true,
+        "report_sha256": "9ba20fd785d3ee2438d6eeac825db707eba1882c78ac5a42aed7c065022641dc"
+      },
+      "api-steering": {
+        "passed": true,
+        "report_sha256": "71e0f00b2ecfc9748946fce08a5f08865948412e75daf18754fdce0416a76de5"
+      },
+      "api-stop": {
+        "passed": true,
+        "report_sha256": "8125efd83cf075150a51006937a262fd3dd1ab4220fdab2eb658b0b67cdd3ece"
+      },
+      "api-tools": {
+        "passed": true,
+        "report_sha256": "786e392efce1f748865bb466393dbf95db5d6436f277d462d2471b2405cfb0ef"
+      },
+      "codex-cancel": {
+        "passed": true,
+        "report_sha256": "d18f83854809e468615e3b30d0314a6ac249fadc737613d2ea6d6f675ff74fd1"
+      },
+      "codex-mode": {
+        "passed": true,
+        "report_sha256": "033f93d84bef3524d11e3c0f24506bf728a00598f35802922447d81e0ca41f5d"
+      },
+      "codex-steering": {
+        "passed": true,
+        "report_sha256": "22f88477c6cb16b25a395cf69e43ba11ff252bb1be6d0d7ab7981192289df31a"
+      },
+      "codex-stop": {
+        "passed": true,
+        "report_sha256": "6217fec7079fb3e1927a9ac4ddc3b760681c2ff5874cec3863339cfb2ee69d23"
+      },
+      "codex-tools": {
+        "passed": true,
+        "report_sha256": "f2e9224f990652222ff1586daa3560ce9022c61999b6cc3a5de3e4978a1a10b5"
+      }
+    }
+  },
+  "requirements_intake": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": false,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "issues_created": 5,
+    "events": 65,
+    "git_check": {
+      "git_state": "committed",
+      "files": 68,
+      "records": 65,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "supplement during intake amends the same Issue before the first development request",
+      "followup reuses Issue",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "65f789874d618bc9f508ad87ffd612954467fca69ef7f70ccb5369f8b86c4f15",
+    "fixture_events_imported": false
+  },
+  "unit_tests": {
+    "requirements_agent": {
+      "passed": 29
+    },
+    "direct_issue": {
+      "passed": 14,
+      "environment_skipped": 2
+    },
+    "codex_bridge": {
+      "passed": 14
+    },
+    "codebuddy_acp": {
+      "passed": 9
+    }
+  },
+  "independent_review": {
+    "worker": "/root/steering_tests",
+    "scope": "production C++ and Python scope guards plus ACP reset",
+    "result": "passed; no remaining blocking finding",
+    "source": "actual native sub-agent completion in current authorized Codex session"
+  },
+  "real_model_service_used": false,
+  "usage": null,
+  "diting_consumption_confirmed": false,
+  "limitations": [
+    "Input applies at host-owned safe boundaries; the Codex exec bridge does not call app-server turn/steer.",
+    "Running actions are not undone by a correction.",
+    "Tests use isolated provider and GitHub fixtures."
+  ],
+  "fixture_formatting": "run_requirements_intake.py received whitespace-only ruff formatting after execution; behavior unchanged.",
+  "ci_correction": {
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42342419516",
+    "finding": "codespell identifier and assertion diagnostic spelling",
+    "logic_changed": false,
+    "local_codespell": "passed",
+    "continuous_conversation_reverified": 10,
+    "requirements_intake_reuse": "Prior recorded binary differs only by identifier spelling and generated version metadata; requirements/runtime inputs unchanged. Prior exact binary hash remains in requirements_intake."
+  }
+}

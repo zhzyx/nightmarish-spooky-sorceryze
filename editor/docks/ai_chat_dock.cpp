@@ -1907,8 +1907,8 @@ void AIChatDock::_apply_pending_steering() {
 		}
 	}
 	_append_work(U"已应用补充要求，保留原任务、工单与快照；重新核对范围并继续。已完成操作不会自动撤销。");
-	Dictionary acknowledgement = transcript[transcript.size() - 1];
-	acknowledgement["steering_applied"] = true;
+	Dictionary acknowledgment = transcript[transcript.size() - 1];
+	acknowledgment["steering_applied"] = true;
 	_refresh_message_queue();
 	_queue_history_save();
 	_save_history();
