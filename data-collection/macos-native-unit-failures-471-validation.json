@@ -1,0 +1,48 @@
+{
+  "request_id": "macos-native-unit-failures-42379241429",
+  "issue_number": 471,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/471",
+  "base": "4bae490b4284cb2bf23beb7c16a1ac8ed1e12c7a",
+  "platform": "macOS 26.6.2 arm64",
+  "original_ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42379241429",
+  "original_ci_artifact_sha256": {
+    "macos-editor": "ac25496f3e8b9c8c0d237239e9f780cd33f250b32a16e2682feac523292e7c69",
+    "macos-template": "57d47b5f3438820535142f79ff7de7d0f92d6901ddfeb2e47da3c354a3b1132f"
+  },
+  "before": {
+    "enet": "Original template reproduced SIGSEGV in the dedicated-server two-client case after 26 passing assertions.",
+    "tcp": "Original editor passed in isolation. Holding port 12345 broke its TCP suite. Replacing the stopped listener with another local accept-and-close listener reproduced actual status 0 versus expected 3. The historical runner environment is unknown.",
+    "restart": "Standard template rejected --path/--script. Both ordinary-restart subcases failed after the ENet crash was repaired."
+  },
+  "checks": {
+    "editor_tcp_port_held": [
+      "[doctest] test cases:   5 |   5 passed | 0 failed | 1532 skipped",
+      "[doctest] assertions: 110 | 110 passed | 0 failed |"
+    ],
+    "editor_enet": [
+      "[doctest] test cases:  1 |  1 passed | 0 failed | 1536 skipped",
+      "[doctest] assertions: 32 | 32 passed | 0 failed |"
+    ],
+    "editor_full": [
+      "[doctest] test cases:   1534 |   1534 passed | 0 failed | 3 skipped",
+      "[doctest] assertions: 435438 | 435438 passed | 0 failed |"
+    ],
+    "template_full": [
+      "[doctest] test cases:   1445 |   1445 passed | 0 failed | 3 skipped",
+      "[doctest] assertions: 326865 | 326865 passed | 0 failed |"
+    ],
+    "template_enet": [
+      "[doctest] test cases:  1 |  1 passed | 0 failed | 1447 skipped",
+      "[doctest] assertions: 32 | 32 passed | 0 failed |"
+    ]
+  },
+  "tested_executable_sha256": {
+    "editor": "7666093557c7a525d966478f40627429dcc9b0e18ac459b13fa16a8e11cf2bcd",
+    "template_release": "6e1cf6b1a1fcd875ae922ef02e46e0d4b58a172a84825b0e9bc5896333de1e74"
+  },
+  "reviewed_source_blobs": {
+    "modules/enet/enet_connection.cpp": "075d2c1491ce66b76b5eeb8f936bef3807296b2b",
+    "tests/core/io/test_tcp_server.cpp": "ef32bd9661d7ba8d840fc969e82ba7a499b107fc",
+    "tests/core/os/test_os.cpp": "15fa2972212b4b6806af5eba435fa53279101cc0"
+  }
+}
