@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-259588e9df9a1c2def26227fe0fbbaaeb0658a83",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-fd4c296f776b137a4723",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9d126c2c49516ecb94511f76af5a75d2162d8a3f408c47f261cc1b6fb889b232",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/495",
+    "action": "intake",
+    "detection_head": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+    "context_sha256": "59573270ed9f2fe8c2735f5c08a6a9e9ef1898696cfca52a893bbafb44b1eeed",
+    "operator": "Sail-Li",
+    "worker": "codex/root",
+    "authority_ref": "user-chat-20261108-advance-Sail-Li-open-issues",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/440",
+    "diagnosis": "Intake refused planned status; actual acceptance started and status changed to in-progress; original intake-only recheck passed. No product code defect.",
+    "next_action": "Close recovered intake tracker after authoritative recheck; deliver missing source document separately under issue 440.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T17:56:29.766724+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T18:00:19.030960+00:00",
+  "sha256": "14929aed57ade7de2c6ffcae82ca663bfa5961a572105deefde6400353d4e752"
+}
