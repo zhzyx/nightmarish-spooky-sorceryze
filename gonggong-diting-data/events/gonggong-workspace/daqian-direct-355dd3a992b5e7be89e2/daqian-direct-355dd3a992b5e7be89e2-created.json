@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "daqian-direct-355dd3a992b5e7be89e2-created",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-355dd3a992b5e7be89e2",
+  "kind": "request",
+  "occurred_at": "2026-11-07T19:21:57Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/516",
+  "agent": {
+    "id": "godot-daqian",
+    "version": "1",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b4b043cf52446c8971e681026aa1795fb726b467d18f1a971b6c350e4a58487a"
+  },
+  "payload": {
+    "event": "request.created",
+    "draft_id": "draft_355dd3a992b5e7be89e2",
+    "actor_id": "350401007",
+    "document": "design-docs/daqian-direct-355dd3a992b5e7be89e2.md",
+    "document_sha256": "274fc76693e6ee1e8272584001391714ba44db9c2a56cffdfc1194eea56131bc",
+    "path_base": "repository_root",
+    "status": "planned",
+    "revision": "2026-11-07T19:21:57Z",
+    "execution": "not_dispatched"
+  },
+  "evidence_refs": [],
+  "sha256": "b57c6b816f6a72a3b9d9d7787c77860d3d503351e31fd31d18351a780ec19d91"
+}

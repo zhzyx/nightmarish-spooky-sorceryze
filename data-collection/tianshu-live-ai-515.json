@@ -1,0 +1,75 @@
+{
+  "issue": 515,
+  "request_id": "tianshu-live-ai-path",
+  "platform": "Windows x64",
+  "entry": "installed headless editor, actual Daqian canvas send signal, saved settings",
+  "editor_sha256": "11552C53FE8B066182FA113EB23F703848756B61B1DBAF84CD61B3A803A23E68",
+  "configured_model": "gpt-6-astra",
+  "observed_provider_model": null,
+  "probe_1": "90-second observation window elapsed; no reply before probe exit",
+  "probe_2": {
+    "wait_seconds_approx": 120,
+    "response": "8157",
+    "route": "answer",
+    "canvas_rendered": true,
+    "prompt": "7919 + 238",
+    "log_sha256": "B69EC5FC8A2A19405694043301D390DEA67E327D9FF5C34E206AFAF1267E8311"
+  },
+  "cli_control": {
+    "log_sha256": "38DEB50096488168F6D0DD29CA722205A508CF6AF5AB42556B8F12DC0949BF39",
+    "observed": "WebSocket timed out; subsequent turn.completed with correct answer 6813",
+    "command": "isolated real codex exec",
+    "reconnect_limit": 5
+  },
+  "routing": {
+    "button": "开始推进",
+    "trigger": "native editor new requirement and confirm publish with same saved model, isolated settings and workspace",
+    "reason": "#516 用于验收 #515 的路由回执。测试对象和通过条件已明确，可由司南直接给出路由决定。",
+    "request_id": "daqian-direct-355dd3a992b5e7be89e2",
+    "log_sha256": "7A6A8A3D302844B19DF9E9EA49F09BC7067F2A82BF6657713ED9ECDA17681310",
+    "issue": 516
+  },
+  "excluded": [
+    "all other agent and model combinations",
+    "end-to-end production code delivery inside the editor",
+    "physical desktop interaction"
+  ],
+  "ui_retest": {
+    "stage": "before final content_filter review correction",
+    "prompt": "7823 + 219",
+    "log_sha256": "FBE04735E90F224AE62852FABCD219F0E92A090F748D658FD24D4A04B7C997B0",
+    "waiting_survived_board_refresh": true,
+    "response": "8042",
+    "waiting_after_response": false
+  },
+  "native_regressions": {
+    "http_responses": [
+      "200 stop",
+      "401 unauthorized",
+      "200 content_filter"
+    ],
+    "candidate_binary_sha256": "c84fabbf31ac3d5703de76e747eab624edea2560d00a2df334f377a08d33eeb6",
+    "check": "DAQIAN_INLINE_APPROVAL_OK",
+    "source_patch_id": "4e22756e5b01c954ebb393797254c0e4f909e998"
+  },
+  "scoped_read": {
+    "issue": 515,
+    "before": {
+      "tool": "read_file",
+      "file": "res://verification.txt",
+      "random_file_bytes": 32,
+      "response_matches_file": true,
+      "canvas_matches_file": false,
+      "runtime_log_sha256": "2894b75017349ae9e3873cfa192f89278ed6a7b3a1cc74cf7d6b23c09b0ad474"
+    },
+    "after": {
+      "tool": "read_file",
+      "file": "res://verification.txt",
+      "random_file_bytes": 32,
+      "response_matches_file": true,
+      "canvas_matches_file": true,
+      "runtime_log_sha256": "ed40fc8e8518927241bd670e7019c3ea47c5a06e84d81fea36eecc659cfc58f8"
+    },
+    "check": "Fresh isolated project each time. Live tool progress reported file read; compare final response and original canvas text with file. Final canvas wait hidden."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-live-ai-path-request",
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-live-ai-path",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+  "occurred_at": "2026-11-07T19:10:39Z",
+  "agent": {
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "id": "current-workspace-operator",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported"
+  },
+  "payload": {
+    "intent": "排查并真实验证天枢 AI 调用，修复已复现的画布等待及终态反馈",
+    "document": "design-docs/tianshu-live-ai-path.md"
+  },
+  "evidence_refs": [],
+  "sha256": "0b2c814539dbbded66a4b9694a8d37428bf7db97de9f9c1de5d5bbe220b3655a"
+}

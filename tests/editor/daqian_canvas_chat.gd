@@ -74,7 +74,7 @@ func run() -> void:
 	var pasted := " ".repeat(8) + "字".repeat(18000)
 	canvas.canvas_message.insert_text_at_caret(pasted)
 	press_key(KEY_ENTER)
-	var input_ok: bool = chat.last.is_empty() and canvas.canvas_message.text == pasted and "12000" in panel.notice.text
+	var input_ok: bool = chat.last.is_empty() and canvas.canvas_message.text == pasted and "12000" in canvas.canvas_log.text
 	canvas.canvas_message.clear()
 	press_key(KEY_NONE, false, "测".unicode_at(0))
 	press_key(KEY_ENTER, true)
@@ -87,15 +87,18 @@ func run() -> void:
 	var first_receipt: String = chat.last[7]
 	var local_ok: bool = chat.last[5].id == "second" and chat.last[4] and "#42" in chat.last[3]
 	local_ok = local_ok and "参考图" in chat.last[3] and "PNGDATA" not in chat.last[3] and "existing" in chat.last[3]
+	panel.notice.text = "上次同步"
+	var waiting_ok: bool = canvas.waiting.visible and "当前画布" in canvas.waiting.text
 	panel._preview_received(first_receipt, '{"route":"execute","text":"执行"}')
 	await process_frame
+	waiting_ok = waiting_ok and not canvas.waiting.visible
 	var execute_ok: bool = chat.last[0] == issue and chat.last[1] == 42 and not chat.last[4]
 	canvas.canvas_message.text = "查看相关工单"
 	canvas.send_requested.emit()
 	local_ok = local_ok and chat.last[0] == source and chat.last[7] != first_receipt
 	panel._preview_received(chat.last[7], '{"route":"project","text":"跨工单"}')
 	await process_frame
-	var project_ok: bool = "全项目工单" in chat.last[3]
+	var project_ok: bool = "全项目工单" in chat.last[3] and canvas.waiting.visible and "全项目" in canvas.waiting.text
 	panel._preview_received(chat.last[7], '{"route":"requirement","text":"新的需求"}')
 	await process_frame
 	var draft_ok: bool = panel.new_drafts == 1 and panel.published_form and panel.editor.draft.nodes.requirement.value == "新的需求"
@@ -136,13 +139,32 @@ func run() -> void:
 	canvas.canvas_message.text = " ".repeat(12000) + "测试"
 	press_key(KEY_ENTER)
 	input_ok = input_ok and canvas.canvas_message.text.is_empty() and "用户输入：测试" in chat.last[3]
+	panel._preview_received(chat.last[7], '{"route":"answer","text":"已收到测试"}')
+	await process_frame
+	canvas.canvas_message.text = "检查连接"
+	canvas.send_requested.emit()
+	var failure: String = chat.last[7]
+	panel.current = ""
+	panel._sync_canvas_scope()
+	panel._preview_failed(failure, "HTTP 401")
+	panel._preview_failed(failure, "重复错误")
+	var failure_ok: bool = not canvas.waiting.visible and "HTTP 401" not in canvas.canvas_log.text
+	panel.current = issue
+	panel._sync_canvas_scope()
+	panel.notice.text = "上次同步"
+	failure_ok = failure_ok and canvas.pending_turns.is_empty() and not canvas.waiting.visible and "HTTP 401" in canvas.canvas_log.text and "重复错误" not in canvas.canvas_log.text
+	canvas.canvas_message.text = "读取校验串"
+	canvas.send_requested.emit()
+	panel._preview_received(chat.last[7], "9fc6d11verify")
+	await process_frame
+	var plain_ok: bool = "答复 · 9fc6d11verify" in canvas.canvas_log.text and not canvas.waiting.visible
 	canvas.free()
 	for id in Node.get_orphan_node_ids():
 		if not original_orphans.has(id) and is_instance_id_valid(id):
 			var node := instance_from_id(id) as Node
 			if node and not node.get_parent():
 				node.free()
-	if not (input_ok and local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated):
+	if not (input_ok and local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated and waiting_ok and failure_ok and plain_ok):
 		push_error("Canvas chat routing regression")
 		quit(1)
 	else:
