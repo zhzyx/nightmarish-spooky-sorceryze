@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-detail-chat-boundary-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-detail-chat-boundary-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T15:03:19.225897+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/457",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "parent": 442,
+    "document": "design-docs/daqian/detail-chat-boundary.md",
+    "intent": "按 #457 拆分节点详情和分层聊天上下文"
+  },
+  "evidence_refs": [],
+  "sha256": "25c2e45d2d033dc95cb4a9d5fe9c77c3ddf2fea1d4d48c0ef496148c62f37f85"
+}

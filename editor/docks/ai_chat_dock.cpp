@@ -3717,7 +3717,7 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("daqian_approval_state", PropertyInfo(Variant::STRING, "token"), PropertyInfo(Variant::STRING, "state")));
 	ClassDB::bind_method(D_METHOD("launch_daqian_routing", "binding", "selection"), &AIChatDock::_launch_daqian_routing);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
-	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_daqian_chat);
 	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_daqian_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
@@ -3835,7 +3835,7 @@ static bool has_personal_daqian_binding(const String &p_scope, const String &p_s
 	return false;
 }
 
-String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded) {
+String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt) {
 	daqian_mount_conversation = String();
 	if (p_source.is_empty() || p_issue < 0 || ((p_issue == 0) != p_request.is_empty())) {
 		return U"工单绑定不完整。";
@@ -4000,7 +4000,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		}
 		_active_model_field()->set_text(model_id);
 		_apply_models(model_catalog);
-		daqian_preview_source = p_preview ? p_source : String();
+		daqian_preview_source = p_preview ? (p_preview_receipt.is_empty() ? p_source : p_preview_receipt) : String();
 		daqian_preview_conversation = conversation_id;
 		consultation_only->set_pressed(p_preview);
 		Dictionary message = chat_message("user", _redact(p_message));
@@ -4019,7 +4019,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		if (!input->get_text().strip_edges().is_empty()) {
 			return U"关联会话中有未发送内容，请先处理已有草稿。";
 		}
-		daqian_preview_source = p_preview ? p_source : String();
+		daqian_preview_source = p_preview ? (p_preview_receipt.is_empty() ? p_source : p_preview_receipt) : String();
 		daqian_preview_conversation = conversation_id;
 		consultation_only->set_pressed(p_preview);
 		input->set_text(p_message);
