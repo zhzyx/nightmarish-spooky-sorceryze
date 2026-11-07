@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0b19d00192ee3975b9ee7bc53164a1911a92291c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7a60195c5fa8fa366b607d939e6a604dae44cab2833892d5263dcdfb3714963b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "delivery",
+    "detection_head": "6c7ffc530e08ebda6de59557e53721f08114ecd4",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "runtime/unified-settings/premerge-v15-main-advanced.json",
+    "diagnosis": "All exact-head CI runs for PR489 passed, but the final premerge readback found main advanced to cef3a3af by PR490. The merge was not attempted. Both local feature commits have now rebased cleanly, preserving the upstream native delivery and Windows liveness changes.",
+    "next_action": "Verify the v16 source-bound build and regressions, sign a new exact candidate, pass CI, merge and read back main; then rebuild the latest main and open the engine as requested.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:25:08.292580+00:00",
+    "attempted": null,
+    "repair_owner": "/root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-07T17:45:10.031712+00:00",
+  "sha256": "1bf7d3bc87b980afb2bedb5b983793efe586fd58a80d6da03501e81ef54e86c4"
+}

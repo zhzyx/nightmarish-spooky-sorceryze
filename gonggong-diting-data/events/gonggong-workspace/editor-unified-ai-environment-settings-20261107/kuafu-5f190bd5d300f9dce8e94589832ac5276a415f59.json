@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5f190bd5d300f9dce8e94589832ac5276a415f59",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8f35d2dc310aa63d2d808bb5c67788cb3e8fcc0774195f7fb382bb03d1802540",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/460",
+    "action": "delivery",
+    "detection_head": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+    "context_sha256": "29158f97f728f70945751587b74634ae3340630489d3fce927c96eed7bf8c28d",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459",
+    "evidence": "runtime/unified-settings/writer-submit.log;build-v10.log;build-evidence-v10.json",
+    "diagnosis": "Writer correctly refused signing after main advanced from ff3ba749 to a2cd8003 with overlapping AIChat and Tianshu source. Root integrated the actual main changes without conflicts in the isolated worktree. MSVC rebuilt successfully; independent combined-source review found no P1/P2.",
+    "next_action": "Complete current-candidate native, layout, art and model-discovery revalidation; append integration evidence, rerun the formal gate and signed submission against current main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:04:15.588082+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:07:40.893901+00:00",
+  "sha256": "22726ce7f9083a4761fdd81f515ea4645b4fa4ebeb44d593fdf21e4fadafed95"
+}

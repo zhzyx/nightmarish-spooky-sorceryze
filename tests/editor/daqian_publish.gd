@@ -16,15 +16,15 @@ func run():
 	var repo := OS.get_environment("DAQIAN_TEST_REPO")
 	var settings := EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", repo)
-	settings.set_setting("gonggong/python", OS.get_environment("DAQIAN_TEST_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("DAQIAN_TEST_PYTHON"))
 	var dock = root.find_child("Daqian", true, false)
 	var panel = dock.find_child("DaqianWorkspace", true, false)
 	var chat = root.find_child("AI Chat", true, false)
-	var backend = chat.find_child("AIBackend", true, false)
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	chat.find_child("APIModel", true, false).text = "fixture"
-	chat.find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
+	chat.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	chat.get_ai_settings_control().find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await panel.refresh()
 	panel._compose_requirement()

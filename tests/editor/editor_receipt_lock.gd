@@ -7,7 +7,7 @@ func _initialize() -> void:
 func run() -> void:
 	await create_timer(1).timeout
 	var dock := root.find_child("AI Chat", true, false)
-	dock.find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
 	var pid := OS.get_process_id()
 	var file := FileAccess.open("res://lock-ready-%d.json" % pid, FileAccess.WRITE)

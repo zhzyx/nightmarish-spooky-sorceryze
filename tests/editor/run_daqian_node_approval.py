@@ -85,7 +85,9 @@ def run(binary):
         workspace = project / ".fixture"
         server.workspace = workspace
         threading.Thread(target=server.serve_forever, daemon=True).start()
-        project.joinpath("project.godot").write_text('config_version=5\n[application]\nconfig/name="Approval test"\n')
+        project.joinpath("project.godot").write_text(
+            'config_version=5\n[application]\nconfig/name="Approval test"\n', encoding="utf-8"
+        )
         shutil.copyfile(Path(__file__).with_name("daqian_node_approval.gd"), project / "test.gd")
         bridge = workspace / "tools/gonggong_bridge.py"
         board = workspace / "customizations/components/godot-host/daqian/board.py"
@@ -128,9 +130,9 @@ from pathlib import Path
 row = {!r}
 action = sys.argv[1]
 if action == "flush":
-    Path(sys.argv[sys.argv.index("--out")+1]).write_text(json.dumps({{"ok": True}}))
+    Path(sys.argv[sys.argv.index("--out")+1]).write_text(json.dumps({{"ok": True}}), encoding="utf-8")
     sys.exit()
-req = json.loads(Path(sys.argv[sys.argv.index("--request")+1]).read_text())
+req = json.loads(Path(sys.argv[sys.argv.index("--request")+1]).read_text(encoding="utf-8"))
 assert req['issue_number'] == row['number'] and req['request_id'] == row['request']
 if action == 'issue-route':
     assert req['model'] == 'fixture'
@@ -142,8 +144,9 @@ elif action == 'issue-start':
 else:
     assert action == 'chat'
     result = {!r}
-Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result))
-""".format(row, dict(ok=True, context="Fixture", reporting=reporting))
+Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encoding="utf-8")
+""".format(row, dict(ok=True, context="Fixture", reporting=reporting)),
+            encoding="utf-8",
         )
         board.write_text(
             "import json,sys\nfrom pathlib import Path\n"
@@ -153,7 +156,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result))
             + 'if (root/"started").exists(): row["status"]="in-progress"\n'
             + 'if (root/"changed").exists(): row["updated"]="changed"\n'
             + 'result={"access":actor} if "--access-only" in sys.argv else {"board":dict(actor,issues=[row], verified_at="now")}\n'
-            + 'Path(sys.argv[sys.argv.index("--result")+1]).write_text(json.dumps(result))\n'
+            + 'Path(sys.argv[sys.argv.index("--result")+1]).write_text(json.dumps(result), encoding="utf-8")\n',
+            encoding="utf-8",
         )
         env = dict(
             {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},

@@ -7,6 +7,7 @@ var state_path = ""
 var valid_endpoint = ""
 var image_model = "fixture-image.safetensors"
 var mesh_model = "fixture-mesh.safetensors"
+var settings_requests: Array = []
 
 func check(ok: bool, label: String) -> bool:
 	print(("PASS " if ok else "FAIL ") + label)
@@ -55,6 +56,7 @@ func new_panel():
 	panel = load("res://addons/ainative/workbench.gd").new()
 	panel.state_dir = state_path
 	panel.set_meta("ainative_builtin", true)
+	panel.settings_requested.connect(func(section): settings_requests.append(section))
 	root.add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await settle()
@@ -101,7 +103,7 @@ func run():
 	check(panel.service_config_link.visible, "blocked generation exposes an actionable configuration entry")
 	panel.service_config_link.pressed.emit()
 	await settle()
-	check(panel.native_buttons.settings.button_pressed and panel.service_choice.is_visible_in_tree(), "configuration entry opens the actual settings section")
+	check(settings_requests.back() == 'ai' and not panel.native_sections.machine.visible, "configuration entry navigates to central AI settings without reopening an editable business form")
 	check(traffic().is_empty(), "opening settings and rejecting unconfigured generation makes no HTTP calls")
 	mode("comfy")
 	panel.endpoint_edit.text = valid_endpoint

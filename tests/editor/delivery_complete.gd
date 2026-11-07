@@ -34,23 +34,27 @@ func _run():
 	# successful candidate/guard/finalizer execution proves no legacy fallback.
 	settings.set_setting("gonggong/python", OS.get_environment("DELIVERY_FIXTURE_ROOT").path_join("missing-legacy-python") if central_config else OS.get_environment("DELIVERY_FIXTURE_PYTHON"))
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
-	var backend = dock.find_child("AIBackend", true, false)
+	var ai = dock.get_ai_settings_control()
+	var environment = dock.get_environment_settings_control()
+	var backend = ai.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("DELIVERY_FIXTURE_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "offline-delivery-fixture"
-	dock.find_child("APIKey", true, false).text = "offline-fixture-key"
-	dock.find_child("CLINode", true, false).text = OS.get_environment("DELIVERY_FIXTURE_NODE")
-	dock.find_child("CLIBridge", true, false).text = OS.get_environment("DELIVERY_FIXTURE_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
+	ai.find_child("APIEndpoint", true, false).text = OS.get_environment("DELIVERY_FIXTURE_ENDPOINT")
+	ai.find_child("APIModel", true, false).text = "offline-delivery-fixture"
+	ai.find_child("APIKey", true, false).text = "offline-fixture-key"
+	var node = environment.find_child("CLINode", true, false)
+	node.text = OS.get_environment("DELIVERY_FIXTURE_NODE")
+	node.text_changed.emit(node.text)
+	environment.find_child("CLIBridge", true, false).text = OS.get_environment("DELIVERY_FIXTURE_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
 	var mode := OS.get_environment("DELIVERY_FIXTURE_CASE")
 	if OS.get_environment("DELIVERY_FIXTURE_PHASE") == "cold":
 		await create_timer(2.0).timeout
 		_finish(dock.get_meta("gonggong_status", "") != "delivery_completed", "Cold history does not restore a live terminal capability")
 		return
-	dock.find_child("AllowTools", true, false).button_pressed = mode != "disabled"
+	ai.find_child("AllowTools", true, false).button_pressed = mode != "disabled"
 	dock.find_child("ConsultationOnly", true, false).button_pressed = mode == "consultation"
-	dock.find_child("AutoApplyFileChanges", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = mode not in ["approval", "inline-approval"]
+	ai.find_child("AutoApplyFileChanges", true, false).button_pressed = true
+	ai.find_child("AutoExecuteCommands", true, false).button_pressed = mode not in ["approval", "inline-approval"]
 	# Model setting refreshes must finish before this fixture starts its turn.
 	await create_timer(0.5).timeout
 	var approval = dock.find_child("AIFileApproval", true, false)

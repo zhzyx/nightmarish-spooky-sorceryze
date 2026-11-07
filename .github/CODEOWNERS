@@ -537,6 +537,7 @@
 /project/                                     @zhzyx
 /releases/                                    @zhzyx
 /samples/                                     @zhzyx
+/samples/ainative-workbench/test_unified_settings.py @zhzyx @godotengine/buildsystem
 /tools/                                       @zhzyx @godotengine/buildsystem
 /tests/editor/                                @godotengine/tests @godotengine/editor
 /tests/editor/*.py                            @godotengine/tests @godotengine/editor @godotengine/buildsystem

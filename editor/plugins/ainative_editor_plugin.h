@@ -44,6 +44,7 @@ class AINativeEditorPlugin : public EditorPlugin {
 	bool initialized = false;
 
 	void _open_workbench();
+	void _prepare_workbench();
 
 public:
 	virtual String get_plugin_name() const override { return U"马良"; }

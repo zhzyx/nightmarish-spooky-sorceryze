@@ -1241,9 +1241,11 @@ void AIChatDock::_igniter_reply(const String &p_text) {
 		}
 	} else if (igniter_state == "python_path") {
 		if (FileAccess::exists(text)) {
-			String save_error;
-			GongGongRuntimeConfig::update_field("workflow_python", text, save_error);
-			EditorSettings::get_singleton()->save();
+			const String save_error = set_runtime_field("workflow_python", text);
+			if (!save_error.is_empty()) {
+				_append(TTR("Editor"), String(U"Python 运行路径未保存：") + save_error);
+				return;
+			}
 			Array selected = igniter_fields["components"];
 			selected.erase("python");
 			if (selected.is_empty()) {

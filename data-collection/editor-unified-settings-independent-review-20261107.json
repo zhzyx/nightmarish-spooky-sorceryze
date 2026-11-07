@@ -1,0 +1,272 @@
+{
+  "issue": 459,
+  "reviewer": "/root/unified_settings_review",
+  "original_request_base": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "integrated_main": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "recommendation": "No actionable P1/P2 code findings remain in the reviewed unified-settings scope. Native behavioral acceptance passed; retain the separate strict shutdown diagnostics result and baseline evidence.",
+  "findings": [],
+  "source_sha256": {
+    "editor/editor_main_screen.cpp": "424156ec9ed28354bdacd3f733c9189d88c551645f120cd5e320bbd56e1609dc",
+    "editor/plugins/unified_settings_editor_plugin.cpp": "083e3d14323f372e765ec3d30be66775ac937a5fed8da215460fcb760d356671",
+    "editor/plugins/unified_settings_editor_plugin.h": "25c2f40da0aa439b8000189b5eec4eb22df80084fd287a8ac63ea5d9c96f8b72",
+    "editor/plugins/ainative_editor_plugin.cpp": "d3dfd3054bfd8ab65e258d3c08bdc107a23858b0dc9063a8129806c41a01cec1",
+    "editor/plugins/ainative_editor_plugin.h": "edee37bc7d75066bc7762c692f276615e5a0bd09ffcf42acd698e64f587f4c01",
+    "editor/register_editor_types.cpp": "c6694c601fe72a8f8b0ae25262c78d0a04a22ab27f1346a905642b64211debc2",
+    "editor/docks/ai_chat_dock.cpp": "72cb5c5baac8c28a96fad369c85f039eecf617d3c3c88dc96884fc58199d9d27",
+    "editor/docks/ai_chat_dock.h": "11618faaf121a3e286c4cac79550cf9adf5f8ebd29125443883ddbd1a5040622",
+    "editor/docks/ai_chat_gonggong.cpp": "a002fea4433d6302721f76e27471fbdb68039a5716893522d1dd3aed5b44e3ae",
+    "editor/docks/gonggong_panel.cpp": "01fd0aa0b9bfaf3b535ebd4ea2d8b26b2c89030ab1e859f99fbfe840f354d83f",
+    "editor/docks/gonggong_panel.h": "fc2b32ce4d39c11075a268a0d610c9bd7f5541fb550d8fcf307b93a434c0fc96",
+    "editor/docks/daqian/workspace.gd": "2c5060404077297dd99cf570f37cc30ed5abbac1ec4d33d519bcef5d944a8748",
+    "editor/docks/daqian/model_settings.gd": "25eed76e5e785893696fd7f652f2a5c25482a73bf3be9f34df3b38389cfb5396",
+    "editor/docks/daqian_dock.cpp": "7d9eba83ed8ca0bdf8923c19fd486d3c660eefab989e99be16536ed3f9aa9b90",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "0ed7c2f932e5cf1ea0903ead8964b68edce812cfbcac8fa5bbf0787e951645a0",
+    "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "2f14dd1d5823b43e4e1e54afd4357238e58b0b4f70279ad046bf0957e9005420"
+  },
+  "build_source_mismatches": [],
+  "binary_sha256": "45ade59084cd8dec24ee3d245c990ce023442646e3e63095d979b4b64989f4e6",
+  "binary_matches_build": true,
+  "fixture_sha256": {
+    "tests/editor/run_unified_settings_native.py": "fce34e2705812df918bcca134783151d70f2d361269aa197c630c3e55f36ad7a",
+    "tests/editor/unified_settings_native.gd": "df1c2ebdcb3d75366944464ce793c7f314ff1696abe214367ad6f2dcd42c4b46",
+    "samples/ainative-workbench/unified_settings_acceptance.gd": "ca888900921759d746945d21468f66abcad911f8aa87294534287f12af259296",
+    "samples/ainative-workbench/test_unified_settings.py": "6c3a9ae648a8090aad2a6bf90e796cfbea928fe3098b5fb1f9524268d89c5174"
+  },
+  "native_fixture_matches_tested": true,
+  "native_independent": {
+    "report": "runtime/unified-settings/review/native-independent-v9.json",
+    "log": "runtime/unified-settings/review/native-independent-v9.log",
+    "behavior_passed": true,
+    "checks": [
+      78,
+      41
+    ],
+    "total_checks": 119,
+    "process_exit_codes": [
+      0,
+      0
+    ],
+    "strict_runner_state": "failed",
+    "strict_runner_exit_code": 1,
+    "strict_resource_error_counts": [
+      7,
+      5
+    ],
+    "synthetic_chat_requests": 1,
+    "session_key_not_persisted": true,
+    "project_sources_unchanged": true
+  },
+  "native_scope_verified": [
+    "Native addon-free settings page, AI/environment categories, Chinese labels, lazy MaLiang initialization and unique actual Control ownership.",
+    "AIChat, GongGong, MaLiang and Tianshu legacy entries navigate to the same central settings; embedded conversation does not reclaim settings into business view.",
+    "Existing independent Python and CLI roles retained; personal-model catalog transient key clears on hide; chat API key remains session-only and absent after save/reopen.",
+    "Actual generic editor-control registry denies descendants of authority settings while leaving page navigation discoverable.",
+    "Personal model synthetic helper receives matching current unsaved endpoint/model/session key and CLI fields.",
+    "Synthetic active chat locks shared configuration and rejects direct save-signal bypass; unlocks on completion.",
+    "Shared environment callback sees old workspace/Python/tenant, clears old actor/watch/debug/chat/model authorization, then coalesces three writes into one reset.",
+    "Native central remove/reenter restores and reborrows identical forms; source remove/free reclaims forms and releases only its lease without invalidating remaining sources."
+  ],
+  "source_review_resolutions": [
+    "Native form reparent retains direct consumers, async request generation and model auto-refresh signatures; no secret-return getter or copied form introduced.",
+    "ObjectID restoration, source and dock exit signals, plugin EXIT_TREE/PREDELETE/destructor cover lifetime ordering; central dock uses MAIN_SCREEN only.",
+    "Stable node-name lookup replaces get_dock_by_name display-title mismatch; existing Tools icon replaces missing icon.",
+    "Explicit navigation uses force_focus_dock rather than preference-limited make_visible.",
+    "UnifiedSettingsMainScreen participates in existing main-screen fill policy; final layout matrix remains parent-run evidence.",
+    "Every native shared environment writer, including igniter Python input and deployment/rollback, uses the same cleanup helper and task/worker guards.",
+    "Current main #441 integration preserves the same live settings Control pointers, consumer roles and authority metadata.",
+    "Legacy regression lookups and popup assertions are migrated; only actually run suites may be claimed as passed."
+  ],
+  "additional_evidence": [
+    {
+      "report": "runtime/unified-settings/review/lifetime-probe.json",
+      "scope": "pure SceneTree source free/queue_free/reparent reclamation",
+      "cases": 9
+    },
+    {
+      "report": "runtime/unified-settings/review/lifetime-probe-nested.json",
+      "scope": "nested Control reclamation and parent-free",
+      "cases": 12
+    },
+    {
+      "report": "runtime/unified-settings/review/model-controls-probe.json",
+      "scope": "copied model controls key/authorization/pending/lifetime semantics",
+      "checks": 13
+    },
+    {
+      "report": "runtime/unified-settings/review/maliang/review-receipt.json",
+      "reviewer": "/root/unified_settings_review/maliang_review",
+      "checks": 42
+    }
+  ],
+  "parent_run_evidence_readback": {
+    "scope": "These are parent-run reports read back by this reviewer; the independent 119-check run remains separately identified.",
+    "layout": {
+      "path": "runtime/unified-settings/layout-final-v2/summary.json",
+      "sha256": "5c9340b163ffeee08ad6fd2f91769cc9a764237409f726f937e0f6871ea9c57d",
+      "passed": true,
+      "binary_matches_reviewed_candidate": true,
+      "width_reports": [
+        {
+          "width": 640,
+          "path": "runtime/unified-settings/layout-final-v2/layout-1.0-640.json",
+          "sha256": "742a3c62bf11aec2ad77dfd74e75dc3f2a055fed2ebf72e516832a29059bf176",
+          "failures": []
+        },
+        {
+          "width": 960,
+          "path": "runtime/unified-settings/layout-final-v2/layout-1.0-960.json",
+          "sha256": "160888f6b313b4455edbebcc45c01d35788b700242d8e920fc22e1ac40ab5139",
+          "failures": []
+        },
+        {
+          "width": 1440,
+          "path": "runtime/unified-settings/layout-final-v2/layout-1.0-1440.json",
+          "sha256": "ef31be17ad762cd6fc5be4d21ded0918e53946181c69f3252e90f54b53610c4f",
+          "failures": []
+        }
+      ]
+    },
+    "native_art_regressions": {
+      "path": "runtime/unified-settings/native-art-regressions-final.json",
+      "sha256": "71f32a8967e327fb65dfb69e90e2e58031cc32847ea2be313ea701683d16623e",
+      "state": "passed",
+      "binary_matches_reviewed_candidate": true,
+      "installed_bundle_matches_source": true,
+      "runs": [
+        {
+          "name": "mesh-and-rig",
+          "passed": true,
+          "exit_code": 0,
+          "checks": 102
+        },
+        {
+          "name": "independent-project",
+          "passed": true,
+          "exit_code": 0,
+          "checks": 58
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "passed": true,
+          "exit_code": 0,
+          "checks": 22
+        },
+        {
+          "name": "relocated-runtime",
+          "passed": true,
+          "exit_code": 0,
+          "checks": 5
+        }
+      ]
+    },
+    "maliang_controls_final": {
+      "path": "runtime/unified-settings/maliang-controls-final.json",
+      "sha256": "a957109d60f6821540c95e53395d37b34bcbebbf28ccbcada6dab53a08e37be6",
+      "log": "runtime/unified-settings/maliang-controls-final.log",
+      "log_sha256": "a7e13637423d49c24f7549eb1a942d56417192b6542d9bba7e786c6e0c45dc95",
+      "executed_by": "/root; report read back by reviewer, not rerun by reviewer",
+      "runner": "samples/ainative-workbench/test_unified_settings.py",
+      "runner_sha256": "6c3a9ae648a8090aad2a6bf90e796cfbea928fe3098b5fb1f9524268d89c5174",
+      "change_before_run": "ruff format only, per parent handoff; no logic changes reported",
+      "parent_reported_binary_sha256": "45ade59084cd8dec24ee3d245c990ce023442646e3e63095d979b4b64989f4e6",
+      "binary_binding_origin": "parent final-v9 run handoff; controls JSON does not independently embed an executable hash",
+      "passed": true,
+      "checks": 26
+    },
+    "automatic_model_fetch_final": {
+      "path": "runtime/unified-settings/autofetch-final-v3.json",
+      "sha256": "f678b02d4f5fda468a18b7bbd4e5e5fa24396194a08c8e1dfb56d0fb19d9c132",
+      "executed_by": "primary worker; final report read back by reviewer, not rerun by reviewer",
+      "runner": "tests/editor/run_model_autofetch.py",
+      "runner_sha256": "e47f68ddaecded0802806092927733cb6f9a0b83870b5205517af6a3158f0e74",
+      "runner_matches_recorded_fixture": true,
+      "binary_matches_reviewed_candidate": true,
+      "source_unchanged": true,
+      "source_hashes_match_current": true,
+      "passed": true,
+      "cases": [
+        {
+          "case": "api-chat-startup",
+          "passed": true,
+          "exit_code": 0,
+          "model_list_events": 1,
+          "windows_job_boundary": null
+        },
+        {
+          "case": "api-responses-startup",
+          "passed": true,
+          "exit_code": 0,
+          "model_list_events": 1,
+          "windows_job_boundary": null
+        },
+        {
+          "case": "codebuddy-startup",
+          "passed": true,
+          "exit_code": 0,
+          "model_list_events": 1,
+          "windows_job_boundary": {
+            "module": "win32-x64/job-object.node",
+            "source_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+            "temporary_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+            "only_native_boundary_copied": true
+          }
+        }
+      ],
+      "external_isolation": {
+        "credential_families_filtered": [
+          "KEY",
+          "PASSWORD",
+          "PASSWD",
+          "TOKEN",
+          "SECRET",
+          "CREDENTIAL",
+          "AUTH",
+          "OPENAI",
+          "ANTHROPIC",
+          "CODEX",
+          "GONGGONG",
+          "AINATIVE"
+        ],
+        "private_profile_overrides": [
+          "HOME",
+          "USERPROFILE",
+          "APPDATA",
+          "LOCALAPPDATA",
+          "XDG_CONFIG_HOME",
+          "XDG_DATA_HOME",
+          "TEMP",
+          "TMP"
+        ],
+        "parent_cwd": "unique system temporary directory",
+        "fixture_bridge_inputs": "JavaScript bridges copied into each temporary fixture engine/tools directory; fake-codebuddy.js is the sole CLI entry for its case; only the authorized installed native process-boundary module is copied in addition",
+        "real_cli_or_account_used": false
+      },
+      "native_boundary_hashes_match": true
+    }
+  },
+  "shutdown_diagnostics": {
+    "baseline_binary_sha256": "683af5474fc7eac99d525e765f5509a3a44b4aa2da35bbf4a0614989aec597eb",
+    "idle_baseline": "runtime/unified-settings/review/baseline/baseline.json",
+    "enriched_baseline": "runtime/unified-settings/review/baseline/rich-baseline.json",
+    "watchdog_baseline": "runtime/unified-settings/review/baseline/rich-baseline-script-watchdog.json",
+    "old_idle_objects": 166,
+    "old_enriched_keep_and_free_objects": 399,
+    "candidate_full_objects": 401,
+    "candidate_reopen_objects": 168,
+    "interpretation": "Old binary reproduces the same renderer/text/font/RichText shutdown diagnostic families. Its enriched keep/free resource counts are identical. Candidate v8 full versus skip-lifetime also has identical counts per author evidence; v9 independent repeats the v8 counts. No incremental error was attributed to central/source restoration. Exact small object/texture count difference from the older binary remains unattributed; watchdog hypotheses did not reproduce it. This is not a zero-error or zero-leak claim.",
+    "parent_author_skip_lifetime_report": "runtime/unified-settings/native-settings-v8-no-lifetime.json",
+    "strict_errors_preserved": true
+  },
+  "diff_check_passed": true,
+  "production_source_edits_by_reviewer": false,
+  "actual_user_settings_or_credentials_access": false,
+  "real_provider_or_cli_probes": 0,
+  "desktop_control": false,
+  "remaining_parent_delivery_checks": [
+    "Exact staged candidate governance, CI/main readback and issue closure remain parent delivery responsibility."
+  ],
+  "schema_version": 1,
+  "request_id": "editor-unified-ai-environment-settings-20261107",
+  "issue_number": 459,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/459"
+}

@@ -1,6 +1,12 @@
 @tool
 extends SceneTree
 
+func _chat_setting(chat: Node, name: String) -> Control:
+	for section in [chat.get_ai_settings_control(), chat.get_environment_settings_control()]:
+		var control = section.find_child(name, true, false)
+		if control != null: return control
+	return null
+
 var dock
 var chat_input: TextEdit
 var send_button: Button
@@ -78,7 +84,7 @@ func _check_agent_rename() -> bool:
 	var before = _text()
 	chat_input.text = "RENAME_KEEP_DRAFT"
 	# Mouse input needs the AI main screen visible, unlike signal-based checks.
-	dock.make_visible()
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await process_frame
 	if not _check(tabs.is_visible_in_tree(), "Agent tabs must be visible before testing mouse input"):
 		return false
@@ -108,7 +114,7 @@ func _check_agent_rename() -> bool:
 		return false
 	name_input.text = "Cancelled name"
 	rename.canceled.emit()
-	if not _check(not rename.visible and tabs.get_tab_title(0) == original, "Cancelling rename changed the title"):
+	if not _check(not rename.visible and tabs.get_tab_title(0) == original, "Canceling rename changed the title"):
 		return false
 	tabs.tab_rmb_clicked.emit(0)
 	menu.hide()
@@ -155,7 +161,7 @@ func _put_file(file_path: String, contents: PackedByteArray) -> void:
 func _check_snapshot_history(expected: int) -> bool:
 	var entry = dock.find_child("LocalSnapshotHistory", true, false) as Button
 	var history = dock.get_node("LocalSnapshotHistoryDialog") as AcceptDialog
-	dock.make_visible()
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await process_frame
 	if not _check(entry != null and entry.is_visible_in_tree() and not entry.disabled and "本地快照" in entry.text, "Fixed local restore entry must be visible outside advanced settings even without snapshots"):
 		return false
@@ -192,7 +198,7 @@ func _check_recorded_changes(expected: int = 2) -> bool:
 		return false
 	changes.hide()
 	# Viewing records does not need local tool permission or a restorable disk.
-	dock.find_child("AllowTools", true, false).set_pressed_no_signal(false)
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).set_pressed_no_signal(false)
 	var inline_entries = _snapshot_buttons(messages, true)
 	print("AI_CHAT_INLINE_CHANGES_COUNT ", inline_entries.size())
 	for button in _snapshot_buttons(messages, false):
@@ -217,7 +223,7 @@ func _check_recorded_changes(expected: int = 2) -> bool:
 			if not _check("AI_CHAT_RUN_OK" in after.text and "intermediate" not in after.text, "Repeated writes should show the final recorded content"):
 				return false
 	changes.hide()
-	dock.find_child("AllowTools", true, false).set_pressed_no_signal(true)
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).set_pressed_no_signal(true)
 	return _check(FileAccess.get_file_as_bytes("res://history_fixture.txt") == disk_before and FileAccess.get_file_as_bytes("res://fixture.gd") == fixture_before and FileAccess.file_exists("res://snapshot_created.txt") == created_exists and not dialog.visible, "Viewing changes wrote files or opened restore confirmation")
 
 func _run_snapshots() -> bool:
@@ -229,21 +235,22 @@ func _run_snapshots() -> bool:
 	messages = dock.find_child("Messages", true, false)
 	if not _check(dock.find_child("Undo", true, false) == null and dock.find_child("GitConversationCheckpoints", true, false) == null and dock.find_child("CheckpointHistory", true, false) == null, "Only local turn restore should remain; single-file/Git UI was not removed"):
 		return false
-	dock.find_child("AllowTools", true, false).set_pressed_no_signal(true)
-	dock.find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(true)
-	var backend = dock.find_child("AIBackend", true, false)
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).set_pressed_no_signal(true)
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(true)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(backend.selected)
 	if cli:
-		dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-		dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-		dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.find_child("CLIModel", true, false).text = "mock-model"
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	else:
-		dock.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-		dock.find_child("APIModel", true, false).text = "mock-model"
-		dock.find_child("APIKey", true, false).text = "test-secret"
+		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
+		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	var before = "extends SceneTree\n\nfunc _initialize():\n\tquit(0)\n"
 	var after = OS.get_environment("AI_CHAT_EXPECTED_AFTER")
 	var eol_before = "\uFEFFheader\r\n\tvalue = 1\r\nfooter\r\n".to_utf8_buffer()
@@ -394,7 +401,7 @@ func _run_rename_stress():
 	dock = root.find_child("AI Chat", true, false)
 	chat_input = dock.find_child("ChatInput", true, false)
 	dialog = dock.find_child("AIFileApproval", true, false)
-	dock.make_visible()
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	dock.find_child("AddAgent", true, false).pressed.emit()
 	messages = dock.find_child("Messages", true, false)
 	var tabs = dock.find_child("AgentTabs", true, false) as TabBar
@@ -493,33 +500,41 @@ func _run():
 		quit(1)
 		return
 	# Visibility assertions require the AI main screen to be selected.
-	dock.make_visible()
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await process_frame
 	if not _check(dock.is_visible_in_tree(), "AI chat dock should be visible for option checks"):
 		quit(1)
 		return
-	var advanced = dock.find_child("AdvancedSettings", true, false) as VBoxContainer
+	var advanced = dock.get_ai_settings_control() as VBoxContainer
+	var environment = dock.get_environment_settings_control() as VBoxContainer
+	var settings_page = root.find_child("UnifiedSettings", true, false) as Control
+	var categories = settings_page.find_child("UnifiedSettingsCategories", true, false) as TabContainer if settings_page != null else null
 	var advanced_toggle = dock.find_child("AdvancedToggle", true, false) as Button
-	if not _check(advanced != null and advanced_toggle != null and not advanced.visible, "Advanced settings should start collapsed"):
+	if not _check(advanced != null and environment != null and settings_page != null and categories != null and advanced_toggle != null and not advanced.is_visible_in_tree() and not environment.is_visible_in_tree(), "Settings forms should stay off the business page"):
 		quit(1)
 		return
 	var option_names = ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]
 	var saved_options = {}
 	for option_name in option_names:
-		var option = dock.find_child(option_name, true, false) as CheckBox
-		if not _check(option != null and option.get_parent() == advanced and not option.is_visible_in_tree(), "Option must collapse inside advanced settings: " + option_name):
+		var option = _chat_setting(dock, option_name) as CheckBox
+		var expected_parent = environment if option_name == "EngineAutoRestart" else advanced
+		if not _check(option != null and option.get_parent() == expected_parent and not option.is_visible_in_tree(), "Option must belong to its central settings category: " + option_name):
 			quit(1)
 			return
 		saved_options[option_name] = option.button_pressed
-	advanced_toggle.button_pressed = true
 	for option_name in option_names:
-		if not _check(dock.find_child(option_name, true, false).is_visible_in_tree(), "Advanced option did not expand: " + option_name):
+		var category = 1 if option_name == "EngineAutoRestart" else 0
+		var navigation = dock.find_child("EnvironmentSettings", true, false) if category == 1 else advanced_toggle
+		navigation.pressed.emit()
+		await process_frame
+		if not _check(settings_page.is_visible_in_tree() and categories.current_tab == category and _chat_setting(dock, option_name).is_visible_in_tree(), "Central category did not reveal its option: " + option_name):
 			quit(1)
 			return
-	advanced_toggle.button_pressed = false
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await process_frame
 	for option_name in option_names:
-		var option = dock.find_child(option_name, true, false) as CheckBox
-		if not _check(not option.is_visible_in_tree() and option.button_pressed == saved_options[option_name], "Collapsing changed an advanced option: " + option_name):
+		var option = _chat_setting(dock, option_name) as CheckBox
+		if not _check(not option.is_visible_in_tree() and option.button_pressed == saved_options[option_name], "Returning from settings changed an option: " + option_name):
 			quit(1)
 			return
 	if not _check(dock.find_child("AttachLogs", true, false) == null, "Automatic log attachment checkbox should be removed"):
@@ -528,30 +543,35 @@ func _run():
 	if not _check(dock.find_child("CancelEngineBuild", true, false).is_visible_in_tree(), "Build cancellation must remain reachable outside settings"):
 		quit(1)
 		return
-	var settings_dialog = dock.find_child("ChatSettingsDialog", true, false) as AcceptDialog
-	advanced_toggle.button_pressed = true
+	if not _check(dock.find_child("ChatSettingsDialog", true, false) == null, "Global configuration must no longer use the old editable dialog"):
+		quit(1)
+		return
+	dock.find_child("EnvironmentSettings", true, false).pressed.emit()
+	await process_frame
 	for control_name in ["BuildEngine", "RestartUpdatedEngine", "EngineBuildLog"]:
-		var control = dock.find_child(control_name, true, false)
-		if not _check(settings_dialog.is_ancestor_of(control) and control.is_visible_in_tree(), "Build controls must remain reachable in tools and settings: " + control_name):
+		var control = _chat_setting(dock, control_name)
+		if not _check(environment.is_ancestor_of(control) and control.is_visible_in_tree() and categories.current_tab == 1, "Build controls must remain reachable in central environment settings: " + control_name):
 			quit(1)
 			return
-	advanced_toggle.button_pressed = false
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await process_frame
 	print("AI_CHAT_ADVANCED_OPTIONS_OK")
 	# Approval cases must not depend on the editor's automation defaults.
-	dock.find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)
-	dock.find_child("AutoExecuteCommands", true, false).set_pressed_no_signal(false)
-	var backend = dock.find_child("AIBackend", true, false)
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).set_pressed_no_signal(false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(1)
 	backend.item_selected.emit(1)
-	dock.find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
-	dock.find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
-	dock.find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-	dock.find_child("CLIModel", true, false).text = "mock-model"
-	var tools = dock.find_child("AllowTools", true, false)
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
+	dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
+	dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+	var tools = dock.get_ai_settings_control().find_child("AllowTools", true, false)
 	tools.button_pressed = true
 	# A legacy saved opt-in must no longer enable automatic attachment.
 	EditorInterface.get_editor_settings().set_setting("ai_chat/attach_editor_logs", true)
-	dock.find_child("APIKey", true, false).text = "LOG_TEST_PRIVATE_KEY"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "LOG_TEST_PRIVATE_KEY"
 	print("AI_CHAT_ON_DEMAND_LOG_SENTINEL LOG_TEST_PRIVATE_KEY")
 	await process_frame
 	chat_input = dock.find_child("ChatInput", true, false)
@@ -561,11 +581,11 @@ func _run():
 	dialog.about_to_popup.connect(_approve)
 	var before = FileAccess.get_file_as_string("res://fixture.gd")
 	OS.set_environment("AI_CHAT_EXPECTED_BEFORE", before)
-	dock.find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(true)
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(true)
 	if not await _phase("native_baseline", "NATIVE_BASELINE_OK"):
 		quit(1)
 		return
-	dock.find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)
 	if not await _phase("native_read", "NATIVE_READ_OK") or not await _phase("editor_logs", "NATIVE_LOGS_ON_DEMAND_OK"):
 		quit(1)
 		return
@@ -655,7 +675,7 @@ func _run():
 	if not await _wait() or not _check(FileAccess.get_file_as_bytes("res://eol_fixture.txt") == eol_before, "Search-to-edit undo did not restore exact bytes"):
 		return
 	undoing = false
-	var auto_apply = dock.find_child("AutoApplyFileChanges", true, false) as CheckBox
+	var auto_apply = dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false) as CheckBox
 	if not _check(auto_apply != null and not auto_apply.button_pressed, "Automatic file changes must require initial opt-in"):
 		quit(1)
 		return
@@ -694,7 +714,7 @@ func _run():
 	if not await _phase("native_command", "NATIVE_COMMAND_EXIT_OK") or not _check(approvals == previous_approvals + 1, "Automatic file changes bypassed command confirmation"):
 		quit(1)
 		return
-	var auto_execute = dock.find_child("AutoExecuteCommands", true, false) as CheckBox
+	var auto_execute = dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false) as CheckBox
 	if not _check(auto_execute != null and not auto_execute.button_pressed, "Automatic execution must require initial opt-in"):
 		quit(1)
 		return

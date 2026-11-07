@@ -23,13 +23,13 @@ func _initialize():
 func run():
     await create_timer(0.5).timeout
     var dock = root.find_child("AI Chat", true, false)
-    var backend = dock.find_child("AIBackend", true, false)
+    var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
     backend.select(0)
     backend.item_selected.emit(0)
-    dock.find_child("APIEndpoint", true, false).text = OS.get_environment("RANGE_ENDPOINT")
-    dock.find_child("APIModel", true, false).text = "offline-range-fixture"
-    dock.find_child("APIKey", true, false).text = "offline-fixture"
-    dock.find_child("AllowTools", true, false).button_pressed = true
+    dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("RANGE_ENDPOINT")
+    dock.get_ai_settings_control().find_child("APIModel", true, false).text = "offline-range-fixture"
+    dock.get_ai_settings_control().find_child("APIKey", true, false).text = "offline-fixture"
+    dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
     dock.find_child("ConsultationOnly", true, false).button_pressed = true
     dock.find_child("ChatInput", true, false).text = "Read the fixture excerpts."
     dock.find_child("Send", true, false).pressed.emit()

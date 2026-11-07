@@ -51,23 +51,24 @@ func _run():
 	var dock = root.find_child("AI Chat", true, false)
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", OS.get_environment("CANDIDATE_FIXTURE_ROOT"))
-	settings.set_setting("gonggong/python", OS.get_environment("CANDIDATE_FIXTURE_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("CANDIDATE_FIXTURE_PYTHON"))
 	# Ordinary conversations must retain their own bindings without replacing
 	# the separately configured global default, even after another chat binds.
 	settings.set_setting("gonggong/issue_number", "999")
 	settings.set_setting("gonggong/request_id", "fixture-global-sentinel")
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
-	var backend = dock.find_child("AIBackend", true, false)
+	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	dock.find_child("APIEndpoint", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_ENDPOINT")
-	dock.find_child("APIModel", true, false).text = "fixture"
-	dock.find_child("APIKey", true, false).text = "fixture-key"
-	dock.find_child("CLINode", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_NODE")
-	dock.find_child("CLIBridge", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
-	dock.find_child("AllowTools", true, false).button_pressed = true
-	dock.find_child("AutoApplyFileChanges", true, false).button_pressed = true
-	dock.find_child("AutoExecuteCommands", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_ENDPOINT")
+	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "fixture-key"
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_NODE")
+	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
+	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("CANDIDATE_FIXTURE_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
 	_send(dock, "CANDIDATE_START")
 	if not await _wait_reply(dock, "CANDIDATE_BOUNDARY_OK"):
 		_finish(dock, false, "initial tool boundaries")

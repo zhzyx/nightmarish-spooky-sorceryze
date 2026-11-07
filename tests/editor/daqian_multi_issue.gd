@@ -30,7 +30,7 @@ func run():
 	await create_timer(1.5).timeout
 	var settings=EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace",OS.get_environment("DAQIAN_TEST_REPO"))
-	settings.set_setting("gonggong/python",OS.get_environment("DAQIAN_TEST_PYTHON"))
+	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("DAQIAN_TEST_PYTHON"))
 	settings.set_setting("ai_chat/cli_node",OS.get_environment("DAQIAN_TEST_NODE"))
 	var dock=root.find_child("Daqian",true,false)
 	dock.get_parent().current_tab=dock.get_parent().get_tab_idx_from_control(dock)

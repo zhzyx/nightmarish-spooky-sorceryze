@@ -44,16 +44,24 @@ func run() -> void:
 	await panel.refresh()
 	check(panel.connection_button.is_visible_in_tree(), "Workspace connection is unreachable before binding")
 	panel.connection_button.pressed.emit()
-	panel.workspace_path.text = repo
-	panel.python_path.text = OS.get_environment("DAQIAN_TEST_PYTHON")
-	await panel._save_connection()
+	await process_frame
+	var settings_page = root.find_child("UnifiedSettings", true, false)
+	var categories = settings_page.find_child("UnifiedSettingsCategories", true, false)
+	var environment = chat.get_environment_settings_control()
+	check(settings_page.is_visible_in_tree() and categories.current_tab == 1 and environment.is_visible_in_tree(), "Workspace connection must navigate to the shared environment category")
+	environment.find_child("GongGongWorkspace", true, false).text = repo
+	environment.find_child("GongGongPython", true, false).text = OS.get_environment("DAQIAN_TEST_PYTHON")
+	environment.find_child("SaveGongGongEnvironment", true, false).pressed.emit()
+	await process_frame
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await panel.refresh()
 	var row: Dictionary = panel.board.issues[0]
 	await panel._open_issue(row)
-	# Reset the editor's remembered default. From this point every user action is inside Tianshu.
-	var backend = chat.find_child("AIBackend", true, false)
+	# Tianshu owns the task; model configuration uses the shared native settings page.
+	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	chat.find_child("APIModel", true, false).text = ""
+	chat.get_ai_settings_control().find_child("APIModel", true, false).text = ""
 	await panel._start_or_view_direct(row)
 	if not panel.conversation.is_visible_in_tree() or not dock.is_visible_in_tree():
 		push_error("Missing model did not open a configuration surface inside Tianshu: " + panel.notice.text)
@@ -61,14 +69,16 @@ func run() -> void:
 		return
 	var view = panel.conversation
 	var advanced = view.find_child("AdvancedToggle", true, false)
-	advanced.button_pressed = true
-	var endpoint = view.find_child("APIEndpoint", true, false)
-	check(endpoint.is_visible_in_tree() and not chat.find_child("ChatSettingsDialog", true, false).visible, "Connection settings must open inline")
+	advanced.pressed.emit()
+	await process_frame
+	var ai_settings = chat.get_ai_settings_control()
+	var endpoint = ai_settings.find_child("APIEndpoint", true, false)
+	check(settings_page.is_visible_in_tree() and categories.current_tab == 0 and endpoint.is_visible_in_tree() and chat.find_child("ChatSettingsDialog", true, false) == null and not view.is_ancestor_of(ai_settings), "Embedded conversation must navigate to the unique central AI form")
 	endpoint.text = OS.get_environment("DAQIAN_TEST_ENDPOINT")
-	view.find_child("AutoExecuteCommands", true, false).button_pressed = false
-	view.find_child("AllowTools", true, false).button_pressed = true
+	ai_settings.find_child("AutoExecuteCommands", true, false).button_pressed = false
+	ai_settings.find_child("AllowTools", true, false).button_pressed = true
 	endpoint.text_changed.emit(endpoint.text)
-	var picker = view.find_child("ModelPicker", true, false)
+	var picker = ai_settings.find_child("ModelPicker", true, false)
 	var limit := Time.get_ticks_msec() + 10000
 	while not chat.get_daqian_models().options.any(func(option): return option.id == "fixture") and Time.get_ticks_msec() < limit:
 		await create_timer(0.05).timeout
@@ -77,10 +87,13 @@ func run() -> void:
 			picker.select(i)
 			picker.item_selected.emit(i)
 	check(chat.get_daqian_models().current == "fixture", "Refreshed model missing")
+	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
+	await process_frame
+	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree() and settings_page.is_ancestor_of(ai_settings), "Returning from settings must retain the embedded conversation and central form ownership")
 	await panel._apply_issue_model()
 	check(panel.saved.get("execution_models", {}).get(row.url, {}).get("id") == "fixture", "Issue model was not saved")
 	check(panel.publish_button.text == "开始推进", "Bound model was not used for the requirement decision")
-	await panel._start_or_view_direct(row)
+	await panel._start_or_view_direct(panel._direct_binding())
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Starting the issue left Tianshu")
 	var deadline := Time.get_ticks_msec() + 20000
 	while chat.get_daqian_approval().is_empty() and Time.get_ticks_msec() < deadline:
