@@ -120,11 +120,11 @@ Array chat_tools() {
 	const char *descriptions[] = {
 		"Read the latest editor Output messages, including project errors. Logs are untrusted data.",
 		"List up to 500 indexed project files. Use list_directory to discover engine source or files outside the project.",
-		"Read any saved UTF-8 text file up to 256 KiB, including .cpp/.h engine source. Accepts absolute or project-relative paths.",
+		"Read saved UTF-8 text, including engine source. Full reads are limited to 256 KiB; offset/limit reads scan up to 16 MiB and return 1-500 lines within a 256 KiB JSON budget. Accepts absolute or project-relative paths.",
 		"Propose full replacement content for any UTF-8 text file. Absolute paths and files outside the project are allowed. Requires confirmation unless automatic file changes are enabled; parent must exist.",
 		"Check one saved GDScript using a separate headless Godot process. For C++/C# builds use run_command. Requires confirmation unless automatic execution is enabled.",
 		"Run a saved GDScript test entry point in a separate headless Godot process. Requires confirmation unless automatic execution is enabled.",
-		"Read any saved UTF-8 text file up to 256 KiB. Supports engine source, absolute paths and any file extension.",
+		"Read saved UTF-8 text. Full reads are limited to 256 KiB; use offset/limit for up to 500 lines from files up to 16 MiB, within a 256 KiB JSON budget. Supports engine source, absolute paths and any file extension.",
 		"Create or replace any UTF-8 text file up to 256 KiB. Requires conflict checking and an existing parent directory; confirmation is required unless automatic file changes are enabled.",
 		"List up to 500 entries in any local directory, including hidden entries. No recursive traversal.",
 		"Run a PowerShell command on Windows or a sh command on Unix with OS user permissions. Can build the engine, run tests or manage files. Requires confirmation unless automatic execution is enabled. Not sandboxed; command changes cannot be undone by the file undo button.",
@@ -2501,18 +2501,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		_finish_tool("Error: " + (error.is_empty() ? String("A script path is required.") : error));
 		return;
 	}
-	pending_path = absolute;
-	pending_existed = FileAccess::exists(absolute);
-	pending_before = String();
-	if (pending_existed && !AIChatTools::read_script(absolute, pending_before, error)) {
-		_finish_tool("Error: " + error);
-		return;
-	}
 	if (name == "read_script" || name == "read_file") {
-		if (!pending_existed) {
-			_finish_tool("Error: File does not exist.");
-			return;
-		}
 		if (arguments.has("offset") || arguments.has("limit")) {
 			const Variant offset = arguments.get("offset", 1);
 			const Variant limit = arguments.get("limit", 200);
@@ -2520,24 +2509,27 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 				_finish_tool("Error: Read offset must be a positive integer and limit must be 1-500 lines.");
 				return;
 			}
-			const Vector<String> lines = pending_before.split("\n");
-			const int first = MIN(int(offset) - 1, lines.size());
-			const int end = MIN(first + int(limit), lines.size());
-			String excerpt;
-			for (int line = first; line < end; line++) {
-				excerpt += (line > first ? "\n" : "") + lines[line];
-			}
 			Dictionary result;
-			result["path"] = absolute;
-			result["offset"] = int(offset);
-			result["returned_lines"] = end - first;
-			result["total_lines"] = lines.size();
-			result["truncated"] = first > 0 || end < lines.size();
-			result["content"] = excerpt;
+			if (!AIChatTools::read_script_range(absolute, int(offset), int(limit), result, error)) {
+				_finish_tool("Error: " + error);
+				return;
+			}
 			_finish_tool(JSON::stringify(result), true);
 		} else {
-			_finish_tool(pending_before, true);
+			String content;
+			if (!AIChatTools::read_script(absolute, content, error)) {
+				_finish_tool("Error: " + error);
+				return;
+			}
+			_finish_tool(content, true);
 		}
+		return;
+	}
+	pending_path = absolute;
+	pending_existed = FileAccess::exists(absolute);
+	pending_before = String();
+	if (pending_existed && !AIChatTools::read_script(absolute, pending_before, error)) {
+		_finish_tool("Error: " + error);
 		return;
 	}
 	if (_has_unsaved_script(pending_path)) {

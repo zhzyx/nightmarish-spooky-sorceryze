@@ -316,6 +316,93 @@ bool AIChatTools::read_script(const String &p_absolute, String &r_content, Strin
 	return true;
 }
 
+// Scan in bounded chunks so an excerpt never requires a full-file text snapshot.
+bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error) {
+	r_result.clear();
+	if (p_offset < 1 || p_limit < 1 || p_limit > 500) {
+		r_error = "Read offset must be a positive integer and limit must be 1-500 lines.";
+		return false;
+	}
+	Ref<FileAccess> file = FileAccess::open(p_absolute, FileAccess::READ);
+	if (file.is_null() || file->get_length() > MAX_READ_SCAN_BYTES) {
+		r_error = "Cannot scan a UTF-8 excerpt: file is inaccessible or exceeds the 16 MiB scan limit.";
+		return false;
+	}
+	const uint64_t length = file->get_length();
+	const int64_t last_line = int64_t(p_offset) + p_limit - 1;
+	int64_t line = 1;
+	Vector<uint8_t> excerpt;
+	uint8_t buffer[16384];
+	int continuation = 0;
+	uint32_t codepoint = 0;
+	uint32_t minimum = 0;
+	uint64_t scanned = 0;
+	while (scanned < length) {
+		const uint64_t amount = MIN(uint64_t(sizeof(buffer)), length - scanned);
+		if (file->get_buffer(buffer, amount) != amount) {
+			r_error = "File changed or could not be read during the excerpt scan.";
+			return false;
+		}
+		for (uint64_t i = 0; i < amount; i++) {
+			const uint8_t byte = buffer[i];
+			bool valid = true;
+			if (continuation) {
+				valid = (byte & 0xc0) == 0x80;
+				codepoint = (codepoint << 6) | (byte & 0x3f);
+				if (--continuation == 0) {
+					valid = valid && codepoint >= minimum && codepoint <= 0x10ffff && !(codepoint >= 0xd800 && codepoint <= 0xdfff);
+				}
+			} else if (byte >= 0xc2 && byte <= 0xf4) {
+				continuation = byte < 0xe0 ? 1 : byte < 0xf0 ? 2
+															 : 3;
+				minimum = continuation == 1 ? 0x80 : continuation == 2 ? 0x800
+																	   : 0x10000;
+				codepoint = byte & (continuation == 1 ? 0x1f : continuation == 2 ? 0x0f
+																				 : 0x07);
+			} else {
+				valid = byte > 0 && byte < 0x80;
+			}
+			if (!valid) {
+				r_error = "Excerpt source is not valid UTF-8 text (invalid encoding or NUL byte).";
+				return false;
+			}
+			if (line >= p_offset && line <= last_line && (byte != '\n' || line < last_line)) {
+				if (excerpt.size() >= MAX_SCRIPT_BYTES) {
+					r_error = "Requested excerpt exceeds the 256 KiB output limit; request fewer lines.";
+					return false;
+				}
+				excerpt.push_back(byte);
+			}
+			if (byte == '\n') {
+				line++;
+			}
+		}
+		scanned += amount;
+	}
+	if (continuation || file->get_length() != length || file->get_error() != OK) {
+		r_error = "Excerpt source has incomplete UTF-8 or changed during the scan.";
+		return false;
+	}
+	String content;
+	if (!decode_script_bytes(excerpt, content)) {
+		r_error = "Cannot decode the complete UTF-8 excerpt.";
+		return false;
+	}
+	Dictionary result;
+	result["path"] = p_absolute;
+	result["offset"] = p_offset;
+	result["returned_lines"] = p_offset > line ? int64_t(0) : MIN(int64_t(p_limit), line - p_offset + 1);
+	result["total_lines"] = line;
+	result["truncated"] = p_offset > 1 || last_line < line;
+	result["content"] = content;
+	if (JSON::stringify(result).utf8().length() > MAX_SCRIPT_BYTES) {
+		r_error = "Encoded excerpt exceeds the 256 KiB output limit; request fewer lines.";
+		return false;
+	}
+	r_result = result;
+	return true;
+}
+
 bool AIChatTools::write_script(const String &p_absolute, const String &p_before, const String &p_after, bool p_existed, String &r_error, bool p_preserve_bom) {
 	String replacement = p_after;
 	const String bom = String::chr(0xfeff);

@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "cases": [
+    "actual engine source",
+    "read_script large source",
+    "unicode and CRLF",
+    "UTF-8 crosses scan chunk",
+    "EOF empty line",
+    "offset beyond EOF",
+    "empty file",
+    "BOM preserved",
+    "maximum scan budget",
+    "whole read stays bounded",
+    "single oversized line",
+    "encoded output budget",
+    "scan budget",
+    "invalid offset",
+    "invalid limit",
+    "NUL",
+    "overlong",
+    "surrogate",
+    "above Unicode range",
+    "truncated UTF-8",
+    "bad continuation"
+  ],
+  "provider": "offline HTTP fixture; real editor tools",
+  "settings": "self-contained cloned executable",
+  "issue_number": 392,
+  "request_id": "large-file-read-20261107",
+  "build": {
+    "result": "passed",
+    "platform": "macos",
+    "arch": "arm64",
+    "elapsed_seconds": 26.41,
+    "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no -j4",
+    "base_commit": "68049a87d7fa2a5c40cfef3132bc104a87ce801e"
+  },
+  "binary_sha256": "4a3169d683ebae98e574f6734c8bf2ecf634a273c7ed7ef6ae6d27f28577b384",
+  "source_sha256": {
+    "editor/docks/ai_chat_tools.cpp": "c79adc740c1d6a555a3b202fb81efc967c816067e1e2659e3179a00576ab3858",
+    "editor/docks/ai_chat_tools.h": "6bdd66e4ef00086c101e225175737f923e9accc80c5fe22a09a10da0d6781691",
+    "editor/docks/ai_chat_dock.cpp": "f514a333d3b27a26989c1cffdf5e9cfa890319ec4face8ef88d01cffeeee5cb5",
+    "tests/editor/run_large_file_read.py": "ba794ce01f2e3d30551e63ea69c617dd71e4486409a6007fa14469bb8bfddd29"
+  },
+  "limits": {
+    "full_read_and_replacement_bytes": 262144,
+    "scan_bytes": 16777216,
+    "range_lines": 500,
+    "encoded_result_bytes": 262144
+  },
+  "limitations": [
+    "Offline HTTP fixture validates actual editor tool execution, not a provider model or Git publication.",
+    "Reading is bounded and does not promise an atomic snapshot against same-length concurrent rewrites.",
+    "Existing full replacement/snapshot routines remain unchanged; native unit suite was not built in this candidate."
+  ],
+  "fixture_correction": "Initial fixture named NUL.txt hit reserved path protection before UTF-8 validation; renamed invalid-NUL.txt and all 21 cases passed.",
+  "independent_review": {
+    "id": "root-review-large-file-read-20261107",
+    "reviewer": "root Codex agent, independent of implementation worker",
+    "result": "passed",
+    "scope": [
+      "Read helper, dock read branch, schema and isolated runner full diff",
+      "Checked actual 21-case tool receipts, source hashes, build evidence and git diff --check"
+    ],
+    "finding": "No blocking defect found. Full reads/writes remain bounded; ranged scan, UTF-8, EOF and JSON expansion are covered. Atomic snapshots, native unit suite and provider/Git publication are not claimed.",
+    "formatting_followup": "Root reviewer reread the formatting-only delta, exact updated hashes and successful rebuild/retest receipts; same review ID remains valid."
+  },
+  "style_checks": {
+    "ruff": "0.17.1 check --no-fix and format --check passed",
+    "clang_format": "22.1.5 --dry-run --Werror passed",
+    "git_diff_check": "passed"
+  },
+  "formatting_followup": "Superseded PR #394 before merge after adding mandatory style normalization. Rebuilt final candidate and reran all 21 cases successfully.",
+  "main_integration": "Rebased onto main 68049a87; 40 upstream paths have no overlap with this candidate write set. Rebuilt integrated macOS editor and reran all 21 cases successfully.",
+  "supersedes_evidence": "data-collection/large-file-read-20261107.json",
+  "correction_reason": "Preserve initial candidate evidence unchanged and append final formatted/main-integrated candidate build, hashes and test receipts."
+}

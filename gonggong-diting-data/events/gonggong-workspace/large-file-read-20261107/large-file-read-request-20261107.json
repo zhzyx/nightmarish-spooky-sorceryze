@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "large-file-read-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "large-file-read-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T06:00:50.250658+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/392",
+  "agent": {
+    "id": "codex-host",
+    "version": "session",
+    "origin": "codex",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 392,
+    "parent_issue_number": 387,
+    "scope": "Repair bounded UTF-8 line reads from engine source files larger than 256 KiB after the real editor workflow reproduced rejection. Preserve full-read, replacement and snapshot limits.",
+    "authorization": "Current user authorized engine workflow verification and repair; delegated by current Codex session.",
+    "usage": null,
+    "usage_unknown_reason": "Host usage is not supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "d72fe75e943e0b80544551f10cfea75cca08f4a0d9995fa321039a84bc33ea66"
+}
