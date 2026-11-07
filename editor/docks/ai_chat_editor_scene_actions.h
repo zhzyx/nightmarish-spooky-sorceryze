@@ -34,9 +34,13 @@
 #include "core/variant/variant.h"
 
 // The caller owns tool permission, scene-content exclusion and host confirmation.
-// This class never grants permission and never saves a scene or resource.
+// This class never grants permission. File operations require exact native
+// confirmation and explicitly report their non-UndoRedo semantics.
+class Node;
+
 class AIChatEditorSceneActions {
 public:
+	static Dictionary history_state(Node *p_root);
 	static bool supports(const String &p_action);
 	static Dictionary perform(const Dictionary &p_args, bool p_confirmed);
 	// Shared pure validation, also usable without an editor instance.

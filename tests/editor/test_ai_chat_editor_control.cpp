@@ -257,5 +257,33 @@ TEST_CASE("[SceneTree][AIChat] Routed receipts enforce capacity and bounded even
 	memdelete(control);
 }
 
+TEST_CASE("[AIChat][SceneCompletionSchema] Scene resource and signal fields are exposed with bounded tool schema") {
+	const Array tools = AIChatEditorControl::tool_definitions();
+	Dictionary editor_action;
+	for (const Variant &entry : tools) {
+		const Dictionary tool = entry;
+		const Dictionary function = tool.get("function", Dictionary());
+		if (function.get("name", "") == Variant("editor_action")) {
+			editor_action = function;
+		}
+	}
+	REQUIRE_FALSE(editor_action.is_empty());
+	const Dictionary parameters = editor_action["parameters"];
+	CHECK(parameters["additionalProperties"] == Variant(false));
+	const Dictionary properties = parameters["properties"];
+	for (const String &field : { "receiver", "signal", "method", "resource_path", "destination", "preset", "format" }) {
+		REQUIRE(properties.has(field));
+		CHECK(Dictionary(properties[field])["type"] == Variant("string"));
+	}
+	REQUIRE(properties.has("debug"));
+	CHECK(Dictionary(properties["debug"])["type"] == Variant("boolean"));
+	const String description = editor_action["description"];
+	for (const String &action : { "scene_assign_resource", "scene_connect_signal", "scene_disconnect_signal", "scene_import_resource", "scene_export_resource", "project_export" }) {
+		CHECK(description.contains(action));
+	}
+	CHECK_FALSE(properties.has("callable"));
+	CHECK_FALSE(properties.has("code"));
+}
+
 } //namespace TestAIChatEditorControl
 #endif

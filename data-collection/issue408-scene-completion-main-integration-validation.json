@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_validation_evidence",
+  "request_id": "editor-scene-business-completion-20261107",
+  "issue_number": 408,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/408",
+  "owner": "kaiyunxue",
+  "base_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+  "design": "design-docs/editor-scene-business-completion-20261107.md",
+  "integration": {
+    "original_408_source_hashes_unchanged": true,
+    "own_tree_stash_sha": "e28d3127ddc895ea0dae0c8fc8764de0a700bc9d",
+    "stash_apply_used_exact_sha": true,
+    "shared_stash_pop_used": false,
+    "tool_schema_fields": [
+      "receiver",
+      "signal",
+      "method",
+      "resource_path",
+      "destination",
+      "preset",
+      "format",
+      "debug"
+    ],
+    "debug_schema_type": "boolean",
+    "additional_properties": false,
+    "arbitrary_execution_added": false,
+    "isolation_389_source_commit": "db6c8728001f4f5f93df4184935663635cbfa202",
+    "isolation_389_upstream_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/456",
+    "upstream_389_delivery": "not asserted by this candidate record",
+    "407_integration": "separate pending candidate; preserve both capability groups on future merge"
+  },
+  "artifact": {
+    "editor_sha256": "89f6c6db739359ee8ddf6b2bac1cc56b5e169415cc1b3c6760f36d2040281ec1",
+    "platform": "macos",
+    "arch": "arm64",
+    "target": "editor",
+    "dev_build": false,
+    "optimize": "speed_trace",
+    "debug_symbols": false,
+    "vulkan": false,
+    "accesskit": false,
+    "tests": true
+  },
+  "validation": {
+    "build": {
+      "exit_code": 0,
+      "elapsed_seconds": 65.33
+    },
+    "business": {
+      "passed": 25,
+      "total": 25,
+      "editor_exit_code": 0,
+      "checks": [
+        "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+        "script storage references reject structural edits without getters or broken paths",
+        "subtree move, owners, native animation paths, undo and redo",
+        "subtree delete and exact owner/animation restoration",
+        "script-attached native property edit and undo",
+        "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+        "instance editable override, protected internal structure, instance-root subtree move",
+        "native resource assignment/undo and explicit resource export",
+        "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+        "persistent signal connect/disconnect and undo without method invocation",
+        "script-shadowed native connect/disconnect with undo and redo",
+        "native history branch rejects approval even when UndoRedo version and scene values repeat",
+        "run project and scene approvals bind history epoch when numeric version repeats",
+        "stale property and resource file hash rejection",
+        "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+        "native texture reimport/scan and actual import metadata",
+        "PCK approval binds actual imported artifact contents",
+        "native preset project pack export with actual output hash",
+        "native ZIP export succeeds through project destination with actual archive validation",
+        "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+        "unsigned arm64 macOS application exports through confirmed API using pinned private template",
+        "PCK binds global class cache; editor receipts preserve approval validity",
+        "application export missing templates is a real failure, no download",
+        "path/tool/consultation boundaries",
+        "inherited property override and local addition; inherited structure protected"
+      ],
+      "includes_real_pck_zip_and_unsigned_arm64_app": true,
+      "exported_application_executed": false
+    },
+    "native": {
+      "passed": 9,
+      "total": 9,
+      "assertions": 129,
+      "exit_code": 0,
+      "scope": "8 SceneActions cases/103 assertions plus one public tool-schema regression"
+    },
+    "isolation_helper": {
+      "tests_run": 8,
+      "passed": 7,
+      "skipped": 1,
+      "exit_code": 0,
+      "skip_reason": "optional ISOLATION_TEST_EDITOR real restart test not selected; 25 business groups used new helper and a real isolated editor"
+    },
+    "static": {
+      "passed": true,
+      "checks": [
+        "copyright",
+        "validate_includes",
+        "clang-format 22.1.5",
+        "header_guards (.h only)",
+        "file_format",
+        "ruff 0.17.1",
+        "mypy 2.4.0",
+        "git diff --check"
+      ]
+    }
+  },
+  "isolation": {
+    "editor_and_project_locations": "system TemporaryDirectory",
+    "real_settings_unchanged": true,
+    "real_settings_sha256_before_after": "869970a00b6c9290d8df035522cef509036071bd4d3b3afaa5be40bb96e11ecc",
+    "desktop_or_original_engine_control": false,
+    "global_settings_auth_or_template_mutations": false
+  },
+  "previous_independent_review": {
+    "receipt_sha256": "15ec836540240096e188a875f5486cc96255185a25bc12df459184bec11a2aed",
+    "candidate_binary_sha256": "d6ed6c857cd19adc000656765edbc20e5636410f7500ed6ca9b9b3833dbf8a89",
+    "result": "passed; no blocking finding in independently exercised frozen 408-v3 scope",
+    "scope": "25 business groups, 8 native cases/103 assertions, independent confirmed ZIP and macOS arm64 application exports",
+    "new_main_schema_isolation_integration_independent_acceptance": "pending parent exact-candidate review"
+  },
+  "private_receipt_digests": {
+    "build": {
+      "sha256": "76bbd1fd3e6f968f20073d8bd4ed1f9e7b8083a8d5388cc84570472edccdcd17"
+    },
+    "business": {
+      "sha256": "aa46afd67db34d0c100ffd60e0f7b04125cf48eedac8f3a4096d0f82c93fc93d"
+    },
+    "native": {
+      "sha256": "56d8c51a43af3a251b2d69abee66ffab2a0a4f0a1167a2fc6a463604b3f734d9"
+    },
+    "isolation": {
+      "sha256": "f7b403cec319b2fc49aa7d96ae4cc1b74731000722c28cda3e0fbcff45e3c239"
+    },
+    "static": {
+      "sha256": "80fa91ae388c1259d391c008159eade35931705b124e385461612c5ef382be1b"
+    }
+  },
+  "private_receipt_contents_published": false,
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+    "editor/docks/ai_chat_editor_scene_actions.h": "b98076ff07985ee58167436cf6ceacc9d015f2a1853cea87bd4fe4494709ce0c",
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "0b078bfb11c3088cfb88c28d82bb132291e0cc0bf996a90d96ce3ab6414d6ade",
+    "editor/docks/ai_chat_editor_scene_completion.h": "4ddf54a4f769e385c9a0462b9a8332c99e6260972d77582685b96a88a2ab8878",
+    "editor/docks/scene_tree_dock.cpp": "d756c3d4186e759cac9eb11574a049fde3397631ba6eb61a4f89664409f69cda",
+    "editor/docks/scene_tree_dock.h": "8311c0f338eb6b3c4bd4737e99a43376c7788e8f70bb471aabd0551e00876807",
+    "editor/docks/ai_chat_editor_control.cpp": "19f798e8dfa28fbc59ff750486bfce0ed8b9c9b74ad6196d9e6b1d0c15b52377",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "6544c5e70a6d1d2ababcc354dfee9769ff041c22afae88162f3603055c5de92a",
+    "tests/editor/test_ai_chat_editor_control.cpp": "a9b90244678ea08ffe47efb1f147f38e9ffd9e427358e1882ff66dc6cd91ddbd",
+    "tests/editor/editor_test_isolation.py": "d508bf1e7f4d6bc5da17adf1c49a60cc7f098897bb9c7de6342bcff7a2499131",
+    "tests/editor/test_editor_test_isolation.py": "60ea4f7566d85a2bb84a62415f79f790c5f0062d15f4a4cc8f2eddcaaf3b9de7",
+    "tests/editor/run_editor_scene_completion.py": "2e21e90840d0b50f0f6ca3adabdbc3ecbe2c15a3a3726f7097d58f1977c08dec",
+    "tests/editor/editor_scene_completion.gd": "ff6d38ec44e1709ed54ab0f3262d296989deef5eb46d6d02d4f9f8ebe7397902"
+  },
+  "unmeasured": [
+    "Exported project actual execution",
+    "All resource whitelist and image-memory combinations; real independently compiled GDExtension library combinations",
+    "Debug/universal/x86_64 and other platform application export combinations; signing and notarization",
+    "Pixel/IME/native-window/desktop interaction and external authentication",
+    "Existing RID/ObjectDB/resource teardown leak diagnostics remain unattributed",
+    "407/F05 final combined candidate"
+  ],
+  "signed_candidate_acceptance": "pending",
+  "exact_head_ci": "pending",
+  "main_delivery": "pending",
+  "diting_ingestion_confirmed": false,
+  "scope_note": "Local integration validation is not main/CI delivery or overall Issue/parent business acceptance. Previous frozen independent review and new integration checks have distinct scopes."
+}
