@@ -170,6 +170,7 @@ async function run(entry, request) {
         let result = '';
         let done = false;
         let failure = '';
+        let lastError = '';
         let stderr = '';
         let bytes = 0;
         const decoder = new StringDecoder('utf8');
@@ -177,7 +178,10 @@ async function run(entry, request) {
             if (!line.trim()) return;
             let packet;
             try { packet = JSON.parse(line); } catch (_) { failure = 'INVALID_RESPONSE'; stop(); return; }
-            if (packet.type === 'error' || packet.type === 'turn.failed') failure = classifyDiagnostics(JSON.stringify(packet));
+            // Codex emits error events while retrying a disconnected stream. Only
+            // turn.failed is terminal; a later turn.completed may still succeed.
+            if (packet.type === 'error') lastError = JSON.stringify(packet);
+            if (packet.type === 'turn.failed') failure = classifyDiagnostics(JSON.stringify(packet));
             if (packet.type === 'item.completed' && packet.item?.type === 'agent_message') result = packet.item.text;
             if (packet.type === 'turn.completed') done = true;
         };
@@ -204,8 +208,8 @@ async function run(entry, request) {
         pending += decoder.end();
         if (pending) consume(pending);
         if (failure) throw bridgeError(failure, code);
-        if (code !== 0) throw bridgeError(classifyDiagnostics(stderr), code);
-        if (!done || !result) throw bridgeError('EMPTY_RESPONSE');
+        if (code !== 0) throw bridgeError(classifyDiagnostics(stderr + '\n' + lastError), code);
+        if (!done || !result) throw bridgeError(lastError ? classifyDiagnostics(lastError) : 'EMPTY_RESPONSE');
         if (Buffer.byteLength(result) > LIMIT) throw bridgeError('OUTPUT_LIMIT');
         return completion(result, input);
     } finally {
