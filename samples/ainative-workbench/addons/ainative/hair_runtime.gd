@@ -18,7 +18,7 @@ var scalp_cap: MeshInstance3D
 
 func _ready():
 	config = get_meta('hair_data',{})
-	var error = load('res://addons/ainative/hair.gd').runtime_error(get_parent(),config,get_meta('authored_scalp_cap',{}))
+	var error = load(get_script().resource_path.get_base_dir().path_join('hair.gd')).runtime_error(get_parent(),config,get_meta('authored_scalp_cap',{}))
 	if error:
 		set_meta('hair_error',error)
 		set_process(false)

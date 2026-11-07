@@ -42,7 +42,7 @@ static func load_scene(path: String) -> Dictionary:
 	var state = FBXState.new() if path.get_extension().to_lower() == 'fbx' else GLTFState.new()
 	var err = doc.append_from_file(path,state)
 	if err != OK: return {'error':'Asset import failed: '+str(err)}
-	var scene = doc.generate_scene(state)
+	var scene = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
 	if scene==null: return {'error':'No imported scene'}
 	var error = normalize_imported(scene)
 	if error: scene.free(); return {'error':error}

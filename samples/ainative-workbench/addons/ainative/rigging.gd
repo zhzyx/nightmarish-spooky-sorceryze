@@ -21,7 +21,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
 	if doc.append_from_file(path,state) != OK: return {'error':'Cannot decode GLB/glTF'}
-	var imported = doc.generate_scene(state)
+	var imported = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
 	if imported == null: return {'error':'No scene'}
 	var surfaces = []
 	var bounds = AABB()

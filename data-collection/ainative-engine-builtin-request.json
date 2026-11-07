@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-engine-builtin-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T03:11:54.113430+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 374,
+    "request": "将AINative工作台注册为引擎内置编辑器插件，普通工程直接进入Mesh生成与骨骼绑定，无需addons安装。",
+    "scope_document": "design-docs/ainative-engine-builtin-20261107.md",
+    "base_commit": "b38882870",
+    "state": "in_progress",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": []
+}

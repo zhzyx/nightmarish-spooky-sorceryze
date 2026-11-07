@@ -1,0 +1,363 @@
+@tool
+extends SceneTree
+# Synthetic fixtures exercise the real editor/provider/publication code. No AI inference.
+
+var panel
+var failures: Array = []
+var passed: Array = []
+var details: Dictionary = {'fixture_kind':'synthetic test assets; no AI inference'}
+
+func _initialize():
+	run.call_deferred()
+
+func check(condition: bool, label: String) -> bool:
+	print(('PASS ' if condition else 'FAIL ')+label)
+	if condition: passed.append(label)
+	else: failures.append(label)
+	return condition
+
+func finish():
+	var receipt = {'ok':failures.is_empty(),'checks':passed,'failures':failures,'details':details}
+	var path = OS.get_environment('AINATIVE_TEST_RECEIPT')
+	if not path.is_empty():
+		var output = FileAccess.open(path,FileAccess.WRITE)
+		if output: output.store_string(JSON.stringify(receipt,'  ')); output.close()
+	print('AINATIVE_BUILTIN_OK' if failures.is_empty() else 'AINATIVE_BUILTIN_FAILED')
+	if is_instance_valid(panel):
+		panel.queue_free()
+		panel = null
+		await process_frame
+	quit(0 if failures.is_empty() else 1)
+
+func wait_idle():
+	var deadline = Time.get_ticks_msec()+45000
+	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec()<deadline:
+		await create_timer(.02).timeout
+	return check(panel.jobs.is_empty() and not panel.auto_step,'real host subprocess completed')
+
+func run():
+	if OS.get_environment('AINATIVE_TEST_MODE')=='runtime':
+		await verify_portable_runtime()
+		finish()
+		return
+	root.size = Vector2i(1440,1000)
+	var deadline = Time.get_ticks_msec()+30000
+	var dock
+	while dock==null and Time.get_ticks_msec()<deadline:
+		dock = root.find_child('AINative',true,false)
+		await process_frame
+	if not check(dock!=null and ClassDB.class_exists('AINativeEditorPlugin'),'native AINative editor plugin is registered'):
+		finish(); return
+	if not check(dock.get_parent() is TabContainer,'AINative is an editor main-screen tab'):
+		finish(); return
+	var tabs: TabContainer = dock.get_parent()
+	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
+	deadline = Time.get_ticks_msec()+30000
+	while panel==null and Time.get_ticks_msec()<deadline:
+		panel = dock.find_child('AINativeWorkbench',true,false)
+		await process_frame
+	if not check(panel!=null and panel.get_meta('ainative_builtin',false),'native tab opens the bundled workbench without addons'):
+		finish(); return
+	await process_frame
+	if OS.get_environment('AINATIVE_TEST_MODE')=='sample':
+		await create_timer(.3).timeout
+		var copies = 0
+		for candidate in root.find_children('*','VBoxContainer',true,false):
+			var attached = candidate.get_script()
+			if attached!=null and str(attached.resource_path).ends_with('/workbench.gd'): copies += 1
+		check(copies==1,'enabled legacy sample addon does not create a second workbench')
+		var docks = 0
+		for candidate in root.find_children('AINative','',true,false):
+			if candidate.is_class('EditorDock'): docks += 1
+		check(docks==1,'sample project retains exactly one native AINative editor dock')
+		finish(); return
+	check(not DirAccess.dir_exists_absolute('res://addons'),'test project has no addons directory')
+	check(panel.native_buttons.keys().size()==5,'five direct navigation buttons are available')
+	for section in ['mesh','rig','character','other','settings']:
+		check(panel.native_buttons.has(section),'navigation: '+section)
+	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
+	var kinds = []
+	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_text(i))
+	check(kinds==['text_to_image','image_to_image','image_to_mesh','text_to_mesh'],'all four generation node kinds are available')
+	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
+	var tools = str(panel.get_meta('ainative_tools_dir',''))
+	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
+	details.state_key = panel.state_dir.get_file()
+	details.host_sha256 = FileAccess.get_sha256(panel.host_edit.text)
+	panel.save_settings()
+	var settings = ConfigFile.new()
+	settings.load(panel.state_dir.path_join('local.cfg'))
+	check(settings.get_value('host','use_bundled_script',false) and not settings.has_section_key('host','script'),'default local settings retain the bundled-host choice without a cached absolute script path')
+	# Reopening the same project state after an engine bundle upgrade chooses the new bundle.
+	var upgraded = panel.get_script().new()
+	var new_tools = panel.state_dir.path_join('simulated-next-bundle/tools')
+	upgraded.state_dir = panel.state_dir
+	upgraded.set_meta('ainative_builtin',true)
+	upgraded.set_meta('ainative_tools_dir',new_tools)
+	root.add_child(upgraded)
+	upgraded.hide()
+	await process_frame
+	check(upgraded.host_edit.text==new_tools.path_join('editor_host.py'),'saved default follows the current engine bundle after an upgrade')
+	upgraded.queue_free()
+	await process_frame
+	if OS.get_environment('AINATIVE_TEST_MODE')=='entry':
+		finish(); return
+	verify_importer_conversion()
+	await verify_mesh()
+	await verify_rigging()
+	await prepare_portable_runtime()
+	var capture = OS.get_environment('AINATIVE_TEST_CAPTURE')
+	if not capture.is_empty():
+		panel.native_buttons.rig.pressed.emit()
+		await process_frame
+		await RenderingServer.frame_post_draw
+		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')
+	finish()
+
+func verify_importer_conversion():
+	var converter = load(panel.get_script().resource_path.get_base_dir().path_join('runtime_mesh.gd'))
+	if not check(converter!=null,'bundled local GLTF runtime converter loads'): return
+	var holder = Node3D.new()
+	var imported = ImporterMeshInstance3D.new()
+	imported.name = 'Imported'
+	var primitive = BoxMesh.new()
+	var material = StandardMaterial3D.new()
+	primitive.material = material
+	imported.mesh = ImporterMesh.from_mesh(primitive)
+	imported.mesh.set_meta('source_mesh_revision','fixture')
+	var skin = Skin.new()
+	skin.add_bind(0,Transform3D.IDENTITY)
+	imported.skin = skin
+	imported.skeleton_path = NodePath('../Skeleton3D')
+	var transform = Transform3D(Basis.from_euler(Vector3(.1,.2,.3)),Vector3(1,2,3))
+	imported.transform = transform
+	imported.visible = false
+	imported.layer_mask = 4
+	imported.visibility_range_end = 20
+	imported.set_meta('source_node_revision','fixture')
+	imported.add_to_group('ainative_conversion_fixture',true)
+	holder.add_child(imported)
+	imported.owner = holder
+	var child = Node3D.new()
+	child.name = 'Child'
+	child.position = Vector3(0,.5,0)
+	imported.add_child(child)
+	child.owner = imported
+	var animation = Animation.new()
+	var track = animation.add_track(Animation.TYPE_POSITION_3D)
+	animation.track_set_path(track,NodePath('Imported/Child'))
+	converter.convert_scene(holder)
+	var converted = holder.get_node('Imported')
+	check(converted is MeshInstance3D and converted.mesh.get_surface_count()==1,'local conversion produces actual runtime Mesh geometry')
+	check(converted.transform.is_equal_approx(transform) and converted.skin==skin and converted.skeleton==NodePath('../Skeleton3D'),'local conversion preserves transforms, Skin and skeleton binding')
+	check(converted.get_meta('source_node_revision')=='fixture' and converted.mesh.get_meta('source_mesh_revision')=='fixture','local conversion preserves node and mesh provenance metadata')
+	check(converted.owner==holder and child.owner==converted and child.get_parent()==converted,'local conversion preserves child relationships and scene ownership')
+	check(not converted.visible and converted.layers==4 and converted.visibility_range_end==20 and converted.is_in_group('ainative_conversion_fixture'),'local conversion preserves visibility, rendering layers and groups')
+	check(converted.mesh.surface_get_material(0)==material,'local conversion preserves surface materials')
+	check(holder.get_node(animation.track_get_path(track))==child,'animation target NodePaths still resolve after local conversion')
+	holder.free()
+	var imported_root = ImporterMeshInstance3D.new()
+	imported_root.name = 'DetachedImporterRoot'
+	imported_root.mesh = ImporterMesh.from_mesh(BoxMesh.new())
+	var branch = Node3D.new()
+	branch.name = 'Branch'
+	imported_root.add_child(branch)
+	branch.owner = imported_root
+	var nested = ImporterMeshInstance3D.new()
+	nested.name = 'NestedMesh'
+	nested.mesh = ImporterMesh.from_mesh(BoxMesh.new())
+	branch.add_child(nested)
+	nested.owner = imported_root
+	var descendant = Node3D.new()
+	descendant.name = 'Descendant'
+	nested.add_child(descendant)
+	descendant.owner = imported_root
+	var converted_root = converter.convert_scene(imported_root)
+	check(converted_root is MeshInstance3D and converted_root.get_parent()==null,'local conversion supports an unparented importer root')
+	check(branch.owner==converted_root and converted_root.get_node('Branch/NestedMesh').owner==converted_root and descendant.owner==converted_root,'root-owned descendants retain scene ownership through nested conversion')
+	converted_root.free()
+
+func verify_mesh():
+	var source = ProjectSettings.globalize_path('res://fixture.glb')
+	var before = FileAccess.get_sha256(source)
+	panel.source_edit.text = source
+	panel.params_edit.text = '{"delay":0.15,"fail":false}'
+	panel.factory_edit.text = 'editor_demo:factory'
+	var heartbeat = panel.heartbeat
+	panel.start_run()
+	if not await wait_idle(): return
+	if not check(panel.current.get('state')=='succeeded','offline Copy Mesh run reaches real Executor success'): return
+	check(panel.heartbeat>heartbeat+5,'editor heartbeat advances during provider execution')
+	panel.request_preview()
+	if not await wait_idle(): return
+	if not check(is_instance_valid(panel.preview_scene),'actual GLB preview is decoded'): return
+	var meshes = panel.preview_scene.find_children('*','MeshInstance3D',true,false)
+	if panel.preview_scene is MeshInstance3D: meshes.append(panel.preview_scene)
+	check(not meshes.is_empty(),'decoded preview contains Mesh geometry')
+	panel.target_edit.text = panel.state_dir.path_join('mesh-v1.tscn')
+	panel.review_publish()
+	check(not FileAccess.file_exists(panel.target_edit.text) and not panel.confirmation.is_empty(),'publication waits for explicit confirmation')
+	panel.confirm_publish()
+	panel.dialog.hide()
+	if not await wait_idle(): return
+	check(ResourceLoader.load(panel.target_edit.text,'PackedScene',ResourceLoader.CACHE_MODE_IGNORE) is PackedScene,'confirmed Mesh publication reloads')
+	var published = FileAccess.get_sha256(panel.target_edit.text)
+	panel.review_publish()
+	panel.confirm_publish()
+	panel.dialog.hide()
+	if not await wait_idle(): return
+	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('failed'),'Mesh publication cannot overwrite an existing version')
+	check(FileAccess.get_sha256(source)==before,'offline run and publication preserve source Mesh bytes')
+	panel.native_buttons.other.pressed.emit()
+	await process_frame
+	check(panel.native_sections.split.is_visible_in_tree() and panel.mesh_container.is_visible_in_tree(),'other tools retain the shared Mesh preview viewport')
+	check(panel.viewport.render_target_update_mode!=SubViewport.UPDATE_DISABLED,'shared preview rendering remains enabled')
+	panel.native_buttons.rig.pressed.emit()
+	await process_frame
+	check(not panel.graph.visible and panel.rigging_panel.is_visible_in_tree(),'rigging navigation opens its controls directly')
+
+func make_humanoid(path: String) -> bool:
+	var scene = Node3D.new()
+	scene.name = 'SyntheticTPoseFixtureNotAI'
+	for box in [
+		[Vector3(0,1.05,0),Vector3(.38,.62,.22)],
+		[Vector3(0,1.6,0),Vector3(.25,.35,.25)],
+		[Vector3(.55,1.28,0),Vector3(.8,.16,.16)],
+		[Vector3(-.55,1.28,0),Vector3(.8,.16,.16)],
+		[Vector3(.11,.38,0),Vector3(.16,.76,.18)],
+		[Vector3(-.11,.38,0),Vector3(.16,.76,.18)]]:
+		var mesh = BoxMesh.new()
+		mesh.size = box[1]
+		mesh.subdivide_width = 2
+		mesh.subdivide_height = 2
+		mesh.subdivide_depth = 2
+		var instance = MeshInstance3D.new()
+		instance.mesh = mesh
+		instance.position = box[0]
+		scene.add_child(instance)
+		instance.owner = scene
+	var document = GLTFDocument.new()
+	var state = GLTFState.new()
+	var error = document.append_from_scene(scene,state)
+	if error==OK: error = document.write_to_filesystem(state,path)
+	scene.free()
+	return check(error==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
+
+func verify_rigging():
+	var rig = panel.rigging_panel
+	rig.set_source(ProjectSettings.globalize_path('res://fixture.glb'))
+	rig.confirm.button_pressed = true
+	rig.fit()
+	if is_instance_valid(rig.built):
+		check(rig.built.get_meta('rigging',{}).get('status')=='needs_landmarks','triangle fixture is not falsely accepted as a humanoid')
+		rig.target.text = panel.state_dir.path_join('must-not-publish.tscn')
+		rig.save_version()
+		check(not FileAccess.file_exists(rig.target.text),'unreviewed anatomy cannot be published')
+	else:
+		check(not rig.message.text.is_empty(),'unsuitable source is rejected with a diagnostic')
+	var source = panel.state_dir.path_join('synthetic-tpose.glb')
+	if not make_humanoid(source): return
+	var source_hash = FileAccess.get_sha256(source)
+	rig.set_source(source)
+	rig.confirm.button_pressed = true
+	rig.fit()
+	if not check(is_instance_valid(rig.built),'synthetic T-pose builds an actual bound character'):
+		details.rig_diagnostic = rig.message.text
+		print('RIG_DIAGNOSTIC ',rig.message.text)
+		return
+	check(rig.built.get_meta('rigging',{}).get('status')=='reviewed_template','suitable confirmed T-pose reaches the reviewed binding state')
+	var skeleton = rig.built.get_node('Skeleton3D') as Skeleton3D
+	var body = rig.built.get_node('Body') as MeshInstance3D
+	check(skeleton.get_bone_count()==18 and body.skin.get_bind_count()==18,'binding creates 18 real bones and Skin bind poses')
+	var max_rest_error = 0.0
+	var valid_weights = true
+	for surface in body.mesh.get_surface_count():
+		var arrays = body.mesh.surface_get_arrays(surface)
+		for i in arrays[Mesh.ARRAY_VERTEX].size():
+			var vertex: Vector3 = arrays[Mesh.ARRAY_VERTEX][i]
+			var rest = Vector3.ZERO
+			var total = 0.0
+			for j in 4:
+				var index: int = arrays[Mesh.ARRAY_BONES][i*4+j]
+				var weight: float = arrays[Mesh.ARRAY_WEIGHTS][i*4+j]
+				valid_weights = valid_weights and index>=0 and index<18 and is_finite(weight) and weight>=0
+				total += weight
+				rest += (skeleton.get_bone_global_rest(index)*body.skin.get_bind_pose(index)*vertex)*weight
+			valid_weights = valid_weights and absf(total-1)<.0001
+			max_rest_error = maxf(max_rest_error,rest.distance_to(vertex))
+	check(valid_weights and max_rest_error<.0002,'Skin indices, normalized weights and rest geometry are valid')
+	var animation = rig.built.get_node('AnimationPlayer') as AnimationPlayer
+	var movement = {}
+	for motion in ['raise_arms','squat','turn']:
+		rig.play(motion)
+		animation.advance(1.0)
+		skeleton.force_update_all_bone_transforms()
+		var maximum = 0.0
+		for surface in body.mesh.get_surface_count():
+			var arrays = body.mesh.surface_get_arrays(surface)
+			for i in arrays[Mesh.ARRAY_VERTEX].size():
+				var vertex: Vector3 = arrays[Mesh.ARRAY_VERTEX][i]
+				var deformed = Vector3.ZERO
+				for j in 4:
+					var index: int = arrays[Mesh.ARRAY_BONES][i*4+j]
+					deformed += (skeleton.get_bone_global_pose(index)*body.skin.get_bind_pose(index)*vertex)*arrays[Mesh.ARRAY_WEIGHTS][i*4+j]
+				maximum = maxf(maximum,deformed.distance_to(vertex))
+		movement[motion] = maximum
+		check(animation.current_animation==motion and maximum>.01,'actual skinned ROM deformation: '+motion)
+	details.rom_maximum_displacement = movement
+	rig.rest()
+	rig.target.text = panel.state_dir.path_join('rig-v1.tscn')
+	rig.save_version()
+	if not check(FileAccess.file_exists(rig.target.text),'reviewed rig publishes a new character version'): return
+	var saved = FileAccess.get_sha256(rig.target.text)
+	rig.save_version()
+	check(FileAccess.get_sha256(rig.target.text)==saved,'rig publication cannot overwrite an existing version')
+	rig.source = ''
+	rig.source_field.text = ''
+	rig.reopen()
+	check(is_instance_valid(rig.built) and rig.source==source and rig.source_field.text==source,'reopening a bound version restores both source model state and visible source input')
+	check(FileAccess.get_sha256(source)==source_hash,'binding, animation and publication preserve source GLB bytes')
+
+func prepare_portable_runtime():
+	var rig = panel.rigging_panel
+	if not is_instance_valid(rig.built): return
+	var portable = rig.built.duplicate()
+	var controller = Node.new()
+	controller.name = 'LayeringPlayer'
+	var scripts = panel.get_script().resource_path.get_base_dir()
+	controller.set_script(load(scripts.path_join('layering_player.gd')))
+	controller.set('playing',false)
+	controller.set('player_path',NodePath('../AnimationPlayer'))
+	controller.set('skeleton_path',NodePath('../Skeleton3D'))
+	portable.add_child(controller)
+	controller.owner = portable
+	var packed = PackedScene.new()
+	var stage = panel.state_dir.path_join('portable-runtime-stage.tscn')
+	var error = packed.pack(portable)
+	if error==OK: error = ResourceSaver.save(packed,stage)
+	portable.free()
+	if not check(error==OK,'character with a real built-in runtime script stages successfully'): return
+	var directory = OS.get_environment('AINATIVE_TEST_TRANSFER')
+	DirAccess.make_dir_recursive_absolute(directory)
+	var target = directory.path_join('character.tscn')
+	var output = []
+	var code = OS.execute(panel.python_edit.text,[str(panel.get_meta('ainative_tools_dir')).path_join('interop_publish.py'),stage,target],output,true)
+	check(code==0 and FileAccess.file_exists(target),'bundled publisher creates a portable runtime dependency directory')
+	if code==0:
+		var scene_text = FileAccess.get_file_as_string(target)
+		check(not scene_text.contains(scripts) and scene_text.contains('.ainative-'),'portable scene uses relative script paths without an editor-cache reference')
+
+func verify_portable_runtime():
+	var packed = load('res://portable/character.tscn')
+	if not check(packed is PackedScene,'portable character loads in a different project without editor bundles'): return
+	var character = packed.instantiate()
+	root.add_child(character)
+	await process_frame
+	var controller = character.get_node_or_null('LayeringPlayer')
+	check(controller!=null and controller.get_script()!=null,'published runtime script and its preload dependencies load')
+	if controller:
+		check(controller.get_script().resource_path.begins_with('res://portable/'),'runtime script resolves from the copied artifact directory')
+		check(not controller.get('playing'),'runtime exported properties survive publication and relocation')
+	check(character.get_node('Skeleton3D').get_bone_count()==18,'relocated character retains actual skeleton data')
+	character.queue_free()
+	await process_frame

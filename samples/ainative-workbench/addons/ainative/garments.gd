@@ -113,7 +113,7 @@ static func fit(path: String, spec: Dictionary, avatar: Node3D, profile: Diction
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
 	if doc.append_from_buffer(captured.bytes,'',state)!=OK: return {'error':'Garment GLB import failed'}
-	var source = doc.generate_scene(state)
+	var source = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
 	if source==null: return {'error':'Empty garment scene'}
 	var surfaces = []
 	var bounds = AABB()

@@ -169,5 +169,5 @@ func save():
 	var err = ResourceSaver.save(packed,staged)
 	if err!=OK: message.text = 'Save failed; source retained'; return
 	var output = []
-	var code = OS.execute(host.python_edit.text,[ProjectSettings.globalize_path('res://../../tools/ainative/interop_publish.py'),staged,ProjectSettings.globalize_path(destination.text)],output,true)
+	var code = OS.execute(host.python_edit.text,[host.host_edit.text.get_base_dir().path_join('interop_publish.py'),staged,ProjectSettings.globalize_path(destination.text)],output,true)
 	message.text = 'Saved '+destination.text if code==0 else 'Save failed; source retained: '+str(output)
