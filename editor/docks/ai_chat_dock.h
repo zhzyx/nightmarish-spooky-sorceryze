@@ -658,6 +658,7 @@ class AIChatDock : public EditorDock {
 	void _apply_pending_steering();
 	void _request_completion();
 	void _request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
+	void _cancel_model_query();
 	void _stop();
 	void _next_tool(uint64_t p_session);
 	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);

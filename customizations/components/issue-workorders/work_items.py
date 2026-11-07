@@ -65,6 +65,7 @@ def gh(*args):
                 "network is unreachable",
                 "connection refused",
                 "i/o timeout",
+                "tls handshake timeout",
             )
         )
         if not match and dropped:

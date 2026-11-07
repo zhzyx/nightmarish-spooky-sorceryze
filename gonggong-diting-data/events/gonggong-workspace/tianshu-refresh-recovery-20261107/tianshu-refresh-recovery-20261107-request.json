@@ -1,0 +1,22 @@
+{
+  "payload": {
+    "parent": 442,
+    "intent": "修复刷新失败后的个人视图和账号会话恢复",
+    "document": "design-docs/daqian/refresh-recovery.md"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/453",
+  "schema_version": 1,
+  "kind": "request",
+  "request_id": "tianshu-refresh-recovery-20261107",
+  "tenant_id": "gonggong-workspace",
+  "event_id": "tianshu-refresh-recovery-20261107-request",
+  "occurred_at": "2026-11-07T14:19:29.5794479Z",
+  "agent": {
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "id": "current-workspace-operator",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported"
+  },
+  "evidence_refs": [],
+  "sha256": "470117d56c5f8111af956bff3081e26e560c4e7da6205738409bbe5d9c600d23"
+}

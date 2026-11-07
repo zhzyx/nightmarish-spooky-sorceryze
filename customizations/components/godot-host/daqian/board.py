@@ -320,7 +320,13 @@ def main():
         if args.editor_session and error.http_status in (401, 403):
             session_path(args.editor_session).unlink(missing_ok=True)
         reason = str(error)
-        offline = reason.startswith(("GITHUB_NETWORK", "GITHUB_TIMEOUT"))
+        offline = reason.startswith(("GITHUB_NETWORK", "GITHUB_TIMEOUT")) or error.http_status in (
+            429,
+            500,
+            502,
+            503,
+            504,
+        )
         result = {"denied": not offline, "offline_login": configured_login() if offline else "", "error": reason}
     except (ValueError, TypeError, OSError, KeyError):
         result = {"denied": True, "error": "读取工单来源失败"}
