@@ -7,3 +7,5 @@
 2026-11-07 接管续办：#367 的初版由 #405 承接。本次从 #405 整合到包含 #424 的 main，沿用建单失败步骤提示、按原账号和草稿核对的回执，以及升级前已经写入的文档摘要。新草稿使用天枢名称；历史草稿按原文回读。交付和本机更新均使用已有 Godot 编辑器。
 
 产品交付包含编辑器、宿主文案、旧草稿兼容和现行说明。Windows Actions 的一项输入说明和三个英文步骤名由 [#432](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/432) 承接，需要工作流写权限；稳定的工作流输入键及工件协议沿用。
+
+#432（需求 ID `tianshu-workflow-labels`）将 Windows Actions 的可见英文名称改为 Tianshu，验证仅更改一项输入说明和三个步骤名称。

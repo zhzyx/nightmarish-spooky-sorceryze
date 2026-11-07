@@ -1,0 +1,14 @@
+{
+  "request_id": "tianshu-workflow-labels",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/432",
+  "related_issue": 365,
+  "base": "0221321fd4b258fbe53f596e30fdc7259bae86b3",
+  "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-workflow-labels/tianshu-workflow-labels-request.json",
+  "sha256": "eb4b506a15f2e85b049c19a459332ed4bea3cc3964d2667da0db30d922a4dc4a",
+  "verification": {
+    "changed_lines": 4,
+    "input_descriptions": 1,
+    "step_names": 3,
+    "workflow_behavior_change": false
+  }
+}
