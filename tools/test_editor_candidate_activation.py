@@ -135,6 +135,20 @@ class ActivationTests(unittest.TestCase):
         (self.root / "engine.cpp").write_text("later edit\n")
         self.refusal("source_changed_after_build")
 
+    def test_committed_checkout_line_endings_match_actual_build_bytes(self):
+        (self.root / ".gitattributes").write_text("*.props text eol=crlf\n")
+        (self.root / "dependency.props").write_bytes(b"first\r\nsecond\r\n")
+        self.git("add", ".gitattributes", "dependency.props")
+        self.git("commit", "-m", "checkout CRLF input")
+        inputs = {
+            name: {"mode": "100644", "sha256": activation.digest(self.root / name)}
+            for name in ("engine.cpp", ".gitattributes", "dependency.props")
+        }
+        activation.source_matches(self.root, self.git("rev-parse", "HEAD"), inputs)
+        inputs["dependency.props"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(activation.ActivationError, "source_not_committed"):
+            activation.source_matches(self.root, self.git("rev-parse", "HEAD"), inputs)
+
     @unittest.skipUnless(sys.platform == "darwin", "owned macOS application entry")
     def test_later_main_commits_are_not_claimed_as_built_candidate(self):
         (self.root / "dependency.cpp").write_text("later unrelated main dependency\n")
