@@ -1,0 +1,36 @@
+{
+  "issue_number": 393,
+  "request_id": "engine-launch-receipt-20261107",
+  "validation": {
+    "activation_tests": {
+      "passed": 12,
+      "coverage": "Isolated actual Git repositories and owned signed macOS app bundles; activation, drift, recovery and pinned accepted-candidate provenance."
+    },
+    "writer_submit_regression": {
+      "passed": 7
+    },
+    "system_app_launch": {
+      "passed": true,
+      "target_arguments_verified": true,
+      "method": "Computer-use application launch of an isolated owned fixture; no-window process timed out in UI automation but wrote the expected execution proof."
+    },
+    "format": "ruff 0.17.1 check --no-fix and format --check passed"
+  },
+  "limitations": [
+    "Production workflow Issue 387 rerun and joint integration with Issue 390 remain pending.",
+    "System launch fixture does not claim the production user app was switched.",
+    "Startup pins the accepted candidate contained in main, not all later main commits."
+  ],
+  "source_sha256": {
+    "tools/editor_candidate_activation.py": "76fd848c77710b893e7ff1d60156214e679f9ce6fb00782738505c6c5e100845",
+    "tools/test_editor_candidate_activation.py": "735cae22045a8f275672470da8aea1d32c8db0d133b704d056728e20289e92c9",
+    "customizations/components/issue-workorders/writer_submit.py": "4a9d9bc6c465dc4fc298c81af1d05c7f3c3db2053cd584be70c339e3e7e15aee"
+  },
+  "independent_review": {
+    "reviewer": "workflow_audit",
+    "result": "passed",
+    "reference": "workflow-audit-review-engine-launch-20261107",
+    "independently_executed_activation_tests": 12,
+    "scope": "Exact helper/test/writer source hashes above; no unresolved blocking findings. Production app activation and Issue 390/387 integration remain pending."
+  }
+}

@@ -444,7 +444,22 @@ def main():
         repo = args.repo.resolve()
         repository = work_items.config(repo)[0]["repository"]
         issue_gate.check_repository(repo, repository)
-        print(json.dumps(inspect_pr(repo, repository, args.inspect_pr), ensure_ascii=False))
+        report = inspect_pr(repo, repository, args.inspect_pr)
+        # A verified merge/acceptance readback is the event that advances a
+        # host-owned editor's stable startup entry. No timer or PR prose grants it.
+        import importlib.util
+
+        activation_path = Path(__file__).resolve().parents[3] / "tools/editor_candidate_activation.py"
+        spec = importlib.util.spec_from_file_location("editor_candidate_activation", activation_path)
+        try:
+            if spec is None or spec.loader is None:
+                raise ValueError("activation adapter unavailable")
+            activation = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(activation)
+            report["engine_launch_activation"] = activation.after_delivery(repo, report)
+        except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+            report["engine_launch_activation"] = {"state": "pending", "error": "activation_adapter_failed"}
+        print(json.dumps(report, ensure_ascii=False))
         return
     if not (args.issue and args.request_id and args.title and args.notes_file):
         parser.error("submission requires --issue, --request-id, --title and --notes-file")

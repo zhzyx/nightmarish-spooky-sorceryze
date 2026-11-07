@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-71596bdbad4500e7034fd1a70e0b9b27ef51abfa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-launch-receipt-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dfd985e208929817761dc321fc9a465b4900039d551f6cea2f8fce825d07f1a7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+    "action": "validation",
+    "detection_head": "68049a87d7fa2a5c40cfef3132bc104a87ce801e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-root-engine-activation",
+    "authority_ref": "user-authorized-engine-workflow-repair-20261107",
+    "evidence": "data-collection/engine-launch-receipt-20261107.json",
+    "diagnosis": "Invoking shell PATH omitted installed Node. The trusted validator passes approved_file_integrity with the existing Node runtime available; governance files are unchanged.",
+    "next_action": "Reverify the original formal gate using the existing runtime. Issue 390 owns runtime unification.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T06:10:18.519321+00:00",
+    "attempted": "Trusted validator and independent activation validation passed.",
+    "repair_owner": "runtime-entry-fix-agent",
+    "continuable": "Original gate is executable without a bypass."
+  },
+  "occurred_at": "2026-11-07T06:58:27.138425+00:00",
+  "sha256": "b47873b66eabbd5dcef50714b6c7ecd360da44bf192eeb0ff09be6270bb420c9"
+}
