@@ -1,0 +1,19 @@
+{
+  "issue_number": 393,
+  "request_id": "engine-launch-receipt-20261107",
+  "base_main": "3c169bec142907c60b1db39ec892eeb5b14e6150",
+  "source_snapshot_commit": "7b7728471fc1c92dbbfb64d9a495f0aa29f1f287",
+  "source_matches": true,
+  "source_input_count": 16407,
+  "source_digest": "9c841bfefda6ae17a812044e96eeae89f114e578c2cfd12e78e11f21590dc5da",
+  "elapsed_seconds": 3.478,
+  "integration": "Latest main Issue 409 changes only Maliang sample workbench and its evidence; no overlap with activation implementation. Conflict-free rebase.",
+  "source_sha256": {
+    "tools/editor_candidate_activation.py": "2fa52c9e2fa83ad257ebd009ea80eaaed287ae5e8490376414bd15e002d09deb",
+    "tools/test_editor_candidate_activation.py": "974785e08ffe7e76382d0d035a701ed964e5dfdb66dbf74753cb9607066d759e",
+    "customizations/components/issue-workorders/writer_submit.py": "4a9d9bc6c465dc4fc298c81af1d05c7f3c3db2053cd584be70c339e3e7e15aee"
+  },
+  "existing_checks_reused": "Activation 13 tests and writer 7 tests remain valid: no implementation/helper dependency changed.",
+  "supersedes_evidence": "data-collection/engine-launch-receipt-20261107-main-integration.json",
+  "pending_acceptance": "Issue 393 remains open until original Issue 387 real startup-entry acceptance."
+}
