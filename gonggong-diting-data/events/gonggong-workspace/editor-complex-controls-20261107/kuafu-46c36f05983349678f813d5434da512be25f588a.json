@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-46c36f05983349678f813d5434da512be25f588a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b82fe34874ff826b9b669f8f29fcb432107565437a6dff11c61bd5d80433f139",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "d09bd4ab4ea419f99527ab8a4e144944f27ec591",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42385144807/job/128440928509",
+    "diagnosis": "Exact407 Windows MSVC Editor build failed at complex_actions314 and922: GradientEdit local edit shadows CurveEdit local edit in the same if/else chain (C4456 promoted to C2220 by W4/WX). Original407 author independently confirmed from the real log. Renamed only those GradientEdit locals to gradient_edit and their branch references. Local rebuild succeeded and native22/308 passed; business and independent follow-up running. No warning flag changed; Windows acceptance remains pending new exact CI.",
+    "next_action": "Finish scoped local/independent regression, normal replacement PR, exact Windows CI and main readback; retain failed466/464.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:12:28.616275+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:23:54.812527+00:00",
+  "sha256": "929b10c0d6e221e5f7d32dfbe8e44618c06d26071304e93ec73fb3f8ac97b972"
+}

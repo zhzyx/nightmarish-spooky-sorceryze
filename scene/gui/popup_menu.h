@@ -428,6 +428,8 @@ public:
 
 	bool activate_item_by_event(const Ref<InputEvent> &p_event, bool p_for_global_only = false);
 	void activate_item(int p_idx);
+	// Native semantic entry point; intentionally not registered for dynamic calls.
+	bool open_submenu(int p_idx);
 
 	void _about_to_popup();
 	void _about_to_close();

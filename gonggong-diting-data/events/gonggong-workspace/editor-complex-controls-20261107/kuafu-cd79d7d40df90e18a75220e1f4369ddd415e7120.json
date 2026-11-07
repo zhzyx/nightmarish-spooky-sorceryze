@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cd79d7d40df90e18a75220e1f4369ddd415e7120",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1144d64f672c0f00b6d74ce76f77f1aed107b3bd63f4188fbd5a5f6280e0f73a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "delivery",
+    "detection_head": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "diagnosis": "Formal407 delivery gate correctly rejected missing same-tenant kind=request event; only dispatch and quality events had been staged. The existing authorized real Issue407 was read back and recorded with its exact URL and body digest through the official Diting file record tool. No source acceptance fabricated. Stage the actual request and assessment events before rerunning normal submission.",
+    "next_action": "Rerun exact staged candidate formal gate and normal signed PR submission; preserve initial failure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:00:26.882777+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:02:33.569410+00:00",
+  "sha256": "838cf0771ee9a268ac762e50463393b1e38c96d093ad1b6ca47b7a767ce0b2dc"
+}

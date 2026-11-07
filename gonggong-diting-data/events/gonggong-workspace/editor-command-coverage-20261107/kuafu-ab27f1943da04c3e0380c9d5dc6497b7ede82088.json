@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ab27f1943da04c3e0380c9d5dc6497b7ede82088",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c4a2009a406de6200c812b99edf0ffdabb71d33ec12a1d9edb3e50d8725f9f65",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "delivery",
+    "detection_head": "9fb6ac9cde3979978fffa9ae9c1e8f81b9d3f7bd",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/475",
+    "diagnosis": "Normal writer correctly refused because latest main merge was staged but not yet committed: current HEAD9fb still has merge-baseff3 rather than a2. All17 upstream bytes and25 command files plus independent3fe492 validation are preserved. Complete the prepared merge only after the official gate, using current verified candidate author and required386 work-order trailers, then committed-data check and ordinary writer resume on that integrated HEAD. No protection or validator bypass and no production change.",
+    "next_action": "Official precommit gate on exact staged integrated tree; commit merge with work-order trailers, require-committed check, resume normal signed PR, exact CI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:23:57.353908+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:26:14.023870+00:00",
+  "sha256": "95591405dcf662643a07c44924a87b81ff059c676eabfd00ad87a048d715e8fe"
+}

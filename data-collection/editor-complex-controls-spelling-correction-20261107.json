@@ -1,0 +1,10 @@
+{
+  "issue_number": 407,
+  "request_id": "editor-complex-controls-20261107",
+  "predecessor_candidate": "ef80faf02dd9f0f0400d515f236ef3b7fb40dcd0",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42384514852/job/128438963744",
+  "cause": "codespell en-GB_to_en-US rewrites acknowledgement within an immutable recorded event",
+  "correction": "Allow this single valid spelling in the existing repository word list; preserve exact event and canonical hash",
+  "production_source_changed": false,
+  "prior_independent_binary_sha256": "a429a5b8da8fc17d5387e6f3201a1dbf2fdf5c5ecbc6221cc41298f4c0a2f265"
+}

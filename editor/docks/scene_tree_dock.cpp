@@ -2170,11 +2170,31 @@ _ALWAYS_INLINE_ static bool _recurse_into_property(const PropertyInfo &p_propert
 	return false;
 }
 
-void SceneTreeDock::_check_object_properties_recursive(Node *p_root_node, Object *p_obj, HashMap<Node *, NodePath> *p_renames, bool p_inside_resource) const {
+// Private receiver used by the approved native scene action path only.
+class ScenePathNativeSetter : public RefCounted {
+	ObjectID target;
+
+public:
+	explicit ScenePathNativeSetter(Object *p_target) : target(p_target->get_instance_id()) {}
+	void apply(StringName p_property, Variant p_value) {
+		Object *object = ObjectDB::get_instance(target);
+		if (object) {
+			bool valid = false;
+			object->set_native(p_property, p_value, &valid);
+			ERR_FAIL_COND(!valid);
+		}
+	}
+};
+
+void SceneTreeDock::_check_object_properties_recursive(Node *p_root_node, Object *p_obj, HashMap<Node *, NodePath> *p_renames, bool p_inside_resource, bool p_native_only) const {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 
 	List<PropertyInfo> properties;
-	p_obj->get_property_list(&properties);
+	if (p_native_only) {
+		ClassDB::get_property_list(p_obj->get_class(), &properties);
+	} else {
+		p_obj->get_property_list(&properties);
+	}
 
 	for (const PropertyInfo &E : properties) {
 		if (!_recurse_into_property(E)) {
@@ -2183,16 +2203,30 @@ void SceneTreeDock::_check_object_properties_recursive(Node *p_root_node, Object
 
 		StringName propertyname = E.name;
 
-		Variant old_variant = p_obj->get(propertyname);
+		Variant old_variant;
+		if (p_native_only) {
+			if (!p_obj->get_native(propertyname, old_variant)) {
+				continue;
+			}
+		} else {
+			old_variant = p_obj->get(propertyname);
+		}
 		Variant updated_variant = old_variant;
-		if (_check_node_path_recursive(p_root_node, updated_variant, p_renames, p_inside_resource)) {
-			undo_redo->add_do_property(p_obj, propertyname, updated_variant);
-			undo_redo->add_undo_property(p_obj, propertyname, old_variant);
+		if (_check_node_path_recursive(p_root_node, updated_variant, p_renames, p_inside_resource, p_native_only)) {
+			if (p_native_only) {
+				Ref<ScenePathNativeSetter> setter = memnew(ScenePathNativeSetter(p_obj));
+				UndoRedo *history = undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_root_node));
+				history->add_do_method(callable_mp(setter.ptr(), &ScenePathNativeSetter::apply).bind(propertyname, updated_variant));
+				history->add_undo_method(callable_mp(setter.ptr(), &ScenePathNativeSetter::apply).bind(propertyname, old_variant));
+			} else {
+				undo_redo->add_do_property(p_obj, propertyname, updated_variant);
+				undo_redo->add_undo_property(p_obj, propertyname, old_variant);
+			}
 		}
 	}
 }
 
-bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_variant, HashMap<Node *, NodePath> *p_renames, bool p_inside_resource) const {
+bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_variant, HashMap<Node *, NodePath> *p_renames, bool p_inside_resource, bool p_native_only) const {
 	switch (r_variant.get_type()) {
 		case Variant::NODE_PATH: {
 			NodePath node_path = r_variant;
@@ -2212,7 +2246,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 			bool updated = false;
 			for (int i = 0; i < a.size(); i++) {
 				Variant value = a[i];
-				if (_check_node_path_recursive(p_root_node, value, p_renames, p_inside_resource)) {
+				if (_check_node_path_recursive(p_root_node, value, p_renames, p_inside_resource, p_native_only)) {
 					if (!updated) {
 						a = a.duplicate(); // Need to duplicate for undo-redo to work.
 						updated = true;
@@ -2231,7 +2265,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 			bool updated = false;
 			for (int i = 0; i < d.size(); i++) {
 				Variant value = d.get_value_at_index(i);
-				if (_check_node_path_recursive(p_root_node, value, p_renames, p_inside_resource)) {
+				if (_check_node_path_recursive(p_root_node, value, p_renames, p_inside_resource, p_native_only)) {
 					if (!updated) {
 						d = d.duplicate(); // Need to duplicate for undo-redo to work.
 						updated = true;
@@ -2247,7 +2281,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 
 		case Variant::OBJECT: {
 			Resource *resource = Object::cast_to<Resource>(r_variant);
-			if (!resource) {
+			if (!resource || (p_native_only && (resource->get_script().get_type() != Variant::NIL || ClassDB::is_gdextension(resource->get_class()) || resource->is_extension_placeholder() || ClassDB::get_api_type(resource->get_class()) != ClassDB::API_CORE))) {
 				break;
 			}
 
@@ -2267,7 +2301,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 				break;
 			}
 
-			_check_object_properties_recursive(p_root_node, resource, p_renames, true);
+			_check_object_properties_recursive(p_root_node, resource, p_renames, true, p_native_only);
 		} break;
 
 		default: {
@@ -2277,7 +2311,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 	return false;
 }
 
-void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath> *p_renames, HashMap<Ref<Animation>, HashSet<int>> *r_rem_anims, LocalVector<Pair<StringName, StringName>> *r_folded_group_renames) {
+void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath> *p_renames, HashMap<Ref<Animation>, HashSet<int>> *r_rem_anims, LocalVector<Pair<StringName, StringName>> *r_folded_group_renames, bool p_native_only) {
 	HashMap<Ref<Animation>, HashSet<int>> rem_anims;
 	if (!r_rem_anims) {
 		r_rem_anims = &rem_anims;
@@ -2383,12 +2417,32 @@ void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath>
 									int idx = i - tracks_removed;
 									tracks_removed++;
 
-									undo_redo->add_do_method(anim.ptr(), "remove_track", idx);
-									undo_redo->add_undo_method(anim.ptr(), "add_track", anim->track_get_type(i), idx);
-									undo_redo->add_undo_method(anim.ptr(), "track_set_path", idx, track_np);
-									undo_redo->add_undo_method(anim.ptr(), "track_set_interpolation_type", idx, anim->track_get_interpolation_type(i));
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_do_method(callable_mp(anim.ptr(), &Animation::remove_track).bind(idx));
+									} else {
+										undo_redo->add_do_method(anim.ptr(), "remove_track", idx);
+									}
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_undo_method(callable_mp(anim.ptr(), &Animation::add_track).bind(anim->track_get_type(i), idx));
+									} else {
+										undo_redo->add_undo_method(anim.ptr(), "add_track", anim->track_get_type(i), idx);
+									}
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_undo_method(callable_mp(anim.ptr(), &Animation::track_set_path).bind(idx, track_np));
+									} else {
+										undo_redo->add_undo_method(anim.ptr(), "track_set_path", idx, track_np);
+									}
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_undo_method(callable_mp(anim.ptr(), &Animation::track_set_interpolation_type).bind(idx, anim->track_get_interpolation_type(i)));
+									} else {
+										undo_redo->add_undo_method(anim.ptr(), "track_set_interpolation_type", idx, anim->track_get_interpolation_type(i));
+									}
 									for (int j = 0; j < anim->track_get_key_count(i); j++) {
-										undo_redo->add_undo_method(anim.ptr(), "track_insert_key", idx, anim->track_get_key_time(i, j), anim->track_get_key_value(i, j), anim->track_get_key_transition(i, j));
+										if (p_native_only) {
+											undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_undo_method(callable_mp(anim.ptr(), &Animation::track_insert_key).bind(idx, anim->track_get_key_time(i, j), anim->track_get_key_value(i, j), anim->track_get_key_transition(i, j)));
+										} else {
+											undo_redo->add_undo_method(anim.ptr(), "track_insert_key", idx, anim->track_get_key_time(i, j), anim->track_get_key_value(i, j), anim->track_get_key_transition(i, j));
+										}
 									}
 
 									ran.erase(i); //byebye channel
@@ -2401,8 +2455,16 @@ void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath>
 									if (new_path == track_np) {
 										continue; //bleh
 									}
-									undo_redo->add_do_method(anim.ptr(), "track_set_path", i, new_path);
-									undo_redo->add_undo_method(anim.ptr(), "track_set_path", i, track_np);
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_do_method(callable_mp(anim.ptr(), &Animation::track_set_path).bind(i, new_path));
+									} else {
+										undo_redo->add_do_method(anim.ptr(), "track_set_path", i, new_path);
+									}
+									if (p_native_only) {
+										undo_redo->get_history_undo_redo(undo_redo->get_history_id_for_object(p_base))->add_undo_method(callable_mp(anim.ptr(), &Animation::track_set_path).bind(i, track_np));
+									} else {
+										undo_redo->add_undo_method(anim.ptr(), "track_set_path", i, track_np);
+									}
 								}
 							}
 						}
@@ -2423,10 +2485,10 @@ void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath>
 	}
 
 	// Renaming node paths used in node properties.
-	_check_object_properties_recursive(p_base, p_base, p_renames);
+	_check_object_properties_recursive(p_base, p_base, p_renames, false, p_native_only);
 
 	for (int i = 0; i < p_base->get_child_count(); i++) {
-		perform_node_renames(p_base->get_child(i), p_renames, r_rem_anims, r_folded_group_renames);
+		perform_node_renames(p_base->get_child(i), p_renames, r_rem_anims, r_folded_group_renames, p_native_only);
 	}
 }
 

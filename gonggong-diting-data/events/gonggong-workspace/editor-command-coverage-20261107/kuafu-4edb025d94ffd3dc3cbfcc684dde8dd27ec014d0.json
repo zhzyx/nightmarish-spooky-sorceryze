@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4edb025d94ffd3dc3cbfcc684dde8dd27ec014d0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c4a2009a406de6200c812b99edf0ffdabb71d33ec12a1d9edb3e50d8725f9f65",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "delivery",
+    "detection_head": "9fb6ac9cde3979978fffa9ae9c1e8f81b9d3f7bd",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/478",
+    "diagnosis": "Latest b5 combination locally passes20/11/25 and74native1470. Extra legacy runner initially failed a bare hidden-target assertion with actual response unrecorded; a later memory-only copy of the unchanged old script plus diagnostic reproduced editor_busy at the same assertion. Added a bounded first read-only describe probe before all writes; patched legacy passes root and independent actual HTTP/CLI runs. Independent fresh b5 source binding25+17 and actual20/native74/1470 passed, without claiming a new independent11/25 run. Binary remainsca88; production sources unchanged; completed worker claim released through trusted host.",
+    "next_action": "Include actual source/acceptance/terminal evidence, official gate, complete baseline merge commit, normal new signed PR and exact CI/main. Keep prior failures and scopes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:23:57.353908+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T16:44:57.028120+00:00",
+  "sha256": "238fe732b9062c47f5e26c2b07d99cba2ca20e662c6d218162236a891a904be8"
+}

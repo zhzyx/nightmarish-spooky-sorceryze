@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1b9c0eb2325bbf168280c573fe56353d3914f48b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-complex-controls-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b82fe34874ff826b9b669f8f29fcb432107565437a6dff11c61bd5d80433f139",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/407",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "action": "validation",
+    "detection_head": "d09bd4ab4ea419f99527ab8a4e144944f27ec591",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/461",
+    "diagnosis": "Final combination exposed fixture ready notification preceding completion of native startup scan. First read-only describe or menu request correctly returned editor_busy; test asserted too early. Both runners now retry only that initial read on exactly editor_busy with a monotonic twenty second limit; no writes or confirmations are retried. Full combined candidate passes31native437,20command,11complex,25scene locally and independently; earlier failures retained. Preliminary integration schema merge selected an unrelated same-key loop; native schema test caught the missing fields, explicit action field loop corrected and31native437 passed.",
+    "next_action": "Deliver test-only readiness correction and exact combined evidence with408 after407 main; preserve separate CI and normal main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T15:12:28.616275+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T15:15:15.259323+00:00",
+  "sha256": "abbea13f79a96cf12d3b631028cbb002310cb3b619eae9ccd22cc3579ef3958c"
+}

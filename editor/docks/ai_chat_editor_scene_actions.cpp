@@ -34,10 +34,14 @@
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
+#include "core/io/resource_loader.h"
 #include "core/io/resource_uid.h"
 #include "core/math/math_funcs.h"
+#include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
+#include "core/object/script_language.h"
 #include "core/object/undo_redo.h"
+#include "editor/docks/ai_chat_editor_scene_completion.h"
 #include "editor/docks/scene_tree_dock.h"
 #include "editor/editor_data.h"
 #include "editor/editor_interface.h"
@@ -213,14 +217,303 @@ Variant wire(const Variant &p_value) {
 	return a;
 }
 
+// UndoRedo skips callables without an associated ObjectID. A private,
+// reference-counted receiver keeps the fixed native setter alive in history;
+// its API is deliberately never registered or exposed to scripts/tools.
+class NativePropertySetter : public RefCounted {
+	ObjectID target;
+
+public:
+	bool succeeded = false;
+	explicit NativePropertySetter(ObjectID p_target) : target(p_target) {}
+	void apply(StringName p_property, Variant p_value) {
+		succeeded = false;
+		Object *object = ObjectDB::get_instance(target);
+		ERR_FAIL_NULL(object);
+		bool valid = false;
+		object->set_native(p_property, p_value, &valid);
+		ERR_FAIL_COND(!valid);
+		object = ObjectDB::get_instance(target);
+		if (!object) {
+			return;
+		}
+		Variant actual;
+		succeeded = object->get_native(p_property, actual) && actual == p_value;
+		ERR_FAIL_COND(!succeeded);
+		object->set_edited(true);
+	}
+};
+
+// One closed receiver per native operation. UndoRedo retains it strongly and
+// resolves every scene object from ObjectID again on do, undo and redo.
+class NativeSceneMutation : public RefCounted {
+public:
+	enum Kind { NAME,
+		REPARENT,
+		ADD_CHILD,
+		REMOVE_CHILD,
+		MOVE_CHILD,
+		OWNER,
+		CONNECT,
+		DISCONNECT,
+		SELECTION_CLEAR,
+		SELECTION_ADD,
+		SELECTION_REMOVE };
+	Kind kind;
+	ObjectID target, other;
+	Variant value;
+	Callable connection;
+	uint32_t flags = 0;
+	bool succeeded = false;
+	NativeSceneMutation(Kind p_kind, Object *p_target, Object *p_other = nullptr, Variant p_value = Variant(), Callable p_connection = Callable(), uint32_t p_flags = 0) : kind(p_kind), target(p_target->get_instance_id()), other(p_other ? p_other->get_instance_id() : ObjectID()), value(p_value), connection(p_connection), flags(p_flags) {}
+	void apply() {
+		succeeded = false;
+		Object *object = ObjectDB::get_instance(target);
+		if (!object) {
+			return;
+		}
+		if (kind >= SELECTION_CLEAR) {
+			EditorSelection *selection = Object::cast_to<EditorSelection>(object);
+			Node *node = Object::cast_to<Node>(ObjectDB::get_instance(other));
+			if (!selection) {
+				return;
+			}
+			if (kind == SELECTION_CLEAR) {
+				selection->clear();
+				succeeded = selection->get_full_selected_node_list().is_empty();
+			} else if (node && kind == SELECTION_ADD) {
+				selection->add_node(node);
+				succeeded = selection->is_selected(node);
+			} else if (node) {
+				selection->remove_node(node);
+				succeeded = !selection->is_selected(node);
+			}
+			return;
+		}
+		Node *node = Object::cast_to<Node>(object);
+		Node *peer = Object::cast_to<Node>(ObjectDB::get_instance(other));
+		if (!node) {
+			return;
+		}
+		switch (kind) {
+			case NAME:
+				node->set_name(value);
+				break;
+			case REPARENT:
+				if (peer) {
+					node->reparent(peer, false);
+				}
+				break;
+			case ADD_CHILD:
+				if (peer) {
+					node->add_child(peer, true);
+				}
+				break;
+			case REMOVE_CHILD:
+				if (peer) {
+					node->remove_child(peer);
+				}
+				break;
+			case MOVE_CHILD:
+				if (peer) {
+					node->move_child(peer, int(value));
+				}
+				break;
+			case OWNER:
+				node->set_owner(peer);
+				break;
+			case CONNECT:
+				node->connect(StringName(String(value)), connection, flags);
+				break;
+			case DISCONNECT:
+				node->disconnect(StringName(String(value)), connection);
+				break;
+			default:
+				return;
+		}
+		// Notifications may run tool scripts and destroy or change either object.
+		node = Object::cast_to<Node>(ObjectDB::get_instance(target));
+		peer = Object::cast_to<Node>(ObjectDB::get_instance(other));
+		if (!node) {
+			return;
+		}
+		switch (kind) {
+			case NAME:
+				succeeded = node->get_name() == StringName(String(value));
+				break;
+			case REPARENT:
+				succeeded = peer && node->get_parent() == peer;
+				break;
+			case ADD_CHILD:
+				succeeded = peer && peer->get_parent() == node;
+				break;
+			case REMOVE_CHILD:
+				succeeded = peer && peer->get_parent() != node;
+				break;
+			case MOVE_CHILD:
+				succeeded = peer && peer->get_parent() == node && peer->get_index() == int(value);
+				break;
+			case OWNER:
+				succeeded = node->get_owner() == peer;
+				break;
+			case CONNECT:
+				succeeded = node->is_connected(StringName(String(value)), connection);
+				break;
+			case DISCONNECT:
+				succeeded = !node->is_connected(StringName(String(value)), connection);
+				break;
+			default:
+				break;
+		}
+	}
+};
+
+class NativeHistoryEpoch : public RefCounted {
+public:
+	uint64_t epoch = 0;
+	void changed() { ++epoch; }
+};
+
+bool editable(Node *p_root, Node *p_node, bool p_structure) {
+	if (p_node->is_internal() || ClassDB::is_gdextension(p_node->get_class()) || p_node->is_extension_placeholder() || ClassDB::get_api_type(p_node->get_class()) != ClassDB::API_CORE) {
+		return false;
+	}
+	if (p_node != p_root && p_node->get_owner() != p_root) {
+		if (p_structure || !p_root->is_editable_instance(p_node->get_owner())) {
+			return false;
+		}
+	}
+	return !p_structure || p_node == p_root || p_root->get_scene_inherited_state().is_null() || p_root->get_scene_inherited_state()->find_node_by_path(p_root->get_path_to(p_node)) < 0;
+}
+
+// Script storage references cannot be traversed through Object::get/set without
+// running user getters/setters. Inspect only native script declaration metadata
+// and reject this entire structural scope before constructing any transaction.
+bool script_reference_scope(Node *p_root) {
+	LocalVector<Node *> pending;
+	pending.push_back(p_root);
+	int count = 0;
+	while (!pending.is_empty()) {
+		Node *node = pending[pending.size() - 1];
+		pending.remove_at(pending.size() - 1);
+		if (++count > 100) {
+			return false;
+		}
+		Ref<Script> script = node->get_script();
+		if (script.is_valid()) {
+			if (script->get_script().get_type() != Variant::NIL || ClassDB::is_gdextension(script->get_class()) || script->is_extension_placeholder() || ClassDB::get_api_type(script->get_class()) != ClassDB::API_CORE) {
+				return false;
+			}
+			List<PropertyInfo> properties;
+			script->get_script_property_list(&properties);
+			if (properties.size() > 256) {
+				return false;
+			}
+			for (const PropertyInfo &property : properties) {
+				if (!(property.usage & PROPERTY_USAGE_STORAGE)) {
+					continue;
+				}
+				if (property.type == Variant::NODE_PATH || property.type == Variant::ARRAY || property.type == Variant::DICTIONARY || property.type == Variant::OBJECT || property.type == Variant::NIL) {
+					return false;
+				}
+			}
+		}
+		for (int i = 0; i < node->get_child_count(); i++) {
+			pending.push_back(node->get_child(i));
+		}
+	}
+	return true;
+}
+
+bool metadata_without_references(const Variant &p_value, int &r_count, int p_depth = 0) {
+	if (p_depth > 12 || ++r_count > 1024) {
+		return false;
+	}
+	switch (p_value.get_type()) {
+		case Variant::NODE_PATH:
+		case Variant::CALLABLE:
+		case Variant::SIGNAL:
+			return false;
+		case Variant::OBJECT:
+			return p_value.get_validated_object() == nullptr;
+		case Variant::ARRAY: {
+			const Array array = p_value;
+			if (array.size() > 256) {
+				return false;
+			}
+			for (const Variant &item : array) {
+				if (!metadata_without_references(item, r_count, p_depth + 1)) {
+					return false;
+				}
+			}
+		} break;
+		case Variant::DICTIONARY: {
+			const Dictionary dictionary = p_value;
+			if (dictionary.size() > 256) {
+				return false;
+			}
+			for (int i = 0; i < dictionary.size(); i++) {
+				if (!metadata_without_references(dictionary.get_key_at_index(i), r_count, p_depth + 1) || !metadata_without_references(dictionary.get_value_at_index(i), r_count, p_depth + 1)) {
+					return false;
+				}
+			}
+		} break;
+		default:
+			break;
+	}
+	return true;
+}
+
+// Native metadata is not in ClassDB's property list. Do not silently leave its
+// dynamic references stale, or route it through generic Object::get/set.
+bool metadata_reference_scope(Node *p_root) {
+	LocalVector<Node *> pending;
+	pending.push_back(p_root);
+	int nodes = 0, values = 0;
+	while (!pending.is_empty()) {
+		Node *node = pending[pending.size() - 1];
+		pending.remove_at(pending.size() - 1);
+		if (++nodes > 100) {
+			return false;
+		}
+		List<StringName> metadata;
+		node->get_meta_list(&metadata);
+		if (metadata.size() > 256) {
+			return false;
+		}
+		for (const StringName &key : metadata) {
+			if (!metadata_without_references(node->get_meta(key), values)) {
+				return false;
+			}
+		}
+		for (int i = 0; i < node->get_child_count(); i++) {
+			pending.push_back(node->get_child(i));
+		}
+	}
+	return true;
+}
+
+bool source_state(const String &p_path, Dictionary &r_state) {
+	if (p_path.is_empty()) {
+		return true;
+	}
+	const String file = p_path.get_slice("::", 0);
+	if (!AIChatEditorSceneActions::valid_project_path(file) || !AIChatEditorSceneCompletion::unlinked(file) || !FileAccess::exists(file)) {
+		return false;
+	}
+	r_state[file] = FileAccess::get_sha256(file);
+	return true;
+}
+
 bool scene_snapshot(Node *p_root, Array &r_nodes, bool p_for_run = false) {
 	LocalVector<Node *> pending;
 	pending.push_back(p_root);
 	while (!pending.is_empty()) {
 		Node *n = pending[pending.size() - 1];
 		pending.remove_at(pending.size() - 1);
-		// Conservative first implementation: no inherited/instanced/scripted scenes.
-		if (r_nodes.size() >= 100 || (!p_for_run && (n->get_script().get_type() != Variant::NIL || ClassDB::get_api_type(n->get_class()) != ClassDB::API_CORE || n->get_scene_inherited_state().is_valid() || (n != p_root && (!n->get_scene_file_path().is_empty() || n->get_owner() != p_root)) || n->get_child_count(true) != n->get_child_count(false)))) {
+		// Native classes with attached scripts remain editable; previews never
+		// invoke script getters, property-list callbacks, loaders or methods.
+		if (r_nodes.size() >= 100 || (!p_for_run && (ClassDB::is_gdextension(n->get_class()) || n->is_extension_placeholder() || ClassDB::get_api_type(n->get_class()) != ClassDB::API_CORE || n->get_child_count(true) != n->get_child_count(false)))) {
 			return false;
 		}
 		Dictionary entry;
@@ -230,6 +523,30 @@ bool scene_snapshot(Node *p_root, Array &r_nodes, bool p_for_run = false) {
 		entry["parent"] = n->get_parent() ? int64_t(n->get_parent()->get_instance_id()) : 0;
 		entry["owner"] = n->get_owner() ? int64_t(n->get_owner()->get_instance_id()) : 0;
 		entry["index"] = n->get_index();
+		Dictionary sources;
+		if (!source_state(n->get_scene_file_path(), sources)) {
+			return false;
+		}
+		Ref<Script> script = n->get_script();
+		int depth = 0;
+		Array scripts;
+		while (script.is_valid()) {
+			if (++depth > 16 || script->get_script().get_type() != Variant::NIL || ClassDB::is_gdextension(script->get_class()) || script->is_extension_placeholder() || ClassDB::get_api_type(script->get_class()) != ClassDB::API_CORE || !source_state(script->get_path(), sources)) {
+				return false;
+			}
+			Dictionary script_state;
+			script_state["instance"] = String::num_uint64(uint64_t(script->get_instance_id()));
+			script_state["version"] = int64_t(script->get_edited_version());
+			scripts.push_back(script_state);
+			script = script->get_base_script();
+		}
+		Ref<SceneState> inherited = n->get_scene_inherited_state();
+		if (inherited.is_valid() && !source_state(inherited->get_path(), sources)) {
+			return false;
+		}
+		entry["scripts"] = scripts;
+		entry["sources"] = sources;
+		entry["editable_instance"] = n != p_root && p_root->is_editable_instance(n);
 		r_nodes.push_back(entry);
 		for (int i = n->get_child_count() - 1; i >= 0; i--) {
 			pending.push_back(n->get_child(i));
@@ -257,6 +574,49 @@ bool linked_path(const String &p_path) {
 	return false;
 }
 } // namespace
+
+Dictionary AIChatEditorSceneActions::history_state(Node *p_root) {
+	Dictionary state;
+	EditorUndoRedoManager *manager = EditorUndoRedoManager::get_singleton();
+	if (!p_root || !manager) {
+		return state;
+	}
+	const int id = manager->get_history_id_for_object(p_root);
+	UndoRedo *history = manager->has_history(id) ? manager->get_history_undo_redo(id) : nullptr;
+	if (!history) {
+		return state;
+	}
+	// Histories own their observers through native metadata; the static map
+	// holds only weak IDs and never destroys RefCounteds after ObjectDB teardown.
+	static HashMap<ObjectID, ObjectID> observers;
+	Vector<ObjectID> dead;
+	for (const KeyValue<ObjectID, ObjectID> &entry : observers) {
+		if (!ObjectDB::get_instance(entry.key) || !ObjectDB::get_instance(entry.value)) {
+			dead.push_back(entry.key);
+		}
+	}
+	for (const ObjectID &object : dead) {
+		observers.erase(object);
+	}
+	const ObjectID object = history->get_instance_id();
+	if (!observers.has(object)) {
+		if (observers.size() >= 128) {
+			state["unavailable"] = true;
+			return state;
+		}
+		Ref<NativeHistoryEpoch> observer;
+		observer.instantiate();
+		history->connect(SNAME("version_changed"), callable_mp(observer.ptr(), &NativeHistoryEpoch::changed));
+		history->set_meta(SNAME("_ai_chat_native_history_epoch"), observer);
+		observers[object] = observer->get_instance_id();
+	}
+	state["instance"] = String::num_uint64(uint64_t(object));
+	NativeHistoryEpoch *observer = static_cast<NativeHistoryEpoch *>(ObjectDB::get_instance(observers[object]));
+	state["observer"] = String::num_uint64(uint64_t(observers[object]));
+	state["epoch"] = String::num_uint64(observer->epoch);
+	state["version"] = String::num_uint64(history->get_version());
+	return state;
+}
 
 bool AIChatEditorSceneActions::valid_project_path(const String &p_path) {
 	if (!p_path.begins_with("res://") || p_path.length() > 1024 || p_path.contains("\\") || p_path.contains_char(0)) {
@@ -321,7 +681,7 @@ bool AIChatEditorSceneActions::convert_json_value(const Variant &p_value, Varian
 }
 
 bool AIChatEditorSceneActions::supports(const String &p_action) {
-	return p_action == "scene_create_node" || p_action == "scene_delete_node" || p_action == "scene_rename_node" || p_action == "scene_reparent_node" || p_action == "scene_select_nodes" || p_action == "scene_set_property" || p_action == "scene_assign_resource" || p_action == "scene_connect_signal" || p_action == "run_project" || p_action == "run_scene" || p_action == "stop_project";
+	return AIChatEditorSceneCompletion::supports(p_action) || p_action == "scene_disconnect_signal" || p_action == "scene_create_node" || p_action == "scene_delete_node" || p_action == "scene_rename_node" || p_action == "scene_reparent_node" || p_action == "scene_select_nodes" || p_action == "scene_set_property" || p_action == "scene_assign_resource" || p_action == "scene_connect_signal" || p_action == "run_project" || p_action == "run_scene" || p_action == "stop_project";
 }
 
 Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_confirmed) {
@@ -332,6 +692,9 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 	if (!supports(action)) {
 		return outcome(false, "unknown_action");
 	}
+	if (AIChatEditorSceneCompletion::supports(action)) {
+		return AIChatEditorSceneCompletion::perform(p_args, p_confirmed);
+	}
 	if (action == "scene_assign_resource" || (action == "run_scene" && p_args.has("target") && p_args["target"] != Variant(String()))) {
 		const Variant path = p_args.get(action == "run_scene" ? "target" : "resource_path", Variant());
 		if (path.get_type() != Variant::STRING || !valid_project_path(path)) {
@@ -341,16 +704,12 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			return outcome(false, "linked_project_path");
 		}
 	}
-	// ResourceLoader may run tool scripts/custom loaders. Signal targets can
-	// invoke arbitrary methods. Keep these explicit failures until a safe path exists.
-	if (action == "scene_assign_resource" || action == "scene_connect_signal") {
-		return outcome(false, "script_capable_operation_not_supported");
-	}
 	const Variant target_arg = p_args.get("target", ".");
 	if (action != "run_scene" && !node_path(target_arg)) {
 		return outcome(false, "invalid_node_path");
 	}
 	const String target = target_arg;
+	const bool resource = action == "scene_assign_resource", signal = action == "scene_connect_signal" || action == "scene_disconnect_signal";
 	const bool create = action == "scene_create_node", select = action == "scene_select_nodes", property = action == "scene_set_property", reparent = action == "scene_reparent_node", stop = action == "stop_project";
 	if ((create || action == "scene_rename_node") && !node_name(p_args.get("name", Variant()))) {
 		return outcome(false, "invalid_node_name");
@@ -378,6 +737,9 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 				return outcome(false, "invalid_selection");
 			}
 		}
+	}
+	if (signal && (!node_path(p_args.get("receiver", Variant())) || p_args.get("signal", Variant()).get_type() != Variant::STRING || p_args.get("method", Variant()).get_type() != Variant::STRING)) {
+		return outcome(false, "invalid_signal_arguments");
 	}
 	EditorInterface *editor = EditorInterface::get_singleton();
 	if (!editor) {
@@ -412,6 +774,10 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			const int history_id = undo->get_history_id_for_object(root);
 			UndoRedo *history = undo->has_history(history_id) ? undo->get_history_undo_redo(history_id) : nullptr;
 			state["scene_version"] = history ? int64_t(history->get_version()) : 0;
+		}
+		state["history"] = history_state(root);
+		if (Dictionary(state["history"]).has("unavailable")) {
+			return outcome(false, "history_snapshot_capacity");
 		}
 		Array scene_nodes;
 		if (root && !scene_snapshot(root, scene_nodes, true)) {
@@ -476,6 +842,10 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			old_selection.push_back(int64_t(selected->get_instance_id()));
 		}
 	}
+	state["history"] = history_state(root);
+	if (Dictionary(state["history"]).has("unavailable")) {
+		return outcome(false, "history_snapshot_capacity");
+	}
 	state["selection"] = old_selection;
 	LocalVector<Node *> selected_nodes;
 	for (const Variant &path : paths) {
@@ -489,14 +859,21 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 	if (reparent && (!new_parent || new_parent == node || node->is_ancestor_of(new_parent))) {
 		return outcome(false, "invalid_parent");
 	}
-	if (!stop && !select && !property && !create && node == root) {
+	if ((action == "scene_delete_node" || reparent || action == "scene_rename_node") && node == root) {
 		return outcome(false, "protected_scene_root");
 	}
 	if ((action == "scene_rename_node" || reparent || action == "scene_delete_node") && !SceneTreeDock::get_singleton()) {
 		return outcome(false, "scene_tree_unavailable");
 	}
-	if ((action == "scene_delete_node" || reparent) && node->get_child_count() > 0) {
-		return outcome(false, "subtree_requires_native_editor");
+	const bool structure = action == "scene_delete_node" || reparent || action == "scene_rename_node";
+	if (structure && !script_reference_scope(root)) {
+		return outcome(false, "unsafe_script_reference_scope");
+	}
+	if (structure && !metadata_reference_scope(root)) {
+		return outcome(false, "unsafe_metadata_reference_scope");
+	}
+	if (!stop && !select && (!editable(root, node, structure) || (reparent && !editable(root, new_parent, false)))) {
+		return outcome(false, structure ? "inherited_or_foreign_structure" : "instance_children_not_editable");
 	}
 	if ((create || action == "scene_rename_node" || reparent)) {
 		Node *parent = create ? node : reparent ? new_parent
@@ -514,11 +891,15 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 	if (property) {
 		property_name = p_args["property"];
 		List<PropertyInfo> properties;
-		node->get_property_list(&properties);
+		ClassDB::get_property_list(node->get_class(), &properties);
 		bool found = false;
 		for (const PropertyInfo &info : properties) {
 			if (info.name == property_name && (info.usage & PROPERTY_USAGE_EDITOR) && !(info.usage & PROPERTY_USAGE_READ_ONLY)) {
-				previous = node->get(property_name);
+				bool valid = false;
+				node->get_native(property_name, previous, &valid);
+				if (!valid) {
+					return outcome(false, "property_unavailable");
+				}
 				if (previous.get_type() != info.type || !convert_json_value(p_args.get("value", Variant()), info.type, value)) {
 					return outcome(false, "property_type_mismatch");
 				}
@@ -532,6 +913,68 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			return outcome(false, "property_unavailable");
 		}
 	}
+	Ref<Resource> assigned;
+	Dictionary assigned_content;
+	if (resource) {
+		property_name = p_args.get("property", "");
+		const bool allowed = (property_name == "texture" && (node->is_class("Sprite2D") || node->is_class("TextureRect"))) || (property_name == "material_override" && node->is_class("GeometryInstance3D")) || (property_name == "mesh" && node->is_class("MeshInstance3D")) || (property_name == "gradient" && node->is_class("Line2D"));
+		if (!allowed || !node->get_native(property_name, previous)) {
+			return outcome(false, "unsupported_resource_property");
+		}
+		Ref<Resource> old = previous;
+		Dictionary old_resource;
+		old_resource["instance"] = old.is_valid() ? String::num_uint64(uint64_t(old->get_instance_id())) : String();
+		old_resource["version"] = old.is_valid() ? int64_t(old->get_edited_version()) : 0;
+		if (old.is_valid() && !source_state(old->get_path(), old_resource)) {
+			return outcome(false, "invalid_resource_source");
+		}
+		if (!AIChatEditorSceneCompletion::resource_snapshot(old, old_resource)) {
+			return outcome(false, "unsupported_old_resource_snapshot");
+		}
+		state["resource"] = old_resource;
+		Dictionary input;
+		const String path = p_args["resource_path"];
+		if (!AIChatEditorSceneCompletion::resource_input(path, input)) {
+			return outcome(false, "unsupported_resource_input");
+		}
+		Ref<Resource> cached = ResourceCache::get_ref(path);
+		if (cached.is_valid()) {
+			Dictionary cached_content;
+			if (!AIChatEditorSceneCompletion::resource_snapshot(cached, cached_content)) {
+				return outcome(false, "unsupported_cached_resource_snapshot");
+			}
+			state["cached_resource_content"] = cached_content;
+		}
+		state["resource_input"] = input;
+	}
+	Node *receiver = nullptr;
+	Callable connection;
+	uint32_t connection_flags = 0;
+	if (signal) {
+		if (!node_path(p_args.get("receiver", Variant())) || p_args.get("signal", Variant()).get_type() != Variant::STRING || p_args.get("method", Variant()).get_type() != Variant::STRING) {
+			return outcome(false, "invalid_signal_arguments");
+		}
+		receiver = root->get_node_or_null(NodePath(String(p_args["receiver"])));
+		const StringName signal_name = String(p_args["signal"]), method = String(p_args["method"]);
+		if (!receiver || !editable(root, receiver, false) || !node->has_signal(signal_name) || !receiver->has_method(method)) {
+			return outcome(false, "signal_or_receiver_unavailable");
+		}
+		connection = Callable(receiver, method);
+		List<Object::Connection> connections;
+		node->get_signal_connection_list(signal_name, &connections);
+		for (const Object::Connection &existing : connections) {
+			if (existing.callable == connection) {
+				connection_flags = existing.flags;
+			}
+		}
+		const bool connected = node->is_connected(signal_name, connection);
+		if ((action == "scene_connect_signal" && connected) || (action == "scene_disconnect_signal" && (!connected || !(connection_flags & Object::CONNECT_PERSIST) || (connection_flags & Object::CONNECT_INHERITED)))) {
+			return outcome(false, "connection_exists_or_not_editable");
+		}
+		state["receiver_instance"] = int64_t(receiver->get_instance_id());
+		state["connected"] = connected;
+		state["connection_flags"] = int64_t(connection_flags);
+	}
 	if (JSON::stringify(state).utf8().length() > 16384 || !json_value(state)) {
 		return outcome(false, "scene_snapshot_capacity");
 	}
@@ -540,6 +983,7 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 	r["target"] = target;
 	r["target_instance"] = instance;
 	r["old_value"] = state;
+	r["manual_confirmation_required"] = true;
 	if (!p_confirmed) {
 		r["confirmation_required"] = true;
 		return r;
@@ -555,6 +999,40 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 		if (!undo || undo->is_committing_action()) {
 			return outcome(false, "undo_unavailable");
 		}
+		// Resource loading can have importer/loader side effects. It is never
+		// performed while proposing or before the exact snapshot is confirmed.
+		if (resource) {
+			Error error = OK;
+			assigned = ResourceLoader::load(p_args["resource_path"], "", ResourceFormatLoader::CACHE_MODE_REUSE, &error);
+			const bool type_ok = assigned.is_valid() && ((property_name == "texture" && assigned->is_class("Texture2D")) || (property_name == "gradient" && assigned->is_class("Gradient")) || (property_name == "material_override" && assigned->is_class("Material")) || (property_name == "mesh" && assigned->is_class("Mesh")));
+			if (error != OK || !type_ok || assigned->get_script().get_type() != Variant::NIL || ClassDB::is_gdextension(assigned->get_class()) || assigned->is_extension_placeholder() || ClassDB::get_api_type(assigned->get_class()) != ClassDB::API_CORE) {
+				return outcome(false, "resource_load_or_type_failed");
+			}
+			if (!AIChatEditorSceneCompletion::resource_snapshot(assigned, assigned_content)) {
+				return outcome(false, "unsupported_loaded_resource_snapshot");
+			}
+			// A custom loader may synchronously edit or destroy scene objects.
+			// Resolve identities again before touching any pre-load raw pointer,
+			// then rebuild the same pure proposal (including hashes and history).
+			EditorInterface *current_editor = EditorInterface::get_singleton();
+			Node *current_root = current_editor ? current_editor->get_edited_scene_root() : nullptr;
+			Node *current_node = Object::cast_to<Node>(ObjectDB::get_instance(ObjectID(uint64_t(instance))));
+			if (!current_root || int64_t(current_root->get_instance_id()) != int64_t(state["root"]) || !current_node || current_root->get_node_or_null(NodePath(target)) != current_node) {
+				return outcome(false, "scene_changed_during_resource_load");
+			}
+			const Dictionary refreshed = perform(p_args, false);
+			Dictionary refreshed_state = refreshed.get("old_value", Dictionary());
+			if (!state.has("cached_resource_content")) {
+				refreshed_state.erase("cached_resource_content");
+			}
+			if (!refreshed.get("confirmation_required", false) || !same_json(refreshed_state, state) || EditorUndoRedoManager::get_singleton() != undo || undo->is_committing_action()) {
+				return outcome(false, "scene_changed_during_resource_load");
+			}
+			editor = current_editor;
+			root = current_root;
+			node = current_node;
+			value = assigned;
+		}
 		Node *created = nullptr;
 		if (create) {
 			created = Object::cast_to<Node>(ClassDB::instantiate(p_args["type"]));
@@ -564,43 +1042,84 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			created->set_name(p_args["name"]);
 		}
 		undo->create_action("AI Chat: " + action, UndoRedo::MERGE_DISABLE, root, false, !select);
+		UndoRedo *native_history = undo->get_history_undo_redo(undo->get_history_id_for_object(root));
+		Vector<Ref<NativeSceneMutation>> mutations;
+		Ref<NativePropertySetter> property_setter;
+		auto native = [&](bool p_do, NativeSceneMutation::Kind p_kind, Object *p_target, Object *p_other = nullptr, Variant p_value = Variant(), Callable p_connection = Callable(), uint32_t p_flags = 0) {
+			Ref<NativeSceneMutation> receiver = memnew(NativeSceneMutation(p_kind, p_target, p_other, p_value, p_connection, p_flags));
+			Callable callable = callable_mp(receiver.ptr(), &NativeSceneMutation::apply);
+			if (p_do) {
+				native_history->add_do_method(callable);
+				mutations.push_back(receiver);
+			} else {
+				native_history->add_undo_method(callable);
+			}
+		};
+
 		if (select) {
 			EditorSelection *selection = editor->get_selection();
-			undo->add_do_method(selection, "clear");
-			undo->add_undo_method(selection, "clear");
+			native(true, NativeSceneMutation::SELECTION_CLEAR, selection);
+			native(false, NativeSceneMutation::SELECTION_CLEAR, selection);
 			for (Node *selected : selected_nodes) {
-				undo->add_do_method(selection, "add_node", selected);
+				native(true, NativeSceneMutation::SELECTION_ADD, selection, selected);
 			}
 			for (Node *selected : selection->get_full_selected_node_list()) {
-				undo->add_undo_method(selection, "add_node", selected);
+				native(false, NativeSceneMutation::SELECTION_ADD, selection, selected);
 			}
 		} else if (create) {
-			undo->add_do_method(node, "add_child", created, true);
-			undo->add_do_method(created, "set_owner", root);
-			undo->add_undo_method(node, "remove_child", created);
+			native(true, NativeSceneMutation::ADD_CHILD, node, created);
+			native(true, NativeSceneMutation::OWNER, created, root);
+			native(false, NativeSceneMutation::REMOVE_CHILD, node, created);
 			undo->add_do_reference(created);
-		} else if (property) {
-			undo->add_do_property(node, property_name, value);
-			undo->add_undo_property(node, property_name, previous);
+		} else if (property || resource) {
+			UndoRedo *history = undo->get_history_undo_redo(undo->get_history_id_for_object(root));
+			Ref<NativePropertySetter> setter = memnew(NativePropertySetter(node->get_instance_id()));
+			property_setter = setter;
+			history->add_do_method(callable_mp(setter.ptr(), &NativePropertySetter::apply).bind(StringName(property_name), value));
+			history->add_undo_method(callable_mp(setter.ptr(), &NativePropertySetter::apply).bind(StringName(property_name), previous));
+		} else if (signal) {
+			const StringName name = String(p_args["signal"]);
+			if (action == "scene_connect_signal") {
+				native(true, NativeSceneMutation::CONNECT, node, nullptr, String(name), connection, Object::CONNECT_PERSIST);
+				native(false, NativeSceneMutation::DISCONNECT, node, nullptr, String(name), connection);
+			} else {
+				native(true, NativeSceneMutation::DISCONNECT, node, nullptr, String(name), connection);
+				native(false, NativeSceneMutation::CONNECT, node, nullptr, String(name), connection, connection_flags);
+			}
 		} else if (action == "scene_rename_node") {
-			undo->add_do_method(node, "set_name", p_args["name"]);
-			undo->add_undo_method(node, "set_name", node->get_name());
+			native(true, NativeSceneMutation::NAME, node, nullptr, p_args["name"]);
+			native(false, NativeSceneMutation::NAME, node, nullptr, String(node->get_name()));
 		} else if (reparent) {
-			undo->add_do_method(node, "reparent", new_parent, false);
-			undo->add_do_method(node, "set_owner", root);
-			undo->add_undo_method(node, "reparent", node->get_parent(), false);
-			undo->add_undo_method(node->get_parent(), "move_child", node, node->get_index());
-			undo->add_undo_method(node, "set_owner", root);
+			native(true, NativeSceneMutation::REPARENT, node, new_parent);
+			native(false, NativeSceneMutation::REPARENT, node, node->get_parent());
+			native(false, NativeSceneMutation::MOVE_CHILD, node->get_parent(), node, node->get_index());
 		} else if (action == "scene_delete_node") {
-			undo->add_do_method(editor->get_selection(), "remove_node", node);
-			undo->add_do_method(node->get_parent(), "remove_child", node);
-			undo->add_undo_method(node->get_parent(), "add_child", node, true);
-			undo->add_undo_method(node->get_parent(), "move_child", node, node->get_index());
-			undo->add_undo_method(node, "set_owner", root);
+			native(true, NativeSceneMutation::SELECTION_REMOVE, editor->get_selection(), node);
+			native(true, NativeSceneMutation::REMOVE_CHILD, node->get_parent(), node);
+			native(false, NativeSceneMutation::ADD_CHILD, node->get_parent(), node);
+			native(false, NativeSceneMutation::MOVE_CHILD, node->get_parent(), node, node->get_index());
 			for (Node *selected : editor->get_selection()->get_full_selected_node_list()) {
-				undo->add_undo_method(editor->get_selection(), "add_node", selected);
+				native(false, NativeSceneMutation::SELECTION_ADD, editor->get_selection(), selected);
 			}
 			undo->add_undo_reference(node);
+		}
+		if (reparent || action == "scene_delete_node") {
+			LocalVector<Node *> descendants;
+			descendants.push_back(node);
+			while (!descendants.is_empty()) {
+				Node *child = descendants[descendants.size() - 1];
+				descendants.remove_at(descendants.size() - 1);
+				Node *owner = child->get_owner();
+				if (owner) {
+					if (reparent) {
+						native(true, NativeSceneMutation::OWNER, child, owner);
+					}
+					native(false, NativeSceneMutation::OWNER, child, owner);
+				}
+				for (int i = 0; i < child->get_child_count(); i++) {
+					descendants.push_back(child->get_child(i));
+				}
+			}
 		}
 		if (action == "scene_rename_node" || reparent || action == "scene_delete_node") {
 			// Use the same NodePath and animation-track maintenance as the native
@@ -622,9 +1141,23 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 			} else {
 				tree_dock->fill_path_renames(node, reparent ? new_parent : nullptr, &path_renames);
 			}
-			tree_dock->perform_node_renames(root, &path_renames);
+			tree_dock->perform_node_renames(root, &path_renames, nullptr, nullptr, true);
 		}
 		undo->commit_action();
+		if (resource) {
+			Dictionary actual_content;
+			if (!AIChatEditorSceneCompletion::resource_snapshot(assigned, actual_content) || !same_json(assigned_content, actual_content)) {
+				return outcome(false, "resource_changed_during_assignment");
+			}
+		}
+		if (property_setter.is_valid() && !property_setter->succeeded) {
+			return outcome(false, "native_mutation_result_mismatch");
+		}
+		for (const Ref<NativeSceneMutation> &mutation : mutations) {
+			if (!mutation->succeeded) {
+				return outcome(false, "native_mutation_result_mismatch");
+			}
+		}
 	}
 	r["ok"] = true;
 	r["saved"] = false;

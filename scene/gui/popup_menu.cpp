@@ -3181,6 +3181,22 @@ void PopupMenu::_about_to_close() {
 	emit_signal(SNAME("popup_hide"));
 }
 
+bool PopupMenu::open_submenu(int p_idx) {
+	if (!is_inside_tree() || !is_visible() || p_idx < 0 || p_idx >= items.size() || items[p_idx].disabled || items[p_idx].separator || !items[p_idx].submenu) {
+		return false;
+	}
+	PopupMenu *submenu = items[p_idx].submenu;
+	if (submenu->is_visible()) {
+		return true;
+	}
+	const ObjectID submenu_id = submenu->get_instance_id();
+	set_focused_item(p_idx);
+	_activate_submenu(p_idx, true);
+	// about_to_popup can run owner callbacks; never reuse a raw submenu pointer.
+	submenu = ObjectDB::get_instance<PopupMenu>(submenu_id);
+	return submenu && submenu->is_visible();
+}
+
 void PopupMenu::activate_item(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 	ERR_FAIL_COND(items[p_idx].separator);
