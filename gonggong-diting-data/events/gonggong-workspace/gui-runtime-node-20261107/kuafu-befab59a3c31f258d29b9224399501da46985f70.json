@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-befab59a3c31f258d29b9224399501da46985f70",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gui-runtime-node-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "988acf0a5dd0c10aab748037ae4d8fc15c2818197eab30c5d2e905bd87328446",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/390",
+    "action": "delivery",
+    "detection_head": "bc4c309ae1fc8ec6513a669c41c771a99c0d1f32",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "/root/runtime_entry_fix",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/d803fdeee5e9b3c04b77f120c31c6ec1489a2e88..e061f84e2f2bab3272d533f9c5b074793f13eaf2",
+    "diagnosis": "main advanced concurrently after the first candidate; writer correctly refused stale baseline, and its authoritative path comparison found no overlapping writes. Owned branch was rebased onto e061f84e; source production digest is unchanged. macOS compilation and all seven-request native editor acceptance stages passed again.",
+    "next_action": "Repeat formal delivery gate and signed candidate CI on the integrated owned branch; keep old unmerged PR401 closed after replacement exists.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T07:01:19.078108+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T07:07:13.568967+00:00",
+  "sha256": "7430ec0f0fe3dcea43b86383b5cb2240980570d6dacc67ef2546a0bc4347f988"
+}

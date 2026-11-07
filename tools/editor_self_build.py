@@ -33,7 +33,7 @@ LOCK_MAX_AGE = 12 * 3600
 
 
 def process_is_running(pid):
-    """Report whether a process is alive, without ever signalling it."""
+    """Report whether a process is alive, without ever signaling it."""
     if not isinstance(pid, int) or pid <= 0:
         return False
     if os.name != "nt":
@@ -221,7 +221,7 @@ def write_resume_fixture(project, current, artifact, storage_case="legacy"):
             "attempt": 1,
         },
     }
-    # Each case must earn a fresh acknowledgement, never reuse a previous one.
+    # Each case must earn a fresh acknowledgment, never reuse a previous one.
     (settings / "ai_chat_restart_ack.json").unlink(missing_ok=True)
     if storage_case != "legacy":
         # Exercise the real reader beyond the old 16 MiB cap, including UTF-8.
@@ -256,11 +256,11 @@ def resume_ack_error(project, token, artifact):
     try:
         value = json.loads(ack.read_text(encoding="utf-8-sig"))
     except (OSError, ValueError) as error:
-        return f"The new editor wrote an unreadable restart acknowledgement: {error}"
+        return f"The new editor wrote an unreadable restart acknowledgment: {error}"
     if not isinstance(value, dict) or value.get("token") != token or value.get("dock_ready") is not True:
-        return "The new editor wrote a restart acknowledgement for a different handoff"
+        return "The new editor wrote a restart acknowledgment for a different handoff"
     if Path(value.get("executable", "")).name != artifact.name:
-        return "The restart acknowledgement names a different executable"
+        return "The restart acknowledgment names a different executable"
     if (project / ".godot/editor/ai_chat_resume.json").is_file():
         return "The new editor did not consume the restart journal, so it would replay on every start"
     return ""
