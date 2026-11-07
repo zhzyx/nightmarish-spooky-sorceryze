@@ -91,6 +91,7 @@ func run():
 		panel.delete_node()
 	panel.generator_choice.select(2)
 	panel.select_node(panel.nodes[0].id)
+	await verify_context_controls()
 	verify_chinese_controls()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
@@ -126,6 +127,28 @@ func run():
 		await RenderingServer.frame_post_draw
 		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')
 	finish()
+
+func verify_context_controls():
+	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')
+	if not panel.has_method("show_context_menu"): return
+	var toolbar_labels: Array = []
+	for child in panel.native_sections.bar.get_children():
+		if child is Button and child.visible: toolbar_labels.append(child.text)
+	check(not toolbar_labels.has("+ 离线复制节点") and not toolbar_labels.has("+ 生成节点") and not toolbar_labels.has("删除选中节点") and not toolbar_labels.has("重试选中节点"), 'bundled toolbar moves object editing into context menus')
+	check(not panel.path_edit.is_visible_in_tree() and not panel.generator_choice.is_visible_in_tree(), 'bundled path and generator selectors no longer occupy the toolbar')
+	var before = panel.nodes.size()
+	var serial = panel.serial
+	panel.graph.popup_request.emit(panel.graph.size - Vector2(20, 20))
+	check(panel.context_menu.visible and panel.serial == serial, 'bundled blank-canvas context opens without executing providers')
+	panel.context_menu.hide()
+	panel.create_context_node("copy")
+	await process_frame
+	var added = panel.nodes.back().id
+	check(panel.nodes.size() == before + 1 and panel.nodes.back().type == "copy", 'bundled context creates the requested machine node')
+	panel.delete_node()
+	check(panel.nodes.size() == before and not panel.nodes.any(func(n): return n.id == added), 'bundled context-created node retains normal delete behavior')
+	panel.select_node(panel.nodes[0].id)
+	await process_frame
 
 func settle():
 	for i in 8: await process_frame
