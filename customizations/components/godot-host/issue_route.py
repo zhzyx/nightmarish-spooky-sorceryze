@@ -170,6 +170,7 @@ verification are sufficiently clear to proceed, choose sinan and give concrete s
 Only choose yanshi when requirements analysis, design or clarification by Yanshi is necessary. Explain why.""",
     "yanshi": """Sinan referred this existing Issue to you. Apply ClarifyFeature to the original and all supplied
 answers. Use route yanshi. Preserve confirmed constraints and decisions. Ask only unresolved material questions.
+If the supplied requirements give explicit choices, preserve them as 【选择】question | choice | choice. Keep open-ended questions as ordinary text.
 When ready, provide concrete scope and acceptance and an empty questions array.""",
 }
 

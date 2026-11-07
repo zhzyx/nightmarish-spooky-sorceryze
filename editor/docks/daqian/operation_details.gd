@@ -1,7 +1,7 @@
 @tool
 extends VBoxContainer
 
-signal confirmation_requested(token: String)
+signal card_requested(token: String)
 signal status_changed(message: String)
 signal operation_checked
 
@@ -61,9 +61,9 @@ func dismiss() -> void:
 func display(item: Dictionary, op: Dictionary, render: Callable) -> void:
 	dismiss()
 	var token: String = op.token
-	details_confirm = _button(self, "确认执行", func():
+	details_confirm = _button(self, "返回卡片确认", func():
 		if details_token == token:
-			confirmation_requested.emit(token))
+			card_requested.emit(token))
 	details_token = token
 	details_title.text = "#%s · 等待你确认 · %s" % [item.number, op.summary]
 	details_command.text = op.detail

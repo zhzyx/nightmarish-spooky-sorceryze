@@ -11,6 +11,13 @@ func check(value: bool, reason: String) -> void:
 		errors.append(reason)
 		push_error(reason)
 
+func canvas_turn(panel, binding: Dictionary, question: String) -> Dictionary:
+	return {"scope":panel._canvas_scope(), "session":panel.canvas_panel.session_epoch, "generation":panel.canvas_panel.canvas_generation,
+		"root":panel._repo(), "actor":panel.actor.duplicate(), "epoch":panel.selection_epoch, "board_epoch":panel.scope_epoch,
+		"project":false, "direct_key":panel._routing_key(binding), "context":"工单 #124", "question":question,
+		"selection":{"backend":0, "id":"chosen-execution-model"}}
+
+
 func run() -> void:
 	await create_timer(1.0).timeout
 	var repo := OS.get_environment("DAQIAN_TEST_REPO")
@@ -28,10 +35,11 @@ func run() -> void:
 	panel.chat = null
 	panel._compose_requirement()
 	var source = panel.current
+	check(panel.publish_form.get_parent()==panel.editor.canvas.get_node("wf-workorder") and panel.publish_confirm.is_visible_in_tree(), "Creation confirmation must be on the workorder card")
 	check(panel.publish_button.text == "发布需求…", "Fresh draft lacks publish action")
-	check(not panel.model_options.visible and panel.publish_dialog.get_ok_button().text == "确认需求并建单", "Direct task requires a model")
+	check(not panel.model_options.visible and panel.publish_confirm.text == "确认需求并建单", "Direct task requires a model")
 	check(panel.editor.canvas.has_node("wf-workorder") and not panel.editor.canvas.has_node("wf-analysis"), "Direct draft incorrectly attributed to Yanshi")
-	panel.publish_dialog.hide()
+	panel.publish_cancel.pressed.emit()
 	panel.chat = chat
 	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
 	backend.select(0)
@@ -46,17 +54,17 @@ func run() -> void:
 	panel.requirement_input.text = "Fixture direct task\nKeep the original body."
 	panel.requirement_input.text_changed.emit()
 	var calls := repo.path_join("tools/calls")
-	check(not panel.publish_dialog.get_ok_button().disabled and not FileAccess.file_exists(calls), "Direct creation preconditions")
-	panel.publish_dialog.get_ok_button().pressed.emit()
-	panel.publish_dialog.get_ok_button().pressed.emit()
+	check(not panel.publish_confirm.disabled and not FileAccess.file_exists(calls), "Direct creation preconditions")
+	panel.publish_confirm.pressed.emit()
+	panel.publish_confirm.pressed.emit()
 	var deadline := Time.get_ticks_msec() + 10000
 	while panel.publish_status.text != "先核对发布结果" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
 	check(panel.category.disabled and not panel.requirement_input.editable, "Unknown publication allows a competing route")
-	panel.publish_dialog.hide()
+	panel.publish_cancel.pressed.emit()
 	check(panel.publish_button.text == "核对建单回执", "Draft lost pending request action")
 	panel.publish_button.pressed.emit()
-	check(panel.publish_dialog.get_ok_button().text == "核对建单回执", "Lost stable reconciliation entry")
+	check(panel.publish_confirm.text == "核对建单回执", "Lost stable reconciliation entry")
 	await panel._confirm_publish()
 	var binding: Dictionary = panel.saved.get("linked", {}).get(source, {})
 	if binding.get("number") != 124:
@@ -74,6 +82,15 @@ func run() -> void:
 	panel._update_direct_action()
 	check(panel.publish_button.text == "判断需求" and not panel.publish_button.disabled, "Unjudged issue lacks initial judgment action")
 	panel.saved.routing[binding.url] = ready_receipt
+	var model_card: GraphNode = panel.editor.canvas.get_node("wf-routing")
+	var manual: LineEdit = model_card.get_node("ManualModel")
+	var picker: OptionButton = model_card.get_node("RouteModel")
+	picker.select(picker.item_count - 1)
+	picker.item_selected.emit(picker.selected)
+	manual.text = "card-chosen-model"
+	check(panel.saved.execution_models[binding.url].id == "chosen-execution-model" and FileAccess.get_file_as_string(calls).strip_edges().split("\n").size()==3, "Editing a card model dispatched or changed the active model")
+	model_card.get_node("ApplyModel").pressed.emit()
+	check(panel.saved.execution_models[binding.url].id == "card-chosen-model", "Card did not apply the chosen manual model")
 	var previous = panel.board.get("issues", []).duplicate(true)
 	var altered = {"url":binding.url, "number":binding.number, "request":"different", "status":"in-progress"}
 	panel.board.issues = [altered]
@@ -97,11 +114,18 @@ func run() -> void:
 	panel.board.issues = previous
 	panel._update_direct_action()
 	chat.get_ai_settings_control().find_child("APIModel", true, false).text = "different-current-model"
-	await panel._start_or_view_direct(binding)
+	var stale := canvas_turn(panel, binding, "继续推进")
+	stale.direct_key += "-old"
+	await panel._finish_canvas_turn(stale, '{"route":"execute","text":"继续"}')
+	check(FileAccess.get_file_as_string(calls).strip_edges().split("\n").size()==3, "Stale canvas request started an issue")
+	await panel._finish_canvas_turn(canvas_turn(panel, binding, "继续推进"), '{"route":"execute","text":"继续"}')
 	check(panel.publish_button.text == "重试开工" and panel.work_status.text.contains("fixture start unavailable"), "Lost distinct start retry")
 	check(panel._routing_receipt(binding).get("ready", false), "Failed start erased ready decision")
 	panel.publish_button.pressed.emit()
-	panel.publish_button.pressed.emit()
+	var start_button: Button = panel.editor.canvas.get_node("wf-prepare/IssueAction")
+	check(start_button.has_focus() and FileAccess.get_file_as_string(calls).strip_edges().split("\n").size()==4, "Toolbar locator launched work")
+	start_button.pressed.emit()
+	start_button.pressed.emit()
 	deadline = Time.get_ticks_msec() + 10000
 	while records.size() < 5 and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
@@ -130,7 +154,7 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	check(panel.current != source and panel.publish_button.text == "发布需求…", "Restart applied receipt to wrong draft")
 	panel._show_issue(source, {"revision":"", "plan":panel.rules.new_plan(), "context":{}})
 	check(panel.publish_button.text == "继续推进对话", "Restart lost confirmed start")
-	panel.publish_button.pressed.emit()
+	await panel._finish_canvas_turn(canvas_turn(panel, binding, "核验导入的材质颜色"), '{"route":"execute","text":"执行"}')
 	var deadline := Time.get_ticks_msec() + 10000
 	while records.size() < 6 and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
@@ -139,8 +163,9 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	var decision: Array = JSON.parse_string(records[-2])
 	check(decision[0] == "issue-start" and decision[1].expected_revision == "fixture-revision" and decision[1].expected_user == "42", "Missing explicit start transition")
 	check(records.size() == 6 and started[0] == "chat" and started[1].get("agent_id") == "sinan" and started[1].get("issue_number") == 124 and started[1].get("request_id") == binding.request, "Start did not use exact bound Issue with Sinan")
+	check(JSON.stringify(started[1]).contains("核验导入的材质颜色"), "Bound execution discarded the requested operation")
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Start left Tianshu")
-	check(chat.get_daqian_models().current == "chosen-execution-model", "Start ignored model chosen at creation")
+	check(chat.get_daqian_models().current == "card-chosen-model", "Start ignored model chosen at creation")
 	panel._leave_conversation()
 	panel._update_direct_action()
 	check(panel.publish_button.text == "查看推进对话", "Existing chat cannot be reopened")

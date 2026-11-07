@@ -1,6 +1,8 @@
 @tool
 extends VBoxContainer
 
+signal graph_rebuilding
+signal stage_controls_requested(id: String, card: GraphNode)
 signal workflow_reply_requested
 signal clarification_draft_changed(text: String)
 signal clarification_submitted(text: String)
@@ -18,7 +20,6 @@ const AFTER := Color("#eecb86")
 
 var workflow := {}
 var clarification_draft := ""
-var expanded_approval := ""
 var debug_active := false
 var debug_states := {}
 var debug_models := {}
@@ -340,6 +341,10 @@ func _render_node(id: String, item: Dictionary) -> void:
 	var view := SizeableCard.new()
 	view.name = id
 	view.title = item.title
+	var heading := view.get_titlebar_hbox().get_child(0) as Label
+	heading.custom_minimum_size.x = 210
+	heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	heading.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	view.tooltip_text = str(context.get("sources", {}).get(id, ""))
 	var request: Dictionary = context.get("questions",{}).get(id,{})
 	var recorded: Dictionary = context.get("answers",{}).get(id,{})
@@ -362,6 +367,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 		input.custom_minimum_size = Vector2(215, 78)
 		input.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		input.scroll_fit_content_height = true
 		input.placeholder_text = "任务说明" if item.kind == "task" else "输入文字"
 		input.name = "PlanContent"
 		input.text = request.get("prompt", item.get("value","")) if item.kind == "question" else item.get("value","")
@@ -382,6 +388,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 			if not options.is_empty():
 				var choose := OptionButton.new()
 				choose.name = "AnswerInput"
+				send.disabled = answers.get(id, "") not in options
 				choose.add_item("请选择")
 				for option in options:
 					choose.add_item(option)
@@ -402,12 +409,14 @@ func _render_node(id: String, item: Dictionary) -> void:
 					send.disabled = answer.text.strip_edges().is_empty()
 					draft_changed.emit())
 				answer.custom_minimum_size = Vector2(215,60)
+				answer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+				answer.scroll_fit_content_height = true
 				view.add_child(answer)
 			send.name = "SubmitReply"
 			send.text = "提交调试答复" if debug_active else "提交答复"
 			send.pressed.connect(func():
 				var value: String = answers.get(id,"")
-				if not value.strip_edges().is_empty():
+				if view.get_parent() == canvas and not value.strip_edges().is_empty() and (options.is_empty() or value in options):
 					answer_requested.emit(id,value))
 			view.add_child(send)
 	if item.kind == "task":
@@ -798,6 +807,8 @@ func _set_clarification_open(card: GraphNode, opened: bool) -> void:
 	card.get_node("FillAnswer").visible = not opened
 	card.get_node("AnswerInput").visible = opened
 	card.get_node("AnswerActions").visible = opened
+	if card.has_node("AnswerChoices"):
+		card.get_node("AnswerChoices").visible = opened
 	card.reset_size()
 	_queue_layout()
 
@@ -807,14 +818,55 @@ func _clarification_scope() -> Array:
 	return [issue_id, item.get("url", ""), item.get("request", ""), item.get("updated", item.get("revision", "")), workflow.get("routing", {}).get("questions", [])]
 
 
+# The existing work-order format marks an explicit list as 【选择】prompt | option | option.
+# Keep the original question untouched for the authority check when submitting the answer.
+func _add_answer_choices(card: GraphNode, input: TextEdit) -> void:
+	var choices := VBoxContainer.new()
+	for question: String in workflow.get("routing", {}).get("questions", []):
+		if not question.begins_with("【选择】") and not question.begins_with("[选择]"):
+			continue
+		var parts := question.substr(4).split("|")
+		if parts.size() < 3: continue
+		var prompt := parts[0].strip_edges()
+		var options := PackedStringArray()
+		for i in range(1, parts.size()):
+			var value := parts[i].strip_edges()
+			if not value.is_empty() and value not in options: options.append(value)
+		if options.size() < 2 or prompt.is_empty(): continue
+		var picker := OptionButton.new()
+		picker.tooltip_text = prompt
+		picker.add_item(prompt)
+		picker.fit_to_longest_item = false
+		var prefix := prompt + "："
+		for value in options:
+			picker.add_item(value)
+			if prefix + value in input.text.split("\n"): picker.select(picker.item_count - 1)
+		choices.add_child(picker)
+		picker.item_selected.connect(func(index):
+			var lines := input.text.split("\n", false)
+			for i in range(lines.size() - 1, -1, -1):
+				if lines[i].begins_with(prefix) and lines[i].trim_prefix(prefix) in options:
+					lines.remove_at(i)
+			if index > 0: lines.append(prefix + picker.get_item_text(index))
+			input.text = "\n".join(lines))
+	if choices.get_child_count() == 0:
+		choices.free()
+		return
+	choices.name = "AnswerChoices"
+	card.add_child(choices)
+	choices.hide()
+
+
 func _add_clarification_editor(card: GraphNode) -> void:
 	card.set_meta("clarification_scope", _clarification_scope().duplicate(true))
 	var input := TextEdit.new()
 	input.name = "AnswerInput"
 	input.placeholder_text = "填写对本轮问题的答复"
 	input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	input.scroll_fit_content_height = true
 	input.custom_minimum_size = Vector2(280, 100) * get_theme_default_base_scale()
 	input.text = clarification_draft
+	_add_answer_choices(card, input)
 	card.add_child(input)
 	var actions := HBoxContainer.new()
 	actions.name = "AnswerActions"
@@ -864,6 +916,10 @@ func _render_stage(id: String, item: Dictionary) -> void:
 	var view := SizeableCard.new()
 	view.name = id
 	view.title = item.title
+	var heading := view.get_titlebar_hbox().get_child(0) as Label
+	heading.custom_minimum_size.x = 210
+	heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	heading.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	view.draggable = false
 	view.tooltip_text = item.value
 	if id == "wf-clarification":
@@ -877,9 +933,6 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		var description := _label(item.value)
 		description.custom_minimum_size.x = 210
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		if id.begins_with("wf-clarification-"):
-			description.max_lines_visible = 4
-			description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		view.add_child(description)
 	view.add_child(Control.new())
@@ -895,6 +948,7 @@ func _render_stage(id: String, item: Dictionary) -> void:
 		_queue_layout()
 		draft_changed.emit())
 	_update_card(view)
+	stage_controls_requested.emit(id, view)
 	if id == "wf-clarification":
 		_add_clarification_editor(view)
 	if id == "wf-worker" and workflow.item.get("status") == "needs-decision":
@@ -929,31 +983,29 @@ func _add_approval_actions(view: GraphNode, token: String) -> void:
 	var row := HBoxContainer.new()
 	row.name = "ApprovalActions"
 	view.add_child(row)
-	row.visible = expanded_approval == token
+	var decision := OptionButton.new()
+	decision.name = "Decision"
+	decision.add_item("选择操作")
+	decision.add_item("查看详情")
+	decision.add_item("执行已预览的操作")
+	row.add_child(decision)
 	var confirm := Button.new()
+	confirm.name = "Confirm"
 	confirm.text = "确认"
-	confirm.pressed.connect(func(): confirm_operation.emit(token))
+	confirm.disabled = true
 	row.add_child(confirm)
-	var details := Button.new()
-	details.text = "查看详情"
-	details.pressed.connect(func(): show_operation_details.emit(token))
-	row.add_child(details)
-	var reveal := func():
-		expanded_approval = token
-		row.show()
-		_queue_layout()
-	view.gui_input.connect(func(event: InputEvent):
-		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			reveal.call())
-	var prompt := Button.new()
-	prompt.text = "待你确认"
-	prompt.pressed.connect(reveal)
-	view.add_child(prompt)
-	row.visibility_changed.connect(func(): prompt.visible = not row.visible)
-	prompt.visible = not row.visible
+	decision.item_selected.connect(func(index): confirm.disabled = index == 0)
+	confirm.pressed.connect(func():
+		if view.get_parent() != canvas: return
+		if decision.selected == 1:
+			show_operation_details.emit(token)
+		elif decision.selected == 2:
+			confirm_operation.emit(token))
+
 
 
 func draw_graph() -> void:
+	graph_rebuilding.emit()
 	var plan := _display_plan()
 	var old := canvas.get_node_or_null("wf-clarification") as GraphNode
 	var reopen := false

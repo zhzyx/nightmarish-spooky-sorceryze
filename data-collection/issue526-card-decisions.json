@@ -1,0 +1,58 @@
+{
+  "issue_number": 526,
+  "request_id": "tianshu-card-decisions",
+  "design": "design-docs/tianshu-card-decisions.md",
+  "incident": {
+    "source_issue": 518,
+    "observed": "planned issue, ready route, no start receipt; canvas execute reached the active-status intake check",
+    "reported_error": "Issue requires exactly one active status label"
+  },
+  "text_regression": {
+    "before": {
+      "overview_title_max_lines": 2,
+      "overview_step_prefix_characters": 32,
+      "clarification_max_lines": 4
+    },
+    "after": {
+      "platform": "Godot Windows",
+      "mixed_script_question": {
+        "wrapped_lines": 33,
+        "visible_lines": 33,
+        "card_size": [
+          246,
+          937
+        ],
+        "body_size": [
+          210,
+          855
+        ]
+      },
+      "long_title_fixture": {
+        "issue_count": 55,
+        "dependency_edges": 54,
+        "checks": [
+          "full text",
+          "wrapped button height",
+          "full visible step text",
+          "no overlap after expansion",
+          "navigation",
+          "dependency wires"
+        ]
+      }
+    }
+  },
+  "verified_editor_sha256": "9679260c88bdd9272b0d646e730e4012c0723486db75b9be0c6163dd8de82032",
+  "verified_scenarios": [
+    "direct issue start and duplicate click",
+    "publish from the work order card",
+    "graph with 55 issues",
+    "card-local operation approval",
+    "requirement draft recovery",
+    "canvas chat",
+    "clarification choices and free text"
+  ],
+  "backend_tests": {
+    "test_direct_issue": 25,
+    "passed": true
+  }
+}
