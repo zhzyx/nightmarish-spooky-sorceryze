@@ -42,6 +42,7 @@
 #include <windows.h>
 #elif defined(UNIX_ENABLED)
 #include <fcntl.h>
+#include <stdio.h>
 #include <sys/file.h>
 #include <unistd.h>
 #endif

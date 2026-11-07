@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "macos-local-editor-repair-request-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-macos-local-editor-repair-20261108",
+  "kind": "request",
+  "occurred_at": "2026-11-07T17:49:10Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/493",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "issue_number": 493,
+    "outcome": "Fix macOS editor build and tab runner and verify local launch.",
+    "scope": "Mac build, package and Tianshu regressions",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "e18c2c15dd408c2b0f537bda2d02d11954d808ca25c37ffefecd7c8d3a36ea43"
+}

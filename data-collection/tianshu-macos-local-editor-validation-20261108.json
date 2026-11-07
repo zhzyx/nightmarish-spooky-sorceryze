@@ -1,0 +1,32 @@
+{
+  "request_id": "tianshu-macos-local-editor-repair-20261108",
+  "issue_number": 493,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/493",
+  "base": "cef3a3af07168711b117e2947d0f86c012dba510",
+  "platform": "macOS 26.6.2 arm64",
+  "baseline": "Apple Clang: no member named rename in the global namespace; tab runner rejected the workspace ancestor when creating the private executable.",
+  "build": "arm64 editor built with SCons; signed local test app with ad-hoc hardened runtime and editor entitlements.",
+  "signed_executable_sha256": "4b42562be8dcebece3fbb4c0c5ca18827e6dcfcca7da42eb732d8c5e055cce06",
+  "tested_inputs": {
+    "editor/docks/gonggong_runtime_config.cpp": "4887dd346c1fffb4d829be8a4b2a7d07684f01b8ad6d32b44bbc7c5fed11d500",
+    "tests/editor/run_ai_chat_tab_order.py": "eddbcb6bba024b231e7a4a414ca4316d843094f49d1be81fb20037d47b948211"
+  },
+  "tab_phases": [
+    "initial",
+    "legacy_maliang_last",
+    "legacy_maliang_selected",
+    "pre_daqian_layout",
+    "pre_maliang_layout",
+    "restart"
+  ],
+  "graph_runs": [
+    "passed",
+    "passed",
+    "passed"
+  ],
+  "entry": "passed",
+  "direct": "passed",
+  "approval": true,
+  "package": "codesign --verify --deep --strict passed on test bundle and on ZIP extraction with identical executable digest",
+  "scope": "Headless private settings and fixture transports. Device activation and issue #471 are tracked separately."
+}
