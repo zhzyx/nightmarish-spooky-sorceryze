@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "issue": 438,
+  "reviewer": "/root/runtime_entry_fix independent central-runtime delivery callsite review",
+  "reviewed_at": "2026-11-07T16:27:28.609896+00:00",
+  "status": "pass_scoped_source_and_available_reports",
+  "base_head": "1a8e08a9dbba7c2e79b9809961fecdf988780893",
+  "scope": "Only new combined _delivery_process_arguments(runtime) consumption and existing _start_process snapshot/guard path, plus already completed targeted private native reports. Not a full C++/Python/central-config re-review.",
+  "findings": [],
+  "files_sha256": {
+    "editor/docks/ai_chat_delivery.cpp": "cae92c27b591df7a7ac439cfd7f343a7ce9c9e07e84be5f49c53828ae4f459df",
+    "editor/docks/ai_chat_dock.cpp": "9674f2e75cd67830540f2dc7965076f0b4ee5d65f8f8b02fd5fb3332aa31e7fb",
+    "editor/docks/ai_chat_dock.h": "837b4cd41f7209abf811486bc5ed3eb64e397112773ed78d0986c679a4580a7b",
+    "tests/editor/delivery_complete.gd": "1640adadde0fee30bdf9b0d463db2ec85d17b106d12946990c281903a9502f02",
+    "tests/editor/run_delivery_complete.py": "92aae55751ddab6af929e8815ff84ebbfc3efffc720379fd4b30be120b748dac"
+  },
+  "source_snapshot_digest": "3a6327912e9390065ab252052a00a05e9b667a285e37d52f7cf31e1adc237def",
+  "source_inputs_selected_hash_match": true,
+  "checks": [
+    {
+      "id": "one_effective_snapshot",
+      "result": "pass",
+      "basis": "Programmatically checked _start_process has exactly one read_effective, prepares child environment once, passes same runtime to delivery argument builder and command_guard. New helper accepts const Dictionary&, calls path(p_runtime,workflow_python), performs no second config/legacy read."
+    },
+    {
+      "id": "no_legacy_python_fallback",
+      "result": "pass_source_and_reported_native",
+      "basis": "New helper contains no EDITOR_GET/GONGGONG_PYTHON/gonggong/python/read_effective. Fixture central header branch deliberately sets legacy Python to nonexistent private path; valid workflowPython is preseeded in private central JSON before editor startup, runtime GONGGONG overrides stripped. Reported successful finalizer and provenance guard therefore exercise central path."
+    },
+    {
+      "id": "permissions_and_guard",
+      "result": "pass_scoped_source",
+      "basis": "Existing parent-only/consultation/allow-tools/approval checks remain; helper rechecks owner/snapshot/generation/source and candidate. Same guard worker/binding/timeout/result/cancel envelope and required macOS command_profile remain before process start; empty runtime or guard denies execution. Receipt still requires actual exit0/not timeout/guard ok and matched host identity."
+    }
+  ],
+  "reported_native_cases_reviewed": [
+    {
+      "case": "normal",
+      "report": "bin/issue438-pending462-normal.json",
+      "sha256": "f6eb902ea19d0d5bd71a96d7813ccfa5b20463aa729075c92ceb7a182d7af607",
+      "ok": true,
+      "model_requests": 1,
+      "editor_status": "delivery_completed",
+      "issue_state": "closed",
+      "writes": [
+        "comment",
+        "done",
+        "remove-active",
+        "close"
+      ]
+    },
+    {
+      "case": "cold",
+      "report": "bin/issue438-pending462-cold.json",
+      "sha256": "69888580ed6498d608f5b24fcb9b586e7c9470aa19b6f8f1d14814388657161d",
+      "ok": true,
+      "model_requests": 1,
+      "editor_status": "delivery_completed",
+      "issue_state": "closed",
+      "writes": [
+        "comment",
+        "done",
+        "remove-active",
+        "close"
+      ]
+    },
+    {
+      "case": "receipt-failure",
+      "report": "bin/issue438-pending462-receipt-failure.json",
+      "sha256": "13cf60037cb03808b5fa301024c8608877c979c78176fefc9d9b718d12e5e94a",
+      "ok": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "issue_state": "closed",
+      "writes": [
+        "comment",
+        "done",
+        "remove-active",
+        "close"
+      ]
+    },
+    {
+      "case": "stop",
+      "report": "bin/issue438-pending462-stop.json",
+      "sha256": "d162c6f0122bea35b7b261c53e7d9b8819d52c11f255a90bfbec1b24de2c7040",
+      "ok": true,
+      "model_requests": 1,
+      "editor_status": "context_ready",
+      "issue_state": "open",
+      "writes": []
+    },
+    {
+      "case": "partial-failure",
+      "report": "bin/issue438-pending462-partial-failure.json",
+      "sha256": "d4d837dfcbdef36236a57d3f54db50b4d9c0ff150b0000ce44703e5b154c8067",
+      "ok": true,
+      "model_requests": 1,
+      "editor_status": "delivery_pending",
+      "issue_state": "open",
+      "writes": [
+        "comment",
+        "done"
+      ]
+    }
+  ],
+  "artifact_sha256": "d25d45fa61e7102c7005f2afd2d65db7be47a1909460dcfd883a9bf502ee01be",
+  "build_provenance_scope": "Author built at1600f40c plus same fbabe0bd conditional origin overlay; safe ff1a8 changes only evidence/same origin bytes. Pending source preintegration, not main, no production/App acceptance claim.",
+  "author_remaining_cases": "Other original native cases continue separately; this report covers only the five fixed available receipts and unchanged-source permission/approval guards, does not claim entire matrix rerun.",
+  "independent_runtime_rerun": false,
+  "production_GitHub_or_user_App_config_history_modified": false,
+  "usage": null,
+  "private_review_report_sha256": "e2b65c27eca0f6a9fe82e6dbd975f9dd4ea9e007ef3f93a1f81a45e0efd7bdb0",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438"
+}

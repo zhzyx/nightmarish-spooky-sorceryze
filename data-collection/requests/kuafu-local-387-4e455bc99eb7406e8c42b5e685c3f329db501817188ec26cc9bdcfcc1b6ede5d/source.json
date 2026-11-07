@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "authorized_request",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "recorded_at": "2026-11-07T15:58:21.457394+00:00",
+  "source": "codex-user:20261107:engine-workflow-observation-and-repair",
+  "worker": "/root/delivery_terminal_fix",
+  "scope": "Fix actual native terminal-delivery stop after done label; preserve active-only production intake, current host authority and diagnostics. Normal Git delivery remains required.",
+  "original_issue": 387,
+  "original_incident": "915403e4dd8f8eb544d6297b9cff3d2102664b05b41fdf9597d792fff2844adf",
+  "design": "design-docs/kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d.md",
+  "original_delivery": {
+    "source": "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+    "signed": "52e5915ae0842f90e103f914e91ca7b82fa93ba5",
+    "main": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "native_acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387#issuecomment-6708490613",
+    "host_assisted_finalization": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387#issuecomment-6708555009",
+    "observation_source": "Parent executor actual results; independently read back during final tracking reconciliation. New offline fixture does not claim production GitHub or business acceptance."
+  },
+  "usage": null,
+  "git_delivery": "pending normal gate, exact candidate CI, main readback and Issue scope reconciliation"
+}

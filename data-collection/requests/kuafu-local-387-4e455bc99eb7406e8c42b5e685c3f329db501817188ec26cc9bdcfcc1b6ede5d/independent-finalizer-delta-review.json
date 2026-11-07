@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "issue": 438,
+  "reviewer": "/root/runtime_entry_fix independent finalizer two-point delta review",
+  "reviewed_at": "2026-11-07T16:29:21.875445+00:00",
+  "status": "pass_scoped_delta",
+  "files_sha256": {
+    "tools/editor_delivery_finalize.py": "8de3815c84ba8062f88a72be245495b41512194f1fe7378b1c493e003f1f8277",
+    "tools/test_editor_delivery_finalize.py": "45252e401acf2ee78b51daac6da6ac5c64d6fd44411a3a5b958ec293b2ffd1b9"
+  },
+  "scope": "Only installed_module loader-null guard/fixed INSTALLATION reuse and prior-status retry admission. Original finalizer full protocol had another independent reviewer; not re-reviewed or claimed by this report.",
+  "findings": [],
+  "checks": [
+    {
+      "id": "fixed_dependency_loader",
+      "result": "pass",
+      "basis": "spec_from_file_location path remains INSTALLATION derived from own resolved __file__; spec None or loader None fails immediately. Candidate and activation reuse same installed_module with constant paths. AST verified every installed_module call has two literal string arguments. No model-supplied root or mutable candidate import/fallback was introduced.",
+      "literal_module_paths": {
+        "delivery_writer": "customizations/components/issue-workorders/writer_submit.py",
+        "delivery_progress": "customizations/components/issue-workorders/yanluo_progress.py",
+        "delivery_storage": "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+        "delivery_candidate": "tools/editor_engine_candidate.py",
+        "delivery_activation": "tools/editor_candidate_activation.py"
+      }
+    },
+    {
+      "id": "status_recovery_read_only_drift",
+      "result": "pass_source_and_unit",
+      "basis": "First active attempt allows exactly one in-progress or in-review and records it. Existing prior only permits that exact prior, its own prior+done partial transition, or standalone done; another active status is refused before publish_declaration or gh label/close writes. CLOSED requires COMPLETED+done. Other identity/base/current-source and authorization gates unchanged within this delta."
+    }
+  ],
+  "independent_executed_test": {
+    "name": "DeliveryTests.test_changed_active_status_after_partial_failure_is_read_only",
+    "result": "passed",
+    "count": 1,
+    "log": "issue438-finalizer-narrow-status-independent-test.log",
+    "log_sha256": "1c1b6f7a7314749c044ac228ea739ada8daa41fe0d614d7e0a85449d779cc15a",
+    "scope": "Private real Git fixture with mocked GitHub; confirms failed retry after another active status causes zero extra write and keeps Issue open, not production GitHub."
+  },
+  "excluded": [
+    "Full finalizer/CI/signature/current-source protocol review",
+    "Original author15-case suite as a personally rerun claim",
+    "Production GitHub/Issue or user App actions",
+    "Final main462 combined candidate validation"
+  ],
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "private_review_report_sha256": "20e8396936ea2764d9319f55a696f17446fd4c5f19d66afcd2115125908329e3",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "public_copy_note": "Private report retained byte-for-byte with the recorded hash; local artifact locator is represented here by filename and content hash."
+}

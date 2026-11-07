@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "incident_reconciliation",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "recorded_at": "2026-11-07T16:19:44.766781+00:00",
+  "original_rechecks": [
+    {
+      "incident": "4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+      "private_recheck_sha256": "037b03d2115b5949940f252271afaaec73b2e720c210aa138b0f8a65885900dc",
+      "actual_recheck": {
+        "incident": "4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+        "state": "recovery_candidate",
+        "head": "4708b1b8413740dc0219eb7377e7e286599ecec7",
+        "index_delta_sha256": "53fbbb2d93f937f46ac366741f3db58a671b9ad8e277227c6e8bb6a47b610c94",
+        "operation": "validation",
+        "validation_base": "4708b1b8413740dc0219eb7377e7e286599ecec7",
+        "observed_at": "2026-11-07T12:02:16.101539+00:00",
+        "result_sha256": "21c9fa06dfef11d972b1234295d709a31020c1f5f58bd3ce9f11f437e8f11560"
+      },
+      "diagnosis_source": "Parent executor account, original private recheck independently read and hash-verified by this worker",
+      "diagnosis": "Parent executor diagnosed newly appended exact-request telemetry not staged. Native agent staged matching events and ran formal validation in the same operation; validator/history were preserved."
+    },
+    {
+      "incident": "4dde7274edd38b1bd2d5a04cfd272c15e82659d9f5023bb625895eea1317b708",
+      "private_recheck_sha256": "f3b16aace8d2eb36fe161413db13590297bb8fe808ac4f0ea6cbd642d29e8e8e",
+      "actual_recheck": {
+        "incident": "4dde7274edd38b1bd2d5a04cfd272c15e82659d9f5023bb625895eea1317b708",
+        "state": "recovery_candidate",
+        "head": "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+        "index_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "operation": "delivery",
+        "validation_base": null,
+        "observed_at": "2026-11-07T12:05:58.936140+00:00",
+        "result_sha256": "60a1c1bfbecb211fa42b6859e1e417aad3f855488a532da78ce7a7a869e475fc"
+      },
+      "diagnosis_source": "Parent executor account, original private recheck independently read and hash-verified by this worker",
+      "diagnosis": "Parent executor diagnosed main advance from4708 to0c548 with no overlapping write paths. Native agent safely integrated then passed gate/writer; signed PR439 was later merged by that native parent."
+    }
+  ],
+  "original_delivery_receipt": {
+    "repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "issue": 387,
+    "request_id": "requirement-3c4dad533276a0226cd3b226c90d8123",
+    "candidate": "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+    "signed_commit": "52e5915ae0842f90e103f914e91ca7b82fa93ba5",
+    "tree": "ae397be10d464989ad88a980ed211f3e3d11a927",
+    "pr_state": "MERGED",
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/439",
+    "merge_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "issue_receipt": {
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "labels": [
+        "status:done",
+        "type:requirement",
+        "workspace:gonggong"
+      ]
+    },
+    "delivered_paths_differ": [],
+    "main_at_original_readback": "cfd1bc5e8b52db878a4938194f3d98f1073b936c",
+    "activation": {
+      "state": "activated",
+      "artifact_sha256": "63eaa38a7e5cff48605086a7477e021056c155f998cd6996885276290a215202",
+      "activation_mode": "accepted_candidate",
+      "source_commit": "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+      "main_commit": "cfd1bc5e8b52db878a4938194f3d98f1073b936c"
+    },
+    "private_inspection_sha256": "8a4753491058baee093b6b6f867266b6067e246f440ef60c375a13fce6b3e267"
+  },
+  "original_finalization_mode": "host-assisted closure and launch-entry activation after native implementation, build, acceptance and main merge; never relabelled automatic",
+  "original_public_sources": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387#issuecomment-6708490613",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/387#issuecomment-6708555009"
+  ],
+  "terminal_incident": {
+    "incident": "915403e4dd8f8eb544d6297b9cff3d2102664b05b41fdf9597d792fff2844adf",
+    "private_failure_record_sha256": "fdb9ef64ce03fd1b63435c8296a9f798db9db0abf6415c8ad91f5f8f3368afc0",
+    "original_classification": "INTAKE_LOCAL_FAILURE",
+    "actual_last_error": "Issue requires exactly one active status label",
+    "root_cause": "Separate done-label shell command succeeded; next model request still required active intake, preventing closure and trusted activation steps. Incident envelope prefix also hid the recognized binding error classification.",
+    "source_fix_delivery": "pending final #462 combination and normal Git main delivery; private native fixtures are forward protocol evidence only"
+  },
+  "local_invocation_incident": {
+    "incident": "b13181f29111b9b4055105f0660b1d5d99d88605321a86f638da00ea535d767e",
+    "cause": "This worker first omitted the explicit tenant argument; original failure preserved.",
+    "recovery": "Correct explicit gonggong-workspace tenant passed real intake-only readback; rechecked now with stdout/stderr retained privately.",
+    "corrected_intake": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+      "number": 438,
+      "type": "type:bug",
+      "status": "status:in-progress",
+      "updated_at": "2026-11-07T15:02:05Z"
+    },
+    "corrected_stdout_sha256": "5f425dd6b2ebf26b71044210dcf28b15efc4ac0be99b3dc1c9413f20cef5b9b1",
+    "corrected_stderr_bytes": 0
+  },
+  "remaining": "Issue438 remains open until source fix main delivery and all scoped reconciliation are recorded. Historical private receipts are reused as evidence and are not old-candidate reruns.",
+  "usage": null
+}

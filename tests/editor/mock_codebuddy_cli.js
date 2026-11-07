@@ -152,14 +152,16 @@ async function main() {
                 }
                 if (text.startsWith('case:host_action')) {
                     const denied = text === 'case:host_action_reject';
-                    const terminal = await connection.createTerminal({ sessionId: session.id, command: 'godot-host-action build_engine' });
+                    const delivery = text === 'case:host_action_delivery';
+                    const command = delivery ? 'godot-host-action complete_delivery ' + JSON.stringify({ pr: 7, candidate: 'a'.repeat(40), signed_commit: 'b'.repeat(40), acceptance_items: [] }) : 'godot-host-action build_engine';
+                    const terminal = await connection.createTerminal({ sessionId: session.id, command });
                     const status = await terminal.waitForExit();
                     const output = await terminal.currentOutput();
                     const result = JSON.parse(output.output);
-                    assert.equal(result.ok, !denied);
-                    assert.equal(status.exitCode, denied ? 1 : 0);
+                    assert.equal(result.ok, !denied && !delivery);
+                    assert.equal(status.exitCode, denied || delivery ? 1 : 0);
                     await terminal.release();
-                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: denied ? 'HOST_ACTION_REJECT_OK' : 'HOST_ACTION_BUILD_OK' } } });
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: denied ? 'HOST_ACTION_REJECT_OK' : delivery ? 'HOST_DELIVERY_RESULT_OK' : 'HOST_ACTION_BUILD_OK' } } });
                     return { stopReason: 'end_turn' };
                 }
                 if (text.startsWith('case:native_command')) {

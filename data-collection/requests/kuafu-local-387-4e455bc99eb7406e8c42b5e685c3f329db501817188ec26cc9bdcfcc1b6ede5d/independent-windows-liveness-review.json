@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "issue": 438,
+  "reviewer": "/root/runtime_entry_fix independent Windows liveness fix review",
+  "reviewed_at": "2026-11-07T17:02:28.906313+00:00",
+  "status": "pass_fixed_source_and_portable_tests_actual_Windows_CI_pending",
+  "scope": "Production WinAPI membership/liveness correction caused by exact PR485 precompile failure; no other438 implementation re-review or claimed Windows execution.",
+  "source_candidate_head": "4634442af1af6a8192faa5f755ca0a095b1c839a",
+  "files_sha256": {
+    "tools/editor_provenance_process.py": "39b84b121d45b720b1145a979062146607235239ab31e7737c1ab4875077afea",
+    "tools/editor_provenance_guard.py": "a55289fc852dc7b391eff19e33f088a470cc6219b831dc186f5e9c3b9266c2f6",
+    "tools/test_editor_provenance_process.py": "f78e61eb898768f4474966985e08cf0447d653f82030027132894d7af5c542a6"
+  },
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "raw_job_count_is_not_live_work",
+      "before": "quiesce fed accounting.ActiveProcesses to production guard, which reported any remaining association as background_descendants_terminated and failed protected commands. Exact Windows CI reproduced false-expected-quiet in standalone print/exit fixture; precise OS cause remains unknown from old log.",
+      "after": "WinAPI.active now returns number of exact Job members whose read-only synchronized process handles are actually nonsignaled. AccountedActive retained only diagnostic; no time-grace or executable-name exception."
+    },
+    {
+      "id": "close_all_handles_after_first_failure",
+      "before": "Initial patch finally would stop closing at first CloseHandle error.",
+      "after": "Every opened handle is attempted; any exception then raises handles_close_failed, preserving fail-closed result. Independent portable regression passes."
+    }
+  ],
+  "checks": [
+    {
+      "id": "complete_pid_snapshot_and_ABI",
+      "result": "pass_source_and_portable",
+      "basis": "DWORD count header8 plus SIZE_T/ULONG_PTR entries, query class3 and return-size bounds. MORE_DATA or success partial results resize/retry; count/duplicates/PID0/outsideDWORD/capacity/unstable lists fail closed."
+    },
+    {
+      "id": "exact_owned_live_processes",
+      "result": "pass_source_and_portable",
+      "basis": "OpenProcess read-only QUERY_LIMITED_INFORMATION|SYNCHRONIZE with inheritFalse; exact private IsProcessInJob API success and outBOOL checked; WaitForSingleObject0 permits only signaled or timeout. Unknown/foreign/waitfailure denied. All live members counted, preserving existing>=2 tree assertion."
+    },
+    {
+      "id": "exit_spawn_and_PID_reuse",
+      "result": "pass_source_and_portable",
+      "basis": "All opened identities retained across bounded retries. Vanished PID error87 only retries when complete list differs; stable unknown errors. Quiet return requires a second identical complete membership list while all observed handles remain held and signaled."
+    },
+    {
+      "id": "same_production_caller_contract",
+      "result": "pass_scoped_diff",
+      "basis": "quiesce/cancel/wait_empty/recovery preserve existing decisions using corrected active semantics. quiesce only additionally retains last_liveness diagnostic. Production guard bytes unchanged; verified live descendants still terminate through existing private Job boundary and report violation, no guard relaxation."
+    },
+    {
+      "id": "original_Windows_runtime_expectations",
+      "result": "pass_scoped_diff",
+      "basis": "Existing real Windows fixture still requires standalone quiesceFalse, real background late writer termination, leader+grandchild count>=2, assignment failure safety, hardkill and cancellation. Only failing standalone test adds actual member/wait-state diagnostic on failure; assertion not weakened."
+    }
+  ],
+  "independent_executed_tests": {
+    "suite": "MembershipUnitTests",
+    "passed": 8,
+    "failed": 0,
+    "log": "issue438-windows-membership-independent-tests.log",
+    "log_sha256": "75ff54e727b57e4bd7b88956ed0c92c4b9a416e6f0976707e8fb54aa385ac0bd",
+    "scope": "Executed on macOS with portable ctypes kernel-boundary fixture; not actual Windows APIs. ABI/truncation/signaled refs/live count/new child/vanished PID/foreign/wait error/close failure covered."
+  },
+  "secondary_independent_source_review": "diagnostics directly reviewed here; no Windows execution in either source review",
+  "official_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_basic_accounting_information",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_basic_process_id_list",
+    "https://learn.microsoft.com/en-us/windows/win32/api/jobapi/nf-jobapi-isprocessinjob",
+    "https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-queryinformationjobobject"
+  ],
+  "remaining": [
+    "New exact signed Windows CI including all unchanged substantive6 real runtime tests must pass before reporting recovery. Old485 failure is preserved, not reclassified successful.",
+    "Source/helper changes require normal formal gate/re-sign/CI/main reconciliation by implementation owner.",
+    "No user App/config/history, native483 process, or production GitHub delivery tested by this reviewer."
+  ],
+  "windows_runtime_claimed": false,
+  "source_modified_by_reviewer": false,
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "private_review_report_sha256": "bd43a521d6d393c0d02b3e3b720f2f58c1074229ab444461b23b876df4fa9076"
+}

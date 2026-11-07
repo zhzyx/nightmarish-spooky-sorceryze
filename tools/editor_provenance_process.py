@@ -22,6 +22,12 @@ JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 JOB_OBJECT_QUERY = 0x0004
 ERROR_NO_MORE_FILES = 18
 ERROR_ALREADY_EXISTS = 183
+ERROR_MORE_DATA = 234
+ERROR_INVALID_PARAMETER = 87
+PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+SYNCHRONIZE = 0x00100000
+WAIT_OBJECT_0 = 0
+WAIT_TIMEOUT = 0x102
 NAME = re.compile(r"Local\\GongGongProvenance-[a-f0-9]{32}\Z")
 
 
@@ -91,6 +97,20 @@ class JOBOBJECT_BASIC_ACCOUNTING_INFORMATION(ctypes.Structure):
     ]
 
 
+def process_list_type(capacity):
+    if type(capacity) is not int or not 1 <= capacity <= 65536:
+        raise ProcessError("provenance_windows_job_query_limit")
+
+    class ProcessList(ctypes.Structure):
+        _fields_ = [
+            ("NumberOfAssignedProcesses", DWORD),
+            ("NumberOfProcessIdsInList", DWORD),
+            ("ProcessIdList", SIZE_T * capacity),
+        ]
+
+    return ProcessList
+
+
 class WinAPI:
     def __init__(self):
         if os.name != "nt":
@@ -111,6 +131,9 @@ class WinAPI:
             "OpenThread": ([DWORD, BOOL, DWORD], HANDLE),
             "GetProcessIdOfThread": ([HANDLE], DWORD),
             "ResumeThread": ([HANDLE], DWORD),
+            "OpenProcess": ([DWORD, BOOL, DWORD], HANDLE),
+            "IsProcessInJob": ([HANDLE, HANDLE, ctypes.POINTER(BOOL)], BOOL),
+            "WaitForSingleObject": ([HANDLE, DWORD], DWORD),
         }
         for name, (arguments, result) in signatures.items():
             function = getattr(self.kernel, name)
@@ -186,13 +209,97 @@ class WinAPI:
         finally:
             self.close(thread)
 
-    def active(self, handle):
+    def accounted_active(self, handle):
+        """Diagnostic count; terminated processes may still have references."""
         accounting = JOBOBJECT_BASIC_ACCOUNTING_INFORMATION()
         if not self.kernel.QueryInformationJobObject(
             handle, 1, ctypes.byref(accounting), ctypes.sizeof(accounting), None
         ):
             raise ProcessError("provenance_windows_job_query_failed")
         return accounting.ActiveProcesses
+
+    def members(self, handle):
+        capacity = 16
+        for _ in range(8):
+            value = process_list_type(capacity)()
+            returned = DWORD()
+            ok = self.kernel.QueryInformationJobObject(
+                handle, 3, ctypes.byref(value), ctypes.sizeof(value), ctypes.byref(returned)
+            )
+            assigned = value.NumberOfAssignedProcesses
+            count = value.NumberOfProcessIdsInList
+            if assigned > 65536 or count > assigned or count > capacity:
+                raise ProcessError("provenance_windows_job_members_invalid")
+            if not ok and ctypes.get_last_error() != ERROR_MORE_DATA:
+                raise ProcessError("provenance_windows_job_members_unavailable")
+            if not ok or count != assigned:
+                capacity = max(capacity * 2, assigned)
+                continue
+            required = 8 + count * ctypes.sizeof(SIZE_T)
+            if not required <= returned.value <= ctypes.sizeof(value):
+                raise ProcessError("provenance_windows_job_members_invalid")
+            members = tuple(sorted(value.ProcessIdList[:count]))
+            if len(set(members)) != count or any(not 0 < pid <= 0xFFFFFFFF for pid in members):
+                raise ProcessError("provenance_windows_job_members_invalid")
+            return members
+        raise ProcessError("provenance_windows_job_members_unstable")
+
+    def active(self, handle):
+        # Accounting includes terminated records. Only verified, unsignaled
+        # process handles establish runnable work; uncertainty never means quiet.
+        opened = {}
+        try:
+            for _ in range(8):
+                members = self.members(handle)
+                observation = {"members": list(members), "processes": []}
+                self.last_liveness = observation
+                changed = False
+                running = 0
+                for pid in members:
+                    process = opened.get(pid)
+                    if process is None:
+                        process = self.kernel.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, False, pid)
+                        if not process:
+                            error = ctypes.get_last_error()
+                            observation["processes"].append({"pid": pid, "open_error": error})
+                            if error == ERROR_INVALID_PARAMETER and self.members(handle) != members:
+                                changed = True
+                                break
+                            raise ProcessError("provenance_windows_job_member_unavailable")
+                        opened[pid] = process
+                    belongs = BOOL()
+                    if not self.kernel.IsProcessInJob(process, handle, ctypes.byref(belongs)) or not belongs.value:
+                        observation["processes"].append({"pid": pid, "owner_verified": False})
+                        if self.members(handle) != members:
+                            changed = True
+                            break
+                        raise ProcessError("provenance_windows_job_member_owner_unverified")
+                    state = self.kernel.WaitForSingleObject(process, 0)
+                    observation["processes"].append({"pid": pid, "owner_verified": True, "wait_result": state})
+                    if state == WAIT_TIMEOUT:
+                        running += 1
+                    elif state != WAIT_OBJECT_0:
+                        raise ProcessError("provenance_windows_job_member_state_unverified")
+                if changed:
+                    continue
+                if running:
+                    return running
+                # Keep all signaled handles alive across the final full query,
+                # preventing PID reuse while proving that no new child appeared.
+                after = self.members(handle)
+                observation["members_after"] = list(after)
+                if after == members:
+                    return 0
+            raise ProcessError("provenance_windows_job_members_unstable")
+        finally:
+            failure = None
+            for process in opened.values():
+                try:
+                    self.close(process)
+                except Exception as error:
+                    failure = error
+            if failure is not None:
+                raise ProcessError("provenance_windows_job_member_handles_close_failed") from failure
 
     def terminate(self, handle):
         if not self.kernel.TerminateJobObject(handle, 143):
@@ -260,7 +367,9 @@ class WindowsJob:
         self.wait_empty()
 
     def quiesce(self):
-        if self.api.active(self.handle) == 0:
+        active = self.api.active(self.handle)
+        self.quiesce_observation = getattr(self.api, "last_liveness", None)
+        if active == 0:
             return False
         self.cancel()
         return True

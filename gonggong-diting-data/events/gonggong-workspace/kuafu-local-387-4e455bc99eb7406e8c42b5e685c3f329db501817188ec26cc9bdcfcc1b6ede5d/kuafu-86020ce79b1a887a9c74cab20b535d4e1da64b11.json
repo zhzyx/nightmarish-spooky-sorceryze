@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-86020ce79b1a887a9c74cab20b535d4e1da64b11",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3b6b71a274482817191db65f0fb50abc3483428fd7d53905ee27d333c4476b99",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+    "action": "validation",
+    "detection_head": "4634442af1af6a8192faa5f755ca0a095b1c839a",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-delivery-terminal-fix",
+    "authority_ref": "godot-editor-authorized-workflow-repair",
+    "evidence": "PR485 exact5d3d Windows job128464069546 failed original stream/exit test at quiesce false assertion; original log preserved. New fixed process39b84b1/testf78e61eb independent scoped review bd43a521, portable14 passed; real Windows remains pending new signed CI.",
+    "diagnosis": "Existing WinAPI.active treated Job accounting ActiveProcesses as runnable work; production guard interprets positive quiesce as background violation. Accounting may include terminated process references, so count alone is insufficient. Old log does not establish which actual PIDs were alive; no console-host whitelist or unproven OS attribution. New implementation requires complete stable private-Job PID membership, same-Job process handles and signaled state; unknown stays failclosed.",
+    "next_action": "Normal formal gate and new signed candidate, then real exact Windows runtime plus required compilation CI. Preserve original failure; close superseded485 only after new receipt, and merge only verified new head.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:51:59.342377+00:00",
+    "attempted": "Loaded exact job log; preserved code/header/base facts; replaced liveness query in shared active API for quiesce/cancel/recovery. Added8 portable kernel boundary tests; old6 real Windows expectations remain, diagnostics enhanced. Ruff/Mypy/codespell passed.",
+    "repair_owner": "codex-delivery-terminal-fix",
+    "continuable": "Native Issue483 may continue authorized main462 build/diagnostic preparation; final business delivery must include new438 actual main. User GUI/App/config/history untouched by this fix."
+  },
+  "occurred_at": "2026-11-07T17:03:30.106052+00:00",
+  "sha256": "a308631cbd9407a8e8147715bdb1e701a200668ca496cd1cdff1c33ccf16b426"
+}

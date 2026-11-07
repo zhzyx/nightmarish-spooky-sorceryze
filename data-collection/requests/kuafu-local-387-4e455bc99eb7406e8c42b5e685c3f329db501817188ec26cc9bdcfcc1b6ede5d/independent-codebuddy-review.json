@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "issue": 438,
+  "reviewer": "/root/runtime_entry_fix independent scoped JS review",
+  "reviewed_at": "2026-11-07T16:15:53.042017+00:00",
+  "base_head": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "status": "pass_after_resolved_blocker",
+  "findings": [],
+  "files_sha256": {
+    "tools/codebuddy_cli/godot_terminal.js": "560ce1936ee8031e691af75fee0bd287310299d3616d7e8673cf7ada44829683",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31",
+    "tools/codebuddy_cli/godot_acp.js": "72c47c86adf85db3724e7b20d37fa0eed500aa523c8c88c2da5e311bead98603"
+  },
+  "scope": "Only the three fixed JS diffs and their immediate existing parser/ACP protocol context. Not all C++/Python workers, real GitHub delivery, or final configuration/native App combination.",
+  "resolved_findings": [
+    {
+      "priority": "P2",
+      "title": "Reserved delivery request was still rejected by ordinary 12000-character terminal validation",
+      "before": "Direct actual createTerminals call reproduced JSON17159 code units/51159 UTF8 bytes accepted by reserved parser but rejected before host callback; host_calls=0.",
+      "fix": "terminalArguments now identifies successfully parsed complete_delivery and gives only that action a bounded full-command UTF8 budget. Its JSON limit uses Buffer.byteLength<=65536. Ordinary shell and existing UI limits remain as before.",
+      "after": "Independent real terminal factory accepts 51159-byte and exact65536-byte JSON with typed ok:false, without shell approval/execution. Malformed/trailing/multi-byte overflow are rejected before host or shell."
+    }
+  ],
+  "protocol_review": [
+    {
+      "check": "reserved_parser_and_shell_separation",
+      "result": "pass",
+      "basis": "Only command inputs beginning with the reserved prefix are parsed; strict full JSON object required and all invalid reserved forms throw. createTerminals calls hostAction and returns typed host JSON without invoking shell for reserved requests. Ordinary process output is not parsed as a reserved request."
+    },
+    {
+      "check": "tool_availability_consult_stop",
+      "result": "pass_scoped_source",
+      "basis": "Existing validateTerminal still requires active matching session, not stopped, tool_context unavailable_reason none, run_command available, and the exact host action present in available_tools; consultation/no-tools therefore cannot reach hostAction."
+    },
+    {
+      "check": "approval_and_exclusivity",
+      "result": "pass_scoped_source",
+      "basis": "No new JS approval grant. Reserved request yields through existing native tool pipeline; native approval remains the host responsibility. hostAction requires pending.size=0 and terminals.running=0. complete_delivery added to existing pending-exclusive checks for files and ordinary commands."
+    },
+    {
+      "check": "typed_host_response",
+      "result": "pass_scoped_source_and_factory",
+      "basis": "ACP resumes only sent pending IDs with exact tool-round and no new user messages; complete_delivery resolves only typed JSON with Boolean ok from host result. JS does not mark Issue complete or accept ordinary child stdout as terminal success."
+    },
+    {
+      "check": "cold_bootstrap",
+      "result": "pass",
+      "basis": "promptBlocks bootstrap whitelist remains build_engine/restart_engine/rollback_engine; complete_delivery was not added to cold replay or task restart logic."
+    },
+    {
+      "check": "legacy_limits",
+      "result": "pass",
+      "basis": "New complete JSON uses UTF8 bytes<=65536 and command<=65600 when long. Existing editor_action/route JSON32768 code-unit limit and ordinary shell12000 cap preserved."
+    }
+  ],
+  "independent_tests": {
+    "after_group_count": 6,
+    "after_result": "passed",
+    "scope": "Actual local parser/createTerminals with host callback stub; one harmless approved printf in private temp to confirm stdout cannot call host. No production native finalization or GitHub request executed."
+  },
+  "test_coverage_reviewed": {
+    "author_claims": "CodeBuddy bridge36/ACP10 and native/C++ tests reported by author; not represented as this reviewer personally running those suites. Added actual terminal tests inspected separately.",
+    "existing_typed_failure": "ACP test explicitly yields complete_delivery and preserves host ok:false/completion_verified:false."
+  },
+  "evidence_sha256": {
+    "issue438-reserved-terminal-size-review-before.json": "729206a2cca3ddbe67bdf858b6b2a77dc408e084898c6cefac8122a793fa1e69",
+    "issue438-reserved-terminal-size-review-after.json": "a97b1017ede8c0bb853aae1fea87a74ddb7b8cb0a768d4deb85b7899887a51cb"
+  },
+  "excluded": [
+    "Full C++ native execution/approval/final pause implementation",
+    "Full Python delivery worker or production GitHub authorization/Issue closure",
+    "Final #462 combined candidate or installed user App/UI",
+    "Windows actual process/runtime behavior"
+  ],
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "private_review_report_sha256": "d07208473224ebe6a9fa4a71e91d3723d3b9fae49ddfdf28ad07cb597c4ff257",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438"
+}

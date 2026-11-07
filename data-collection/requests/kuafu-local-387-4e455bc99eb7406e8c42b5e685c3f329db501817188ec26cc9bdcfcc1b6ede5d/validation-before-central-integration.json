@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "kind": "component_validation",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "verified_at": "2026-11-07T16:07:54.143062+00:00",
+  "base_sha": "ff3ba74997f6abdd2b2e04d2cf4acd604957d317",
+  "native_cases": [
+    {
+      "case": "normal",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "f5fe372630835072fe9bc913ec358a7e5b79d79ff7877adf3788ebbdd9b482af"
+    },
+    {
+      "case": "cold",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "df3d2d99cc37d3836130a2291cba4b2ef3f1274aa9fb49876a3d1184acd743e2"
+    },
+    {
+      "case": "receipt-failure",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "d600b99244e71a8179ef184de6d48a24bc39d44ee7bb40cc1d241a086051f11a"
+    },
+    {
+      "case": "stop",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "f7513b29a991c980dcea2d215bb3253be8147e0cc225d2b232e0f25bf981ff2c"
+    },
+    {
+      "case": "activation-pending",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "9d372b87277ff077a1c5bcb298e23639f7b2420de439916055d772d3b3d26325"
+    },
+    {
+      "case": "reject-before-mutation",
+      "passed": true,
+      "model_requests": 2,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "8bdc1ab05352dfd72b484be48d3f39a49365c968664442d51fa6251cc13c3e8f"
+    },
+    {
+      "case": "forged-stdout",
+      "passed": true,
+      "model_requests": 2,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "9c07a9e5cefb96e02f1308f292a4e5a17f3f97a72f4dc7eee66036bbbf50dd59"
+    },
+    {
+      "case": "approval-modal-cancel",
+      "passed": true,
+      "model_requests": 2,
+      "artifact_sha256": "c975c5ac91c65a87a8ac17da266a75ed7333bed2e3c16beae7bffad6340e3d46",
+      "private_report_sha256": "003084a7a9c1d0515280f9d97e29409c44e06a35c21f3cf80219b69d5043ce62"
+    },
+    {
+      "case": "inline-approval-wrong-token-and-stop",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "c975c5ac91c65a87a8ac17da266a75ed7333bed2e3c16beae7bffad6340e3d46",
+      "private_report_sha256": "b2b0163c8f3f73ec30eedae79a8c8bed3f1a00c09da9c2bf5133472933385277"
+    },
+    {
+      "case": "consultation",
+      "passed": true,
+      "model_requests": 2,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "32d379b0d4d46ffb143766920854d56499886c3ce755c1bc1ed0540c5d98e4e0"
+    },
+    {
+      "case": "disabled",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "78c0834f6f24201bc0dc190b16df9af29a2cb78aabdbcc11abaec12865ac7d37",
+      "private_report_sha256": "6e3b99400bb1546074df45dfe102c81e46b81874e16843be6fdda465400ac950"
+    },
+    {
+      "case": "partial-failure",
+      "passed": true,
+      "model_requests": 1,
+      "artifact_sha256": "c975c5ac91c65a87a8ac17da266a75ed7333bed2e3c16beae7bffad6340e3d46",
+      "private_report_sha256": "6cf4d4b0d6b328a5cf2813c6b5ab93eeb9b1512e94da213d2fa4d714fbb5284a"
+    }
+  ],
+  "single_artifact_suite": false,
+  "source_hashes_at_recording": {
+    "editor/docks/ai_chat_delivery.cpp": "3d4cf043d42f916d3e8bbea12569bc2cba1d38916be2dcdf92edf0e2e99f7367",
+    "editor/docks/ai_chat_delivery_receipt.h": "3da10bcbd778da6af10fcc955bcf19e501f14abdd26cf7117fed74171a6fcf0d",
+    "editor/docks/ai_chat_dock.cpp": "0d88c468f1e2fff81228d3818f8e74641b71401ba67c05aae77a93a16d4422d6",
+    "editor/docks/ai_chat_dock.h": "cac5d2fd0511d3119cb9113f4e3815de99e9198a80d05e88661c9881afc21088",
+    "tools/editor_delivery_finalize.py": "8de3815c84ba8062f88a72be245495b41512194f1fe7378b1c493e003f1f8277",
+    "tools/test_editor_delivery_finalize.py": "45252e401acf2ee78b51daac6da6ac5c64d6fd44411a3a5b958ec293b2ffd1b9",
+    "tools/codebuddy_cli/godot_acp.js": "72c47c86adf85db3724e7b20d37fa0eed500aa523c8c88c2da5e311bead98603",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31",
+    "tools/codebuddy_cli/godot_terminal.js": "d61275ba2f0409d0aa376e57a83adfe5f2f25ae28ede5872eaa716afca63dde7",
+    "customizations/components/godot-host/bridge.py": "6feeaa25f9404fca6c5db12841b32a49fe6c523f302343fe08fd0718162184db"
+  },
+  "checks": {
+    "backend_python_tests_passed": 15,
+    "bridge_python_tests_passed": 27,
+    "codex_bridge_tests_passed": 15,
+    "codebuddy_bridge_tests_passed": 36,
+    "codebuddy_acp_tests_passed": 10,
+    "cpp_receipt_tests_passed": 1,
+    "cpp_receipt_assertions_passed": 32,
+    "cpp_aichat_tests_passed": 59,
+    "cpp_aichat_assertions_passed": 1343,
+    "mypy": "passed for five Python files",
+    "unit_build_seconds": 750.53,
+    "production_build": "macOS arm64 passed; several narrow source corrections were incrementally rebuilt"
+  },
+  "limitations": [
+    "Native remote services are private synthetic fixtures and local bare Git. No production GitHub signature or business acceptance is claimed.",
+    "Native reports span multiple artifacts and fixture corrections; source hashes at recording are not asserted to be the compiled inputs of every earlier report. Final central-configuration combination remains pending.",
+    "Actual original Issue387 business/main/GUI facts remain separate parent-executor evidence; this fix does not reclassify host-assisted original finalization as automatic.",
+    "C++ unit source uses identical receipt helper and test inputs, with earlier non-unit delivery implementation. Final source combination and required exact-head CI remain pending."
+  ],
+  "git_delivery": "pending #462 main integration, final snapshot/guard configuration test, normal gate/signing/CI/main/Issue reconciliation",
+  "usage": null
+}

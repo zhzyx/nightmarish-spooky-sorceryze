@@ -92,7 +92,7 @@ test('consultation preserves host mode and rejects write capabilities before sub
         consultation_only: true, writes_allowed: false, execution_allowed: false } };
     assert.equal(validateRequest(consultation).tool_context.consultation_only, true);
     for (const name of ['write_file', 'write_script', 'run_command', 'build_engine', 'restart_engine',
-        'rollback_engine', 'run_test', 'check_script', 'get_parent_context']) {
+        'rollback_engine', 'complete_delivery', 'run_test', 'check_script', 'get_parent_context']) {
         const broadened = { ...consultation, available_tools: [{ type: 'function', function: { name } }] };
         assert.throws(() => validateRequest(broadened));
         assert.throws(() => completion(JSON.stringify({ content: '', actions: [{ name, arguments: '{}' }] }), broadened));
@@ -231,6 +231,21 @@ test('semantic actions are discoverable and disabled permissions reject them', (
         assert.equal(result.choices[0].message.tool_calls[0].function.name, name);
         assert.throws(() => completion(envelope, { ...configured, available_tools: [] }));
     }
+});
+
+test('delivery completion remains an explicit host proposal with its exact typed scope', () => {
+    const args = { pr: 7, candidate: 'a'.repeat(40), signed_commit: 'b'.repeat(40), acceptance_items: [{ id: 'one', state: 'done' }] };
+    const configured = { ...input, available_tools: [{ type: 'function', function: { name: 'complete_delivery', parameters: {
+        type: 'object', properties: { pr: { type: 'integer' }, candidate: { type: 'string' }, signed_commit: { type: 'string' }, acceptance_items: { type: 'array' } },
+        required: ['pr', 'candidate', 'signed_commit', 'acceptance_items'],
+    } } }] };
+    const envelope = JSON.stringify({ content: '', actions: [{ name: 'complete_delivery', arguments: args }] });
+    const result = completion(envelope, configured);
+    assert.equal(result.choices[0].finish_reason, 'tool_calls');
+    const call = result.choices[0].message.tool_calls[0];
+    assert.equal(call.function.name, 'complete_delivery');
+    assert.deepEqual(JSON.parse(call.function.arguments), args);
+    assert.throws(() => completion(envelope, { ...configured, available_tools: [] }));
 });
 
 test('images reach the CLI as private attachments with message references and are cleaned up', () => {
