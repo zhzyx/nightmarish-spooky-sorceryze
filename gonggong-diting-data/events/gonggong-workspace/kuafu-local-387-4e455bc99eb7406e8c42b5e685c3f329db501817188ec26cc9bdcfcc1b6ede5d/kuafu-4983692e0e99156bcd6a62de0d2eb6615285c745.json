@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4983692e0e99156bcd6a62de0d2eb6615285c745",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3b6b71a274482817191db65f0fb50abc3483428fd7d53905ee27d333c4476b99",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+    "action": "validation",
+    "detection_head": "4634442af1af6a8192faa5f755ca0a095b1c839a",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-delivery-terminal-fix",
+    "authority_ref": "godot-editor-authorized-workflow-repair",
+    "evidence": "PR488 exact7eb4143e195c3c9001e26ae4840b9c785405139e all3 workflows success,11checksSUCCESS14SKIP; realWindows MSVC job128469343942 Ran20tests/5.852s and compilation+unitSUCCESS; originalPR485 failure retained/closed superseded.",
+    "diagnosis": "New candidate production liveness fix passed the original six real Windows expectations plus fourteen portable tests without weakening guard or tests. This is successor-candidate recovery, not an old485 rerun; exact old PID cause remains unproven.",
+    "next_action": "Main advanced independently to d492 PR486 with no overlapping issue438 write paths. Preserve488 exact success, normally integrate new main, gate/sign combined candidate and require its own exact CI before normal main merge and438 closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:51:59.342377+00:00",
+    "attempted": "Read signedhead and all workflow terminal states; downloaded exact Windows job log. Integration leaves11 owned protocol/Windows repair sources byte-identical, incrementalMac build11.56s and isolated native normal1modelrequest passed; formal pre-merge gate passed.",
+    "repair_owner": "codex-delivery-terminal-fix",
+    "continuable": "Parent native483 continues authorized self-build and business work; final acceptance/main/finalize must use actualmain including438, not private fixture claims."
+  },
+  "occurred_at": "2026-11-07T17:30:37.989849+00:00",
+  "sha256": "cfed43a4ea282829e23828498d78cf83183c0d5af48faaa15fd477ea28ac034d"
+}

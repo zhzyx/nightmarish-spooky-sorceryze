@@ -211,6 +211,12 @@ func run() -> void:
 	var sorted: Array = workspace.issue_list.get_root().get_children()
 	check(sorted[0].get_metadata(0).number == 10 and sorted[1].get_metadata(0).number == 51, "explicit decision and pending answers must lead")
 	check(sorted[2].get_metadata(0).number == 9 and sorted[3].get_metadata(0).number == 8, "category order must precede issue number")
+	check(workspace.pending_menu.get_popup().get_item_index(10) == -1, "a status label without a question entered the user's todo menu")
+	workspace.status.select(1)
+	workspace._filter_board()
+	check(not workspace.issue_rows[issues[9].url].visible, "action filter included an issue without a pending action")
+	workspace.status.select(0)
+	workspace._filter_board()
 	var first_row: TreeItem = workspace.issue_rows[issues[0].url]
 	check(first_row.get_text(1) == issues[0].title and first_row.get_text(2) == "已完成", "list lost full title or status")
 	check(workspace.board_views.get_tab_rect(1).end.x <= workspace.board_views.size.x, "second view tab is clipped")

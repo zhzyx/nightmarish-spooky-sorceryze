@@ -1,0 +1,22 @@
+{
+  "evidence_refs": [],
+  "event_id": "tianshu-workbench-rebuild-20261107-integration-acceptance",
+  "request_id": "tianshu-workbench-rebuild-20261107",
+  "payload": {
+    "validation": "data-collection/tianshu-rebuild-validation.json",
+    "result": "本地集成验证通过，main 接收待回读，跨设备继续延期",
+    "document": "design-docs/daqian/rebuild-plan.md"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+  "agent": {
+    "id": "current-workspace-operator",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported"
+  },
+  "occurred_at": "2026-11-07T16:40:56.0121305Z",
+  "kind": "coverage",
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "sha256": "fe1e0eb26395e3e7d0804b1fcfdfd19f0a79209dfa9901c9d6efb59cfbbbef32"
+}

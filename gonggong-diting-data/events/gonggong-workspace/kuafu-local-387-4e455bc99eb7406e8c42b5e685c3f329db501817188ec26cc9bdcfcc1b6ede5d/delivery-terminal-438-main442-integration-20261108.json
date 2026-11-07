@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "delivery-terminal-438-main442-integration-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "kind": "step",
+  "occurred_at": "2026-11-07T17:13:45.046414+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "agent": {
+    "id": "codex-delivery-terminal-fix",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "phase": "main_integration_validation",
+    "status": "succeeded",
+    "worker": "/root/delivery_terminal_fix",
+    "actual_dependency_main": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+    "source_snapshot_digest": "425ea5f6abc85983142f1cfc791bc01bce98d54bd4ff2b0d4b0dac54dad1ce49",
+    "native_normal_passed": true,
+    "protocol_sources_unchanged": true,
+    "production_GitHub_or_model_acceptance_claimed": false,
+    "validation_ref": "data-collection/requests/kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d/validation-main442-integration.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "01428aff860fe11c3903449fc83554f190604838cf37e0cf2c8fb03e021c6b72"
+}
