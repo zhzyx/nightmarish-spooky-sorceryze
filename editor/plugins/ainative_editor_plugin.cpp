@@ -82,8 +82,8 @@ void AINativeEditorPlugin::_open_workbench() {
 		notice->set_text(U"AINative 需要此编辑器启用 GDScript 支持。");
 		return;
 	}
-	const String data = EditorPaths::get_singleton()->get_data_dir().path_join("ainative");
-	const String bundle = data.path_join("bundles").path_join(ainative_bundle_version);
+	const String editor_data_root = EditorPaths::get_singleton()->get_data_dir().path_join("ainative");
+	const String bundle = editor_data_root.path_join("bundles").path_join(ainative_bundle_version);
 	if (install_ainative_bundle(bundle) != OK) {
 		notice->set_text(U"无法准备内置 AINative 工具，请检查编辑器数据目录是否可写。");
 		return;
@@ -99,7 +99,7 @@ void AINativeEditorPlugin::_open_workbench() {
 	workbench->set_script(script);
 	workbench->set_meta("ainative_builtin", true);
 	workbench->set_meta("ainative_tools_dir", bundle.path_join("tools"));
-	workbench->set("state_dir", data.path_join("projects").path_join(project_key));
+	workbench->set("state_dir", editor_data_root.path_join("projects").path_join(project_key));
 	workbench->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	workbench->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	initialized = true;

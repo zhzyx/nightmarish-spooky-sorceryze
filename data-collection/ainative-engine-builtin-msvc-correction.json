@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-engine-builtin-msvc-correction-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "correction",
+  "occurred_at": "2026-11-07T03:47:54.511048+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 374,
+    "scope": "Avoid inherited Node::data shadowing in strict MSVC build",
+    "evidence": "data-collection/ainative-engine-builtin-msvc-validation.json",
+    "evidence_sha256": "1cdf844cff33687f79fe8d82a1f974be033ec24fb095214cdfb10f031009c16d",
+    "native_checks_passed": 84,
+    "state": "local_reverified",
+    "usage": null
+  },
+  "evidence_refs": [
+    "ainative-engine-builtin-ci-correction-20261107"
+  ]
+}
