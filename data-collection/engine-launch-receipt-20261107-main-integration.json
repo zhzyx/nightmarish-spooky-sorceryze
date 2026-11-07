@@ -1,0 +1,42 @@
+{
+  "issue_number": 393,
+  "request_id": "engine-launch-receipt-20261107",
+  "base_main": "385d7f07aa92e40c48e5726f301e7cbc6040df2e",
+  "integration": "Conflict-free integration of Issue 390 main delivery; implementation source bytes remain identical to independently reviewed CRLF candidate.",
+  "validation": {
+    "activation_tests": {
+      "passed": 13,
+      "seconds": 5.695
+    },
+    "writer_submit_regression": {
+      "passed": 7,
+      "seconds": 4.004
+    },
+    "full_source_manifest": {
+      "ok": true,
+      "input_count": 16407,
+      "source_digest": "44465e55f37b0ff15ae3a2ee5d94f23ec3beb702f74714bffc70df6e06ce1e11",
+      "candidate_commit": "c1134a22c8e877fff308aeb15dbbf74ee41539ae",
+      "seconds": 4.283
+    },
+    "ruff_0_17_1": "check --no-fix and format --check passed",
+    "git_diff_check": "passed"
+  },
+  "source_sha256": {
+    "tools/editor_candidate_activation.py": "2fa52c9e2fa83ad257ebd009ea80eaaed287ae5e8490376414bd15e002d09deb",
+    "tools/test_editor_candidate_activation.py": "974785e08ffe7e76382d0d035a701ed964e5dfdb66dbf74753cb9607066d759e",
+    "customizations/components/issue-workorders/writer_submit.py": "4a9d9bc6c465dc4fc298c81af1d05c7f3c3db2053cd584be70c339e3e7e15aee"
+  },
+  "handoff": {
+    "from": "root",
+    "to": "workflow_audit",
+    "scope": "Own only this isolated worktree delivery; Issue remains open until original Issue 387 real startup acceptance.",
+    "prior_independent_review": "workflow-audit-review-engine-launch-crlf-20261107"
+  },
+  "supersedes_evidence": "data-collection/engine-launch-receipt-20261107-final.json",
+  "limitations": [
+    "Production Issue 387 workflow and real user startup-entry acceptance remain pending.",
+    "No production application is activated by these local tests.",
+    "Startup pins an accepted candidate already in main, not all later main bytes."
+  ]
+}
