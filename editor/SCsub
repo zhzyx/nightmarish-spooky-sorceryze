@@ -4,12 +4,23 @@ from misc.utility.scons_hints import *
 import os
 
 import editor_builders
+from ainative import builders as ainative_builders
 
 Import("env")
 
 env.editor_sources = []
 
 if env.editor_build:
+    ainative_sources = [
+        node for node in Glob("#samples/ainative-workbench/addons/ainative/*.gd") if node.name != "plugin.gd"
+    ]
+    ainative_sources += [node for node in Glob("#tools/ainative/*.py") if not node.name.startswith("test_")]
+    env.CommandNoCache(
+        "ainative/bundle.gen.h",
+        ainative_sources,
+        env.Run(ainative_builders.build_bundle),
+    )
+
     env.CommandNoCache(
         "docks/daqian_scripts.gen.h",
         [

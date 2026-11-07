@@ -1,0 +1,61 @@
+{
+  "request_id": "ainative-engine-builtin-20261107",
+  "issue_number": 374,
+  "state": "local_reverified",
+  "previous_windows_failure": {
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42334737540",
+    "compiler": "MSVC",
+    "diagnostic": "C4458, local data hides inherited Node::data; warnings are errors"
+  },
+  "fix": "Rename the local variable and its two uses to editor_data_root; behavior unchanged.",
+  "source_sha256": {
+    "editor/plugins/ainative_editor_plugin.cpp": "ce64df545950efc909369c5051ac2f3fb0dcb1d9dfdcc26bae93fb97548a140f",
+    "editor/plugins/ainative_editor_plugin.h": "b745012d76abdd2ba58d92e87501112bae6ca2de27d95dd6b8343df12c970e57",
+    "samples/ainative-workbench/addons/ainative/rigging.gd": "f0816e7855c40d20a7aecf3fd973f4805ec629637bbe91d1d1dd29fb98ffe342",
+    "samples/ainative-workbench/addons/ainative/rigging_panel.gd": "0a3e2fb854bc9f4250595a2f4bf1aab47247e9012e7ff7a73d533e153f057ef3"
+  },
+  "macos_rebuild": "passed",
+  "packaged_executable_sha256": "82d79b230434e6c98e82e4a9a565322f6ce7caa31e3477bc7d24ab8555b0ef48",
+  "package_signature_verification": "codesign --verify --deep --strict passed",
+  "bundle_version": "a40686400e6df5da3f1796323df391ae7eff4059049fc67bb15a1cb03fb6993b",
+  "native_acceptance": {
+    "state": "passed",
+    "checks": 84,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "returncode": 0,
+        "checks": 58
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "returncode": 0,
+        "checks": 16
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "returncode": 0,
+        "checks": 5
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "returncode": 0,
+        "checks": 5
+      }
+    ],
+    "project_sources_unchanged": true,
+    "project_state_isolated": true
+  },
+  "python_evidence": "26 previously passed tests retained; no Python implementation changed since their recorded input hashes.",
+  "independent_increment_review": {
+    "reviewer": "/root/ainative_native_review",
+    "state": "passed",
+    "scope": "Local variable alpha rename and inherited-field shadowing"
+  },
+  "new_exact_windows_ci": "pending; must be read from the successor signed candidate",
+  "inference_invoked": false
+}

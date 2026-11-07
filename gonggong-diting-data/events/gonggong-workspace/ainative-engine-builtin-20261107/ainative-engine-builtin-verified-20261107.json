@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "ainative-engine-builtin-verified-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T03:29:12.591065+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 374,
+    "state": "local_verified",
+    "native_checks_passed": 84,
+    "python_tests_passed": 26,
+    "independent_review": "passed",
+    "source_validation": "data-collection/ainative-engine-builtin-validation.json",
+    "validation_sha256": "c6d15a42142255e1dd369e0ef45a713c38deee7126496ef4b264444e934f549d",
+    "inference_invoked": false,
+    "remote_delivery": "pending",
+    "usage": null
+  },
+  "evidence_refs": [
+    "ainative-engine-builtin-request-20261107"
+  ],
+  "sha256": "7e179fc15bceb92a3137a1c77ea00f62be63ce3a855e0ca5f7062451737cac0b"
+}

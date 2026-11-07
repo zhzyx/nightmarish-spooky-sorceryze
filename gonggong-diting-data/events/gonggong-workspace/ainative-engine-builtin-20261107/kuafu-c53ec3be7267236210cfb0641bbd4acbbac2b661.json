@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c53ec3be7267236210cfb0641bbd4acbbac2b661",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0f496e0836ee7601d7f01ef8bd1b7624138f6b7d9d6b13e5b2606f52a9f69bb6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/377",
+    "action": "delivery",
+    "detection_head": "ad510d9b2c250e6902ddcd5e0bf945b77601fc1d",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator",
+    "authority_ref": "current-user-ainative-engine-builtin",
+    "evidence": "GitHub已重新回读#374为OPEN/in-progress；本地HEAD未产生交付提交，远端未创建本工单PR。",
+    "diagnosis": "第二次交付尝试在GitHub回读时发生临时网络连接错误；随后同一认证通道读取工单和PR列表成功，未观察到写入副作用。",
+    "next_action": "保留已验收候选和既有签发入口，重跑交付，不重复创建工单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:33:47.343233+00:00",
+    "attempted": "已检查本地HEAD/index，读取当前工单和现有PR以排除未知发布。",
+    "repair_owner": "当前Codex执行者",
+    "continuable": "本机内置应用已打开到AINative页面，业务验收与源码候选保持有效。"
+  },
+  "occurred_at": "2026-11-07T03:34:51.352047+00:00",
+  "sha256": "6c32981a298baafeb9f9f3faae14a28543b0003b07af36cca798251162a8befc"
+}

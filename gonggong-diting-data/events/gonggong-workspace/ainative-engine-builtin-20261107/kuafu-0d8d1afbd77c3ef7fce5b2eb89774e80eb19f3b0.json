@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0d8d1afbd77c3ef7fce5b2eb89774e80eb19f3b0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fa1900e91d4d41903cd762d4916c0ec1725e72ccfc75eab03c3e6e3421cbbb5b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/377",
+    "action": "delivery",
+    "detection_head": "3cc8a37433f2229d374232bbb572cb96a63691d5",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator",
+    "authority_ref": "current-user-ainative-engine-builtin",
+    "evidence": "原交付guard在并发Issue更新时按设计拒绝；本地已验收内容和index未被他人修改，旧PR的MSVC失败已由局部变量更名修复并重建复验。",
+    "diagnosis": "正式校验前后检测到内容或工单修订变化；同时段旧候选CI完成并上报工单，属于需重新绑定当前来源修订的保护性拒绝。",
+    "next_action": "旧候选PR已关闭，等待其事件处理结束后回读当前工单，以稳定来源重新提交同一已验收修复；不跳过前后校验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:48:06.715689+00:00",
+    "attempted": "已核对工作树/index、Issue更新时间和CI终态；业务84项再次通过。",
+    "repair_owner": "当前Codex执行者",
+    "continuable": "本机引擎页面已打开，已验收应用继续可用。"
+  },
+  "occurred_at": "2026-11-07T03:50:04.857954+00:00",
+  "sha256": "2b26f88c9cfb0cc8ab52e5289d9b173c3b65aa1c7c890fa509cde75e4b627e9c"
+}

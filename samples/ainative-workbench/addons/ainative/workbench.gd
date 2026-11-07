@@ -39,6 +39,11 @@ var staged = ""
 var confirmation: Dictionary = {}
 var state_dir = ""
 var db = ""
+var native_sections: Dictionary = {}
+var native_buttons: Dictionary = {}
+var native_scroll: ScrollContainer
+var native_inspector_fields: Array = []
+var native_other_panels: Array = []
 
 func line(parent: Node, placeholder: String, value: String = "") -> LineEdit:
 	var edit = LineEdit.new()
@@ -53,10 +58,24 @@ func button(parent: Node, label: String, action: Callable):
 	b.text = label
 	b.pressed.connect(action)
 	parent.add_child(b)
+	return b
 
 func _ready():
 	custom_minimum_size = Vector2(900, 520)
+	var builtin = get_meta('ainative_builtin',false)
+	if builtin:
+		var navigation = HFlowContainer.new()
+		navigation.name = 'AINativeNavigation'
+		add_child(navigation)
+		var group = ButtonGroup.new()
+		for item in [['mesh','Mesh 生成'],['rig','骨骼绑定'],['character','角色工作台'],['other','其他工具'],['settings','本机设置']]:
+			var action = button(navigation,item[1],show_native_section.bind(item[0]))
+			action.name = 'AINativeNav_'+item[0]
+			action.toggle_mode = true
+			action.button_group = group
+			native_buttons[item[0]] = action
 	var scroll = ScrollContainer.new()
+	native_scroll = scroll
 	scroll.name = 'WorkbenchScroll'
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -67,15 +86,19 @@ func _ready():
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(content)
-	state_dir = ProjectSettings.globalize_path("user://ainative")
+	if state_dir.is_empty(): state_dir = ProjectSettings.globalize_path("user://ainative")
 	DirAccess.make_dir_recursive_absolute(state_dir)
 	db = state_dir.path_join("executor.sqlite")
 	var settings = ConfigFile.new()
 	settings.load(state_dir.path_join("local.cfg"))
-	var machine = HBoxContainer.new()
+	var machine = VBoxContainer.new()
+	machine.name = 'AINativeLocalSettings'
 	content.add_child(machine)
-	python_edit = line(machine, "Trusted local Python executable", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", "python"))
-	host_edit = line(machine, "Trusted editor_host.py path", settings.get_value("host", "script", ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")))
+	var default_python = 'python' if OS.get_name()=='Windows' or not builtin else 'python3'
+	var bundled_host = str(get_meta('ainative_tools_dir','')).path_join('editor_host.py') if builtin else ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")
+	var configured_host = bundled_host if builtin and settings.get_value('host','use_bundled_script',true) else settings.get_value('host','script',bundled_host)
+	python_edit = line(machine, "Trusted local Python executable (3.11+)", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
+	host_edit = line(machine, "Trusted editor_host.py path", configured_host)
 	factory_edit = line(machine, "Trusted provider factory", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(machine, "Save local settings", save_settings)
 	var character_panel = preload('res://addons/ainative/character_panel.gd').new()
@@ -83,7 +106,7 @@ func _ready():
 	character_panel.initialize(self)
 	var advanced = VBoxContainer.new()
 	advanced.name = 'IndependentModuleDiagnostics'
-	button(content,'Advanced independent module diagnostics',func(): advanced.visible = not advanced.visible)
+	if not builtin: button(content,'Advanced independent module diagnostics',func(): advanced.visible = not advanced.visible)
 	content.add_child(advanced)
 	advanced.hide()
 	machine.reparent(advanced)
@@ -91,14 +114,16 @@ func _ready():
 	var diagnostics_title = Label.new()
 	diagnostics_title.text = 'Independent module diagnostics use separate characters.'
 	content.add_child(diagnostics_title)
-	var bar = HBoxContainer.new()
+	var bar = HFlowContainer.new()
 	content.add_child(bar)
 	path_edit = line(bar, "Workflow JSON path", ProjectSettings.globalize_path("user://workflow.json"))
+	path_edit.custom_minimum_size.x = 280
 	button(bar, "Save graph", save_graph)
 	button(bar, "Open graph", open_graph)
 	button(bar, "+ Copy node", add_node)
 	generator_choice = OptionButton.new()
 	for kind in ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh"]: generator_choice.add_item(kind)
+	if builtin: generator_choice.selected = 2
 	bar.add_child(generator_choice)
 	button(bar, "+ Generate", add_generator)
 	button(bar, "Delete selected", delete_node)
@@ -131,6 +156,7 @@ func _ready():
 	button(inspector, "Apply selected fields", apply_fields)
 	button(inspector, "Clear embedded source / context", clear_embedded)
 	button(inspector, "Preview selected result", request_preview)
+	native_inspector_fields = inspector.get_children()
 	texture = TextureRect.new()
 	texture.custom_minimum_size = Vector2(240, 120)
 	texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -189,6 +215,7 @@ func _ready():
 	var cloth_panel = preload('res://addons/ainative/cloth_panel.gd').new()
 	content.add_child(cloth_panel)
 	cloth_panel.initialize(self)
+	native_other_panels = [interop_panel,garments_panel,motion_panel,customization_panel,hair_panel,layering_panel,cloth_panel]
 	var publish_bar = HBoxContainer.new()
 	content.add_child(publish_bar)
 	target_edit = line(publish_bar, "New .tres (image) or .tscn (mesh) absolute target", ProjectSettings.globalize_path("res://published.tres"))
@@ -199,14 +226,39 @@ func _ready():
 	status = Label.new()
 	status.text = "Copy demo or ComfyUI generation. Configure local factory for generation."
 	content.add_child(status)
+	if builtin:
+		native_sections = {'machine':machine,'character':character_panel,'advanced':advanced,'title':diagnostics_title,'bar':bar,'split':split,'publish':publish_bar}
+		status.reparent(self)
+		status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		show_native_section('mesh')
 	if FileAccess.file_exists(state_dir.path_join("last_run.txt")):
 		run_id = FileAccess.get_file_as_string(state_dir.path_join("last_run.txt"))
 	add_node()
 
+func show_native_section(section: String):
+	if native_sections.is_empty(): return
+	native_sections.character.visible = section=='character'
+	native_sections.advanced.visible = section!='character'
+	native_sections.machine.visible = section=='settings'
+	native_sections.bar.visible = section=='mesh'
+	native_sections.split.visible = section in ['mesh','rig','other']
+	graph.visible = section=='mesh'
+	rigging_panel.visible = section=='rig'
+	native_sections.publish.visible = section=='mesh'
+	for field in native_inspector_fields: field.visible = section=='mesh'
+	for panel in native_other_panels: panel.visible = section=='other'
+	texture.visible = section=='mesh' and preview_resource!=null
+	mesh_container.visible = is_instance_valid(preview_scene)
+	native_sections.title.text = {'mesh':'Mesh 生成 · 选择生成类型，再添加节点；Copy 为离线演示。','rig':'骨骼绑定 · 使用已预览的 Mesh，或选择本地 Mesh；检查姿势后拟合。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
+	for key in native_buttons: native_buttons[key].button_pressed = key==section
+	native_scroll.scroll_vertical = 0
+
 func save_settings():
 	var c = ConfigFile.new()
 	c.set_value("host", "python", python_edit.text)
-	c.set_value("host", "script", host_edit.text)
+	var bundled = get_meta('ainative_builtin',false) and host_edit.text==str(get_meta('ainative_tools_dir','')).path_join('editor_host.py')
+	c.set_value('host','use_bundled_script',bundled)
+	if not bundled: c.set_value("host", "script", host_edit.text)
 	c.set_value("host", "factory", factory_edit.text)
 	c.save(state_dir.path_join("local.cfg"))
 
@@ -487,7 +539,7 @@ func load_preview(data: Dictionary, node_id: String):
 		var document = GLTFDocument.new()
 		var state = GLTFState.new()
 		if document.append_from_file(data.path, state) != OK: status.text = "Mesh preview failed"; return
-		preview_scene = document.generate_scene(state)
+		preview_scene = preload('res://addons/ainative/runtime_mesh.gd').generate(document,state)
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
 		rigging_panel.set_source(data.path)

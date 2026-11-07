@@ -15,13 +15,13 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	if p.get('route') not in ['standard','free'] or p.get('reference_pose') not in ['T','marked']: return {'error':'Choose standard/free route and a Y-up T reference pose.'}
 	for key in ['height_m','yaw_degrees','crop_below_y']:
 		if not (p.get(key) is float or p.get(key) is int) or not is_finite(float(p[key])): return {'error':'Invalid finite numeric parameter: '+key}
-	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'Height must be 0.2–4 metres.'}
+	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'Height must be 0.2–4 meters.'}
 	if not p.get('joints') is Dictionary or not p.get('weights') is Dictionary: return {'error':'Joint and weight corrections must be objects.'}
 	if not p.weights.is_empty() and p.get('weights_geometry','')!=geometry_key(p): return {'error':'Weight corrections belong to a different derived geometry; clear weights and load new marker IDs.'}
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
 	if doc.append_from_file(path,state) != OK: return {'error':'Cannot decode GLB/glTF'}
-	var imported = doc.generate_scene(state)
+	var imported = preload('res://addons/ainative/runtime_mesh.gd').generate(doc,state)
 	if imported == null: return {'error':'No scene'}
 	var surfaces = []
 	var bounds = AABB()
@@ -121,7 +121,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 		var xyz = p.joints[name]
 		if not name in NAMES or not xyz is Array or xyz.size()!=3: return {'error':'Invalid joint correction '+str(name)}
 		for n in xyz:
-			if not (n is float or n is int) or not is_finite(float(n)) or absf(n)>h*2: return {'error':'Joint must contain finite metre coordinates'}
+			if not (n is float or n is int) or not is_finite(float(n)) or absf(n)>h*2: return {'error':'Joint must contain finite meter coordinates'}
 		positions[NAMES.find(name)] = Vector3(xyz[0],xyz[1],xyz[2])
 	var root = Node3D.new()
 	root.name = 'Character'

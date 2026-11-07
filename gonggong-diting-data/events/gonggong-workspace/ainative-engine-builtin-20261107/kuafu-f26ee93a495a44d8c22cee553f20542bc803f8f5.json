@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f26ee93a495a44d8c22cee553f20542bc803f8f5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-engine-builtin-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "372fef9b660a119d3499349c94f61592706478ae991fc78a18d091718209be23",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/374",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/377",
+    "action": "delivery",
+    "detection_head": "ad510d9b2c250e6902ddcd5e0bf945b77601fc1d",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator",
+    "authority_ref": "current-user-ainative-engine-builtin",
+    "evidence": "data-collection/ainative-engine-builtin-validation.json",
+    "diagnosis": "功能验收通过；首次交付检查的本机进程搜索路径缺少已有Node运行时，框架校验未能启动。补入已有运行时路径后，可信框架完整性校验已通过，无需修改框架或业务代码。",
+    "next_action": "沿原候选重跑正式交付检查并按真实回执核验恢复。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:29:36.326772+00:00",
+    "attempted": "已用原可信validator复现缺少node；使用现有运行时路径后原validator退出0。",
+    "repair_owner": "当前Codex执行者",
+    "continuable": "已通过的84项原生验收与26项Python验证仍有效；继续原候选交付。"
+  },
+  "occurred_at": "2026-11-07T03:33:05.063830+00:00",
+  "sha256": "51b9b921fe7ae877c461a496375ba5fdd96b5802319c7fecc9f85f9f95d625a4"
+}

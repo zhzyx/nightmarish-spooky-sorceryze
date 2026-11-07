@@ -14,12 +14,25 @@ var message: Label
 var target: LineEdit
 var built: Node3D
 var overlay: MeshInstance3D
+var source_field: LineEdit
 
 func initialize(workbench: Control):
 	host = workbench
 	var title = Label.new()
 	title.text = 'Character • anatomical template fitting (not general AI rigging)'
 	add_child(title)
+	if host.get_meta('ainative_builtin',false):
+		var import_row = HBoxContainer.new()
+		add_child(import_row)
+		source_field = host.line(import_row,'Local .glb / embedded .gltf Mesh')
+		var chooser = FileDialog.new()
+		chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		chooser.access = FileDialog.ACCESS_FILESYSTEM
+		chooser.filters = PackedStringArray(['*.glb,*.gltf ; Mesh'])
+		add_child(chooser)
+		chooser.file_selected.connect(set_source)
+		host.button(import_row,'Browse Mesh',func(): chooser.popup_centered_ratio(.7))
+		host.button(import_row,'Use Mesh',func(): set_source(source_field.text))
 	var row = HBoxContainer.new()
 	add_child(row)
 	route = OptionButton.new()
@@ -36,7 +49,7 @@ func initialize(workbench: Control):
 	add_child(confirm)
 	corrections = TextEdit.new()
 	corrections.custom_minimum_size.y = 85
-	corrections.placeholder_text = 'Joint positions in normalized metres and vertex weight overrides'
+	corrections.placeholder_text = 'Joint positions in normalized meters and vertex weight overrides'
 	corrections.text = '{"joints":{},"weights":{},"yaw_degrees":0}'
 	add_child(corrections)
 	var actions = HBoxContainer.new()
@@ -69,6 +82,7 @@ func number(parent: Node, label: String, value: float, low: float, high: float, 
 
 func set_source(path: String):
 	source = path
+	if source_field: source_field.text = path
 	params = Rig.defaults(path)
 	built = null
 	confirm.button_pressed = false
@@ -137,6 +151,7 @@ func reopen():
 	var local_source = config.get_value('sources',metadata.source_sha256,source)
 	if FileAccess.get_sha256(local_source)!=metadata.source_sha256: scene.free(); message.text = 'Source changed; corrections cannot be rebound.'; return
 	source = local_source
+	if source_field: source_field.text = local_source
 	params = metadata.parameters
 	route.select(0 if params.route=='standard' else 1)
 	height.value = params.height_m
@@ -156,7 +171,7 @@ func load_markers():
 		var v = sk.get_bone_global_rest(i).origin
 		joints[sk.get_bone_name(i)] = [v.x,v.y,v.z]
 	corrections.text = JSON.stringify({'joints':joints,'weights':stored.weights,'yaw_degrees':stored.yaw_degrees,'reference_pose':'marked','weights_geometry':stored.get('weights_geometry','') if not stored.weights.is_empty() else Rig.geometry_key(stored)},'  ')
-	message.text = 'Edit marker coordinates in metres, then Fit. Weight IDs use compacted surface order; changing cleanup changes IDs.'
+	message.text = 'Edit marker coordinates in meters, then Fit. Weight IDs use compacted surface order; changing cleanup changes IDs.'
 
 func _process(_delta):
 	if not is_instance_valid(built):
