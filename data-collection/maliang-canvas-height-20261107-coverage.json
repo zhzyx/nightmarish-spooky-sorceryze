@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-canvas-height-20261107",
+  "occurred_at": "2026-11-07T07:35:39.770300+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/409",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "evidence_refs": [],
+  "event_id": "maliang-canvas-height-20261107-coverage",
+  "kind": "coverage",
+  "payload": {
+    "state": "passed",
+    "mode": "isolated headless source-script geometry probe",
+    "heights": [
+      800,
+      1000,
+      1400
+    ],
+    "before_canvas_height": [
+      371,
+      371,
+      371
+    ],
+    "after_canvas_height": [
+      638,
+      838,
+      1238
+    ],
+    "after_unused_height": [
+      0,
+      0,
+      0
+    ],
+    "navigation_visibility": "character/settings/rig/other/mesh passed independent probe",
+    "independent_review": {
+      "reviewer": "/root/layout_review",
+      "state": "passed"
+    },
+    "input_sha256": "6075a98a9ea03fafd66145c7ecb8e1047fe0bd2b80086c34d9e34d31da0a7780",
+    "installed_editor_updated": false,
+    "usage": null
+  }
+}

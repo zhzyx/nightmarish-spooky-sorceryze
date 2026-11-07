@@ -116,6 +116,7 @@ func _ready():
 	character_panel.initialize(self)
 	var advanced = VBoxContainer.new()
 	advanced.name = 'IndependentModuleDiagnostics'
+	advanced.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	if not builtin: button(content,'展开独立模块诊断',func(): advanced.visible = not advanced.visible)
 	content.add_child(advanced)
 	advanced.hide()
