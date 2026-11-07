@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "engine-launch-receipt-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-launch-receipt-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T06:09:17.281111+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "issue_number": 393,
+    "parent_issue_number": 390,
+    "scope": "Maintain the accepted engine candidate in the existing startup entry after authoritative acceptance and main readback, without user paths or branch selection.",
+    "authorization": "Explicit current user mandate including forwarded side-chat addition.",
+    "usage": null,
+    "usage_unknown_reason": "Host usage is not supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "6c84270ae258bf1982040e87a9e875518d55f323241dc487de04f62163cde82f"
+}
