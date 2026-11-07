@@ -69,3 +69,13 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 支持鼠标右键、macOS 双指点按和 Control 单击。在画布中使用 Shift+F10 可打开上下文菜单，Command+D（其他平台 Ctrl+D）复制选中节点，Delete 删除。打开菜单不会执行生成；不可用项会说明原因。保存/打开工作流时通过对话框填写原有 JSON 文件路径，数据格式不变。
 
 后台验证：设置 `AINATIVE_PYTHON` 后执行 `--headless --path samples/ainative-workbench --script context_menu_acceptance.gd`。该回归使用离线复制服务，验证实际编辑和预览，不调用模型。
+
+## 参数表单与生成服务
+
+普通界面使用提示词、尺寸及高级采样/网格选项表单。原始参数 JSON 需要在本机设置开启开发者模式后展开；旧工作流的未知字段和安全整数精度保留。图像生成网格可直接使用源图；填写可选提示词后会先重绘，旧工作流已有的重绘提示词仍显示并生效。
+
+在“本机设置”选择离线复制、ComfyUI 或高级兼容模式。ComfyUI 模式填写已有服务地址，点击“检测连接与模型”，选择模型并保存；配置会独立保存在当前工程的本机状态目录中，重开编辑器仍可读取。检测只读取服务信息，不触发推理、不下载模型、不自动替换模型选择。未配置、连接失败、缺少节点/模型或输入时会提示具体问题和设置入口。运行时使用固定的配置快照，避免在途任务被新设置改变。
+
+本地 ComfyUI 不要求购买云端额度，但仍需要实际运行的服务和模型。当前没有将第三方图生三维模型计入 ChatGPT/Codex 账户额度的接入实现；界面配置通过不代表真实生成已验收。没有服务时，可继续离线复制和预览。
+
+后台回归还包括 `parameter_form_acceptance.gd` 及 `generation_service_acceptance.gd`。后者由 `tools/ainative/test_generation_service_gui.py` 启动只读 HTTP 测试服务；结果只证明配置、错误处理及离线流程，不代表真实模型推理。

@@ -93,6 +93,7 @@ func run():
 	panel.select_node(panel.nodes[0].id)
 	await verify_context_controls()
 	verify_chinese_controls()
+	await verify_generation_service_controls()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
@@ -127,6 +128,19 @@ func run():
 		await RenderingServer.frame_post_draw
 		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')
 	finish()
+
+func verify_generation_service_controls():
+	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
+	var service_modes: Array = []
+	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
+	check(service_modes == ["offline", "comfy", "legacy"], 'bundled service picker preserves explicit offline, ComfyUI and legacy modes')
+	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
+	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
+	var serial = panel.serial
+	panel.check_service()
+	if not await wait_idle(): return
+	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "offline" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
+	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
 
 func verify_context_controls():
 	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')

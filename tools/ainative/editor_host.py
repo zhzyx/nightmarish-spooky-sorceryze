@@ -8,10 +8,22 @@ import json
 import math
 import os
 import struct
+import uuid
 from pathlib import Path
 
 from executor import Executor, snapshot_file
 from extensions import NodeRegistry, canonical, publish_new
+from generation_service import (
+    ServiceError,
+    check_inputs,
+    check_service,
+    failure,
+    load_settings,
+    prepare_provider,
+    restore_provider,
+    run_service,
+    save_run_service,
+)
 
 SECRET_KEYS = {"token", "api_key", "apikey", "password", "secret", "authorization", "credentials", "factory", "python"}
 
@@ -185,17 +197,40 @@ def selected(host, request, preview=False):
 
 
 def dispatch(args, request):
+    if args.command == "service-check":
+        return check_service(request.get("service", {}))
     registry, providers = NodeRegistry(), {}
+    model = None
+    runtime_service = None
+    run_id = None
+    service_path = getattr(args, "service_config", None)
+    if args.command == "create":
+        model = target_graph(request["model"], request["target"]) if "target" in request else request["model"]
+        safe(model)
+        check_inputs(model)
+        if service_path:
+            run_id = uuid.uuid4().hex
+            registry, providers, runtime_service = prepare_provider(load_settings(service_path), model, args.db, run_id)
+        elif args.factory == "editor_demo:factory" and any(n.get("type", "copy") != "copy" for n in model["nodes"]):
+            raise ServiceError("service_not_configured")
+    elif args.command == "step":
+        runtime_service = run_service(args.db, request["run"])
+        if runtime_service is not None:
+            registry, providers = restore_provider(runtime_service)
     if args.command in ("create", "step"):
-        module, func = args.factory.split(":")
-        registry, providers = getattr(importlib.import_module(module), func)()
+        if runtime_service is None:
+            module, func = args.factory.split(":")
+            registry, providers = getattr(importlib.import_module(module), func)()
     host = Executor(args.db, registry, providers)
     try:
         if args.command == "create":
-            model = target_graph(request["model"], request["target"]) if "target" in request else request["model"]
             graph, manifest = compile_graph(model)
             normalize_editor_integers(graph, registry)
-            return {"run_id": host.create(graph, manifest)}
+            if runtime_service is not None:
+                # Persist before creating the run. A crash leaves only an unused
+                # local settings row; a created run always has frozen identity.
+                save_run_service(args.db, run_id, runtime_service)
+            return {"run_id": host.create(graph, manifest, run_id=run_id)}
         if args.command == "retry":
             host.retry(request["run"], request["node"])
             return host.status(request["run"])
@@ -241,16 +276,19 @@ def dispatch(args, request):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["create", "step", "status", "cancel", "retry", "preview", "publish"])
+    p.add_argument(
+        "command", choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check"]
+    )
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")
+    p.add_argument("--service-config")
     p.add_argument("--spec", required=True)
     p.add_argument("--result", required=True)
     args = p.parse_args()
     try:
         result = {"ok": True, "result": dispatch(args, json.loads(Path(args.spec).read_text(encoding="utf-8")))}
-    except Exception:
-        result = {"ok": False, "error": "editor_command_failed"}
+    except Exception as error:
+        result = failure(error)
     path = Path(args.result)
     temp = path.with_suffix(".tmp")
     temp.write_text(json.dumps(result), encoding="utf-8")

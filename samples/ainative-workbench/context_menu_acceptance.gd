@@ -220,6 +220,9 @@ func run():
 	check(run_index >= 0 and panel.context_menu.is_item_disabled(run_index) and not panel.context_menu.get_item_tooltip(run_index).is_empty(), "missing required input disables execution with a visible explanation")
 	reset_graph()
 	await settle()
+	# Input-only eligibility remains testable independently of configured service capabilities.
+	panel.service_choice.select(2)
+	panel.service_choice.item_selected.emit(2)
 	panel.nodes[0].type = "text_to_image"
 	panel.nodes[0].provider = "comfy"
 	panel.nodes[0].source = ""
@@ -241,6 +244,35 @@ func run():
 	popup_at(point_on_node("a"))
 	run_index = menu_index("运行并预览")
 	check(run_index >= 0 and not panel.context_menu.is_item_disabled(run_index), "image-to-mesh permits a source image without a text prompt")
+	# Visible parameter drafts participate in the contextual target-save path.
+	panel.nodes[0].type = "text_to_image"
+	panel.nodes[0].source = ""
+	panel.select_node("a")
+	panel.parameter_form.prompt_edit.text = "visible draft saved before another node is inspected"
+	panel.parameter_form.controls.seed.text = "9007199254740991"
+	panel.parameter_form.controls.seed.text_changed.emit("9007199254740991")
+	popup_at(point_on_node("b"))
+	check(panel.nodes[0].parameters.prompt == "visible draft saved before another node is inspected" and panel.nodes[0].parameters.seed == 9007199254740991, "right-click target switching commits visible prompt and full-precision seed drafts")
+	panel.context_menu.hide()
+	panel.factory_edit.text = "test_editor_host:integer_transport_factory"
+	popup_at(point_on_node("a"))
+	if activate("编辑提示词与参数"):
+		await settle()
+		check(panel.parameter_form.prompt_edit.has_focus(), "generation edit action focuses the visible prompt form rather than hidden JSON")
+	popup_at(point_on_node("a"))
+	if activate("运行并预览"):
+		var serialized_spec = ""
+		for job in panel.jobs.values():
+			if job.command == "create": serialized_spec = FileAccess.get_file_as_string(job.prefix + ".json")
+		var parsed_spec = JSON.parse_string(serialized_spec)
+		var launched_seed = parsed_spec.model.nodes[0].parameters.seed if parsed_spec is Dictionary else null
+		check(launched_seed == 9007199254740991 and launched_seed != 9007199254740992, "actual subprocess launch preserves the maximum safe seed without numeric rounding")
+		panel.cancel_run()
+		await wait_idle()
+		check(panel.current.get("state") == "cancelled", "description-only transport check cancels before any model operation")
+	panel.factory_edit.text = "editor_demo:factory"
+	panel.service_choice.select(0)
+	panel.service_choice.item_selected.emit(0)
 	reset_graph()
 	await settle()
 	panel.creating = true

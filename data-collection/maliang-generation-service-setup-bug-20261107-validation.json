@@ -1,0 +1,923 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-generation-service-setup-bug-20261107",
+  "issue_number": 414,
+  "related_issue_number": 413,
+  "state": "implemented_inference_acceptance_pending",
+  "recorded_at": "2026-11-07T08:21:32.957304+00:00",
+  "platform": "macOS arm64",
+  "base_commit": "11df31d9ff063efa27e4076339060964a43c5808",
+  "input_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "f072b3214b471338435e3a75e0609d90e4e2d79339cf9b94572397086981e622",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "fc724d0e24b5c33ca5a43ea9bc2b2fd4c0e915e7274a29a7b7a5ceba57926178",
+    "samples/ainative-workbench/generation_service_acceptance.gd": "51f97256d369775ffe42503300a7a6d40d8768ef2dd1d9a90287b7292e757ede",
+    "samples/ainative-workbench/parameter_form_acceptance.gd": "b9f882f4edc095aad7838653afc5e6010cf1d67040e85f08a0496fa90ae92c4f",
+    "samples/ainative-workbench/context_menu_acceptance.gd": "96a5c05c7637ee738024530cf9eafd07e279d01bb77828ede3733ba33b55f1df",
+    "samples/ainative-workbench/README.md": "4c35d5819e8004ce984a4d68c6eaa3e5ab78684f4ae24495737016f0c9c59541",
+    "tests/editor/ainative_builtin.gd": "b781d3b4ae4b97be61b8c2ea67c0bf35ba6d529e53699df8d1965fb83d9f0b81",
+    "tools/ainative/editor_host.py": "b31ed2d588d2f87e04582c9ad4600688aabbed83ebd336babba0b0f9329e13e9",
+    "tools/ainative/comfy_provider.py": "70d81edc2cd0392101ef4bc44fa1ba6c70f44b314298d8505a7852ce4cc9f7ea",
+    "tools/ainative/generation_service.py": "1e77b19a3519f22c666437e6f08a56b9a7d87b836f8d007ced89b788b98411b2",
+    "tools/ainative/test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e",
+    "tools/ainative/test_generation_service_gui.py": "96c0eb6f0c406bd7da97093a071c2eddc0ff44560dfdc69408bc85e5dae81609"
+  },
+  "validation": {
+    "backend_tests": 61,
+    "gui": {
+      "checks": [
+        {
+          "label": "read-only HTTP fixture endpoints are explicitly supplied",
+          "passed": true
+        },
+        {
+          "label": "built-in settings expose generation service controls",
+          "passed": true
+        },
+        {
+          "label": "settings distinguish offline demonstration, ComfyUI, and legacy compatibility",
+          "passed": true
+        },
+        {
+          "label": "a fresh project starts without a claimed real generation service",
+          "passed": true
+        },
+        {
+          "label": "fresh settings clearly show offline copying availability",
+          "passed": true
+        },
+        {
+          "label": "direct generation is blocked before subprocess creation in offline mode",
+          "passed": true
+        },
+        {
+          "label": "blocked generation exposes an actionable configuration entry",
+          "passed": true
+        },
+        {
+          "label": "configuration entry opens the actual settings section",
+          "passed": true
+        },
+        {
+          "label": "opening settings and rejecting unconfigured generation makes no HTTP calls",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "GUI discovery reaches the read-only HTTP fixture through the real Python subprocess",
+          "passed": true
+        },
+        {
+          "label": "discovery lists models without silently selecting one",
+          "passed": true
+        },
+        {
+          "label": "both model selectors contain names reported by the fixture",
+          "passed": true
+        },
+        {
+          "label": "detected but unselected models do not claim generation readiness",
+          "passed": true
+        },
+        {
+          "label": "GUI save creates the private local service configuration",
+          "passed": true
+        },
+        {
+          "label": "saved configuration exactly records the explicit endpoint and selected models",
+          "passed": true
+        },
+        {
+          "label": "explicit GUI settings select the managed adapter without a custom factory or environment variable",
+          "passed": true
+        },
+        {
+          "label": "workflow serialization excludes machine service settings",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "selected fixture models enable the corresponding discovered capabilities",
+          "passed": true
+        },
+        {
+          "label": "capability readiness is shown separately for image and mesh types",
+          "passed": true
+        },
+        {
+          "label": "freshly recreated GUI restores saved settings independently of launcher environment",
+          "passed": true
+        },
+        {
+          "label": "restored settings do not reuse a stale connection result",
+          "passed": true
+        },
+        {
+          "label": "saved model choices survive reopening before discovery",
+          "passed": true
+        },
+        {
+          "label": "missing required source is diagnosed before a service check or subprocess",
+          "passed": true
+        },
+        {
+          "label": "slow fixture check is actually pending",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "late discovery for an edited endpoint cannot replace current readiness",
+          "passed": true
+        },
+        {
+          "label": "invalid authenticated or path-bearing address cannot replace the last valid configuration",
+          "passed": true
+        },
+        {
+          "label": "visible validation errors do not echo embedded credentials",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "offline service produces a precise connection failure",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "wrong server protocol is distinguished from an offline service",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "missing model lists report the specific image and mesh requirements",
+          "passed": true
+        },
+        {
+          "label": "missing models leave affected capabilities unavailable with a repair hint",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "corrected detected and saved settings recover service eligibility without restarting",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "mesh-only settings allow image-to-mesh without an optional redraw prompt",
+          "passed": true
+        },
+        {
+          "label": "an explicit image-to-mesh redraw prompt requires an image model",
+          "passed": true
+        },
+        {
+          "label": "existing saved image-to-mesh prompts remain intact and visible",
+          "passed": true
+        },
+        {
+          "label": "new image-to-mesh nodes start without silently requesting image redraw",
+          "passed": true
+        },
+        {
+          "label": "context-created image-to-mesh nodes also start with an empty optional prompt",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "service fixture is ready before simulating loss between detection and execution",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "a real create-stage service failure reaches the GUI as a precise repairable error",
+          "passed": true
+        },
+        {
+          "label": "failed create exposes settings and does not invent a generated result",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "legacy compatibility choice persists explicitly in local host settings",
+          "passed": true
+        },
+        {
+          "label": "legacy selection does not write an unsupported legacy mode into managed service JSON",
+          "passed": true
+        },
+        {
+          "label": "legacy check points to the configured adapter without sending managed HTTP discovery",
+          "passed": true
+        },
+        {
+          "label": "GUI can save and restore offline mode explicitly",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "offline copy still runs and previews actual image bytes using the managed configuration",
+          "passed": true
+        },
+        {
+          "label": "offline publication still waits for its explicit confirmation",
+          "passed": true
+        },
+        {
+          "label": "service operation completes while the editor remains responsive",
+          "passed": true
+        },
+        {
+          "label": "confirmed copied image reloads as a Godot resource",
+          "passed": true
+        },
+        {
+          "label": "service configuration and copy publication preserve source bytes",
+          "passed": true
+        },
+        {
+          "label": "all fixture traffic is read-only discovery; no prompt submission or uploads occur",
+          "passed": true
+        },
+        {
+          "label": "GUI detection uses only the documented discovery endpoints",
+          "passed": true
+        }
+      ],
+      "failures": 0,
+      "ok": true,
+      "scope": "HTTP fixture configuration and offline copy only; no real generation models are installed or executed"
+    },
+    "context": {
+      "checks": [
+        {
+          "label": "workbench exposes its context menu controls",
+          "passed": true
+        },
+        {
+          "label": "object editing buttons are removed from the visible toolbar",
+          "passed": true
+        },
+        {
+          "label": "toolbar remains compact with workflow path and node type picker moved out",
+          "passed": true
+        },
+        {
+          "label": "blank canvas offers creation rather than stale selected-node actions",
+          "passed": true
+        },
+        {
+          "label": "opening a menu never starts inference",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "blank-canvas action opens the searchable node picker",
+          "passed": true
+        },
+        {
+          "label": "node search filters generation types by their Chinese names",
+          "passed": true
+        },
+        {
+          "label": "right-click creation preserves the selected machine node kind",
+          "passed": true
+        },
+        {
+          "label": "created node is placed at the clicked canvas coordinate after zoom and scroll",
+          "passed": true
+        },
+        {
+          "label": "switching right-click targets retains pending inspector edits",
+          "passed": true
+        },
+        {
+          "label": "right-click targets the node under the pointer instead of the previous inspector selection",
+          "passed": true
+        },
+        {
+          "label": "node menu contains the primary editing and execution actions",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "edit action focuses the node's detailed fields",
+          "passed": true
+        },
+        {
+          "label": "right-click inside a selected set preserves the multi-selection",
+          "passed": true
+        },
+        {
+          "label": "multi-selection offers valid batch edits without an ambiguous batch run",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch copy creates one distinct node for each selected node",
+          "passed": true
+        },
+        {
+          "label": "batch copy remaps the selected internal connection",
+          "passed": true
+        },
+        {
+          "label": "embedded source snapshot is retained in the copied node",
+          "passed": true
+        },
+        {
+          "label": "copied parameters and embedded snapshots do not alias the originals",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch delete removes copied nodes and their incident connection only",
+          "passed": true
+        },
+        {
+          "label": "right-click on a rendered connection selects its disconnect action",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "connection action removes the selected edge without deleting nodes",
+          "passed": true
+        },
+        {
+          "label": "node retains a discoverable run fallback",
+          "passed": true
+        },
+        {
+          "label": "real viewport right-click over the node run button opens its context menu",
+          "passed": true
+        },
+        {
+          "label": "right-clicking the run fallback does not activate generation",
+          "passed": true
+        },
+        {
+          "label": "missing required input disables execution with a visible explanation",
+          "passed": true
+        },
+        {
+          "label": "generation accepts the effective prompt from node instructions without a parameter prompt",
+          "passed": true
+        },
+        {
+          "label": "text generation without parameter or instruction prompt remains disabled",
+          "passed": true
+        },
+        {
+          "label": "image-to-mesh permits a source image without a text prompt",
+          "passed": true
+        },
+        {
+          "label": "right-click target switching commits visible prompt and full-precision seed drafts",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "generation edit action focuses the visible prompt form rather than hidden JSON",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "actual subprocess launch preserves the maximum safe seed without numeric rounding",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "description-only transport check cancels before any model operation",
+          "passed": true
+        },
+        {
+          "label": "busy nodes disable duplicate execution and destructive edits",
+          "passed": true
+        },
+        {
+          "label": "an action from a stale menu cannot delete a changed model",
+          "passed": true
+        },
+        {
+          "label": "reopening an identical workflow invalidates old menu actions even when node IDs are reused",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "node menu automatically previews the real decoded image",
+          "passed": true
+        },
+        {
+          "label": "successful node enables existing-result and history actions",
+          "passed": true
+        },
+        {
+          "label": "history submenu restores the correct node's prior result",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "right-click rerun previews a real mesh while retaining the previous image",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "confirmed provider failure enables node retry",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "retry menu item invokes the durable executor retry path",
+          "passed": true
+        },
+        {
+          "label": "Control-click opens the node context menu on macOS",
+          "passed": true
+        },
+        {
+          "label": "Shift-F10 provides a keyboard context-menu entry point",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit duplicate shortcut uses the same contextual copy implementation",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit delete shortcut removes the requested node using contextual safeguards",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context editing and preview preserve source file bytes",
+          "passed": true
+        }
+      ],
+      "failures": 0,
+      "inference": "offline copy provider; no AI model calls",
+      "ok": true
+    },
+    "form_checks": 37,
+    "preview_checks": 35,
+    "legacy_checks": 35,
+    "empty_runtime_guard_checks": 14,
+    "native_signed_app": {
+      "state": "passed",
+      "editor_sha256": "e7ce888e4e8dffa8d07afeb892acb3ce637f8eff383b7805acb5510805f9547e",
+      "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference",
+      "runs": [
+        {
+          "name": "mesh-and-rig",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "bundled editor exposes contextual editing",
+              "bundled toolbar moves object editing into context menus",
+              "bundled path and generator selectors no longer occupy the toolbar",
+              "bundled blank-canvas context opens without executing providers",
+              "bundled context creates the requested machine node",
+              "bundled context-created node retains normal delete behavior",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "bundled editor exposes generation service setup controls",
+              "bundled service picker preserves explicit offline, ComfyUI and legacy modes",
+              "bundled service configuration is private machine state",
+              "fresh native project does not claim a real generation service",
+              "real host subprocess completed",
+              "bundled read-only service check reaches its Python implementation",
+              "checking offline mode neither invents generation readiness nor writes configuration",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade",
+              "bundled local GLTF runtime converter loads",
+              "local conversion produces actual runtime Mesh geometry",
+              "local conversion preserves transforms, Skin and skeleton binding",
+              "local conversion preserves node and mesh provenance metadata",
+              "local conversion preserves child relationships and scene ownership",
+              "local conversion preserves visibility, rendering layers and groups",
+              "local conversion preserves surface materials",
+              "animation target NodePaths still resolve after local conversion",
+              "local conversion supports an unparented importer root",
+              "root-owned descendants retain scene ownership through nested conversion",
+              "bundled graph has explicit node preview action",
+              "real host subprocess completed",
+              "offline Copy Mesh run reaches real Executor success",
+              "editor heartbeat advances during provider execution",
+              "bundled node action automatically previews and records its result",
+              "real host subprocess completed",
+              "actual GLB preview is decoded",
+              "decoded preview contains Mesh geometry",
+              "publication waits for explicit confirmation",
+              "real host subprocess completed",
+              "confirmed Mesh publication reloads",
+              "real host subprocess completed",
+              "Mesh publication cannot overwrite an existing version",
+              "offline run and publication preserve source Mesh bytes",
+              "other tools retain the shared Mesh preview viewport",
+              "shared preview rendering remains enabled",
+              "rigging navigation opens its controls directly",
+              "triangle fixture is not falsely accepted as a humanoid",
+              "unreviewed anatomy cannot be published",
+              "synthetic T-pose GLB fixture is encoded without AI inference",
+              "synthetic T-pose builds an actual bound character",
+              "suitable confirmed T-pose reaches the reviewed binding state",
+              "binding creates 18 real bones and Skin bind poses",
+              "Skin indices, normalized weights and rest geometry are valid",
+              "actual skinned ROM deformation: raise_arms",
+              "actual skinned ROM deformation: squat",
+              "actual skinned ROM deformation: turn",
+              "reviewed rig publishes a new character version",
+              "rig publication cannot overwrite an existing version",
+              "reopening a bound version restores both source model state and visible source input",
+              "binding, animation and publication preserve source GLB bytes",
+              "character with a real built-in runtime script stages successfully",
+              "bundled publisher creates a portable runtime dependency directory",
+              "portable scene uses relative script paths without an editor-cache reference"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "b31ed2d588d2f87e04582c9ad4600688aabbed83ebd336babba0b0f9329e13e9",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "rom_maximum_displacement": {
+                "raise_arms": 0.545059084892273,
+                "squat": 0.33388340473175,
+                "turn": 0.765170753002167
+              },
+              "state_key": "b179cce89797f8fa67579d2bdaf3803f2d89fa3377d14d8c01112c1f1511eb67",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "independent-project",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "bundled editor exposes contextual editing",
+              "bundled toolbar moves object editing into context menus",
+              "bundled path and generator selectors no longer occupy the toolbar",
+              "bundled blank-canvas context opens without executing providers",
+              "bundled context creates the requested machine node",
+              "bundled context-created node retains normal delete behavior",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "bundled editor exposes generation service setup controls",
+              "bundled service picker preserves explicit offline, ComfyUI and legacy modes",
+              "bundled service configuration is private machine state",
+              "fresh native project does not claim a real generation service",
+              "real host subprocess completed",
+              "bundled read-only service check reaches its Python implementation",
+              "checking offline mode neither invents generation readiness nor writes configuration",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "b31ed2d588d2f87e04582c9ad4600688aabbed83ebd336babba0b0f9329e13e9",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "state_key": "ced10480a5563067cccb3d2923e2c3971ec90bf0db7b1be0ffa8df558be3bad6",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "enabled legacy sample addon does not create a second workbench",
+              "sample project retains exactly one native AINative editor dock"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              }
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "relocated-runtime",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "portable character loads in a different project without editor bundles",
+              "published runtime script and its preload dependencies load",
+              "runtime script resolves from the copied artifact directory",
+              "runtime exported properties survive publication and relocation",
+              "relocated character retains actual skeleton data"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference"
+            },
+            "failures": [],
+            "ok": true
+          }
+        }
+      ],
+      "project_state_isolated": true,
+      "same_engine_bundle": true,
+      "project_sources_unchanged": true
+    },
+    "ruff": "0.17.1 check/format passed all five Python modules",
+    "mypy": "2.4.0 passed all five Python modules",
+    "independent_review": {
+      "reviewer": "/root/context_menu_review",
+      "state": "passed",
+      "service_gui": 66,
+      "form_checks": 37,
+      "backend_service_checks": 11,
+      "affected_variant_check": "GET-only fixture without SaveImage and EmptyLatentImage accepts mesh redraw; normal image generation remains unavailable"
+    }
+  },
+  "acceptance": {
+    "issue_413": "all implemented and locally verified; awaits main/install",
+    "issue_411": "PR418 merged; unified install pending",
+    "issue_414_completed": [
+      "GUI service configuration and model selection",
+      "GET-only connection/capability detection",
+      "local persistence without environment variables",
+      "precise preflight and structured Chinese errors",
+      "offline workflow, context menus, forms, preview/publication regressions"
+    ],
+    "issue_414_remaining": [
+      "Actual image generation using a reachable model service",
+      "Actual mesh generation using a reachable model service"
+    ]
+  },
+  "external_dependency": {
+    "user_confirmed_no_service": true,
+    "local_probe": "No ComfyUI listener at127.0.0.1:8188, no installed model weights discovered; historicalWindows inference evidence is not currentMac proof",
+    "real_model_inference_performed": false
+  },
+  "billing_constraint": "User wants existing ChatGPT/Codex account allowance; no paid service signup, no model download, no automatic charge; third-party 3D is not claimed to share that allowance",
+  "signed_app_sha256": "e7ce888e4e8dffa8d07afeb892acb3ce637f8eff383b7805acb5510805f9547e"
+}
