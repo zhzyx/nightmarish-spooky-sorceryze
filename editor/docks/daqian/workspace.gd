@@ -1120,6 +1120,11 @@ func _show_board() -> void:
 			row.select(0)
 			issue_list.scroll_to_item(row)
 			issue_list.grab_focus()
+	elif overview.visible and not previous.is_empty():
+		for card in board_cards:
+			if card.visible and card.get_meta("issue_url") == previous:
+				card.selected = true
+				break
 
 
 func _draw_board() -> void:
@@ -1951,26 +1956,8 @@ func _check_canvas_zoom() -> void:
 		return
 	if not current.is_empty():
 		if editor.canvas.is_visible_in_tree() and editor.canvas.zoom <= ZOOM_TO_PARENT:
-			var origin_issue := current
 			editor.canvas.zoom = 0.85
 			_show_board()
-			if project_mode and creator_filter.selected > 0:
-				board_views.current_tab = 0
-				return
-			if project_mode:
-				_set_project(false)
-			board_views.current_tab = 1
-			status.select(0)
-			creator_filter.select(0)
-			search.clear()
-			_filter_board()
-			overview.zoom = 0.85
-			overview.scroll_offset = Vector2.ZERO
-			for card in board_cards:
-				if card.get_meta("issue_url") == origin_issue:
-					card.selected = true
-					overview.scroll_offset = (card.position_offset + card.size * 0.5) * overview.zoom - overview.size * 0.5
-					break
 		return
 	if not overview.is_visible_in_tree():
 		return
@@ -2136,15 +2123,11 @@ func _open_issue(item: Dictionary) -> void:
 		var clean: bool = editor.draft == editor.baseline and editor.answers.is_empty()
 		var next_plan: Dictionary = live.plan.duplicate(true)
 		if not clean and revision == item.updated:
-			for key in editor.draft.nodes:
-				if not editor.baseline.nodes.has(key):
-					next_plan.nodes[key] = editor.draft.nodes[key]
-			for edge in editor.draft.edges:
-				if edge not in editor.baseline.edges and edge not in next_plan.edges:
-					if not next_plan.nodes.has(edge.from) or not next_plan.nodes.has(edge.to):
-						notice.text = "流程端点已变更，已保留草稿。请移除失效连线后重新打开工单。"
-						return
-					next_plan.edges.append(edge)
+			var result: Dictionary = rules.reconcile_snapshot(editor.baseline, editor.draft, live.plan)
+			if result.has("error"):
+				notice.text = "%s，已保留草稿。请核对后再应用。" % result.error
+				return
+			next_plan = result.plan
 		if clean or revision == item.updated:
 			editor.revision = live.revision
 			editor.baseline = live.plan.duplicate(true)

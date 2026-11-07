@@ -1,0 +1,21 @@
+{
+  "evidence_refs": [],
+  "kind": "request",
+  "occurred_at": "2026-11-07T13:09:56.1562552Z",
+  "agent": {
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "id": "current-workspace-operator"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/442",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-workbench-rebuild-20261107",
+  "schema_version": 1,
+  "event_id": "tianshu-workbench-rebuild-20261107-request",
+  "payload": {
+    "intent": "从需求诞生复盘天枢，核对当前阻塞及交互问题，产出整体重做计划",
+    "document": "design-docs/daqian/rebuild-plan.md"
+  },
+  "sha256": "7bf3e7f12fe56cee4d3cdc8c5ea1cf645ad30b88c37dee8e4f1afd8e43b86108"
+}
