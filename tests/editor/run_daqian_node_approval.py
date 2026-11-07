@@ -28,11 +28,20 @@ class Model(BaseHTTPRequestHandler):
         request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         assert request["model"] == "fixture"
         messages = request["messages"]
+        last_user = next(turn for turn in reversed(messages) if turn["role"] == "user")
+        if "canvas fixture rejected" in str(last_user["content"]):
+            time.sleep(0.4)
+            self.send_error(401)
+            return
         followup = any(
             "Check the receipt again" in str(turn.get("content")) for turn in messages if turn["role"] == "user"
         )
         message = {"role": "assistant", "content": "Receipt rechecked" if followup else "Verified"}
-        if any("canvas fixture question" in str(turn.get("content")) for turn in messages if turn["role"] == "user"):
+        filtered = "canvas fixture filtered" in str(last_user["content"])
+        if filtered:
+            time.sleep(0.4)
+            message["content"] = json.dumps({"route": "answer", "text": "Unexpected filtered answer"})
+        elif any("canvas fixture question" in str(turn.get("content")) for turn in messages if turn["role"] == "user"):
             time.sleep(0.4)  # Allow the real workspace to switch before the receipt arrives.
             message["content"] = json.dumps({"route": "answer", "text": "Canvas fixture answer"})
         elif not followup and not any(turn["role"] == "tool" for turn in messages):
@@ -54,8 +63,9 @@ class Model(BaseHTTPRequestHandler):
                     }
                 ],
             )
+        finish = "tool_calls" if "tool_calls" in message else "stop"
         response = json.dumps({
-            "choices": [{"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}]
+            "choices": [{"message": message, "finish_reason": "content_filter" if filtered else finish}]
         }).encode()
         self.send_response(200)
         self.send_header("Content-Length", str(len(response)))

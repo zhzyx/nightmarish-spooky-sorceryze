@@ -547,7 +547,7 @@ func _canvas_matches(turn: Dictionary) -> bool:
 func _send_canvas_message() -> void:
 	var question: String = canvas_panel.canvas_message.text.strip_edges()
 	if question.length() > canvas_panel.QUESTION_LIMIT:
-		notice.text = "问题最多 12000 字符，请缩短后重试。"
+		canvas_panel.append_line(_canvas_scope(), "问题最多 12000 字符，请缩短后重试。")
 		return
 	if question.is_empty() or not is_instance_valid(chat) or actor.is_empty():
 		return
@@ -555,7 +555,7 @@ func _send_canvas_message() -> void:
 	_load_canvas_models()
 	var selection: Dictionary = canvas_panel.model_selection()
 	if _needs_model(chat.get_daqian_models(), selection):
-		notice.text = "请先在 AI 对话配置可用模型。"
+		canvas_panel.append_line(_canvas_scope(), "请先在 AI 对话配置可用模型。")
 		return
 	var turn := {"session":canvas_panel.session_epoch, "generation":canvas_panel.canvas_generation, "scope":_canvas_scope(), "root":_repo(), "actor":actor.duplicate(), "epoch":selection_epoch, "board_epoch":scope_epoch, "question":question, "selection":selection}
 	if not await _fresh_access() or not _canvas_matches(turn):
@@ -603,19 +603,24 @@ func _route_canvas(turn: Dictionary, project: bool) -> void:
 	var conversation_source := "canvas_route_" + str(turn.scope).sha256_text()
 	var error: String = chat.open_daqian_chat(conversation_source, 0, "", prompt, true, turn.selection, true, turn.source)
 	if not error.is_empty():
-		notice.text = error
+		canvas_panel.append_line(turn.scope, "请求失败 · " + error)
 		return
 	canvas_panel.sent(turn)
-	notice.text = "正在分析 · " + str(turn.scope)
 
 
 func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 	if turn.session != canvas_panel.session_epoch or turn.root != _repo() or turn.actor != actor:
 		return
-	var result = JSON.parse_string(response.strip_edges().trim_prefix("```json").trim_suffix("```").strip_edges())
+	var body := response.strip_edges()
+	# A completed consultation can return a direct answer after reading a tool result.
+	# Only a validated route object below may request another operation.
+	if not body.is_empty() and not body.begins_with("{") and not body.begins_with("[") and not body.begins_with("```json"):
+		canvas_panel.append_line(turn.scope, ("项目 · " if turn.project else "答复 · ") + body)
+		return
+	var parser := JSON.new()
+	var result = parser.data if parser.parse(body.trim_prefix("```json").trim_suffix("```").strip_edges()) == OK else null
 	if not result is Dictionary or not result.get("text") is String or result.text.strip_edges().is_empty():
-		if _canvas_matches(turn):
-			notice.text = "模型未返回有效的范围判断，请重试。"
+		canvas_panel.append_line(turn.scope, "模型未返回有效的范围判断，请重试。")
 		return
 	if result.get("route") == "answer":
 		canvas_panel.append_line(turn.scope, ("项目 · " if turn.project else "答复 · ") + str(result.text))
@@ -628,7 +633,7 @@ func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 			return
 		var full: Dictionary = response_board.get("board", {})
 		if full.get("repo_id") != actor.repo_id or full.get("user_id") != actor.user_id:
-			notice.text = str(response_board.get("error", "无法读取项目工单"))
+			canvas_panel.append_line(turn.scope, str(response_board.get("error", "无法读取项目工单")))
 			return
 		turn.context = _canvas_context(turn, full, true)
 		_route_canvas(turn, true)
@@ -656,9 +661,9 @@ func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 			empty_state.hide()
 			apply_model.visible = not binding.is_empty()
 		else:
-			notice.text = error
+			canvas_panel.append_line(turn.scope, "请求失败 · " + error)
 	else:
-		notice.text = "模型未返回可处理的操作，请重试。"
+		canvas_panel.append_line(turn.scope, "模型未返回可处理的操作，请重试。")
 
 
 func _build_workbench() -> void:
@@ -2946,7 +2951,9 @@ func _attach_chat() -> void:
 			chat.connect("daqian_approval_changed", _approval_changed)
 		if chat.has_signal("daqian_approval_state"):
 			chat.connect("daqian_approval_state", _operation_state)
-		chat.connect("daqian_preview_received",_preview_received)
+		chat.connect("daqian_preview_received", _preview_received, CONNECT_DEFERRED)
+		if chat.has_signal("daqian_preview_failed"):
+			chat.connect("daqian_preview_failed", _preview_failed, CONNECT_DEFERRED)
 
 
 func _approval_changed() -> void:
@@ -3264,6 +3271,12 @@ func _chat_action(action: String) -> void:
 	if not error.is_empty():
 		notice.text = error
 
+
+
+func _preview_failed(source: String, reason: String) -> void:
+	var turn: Dictionary = canvas_panel.take_reply(source)
+	if not turn.is_empty() and turn.session == canvas_panel.session_epoch and turn.root == _repo() and turn.actor == actor:
+		canvas_panel.append_line(turn.scope, "请求失败 · " + reason)
 
 
 func _preview_received(source: String, text: String) -> void:

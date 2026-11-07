@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bd9859b01d52b7b4206cc347fabc65519d8c9042",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-live-ai-path",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ee84f2243c55ecf41d35e4f77269c45ae7d9b6fff296dae5b2ea00074ffa1b59",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/515",
+    "action": "delivery",
+    "detection_head": "28b495d14c9756eda49b341473713cbcda457ec5",
+    "context_sha256": "dc5e35a2cbb8cd68e6f8b678f1037460b25fbd4bd987af905e56d276e20e8615",
+    "operator": "Sail-Li",
+    "worker": "codex-live-515",
+    "authority_ref": "Issue 515; verified Sail-Li push permission",
+    "evidence": "writer_submit: Collection source/receipt must be staged with current bytes: data-collection/tianshu-live-ai-515.json",
+    "diagnosis": "Windows receipt ended in CRLF and Git staged LF; normalize receipt to canonical bytes and re-run precommit validation.",
+    "next_action": "Re-stage identical bytes and rerun writer_submit on the candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T19:36:13.334882+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T19:36:49.314554+00:00",
+  "sha256": "7d0f54ec47977c3d6412ec3ccfe4af957523434ebab8041fb055f1f0db12fd56"
+}
