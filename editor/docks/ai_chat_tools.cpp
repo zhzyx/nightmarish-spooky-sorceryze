@@ -353,9 +353,12 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 					valid = valid && codepoint >= minimum && codepoint <= 0x10ffff && !(codepoint >= 0xd800 && codepoint <= 0xdfff);
 				}
 			} else if (byte >= 0xc2 && byte <= 0xf4) {
-				continuation = byte < 0xe0 ? 1 : byte < 0xf0 ? 2 : 3;
-				minimum = continuation == 1 ? 0x80 : continuation == 2 ? 0x800 : 0x10000;
-				codepoint = byte & (continuation == 1 ? 0x1f : continuation == 2 ? 0x0f : 0x07);
+				continuation = byte < 0xe0 ? 1 : byte < 0xf0 ? 2
+															 : 3;
+				minimum = continuation == 1 ? 0x80 : continuation == 2 ? 0x800
+																	   : 0x10000;
+				codepoint = byte & (continuation == 1 ? 0x1f : continuation == 2 ? 0x0f
+																				 : 0x07);
 			} else {
 				valid = byte > 0 && byte < 0x80;
 			}

@@ -19,4 +19,4 @@ read_file 对 ai_chat_dock.cpp 传入 offset/limit，仍在切行之前读取完
 
 Issue：[#392](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/392)。
 
-macOS arm64 候选编译通过；真实编辑器离线 HTTP 工具循环 21 项通过，见 `data-collection/large-file-read-20261107.json`。测试使用候选副本及 `_sc_` 自包含设置，不修改真实全局设置。读取不承诺并发同长度改写的原子快照；完整写入与快照例程保持原样。
+macOS arm64 候选编译通过；真实编辑器离线 HTTP 工具循环 21 项通过，初次候选见 `data-collection/large-file-read-20261107.json`；格式化并整合 main 后的精确候选回执见 `data-collection/large-file-read-final-20261107.json`。测试使用候选副本及 `_sc_` 自包含设置，不修改真实全局设置。读取不承诺并发同长度改写的原子快照；完整写入与快照例程保持原样。
