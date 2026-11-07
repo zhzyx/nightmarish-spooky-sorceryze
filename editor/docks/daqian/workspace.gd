@@ -79,6 +79,7 @@ var legacy_route_path := ""
 var legacy_route_result := {}
 var legacy_route_turns := []
 var chat_work := {}
+const HOST_RECEIPT_POLL_SECONDS := 1.0
 const WATCHER_POLL_MS := 15_000
 const AUTO_REFRESH_INTERVAL_MS := 300_000
 var watcher_poll_after := 0
@@ -1763,7 +1764,7 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	if pid < 0:
 		return {"denied":true,"error":"无法启动共工身份核验入口"}
 	while not FileAccess.file_exists(path) and OS.is_process_running(pid):
-		await get_tree().create_timer(0.12).timeout
+		await get_tree().create_timer(HOST_RECEIPT_POLL_SECONDS).timeout
 	if not FileAccess.file_exists(path):
 		return {"denied":true,"error":"未收到共工身份回执"}
 	var value = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -3191,7 +3192,7 @@ func _host_command(args: PackedStringArray, output_flag: String, request: Dictio
 func _host_result(pid: int, req_path: String, result_path: String) -> Dictionary:
 	if pid >= 0:
 		while not FileAccess.file_exists(result_path) and OS.is_process_running(pid):
-			await get_tree().create_timer(0.12).timeout
+			await get_tree().create_timer(HOST_RECEIPT_POLL_SECONDS).timeout
 	if FileAccess.file_exists(req_path):
 		DirAccess.remove_absolute(req_path)
 	if FileAccess.file_exists(result_path):
