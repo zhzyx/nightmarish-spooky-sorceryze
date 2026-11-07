@@ -2526,7 +2526,8 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 		const Dictionary operation = tool == "route_engine_message" ? Dictionary(pending_editor_action["operation"]) : pending_editor_action;
 		summary = String(U"编辑器操作 · ") + String(operation.get("action", "")) + " " + String(operation.get("target", ""));
 	} else {
-		summary = tool == "build_engine" ? (engine_tool_wants_restart ? U"编译并重启引擎" : U"编译引擎") : tool == "restart_engine" ? U"重启引擎" : U"回退引擎";
+		summary = tool == "build_engine" ? (engine_tool_wants_restart ? U"编译并重启引擎" : U"编译引擎") : tool == "restart_engine" ? U"重启引擎"
+																																	: U"回退引擎";
 	}
 	daqian_approval_generation = session_generation;
 	daqian_approval["token"] = new_conversation_id();
