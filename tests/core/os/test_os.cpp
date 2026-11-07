@@ -62,7 +62,7 @@ public:
 	}
 };
 
-static void check_process_receipt(OS *p_os, ProcessID p_child_id, const String &p_receipt_path, const String &p_payload) {
+static void check_process_exit(OS *p_os, ProcessID p_child_id) {
 	const uint64_t deadline = p_os->get_ticks_msec() + 5000;
 	while (p_os->is_process_running(p_child_id) && p_os->get_ticks_msec() < deadline) {
 		p_os->delay_usec(1000);
@@ -74,6 +74,10 @@ static void check_process_receipt(OS *p_os, ProcessID p_child_id, const String &
 		return;
 	}
 	CHECK(p_os->get_process_exit_code(p_child_id) == 0);
+}
+
+static void check_process_receipt(OS *p_os, ProcessID p_child_id, const String &p_receipt_path, const String &p_payload) {
+	check_process_exit(p_os, p_child_id);
 	CHECK(FileAccess::get_file_as_string(p_receipt_path) == itos(p_child_id) + "\n" + p_payload);
 	if (FileAccess::exists(p_receipt_path)) {
 		CHECK(DirAccess::remove_absolute(p_receipt_path) == OK);
@@ -291,6 +295,9 @@ TEST_CASE("[OS][MacOS] Headless instance without an explicit restart executable"
 		executable = "/usr/bin/false";
 	}
 
+	List<String> arguments;
+	arguments.push_back("--headless");
+#ifdef OVERRIDE_PATH_ENABLED
 	const String project_path = TestUtils::get_temp_path("macos_restart_fallback");
 	const String receipt_path = project_path.path_join("receipt.txt");
 	const String script_path = project_path.path_join("probe.gd");
@@ -304,8 +311,6 @@ TEST_CASE("[OS][MacOS] Headless instance without an explicit restart executable"
 		REQUIRE(script.is_valid());
 		script->store_string("extends SceneTree\n\nfunc _initialize():\n\tvar args = OS.get_cmdline_user_args()\n\tvar file = FileAccess.open(args[0], FileAccess.WRITE)\n\tfile.store_string(str(OS.get_process_id()) + \"\\n\" + args[1])\n\tfile.close()\n\tquit()\n");
 	}
-	List<String> arguments;
-	arguments.push_back("--headless");
 	arguments.push_back("--path");
 	arguments.push_back(project_path);
 	arguments.push_back("--script");
@@ -313,6 +318,11 @@ TEST_CASE("[OS][MacOS] Headless instance without an explicit restart executable"
 	arguments.push_back("--");
 	arguments.push_back(receipt_path);
 	arguments.push_back(payload);
+#else
+	// Standard export templates reject --path and --script. A real self-launch
+	// must still succeed, including when the ignored restart target is /usr/bin/false.
+	arguments.push_back("--version");
+#endif
 
 	ProcessID child_id = 0;
 	Error err = FAILED;
@@ -324,12 +334,16 @@ TEST_CASE("[OS][MacOS] Headless instance without an explicit restart executable"
 	}
 	REQUIRE(err == OK);
 	REQUIRE(child_id > 0);
+#ifdef OVERRIDE_PATH_ENABLED
 	check_process_receipt(os, child_id, receipt_path, payload);
 	Ref<DirAccess> project = DirAccess::open(project_path);
 	REQUIRE(project.is_valid());
 	CHECK(project->erase_contents_recursive() == OK);
 	project.unref();
 	CHECK(DirAccess::remove_absolute(project_path) == OK);
+#else
+	check_process_exit(os, child_id);
+#endif
 }
 #endif
 

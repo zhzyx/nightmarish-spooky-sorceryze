@@ -365,6 +365,7 @@ void NetSocketUnix::close() {
 	_family = Family::NONE;
 	_ip_type = IP::TYPE_NONE;
 	_is_stream = false;
+	_tcp_connect_pending = false;
 }
 
 Error NetSocketUnix::_inet_bind(IPAddress p_addr, uint16_t p_port) {
@@ -458,6 +459,25 @@ Error NetSocketUnix::listen(int p_max_pending) {
 Error NetSocketUnix::_inet_connect_to_host(IPAddress p_host, uint16_t p_port) {
 	ERR_FAIL_COND_V(!_can_use_ip(p_host, false), ERR_INVALID_PARAMETER);
 
+	// A second connect() on macOS can return EISCONN with ECONNREFUSED
+	// still pending. Read the result of the original nonblocking connect.
+	if (_tcp_connect_pending) {
+		struct pollfd descriptor = { _sock, POLLOUT, 0 };
+		const int ready = ::poll(&descriptor, 1, 0);
+		if (ready == 0 || (ready < 0 && errno == EINTR)) {
+			return ERR_BUSY;
+		}
+
+		int socket_error = 0;
+		socklen_t length = sizeof(socket_error);
+		if (ready > 0 && getsockopt(_sock, SOL_SOCKET, SO_ERROR, &socket_error, &length) == 0 && socket_error == 0) {
+			_tcp_connect_pending = false;
+			return OK;
+		}
+		close();
+		return FAILED;
+	}
+
 	struct sockaddr_storage addr;
 	size_t addr_size = _set_addr_storage(&addr, p_host, p_port, _ip_type);
 
@@ -468,9 +488,11 @@ Error NetSocketUnix::_inet_connect_to_host(IPAddress p_host, uint16_t p_port) {
 			// We are already connected.
 			case ERR_NET_IS_CONNECTED:
 				return OK;
-			// Still waiting to connect, try again in a while.
+			// No connection is pending when connect() must be retried.
 			case ERR_NET_WOULD_BLOCK:
+				return ERR_BUSY;
 			case ERR_NET_IN_PROGRESS:
+				_tcp_connect_pending = _is_stream;
 				return ERR_BUSY;
 			default:
 				print_verbose("Connection to remote host failed.");

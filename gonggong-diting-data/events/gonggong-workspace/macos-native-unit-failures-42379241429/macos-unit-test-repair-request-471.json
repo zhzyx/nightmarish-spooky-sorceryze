@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "macos-unit-test-repair-request-471",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-native-unit-failures-42379241429",
+  "kind": "request",
+  "occurred_at": "2026-11-07T17:46:58Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/471",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "issue_number": 471,
+    "scope": "Reproduce, repair and verify native macOS editor and template unit-test failures following Tianshu acceptance.",
+    "authority": "User requested #471 on this device; issue moved to in-progress and read back.",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "57e190d0b128b526cb9f340e85190fb9a6be0d377068c754edd23920ac1a9aac"
+}

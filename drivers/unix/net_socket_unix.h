@@ -45,6 +45,7 @@ private:
 	Family _family = Family::NONE;
 	IP::Type _ip_type = IP::TYPE_NONE;
 	bool _is_stream = false;
+	bool _tcp_connect_pending = false;
 	CharString _unix_path;
 	// If this is Family::UNIX,
 	bool _unlink_on_close = false;
