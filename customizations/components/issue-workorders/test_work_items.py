@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -39,6 +40,13 @@ class WorkItemTests(unittest.TestCase):
             module.labels(self.root)
         gh.assert_not_called()
 
+    def test_github_transport_eof_is_a_network_error(self):
+        failed = subprocess.CompletedProcess([], 1, "", 'Get "https://api.github.com/user/repos": EOF\n')
+        with patch.object(module.subprocess, "run", return_value=failed):
+            with self.assertRaisesRegex(module.GitHubCommandError, "^GITHUB_NETWORK:") as raised:
+                module.gh("api", "user/repos")
+        self.assertNotIn("api.github.com", str(raised.exception))
+
     def test_document_cannot_escape_design_directory(self):
         with self.assertRaises(ValueError):
             self.create(document="../outside.md")
@@ -54,17 +62,23 @@ class WorkItemTests(unittest.TestCase):
             self.assertIn("status:in-progress", args)
             self.assertNotIn("status:needs-decision", args)
             return "https://github.com/test/repo/issues/2"
+
         with patch.object(module, "gh", side_effect=fake):
-            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1",
-                                  True, "user-request-100")
+            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1", True, "user-request-100")
         self.assertEqual(result["state"], "created")
 
     def test_authorized_retry_does_not_mutate_existing_closed_issue(self):
-        existing = [[dict(state="closed", body="<!-- gonggong-request:req-1 -->",
-                          html_url="https://github.com/test/repo/issues/1")]]
+        existing = [
+            [
+                dict(
+                    state="closed",
+                    body="<!-- gonggong-request:req-1 -->",
+                    html_url="https://github.com/test/repo/issues/1",
+                )
+            ]
+        ]
         with patch.object(module, "gh", side_effect=['{"login":"test-host"}', json.dumps(existing)]) as gh:
-            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1",
-                                  True, "user-request-100")
+            result = module.issue(self.root, "design-docs/req.md", "Title", "design", "req-1", True, "user-request-100")
         self.assertEqual(result["state"], "existing")
         self.assertEqual(gh.call_count, 2)
 

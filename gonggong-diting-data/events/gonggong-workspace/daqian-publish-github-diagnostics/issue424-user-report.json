@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue424-user-report",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-publish-github-diagnostics",
+  "kind": "request",
+  "occurred_at": "2026-11-07T09:05:17.607409+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+  "agent": {
+    "id": "codex-workspace-operator",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "scope": "修复大千创建需求时 GitHub 读取中断、错误提示及原草稿恢复",
+    "definition_ref": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "9628ea860d41ea0750adc1f238d2575234dcf378f1394075148146338930dbb3"
+}

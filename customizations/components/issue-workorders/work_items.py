@@ -55,8 +55,9 @@ def gh(*args):
         ) from None
     if result.returncode:
         match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
-        if not match and any(
-            text in (result.stderr or "").lower()
+        stderr = result.stderr or ""
+        dropped = re.search(r"\bEOF\s*$", stderr, re.I) or any(
+            text in stderr.lower()
             for text in (
                 "error connecting",
                 "connection was reset",
@@ -65,7 +66,8 @@ def gh(*args):
                 "connection refused",
                 "i/o timeout",
             )
-        ):
+        )
+        if not match and dropped:
             raise GitHubCommandError(
                 reason="GITHUB_NETWORK: connection unavailable; check host network permissions and connectivity; Issue state is unknown"
             )
@@ -139,7 +141,7 @@ def issue(root, document, title, category, request_id, apply=False, execution_au
     if doc.suffix != ".md" or not doc.is_file():
         raise ValueError("A Markdown requirement in design-docs is required")
     marker = "<!-- gonggong-request:" + request_id + " -->"
-    relative = doc.relative_to(root).as_posix()
+    relative = doc.relative_to(root.resolve()).as_posix()
     design_url = f"https://github.com/{settings['repository']}/blob/main/{quote(relative, safe='/')}"
     body = f"{marker}\n\n需求文档：`{relative}`\n\n[查看主线设计（合入后可用）]({design_url})\n\n" + doc.read_text(
         encoding="utf-8"
