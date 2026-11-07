@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "scope": "439-model-autofetch-and-450-live-child-combination",
+  "feature_accepted": false,
+  "four_stalls_reproduced": true,
+  "cases": {
+    "models-initial-ok": {
+      "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+      "report": "bin/issue441-models-initial-ok-before.json",
+      "report_sha256": "fb1cd48e5aa5c76c58f48cca079df58e8a4060e936aa5891a0a6ec9ae7a074fe",
+      "ok": false,
+      "reproduced_stall": true,
+      "verification_status": "reproduced_stall",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "parent_return_count": 0,
+      "models_status": 200,
+      "startup_get_count": 1,
+      "legal_idle_source_change": true,
+      "models_loading_observed": true,
+      "terminal_receipt_recorded_during_models": true,
+      "idle_stall_observed": true,
+      "recorded_event_files": 14,
+      "tool_receipt_files": 0
+    },
+    "models-initial-fail": {
+      "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+      "report": "bin/issue441-models-initial-fail-before.json",
+      "report_sha256": "4716ccbd6e9ddb507262adc0f4906c0834b0fa8e135f5c63799a821c36889c3a",
+      "ok": false,
+      "reproduced_stall": true,
+      "verification_status": "reproduced_stall",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "parent_return_count": 0,
+      "models_status": 500,
+      "startup_get_count": 1,
+      "legal_idle_source_change": true,
+      "models_loading_observed": true,
+      "terminal_receipt_recorded_during_models": true,
+      "idle_stall_observed": true,
+      "recorded_event_files": 14,
+      "tool_receipt_files": 0
+    },
+    "models-return-ok": {
+      "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+      "report": "bin/issue441-models-return-ok-before.json",
+      "report_sha256": "26e811062bc8657d9f15e3ed85c2c674ea16cdb43d258f00c57c9eef45744351",
+      "ok": false,
+      "reproduced_stall": true,
+      "verification_status": "reproduced_stall",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3
+      },
+      "parent_return_count": 0,
+      "models_status": 200,
+      "startup_get_count": 1,
+      "legal_idle_source_change": true,
+      "models_loading_observed": true,
+      "terminal_receipt_recorded_during_models": true,
+      "idle_stall_observed": true,
+      "recorded_event_files": 95,
+      "tool_receipt_files": 2
+    },
+    "models-return-fail": {
+      "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+      "report": "bin/issue441-models-return-fail-before.json",
+      "report_sha256": "1946e3c7c62e93105c6c622a6a0076db12b127dbdb18272405e4f7e7ac8af1e8",
+      "ok": false,
+      "reproduced_stall": true,
+      "verification_status": "reproduced_stall",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3
+      },
+      "parent_return_count": 0,
+      "models_status": 500,
+      "startup_get_count": 1,
+      "legal_idle_source_change": true,
+      "models_loading_observed": true,
+      "terminal_receipt_recorded_during_models": true,
+      "idle_stall_observed": true,
+      "recorded_event_files": 95,
+      "tool_receipt_files": 2
+    }
+  }
+}

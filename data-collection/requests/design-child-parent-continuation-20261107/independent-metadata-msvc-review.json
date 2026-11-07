@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "issue_number": 441,
+  "reviewer": "codex-agent:/root/runtime_entry_fix",
+  "author": "codex-agent:/root/runtime_entry_fix/runtime_metadata_441",
+  "scope": "Independent review of the four-reference metadata getter local-name change after actual MSVC C4458. Existing live-batch and helper reviews remain scoped to unchanged logic.",
+  "result": "passed_narrow_review",
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "a4d5cfdc98f6b5ae04136aab982bc34996d8dbc67f29aeab434104bf2d720429",
+    "editor/docks/ai_chat_dock.h": "ecbcaae43fd05f9a39b02cbab5233075b53bb9f2250c895774cd5df715dd46f0",
+    "editor/docks/ai_chat_sub_agents.cpp": "90532136553a10bf7164bdae7822165d531d96a2483a0ae500894e06d0be6114",
+    "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+    "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+  },
+  "changes": [
+    "Dictionary metadata declaration, two writes and return renamed to host_metadata; field keys, values, validation, permissions and all other source bytes unchanged."
+  ],
+  "failure_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42376758833/job/128415903406",
+  "previous_summary_correction": "Earlier four-Windows-pass summary was inaccurate: MSVC editor failed while clang editor and two templates passed. Actual new-head MSVC result remains pending CI.",
+  "checks": [
+    "Exact +4/-4 diff reviewed against source85d312160ffa974427e4e3460e58618e170012a3",
+    "Targeted clang-format and diff-check passed",
+    "macOS build and valid/invalid runtime native acceptance passed; these do not claim actual MSVC recovery."
+  ],
+  "usage": null
+}

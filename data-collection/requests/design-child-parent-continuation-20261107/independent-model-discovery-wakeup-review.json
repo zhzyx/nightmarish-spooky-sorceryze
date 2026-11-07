@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "reviewer": "runtime_metadata_441",
+  "review_status": "passed_static_review",
+  "feature_accepted": false,
+  "scope": "Independent read-only review of the five-line live-only model-discovery completion wakeup, shared HTTP/CLI callback flow, retained dispatch protection, fixture timing and fixed-before evidence. This is not an admission review of all staged integration files.",
+  "base_commit": "dd31189957919d0dc4ab274964ab135192ce661d",
+  "combined_sources": [
+    "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+    "0eec15645c91e82eaf1cc79da0d5fae994e9d052"
+  ],
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "a065c66bccfe301be46fadd5d35e57a8add4687f2e726f7a20aa26d8bb96e7f6",
+    "editor/docks/ai_chat_dock.h": "5e477762a88289e887afa345002fa0762ff0901f9494c6f14e9f62c532065f64",
+    "editor/docks/ai_chat_sub_agents.cpp": "6942064e7371c9d36095bcee6205a9d7dc66b728b62d734c236e626611881ab6",
+    "editor/docks/ai_chat_gonggong.cpp": "8637c1f7fc373500c90508a1b7c9e22f70efbc4c7f1d626c87df7b5bd0995a2c",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "2e19472bde72a6717e491a6f91286695d26a363b8040310931168034693d56e4",
+    "tests/editor/test_ai_chat_tools.cpp": "d95932b5fdd6a7106cd0df270887d16e4a3b972a19a8f2d5fa83c2a4824ae4e7"
+  },
+  "fixture_files": {
+    "tests/editor/design_batch.gd": "cda26cd6a4ae5ca0990adeb8f12d03b0c4a493e674fde843c431d259afdce7e7",
+    "tests/editor/run_design_batch.py": "aae05dfdc5372e490fdeb5b4a9165f85cab7a8661756eee213941f293002e8a2",
+    "tests/editor/editor_test_isolation.py": "c461e77e48b942af22d86904d3a7afba221abd00f6e27d64a6b1b2a8e0300e7a"
+  },
+  "baseline_staged_cpp_sha256": "d5cbce3f4677680b45d78c81baa94dc51ec08c899cb780ae1d67522b889f6d98",
+  "production_delta": {
+    "file": "editor/docks/ai_chat_dock.cpp",
+    "lines_added": 5,
+    "lines_removed": 0,
+    "only_expected_hook": true,
+    "method": "AIChatDock::_models_completed",
+    "location": "editor/docks/ai_chat_dock.cpp:4524-4528"
+  },
+  "findings": [],
+  "verified_properties": [
+    "The hook follows the loading/request-generation rejection and loading-state cleanup, and precedes HTTP failure, JSON failure and empty-list early returns.",
+    "Dispatch is deferred; successful model-list application finishes before the queued dispatch executes.",
+    "CLI model listings restore their suspended session then call the same _models_completed callback at ai_chat_dock.cpp:5023-5029. Dynamic CLI model-list coverage is not claimed.",
+    "Only an in-memory batch for the active parent or active child queues this new wakeup. Cold history has no design_batches ownership after _load_sub_agents.",
+    "Stop cancels the batch and invalidates model callbacks; no-tools, queue pause, unrelated active sessions, source identity, snapshot failure/recovery and terminal receipts retain the existing dispatcher guards.",
+    "Repeated wakeups retain existing queue removal, batch ownership and busy checks; the new code grants no tool permission and adds no polling or history scan."
+  ],
+  "fixture_review": {
+    "status": "passed_static_review",
+    "files": [
+      "tests/editor/design_batch.gd",
+      "tests/editor/run_design_batch.py"
+    ],
+    "timing": "Endpoint changes use the editable native field at a confirmed idle control boundary. Debounce/pending refresh handles changes made before the parent request or at a public completed-child boundary. The loopback model-list response delays two seconds; fixtures verify native loading controls and terminal receipt settlement during that interval. No private busy/models_loading/batch state is injected.",
+    "matrix": "Initial dispatch and final parent return, each with HTTP 200 and HTTP 500, plus planned Stop and no-live guards.",
+    "isolation": "Runner uses copy_editor, a private self-contained editor/settings directory, temporary project/repository and loopback model/Issue fixtures; production admission and user assets are excluded."
+  },
+  "before_evidence": {
+    "review_status": "verified_recorded_evidence_not_executed_by_reviewer",
+    "summary": "/Users/kevinxue/Documents/ChatGPT/newage/codex-child-model-wakeup/bin/issue441-model-wakeup-before-summary.json",
+    "summary_sha256": "b7d7e4fc4e98a30d6de09b4560b2cda1b939dc9a33501fae0c8bd550680b3731",
+    "source_manifest": "/Users/kevinxue/Documents/ChatGPT/newage/codex-child-model-wakeup/bin/issue441-model-wakeup-before-source.json",
+    "source_manifest_sha256": "627acc2a0a16ab1f6a035c7b44c4f37b29a54fd5d510c3f30dd7fc0c63eacbc8",
+    "binary_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+    "binary_digest_verified": true,
+    "baseline_source_manifest_matches_index": true,
+    "cases": [
+      {
+        "case": "models-initial-fail",
+        "report": "bin/issue441-models-initial-fail-before.json",
+        "report_sha256": "4716ccbd6e9ddb507262adc0f4906c0834b0fa8e135f5c63799a821c36889c3a",
+        "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+        "verification_status": "reproduced_stall",
+        "feature_accepted": false,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1
+        },
+        "parent_return_count": 0
+      },
+      {
+        "case": "models-initial-ok",
+        "report": "bin/issue441-models-initial-ok-before.json",
+        "report_sha256": "fb1cd48e5aa5c76c58f48cca079df58e8a4060e936aa5891a0a6ec9ae7a074fe",
+        "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+        "verification_status": "reproduced_stall",
+        "feature_accepted": false,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1
+        },
+        "parent_return_count": 0
+      },
+      {
+        "case": "models-return-fail",
+        "report": "bin/issue441-models-return-fail-before.json",
+        "report_sha256": "1946e3c7c62e93105c6c622a6a0076db12b127dbdb18272405e4f7e7ac8af1e8",
+        "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+        "verification_status": "reproduced_stall",
+        "feature_accepted": false,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1,
+          "child1": 3,
+          "child2": 3
+        },
+        "parent_return_count": 0
+      },
+      {
+        "case": "models-return-ok",
+        "report": "bin/issue441-models-return-ok-before.json",
+        "report_sha256": "26e811062bc8657d9f15e3ed85c2c674ea16cdb43d258f00c57c9eef45744351",
+        "artifact_sha256": "692ba56636b83c0234915fe02e180793db64582e7b6ae3d3e21cad60ae9f8e72",
+        "verification_status": "reproduced_stall",
+        "feature_accepted": false,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1,
+          "child1": 3,
+          "child2": 3
+        },
+        "parent_return_count": 0
+      }
+    ]
+  },
+  "after_validation": {
+    "status": "pending_execution_and_evidence_review",
+    "executed_by_reviewer": false,
+    "note": "Parent reported after candidate compilation in progress and fixture author will run the four behavior cases plus two guards. No after execution or feature acceptance is claimed by this receipt."
+  },
+  "checks": [
+    "Expected production delta reconstructed exactly from the index plus the five-line hook.",
+    "Before report SHA-256s, before binary SHA-256, source manifest and four non-acceptance outcomes verified.",
+    "Fixture Python parses successfully."
+  ],
+  "private_receipt_sha256": "ff890bd3742a797ac43e1440b360bb03147c172de7b9ea37df2051f79291b9b9",
+  "delivery_source_transfer": "Eight code and fixture inputs are byte-identical in the final cfd1 main-based delivery worktree; review was performed on the isolated combination before formal submission."
+}

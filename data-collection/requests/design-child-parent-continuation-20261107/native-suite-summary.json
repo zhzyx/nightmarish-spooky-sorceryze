@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "suite": "isolated_native_typed_http",
+  "all_recorded_cases_pass": true,
+  "single_artifact_suite": false,
+  "latest_artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+  "latest_artifact_cases": [
+    "stale-retry",
+    "stale-retry-terminal-failure"
+  ],
+  "current_fixture_sha256": {
+    "tests/editor/run_design_batch.py": "5b0e11cf59d971a1d28ab420b3add382756f13ef56ea15e9cbabffcf29d1321b",
+    "tests/editor/design_batch.gd": "18cd1be46967e76e16aff79674b822d1bad01cf5a590fc414a50719d54ea7147"
+  },
+  "cases": {
+    "approval-stop": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-approval-stop-v4.json",
+      "report_sha256": "485d63d5c3ce9e69ed824b02ded4a23f66a1d41688376ff9f6e97731d90b62c4"
+    },
+    "binding-drift": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-binding-drift.json",
+      "report_sha256": "1f166f01212ca689d2c087552b6f82f4bbac4459cd220a56de596557e9071595"
+    },
+    "close-child": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-close-child.json",
+      "report_sha256": "7894d9a84c51a23209a43be6eb82466c3d3a6d3eea12a21775617d89e424d183"
+    },
+    "close-parent": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-close-parent.json",
+      "report_sha256": "a0871b56aa153b8b40d5c3c565c839fe97e875812e12e363a89c9ca69aac43d1"
+    },
+    "cold": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-cold-v4.json",
+      "report_sha256": "672ee25c408461ee1b4430e5396196268b65128e04bde3cd2ac667bfb66fc46a"
+    },
+    "consultation": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-consultation-v4.json",
+      "report_sha256": "1691a997bcf5dff43915b2d7cef43baadaa27fab5107a716dca3b3eda7e52573"
+    },
+    "failure": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-failure.json",
+      "report_sha256": "8f75a8c33157ce6f6f445674e393d67fd321323cab87c327219094b83f475e2b"
+    },
+    "late-stop": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-late-stop-v4.json",
+      "report_sha256": "8c28f754b256098ff30a326168018d762db448fec093518bd256f77a7adfb415"
+    },
+    "no-tools": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-no-tools-v4.json",
+      "report_sha256": "12e2b414782584bfb619e228fdfb7ccf870910b1518f3842984c9080d032793f"
+    },
+    "normal": {
+      "ok": true,
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "report": "bin/issue441-native-normal-v6.json",
+      "report_sha256": "6f377f77681dbb8fc7518d39e03419c8c4362fb6a324ec0b83a2e4b7a317fafb"
+    },
+    "parent-terminal-failure": {
+      "ok": true,
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "report": "bin/issue441-native-parent-terminal-failure-v6.json",
+      "report_sha256": "c962c8b87ac6b49a0508d446cf35fa6a847e73a2eb3eed54221b8e9fcad65708"
+    },
+    "paused": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-paused.json",
+      "report_sha256": "ed85b22d585fdff22ff7df1ba2c18903efa3cb969de880d3306cc74f753d67c9"
+    },
+    "receipt-failure": {
+      "ok": true,
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "report": "bin/issue441-native-receipt-failure-v5.json",
+      "report_sha256": "b0e9de583ff010bb0db8f0c873c7b3cad63b638433df223fd4ce62dcdd54a11e"
+    },
+    "runtime-invalid": {
+      "ok": true,
+      "artifact_sha256": "941dddbdb25cdf6bfffb9d0612b28501719fe405a0f02a895c9177579e2de6df",
+      "report": "bin/issue441-native-runtime-invalid-v4.json",
+      "report_sha256": "baed422073e90a405dfc3d4da87dd09590e9d88950db176b47125f662be97063"
+    },
+    "stale-retry": {
+      "ok": true,
+      "artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+      "report": "bin/issue441-native-stale-retry-v7.json",
+      "report_sha256": "b06c4681a4c299ce866bc51c5ce48cdbbb14fc957d3e28f4fc3c2a9f5cf20739"
+    },
+    "stale-retry-terminal-failure": {
+      "ok": true,
+      "artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+      "report": "bin/issue441-native-stale-retry-terminal-failure-v7.json",
+      "report_sha256": "b3eb6b54a9d6a87adf7e950350df880ffa0f37acaa70c0ab3a53f9af6a0e6085"
+    },
+    "stop": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-stop.json",
+      "report_sha256": "541e078da6557096ed1a4b4bc47021d881b160bb65ffa6aaa132b2f71f212015"
+    },
+    "terminal-failure": {
+      "ok": true,
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "report": "bin/issue441-native-terminal-failure-v6.json",
+      "report_sha256": "e245dfe880e31a2c836762c0d1626b7a468deb7d05a5da7b9709c616ab070a97"
+    },
+    "timeout": {
+      "ok": true,
+      "artifact_sha256": "ce833f67bd158175277d2820564c11d122bb945e21bed51d256a474ff60f47a8",
+      "report": "bin/issue441-native-timeout.json",
+      "report_sha256": "846aac921f41dac47e29cdb46281f037d261eebe357e4c01b324f4c023188c07"
+    },
+    "unrelated": {
+      "ok": true,
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "report": "bin/issue441-native-unrelated-v5.json",
+      "report_sha256": "b61397167da53f637c78b0905f1f6b33e678ba5cc5f14771f3ab9be7372ecbe5"
+    }
+  },
+  "before_regressions": [
+    {
+      "case": "receipt-failure",
+      "ok": false,
+      "artifact_sha256": "82369e73ddcb210339a501e4a3d84396777d502d2d13475be9645df284db3df7",
+      "report": "bin/issue441-native-receipt-failure-before.json",
+      "report_sha256": "12fb9a0be9915bef01d18c2503e2eeb0fe2112b3e0fc41541b4f0e721ddb6f27"
+    }
+  ],
+  "retry_source_wait_regression": {
+    "before_standalone_retry": {
+      "report": "bin/issue441-native-stale-retry-v5.json",
+      "report_sha256": "36adba96202cfcbde12fc57689bef8ffe5127e20467b1ac42471db7c2cb83204",
+      "artifact_sha256": "1c689c5f942ac087385fd97d7618414885ee7bd79b472914f6e7af4c2c5fb6eb",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_auto_return_turns": 1,
+      "paused_local_notices": 0,
+      "native_retry_refusal_observed": null,
+      "child1_state": "prior_completed",
+      "child1_receipt_count": 0,
+      "child1_transport_completed": null
+    },
+    "before_combination": {
+      "executed": false,
+      "basis": "Source review only; no native before-run combination result is claimed."
+    },
+    "after_standalone_retry": {
+      "report": "bin/issue441-native-stale-retry-v7.json",
+      "report_sha256": "b06c4681a4c299ce866bc51c5ce48cdbbb14fc957d3e28f4fc3c2a9f5cf20739",
+      "artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_auto_return_turns": 1,
+      "paused_local_notices": 0,
+      "native_retry_refusal_observed": true,
+      "child1_state": "completed",
+      "child1_receipt_count": 3,
+      "child1_transport_completed": true
+    },
+    "after_combination": {
+      "report": "bin/issue441-native-stale-retry-terminal-failure-v7.json",
+      "report_sha256": "b3eb6b54a9d6a87adf7e950350df880ffa0f37acaa70c0ab3a53f9af6a0e6085",
+      "artifact_sha256": "ae2258c50f5b76f483fbf225859a2fb14a0691ffd5ddf9303611048231e2cf4b",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "parent_auto_return_turns": 0,
+      "paused_local_notices": 1,
+      "native_retry_refusal_observed": true,
+      "child1_state": "completed",
+      "child1_receipt_count": 3,
+      "child1_transport_completed": true
+    }
+  }
+}
