@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f916b49deba0cc3571c3ee84dff36a24c9fb671b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-input-memory",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "22af20ddf13a4fba3dfd0d8f47840f6b58d2852ca63625cc625e0272f38182dd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511",
+    "action": "validation",
+    "detection_head": "d4e1d8a34a02562849c9eb765c44ed8b5bd3634e",
+    "context_sha256": "e72ded64f12e7219386b787e6caf55928645d5a4d4887e3b1f4715e8f7e0969a",
+    "operator": "Sail-Li",
+    "worker": "codex-511-text",
+    "authority_ref": "user-request",
+    "evidence": "Prior attempt git checkout-index retained normalized-equivalent working file. Explicitly wrote git cat-file blob bytes and verified equality before retry.",
+    "diagnosis": "Index refresh left CRLF behind despite an unchanged normalized index.",
+    "next_action": "Re-run check_collection and exact full gate, then sign candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T21:17:26.330794+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T21:18:15.056135+00:00",
+  "sha256": "f3d478d0d0d94ac429f5de5b1cefda2418796a74128777440dc1111cf050bdae"
+}
