@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-layered-refresh-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-layered-refresh",
+  "kind": "request",
+  "occurred_at": "2026-11-07T20:50:49.0931938Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/524",
+  "agent": {
+    "version": "host-version-unreported",
+    "id": "codex-524",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "按层级合并天枢变化并分步显示工单",
+    "design_document": "design-docs/tianshu-layered-refresh.md"
+  },
+  "evidence_refs": [],
+  "sha256": "022272c5a8742ce87ea198fe1d6bc37391c08915348fb23576259e3be220c5d7"
+}

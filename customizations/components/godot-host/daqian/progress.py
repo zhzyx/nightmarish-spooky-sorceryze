@@ -7,7 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+if Path(__file__).is_file():  # A bundled adapter resolves this from the bound workspace.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import issue_route
 
 from daqian.repository_access import work_items
@@ -35,13 +36,30 @@ def route_for_row(root, receipts, actor, row, item):
     if not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key) or item["closed"]:
         return {}
     try:
-        binding, _, _, status, _ = issue_route.source_from_row(
+        binding, _, _, _, _ = issue_route.source_from_row(
             work_items, {"repository": actor["repo"]}, item["number"], key, row
         )
-        binding["actor"] = actor["user_id"]
         item["source_sha256"] = binding["source_sha256"]
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return {}
+    return route_for_snapshot(root, receipts, actor, item)
+
+
+def route_for_snapshot(root, receipts, actor, item):
+    key = item["request"]
+    if item["closed"] or not re.fullmatch(r"daqian-direct-[a-f0-9]{20}", key) or not item.get("source_sha256"):
+        return {}
+    binding = {
+        "actor": actor["user_id"],
+        "number": item["number"],
+        "revision": item["updated"],
+        "request_id": key,
+        "source_sha256": item["source_sha256"],
+        "url": item["url"],
+    }
+    try:
         folder = receipts / "daqian-direct" / key
-        if status == "planned":
+        if item["status"] == "planned":
             state = read_object(folder / ("route-" + issue_route.digest(binding) + ".json"))
             if state.get("binding") != binding:
                 return {}
@@ -71,7 +89,7 @@ def route_for_row(root, receipts, actor, row, item):
             **decision,
             **{k: binding[k] for k in ("number", "request_id", "url", "revision")},
             "ready": result["ready"],
-            "clarification_history": state.get("answers" if status == "planned" else "clarifications", []),
+            "clarification_history": state.get("answers" if item["status"] == "planned" else "clarifications", []),
         }
     except (AttributeError, KeyError, OSError, TypeError, ValueError):
         return {}
@@ -99,6 +117,10 @@ def dispatch_revision(row):
 
 
 def workers_for_row(receipts, repo, row, item):
+    return workers_for_snapshot(receipts, repo, dispatch_revision(row), item)
+
+
+def workers_for_snapshot(receipts, repo, revision, item):
     if not item["request"] or item["closed"]:
         return []
     ticket = f"github:{repo}#{item['number']}"
@@ -121,7 +143,7 @@ def workers_for_row(receipts, repo, row, item):
             and assignment.get("ticket") == ticket
             and source.get("requestId") == item["request"]
             and source.get("authority") == item["url"]
-            and source.get("sha256") == dispatch_revision(row)
+            and source.get("sha256") == revision
             and receipt.get("setupPending") is False
             and isinstance(receipt.get("workerId"), str)
             and receipt["workerId"]

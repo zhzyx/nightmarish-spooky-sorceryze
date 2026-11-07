@@ -10,6 +10,10 @@ var environment_cleanup_active := false
 var observed_runtime: Dictionary = {}
 
 var canvas_script: Script
+var board_bundle_base64 := ""
+var board_bundle_sha256 := ""
+# Official pre-delta board shipped with the model-routing workspace. Custom helpers keep their original entry.
+const LEGACY_BOARD_SHA256 := "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5"
 var canvas_panel
 
 var rules: Script
@@ -19,6 +23,15 @@ var models_script: Script
 var models_dialog: AcceptDialog
 var editor
 var board_cards: Array[GraphNode] = []
+signal board_projection_finished
+const BOARD_SLICE_US := 3000
+var board_projection_generation := 0
+var board_projection_pending := false
+var board_projection_suspended := false
+var card_by_url := {}
+var row_rendered := {}
+var card_rendered := {}
+var board_return_url := ""
 var board_layout_pending := false
 var last_search_query := ""
 var details_expanded := false
@@ -30,6 +43,18 @@ var project_mode := false
 var loading_project := false
 var scope_epoch := 0
 var personal_snapshot := {}
+var project_snapshot := {}
+var delta_enabled := {false:false, true:false}
+var layer_generation := {false:0, true:0}
+var layer_dirty := {false:{}, true:{}}
+var layer_positions := {false:{}, true:{}}
+var layer_events := {false:{}, true:{}}
+var hidden_detail_changed := false
+var watch_config := {}
+var layer_discovery := {}
+var layer_full_after := {false:0, true:0}
+var delta_busy := false
+var next_delta_tick := 0
 var far_depth := 0.0
 var project_anchor := Button.new()
 var notice_panel := PanelContainer.new()
@@ -222,7 +247,7 @@ func _ready() -> void:
 	connection_button.flat = true
 	connection_button.tooltip_text = "工作区连接"
 	connection_button.accessibility_name = "工作区连接"
-	refresh_button = _button(row, "刷新", refresh)
+	refresh_button = _button(row, "刷新", _manual_refresh)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
 	advanced_bar = HFlowContainer.new()
 	advanced_bar.hide()
@@ -329,7 +354,7 @@ func _ready() -> void:
 	issue_list.item_activated.connect(func():
 		var selected := issue_list.get_selected()
 		if selected and selected.visible and selected.get_metadata(0) is Dictionary:
-			_open_issue(selected.get_metadata(0))
+			_open_board_url(selected.get_metadata(0).url)
 			return_button.grab_focus())
 	issue_list.gui_input.connect(_list_zoom_input)
 	add_child(issue_list)
@@ -420,6 +445,9 @@ func _ready() -> void:
 	add_child(debug_timer)
 	theme_changed.connect(_update_board_theme, CONNECT_DEFERRED)
 	visibility_changed.connect(_opened)
+	visibility_changed.connect(func():
+		if board_projection_suspended and is_visible_in_tree() and current.is_empty() and not actor.is_empty():
+			_draw_board())
 	get_window().files_dropped.connect(_drop_images)
 	for dialog: Window in [clarification_dialog, history_dialog, models_dialog, editor.picker]:
 		dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
@@ -1049,9 +1077,17 @@ func _start_session() -> void:
 
 func _opened() -> void:
 	if is_visible_in_tree():
+		var reconnect := watcher_exited
 		watcher_exited = false
+		if reconnect and not actor.is_empty() and picker_scope == _repo():
+			_start_progress_watch(watch_config)
+		if hidden_detail_changed and not current.is_empty():
+			hidden_detail_changed = false
+			_sync_workflow()
 		if actor.is_empty() or picker_scope != _repo():
 			refresh()
+		elif delta_enabled[project_mode] and not watcher.is_empty():
+			_mark_layer_event("ready", project_mode)
 		elif Time.get_ticks_msec() >= auto_refresh_after:
 			auto_refresh_pending = true
 
@@ -1069,6 +1105,7 @@ func _private_path() -> String:
 
 
 func _load_personal() -> void:
+	_clear_board_widgets()
 	picker_scope = _repo()
 	saved = {}
 	if FileAccess.file_exists(_private_path()):
@@ -1216,7 +1253,9 @@ func _exit_tree() -> void:
 		var python := str(_runtime_paths().get("workflow_python", ""))
 		if FileAccess.file_exists(bridge):
 			if not python.is_empty():
-				OS.execute(python,[bridge,"--repo",picker_scope,"--end-session","--editor-session",editor_session])
+				var args := _board_entry_args(bridge)
+				args.append_array(["--repo",picker_scope,"--end-session","--editor-session",editor_session])
+				OS.execute(python,args)
 	_stop_debug(false,true)
 	if is_instance_valid(editor) and is_instance_valid(overview):
 		_save()
@@ -1250,6 +1289,7 @@ func _show_board() -> void:
 	advanced_bar.hide()
 	advanced_button.text = "筛选与跟进 ▾"
 	return_button.hide()
+	board_return_url = previous
 	_draw_board()
 	if issue_list.visible and issue_rows.has(previous):
 		var row: TreeItem = issue_rows[previous]
@@ -1264,57 +1304,228 @@ func _show_board() -> void:
 				break
 
 
-func _draw_board() -> void:
-	# Returning to the overview rebuilds it from the latest board snapshot.
-	if not current.is_empty():
-		var pending_count := 0
-		for item in board.get("issues", []):
-			pending_count += _pending_action_count(item)
-		_update_dock_title(pending_count)
-		return
+func await_board_projection() -> void:
+	while board_projection_pending:
+		await board_projection_finished
+
+
+func _clear_board_widgets() -> void:
+	board_projection_generation += 1
+	board_projection_pending = false
+	board_return_url = ""
+	overview.clear_flow()
+	for card in board_cards:
+		overview.remove_child(card)
+		card.queue_free()
+	for frame: GraphFrame in creator_sections.values():
+		overview.remove_child(frame)
+		frame.queue_free()
 	board_cards.clear()
+	card_by_url.clear()
+	card_rendered.clear()
 	creator_sections.clear()
 	creator_rows.clear()
-	for child in overview.get_children():
-		if child is GraphNode or child is GraphFrame:
-			overview.remove_child(child)
-			child.queue_free()
-	overview.clear_flow()
-	var selected_url := ""
-	if issue_list.get_selected() and issue_list.get_selected().get_metadata(0) is Dictionary:
-		selected_url = issue_list.get_selected().get_metadata(0).url
 	issue_rows.clear()
+	row_rendered.clear()
 	issue_list.clear()
-	issue_list.create_item()
-	var statuses := ["全部状态", "待我处理"]
-	var creators := ["全部创建人"]
+	board_projection_finished.emit()
+
+
+func _continue_projection(generation: int) -> bool:
+	if generation != board_projection_generation:
+		return false
+	if current.is_empty() and not actor.is_empty() and is_visible_in_tree() and far_depth <= 0.0:
+		return true
+	board_projection_suspended = true
+	board_projection_pending = false
+	board_projection_finished.emit()
+	return false
+
+
+func _open_board_url(url: String) -> void:
+	for item in board.get("issues", []):
+		if item.url == url:
+			await _open_issue(item)
+			return
+
+
+func _draw_board() -> void:
+	board_projection_generation += 1
+	var generation := board_projection_generation
+	board_projection_pending = false
+	if not current.is_empty() or not is_visible_in_tree() or actor.is_empty():
+		board_projection_suspended = true
+		board_projection_finished.emit()
+		return
+	board_projection_suspended = false
+	var graph_view := board_views.current_tab == 1
 	var rows: Array = board.get("issues", []).duplicate()
+	var live := {}
 	var keys := {}
-	var action_counts := {}
+	var actions := {}
 	var groups := {}
+	var statuses := ["全部状态", "待我处理"]
+	var waiting := 0
 	for item: Dictionary in rows:
+		live[item.url] = item
 		var state := _display_state(item)
 		var rank := STATE_ORDER.find(state)
 		var categories := PackedStringArray(item.get("categories", ["development"] if item.get("development", false) else []))
 		categories.sort()
-		action_counts[item.url] = _pending_action_count(item)
-		var decision_first: bool = action_counts[item.url] > 0 or state in ["needs-decision", "awaiting_approval"]
-		keys[item.url] = [int(not decision_first), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
+		actions[item.url] = _pending_action_count(item)
+		waiting += int(actions[item.url])
+		var prioritize: bool = actions[item.url] > 0 or state in ["needs-decision", "awaiting_approval"]
+		keys[item.url] = [int(not prioritize), rank if rank >= 0 else STATE_ORDER.find("open"), state, int(categories.is_empty()), ",".join(categories), int(item.number)]
 		groups[_creator(item)] = true
 	rows.sort_custom(func(a, b): return keys[a.url] < keys[b.url])
 	var names := groups.keys()
 	names.sort_custom(func(a, b): return a != b and (b == UNKNOWN_CREATOR or (a != UNKNOWN_CREATOR and str(a).naturalnocasecmp_to(b) < 0)))
-	creators.append_array(names)
-	if project_mode:
-		for creator: String in names:
-			if board_views.current_tab == 0:
-				var header := issue_list.create_item(issue_list.get_root())
-				header.set_text(1, creator)
-				header.set_selectable(0, false)
-				header.set_selectable(1, false)
-				header.set_selectable(2, false)
-				creator_rows[creator] = header
+	pending_menu.get_popup().clear()
+	for item in rows:
+		if actions[item.url] > 0:
+			pending_menu.get_popup().add_item("#%s  %s" % [item.number, item.title], int(item.number))
+		if item.status not in statuses:
+			statuses.append(item.status)
+	pending_menu.text = "待办 (%d)" % waiting
+	pending_menu.disabled = waiting == 0
+	pending_menu.flat = waiting == 0
+	pending_menu.icon = get_theme_icon("Notification", "EditorIcons") if waiting else null
+	_update_dock_title(waiting)
+	_fill_filter(status, statuses)
+	_fill_filter(creator_filter, ["全部创建人"] + names)
+	_update_board_sync_notice()
+	_filter_board()
+	if far_depth > 0.0:
+		board_projection_suspended = true
+		project_anchor.text = "%s · %d 项\n项目远景 · %.1f 级" % [actor.get("repo", ""), rows.size(), far_depth]
+		board_projection_finished.emit()
+		return
+
+	var selected_url := board_return_url
+	if not graph_view and selected_url.is_empty() and issue_list.get_selected() and issue_list.get_selected().get_metadata(0) is Dictionary:
+		selected_url = issue_list.get_selected().get_metadata(0).url
+	board_projection_pending = true
+	var deadline := Time.get_ticks_usec() + BOARD_SLICE_US
+	if graph_view:
+		for url in card_by_url.keys():
+			if not live.has(url):
+				_remove_board_card(url)
+				if Time.get_ticks_usec() >= deadline:
+					await get_tree().process_frame
+					if not _continue_projection(generation):
+						return
+					deadline = Time.get_ticks_usec() + BOARD_SLICE_US
+	else:
+		if not issue_list.get_root():
+			issue_list.create_item()
+		for url in issue_rows.keys():
+			if not live.has(url):
+				issue_rows[url].free()
+				issue_rows.erase(url)
+				row_rendered.erase(url)
+	_sync_creator_groups(names if project_mode else [], graph_view)
+	var next_rows := rows.duplicate()
+	# Pinned cards that are already in view and the navigation target appear in the first slice.
+	if graph_view:
+		var visible_rect := Rect2(overview.scroll_offset / overview.zoom, overview.size / overview.zoom)
+		var priority := []
+		var rest := []
+		for item in next_rows:
+			var pos = saved.get("positions", {}).get(item.url)
+			if item.url == selected_url or (pos is Vector2 and visible_rect.has_point(pos)):
+				priority.append(item)
 			else:
+				rest.append(item)
+		next_rows = priority + rest
+	var previous_row := {}
+	var geometry_changed := false
+	for item: Dictionary in next_rows:
+		var state := _display_state(item)
+		var running := PackedStringArray(item.get("running_titles", [])) if fresh_progress else PackedStringArray()
+		if fresh_progress:
+			running.append_array(PackedStringArray(item.get("workers", [])))
+		if not _pending_operation(item).is_empty():
+			state = "awaiting_approval"
+		var actionable: bool = actions[item.url] > 0
+		var suffix := " · 待决策" if actionable and state not in ["needs-decision", "awaiting_approval"] else ""
+		var region := _creator(item) if project_mode else ""
+		if graph_view:
+			var steps := []
+			for node in item.get("plan", {}).get("nodes", {}).values():
+				if node.kind != "text":
+					steps.append([node.title, node.value])
+			var signature := [item.title, item.owners.duplicate(), state, suffix, running, region, steps, board_palette]
+			if card_rendered.get(item.url) != signature:
+				var selected: bool = (card_by_url.has(item.url) and card_by_url[item.url].selected) or selected_url == item.url
+				_remove_board_card(item.url)
+				var card := _add_board_card(item, state, suffix, running, region)
+				card_by_url[item.url] = card
+				card_rendered[item.url] = signature
+				card.selected = selected
+				card.visible = _matches_board_filter(item, actionable)
+				geometry_changed = true
+		else:
+			var parent: TreeItem = creator_rows[region] if project_mode else issue_list.get_root()
+			var line: TreeItem = issue_rows.get(item.url)
+			if line and line.get_parent() != parent:
+				line.get_parent().remove_child(line)
+				parent.add_child(line)
+			var signature := [item.title, item.owners.duplicate(), item.get("categories", []).duplicate(), item.get("development", false), state, suffix, running, actionable, board_palette]
+			if not line or row_rendered.get(item.url) != signature:
+				line = _add_issue_row(item, state, suffix, running, parent, line)
+				line.set_icon(1, get_theme_icon("Notification", "EditorIcons") if actionable else null)
+				if actionable:
+					line.set_icon_modulate(1, overview.status_ink("waiting"))
+				row_rendered[item.url] = signature
+			else:
+				line.set_metadata(0, item)
+			var prior: TreeItem = previous_row.get(region)
+			if prior and line.get_prev() != prior:
+				line.move_after(prior)
+			elif not prior and line.get_prev():
+				line.move_before(parent.get_first_child())
+			previous_row[region] = line
+			if item.url == selected_url and line.visible:
+				line.select(0)
+			line.visible = _matches_board_filter(item, actionable)
+		if Time.get_ticks_usec() >= deadline:
+			if geometry_changed:
+				_queue_board_layout()
+				geometry_changed = false
+			await get_tree().process_frame
+			if not _continue_projection(generation):
+				return
+			deadline = Time.get_ticks_usec() + BOARD_SLICE_US
+	if graph_view:
+		var ordered: Array[GraphNode] = []
+		for item in rows:
+			ordered.append(card_by_url[item.url])
+		if geometry_changed or board_cards != ordered:
+			board_cards = ordered
+			_queue_board_layout()
+		if not await _sync_board_edges(rows, generation):
+			return
+		_zoom_detail()
+		if board_layout_pending:
+			_layout_board()
+	else:
+		for creator in creator_rows.keys():
+			if not project_mode or not groups.has(creator):
+				creator_rows[creator].free()
+				creator_rows.erase(creator)
+	_filter_board()
+	if not graph_view and selected_url == board_return_url and issue_rows.has(selected_url) and issue_rows[selected_url].visible:
+		issue_list.scroll_to_item(issue_rows[selected_url])
+	board_return_url = ""
+	board_projection_pending = false
+	board_projection_finished.emit()
+
+
+func _sync_creator_groups(names: Array, graph_view: bool) -> void:
+	var previous: TreeItem
+	for creator in names:
+		if graph_view:
+			if not creator_sections.has(creator):
 				var frame := GraphFrame.new()
 				frame.title = creator
 				frame.autoshrink_enabled = false
@@ -1323,50 +1534,62 @@ func _draw_board() -> void:
 				frame.resizable = false
 				overview.add_child(frame)
 				creator_sections[creator] = frame
-	var waiting_inputs := 0
-	pending_menu.get_popup().clear()
-	var by_url := {}
-	for index in rows.size():
-		var item: Dictionary = rows[index]
-		var issue_state := _display_state(item)
-		var running := PackedStringArray(item.get("running_titles", [])) if fresh_progress else PackedStringArray()
-		if fresh_progress:
-			running.append_array(PackedStringArray(item.get("workers", [])))
-		var needs_approval := not _pending_operation(item).is_empty()
-		if needs_approval:
-			issue_state = "awaiting_approval"
-		var actionable: bool = action_counts[item.url] > 0
-		if actionable:
-			waiting_inputs += action_counts[item.url]
-			pending_menu.get_popup().add_item("#%s  %s" % [item.number,item.title],int(item.number))
-		if item.status not in statuses:
-			statuses.append(item.status)
-		var suffix := " · 待决策" if actionable and issue_state not in ["needs-decision", "awaiting_approval"] else ""
-		var creator := _creator(item)
-		if board_views.current_tab == 0:
-			var line := _add_issue_row(item, issue_state, suffix, running, creator_rows.get(creator, issue_list.get_root()))
-			if actionable:
-				line.set_icon(1, get_theme_icon("Notification", "EditorIcons"))
-				line.set_icon_modulate(1, overview.status_ink("waiting"))
-			if item.url == selected_url:
-				line.select(0)
 		else:
-			by_url[item.url] = _add_board_card(item, issue_state, suffix, running, creator if project_mode else "")
+			if not creator_rows.has(creator):
+				var header := issue_list.create_item(issue_list.get_root())
+				for column in 3:
+					header.set_selectable(column, false)
+				creator_rows[creator] = header
+			var header: TreeItem = creator_rows[creator]
+			if previous and header.get_prev() != previous:
+				header.move_after(previous)
+			previous = header
+	if graph_view:
+		for creator in creator_sections.keys():
+			if creator not in names:
+				var frame: GraphFrame = creator_sections[creator]
+				overview.remove_child(frame)
+				frame.queue_free()
+				creator_sections.erase(creator)
+		var ordered := {}
+		for creator in names:
+			ordered[creator] = creator_sections[creator]
+		creator_sections = ordered
+
+
+func _remove_board_card(url: String) -> void:
+	var card: GraphNode = card_by_url.get(url)
+	if not card:
+		return
+	if overview.get_connection_count(card.name, 0) > 0:
+		for edge in overview.get_connection_list_from_node(card.name):
+			overview.disconnect_flow(edge.from_node, edge.from_port, edge.to_node, edge.to_port)
+	board_cards.erase(card)
+	card_by_url.erase(url)
+	card_rendered.erase(url)
+	overview.remove_child(card)
+	card.queue_free()
+
+
+func _sync_board_edges(rows: Array, generation: int) -> bool:
+	var wanted := {}
+	var deadline := Time.get_ticks_usec() + BOARD_SLICE_US
 	for item in rows:
 		for dep in item.dependencies:
-			if by_url.has(dep) and by_url.has(item.url):
-				overview.connect_flow(by_url[dep], 0, by_url[item.url], 0)
-	pending_menu.text = "待办 (%d)" % waiting_inputs
-	pending_menu.disabled = waiting_inputs == 0
-	pending_menu.flat = waiting_inputs == 0
-	pending_menu.icon = get_theme_icon("Notification", "EditorIcons") if waiting_inputs > 0 else null
-	_update_dock_title(waiting_inputs)
-	_zoom_detail(true)
-	_layout_board()
-	_fill_filter(status, statuses)
-	_fill_filter(creator_filter, creators)
-	_filter_board()
-	_update_board_sync_notice()
+			if card_by_url.has(dep):
+				var key := [card_by_url[dep].name, 0, card_by_url[item.url].name, 0]
+				wanted[key] = true
+				if not overview.lines.has(key):
+					overview.connect_flow(key[0], 0, key[2], 0)
+				if Time.get_ticks_usec() >= deadline:
+					await get_tree().process_frame
+					if not _continue_projection(generation):
+						return false
+					deadline = Time.get_ticks_usec() + BOARD_SLICE_US
+	for key in overview.lines.keys():
+		if not wanted.has(key):
+			overview.disconnect_flow(key[0], 0, key[2], 0)
+	return true
 
 
 func _update_board_sync_notice() -> void:
@@ -1408,8 +1631,9 @@ func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
 	link.visible = not link.uri.is_empty()
 
 
-func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem) -> TreeItem:
-	var line := issue_list.create_item(parent)
+func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem, line: TreeItem = null) -> TreeItem:
+	if not line:
+		line = issue_list.create_item(parent)
 	issue_rows[item.url] = line
 	line.set_metadata(0, item)
 	line.set_text(0, "#%s" % item.number)
@@ -1452,7 +1676,7 @@ func _paint_issue_status(item: TreeItem, rect: Rect2, state: String) -> void:
 	issue_list.draw_style_box(overview.status_badge(state), bounds)
 
 
-func _add_board_card(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, region: String) -> StringName:
+func _add_board_card(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, region: String) -> GraphNode:
 	var card = graph_script.SizeableCard.new()
 	card.set_meta("issue_url", item.url)
 	card.name = "i_" + str(item.number)
@@ -1478,7 +1702,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	overview.mark_card(card, label, issue_state, suffix)
 	label.size_flags_horizontal = Control.SIZE_SHRINK_END
 	card.get_titlebar_hbox().add_child(label)
-	var open_title := _button(card, item.title, _open_issue.bind(item))
+	var open_title := _button(card, item.title, _open_board_url.bind(item.url))
 	open_title.name = "OpenIssue"
 	open_title.flat = true
 	open_title.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -1497,6 +1721,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		card.add_child(active)
 	var detail := VBoxContainer.new()
 	detail.name = "StepDetails"
+	detail.visible = overview.zoom >= 1.2
 	for node in item.get("plan",{}).get("nodes",{}).values():
 		if node.kind == "text":
 			continue
@@ -1530,7 +1755,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		_queue_save())
 	board_cards.append(card)
 	card.resized.connect(_queue_board_layout)
-	return card.name
+	return card
 
 
 func _zoom_detail(rebuilt := false) -> void:
@@ -1552,11 +1777,18 @@ func _zoom_detail(rebuilt := false) -> void:
 func _queue_board_layout() -> void:
 	if not board_layout_pending:
 		board_layout_pending = true
-		_layout_board.call_deferred()
+		_flush_board_layout.call_deferred()
+
+
+func _flush_board_layout() -> void:
+	if board_layout_pending:
+		_layout_board()
 
 
 func _layout_board() -> void:
 	board_layout_pending = false
+	if not current.is_empty() or board_views.current_tab != 1 or far_depth > 0.0 or not is_visible_in_tree():
+		return
 	if project_mode:
 		graph_layout.arrange_creators(overview, board_cards, creator_sections)
 	else:
@@ -1619,12 +1851,25 @@ func _search_input(event: InputEvent) -> void:
 
 
 func _fill_filter(control: OptionButton, values: Array) -> void:
+	if control.item_count == values.size():
+		var same := true
+		for i in values.size():
+			if control.get_item_text(i) != values[i]:
+				same = false
+				break
+		if same:
+			return
 	var selected := control.text
 	control.clear()
 	for value in values:
 		control.add_item(value)
 		if selected == value:
 			control.select(control.item_count-1)
+
+
+func _matches_board_filter(item: Dictionary, actionable: bool) -> bool:
+	var creator := _creator(item)
+	return (last_search_query.is_empty() or last_search_query in str(item.number) or last_search_query in str(item.title).to_lower()) and (status.selected <= 0 or (status.selected == 1 and actionable) or status.text == item.status) and (creator_filter.selected <= 0 or creator_filter.text == creator)
 
 
 func _filter_board(search_changed := false) -> void:
@@ -1639,16 +1884,15 @@ func _filter_board(search_changed := false) -> void:
 	var matched := {}
 	var counts := {}
 	for item in board.get("issues", []):
-		var matches := query.is_empty() or query in str(item.number) or query in str(item.title).to_lower()
 		var creator := _creator(item)
-		var included: bool = matches and (status.selected <= 0 or (status.selected == 1 and _pending_action_count(item) > 0) or status.text == item.status) and (creator_filter.selected <= 0 or creator_filter.text == creator)
+		var included := _matches_board_filter(item, status.selected == 1 and _pending_action_count(item) > 0)
 		matched[item.url] = included
 		if included:
 			shown += 1
 			counts[creator] = int(counts.get(creator, 0)) + 1
-		if issue_rows.has(item.url) and issue_rows[item.url].visible != included:
+		if board_views.current_tab == 0 and issue_rows.has(item.url) and issue_rows[item.url].visible != included:
 			issue_rows[item.url].visible = included
-	for creator in creator_rows:
+	for creator in creator_rows if board_views.current_tab == 0 else {}:
 		var row: TreeItem = creator_rows[creator]
 		var heading := "创建人 · %s (%d)" % [creator, counts.get(creator, 0)]
 		if row.visible != counts.has(creator):
@@ -1656,7 +1900,7 @@ func _filter_board(search_changed := false) -> void:
 		if row.get_text(1) != heading:
 			row.set_text(1, heading)
 	var sections_changed := false
-	for creator in creator_sections:
+	for creator in creator_sections if board_views.current_tab == 1 else {}:
 		var section: GraphFrame = creator_sections[creator]
 		var included := far_depth <= 0.0 and counts.has(creator)
 		if section.visible != included:
@@ -1666,7 +1910,7 @@ func _filter_board(search_changed := false) -> void:
 		if section.title != heading:
 			section.title = heading
 	var changed_cards := {}
-	for card in board_cards:
+	for card: GraphNode in board_cards if board_views.current_tab == 1 else []:
 		var included: bool = matched.get(card.get_meta("issue_url"), false) and far_depth <= 0.0
 		if card.visible != included:
 			card.visible = included
@@ -1778,9 +2022,7 @@ func _forget(reason: String) -> void:
 	far_depth = 0.0
 	project_anchor.hide()
 	personal_snapshot = {}
-	creator_rows.clear()
-	issue_rows.clear()
-	issue_list.clear()
+	_clear_board_widgets()
 	saved = {}
 	current = ""
 	editor.generation += 1
@@ -1799,7 +2041,32 @@ func _access_key() -> String:
 	return _repo().sha256_text()
 
 
+func _board_entry_args(script: String) -> PackedStringArray:
+	var original := PackedStringArray([script])
+	if board_bundle_base64.is_empty() or not FileAccess.file_exists(script) or FileAccess.file_exists(script.get_base_dir().path_join("board_delta.py")):
+		return original
+	if FileAccess.get_file_as_string(script).replace("\r\n", "\n").sha256_text() != LEGACY_BOARD_SHA256:
+		return original
+	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("gonggong-board-" + board_bundle_sha256 + ".pyz")
+	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != board_bundle_sha256:
+		var temporary := path + "." + editor_session + ".tmp"
+		var file := FileAccess.open(temporary, FileAccess.WRITE)
+		if not file:
+			return original
+		var written := file.store_buffer(Marshalls.base64_to_raw(board_bundle_base64))
+		file.close()
+		if not written or FileAccess.get_sha256(temporary) != board_bundle_sha256 or DirAccess.rename_absolute(temporary, path) != OK:
+			if FileAccess.file_exists(temporary):
+				DirAccess.remove_absolute(temporary)
+			return original
+	return PackedStringArray(["-I", "-B", path, "--workspace-board-sha256", LEGACY_BOARD_SHA256])
+
+
 func _board_command(access_only: bool, expected := "", project := false) -> Dictionary:
+	return await _run_board_command(access_only, expected, project, {})
+
+
+func _run_board_command(access_only: bool, expected: String, project: bool, delta_request: Dictionary) -> Dictionary:
 	var root := _repo()
 	var bridge := root.path_join("customizations/components/godot-host/daqian/board.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
@@ -1812,7 +2079,8 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	if python.is_empty():
 		return {"error":"工作流 Python 路径未配置或无效"}
 	var path := EditorInterface.get_editor_paths().get_cache_dir().path_join("daqian-" + Crypto.new().generate_random_bytes(12).hex_encode() + ".json")
-	var args := PackedStringArray([bridge,"--repo",root,"--result",path])
+	var args := _board_entry_args(bridge)
+	args.append_array(["--repo",root,"--result",path])
 	args.append_array(["--editor-session",editor_session])
 	if access_only:
 		args.append("--access-only")
@@ -1823,13 +2091,25 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 			args.append(str(number))
 	if expected != "":
 		args.append_array(["--expected-user",expected])
+	var request_path := path + ".request"
+	if not delta_request.is_empty():
+		var file := FileAccess.open(request_path, FileAccess.WRITE)
+		if not file:
+			return {"error":"未能保存增量读取请求"}
+		file.store_string(JSON.stringify(delta_request))
+		file.close()
+		args.append_array(["--delta",request_path])
 	var pid := OS.create_process(python,args)
 	if pid < 0:
-		return {"denied":true,"error":"无法启动共工身份核验入口"}
+		if not delta_request.is_empty():
+			DirAccess.remove_absolute(request_path)
+		return {"denied":delta_request.is_empty(),"error":"无法启动共工身份核验入口"}
 	while not FileAccess.file_exists(path) and OS.is_process_running(pid):
 		await get_tree().create_timer(HOST_RECEIPT_POLL_SECONDS).timeout
+	if not delta_request.is_empty():
+		DirAccess.remove_absolute(request_path)
 	if not FileAccess.file_exists(path):
-		return {"denied":true,"error":"未收到共工身份回执"}
+		return {"denied":delta_request.is_empty(),"error":"未收到共工身份回执"}
 	var value = JSON.parse_string(FileAccess.get_file_as_string(path))
 	DirAccess.remove_absolute(path)
 	if root != _repo() or not value is Dictionary:
@@ -1955,6 +2235,7 @@ func _refresh_board() -> void:
 		return
 	if value.has("board") and not actor.is_empty() and value.board.get("user_id") == actor.user_id and value.board.get("repo_id") == actor.repo_id:
 		var incoming: Dictionary = value.board
+		_note_layer_read(project_mode, value)
 		var comparable := board.duplicate()
 		if incoming.has("verified_at"):
 			comparable.verified_at = incoming.verified_at
@@ -2003,6 +2284,17 @@ func _stop_progress_watch() -> void:
 	legacy_route_result.clear()
 	legacy_route_turns = []
 	routing_stages.clear()
+	project_snapshot = {}
+	for project in [false, true]:
+		delta_enabled[project] = false
+		layer_generation[project] += 1
+		layer_full_after[project] = 0
+		layer_dirty[project].clear()
+		layer_positions[project].clear()
+		layer_events[project].clear()
+	layer_discovery.clear()
+	hidden_detail_changed = false
+	watch_config = {}
 	if not watcher.is_empty() and OS.is_process_running(watcher.pid):
 		OS.kill(watcher.pid)
 	watcher = {}
@@ -2022,7 +2314,8 @@ func _start_progress_watch(config: Dictionary) -> void:
 	var entry := _repo().path_join("customizations/components/godot-host/daqian/watch_progress.mjs")
 	if FileAccess.file_exists(entry):
 		progress_directory = config.directory
-		watcher = OS.execute_with_pipe(config.node, [entry, config.directory], false)
+		watch_config = config
+		watcher = OS.execute_with_pipe(config.node, [entry, config.directory, "--source-events"], false)
 
 
 func _list_zoom_input(event: InputEvent) -> void:
@@ -2043,7 +2336,7 @@ func _list_zoom_input(event: InputEvent) -> void:
 			list_zoom_until = 0
 			issue_list.accept_event()
 			row.select(0)
-			_open_issue(row.get_metadata(0))
+			_open_board_url(row.get_metadata(0).url)
 
 
 func _input(event: InputEvent) -> void:
@@ -2060,16 +2353,22 @@ func _process(_delta: float) -> void:
 		_zoom_detail()
 	_check_canvas_zoom()
 	var now := Time.get_ticks_msec()
-	if auto_refresh_pending and not checking and now >= auto_refresh_after and is_visible_in_tree():
+	if auto_refresh_pending and not checking and not delta_busy and now >= auto_refresh_after and is_visible_in_tree():
 		refresh(true)
+	if not delta_busy and not checking and not loading_project and now >= next_delta_tick:
+		next_delta_tick = now + 1000
+		_consume_layer_events(now)
 	if watcher.is_empty() or now < watcher_poll_after:
 		return
-	watcher_poll_after = now + WATCHER_POLL_MS
+	watcher_poll_after = now + (1000 if delta_enabled[project_mode] else WATCHER_POLL_MS)
 	if not OS.is_process_running(watcher.pid):
 		# A closed Windows pipe reports an engine error on every length query.
 		# Reconcile any unread final event once. Reopen or explicit refresh can reconnect.
 		watcher_exited = true
-		auto_refresh_pending = true
+		auto_refresh_pending = not delta_enabled[project_mode]
+		for project in [false, true]:
+			if delta_enabled[project]:
+				_mark_layer_event("ready", project)
 		watcher = {}
 		watcher_buffer = ""
 		return
@@ -2080,23 +2379,289 @@ func _process(_delta: float) -> void:
 	watcher_buffer += stream.get_buffer(size).get_string_from_ascii()
 	var lines := watcher_buffer.split("\n")
 	watcher_buffer = lines[-1]
-	var changed := false
 	var binding := _direct_binding()
-	var route_changed := false
-	for i in lines.size() - 1:
-		if lines[i] == "ready" or lines[i] == binding.get("request"):
-			route_changed = true
-		if lines[i] == "ready":
-			changed = true # Close the race between reading the board and attaching its watcher.
-		for row in board.get("issues", []):
-			var ticket := "github:%s#%d" % [actor.get("repo", ""), row.number]
-			if lines[i] == row.get("request", "") or lines[i] == JSON.stringify(ticket).sha256_text():
-				changed = true
-	if route_changed:
+	var check_route := false
+	for event in lines.slice(0, lines.size() - 1):
+		if event == "ready" or event == binding.get("request"):
+			check_route = true
+		for project in [false, true]:
+			_mark_layer_event(event, project)
+	if check_route:
 		legacy_route_path = ""
 		_read_routing_stage(binding)
-	if changed:
-		auto_refresh_pending = true
+
+
+func _layer_snapshot(project: bool) -> Dictionary:
+	if project == project_mode:
+		return board
+	return project_snapshot if project else personal_snapshot
+
+
+func _note_layer_read(project: bool, response: Dictionary) -> void:
+	delta_enabled[project] = response.get("delta_version") == 1
+	layer_full_after[project] = Time.get_ticks_msec() + AUTO_REFRESH_INTERVAL_MS
+	layer_generation[project] += 1
+	_index_layer(project, response.board)
+
+
+func _index_layer(project: bool, snapshot: Dictionary) -> void:
+	var positions := {}
+	var events := {}
+	var rows: Array = snapshot.get("issues", [])
+	for i in rows.size():
+		var row: Dictionary = rows[i]
+		var number := int(row.number)
+		positions[number] = i
+		if not str(row.get("request", "")).is_empty():
+			events.get_or_add(row.request, []).append(number)
+		var ticket := "github:%s#%d" % [snapshot.get("repo", actor.get("repo", "")), number]
+		events[JSON.stringify(ticket).sha256_text()] = [number]
+	layer_positions[project] = positions
+	layer_events[project] = events
+	for number in layer_dirty[project].keys():
+		if not positions.has(number):
+			layer_dirty[project].erase(number)
+
+
+func _manual_refresh() -> void:
+	if not current.is_empty() and delta_enabled[project_mode] and fresh_progress and not offline:
+		var url := str(saved.get("linked", {}).get(current, {}).get("url", current))
+		for row in board.get("issues", []):
+			if row.url == url:
+				layer_dirty[project_mode][int(row.number)] = {"at":0, "source":true, "manual":true}
+				if not checking and not delta_busy:
+					_consume_layer_events(Time.get_ticks_msec())
+				return
+	await refresh()
+
+
+func _mark_layer_event(event: String, project: bool) -> void:
+	var snapshot := _layer_snapshot(project)
+	if snapshot.is_empty() or actor.is_empty() or event.is_empty():
+		return
+	var now := Time.get_ticks_msec()
+	var source_event := event.begins_with("source:")
+	event = event.trim_prefix("source:")
+	var numbers: Array = layer_positions[project].keys() if event == "ready" else layer_events[project].get(event, [])
+	var matched := not numbers.is_empty() or event == "ready"
+	if delta_enabled[project]:
+		for number in numbers:
+			var entry: Dictionary = layer_dirty[project].get_or_add(number, {"at":now})
+			if source_event:
+				entry.source = true
+	var suffix := event.trim_prefix("daqian-direct-")
+	if not matched and suffix != event and suffix.length() == 20 and suffix.is_valid_hex_number(false):
+		layer_discovery.get_or_add(project, maxi(now + 20_000, layer_full_after[project]))
+	elif matched and not delta_enabled[project]:
+		if project == project_mode:
+			auto_refresh_pending = true
+		else:
+			layer_discovery.get_or_add(project, now + AUTO_REFRESH_INTERVAL_MS)
+
+
+func _consume_layer_events(now: int) -> void:
+	if layer_dirty[false].is_empty() and layer_dirty[true].is_empty() and layer_discovery.is_empty():
+		return
+	if actor.is_empty() or offline or picker_scope != _repo():
+		return
+	var selected := project_mode
+	var batch := []
+	var source := false
+	var earliest := now + 1
+	var discover := false
+	var active_url := str(saved.get("linked", {}).get(current, {}).get("url", current))
+	for project: bool in [project_mode, not project_mode]:
+		var discovery := int(layer_discovery.get(project, now + 1))
+		if discovery < earliest:
+			earliest = discovery
+			selected = project
+			discover = true
+			batch.clear()
+		if layer_dirty[project].is_empty() or not delta_enabled[project]:
+			continue
+		var layer := _layer_snapshot(project)
+		var candidates := []
+		for number in layer_dirty[project].keys():
+			if not layer_positions[project].has(number):
+				layer_dirty[project].erase(number)
+				continue
+			var row: Dictionary = layer.issues[layer_positions[project][number]]
+			var entry: Dictionary = layer_dirty[project][number]
+			var delay := 20_000 if project != project_mode else 10_000
+			if project == project_mode and is_visible_in_tree() and (current.is_empty() or active_url == row.url):
+				delay = 0
+			var read_source: bool = entry.get("source", false)
+			var due := int(entry.at) + (0 if entry.get("manual", false) else delay)
+			if due <= now:
+				candidates.append({"row":row, "due":due, "source":read_source})
+				if due < earliest:
+					earliest = due
+					selected = project
+					source = read_source
+					discover = false
+		if selected == project and not discover:
+			batch.clear()
+			for candidate in candidates:
+				if candidate.source == source and batch.size() < 64:
+					batch.append(candidate.row)
+	if discover:
+		layer_discovery.erase(selected)
+		_read_layer_discovery(selected)
+	elif not batch.is_empty():
+		_read_layer_delta(selected, batch, source)
+
+
+func _read_layer_discovery(project: bool) -> void:
+	delta_busy = true
+	var principal := actor.duplicate()
+	var root := _repo()
+	var version: int = layer_generation[project]
+	var nonce := editor_session
+	var follows: Array = saved.get("following", []).duplicate()
+	var value := await _board_command(false, actor.user_id, project)
+	delta_busy = false
+	if root != _repo() or principal != actor or nonce != editor_session or version != layer_generation[project] or (not project and follows != saved.get("following", [])):
+		return
+	if value.get("denied", false):
+		_forget(str(value.get("error", "工单访问权限已变更")))
+		return
+	var snapshot: Dictionary = value.get("board", {})
+	if snapshot.get("repo_id") != actor.repo_id or snapshot.get("user_id") != actor.user_id:
+		return
+	_note_layer_read(project, value)
+	if project != project_mode:
+		if project:
+			project_snapshot = snapshot
+		else:
+			personal_snapshot = snapshot
+		return
+	var prior := board.duplicate()
+	prior.verified_at = snapshot.get("verified_at")
+	board = snapshot
+	if prior != snapshot:
+		if is_visible_in_tree():
+			_draw_board()
+			_sync_workflow()
+		else:
+			board_projection_suspended = true
+			hidden_detail_changed = not current.is_empty()
+
+
+func _read_layer_delta(project: bool, batch: Array, source: bool) -> void:
+	delta_busy = true
+	var principal := actor.duplicate()
+	var root := _repo()
+	var nonce := editor_session
+	var version: int = layer_generation[project]
+	var follows: Array = saved.get("following", []).duplicate()
+	var targets := []
+	var expected := {}
+	var entries := {}
+	for row in batch:
+		var number := int(row.number)
+		var target := {"number":number, "request":row.request, "updated":row.updated, "delta_stamp":row.get("delta_stamp", "")}
+		targets.append(target)
+		expected[number] = target
+		entries[number] = layer_dirty[project][number]
+		layer_dirty[project].erase(number)
+	var result := await _run_board_command(false, actor.user_id, project, {"mode":"source" if source else "progress", "items":targets})
+	delta_busy = false
+	if root != _repo() or principal != actor or nonce != editor_session or (not project and follows != saved.get("following", [])):
+		return
+	if version != layer_generation[project]:
+		# A full read overtook this event. Reproject the still-visible bindings locally.
+		for number in entries:
+			if delta_enabled[project] and layer_positions[project].has(number):
+				var pending: Dictionary = layer_dirty[project].get_or_add(number, entries[number])
+				if source:
+					pending.source = true
+				if entries[number].get("manual", false):
+					pending.manual = true
+		return
+	if result.get("denied", false):
+		_forget(str(result.get("error", "工单访问权限已变更")))
+		return
+	var delta: Dictionary = result.get("delta", {})
+	if delta.get("repo") != actor.repo or delta.get("repo_id") != actor.repo_id or delta.get("user_id") != actor.user_id:
+		# Retain one retry for a missing receipt; a new event or a manual refresh can try again.
+		for number in entries:
+			if not entries[number].get("retried", false):
+				var pending: Dictionary = layer_dirty[project].get_or_add(number, {"at":Time.get_ticks_msec() + 10_000})
+				pending.retried = true
+				if source:
+					pending.source = true
+				if entries[number].get("manual", false):
+					pending.manual = true
+		if source and project == project_mode:
+			notice.text = str(result.get("error", "未取得此工单的读取回执"))
+		return
+	var updates := {}
+	for row in delta.get("updates", []):
+		if row is Dictionary and expected.has(int(row.get("number", 0))):
+			var number := int(row.number)
+			if row.get("url") == "https://github.com/%s/issues/%d" % [actor.repo, number] and (source or (row.get("request") == expected[number].request and row.get("updated") == expected[number].updated)):
+				row.number = number
+				updates[number] = row
+	for number: int in PackedInt64Array(delta.get("source_required", [])):
+		if not expected.has(number):
+			continue
+		var tries := int(entries[number].get("start_checks", 0))
+		if tries >= 4:
+			layer_discovery.get_or_add(project, maxi(Time.get_ticks_msec() + 20_000, layer_full_after[project]))
+			continue
+		# A legacy start intent is written before its GitHub update. Occupied writers
+		# request a bounded follow-up; ordinary routing events never enter this path.
+		var pending: Dictionary = layer_dirty[project].get_or_add(number, {"at":Time.get_ticks_msec() + (2000 * tries if source else 0)})
+		pending.source = true
+		pending.start_checks = tries + 1
+	var removed := PackedInt64Array(delta.get("removed", []))
+	if not delta.get("reconcile", []).is_empty():
+		layer_discovery.get_or_add(project, maxi(Time.get_ticks_msec() + 20_000, layer_full_after[project]))
+	if updates.is_empty() and removed.is_empty():
+		return
+	var layer := _layer_snapshot(project)
+	var rows: Array = layer.get("issues", [])
+	var visible_url := str(saved.get("linked", {}).get(current, {}).get("url", current))
+	var changed := false
+	var active_changed := false
+	var removed_indices := []
+	var reindex := false
+	for number in expected:
+		if not layer_positions[project].has(number):
+			continue
+		var i: int = layer_positions[project][number]
+		var old: Dictionary = rows[i]
+		if old.number != number or old.request != expected[number].request or old.updated != expected[number].updated or old.get("delta_stamp", "") != expected[number].delta_stamp:
+			continue
+		if removed.has(number):
+			removed_indices.append(i)
+		elif updates.has(number):
+			rows[i] = updates[number]
+			reindex = reindex or old.request != updates[number].request
+		else:
+			continue
+		changed = true
+		active_changed = active_changed or old.url == visible_url
+	removed_indices.sort()
+	removed_indices.reverse()
+	for index in removed_indices:
+		rows.remove_at(index)
+	if reindex or not removed_indices.is_empty():
+		_index_layer(project, layer)
+	if not changed or project != project_mode:
+		return
+	if not is_visible_in_tree():
+		board_projection_suspended = true
+		hidden_detail_changed = hidden_detail_changed or active_changed
+	elif current.is_empty():
+		_draw_board()
+	elif active_changed:
+		_sync_workflow()
+		_reveal_pending_operation()
+		if source:
+			await _refresh_open_states()
+	# Receipt changes live in the layer cache; normal saves capture it without
+	# forcing a graph snapshot while the user is typing in another issue.
 
 
 func _set_project(enabled: bool) -> void:
@@ -2112,7 +2677,9 @@ func _set_project(enabled: bool) -> void:
 		var principal := actor.duplicate()
 		var root := _repo()
 		var epoch := selection_epoch
-		var response := await _board_command(false, actor.user_id, true)
+		var response := {"board":project_snapshot}
+		if project_snapshot.is_empty():
+			response = await _board_command(false, actor.user_id, true)
 		if token != scope_epoch:
 			return
 		loading_project = false
@@ -2124,9 +2691,13 @@ func _set_project(enabled: bool) -> void:
 			if not actor.is_empty() and token == scope_epoch:
 				notice.text = str(response.get("error", "项目工单未能读取，保留个人总览"))
 			return
+		if project_snapshot.is_empty():
+			_note_layer_read(true, response)
 		personal_snapshot = board
 		board = response.board
+		project_snapshot = {}
 	else:
+		project_snapshot = board
 		board = personal_snapshot
 		personal_snapshot = {}
 	# A refresh may have started against the old board during the project fetch.
@@ -2146,6 +2717,7 @@ func _set_project(enabled: bool) -> void:
 
 
 func _set_far_depth(depth: float, return_zoom := PROJECT_FOLD * 1.15) -> void:
+	var was_folded := far_depth > 0.0
 	far_depth = maxf(depth, 0.0)
 	_sync_canvas_scope()
 	var folded := far_depth > 0.0
@@ -2153,7 +2725,10 @@ func _set_far_depth(depth: float, return_zoom := PROJECT_FOLD * 1.15) -> void:
 	project_anchor.visible = folded
 	if folded:
 		project_anchor.text = "%s · %d 项\n项目远景 · %.1f 级" % [actor.get("repo", ""), board.get("issues", []).size(), far_depth]
-	_filter_board()
+	if was_folded != folded:
+		_draw_board()
+	else:
+		_filter_board()
 
 
 func _sync_modal_input() -> void:
@@ -2216,6 +2791,7 @@ func _open_creator_at(point: Vector2) -> bool:
 				if creator_filter.get_item_text(index) == creator:
 					creator_filter.select(index)
 					overview.zoom = 0.85
+					board_return_url = nearest_url
 					board_views.current_tab = 0
 					list_zoom_until = Time.get_ticks_msec() + LIST_ZOOM_CONTINUATION_MS
 					advanced_bar.show()
@@ -2256,8 +2832,9 @@ func _refresh_open_states() -> void:
 			continue
 		var has_questions: bool = item.get("decision", false) or item.get("answered_count", 0) > 0 or not editor.context.get("questions", {}).is_empty()
 		if not has_questions or target_url != current:
-			editor.context.states = item.node_states.duplicate()
-			editor.refresh_states()
+			if editor.context.get("states", {}) != item.node_states:
+				editor.context.states = item.node_states.duplicate()
+				editor.refresh_states()
 			return
 	if target_url != current:
 		return
@@ -2282,11 +2859,12 @@ func _refresh_open_states() -> void:
 		editor.context = fresh.context.duplicate(true)
 		for key in fresh.context.get("answers", {}):
 			editor.answers.erase(key)
-		if redraw:
-			editor.draw_graph()
+		var previous_workflow: Dictionary = editor.workflow
+		_sync_workflow(false)
+		if redraw or previous_workflow != editor.workflow:
+			await editor.draw_graph(true)
 		else:
 			editor.refresh_states()
-		_sync_workflow()
 
 
 func _open_issue(item: Dictionary) -> void:
@@ -2314,6 +2892,12 @@ func _open_issue(item: Dictionary) -> void:
 	if live.has("plan") and editor.revision == revision and not editor.applying:
 		var clean: bool = editor.draft == editor.baseline and editor.answers.is_empty()
 		var next_plan: Dictionary = live.plan.duplicate(true)
+		var changed_plan: bool = next_plan != editor.draft
+		var old_context: Dictionary = editor.context.duplicate()
+		old_context.erase("states")
+		var next_context: Dictionary = live.context.duplicate()
+		next_context.erase("states")
+		var changed_states: bool = live.context.get("states", {}) != editor.context.get("states", {})
 		if not clean and revision == item.updated:
 			var result: Dictionary = rules.reconcile_snapshot(editor.baseline, editor.draft, live.plan)
 			if result.has("error"):
@@ -2326,15 +2910,20 @@ func _open_issue(item: Dictionary) -> void:
 			editor.draft = next_plan
 		editor.context = live.context.duplicate(true)
 		if clean:
-			_sync_workflow()
-			editor.draw_graph()
-		else:
+			var previous_workflow: Dictionary = editor.workflow
+			_sync_workflow(false)
+			if changed_plan or old_context != next_context or previous_workflow != editor.workflow:
+				editor.draw_graph(true)
+			elif changed_states:
+				editor.refresh_states()
+		elif changed_states or old_context != next_context:
 			editor.refresh_states()
 		_queue_save()
 	if live.has("source_mode"):
 		notice.text = "#%s · %s" % [item.number, item.title] + (" · 共享计划宿主" if live.source_mode == "shared_host" else " · 当前安装的计划")
 	if live.has("error"):
 		notice.text = str(live.error) + " · 显示最近工单快照"
+	await editor.await_graph_projection()
 
 
 func _list_drafts() -> void:
@@ -2900,6 +3489,11 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 			saved.direct_start_receipts = {}
 		saved.get("start_errors", {}).erase(key)
 		saved.direct_start_receipts[url] = binding.request
+		# The start receipt acknowledges a source change even if mounting chat fails.
+		for project in [false, true]:
+			if delta_enabled[project] and layer_positions[project].has(int(binding.number)):
+				var entry: Dictionary = layer_dirty[project].get_or_add(int(binding.number), {"at":Time.get_ticks_msec()})
+				entry.source = true
 		_save()
 		_update_direct_action()
 		if source != current or epoch != selection_epoch or _direct_binding().get("request") != binding.request or _issue_action(_direct_binding()).get("kind") != "resume":
@@ -2917,7 +3511,7 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 	_sync_workflow()
 	_update_direct_action()
 	_save()
-	if not started and binding.status == "planned":
+	if not started and binding.status == "planned" and not delta_enabled[project_mode]:
 		if checking:
 			refresh_pending = true
 		else:
@@ -3180,7 +3774,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	editor.debug_active = debug_sessions.has(current)
 	editor.debug_states = debug_states.duplicate(true)
 	editor.workflow = {}
-	editor.bind_issue(id,snapshot,apply_port,read_port)
+	editor.bind_issue(id,snapshot,apply_port,read_port,false)
 	var stored: Dictionary = saved.get("drafts", {}).get(id,{})
 	if stored.has("graph"):
 		editor.draft = stored.graph
@@ -3192,11 +3786,11 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 		editor.canvas.scroll_offset = stored.get("scroll",Vector2.ZERO)
 		editor.revision = stored.revision
 		editor.baseline = stored.baseline
-		editor.draw_graph()
 	_read_routing_stage(_direct_binding())
-	_sync_workflow()
+	_sync_workflow(false)
 	flow_split.show()
 	editor.show()
+	editor.draw_graph(id.begins_with("https://"))
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
 	_update_direct_action()
@@ -3398,7 +3992,8 @@ func _chat_work_event(root: String, binding: Dictionary, worker: String, kind: S
 		chat_work[url] = active
 		_sync_workflow()
 		if kind == "request_end":
-			auto_refresh_pending = true
+			for project in [false, true]:
+				_mark_layer_event(str(row.request), project)
 		return
 
 
@@ -3509,7 +4104,7 @@ func _set_issue_brief(item: Dictionary, progress: Dictionary) -> void:
 			work_status.text += "　离线快照"
 
 
-func _sync_workflow() -> void:
+func _sync_workflow(redraw := true) -> void:
 	inline_answer_key = ""
 	if current.is_empty():
 		return
@@ -3604,8 +4199,7 @@ func _sync_workflow() -> void:
 		"clarification_history":_confirmed_clarifications(item, judged) if direct else [],
 		"progress":progress, "operation":operation, "routing_stage":_routing_stage(item), "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:
-		editor.workflow = facts.duplicate(true)
-		editor.draw_graph()
+		editor.update_workflow(facts, redraw)
 
 
 func _issue_bound(source: String, number: int, request_id: String, details := {}) -> void:

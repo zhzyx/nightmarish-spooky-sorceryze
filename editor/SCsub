@@ -36,6 +36,15 @@ if env.editor_build:
         env.Run(editor_builders.daqian_scripts_builder),
     )
 
+    env.CommandNoCache(
+        "docks/daqian_board.gen.h",
+        [
+            "#customizations/components/godot-host/daqian/" + name
+            for name in ("editor_board_entry.py", "board.py", "board_delta.py", "progress.py")
+        ],
+        env.Run(editor_builders.daqian_board_builder),
+    )
+
     if env["platform"] == "macos":
         env.CommandNoCache(
             "docks/gonggong_validation.gen.h",

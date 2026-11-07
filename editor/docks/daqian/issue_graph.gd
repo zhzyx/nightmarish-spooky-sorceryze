@@ -48,6 +48,11 @@ var menu_at := Vector2(80, 100)
 var host_read: Callable
 var generation := 0
 var applying := false
+signal graph_projection_finished
+var graph_projection_generation := 0
+var graph_projection_pending := false
+var graph_projection_suspended := false
+const GRAPH_SLICE_US := 3000
 
 
 # Keep the GraphEdit wire for hit testing, dragging, zoom and the minimap.
@@ -239,6 +244,9 @@ class IssueCanvas extends FlowCanvas:
 
 
 func _ready() -> void:
+	visibility_changed.connect(func():
+		if graph_projection_suspended and is_visible_in_tree():
+			draw_graph(true))
 	var toolbar := HFlowContainer.new()
 	add_child(toolbar)
 	add_menu = MenuButton.new()
@@ -300,7 +308,7 @@ func _ready() -> void:
 
 
 ## Host issues a fresh projection and a compare-and-apply port. Draft is never a status source.
-func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_port := Callable()) -> void:
+func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_port := Callable(), render_now := true) -> void:
 	generation += 1
 	applying = false
 	issue_id = id
@@ -315,7 +323,7 @@ func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_por
 	card_sizes = {}
 	answers = {}
 	debug_models = {}
-	if is_node_ready():
+	if is_node_ready() and render_now:
 		draw_graph()
 
 
@@ -1004,7 +1012,37 @@ func _add_approval_actions(view: GraphNode, token: String) -> void:
 
 
 
-func draw_graph() -> void:
+func await_graph_projection() -> void:
+	while graph_projection_pending:
+		await graph_projection_finished
+
+
+func _continue_graph_projection(epoch: int) -> bool:
+	if epoch != graph_projection_generation:
+		return false
+	if is_visible_in_tree():
+		return true
+	graph_projection_pending = false
+	graph_projection_suspended = true
+	graph_projection_finished.emit()
+	return false
+
+
+func update_workflow(facts: Dictionary, redraw: bool) -> void:
+	var previous := _display_plan() if redraw and not graph_projection_pending else {}
+	workflow = facts.duplicate(true)
+	if redraw:
+		draw_graph(issue_id.begins_with("https://"), previous)
+
+
+func draw_graph(staged := false, previous := {}) -> void:
+	graph_projection_generation += 1
+	var epoch := graph_projection_generation
+	graph_projection_suspended = staged and not is_visible_in_tree()
+	graph_projection_pending = not graph_projection_suspended
+	if graph_projection_suspended:
+		graph_projection_finished.emit()
+		return
 	graph_rebuilding.emit()
 	var plan := _display_plan()
 	var old := canvas.get_node_or_null("wf-clarification") as GraphNode
@@ -1042,16 +1080,39 @@ func draw_graph() -> void:
 			counts[next] -= 1
 			if counts[next] == 0:
 				ready.append(next)
-	canvas.clear_flow()
+	var retained := {}
+	if not previous.is_empty():
+		for child in canvas.get_children():
+			if not child is GraphNode:
+				continue
+			var id := String(child.name)
+			# Interactive workflow stages bind actions to the current receipt when rendered.
+			if draft.nodes.has(id) or id.begins_with("wf-scope-") or id.begins_with("wf-acceptance-") or id.begins_with("wf-dep-"):
+				if plan.nodes.has(id) and plan.nodes[id] == previous.nodes.get(id):
+					retained[id] = true
+	if retained.is_empty():
+		canvas.clear_flow()
+	else:
+		var unchanged_wires := {}
+		for edge in plan.edges:
+			if retained.has(edge.from) and retained.has(edge.to):
+				unchanged_wires[_wire_key(edge, plan.nodes)] = true
+		for key in canvas.lines.keys():
+			if not unchanged_wires.has(key):
+				canvas.disconnect_flow(key[0], key[1], key[2], key[3])
+	var deadline := Time.get_ticks_usec() + GRAPH_SLICE_US
 	for child in canvas.get_children():
-		if child is GraphNode:
+		if child is GraphNode and not retained.has(String(child.name)):
+			child.hide()
+	for child in canvas.get_children():
+		if child is GraphNode and not retained.has(String(child.name)):
 			canvas.remove_child(child)
 			child.queue_free()
-	for id in plan.nodes:
-		if draft.nodes.has(id):
-			_render_node(id, plan.nodes[id])
-		else:
-			_render_stage(id, plan.nodes[id])
+			if staged and Time.get_ticks_usec() >= deadline:
+				await get_tree().process_frame
+				if not _continue_graph_projection(epoch):
+					return
+				deadline = Time.get_ticks_usec() + GRAPH_SLICE_US
 	# Personal edits can order existing tasks differently from the displayed plan.
 	for id in plan.nodes:
 		if counts[id] > 0:
@@ -1068,12 +1129,30 @@ func draw_graph() -> void:
 		var level: int = depth[id]
 		while layout_columns.size() <= level:
 			layout_columns.append([])
+		if retained.has(id):
+			_update_card(canvas.get_node(NodePath(str(id))))
+		elif draft.nodes.has(id):
+			_render_node(id, plan.nodes[id])
+		else:
+			_render_stage(id, plan.nodes[id])
 		var view := canvas.get_node(NodePath(str(id))) as GraphNode
 		layout_columns[level].append(view)
-		view.resized.connect(_queue_layout)
+		if not view.resized.is_connected(_queue_layout):
+			view.resized.connect(_queue_layout)
+		if staged and Time.get_ticks_usec() >= deadline:
+			_queue_layout()
+			await get_tree().process_frame
+			if not _continue_graph_projection(epoch):
+				return
+			deadline = Time.get_ticks_usec() + GRAPH_SLICE_US
 	_layout_cards()
 	for edge in plan.edges:
 		_draw_edge(edge, plan.nodes)
+		if staged and Time.get_ticks_usec() >= deadline:
+			await get_tree().process_frame
+			if not _continue_graph_projection(epoch):
+				return
+			deadline = Time.get_ticks_usec() + GRAPH_SLICE_US
 	_update_running_nodes()
 	if reopen:
 		var card := canvas.get_node("wf-clarification") as GraphNode
@@ -1083,6 +1162,8 @@ func draw_graph() -> void:
 		field.set_caret_column(caret.x)
 		if refocus:
 			field.grab_focus()
+	graph_projection_pending = false
+	graph_projection_finished.emit()
 
 
 # Wrapping and theme changes can resize a card after GraphNode has sorted its children.
@@ -1100,11 +1181,16 @@ func _layout_cards() -> void:
 func _draw_edge(edge: Dictionary, nodes := {}) -> void:
 	if nodes.is_empty():
 		nodes = draft.nodes
+	var key := _wire_key(edge, nodes)
+	canvas.connect_flow(key[0], key[1], key[2], key[3])
+
+
+func _wire_key(edge: Dictionary, nodes: Dictionary) -> Array:
 	var output := 0 if edge.kind == "data" else 1
 	var input := 0
 	if edge.kind == "after" and nodes[edge.to].kind in ["task","join","stage"]:
 		input = 1
-	canvas.connect_flow(edge.from, output, edge.to, input)
+	return [StringName(edge.from), output, StringName(edge.to), input]
 
 
 func _edge(a: StringName, ap: int, b: StringName, bp: int) -> Dictionary:

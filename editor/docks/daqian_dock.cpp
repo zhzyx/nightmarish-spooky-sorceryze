@@ -32,6 +32,7 @@
 
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
+#include "editor/docks/daqian_board.gen.h"
 #include "editor/docks/daqian_scripts.gen.h"
 #include "editor/docks/editor_dock.h"
 #include "scene/gui/box_container.h"
@@ -113,6 +114,8 @@ EditorDock *create_daqian_dock() {
 	VBoxContainer *content = memnew(VBoxContainer);
 	content->set_name("DaqianWorkspace");
 	content->set_script(workspace);
+	content->set("board_bundle_base64", editor_script_source(daqian_board_base64));
+	content->set("board_bundle_sha256", daqian_board_sha256);
 	content->set("details_script", details);
 	content->set("canvas_script", canvas);
 	content->set_meta("unified_settings", true);

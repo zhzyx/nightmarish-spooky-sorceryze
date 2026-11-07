@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
+import board_delta
 import progress
 from repository_access import (
     AccessDenied,
@@ -104,7 +105,50 @@ def design_document(root, body):
     return {"path": relative, "markdown": snapshot.rstrip(), "source": "工单发布版本"}
 
 
-def read_board(root, follows, actor=None, *, project=False, personal_history=False):
+def project_row(root, receipts, actor, row):
+    number = row["number"]
+    repo = actor["repo"]
+    labels = [label["name"] for label in row["labels"]]
+    statuses = [v.removeprefix("status:") for v in labels if v.startswith("status:")]
+    status = statuses[0] if len(statuses) == 1 else row["state"]
+    markers = sorted(work_items.request_ids(row.get("body")))
+    item = {
+        "number": number,
+        "title": row["title"],
+        "status": status,
+        "url": row["html_url"],
+        "updated": row["updated_at"],
+        "creator": (row.get("user") or {}).get("login") or "",
+        "owners": [x["login"] for x in row["assignees"]],
+        "request": markers[0] if len(markers) == 1 else "",
+        "dependencies": [],
+        "development": "type:development" in labels,
+        "categories": sorted({v[5:] for v in labels if v.startswith("type:") and v[5:]}),
+        "analyzed": (
+            len(markers) == 1
+            and re.fullmatch(r"requirement-[0-9a-f]{32}", markers[0]) is not None
+            and bool(
+                re.search(
+                    r"^需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + markers[0][12:] + r"[0-9a-f]{32}`。$",
+                    (row.get("body") or "").replace("\r\n", "\n"),
+                    re.MULTILINE,
+                )
+            )
+        ),
+        "closed": row["state"] == "closed",
+    }
+    if item["request"] and not item["request"].startswith("daqian-direct-"):
+        item["source_sha256"] = progress.issue_route.digest([item["url"], item["request"], item["updated"]])
+    item["design_document"] = design_document(root, row.get("body")) if item["request"] else {}
+    item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
+    item["workers"] = progress.workers_for_row(receipts, repo, row, item)
+    item.update(source_plan(row, item["request"]))
+    item["pending_count"] = len(item.get("questions", {})) if row["state"] == "open" else 0
+    item["decision"] = item["pending_count"] > 0
+    return item
+
+
+def read_board(root, follows, actor=None, *, project=False, personal_history=False, sources=None):
     settings, _ = work_items.config(root)
     repo = settings["repository"]
     base = f"repos/{repo}/issues"
@@ -143,43 +187,9 @@ def read_board(root, follows, actor=None, *, project=False, personal_history=Fal
         number, row = queue.popitem()
         if number in items:
             continue
-        labels = [label["name"] for label in row["labels"]]
-        statuses = [v.removeprefix("status:") for v in labels if v.startswith("status:")]
-        status = statuses[0] if len(statuses) == 1 else row["state"]
-        markers = sorted(work_items.request_ids(row.get("body")))
-        item = {
-            "number": number,
-            "title": row["title"],
-            "status": status,
-            "url": row["html_url"],
-            "updated": row["updated_at"],
-            "creator": (row.get("user") or {}).get("login") or "",
-            "owners": [x["login"] for x in row["assignees"]],
-            "request": markers[0] if len(markers) == 1 else "",
-            "dependencies": [],
-            "development": "type:development" in labels,
-            "categories": sorted({v[5:] for v in labels if v.startswith("type:") and v[5:]}),
-            "analyzed": (
-                len(markers) == 1
-                and re.fullmatch(r"requirement-[0-9a-f]{32}", markers[0]) is not None
-                and bool(
-                    re.search(
-                        r"^需求整理：Yanshi / ClarifyFeature；原始输入摘要：`" + markers[0][12:] + r"[0-9a-f]{32}`。$",
-                        (row.get("body") or "").replace("\r\n", "\n"),
-                        re.MULTILINE,
-                    )
-                )
-            ),
-            "closed": row["state"] == "closed",
-        }
-        if item["request"] and not item["request"].startswith("daqian-direct-"):
-            item["source_sha256"] = progress.issue_route.digest([item["url"], item["request"], item["updated"]])
-        item["design_document"] = design_document(root, row.get("body")) if item["request"] else {}
-        item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
-        item["workers"] = progress.workers_for_row(receipts, repo, row, item)
-        item.update(source_plan(row, item["request"]))
-        item["pending_count"] = len(item.get("questions", {})) if row["state"] == "open" else 0
-        item["decision"] = item["pending_count"] > 0
+        item = project_row(root, receipts, actor, row)
+        if sources is not None:
+            sources[number] = progress.dispatch_revision(row)
         items[number] = item
         # GitHub only returns a summary on some endpoint/API versions.
         summary = row.get("issue_dependencies_summary", {})
@@ -251,12 +261,17 @@ def main():
     parser.add_argument("--personal-history", action="store_true")
     parser.add_argument("--access-only", action="store_true")
     parser.add_argument("--expected-user", default="")
+    parser.add_argument("--delta", type=Path, help="Apply known issue changes to this editor session snapshot")
     args = parser.parse_args()
     try:
         if any(n <= 0 for n in args.follow):
             raise ValueError("工单编号必须为正整数")
         if args.end_session:
             session_path(args.editor_session).unlink(missing_ok=True)
+            try:
+                board_delta.cache_path(args.editor_session).unlink(missing_ok=True)
+            except OSError:
+                pass  # An exiting delta reader can still have the SQLite file open on Windows.
             return
         if args.result is None:
             parser.error("--result required")
@@ -265,9 +280,21 @@ def main():
             raise AccessDenied("当前登录账号已切换")
         if args.access_only:
             result = {"access": actor}
+        elif args.delta:
+            if not args.editor_session or args.expected_user != actor["user_id"]:
+                raise AccessDenied("增量读取必须绑定当前编辑器和账号")
+            result = {"delta": board_delta.read_changes(args, actor)}
+            if session_actor(args.repo, args.editor_session) != actor:
+                raise AccessDenied("读取工单期间账号已切换")
         else:
+            sources = {} if args.editor_session else None
             board = read_board(
-                args.repo, args.follow, actor, project=args.project, personal_history=args.personal_history
+                args.repo,
+                args.follow,
+                actor,
+                project=args.project,
+                personal_history=args.personal_history,
+                sources=sources,
             )
             import plan_store
 
@@ -310,6 +337,8 @@ def main():
             receipts = progress.receipt_root(args.repo)
             node = bridge._igniter.discover_node(args.repo, bridge.host_environment(args.repo))
             result = {"board": board}
+            if sources is not None and board_delta.seed(args, actor, sources, board["issues"]):
+                result["delta_version"] = 1
             if receipts.is_dir() and node:
                 result["watch"] = {"node": node, "directory": str(receipts)}
     except AccessDenied as error:

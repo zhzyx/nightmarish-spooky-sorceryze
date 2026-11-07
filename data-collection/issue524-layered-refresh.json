@@ -1,0 +1,101 @@
+{
+  "issue_number": 524,
+  "request_id": "tianshu-layered-refresh",
+  "design_document": "design-docs/tianshu-layered-refresh.md",
+  "original_validation_bug": 528,
+  "main_base": "d4e1d8a34a02562849c9eb765c44ed8b5bd3634e",
+  "platform": "Windows; isolated desktop; OpenGL 3; 144 issue fixture",
+  "binary_sha256": "dc6adc9317ea01e4886f231f7075b6c2899f914bcbd550173770f06caac3d2f8",
+  "baseline": {
+    "graph_open": {
+      "first_ready_ms": 211.301,
+      "max_frame_ms": 211.301,
+      "controls_added": 1296,
+      "controls_removed": 0
+    },
+    "graph_single_delta": {
+      "first_ready_ms": 11.714,
+      "max_frame_ms": 260.362,
+      "controls_added": 1296,
+      "controls_removed": 1296
+    },
+    "detail_back": {
+      "first_ready_ms": 196.67,
+      "max_frame_ms": 196.67,
+      "controls_added": 1296,
+      "controls_removed": 1296
+    },
+    "fast_switch": {
+      "first_ready_ms": 24.172,
+      "max_frame_ms": 201.649,
+      "controls_added": 1296,
+      "controls_removed": 2592
+    }
+  },
+  "candidate": {
+    "graph_open": {
+      "first_ready_ms": 9.288,
+      "max_frame_ms": 19.827,
+      "controls_added": 1152,
+      "controls_removed": 0
+    },
+    "graph_single_delta": {
+      "first_ready_ms": 12.297,
+      "max_frame_ms": 36.129,
+      "controls_added": 8,
+      "controls_removed": 8
+    },
+    "detail_back": {
+      "first_ready_ms": 39.147,
+      "max_frame_ms": 39.147,
+      "controls_added": 0,
+      "controls_removed": 0
+    },
+    "fast_switch": {
+      "first_ready_ms": 10.373,
+      "max_frame_ms": 31.012,
+      "controls_added": 0,
+      "controls_removed": 0
+    }
+  },
+  "progress_events": {
+    "observed_reads": [
+      "delta-progress-2\r",
+      "delta-progress-3"
+    ],
+    "resulting_workers": {
+      "2": [
+        "Live-2"
+      ],
+      "3": [
+        "Live-3"
+      ]
+    },
+    "source": "real Node filesystem notifications in a private fixture; models were not invoked"
+  },
+  "host_compatibility": {
+    "legacy_workspace_adapter_sha256": "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5",
+    "delta_version": 1,
+    "verified_open_project_issues": 41,
+    "unchanged_local_issue": 524,
+    "source_and_local_empty_delta_verified": true,
+    "editor_bundle_sha256": "424a720ad7b72a43356095e4630b1681d1459f157cac716d5a65000cec30a389"
+  },
+  "validation": {
+    "headless": [
+      "graph",
+      "direct",
+      "publish",
+      "native node approval",
+      "layer refresh",
+      "clarification graph",
+      "draft recovery",
+      "graph font"
+    ],
+    "python_board_cases": 10,
+    "python_direct_issue_cases": 25,
+    "node_watcher_cases": 2,
+    "cross_window_start": "Known source events or a legacy start intent require an authenticated single-issue source read. Route-only events use local receipts."
+  },
+  "coverage": "No real issue creation, external model request or production approval used for the editor regressions."
+}

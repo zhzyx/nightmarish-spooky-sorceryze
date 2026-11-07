@@ -587,6 +587,9 @@ void GraphEdit::_graph_element_visibility_changed(GraphElement *p_graph_element)
 	if (p_graph_element->is_selected() && !p_graph_element->is_visible()) {
 		p_graph_element->set_selected(false);
 	}
+	if (connections_layer && p_graph_element->is_visible_in_tree()) {
+		connections_layer->queue_redraw();
+	}
 }
 
 void GraphEdit::_graph_element_resize_request(const Vector2 &p_new_minsize, Node *p_node) {
@@ -1635,6 +1638,11 @@ void GraphEdit::_update_connections() {
 			}
 
 			if (conn->keep_alive && (!gnode_from || !gnode_to)) {
+				continue;
+			}
+			// Hidden graph cards have no visible port controls. Keep the geometry dirty
+			// until the connection and its endpoints are displayed again.
+			if (!gnode_from->is_visible_in_tree() || !gnode_to->is_visible_in_tree()) {
 				continue;
 			}
 
