@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "chat-steering-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "chat-steering-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T05:18:17.681470+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/381",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Implement continuous in-flight user input with Daqian and GongGong task boundaries",
+    "authorization_ref": "codex:user:20261107:chat-steering",
+    "state": "in_progress",
+    "usage": null,
+    "agent_definition_basis": "sha256 of repository AGENTS.md read by this host"
+  },
+  "evidence_refs": [],
+  "sha256": "d8f5bba3291d1357129e754680ac1bc12976089e9de42c9bfcb84a21eee80cd7"
+}

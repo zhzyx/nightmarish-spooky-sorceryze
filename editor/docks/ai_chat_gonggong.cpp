@@ -235,13 +235,27 @@ void AIChatDock::_environment_setup_completed() {
 }
 
 static String last_user_content(const Array &p_messages) {
+	// A steering message amends the current requirement; it cannot replace the
+	// original objective when the host revalidates scope and Issue bindings.
+	int start = -1;
 	for (int i = p_messages.size() - 1; i >= 0; i--) {
 		const Dictionary message = p_messages[i];
-		if (String(message.get("role", "")) == "user") {
-			return message.get("content", "");
+		if (String(message.get("role", "")) == "user" && !bool(message.get("steering", false))) {
+			start = i;
+			break;
 		}
 	}
-	return String();
+	String result;
+	for (int i = MAX(start, 0); i < p_messages.size(); i++) {
+		const Dictionary message = p_messages[i];
+		if (String(message.get("role", "")) == "user") {
+			if (!result.is_empty()) {
+				result += "\n\nAdditional user instructions:\n";
+			}
+			result += String(message.get("content", ""));
+		}
+	}
+	return result;
 }
 
 bool AIChatDock::_direct_daqian_task() const {
@@ -259,7 +273,15 @@ void AIChatDock::_begin_gonggong_context() {
 	// Scheduled and child Agents never run requirement intake or create Issues;
 	// a child inherits the real Issue its parent's finalized design was bound to.
 	const bool direct = _direct_daqian_task() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent);
-	const bool needs_intake = !direct && tool_rounds == 0 && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
+	bool amendment = false;
+	for (const Variant &entry : messages) {
+		const Dictionary message = entry;
+		if (bool(message.get("steering", false)) && message.get("steering_snapshot", "") == snapshot_id) {
+			amendment = true;
+			break;
+		}
+	}
+	const bool needs_intake = (!direct || amendment) && gonggong_recovered_result.is_empty() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && issue_agent_checked != requirement_key;
 	if (gonggong_pid >= 0) {
 		if (needs_intake) {
 			_emit_daqian_requirement_phase("error");
@@ -588,6 +610,17 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	issue_guide_fields["initial_request"] = _work_order_binding("request_id");
 	input_request["issue_number"] = int64_t(String(_work_order_binding("issue_number")).to_int());
 	input_request["request_id"] = String(_work_order_binding("request_id"));
+	// A correction belongs to this exact task. The requirements model may
+	// identify unrelated work, but it cannot publish it or rebind this turn.
+	if (AIChatIssueGuide::is_bound(int64_t(input_request["issue_number"]), input_request["request_id"])) {
+		for (const Variant &entry : messages) {
+			const Dictionary message = entry;
+			if (bool(message.get("steering", false)) && String(message.get("steering_snapshot", "")) == snapshot_id) {
+				input_request["continuation_only"] = true;
+				break;
+			}
+		}
+	}
 	_set_issue_model_config(input_request);
 	if (snapshot_state.has("daqian_model")) {
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
@@ -866,6 +899,11 @@ void AIChatDock::_poll_issue_guide() {
 		if (!ok) {
 			issue_guide_state = "agent_error";
 			_emit_daqian_requirement_phase("error");
+			if (error == "steering_requires_separate_task") {
+				_append(TTR("Editor"), U"这条补充被识别为独立需求，当前任务已暂停；未新建或切换工单。请先停止当前任务，再通过新会话或大千的新需求入口办理。");
+				_set_busy(false);
+				return;
+			}
 			_append(TTR("Error"), String(U"Yanshi 需求建单尚未完成，开发执行仍暂停。请先修复环境、模型 API 或 GitHub 权限，再回复“重试”。已发送的远程请求可能已生效，重试会按稳定需求 ID 对账。\n") + error);
 			if (error == "gh_unauthenticated") {
 				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));

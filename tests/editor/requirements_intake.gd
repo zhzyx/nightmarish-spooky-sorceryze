@@ -61,26 +61,34 @@ func _run():
 			return
 		setup.find_child("GongGongRuntimeSource", true, false).text = runtime_source
 		setup.get_ok_button().pressed.emit()
-	for attempt in range(6000):
+	var intake_waiting := false
+	for attempt in range(1000):
 		await create_timer(0.02).timeout
 		if FileAccess.file_exists(folder.path_join("first_intake_waiting")):
+			intake_waiting = true
 			break
-	_send(dock, "Queued feature from requirements phase")
+	if not intake_waiting:
+		for label in dock.find_children("*", "RichTextLabel", true, false):
+			print("NATIVE_INTAKE_START_DIAGNOSTIC ", label.get_parsed_text())
+		push_error("First requirements request never reached the isolated model fixture")
+		quit(1)
+		return
+	_send(dock, "Refine first feature during requirements phase")
 	if dock.get_meta("queued_message_count", 0) != 1:
-		push_error("Requirement sent during intake was consumed instead of queued")
+		push_error("Supplement sent during intake was not retained until the safe boundary")
 		quit(1)
 		return
 	if dock.find_child("Stop", true, false).disabled:
 		push_error("Requirements intake incorrectly appears idle and cannot be stopped")
 		quit(1)
 		return
-	if not await _wait_reply(dock, 1) or not await _wait_reply(dock, 2):
+	if not await _wait_reply(dock, 1):
 		quit(1)
 		return
 	var prompts = ["Refine current feature", "Create second feature label", "Create second feature label"]
 	for i in range(prompts.size()):
 		_send(dock, prompts[i])
-		if not await _wait_reply(dock, i + 3):
+		if not await _wait_reply(dock, i + 2):
 			quit(1)
 			return
 	_send(dock, "Cancel pending feature")
@@ -104,7 +112,7 @@ func _run():
 		return
 	FileAccess.open(folder.path_join("api_fixed"), FileAccess.WRITE).store_string("fixed")
 	_send(dock, "重试")
-	if not await _wait_reply(dock, 6):
+	if not await _wait_reply(dock, 5):
 		quit(1)
 		return
 	FileAccess.open(folder.path_join("gh_disabled"), FileAccess.WRITE).store_string("disabled")
@@ -118,7 +126,7 @@ func _run():
 		return
 	DirAccess.remove_absolute(folder.path_join("gh_disabled"))
 	_send(dock, "重试")
-	if not await _wait_reply(dock, 7):
+	if not await _wait_reply(dock, 6):
 		quit(1)
 		return
 	_send(dock, "Clarify pending requirement")
@@ -131,7 +139,7 @@ func _run():
 		quit(1)
 		return
 	_send(dock, "补充验收：点击后出现状态文字")
-	if not await _wait_reply(dock, 8):
+	if not await _wait_reply(dock, 7):
 		quit(1)
 		return
 	dock.find_child("GongGongEnvironmentSetup", true, false).pressed.emit()

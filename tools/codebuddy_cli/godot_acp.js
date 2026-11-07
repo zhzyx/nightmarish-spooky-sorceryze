@@ -378,6 +378,8 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     let stderrBytes = 0;
     let stderrTail = '';
     let stopped = false;
+    let resetting = false;
+    const closedChildren = new WeakSet();
     const diagnostics = () => ({ ...active?.budget.snapshot(), stdout_bytes: outputBytes, stderr_bytes: stderrBytes, stage: active?.activity || 'connecting' });
     const heartbeat = setInterval(() => {
         if (active && !stopped) record('wait_snapshot', { ...diagnostics(), ...counts, active: true, yielded: active.yielded, pending_count: pending.size, content_bytes: active.contentBytes });
@@ -545,30 +547,39 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     });
     const initialize = async input => {
         agentId = input.agent_id || 'default';
-        child = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled)], { cwd: input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+        const instance = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled)], { cwd: input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+        child = instance;
+        const belongs = () => child === instance && !resetting && !stopped;
+        const failInstance = error => { if (belongs()) fail(error); };
+        const scoped = callback => params => {
+            if (!belongs()) throw fileError('Superseded Godot native session');
+            return callback(params);
+        };
         setChild(child);
         record('cli_spawned', { child_pid: child.pid });
-        child.on('error', () => fail(api.bridgeError('PROCESS_START')));
-        child.on('close', code => { record('cli_closed', { exit_code: code, stopped }); if (!stopped) fail(api.bridgeError('PROCESS_EXIT')); });
+        child.on('error', () => failInstance(api.bridgeError('PROCESS_START')));
+        child.on('close', code => { closedChildren.add(instance); record('cli_closed', { exit_code: code, stopped }); if (!stopped) failInstance(api.bridgeError('PROCESS_EXIT')); });
         child.stderr.on('data', bytes => {
+            if (!belongs()) return;
             stderrBytes += bytes.byteLength;
             stderrTail = (stderrTail + bytes.toString('utf8')).slice(-16384);
         });
         const observe = (event, details) => { counts.rpc_count++; record(event, details); };
-        const outgoing = rpcTrace('outgoing', observe, { onLimit: fail });
-        outgoing.readable.pipeTo(Writable.toWeb(child.stdin)).catch(error => { record('stdin_pipe_closed', { stopped }); if (!stopped) fail(error.bridgeCode ? error : api.bridgeError('PROCESS_EXIT')); });
+        const outgoing = rpcTrace('outgoing', observe, { onLimit: failInstance });
+        outgoing.readable.pipeTo(Writable.toWeb(child.stdin)).catch(error => { record('stdin_pipe_closed', { stopped }); if (!stopped) failInstance(error.bridgeCode ? error : api.bridgeError('PROCESS_EXIT')); });
         // Total protocol traffic is diagnostic only. A long task may safely
         // process far more than 16 MiB without retaining it in memory.
-        const stream = boundedRpcStream(acp, outgoing.writable, Readable.toWeb(child.stdout), observe, fail, size => { outputBytes += size; });
+        const stream = boundedRpcStream(acp, outgoing.writable, Readable.toWeb(child.stdout), observe, failInstance, size => { if (child === instance) outputBytes += size; });
         connection = new acp.ClientSideConnection(() => ({
-            readTextFile: params => fileRequest(params, false),
-            writeTextFile: params => fileRequest(params, true),
-            createTerminal: params => terminals.create(params, active?.input.workspace),
-            terminalOutput: params => terminals.output(params),
-            waitForTerminalExit: params => terminals.wait(params),
-            killTerminal: params => terminals.kill(params),
-            releaseTerminal: params => terminals.release(params),
+            readTextFile: scoped(params => fileRequest(params, false)),
+            writeTextFile: scoped(params => fileRequest(params, true)),
+            createTerminal: scoped(params => terminals.create(params, active?.input.workspace)),
+            terminalOutput: scoped(params => terminals.output(params)),
+            waitForTerminalExit: scoped(params => terminals.wait(params)),
+            killTerminal: scoped(params => terminals.kill(params)),
+            releaseTerminal: scoped(params => terminals.release(params)),
             requestPermission: async params => {
+                if (!belongs()) return { outcome: { outcome: 'cancelled' } };
                 const allow = params.options.find(option => option.kind === 'allow_once');
                 const reject = params.options.find(option => option.kind === 'reject_once');
                 const resolved = toolKinds.resolve(params.sessionId, params.toolCall);
@@ -580,6 +591,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 return reject ? { outcome: { outcome: 'selected', optionId: reject.optionId } } : { outcome: { outcome: 'cancelled' } };
             },
             sessionUpdate: async notification => {
+                if (!belongs()) return;
                 record('session_notification', { update: notification.update?.sessionUpdate, native_tool: ['Glob', 'Grep'].includes(notification.update?.title) ? notification.update.title : undefined, kind: notification.update?.kind || 'missing', status: notification.update?.status || 'missing', call_hash: typeof notification.update?.toolCallId === 'string' ? createHash('sha256').update(notification.update.toolCallId).digest('hex').slice(0, 16) : undefined, session_match: notification.sessionId === sessionId, active: !!active, yielded: active?.yielded, stopped, text_bytes: notification.update?.content?.type === 'text' && typeof notification.update.content.text === 'string' ? Buffer.byteLength(notification.update.content.text) : 0 });
                 if (notification.sessionId !== sessionId || !active || stopped) return;
                 const failure = toolFailure(notification.update);
@@ -685,7 +697,9 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         toolKinds.begin(sessionId);
         reportProgress('waiting');
         record('model_prompt_sent', { prompt_bytes: active.transmittedBytes, image_count: prompt.filter(block => block.type === 'image').length, text_bytes: prompt.filter(block => block.type === 'text').reduce((sum, block) => sum + Buffer.byteLength(block.text), 0) });
+        const submitted = active;
         connection.prompt({ sessionId, prompt }).then(async result => {
+            if (active !== submitted || resetting) return;
             record('model_prompt_completed', { stop_reason: result.stopReason, stopped, pending_count: pending.size });
             if (stopped) return;
             if (pending.size || active.yielded) throw api.bridgeError('RESULT_FAILED');
@@ -694,11 +708,50 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 throw api.bridgeError(reason === 'round_limit_reached' ? 'TOOL_ROUND_LIMIT_REACHED' : reason === 'permission_disabled' ? 'TOOLS_DISABLED' : active.editMatchFailed ? 'EDIT_MATCH_FAILED' : result.stopReason === 'cancelled' ? 'CLI_CANCELLED' : 'RESULT_FAILED');
             }
             await terminals.reset();
-            if (stopped) return;
+            if (stopped || active !== submitted || resetting) return;
             emit([]);
             toolKinds.clear();
             active = undefined;
-        }).catch(fail);
+        }).catch(error => { if (active === submitted && !resetting) fail(error); });
+    };
+    const resetSession = async () => {
+        // Reset is host-owned and only valid after a tool yield or completion.
+        // Close native terminals before replacing the model process; killing
+        // only the bridge would leave detached command groups alive on Unix.
+        if (active && !active.yielded) throw api.bridgeError('INVALID_REQUEST');
+        resetting = true;
+        clearTimeout(timer);
+        clearTimeout(flushTimer);
+        clearTimeout(progressTimer);
+        flushTimer = progressTimer = undefined;
+        const previousChild = child;
+        const previousConnection = connection;
+        const previousSession = sessionId;
+        active = undefined;
+        child = connection = sessionId = undefined;
+        if (previousConnection && previousSession) previousConnection.cancel({ sessionId: previousSession }).catch(() => {});
+        rejectPending();
+        try {
+            await terminals.reset();
+            terminalResults.length = 0;
+            fileText.clear();
+            if (previousChild && !closedChildren.has(previousChild)) {
+                const exited = new Promise(resolve => previousChild.once('close', resolve));
+                previousChild.kill();
+                const force = setTimeout(() => previousChild.kill('SIGKILL'), 2000);
+                let deadline;
+                const failed = new Promise((_, reject) => { deadline = setTimeout(() => reject(api.bridgeError('PROCESS_BOUNDARY_FAILED')), 4000); });
+                // An exit code can become visible before pipes have closed.
+                // A new session requires the old process's actual close receipt.
+                try { await Promise.race([exited, failed]); } finally { clearTimeout(force); clearTimeout(deadline); }
+            }
+            record('session_reset_completed', { success: true });
+        } catch (error) {
+            if (previousChild && previousChild.exitCode === null) previousChild.kill('SIGKILL');
+            throw error;
+        } finally {
+            resetting = false;
+        }
     };
     const lines = require('node:readline').createInterface({ input: process.stdin, crlfDelay: Infinity });
     try {
@@ -706,8 +759,13 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
             if (stopped) break;
             if (Buffer.byteLength(line) > 8192) throw api.bridgeError('INVALID_REQUEST');
             const request = JSON.parse(line);
-            if (typeof request.path !== 'string' || !path.isAbsolute(request.path) || fs.statSync(request.path).size > 1024 * 1024) throw api.bridgeError('INVALID_REQUEST');
-            await submit(parseHostJson(fs.readFileSync(request.path, 'utf8')));
+            if (typeof request.path !== 'string' || !path.isAbsolute(request.path) || fs.statSync(request.path).size > 1024 * 1024 || request.reset !== undefined && typeof request.reset !== 'boolean') throw api.bridgeError('INVALID_REQUEST');
+            const input = api.validateInput(parseHostJson(fs.readFileSync(request.path, 'utf8')));
+            if (request.reset) {
+                if (agentId !== undefined && (input.agent_id || 'default') !== agentId) throw api.bridgeError('INVALID_REQUEST');
+                await resetSession();
+            }
+            await submit(input);
         }
     } catch (error) {
         fail(error);

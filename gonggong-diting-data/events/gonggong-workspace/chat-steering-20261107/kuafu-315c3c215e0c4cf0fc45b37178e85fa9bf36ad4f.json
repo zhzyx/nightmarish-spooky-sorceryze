@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-315c3c215e0c4cf0fc45b37178e85fa9bf36ad4f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "chat-steering-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/381",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fd5fd7d0a4207b7aae63eca96bf8cf1f487622b9d50e14854bcd9c2d09d9068d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/381",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/382",
+    "action": "intake",
+    "detection_head": "ad510d9b2c250e6902ddcd5e0bf945b77601fc1d",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-root",
+    "authority_ref": "codex:user:20261107:chat-steering",
+    "evidence": "issue381:intake-only:tenant-gonggong-workspace:passed",
+    "diagnosis": "首次门禁缺少显式租户参数；补充与work-items一致的租户后已原操作复验通过。采集须使用Python3.12解析现有高精度时间戳。",
+    "next_action": "继续原工单验证交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T03:55:39.728394+00:00",
+    "attempted": "intake-only with explicit tenant passed",
+    "repair_owner": "codex-root",
+    "continuable": "implementation and validation"
+  },
+  "occurred_at": "2026-11-07T05:11:04.172015+00:00",
+  "sha256": "055971489d8253645bf8eec024a109e631a770480c592557d3e98f73e7739cc6"
+}

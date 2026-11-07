@@ -100,6 +100,17 @@ def main():
             "--repo",
             str(root),
         ])
+        editor_folder = root / "isolated-editor"
+        editor_folder.mkdir()
+        isolated_editor = editor_folder / args.godot.name
+        cloned = (
+            subprocess.run(["cp", "-c", str(args.godot.resolve()), str(isolated_editor)], capture_output=True)
+            if sys.platform == "darwin"
+            else None
+        )
+        if cloned is None or cloned.returncode != 0:
+            shutil.copy2(args.godot, isolated_editor)
+        (editor_folder / "_sc_").touch()
         project = root / "project"
         project.mkdir()
         # The editor changes cwd to the opened project before invoking Python.
@@ -138,9 +149,12 @@ def main():
                         and (
                             "Refine" in text
                             or ("Clarify pending" in text and "用户补充" in text)
-                            or ("second feature" in text and existing["number"] == 8003)
+                            or ("second feature" in text and existing["number"] == 8002)
                         )
                         else "new"
+                    )
+                    requests[-1].update(
+                        outcome=text, existing_issue=existing["number"] if existing else None, decision=decision
                     )
                     body = json.dumps({
                         "decision": decision,
@@ -155,6 +169,13 @@ def main():
                     })
                 else:
                     normal += 1
+                    users = [message["content"] for message in data["messages"] if message["role"] == "user"]
+                    requests[-1]["users"] = users
+                    if normal == 1:
+                        assert any("Create first feature" in text for text in users)
+                        assert any("Refine first feature during requirements phase" in text for text in users), (
+                            "Development started before applying the intake supplement"
+                        )
                     body = "INTAKE_WORK_REPLY_" + str(normal)
                 result = json.dumps({
                     "choices": [{"message": {"role": "assistant", "content": body}, "finish_reason": "stop"}]
@@ -192,7 +213,7 @@ def main():
         try:
             result = subprocess.run(
                 [
-                    str(args.godot.resolve()),
+                    str(isolated_editor),
                     "--headless",
                     "--editor",
                     "--path",
@@ -226,12 +247,18 @@ def main():
         )
         assert result.returncode == 0 and b"REQUIREMENTS_AGENT_NATIVE_OK" in result.stdout, result.stdout[-3500:]
         issues = json.loads((root / "fake-issues.json").read_text())
-        assert len(issues) == 6, issues
+        assert len(issues) == 5, issues
         documents = list((root / "design-docs").glob("*.md"))
-        assert len(documents) == 6, documents
-        assert any("Queued feature from requirements phase" in p.read_text(encoding="utf-8") for p in documents)
-        assert any(x["title"] == "Queued feature from requirements phase" for x in issues)
-        assert normal == 8 and sum(x["requirements"] for x in requests) == 11, requests
+        assert len(documents) == 5, documents
+        supplements = [
+            request
+            for request in requests
+            if request.get("existing_issue") == 8001
+            and "Refine first feature during requirements phase" in request.get("outcome", "")
+        ]
+        assert len(supplements) == 1 and supplements[0]["decision"] == "continue", requests
+        assert not any(x["title"] == "Refine first feature during requirements phase" for x in issues), issues
+        assert normal == 7 and sum(x["requirements"] for x in requests) == 11, requests
         events = [
             json.loads(p.read_text(encoding="utf-8")) for p in (root / "gonggong-diting-data/events").rglob("*.json")
         ]
@@ -270,13 +297,13 @@ def main():
             "actual_yanshi_admission": True,
             "model_and_github": "isolated loopback/CLI fixtures only",
             "requirements_calls": 11,
-            "development_calls": 8,
-            "issues_created": 6,
+            "development_calls": normal,
+            "issues_created": len(issues),
             "events": len(events),
             "git_check": receipt,
             "cases": [
                 "new requirement",
-                "requirement submitted during intake is queued and creates its own document and Issue",
+                "supplement during intake amends the same Issue before the first development request",
                 "followup reuses Issue",
                 "new requirement while bound",
                 "same text new turn still classified",
