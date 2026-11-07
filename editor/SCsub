@@ -25,6 +25,7 @@ if env.editor_build:
         "docks/daqian_scripts.gen.h",
         [
             "docks/daqian/graph_rules.gd",
+            "docks/daqian/graph_layout.gd",
             "docks/daqian/issue_graph.gd",
             "docks/daqian/workspace.gd",
             "docks/daqian/model_settings.gd",

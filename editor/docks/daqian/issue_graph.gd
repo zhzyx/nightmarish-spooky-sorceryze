@@ -20,6 +20,7 @@ var debug_active := false
 var debug_states := {}
 var debug_models := {}
 var rules: Script
+var graph_layout: Script
 var issue_id := ""
 var revision := ""
 var baseline := {"nodes": {}, "edges": []}
@@ -879,46 +880,9 @@ func _queue_layout() -> void:
 		_layout_cards.call_deferred()
 
 
-# Only manual positions obstruct the automatic lanes. Move down to the first clear interval.
-static func clear_pinned_space(rect: Rect2, obstacles: Array[Rect2], gap: float) -> Vector2:
-	for obstacle in obstacles:
-		if rect.intersects(obstacle.grow(gap)):
-			rect.position.y = obstacle.end.y + gap
-	return rect.position
-
-
 func _layout_cards() -> void:
 	layout_pending = false
-	if layout_columns.is_empty():
-		return
-	var scale_factor := canvas.get_theme_default_base_scale()
-	var gap := Vector2(88, 36) * scale_factor
-	var obstacles: Array[Rect2] = []
-	for id in positions:
-		var card := canvas.get_node_or_null(NodePath(str(id))) as GraphNode
-		if card:
-			obstacles.append(Rect2(positions[id], card.size.max(card.get_combined_minimum_size())))
-	obstacles.sort_custom(func(a: Rect2, b: Rect2): return a.position.y < b.position.y)
-	var x := 48.0 * scale_factor
-	var center_y := 64.0 * scale_factor
-	for level in layout_columns.size():
-		var column: Array = layout_columns[level]
-		var height := -gap.y
-		var width := 0.0
-		for card: GraphNode in column:
-			var extent := card.size.max(card.get_combined_minimum_size())
-			width = maxf(width, extent.x)
-			height += extent.y + gap.y
-		if level == 0:
-			center_y += height / 2.0
-		var y := center_y - height / 2.0
-		for card: GraphNode in column:
-			var extent := card.size.max(card.get_combined_minimum_size())
-			if not positions.has(String(card.name)):
-				card.position_offset = clear_pinned_space(Rect2(Vector2(x, y), extent), obstacles, gap.y)
-				y = card.position_offset.y
-			y += extent.y + gap.y
-		x += width + gap.x
+	graph_layout.arrange_flow(canvas, layout_columns, positions)
 
 
 func _draw_edge(edge: Dictionary, nodes := {}) -> void:
