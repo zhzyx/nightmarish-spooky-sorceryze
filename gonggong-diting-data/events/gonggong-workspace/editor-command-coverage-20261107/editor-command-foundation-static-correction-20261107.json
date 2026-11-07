@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-command-foundation-static-correction-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-07T08:12:05.297091+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "state": "passed_local_targeted",
+    "validation_ref": "data-collection/editor-command-coverage-validation-correction-20261107.json",
+    "validation_sha256": "eec69433aaea33a676bbdaa89dc808087172ec677b1d44ce77921a7e60c9d9b2",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "a47a614b90a48fc4f5b1f40eef85fe8ab599d2cb4602fa23009d8d59a5578b01"
+}

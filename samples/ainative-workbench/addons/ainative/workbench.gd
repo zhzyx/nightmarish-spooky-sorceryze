@@ -47,6 +47,35 @@ var native_buttons: Dictionary = {}
 var native_scroll: ScrollContainer
 var native_inspector_fields: Array = []
 var native_other_panels: Array = []
+var context_menu: PopupMenu
+var context_history_menu: PopupMenu
+var context_node_ids: Array = []
+var context_connection: Dictionary = {}
+var context_position = Vector2.ZERO
+var context_model = ""
+var context_run = ""
+var context_selection: Array = []
+var context_inspected_id = ""
+var node_picker: ConfirmationDialog
+var node_picker_search: LineEdit
+var node_picker_list: ItemList
+var workflow_menu: MenuButton
+var workflow_dialog: ConfirmationDialog
+var workflow_mode = ""
+var inspector_fields: VBoxContainer
+const CONTEXT_ADD = 1
+const CONTEXT_RUN = 2
+const CONTEXT_PREVIEW = 3
+const CONTEXT_EDIT = 4
+const CONTEXT_RETRY = 5
+const CONTEXT_DUPLICATE = 6
+const CONTEXT_DELETE = 7
+const CONTEXT_DISCONNECT = 8
+const CONTEXT_SAVE = 9
+const CONTEXT_OPEN = 10
+const CONTEXT_RUN_ALL = 11
+const CONTEXT_HISTORY = 12
+const NODE_KINDS = ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "copy"]
 
 func node_label(kind: String) -> String:
 	return {"copy":"离线复制", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格"}.get(kind,kind)
@@ -127,23 +156,43 @@ func _ready():
 	content.add_child(diagnostics_title)
 	var bar = HFlowContainer.new()
 	content.add_child(bar)
-	path_edit = line(bar, "工作流 JSON 路径", ProjectSettings.globalize_path("user://workflow.json"))
-	path_edit.custom_minimum_size.x = 280
-	button(bar, "保存工作流", save_graph)
-	button(bar, "打开工作流", open_graph)
-	button(bar, "+ 离线复制节点", add_node)
+	bar.name = "WorkflowToolbar"
+	workflow_menu = MenuButton.new()
+	workflow_menu.text = "工作流"
+	bar.add_child(workflow_menu)
+	workflow_menu.get_popup().add_item("保存工作流…", CONTEXT_SAVE)
+	workflow_menu.get_popup().add_item("打开工作流…", CONTEXT_OPEN)
+	workflow_menu.get_popup().id_pressed.connect(_workflow_action)
+	workflow_menu.get_popup().about_to_popup.connect(func():
+		workflow_menu.get_popup().set_item_disabled(1, is_graph_busy())
+		workflow_menu.get_popup().set_item_tooltip(1, "请等待运行结束或取消后再打开" if is_graph_busy() else "打开保存的工作流"))
+	button(bar, "运行", start_run)
+	button(bar, "取消", cancel_run)
+	button(bar, "继续运行", resume_run)
+	var context_hint = Label.new()
+	context_hint.text = "右键画布添加节点 · 右键节点编辑与预览 · ⇧F10 打开菜单"
+	context_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	context_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bar.add_child(context_hint)
+	workflow_dialog = ConfirmationDialog.new()
+	workflow_dialog.title = "工作流文件"
+	workflow_dialog.ok_button_text = "确定"
+	workflow_dialog.cancel_button_text = "取消"
+	var workflow_fields = VBoxContainer.new()
+	workflow_dialog.add_child(workflow_fields)
+	path_edit = line(workflow_fields, "工作流 JSON 绝对路径", ProjectSettings.globalize_path("user://workflow.json"))
+	path_edit.custom_minimum_size.x = 420
+	workflow_dialog.confirmed.connect(_workflow_confirmed)
+	add_child(workflow_dialog)
+	# Retained for saved automation and callers; node creation is now in the canvas menu.
 	generator_choice = OptionButton.new()
-	for kind in ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh"]:
+	for kind in NODE_KINDS:
+		if kind == "copy": continue
 		generator_choice.add_item(node_label(kind))
 		generator_choice.set_item_metadata(generator_choice.item_count - 1, kind)
 	if builtin: generator_choice.selected = 2
-	bar.add_child(generator_choice)
-	button(bar, "+ 生成节点", add_generator)
-	button(bar, "删除选中节点", delete_node)
-	button(bar, "运行", start_run)
-	button(bar, "取消", cancel_run)
-	button(bar, "重试选中节点", retry_node)
-	button(bar, "继续运行", resume_run)
+	add_child(generator_choice)
+	generator_choice.hide()
 	var split = HSplitContainer.new()
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(split)
@@ -153,7 +202,14 @@ func _ready():
 	split.add_child(graph)
 	graph.connection_request.connect(connect_nodes)
 	graph.disconnection_request.connect(disconnect_nodes)
+	graph.popup_request.connect(show_context_menu)
+	graph.gui_input.connect(_graph_context_input)
+	graph.duplicate_nodes_request.connect(_keyboard_duplicate)
+	graph.delete_nodes_request.connect(_keyboard_delete)
+	graph.focus_mode = Control.FOCUS_ALL
+	_setup_context_controls()
 	var inspector = VBoxContainer.new()
+	inspector_fields = inspector
 	inspector.custom_minimum_size.x = 360
 	split.add_child(inspector)
 	source_edit = line(inspector, "源文件绝对路径（PNG/JPEG/GLB/内嵌 glTF）")
@@ -270,7 +326,7 @@ func show_native_section(section: String):
 	for panel in native_other_panels: panel.visible = section=='other'
 	texture.visible = section=='mesh' and preview_resource!=null
 	mesh_container.visible = is_instance_valid(preview_scene)
-	native_sections.title.text = {'mesh':'网格生成 · 选择生成类型，再添加节点；复制节点用于离线演示。','rig':'骨骼绑定 · 使用已预览的网格，或选择本地网格；检查姿势后拟合。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
+	native_sections.title.text = {'mesh':'网格生成 · 右键画布添加节点，右键节点编辑、预览和管理结果。','rig':'骨骼绑定 · 使用已预览的网格，或选择本地网格；检查姿势后拟合。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
 	for key in native_buttons: native_buttons[key].button_pressed = key==section
 	native_scroll.scroll_vertical = 0
 
@@ -329,7 +385,8 @@ func rebuild():
 		node.add_child(label)
 		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
 		graph.add_child(node)
-		button(node, "运行并预览", run_node_preview.bind(data.id))
+		var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
+		run_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
 	for edge in edges:
@@ -455,6 +512,7 @@ func clear_embedded():
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
 
 func open_graph():
+	_invalidate_context()
 	if creating or auto_step or not jobs.is_empty():
 		status.text = "请等待当前运行结束或先取消，再打开工作流"
 		return
@@ -737,3 +795,347 @@ func confirm_publish():
 func _exit_tree():
 	for pid in jobs:
 		if OS.is_process_running(pid): OS.kill(pid)
+
+func is_graph_busy() -> bool:
+	return creating or auto_step or not jobs.is_empty()
+
+func _setup_context_controls():
+	context_menu = PopupMenu.new()
+	context_menu.name = "GraphContextMenu"
+	context_menu.allow_search = true
+	context_menu.id_pressed.connect(_context_action)
+	add_child(context_menu)
+	context_history_menu = PopupMenu.new()
+	context_history_menu.name = "ContextHistory"
+	context_history_menu.id_pressed.connect(_history_context_action)
+	context_menu.add_child(context_history_menu)
+	node_picker = ConfirmationDialog.new()
+	node_picker.title = "添加节点"
+	node_picker.ok_button_text = "添加"
+	node_picker.cancel_button_text = "取消"
+	node_picker.min_size = Vector2i(420, 320)
+	var fields = VBoxContainer.new()
+	node_picker.add_child(fields)
+	node_picker_search = line(fields, "搜索节点类型，如：图像、网格、离线")
+	node_picker_search.text_changed.connect(filter_node_picker)
+	node_picker_search.text_submitted.connect(func(_text): _node_picker_confirmed())
+	node_picker_list = ItemList.new()
+	node_picker_list.custom_minimum_size = Vector2(400, 240)
+	node_picker_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	node_picker_list.item_activated.connect(func(_index): _node_picker_confirmed())
+	fields.add_child(node_picker_list)
+	node_picker.confirmed.connect(_node_picker_confirmed)
+	add_child(node_picker)
+
+func _graph_selected_ids() -> Array:
+	var ids: Array = []
+	for child in graph.get_children():
+		if child is GraphNode and child.selected: ids.append(str(child.name))
+	return ids
+
+func _node_at_context(point: Vector2) -> String:
+	var global_point = graph.get_global_transform() * point
+	var children = graph.get_children()
+	children.reverse()
+	for child in children:
+		if child is GraphNode and child.visible:
+			var local_point = child.get_global_transform().affine_inverse() * global_point
+			if Rect2(Vector2.ZERO, child.size).has_point(local_point): return str(child.name)
+	return ""
+
+func _remember_context():
+	context_model = JSON.stringify(model())
+	context_run = run_id
+	context_selection = _graph_selected_ids()
+	context_inspected_id = selected_id
+
+func _context_is_current() -> bool:
+	if context_model.is_empty() or context_model != JSON.stringify(model()) or context_run != run_id or context_inspected_id != selected_id or context_selection != _graph_selected_ids():
+		status.text = "编辑内容或运行已变化，请重新打开右键菜单"
+		return false
+	for id in context_node_ids:
+		if nodes.filter(func(n): return n.id == id).is_empty():
+			status.text = "节点已不存在，请重新打开右键菜单"
+			return false
+	return true
+
+func _invalidate_context():
+	context_model = ""
+	context_node_ids.clear()
+	context_connection.clear()
+	if is_instance_valid(context_menu): context_menu.hide()
+	if is_instance_valid(node_picker): node_picker.hide()
+
+func _context_item(label: String, action: int, reason: String = ""):
+	context_menu.add_item(label, action)
+	var index = context_menu.item_count - 1
+	context_menu.set_item_disabled(index, not reason.is_empty())
+	if not reason.is_empty(): context_menu.set_item_tooltip(index, reason)
+
+func node_run_blocker(id: String) -> String:
+	if is_graph_busy(): return "正在运行，请等待结果或先取消"
+	var pending: Array = [id]
+	var visited: Array = []
+	while not pending.is_empty():
+		var next_id = pending.pop_back()
+		if next_id in visited: continue
+		visited.append(next_id)
+		var matching = nodes.filter(func(n): return n.id == next_id)
+		if matching.is_empty(): return "缺少必要的上游节点"
+		var data: Dictionary = matching[0]
+		var kind: String = data.get("type", "copy")
+		var incoming = edges.filter(func(edge): return edge.to == next_id)
+		for edge in incoming: pending.append(edge.from)
+		if not kind.begins_with("text_") and incoming.is_empty():
+			if data.get("source", "").is_empty() and not data.has("source_snapshot"):
+				return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
+			if not data.get("source", "").is_empty() and not FileAccess.file_exists(data.source):
+				return "源文件不存在（" + str(next_id) + "）"
+		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
+		if not kind in ["copy", "image_to_mesh"] and prompt.strip_edges().is_empty():
+			return "请先填写生成提示词（" + str(next_id) + "）"
+		if not data.get("image_context", "").is_empty() and not FileAccess.file_exists(data.image_context):
+			return "参考图像不存在（" + str(next_id) + "）"
+	return ""
+
+func _retry_blocker(id: String) -> String:
+	if is_graph_busy(): return "正在运行，请等待结束或先取消"
+	var state: Dictionary = current.get("nodes", {}).get(id, {})
+	var job = state.get("job")
+	if run_id.is_empty() or state.get("state") != "failed" or not job is Dictionary or job.get("state") != "failed":
+		return "仅可重试原运行中已确认失败的节点"
+	return ""
+
+func show_context_menu(local_position: Vector2):
+	if not graph.is_visible_in_tree(): return
+	# Persist the previous inspector before selecting a different context target.
+	if not selected_id.is_empty() and not apply_fields(): return
+	context_position = local_position
+	context_node_ids = []
+	context_connection = {}
+	var hit = _node_at_context(local_position)
+	if not hit.is_empty():
+		var selected = _graph_selected_ids()
+		if not hit in selected:
+			for child in graph.get_children():
+				if child is GraphNode: child.selected = str(child.name) == hit
+			selected = [hit]
+		select_node(hit)
+		context_node_ids = selected
+	else:
+		context_connection = graph.get_closest_connection_at_point(local_position, 8.0)
+	_remember_context()
+	context_menu.clear()
+	context_history_menu.clear()
+	var busy_reason = "请等待当前运行结束或先取消" if is_graph_busy() else ""
+	if context_node_ids.size() == 1:
+		var id: String = context_node_ids[0]
+		_context_item("运行并预览", CONTEXT_RUN, node_run_blocker(id))
+		var has_result = not preview_history.get(id, []).is_empty() or current.get("nodes", {}).get(id, {}).get("state") == "succeeded"
+		_context_item("查看已有结果", CONTEXT_PREVIEW, "该节点尚无成功结果" if not has_result else "")
+		var history: Array = preview_history.get(id, [])
+		for i in history.size():
+			context_history_menu.add_item("版本 " + str(i + 1) + ("（最新）" if i == history.size() - 1 else ""), i)
+			context_history_menu.set_item_tooltip(i, history[i].get("description", ""))
+		context_menu.add_submenu_item("预览历史", "ContextHistory", CONTEXT_HISTORY)
+		context_menu.set_item_disabled(context_menu.item_count - 1, history.is_empty())
+		if history.is_empty(): context_menu.set_item_tooltip(context_menu.item_count - 1, "本次会话暂无该节点的预览版本")
+		_context_item("编辑提示词与参数", CONTEXT_EDIT)
+		_context_item("重试节点", CONTEXT_RETRY, _retry_blocker(id))
+		context_menu.add_separator()
+		_context_item("复制节点", CONTEXT_DUPLICATE, busy_reason)
+		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_MASK_CMD_OR_CTRL | KEY_D)
+		_context_item("删除节点", CONTEXT_DELETE, busy_reason)
+		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
+	elif context_node_ids.size() > 1:
+		context_menu.add_separator("已选择 " + str(context_node_ids.size()) + " 个节点")
+		_context_item("复制选中节点", CONTEXT_DUPLICATE, busy_reason)
+		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_MASK_CMD_OR_CTRL | KEY_D)
+		_context_item("删除选中节点", CONTEXT_DELETE, busy_reason)
+		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
+	elif not context_connection.is_empty():
+		_context_item("断开连接", CONTEXT_DISCONNECT, busy_reason)
+	else:
+		_context_item("添加节点…", CONTEXT_ADD, busy_reason)
+		context_menu.add_separator()
+		_context_item("保存工作流…", CONTEXT_SAVE)
+		_context_item("打开工作流…", CONTEXT_OPEN, busy_reason)
+		_context_item("运行整个工作流", CONTEXT_RUN_ALL, busy_reason if not busy_reason.is_empty() else ("请先添加节点" if nodes.is_empty() else ""))
+	context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+
+func _context_action(action: int):
+	if not _context_is_current(): return
+	context_menu.hide()
+	match action:
+		CONTEXT_ADD:
+			if is_graph_busy(): return
+			node_picker_search.text = ""
+			filter_node_picker("")
+			node_picker.popup_centered()
+			node_picker_search.grab_focus()
+		CONTEXT_RUN:
+			if context_node_ids.size() == 1:
+				var reason = node_run_blocker(context_node_ids[0])
+				if not reason.is_empty(): status.text = reason; return
+				run_node_preview(context_node_ids[0])
+		CONTEXT_PREVIEW:
+			if context_node_ids.size() == 1:
+				var id: String = context_node_ids[0]
+				if not creating and current.get("nodes", {}).get(id, {}).get("state") == "succeeded": request_preview()
+				elif not preview_history.get(id, []).is_empty(): show_history(preview_history[id].size() - 1)
+		CONTEXT_HISTORY:
+			if context_node_ids.size() == 1 and not preview_history.get(context_node_ids[0], []).is_empty():
+				history_choice.grab_focus()
+				status.text = "在预览历史子菜单或右侧版本列表选择结果"
+		CONTEXT_EDIT:
+			if context_node_ids.size() == 1:
+				text_edit.grab_focus()
+				status.text = "在右侧编辑提示词与参数，完成后右键选择“运行并预览”"
+		CONTEXT_RETRY:
+			if context_node_ids.size() == 1:
+				var reason = _retry_blocker(context_node_ids[0])
+				if not reason.is_empty(): status.text = reason; return
+				preview_target = context_node_ids[0]
+				retry_node()
+		CONTEXT_DUPLICATE: duplicate_context_nodes()
+		CONTEXT_DELETE: delete_context_nodes()
+		CONTEXT_DISCONNECT:
+			if is_graph_busy() or context_connection.is_empty(): return
+			disconnect_nodes(context_connection.from_node, context_connection.from_port, context_connection.to_node, context_connection.to_port)
+		CONTEXT_SAVE, CONTEXT_OPEN: _workflow_action(action)
+		CONTEXT_RUN_ALL:
+			if not is_graph_busy(): start_run()
+
+func _history_context_action(index: int):
+	if _context_is_current() and context_node_ids.size() == 1:
+		show_history(index)
+
+func filter_node_picker(text: String):
+	node_picker_list.clear()
+	var search = text.strip_edges().to_lower()
+	for group in [["图像生成", ["text_to_image", "image_to_image"]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["离线工具", ["copy"]]]:
+		var matches: Array = []
+		for kind in group[1]:
+			if search.is_empty() or search in (node_label(kind) + " " + kind + " " + group[0]).to_lower(): matches.append(kind)
+		if matches.is_empty(): continue
+		node_picker_list.add_item(group[0])
+		node_picker_list.set_item_selectable(node_picker_list.item_count - 1, false)
+		for kind in matches:
+			node_picker_list.add_item("  " + node_label(kind))
+			node_picker_list.set_item_metadata(node_picker_list.item_count - 1, kind)
+	for i in node_picker_list.item_count:
+		if node_picker_list.is_item_selectable(i):
+			node_picker_list.select(i)
+			break
+	node_picker.get_ok_button().disabled = node_picker_list.get_selected_items().is_empty()
+
+func _node_picker_confirmed():
+	var selected = node_picker_list.get_selected_items()
+	if selected.is_empty(): return
+	create_context_node(str(node_picker_list.get_item_metadata(selected[0])))
+
+func create_context_node(kind: String):
+	if not kind in NODE_KINDS or is_graph_busy() or not _context_is_current(): return
+	if not selected_id.is_empty() and not apply_fields(): return
+	var position = (context_position + graph.scroll_offset) / graph.zoom
+	var id = "n" + str(Time.get_ticks_usec())
+	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
+	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else "comfy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	nodes.append(data)
+	node_picker.hide()
+	context_menu.hide()
+	rebuild()
+	for child in graph.get_children():
+		if child is GraphNode: child.selected = str(child.name) == id
+	select_node(id)
+	status.text = "已在右键位置添加“" + node_label(kind) + "”节点"
+
+func duplicate_context_nodes() -> Array:
+	if is_graph_busy() or not _context_is_current() or context_node_ids.is_empty(): return []
+	if not apply_fields(): return []
+	var mapping: Dictionary = {}
+	var copies: Array = []
+	for id in context_node_ids:
+		var matching = nodes.filter(func(n): return n.id == id)
+		if matching.is_empty(): return []
+		var copy: Dictionary = matching[0].duplicate(true)
+		var new_id = "n" + str(Time.get_ticks_usec())
+		while mapping.values().has(new_id) or not nodes.filter(func(n): return n.id == new_id).is_empty(): new_id += "x"
+		mapping[id] = new_id
+		copy.id = new_id
+		copy.x += 40
+		copy.y += 40
+		copies.append(copy)
+	var copied_edges: Array = []
+	for edge in edges:
+		if mapping.has(edge.from) and mapping.has(edge.to):
+			var copy = edge.duplicate(true)
+			copy.from = mapping[edge.from]
+			copy.to = mapping[edge.to]
+			copied_edges.append(copy)
+	nodes.append_array(copies)
+	edges.append_array(copied_edges)
+	rebuild()
+	for child in graph.get_children():
+		if child is GraphNode: child.selected = mapping.values().has(str(child.name))
+	select_node(copies[-1].id)
+	status.text = "已复制 " + str(copies.size()) + " 个节点及其内部连接"
+	return mapping.values()
+
+func delete_context_nodes():
+	if is_graph_busy() or not _context_is_current() or context_node_ids.is_empty(): return
+	var removed = context_node_ids.duplicate()
+	for id in removed: preview_history.erase(id)
+	if preview_node in removed: clear_preview()
+	nodes = nodes.filter(func(n): return not n.id in removed)
+	edges = edges.filter(func(edge): return not edge.from in removed and not edge.to in removed)
+	if selected_id in removed:
+		selected_id = ""
+		source_edit.text = ""
+		context_edit.text = ""
+		text_edit.text = ""
+		params_edit.text = "{}"
+		refresh_history()
+	rebuild()
+	status.text = "已删除 " + str(removed.size()) + " 个节点及关联连接"
+
+func _keyboard_duplicate():
+	context_node_ids = _graph_selected_ids()
+	context_connection = {}
+	_remember_context()
+	duplicate_context_nodes()
+
+func _keyboard_delete(ids: Array):
+	context_node_ids = []
+	for id in ids: context_node_ids.append(str(id))
+	context_connection = {}
+	_remember_context()
+	delete_context_nodes()
+
+func _graph_context_input(event: InputEvent):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.ctrl_pressed and OS.get_name() == "macOS":
+		# Cocoa already maps real Control-click to RIGHT. This is the synthetic-input fallback.
+		show_context_menu(event.position)
+		graph.accept_event()
+	elif event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_MENU or (event.keycode == KEY_F10 and event.shift_pressed)):
+		var position = graph.size * 0.5
+		var ids = _graph_selected_ids()
+		if not ids.is_empty():
+			var node = graph.get_node_or_null(NodePath(ids[0])) as GraphNode
+			if node != null: position = graph.get_global_transform().affine_inverse() * (node.get_global_transform() * (node.size * 0.5))
+		show_context_menu(position)
+		graph.accept_event()
+
+func _workflow_action(action: int):
+	if action == CONTEXT_OPEN and is_graph_busy():
+		status.text = "请等待运行结束或先取消，再打开工作流"
+		return
+	workflow_mode = "save" if action == CONTEXT_SAVE else "open"
+	workflow_dialog.title = "保存工作流" if workflow_mode == "save" else "打开工作流"
+	workflow_dialog.ok_button_text = "保存" if workflow_mode == "save" else "打开"
+	workflow_dialog.popup_centered()
+	path_edit.grab_focus()
+
+func _workflow_confirmed():
+	if workflow_mode == "save": save_graph()
+	elif workflow_mode == "open": open_graph()

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-396c6150e8f31506664282e2d5a56f96a48a9a52",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-coverage-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "46e4df122452fa29a3fd049af11c0188bc125651e3eaf711ed8416658118511c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/389",
+    "action": "validation",
+    "detection_head": "3a8a6c38f4d700e8351f1793a2babea4739fd7a1",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-host",
+    "authority_ref": "codex:user-delegation:01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42353980814",
+    "diagnosis": "PR static validation identified copyright alignment, quoted include resolution, three pre-existing empty collection annotations newly checked by modified runner, and one assertion-message spelling. Root applied repository formatters and explicit annotations without production behavior changes; local full hooks and rebuild verify the correction.",
+    "next_action": "Retain prior validation, append corrected candidate evidence, resubmit and require new exact-head CI before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:08:33.741624+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T08:09:42.531166+00:00",
+  "sha256": "f48c6780223119b6a1b90182b4c21d139e73afbed2a11dba96d6ea82f6d2a78f"
+}

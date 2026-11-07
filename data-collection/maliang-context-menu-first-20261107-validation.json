@@ -1,0 +1,858 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-context-menu-first-20261107",
+  "issue_number": 411,
+  "state": "passed",
+  "recorded_at": "2026-11-07T07:56:20.890545+00:00",
+  "platform": "macOS arm64",
+  "base_commit": "1d080f6554668b720347bfcd222e527a9a7541f3",
+  "input_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "4a09626514c6f993dc8c00ca8e3518eae39d853cc82ded521ede652debf52ee4",
+    "samples/ainative-workbench/context_menu_acceptance.gd": "76aabd049d0c40f4101f43f1650db6677456d363fa21c09d8a9e814dffea942b",
+    "samples/ainative-workbench/README.md": "f599ee4545463ce404aa26b930f077f43db262ba8ac30cfab4f0622d46d4da0a",
+    "tests/editor/ainative_builtin.gd": "fcbc4446c7e16073c779c0fbed4c6abfa5b0c29a8c274b0bb217157baf8c75b8"
+  },
+  "validation": {
+    "interactions": {
+      "checks": [
+        {
+          "label": "workbench exposes its context menu controls",
+          "passed": true
+        },
+        {
+          "label": "object editing buttons are removed from the visible toolbar",
+          "passed": true
+        },
+        {
+          "label": "toolbar remains compact with workflow path and node type picker moved out",
+          "passed": true
+        },
+        {
+          "label": "blank canvas offers creation rather than stale selected-node actions",
+          "passed": true
+        },
+        {
+          "label": "opening a menu never starts inference",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "blank-canvas action opens the searchable node picker",
+          "passed": true
+        },
+        {
+          "label": "node search filters generation types by their Chinese names",
+          "passed": true
+        },
+        {
+          "label": "right-click creation preserves the selected machine node kind",
+          "passed": true
+        },
+        {
+          "label": "created node is placed at the clicked canvas coordinate after zoom and scroll",
+          "passed": true
+        },
+        {
+          "label": "switching right-click targets retains pending inspector edits",
+          "passed": true
+        },
+        {
+          "label": "right-click targets the node under the pointer instead of the previous inspector selection",
+          "passed": true
+        },
+        {
+          "label": "node menu contains the primary editing and execution actions",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "edit action focuses the node's detailed fields",
+          "passed": true
+        },
+        {
+          "label": "right-click inside a selected set preserves the multi-selection",
+          "passed": true
+        },
+        {
+          "label": "multi-selection offers valid batch edits without an ambiguous batch run",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch copy creates one distinct node for each selected node",
+          "passed": true
+        },
+        {
+          "label": "batch copy remaps the selected internal connection",
+          "passed": true
+        },
+        {
+          "label": "embedded source snapshot is retained in the copied node",
+          "passed": true
+        },
+        {
+          "label": "copied parameters and embedded snapshots do not alias the originals",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch delete removes copied nodes and their incident connection only",
+          "passed": true
+        },
+        {
+          "label": "right-click on a rendered connection selects its disconnect action",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "connection action removes the selected edge without deleting nodes",
+          "passed": true
+        },
+        {
+          "label": "node retains a discoverable run fallback",
+          "passed": true
+        },
+        {
+          "label": "real viewport right-click over the node run button opens its context menu",
+          "passed": true
+        },
+        {
+          "label": "right-clicking the run fallback does not activate generation",
+          "passed": true
+        },
+        {
+          "label": "missing required input disables execution with a visible explanation",
+          "passed": true
+        },
+        {
+          "label": "generation accepts the effective prompt from node instructions without a parameter prompt",
+          "passed": true
+        },
+        {
+          "label": "text generation without parameter or instruction prompt remains disabled",
+          "passed": true
+        },
+        {
+          "label": "image-to-mesh permits a source image without a text prompt",
+          "passed": true
+        },
+        {
+          "label": "busy nodes disable duplicate execution and destructive edits",
+          "passed": true
+        },
+        {
+          "label": "an action from a stale menu cannot delete a changed model",
+          "passed": true
+        },
+        {
+          "label": "reopening an identical workflow invalidates old menu actions even when node IDs are reused",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "node menu automatically previews the real decoded image",
+          "passed": true
+        },
+        {
+          "label": "successful node enables existing-result and history actions",
+          "passed": true
+        },
+        {
+          "label": "history submenu restores the correct node's prior result",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "right-click rerun previews a real mesh while retaining the previous image",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "confirmed provider failure enables node retry",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "retry menu item invokes the durable executor retry path",
+          "passed": true
+        },
+        {
+          "label": "Control-click opens the node context menu on macOS",
+          "passed": true
+        },
+        {
+          "label": "Shift-F10 provides a keyboard context-menu entry point",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit duplicate shortcut uses the same contextual copy implementation",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit delete shortcut removes the requested node using contextual safeguards",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context editing and preview preserve source file bytes",
+          "passed": true
+        }
+      ],
+      "failures": 0,
+      "inference": "offline copy provider; no AI model calls",
+      "ok": true
+    },
+    "independent": {
+      "checks": [
+        {
+          "label": "workbench exposes its context menu controls",
+          "passed": true
+        },
+        {
+          "label": "object editing buttons are removed from the visible toolbar",
+          "passed": true
+        },
+        {
+          "label": "toolbar remains compact with workflow path and node type picker moved out",
+          "passed": true
+        },
+        {
+          "label": "blank canvas offers creation rather than stale selected-node actions",
+          "passed": true
+        },
+        {
+          "label": "opening a menu never starts inference",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 添加节点…",
+          "passed": true
+        },
+        {
+          "label": "blank-canvas action opens the searchable node picker",
+          "passed": true
+        },
+        {
+          "label": "node search filters generation types by their Chinese names",
+          "passed": true
+        },
+        {
+          "label": "right-click creation preserves the selected machine node kind",
+          "passed": true
+        },
+        {
+          "label": "created node is placed at the clicked canvas coordinate after zoom and scroll",
+          "passed": true
+        },
+        {
+          "label": "switching right-click targets retains pending inspector edits",
+          "passed": true
+        },
+        {
+          "label": "right-click targets the node under the pointer instead of the previous inspector selection",
+          "passed": true
+        },
+        {
+          "label": "node menu contains the primary editing and execution actions",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 编辑提示词与参数",
+          "passed": true
+        },
+        {
+          "label": "edit action focuses the node's detailed fields",
+          "passed": true
+        },
+        {
+          "label": "right-click inside a selected set preserves the multi-selection",
+          "passed": true
+        },
+        {
+          "label": "multi-selection offers valid batch edits without an ambiguous batch run",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 复制选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch copy creates one distinct node for each selected node",
+          "passed": true
+        },
+        {
+          "label": "batch copy remaps the selected internal connection",
+          "passed": true
+        },
+        {
+          "label": "embedded source snapshot is retained in the copied node",
+          "passed": true
+        },
+        {
+          "label": "copied parameters and embedded snapshots do not alias the originals",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 删除选中节点",
+          "passed": true
+        },
+        {
+          "label": "batch delete removes copied nodes and their incident connection only",
+          "passed": true
+        },
+        {
+          "label": "right-click on a rendered connection selects its disconnect action",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 断开连接",
+          "passed": true
+        },
+        {
+          "label": "connection action removes the selected edge without deleting nodes",
+          "passed": true
+        },
+        {
+          "label": "node retains a discoverable run fallback",
+          "passed": true
+        },
+        {
+          "label": "real viewport right-click over the node run button opens its context menu",
+          "passed": true
+        },
+        {
+          "label": "right-clicking the run fallback does not activate generation",
+          "passed": true
+        },
+        {
+          "label": "missing required input disables execution with a visible explanation",
+          "passed": true
+        },
+        {
+          "label": "generation accepts the effective prompt from node instructions without a parameter prompt",
+          "passed": true
+        },
+        {
+          "label": "text generation without parameter or instruction prompt remains disabled",
+          "passed": true
+        },
+        {
+          "label": "image-to-mesh permits a source image without a text prompt",
+          "passed": true
+        },
+        {
+          "label": "busy nodes disable duplicate execution and destructive edits",
+          "passed": true
+        },
+        {
+          "label": "an action from a stale menu cannot delete a changed model",
+          "passed": true
+        },
+        {
+          "label": "reopening an identical workflow invalidates old menu actions even when node IDs are reused",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "node menu automatically previews the real decoded image",
+          "passed": true
+        },
+        {
+          "label": "successful node enables existing-result and history actions",
+          "passed": true
+        },
+        {
+          "label": "history submenu restores the correct node's prior result",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "right-click rerun previews a real mesh while retaining the previous image",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 运行并预览",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "confirmed provider failure enables node retry",
+          "passed": true
+        },
+        {
+          "label": "context action is discoverable: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action is enabled: 重试节点",
+          "passed": true
+        },
+        {
+          "label": "context action finishes without blocking the editor",
+          "passed": true
+        },
+        {
+          "label": "retry menu item invokes the durable executor retry path",
+          "passed": true
+        },
+        {
+          "label": "Control-click opens the node context menu on macOS",
+          "passed": true
+        },
+        {
+          "label": "Shift-F10 provides a keyboard context-menu entry point",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit duplicate shortcut uses the same contextual copy implementation",
+          "passed": true
+        },
+        {
+          "label": "GraphEdit delete shortcut removes the requested node using contextual safeguards",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1100, 800)",
+          "passed": true
+        },
+        {
+          "label": "context menu remains inside the window at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context menus preserve the canvas vertical expansion at size (1440, 1000)",
+          "passed": true
+        },
+        {
+          "label": "context editing and preview preserve source file bytes",
+          "passed": true
+        }
+      ],
+      "failures": 0,
+      "inference": "offline copy provider; no AI model calls",
+      "ok": true
+    },
+    "native_signed_app": {
+      "state": "passed",
+      "editor_sha256": "dd869046cfd7236f74dbafc52748da0216a748411f0575b5e80b99b6c8f73091",
+      "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference",
+      "runs": [
+        {
+          "name": "mesh-and-rig",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "bundled editor exposes contextual editing",
+              "bundled toolbar moves object editing into context menus",
+              "bundled path and generator selectors no longer occupy the toolbar",
+              "bundled blank-canvas context opens without executing providers",
+              "bundled context creates the requested machine node",
+              "bundled context-created node retains normal delete behavior",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade",
+              "bundled local GLTF runtime converter loads",
+              "local conversion produces actual runtime Mesh geometry",
+              "local conversion preserves transforms, Skin and skeleton binding",
+              "local conversion preserves node and mesh provenance metadata",
+              "local conversion preserves child relationships and scene ownership",
+              "local conversion preserves visibility, rendering layers and groups",
+              "local conversion preserves surface materials",
+              "animation target NodePaths still resolve after local conversion",
+              "local conversion supports an unparented importer root",
+              "root-owned descendants retain scene ownership through nested conversion",
+              "bundled graph has explicit node preview action",
+              "real host subprocess completed",
+              "offline Copy Mesh run reaches real Executor success",
+              "editor heartbeat advances during provider execution",
+              "bundled node action automatically previews and records its result",
+              "real host subprocess completed",
+              "actual GLB preview is decoded",
+              "decoded preview contains Mesh geometry",
+              "publication waits for explicit confirmation",
+              "real host subprocess completed",
+              "confirmed Mesh publication reloads",
+              "real host subprocess completed",
+              "Mesh publication cannot overwrite an existing version",
+              "offline run and publication preserve source Mesh bytes",
+              "other tools retain the shared Mesh preview viewport",
+              "shared preview rendering remains enabled",
+              "rigging navigation opens its controls directly",
+              "triangle fixture is not falsely accepted as a humanoid",
+              "unreviewed anatomy cannot be published",
+              "synthetic T-pose GLB fixture is encoded without AI inference",
+              "synthetic T-pose builds an actual bound character",
+              "suitable confirmed T-pose reaches the reviewed binding state",
+              "binding creates 18 real bones and Skin bind poses",
+              "Skin indices, normalized weights and rest geometry are valid",
+              "actual skinned ROM deformation: raise_arms",
+              "actual skinned ROM deformation: squat",
+              "actual skinned ROM deformation: turn",
+              "reviewed rig publishes a new character version",
+              "rig publication cannot overwrite an existing version",
+              "reopening a bound version restores both source model state and visible source input",
+              "binding, animation and publication preserve source GLB bytes",
+              "character with a real built-in runtime script stages successfully",
+              "bundled publisher creates a portable runtime dependency directory",
+              "portable scene uses relative script paths without an editor-cache reference"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "6fa2c455223ee7f07a34f9564239a70685c145691d36c927450b1d108c0b4cdb",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "rom_maximum_displacement": {
+                "raise_arms": 0.545059084892273,
+                "squat": 0.33388340473175,
+                "turn": 0.765170753002167
+              },
+              "state_key": "a3a3d8750c2a8dd141189a03eaac1bdc372eeb4dc0174bb40085922e18d9b136",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "independent-project",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "test project has no addons directory",
+              "five direct navigation buttons are available",
+              "navigation: mesh",
+              "navigation: rig",
+              "navigation: character",
+              "navigation: other",
+              "navigation: settings",
+              "Mesh generation is the default native page",
+              "all four generation node kinds are available",
+              "Chinese generator option preserves protocol: text_to_image",
+              "Chinese generator option preserves protocol: image_to_image",
+              "Chinese generator option preserves protocol: image_to_mesh",
+              "Chinese generator option preserves protocol: text_to_mesh",
+              "bundled editor exposes contextual editing",
+              "bundled toolbar moves object editing into context menus",
+              "bundled path and generator selectors no longer occupy the toolbar",
+              "bundled blank-canvas context opens without executing providers",
+              "bundled context creates the requested machine node",
+              "bundled context-created node retains normal delete behavior",
+              "workbench-owned labels, actions and placeholders are Chinese or proper names",
+              "raw external failure details are retained locally behind a Chinese summary",
+              "rigging exposes a local Mesh browser/input",
+              "host comes from the engine bundle",
+              "default local settings retain the bundled-host choice without a cached absolute script path",
+              "saved default follows the current engine bundle after an upgrade"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "host_sha256": "6fa2c455223ee7f07a34f9564239a70685c145691d36c927450b1d108c0b4cdb",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              },
+              "state_key": "233705ac55e15c46627e822fb3b9475f9e96c6886dd5e14d0b596323fadde056",
+              "untranslated_controls": []
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "native AINative editor plugin is registered",
+              "AINative is an editor main-screen tab",
+              "native workbench is displayed as 马良",
+              "马良 is immediately after AI Chat",
+              "native tab opens the bundled workbench without addons",
+              "real editor layout controls are available for geometry checks",
+              "normal editor layout restored on 2D",
+              "马良 hides side docks, scene tabs and bottom panel after 2D",
+              "马良 fills the available editor workspace after 2D",
+              "normal editor layout restored on 3D",
+              "马良 hides side docks, scene tabs and bottom panel after 3D",
+              "马良 fills the available editor workspace after 3D",
+              "normal editor layout restored on Script",
+              "马良 hides side docks, scene tabs and bottom panel after Script",
+              "马良 fills the available editor workspace after Script",
+              "AI Chat keeps its full workspace",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "direct full-workspace switch with separate distraction settings: DaqianMainScreen",
+              "direct full-workspace switch with separate distraction settings: AIChatMainScreen",
+              "direct full-workspace switch with separate distraction settings: AINativeMainScreen",
+              "enabled legacy sample addon does not create a second workbench",
+              "sample project retains exactly one native AINative editor dock"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference",
+              "layout_lookup": {
+                "bottom": 1,
+                "inspector": true,
+                "scene": true,
+                "scene_tabs": 1
+              }
+            },
+            "failures": [],
+            "ok": true
+          }
+        },
+        {
+          "name": "relocated-runtime",
+          "passed": true,
+          "returncode": 0,
+          "receipt": {
+            "checks": [
+              "portable character loads in a different project without editor bundles",
+              "published runtime script and its preload dependencies load",
+              "runtime script resolves from the copied artifact directory",
+              "runtime exported properties survive publication and relocation",
+              "relocated character retains actual skeleton data"
+            ],
+            "details": {
+              "fixture_kind": "synthetic test assets; no AI inference"
+            },
+            "failures": [],
+            "ok": true
+          }
+        }
+      ],
+      "project_state_isolated": true,
+      "same_engine_bundle": true,
+      "project_sources_unchanged": true
+    },
+    "original_preview_checks": 35,
+    "legacy_workflow_checks": 35,
+    "toolbar_before_controls": 11,
+    "toolbar_after_controls": 4,
+    "build": "macOS arm64 incremental SCons with zstandard; use_volk=yes accesskit=no",
+    "independent_review": {
+      "reviewer": "/root/context_menu_review",
+      "state": "passed",
+      "fixed_findings": [
+        "provider prompt eligibility",
+        "right-click propagation over node button",
+        "Chinese default confirmation buttons"
+      ]
+    }
+  },
+  "limitations": [
+    "No real model inference; tested real offline Executor and Godot preview decoding.",
+    "Generation-service configuration bug414 is separately tracked; user confirms no service available."
+  ],
+  "installation": "Signed candidate ready; unified user installation follows414 UI/config diagnostics work. No user app replaced during411 validation."
+}

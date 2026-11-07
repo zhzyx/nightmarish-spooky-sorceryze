@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-context-menu-first-20261107-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-context-menu-first-20261107",
+  "kind": "request",
+  "occurred_at": "2026-11-07T07:42:28.340278+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/411",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "intent": "Implement context-menu-first Maliang node editing, reduce toolbar and update the current installed editor",
+    "authorization_ref": "codex:user:20261107:implement-411-and-update-installed-maliang",
+    "state": "in_progress",
+    "native_workers": [
+      "/root/context_menu_ui",
+      "/root/context_menu_tests",
+      "/root/context_menu_review"
+    ],
+    "base_includes_409": true,
+    "usage": null
+  },
+  "evidence_refs": []
+}

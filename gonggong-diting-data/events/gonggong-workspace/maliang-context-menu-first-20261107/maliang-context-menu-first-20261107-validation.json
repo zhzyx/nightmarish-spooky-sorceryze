@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-context-menu-first-20261107-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-context-menu-first-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-07T07:56:20.890545+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/411",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "ed832c00eea16262f24fd31659988f84a03a71c0d1623316b4fbfb381ea48d60"
+  },
+  "payload": {
+    "state": "passed",
+    "issue_number": 411,
+    "validation_ref": "data-collection/maliang-context-menu-first-20261107-validation.json",
+    "validation_sha256": "767861ae74675eac8e1e7c65b393d49fdcd197edeacdd3cb1d6d95686234a638",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "929d1c43fe574f2e89b9579f1a93dc66b1a8f10a7a3149ba403fbf6dc6e42963"
+}
