@@ -5,6 +5,7 @@ var failures := []
 var state := {}
 var writes := 0
 var delay_detail := false
+var detail_reads: Array = []
 signal release_detail
 
 
@@ -49,7 +50,8 @@ func settle_layout() -> void:
 		await process_frame
 
 
-func read_graph(_id):
+func read_graph(id):
+	detail_reads.append(id)
 	if delay_detail:
 		await release_detail
 	return state.duplicate(true)
@@ -526,6 +528,7 @@ func run() -> void:
 	state.context = {}
 	workspace.host = self
 	delay_detail = true
+	detail_reads.clear()
 	workspace.overview.get_node("i_1/OpenIssue").pressed.emit()
 	check(workspace.issue_link.uri == issues[0].url and "已完成" in workspace.work_status.text, "issue detail lost link or status")
 	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
@@ -535,7 +538,9 @@ func run() -> void:
 	input.grab_focus()
 	input.text = "草稿输入"
 	input.text_changed.emit()
+	await process_frame
 	release_detail.emit()
+	check(detail_reads == [issues[1].url], "Superseded selection launched an unnecessary host read")
 	check(workspace.current == issues[1].url and graph.draft.nodes.has(edited), "late reply replaced selection or erased edits")
 	check(is_instance_valid(input) and input.has_focus(), "background reply stole draft input focus")
 	delay_detail = false
@@ -544,6 +549,7 @@ func run() -> void:
 	delay_detail = true
 	workspace._show_board()
 	workspace._open_issue(issues[2])
+	await process_frame
 	release_detail.emit()
 	check(graph.revision == state.revision and graph.draft == state.plan, "clean snapshot did not advance to live plan")
 	workspace._show_board()

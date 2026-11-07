@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d4f04507aca5de8e70120b3059b65691623b6941",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-real-issue-load",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3ba096d2de0fbd43b4dbf4e54076cdbf4c27791682ac1ba3640b26fe070c704d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "action": "user-report",
+    "detection_head": "ab24a0bedd74d70504d369d580acb619eb5ea942",
+    "context_sha256": "e4d91919d099c13bfcd18b6b7425738bc33a2adcd81c4da7f3235e5511b8182d",
+    "operator": "Sail-Li",
+    "worker": "codex-533",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+    "evidence": "data-collection/issue533-real-navigation.json",
+    "diagnosis": "切换工单同步写私有快照，挂载对话时全部 AI 页面重新入树。已在 #534 真实会话定位并复验。",
+    "next_action": "在同一基线上重新核对正式门禁，由阎罗完成交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T21:48:41.376309+00:00",
+    "attempted": null,
+    "repair_owner": "codex-533",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T22:26:08.002943+00:00",
+  "sha256": "db911021d3d83d1d7fb1a50204439932a6315be5f92844c2553d372722362140"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-real-issue-load-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-real-issue-load",
+  "kind": "request",
+  "occurred_at": "2026-11-07T22:15:45.615881Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/533",
+  "agent": {
+    "version": "host-version-unreported",
+    "id": "codex-533",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "以实际工单、工单对话与用户私有缓存副本修复导航卡顿",
+    "design_document": "design-docs/tianshu-real-issue-load.md"
+  },
+  "evidence_refs": [],
+  "sha256": "3909239ce871f292158096e8cf6714564a9cba826159033feaccc7f1ca461130"
+}

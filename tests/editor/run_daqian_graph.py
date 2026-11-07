@@ -11,7 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor, macos_editor
 
 
 def timeout_output(output: str | bytes | None) -> str:
@@ -52,7 +52,14 @@ if args.scenario in {"parallel", "inputs", "multi_issue"}:
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory).resolve()
-    isolated_editor = macos_editor(binary, project / "isolated-editor")
+    if os.name == "nt":
+        # These scenarios save EditorSettings, including the selected repository.
+        # A self-contained executable also isolates an already portable source editor.
+        isolated_editor = copy_editor(binary, project / "isolated-editor")
+        env["APPDATA"] = str(project / "roaming")
+        env["LOCALAPPDATA"] = str(project / "local")
+    else:
+        isolated_editor = macos_editor(binary, project / "isolated-editor")
     configuration = (
         isolated_editor.parent / "editor_data/gonggong/config.json"
         if (isolated_editor.parent / "_sc_").is_file()
