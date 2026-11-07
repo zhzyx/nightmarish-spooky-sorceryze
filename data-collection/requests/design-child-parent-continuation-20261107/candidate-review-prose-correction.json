@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "kind": "unmerged_candidate_review_prose_correction",
+  "preserved_original": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/443",
+    "source": "571acafd62a01c32f647def1344bf2db62e716e3",
+    "signed": "84b26d1297cce07858fb1b6f2f8038182bc81776",
+    "review_path": "data-collection/requests/design-child-parent-continuation-20261107/independent-livebatch-review.json",
+    "review_sha256": "641b63ba3e2da4f61cb9cb8601a046bf6b516734cd7e9a6b22f5587840017627"
+  },
+  "correction": "Four British spellings in review prose normalized to repository codespell rules. Review judgment, all six source hashes, actual test results and immutable events are unchanged. Fresh candidate starts from the same main; original remote branch/PR remains as evidence, never rewritten.",
+  "current_review_sha256": "8e1483c43a2d287dbf7e958e2088cb9b4d71104bb91d002548e35f25138c9cfd",
+  "production_source_sha256": "4f19950c5418b2f8eb6888a822bc041b5d1c538f77f76dfc670cd304a84e3c6e",
+  "logic_or_test_changes": false,
+  "usage": null
+}

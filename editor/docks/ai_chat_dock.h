@@ -547,6 +547,22 @@ class AIChatDock : public EditorDock {
 	// Child Agents are hidden in agent_tabs and shown only inside their parent's
 	// window. Only a top-level (manual, non-scheduled) Agent can own children.
 	HashMap<int, Dictionary> sub_agents;
+	// Live dispatch ownership never comes from saved chat history.
+	HashMap<int, Dictionary> design_batches;
+	int design_child_starting = -1;
+	int design_parent_starting = -1;
+	uint64_t design_last_blocked_generation = UINT64_MAX;
+	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue);
+	void _cancel_design_batch(int p_agent);
+	bool _design_parent_matches(int p_parent, const Dictionary &p_batch) const;
+	int _design_child_parent(int p_child) const;
+	void _design_turn_started();
+	void _record_design_tool_receipt(const String &p_tool, const String &p_result, bool p_file_success, bool p_terminal = false);
+	void _design_reporting_blocked(uint64_t p_generation = 0);
+	void _resume_design_completions(uint64_t p_generation);
+	bool _design_child_finished(int p_agent, bool p_completed, uint64_t p_generation);
+	bool _queue_design_parent_result(int p_parent);
+	bool _design_return_allowed(int p_parent, const Dictionary &p_message) const;
 	int64_t sub_agent_parallel_pid = -1;
 	String sub_agent_parallel_output;
 	bool _dispatch_parallel_sub_agents();
@@ -569,7 +585,7 @@ class AIChatDock : public EditorDock {
 	bool _spawn_work_order_agents(int p_parent, bool p_explicit);
 	bool _resume_work_order_agents(int p_parent, const String &p_request_id);
 	void _sub_agent_dispatch();
-	void _sub_agent_finished(int p_agent, bool p_completed);
+	void _sub_agent_finished(int p_agent, bool p_completed, uint64_t p_generation);
 	void _sub_agent_removed(int p_id);
 	String _parent_context_result() const;
 
@@ -639,6 +655,7 @@ class AIChatDock : public EditorDock {
 	void _poll_process();
 	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
+	Dictionary _current_host_runtime_metadata() const;
 
 	Dictionary daqian_approval;
 	uint64_t daqian_approval_generation = 0;
@@ -651,7 +668,7 @@ class AIChatDock : public EditorDock {
 
 	String daqian_preview_source;
 	String daqian_preview_conversation;
-	String _work_order_binding(const String &p_field) const;
+	String _work_order_binding(const String &p_field, int p_agent = -1) const;
 	Dictionary _get_daqian_models() const;
 	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
 	void _set_issue_model_config(Dictionary &r_request) const;

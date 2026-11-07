@@ -41,6 +41,7 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/ai_chat_sub_agent_receipts.h"
 #include "editor/docks/ai_chat_sub_agents.h"
 #include "editor/docks/ai_chat_tools.h"
 
@@ -644,6 +645,137 @@ TEST_CASE("[Editor][AIChat] Sub-agent parent context keeps recent visible record
 	CHECK(bool(context["truncated"]));
 	CHECK(String(Dictionary(Array(context["records"])[0])["content"]).contains(U"已截断"));
 	CHECK(Array(AIChatSubAgents::parent_context(Array())["records"]).is_empty());
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent receipts separate approval from process execution") {
+	const String approval = R"({"approved":true,"exit_code":0,"timed_out":false,"stdout":"not execution evidence"})";
+	const Dictionary approved = AIChatSubAgentReceipts::summarize("run_command", approval, true);
+	CHECK(String(approved["phase"]) == "approval");
+	CHECK(approved["ok"].get_type() == Variant::NIL);
+	CHECK(approved["exit_code"].get_type() == Variant::NIL);
+	CHECK(approved["timed_out"].get_type() == Variant::NIL);
+	CHECK(approved["business_accepted"].get_type() == Variant::NIL);
+
+	for (const String &tool : { String("run_command"), String("check_script"), String("run_test") }) {
+		const Dictionary passed = AIChatSubAgentReceipts::summarize(tool, R"({"exit_code":0,"timed_out":false,"stdout":"private output"})", false);
+		CHECK(String(passed["phase"]) == "execution");
+		CHECK(passed["exit_code"].get_type() == Variant::INT);
+		CHECK(int64_t(passed["exit_code"]) == 0);
+		CHECK(bool(passed["ok"]));
+		CHECK_FALSE(bool(passed["timed_out"]));
+		CHECK(passed["business_accepted"].get_type() == Variant::NIL);
+		const Dictionary failed = AIChatSubAgentReceipts::summarize(tool, R"({"exit_code":7,"timed_out":false,"stderr":"private error"})", false);
+		CHECK(String(failed["phase"]) == "execution");
+		CHECK(int64_t(failed["exit_code"]) == 7);
+		CHECK_FALSE(bool(failed["ok"]));
+	}
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent receipts use native terminal status instead of output claims") {
+	const String result = R"({"exit_status":{"exitCode":7,"_meta":{"timed_out":false,"start_failed":false}},"exit_code":0,"output":"{\"ok\":true,\"exit_code\":0}"})";
+	const Dictionary receipt = AIChatSubAgentReceipts::summarize("run_command", result, false, true);
+	CHECK(String(receipt["phase"]) == "execution");
+	CHECK(int64_t(receipt["exit_code"]) == 7);
+	CHECK_FALSE(bool(receipt["ok"]));
+	CHECK_FALSE(bool(receipt["timed_out"]));
+	CHECK_FALSE(bool(receipt["start_failed"]));
+	CHECK(receipt["business_accepted"].get_type() == Variant::NIL);
+
+	for (const String &failure : {
+				 String(R"({"exit_status":{"exitCode":0,"_meta":{"timed_out":true,"start_failed":false}}})"),
+				 String(R"({"exit_status":{"exitCode":0,"_meta":{"timed_out":false,"start_failed":true}}})"),
+				 String(R"({"exit_status":{"exitCode":0,"signal":"SIGTERM","_meta":{"timed_out":false,"start_failed":false}}})") }) {
+		CHECK_FALSE(bool(AIChatSubAgentReceipts::summarize("run_command", failure, false, true)["ok"]));
+	}
+	const Dictionary missing = AIChatSubAgentReceipts::summarize("run_command", R"({"exit_status":{"_meta":{"timed_out":false,"start_failed":false}},"output":"exit 0"})", false, true);
+	CHECK(String(missing["phase"]) == "execution");
+	CHECK(missing["ok"].get_type() == Variant::NIL);
+	CHECK(missing["exit_code"].get_type() == Variant::NIL);
+	const Dictionary wrong_shape = AIChatSubAgentReceipts::summarize("run_command", R"({"exit_code":0,"timed_out":false})", false, true);
+	CHECK(String(wrong_shape["phase"]) == "host_result");
+	CHECK(wrong_shape["ok"].get_type() == Variant::NIL);
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent receipts preserve Windows DWORD failure codes and reject invalid numbers") {
+	for (const String &code : { String("-2147483648"), String("3221225477"), String("4294967295") }) {
+		const Dictionary regular = AIChatSubAgentReceipts::summarize("run_command", "{\"exit_code\":" + code + "}", false);
+		CHECK(regular["exit_code"].get_type() == Variant::INT);
+		CHECK(int64_t(regular["exit_code"]) == code.to_int());
+		CHECK_FALSE(bool(regular["ok"]));
+		const Dictionary native = AIChatSubAgentReceipts::summarize("run_command", "{\"exit_status\":{\"exitCode\":" + code + "}}", false, true);
+		CHECK(native["exit_code"].get_type() == Variant::INT);
+		CHECK(int64_t(native["exit_code"]) == code.to_int());
+		CHECK_FALSE(bool(native["ok"]));
+	}
+	for (const String &code : { String("-2147483649"), String("4294967296"), String("0.5"), String("\"0\""), String("true"), String("null") }) {
+		const Dictionary regular = AIChatSubAgentReceipts::summarize("run_command", "{\"exit_code\":" + code + "}", false);
+		CHECK(regular["exit_code"].get_type() == Variant::NIL);
+		CHECK(regular["ok"].get_type() == Variant::NIL);
+		const Dictionary native = AIChatSubAgentReceipts::summarize("run_command", "{\"exit_status\":{\"exitCode\":" + code + "}}", false, true);
+		CHECK(native["exit_code"].get_type() == Variant::NIL);
+		CHECK(native["ok"].get_type() == Variant::NIL);
+	}
+	const Dictionary untyped_flags = AIChatSubAgentReceipts::summarize("run_command", R"({"timed_out":"true","start_failed":1,"ok":true})", false);
+	CHECK(String(untyped_flags["phase"]) == "host_result");
+	CHECK(untyped_flags["timed_out"].get_type() == Variant::NIL);
+	CHECK(untyped_flags["start_failed"].get_type() == Variant::NIL);
+	CHECK(untyped_flags["ok"].get_type() == Variant::NIL);
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent receipts do not parse file contents as host status") {
+	for (const String &tool : { String("read_file"), String("read_script"), String("write_file"), String("write_script") }) {
+		for (const String &contents : { String(R"({"approved":true,"ok":true,"exit_code":0})"), String("Error: this is literal file content") }) {
+			const Dictionary success = AIChatSubAgentReceipts::summarize(tool, contents, true);
+			CHECK(String(success["phase"]) == "file_result");
+			CHECK(bool(success["ok"]));
+			CHECK(success["exit_code"].get_type() == Variant::NIL);
+			CHECK(success["business_accepted"].get_type() == Variant::NIL);
+			const Dictionary failure = AIChatSubAgentReceipts::summarize(tool, contents, false);
+			CHECK_FALSE(bool(failure["ok"]));
+			CHECK(failure["exit_code"].get_type() == Variant::NIL);
+		}
+	}
+	const Dictionary error = AIChatSubAgentReceipts::summarize("read_file", "Error: inaccessible file", false);
+	CHECK(String(error["phase"]) == "host_error");
+	CHECK_FALSE(bool(error["ok"]));
+	const Dictionary command_error = AIChatSubAgentReceipts::summarize("run_command", "Error: command was not started", false);
+	CHECK(String(command_error["phase"]) == "host_error");
+	CHECK_FALSE(bool(command_error["ok"]));
+	CHECK(command_error["exit_code"].get_type() == Variant::NIL);
+}
+
+TEST_CASE("[Editor][AIChat] Sub-agent receipts retain bounded typed metadata without result text") {
+	const String result = String(U"秘密正文：") + R"({"ok":true,"command":"private command","output":"private output"})";
+	const Dictionary receipt = AIChatSubAgentReceipts::summarize("read_logs", result, false);
+	CHECK(receipt.size() == 10);
+	CHECK(String(receipt["source"]) == "host_callback");
+	CHECK(String(receipt["tool"]) == "read_logs");
+	CHECK(String(receipt["result_sha256"]) == result.sha256_text());
+	CHECK(int64_t(receipt["result_bytes"]) == result.utf8().length());
+	const String serialized = JSON::stringify(receipt);
+	CHECK_FALSE(serialized.contains(U"秘密正文"));
+	CHECK_FALSE(serialized.contains("private command"));
+	CHECK_FALSE(serialized.contains("private output"));
+	CHECK(serialized.utf8().length() < 512);
+
+	const Dictionary host_result = AIChatSubAgentReceipts::summarize("read_logs", R"({"ok":true,"logs":"not business acceptance"})", false);
+	CHECK(String(host_result["phase"]) == "host_result");
+	CHECK(bool(host_result["ok"]));
+	CHECK(host_result["business_accepted"].get_type() == Variant::NIL);
+	const Dictionary unknown = AIChatSubAgentReceipts::summarize(String("untrusted tool ").repeat(1000), R"({"ok":true,"exit_code":0})", false);
+	CHECK(String(unknown["tool"]) == "unknown");
+	CHECK(unknown["ok"].get_type() == Variant::NIL);
+	CHECK(JSON::stringify(unknown).utf8().length() < 512);
+
+	const String large = String(" ").repeat(AIChatSubAgentReceipts::MAX_RESULT_PARSE_BYTES) + R"({"ok":true})";
+	const Dictionary oversized = AIChatSubAgentReceipts::summarize("read_logs", large, false);
+	CHECK(String(oversized["result_sha256"]) == large.sha256_text());
+	CHECK(int64_t(oversized["result_bytes"]) == large.utf8().length());
+	CHECK(oversized["ok"].get_type() == Variant::NIL);
+	CHECK(JSON::stringify(oversized).utf8().length() < 512);
+	CHECK(AIChatSubAgentReceipts::MAX_RECEIPTS_PER_CHILD == 24);
+	CHECK(AIChatSubAgentReceipts::MAX_CHILD_RECEIPT_BYTES <= AIChatSubAgentReceipts::MAX_PARENT_RECEIPT_BYTES);
+	CHECK(AIChatSubAgentReceipts::MAX_PARENT_RECEIPT_BYTES == 64 * 1024);
 }
 
 } // namespace TestAIChatTools

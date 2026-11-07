@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "request_id": "design-child-parent-continuation-20261107",
+  "issue_number": 441,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/441",
+  "kind": "parent_reported_live_design_child_handoff_gap",
+  "observed_at": "2026-11-07T13:02:29.707681+00:00",
+  "original_issue": 387,
+  "reported_original_source_commit": "595bf3faa3d64ae969ff8538d8ccf90891eb5451",
+  "reported_native_host_pid": 16083,
+  "reported_child_id": 6,
+  "reported_child_owner_prefix": "40468",
+  "original_full_child_owner": null,
+  "reported_manual_assistance": {
+    "parent_executor": "codex-agent:/root",
+    "actions": [
+      "normal SubAgentTabs signal selected original parent",
+      "explicit continue message sent by host after child completed"
+    ],
+    "fact_source": "authorized parent task message; not an independent capture of the original private history"
+  },
+  "source_inspection": {
+    "base_sha": "0c548aa94ed6ffbd34839a3e728f934a3ede9cbc",
+    "path": "editor/docks/ai_chat_sub_agents.cpp",
+    "finding": "_sub_agent_finished dispatches children but does not return bounded actual evidence and continue original parent"
+  },
+  "scope": "This task changes only its own isolated source; original app/config/history/project/model lifecycle remain with parent executor. Original Issue387 GUI/main acceptance is separate.",
+  "business_accepted": false,
+  "usage": null
+}
