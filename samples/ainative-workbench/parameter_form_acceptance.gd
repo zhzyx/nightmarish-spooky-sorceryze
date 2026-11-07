@@ -60,6 +60,7 @@ func run():
 	panel.params_edit.text_changed.emit()
 	await process_frame
 	check(form.prompt_edit.text == "来自旧工作流" and form.controls.seed.text == "9007199254740991", "developer JSON updates human controls without losing safe-integer precision")
+	check(form.controls.denoise.value == 0.001 and form.controls.denoise.get_line_edit().text.to_float() == 0.001, "valid fractional legacy values are shown accurately rather than snapped to the arrow step")
 	check(panel.apply_fields() and panel.nodes[-1].parameters.extra.v == 3 and panel.nodes[-1].parameters.denoise == 0.001, "unrepresented keys and valid non-default fractional values survive round trip")
 	form.prompt_edit.text = "仅修改提示词"
 	form.prompt_edit.text_changed.emit()
