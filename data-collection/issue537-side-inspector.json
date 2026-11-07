@@ -1,0 +1,19 @@
+{
+  "issue_number": 537,
+  "request_id": "tianshu-decision-inspector",
+  "design": "design-docs/tianshu-decision-inspector.md",
+  "source_issue": 534,
+  "windows_editor_sha256": "7c378b2aef8219073b7635c7f7cbcdbafe34993a5937d6faba0cf5e3048790c4",
+  "graphics": "private Windows desktop, OpenGL, NVIDIA RTX 5080",
+  "verified": [
+    "bound conversation beside original graph",
+    "adjustable splitter at desktop width",
+    "600-pixel remaining canvas adapts the approval view",
+    "closing inspector preserves the original graph node",
+    "native start or retry uses bright green with white outline",
+    "completed revisit uses pale green with outline",
+    "automatic receipt waiting has a neutral card and incoming wire",
+    "keyboard focus, pending choices, and single approval dispatch"
+  ],
+  "fixture": "Isolated issue and API fixtures; no live execution of #534."
+}

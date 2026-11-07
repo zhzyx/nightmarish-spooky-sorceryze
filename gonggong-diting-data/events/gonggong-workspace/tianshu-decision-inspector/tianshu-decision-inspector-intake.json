@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-decision-inspector-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-decision-inspector",
+  "kind": "request",
+  "occurred_at": "2026-11-07T22:10:46.398446+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/537",
+  "agent": {
+    "id": "codex-537",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Inspect an issue conversation beside its workflow and identify actionable controls",
+    "design_document": "design-docs/tianshu-decision-inspector.md"
+  },
+  "evidence_refs": [],
+  "sha256": "c6d9b7b0a0d07875889e9a55bf51c06721ba55a7b7b0c6dc43bf09d68d0ded2d"
+}

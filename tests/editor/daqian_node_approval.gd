@@ -64,6 +64,7 @@ func run() -> void:
 	chat.get_ai_settings_control().find_child("APIModel", true, false).text = ""
 	await panel._start_or_view_direct(row)
 	var route_card: GraphNode = panel.editor.canvas.get_node("wf-routing")
+	check(route_card.get_node("RouteModel").get_theme_stylebox("normal").border_color == Color.WHITE and route_card.get_node("ApplyModel").get_theme_stylebox("normal").border_color == Color.WHITE, "Required model lacks action styling")
 	if panel.conversation.visible or not route_card.get_node("RouteModel").has_focus():
 		push_error("Missing model did not open a configuration surface inside Tianshu: " + panel.notice.text)
 		quit(1)
@@ -105,6 +106,7 @@ func run() -> void:
 	check(not panel.saved.get("execution_models", {}).has(row.url), "Model selection took effect before confirmation")
 	route_card.get_node("ApplyModel").pressed.emit()
 	check(panel.saved.get("execution_models", {}).get(row.url, {}).get("id") == "fixture", "Issue model was not saved")
+	check(model.get_theme_stylebox("normal").border_color == Color("#a8e1b9") and not model.disabled, "Applied model cannot be identified as revisitable")
 	check(panel.publish_button.text == "判断需求", "Applying a model dispatched a judgment")
 	await panel._start_or_view_direct(panel._direct_binding())
 	check(panel.publish_button.text == "开始推进", "Confirmed judgment did not prepare the issue")
@@ -132,6 +134,7 @@ func run() -> void:
 	var actions = card.get_node("ApprovalActions")
 	check(actions.visible and actions.get_node("Confirm").disabled, "Approval actions must be visible and require a decision")
 	var decision: OptionButton = actions.get_node("Decision")
+	check(decision.get_theme_stylebox("normal").border_color == Color.WHITE and not actions.get_node("Confirm").has_theme_stylebox_override("disabled"), "Approval dropdown or disabled confirmation misrepresents priority")
 	decision.select(1)
 	decision.item_selected.emit(1)
 	check(not panel.details_panel.visible, "Choosing details invoked the action prematurely")

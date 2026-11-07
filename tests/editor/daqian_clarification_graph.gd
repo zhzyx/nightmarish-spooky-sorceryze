@@ -54,6 +54,14 @@ func run() -> void:
 	graph.clarification_submitted.connect(func(text): submissions.append(text))
 	check_graph()
 	var active: GraphNode = graph.canvas.get_node("wf-clarification")
+	var fill: Button = active.get_node("FillAnswer")
+	var normal := fill.get_theme_stylebox("normal") as StyleBoxFlat
+	var hover := fill.get_theme_stylebox("hover") as StyleBoxFlat
+	var focus := fill.get_theme_stylebox("focus") as StyleBoxFlat
+	check(normal.border_color == Color.WHITE and normal.bg_color.g > normal.bg_color.r and hover.bg_color != normal.bg_color, "current action lacks visible green surface, white border or hover")
+	check(not focus.draw_center and focus.border_width_left > normal.border_width_left, "keyboard focus hides the action or lacks a distinct outline")
+	var confirm: Button = active.get_node("AnswerActions/SubmitAnswer")
+	check(confirm.disabled and not confirm.has_theme_stylebox_override("disabled"), "empty answer looks actionable")
 	check(active.get_node("FlowState").text == "待你答复", "missing pending answer status")
 	check(active.get_theme_stylebox("panel").border_width_left >= 2, "pending answer input lacks highlight")
 	check(graph.canvas.find_children("FillAnswer", "Button", true, false).size() == 1, "questions must share one answer action")
@@ -71,6 +79,7 @@ func run() -> void:
 	click(active.get_node("FillAnswer"))
 	await process_frame
 	var input := active.get_node("AnswerInput") as TextEdit
+	check(input.get_theme_stylebox("normal").bg_color == normal.bg_color, "focused input missing current-action surface")
 	check(input.is_visible_in_tree() and input.has_focus(), "click failed to focus inline answer")
 	var key := InputEventKey.new()
 	key.pressed = true
@@ -113,6 +122,7 @@ func run() -> void:
 	graph.workflow.judging = true
 	check_graph()
 	check(not graph.canvas.has_node("wf-clarification"), "duplicate reply exposed while judging")
+	check(graph.canvas.get_node("wf-routing").find_children("*", "Button", true, false).is_empty(), "waiting receipt introduced an action")
 
 	graph.workflow.judging = false
 	graph.workflow.phase = "bound"
