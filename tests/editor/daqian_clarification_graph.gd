@@ -46,7 +46,8 @@ func run() -> void:
 	root.size = Vector2i(1100, 720)
 	graph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	graph.draft = {"nodes":{"requirement":{"kind":"text","title":"需求","value":"测试"}}, "edges":[]}
-	var questions := ["交付到哪个平台？", "需要哪些资源？"]
+	var long_question := "交付到哪个平台？".repeat(42) + "\n" + "Z".repeat(120)
+	var questions := [long_question, "需要哪些资源？"]
 	graph.workflow = {"phase":"questions", "direct":true, "item":{"status":"planned"},
 		"design":{"questions":questions}, "routing":{"route":"yanshi","ready":false,"questions":questions}}
 	graph.clarification_draft_changed.connect(func(text): edits.append(text))
@@ -61,6 +62,10 @@ func run() -> void:
 		check(linked("wf-analysis", question) and linked(question, "wf-clarification"), "question does not lead to input")
 		check(graph.canvas.get_node(NodePath(question + "/FlowState")).text == "待确认", "unanswered question marked complete")
 	for i in 4: await process_frame
+	var question_card: GraphNode = graph.canvas.get_node("wf-clarification-question-0-0")
+	var question_body := question_card.get_child(0) as Label
+	check(long_question in question_body.text and question_body.get_line_count() > 4, "long question lost text or wrapping")
+	check(question_body.get_line_count() == question_body.get_visible_line_count(), "long question clipped by card")
 	graph.focus_flow_node("wf-clarification")
 	for i in 2: await process_frame
 	click(active.get_node("FillAnswer"))
@@ -119,6 +124,28 @@ func run() -> void:
 		var task := "wf-scope-" + str(clause).sha256_text().left(20)
 		check(linked("wf-clarification-answer-1", task) and linked(task, "wf-verify"), "accepted answer did not branch into parallel tasks and verification")
 	check(not graph.canvas.has_node("wf-clarification"), "validated answers left a stale input")
+	# Only choices explicitly supplied by the question are selectable.
+	graph.workflow.phase = "questions"
+	graph.workflow.routing = {"route":"yanshi","ready":false,"questions":["【选择】平台 | Windows | Linux", "说明交付时间"]}
+	graph.clarification_draft = "周五交付"
+	check_graph()
+	active = graph.canvas.get_node("wf-clarification")
+	graph.focus_clarification()
+	var choices: VBoxContainer = active.get_node("AnswerChoices")
+	var options: OptionButton = choices.get_child(0)
+	check(choices.get_child_count()==1 and options.item_count==3, "Open text received fabricated choices")
+	options.select(1)
+	options.item_selected.emit(1)
+	options.select(2)
+	options.item_selected.emit(2)
+	input = active.get_node("AnswerInput")
+	check(input.text == "周五交付\n平台：Linux" and submissions == ["测"], "Selection dispatched or replaced free text")
+	check(graph.canvas.get_node("wf-clarification")==active, "Choice selection rebuilt the node")
+	active.get_node("AnswerActions/SubmitAnswer").pressed.emit()
+	check(submissions.back() == input.text, "Confirmation lost the chosen answer")
+	graph.draw_graph()
+	active = graph.canvas.get_node("wf-clarification")
+	check(active.get_node("AnswerChoices").get_child(0).selected==2, "Restored draft lost its selected choice")
 	graph.free()
 	if not failed:
 		print("DAQIAN_CLARIFICATION_GRAPH_OK")

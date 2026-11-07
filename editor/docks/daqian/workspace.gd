@@ -69,8 +69,11 @@ var conversation_host := VBoxContainer.new()
 var conversation_title := Label.new()
 var apply_model: Button
 var resume_action := ""
+var pending_model_operation := {}
 var publish_button: Button
-var publish_dialog: ConfirmationDialog
+var publish_form := VBoxContainer.new()
+var publish_confirm: Button
+var publish_cancel: Button
 var requirement_input: TextEdit
 var routing_in_flight := {}
 var routing_stages := {}
@@ -113,10 +116,6 @@ var direct_in_flight := {}
 var starting_direct := {}
 var model_options: OptionButton
 var manual_model: LineEdit
-var route_model_dialog := ConfirmationDialog.new()
-var route_model_options := OptionButton.new()
-var route_manual_model := LineEdit.new()
-var route_model_source := ""
 var publish_status: Label
 var publish_backend := -1
 var publish_source := ""
@@ -271,12 +270,11 @@ func _ready() -> void:
 	row.add_child(actions)
 	_button(actions, "仅推演", _chat_action.bind("preview"))
 	publish_button = _button(actions, "发布需求…", _publish_or_follow)
-	_build_publish_dialog()
+	_build_publish_form()
 	_build_clarification_dialog()
 	reply_button = _button(actions, "答复问题", _respond_to_wait)
 	_button(actions, "工单对话与模型", _open_issue_conversation)
 	_button(actions, "选择司南模型", _open_route_model)
-	_build_route_model_dialog()
 	_build_workbench()
 	debug_start_button = _button(actions, "调试运行", _start_debug)
 	debug_stop_button = _button(actions, "结束调试", _stop_debug)
@@ -393,6 +391,8 @@ func _ready() -> void:
 	editor.draft_changed.connect(_queue_save)
 	editor.answer_requested.connect(_answer_question)
 	editor.workflow_reply_requested.connect(_respond_to_wait)
+	editor.stage_controls_requested.connect(_attach_stage_controls)
+	editor.graph_rebuilding.connect(_park_publish_form)
 	editor.clarification_draft_changed.connect(func(text: String):
 		if not inline_answer_key.is_empty():
 			inline_answer_drafts[inline_answer_key] = text
@@ -421,7 +421,7 @@ func _ready() -> void:
 	theme_changed.connect(_update_board_theme, CONNECT_DEFERRED)
 	visibility_changed.connect(_opened)
 	get_window().files_dropped.connect(_drop_images)
-	for dialog: Window in [publish_dialog, clarification_dialog, route_model_dialog, history_dialog, models_dialog, editor.picker]:
+	for dialog: Window in [clarification_dialog, history_dialog, models_dialog, editor.picker]:
 		dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
 	_gate_visibility(false)
 	if get_meta("unified_settings", false):
@@ -574,7 +574,8 @@ func _send_canvas_message() -> void:
 	if _needs_model(chat.get_daqian_models(), selection):
 		canvas_panel.append_line(_canvas_scope(), "请先在 AI 对话配置可用模型。")
 		return
-	var turn := {"session":canvas_panel.session_epoch, "generation":canvas_panel.canvas_generation, "scope":_canvas_scope(), "root":_repo(), "actor":actor.duplicate(), "epoch":selection_epoch, "board_epoch":scope_epoch, "question":question, "selection":selection}
+	var direct := _direct_binding()
+	var turn := {"direct_key":_routing_key(direct) if not direct.is_empty() else "", "session":canvas_panel.session_epoch, "generation":canvas_panel.canvas_generation, "scope":_canvas_scope(), "root":_repo(), "actor":actor.duplicate(), "epoch":selection_epoch, "board_epoch":scope_epoch, "question":question, "selection":selection}
 	if not await _fresh_access() or not _canvas_matches(turn):
 		return
 	turn.context = _canvas_context(turn, board, false)
@@ -584,8 +585,9 @@ func _send_canvas_message() -> void:
 func _canvas_context(turn: Dictionary, snapshot: Dictionary, project: bool) -> String:
 	var budget := 15500 - str(turn.question).length()
 	var context := ("原层级：%s，全项目工单：" if project else "当前层级：%s，工单：") % turn.scope
+	var bound_url: String = _conversation_binding().get("url", current)
 	for item in snapshot.get("issues", []):
-		if not project and current != item.url and (not current.is_empty() or (creator_filter.selected > 0 and _creator(item) != creator_filter.text)):
+		if not project and bound_url != item.url and (not current.is_empty() or (creator_filter.selected > 0 and _creator(item) != creator_filter.text)):
 			continue
 		context += "\n#%s %s %s %s" % [item.number, _creator(item), str(item.title).left(budget), item.status]
 		if context.length() > budget:
@@ -642,7 +644,11 @@ func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 	if result.get("route") == "answer":
 		canvas_panel.append_line(turn.scope, ("项目 · " if turn.project else "答复 · ") + str(result.text))
 		return
-	if not _canvas_matches(turn) or not await _fresh_access() or not _canvas_matches(turn):
+	if not _canvas_matches(turn):
+		return
+	var direct := _direct_binding() if result.get("route") == "execute" and not turn.project and not current.is_empty() else {}
+	var use_direct: bool = not turn.project and result.get("route") == "execute" and (not direct.is_empty() or not str(turn.get("direct_key", "")).is_empty())
+	if not use_direct and (not await _fresh_access() or not _canvas_matches(turn)):
 		return
 	if result.get("route") == "project" and not turn.project:
 		var response_board := await _board_command(false, actor.user_id, true)
@@ -663,13 +669,26 @@ func _finish_canvas_turn(turn: Dictionary, response: String) -> void:
 	elif result.get("route") == "execute":
 		var binding := _conversation_binding() if not turn.project and not current.is_empty() else {}
 		var target := str(turn.scope) if not turn.project else "全项目"
+		var message := "操作范围：%s\n%s\n用户请求：%s" % [target, turn.context, turn.question]
+		if use_direct:
+			if direct.is_empty() or direct.has("error") or _routing_key(direct) != turn.get("direct_key", ""):
+				canvas_panel.append_line(turn.scope, "工单绑定已改变，请核对后重试。")
+				return
+			var action := _issue_action(direct)
+			if action.get("kind") == "wait":
+				canvas_panel.append_line(turn.scope, action.text)
+				return
+			if action.get("kind") in ["judge", "retry", "clarify"]:
+				canvas_panel.append_line(turn.scope, "先完成当前工单的需求判断或答复，再发起这项操作。")
+			await _start_or_view_direct(direct, message, turn)
+			return
 		var source := str(binding.get("url", current)) if not turn.project and not current.is_empty() else "canvas_execute_" + target.sha256_text()
 		# Plain GitHub issues have no workorder request ID. Keep the URL in the
 		# operation context and use an isolated conversation until formally bound.
 		if binding.get("number", 0) and str(binding.get("request", "")).is_empty():
 			source = "canvas_execute_" + source.sha256_text()
 			binding = {}
-		var error: String = chat.open_daqian_chat(source, int(binding.get("number", 0)), str(binding.get("request", "")), "操作范围：%s\n%s\n用户请求：%s" % [target, turn.context, turn.question], false, turn.selection, true)
+		var error: String = chat.open_daqian_chat(source, int(binding.get("number", 0)), str(binding.get("request", "")), message, false, turn.selection, true)
 		if error.is_empty():
 			_mount_conversation(binding)
 			conversation_title.text = target
@@ -788,7 +807,7 @@ func _mount_conversation(binding: Dictionary, next := "") -> void:
 		return
 	apply_model.show()
 	resume_action = next
-	apply_model.text = "应用推进模型" if next.is_empty() else "应用模型并继续"
+	apply_model.text = "前往司南卡选择模型" if not _direct_binding().is_empty() else ("应用推进模型" if next.is_empty() else "应用模型并继续")
 	conversation_title.text = "工单 #%d" % int(binding.number) if binding.get("number", 0) else "需求草稿"
 	connection_panel.hide()
 	flow_split.hide()
@@ -826,71 +845,118 @@ func _needs_model(catalog: Dictionary, selection: Dictionary) -> bool:
 	return selection.get("backend") != catalog.backend or (catalog.backend in [0, 3] and str(selection.get("id", "")).strip_edges().is_empty())
 
 
-func _build_route_model_dialog() -> void:
-	route_model_dialog.title = "选择司南判断模型"
-	route_model_dialog.get_ok_button().text = "保存并重试判断"
-	var fields := VBoxContainer.new()
-	route_model_dialog.add_child(fields)
-	var label := Label.new()
-	label.text = "使用当前 AI Chat 后端；可选列表型号或手动填写模型 ID"
-	fields.add_child(label)
-	fields.add_child(route_model_options)
-	route_manual_model.placeholder_text = "手动模型 ID；CLI 留空使用默认模型"
-	route_manual_model.max_length = 128
-	fields.add_child(route_manual_model)
-	route_model_options.item_selected.connect(func(_index): _update_route_model_field())
-	add_child(route_model_dialog)
-	route_model_dialog.confirmed.connect(_confirm_route_model)
-
-
-func _update_route_model_field() -> void:
-	route_manual_model.visible = route_model_options.selected == route_model_options.item_count - 1
-
-
 func _open_route_model() -> void:
-	if actor.is_empty() or not is_instance_valid(chat):
-		return
-	var binding := _direct_binding()
-	if binding.is_empty() or binding.has("error") or binding.get("status") != "planned":
-		notice.text = "请先打开待判断的天枢工单"
-		return
-	var catalog: Dictionary = chat.get_daqian_models()
-	var selected: Dictionary = saved.get("execution_models", {}).get(binding.url, {"backend":catalog.backend, "id":catalog.current})
-	route_model_source = current
-	route_model_options.clear()
-	var found := -1
-	for option in catalog.options:
-		route_model_options.add_item(option.label)
-		var index := route_model_options.item_count - 1
-		route_model_options.set_item_metadata(index, option.id)
-		if option.id == selected.get("id", ""):
-			found = index
-	route_model_options.add_item("手动填写模型 ID")
-	route_model_options.select(found if found >= 0 else route_model_options.item_count - 1)
-	route_manual_model.text = str(selected.get("id", ""))
-	_update_route_model_field()
-	route_model_dialog.popup_centered_clamped(Vector2i(440, 180))
+	if editor.canvas.has_node("wf-routing/RouteModel"):
+		editor.focus_flow_node("wf-routing")
+		editor.canvas.get_node("wf-routing/RouteModel").grab_focus()
+	else:
+		notice.text = "当前工单没有可配置的司南判断节点"
 
 
-func _confirm_route_model() -> void:
-	if route_model_source != current or not is_instance_valid(chat):
+func _card_binding_matches(card: GraphNode, key: String, epoch: int) -> bool:
+	var binding := _direct_binding()
+	return is_instance_valid(card) and card.get_parent() == editor.canvas and epoch == selection_epoch and not binding.is_empty() and not binding.has("error") and key == _routing_key(binding)
+
+
+func _attach_stage_controls(id: String, card: GraphNode) -> void:
+	if id == "wf-workorder" and current.begins_with("draft_") and not saved.get("linked", {}).has(current) and not saved.get("submitted", {}).has(current):
+		var open := _button(card, "填写并确认建单", _open_publish)
+		open.name = "OpenPublish"
+		if publish_source == current:
+			_mount_publish_form(card)
+		return
+	if id not in ["wf-routing", "wf-prepare"] or not editor.workflow.get("direct", false):
 		return
 	var binding := _direct_binding()
-	if binding.is_empty() or binding.has("error"):
+	if binding.is_empty() or binding.has("error") or binding.get("closed", false):
 		return
-	var catalog: Dictionary = chat.get_daqian_models()
-	var model_id := route_manual_model.text.strip_edges() if route_manual_model.visible else str(route_model_options.get_selected_metadata())
-	if model_id.contains("\n") or model_id.contains("\r") or (catalog.backend in [0, 3] and model_id.is_empty()):
-		notice.text = "请填写有效的模型 ID"
+	var key := _routing_key(binding)
+	var epoch := selection_epoch
+	var action := _issue_action(binding)
+	if id == "wf-routing" and binding.get("status") in ["planned", "in-progress", "in-review"] and is_instance_valid(chat) and chat.has_method("get_daqian_models"):
+		_add_card_model(card, binding, key, epoch)
+	var available: Array = ["judge", "retry"] if id == "wf-routing" else ["start", "resume", "view"]
+	if action.get("kind") not in available:
 		return
-	if not saved.has("execution_models"):
-		saved.execution_models = {}
-	saved.execution_models[binding.url] = {"backend":catalog.backend, "id":model_id}
-	_save()
-	await _judge_requirement(binding, "", true)
+	var button := Button.new()
+	button.name = "IssueAction"
+	button.text = action.text
+	card.add_child(button)
+	button.pressed.connect(func():
+		if not _card_binding_matches(card, key, epoch) or _issue_action(_direct_binding()).get("kind") != action.kind:
+			return
+		button.disabled = true
+		var operation := ""
+		if pending_model_operation.get("binding") == key and pending_model_operation.get("epoch") == epoch:
+			operation = pending_model_operation.message
+		pending_model_operation.clear()
+		await _start_or_view_direct(_direct_binding(), operation)
+		if is_instance_valid(button):
+			button.disabled = false)
+
+
+func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: int) -> void:
+	var picker := OptionButton.new()
+	picker.name = "RouteModel"
+	picker.tooltip_text = "司南判断和推进模型"
+	card.add_child(picker)
+	var manual := LineEdit.new()
+	manual.name = "ManualModel"
+	manual.max_length = 128
+	manual.placeholder_text = "填写模型 ID"
+	card.add_child(manual)
+	var apply := Button.new()
+	apply.name = "ApplyModel"
+	apply.text = "应用模型"
+	card.add_child(apply)
+	var populate := func():
+		var catalog: Dictionary = chat.get_daqian_models()
+		var stored: Dictionary = saved.get("execution_models", {}).get(binding.url, {})
+		var choice: String = stored.get("id", catalog.current) if stored.get("backend") == catalog.backend else catalog.current
+		if picker.item_count and picker.get_meta("backend") == catalog.backend:
+			choice = manual.text if manual.visible else str(picker.get_selected_metadata())
+		picker.set_meta("backend", catalog.backend)
+		picker.clear()
+		var found := -1
+		for option in catalog.options:
+			picker.add_item(str(option.get("label", option.id)))
+			picker.set_item_metadata(picker.item_count - 1, option.id)
+			if option.id == choice: found = picker.item_count - 1
+		picker.add_item("手动填写模型 ID")
+		picker.select(found if found >= 0 else picker.item_count - 1)
+		manual.text = choice
+		manual.visible = found < 0
+	populate.call()
+	picker.get_popup().about_to_popup.connect(populate)
+	picker.item_selected.connect(func(index): manual.visible = index == picker.item_count - 1)
+	apply.pressed.connect(func():
+		if not _card_binding_matches(card, key, epoch) or _direct_binding().get("status") not in ["planned", "in-progress", "in-review"]:
+			return
+		var backend: int = chat.get_daqian_models().backend
+		if backend != picker.get_meta("backend"):
+			populate.call()
+			notice.text = "连接后端已改变，请重新选择模型。"
+			return
+		var model_id := manual.text.strip_edges() if manual.visible else str(picker.get_selected_metadata())
+		if model_id.contains("\n") or model_id.contains("\r") or (backend in [0, 3] and model_id.is_empty()):
+			notice.text = "请填写有效的模型 ID"
+			return
+		saved.get_or_add("execution_models", {})[binding.url] = {"backend":backend, "id":model_id}
+		_save()
+		notice.text = "已应用推进模型 · " + (model_id if not model_id.is_empty() else "CLI 默认模型"))
+
+
+func _locate_operation(token: String) -> void:
+	if _pending_operation(_conversation_binding()).get("token", "") == token and editor.canvas.has_node("wf-operation/ApprovalActions"):
+		editor.focus_flow_node("wf-operation")
+		editor.canvas.get_node("wf-operation/ApprovalActions/Decision").grab_focus()
 
 
 func _apply_issue_model() -> void:
+	if not _direct_binding().is_empty() and conversation.visible and editor.canvas.has_node("wf-routing/RouteModel"):
+		_leave_conversation()
+		_open_route_model()
+		return
 	var source := current
 	var binding := _conversation_binding().duplicate(true)
 	var principal := actor.duplicate()
@@ -921,7 +987,7 @@ func _build_operation_details(split: SplitContainer) -> void:
 	details_panel = details_script.new()
 	split.add_child(details_panel)
 	details_panel.build()
-	details_panel.confirmation_requested.connect(_confirm_operation)
+	details_panel.card_requested.connect(_locate_operation)
 	details_panel.status_changed.connect(func(message): notice.text = message)
 	details_panel.operation_checked.connect(_sync_workflow)
 
@@ -1157,6 +1223,8 @@ func _exit_tree() -> void:
 
 
 func _show_board() -> void:
+	_close_publish_form()
+	pending_model_operation.clear()
 	var previous := current
 	_leave_conversation()
 	details_panel.dismiss()
@@ -1345,6 +1413,8 @@ func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, runni
 	issue_rows[item.url] = line
 	line.set_metadata(0, item)
 	line.set_text(0, "#%s" % item.number)
+	line.set_autowrap_mode(1, TextServer.AUTOWRAP_WORD_SMART)
+	line.set_text_overrun_behavior(1, TextServer.OVERRUN_NO_TRIMMING)
 	line.set_text(1, item.title)
 	line.set_cell_mode(2, TreeItem.CELL_MODE_CUSTOM)
 	line.set_text(2, graph_script.FlowCanvas.state_text(issue_state) + suffix)
@@ -1365,6 +1435,8 @@ func _set_owner_cell(line: TreeItem, item: Dictionary) -> void:
 		names.append(CATEGORY_NAMES.get(category, category))
 	var categories := "、".join(names)
 	var owner := "、".join(item.owners) if not item.owners.is_empty() else UNASSIGNED
+	line.set_autowrap_mode(3, TextServer.AUTOWRAP_WORD_SMART)
+	line.set_text_overrun_behavior(3, TextServer.OVERRUN_NO_TRIMMING)
 	line.set_text(3, categories + " / " + owner if not categories.is_empty() else owner)
 	line.set_tooltip_text(3, line.get_text(3))
 	line.set_custom_color(3, get_theme_color("font_readonly_color", "Editor"))
@@ -1396,7 +1468,6 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	if link.visible:
 		title_label.hide()
 		link.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	card.dragged.connect(func(_from, to):
 		if not saved.has("positions"):
 			saved.positions = {}
@@ -1407,29 +1478,20 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 	overview.mark_card(card, label, issue_state, suffix)
 	label.size_flags_horizontal = Control.SIZE_SHRINK_END
 	card.get_titlebar_hbox().add_child(label)
-	var open_title := _button(card, "", _open_issue.bind(item))
+	var open_title := _button(card, item.title, _open_issue.bind(item))
 	open_title.name = "OpenIssue"
 	open_title.flat = true
-	open_title.clip_contents = true
 	open_title.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	open_title.accessibility_name = "打开工单 · " + item.title
 	open_title.tooltip_text = item.title
-	var title := Label.new()
-	title.text = item.title
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.max_lines_visible = 2
-	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
-	title.add_theme_font_size_override("font_size", roundi(16 * get_theme_default_base_scale()))
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	open_title.add_child(title)
-	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	open_title.custom_minimum_size.y = 2 * title.get_line_height() + title.get_theme_constant("line_spacing") + ceilf(4 * get_theme_default_base_scale())
+	open_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	open_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
+	open_title.add_theme_font_size_override("font_size", roundi(16 * get_theme_default_base_scale()))
 	if not running.is_empty():
 		var active := Label.new()
 		active.text = "运行中 · " + "、".join(running)
 		active.tooltip_text = active.text
-		active.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		active.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		active.custom_minimum_size.x = 190
 		active.add_theme_color_override("font_color", graph_script.FlowCanvas.COLORS.running)
 		card.add_child(active)
@@ -1439,9 +1501,10 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		if node.kind == "text":
 			continue
 		var line := Label.new()
-		line.text = str(node.title) + " · " + str(node.value).left(32)
-		line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		line.tooltip_text = node.value
+		var content := str(node.get("caption", "")) if node.kind == "image" else str(node.value)
+		line.text = str(node.title) + (" · " + content if not content.is_empty() else "")
+		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		line.tooltip_text = line.text
 		detail.add_child(line)
 	card.add_child(detail)
 	card.set_slot(0, true, 0, Color.GRAY, true, 0, Color.GRAY)
@@ -1449,7 +1512,7 @@ func _add_board_card(item: Dictionary, issue_state: String, suffix: String, runn
 		var owner := Label.new()
 		owner.text = "负责人 · " + "、".join(item.owners)
 		owner.tooltip_text = owner.text
-		owner.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		owner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		owner.add_theme_color_override("font_color", get_theme_color("font_readonly_color", "Editor"))
 		card.add_child(owner)
 	overview.add_child(card)
@@ -1684,7 +1747,7 @@ func _gate_visibility(opened: bool) -> void:
 		inline_answer_key = ""
 		inline_answer_drafts.clear()
 		clarification_answer.clear()
-		publish_dialog.hide()
+		_close_publish_form()
 		history_dialog.hide()
 		history_view.clear()
 		draft_menu.get_popup().hide()
@@ -2295,14 +2358,11 @@ func _compose_requirement() -> void:
 	_open_publish()
 
 
-func _build_publish_dialog() -> void:
-	publish_dialog = ConfirmationDialog.new()
-	publish_dialog.title = "发布需求"
-	publish_dialog.dialog_hide_on_ok = false
-	publish_dialog.get_ok_button().text = "确认需求并建单"
-	publish_dialog.get_cancel_button().text = "保存为草稿"
-	var fields := VBoxContainer.new()
-	publish_dialog.add_child(fields)
+func _build_publish_form() -> void:
+	var fields := publish_form
+	fields.name = "PublishForm"
+	fields.hide()
+	add_child(fields)
 	category = OptionButton.new()
 	category.tooltip_text = "工单类别"
 	category.item_selected.connect(func(_index): _update_publish_form())
@@ -2334,9 +2394,12 @@ func _build_publish_dialog() -> void:
 	publish_status = Label.new()
 	publish_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	fields.add_child(publish_status)
-	add_child(publish_dialog)
-	publish_dialog.confirmed.connect(_confirm_publish)
-	publish_dialog.visibility_changed.connect(_publish_visibility_changed)
+	var buttons := HBoxContainer.new()
+	fields.add_child(buttons)
+	publish_cancel = _button(buttons, "保存为草稿", _close_publish_form)
+	publish_confirm = _button(buttons, "确认需求并建单", _confirm_publish)
+	publish_confirm.name = "ConfirmWorkorder"
+	requirement_input.focus_exited.connect(_sync_requirement_preview)
 
 
 func _build_clarification_dialog() -> void:
@@ -2624,7 +2687,7 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false, expec
 				var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
 				if _needs_model(catalog, selection):
 					result.error = "请选择此工单的推进模型。"
-					_mount_conversation(binding, "direct")
+					_open_route_model()
 				else:
 					var process: Dictionary = chat.launch_daqian_routing(request, selection)
 					if process.has("pid"):
@@ -2730,8 +2793,14 @@ func _publish_or_follow() -> void:
 			_open_publish()
 		"discuss":
 			_chat_action("discuss")
-		"judge", "retry", "clarify", "start", "view", "resume":
+		"clarify":
 			_start_or_view_direct(binding)
+		"judge", "retry", "start", "view", "resume":
+			var id := "wf-routing" if _issue_action(binding).kind in ["judge", "retry"] else "wf-prepare"
+			var button := editor.canvas.get_node_or_null(NodePath(id + "/IssueAction")) as Button
+			if button:
+				editor.focus_flow_node(id)
+				button.grab_focus()
 
 
 func _direct_binding() -> Dictionary:
@@ -2751,10 +2820,12 @@ func _direct_binding() -> Dictionary:
 	return binding
 
 
-func _start_or_view_direct(binding: Dictionary) -> void:
+func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> void:
 	if binding.has("error"):
 		notice.text = binding.error
 		return
+	if not turn.is_empty():
+		pending_model_operation.clear()
 	var source := current
 	var epoch := selection_epoch
 	var user := actor.duplicate()
@@ -2769,7 +2840,7 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 		return
 	if source != current or epoch != selection_epoch or user != actor or root != _repo():
 		return
-	if binding != _direct_binding() or action != _issue_action(binding).get("kind"):
+	if (not turn.is_empty() and not _canvas_matches(turn)) or binding != _direct_binding() or action != _issue_action(binding).get("kind"):
 		return
 	var url: String = binding.url
 	if action == "clarify":
@@ -2785,19 +2856,23 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	if not bind_error.is_empty():
 		notice.text = bind_error
 		return
-	var selection := {}
-	if not started:
-		var catalog: Dictionary = chat.get_daqian_models()
-		selection = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
-		if _needs_model(catalog, selection):
-			_mount_conversation(binding, "direct")
-			notice.text = "请为此工单选择后端和推进模型，然后点击「应用模型并继续」。"
-			return
+	var catalog: Dictionary = chat.get_daqian_models()
+	var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
+	if _needs_model(catalog, selection) and (not started or not operation.is_empty()):
+		if not operation.is_empty():
+			pending_model_operation = {"binding":_routing_key(binding), "epoch":epoch, "message":operation}
+		_open_route_model()
+		notice.text = "请在司南卡上应用推进模型，再确认当前操作。"
+		return
+	if started and _needs_model(catalog, selection):
+		selection = {}
 	if action in ["judge", "retry"]:
 		await _judge_requirement(binding, "", action == "retry")
 		return
 
-	var message := "" if started else "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
+	var message := operation
+	if message.is_empty() and not started:
+		message = "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
 	if action == "start":
 		var key := _routing_key(binding)
 		var start_key := _start_key(binding)
@@ -2839,6 +2914,7 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 	if not saved.has("direct_started"):
 		saved.direct_started = {}
 	saved.direct_started[url] = binding.request
+	_sync_workflow()
 	_update_direct_action()
 	_save()
 	if not started and binding.status == "planned":
@@ -2849,6 +2925,10 @@ func _start_or_view_direct(binding: Dictionary) -> void:
 
 
 func _open_publish() -> void:
+	if not current.is_empty() and publish_source == current and publish_form.visible:
+		editor.focus_flow_node("wf-workorder")
+		requirement_input.grab_focus()
+		return
 	if actor.is_empty() or not current.begins_with("draft_") or saved.get("linked", {}).has(current) or saved.get("submitted", {}).has(current):
 		return
 	if not editor.draft.nodes.has("requirement"):
@@ -2889,7 +2969,12 @@ func _open_publish() -> void:
 	model_options.select(selected if selected >= 0 else model_options.item_count - 1)
 	manual_model.text = chosen
 	_update_publish_controls()
-	publish_dialog.popup_centered_clamped(Vector2i(540, 360))
+	var card := editor.canvas.get_node_or_null("wf-workorder") as GraphNode
+	if not card:
+		_close_publish_form()
+		return
+	_mount_publish_form(card)
+	editor.focus_flow_node("wf-workorder")
 	requirement_input.grab_focus()
 
 
@@ -2900,7 +2985,7 @@ func _update_publish_controls() -> void:
 	var pending: bool = saved.get("direct_pending", {}).has(current)
 	category.disabled = pending
 	requirement_input.editable = not pending
-	publish_dialog.get_ok_button().text = "核对建单回执" if pending else "确认需求并建单"
+	publish_confirm.text = "核对建单回执" if pending else "确认需求并建单"
 	publish_status.text = "将按原需求标识核对上次建单结果。" if pending else "确认后创建工单，再由共工判断是否需要偃师。"
 	_select_publish_model(model_options.selected)
 	_sync_workflow()
@@ -2925,7 +3010,7 @@ func _update_publish_form(text_only := false) -> void:
 		publish_status.text = LIMIT_HINT
 	elif publish_status.text == LIMIT_HINT:
 		publish_status.text = "确认后创建工单，再由共工判断是否需要偃师。"
-	publish_dialog.get_ok_button().disabled = submitting or too_long or message.strip_edges().is_empty() or category.selected < 0 or direct_in_flight.has(current)
+	publish_confirm.disabled = submitting or too_long or message.strip_edges().is_empty() or category.selected < 0 or direct_in_flight.has(current)
 	if publish_source == current and not current.is_empty():
 		if text_only:
 			_queue_requirement_save()
@@ -2949,18 +3034,47 @@ func _edit_requirement() -> void:
 		_update_publish_form(true)
 
 
-func _publish_visibility_changed() -> void:
-	if not publish_dialog.visible:
-		publish_generation += 1
-		submitting = false
-		if publish_source == current and not current.is_empty():
-			editor.draw_graph()
-			_save()
-		publish_source = ""
+func _sync_requirement_preview() -> void:
+	if publish_source != current or not is_instance_valid(editor): return
+	var preview := editor.canvas.get_node_or_null("requirement/PlanContent") as TextEdit
+	if preview and preview.text != requirement_input.text:
+		preview.set_block_signals(true)
+		preview.text = requirement_input.text
+		preview.set_block_signals(false)
+
+
+func _mount_publish_form(card: GraphNode) -> void:
+	if publish_form.get_parent() != card:
+		publish_form.reparent(card, false)
+	publish_form.show()
+	card.get_node("OpenPublish").hide()
+	# The registration form owns text editing until it closes; the source node shows the saved preview.
+	var preview := editor.canvas.get_node_or_null("requirement/PlanContent") as TextEdit
+	if preview: preview.editable = false
+	card.reset_size()
+	editor._queue_layout()
+
+
+func _park_publish_form() -> void:
+	if publish_form.get_parent() != self and publish_form.get_parent() != null:
+		publish_form.hide()
+		publish_form.reparent(self, false)
+
+
+func _close_publish_form() -> void:
+	if publish_source.is_empty(): return
+	var source := publish_source
+	publish_source = ""
+	publish_generation += 1
+	submitting = false
+	_park_publish_form()
+	if source == current:
+		editor.draw_graph()
+		_save()
 
 
 func _confirm_publish() -> void:
-	if submitting or publish_dialog.get_ok_button().disabled or publish_source != current or not publish_dialog.visible:
+	if submitting or publish_confirm.disabled or publish_source != current or not publish_form.visible:
 		return
 	submitting = true
 	var generation := publish_generation
@@ -2970,7 +3084,7 @@ func _confirm_publish() -> void:
 	var kind := str(category.get_selected_metadata()) if category.selected >= 0 else ""
 	var message := requirement_input.text
 	var epoch := selection_epoch
-	publish_dialog.get_ok_button().disabled = true
+	publish_confirm.disabled = true
 	publish_status.text = "正在核对协作者身份…"
 	var allowed := await _fresh_access()
 	if generation != publish_generation:
@@ -3017,7 +3131,7 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 		if result.get("reconcile_required", true) == false:
 			saved.direct_pending.erase(source)
 		_update_direct_action()
-		if publish_source == source and publish_dialog.visible:
+		if publish_source == source and publish_form.visible:
 			_update_publish_controls()
 			publish_status.text = str(result.get("error", "未取得完整建单回执，请核对原请求。"))
 		_save()
@@ -3026,7 +3140,7 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 	if saved.get("execution_models", {}).has(source):
 		saved.execution_models[url] = saved.execution_models[source].duplicate()
 	if publish_source == source:
-		publish_dialog.hide()
+		_close_publish_form()
 	_issue_bound(source, number, request_id, {"url":url,"revision":result.revision,"status":result.status})
 	_sync_workflow()
 	_save()
@@ -3048,6 +3162,8 @@ func _new_requirement() -> void:
 
 
 func _show_issue(id: String, snapshot: Dictionary) -> void:
+	_close_publish_form()
+	pending_model_operation.clear()
 	selection_epoch += 1
 	_leave_conversation()
 	if not current.is_empty():
@@ -3303,7 +3419,7 @@ func _respond_to_wait() -> void:
 	var item := _conversation_binding()
 	var pending := _pending_operation(item)
 	if not pending.is_empty():
-		_show_operation_details(pending.token)
+		_locate_operation(pending.token)
 		return
 	var direct := _direct_binding()
 	if _has_routing_questions(direct):
@@ -3484,6 +3600,7 @@ func _sync_workflow() -> void:
 		inline_answer_key = _clarification_key(item, judged.questions)
 		editor.clarification_draft = inline_answer_drafts.get(inline_answer_key, "")
 	var facts := {"phase":phase, "design":design, "item":item, "analyzed":analyzed, "direct":direct, "routing":judged,
+		"issue_action":_issue_action(_direct_binding()) if direct else {},
 		"clarification_history":_confirmed_clarifications(item, judged) if direct else [],
 		"progress":progress, "operation":operation, "routing_stage":_routing_stage(item), "judging":routing_in_flight.has(_routing_key(item))}
 	if editor.workflow != facts:

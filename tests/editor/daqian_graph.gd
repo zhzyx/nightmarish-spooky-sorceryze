@@ -343,6 +343,10 @@ func run() -> void:
 	await settle_layout()
 	check_spacing(workspace.overview, "expanded board")
 	var pinned := workspace.overview.get_node("i_1") as GraphNode
+	var full_title := pinned.get_node("OpenIssue") as Button
+	check(full_title.text == issues[0].title and full_title.size.y > 2 * full_title.get_theme_font("font").get_height(full_title.get_theme_font_size("font_size")), "long overview title did not expand")
+	var full_step := pinned.get_node("StepDetails").get_child(0) as Label
+	check(issues[0].plan.nodes["0"].value in full_step.text and full_step.get_visible_line_count() == full_step.get_line_count(), "long overview step lost text")
 	previous = pinned.position_offset
 	pinned.position_offset = workspace.overview.get_node("i_2").position_offset
 	pinned.dragged.emit(previous, pinned.position_offset)

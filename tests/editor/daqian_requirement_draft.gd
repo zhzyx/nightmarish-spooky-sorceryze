@@ -42,7 +42,7 @@ func run() -> void:
 	w.add_child(w.overview)
 	w.add_child(w.editor)
 	w.editor.add_child(w.editor.canvas)
-	w._build_publish_dialog()
+	w._build_publish_form()
 	w.category.add_item("development")
 	w.publish_source = w.current
 	w.save_timer = Timer.new()

@@ -33,13 +33,13 @@ func run():
 	check(not graph.canvas.has_node("wf-analysis"), "Unconfirmed requirements already show Yanshi")
 	panel.requirement_input.text = "需".repeat(16000)
 	panel.requirement_input.text_changed.emit()
-	check(not panel.publish_dialog.get_ok_button().disabled, "16000 characters rejected")
+	check(not panel.publish_confirm.disabled, "16000 characters rejected")
 	panel.requirement_input.text += "求"
 	panel.requirement_input.text_changed.emit()
-	check(panel.publish_dialog.get_ok_button().disabled, "Oversized requirement accepted")
+	check(panel.publish_confirm.disabled, "Oversized requirement accepted")
 	panel.requirement_input.text = "Fixture requirement"
 	panel.requirement_input.text_changed.emit()
-	panel.publish_dialog.get_cancel_button().pressed.emit()
+	panel.publish_cancel.pressed.emit()
 	await process_frame
 	var calls := repo.path_join("tools/calls")
 	check(not FileAccess.file_exists(calls), "Saving a draft sent a request")

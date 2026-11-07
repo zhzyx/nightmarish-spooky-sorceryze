@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-card-decisions-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-card-decisions",
+  "kind": "request",
+  "occurred_at": "2026-11-07T20:47:34.878159+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/526",
+  "agent": {
+    "id": "codex-526",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "Place decisions on their owning cards and show complete wrapped text",
+    "design_document": "design-docs/tianshu-card-decisions.md"
+  },
+  "evidence_refs": [],
+  "sha256": "9965b3009cd7c8e959ee0aa761d753c1b51cc467cce59c2225912020b64e842f"
+}

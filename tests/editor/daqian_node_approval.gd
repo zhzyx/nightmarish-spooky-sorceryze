@@ -16,7 +16,7 @@ func check_replaced_button(panel, row: Dictionary, op: Dictionary) -> void:
 	root.add_child(details)
 	details.build()
 	var confirmed := []
-	details.confirmation_requested.connect(func(token): confirmed.append(token))
+	details.card_requested.connect(func(token): confirmed.append(token))
 	var item := {"number":row.number}
 	details.display(item, op, Callable())
 	var old_button: Button = details.details_confirm
@@ -63,10 +63,12 @@ func run() -> void:
 	backend.item_selected.emit(0)
 	chat.get_ai_settings_control().find_child("APIModel", true, false).text = ""
 	await panel._start_or_view_direct(row)
-	if not panel.conversation.is_visible_in_tree() or not dock.is_visible_in_tree():
+	var route_card: GraphNode = panel.editor.canvas.get_node("wf-routing")
+	if panel.conversation.visible or not route_card.get_node("RouteModel").has_focus():
 		push_error("Missing model did not open a configuration surface inside Tianshu: " + panel.notice.text)
 		quit(1)
 		return
+	await panel._open_issue_conversation()
 	var view = panel.conversation
 	var advanced = view.find_child("AdvancedToggle", true, false)
 	advanced.pressed.emit()
@@ -91,8 +93,21 @@ func run() -> void:
 	await process_frame
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree() and settings_page.is_ancestor_of(ai_settings), "Returning from settings must retain the embedded conversation and central form ownership")
 	await panel._apply_issue_model()
+	route_card = panel.editor.canvas.get_node("wf-routing")
+	var model: OptionButton = route_card.get_node("RouteModel")
+	model.get_popup().about_to_popup.emit()
+	var index := -1
+	for i in model.item_count:
+		if model.get_item_metadata(i) == "fixture":index=i
+	check(index>=0, "Card did not read the authorized model directory")
+	model.select(index)
+	model.item_selected.emit(index)
+	check(not panel.saved.get("execution_models", {}).has(row.url), "Model selection took effect before confirmation")
+	route_card.get_node("ApplyModel").pressed.emit()
 	check(panel.saved.get("execution_models", {}).get(row.url, {}).get("id") == "fixture", "Issue model was not saved")
-	check(panel.publish_button.text == "开始推进", "Bound model was not used for the requirement decision")
+	check(panel.publish_button.text == "判断需求", "Applying a model dispatched a judgment")
+	await panel._start_or_view_direct(panel._direct_binding())
+	check(panel.publish_button.text == "开始推进", "Confirmed judgment did not prepare the issue")
 	await panel._start_or_view_direct(panel._direct_binding())
 	check(panel.conversation.is_visible_in_tree() and dock.is_visible_in_tree(), "Starting the issue left Tianshu")
 	var deadline := Time.get_ticks_msec() + 20000
@@ -114,11 +129,13 @@ func run() -> void:
 	var card = panel.editor.canvas.get_node("wf-operation")
 	check(card.get_meta("flow_state") == "awaiting_approval", "Missing waiting state")
 	check(not chat.find_child("AIFileApproval", true, false).visible, "Unexpected approval dialog")
-	check(not card.get_node("ApprovalActions").visible, "Actions should expand on click")
-	card.get_child(-1).pressed.emit()
 	var actions = card.get_node("ApprovalActions")
-	check(actions.visible, "Actions did not expand")
-	actions.get_child(1).pressed.emit()
+	check(actions.visible and actions.get_node("Confirm").disabled, "Approval actions must be visible and require a decision")
+	var decision: OptionButton = actions.get_node("Decision")
+	decision.select(1)
+	decision.item_selected.emit(1)
+	check(not panel.details_panel.visible, "Choosing details invoked the action prematurely")
+	actions.get_node("Confirm").pressed.emit()
 	await process_frame
 	await process_frame
 	check(panel.details_panel.is_visible_in_tree() and panel.editor.canvas.is_visible_in_tree(), "Graph and details must coexist")
@@ -135,7 +152,14 @@ func run() -> void:
 	check(not FileAccess.file_exists(marker) and not chat.get_daqian_approval().is_empty(), "Stale source was approved")
 	DirAccess.remove_absolute(repo.path_join("changed"))
 	panel.details_panel.details_confirm.pressed.emit()
-	panel.details_panel.details_confirm.pressed.emit()
+	check(not FileAccess.file_exists(marker), "Returning to the card approved a tool")
+	actions = panel.editor.canvas.get_node("wf-operation/ApprovalActions")
+	decision = actions.get_node("Decision")
+	decision.select(2)
+	decision.item_selected.emit(2)
+	check(not FileAccess.file_exists(marker), "Selection approved a tool")
+	actions.get_node("Confirm").pressed.emit()
+	actions.get_node("Confirm").pressed.emit()
 	deadline = Time.get_ticks_msec() + 12000
 	while panel.editor.workflow.get("operation", {}).get("state") != "completed" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
