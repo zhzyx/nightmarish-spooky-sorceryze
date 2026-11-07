@@ -51,6 +51,9 @@ class DirectIssueTests(unittest.TestCase):
         }
         self.patch(bridge, "work_items_module", return_value=self.work)
         self.patch(bridge, "gh_state", return_value=("gh", None))
+        self.actor = self.patch(
+            direct_issue, "refresh_collaborator", return_value={"user_id": "7", "repo": "test/repo", "login": "alice"}
+        )
         self.patch(direct_issue, "collaborator", return_value={"user_id": "7", "repo": "test/repo", "login": "alice"})
         self.patch(self.work, "gh", side_effect=self.gh)
         self.enqueue = self.patch(bridge, "enqueue")
@@ -362,6 +365,43 @@ class DirectIssueTests(unittest.TestCase):
         self.assertTrue(self.submit(outcome="changed")["reconcile_required"])
         self.rows.append(published)
         self.assertTrue(self.submit()["ok"])
+        self.assertEqual(self.writes, 1)
+
+    def test_collaborator_read_recovers_from_dropped_connection(self):
+        network = direct_issue.work_items.GitHubCommandError(reason="GITHUB_NETWORK: private diagnostic")
+        self.actor.side_effect = [network, self.actor.return_value]
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual((self.actor.call_count, self.writes), (2, 1))
+
+    def test_rest_only_collaborator_can_publish(self):
+        self.actor.side_effect = direct_issue.work_items.GitHubCommandError()
+        self.assertTrue(self.submit()["ok"])
+        self.assertEqual(self.writes, 1)
+
+    def test_persistent_network_failure_keeps_draft_retryable(self):
+        self.actor.side_effect = direct_issue.work_items.GitHubCommandError(reason="GITHUB_NETWORK: private diagnostic")
+        result = self.submit()
+        self.assertFalse(result["reconcile_required"])
+        self.assertIn("核验仓库协作者身份", result["error"])
+        self.assertIn("原草稿重试", result["error"])
+        self.assertNotIn("private diagnostic", result["error"])
+        self.assertEqual((self.actor.call_count, self.writes), (2, 0))
+
+    def test_login_failure_after_lost_receipt_requests_reconciliation(self):
+        self.lose_receipt = True
+        self.assertTrue(self.submit()["reconcile_required"])
+        with patch.object(bridge, "gh_state", return_value=("gh", "gh_unauthenticated")):
+            result = self.submit()
+        self.assertTrue(result["reconcile_required"])
+        self.assertIn("原草稿核对发布回执", result["error"])
+        self.assertEqual(self.writes, 1)
+
+    def test_interrupted_write_is_never_replayed(self):
+        self.next_error = self.work.GitHubCommandError(reason="GITHUB_NETWORK: EOF")
+        result = self.submit()
+        self.assertTrue(result["reconcile_required"])
+        self.assertIn("提交建单请求", result["error"])
+        self.assertIn("原草稿核对发布回执", result["error"])
         self.assertEqual(self.writes, 1)
 
     def test_definite_rejection_allows_repair_and_edit(self):

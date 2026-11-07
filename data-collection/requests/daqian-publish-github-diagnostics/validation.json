@@ -1,0 +1,32 @@
+{
+  "request_id": "daqian-publish-github-diagnostics",
+  "issue_number": 424,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+  "preflight": {
+    "before": "gh auth status and GET user succeeded; paginated GET user/repos failed with EOF before publication intent",
+    "after": "Editor-equivalent environment verified viewer and target repository. Active workspace issue-direct reached the first local document write boundary, where the read-only probe stopped."
+  },
+  "regression_suites": {
+    "test_direct_issue": 21,
+    "test_work_items": 14,
+    "test_daqian_collaborators": 7,
+    "test_issue_guide": 12,
+    "test_bridge": 25
+  },
+  "headless_editor": {
+    "state": "passed",
+    "editor_sha256": "145f1742bf86332b39d70f494877a3d1b6fa65ea7bea49b2bc0674f17dcf8f42",
+    "scenario": "direct",
+    "scope": "native editor to direct issue and Sinan admission subprocesses"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_6ece33f2c758a08d",
+    "checked": [
+      "recovery hint when authentication fails on pending publication",
+      "REST-only collaborator verification after GraphQL query rejection",
+      "unknown write remains readback-only"
+    ],
+    "result": "passed after fixes"
+  },
+  "original_issue_submission": "reserved for user"
+}

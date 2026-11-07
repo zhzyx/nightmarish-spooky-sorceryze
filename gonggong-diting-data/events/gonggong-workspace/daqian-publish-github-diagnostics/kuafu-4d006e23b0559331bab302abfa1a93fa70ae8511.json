@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4d006e23b0559331bab302abfa1a93fa70ae8511",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-publish-github-diagnostics",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e996938b4dabb52b99b0c82c046367af81f22f6c150db90e70068237f80f6f2b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+    "action": "user-report",
+    "detection_head": "208e6cc8fcd7072084ad2a6151a19083ab3aff4e",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424",
+    "evidence": "Desktop-equivalent preflight: auth status and viewer succeeded; REST user/repos returned EOF. No create intent.",
+    "diagnosis": "GitHub connection closed during collaborator enumeration, categorized as generic CLI failure.",
+    "next_action": "Verify scoped identity query, bounded read retry and write reconciliation through issue-direct.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T08:59:54.109616+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-07T09:05:57.036342+00:00",
+  "sha256": "c90cf02f61d411647b401bade2ee6306bd94b8aade08e4090b0bdf6514899340"
+}

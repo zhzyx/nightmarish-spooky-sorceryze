@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "daqian-publish-github-diagnostics",
+  "collected_at": "2026-11-07T09:09:14.343253+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-publish-github-diagnostics/dispatch-63ca6d86c72e48379f272dea641278e2.json",
+      "sha256": "29de112a566e3fc0b9885c9dec668423adc8740b2fec3ba4d49668c1bf37fabe",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-63ca6d86c72e48379f272dea641278e2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-publish-github-diagnostics/dispatch-e2e2e75dca864b8999e7f9d066d10500.json",
+      "sha256": "ea5baebb13ec8cc6a99237eb9de5ce4c07c99a948286e29436f19b948713c97b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e2e2e75dca864b8999e7f9d066d10500",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-publish-github-diagnostics/dispatch-e813b27d03b74634ad455432d340d330.json",
+      "sha256": "568611b28a1b2e8d7a08de3e6cf9639d4a93af3d7bb2d60d9ba09cc96ff6dfe1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e813b27d03b74634ad455432d340d330",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-publish-github-diagnostics/issue424-user-report.json",
+      "sha256": "50c97fee2f9ea56a4c371118069f59940d0852f66f21508c6d941189e105447e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "issue424-user-report",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/daqian-publish-github-diagnostics/kuafu-4d006e23b0559331bab302abfa1a93fa70ae8511.json",
+      "sha256": "596551644928d33c80887f8ef8ae02763e56eb923f55ac2ef7e471a7e33e23f9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-4d006e23b0559331bab302abfa1a93fa70ae8511",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 424,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/424"
+}
