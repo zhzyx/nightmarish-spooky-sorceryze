@@ -124,8 +124,13 @@ class HandoffTests(unittest.TestCase):
             self.assertEqual((operation, url), ("fetch", "https://github.com/org/repo.git"))
             return submission.git(repo, "fetch", str(self.repo), ref)
 
+        def read_source(command, *args):
+            if command == "issue":
+                return json.dumps(getattr(self, "issue_receipt", {"state": "OPEN", "stateReason": None, "labels": []}))
+            return json.dumps(self.pr)
+
         with (
-            patch.object(submission.work_items, "gh", return_value=json.dumps(self.pr)),
+            patch.object(submission.work_items, "gh", side_effect=read_source),
             patch.object(submission, "graphql", return_value={"repository": {"object": self.tip}}),
             patch.object(submission, "authenticated_git", side_effect=fetch),
         ):
@@ -151,7 +156,13 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(result["main_observed"], self.pr_base)
         self.assertEqual(result["current_main"], self.git("rev-parse", "main"))
         self.assertEqual(result["delivered_paths_differ"], [])
-        self.assertIn("已有 main 回执", result["next_action"])
+        self.assertIn("逐项执行", result["next_action"])
+        for reason, labels, expected in [
+            ("COMPLETED", [{"name": "status:done"}], "目标单已有完成回执"),
+            ("NOT_PLANNED", [], "核对关闭原因"),
+        ]:
+            self.issue_receipt = {"state": "CLOSED", "stateReason": reason, "labels": labels}
+            self.assertIn(expected, self.inspect()["next_action"])
 
     def test_shared_path_and_file_directory_write(self):
         path = self.repo / "ship.txt"
