@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8f105d7467b76ceb119a56fd550fde2aa19ca39c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "05758970635a8c56ff3bf29261a0b0927e6be213253fdcb21962af50cc565359",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/480",
+    "action": "validation",
+    "detection_head": "1600f40c56194fd3f0b4fc99a2ef2e7cdafd0596",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-config-bootstrap",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42390399084/job/128456668231",
+    "diagnosis": "Windows clang-cl和MSVC在uses_default_project产生unused-variable/C4189并被Werror/WX拒绝，根因是range-loop局部argument仅在Mac分支使用。实际两个失败job日志已核实。",
+    "next_action": "Mac循环整体条件编译；非Mac返回is_empty保持语义。修后完成同7项native测试50断言及独立预处理窄审，正式重签并在新精确head复验Windows编译与原生锁单测。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T16:20:19.774857+00:00",
+    "attempted": "修后Mac增量编译11.64s与7项native测试50断言通过；独立评审确认Mac预处理token相同、非Mac无unused局部。Windows恢复仍待新CI。",
+    "repair_owner": "codex-config-bootstrap",
+    "continuable": "继续修后源候选交付，真实生产App/GUI验收由根负责。"
+  },
+  "occurred_at": "2026-11-07T16:22:53.128545+00:00",
+  "sha256": "118c63f86152f86c79fc6ddb502a5ce9497d4592883226966d323449ea1bf909"
+}

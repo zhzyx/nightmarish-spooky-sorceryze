@@ -176,14 +176,16 @@ String GongGongEngineOrigin::source_root() {
 }
 
 bool GongGongEngineOrigin::uses_default_project(const List<String> &p_arguments) {
-	for (const String &argument : p_arguments) {
 #ifdef MACOS_ENABLED
+	for (const String &argument : p_arguments) {
 		// Main already ignores this Launch Services/Gatekeeper bookkeeping.
 		if (argument.begins_with("-psn_")) {
 			continue;
 		}
-#endif
 		return false;
 	}
 	return true;
+#else
+	return p_arguments.is_empty();
+#endif
 }

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "issue_number": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "bug_number": 480,
+  "failed_pull_request": 479,
+  "failed_head": "ed3a867af13d51cf04f50dbffad8ef835dff28a4",
+  "failed_source": "1600f40c56194fd3f0b4fc99a2ef2e7cdafd0596",
+  "failed_run": 42390399084,
+  "failed_jobs": [
+    128456668231,
+    128456668287
+  ],
+  "diagnosis": "Non-Mac conditional compilation left argument unused; clang-cl unused-variable and MSVC C4189 were treated as errors.",
+  "repair_source": "editor/docks/gonggong_engine_origin.cpp",
+  "repair_sha256": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+  "local_validation": {
+    "macos_incremental_build": "passed 11.64 seconds",
+    "native_unit": "passed 7 cases, 50 assertions",
+    "independent_review": "data-collection/issue462-conditional-compilation-review-20261108.json"
+  },
+  "remote_recovery": "pending_new_exact_candidate_CI",
+  "private_log_sha256": {
+    "bin/issue462-clangcl-failure.log": "f4e5c101e145d3cce549aacd03bab8e8f4766c5d7d0b4464cc56cdb58516b2c1",
+    "bin/issue462-msvc-failure.log": "4ecaf2db08a2cb88582d3d48d1796302d29edaf7b1fd6e8ba07f93da06dfaf66"
+  },
+  "observed_at": "2026-11-07T16:22:38.658055+00:00",
+  "usage": null
+}
