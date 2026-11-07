@@ -278,7 +278,16 @@ def run_turn(root, bridge, work, settings, binding, journal, state, request, age
             elif "Repair Node/CLI installation" in str(error):
                 reason = "模型 CLI 或 Node 路径已失效"
             elif "failed in CLI" in str(error):
-                reason = "模型 CLI 调用失败，请检查登录和所选模型"
+                code = re.search(r"failed in CLI \[([A-Z_]+)\]", str(error))
+                reason = {
+                    "AUTH_REQUIRED": "模型 CLI 登录已失效，请重新登录",
+                    "MODEL_UNAVAILABLE": "所选模型不可用，请更换模型 ID",
+                    "NETWORK_ERROR": "模型服务连接失败，请检查网络后重试",
+                    "PROCESS_BOUNDARY_FAILED": "模型 CLI 进程边界建立失败，请检查本机运行环境",
+                    "TIMEOUT": "模型 CLI 调用超时，请显式重试",
+                    "EMPTY_RESPONSE": "模型 CLI 未返回结论，请显式重试",
+                    "INVALID_RESPONSE": "模型 CLI 返回格式无效，请显式重试",
+                }.get(code.group(1) if code else "", "模型 CLI 调用失败，请检查登录和所选模型")
             elif isinstance(error, (json.JSONDecodeError, KeyError, IndexError, TypeError)):
                 reason = "模型返回格式无效"
             else:

@@ -1,0 +1,9 @@
+{
+  "request_id": "daqian-model-route-fix-20261107",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/348",
+  "verification": {
+    "codex_bridge_tests": "14 passed on Windows, including transient reconnect followed by completed turn",
+    "editor_real_model": "Godot Windows editor called Codex gpt-6-astra for existing Issue #347; route=sinan, ready=true, error empty",
+    "event_id": "route-1823ecf6e7814c7faeee9926625ec1cb"
+  }
+}
