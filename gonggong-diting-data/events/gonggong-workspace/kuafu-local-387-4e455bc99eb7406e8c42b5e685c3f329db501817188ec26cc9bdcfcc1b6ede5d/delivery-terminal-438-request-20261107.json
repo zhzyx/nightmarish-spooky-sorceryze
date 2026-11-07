@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "delivery-terminal-438-request-20261107",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "kind": "request",
+  "occurred_at": "2026-11-07T15:56:29.944243+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "agent": {
+    "id": "codex-delivery-terminal-fix",
+    "version": "20261107",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "request": "Repair native Agent finalization after actual main delivery without granting production to terminal work orders",
+    "authority_ref": "codex-user:20261107:engine-workflow-observation-and-repair",
+    "worker": "/root/delivery_terminal_fix",
+    "original_issue": 387,
+    "incident": "915403e4dd8f8eb544d6297b9cff3d2102664b05b41fdf9597d792fff2844adf",
+    "design": "design-docs/kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "63a544733837dc891b57a1466c74079c91875a8da4c509ad324c83b4b15e3d2c"
+}

@@ -110,6 +110,19 @@ test('Restarted ACP sessions continue from a host result without re-submitting t
     assert.equal(response.transport.message_count, 3);
 });
 
+test('Delivery completion yields to the host and preserves its typed failure result', { timeout: 10000 }, async t => {
+    const tools = ['run_command', 'complete_delivery'].map(name => ({ type: 'function', function: { name, parameters: { type: 'object' } } }));
+    const submit = await bridge(t, '', 'delivery_agent', { tools });
+    const user = { role: 'user', content: 'case:host_action_delivery' };
+    const proposal = await submit([user]);
+    const message = proposal.choices[0].message;
+    assert.equal(message.tool_calls.length, 1);
+    assert.equal(message.tool_calls[0].function.name, 'complete_delivery');
+    assert.equal(JSON.parse(message.tool_calls[0].function.arguments).pr, 7);
+    const response = await submit([{ role: 'tool', tool_call_id: message.tool_calls[0].id, content: JSON.stringify({ ok: false, delivery_finalization: { completion_verified: false } }) }], 1);
+    assert.equal(response.choices[0].message.content, 'HOST_DELIVERY_RESULT_OK');
+});
+
 test('Legacy controls survive file results, recovery and subsequent messages without poisoning an agent', { timeout: 20000 }, async t => {
     const ansi = '\x1b[90mfirst_line\x1b[0m\v';
     const server = http.createServer(async (request, response) => {

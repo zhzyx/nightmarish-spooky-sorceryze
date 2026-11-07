@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "ci_failure_and_repair",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "recorded_at": "2026-11-07T17:04:58.521516+00:00",
+  "failed_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/485",
+  "failed_signed_head": "5d3d387b2ce486080261aeb950be04af82e0d005",
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42392884666/job/128464069546",
+  "private_original_job_log_sha256": "360fc83708dece65e0610a71552b2eafe6847dfd501c3761e9a4e5247d683046",
+  "actual_failure": "Existing WindowsRuntimeTests normal subprocess passed exit7/stdout/stderr but quiesce returned true; workflow stopped before C++ compilation. Original process/test code had no diff from base68fe. Old log does not show actual PIDs, so exact OS bookkeeping cause remains unproven.",
+  "production_impact": "The same quiesce true path marks background descendants and makes provenance guard reject an otherwise finished command; fix belongs in production liveness query.",
+  "kuafu_incident": "3b6b71a274482817191db65f0fb50abc3483428fd7d53905ee27d333c4476b99",
+  "kuafu_assessment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438#issuecomment-6710364537",
+  "fixed_sources": {
+    "tools/editor_provenance_process.py": "39b84b121d45b720b1145a979062146607235239ab31e7737c1ab4875077afea",
+    "tools/test_editor_provenance_process.py": "f78e61eb898768f4474966985e08cf0447d653f82030027132894d7af5c542a6"
+  },
+  "design": "Complete bounded Job PID enumeration, same-private-Job read-only handles and zero-time signaled queries, held handles through final stable full membership. Shared active API preserves termination/recovery semantics and real live count. Unknown ownership/query/state fails closed; close all handles even after a close failure. No process-name whitelist or blind grace.",
+  "local_validation": {
+    "portable_passed": 14,
+    "real_windows_skipped_on_macos": 6,
+    "ruff": "passed",
+    "mypy": "passed",
+    "codespell": "passed",
+    "real_windows_acceptance": "pending new exact signed CI; not claimed from portable checks"
+  },
+  "primary_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_basic_accounting_information",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_basic_process_id_list",
+    "https://learn.microsoft.com/en-us/windows/win32/api/jobapi/nf-jobapi-isprocessinjob",
+    "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject"
+  ],
+  "evidence_reuse": "Existing native/CPP/JS/finalizer cases remain within their unchanged scopes. These Windows-only process source changes require new real Windows CI; no user App/config/history mutation.",
+  "usage": null
+}

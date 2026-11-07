@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "main_integration_validation",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "verified_at": "2026-11-07T16:43:21.746659+00:00",
+  "actual_dependency_main": "68fe8c9e0d77b5979b724ba483ccfb409e783e50",
+  "dependency_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/482",
+  "dependency_source": "78d82de0e11c95073f7256801addf79d7b8ee945",
+  "dependency_signed": "9b40a41ed97c9917c9599eaeb11a5b419c307ce9",
+  "normal_fast_forward": true,
+  "source_tree_diff_from_pretested_dependency_source": [],
+  "full_source_snapshot_matches_pretested": true,
+  "source_snapshot_digest": "7db1c6545aaa005110ec550de5df310e980e6dcd1e48e2cb09c1d20410cd25c3",
+  "source_input_count": 16462,
+  "reused_validation": [
+    "validation-pending462-combination.json",
+    "validation-pending462-b5-integration.json"
+  ],
+  "reused_independent_reviews": [
+    "independent-review-before-central.json",
+    "independent-codebuddy-review.json",
+    "independent-central-callsite-review.json",
+    "independent-finalizer-delta-review.json"
+  ],
+  "artifact_sha256": "fb61a552e4f8cb83c36ba42b2fd17739b4bc2ad10f1be1935e78cc4a4e71a0e8",
+  "scope": "Complete source snapshot equality proves actual dependency main introduced no source changes after the tested pending78 integration. Existing actual native/guard/approval/queue/cold/partial protocols and stable Python/JS/unit evidence are reused within their stated scopes; no production GitHub completion or user App installation claimed.",
+  "git_delivery": "Current Issue438 now advancing formal gate, exact candidate signing/CI and main delivery",
+  "usage": null
+}

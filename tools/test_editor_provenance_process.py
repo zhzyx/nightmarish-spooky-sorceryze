@@ -110,6 +110,138 @@ class OwnershipUnitTests(unittest.TestCase):
             processes.job_is_quiet("arbitrary-job-name", api)
 
 
+class MemberKernel:
+    """Portable ctypes boundary fixture, not real Windows runtime evidence."""
+
+    def __init__(self, snapshots, states=None):
+        self.snapshots = list(snapshots)
+        self.states = states or {}
+        self.error = 0
+        self.closed = []
+        self.opened = []
+        self.query_sizes = []
+        self.missing = set()
+        self.foreign = set()
+        self.close_failure = set()
+        self.returned_override = None
+        self.accounted = 7
+
+    def QueryInformationJobObject(self, job, kind, target, size, returned):
+        value = target._obj
+        if kind == 1:
+            value.ActiveProcesses = self.accounted
+            return True
+        assert kind == 3
+        self.query_sizes.append(size)
+        ids = self.snapshots.pop(0) if len(self.snapshots) > 1 else self.snapshots[0]
+        capacity = len(value.ProcessIdList)
+        count = min(len(ids), capacity)
+        value.NumberOfAssignedProcesses = len(ids)
+        value.NumberOfProcessIdsInList = count
+        for i in range(count):
+            value.ProcessIdList[i] = ids[i]
+        returned._obj.value = (
+            self.returned_override
+            if self.returned_override is not None
+            else 8 + count * ctypes.sizeof(processes.SIZE_T)
+        )
+        self.error = processes.ERROR_MORE_DATA if count != len(ids) else 0
+        return count == len(ids)
+
+    def OpenProcess(self, rights, inherit, pid):
+        assert rights == processes.PROCESS_QUERY_LIMITED_INFORMATION | processes.SYNCHRONIZE
+        assert inherit is False
+        self.opened.append(pid)
+        self.error = processes.ERROR_INVALID_PARAMETER if pid in self.missing else 0
+        return None if pid in self.missing else pid + 1000
+
+    def IsProcessInJob(self, process, job, belongs):
+        belongs._obj.value = int(process - 1000 not in self.foreign)
+        return True
+
+    def WaitForSingleObject(self, process, timeout):
+        assert timeout == 0
+        return self.states.get(process - 1000, processes.WAIT_OBJECT_0)
+
+    def CloseHandle(self, process):
+        self.closed.append(process - 1000)
+        return process - 1000 not in self.close_failure
+
+
+class MembershipUnitTests(unittest.TestCase):
+    def api(self, kernel):
+        result = processes.WinAPI.__new__(processes.WinAPI)
+        result.kernel = kernel
+        patch = mock.patch.object(ctypes, "get_last_error", lambda: kernel.error, create=True)
+        patch.start()
+        self.addCleanup(patch.stop)
+        return result
+
+    def test_pid_list_abi_and_truncated_buffer_are_complete(self):
+        structure = processes.process_list_type(16)
+        self.assertEqual(structure.ProcessIdList.offset, 8)
+        self.assertEqual(ctypes.sizeof(structure), 8 + 16 * ctypes.sizeof(processes.SIZE_T))
+        ids = tuple(range(1, 21))
+        kernel = MemberKernel([ids])
+        self.assertEqual(self.api(kernel).members(123), ids)
+        self.assertGreater(kernel.query_sizes[-1], kernel.query_sizes[0])
+
+    def test_invalid_or_short_member_snapshot_is_never_empty_success(self):
+        for ids in [(0,), (1, 1), (0x100000000,)]:
+            with self.subTest(ids=ids):
+                with self.assertRaises(processes.ProcessError):
+                    self.api(MemberKernel([ids])).members(123)
+        kernel = MemberKernel([(1,)])
+        kernel.returned_override = 0
+        with self.assertRaises(processes.ProcessError):
+            self.api(kernel).members(123)
+
+    def test_terminated_records_are_quiet_despite_accounting_references(self):
+        kernel = MemberKernel([(11, 12)])
+        api = self.api(kernel)
+        self.assertEqual(api.accounted_active(123), 7)
+        self.assertEqual(api.active(123), 0)
+        self.assertEqual(kernel.closed, [11, 12])
+
+    def test_live_count_includes_all_verified_members(self):
+        kernel = MemberKernel([(11, 12, 13)], {11: processes.WAIT_TIMEOUT, 12: processes.WAIT_TIMEOUT})
+        self.assertEqual(self.api(kernel).active(123), 2)
+        self.assertEqual(kernel.closed, [11, 12, 13])
+
+    def test_new_live_child_during_exit_snapshot_prevents_quiet(self):
+        kernel = MemberKernel([(11,), (11, 12), (11, 12)], {12: processes.WAIT_TIMEOUT})
+        self.assertEqual(self.api(kernel).active(123), 1)
+        self.assertEqual(kernel.closed, [11, 12])
+        self.assertEqual(kernel.opened, [11, 12])
+
+    def test_disappearing_pid_retries_only_when_full_membership_changed(self):
+        kernel = MemberKernel([(11,), (12,), (12,)], {12: processes.WAIT_TIMEOUT})
+        kernel.missing.add(11)
+        self.assertEqual(self.api(kernel).active(123), 1)
+        stable = MemberKernel([(11,)])
+        stable.missing.add(11)
+        with self.assertRaisesRegex(processes.ProcessError, "member_unavailable"):
+            self.api(stable).active(123)
+
+    def test_unverified_ownership_and_wait_fail_closed(self):
+        kernel = MemberKernel([(11,)])
+        kernel.foreign.add(11)
+        with self.assertRaisesRegex(processes.ProcessError, "owner_unverified"):
+            self.api(kernel).active(123)
+        self.assertEqual(kernel.closed, [11])
+        kernel = MemberKernel([(11,)], {11: 0xFFFFFFFF})
+        with self.assertRaisesRegex(processes.ProcessError, "state_unverified"):
+            self.api(kernel).active(123)
+        self.assertEqual(kernel.closed, [11])
+
+    def test_all_handles_are_closed_even_if_one_close_fails(self):
+        kernel = MemberKernel([(11, 12)])
+        kernel.close_failure.add(11)
+        with self.assertRaisesRegex(processes.ProcessError, "handles_close_failed"):
+            self.api(kernel).active(123)
+        self.assertEqual(kernel.closed, [11, 12])
+
+
 @unittest.skipUnless(os.name == "nt", "Real Windows Job runtime required; a skip is not acceptance")
 class WindowsRuntimeTests(unittest.TestCase):
     def setUp(self):
@@ -135,7 +267,17 @@ class WindowsRuntimeTests(unittest.TestCase):
             self.assertEqual(child.returncode, 7)
             self.assertEqual(output.strip(), b"job-out")
             self.assertEqual(errors.strip(), b"job-err")
-            self.assertFalse(job.quiesce())
+            try:
+                cleaned_background = job.quiesce()
+            except processes.ProcessError as error:
+                self.fail(
+                    str(error)
+                    + " "
+                    + json.dumps({"leader_exit": child.returncode, "job": getattr(job.api, "last_liveness", None)})
+                )
+            self.assertFalse(
+                cleaned_background, json.dumps({"leader_exit": child.returncode, "job": job.quiesce_observation})
+            )
 
     def test_real_leader_exit_does_not_leave_late_writer(self):
         late = self.root / "late-write"

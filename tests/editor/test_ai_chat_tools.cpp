@@ -38,6 +38,7 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "core/io/json.h"
 #include "core/os/os.h"
 #include "editor/docks/ai_chat_cli_login.h"
+#include "editor/docks/ai_chat_delivery_receipt.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
@@ -46,6 +47,50 @@ TEST_FORCE_LINK(test_ai_chat_tools)
 #include "editor/docks/ai_chat_tools.h"
 
 namespace TestAIChatTools {
+
+TEST_CASE("[Editor][AIChat] Delivery receipt binds private worker identity and exact candidate") {
+	const Dictionary expected = JSON::parse_string(R"({"owner":"parent","snapshot_id":"turn","nonce":"nonce","source_root":"/owned","generation":4,"pr":7,"expected_candidate":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","expected_signed_commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","binding":{"issue":9,"request_id":"flow-test","repository":"org/repo"}})");
+	const Dictionary receipt = JSON::parse_string(R"({"schema_version":1,"kind":"native_delivery_finalization","owner":"parent","snapshot_id":"turn","nonce":"nonce","source_root":"/owned","generation":4,"issue":9,"request_id":"flow-test","completion_verified":true,"mutations_may_have_started":true,"host_facts":{"repository":"org/repo","issue":9,"request_id":"flow-test","candidate":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","signed_commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","tree":"cccccccccccccccccccccccccccccccccccccccc","current_main":"dddddddddddddddddddddddddddddddddddddddd","merge_commit":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","pull_request":"https://github.com/org/repo/pull/7","pr_state":"MERGED","delivered_paths_differ":[],"issue_receipt":{"state":"CLOSED","reason":"COMPLETED","labels":["status:done","workspace:gonggong"]}},"ci":[{"name":"actual","state":"SUCCESS"},{"name":"configured skip","state":"SKIPPED"}]})");
+	CHECK(AIChatDeliveryReceipt::matches(receipt, expected));
+	CHECK(AIChatDeliveryReceipt::completed(receipt, expected));
+	for (const String &key : { String("owner"), String("snapshot_id"), String("nonce"), String("source_root"), String("request_id"), String("kind") }) {
+		Dictionary changed = receipt.duplicate(true);
+		changed[key] = "foreign";
+		CHECK_FALSE(AIChatDeliveryReceipt::matches(changed, expected));
+		CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+	}
+	for (const Variant &value : { Variant(true), Variant("4"), Variant(4.5), Variant(5) }) {
+		Dictionary changed = receipt.duplicate(true);
+		changed["generation"] = value;
+		CHECK_FALSE(AIChatDeliveryReceipt::matches(changed, expected));
+	}
+	for (const String &key : { String("candidate"), String("signed_commit"), String("repository"), String("request_id"), String("pull_request"), String("current_main"), String("tree") }) {
+		Dictionary changed = receipt.duplicate(true);
+		Dictionary facts = changed["host_facts"];
+		facts[key] = "foreign";
+		CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+	}
+	for (const String &state : { String("PENDING"), String("FAILURE"), String("CANCELLED"), String("NEUTRAL") }) {
+		Dictionary changed = receipt.duplicate(true);
+		Array checks = changed["ci"];
+		Dictionary check = checks[0];
+		check["state"] = state;
+		CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+	}
+	for (const String &field : { String("state"), String("reason") }) {
+		Dictionary changed = receipt.duplicate(true);
+		Dictionary facts = changed["host_facts"];
+		Dictionary issue = facts["issue_receipt"];
+		issue[field] = "unknown";
+		CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+	}
+	Dictionary changed = receipt.duplicate(true);
+	Dictionary facts = changed["host_facts"];
+	Dictionary issue = facts["issue_receipt"];
+	Array labels = issue["labels"];
+	labels.push_back("status:in-progress");
+	CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+}
 
 Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat") {
 	Error error = OK;

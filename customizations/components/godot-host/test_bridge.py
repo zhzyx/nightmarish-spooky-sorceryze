@@ -25,11 +25,16 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
         self.addCleanup(self.env.stop)
 
     def result(self, stderr="", ok=False):
-        return types.SimpleNamespace(returncode=0 if ok else 1, stderr=stderr,
-                                     stdout='{"number":165,"url":"https://github.com/test/repo/issues/165"}' if ok else "")
+        return types.SimpleNamespace(
+            returncode=0 if ok else 1,
+            stderr=stderr,
+            stdout='{"number":165,"url":"https://github.com/test/repo/issues/165"}' if ok else "",
+        )
 
     def receipts(self):
-        return [json.loads(path.read_text()) for path in (self.root / ".gonggong-outbox/intake-failures").glob("*.json")]
+        return [
+            json.loads(path.read_text()) for path in (self.root / ".gonggong-outbox/intake-failures").glob("*.json")
+        ]
 
     def test_success_reads_once_and_never_records_a_failure(self):
         with patch.object(bridge.subprocess, "run", return_value=self.result(ok=True)) as run:
@@ -40,18 +45,36 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
 
     def test_recognised_transient_failure_rechecks_read_once(self):
         for code in ["GITHUB_NETWORK", "GITHUB_HTTP_429", "GITHUB_HTTP_500", "GITHUB_HTTP_503"]:
-            with self.subTest(code=code), patch.object(bridge.subprocess, "run", side_effect=[
-                self.result(code + ": fixture transient error"), self.result(ok=True),
-            ]) as run:
+            with (
+                self.subTest(code=code),
+                patch.object(
+                    bridge.subprocess,
+                    "run",
+                    side_effect=[
+                        self.result(code + ": fixture transient error"),
+                        self.result(ok=True),
+                    ],
+                ) as run,
+            ):
                 self.assertEqual(bridge.issue_binding(self.root, self.request, "tenant")["number"], 165)
                 self.assertEqual(run.call_count, 2)
                 self.assertEqual(run.call_args_list[0].args, run.call_args_list[1].args)
                 self.assertGreater(run.call_args_list[0].kwargs["timeout"], run.call_args_list[1].kwargs["timeout"])
 
     def test_permission_binding_and_unknown_errors_never_retry(self):
-        for error in ["GITHUB_HTTP_401", "GITHUB_HTTP_403", "GITHUB_HTTP_404", "GITHUB_COMMAND",
-                      "Issue is not open", "Host tenant must match work-items.json", "fixture unexpected failure"]:
-            with self.subTest(error=error), patch.object(bridge.subprocess, "run", return_value=self.result(error)) as run:
+        for error in [
+            "GITHUB_HTTP_401",
+            "GITHUB_HTTP_403",
+            "GITHUB_HTTP_404",
+            "GITHUB_COMMAND",
+            "Issue is not open",
+            "Host tenant must match work-items.json",
+            "fixture unexpected failure",
+        ]:
+            with (
+                self.subTest(error=error),
+                patch.object(bridge.subprocess, "run", return_value=self.result(error)) as run,
+            ):
                 with self.assertRaisesRegex(ValueError, "Issue intake rejected:"):
                     bridge.issue_binding(self.root, self.request, "tenant")
                 self.assertEqual(run.call_count, 1)
@@ -64,27 +87,34 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
         self.assertEqual({r["read_attempt"] for r in self.receipts()}, {1, 2})
 
     def test_no_retry_after_total_budget_is_exhausted(self):
-        with patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]), patch.object(
-            bridge.subprocess, "run", return_value=self.result("GITHUB_NETWORK: unavailable")
-        ) as run:
+        with (
+            patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]),
+            patch.object(bridge.subprocess, "run", return_value=self.result("GITHUB_NETWORK: unavailable")) as run,
+        ):
             with self.assertRaisesRegex(ValueError, "read attempts=1"):
                 bridge.issue_binding(self.root, self.request, "tenant")
         self.assertEqual(run.call_count, 1)
         self.assertEqual(run.call_args.kwargs["timeout"], 120)
 
     def test_timeout_is_recorded_without_an_unbounded_read(self):
-        with patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]), patch.object(
-            bridge.subprocess, "run", side_effect=bridge.subprocess.TimeoutExpired("fixture", 120)
-        ) as run:
+        with (
+            patch.object(bridge.time, "monotonic", side_effect=[0, 0, 121]),
+            patch.object(bridge.subprocess, "run", side_effect=bridge.subprocess.TimeoutExpired("fixture", 120)) as run,
+        ):
             with self.assertRaisesRegex(ValueError, "GITHUB_TIMEOUT; read attempts=1"):
                 bridge.issue_binding(self.root, self.request, "tenant")
         self.assertEqual(run.call_count, 1)
         self.assertEqual(self.receipts()[0]["code"], "GITHUB_TIMEOUT")
 
     def test_second_read_rejection_never_reuses_prior_permission(self):
-        with patch.object(bridge.subprocess, "run", side_effect=[
-            self.result("GITHUB_NETWORK: unavailable"), self.result("Issue is not open"),
-        ]) as run:
+        with patch.object(
+            bridge.subprocess,
+            "run",
+            side_effect=[
+                self.result("GITHUB_NETWORK: unavailable"),
+                self.result("Issue is not open"),
+            ],
+        ) as run:
             with self.assertRaisesRegex(ValueError, "Issue is not open; read attempts=2"):
                 bridge.issue_binding(self.root, self.request, "tenant")
         self.assertEqual(run.call_count, 2)
@@ -103,11 +133,47 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
 
 
+class IntakeClassificationTests(unittest.TestCase):
+    def envelope(self):
+        return {
+            "incident": "a" * 64,
+            "state": "pending_kuafu_intake",
+            "issue": 387,
+            "action": "intake",
+            "next_action": "The active host must invoke Kuafu now: receive, investigate, then assess with the actual worker and bug.",
+            "dispatch": {"state": "dispatch_requested"},
+        }
+
+    def test_known_incident_envelope_preserves_fixed_binding_reason(self):
+        prefix = json.dumps(self.envelope())
+        error = "Issue requires exactly one active status label"
+        self.assertEqual(bridge.intake_failure_reason(prefix + "\n" + error + "\n"), ("ISSUE_BINDING", False, error))
+        self.assertEqual(
+            bridge.intake_failure_reason(prefix + "\nGITHUB_NETWORK: failed"),
+            ("GITHUB_NETWORK", True, "GITHUB_NETWORK"),
+        )
+
+    def test_arbitrary_prefix_and_substrings_are_not_unwrapped(self):
+        error = "Issue requires exactly one active status label"
+        for prefix in (
+            "private output",
+            json.dumps({"incident": "a" * 64}),
+            json.dumps(dict(self.envelope(), action="delivery")),
+            json.dumps(dict(self.envelope(), incident="bad")),
+            json.dumps(dict(self.envelope(), issue=True)),
+        ):
+            with self.subTest(prefix=prefix):
+                self.assertEqual(bridge.intake_failure_reason(prefix + "\n" + error)[0], "INTAKE_LOCAL_FAILURE")
+        self.assertEqual(
+            bridge.intake_failure_reason(json.dumps(self.envelope()) + "\nprivate\n" + error)[0], "INTAKE_LOCAL_FAILURE"
+        )
+
+
 class ChatGateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         (self.root / "CURRENT_FRAMEWORK.json").write_text(
             json.dumps({"path_base": "this_file_directory", "root": "framework", "manifest": "framework-manifest.json"})
         )

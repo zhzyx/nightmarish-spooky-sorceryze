@@ -5,6 +5,17 @@ const test = require('node:test');
 const { cliEnvironment, safeArguments, sessionArguments, modelArguments, normalizeModels, buildPrompt, validateInput, sessionInstructions, normalizeResult, classifyDiagnostics, serializeError } = require('../../tools/codebuddy_cli/godot_bridge');
 const { workspacePaths, promptBlocks, fileArguments, parseHostJson, readResponse, createWaitBudget, progressUpdate, createTraceLog, rpcTrace, createToolKindState, createFileTextView, fileTextFormat, toolFailure, boundedRpcStream } = require('../../tools/codebuddy_cli/godot_acp');
 
+test('Reserved delivery JSON never reaches a shell and retains the original UI action size limit', () => {
+    const { hostActionRequest } = require('../../tools/codebuddy_cli/godot_terminal');
+    const args = { pr: 7, candidate: 'a'.repeat(40), signed_commit: 'b'.repeat(40), acceptance_items: [{ evidence: '中'.repeat(17000) }] };
+    assert.deepEqual(hostActionRequest('godot-host-action complete_delivery ' + JSON.stringify(args)), { name: 'complete_delivery', arguments: args });
+    for (const text of ['{}; touch forbidden', '[]', '{} && true', '{"bad":', JSON.stringify({ evidence: 'x'.repeat(65536) })]) {
+        assert.throws(() => hostActionRequest('godot-host-action complete_delivery ' + text));
+    }
+    assert.throws(() => hostActionRequest('godot-host-action editor_action ' + JSON.stringify({ evidence: 'x'.repeat(32768) })));
+    assert(sessionInstructions().includes('godot-host-action complete_delivery'));
+});
+
 test('Godot CLI disables automatic title inference without mutating the parent environment', () => {
     const source = Object.freeze({ PATH: 'test-path', CODEBUDDY_CODE_DISABLE_TERMINAL_TITLE: '0', CODEBUDDY_STARTUP_PROFILE: 'old-profile' });
     const env = cliEnvironment(source);

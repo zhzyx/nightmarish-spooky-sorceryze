@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "issue": 438,
+  "reviewer": "/root/runtime_entry_fix independent main442 integration narrow review",
+  "reviewed_at": "2026-11-07T17:30:09.785062+00:00",
+  "status": "pass_scoped_integration",
+  "source_head": "2c4375d39f2c2e76d16ca48fe8bfc434647908e6",
+  "main_merge": "d492e0b4a77966d8a8ba61a81a9d5ee1ebf0a06b",
+  "findings": [],
+  "scope": "Only PR486/#442 upstream two-product-file integration: pending action count/sort/filter and its graph assertions; no full438 or unrelated production business review.",
+  "upstream_product_sha256": {
+    "editor/docks/daqian/workspace.gd": "03d334a4011b42f291c2f6f732ed0362ffe6c03f97a4cb80a73564f462f778a7",
+    "tests/editor/daqian_graph.gd": "5cd5debbc74365546995f97cb8a002fe3ede347e467ee3331782ee90c42759e6"
+  },
+  "checks": [
+    "Upstream workspace uses existing pending operation readback only for display/action counters, does not call finalizer or change execution/approval entry points. Closed/done/cancelled items count0; no status label or worker mutation introduced.",
+    "No central runtime path reader/writer changed; UI model/config/connection callbacks outside diff.",
+    "Programmatically verified all11 delivery/CLI/provenance protocol source bytes match source2c4375d and reported hashes exactly. Existing narrow reviews apply to those identical files.",
+    "Graph assertion additions exercise display count/filter, do not replace or relax native finalizer/Windowsprocess tests."
+  ],
+  "owned_protocol_hashes_confirmed": {
+    "customizations/components/godot-host/bridge.py": "87e9247ba5f51914f0fdcb5702d7be4bcbc89cbe10bb72ec16b96af2f826d558",
+    "editor/docks/ai_chat_delivery.cpp": "cae92c27b591df7a7ac439cfd7f343a7ce9c9e07e84be5f49c53828ae4f459df",
+    "editor/docks/ai_chat_delivery_receipt.h": "3da10bcbd778da6af10fcc955bcf19e501f14abdd26cf7117fed74171a6fcf0d",
+    "editor/docks/ai_chat_dock.cpp": "56c168a11601e0b9ab63ab5d4ec40a8c88494ca507577d7cfe0c2eb92903a617",
+    "editor/docks/ai_chat_dock.h": "9eddaa0a4b55a7daedab171c475b07efb909b9d1bee636656b24c27bead6d95d",
+    "tools/codebuddy_cli/godot_acp.js": "72c47c86adf85db3724e7b20d37fa0eed500aa523c8c88c2da5e311bead98603",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31",
+    "tools/codebuddy_cli/godot_terminal.js": "560ce1936ee8031e691af75fee0bd287310299d3616d7e8673cf7ada44829683",
+    "tools/editor_delivery_finalize.py": "8de3815c84ba8062f88a72be245495b41512194f1fe7378b1c493e003f1f8277",
+    "tools/editor_provenance_process.py": "39b84b121d45b720b1145a979062146607235239ab31e7737c1ab4875077afea",
+    "tools/test_editor_provenance_process.py": "f78e61eb898768f4474966985e08cf0447d653f82030027132894d7af5c542a6"
+  },
+  "author_receipt_read": {
+    "validation": "data-collection/requests/kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d/validation-main442-integration.json",
+    "sha256": "3279d48fa44e09ac4abd7f260e81a0628f9286e613b2097407e875e557e5bcc2",
+    "scope": "Author reported actual11.56s localbuild/dd7fbd0d and normal native offline loopPASS plus41POSIXguards; not this reviewer rerunning tests. New exact signed CI still required."
+  },
+  "not_claimed": [
+    "Final new exact CI or main/Issue closure",
+    "Actual user App/GUI/production GitHub",
+    "Independent rerun of prior native/Windows matrices"
+  ],
+  "user_app_config_history_modified": false,
+  "usage": null,
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "private_original_sha256": "69ef0ce8da36a8295a2d4c97bfdff6e6df698d7e1fd328b813855348edb2b7d6"
+}

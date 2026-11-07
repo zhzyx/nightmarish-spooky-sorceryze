@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "kind": "dependency_integration_validation",
+  "request_id": "kuafu-local-387-4e455bc99eb7406e8c42b5e685c3f329db501817188ec26cc9bdcfcc1b6ede5d",
+  "issue_number": 438,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/438",
+  "verified_at": "2026-11-07T16:35:20.051626+00:00",
+  "pending_dependency_source_commit": "78d82de0e11c95073f7256801addf79d7b8ee945",
+  "previous_full_suite": "validation-pending462-combination.json",
+  "source_snapshot_digest": "7db1c6545aaa005110ec550de5df310e980e6dcd1e48e2cb09c1d20410cd25c3",
+  "source_input_count": 16462,
+  "changed_source_hashes": {
+    "editor/docks/ai_chat_dock.cpp": "56c168a11601e0b9ab63ab5d4ec40a8c88494ca507577d7cfe0c2eb92903a617",
+    "editor/docks/ai_chat_dock.h": "9eddaa0a4b55a7daedab171c475b07efb909b9d1bee636656b24c27bead6d95d",
+    "editor/docks/daqian/workspace.gd": "21a35f385d3bb33242d44850d93d4537a723da53ee037bd2c5d5e807c460f602",
+    "editor/docks/daqian/canvas_context.gd": "d2d065b7d783257a36f7b9b9ccb327716e043c39834dc40005fcf622c8197670",
+    "editor/docks/daqian/operation_details.gd": "308f4be59b5a08de09c6a33436c2d365318073bce568f6c63948a181af3a6208",
+    "editor/SCsub": "94153c14e7c5062dc5f853b3ac2b2c0b03b454ab102f1eecac8fc560dd17e93a",
+    "editor/docks/daqian_dock.cpp": "452d3acda05690ac5cf7fc654036f799581971770f07552538ab111e77507dd1"
+  },
+  "stable_related_source_hashes": {
+    "editor/docks/ai_chat_delivery.cpp": "cae92c27b591df7a7ac439cfd7f343a7ce9c9e07e84be5f49c53828ae4f459df",
+    "editor/docks/ai_chat_delivery_receipt.h": "3da10bcbd778da6af10fcc955bcf19e501f14abdd26cf7117fed74171a6fcf0d",
+    "editor/docks/gonggong_engine_origin.cpp": "fbabe0bd57aa84fc2291ce6ac77de36d2e546d1dccfc28874c4f1eb5ecd5a3c5",
+    "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+    "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+    "editor/docks/ai_chat_host_runtime.h": "47765b31a5202f90de201b7c7d0df53f8242ac8f9bec29b8007a8763a06859f6",
+    "editor/docks/ai_chat_gonggong.cpp": "62a4b33f440b9356198f0db70d12b754deaedfcd4d31dd614374ac3146a96bfc",
+    "editor/docks/ai_chat_sub_agents.cpp": "1177732c369f349ce4cfb2199a8e7c13f151862570c7242bda25a71c298fd856",
+    "tools/editor_delivery_finalize.py": "8de3815c84ba8062f88a72be245495b41512194f1fe7378b1c493e003f1f8277",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/codebuddy_cli/godot_acp.js": "72c47c86adf85db3724e7b20d37fa0eed500aa523c8c88c2da5e311bead98603",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31",
+    "tools/codebuddy_cli/godot_terminal.js": "560ce1936ee8031e691af75fee0bd287310299d3616d7e8673cf7ada44829683",
+    "tests/editor/run_delivery_complete.py": "92aae55751ddab6af929e8815ff84ebbfc3efffc720379fd4b30be120b748dac",
+    "tests/editor/delivery_complete.gd": "1640adadde0fee30bdf9b0d463db2ec85d17b106d12946990c281903a9502f02"
+  },
+  "affected_method_body_hashes": {
+    "_start_process": "b354a3ae8f604259e872e386b909247632698484ce0724247a8614e2b852ebd0",
+    "_poll_process": "8ac821eddefa5b0fad6b0bb16237702defd48b367746805d9b7fe3227be6f9ff",
+    "_set_busy": "69c25821f6008c59167b16637c6286c08be7706b4a375227dd40a56595b27fe3",
+    "_request_completion": "168b7fa713e2051695d06a9ef50ebb940dbd1adab2fd7886a7a4a16230f277ca",
+    "_next_tool": "ff970c695265e2ae5ec7346ff169ad8690bec26a2793c5b14022b9ba29ef177c",
+    "_tool_after_receipt": "b1d7639c5bc0f1a63bdee61d7b97136565883bead8f5b2d23e727e64e6e06fa0",
+    "_finish_tool": "87f920752b7a9ebfc65892e6f46503457cd6c4bc1cc1871613ceeff2d6ce37c3",
+    "_confirm_action": "5816eba41e303c099eccac700fe9947899778f52fe01da59f64eb27620983b24",
+    "_offer_daqian_approval": "63e4a0d910a62b761623c7528a2c844424a6768fe885c75d2500b41212b21e19"
+  },
+  "method_comparison": "All nine delivery/execution/approval method bodies byte-identical to owned preintegration stash9ec36727; upstream C++ delta only extends open_daqian_chat preview binding and defaults. New GDScript detail helpers retained as actual upstream changes.",
+  "artifact_sha256": "fb61a552e4f8cb83c36ba42b2fd17739b4bc2ad10f1be1935e78cc4a4e71a0e8",
+  "production_macos_arm64_build_seconds": 15.47,
+  "native_cases": [
+    {
+      "case": "normal",
+      "passed": true,
+      "model_requests": 1,
+      "private_report_sha256": "c0dd1c7c28ea200f68dce81f9b058f1786dc41c1cf5e3f8eef9cca9022ec119a"
+    },
+    {
+      "case": "cold",
+      "passed": true,
+      "model_requests": 1,
+      "private_report_sha256": "1df3884413bd7737a7d2263f0a311e28839e9f2c042267ed439e0c1c4023342f"
+    },
+    {
+      "case": "receipt-failure",
+      "passed": true,
+      "model_requests": 1,
+      "private_report_sha256": "e65e46728d8a916565ec64f91bbdda2038c302b9d70b3d95d927b85ab9a06fe0"
+    },
+    {
+      "case": "stop",
+      "passed": true,
+      "model_requests": 1,
+      "private_report_sha256": "98eaed92df20da6d1f4bf1493b64aaa0468d7251157a25e80dd92023f09bd96e"
+    }
+  ],
+  "scope": "Private actual native editor with synthetic services/local bare Git and effective central Python trap. Four impacted regression cases rerun on new artifact; previous twelve-case matrix reused only for unchanged related methods/helpers. Pending source is not main, no App install or production GitHub acceptance claim.",
+  "git_delivery": "pending #462 actual main, final source diff reconciliation and normal signed CI/main delivery",
+  "usage": null
+}

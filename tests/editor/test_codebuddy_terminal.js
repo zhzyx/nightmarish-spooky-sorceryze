@@ -49,6 +49,31 @@ test('Terminal validates commands, cwd and unsupported args/env before approval'
     for (const changes of [{ command: '' }, { command: 'bad\0command' }, { command: 'x'.repeat(12001) }, { args: ['ignored'] }, { env: [{ name: 'SECRET', value: 'ignored' }] }, { cwd: 'relative' }, { outputByteLimit: 0 }, { outputByteLimit: 300000 }]) assert.throws(() => terminalArguments({ ...base, ...changes }, workspace));
 });
 
+test('Actual delivery terminals admit bounded UTF-8 host JSON while shell and UI limits remain unchanged', async t => {
+    let hostCalls = 0;
+    const { manager, workspace } = fixture(t, {
+        env: {},
+        approve: () => { throw new Error('Reserved delivery must not request shell approval or spawn'); },
+        hostAction: async (name, args) => { hostCalls++; assert.equal(name, 'complete_delivery'); return { ok: false, evidence_bytes: Buffer.byteLength(args.evidence, 'utf8') }; },
+    });
+    const prefix = 'godot-host-action complete_delivery ';
+    const overhead = Buffer.byteLength(JSON.stringify({ evidence: '' }), 'utf8');
+    for (const evidence of ['中'.repeat(17000), 'x'.repeat(65536 - overhead)]) {
+        const command = prefix + JSON.stringify({ evidence });
+        assert(command.length > 12000);
+        const terminal = await manager.create({ sessionId: 'test', command }, workspace);
+        const params = { sessionId: 'test', terminalId: terminal.terminalId };
+        assert.equal((await manager.wait(params)).exitCode, 1);
+        assert.equal(JSON.parse(manager.output(params).output).evidence_bytes, Buffer.byteLength(evidence, 'utf8'));
+        await manager.release(params);
+    }
+    for (const command of [prefix + JSON.stringify({ evidence: '中'.repeat(22000) }), prefix + JSON.stringify({ evidence: 'x'.repeat(65537 - overhead) }), prefix + '{} && echo forbidden', 'x'.repeat(12001), 'godot-host-action editor_action ' + JSON.stringify({ value: 'x'.repeat(13000) })]) {
+        await assert.rejects(manager.create({ sessionId: 'test', command }, workspace));
+    }
+    assert.equal(hostCalls, 2);
+    assert.equal(manager.running, 0);
+});
+
 test('No process starts while confirmation is pending or rejected', async t => {
     let resolve;
     const { directory, manager, workspace } = fixture(t, { approve: () => new Promise(done => { resolve = done; }) });

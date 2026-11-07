@@ -423,6 +423,15 @@ class AIChatDock : public EditorDock {
 	void _finish_external_editor_request();
 	void _cancel_external_editor_request(const String &p_reason);
 	String pending_action;
+	Dictionary pending_delivery_request;
+	Dictionary delivery_receipt;
+	String delivery_request_path;
+	String delivery_result_path;
+	void _run_delivery_tool(const Dictionary &p_arguments);
+	bool _delivery_process_arguments(String &r_executable, List<String> &r_arguments, const Dictionary &p_runtime);
+	void _capture_delivery_result(Dictionary &r_process_result);
+	void _finish_delivery();
+	void _clear_delivery_files();
 	String pending_command;
 	String process_guard_result_path;
 	String pending_cwd;

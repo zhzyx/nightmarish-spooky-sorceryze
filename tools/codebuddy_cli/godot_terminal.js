@@ -18,7 +18,9 @@ function bashExecutable(env = process.env, platform = process.platform) {
 }
 
 function terminalArguments(params, workspace) {
-    if (!params || typeof params.command !== 'string' || !params.command.trim() || params.command.includes('\0') || params.command.length > 12000 || (params.args !== undefined && (!Array.isArray(params.args) || params.args.length))) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
+    if (!params || typeof params.command !== 'string' || !params.command.trim() || params.command.includes('\0') || (params.args !== undefined && (!Array.isArray(params.args) || params.args.length))) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
+    const reserved = hostActionRequest(params.command);
+    if (params.command.length > 12000 && (reserved?.name !== 'complete_delivery' || Buffer.byteLength(params.command, 'utf8') > 65600)) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
     if (params.env !== undefined && (!Array.isArray(params.env) || params.env.length)) throw new Error('Terminal environment overrides are not supported.');
     const cwd = params.cwd ?? workspace.workspace_root ?? workspace.project_root;
     if (typeof cwd !== 'string' || !path.isAbsolute(cwd) || cwd.includes('\0') || !fs.statSync(cwd).isDirectory()) throw new Error('An existing absolute terminal working directory is required.');
@@ -33,8 +35,10 @@ function hostActionRequest(command) {
     const text = command.trim();
     const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|build_engine|restart_engine|rollback_engine)$/.exec(text);
     if (plain) return { name: plain[1], arguments: {} };
-    const action = /^godot-host-action (editor_action|route_engine_message) ([\s\S]{2,32768})$/.exec(text);
+    const action = /^godot-host-action (editor_action|route_engine_message|complete_delivery) ([\s\S]+)$/.exec(text);
     if (action) {
+        const limit = action[1] === 'complete_delivery' ? 65536 : 32768;
+        if (action[2].length < 2 || (action[1] === 'complete_delivery' ? Buffer.byteLength(action[2], 'utf8') : action[2].length) > limit) throw new Error('Godot host action JSON exceeds its size limit.');
         let args;
         try { args = JSON.parse(action[2]); } catch (_) { throw new Error('Godot host action requires one valid JSON object.'); }
         if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Godot host action requires one valid JSON object.');
