@@ -1811,7 +1811,12 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 }
 
 void AIChatDock::_send() {
-	if (issue_guide_pid >= 0 && !consultation_only->is_pressed() && AIChatIssueGuide::is_cancel(input->get_text())) {
+	_send_with_mode(false);
+}
+
+void AIChatDock::_send_with_mode(bool p_force_consultation) {
+	const bool consultation = p_force_consultation || consultation_only->is_pressed() || _is_review_child();
+	if (issue_guide_pid >= 0 && !consultation && AIChatIssueGuide::is_cancel(input->get_text())) {
 		_cancel_design_batch(active_agent);
 		const String text = input->get_text().strip_edges();
 		input->set_text(String());
@@ -1840,7 +1845,7 @@ void AIChatDock::_send() {
 		return;
 	}
 
-	if (consultation_only->is_pressed() && !gonggong_recovered_result.is_empty()) {
+	if (consultation && !gonggong_recovered_result.is_empty()) {
 		_append(TTR("Error"), U"仍有旧开发结果待恢复。请先按停止放弃恢复，再发送仅咨询消息；本次未恢复或执行任何操作。");
 		return;
 	}
@@ -1852,7 +1857,7 @@ void AIChatDock::_send() {
 		}
 		return;
 	}
-	if (!issue_guide_state.is_empty() && !busy && !consultation_only->is_pressed()) {
+	if (!issue_guide_state.is_empty() && !busy && !consultation) {
 		// Guide replies are host-local: shown in the transcript, never sent to a model.
 		const String text = input->get_text().strip_edges();
 		if (text.is_empty() || send_button->is_disabled()) {
@@ -1866,7 +1871,7 @@ void AIChatDock::_send() {
 		_issue_guide_reply(text);
 		return;
 	}
-	if (!igniter_state.is_empty() && !busy && !consultation_only->is_pressed()) {
+	if (!igniter_state.is_empty() && !busy && !consultation) {
 		// Environment igniter replies are host-local: no model or tool runs before authorization.
 		const String text = input->get_text().strip_edges();
 		if (text.is_empty() || send_button->is_disabled()) {
@@ -1895,7 +1900,7 @@ void AIChatDock::_send() {
 	if (!draft_images.is_empty()) {
 		message["images"] = draft_images.duplicate(true);
 	}
-	message["consultation_only"] = consultation_only->is_pressed() || _is_review_child();
+	message["consultation_only"] = consultation;
 	// Intake, setup and recovery own their input. A mode change is a separate
 	// task and must never expand the active turn's permission scope.
 	message["steering_snapshot"] = snapshot_id;

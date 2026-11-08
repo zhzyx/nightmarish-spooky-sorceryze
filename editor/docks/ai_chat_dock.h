@@ -428,7 +428,7 @@ class AIChatDock : public EditorDock {
 	Dictionary pending_external_editor_message;
 	Dictionary _editor_bridge_request(const Dictionary &p_envelope);
 	Dictionary _chat_instruction_context() const;
-	String _chat_instruction_blocked_reason() const;
+	String _chat_instruction_blocked_reason(bool p_force_consultation = false) const;
 	Dictionary _chat_instruction_action(const Dictionary &p_args);
 	Dictionary _chat_instruction_request(const Dictionary &p_message);
 	Dictionary _chat_host_action(const Dictionary &p_args, bool p_confirmed);
@@ -687,6 +687,7 @@ class AIChatDock : public EditorDock {
 	void _set_busy(bool p_busy);
 	void _automation_toggled(bool p_enabled);
 	void _send();
+	void _send_with_mode(bool p_force_consultation);
 	bool _has_pending_steering() const;
 	void _apply_pending_steering();
 	void _request_completion();
