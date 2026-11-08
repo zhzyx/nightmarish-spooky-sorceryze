@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "kind": "independent_final_r3_provider_service_gate_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; did not author provider/service fixes or tests",
+  "reviewed_at_utc": "2026-11-08T11:00:30.598641+00:00",
+  "state": "approved_exact_r3_provider_service_source_integration_native_target_fidelity_pending",
+  "scope": "Independent final four-file source review, full synthetic/local Blender integration regression, actual160-cup receipt positive/adversarial verification and narrow spellcheck configuration read-back. No actual GPT generation or native editor launch was performed by this reviewer.",
+  "source_sha256": {
+    "tools/ainative/sculpt_provider.py": "e3d18a21461ca74baa54934731fd37c9f208bba42a72ec80ca0e3652dacc1ee2",
+    "tools/ainative/test_sculpt_provider.py": "67ffafdba7a7afe15996c0835e1a85420d895cde5f608d39ccbb0dfb0c51e040",
+    "tools/ainative/generation_service.py": "d3395930683640f203a0beb58cb3583634fb1d5b856368d761c54d6b68a3322b",
+    "tools/ainative/test_sculpt_service.py": "95fde38a094015b5d48695d137681807e115caf51fe90989e513cbb5320936ad"
+  },
+  "dependency_sha256": {
+    "tools/ainative/sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+    "tools/ainative/organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+    "tools/ainative/character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+    "tools/ainative/anatomy_calibration.py": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+    "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+    "tools/ainative/test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e"
+  },
+  "spellcheck_config_sha256": "a82df9b150d1bcd03217a9b2c4e50949aab70faf82bd22ddc97da123f465de65",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "finding": "Earlier organic receipt validation trusted placements with only names and could accept forged center/axis/radius/source TRS.",
+      "fix": "Final provider revalidates bounded source data and invokes trusted stdlib expand_patterns; requires exact placement fields, known generated names, three-component finite nonboolean vectors and requested deterministic center/axis/radius/TRS within explicit numeric tolerance.",
+      "verification": "Actual final160-cup receipt remains accepted; independently mutated center/axis/position/rotation/size/radius are all rejected. Final source tests also reject name-only/missing-frame records."
+    },
+    {
+      "finding": "A small cup could borrow a larger pattern global distance/seating allowance.",
+      "fix": "Distance_limit and seating_depth are recalculated for each named cup from its requested radius, source size and voxel setting; exact per-cup envelopes and normal_alignment>=.2 are enforced.",
+      "verification": "Independent prior borrowing/normal/depth mutations now fail; full suite includes mixed-scale small-cup/global-max regressions."
+    },
+    {
+      "finding": "An unconditional optional sculpt import could block image-only prepare/reopen when a sculpt dependency was missing.",
+      "fix": "New image-only sculpt-mode snapshots set provider=None and never import or instantiate the sculpt stack. Mesh preflight validates runtime before mesh auth and returns structured sculpt_runtime_missing on unavailable imports.",
+      "verification": "Independent final suite passes explicit blocked-import image-only prepare/reopen, missing sibling/calibration, structured mesh preflight and existing mixed/legacy snapshot behavior tests."
+    }
+  ],
+  "verified_behavior": [
+    "Trusted receipt expansion is bounded before allocation: source schema at most8 patterns/512 cups and exact cup/generated output budgets, with no model-controlled code, imports, callbacks or paths.",
+    "Report keys, pattern identities/counts, placement names/fields and seating-name coverage are strict. Raw local center/frame/radius/source TRS are derived from requested data rather than accepted as model/native measurements on trust alone.",
+    "Per-cup surface distance uses max(3*requested_voxel,.4*local_radius*max(source_size)); embedding uses min(.001,.03*local_radius*min(source_size)). Values must match their own cup and finite nonboolean types; source-to-surface distance and exposed-normal bounds remain enforced.",
+    "The realistic eye-size instruction now accurately describes eyelid aperture; stylized eye/globe behavior is not constrained by that realistic-only statement.",
+    "Organic spacing instruction explicitly says count is per row and relates cup radius to selected local arc span/count, while retaining the actual source frame/TRS and USER image evidence priority.",
+    "Image-only configuration and fresh provider=None snapshots remain independent of sculpt helper availability. Existing provider-bearing mixed snapshots keep their prior restoration path and receive a structured missing-runtime error when that mesh dependency is unavailable.",
+    "Final66-test regression covers real installed Blender through synthetic CLI only, including rounded cups/strict receipts, character and ordinary organic paths, service dependency isolation and legacy services. No paid model turn occurred.",
+    "Prior native R3 cases bound to75ae and the previous failed organic plan remain immutable. This source approval does not retag their provider identity or assert new real-model reference fidelity."
+  ],
+  "tests": {
+    "independent_final_cohort": {
+      "result": "66 passed, no skips",
+      "unittest_seconds": 59.33,
+      "modules": [
+        "test_sculpt_provider41",
+        "test_sculpt_service9",
+        "test_modeling_service5",
+        "test_generation_service11"
+      ],
+      "source_binding": {
+        "exit_code": 0,
+        "seconds": 59.48500000000058,
+        "source_sha256_before": {
+          "sculpt_provider.py": "e3d18a21461ca74baa54934731fd37c9f208bba42a72ec80ca0e3652dacc1ee2",
+          "test_sculpt_provider.py": "67ffafdba7a7afe15996c0835e1a85420d895cde5f608d39ccbb0dfb0c51e040",
+          "generation_service.py": "d3395930683640f203a0beb58cb3583634fb1d5b856368d761c54d6b68a3322b",
+          "test_sculpt_service.py": "95fde38a094015b5d48695d137681807e115caf51fe90989e513cbb5320936ad",
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "anatomy_calibration.py": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+          "test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+          "test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e"
+        },
+        "source_sha256_after": {
+          "sculpt_provider.py": "e3d18a21461ca74baa54934731fd37c9f208bba42a72ec80ca0e3652dacc1ee2",
+          "test_sculpt_provider.py": "67ffafdba7a7afe15996c0835e1a85420d895cde5f608d39ccbb0dfb0c51e040",
+          "generation_service.py": "d3395930683640f203a0beb58cb3583634fb1d5b856368d761c54d6b68a3322b",
+          "test_sculpt_service.py": "95fde38a094015b5d48695d137681807e115caf51fe90989e513cbb5320936ad",
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "anatomy_calibration.py": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+          "test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+          "test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e"
+        },
+        "log_sha256": "e363b0018a526e6e29da1c9682406d91c35a4b3213ce3229fd138ecd6b215704"
+      },
+      "path": "project/build-support/detail-capabilities-audit-20261108/final-e3d-provider-service-binding.json",
+      "binding_sha256": "3f0c52a0545ff6a09837de1d9e0b4ccc0dac78a7b6aa3e6da7d0970d20465908",
+      "log_path": "project/build-support/detail-capabilities-audit-20261108/final-e3d-provider-service-tests.log"
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed on four exact final files",
+      "ruff": "All checks passed;4 files already formatted",
+      "mypy": "Success: no issues found in4 source files"
+    },
+    "actual_receipt_adversarial": {
+      "report": {
+        "provider_sha256": "e3d18a21461ca74baa54934731fd37c9f208bba42a72ec80ca0e3652dacc1ee2",
+        "genuine_final160_receipt_valid": true,
+        "tampered_fields_rejected": [
+          {
+            "field": "center",
+            "rejected": true
+          },
+          {
+            "field": "axis",
+            "rejected": true
+          },
+          {
+            "field": "position",
+            "rejected": true
+          },
+          {
+            "field": "rotation_degrees",
+            "rejected": true
+          },
+          {
+            "field": "size",
+            "rejected": true
+          },
+          {
+            "field": "radius",
+            "rejected": true
+          },
+          {
+            "seating_field": "name",
+            "rejected": true
+          },
+          {
+            "seating_field": "normal_alignment",
+            "rejected": true
+          },
+          {
+            "seating_field": "seating_depth",
+            "rejected": true
+          },
+          {
+            "seating_field": "distance_limit",
+            "rejected": true
+          }
+        ],
+        "no_model_or_blender_call": true
+      },
+      "path": "project/build-support/detail-capabilities-audit-20261108/final-e3d-actual-receipt-negatives.json",
+      "sha256": "b706699a1e6ba113a771dcffc102a3950c1fd35cabc3618e92d1b54332a7e42e"
+    },
+    "historical_midrun_binding_note": "An earlier89ff provider-only run encountered one idempotency conflict after an authorized live edit changed provider bytes to e3d. Its hash guard correctly rejected mixed-source validation. The final66-test exact-source run above is the authoritative result; the earlier private log is preserved."
+  },
+  "spellcheck_scope": {
+    "new_maliang_exact_skip_paths": [
+      "tools/ainative/anatomy_calibration.py",
+      "data-collection/maliang-gpt-modeling-20261108-complex-builder-review.json",
+      "data-collection/maliang-gpt-modeling-20261108-calibration-consumer-independent-review.json"
+    ],
+    "technical_ignore_words": [
+      "deriver",
+      "localy"
+    ],
+    "justification": "The runtime image module contains encoded PNG bytes, while the two issued reviews preserve their original referenced prose/quoted before-after spelling and source hashes. Generator labels, runtime code and tests remain checked. No broad exclusion or weaker source/PNG/AST validator was introduced.",
+    "issued_consumer_review_sha256_unchanged": "4c7e52b31706125d72c2ef3b497d2c01db186e94b2ceda96f22010652d961987",
+    "configuration_read_only_review": true
+  },
+  "related_capability_review": {
+    "path": "data-collection/maliang-gpt-modeling-20261108-detail-capabilities-independent-review.json",
+    "sha256": "d3ce0cff4a3bb7beb9ffc91ebf582ac93f6aa6b86386424e089e82c4a4b53045",
+    "scope": "Separate949/cabbb/7ce geometry/helper/R3-data and measured attachment approval"
+  },
+  "limitations": [
+    "This is a source/protocol/component integration approval. Final packaged native regressions and actual real-model reference-fidelity acceptance remain separate.",
+    "Image-only optional import isolation is verified for fresh provider=None snapshots; this does not invent a mesh backend when a provider-bearing saved mixed workflow lacks its required runtime.",
+    "No claim is made here for the still-pending new organic target output or exact hidden geometry from a single image."
+  ]
+}

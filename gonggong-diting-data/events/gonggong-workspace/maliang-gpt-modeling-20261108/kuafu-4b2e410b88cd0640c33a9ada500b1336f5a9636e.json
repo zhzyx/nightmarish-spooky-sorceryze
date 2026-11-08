@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4b2e410b88cd0640c33a9ada500b1336f5a9636e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f0eba575d45c2b2c4e7d233bb1b74eb2527f17fe6e4b405735d86c46744bc536",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "delivery",
+    "detection_head": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-review-publication-line-ending-correction.json",
+    "diagnosis": "One new uncommitted review used CRLF while Git normalized its index toLF. Gate correctly rejected mismatched source/receipt bytes before any commit. Original issued bytes preserved privately; first publication normalized only line endings with exact JSON semantic equality and appended old/new digest mapping.",
+    "next_action": "Restage exact LF source and append-only correction, rerun formal writer; preserve independent scope and all committed history.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T15:57:44.103064+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T16:00:01.107603+00:00",
+  "sha256": "d8b8711315c956bffb9c9d39615b2eb197926a8e3699ebc7d434b74c6617e1b9"
+}

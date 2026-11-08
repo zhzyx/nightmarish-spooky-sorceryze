@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-r3-native-results",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T10:55:13.324717+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "three_actual_native_pipelines_passed_organic_rejected_overlapping_cups",
+    "scope": "Actual GPT CLI image-led requests on exact R3 bundle, linked preview/publication/save/reopen. Target visual fidelity remains separate and unaccepted.",
+    "editor_sha256": "eadb7585d831818615186f50eff875d357d1b9f289508b021949342068e9498e",
+    "cases": [
+      {
+        "case": "n8-photo-r3",
+        "native_pipeline_passed": true,
+        "native_checks_passed": 26,
+        "native_checks_recorded": 26,
+        "backend_terminal": "succeeded",
+        "raw_plan_sha256": "3e7733c3974a91d1207557f874f03bb4264c2f2b7eb2f17bcf790999228c323a",
+        "validated_plan_sha256": "0a37dd04cce81468100c59c656e78ccdc17adec1897a6c4a595aa338f16af6c5",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 21204,
+          "output_tokens": 835,
+          "reasoning_output_tokens": 161
+        },
+        "cli_events_sha256": "844f34784cc5a155eac8088c164551983fdb3c68cdd1111827330ddb12011e10",
+        "cost": null,
+        "original_terminal_immutable": true,
+        "distinct_user_reference_images": 2,
+        "internal_calibration_user_reference": false,
+        "internal_calibration_image_sha256": "cd9dea9066d3805ae41c36d248de206ff4411df42ba49ffb71e9f5e94be32e6b",
+        "actual_provider_sha256": "75ae74c574b1916d375c5899aaea80a4ef612a00e83c65fc6fc0f62ae5cc22a4",
+        "actual_service_sha256": "1d2b5a9314a3fd9ec8300e9e75b411ae7746ccce018a512efc87853b743646b5",
+        "visual_acceptance": null,
+        "mesh_sha256": "04c14b52a534e8a55aa1d094198b07f34d6663b21a56ff134d3ad58062279672",
+        "vertices": 391014,
+        "triangles": 781992,
+        "body_components": 1,
+        "builder_runtime_input_sha256": {
+          "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "anatomy_calibration_sha256": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+          "builder_sha256": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+        },
+        "native_receipt_sha256": "1e6f8b764fa6df3470f7e4024932bcdcfdce668f2dde758bf72f8e92c816bc57"
+      },
+      {
+        "case": "n9b-stylized-r3",
+        "native_pipeline_passed": true,
+        "native_checks_passed": 26,
+        "native_checks_recorded": 26,
+        "backend_terminal": "succeeded",
+        "raw_plan_sha256": "8a343ed09b4b155da0cd509253cc6b45a9198d132d36ac2b2b5fddba1e2bc72c",
+        "validated_plan_sha256": "8a343ed09b4b155da0cd509253cc6b45a9198d132d36ac2b2b5fddba1e2bc72c",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 21214,
+          "output_tokens": 552,
+          "reasoning_output_tokens": 94
+        },
+        "cli_events_sha256": "bbaaabeca108b3ca8ccdaf53de5640c2636e7c37e77b8280f332435d63de7f83",
+        "cost": null,
+        "original_terminal_immutable": true,
+        "distinct_user_reference_images": 2,
+        "internal_calibration_user_reference": false,
+        "internal_calibration_image_sha256": "cd9dea9066d3805ae41c36d248de206ff4411df42ba49ffb71e9f5e94be32e6b",
+        "actual_provider_sha256": "75ae74c574b1916d375c5899aaea80a4ef612a00e83c65fc6fc0f62ae5cc22a4",
+        "actual_service_sha256": "1d2b5a9314a3fd9ec8300e9e75b411ae7746ccce018a512efc87853b743646b5",
+        "visual_acceptance": null,
+        "mesh_sha256": "024d38e881d5e77bf740d1305a8b59e7e5af133761220da0a123f7d508779faa",
+        "vertices": 97138,
+        "triangles": 194228,
+        "body_components": 1,
+        "builder_runtime_input_sha256": {
+          "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "anatomy_calibration_sha256": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+          "builder_sha256": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+        },
+        "native_receipt_sha256": "0d6020c225290986817669fc841241367ea5d581f9e9eef4df5b168b7edc7772"
+      },
+      {
+        "case": "n10-organic-r3",
+        "native_pipeline_passed": false,
+        "native_checks_passed": 10,
+        "native_checks_recorded": 11,
+        "backend_terminal": "failed",
+        "raw_plan_sha256": "e7746e75601a89d3c0efd8a59dc48430695c6c2e6d9cd2447294f8830eaf39f8",
+        "validated_plan_sha256": "6000fadc92083ee596ea03bd35bfeff7a35bef920e987e5223de74b3648fb68b",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 20967,
+          "output_tokens": 6786,
+          "reasoning_output_tokens": 176
+        },
+        "cli_events_sha256": "d27916e47f98d319a3a985c0178dce2414f188c51120a7884d1eb85e7cfce49c",
+        "cost": null,
+        "original_terminal_immutable": true,
+        "distinct_user_reference_images": 1,
+        "internal_calibration_user_reference": false,
+        "internal_calibration_image_sha256": "cd9dea9066d3805ae41c36d248de206ff4411df42ba49ffb71e9f5e94be32e6b",
+        "actual_provider_sha256": "75ae74c574b1916d375c5899aaea80a4ef612a00e83c65fc6fc0f62ae5cc22a4",
+        "actual_service_sha256": "1d2b5a9314a3fd9ec8300e9e75b411ae7746ccce018a512efc87853b743646b5",
+        "visual_acceptance": null,
+        "failure": "repeat_pattern_cup_overlap",
+        "actual_surface_intersections_confirmed": true,
+        "requested_cups": 416
+      },
+      {
+        "case": "n11-elder-r3",
+        "native_pipeline_passed": true,
+        "native_checks_passed": 26,
+        "native_checks_recorded": 26,
+        "backend_terminal": "succeeded",
+        "raw_plan_sha256": "5b57b9151f2aceefa174c387be867120cf1d2688ccf25342c4a5410d75762eba",
+        "validated_plan_sha256": "e69105ebf92265b66e881dfb2efda77dae9bfdae4e852ba1e339eedc454c10d2",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 23789,
+          "output_tokens": 766,
+          "reasoning_output_tokens": 99
+        },
+        "cli_events_sha256": "4ba231f8efc1f51b786294ea932d9076c855dd1f043e29b93b4052f29fe3f757",
+        "cost": null,
+        "original_terminal_immutable": true,
+        "distinct_user_reference_images": 2,
+        "internal_calibration_user_reference": false,
+        "internal_calibration_image_sha256": "cd9dea9066d3805ae41c36d248de206ff4411df42ba49ffb71e9f5e94be32e6b",
+        "actual_provider_sha256": "75ae74c574b1916d375c5899aaea80a4ef612a00e83c65fc6fc0f62ae5cc22a4",
+        "actual_service_sha256": "1d2b5a9314a3fd9ec8300e9e75b411ae7746ccce018a512efc87853b743646b5",
+        "visual_acceptance": null,
+        "mesh_sha256": "c2548ad3e5d2e0ac8a1a52de9dfb3c7cc966797f5c7484204b457a2c75854ed3",
+        "vertices": 124182,
+        "triangles": 248280,
+        "body_components": 1,
+        "builder_runtime_input_sha256": {
+          "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "anatomy_calibration_sha256": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+          "builder_sha256": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+        },
+        "native_receipt_sha256": "cc1bceffd4c2a09d42106b768c1630e2b33b0fb1dd08943871eebe1c6c233bfa"
+      }
+    ],
+    "measured_attachment_limit": "Hair edge up to1.924mm and collar roots about1-2.304mm offset; no welded attachment claim.",
+    "organic_failure_diagnostic": {
+      "report_sha256": "2c26c49b4357da2e11426718583f663005cb679b75ecd0b23466e7ea40c0f728",
+      "first_neighbor_distance_m": 0.038217,
+      "first_sum_radii_m": 0.064161,
+      "actual_intersecting_pairs_after_subdivision": 132,
+      "plan_not_modified": true,
+      "guard_not_removed": true
+    },
+    "pre_cli_harness_failure": {
+      "case": "n9-stylized-r3",
+      "cause": "wrong private reference filename",
+      "cli_submitted": false,
+      "corrected_separate_case": "n9b-stylized-r3"
+    },
+    "visual_observations": {
+      "photo": "Human proportions, separate colored shirt/trousers and continuous anatomy. Smooth materials and limited face identity detail remain visible.",
+      "elder": "Age shape and wrapped garment generated; target face structure, neckline and garment details visibly differ. Full likeness not accepted.",
+      "stylized": "Joined coverall, collar, wavy hair and larger eyes now present. Exact expression and image-specific proportions still need visual judgment."
+    },
+    "next_action": "Stricter per-cup receipt gate and image-only dependency isolation, final current-main build and fresh original-image organic request with measured feedback. Original jobs stay immutable. Parent543 remains open."
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-calibrated-native-results"
+  ],
+  "sha256": "b830b6cbda79fe478de5412600f2f1ab56522f954e179673fb3f9474a6d853d8"
+}

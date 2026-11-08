@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "occurred_at": "2026-11-08T07:26:57.214592+00:00",
+  "state": "passed_provider_service_integration_only_visual_acceptance_open",
+  "reviewer": "independent modeling_ui agent; did not author sculpt_provider.py or generation_service.py; own UI implementation excluded from this review",
+  "scope": "Read-only provider/service integration and test review against frozen continuous-body runtime dependencies. Separate peer review owns the full sculpt_builder algorithm. Static anatomical asset provenance has separate independent reviews. No overall business or visual-quality pass.",
+  "source_sha256": {
+    "tools/ainative/sculpt_provider.py": "8877dd82fe0c938759117f500fa6cbea7e5163c64ba27190064b3b12ef6402e1",
+    "tools/ainative/test_sculpt_provider.py": "4a613dd637413869f0109626742c1491d6766d148327cee97bce62befc49260f",
+    "tools/ainative/generation_service.py": "80895ef6e8b5ea4bca837f32e676291252f27e4d48a1367079bfe2f06f5cab2c",
+    "tools/ainative/sculpt_builder.py": "2ebe4bb836ffea0b8bc03d593783ee690225ccaa416d5bd00fcab8c403e7a515",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/test_sculpt_service.py": "ee6266f35fbd4687c7b6051badd01dbac5380b0aa0bcb52707ff8d81d0395796",
+    "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+    "tools/ainative/test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e",
+    "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+    "tools/ainative/codex_provider.py": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1"
+  },
+  "source_hashes_before_and_after_tests_unchanged": true,
+  "observed_validation": [
+    {
+      "command": "python -X utf8 -m unittest test_sculpt_provider -v",
+      "environment": "AINATIVE_TEST_BLENDER points to installed Blender5.1",
+      "tests": 25,
+      "seconds": 13.795,
+      "exit_code": 0,
+      "skipped": 0,
+      "observed_result": "OK",
+      "scope": "10 static plan/provenance checks and durable synthetic-CLI jobs, including two actual Blender organic/continuous-character integration cases; no paid CLI calls"
+    },
+    {
+      "command": "python -X utf8 -m unittest test_sculpt_service test_modeling_service -v",
+      "tests": 11,
+      "seconds": 0.055,
+      "exit_code": 0,
+      "observed_result": "OK",
+      "scope": "6 sculpt and5 prior Godot-modeling service routing, readiness, mode isolation and frozen restoration checks; local mocks only"
+    },
+    {
+      "command": "python -X utf8 -m unittest test_generation_service -v",
+      "tests": 11,
+      "seconds": 9.382,
+      "exit_code": 0,
+      "observed_result": "OK",
+      "scope": "Historical offline/legacy/Comfy service behavior against a local fixture HTTP server; no model inference"
+    }
+  ],
+  "total_independently_observed_tests": 47,
+  "static_tools": {
+    "ruff_check_no_fix": "passed",
+    "ruff_format_check": "passed",
+    "mypy": "passed",
+    "files": [
+      "tools/ainative/sculpt_provider.py",
+      "tools/ainative/test_sculpt_provider.py",
+      "tools/ainative/generation_service.py",
+      "tools/ainative/test_sculpt_service.py"
+    ]
+  },
+  "findings": [],
+  "reviewed_boundaries": [
+    "Configured sibling sculpt_builder.py, anatomy_base.py and anatomy_body.py bytes participate in the immutable provider fingerprint. Required assets and matching hashes are checked before provider CLI auth/submission and before/after Blender execution.",
+    "Model output is strict bounded v2 data. The fixed local Blender script is launched with --background --factory-startup --disable-autoexec. Generated executable code is neither accepted nor run; no Comfy or neural-model server is called by codex_sculpt.",
+    "Both ordered input/reference images retain node role/strength and CLI attachments. Distinct content hashes govern single-view versus multi-reference evidence. Text supplements observations or explicit edits; no unsupported numeric image/text model weight is claimed.",
+    "Completed CLI turn usage and raw response/event hashes are recorded before semantic validation. Invalid annotation prose fails with actionable feedback without normalizing model data, starting Blender or silently replaying a paid turn.",
+    "Original validated plan hash, expanded trusted-operator plan hash, native receipt byte hash, generated GLB hash, upstream asset source hashes and runtime module byte hashes remain distinct provenance fields.",
+    "Continuous character receipts require trusted BODY usage, five exact source-key names, consistent source/age hashes and canonical bounded age weights. They disclose requested/effective smoothing/subdivision and requested-but-unused voxel remeshing; no invisible voxel operation is claimed.",
+    "Body quality fields come from the fixed measured native receipt and output GLB validation, with shared finite resource bounds. Character output requires no internal voxel fills; organic numerical certificates are reduced to an honest public count/digest.",
+    "Cancellation and final states remain durable immutable SQLite terminals; heartbeats use separate lease records rather than rewriting image-bearing manifests. Unknown workers do not restart CLI requests.",
+    "codex_sculpt requires its Blender/local-data runtime for meshes but does not block independently available GPT images. Endpoint/model selection is unnecessary for this mode. Image and mesh providers have separate typed run-scoped snapshots; old codex_modeling/offline/legacy paths remain covered.",
+    "Readiness reports a connected CLI/executor, expressly requiring inspection of actual human/organic/occlusion results. It does not advertise character likeness, recovered hidden truth or overall visual acceptance."
+  ],
+  "provenance_name_note": "quality.character_operator.anatomy_base_sha256 identifies the pinned upstream OBJ; runtime_input_sha256.anatomy_base_sha256 identifies the derived head module bytes. They are separate fields and are not interchangeable.",
+  "visual_acceptance_boundary": {
+    "diagnostic_case": "unchanged actual two-reference h1 plan under frozen builder; original failed task is untouched",
+    "observable_shape_properties": [
+      "Continuous anatomical head/neck/shoulders/arms/wrists and five articulated digits per hand",
+      "Complete coherent front/back/profile body and clothing geometry",
+      "Natural paired facial landmarks and recognizable bald-human structure",
+      "Major previous primitive-assembly seams, needle artifacts and ball wrists are removed"
+    ],
+    "remaining_material_shape_errors": [
+      "Reference wrap jacket is closed/overlapped and visibly belted around the waist; diagnostic has a deep exposed V and belt largely occluded by its garment envelope",
+      "Back shows only a short belt block rather than the supplied wraparound waist structure",
+      "Loose cuffed reference trousers and narrower observed stance become relatively tapered legs and a wider foot stance"
+    ],
+    "overall_business_quality_pass": false,
+    "criterion": "User-requested semi-realistic anatomy, image-led correspondence and multi-view consistency, not pixel-perfect identity or photogrammetry"
+  },
+  "limitations": [
+    "Synthetic CLI with actual Blender tests validates engineering boundaries, not actual GPT model quality.",
+    "The diagnostic reuses a genuine earlier two-reference plan without a new model call. It is not converted into a new succeeded business task.",
+    "Actual newly frozen-model business cases and final engine acceptance are controlled by the root agent and are outside this component review."
+  ],
+  "paid_model_calls_by_reviewer": 0,
+  "prior_reviews": [
+    "maliang-gpt-modeling-20261108-complex-integration-review.json",
+    "maliang-gpt-modeling-20261108-complex-anatomy-body-review.json",
+    "maliang-gpt-modeling-20261108-complex-anatomy-forearm-review.json"
+  ]
+}

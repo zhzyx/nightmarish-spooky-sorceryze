@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-04a7daeb5015ad1d7852b02b5d39cfb7e6995c09",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7b2ed730fc56d735da72ad4b2795b8b590ee4f9d8f1a60d1c71662ba2d7d0064",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "intake",
+    "detection_head": "5a1a73a4f2a2e78ae004b53c4663fe70b56c3545",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "project/build-support/r3-main-intake-corrected.log",
+    "diagnosis": "Host intake invocation omitted the configured tenant; explicit gonggong-workspace restored intake on current main5a1a73. No policy bypass or code change.",
+    "next_action": "Continue final-source integration verification and delivery; business visual acceptance remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T10:46:27.284291+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T10:51:57.914082+00:00",
+  "sha256": "fa9fbbbbb1aab4dd120afce658792430ab226ea818f02fed4e47423791cb1210"
+}

@@ -45,6 +45,14 @@ Copyright: 2014-present, Godot Engine contributors
  2007-2014, Juan Linietsky, Ariel Manzur
 License: Expat
 
+Files: tools/ainative/anatomy_base.py
+ tools/ainative/anatomy_body.py
+ tools/ainative/anatomy_calibration.py
+Comment: Anatomical control data derived from MakeHuman's CC0 graphical assets
+ https://github.com/makehumancommunity/makehuman
+Copyright: 2020-2021, Data Collection AB, Joel Palmius, Jonas Hauquier
+License: CC0-1.0
+
 Files: core/math/convex_hull.cpp
  core/math/convex_hull.h
 Comment: Bullet Continuous Collision Detection and Physics Library

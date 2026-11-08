@@ -28,6 +28,7 @@ var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
 var _cli_mode = false
 var _modeling_mode = false
+var _sculpt_mode = false
 
 func _init():
 	name = "GenerationParameterForm"
@@ -170,11 +171,15 @@ func set_modeling_mode(enabled: bool):
 	_modeling_mode = enabled
 	_apply_cli_controls()
 
+func set_sculpt_mode(enabled: bool):
+	_sculpt_mode = enabled
+	_apply_cli_controls()
+
 func _apply_cli_controls():
 	var generator = kind != 'copy'
 	var modeling_mesh = _modeling_mode and kind.ends_with('mesh')
 	cli_hint.visible = (_cli_mode or _modeling_mode) and generator
-	cli_hint.text = 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	cli_hint.text = 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
 	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if _modeling_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh

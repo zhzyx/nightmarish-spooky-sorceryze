@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-independent-image-fixtures",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:19:28.616519+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "reference_images_ready_mesh_acceptance_pending",
+    "cases": [
+      {
+        "case": "style-ref1",
+        "state": "succeeded",
+        "artifact_type": "image_reference_only_not_mesh",
+        "image_sha256": "7262132e8508855c707d739dce172b1620874ea369499eafd2612f1bfe793073",
+        "provider": "codex",
+        "origin": "new_png_in_completed_cli_thread",
+        "auth_mode": "chatgpt",
+        "cli_version": "0.166.0-alpha.6",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 63104,
+          "input_tokens": 70510,
+          "output_tokens": 440,
+          "reasoning_output_tokens": 6
+        },
+        "cli_events_sha256": "08d5bc812ca6315db7e87cc0109cedac38a244357b85331ab19cb439aafc4eed",
+        "image_cost": null,
+        "source_provider_sha256": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1"
+      },
+      {
+        "case": "organic-ref1",
+        "state": "succeeded",
+        "artifact_type": "image_reference_only_not_mesh",
+        "image_sha256": "5080799ccff61cb610b086d0adba12e993d690e84e5c98e80dd5289462673b5d",
+        "provider": "codex",
+        "origin": "new_png_in_completed_cli_thread",
+        "auth_mode": "chatgpt",
+        "cli_version": "0.166.0-alpha.6",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 11008,
+          "input_tokens": 24312,
+          "output_tokens": 273,
+          "reasoning_output_tokens": 0
+        },
+        "cli_events_sha256": "befbb75a7b07a39eb5a96d6cbc624e383c6737a3343bc88fee53d58ea4afe8e3",
+        "image_cost": null,
+        "source_provider_sha256": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1"
+      }
+    ],
+    "stylized_multiview_extraction": {
+      "origin": "Actual GPT CLI image generation, reference fixture only; NOT mesh output",
+      "source_sha256": "7262132e8508855c707d739dce172b1620874ea369499eafd2612f1bfe793073",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "operation": "Exact two vertical crops, no rescaling, no drawing or invented views",
+      "views": [
+        {
+          "view": "front",
+          "box": [
+            0,
+            0,
+            627,
+            1254
+          ],
+          "sha256": "df62d0fcce16d08632baaa34ad5ecce4f55415e2798ae48d8e7b13bbc196b3f4"
+        },
+        {
+          "view": "back",
+          "box": [
+            627,
+            0,
+            1254,
+            1254
+          ],
+          "sha256": "d408e5dacf81c408473b37393f88f98f7513fc1db8716ebc99492e68a8253838"
+        }
+      ]
+    },
+    "usage_note": "Actual observed CLI turn/image receipts only; independent images are references, never evidence that a mesh was generated"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-image-led-steering"
+  ]
+}

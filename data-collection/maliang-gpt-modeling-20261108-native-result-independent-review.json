@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "kind": "independent_native_result_protocol_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; did not author the five candidate implementation/test files",
+  "reviewed_at_utc": "2026-11-08T07:47:25.998292+00:00",
+  "state": "approved_result_protocol_and_terminal_handling_component_native_and_visual_acceptance_pending",
+  "scope": "Read-only source audit, synthetic regression tests, and isolated copied-database replay of the actual frozen n1 result. No paid CLI, no Blender invocation, no native binary rebuild and no visual/business acceptance claim.",
+  "source_sha256": {
+    "tools/ainative/executor.py": "91f3cd3e778c50487119f059508358e4512dd347f069c7d4c0414c2f8c4b6801",
+    "tools/ainative/test_executor.py": "41ec3f7f732a39a9a67ca415b556a54cd5d368a8ad26d9951603b6a5ac0b0fb4",
+    "tools/ainative/sculpt_provider.py": "f166333e8a074a3f8b725b2e17037c65668a17e4a1f19a8b6e5b3e070e3b26c7",
+    "tools/ainative/test_sculpt_provider.py": "8b522def37404091e3ce1133bbb70813e4d0e486d6f0f307013128d95329289a",
+    "tests/editor/sculpt_cli_acceptance.gd": "c5e0561fa041754c6c9bcb7e82d6ac49e962d994eb28ff77b19f2ef940395302"
+  },
+  "source_encoding": "All five candidate files UTF-8 without BOM, LF; exact announced candidate hashes retained after checks.",
+  "dependency_sha256": {
+    "tools/ainative/contracts.py": "bfc0c3a659b2501b8bf59554d754769aee0fce538ad48dd7b02dd49ebdd08035",
+    "tools/ainative/extensions.py": "edc695c2555e905e4cf4af810dfbb5327ecac6055535ef772e46e83715362ce8",
+    "tools/ainative/test_modeling_provider.py": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4"
+  },
+  "findings": [],
+  "resolved_findings": [
+    {
+      "finding": "Actual n1 provider succeeded but metadata-only reference_images content_sha256 was treated as an inline content declaration, raising KeyError(content_base64) and leaving the executor node running.",
+      "source": "tools/ainative/sculpt_provider.py:359",
+      "fix": "Reference evidence metadata uses reference_sha256, preserving exact source/reference ordering and digests. True inline mesh/image payloads retain content_sha256 plus content_base64."
+    },
+    {
+      "finding": "A permanently invalid result from an already succeeded provider could be polled indefinitely.",
+      "source": "tools/ainative/executor.py:340",
+      "fix": "After result retrieval succeeds, output/content validation failures become terminal node failed/invalid_result while retaining the actual provider succeeded receipt. Manifest merge/global immutable asset failures also fail terminal and rollback the result savepoint."
+    }
+  ],
+  "verified_behavior": [
+    "check_content still requires both inline content fields to be strings, validates base64, and validates the digest. Metadata digest keys do not weaken true snapshot validation.",
+    "The result-validation phase starts only after result_manifest returns. Transient provider.poll and result retrieval errors remain recoverable provider_operation_failed and do not resubmit.",
+    "Terminal invalid results are excluded from cache and node preview/export; reopening and repeated step do not poll or resubmit them. Existing retry requires an actual provider failed receipt, preventing invalid-result replay.",
+    "Global asset immutability conflict after a preceding new output insertion rolls back all result asset insertion and leaves the cache empty.",
+    "GDScript acceptance source now compares ordered reference_sha256 metadata against the two actual reference file digests; native execution of this script remains the parent integrator responsibility."
+  ],
+  "actual_frozen_n1": {
+    "root": "D:/m543/n1",
+    "provider_receipt_state": "succeeded",
+    "original_executor_source_node_state": "running",
+    "original_executor_source_node_error": "provider_operation_failed",
+    "original_frozen_validator_reproduced": "KeyError(content_base64)",
+    "metadata_only_collisions": 2,
+    "compatibility_checks": {
+      "original_frozen_validator": "KeyError(content_base64)",
+      "current_original_rejection": "ValueError",
+      "metadata_only_renames": 2,
+      "mapped_manifest_valid": true,
+      "original_result_canonical_sha256": "8429d7347e765b3137654ed25ffb85ffa6c3b72af819543f3bf7569bbff4b464",
+      "mapped_result_canonical_sha256": "d1eda94a312b426981e995e6e417ddb634d88e7ec86b2604637e8fa62422bbeb",
+      "glb_content_sha256_unchanged": true
+    },
+    "copied_original_result_replay": {
+      "source_node_state": "failed",
+      "provider_receipt_preserved": true,
+      "polls": 1,
+      "submits": 0,
+      "original_database_written": false
+    },
+    "copied_metadata_mapped_replay": {
+      "source_node_state": "succeeded",
+      "provider_receipt_preserved": true,
+      "polls": 1,
+      "submits": 0,
+      "original_database_written": false
+    },
+    "original_immutable_sha256_before": {
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\projects\\1302a29597494318370903467b47438d5ba2584910bde2d1e7d2c17650ea7ef7\\executor.sqlite": "5a85ea259d66d77e1b0ff36e37673cb4c11df745c9cd61710b74a33637881bf9",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\projects\\1302a29597494318370903467b47438d5ba2584910bde2d1e7d2c17650ea7ef7\\sculpt-state\\sculpt-jobs.sqlite": "a051eca0b6f668df7be5ed2b1a8e435d10bb961a922fdc524a6b56991ab0503c",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\bundles\\07333ae9c194bf44567ff60b1362eaac76ab8974be97b63c1778db3143908792\\manifest.json": "c7a469a26bf880925be862c55acf69f8d296a71fca24894cdac39393c91990a8",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\bundles\\07333ae9c194bf44567ff60b1362eaac76ab8974be97b63c1778db3143908792\\tools\\executor.py": "13771345e66325b5f28866744a76b87c57583b86869703cacde7f3f952d8f64d",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\bundles\\07333ae9c194bf44567ff60b1362eaac76ab8974be97b63c1778db3143908792\\tools\\sculpt_provider.py": "8877dd82fe0c938759117f500fa6cbea7e5163c64ba27190064b3b12ef6402e1",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\projects\\1302a29597494318370903467b47438d5ba2584910bde2d1e7d2c17650ea7ef7\\sculpt-state\\9dde864d635cc418599d7334d9be86c67350ffe9a8d12299a37551c4986158fa\\result.glb": "3828605bab6dc353f8cae8f581cab5e90d1a61eee700c8b1b635923ce05d4a26",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\projects\\1302a29597494318370903467b47438d5ba2584910bde2d1e7d2c17650ea7ef7\\sculpt-state\\9dde864d635cc418599d7334d9be86c67350ffe9a8d12299a37551c4986158fa\\result.glb.receipt.json": "63a3fffdc6300eb303920b85a9d8f3b5ea446263a9e195aba1cee318dee141a4",
+      "D:\\m543\\n1\\engine\\editor_data\\ainative\\projects\\1302a29597494318370903467b47438d5ba2584910bde2d1e7d2c17650ea7ef7\\sculpt-state\\9dde864d635cc418599d7334d9be86c67350ffe9a8d12299a37551c4986158fa\\validated-plan.json": "9f3a336f1c2bc521c95c7bfae48a4b8c1ad766bbf8a7f434705bc6ddcd8767be"
+    },
+    "original_immutable_hashes_unchanged_after_all_checks": true,
+    "historical_artifact_policy": "The original n1 SQLite databases, bundle, result, receipt and validated plan were never edited. The two metadata key renames were applied only to an in-memory compatibility copy; this is not migration or recovery of the original real run."
+  },
+  "tests": {
+    "narrow_source_suite": {
+      "command": "python -X utf8 -m unittest -v test_executor test_sculpt_provider.SculptTests.test_two_image_instruction_receipt_uses_reference_digests_not_inline_content",
+      "result": "23 passed, no skips",
+      "seconds": 1.414,
+      "log_path": "project/build-support/n1-result-audit-20261108/targeted-tests.log",
+      "log_sha256": "275d6550e2f69f4af981ab4b246028857e70a6f5b9d9cd94f3f6f2cd0637109c",
+      "model_runtime": "Synthetic C# CLI fixture only; no GPT/Codex or Blender call"
+    },
+    "independent_offline_checks": {
+      "result": "All 7 check groups passed",
+      "script_path": "project/build-support/n1-result-audit-20261108/independent_checks.py",
+      "script_sha256": "c549d2e9cb60f2d937eebd686e63ab4e438fbf27bd1925f1e59338d681a5d1c6",
+      "report_path": "project/build-support/n1-result-audit-20261108/independent-checks-result.json",
+      "report_sha256": "17c197d7b1bd3795734f57a090fc07b9511792235aaadb825e8c46c0ab162fc6",
+      "groups": {
+        "actual_n1_protocol": {
+          "original_frozen_validator": "KeyError(content_base64)",
+          "current_original_rejection": "ValueError",
+          "metadata_only_renames": 2,
+          "mapped_manifest_valid": true,
+          "original_result_canonical_sha256": "8429d7347e765b3137654ed25ffb85ffa6c3b72af819543f3bf7569bbff4b464",
+          "mapped_result_canonical_sha256": "d1eda94a312b426981e995e6e417ddb634d88e7ec86b2604637e8fa62422bbeb",
+          "glb_content_sha256_unchanged": true
+        },
+        "copied_real_run_original": {
+          "source_node_state": "failed",
+          "provider_receipt_preserved": true,
+          "polls": 1,
+          "submits": 0,
+          "original_database_written": false
+        },
+        "copied_real_run_metadata_mapped": {
+          "source_node_state": "succeeded",
+          "provider_receipt_preserved": true,
+          "polls": 1,
+          "submits": 0,
+          "original_database_written": false
+        },
+        "inline_snapshot_validation": {
+          "valid_passed": 1,
+          "invalid_rejected": 6
+        },
+        "transient_poll_recovery_after_reopen": {
+          "recovered": true,
+          "calls": 2,
+          "submits": 1
+        },
+        "transient_fetch_recovery_after_reopen": {
+          "recovered": true,
+          "calls": 2,
+          "submits": 1
+        },
+        "global_asset_immutability_savepoint": {
+          "terminal_failed": true,
+          "new_output_insert_rolled_back": true,
+          "cache_entries": 0,
+          "submits": 1
+        }
+      }
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed on the four Python source/test files",
+      "ruff": "All checks passed; 4 files already formatted",
+      "mypy": "Success: no issues found in 4 source files"
+    }
+  },
+  "limitations": [
+    "The source fix does not rewrite historical successful provider artifacts containing the old metadata key.",
+    "A rebuilt bundle and genuine new native workflow preview/publish/reopen still require the parent integration check.",
+    "Human realism, garment fidelity, multiview consistency, organic quality and hidden surface acceptance are outside this protocol-only approval."
+  ]
+}

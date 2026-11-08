@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "kind": "independent_fixed_detail_capability_source_and_geometry_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; no runtime/helper/test/deriver implementation authored",
+  "reviewed_at_utc": "2026-11-08T10:48:03.097191+00:00",
+  "state": "approved_exact_bounded_capability_component_with_measured_offsets_native_reference_fidelity_pending",
+  "scope": "Exact frozen core/organic/character helpers and tests, independent actual local Blender builds/cup and attachment measurements, plus R3 fixed calibration literal/source binding. Provider/service final integration is explicitly excluded while its additional receipt gate fixes are pending.",
+  "source_sha256": {
+    "tools/ainative/sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+    "tools/ainative/organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+    "tools/ainative/character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+    "tools/ainative/test_sculpt_builder.py": "c625da407d5fd6d67a758053953f9d4c959765575ad256d4013a75234e21d6da",
+    "tools/ainative/test_organic_detail.py": "4c8c0a67a6528c7c8aeddbe262b6325ec584314573e970c01a047acf9da1ede4",
+    "tools/ainative/test_character_detail.py": "3bfb9318dffd4810b83ca7e9da23541e5a1280bf60296077f2fb14a37e78b4f7",
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+  },
+  "calibration_dependency_sha256": {
+    "tools/ainative/anatomy_calibration.py": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+    "misc/scripts/derive_maliang_calibration.py": "291ec78ac1b25b75695c1d11600f632b4c54c6374c29ab904fd458da68f46e39"
+  },
+  "findings": [],
+  "resolved_findings": [
+    {
+      "finding": "Early cup triangle budget counted two20-gon caps as two triangles each, underestimating generated subdivision cost.",
+      "fix": "Final organic helper uses exact236/880/3520 cup triangles for subdivision0/1/2.",
+      "verification": "Independent final API boundary check plus source unit tests verify exact thresholds;512-cup expansion fits its cup-only budget and514 cups are rejected."
+    },
+    {
+      "finding": "Long declared source names could be truncated by Blender, and generated names could exceed native object-name limits.",
+      "fix": "Pattern identifiers use strict ASCII1..48 and generated names fit55 bytes; declared long accessory source names map directly to actual object pointers.",
+      "verification": "Final organic tests include a real long-source-name build and exact source-reference preservation."
+    }
+  ],
+  "verified_design": [
+    "New model-facing fields remain strict bounded JSON data: nullable loft flat/rounded caps and at most8 repeated cup patterns, maximum512 total count-per-row*rows, closed material/name/source references and no generated code/eval/import/callback selection from model data.",
+    "Rounded caps keep every original loft ring and add four nonzero latitude rings plus a single pole. Local depth is radius-relative; actual transformed geometry/grid/subdivision/vertex/triangle/byte limits remain mandatory.",
+    "Cup expansion uses the same interpolated centerline, arc-length bin centers and transported frame as source lofts; source TRS is copied exactly. Radius/source-section and same-source spacing constraints reject oversized or coincident placements rather than silently clamping/dropping cups.",
+    "True cups are closed concave wall/bowl solids with a raised cavity floor. Final seating uses the actual post-modifier body/accessory surface, inverse-transpose normals under nonuniform scale, bounded nearest projection and a small embedded base. Hidden/nonexposed anchors and within-pattern seated overlap fail explicitly.",
+    "Generic body lofts receive fixed pre-voxel subdivision1 with disclosed32-radial/eight-samples-per-span approximation. Requested voxel settings are preserved; one-body and closed positive nondegenerate geometry guards remain strict. No positive island/component filtering or arbitrary body-region removal was added.",
+    "Source plan and expanded plan hashes remain distinct; old absent/null fields preserve legacy data semantics. Genuine original N7 keeps all28 input regions,12 body regions/12 legacy beads and17 output parts with generated_cups0 in the regression.",
+    "Character helper uses bounded scalar detail fields and trusted raw BODY/garment surfaces: high-waist overlap/coverall, closed projected collar/placket/patch panels, bounded outward fabric offsets, smile/brow/forehead changes and bounded wavy-hair/nape. Patch panels explicitly do not claim functional pocket interiors or cloth simulation.",
+    "Final hair extra displacement fades to zero at exact clipped boundary; narrow base clearance and2mm solid thickness give measured scalp contact. Collar roots derive from actual neckline edges pinned through relaxation. Remaining final-mesh offsets are reported below rather than claimed to be welded/zero-gap.",
+    "Both new helper byte hashes are exposed in native receipts and checked against the fixed runtime. No new neural weights, ComfyUI dependency, physics, pose engine or model-generated executable code was introduced."
+  ],
+  "tests": {
+    "independent_full_cohort": {
+      "result": "57 passed, no skips",
+      "unittest_seconds": 108.572,
+      "modules": [
+        "test_sculpt_builder30",
+        "test_organic_detail9",
+        "test_character_detail18"
+      ],
+      "blender": "Actual installed5.1.0 background/factory-startup/disable-autoexec",
+      "source_binding": {
+        "exit_code": 0,
+        "seconds": 108.65700000000652,
+        "source_sha256_before": {
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "test_sculpt_builder.py": "c625da407d5fd6d67a758053953f9d4c959765575ad256d4013a75234e21d6da",
+          "test_organic_detail.py": "4c8c0a67a6528c7c8aeddbe262b6325ec584314573e970c01a047acf9da1ede4",
+          "test_character_detail.py": "3bfb9318dffd4810b83ca7e9da23541e5a1280bf60296077f2fb14a37e78b4f7",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "source_sha256_after": {
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "test_sculpt_builder.py": "c625da407d5fd6d67a758053953f9d4c959765575ad256d4013a75234e21d6da",
+          "test_organic_detail.py": "4c8c0a67a6528c7c8aeddbe262b6325ec584314573e970c01a047acf9da1ede4",
+          "test_character_detail.py": "3bfb9318dffd4810b83ca7e9da23541e5a1280bf60296077f2fb14a37e78b4f7",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "log_sha256": "8db782a964bfc33997817d0105d0cb52176dfd441c721d2483e222b983480375"
+      },
+      "binding_sha256": "b3d379ae91154a58638c4980d0b071590e2646ea946095eae4975c3db4a0802b",
+      "log_path": "project/build-support/detail-capabilities-audit-20261108/final949-core-organic-character-tests.log"
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed on all six frozen source/test files",
+      "ruff": "All checks passed;6 files already formatted",
+      "mypy": "Success: no issues found in6 source files"
+    },
+    "independent_api_boundaries": {
+      "report": {
+        "all_passed": true,
+        "caps_extreme_cases": [
+          {
+            "depth": 0.25,
+            "vertices": 802,
+            "faces": 832,
+            "closed_consistent_outward": true
+          },
+          {
+            "depth": 1.5,
+            "vertices": 802,
+            "faces": 832,
+            "closed_consistent_outward": true
+          }
+        ],
+        "exact_cup_triangle_budgets": [
+          236,
+          880,
+          3520
+        ],
+        "512_cup_pure_expansion": {
+          "generated": 512,
+          "source_unmodified": true,
+          "estimated_subdivision2_triangles": 1802240,
+          "maximum_generated_name_bytes": 9
+        },
+        "514_cups_rejected": true,
+        "scope": "Pure schema/resource expansion boundary; the separated eight test sources are intentionally not a complete connected body build."
+      },
+      "path": "project/build-support/detail-capabilities-audit-20261108/final949-independent-api-boundaries.json",
+      "sha256": "49c32525ae3f5e3beb8b32121cdf07cbe3bfa9eaa897e62c786f3b190c6b5180"
+    },
+    "actual_final160_rebuild": {
+      "report": {
+        "exit_code": 0,
+        "seconds": 34.65700000000652,
+        "source_sha256_before": {
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "source_sha256_after": {
+          "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+          "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+          "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "source_plan_file_sha256": "6c29e25c114474a2dc87b569afe5afdba81575e2342fc308a0a36344ed391c71",
+        "source_plan_unchanged": true,
+        "log_sha256": "152509f9b85059ecaadb3e70aa272b3581c7a8529591e4135913c3c017734015",
+        "glb_sha256": "7158c9079f66fe6616cd44fbf980549110f57296fa0d553f459cfcb2488f1e9b",
+        "receipt_sha256": "cecfe69d3badc1c3ef67c3fdb0f37d6d2e990668c5e7b565c16b733ccc55e873",
+        "vertices": 643738,
+        "triangles": 1286816,
+        "parts": 165,
+        "generated_cups": 160,
+        "source_plan_sha256": "6c29e25c114474a2dc87b569afe5afdba81575e2342fc308a0a36344ed391c71",
+        "expanded_plan_sha256": "933d9bfb0dd0b7093c464ae4fbe2251834eae2240b0bec8e43730042456ec2f5",
+        "runtime_input_sha256": {
+          "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+        }
+      },
+      "path": "project/build-support/detail-capabilities-audit-20261108/actual160-final949-build.json",
+      "sha256": "722f88e1fc80b325ba22badf55f256a1fbbc847e85bbe86c575d8c383d816e9b",
+      "scope": "Explicit derived diagnostic source plan6c29…, not a new GPT request or replacement of original N7."
+    },
+    "actual_exported_glb_host_validation": {
+      "report": {
+        "glb_sha256": "7158c9079f66fe6616cd44fbf980549110f57296fa0d553f459cfcb2488f1e9b",
+        "host_validation": {
+          "vertices": 643738,
+          "primitives": 165,
+          "bytes": 30019396
+        },
+        "actual_index_triangle_count": 1286816,
+        "actual_mesh_parts": 165,
+        "all_bound_receipt_parts_closed_positive_nondegenerate": true,
+        "source_plan_sha256": "6c29e25c114474a2dc87b569afe5afdba81575e2342fc308a0a36344ed391c71",
+        "expanded_plan_sha256": "933d9bfb0dd0b7093c464ae4fbe2251834eae2240b0bec8e43730042456ec2f5",
+        "source_and_expanded_differ": true,
+        "runtime_input_sha256": {
+          "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+          "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+        }
+      },
+      "path": "project/build-support/detail-capabilities-audit-20261108/actual160-final949-host-checks.json",
+      "sha256": "e9ad19262281a652b8930003f598441a735ba5a08d3a276d2d285a946c928a25"
+    },
+    "actual_exported_cup_measurements": {
+      "source_glb_sha256": "7158c9079f66fe6616cd44fbf980549110f57296fa0d553f459cfcb2488f1e9b",
+      "cups": 160,
+      "all_concave": true,
+      "all_base_centers_inside_actual_body": true,
+      "no_body_seals_center_cavity": true,
+      "minimum_cavity_depth_over_radius": 0.4094843589244653,
+      "minimum_axis_surface_alignment": 0.9966838727305003,
+      "minimum_global_center_spacing_ratio": 1.0648172527742845,
+      "spacing_suspects": 0,
+      "path": "project/build-support/detail-capabilities-audit-20261108/actual160-final949-cup-probe.json",
+      "sha256": "7bce96249b1201f5ccd9798fcb16c9f22c0928db3286d78c882c023378a6ba6a",
+      "probe_sha256": "ced2c82f4c6ddf7b39931c9f9eed623d0df54c3b6f803691f90b92c243b6034b",
+      "limitation": "PCA mouth-axis test is measured on this uniform-scale160-cup specimen. Center cavity rays and base-center containment do not certify every cup-wall point or global collision freedom. Spacing is a conservative center/radius diagnostic, not a triangle intersection proof."
+    }
+  },
+  "actual_character_attachment_measurements": {
+    "source_glb_sha256": "3a64f430280b333410a7eeac81aaaee8e6a0d98601d5a3945727e6e32b260a56",
+    "source_plan_sha256": "36438419c3b555f2ebe992d3b3b96e618daf081d4f11183ee829160645a72cd8",
+    "source_runtime_sha256": {
+      "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+      "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+      "character_detail.py": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+      "organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+      "sculpt_builder.py": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84"
+    },
+    "control_metadata_only_no_rebuild": true,
+    "collar_anchor_count": 14,
+    "collar_maximum_control_match_error_m": 0.0,
+    "collar_maximum_outward_gap_m": 0.0023039515454001958,
+    "hair_fringe_band_width_m": 0.003,
+    "hair_band_by_surface": {
+      "inner": {
+        "count": 1426,
+        "minimum_signed_outward_gap_m": -0.000304472020765445,
+        "median_signed_outward_gap_m": 0.00039065506689439644,
+        "p95_signed_outward_gap_m": 0.0016402279916292173,
+        "maximum_signed_outward_gap_m": 0.0024533795867682784,
+        "at_or_inside_body_count": 180,
+        "within_half_mm_count": 871
+      },
+      "outer": {
+        "count": 1190,
+        "minimum_signed_outward_gap_m": 0.0009051347005879506,
+        "median_signed_outward_gap_m": 0.0017755536318873055,
+        "p95_signed_outward_gap_m": 0.002658287659380676,
+        "maximum_signed_outward_gap_m": 0.003778226518079464,
+        "at_or_inside_body_count": 0,
+        "within_half_mm_count": 0
+      },
+      "rim": {
+        "count": 307,
+        "minimum_signed_outward_gap_m": 0.0005180871180527902,
+        "median_signed_outward_gap_m": 0.000894471848368994,
+        "p95_signed_outward_gap_m": 0.0019160786120664853,
+        "maximum_signed_outward_gap_m": 0.00220638332029921,
+        "at_or_inside_body_count": 0,
+        "within_half_mm_count": 0
+      }
+    },
+    "hair_nearest_fringe_half_mm": {
+      "count": 645,
+      "minimum_signed_outward_gap_m": 0.0002742999822658021,
+      "median_signed_outward_gap_m": 0.0009295211057178676,
+      "p95_signed_outward_gap_m": 0.0015485661128650462,
+      "maximum_signed_outward_gap_m": 0.0019236067855672445,
+      "at_or_inside_body_count": 0,
+      "within_half_mm_count": 56
+    },
+    "interpretation": "Major floating fringe is removed and actual inner hair points contact/penetrate the BODY slightly. Collar root distances are nonzero up to2.304mm, so this record does not certify a welded or zero-clearance collar seam. Closest0.5mm fringe subset max outward gap1.924mm; broader3mm band outer maximum3.778mm includes the transition toward hair volume.",
+    "path": "project/build-support/detail-capabilities-audit-20261108/style-physical-attachment-final.json",
+    "sha256": "a74bba22a2711d9dff169f03c6f02080d9cc91a81b67f74f2295d71c5f8929eb",
+    "probe_sha256": "9ff2a07aceae47a28ed906084f7e1af96fdea034b14b2f622b53aad5e387947c"
+  },
+  "r3_fixed_calibration_binding": {
+    "report": {
+      "module_sha256": "f84378aa0e4277cd7ace111b2d5bd2b4cefd7bb597dff2abbadd83d252ab4574",
+      "png_sha256": "cd9dea9066d3805ae41c36d248de206ff4411df42ba49ffb71e9f5e94be32e6b",
+      "literal_only": true,
+      "dimensions": [
+        1152,
+        1916
+      ],
+      "baseline_builder_sha256": "949e0970952fd3ff9d2b78cc6dd303a86da36f0c288421237784a5ffaa497f84",
+      "baseline_runtime_sha256": {
+        "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+        "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+        "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+        "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+      },
+      "generator_sha256": "291ec78ac1b25b75695c1d11600f632b4c54c6374c29ab904fd458da68f46e39",
+      "origin_sha256": "36f54b376f5b5fabe378977419ac4ac1ed6faf6772ca9daecc2b354d9440a47a",
+      "panels": 4,
+      "pixel_identical_render_panels": 12,
+      "scope": "Ordinary fixed baseline data/source/image binding only; no target fidelity conclusion."
+    },
+    "path": "project/build-support/detail-capabilities-audit-20261108/r3-data-binding-checks.json",
+    "sha256": "026f905e71f4d3072392ed6778bc0f10ab8c21ed24dea5f4ebef17b05b097822",
+    "scope": "One ordinary data literal; PNG/source/control/GLB-origin bindings and all12 contact-sheet panels match actual row renders. No target identity/fidelity assertion."
+  },
+  "scope_boundaries": [
+    "Final provider/service trusted-placement/per-cup receipt gate fixes are pending separate exact-source review; no75ae or earlier gate approval is migrated to those changes.",
+    "The derived160cup and style attachment plans are local capability diagnostics, not new real model generations. Original N4-N7 native passes and failed visual reports remain unchanged.",
+    "Cup center rays/base-center containment and conservative spacing do not prove every wall collision-free or every possible transformed layout valid.",
+    "New actual native photo/stylized/organic/elder reference fidelity and hidden-surface acceptance remain separate. This component approval does not close either user acceptance issue."
+  ]
+}

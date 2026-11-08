@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "state": "passed",
+  "reviewer": "independent modeling_ui agent; did not author reviewed backend/service files",
+  "scope": "Read-only review of codex_sculpt provider, service routing and backend tests. Self-authored workbench/parameter UI excluded.",
+  "source_sha256": {
+    "tools/ainative/sculpt_provider.py": "ffe672faf984795af3bef59fcfe22cc116cf961804fb67b7739994feadbf325e",
+    "tools/ainative/generation_service.py": "535b3dd2aed720b80919408fc11a9b8d8f221a4bbf9999388bdcabedbd903c26",
+    "tools/ainative/test_sculpt_provider.py": "426aa4f5e01d9dd06036bd126c7eb51bff6780d0662af8288ea9c1d5dcdcd882"
+  },
+  "dependency_sha256": {
+    "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+    "tools/ainative/sculpt_builder.py": "f64485fe4652f4d4fee8a8d84059b473d37020416fa934bf502b5094739a083a"
+  },
+  "findings": [],
+  "checks": [
+    "Version-2 organic plan schema is separate from v1 primitive plans and accepts data only; strict fields, finite coordinates and bounded budgets reject executable or unrecognized data",
+    "Up to two ordered images retain source/reference roles and strength; content digests determine distinct-reference count rather than duplicate attachments",
+    "Text-only and single-view jobs retain plausible-generation/backfill policy; multiple distinct images constrain inference while hidden surfaces remain ambiguous; exact recovery is never claimed",
+    "CLI structured-output invocation disables image generation, shell, web and external tools; incomplete, failed or forbidden-tool receipts are rejected before Blender execution",
+    "Fixed trusted Blender builder runs with factory-startup and disable-autoexec; model output is never executable Python; builder digest, GLB content and measured quality receipt bind publication",
+    "Separate sculpt provider identity, config keys, storage and run snapshots preserve existing Godot-modeling, image and legacy provider modes",
+    "Lease heartbeats use separate SQLite rows, atomic terminal transitions remain immutable, cancellation survives reopen and uncertain workers cannot silently replay CLI requests",
+    "Readiness reports runtime connection only and explicitly leaves person, organic-form and occlusion quality for actual result inspection",
+    "12 backend tests independently passed without skips, including synthetic CLI plus real installed Blender mesh, quality receipt and recovery",
+    "14 independent service-routing checks passed with mocked CLI status and real Blender --version; ComfyUI endpoint calls were prohibited and never made"
+  ],
+  "evidence": {
+    "provider_tests": {
+      "path": "project/build-support/complex-integration-review/provider-tests.log",
+      "sha256": "5895fc8e28fcdd5f7ee5bd4141365bf535d5624d63cdb7b7c3700de4a1b56dd0",
+      "result": "12 tests passed; no skips"
+    },
+    "service_routing": {
+      "path": "project/build-support/complex-integration-review/service-routing.json",
+      "sha256": "bf871c9a7b5e68e670e92a63b246a7d9b15c908c2b40be7d25afc72a0db5a76b",
+      "result": "14 checks passed"
+    },
+    "dependency_recheck": "Builder changed during initial evidence assembly. Full 12-test backend suite rerun passed against final recorded builder hash; source hashes checked unchanged after rerun."
+  },
+  "business_acceptance": {
+    "state": "pending",
+    "required": [
+      "Actual GPT CLI complex-character generation with visible face and limb structure",
+      "Actual organic-form generation and useful continuous topology",
+      "Actual reference-driven hidden-surface completion and front/back/side visual inspection"
+    ],
+    "note": "Synthetic CLI ellipsoid test and runtime readiness do not satisfy these user-facing acceptance items; original issue remains open until actual results are verified."
+  },
+  "limitations": [
+    "Two-image unit tests establish attachment, role and digest handling only, not visual multi-view fidelity",
+    "Measured connected-manifold, volume and triangle constraints do not establish anatomical or artistic quality",
+    "No review of self-authored UI changes and no claim that complex business acceptance is complete"
+  ]
+}

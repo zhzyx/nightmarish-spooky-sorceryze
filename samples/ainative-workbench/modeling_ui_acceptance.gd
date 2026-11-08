@@ -25,7 +25,7 @@ func run():
 	await process_frame
 	var modes: Array = []
 	for i in panel.service_choice.item_count: modes.append(panel.service_choice.get_item_metadata(i))
-	check(modes == ['offline','comfy','legacy','codex','codex_modeling'], 'new modeling mode preserves all existing service identifiers and indices')
+	check(modes == ['offline','comfy','legacy','codex','codex_modeling','codex_sculpt'], 'new modeling mode preserves all existing service identifiers and indices')
 	select_mode('codex_modeling')
 	panel.endpoint_edit.text = 'invalid ignored address'
 	panel.cli_path_edit.text = 'codex-test-program'

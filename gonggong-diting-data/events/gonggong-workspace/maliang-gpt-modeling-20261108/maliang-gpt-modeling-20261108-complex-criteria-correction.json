@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-complex-criteria-correction",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T04:38:35.846605+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "correction": "Latest user criteria prioritize semi-realistic human proportions and facial structure; stylized characters also remain in this same round. Back/occluded consistency must be constrained by multiple actual views of the same subject; single-view plausible backfill is insufficient.",
+    "authority_ref": "codex:user:20261108:semi-real-multiview-criteria-correction",
+    "state": "in_progress",
+    "planned_backend": "GPT CLI structured plans + fixed local Blender geometry interpreter; no ComfyUI/3D neural weights",
+    "acceptance_criteria": [
+      {
+        "id": "semi_real_human",
+        "priority": "primary",
+        "criterion": "Full semi-realistic body proportions and facial structure, complete anatomy and requested clothing, with actual multiview appearance review",
+        "state": "pending"
+      },
+      {
+        "id": "stylized_human",
+        "priority": "same_round",
+        "criterion": "Stylized complete character is also required and cannot substitute for the semi-realistic case",
+        "state": "pending"
+      },
+      {
+        "id": "organic_shape",
+        "priority": "same_round",
+        "criterion": "Continuous organic form with requested shape/detail and complete surfaces",
+        "state": "pending"
+      },
+      {
+        "id": "multiview_occluded_consistency",
+        "priority": "same_round",
+        "criterion": "Use distinct actual reference views of the same subject to constrain and inspect back/occluded geometry consistency; single-view plausible completion and duplicate-image inputs do not satisfy this criterion",
+        "state": "pending"
+      }
+    ],
+    "previous_partial_evidence": "33-part primitive robot establishes the basic pipeline only; geometric manifold/volume checks do not establish anatomy, likeness or occluded-view consistency",
+    "issue_closure_allowed": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-request",
+    "maliang-gpt-modeling-20261108-complex-scope"
+  ],
+  "supersedes": "maliang-gpt-modeling-20261108-complex-scope",
+  "sha256": "f30bc8b993a429c5427dc8211359d07cdcde63d3fa05e2142d5186ab69a82f67"
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-trusted-anatomy-data",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:08:53.013240+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "trusted_data_prepared_pending_independent_review_and_visual_reconstruction",
+    "origin": {
+      "repo": "makehumancommunity/makehuman",
+      "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+      "files": [
+        {
+          "path": "makehuman/data/3dobjs/base.obj",
+          "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/3dobjs/base.obj",
+          "blob_sha": "d26635e9326e3cca30778fd7b9c00062b03cce09",
+          "sha256": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+          "bytes": 1749303
+        },
+        {
+          "path": "LICENSE.md",
+          "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md",
+          "blob_sha": "5d1a49d31ebdaa46b06c52eae2c005c678a63ffa",
+          "sha256": "edd99571ca62698f78c943fd4fffb159a413c315fa0d4819d3cec5cadaf8b4f1",
+          "bytes": 3598
+        },
+        {
+          "path": "LICENSE.ASSETS.md",
+          "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.ASSETS.md",
+          "blob_sha": "f3ede1fc3318f8d794e2cb51924186c62f02f71a",
+          "sha256": "f6089cba01cb570a24712b41ab8a586ccd3cc5ef53dc266ca50b95c288956d2c",
+          "bytes": 6962
+        }
+      ],
+      "usage": "CC0 graphical data only; no MakeHuman program code copied"
+    },
+    "files": {
+      "tools/ainative/anatomy_base.py": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0",
+      "misc/scripts/derive_maliang_anatomy.py": "c817d164f4dfb6523d169f82663e604d5c4d0ef55ea35347a70edea1b16d248b"
+    },
+    "geometry": {
+      "vertices": 4290,
+      "triangles": 8576,
+      "coordinate_system": "Y-up,+Z-front; crown/chin height one unit with neck extension below chin",
+      "eye_anchors": "original official joint-eye centers normalized with the mesh"
+    },
+    "derivation": "Select only official body group; clip original Y below6.0; cap open neck/eye boundary loops; triangulate; recalculate outward normals; normalize crown8.4913/chin6.19075 span and original headZ0.16075 center. Reproducer rejects nonpinned source and existing output.",
+    "license": "CC0-1.0; official asset header and LICENSE.ASSETS.md verified; copyright entry and source header preserve attribution",
+    "copied_program_logic": false,
+    "neural_weights_loaded": false,
+    "user_reference_mesh_imported": false,
+    "acceptance_note": "Trusted generic anatomical control data only. GPT must visibly modify morphology from actual input views. An unchanged template does not satisfy image-to-mesh reconstruction; quality and all reference-view checks remain pending.",
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-image-led-steering",
+    "maliang-gpt-modeling-20261108-real-human-first-failure"
+  ],
+  "sha256": "09be63430f2ebffefd465ab41fb33ad35f198a8b6c7fe4e2cb2ab5462b15ae1c"
+}

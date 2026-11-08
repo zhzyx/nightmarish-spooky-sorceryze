@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-elder-visual-failure",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T08:26:32.392715+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "failed_elder_image_shape_acceptance_after_native_pipeline_success",
+    "case": "n3-elder",
+    "actual_glb_sha256": "5f4035daf4fb10c36eee0c28ec3bd8040faa154b12cbe89662bfe56dbe873fe6",
+    "independent_visual_report_sha256": "61e45257115cfec3a36558d481b2ecbcf3d9140df81ee0af3fb5c86e528ecf8f",
+    "builder_sha256": "3d6d93551965170164d0b5a6ad0a05e79e6e96933833abb3a1190e1ce5861b90",
+    "reviewer": "independent modeling_ui agent",
+    "method": "Existing calibration-verified identical orthographic cameras, neutral clay/lights, uniform1.8m normalization. No nonuniform fitting, reference blending, invented similarity score, pixel-perfect identity or photogrammetry criterion.",
+    "observed_positive": [
+      "Complete semi-realistic human proportions, facial structures, continuous anatomy and five digits per hand",
+      "Actual front/back/profile of one coherent complete mesh",
+      "External waistband, overlap lower seam and rolled cuffs are observable improvements"
+    ],
+    "remaining_failures": [
+      "Target older head/lower face is broader and rounder; generated face remains narrower/longer with overly strong nose/chin",
+      "Observed eyelid, cheek, jaw and neck age-related form not sufficiently reflected",
+      "Wrap inner front remains open too deeply; clothing is more straight and tight than reference"
+    ],
+    "actual_plan_bias": {
+      "jaw_width": 0.88,
+      "nose_length": 1.15,
+      "chin_length": 1.08,
+      "head_width": 0.98,
+      "head_depth": 1.06,
+      "age": "elder",
+      "effective_age_blend": 0.65
+    },
+    "next_action": "Local fixed-operator sensitivity/baseline calibration, exact relative control semantics and optional bounded age delta; close actual inner wrap, repair photo pants/shoes. Then actual new CLI plans and multiview inspection. No blind paid retries or overall acceptance claim.",
+    "user_scope_remains_this_round": true
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-fresh-human-native-results"
+  ],
+  "sha256": "8387215f666f5d8f75445532619aceeb82ae00f6476ead6f023eeaf848c4dcb1"
+}

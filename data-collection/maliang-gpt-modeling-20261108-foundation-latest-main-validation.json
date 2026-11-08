@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-foundation-latest-main-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T15:56:40.976466+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "technical_foundation_current_main_integration_verified_visual_acceptance_still_rejected",
+    "source_main": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "upstream_overlap_files": 0,
+    "editor_sha256": "4c7ecefe16fdb544816c82eac9634bd6528b2de308d70a3b4a882438f1180a79",
+    "native_report_sha256": "5be61082f8d6003835b65223f7eda5a2e299dc03ca63a60e3d6effeec950211c",
+    "native_checks": 187,
+    "native_runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ],
+    "all_66_previous_bundle_and_bundler_source_hashes_still_exact": true,
+    "previous_ui_checks": 179,
+    "previous_ui_editor_sha256": "ae8d42c118a913d826acc5324f22af909924dc613a3dbcf40300aee5f3927b52",
+    "previous_ui_retagged_as_new_run": false,
+    "provider_and_geometry_source_unchanged": true,
+    "previous_real_cli_tasks_retagged_as_new_runs": false,
+    "scope": "Current-main native integration of the already independently reviewed runtime foundation only. User-rejected human quality and organic failed actual jobs remain open. Major human revision and same-resolution numerical fusion prototype are continuous authorized work, private and not included here."
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-runtime-verification-human-rejection"
+  ]
+}

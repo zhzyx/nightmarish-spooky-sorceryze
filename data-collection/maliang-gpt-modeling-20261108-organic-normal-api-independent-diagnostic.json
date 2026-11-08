@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "kind": "independent_historical_organic_normal_diagnostic_and_api_advice",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; no runtime implementation authored",
+  "reviewed_at_utc": "2026-11-08T09:27:02.201354+00:00",
+  "state": "historical_smooth_normals_verified_new_organic_capabilities_pending_review",
+  "scope": "Read-only actual N7 GLB NORMAL measurements, exact historical bundled source inspection and preliminary proposed data-API/resource review. This is not approval of an unfrozen implementation.",
+  "historical_sources": {
+    "builder_sha256": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+    "glb_sha256": "8c04d8cb113bbc7999425ff8bc1c6a234c936a4452b7377074a1e6317b8f3185",
+    "plan_sha256": "55f09e20cf7e98b9862de56ea00ac483392e4c0ef1ee58c79a1bdedb76d47597",
+    "smooth_flag_source_line": 2801,
+    "source_observation": "Exact0950 sets polygon.use_smooth=True after quality/triangulation and immediately before GLB export."
+  },
+  "actual_normal_metrics": {
+    "glb_sha256": "8c04d8cb113bbc7999425ff8bc1c6a234c936a4452b7377074a1e6317b8f3185",
+    "body_mesh_name": "Orange octopus with eight curled arms",
+    "indexed_body_normals": 567850,
+    "unique_body_positions": 567850,
+    "max_normal_length_error": 1.5441418987904854e-07,
+    "body_triangles": 1135696,
+    "sample_stride_triangles": 97,
+    "sampled_triangles": 11708,
+    "sampled_triangles_equal_three_normals": 42,
+    "sampled_triangles_all_normals_align_face_cos_gt_0_999999": 417,
+    "sampled_triangles_some_normal_departs_face_cos_lt_0_999999": 11291,
+    "normal_variants_per_position_rounded_to_6_decimals": {
+      "1": 567850
+    }
+  },
+  "normal_conclusion": "The actual exported BODY has correct shared smooth vertex normals. Only42 of11708 sampled triangles have three equal normals;11291 depart their face normal. The observed broad bands/capped seams are geometry limitations, not evidence of lost use_smooth or flat-per-triangle export. No smoothing-flag fix is supported by this artifact.",
+  "concrete_geometry_evidence": [
+    "The head first loft section at[-.05,1.05,.13] has radii[.49,.49,.27,.28] and a flat end. Arm roots begin above this broad base, leaving an exposed planar head-base plate.",
+    "The mantle final section retains radii[.08,.08,.09,.09], so the tip also closes as a cut disk rather than a rounded pole.",
+    "More triangles/subdivision or different shading alone cannot erase the intended flat cross-section or invent organic root webbing."
+  ],
+  "proposed_api_review": {
+    "status": "Advice sent to owners; final schema/helper/source/tests are not yet reviewed or approved",
+    "rounded_caps": [
+      "Absent/null retains flat legacy semantics; new flat/rounded endpoints remain explicit bounded data.",
+      "Use fixed nonzero latitude rings plus one pole, outward winding, no duplicate zero-radius ring; extend grid/bounds estimates before fusion.",
+      "Specify depth as local radius-relative distance and apply the exact surface TRS. At head radius.49, depth1.5 extends.735m, so combined extrema require tests.",
+      "Attachment roots still require deliberate overlap into a head/web hub; merely tangent rounded tubes can leave collar-like bulges."
+    ],
+    "repeated_true_cups": [
+      "State count as cups per row; enforce rows*count total<=512 before mesh allocation and estimate full tessellation plus requested subdivision against global output limits.",
+      "Require exact existing explicit loft source_region, valid material/name and noncolliding generated namespace; completion uses the pattern name once.",
+      "Use true arc length of the same interpolated centerline and identical transported frame/TRS; anchor cup bases after fusion/smoothing or verify sufficient overlap.",
+      "Define coupled radius/depth/tip-scale/wall-thickness and spacing limits; reject impossible coincident rows or disclose deterministic requested/effective clamping.",
+      "Cups must be closed concave wall/bowl solids with positive volume; preserve interior cavity and avoid replacing them with open meshes or sealed beads."
+    ]
+  },
+  "evidence": {
+    "private_report_path": "project/build-support/final-stylized-organic-qa-20261108/n7-actual-normal-diagnostic.json",
+    "private_report_sha256": "4a823a11d26581025a3633b7f7ab478617a6a4b17e34a1388dd82b998c9250e2",
+    "prior_visual_review_path": "data-collection/maliang-gpt-modeling-20261108-stylized-organic-result-review.json",
+    "prior_visual_review_sha256": "dd10eef05238e6e89c7d5e4c73facd5fd9c7fd2e1892a42c8415ff201baa5b88"
+  },
+  "scope_boundaries": [
+    "Original N4-N7 outputs/plans/native passes and failed visual reviews remain immutable.",
+    "No new model calls, plan rebuild, source edit or shading mutation was performed.",
+    "Future helper/runtime schema/resource/geometry and actual fidelity reviews require new exact-source candidates and evidence."
+  ]
+}

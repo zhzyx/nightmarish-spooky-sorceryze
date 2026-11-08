@@ -8,7 +8,11 @@ cross-run reuse under an unverified model identity.
 
 import ipaddress
 import json
+import os
+import re
+import shutil
 import sqlite3
+import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -35,8 +39,8 @@ MESSAGES = {
     "cli_image_unavailable": "当前 Codex CLI 未提供内置图像生成能力，请更新或检查已有账号的功能。",
     "cli_unavailable": "未找到可用的 Codex CLI。请选择本机已安装的 Codex 程序。",
     "cli_login_required": "Codex CLI 需要使用你已有的 ChatGPT 登录；请先完成 CLI 登录，再检测连接。",
-    "service_not_configured": "尚未配置真实生成服务。请打开“本机设置”，选择 ComfyUI，检测连接并保存模型；离线复制仍可使用。",
-    "service_config_invalid": "生成服务设置无效。请在“本机设置”重新填写服务类型、地址及模型并保存。",
+    "service_not_configured": "尚未配置真实生成服务。请打开“本机设置”，选择 GPT CLI 网格建模或其他生成方式，检测并保存；离线复制仍可使用。",
+    "service_config_invalid": "生成设置无效。请在“本机设置”检查生成方式及其所需的本机程序或服务参数并保存。",
     "service_address_invalid": "服务地址无效。请填写 http:// 或 https:// 服务根地址，不要包含账号、密码、查询参数或接口路径。",
     "service_unreachable": "无法连接 ComfyUI。请确认服务已启动、地址与端口正确，再点击“检测连接与模型”。",
     "service_protocol_invalid": "该地址未返回兼容的 ComfyUI 节点信息。请检查服务地址与 ComfyUI 版本。",
@@ -50,6 +54,7 @@ MESSAGES = {
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
     "editor_command_failed": "操作未完成。请检查节点输入与本机设置；本机诊断已记录不含凭据的错误类别。",
     "modeling_runtime_missing": "指令建模需要有效的 Godot 程序和内置构造工具，请使用包含该功能的马良引擎。",
+    "sculpt_runtime_missing": "复杂网格构造器尚未就绪，请在设置的环境页选择 Blender 4 或更高版本，并检查内置构造工具。",
 }
 
 
@@ -79,6 +84,7 @@ def settings(value):
         "cli_path",
         "godot_path",
         "builder_path",
+        "blender_path",
     }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
@@ -86,7 +92,7 @@ def settings(value):
     if (
         result["schema_version"] != 1
         or isinstance(result["schema_version"], bool)
-        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling")
+        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling", "codex_sculpt")
     ):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
@@ -97,7 +103,7 @@ def settings(value):
             name.startswith(("/", "\\")) or ".." in name.replace("\\", "/").split("/") or any(ord(c) < 32 for c in name)
         ):
             raise ServiceError("service_config_invalid")
-    if result["mode"] in ("codex", "codex_modeling"):
+    if result["mode"] in ("codex", "codex_modeling", "codex_sculpt"):
         result.setdefault("cli_path", "codex")
         if not isinstance(result["cli_path"], str) or not result["cli_path"].strip():
             raise ServiceError("cli_unavailable")
@@ -106,7 +112,18 @@ def settings(value):
     if result["mode"] == "codex_modeling":
         if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
             raise ServiceError("modeling_runtime_missing")
+        if "blender_path" in result:
+            raise ServiceError("service_config_invalid")
+    elif result["mode"] == "codex_sculpt":
+        if not all(
+            isinstance(result.get(key), str) and result[key].strip() for key in ("blender_path", "builder_path")
+        ):
+            raise ServiceError("sculpt_runtime_missing")
+        if "godot_path" in result:
+            raise ServiceError("service_config_invalid")
     elif any(key in result for key in ("godot_path", "builder_path")):
+        raise ServiceError("service_config_invalid")
+    elif "blender_path" in result:
         raise ServiceError("service_config_invalid")
     if result["mode"] in ("comfy", "codex"):
         try:
@@ -203,6 +220,8 @@ def capability(kind, config, info, models, extra_image=False):
 def _probe_service(value):
     try:
         config = settings(value)
+        if config["mode"] == "codex_sculpt":
+            return _probe_sculpt(config), {}
         if config["mode"] == "codex_modeling":
             return _probe_modeling(config), {}
         if config["mode"] == "codex":
@@ -294,6 +313,83 @@ def _probe_modeling(config):
     )
 
 
+def _blender_runtime(config):
+    executable = shutil.which(config["blender_path"])
+    builder = Path(config["builder_path"])
+    if (
+        not executable
+        or not builder.is_file()
+        or not all(
+            builder.with_name(name).is_file()
+            for name in (
+                "anatomy_base.py",
+                "anatomy_body.py",
+                "character_detail.py",
+                "organic_detail.py",
+                "anatomy_calibration.py",
+            )
+        )
+    ):
+        return None
+    try:
+        from sculpt_provider import load_operator_calibration
+
+        load_operator_calibration(builder)
+        process = subprocess.run(
+            [executable, "--version"],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            timeout=15,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+        )
+        match = re.search(rb"Blender\s+(\d+)\.(\d+)", process.stdout)
+        if process.returncode != 0 or not match or int(match.group(1)) < 4:
+            return None
+        return dict(executable=str(Path(executable).resolve()), version=match.group(0).decode("ascii"))
+    except (OSError, ValueError, SyntaxError, ImportError, subprocess.TimeoutExpired):
+        return None
+
+
+def _probe_sculpt(config):
+    from codex_provider import check_cli
+    from modeling_provider import check_modeling_cli
+
+    runtime = _blender_runtime(config)
+    cli = (
+        check_modeling_cli(config["cli_path"])
+        if runtime
+        else dict(connected=False, code="sculpt_runtime_missing", message=MESSAGES["sculpt_runtime_missing"])
+    )
+    image_cli = check_cli(config["cli_path"])
+    ready = bool(cli.get("connected") and runtime)
+    mesh = dict(
+        ready=ready,
+        code="" if ready else cli.get("code") or "sculpt_runtime_missing",
+        message="GPT 建模计划与 Blender 构造器已连接；具体人物、有机形态和遮挡补全结果需运行后检查。"
+        if ready
+        else cli.get("message", "")
+        if not cli.get("connected")
+        else MESSAGES["sculpt_runtime_missing"],
+        missing_nodes=[],
+    )
+    image = dict(
+        ready=image_cli.get("connected", False),
+        code=image_cli.get("code", ""),
+        message=image_cli.get("message", ""),
+        missing_nodes=[],
+    )
+    return dict(
+        mode="codex_sculpt",
+        connected=ready,
+        cli=cli,
+        runtime=runtime,
+        models=dict(image=["builtin"], mesh=[]),
+        capabilities=dict(text_to_image=image, image_to_image=image, text_to_mesh=mesh, image_to_mesh=mesh),
+        backend_revision=cli.get("version", "") + "|sculpt-v2|" + (runtime["version"] if runtime else "unavailable"),
+        message="图像和建模规划使用 GPT CLI；Blender 在本机执行控制网格、放样和表面融合，无需 ComfyUI 或三维 AI 权重。",
+    )
+
+
 def _probe_codex(config):
     from codex_provider import check_cli
 
@@ -364,6 +460,46 @@ def prepare_provider(config, model, database, run_id):
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
     if not generated:
         return registry, providers, {"mode": "offline"}
+    if config["mode"] == "codex_sculpt":
+        from codex_provider import CodexProvider, check_cli
+
+        image_config = dict(
+            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=None
+        )
+        if all(not node["type"].endswith("mesh") for node in generated):
+            # A pure image workflow must not import the optional sculpt stack,
+            # probe Blender or persist an unused mesh dependency for reopen.
+            image_report = check_cli(config["cli_path"])
+            if not image_report.get("connected"):
+                raise ServiceError(image_report.get("code") or "cli_image_unavailable")
+            register(registry)
+            providers["codex"] = CodexProvider(image_config)
+            for node in generated:
+                node["provider"] = "codex"
+            return registry, providers, dict(mode="codex_sculpt", provider=None, image_provider=image_config)
+
+        report = _probe_sculpt(config)
+        for node in generated:
+            capability_report = report["capabilities"][node["type"]]
+            if not capability_report["ready"]:
+                raise ServiceError(capability_report.get("code", "service_not_configured"))
+        try:
+            from sculpt_provider import SculptProvider
+        except ImportError:
+            raise ServiceError("sculpt_runtime_missing") from None
+        runtime = report["runtime"]
+        provider_config = dict(
+            cli_path=config["cli_path"],
+            storage=str(Path(database).resolve().parent / "sculpt-state"),
+            blender_path=runtime["executable"] if runtime else config["blender_path"],
+            builder_path=config["builder_path"],
+        )
+        register(registry)
+        providers["codex-sculpt"] = SculptProvider(provider_config)
+        providers["codex"] = CodexProvider(image_config)
+        for node in generated:
+            node["provider"] = "codex-sculpt" if node["type"].endswith("mesh") else "codex"
+        return registry, providers, dict(mode="codex_sculpt", provider=provider_config, image_provider=image_config)
     if config["mode"] == "codex_modeling":
         from codex_provider import CodexProvider
         from modeling_provider import ModelingProvider
@@ -479,6 +615,17 @@ def restore_provider(snapshot):
 
         register(registry)
         providers["codex-modeling"] = ModelingProvider(snapshot["provider"])
+        providers["codex"] = CodexProvider(snapshot["image_provider"])
+    elif snapshot["mode"] == "codex_sculpt":
+        from codex_provider import CodexProvider
+
+        register(registry)
+        if snapshot["provider"] is not None:
+            try:
+                from sculpt_provider import SculptProvider
+            except ImportError:
+                raise ServiceError("sculpt_runtime_missing") from None
+            providers["codex-sculpt"] = SculptProvider(snapshot["provider"])
         providers["codex"] = CodexProvider(snapshot["image_provider"])
     return registry, providers
 

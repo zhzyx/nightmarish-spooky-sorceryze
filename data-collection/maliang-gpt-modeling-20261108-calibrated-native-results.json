@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-calibrated-native-results",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T09:37:59.340375+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "four_actual_native_pipelines_passed_visual_fidelity_failed",
+    "scope": "Actual GPT CLI image-led modeling plus linked native preview/publication/save/reopen; geometric validity and target visual fidelity reported separately",
+    "editor_sha256": "1ae958cbc3a85698e3951efb6cd2a93781a19731cbd600d9765f0b635b7f7327",
+    "frozen_bundle_sources_sha256": {
+      "sculpt_provider.py": "1d84bbe9706568aacaf166306b26d4d4c1c32fbd7b7e60b70d210553dede3685",
+      "sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+      "anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+      "anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+      "anatomy_calibration.py": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a"
+    },
+    "cases": [
+      {
+        "case": "n4-photo-calibrated",
+        "native_pipeline_passed": true,
+        "native_checks": 26,
+        "backend_terminal": "succeeded",
+        "vertices": 96202,
+        "raw_plan_sha256": "9e82a659b86dacce564f8338fca99dcf8c827b803679e44c013b4a300ae56834",
+        "mesh_sha256": "16b54554cfe9f4c0497995415d8dc0f5a7c4bf1010fb77ba2256ec6f0791a619",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 18820,
+          "output_tokens": 520,
+          "reasoning_output_tokens": 117
+        },
+        "cli_events_sha256": "0b3b25eabd7ba1f603ff6ff678940c72891f95dfd239260e0a8d1101129bae38",
+        "distinct_user_reference_images": 2,
+        "internal_calibration_image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+        "internal_calibration_user_reference": false,
+        "original_terminal_immutable": true,
+        "visual_acceptance": false
+      },
+      {
+        "case": "n5-elder-calibrated",
+        "native_pipeline_passed": true,
+        "native_checks": 26,
+        "backend_terminal": "succeeded",
+        "vertices": 120122,
+        "raw_plan_sha256": "c4961bf35b3a9a1feeba2caae5eb3f6884e9d524c63913aca11d533a9118509f",
+        "mesh_sha256": "919f1666e782f614543ebfd53181394e2ca13bf8a92551a71e055711bada535b",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 21350,
+          "output_tokens": 666,
+          "reasoning_output_tokens": 87
+        },
+        "cli_events_sha256": "2f446fd33f2e40ba1244422dc2f008d8efa578e5029bdc0b5fc9a7733705f95e",
+        "distinct_user_reference_images": 2,
+        "internal_calibration_image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+        "internal_calibration_user_reference": false,
+        "original_terminal_immutable": true,
+        "visual_acceptance": false
+      },
+      {
+        "case": "n6-stylized",
+        "native_pipeline_passed": true,
+        "native_checks": 26,
+        "backend_terminal": "succeeded",
+        "vertices": 378318,
+        "raw_plan_sha256": "3bbc68177058289c22e9a123c32907f99de460d774397ba159b9231af2f1a426",
+        "mesh_sha256": "f76ca515ec57b7ad9dd997088bec806cb3ed331e3e9108ce963734ef7daec5af",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 18717,
+          "output_tokens": 548,
+          "reasoning_output_tokens": 152
+        },
+        "cli_events_sha256": "92fca4e291aa1c262cc65c34a82f2015a0d3f04b9f1fb20c081e8e44f4ea3534",
+        "distinct_user_reference_images": 2,
+        "internal_calibration_image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+        "internal_calibration_user_reference": false,
+        "original_terminal_immutable": true,
+        "visual_acceptance": false
+      },
+      {
+        "case": "n7-organic",
+        "native_pipeline_passed": true,
+        "native_checks": 23,
+        "backend_terminal": "succeeded",
+        "vertices": 616010,
+        "raw_plan_sha256": "55f09e20cf7e98b9862de56ea00ac483392e4c0ef1ee58c79a1bdedb76d47597",
+        "mesh_sha256": "8c04d8cb113bbc7999425ff8bc1c6a234c936a4452b7377074a1e6317b8f3185",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 18475,
+          "output_tokens": 7382,
+          "reasoning_output_tokens": 61
+        },
+        "cli_events_sha256": "465af43571dbdef65186222b1c714f2b9f6bc6f4e9525a60d8a93f7ac291a041",
+        "distinct_user_reference_images": 1,
+        "internal_calibration_image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+        "internal_calibration_user_reference": false,
+        "original_terminal_immutable": true,
+        "visual_acceptance": false
+      }
+    ],
+    "observed_improvement": "Calibrated elder face has broader jaw/cheeks, reduced nose/chin projection, stronger true-age form; wrap inner chest coverage improved versus n3",
+    "remaining_failures": [
+      "Photographic hair remains close scalp cap and clothes/shoes overly simple",
+      "Stylized actual output exposes midriff and lacks coverall collar/placket, swept hair and large-eye/smile expression",
+      "Octopus has correct eight curved arms but coarse/capped junctions and sparse bead-like suckers instead of dense cup rows"
+    ],
+    "normal_diagnosis_correction": "Actual N7 export normals are smooth; geometry sampling and nonzero flat loft caps cause the observed bands/plates. The provisional reset-normal hypothesis was disproved independently.",
+    "next_action": "Extend bounded fixed operator with image-driven coverall/hair/expression/ease and explicit rounded loft caps/repeated true cups; preserve source plans and all prior outputs, revalidate before new requests. Full round remains open.",
+    "user_test_preview": {
+      "state": "visible_editor_opened_for_interaction",
+      "pid": 27416,
+      "actual_mesh_source_case": "n4-photo-calibrated",
+      "startup_checks": 22,
+      "operation": "Copy saved actual generated mesh only; no automatic CLI request",
+      "quality_label": "Technical preview; visual details still under repair",
+      "original_editor_pid": 21380,
+      "original_editor_preserved": true
+    }
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-operator-calibration-data",
+    "maliang-gpt-modeling-20261108-fresh-human-native-results"
+  ]
+}

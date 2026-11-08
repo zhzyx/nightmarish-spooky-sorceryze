@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e375f15ca21793dc48e51a8b42d765d11406ed7c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a7182b765b6370108e4fab8c7eb4dd3007c818734a77fe6400c530f3799b8ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "validation",
+    "detection_head": "3a596e24bff2e7c02ad8e55bbfc062916880de9e",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-image-human-first-failure.json;candidate-rebuild:source-plan-6649c944:1986126-triangles-46615548bytes;original-terminal-failed",
+    "diagnosis": "Actual two-reference CLI plan passed strict schema and matched visible clothing parameters. Original prototype failed body connectivity. Deterministic candidate rebuild of unchanged plan now passes closed manifold positive volume and geometry limits after certified internal numerical-cavity repair and constrained Steiner triangulation; original failed job remains unchanged. Independent visual review still rejects collar neck and cloth drape fidelity.",
+    "next_action": "Complete observed visual repairs using the same plan; freeze and independently review source; rerun actual native image-led workflow and all remaining acceptance cases before closing parent.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:38:55.215921+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T05:52:14.788693+00:00",
+  "sha256": "dae9a9428d004ef6c80f0d1886b145663afecc5a95bde2111f248d08fa983707"
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "kind": "independent_final_calibration_consumer_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; did not author consumer/service code, tests, native acceptance helpers or spellcheck configuration",
+  "reviewed_at_utc": "2026-11-08T08:59:38.028588+00:00",
+  "state": "approved_exact_consumer_and_test_config_delta_native_and_business_acceptance_pending",
+  "scope": "Source audit and independent synthetic/local Blender regression for final calibration/age consumer, service preflight, test-only native assertions/runner and narrow spellcheck configuration. No real GPT/Codex generation or native editor execution was performed by this reviewer.",
+  "source_sha256": {
+    "tools/ainative/sculpt_provider.py": "1d84bbe9706568aacaf166306b26d4d4c1c32fbd7b7e60b70d210553dede3685",
+    "tools/ainative/test_sculpt_provider.py": "9c76834985810e2cd7066147502236a6bfb8b6fdf0b53c7ec611b99143f55db3",
+    "tools/ainative/generation_service.py": "76aa3d57a0aa8b606fc355cd12df020317988610cc946c370343b7629813ef5b",
+    "tools/ainative/test_sculpt_service.py": "10cf1c6d72635a5756c252d730d79245da3f0c41cfc73f171c094c59b6b25e12",
+    "tests/editor/sculpt_cli_acceptance.gd": "99f4a4e8649633f4569875358479e8d2c880503f4acca33eacc0370287bc9901",
+    "tests/editor/run_sculpt_cli.py": "357fae7e1734cd8cd1f8979f0c42a94d7c4f599f31aecf15940b907612ac4315",
+    "pyproject.toml": "ed8e5e1e974a08d2933cb2e1d8e67a6269e0124131b84d8e0af252089567b0f0"
+  },
+  "runtime_dependency_sha256": {
+    "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+    "tools/ainative/anatomy_calibration.py": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+    "tools/ainative/executor.py": "91f3cd3e778c50487119f059508358e4512dd347f069c7d4c0414c2f8c4b6801",
+    "tools/ainative/test_executor.py": "41ec3f7f732a39a9a67ca415b556a54cd5d368a8ad26d9951603b6a5ac0b0fb4"
+  },
+  "prior_component_review": {
+    "path": "data-collection/maliang-gpt-modeling-20261108-garment-calibration-independent-review.json",
+    "sha256": "1bbf761d8801e210efd116c31e199bff47f4d6212949c5456af3f151d0cd630b",
+    "scope": "Frozen0950 builder and8b59 actual calibration origin/data; this new record adds consumer/config/test-helper scope without editing previous records"
+  },
+  "findings": [],
+  "verified_behavior": [
+    "Runtime reads only one bounded AST CALIBRATION literal and never imports/executes asset code. It validates exact schema, PNG base64/digest/structure/CRC/dimensions and builder/helper byte bindings before CLI authentication/model submission.",
+    "The actual calibration module is included in runtime fingerprint inputs. Inputs and calibration metadata are rechecked before the CLI turn and around local construction, so stale/missing/changed calibration fails safely and remains bound to the actual request receipt.",
+    "Up to two USER reference images retain ordered roles/scopes/strengths/reference_sha256. The internal image is appended separately at user attachment count+1, records user_reference=false and internal_fixed_operator_calibration, and uses image_sha256 metadata rather than reserved inline content keys.",
+    "Distinct USER image digest count controls text/single-view/multiview policy and completion mode; internal calibration never increases that count. Prompt explicitly distinguishes USER evidence and says to ignore baseline for nonhuman organic models.",
+    "Optional requested/effective age_blend provenance is matched using the builder shared resolver with finite0..1 bounds and non-boolean numeric types. Missing/null preserves historical age-label defaults; original plans and parameter objects remain intact.",
+    "Service mesh discovery checks actual calibration validity before launching Blender probe and keeps existing image-only service behavior independent. Regression coverage confirms no ComfyUI/neural service call is introduced for the sculpt mode.",
+    "Executor regressions still reject malformed inline results, fail permanent invalid results durably without cache/publication/repeated submissions, and recover transient polling/fetch errors without resubmission.",
+    "Native acceptance test adds actual receipt calibration purpose/PNG/attachment checks while preserving the existing two-user-image digest/order/role checks. Runner reads expected PNG digest through AST/literal_eval and retains explicit --real-cli opt-in.",
+    "Final one-word labeled spelling change is byte-proven equivalent to the independently full-tested07dbc consumer after reversing exactly that one occurrence. Two affected policy/prompt tests and static checks pass on the final1d84 bytes."
+  ],
+  "tests": {
+    "full_source_cohort": {
+      "provider_sha256": "07dbc2a8cac78e43b904b421eda4724a50c7de06340b3cf535c58640bbccbe4e",
+      "result": "62 tests passed, no skips",
+      "seconds": 40.344,
+      "modules": [
+        "test_sculpt_provider33",
+        "test_sculpt_service7",
+        "test_executor22"
+      ],
+      "source_binding": {
+        "exit_code": 0,
+        "seconds": 40.48399999999674,
+        "source_sha256_before": {
+          "tools/ainative/sculpt_provider.py": "07dbc2a8cac78e43b904b421eda4724a50c7de06340b3cf535c58640bbccbe4e",
+          "tools/ainative/test_sculpt_provider.py": "9c76834985810e2cd7066147502236a6bfb8b6fdf0b53c7ec611b99143f55db3",
+          "tools/ainative/generation_service.py": "76aa3d57a0aa8b606fc355cd12df020317988610cc946c370343b7629813ef5b",
+          "tools/ainative/test_sculpt_service.py": "10cf1c6d72635a5756c252d730d79245da3f0c41cfc73f171c094c59b6b25e12",
+          "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+          "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "tools/ainative/anatomy_calibration.py": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+          "tools/ainative/executor.py": "91f3cd3e778c50487119f059508358e4512dd347f069c7d4c0414c2f8c4b6801",
+          "tools/ainative/test_executor.py": "41ec3f7f732a39a9a67ca415b556a54cd5d368a8ad26d9951603b6a5ac0b0fb4",
+          "pyproject.toml": "3269e20c00ee486d1bb59afa0faa6e64fd0fa5493d39d9e7a31b8af5667af351"
+        },
+        "source_sha256_after": {
+          "tools/ainative/sculpt_provider.py": "07dbc2a8cac78e43b904b421eda4724a50c7de06340b3cf535c58640bbccbe4e",
+          "tools/ainative/test_sculpt_provider.py": "9c76834985810e2cd7066147502236a6bfb8b6fdf0b53c7ec611b99143f55db3",
+          "tools/ainative/generation_service.py": "76aa3d57a0aa8b606fc355cd12df020317988610cc946c370343b7629813ef5b",
+          "tools/ainative/test_sculpt_service.py": "10cf1c6d72635a5756c252d730d79245da3f0c41cfc73f171c094c59b6b25e12",
+          "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+          "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+          "tools/ainative/anatomy_calibration.py": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+          "tools/ainative/executor.py": "91f3cd3e778c50487119f059508358e4512dd347f069c7d4c0414c2f8c4b6801",
+          "tools/ainative/test_executor.py": "41ec3f7f732a39a9a67ca415b556a54cd5d368a8ad26d9951603b6a5ac0b0fb4",
+          "pyproject.toml": "3269e20c00ee486d1bb59afa0faa6e64fd0fa5493d39d9e7a31b8af5667af351"
+        },
+        "log_sha256": "56de9e2b32a8e26e360dd2195b36b57eaea43ea74d8f50fe4399e6be392d18a6"
+      },
+      "log_path": "project/build-support/builder-garment-audit-20261108/provider-service-executor-final-tests.log",
+      "binding_sha256": "76599592cf5b0d3ae339bb6cd65cce6deebc7c241049ca3514774cbc2ff57bac"
+    },
+    "legacy_service_cohort": {
+      "result": "16 tests passed, no skips",
+      "seconds": 9.294,
+      "modules": [
+        "test_modeling_service5",
+        "test_generation_service11"
+      ],
+      "source_binding": {
+        "exit_code": 0,
+        "seconds": 9.406000000002678,
+        "source_sha256_before": {
+          "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+          "tools/ainative/test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e",
+          "tools/ainative/generation_service.py": "76aa3d57a0aa8b606fc355cd12df020317988610cc946c370343b7629813ef5b",
+          "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+          "tools/ainative/codex_provider.py": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1"
+        },
+        "source_sha256_after": {
+          "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+          "tools/ainative/test_generation_service.py": "979dd0f139aaa68cc6ffc1ca9b819b2007df3ca93ffa0e970acaa7e24dd4857e",
+          "tools/ainative/generation_service.py": "76aa3d57a0aa8b606fc355cd12df020317988610cc946c370343b7629813ef5b",
+          "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+          "tools/ainative/codex_provider.py": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1"
+        },
+        "log_sha256": "8c5d1f5a03de85f5272cce066ddb148911f0ad77dcde1a662d90dc2faaa42cef"
+      },
+      "log_path": "project/build-support/builder-garment-audit-20261108/legacy-service-final-repeat-tests.log",
+      "binding_sha256": "7c22496ce9bfda846c89112fd76940ae5ef1f320893c4b6c411a91c146bf2af0",
+      "earlier_harness_note": "Earlier16 tests also passed; an unrelated concurrent authorized pyproject change invalidated an overly broad harness config guard. This clean repeat binds actual service/test dependencies and is the authoritative result."
+    },
+    "final_spelling_delta": {
+      "provider_sha256": "1d84bbe9706568aacaf166306b26d4d4c1c32fbd7b7e60b70d210553dede3685",
+      "result": "2 affected tests passed",
+      "seconds": 0.936,
+      "exact_delta": "Only labelled -> labeled in calibration prompt; reversing that known occurrence reproduces SHA07dbc2a8… exactly",
+      "log_path": "project/build-support/builder-garment-audit-20261108/provider-final-spelling-tests.log",
+      "log_sha256": "7f3d155a9209b1552fc6a875a4b2e5e1cd64f5e1c975541e0995478f960836d6"
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed on four final consumer/service source/test files",
+      "ruff": "All checks passed;4 files already formatted",
+      "mypy": "Success: no issues found in4 source files"
+    },
+    "runtime": "Synthetic executable CLI only plus actual installed Blender5.1.0 for the two provider geometry tests; legacy HTTP tests use local synthetic servers. No paid inference call.",
+    "native_runner_digest_function": {
+      "result": "Actual expected PNG digest returned correctly without engine/CLI startup",
+      "png_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+      "scope": "Read-only function extracted from the trusted local runner; full native execution is pending parent integration"
+    }
+  },
+  "spellcheck_configuration": {
+    "sha256": "ed8e5e1e974a08d2933cb2e1d8e67a6269e0124131b84d8e0af252089567b0f0",
+    "reviewed_added_skip_paths": [
+      "tools/ainative/anatomy_calibration.py",
+      "data-collection/maliang-gpt-modeling-20261108-complex-builder-review.json"
+    ],
+    "reviewed_added_ignore_words": [
+      "deriver",
+      "localy"
+    ],
+    "rationale": "Encoded PNG bytes are not prose; the exact earlier issued review bytes must be preserved; the two words are a technical noun and existing local-Y coordinate identifier. Labels/generator/runtime/tests remain spellcheckable.",
+    "scope": "Exact paths and two specific words only; no broad source/test exclusion and no weakening of AST/PNG/digest validation.",
+    "asset_recheck": {
+      "module_sha256": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+      "png_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+      "literal_only": true,
+      "matches_original_executed_derivation": true
+    }
+  },
+  "limitations": [
+    "Actual calibrated native cases, linked node preview/publish/reopen and final bundle byte integration remain the parent integrator checks.",
+    "Photorealistic reference fidelity, stylized and organic quality, hidden-surface consistency and overall business acceptance are not established by this component/source review."
+  ]
+}

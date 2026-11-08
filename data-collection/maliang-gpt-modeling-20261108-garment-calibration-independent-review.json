@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "kind": "independent_garment_builder_and_fixed_calibration_data_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; did not author builder/tests, deriver or calibration data",
+  "reviewed_at_utc": "2026-11-08T08:41:31.810999+00:00",
+  "state": "approved_frozen_builder_and_fixed_calibration_data_only_provider_native_and_business_acceptance_pending",
+  "scope": "Independent read-only audit and actual local Blender tests/rebuilds of the frozen builder, plus source/AST/PNG/provenance review of the executed fixed calibration deriver/data. No paid CLI calls, no implementation edits, no changes to prior review records or original real-run artifacts.",
+  "source_sha256": {
+    "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+    "tools/ainative/test_sculpt_builder.py": "7b2d6d90260b3f7e575153846482e4b80a81b5e331c6d18c5ca53c5275b2734b",
+    "misc/scripts/derive_maliang_calibration.py": "6c8da8060bfe16a98c23d68fcc2c654fcd3506c36c58f6eb6e6a57570aff91ca",
+    "tools/ainative/anatomy_calibration.py": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a"
+  },
+  "dependency_sha256": {
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+  },
+  "source_encoding": "Bound source/data files are UTF-8 without BOM and LF; builder/tests/helpers unchanged before/after independent suite and rebuilds.",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "finding": "Genuine n2-photo plan produced two disconnected561-vertex trouser leg shells when belt_height=.515 clipped away the seat. The provider plan was valid; rejecting its split mesh was correct.",
+      "fix": "Trouser waist now derives from canonical hip seat independently from decorative/default belt height. The original plan remains byte-identical and the one-component guard remains strict.",
+      "verification": "Independent unchanged n2 source SHA107c3a5b… rebuild passes with every part closed; final suite includes exact photo and low-belt topology coverage."
+    },
+    {
+      "finding": "Actual n2 diagnostic2 closed shoes left4144/14010 masked forefoot BODY vertices outside each shoe, up to14.196mm.",
+      "fix": "Fixed closed footwear uses bounded support-ring geometry based on actual morphed feet, retaining forefoot coverage after subdivision.",
+      "verification": "Independent three-ray inside test on final own n2 GLB finds0/14010 outside each side at approximately0.5mm tolerance, using a mask that excludes the heel/ankle opening."
+    },
+    {
+      "finding": "Initial calibration deriver imported by module name while hashing an arbitrary builder argument, and could overwrite an existing module silently.",
+      "fix": "Deriver requires canonical basename and exact imported __file__, captures source hashes before imports, rechecks source/generator around rows and output, and refuses existing module unless explicit --replace-module.",
+      "verification": "Executed final origin binds current exact generator/builder/helpers/module/PNG; generated module is one literal and all nine sheet panels equal actual render files pixel for pixel."
+    }
+  ],
+  "verified_design": [
+    "Model inputs remain bounded JSON data; optional trouser_color/footwear_color are null-or-RGBA and age_blend is null-or-finite0..1. Fresh strict schema requires these nullable keys, while absent/null legacy fields preserve prior defaults during expansion without modifying original plan data.",
+    "All age deformation paths use shared resolve_age_blend. Receipt records requested/effective age coefficients, while source-plan hash and original parameter object remain unchanged.",
+    "Garment waistband follows measured pre-thickness outer surface sections; rolled cuffs follow actual closed hem loops. Layered wrap front and upper-chest inner panel are real thickened geometry, not painted seams.",
+    "Canonical BODY stays one closed surface with no skin VDB, head/hand splicing or external component filtering. Generic organic fusion retains its bounded connected/manifold checks. Body/accessory components, positive volume and nondegenerate triangles remain mandatory.",
+    "Actual post-modifier limits remain2M triangles/1M vertices/64MiB GLB; fixed source plan/grid budgets and output no-overwrite checks remain enforced. No arbitrary region dropping or weaker topology guard was introduced.",
+    "Actual GLB position counts and index triangle totals match final receipts; requested/fallback independent trouser and footwear colors are present in the exported material factors within float32 tolerance.",
+    "Calibration renders three fixed ordinary-data baselines with no target image, model or network. Full body/front face/+X profile cameras match the builder axis transform and fixed1.8m/7.5-head controls. GLB geometry is exported before the clay view-layer rendering override.",
+    "Calibration Python module contains exactly one AST assignment of a literal CALIBRATION value. Decoded PNG, dimensions, source hashes, controls and actual receipt hashes match the executed artifact/origin; no module execution was used for this review."
+  ],
+  "tests": {
+    "independent_builder_suite": {
+      "result": "28 tests passed, no skips",
+      "unittest_seconds": 59.076,
+      "actual_blender": "5.1.0 background/factory-startup/disable-autoexec",
+      "source_binding": {
+        "exit_code": 0,
+        "seconds": 59.15700000000652,
+        "source_sha256_before": {
+          "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+          "tools/ainative/test_sculpt_builder.py": "7b2d6d90260b3f7e575153846482e4b80a81b5e331c6d18c5ca53c5275b2734b",
+          "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "source_sha256_after": {
+          "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+          "tools/ainative/test_sculpt_builder.py": "7b2d6d90260b3f7e575153846482e4b80a81b5e331c6d18c5ca53c5275b2734b",
+          "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+          "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+        },
+        "log_sha256": "6a37c56a02243e1d1594fb65482ea74c28975936150781390c52ff562bc382e7"
+      },
+      "log_path": "project/build-support/builder-garment-audit-20261108/builder-final-28-tests.log",
+      "binding_sha256": "5dbed87678e4a2c177f99b9420dc232d2a6780b93e87e509cfaf3ea568ce7029"
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed for frozen builder, final tests and calibration deriver",
+      "ruff": "All checks passed;3 files already formatted",
+      "mypy": "Success: no issues found in3 source files"
+    },
+    "independent_original_plan_rebuilds": {
+      "all_passed": true,
+      "runtime_unchanged": true,
+      "cases": [
+        {
+          "label": "h1",
+          "seconds": 7.25,
+          "source_sha256": {
+            "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+            "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+            "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+          },
+          "source_plan_file_sha256": "6649c944b6c82a7d3db800078248f5d56949d173e8e6da862f4bb3e0d639fdce",
+          "source_plan_canonical_sha256": "6649c944b6c82a7d3db800078248f5d56949d173e8e6da862f4bb3e0d639fdce",
+          "original_source_unchanged": true,
+          "glb_sha256": "2ce52c3073f18913cd64db8ee7ff330d400bf141e9e72be423f1706539b486f5",
+          "glb_bytes": 4314028,
+          "receipt_sha256": "f4b28a8b414194d85ace28d75d7659235a4d0e08a4574ba319c83efda3739420",
+          "host_validation": {
+            "vertices": 119718,
+            "primitives": 23,
+            "bytes": 4314028
+          },
+          "vertices": 119718,
+          "triangles": 239376,
+          "parts": 23,
+          "actual_index_triangles": 239376,
+          "all_parts_closed_positive_nondegenerate": true,
+          "parameters_preserved": true,
+          "actual_glb_colors_match_requested_or_fallback": true,
+          "renders": [
+            "preview_front.png",
+            "preview_back.png",
+            "preview_left.png",
+            "preview_right.png",
+            "preview_threequarter.png"
+          ],
+          "log_sha256": "9d75a0d3d33272ca9277e3d88a85ad94193bab69ff6b0ef81bb35a818d904213"
+        },
+        {
+          "label": "n2",
+          "seconds": 15.875,
+          "source_sha256": {
+            "tools/ainative/sculpt_builder.py": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+            "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+            "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+          },
+          "source_plan_file_sha256": "107c3a5b44e18aadf87e90cccbb0f197092f003f33040f51e2d8c062a2b75f15",
+          "source_plan_canonical_sha256": "107c3a5b44e18aadf87e90cccbb0f197092f003f33040f51e2d8c062a2b75f15",
+          "original_source_unchanged": true,
+          "glb_sha256": "5fa5dc26beff831adc0166b235e7b1853dcdaca15394b45f989de46dd36164c9",
+          "glb_bytes": 17208672,
+          "receipt_sha256": "4706df70a979c404a9d22ba8460d151ea07ed099d8dde78720b0f4134da077c1",
+          "host_validation": {
+            "vertices": 384798,
+            "primitives": 14,
+            "bytes": 17208672
+          },
+          "vertices": 384798,
+          "triangles": 769568,
+          "parts": 14,
+          "actual_index_triangles": 769568,
+          "all_parts_closed_positive_nondegenerate": true,
+          "parameters_preserved": true,
+          "actual_glb_colors_match_requested_or_fallback": true,
+          "renders": [
+            "preview_front.png",
+            "preview_back.png",
+            "preview_left.png",
+            "preview_right.png",
+            "preview_threequarter.png"
+          ],
+          "log_sha256": "354cb95fd42baabe1137ccec5b6499477450d293aa9fb6f0154fc3e2f8f241db"
+        }
+      ]
+    },
+    "rebuild_report_path": "project/build-support/builder-garment-audit-20261108/final-0950-independent-rebuilds.json",
+    "rebuild_report_sha256": "06324987a34f239d876b38460a964b1f10157af265746ba04b18edf85e524555",
+    "forefoot_coverage": {
+      "scope": "Actual exported BODY forefoot vertices, three oblique parity rays, heel/ankle excluded; this measures coverage, not shoe shape quality",
+      "final": {
+        "source_glb_sha256": "5fa5dc26beff831adc0166b235e7b1853dcdaca15394b45f989de46dd36164c9",
+        "height": 1.7982003567158245,
+        "foot_mask": "side-specific BODY Y < 0.065*height and Z >= foot_zmin + .55*foot_length; foot bounds use Y<.08*height; excludes heel/ankle opening",
+        "tolerance_m": 0.000499500099087729,
+        "feet": {
+          "L": {
+            "tested_body_vertices": 14010,
+            "outside_vertices": 0,
+            "outside_ratio": 0.0,
+            "maximum_outside_distance_m": 0
+          },
+          "R": {
+            "tested_body_vertices": 14010,
+            "outside_vertices": 0,
+            "outside_ratio": 0.0,
+            "maximum_outside_distance_m": 0
+          }
+        }
+      },
+      "script_path": "project/build-support/builder-garment-audit-20261108/foot_coverage_probe.py",
+      "script_sha256": "289ebb2a0a6876d7e14040869bd5fa797ddd3d0d6ed760e2ab71be01ce4d3856",
+      "report_sha256": "c53ca79ab063901c6d10d670bd5b28980a8f89433c1334eb2c9a968625e8aad7"
+    }
+  },
+  "calibration_asset": {
+    "all_passed": true,
+    "module_literal_only": true,
+    "module_sha256": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+    "module_bytes": 1003036,
+    "png_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+    "png_bytes": 749467,
+    "dimensions": [
+      1152,
+      1462
+    ],
+    "generator_sha256": "6c8da8060bfe16a98c23d68fcc2c654fcd3506c36c58f6eb6e6a57570aff91ca",
+    "baseline_builder_sha256": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+    "baseline_runtime_sha256": {
+      "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+      "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+    },
+    "scope": "fixed operator baseline calibration, NOT user target or reconstructed result",
+    "origin_sha256": "747f2aaa6e0f7370e70d4109f4997b4f0496a36b51661737f3a29f7d37b3af2b",
+    "render_settings": {
+      "engine": "CYCLES",
+      "device": "CPU",
+      "samples": 16,
+      "seed": 0,
+      "denoising": true
+    },
+    "blender_versions": [
+      "5.1.0"
+    ],
+    "pillow_version": "12.3.0",
+    "panels": [
+      {
+        "row": 1,
+        "age": "adult",
+        "age_blend": 0.0,
+        "source_plan_sha256": "242540d60dc90611ab35ed24d1f460af0920255bbc1b730526d44c679596e934",
+        "glb_sha256": "237b1cd32f173efed20c9741868d98a20f9745c769ab3299d4679dcead9380e1",
+        "parts": 13,
+        "body_manifold": true,
+        "geometry_retained": true
+      },
+      {
+        "row": 2,
+        "age": "elder",
+        "age_blend": 0.65,
+        "source_plan_sha256": "c342e55867a5a4e332f3254ec50c12c902bcd93cf295a796375b0d47624a7086",
+        "glb_sha256": "6d37e79fc0cc09bcf7d16b93738690ebe9b5507e52cd0c1b5582320872dc062e",
+        "parts": 13,
+        "body_manifold": true,
+        "geometry_retained": true
+      },
+      {
+        "row": 3,
+        "age": "elder",
+        "age_blend": 1.0,
+        "source_plan_sha256": "4d7a81539896dd6315db0d78ad5de8ff20588a2a6a8b3ecbfe876ddb3f6541ec",
+        "glb_sha256": "3089397129791e521975d5fbb77c73cf28b9508a67b623da548b30e09af13eae",
+        "parts": 13,
+        "body_manifold": true,
+        "geometry_retained": true
+      }
+    ],
+    "actual_sheet_path": "D:/m543/operator-calibration-r1/operator-calibration.png",
+    "contact_sheet_panels_pixel_identical_to_actual_row_renders": 9,
+    "visual_observation": "Viewed actual sheet: entire bodies/heads remain in frame, front/profile and three age coefficients are visibly distinct, and labels explicitly identify baseline rather than a target/reconstruction.",
+    "independent_report_path": "project/build-support/builder-garment-audit-20261108/calibration-independent-data-checks.json",
+    "independent_report_sha256": "8e49f143af14f5e81b0d85713f300db1953d409a02bd5dd70410aec9006d06f7",
+    "reproducibility": "Exact source/controls/cameras and renderer settings are bound; cross-version byte-identical PNG is not asserted."
+  },
+  "scope_boundaries": [
+    "Provider age/calibration loading, third CLI attachment semantics, bundling and final native workflow still require their own exact-source integration review; the prior02478 provider color-guidance approval does not implicitly cover the new consumer delta.",
+    "Historical3d6 h1 success and original failed n2 remain immutable evidence. New0950 rebuilds interpret identical genuine source plans and do not claim a new GPT generation request.",
+    "This review does not establish reference facial identity, photorealistic rendering, organic-case fidelity, hidden-surface truth or overall business acceptance. Final native/new real-case checks remain the parent integrator responsibility."
+  ]
+}

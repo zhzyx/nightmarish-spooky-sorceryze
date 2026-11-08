@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-operator-calibration-data",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T08:42:51.968646+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "ordinary_calibration_data_validated_consumer_and_actual_fidelity_pending",
+    "scope": "fixed operator baseline calibration, NOT user target or reconstructed result",
+    "module_sha256": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a",
+    "png_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413",
+    "dimensions": [
+      1152,
+      1462
+    ],
+    "baseline_builder_sha256": "09502523cb5d75dfdaa6be3e17dac154d753b276c002865f766ed98b16d71cd6",
+    "baseline_runtime_sha256": {
+      "anatomy_base_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+      "anatomy_body_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+    },
+    "generator_sha256": "6c8da8060bfe16a98c23d68fcc2c654fcd3506c36c58f6eb6e6a57570aff91ca",
+    "age_blends": [
+      0.0,
+      0.65,
+      1.0
+    ],
+    "baseline_plan_sha256": [
+      "242540d60dc90611ab35ed24d1f460af0920255bbc1b730526d44c679596e934",
+      "c342e55867a5a4e332f3254ec50c12c902bcd93cf295a796375b0d47624a7086",
+      "4d7a81539896dd6315db0d78ad5de8ff20588a2a6a8b3ecbfe876ddb3f6541ec"
+    ],
+    "controls": "Default relative face/head factors1, height1.8m/head_ratio7.5, bald A-pose; three actual fixed-operator age delta blends",
+    "actual_local_renderer": {
+      "blender_versions": [
+        "5.1.0"
+      ],
+      "pillow_version": "12.3.0",
+      "settings": {
+        "engine": "CYCLES",
+        "device": "CPU",
+        "samples": 16,
+        "seed": 0,
+        "denoising": true
+      },
+      "reproducibility": "Pinned source/controls/cameras; byte-identical PNG across renderer or denoiser versions is not asserted"
+    },
+    "source": "Only pinned CC0 ordinary anatomy assets and fixed geometry; no user target image, online model call or neural weight",
+    "read_boundary": "One AST literal assignment; no executable calibration module loaded",
+    "independent_review": {
+      "file": "data-collection/maliang-gpt-modeling-20261108-garment-calibration-independent-review.json",
+      "sha256": "1bbf761d8801e210efd116c31e199bff47f4d6212949c5456af3f151d0cd630b",
+      "observed": "All9 panels equal actual renders; source/plan/receipt hashes agree;28 actual Blender tests pass; final shoes contain all14010 forefoot vertices per side"
+    },
+    "spellcheck_correction": {
+      "original_failure": "Repository codespell write-changes altered random base64 token words; production actual-asset validator rejected corruption before any CLI",
+      "corrupted_module_sha256": "632bdf6fa763eb522ca43c9ea7a5d8fac1ce3d7659382016d8c177c12aeabfbc",
+      "recovery": "Exact original literal reconstructed from immutable PNG+origin; original byte digest restored and verified",
+      "config": "Only generated encoded PNG literal exempted from prose spellcheck; generator text and strict AST/PNG/source binding stay checked",
+      "repeat_exit_code": 0,
+      "repeat_log_bytes": 0,
+      "repeat_module_sha256": "8b592eb5d1030626ce1e151ee7f2b3223a718ab441571b718bcc744a3c02b89a"
+    },
+    "actual_cli_usage": null,
+    "next_action": "Freeze/test consumer, rebuild native bundle, request actual image-led plans using clearly separated fixed-operator baseline, and inspect resulting human/organic meshes; this image is not a reconstructed target or business acceptance"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-elder-visual-failure"
+  ]
+}
