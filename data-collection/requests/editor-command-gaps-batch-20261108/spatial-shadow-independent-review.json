@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_spatial_shadow_and_pending_production_diff_review",
+  "reviewer": "final_independent_review; no production implementation authorship",
+  "baseline_source_commit": "6e50f89070c109604b23034586f2d9aa4b78fd46",
+  "result": "no_unresolved_blocking_finding_identified_in_current_two_production_file_increment",
+  "findings": [],
+  "spatial_alpha_rename": {
+    "path": "editor/docks/ai_chat_editor_spatial_actions.cpp",
+    "before_sha256": "6db55c31e2be8a3e5aa05ce3a8946426016da353768fd2f68f868afb183733a9",
+    "after_sha256": "fed3cbc692fd566be636b8a8847c4519041a793e3f336b5c1fadfe45da0da124",
+    "renaming": {
+      "before": "node",
+      "after": "collision_node",
+      "scope": "NativeSpatialEdit::polygon CollisionPolygon2D else-if branch"
+    },
+    "region_identical_after_inverse_alpha_rename": true,
+    "outside_region_byte_identical": true,
+    "semantic_assessment": "Cast, setter, ObjectDB target re-resolution and success comparison are unchanged. The preceding Polygon2D branch local and shared target/succeeded members are unchanged; the rename only removes the MSVC nested-if declaration shadow."
+  },
+  "remaining_production_diff": {
+    "path": "editor/docks/ai_chat_editor_complex_actions.cpp",
+    "sha256": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+    "assessment": "Byte-identical to the production fix already independently reviewed and exercised by the five-group Tree-boundary native regression. No additional change found.",
+    "existing_review": "data-collection/requests/editor-command-gaps-batch-20261108/tree-boundary-independent-revalidation.json",
+    "existing_review_sha256": "096295475c117e476d7ac89775830aa2d1bd51c0207a9824fe540beafc863cab",
+    "native_artifact_note": "Existing Tree evidence remains on actual artifact 3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0; not relabeled as an execution on the subsequent spatial-variable rebuild."
+  },
+  "diagnostic_assessment": [
+    "Original PR566 MSVC C4456 excerpt matches the CollisionPolygon2D local declaration shadowing the preceding if-initializer local.",
+    "The optional broader -Wshadow-all object probe failed at an unchanged core/math/dynamic_bvh.h field shadow. This is not recorded as a passed strict compile and does not justify modifying unrelated source in this increment."
+  ],
+  "limits": [
+    "This is a source/evidence review. No duplicate native or spatial suite was run by this reviewer for the alpha-rename.",
+    "Necessary parent-owned rebuild/checks and successful new exact-candidate Windows CI must still be established separately.",
+    "Earlier Tree vulnerability finding and repair validation originals are unchanged; only the new report is written."
+  ],
+  "production_state_changed": false
+}

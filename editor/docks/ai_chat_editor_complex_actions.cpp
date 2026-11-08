@@ -43,6 +43,7 @@
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/scene/curve_editor_plugin.h"
 #include "editor/scene/gradient_editor_plugin.h"
+#include "editor/scene/scene_tree_editor.h"
 #include "scene/gui/graph_edit.h"
 #include "scene/gui/graph_node.h"
 #include "scene/gui/item_list.h"
@@ -75,6 +76,29 @@ bool integer(const Variant &p_value, int p_min, int p_max, int &r_value) {
 bool number(const Variant &p_value, double p_min, double p_max) {
 	return (p_value.get_type() == Variant::INT || p_value.get_type() == Variant::FLOAT) && Math::is_finite(double(p_value)) && double(p_value) >= p_min && double(p_value) <= p_max;
 }
+// Scene writes use their dedicated owner/history-aware route and fresh human
+// confirmation. A generic editable Tree cell must not create a second route.
+bool scene_tree_context(Tree *p_tree) {
+	if (!p_tree) {
+		return false;
+	}
+	for (Node *ancestor = p_tree; ancestor; ancestor = ancestor->get_parent()) {
+		if (Object::cast_to<SceneTreeEditor>(ancestor)) {
+			return true;
+		}
+	}
+	// Keep this boundary if a plugin reparents the real widget: the native
+	// scene editor still owns its business callback even outside its subtree.
+	List<Object::Connection> connections;
+	p_tree->get_signal_connection_list(SNAME("item_edited"), &connections);
+	for (const Object::Connection &connection : connections) {
+		if (Object::cast_to<SceneTreeEditor>(ObjectDB::get_instance(connection.callable.get_object_id()))) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool graph_name(const Variant &p_value) {
 	if (p_value.get_type() != Variant::STRING) {
 		return false;
@@ -541,7 +565,9 @@ Array AIChatEditorComplexActions::actions(Node *p_node) {
 		}
 	} else if (Object::cast_to<Tree>(p_node)) {
 		a.push_back("read_tree_cells");
-		a.push_back("edit_tree_cell");
+		if (!scene_tree_context(Object::cast_to<Tree>(p_node))) {
+			a.push_back("edit_tree_cell");
+		}
 		a.push_back("activate_tree_item");
 		a.push_back("tree_context_menu");
 	} else if (Object::cast_to<ItemList>(p_node)) {
@@ -621,6 +647,12 @@ Dictionary AIChatEditorComplexActions::perform(Node *p_node, const String &p_id,
 	}
 	const String action = p_args.get("action", "");
 	const bool resource_history = action == "undo_resource_edit" || action == "redo_resource_edit";
+	if (action == "edit_tree_cell" && scene_tree_context(Object::cast_to<Tree>(p_node))) {
+		Dictionary denied = result(false, "scene_action_required");
+		denied["required_action"] = "scene_rename_node";
+		return denied;
+	}
+
 	if (!actions(p_node).has(action)) {
 		return result(false, "unsupported_target_action");
 	}

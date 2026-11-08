@@ -346,10 +346,10 @@ public:
 			node->set_polygon(p_points);
 			node = ObjectDB::get_instance<Polygon2D>(target);
 			succeeded = node && node->get_polygon() == p_points;
-		} else if (CollisionPolygon2D *node = Object::cast_to<CollisionPolygon2D>(object)) {
-			node->set_polygon(p_points);
-			node = ObjectDB::get_instance<CollisionPolygon2D>(target);
-			succeeded = node && node->get_polygon() == p_points;
+		} else if (CollisionPolygon2D *collision_node = Object::cast_to<CollisionPolygon2D>(object)) {
+			collision_node->set_polygon(p_points);
+			collision_node = ObjectDB::get_instance<CollisionPolygon2D>(target);
+			succeeded = collision_node && collision_node->get_polygon() == p_points;
 		}
 	}
 	void animation(Ref<Animation> p_snapshot) {

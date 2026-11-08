@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0d0edd4ea63b5bbcc149e9b291a744667a73f8c3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a182bc0085dd5cc09c664b2743a97694742bf0cda5e71b03ba8aa7593265282",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/560",
+    "action": "validation",
+    "detection_head": "6e50f89070c109604b23034586f2d9aa4b78fd46",
+    "context_sha256": "4728365ca769f7d611f16e2e35a2522898a5606d0b8b9993438edb8ebec4678d",
+    "operator": "kaiyunxue",
+    "worker": "codex-command-gaps-batch",
+    "authority_ref": "Issue559 authorized implementation and delivery",
+    "evidence": "data-collection/requests/editor-command-gaps-batch-20261108/safe-successor-local-validation.json",
+    "diagnosis": "Formal validator process was invoked without the required Node runtime PATH. This is a host invocation error, not a product or source failure. Rerunning with the established runtime PATH and retaining failed original invocation.",
+    "next_action": "Record corrected framework and gate receipts, commit actual new events and submit successor",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T07:55:46.188752+00:00",
+    "attempted": null,
+    "repair_owner": "codex-command-gaps-batch",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-08T07:56:35.160890+00:00",
+  "sha256": "29f62a72ff2ca9b5193885e42947cf7e892e86d4754359d1f9349fc471b8c1f4"
+}

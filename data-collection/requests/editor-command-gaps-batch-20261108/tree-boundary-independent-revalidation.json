@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_scene_tree_confirmation_boundary_revalidation",
+  "reviewer": "final_independent_review; did not modify production repair",
+  "result": "original_P1_reproduced_then_fixed_in_reviewed_native_scope",
+  "original_finding": {
+    "report_reference": "issue559-tree-confirmation-independent-review.json",
+    "report_sha256": "82a6848cebad8a61e59803d97acee83156737e7d2b1e4d27f543f463af6a782e",
+    "priority": "P1",
+    "finding_id": "scene-tree-cell-edit-manual-confirmation-bypass",
+    "artifact_with_reproduced_bypass": "fc91ebe1df7bbcdddcb0bf0dc413b4cdeac89658608ba00238ab32c04042fe9e"
+  },
+  "repair_assessment": [
+    "New scene_tree_context checks actual native SceneTreeEditor ancestors and actual item_edited callback owners. Reparenting the native widget does not remove its boundary.",
+    "New generic edit is removed from advertised Tree capabilities for that context and perform rejects it independently with scene_action_required, required_action=scene_rename_node.",
+    "Compound aliases depend on the actual descendant native action advertisement and revalidate it. They cannot turn this rejected scene Tree edit back into an accepted generic action.",
+    "Routing scene mutations through the existing dedicated scene action preserves its established object/scene ownership/history and fresh manual-confirmation checks. No second scene write path or independently incomplete history fence is introduced.",
+    "Ordinary unrelated Tree editing retains the existing confirmation/auto-execute behavior."
+  ],
+  "native_validation": {
+    "path": "data-collection/requests/editor-command-gaps-batch-20261108/tree-boundary-native-validation.json",
+    "sha256": "f5bf65a74658f59a86311b58de866b7713ac393f8984d59b10a1387fd1dc6d16",
+    "artifact_sha256": "3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0",
+    "ok": true,
+    "checks": [
+      "Actual scene Tree omits generic edit and refuses auto-execute mutation",
+      "Dedicated scene rename waits despite auto-execute and changes only after native test approval",
+      "Ordinary editable Tree preserves existing auto-execute behavior and native callback",
+      "Reparented actual native Tree remains guarded through its SceneTreeEditor callback owner",
+      "Compound declaration cannot advertise or forward a prohibited scene Tree edit"
+    ],
+    "confirmation": "Private test emits a native signal only after observing dedicated scene action awaiting manual confirmation; not real human approval."
+  },
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+    "editor/docks/ai_chat_editor_registry.cpp": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+    "editor/docks/ai_chat_dock.cpp": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+    "editor/scene/scene_tree_editor.cpp": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0",
+    "tests/editor/run_scene_tree_cell_guard.py": "e8336ae3e8c61b0e1165a29167f044253ca56840e151e5a6b35b0ee09b6a668b",
+    "tests/editor/scene_tree_cell_guard.gd": "379ee72aecdef6784e9455fab2c0d3e473d8ce1669fc38a10f72580a151e0f1c"
+  },
+  "test_implementation_note": "Two private fixture setup mistakes were corrected before the passing run: reveal the 2D scene view first, and attach synthetic ordinary/compound controls under the Editor base control for normal registry discovery. No product policy was relaxed to make the test pass.",
+  "limits": [
+    "No production editor/project/owner/history/queue/user application was modified. User editor-settings digest stayed unchanged.",
+    "The passing native artifact is the actually copied Tree-repair binary; subsequent spatial local-variable-only rebuilds must not be relabeled as this execution.",
+    "CI and signed/main delivery recovery require later actual receipts. Earlier immutable finding and full-review originals remain preserved.",
+    "This revalidation resolves the specific reproduced SceneTreeEditor native Tree-edit boundary; it is not exhaustive approval of every callback, plugin or editor surface."
+  ]
+}

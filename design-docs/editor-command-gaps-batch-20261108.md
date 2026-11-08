@@ -73,3 +73,5 @@
 首个签名候选c8a966（作者40b89ac）在PR #564的静态与Windows严格编译检查失败，未合入。修正importlib loader空值保护、规范include/版权头、继承成员同名局部变量以及有界计数的整数符号比较；未放宽警告、权限或CI。原始测试/独立审查原件保留，增量证明及必要重编/复验另存ci-correction-validation.json与ci-correction-independent-review.json。远端成功、main合入及原单整体验收仍各自需要真实回执。
 
 第二个签名候选d539e1（作者43ea5069，PR #565）的静态检查、clang-cl编辑器和导出模板已通过，但MSVC编辑器在新动作列表分页报C4701。另加offset/limit显式初始化及四个实际原生断言；msvc-init-validation.json与独立增量审查保留这个失败及后继验证，不覆盖旧报告，不放宽编译警告。
+
+第三个候选374cdb（PR #566）未合入：MSVC编辑器在Polygon2D/CollisionPolygon2D相邻分支发现C4456，修正仅为后一局部变量更名。同时独立实际原生检查复现SceneTreeEditor通用Tree单元格编辑可经自动执行绕过专用场景改名的真人确认。新增保护按真实SceneTreeEditor祖先及原生回调所有者拒绝该通用写入口，提示使用已有scene_rename_node；普通Tree仍保留原有行为。5组原生回归覆盖专用确认、普通Tree、重挂载和复合声明，原始发现及修复独立证据另存tree-boundary-*，不覆盖早期审查。额外-Wshadow-all探测在未修改的dynamic_bvh.h既有字段遮蔽处失败，未修改该无关文件，亦不记为通过；常规构建和实际后继CI分别核验。

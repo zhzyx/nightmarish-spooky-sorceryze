@@ -1,0 +1,19 @@
+{
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "host_invocation_correction",
+  "original_gate": {
+    "passed": false,
+    "reason": "Required Node runtime absent from PATH; formal framework verification failed"
+  },
+  "corrected_invocation": {
+    "runtime": "Established bundled Node runtime added to PATH",
+    "framework_mode": "approved_file_integrity",
+    "gate_state": "local_checks_passed"
+  },
+  "limits": [
+    "Original invocation was not reclassified as successful.",
+    "Kuafu automatic recheck reported BlockingIOError; explicit corrected local gate receipt exists.",
+    "Local validation grants neither remote acceptance nor production authorization."
+  ]
+}
