@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-21746607c0077a9cded94883266129cb4ffab635",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7b52810126b8426752448e94d75ff408f39d6e1504994f679dba376ca14057c9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/547",
+    "action": "delivery",
+    "detection_head": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "context_sha256": "364e5b8318395e3b2b351173444e7fd5255592b8fcee1fb51f00e6849f0e6bc7",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "Current user GPT CLI modeling delivery request in this chat",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-ci-format-review.json",
+    "diagnosis": "After original PR548 merged, independent-review JSON became committed evidence. Gate correctly refused adding a revision in the same historical file. Restored exact main bytes and saved formatter review as a new append-only CI review artifact; no runtime or prior evidence changed.",
+    "next_action": "Stage only appended evidence and exact formatter exception, then sign and verify its CI/main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:53:54.562569+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T03:55:01.861061+00:00",
+  "sha256": "8a142aefb518e62acfb445de14a46ab997774c8952285f8fd9af34a0c9a5cfbe"
+}
