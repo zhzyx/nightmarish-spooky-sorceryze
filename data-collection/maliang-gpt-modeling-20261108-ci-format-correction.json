@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42444100927",
+  "failure": "file-format hook tried to replace CRLF of the exact host snapshot referenced by immutable request; all other hooks passed",
+  "correction": "Narrow exact-file exception in existing file-format hook; existing .gitattributes already preserves this immutable snapshot. Snapshot bytes and original request identity remain unchanged.",
+  "runtime_source_change": false,
+  "paid_cli_repeated": false,
+  "independent_review": "data-collection/maliang-gpt-modeling-20261108-ci-format-review.json"
+}

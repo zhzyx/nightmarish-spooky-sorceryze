@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0674ee2222bfd02e94d85eac7e642a8fd01523c3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f46ef80f9671373930a750dc1d696fd7e74fa252935dfd3abf047254f242dc14",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/547",
+    "action": "delivery",
+    "detection_head": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "context_sha256": "364e5b8318395e3b2b351173444e7fd5255592b8fcee1fb51f00e6849f0e6bc7",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "Current user GPT CLI modeling delivery request in this chat",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42444100927",
+    "diagnosis": "CI file-format hook does not consult .gitattributes and tried to normalize the preserved immutable host snapshot. All other static hooks passed. Added a single exact-path exception alongside existing immutable snapshot exceptions; source snapshot and modeling runtime unchanged. Exact regex coverage checked with negative neighboring cases; independent review requested.",
+    "next_action": "Sign corrected exact candidate, let new CI verify it, supersede prior failed PR, then verify main and close related work orders.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:44:51.973912+00:00",
+    "attempted": "Fetched only failed CI log, identified the sole file-format change, preserved original snapshot digest.",
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T03:49:14.662510+00:00",
+  "sha256": "dad4a2e83c08f30e482374103bc3be2c7b4c52c971792f1566c24577efe2bf87"
+}
