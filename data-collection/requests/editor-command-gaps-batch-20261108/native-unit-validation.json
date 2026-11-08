@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "returncode": 0,
+  "editor_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "private_native_unit_validation",
+  "test_cases": {
+    "passed": 23,
+    "failed": 0
+  },
+  "assertions": {
+    "passed": 346,
+    "failed": 0
+  },
+  "output_sha256": "6a33bbd47c14b6ca3b201ce3178aa55bc12f7cfe5b0f0dd3e95804f174dfe406",
+  "expected_diagnostics": [
+    "Two deliberate synchronous free-during-signal regression cases emit the engine Object destructor diagnostic. Both complete without a crash; this is not a claim of diagnostic-free execution."
+  ],
+  "source_manifest": {
+    "core/input/input.cpp": "46dbf7f92862b6e192866f21a92dbd87a5eac34d4836106ad23c56816ee71038",
+    "tests/core/input/test_input_semantic.cpp": "fdb60b2ebdcea4d3ccf2797fb2646ad09fd5055f11b453e681ef1da842cd05e7",
+    "editor/docks/ai_chat_editor_registry.cpp": "1cbfeb6fc6d9948b359a8eaeb6c5412c02c4cae99350847cfeed2413684e24e7",
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "24f7f8542166abaea34b357915e0a68a8aa4f9da7ba13d564c835b49ff948f1a",
+    "scene/gui/tree.cpp": "ca961b96252e61510039585e92d92112b69660697aa34dc3d1d5b69ca81a0191",
+    "scene/gui/menu_bar.cpp": "fbec59f8e96ff57fbecea65d9cbe11cc32d3c23c7f697f1a6b490d5b690059e4",
+    "scene/gui/rich_text_label.cpp": "d12811bc8bcc331e8fdd55b2f9d5673f2b76865da5cd22f3183a249e5b53644f",
+    "scene/main/window.cpp": "6669e2659992ac935686d5a6826806fd4ead7950c31ba3ddeacee943a115d3fa",
+    "tests/editor/test_ai_chat_editor_complex.cpp": "f44891186e124d67271779e38abf1c0c8b89263fc96fecd5f886de1347a35355",
+    "editor/docks/ai_chat_sub_agents.h": "97597f8344303072b1696f556e3e951abb20c3ff8a0f13cc7e2ed0d2057ec3cc",
+    "tests/editor/test_ai_chat_tools.cpp": "d1e82b3eb61b6aa5cfe41ae9094e5d46c7fc97c997833a1a2f5d918d7da25a5b",
+    "tests/editor/run_command_gap_unit.py": "1b8a032a69b02890e61f8e5e6fd196e1644f91f5529cbc1012d14c6eff58fd78"
+  }
+}

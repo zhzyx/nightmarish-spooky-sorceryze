@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "json_representation_only_static_correction",
+  "failed_pr": 570,
+  "failed_head": "041ce7873ed49e231e85261e10d0bf8ca6468a86",
+  "failure_check": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42461477640/job/128671491393",
+  "diagnosis": "One duplicate static run passed; the full PR run scanned new evidence records and rejected the quoted original misspelling. Previous local path enumeration omitted new untracked files.",
+  "correction": "Archive original bytes and hashes first, then escape the first character of the reported word in three JSON values; decoded JSON remains identical. No product, tests, permission or checker configuration changed.",
+  "archive": "data-collection/requests/editor-command-gaps-batch-20261108/immutable-originals-archive.json",
+  "validation_requirement": "Run codespell against final staged path union after all new evidence and event records are staged; require all exact-head applicable checks before merging.",
+  "limits": [
+    "Original failed head remains failed.",
+    "Byte encoding changed and is not described as identical; exact prior bytes are preserved in archive and source commit.",
+    "No prior runtime execution is relabeled for evidence representation changes."
+  ]
+}

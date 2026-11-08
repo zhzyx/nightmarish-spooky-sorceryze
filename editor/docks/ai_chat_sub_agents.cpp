@@ -209,8 +209,8 @@ bool AIChatDock::_is_review_child() const {
 }
 
 String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
-	if (!busy || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || backend->get_selected() == 1 || !history_writable || snapshot_transaction_failed || snapshot_restoring || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || design_batches.has(active_agent) || queue_paused || !queued_messages.is_empty()) {
-		return "Error: A read-only review requires an authorized active API/Codex parent with no pending batch, queue or restore. No reviewer was started.";
+	if (!busy || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !AIChatSubAgents::supports_read_only_backend(backend->get_selected()) || !history_writable || snapshot_transaction_failed || snapshot_restoring || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || design_batches.has(active_agent) || queue_paused || !queued_messages.is_empty()) {
+		return "Error: A read-only review requires an authorized active parent with no pending batch, queue or restore. No reviewer was started.";
 	}
 	const int64_t issue = _work_order_binding("issue_number").to_int();
 	const String review_request = _work_order_binding("request_id");

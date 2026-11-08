@@ -34,6 +34,7 @@
 #include "core/debugger/debugger_marshalls.h"
 #include "core/debugger/remote_debugger.h"
 #include "core/input/input.h"
+#include "core/io/json.h"
 #include "core/io/resource_loader.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
@@ -1021,6 +1022,7 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 HashMap<String, ScriptEditorDebugger::ParseMessageFunc> ScriptEditorDebugger::parse_message_handlers;
 
 void ScriptEditorDebugger::_init_parse_message_handlers() {
+	parse_message_handlers["scene:semantic_input"] = &ScriptEditorDebugger::_msg_semantic_input;
 	parse_message_handlers["debug_enter"] = &ScriptEditorDebugger::_msg_debug_enter;
 	parse_message_handlers["debug_exit"] = &ScriptEditorDebugger::_msg_debug_exit;
 	parse_message_handlers["set_pid"] = &ScriptEditorDebugger::_msg_set_pid;
@@ -1356,6 +1358,9 @@ void ScriptEditorDebugger::_stop_and_notify() {
 }
 
 void ScriptEditorDebugger::stop() {
+	semantic_input_generation++;
+	semantic_input_receipt.clear();
+	semantic_input_last_action.clear();
 	set_process(false);
 	threads_debugged.clear();
 	debugging_thread_id = Thread::UNASSIGNED_ID;
@@ -2547,4 +2552,39 @@ ScriptEditorDebugger::~ScriptEditorDebugger() {
 		peer.unref();
 	}
 	memdelete(scene_tree);
+}
+
+// This is scoped to this debugger peer and generation, never the editor/OS input queue.
+Dictionary ScriptEditorDebugger::get_semantic_input_state() const {
+	Dictionary state;
+	state["generation"] = int64_t(semantic_input_generation);
+	state["instance"] = int64_t(get_instance_id());
+	state["remote_pid"] = remote_pid;
+	state["receipt"] = semantic_input_receipt.duplicate(true);
+	state["last_action_receipt"] = semantic_input_last_action.duplicate(true);
+	return state;
+}
+
+void ScriptEditorDebugger::request_semantic_input(const Dictionary &p_request) {
+	Array semantic_request_data;
+	semantic_request_data.push_back(p_request);
+	_put_msg("scene:semantic_input", semantic_request_data);
+}
+
+void ScriptEditorDebugger::_msg_semantic_input(uint64_t p_thread_id, const Array &p_data) {
+	if (p_data.size() == 1 && p_data[0].get_type() == Variant::DICTIONARY) {
+		const Dictionary receipt = p_data[0];
+		if (receipt.get("editor_generation", Variant()) == Variant(int64_t(semantic_input_generation))) {
+			if (JSON::stringify(receipt).utf8().length() > 8192 || receipt.get("request_id", Variant()).get_type() != Variant::STRING || String(receipt["request_id"]).length() > 128) {
+				semantic_input_receipt.clear();
+				semantic_input_receipt["ok"] = false;
+				semantic_input_receipt["error"] = "game_receipt_capacity_or_identity";
+				return;
+			}
+			semantic_input_receipt = receipt.duplicate(true);
+			if (receipt.get("status", "") != Variant("observed")) {
+				semantic_input_last_action = receipt.duplicate(true);
+			}
+		}
+	}
 }

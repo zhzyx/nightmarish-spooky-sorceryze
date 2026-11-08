@@ -1,0 +1,230 @@
+{
+  "ok": true,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "editor_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+  "cases": [
+    {
+      "case": "chat_sessions",
+      "state": "passed"
+    },
+    {
+      "case": "rename waits despite autoexec",
+      "state": "passed"
+    },
+    {
+      "case": "stale confirmation rejected",
+      "state": "passed"
+    },
+    {
+      "case": "chat_create_child",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_sessions",
+      "state": "passed"
+    },
+    {
+      "case": "chat_close_session",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_sessions",
+      "state": "passed"
+    },
+    {
+      "case": "chat_schedule_create",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedules",
+      "state": "passed"
+    },
+    {
+      "case": "chat_schedule_update",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedule_enable",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedules",
+      "state": "passed"
+    },
+    {
+      "case": "chat_schedule_select",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedule_run",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_sessions",
+      "state": "passed"
+    },
+    {
+      "case": "chat_state",
+      "state": "passed"
+    },
+    {
+      "case": "chat_close_session",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedule_delete",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_schedules",
+      "state": "passed"
+    },
+    {
+      "case": "chat_set_model_id",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_set_reasoning",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_configuration",
+      "state": "passed"
+    },
+    {
+      "case": "chat_set_cli_path",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_set_runtime_field",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "png oversized header rejected before decode",
+      "state": "passed"
+    },
+    {
+      "case": "jpg oversized header rejected before decode",
+      "state": "passed"
+    },
+    {
+      "case": "webp oversized header rejected before decode",
+      "state": "passed"
+    },
+    {
+      "case": "image file replacement rejects stale confirmation",
+      "state": "passed"
+    },
+    {
+      "case": "chat_attachment_add",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_attachments",
+      "state": "passed"
+    },
+    {
+      "case": "chat_attachment_remove",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_attachments",
+      "state": "passed"
+    },
+    {
+      "case": "headless clipboard reports unavailable",
+      "state": "passed"
+    },
+    {
+      "case": "chat_attachment_add",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_attachments",
+      "state": "passed"
+    },
+    {
+      "case": "chat_attachment_remove",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_attachment_add",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_attachments",
+      "state": "passed"
+    },
+    {
+      "case": "chat_attachment_remove",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_history",
+      "state": "passed"
+    },
+    {
+      "case": "chat_show_history",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_host_context",
+      "state": "passed"
+    },
+    {
+      "case": "chat_close_session",
+      "state": "passed",
+      "confirmation": "private native signal"
+    },
+    {
+      "case": "chat_sessions",
+      "state": "passed"
+    }
+  ],
+  "limitations": [
+    "Private native confirmations simulate the host; no human approval claimed.",
+    "No production LLM/account, mounted-host successful owner flow, scheduler actual business execution, CodeBuddy provider, OS UI or visual rendering acceptance claimed.",
+    "Positive clipboard image input requires a display; headless verifies explicit unavailability only.",
+    "Nonempty historical snapshot diff viewing/restoration were not exercised; empty history view and foreign snapshot refusal were verified.",
+    "Headless editor exited with status 0 and passed all checks, but emitted RID/resource leak warnings during teardown; this is not a leak-free shutdown claim."
+  ],
+  "schema_version": 1,
+  "kind": "private_native_chat_command_validation",
+  "source_baseline": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "checks_passed": 44,
+  "artifact_binding": "Private self-contained executable copy SHA256 matched final build; no production editor used.",
+  "fixture_sources": {
+    "tests/editor/chat_command_gaps.gd": "6c6e35bf3cb3df72e7a2f9301bed4c3e0f4f559e4169b72fcc1e456b66abae77",
+    "tests/editor/run_chat_command_gaps.py": "915d145025135696284f3bd60d83accf768a1d27352fd637e963c821fd8b9e1a"
+  },
+  "teardown_warnings": [
+    "ERROR: 5 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+    "ERROR: 20 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+    "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+    "ERROR: 377 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+    "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+    "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+    "ERROR: 21 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit."
+  ]
+}

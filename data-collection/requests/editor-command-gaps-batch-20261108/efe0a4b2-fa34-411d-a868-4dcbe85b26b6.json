@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "collected_at": "2026-11-08T08:12:11.887685+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/editor-command-gaps-batch-native-validation-20261108.json",
+      "sha256": "901121c51fcc57cc685bcad407cc6193078b979d55aba8475cb9b4257ec3ef50",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "editor-command-gaps-batch-native-validation-20261108",
+      "origin": "explicit-authorized-host-request"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/editor-command-gaps-batch-request-20261108.json",
+      "sha256": "de48ef6b2af8044b5b29e995956a0a8da52c9586d125fcc9a52bba378fa260b4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "editor-command-gaps-batch-request-20261108",
+      "origin": "explicit-authorized-host-request"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-02cbef3f25bb2f85c0e5b9af28a3276fd6a5780a.json",
+      "sha256": "ea665796489055035c79eed248e548252e2beb914329b29557c82a69842aaa8a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-02cbef3f25bb2f85c0e5b9af28a3276fd6a5780a",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-0d0edd4ea63b5bbcc149e9b291a744667a73f8c3.json",
+      "sha256": "f662fc4ac28e88b9a190fe9c32b1553f4d7da3766f3ffd95aa4da56c49abf903",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-0d0edd4ea63b5bbcc149e9b291a744667a73f8c3",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-15b44ff3e90fad54d1aea4acfe5425de23eaf72d.json",
+      "sha256": "52884913a14cf491fe19dd817b94bafd07dfb5c7e86661cc0be2ed24759212b6",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-15b44ff3e90fad54d1aea4acfe5425de23eaf72d",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-51a8098938d80a907e0dfccb93a978a3da198823.json",
+      "sha256": "2058414a705de6af672422b7d669671040752b5a0b118019f48184973a1db8cc",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-51a8098938d80a907e0dfccb93a978a3da198823",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json",
+      "sha256": "4cba5b0cddd6c16c3803314442a97d1e25294a1aba25c6b1b9e4bc6e7ea7185e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5e441f2d59de8725e74ad6560d3510577fde8680.json",
+      "sha256": "51b7807020145407e41342e55826ae059ea91cb05b1da0b1df44147fbabbb8c4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5e441f2d59de8725e74ad6560d3510577fde8680",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-60911538670118b18baa4b328dc4dd97c9096596.json",
+      "sha256": "d1b532f6c67126d524b6237a3740999dbff6d88c21f759f26842892bbe2d013a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-60911538670118b18baa4b328dc4dd97c9096596",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-81c9f3c82e6942d02a48002abc83ad85f66298da.json",
+      "sha256": "46f7ce799185aa0686321fdff8fb7dd4b48955a896f5e5df2b75dcfdf929c29a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-81c9f3c82e6942d02a48002abc83ad85f66298da",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-d7dd0a314fa4ca976969dcbd6866a3650a40339c.json",
+      "sha256": "e3775a51685470f7f62292d37ae088bc333ef1915337554a7541ae6783e00488",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-d7dd0a314fa4ca976969dcbd6866a3650a40339c",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-dbeff63440d31ad61c276213e34b93c57b48ea84.json",
+      "sha256": "cf4219c25f6864eec0b4995c71987dba6542c838cfb847524a460fc2ff956146",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-dbeff63440d31ad61c276213e34b93c57b48ea84",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-ec2a1a031abe8eb798fb0238cc71abfa31404f9e.json",
+      "sha256": "5c72bece24a65fcee07b85144307724b3e6cf98e54d42465e3c988266b046557",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ec2a1a031abe8eb798fb0238cc71abfa31404f9e",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 559,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559"
+}

@@ -5870,6 +5870,38 @@ TreeItem *Tree::get_last_item() const {
 	return last;
 }
 
+bool Tree::edit_cell(TreeItem *p_item, int p_column, const Variant &p_value) {
+	if (!p_item || p_item->get_tree() != this || p_column < 0 || p_column >= get_columns() || !p_item->is_editable(p_column)) {
+		return false;
+	}
+	switch (p_item->get_cell_mode(p_column)) {
+		case TreeItem::CELL_MODE_CHECK: {
+			if (p_value.get_type() != Variant::BOOL) {
+				return false;
+			}
+			p_item->set_checked(p_column, p_value);
+		} break;
+		case TreeItem::CELL_MODE_STRING: {
+			if (p_value.get_type() != Variant::STRING || String(p_value).length() > 8192) {
+				return false;
+			}
+			p_item->set_text(p_column, p_value);
+		} break;
+		case TreeItem::CELL_MODE_RANGE: {
+			double min, max, step;
+			p_item->get_range_config(p_column, min, max, step);
+			if (!p_value.is_num() || !Math::is_finite(double(p_value)) || double(p_value) < min || double(p_value) > max) {
+				return false;
+			}
+			p_item->set_range(p_column, p_value);
+		} break;
+		default:
+			return false;
+	}
+	item_edited(p_column, p_item);
+	return true;
+}
+
 void Tree::item_edited(int p_column, TreeItem *p_item, MouseButton p_custom_mouse_index) {
 	edited_item = p_item;
 	edited_col = p_column;
@@ -5877,9 +5909,16 @@ void Tree::item_edited(int p_column, TreeItem *p_item, MouseButton p_custom_mous
 		edited_item->cells.write[p_column].dirty = true;
 		edited_item->cells.write[p_column].cached_minimum_size_dirty = true;
 	}
+	const ObjectID instance = get_instance_id();
 	emit_signal(SNAME("item_edited"));
+	if (!ObjectDB::get_instance(instance)) {
+		return;
+	}
 	if (p_custom_mouse_index != MouseButton::NONE) {
 		emit_signal(SNAME("custom_item_clicked"), p_custom_mouse_index);
+		if (!ObjectDB::get_instance(instance)) {
+			return;
+		}
 	}
 	queue_accessibility_update();
 }

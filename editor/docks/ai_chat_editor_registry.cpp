@@ -258,6 +258,46 @@ Variant control_value(Control *p_control) {
 	}
 	return Variant();
 }
+// Declarative compound aliases only reach existing native descendant actions.
+// They cannot name methods, signals, peer controls, protected roots or aliases.
+Array semantic_aliases(Control *p_owner) {
+	Array aliases;
+	if (!p_owner || !p_owner->has_meta("ai_control_semantic_actions") || AIChatEditorRegistry::is_protected(p_owner) || bool(p_owner->get_meta("ai_control_page_only", false))) {
+		return aliases;
+	}
+	const Variant raw = p_owner->get_meta("ai_control_semantic_actions", Variant());
+	if (raw.get_type() != Variant::ARRAY || Array(raw).size() > 64) {
+		return aliases;
+	}
+	HashSet<String> names;
+	for (const Variant &entry : Array(raw)) {
+		if (entry.get_type() != Variant::DICTIONARY) {
+			continue;
+		}
+		Dictionary declaration = entry;
+		Variant name = declaration.get("name", Variant()), path = declaration.get("target", Variant()), action_value = declaration.get("action", Variant());
+		if (name.get_type() != Variant::STRING || path.get_type() != Variant::STRING || action_value.get_type() != Variant::STRING) {
+			continue;
+		}
+		const String label = name, relative = path, action = action_value;
+		if (label.is_empty() || label.length() > 128 || names.has(label) || relative.is_empty() || relative.length() > 1024 || NodePath(relative).is_absolute() || relative.contains(":") || relative.split("/").has("..") || action == "read_semantic_actions" || action == "invoke_semantic_action" || action == "focus" || action == "open_target" || action == "reveal_target" || action == "highlight" || !AIChatEditorRegistry::supported(action)) {
+			continue;
+		}
+		Node *child = p_owner->get_node_or_null(NodePath(relative));
+		Control *control = Object::cast_to<Control>(child);
+		if (!child || !p_owner->is_ancestor_of(child) || AIChatEditorRegistry::is_protected(child) || bool(child->get_meta("ai_control_page_only", false)) || !(control ? AIChatEditorRegistry::actions(control) : AIChatEditorComplexActions::actions(child)).has(action)) {
+			continue;
+		}
+		Dictionary accepted;
+		accepted["name"] = label;
+		accepted["target"] = relative;
+		accepted["action"] = action;
+		accepted["target_instance"] = int64_t(child->get_instance_id());
+		aliases.push_back(accepted);
+		names.insert(label);
+	}
+	return aliases;
+}
 } // namespace
 
 bool AIChatEditorRegistry::_excluded(Node *p_node) {
@@ -419,6 +459,10 @@ Node *AIChatEditorRegistry::resolve_node(const String &p_id) const {
 
 Array AIChatEditorRegistry::actions(Control *p_control) {
 	Array result = AIChatEditorComplexActions::actions(p_control);
+	if (p_control->has_meta("ai_control_semantic_actions") && p_control->get_meta("ai_control_semantic_actions").get_type() == Variant::ARRAY && !bool(p_control->get_meta("ai_control_page_only", false))) {
+		result.push_back("read_semantic_actions");
+		result.push_back("invoke_semantic_action");
+	}
 	for (const char *action : { "open_target", "reveal_target", "highlight" }) {
 		result.push_back(action);
 	}
@@ -768,7 +812,7 @@ Dictionary AIChatEditorRegistry::status() const {
 }
 
 bool AIChatEditorRegistry::supported(const String &p_action) {
-	return AIChatEditorComplexActions::supports(p_action) || p_action == "read_items" || p_action == "select_text_range" || p_action == "read_text" || p_action == "append_text" || p_action == "replace_text_range" || p_action == "submit_text" || p_action == "undo_text" || p_action == "select_tree_item" || p_action == "expand_tree_item" || p_action == "select_item" || p_action == "select_tab" || p_action == "set_color" || p_action == "scroll_to" || p_action == "open_target" || p_action == "focus" || p_action == "set_text" || p_action == "set_value" || p_action == "select_option" || p_action == "press";
+	return p_action == "read_semantic_actions" || p_action == "invoke_semantic_action" || AIChatEditorComplexActions::supports(p_action) || p_action == "read_items" || p_action == "select_text_range" || p_action == "read_text" || p_action == "append_text" || p_action == "replace_text_range" || p_action == "submit_text" || p_action == "undo_text" || p_action == "select_tree_item" || p_action == "expand_tree_item" || p_action == "select_item" || p_action == "select_tab" || p_action == "set_color" || p_action == "scroll_to" || p_action == "open_target" || p_action == "focus" || p_action == "set_text" || p_action == "set_value" || p_action == "select_option" || p_action == "press";
 }
 
 Dictionary AIChatEditorRegistry::perform(Node *p_node, const String &p_id, const Dictionary &p_args, bool p_confirmed) {
@@ -782,6 +826,81 @@ Dictionary AIChatEditorRegistry::perform(Node *p_node, const String &p_id, const
 		}
 	}
 	const String action = p_args.get("action", "");
+	if (action == "read_semantic_actions" || action == "invoke_semantic_action") {
+		Control *owner = Object::cast_to<Control>(target_node);
+		Array aliases = semantic_aliases(owner);
+		if (!owner || bool(owner->get_meta("ai_control_page_only", false)) || aliases.is_empty()) {
+			return registry_result(false, "semantic_declaration_unavailable");
+		}
+		if (action == "read_semantic_actions") {
+			Dictionary response = registry_result(true);
+			int64_t offset = 0, limit = 0;
+			if (!registry_integer(p_args.get("offset", 0), 0, 64, offset) || !registry_integer(p_args.get("limit", 64), 1, 64, limit)) {
+				return registry_result(false, "invalid_semantic_page");
+			}
+			Array items;
+			for (int i = int(offset); i < MIN(aliases.size(), int(offset + limit)); i++) {
+				items.push_back(aliases[i]);
+			}
+			bound_items(items);
+			response["items"] = items;
+			response["total"] = aliases.size();
+			response["next_offset"] = offset + items.size() < aliases.size() ? Variant(offset + items.size()) : Variant();
+			response["truncated"] = offset + items.size() < aliases.size();
+			response["target_instance"] = int64_t(owner->get_instance_id());
+			return response;
+		}
+		const Variant raw = p_args.get("value", Variant());
+		if (raw.get_type() != Variant::DICTIONARY) {
+			return registry_result(false, "invalid_semantic_action");
+		}
+		Dictionary value = raw, selected;
+		for (const Variant &entry : aliases) {
+			if (Dictionary(entry)["name"] == value.get("name", Variant())) {
+				selected = entry;
+				break;
+			}
+		}
+		const Variant input = value.get("arguments", Dictionary());
+		if (selected.is_empty() || input.get_type() != Variant::DICTIONARY) {
+			return registry_result(false, "invalid_semantic_action");
+		}
+		Dictionary inner = Dictionary(input).duplicate(true);
+		for (const Variant &key : inner.keys()) {
+			if (key != "value" && key != "index" && key != "column" && key != "start" && key != "end" && key != "limit" && key != "offset") {
+				return registry_result(false, "invalid_semantic_argument");
+			}
+		}
+		Node *child = ObjectDB::get_instance<Node>(ObjectID(uint64_t(int64_t(selected["target_instance"]))));
+		inner["action"] = selected["action"];
+		Dictionary preview = perform(child, p_id, inner, false);
+		if (!bool(preview.get("confirmation_required", false))) {
+			return preview;
+		}
+		Dictionary observed;
+		observed["declaration_hash"] = JSON::stringify(aliases).sha256_text();
+		observed["child_instance"] = preview["target_instance"];
+		observed["child_state"] = preview["old_value"];
+		Dictionary response = registry_result(false);
+		response["target_instance"] = int64_t(owner->get_instance_id());
+		response["old_value"] = observed;
+		response["new_value"] = value;
+		if (!p_confirmed) {
+			response["confirmation_required"] = true;
+			response["manual_confirmation_required"] = preview.get("manual_confirmation_required", false);
+			return response;
+		}
+		if (p_args.get("expected_target_instance", Variant()) != response["target_instance"] || JSON::parse_string(JSON::stringify(p_args.get("expected_old_value", Variant()))) != JSON::parse_string(JSON::stringify(observed))) {
+			return registry_result(false, "semantic_target_changed_since_confirmation");
+		}
+		inner["expected_target_instance"] = preview["target_instance"];
+		inner["expected_old_value"] = preview["old_value"];
+		const int64_t owner_instance = int64_t(owner->get_instance_id());
+		Dictionary forwarded = perform(child, p_id, inner, true);
+		forwarded["semantic_owner_instance"] = owner_instance;
+		forwarded["semantic_action"] = selected["name"];
+		return forwarded;
+	}
 	if (AIChatEditorComplexActions::supports(action)) {
 		return complex_actions.perform(p_node, p_id, p_args, p_confirmed);
 	}

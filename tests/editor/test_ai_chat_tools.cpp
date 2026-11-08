@@ -656,6 +656,11 @@ TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized des
 	CHECK(prompt.contains("Issue #47"));
 	CHECK(prompt.contains("design-docs/requirement-x.md"));
 	CHECK(prompt.contains("get_parent_context"));
+	for (int backend : { 0, 1, 2, 3 }) {
+		CHECK(AIChatSubAgents::supports_read_only_backend(backend));
+	}
+	CHECK_FALSE(AIChatSubAgents::supports_read_only_backend(-1));
+	CHECK_FALSE(AIChatSubAgents::supports_read_only_backend(4));
 	CHECK(AIChatSubAgents::is_state("interrupted"));
 	CHECK_FALSE(AIChatSubAgents::is_state("unknown"));
 }

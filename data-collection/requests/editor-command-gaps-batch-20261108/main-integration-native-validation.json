@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "main_integration_native_validation",
+  "upstream_main": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+  "integration_commit": "ad234297",
+  "upstream_pr": 567,
+  "conflicts": false,
+  "build": {
+    "passed": true,
+    "artifact_sha256": "d31e4598a66a6a05941c3a3fa21c4ada40c5155bccceac64c7c744fdb440ac4c",
+    "log_sha256": "e4525d9edf8ff1c6699a1a23692dc4db0392d2b74911fe6f2022d5310df4a1be"
+  },
+  "chat": {
+    "ok": true,
+    "issue_number": 559,
+    "request_id": "editor-command-gaps-batch-20261108",
+    "editor_sha256": "d31e4598a66a6a05941c3a3fa21c4ada40c5155bccceac64c7c744fdb440ac4c",
+    "cases": [
+      {
+        "case": "chat_sessions",
+        "state": "passed"
+      },
+      {
+        "case": "rename waits despite autoexec",
+        "state": "passed"
+      },
+      {
+        "case": "stale confirmation rejected",
+        "state": "passed"
+      },
+      {
+        "case": "chat_create_child",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_sessions",
+        "state": "passed"
+      },
+      {
+        "case": "chat_close_session",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_sessions",
+        "state": "passed"
+      },
+      {
+        "case": "chat_schedule_create",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedules",
+        "state": "passed"
+      },
+      {
+        "case": "chat_schedule_update",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedule_enable",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedules",
+        "state": "passed"
+      },
+      {
+        "case": "chat_schedule_select",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedule_run",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_sessions",
+        "state": "passed"
+      },
+      {
+        "case": "chat_state",
+        "state": "passed"
+      },
+      {
+        "case": "chat_close_session",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedule_delete",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_schedules",
+        "state": "passed"
+      },
+      {
+        "case": "chat_set_model_id",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_set_reasoning",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_configuration",
+        "state": "passed"
+      },
+      {
+        "case": "chat_set_cli_path",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_set_runtime_field",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "png oversized header rejected before decode",
+        "state": "passed"
+      },
+      {
+        "case": "jpg oversized header rejected before decode",
+        "state": "passed"
+      },
+      {
+        "case": "webp oversized header rejected before decode",
+        "state": "passed"
+      },
+      {
+        "case": "image file replacement rejects stale confirmation",
+        "state": "passed"
+      },
+      {
+        "case": "chat_attachment_add",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_attachments",
+        "state": "passed"
+      },
+      {
+        "case": "chat_attachment_remove",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_attachments",
+        "state": "passed"
+      },
+      {
+        "case": "headless clipboard reports unavailable",
+        "state": "passed"
+      },
+      {
+        "case": "chat_attachment_add",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_attachments",
+        "state": "passed"
+      },
+      {
+        "case": "chat_attachment_remove",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_attachment_add",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_attachments",
+        "state": "passed"
+      },
+      {
+        "case": "chat_attachment_remove",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_history",
+        "state": "passed"
+      },
+      {
+        "case": "chat_show_history",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_host_context",
+        "state": "passed"
+      },
+      {
+        "case": "chat_close_session",
+        "state": "passed",
+        "confirmation": "private native signal"
+      },
+      {
+        "case": "chat_sessions",
+        "state": "passed"
+      }
+    ],
+    "limitations": [
+      "Private native confirmations simulate the host; no human approval claimed.",
+      "No production LLM/account, mounted-host successful owner flow, scheduler actual business execution, CodeBuddy provider, OS UI or visual rendering acceptance claimed.",
+      "Positive clipboard image input requires a display; headless verifies explicit unavailability only.",
+      "Nonempty historical snapshot diff viewing/restoration were not exercised; empty history view and foreign snapshot refusal were verified."
+    ]
+  },
+  "tree": {
+    "schema_version": 1,
+    "issue_number": 559,
+    "request_id": "editor-command-gaps-batch-20261108",
+    "kind": "private_native_scene_tree_confirmation_regression",
+    "ok": true,
+    "checks": [
+      "Actual scene Tree omits generic edit and refuses auto-execute mutation",
+      "Dedicated scene rename waits despite auto-execute and changes only after native test approval",
+      "Ordinary editable Tree preserves existing auto-execute behavior and native callback",
+      "Reparented actual native Tree remains guarded through its SceneTreeEditor callback owner",
+      "Compound declaration cannot advertise or forward a prohibited scene Tree edit"
+    ],
+    "confirmation": "Private native signal only after asserting the manual boundary; not human approval",
+    "limits": [
+      "Isolated headless native editor; no production project, owner, credentials or OS UI tested."
+    ],
+    "editor_sha256": "d31e4598a66a6a05941c3a3fa21c4ada40c5155bccceac64c7c744fdb440ac4c",
+    "native_log_sha256": "f0cce8878689071aa970cfb435dcadb1f2ea1e56579f2c87759b7a6eca13e882",
+    "user_settings_unchanged": true,
+    "source_manifest": {
+      "editor/docks/ai_chat_editor_complex_actions.cpp": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+      "editor/docks/ai_chat_editor_registry.cpp": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+      "editor/docks/ai_chat_dock.cpp": "0cb072f757e8791f6aeb5c00ad34cee875e275eeb106a7e48eb9e38e77b880cc",
+      "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+      "editor/scene/scene_tree_editor.cpp": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0",
+      "tests/editor/run_scene_tree_cell_guard.py": "e8336ae3e8c61b0e1165a29167f044253ca56840e151e5a6b35b0ee09b6a668b",
+      "tests/editor/scene_tree_cell_guard.gd": "379ee72aecdef6784e9455fab2c0d3e473d8ce1669fc38a10f72580a151e0f1c"
+    }
+  },
+  "unit": {
+    "ok": true,
+    "returncode": 0,
+    "editor_sha256": "d31e4598a66a6a05941c3a3fa21c4ada40c5155bccceac64c7c744fdb440ac4c",
+    "output": "[doctest] doctest version is \"2.4.12\"\n[doctest] run with \"--help\" for options\n===============================================================================\n[doctest] test cases:  23 |  23 passed | 0 failed | 1545 skipped\n[doctest] assertions: 350 | 350 passed | 0 failed |\n[doctest] Status: SUCCESS!\nERROR: Object '<Object#31608275462>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.\n   at: ~Object (core/object/object.cpp:2399)\nERROR: Object '<Object#38486933979>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.\n   at: ~Object (core/object/object.cpp:2399)\n"
+  },
+  "model_catalog": {
+    "binary_sha256": "d31e4598a66a6a05941c3a3fa21c4ada40c5155bccceac64c7c744fdb440ac4c",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "0cb072f757e8791f6aeb5c00ad34cee875e275eeb106a7e48eb9e38e77b880cc",
+      "editor/docks/ai_chat_dock.h": "1b8b6c3ff9ea807e5701132434783b32d0f9c09da00a8d8cd1a09b3b75e6998e",
+      "tools/codex_cli/godot_bridge.js": "466cdf1e249c987bca105baedfc77164f4f3c1ad34f14262f2d4d80a5726805a",
+      "tools/codebuddy_cli/godot_bridge.js": "a216b344d03884e15795389504810f24697c5eff7799c4dfdb18305fe6990bba"
+    },
+    "source_unchanged": true,
+    "provider": "Offline CLI/HTTP fixtures; real editor binary; no real inference",
+    "isolated_settings": true,
+    "results": [
+      {
+        "case": "session-reuse",
+        "checks": [
+          "manual refresh button absent",
+          "new session reused catalog without query; selections stayed independent; config change invalidated old catalog"
+        ],
+        "error": "",
+        "heartbeat": 135,
+        "ok": true,
+        "returncode": 0,
+        "events": [
+          {
+            "kind": "codex-login-status",
+            "pid": 11098
+          },
+          {
+            "kind": "codex-model-list",
+            "pid": 11111
+          }
+        ]
+      },
+      {
+        "case": "session-catalog-freshness",
+        "checks": [
+          "manual refresh button absent",
+          "same-connection login refresh replaced archived C1 with C2; independent choices survived"
+        ],
+        "error": "",
+        "heartbeat": 161,
+        "ok": true,
+        "returncode": 0,
+        "events": [
+          {
+            "kind": "codex-login-status",
+            "pid": 11141
+          },
+          {
+            "kind": "codex-model-list",
+            "pid": 11143
+          },
+          {
+            "kind": "codex-login-start",
+            "pid": 11144
+          },
+          {
+            "kind": "codex-login-success",
+            "pid": 11144
+          },
+          {
+            "kind": "codex-login-status",
+            "pid": 11145
+          },
+          {
+            "kind": "codex-model-list",
+            "pid": 11151
+          }
+        ]
+      },
+      {
+        "case": "shared-config-inflight",
+        "checks": [
+          "manual refresh button absent",
+          "external shared-config edit during in-flight C1 query retained only C2 catalog"
+        ],
+        "error": "",
+        "heartbeat": 162,
+        "ok": true,
+        "returncode": 0,
+        "events": [
+          {
+            "kind": "codex-login-status",
+            "pid": 11187
+          },
+          {
+            "kind": "codex-model-list",
+            "pid": 11190
+          },
+          {
+            "kind": "codex-login-status",
+            "pid": 11200
+          },
+          {
+            "kind": "codex-model-list",
+            "pid": 11219
+          }
+        ]
+      }
+    ],
+    "ok": true
+  },
+  "original_chat_fixture_failure": {
+    "error": "unsupported_reasoning_effort at high after session switching",
+    "log_sha256": "21aef025dcc049abedef21a69170cf395dc979a4f74fcd16e17f26cdcfdc68a6",
+    "diagnosis": "Private fixture assigned APIKey text without native text_changed; new connection-scoped catalog correctly rejected former connection metadata",
+    "correction": "Emit ordinary text_changed in private setup and wait for actual advertised high before lifecycle operations; production unchanged"
+  },
+  "source_manifest": {
+    "editor/docks/ai_chat_dock.cpp": "0cb072f757e8791f6aeb5c00ad34cee875e275eeb106a7e48eb9e38e77b880cc",
+    "editor/docks/ai_chat_dock.h": "1b8b6c3ff9ea807e5701132434783b32d0f9c09da00a8d8cd1a09b3b75e6998e",
+    "tests/editor/chat_command_gaps.gd": "819b73758e3ac3793aeaf123cf178598a07098f760d730937ed54157b3c1867c",
+    "tests/editor/run_chat_command_gaps.py": "5e6079fc26a80edab3875da326ab15b51c289726d36257421613aa0b364a0aa9"
+  },
+  "limits": [
+    "All runtime cases use isolated native editor and offline providers. Native approval is simulated, not human approval.",
+    "Upstream restart/system installation behavior was preserved and source-reviewed; no production restart performed.",
+    "Original headless cleanup warnings and deliberate free-during-signal diagnostics retained.",
+    "Exact successor CI and main delivery still require subsequent actual receipts."
+  ]
+}

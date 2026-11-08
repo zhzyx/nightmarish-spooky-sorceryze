@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "codebuddy_protocol_regression",
+  "ok": true,
+  "passed": 65,
+  "failed": 0,
+  "runtime": "Node 24.22.1",
+  "command": "node --test tests/editor/test_codebuddy_bridge.js tests/editor/test_codebuddy_acp.js tests/editor/test_codebuddy_terminal.js",
+  "log_sha256": "6dcaeef26291475cfee91863502b2f6bd1d500aac487e795d46ab8ec5be7f866",
+  "source_manifest": {
+    "tools/codebuddy_cli/godot_acp.js": "c2eca43f85fbf8473ff8d1ef676c58a6f3fb5b4553562c546e0612dcce8087d1",
+    "tools/codebuddy_cli/godot_bridge.js": "a216b344d03884e15795389504810f24697c5eff7799c4dfdb18305fe6990bba",
+    "tools/codebuddy_cli/godot_terminal.js": "415da2d538473c295bd7a34e7af3098de1253bec23ac6fce13bcb1bc319f0cec",
+    "tests/editor/test_codebuddy_acp.js": "8eb0258cebff26fcefe2d7866a6ad14911df09eafb32d7376927f59e3dff7bf2",
+    "tests/editor/test_codebuddy_bridge.js": "bbae7ead26f96d03694cdc2af358db8c17d56cdf70250108a29b3855874d2c6e",
+    "tests/editor/test_codebuddy_terminal.js": "f04a4599332a2ad601dbbd028b98f2b723b8a8f11c19a543861fb382caeee329",
+    "tests/editor/mock_codebuddy_cli.js": "6cda9315047815189a412b0d4709148bd89cbfe04bd1d0169cde62509be8ae59"
+  },
+  "limits": [
+    "These tests execute an explicit mock ACP process; they do not authenticate or exercise a production provider/account.",
+    "Readonly native Glob/Grep are disabled; reads use the declared host tool facade. Restricting writes/execution does not establish an independent OS sandbox."
+  ]
+}

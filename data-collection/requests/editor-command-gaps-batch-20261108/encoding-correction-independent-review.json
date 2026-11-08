@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_json_encoding_correction_review",
+  "result": "no_blocker_for_representation_only_correction",
+  "findings": [],
+  "archive_sha256": "0b9cf83ed68c1d94873ea632f1fbce6361d987b206a2671324f031119eb47087",
+  "correction_record_sha256": "7d5d18ae93e5021b2a877f4bf2a812be1e42e86e480ef4ab040e674b932dbede",
+  "records": [
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-independent-review.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "original_sha256": "4d7ee60bac2ad135df7a9f38ed0cba8a0b40135f491a5230c5cc50e8eea5c048",
+      "represented_sha256": "3b966fe21ad0c247ff20be9bbbd347f8650307f1ee887325a2393bdbdc71c33a",
+      "git_source_bytes_match_archive": true,
+      "base64_decodes_exactly": true,
+      "single_escape_only": true,
+      "parsed_json_strictly_equal": true
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "original_sha256": "214aecd53387df483785b47749a03ab4a6fbed1785413d77510eca2c7ff68772",
+      "represented_sha256": "7bbb1aacb9c15cdccfef12ee9277c43d5a6e1c0f47dd0f712d7e3965fb8a7b06",
+      "git_source_bytes_match_archive": true,
+      "base64_decodes_exactly": true,
+      "single_escape_only": true,
+      "parsed_json_strictly_equal": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "original_sha256": "4cba5b0cddd6c16c3803314442a97d1e25294a1aba25c6b1b9e4bc6e7ea7185e",
+      "represented_sha256": "1bd01635ad28ba5c2469e2b36efc93785c69d52d5f2fb5578e2cdaa8019cecf1",
+      "git_source_bytes_match_archive": true,
+      "base64_decodes_exactly": true,
+      "single_escape_only": true,
+      "parsed_json_strictly_equal": true
+    }
+  ],
+  "checks": [
+    "All three original byte sequences decode exactly from archived base64 and match their declared Git source versions and SHA256.",
+    "Each current file differs solely by escaping the first character of one quoted word as a JSON Unicode escape. Parsed JSON values are strictly equal.",
+    "Tracked working diff contains exactly these three evidence files; no product, test or checker configuration change.",
+    "Prior bytes remain recoverable; this review does not claim represented bytes retain original file hashes."
+  ],
+  "limits": [
+    "Review is restricted to representation and archive integrity.",
+    "Final staged full path spelling check and exact candidate CI results remain responsibilities of the actual executor.",
+    "No previous failed check is relabeled as passed and no runtime suite was repeated."
+  ],
+  "production_state_changed": false
+}

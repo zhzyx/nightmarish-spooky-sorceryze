@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-15b44ff3e90fad54d1aea4acfe5425de23eaf72d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "28eafb7376eb160e97ca343290b7d83593bc032d0ee952529162f5c14c73969c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/560",
+    "action": "intake",
+    "detection_head": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+    "context_sha256": "9cc4cd5640b573a0b51fbc0eb671479b8664566d199b57fe25b9dd7a6534c6d5",
+    "operator": "kaiyunxue",
+    "worker": "codex-command-gaps-batch",
+    "authority_ref": "Issue559 explicit batch fix request",
+    "evidence": "Issue559 intake-only failure and successful tenant-bound readback at baseline b21a9cd1",
+    "diagnosis": "Initial intake invocation omitted required tenant argument; no engine or authorization defect. Same checkout intake passed with explicit configured gonggong-workspace tenant.",
+    "next_action": "Re-run the original tenant-bound intake and retain exact recovery receipt; continue isolated implementation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T06:18:59.015176+00:00",
+    "attempted": null,
+    "repair_owner": "codex-command-gaps-batch",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-08T06:28:18.825656+00:00",
+  "sha256": "7d9472bfdba68f01a37e228ec1f70597f7a062776c5432d8bbf3652e224a9228"
+}

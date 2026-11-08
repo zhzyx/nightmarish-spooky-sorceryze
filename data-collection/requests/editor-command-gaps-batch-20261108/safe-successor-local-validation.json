@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "safe_successor_local_validation",
+  "ok": true,
+  "build": {
+    "command": "SCons platform=macos arch=arm64 target=editor vulkan=no tests=yes -j4",
+    "exit_code": 0,
+    "log_sha256": "53baa0b5423842339cff46c25f178c76ef95565cf11094863bec9804f7a3677e",
+    "artifact_sha256": "3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0",
+    "note": "SCons rebuilt changed spatial object; content-equivalent local rename did not change final artifact hash. Tests below were actually rerun after this build."
+  },
+  "tree_regression": {
+    "schema_version": 1,
+    "issue_number": 559,
+    "request_id": "editor-command-gaps-batch-20261108",
+    "kind": "private_native_scene_tree_confirmation_regression",
+    "ok": true,
+    "checks": [
+      "Actual scene Tree omits generic edit and refuses auto-execute mutation",
+      "Dedicated scene rename waits despite auto-execute and changes only after native test approval",
+      "Ordinary editable Tree preserves existing auto-execute behavior and native callback",
+      "Reparented actual native Tree remains guarded through its SceneTreeEditor callback owner",
+      "Compound declaration cannot advertise or forward a prohibited scene Tree edit"
+    ],
+    "confirmation": "Private native signal only after asserting the manual boundary; not human approval",
+    "limits": [
+      "Isolated headless native editor; no production project, owner, credentials or OS UI tested."
+    ],
+    "editor_sha256": "3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0",
+    "native_log_sha256": "a0699e9f81777aa79fd80fc36d381ef5aa720dc3c2a0ca78a1bf16331a77dae3",
+    "user_settings_unchanged": true,
+    "source_manifest": {
+      "editor/docks/ai_chat_editor_complex_actions.cpp": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+      "editor/docks/ai_chat_editor_registry.cpp": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+      "editor/docks/ai_chat_dock.cpp": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+      "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+      "editor/scene/scene_tree_editor.cpp": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0",
+      "tests/editor/run_scene_tree_cell_guard.py": "e8336ae3e8c61b0e1165a29167f044253ca56840e151e5a6b35b0ee09b6a668b",
+      "tests/editor/scene_tree_cell_guard.gd": "379ee72aecdef6784e9455fab2c0d3e473d8ce1669fc38a10f72580a151e0f1c"
+    }
+  },
+  "native_unit": {
+    "ok": true,
+    "returncode": 0,
+    "editor_sha256": "3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0",
+    "output": "[doctest] doctest version is \"2.4.12\"\n[doctest] run with \"--help\" for options\n===============================================================================\n[doctest] test cases:  23 |  23 passed | 0 failed | 1544 skipped\n[doctest] assertions: 350 | 350 passed | 0 failed |\n[doctest] Status: SUCCESS!\nERROR: Object '<Object#31608275462>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.\n   at: ~Object (core/object/object.cpp:2399)\nERROR: Object '<Object#38486933979>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.\n   at: ~Object (core/object/object.cpp:2399)\n"
+  },
+  "checks": [
+    "clang-format dry-run Werror for both modified production files passed",
+    "canonical include validation passed",
+    "ruff check and format-check for added Python fixture passed",
+    "mypy 2.4 for added Python fixture passed"
+  ],
+  "optional_shadow_probe": {
+    "passed": false,
+    "diagnostic": "Unchanged core/math/dynamic_bvh.h:123 parameter tiebreaker shadows member under additional -Wshadow-all. No unrelated source or compiler policy modified.",
+    "log_sha256": "f132a1e65864a979532555d2280604c5d74ffa4a022926fcfe11e0f61f530d90"
+  },
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+    "editor/docks/ai_chat_editor_spatial_actions.cpp": "fed3cbc692fd566be636b8a8847c4519041a793e3f336b5c1fadfe45da0da124",
+    "tests/editor/run_scene_tree_cell_guard.py": "e8336ae3e8c61b0e1165a29167f044253ca56840e151e5a6b35b0ee09b6a668b",
+    "tests/editor/scene_tree_cell_guard.gd": "379ee72aecdef6784e9455fab2c0d3e473d8ce1669fc38a10f72580a151e0f1c"
+  },
+  "limits": [
+    "Native confirmation signal in private fixture is simulated, not human approval.",
+    "Original native free-during-signal negative tests emit two expected destructor diagnostics; no leak-free claim.",
+    "Successor exact CI and main readback still require actual receipts."
+  ]
+}

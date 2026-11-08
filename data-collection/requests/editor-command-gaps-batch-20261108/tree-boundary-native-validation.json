@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "private_native_scene_tree_confirmation_regression",
+  "ok": true,
+  "checks": [
+    "Actual scene Tree omits generic edit and refuses auto-execute mutation",
+    "Dedicated scene rename waits despite auto-execute and changes only after native test approval",
+    "Ordinary editable Tree preserves existing auto-execute behavior and native callback",
+    "Reparented actual native Tree remains guarded through its SceneTreeEditor callback owner",
+    "Compound declaration cannot advertise or forward a prohibited scene Tree edit"
+  ],
+  "confirmation": "Private native signal only after asserting the manual boundary; not human approval",
+  "limits": [
+    "Isolated headless native editor; no production project, owner, credentials or OS UI tested."
+  ],
+  "editor_sha256": "3b72650c43aeec1debb28d040aa08e360763d2a1a71d7746593e79a3642be9c0",
+  "native_log_sha256": "c1c0e01f31a0812a618f87324c4487fe9b7115936558e7ecc6ddfb53548e4847",
+  "user_settings_unchanged": true,
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "91b02aacbfe0af0fc760dfdb86a9c26f7015fcc9fa2ba598bc785c97402045c7",
+    "editor/docks/ai_chat_editor_registry.cpp": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+    "editor/docks/ai_chat_dock.cpp": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+    "editor/scene/scene_tree_editor.cpp": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0",
+    "tests/editor/run_scene_tree_cell_guard.py": "e8336ae3e8c61b0e1165a29167f044253ca56840e151e5a6b35b0ee09b6a668b",
+    "tests/editor/scene_tree_cell_guard.gd": "379ee72aecdef6784e9455fab2c0d3e473d8ce1669fc38a10f72580a151e0f1c"
+  }
+}

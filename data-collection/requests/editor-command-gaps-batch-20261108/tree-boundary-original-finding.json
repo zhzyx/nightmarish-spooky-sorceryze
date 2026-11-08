@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_scene_tree_manual_confirmation_boundary_review",
+  "reviewer": "final_independent_review",
+  "result": "confirmed_blocking_finding",
+  "baseline_source_commit": "6e50f89070c109604b23034586f2d9aa4b78fd46",
+  "finding": {
+    "id": "scene-tree-cell-edit-manual-confirmation-bypass",
+    "priority": "P1",
+    "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+    "line": 676,
+    "trigger": "With existing allow-tools and auto-execute enabled, discover/reveal the actual SceneTreeEditor Tree, select an editable scene node and route edit_tree_cell for column 0.",
+    "actual": "The new generic Tree edit advertises only confirmation_required. Existing host auto-execute calls _confirm_action, native Tree::edit_cell emits item_edited, and SceneTreeEditor::_edited renames the actual selected scene node without fresh human approval.",
+    "expected": "The scene-edit confirmation boundary already imposed by scene_rename_node must also apply when a declared Tree cell action reaches the same scene mutation.",
+    "scope": "SceneTreeEditor ancestor context; this does not justify forcing unrelated ordinary Tree controls to require fresh human approval.",
+    "recommended_correction": "Mark writes under actual native SceneTreeEditor ancestors manual_confirmation_required and preserve that flag through compound forwarding. Bind actual scene root/editor-selection/history context to the preview and revalidate it after approval, in addition to TreeItem/column state."
+  },
+  "native_evidence": {
+    "artifact_sha256": "fc91ebe1df7bbcdddcb0bf0dc413b4cdeac89658608ba00238ab32c04042fe9e",
+    "probe_report_sha256": "5b3f794876ed74bb98dedfc4c74dd2113b4608caf34748ba7373ad4a908aeb92",
+    "fixture_sha256": "0c57a451637ff94c80041329b7fbd4032bca0f0e277a547a638b0a9410162faa",
+    "setup": "Self-contained cloned editor and private project, native Node2D scene with a selected Victim child; native allow-tools/auto-execute configured only in the private editor.",
+    "discovery": "Actual normal automatic capability target matched the native Tree instance. No alias metadata or custom callback was injected. Initial hidden target explicitly rejected target_not_visible; existing semantic open_target and main_screen 2D then made the ordinary native editor view available.",
+    "route_action": "edit_tree_cell",
+    "row": 1,
+    "column": 0,
+    "cell_metadata_variant_type": 22,
+    "before_name": "Victim",
+    "after_name": "RenamedWithoutHuman",
+    "route_ok": true,
+    "routing_status": "completed",
+    "confirmation_dialog_visible": false,
+    "confirmation_signal_emitted": false,
+    "business_completed_flag": false,
+    "interpretation": "Although the request correctly does not claim downstream business completion, actual native scene mutation was observed; business_completed:false does not preserve the human-approval boundary."
+  },
+  "static_trace": [
+    {
+      "file": "editor/scene/scene_tree_editor.cpp",
+      "evidence": "_update_node makes column 0 editable when can_rename; metadata is a relative NodePath; item_edited is connected to _edited; _edited resolves selected row against current edited scene and calls rename_node."
+    },
+    {
+      "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+      "evidence": "metadata_identity supports NodePath. New edit_tree_cell branch accepts visible editable Tree rows, snapshots content and target instance, then requests confirmation without a manual-only marker."
+    },
+    {
+      "file": "editor/docks/ai_chat_dock.cpp",
+      "evidence": "Existing auto_execute_commands path auto-confirms results lacking manual_confirmation_required."
+    },
+    {
+      "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+      "evidence": "Dedicated scene mutations already return manual_confirmation_required=true."
+    }
+  ],
+  "context_fence_assessment": "Tree state currently binds TreeItem identity/content/metadata/selection and column configuration, but lacks actual scene root, SceneTreeEditor identity, actual editor selection and scene/history fence. A context-specific fence is needed to prevent an old visible row snapshot from being treated as authorization for a changed native scene/history context; this additional drift scenario was statically assessed, not independently runtime reproduced.",
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_complex_actions.cpp": {
+      "author_source_sha256": "24f7f8542166abaea34b357915e0a68a8aa4f9da7ba13d564c835b49ff948f1a",
+      "observed_worktree_sha256": "24f7f8542166abaea34b357915e0a68a8aa4f9da7ba13d564c835b49ff948f1a"
+    },
+    "editor/docks/ai_chat_editor_registry.cpp": {
+      "author_source_sha256": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+      "observed_worktree_sha256": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d"
+    },
+    "editor/docks/ai_chat_dock.cpp": {
+      "author_source_sha256": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+      "observed_worktree_sha256": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3"
+    },
+    "editor/docks/ai_chat_editor_scene_actions.cpp": {
+      "author_source_sha256": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b",
+      "observed_worktree_sha256": "5b119bcf36558a9fb91e7679fe44159407236494281cced053493dd118f3445b"
+    },
+    "editor/scene/scene_tree_editor.cpp": {
+      "author_source_sha256": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0",
+      "observed_worktree_sha256": "37bd10200c077d69f29e910dbd25c69f816322dcb94d396abf5d13744de097b0"
+    },
+    "scene/gui/tree.cpp": {
+      "author_source_sha256": "ca961b96252e61510039585e92d92112b69660697aa34dc3d1d5b69ca81a0191",
+      "observed_worktree_sha256": "ca961b96252e61510039585e92d92112b69660697aa34dc3d1d5b69ca81a0191"
+    }
+  },
+  "limits": [
+    "Only private headless editor state was modified. No production editor, original Issue483 project, owner, queue, history or user application was opened or changed.",
+    "No human approval was simulated or emitted in the successful bypass probe. Permission switches were only private fixture setup, not an authorization claim for production.",
+    "The scene/history drift concern remains a source-level assessment; the direct no-human rename is actual native HTTP runtime evidence.",
+    "Prior no-blocking-finding review conclusion is superseded for this newly reproduced SceneTreeEditor Tree-edit path; no earlier immutable report has been overwritten.",
+    "Repair, negative revalidation and unrelated ordinary-Tree auto-execute regression require their own subsequent evidence."
+  ]
+}

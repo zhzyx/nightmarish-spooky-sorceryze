@@ -5,7 +5,7 @@ const path = require('node:path');
 const { randomUUID, createHash } = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { Readable, Writable } = require('node:stream');
-const { createTerminals, hostActionName } = require('./godot_terminal');
+const { createTerminals, hostActionName, hostActionRequest, READ_ONLY_HOST_ACTIONS } = require('./godot_terminal');
 
 function workspacePaths(input, fallback) {
     const resolve = value => {
@@ -356,6 +356,21 @@ function boundedRpcStream(acp, output, input, record, onLimit, onBytes = () => {
     return { readable, writable: stream.writable, get bufferedBytes() { return bufferedBytes; } };
 }
 
+function readonlyHostRequest(command, tools) {
+    if (typeof command !== 'string') return null;
+    let request;
+    try { request = hostActionRequest(command); } catch (_) { return null; }
+    if (!request || !READ_ONLY_HOST_ACTIONS.has(request.name) || !tools.some(tool => tool.function?.name === request.name)) return null;
+    if (['read_file', 'read_script', 'list_directory'].includes(request.name)) {
+        const args = request.arguments;
+        const fields = request.name === 'list_directory' ? ['path'] : ['path', 'offset', 'limit'];
+        if (Object.keys(args).some(key => !fields.includes(key)) || typeof args.path !== 'string' || !args.path || args.path.length > 4096 || args.path.includes('\0')) return null;
+        if (args.offset !== undefined && (!Number.isSafeInteger(args.offset) || args.offset < 1 || args.offset > 2147483647)) return null;
+        if (args.limit !== undefined && (!Number.isSafeInteger(args.limit) || args.limit < 1 || args.limit > 500)) return null;
+    }
+    return request;
+}
+
 async function runAcpSession(entry, cwd, env, setChild, api) {
     const trace = createTraceLog(env.GODOT_ACP_LOG_DIRECTORY || path.join(__dirname, 'logs'));
     let requestNumber = 0;
@@ -372,6 +387,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     let sessionId;
     let agentId;
     let currentModel;
+    let capabilityBinding;
     let defaultModel;
     let imageSupported = false;
     let outputBytes = 0;
@@ -491,11 +507,12 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         record('file_callback_received', { operation: name, session_match: params.sessionId === sessionId, active: !!active, stopped, line: params.line, limit: params.limit, ...counts });
         const deny = (reason, message) => { record('file_callback_denied', { operation: name, reason }); return Promise.reject(fileError(message)); };
         if (!active || stopped || params.sessionId !== sessionId) return deny('invalid_session', 'Invalid or inactive Godot file session');
+        if (writing && !active.input.tool_context.writes_allowed) return deny('unavailable', 'This Godot review session cannot write files');
         const reason = active.input.tool_context.unavailable_reason;
         if (reason !== 'none') {
             return deny(reason, api.bridgeError(reason === 'round_limit_reached' ? 'TOOL_ROUND_LIMIT_REACHED' : 'TOOLS_DISABLED').message);
         }
-        if (!active.input.available_tools.some(tool => tool.function?.name === name) || pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
+        if (!active.input.available_tools.some(tool => tool.function?.name === name) || pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
         let args;
         try {
             args = fileArguments(params, writing);
@@ -513,18 +530,26 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         });
     };
     const validateTerminal = params => {
-        if (!active || stopped || params.sessionId !== sessionId || active.input.tool_context.unavailable_reason !== 'none' || !active.input.available_tools.some(tool => tool.function?.name === 'run_command')) throw fileError('Invalid, inactive or disabled Godot terminal session');
+        if (!active || stopped || params.sessionId !== sessionId || active.input.tool_context.unavailable_reason !== 'none') throw fileError('Invalid, inactive or disabled Godot terminal session');
+        const context = active.input.tool_context;
+        if (context.consultation_only || !context.execution_allowed) {
+            if (params.command !== undefined) {
+                const request = readonlyHostRequest(params.command, active.input.available_tools);
+                if (!request) throw fileError('This Godot review session only accepts advertised read-only host requests');
+            }
+        } else if (!active.input.available_tools.some(tool => tool.function?.name === 'run_command')) throw fileError('Godot command execution is unavailable');
         if (params.command !== undefined) {
             const name = hostActionName(params.command);
             if (name && !active.input.available_tools.some(tool => tool.function?.name === name)) throw fileError('Godot host action is unavailable. Nothing was executed.');
         }
     };
     const hostAction = (name, actionArgs = {}, command = '') => {
+        if (!active || !active.input.available_tools.some(tool => tool.function?.name === name) || active.input.tool_context.consultation_only && !READ_ONLY_HOST_ACTIONS.has(name)) return Promise.reject(fileError('Godot host action is not permitted in this session'));
         if (pending.size || terminals.running) return Promise.reject(fileError('Godot host actions must run alone, after all other tools and terminals finish'));
         reportProgress('tool_pending');
         return new Promise((resolve, reject) => {
             const id = 'acp_host_' + randomUUID();
-            pending.set(id, { resolve, reject, name, arguments: actionArgs, sent: false });
+            pending.set(id, { resolve, reject, name, arguments: actionArgs, sent: false, hostAction: true });
             record('host_action_queued', { operation: name, pending_count: pending.size });
             if (!flushTimer && !active.yielded) flushTimer = setTimeout(flushTools, 10);
         });
@@ -534,7 +559,8 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         validate: validateTerminal,
         hostAction,
         approve: args => {
-            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
+            if (!active?.input.tool_context.execution_allowed || active.input.tool_context.consultation_only) return Promise.reject(fileError('This Godot review session cannot execute commands'));
+            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
             reportProgress('tool_pending');
             return new Promise((resolve, reject) => {
                 const id = 'acp_command_' + randomUUID();
@@ -552,7 +578,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     });
     const initialize = async input => {
         agentId = input.agent_id || 'default';
-        const instance = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled)], { cwd: input.workspace.workspace_root || input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+        const instance = spawn(process.execPath, [entry, ...api.sessionArguments(input.model, input.instructions || '', input.tool_context.permission_enabled, input.tool_context.consultation_only)], { cwd: input.workspace.workspace_root || input.workspace.project_root, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
         child = instance;
         const belongs = () => child === instance && !resetting && !stopped;
         const failInstance = error => { if (belongs()) fail(error); };
@@ -588,7 +614,8 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 const allow = params.options.find(option => option.kind === 'allow_once');
                 const reject = params.options.find(option => option.kind === 'reject_once');
                 const resolved = toolKinds.resolve(params.sessionId, params.toolCall);
-                const fileKind = ['read', 'edit', 'search'].includes(resolved.kind) || resolved.kind === 'execute' && active?.input.available_tools.some(tool => tool.function?.name === 'run_command');
+                const readonlyRequest = active?.input.tool_context.consultation_only && readonlyHostRequest(params.toolCall?.rawInput?.command, active.input.available_tools);
+                const fileKind = !!readonlyRequest || ['read', 'search'].includes(resolved.kind) || resolved.kind === 'edit' && active?.input.tool_context.writes_allowed && !active.input.tool_context.consultation_only || resolved.kind === 'execute' && active?.input.tool_context.execution_allowed && !active.input.tool_context.consultation_only && active.input.available_tools.some(tool => tool.function?.name === 'run_command');
                 counts.permission_count++;
                 const allowed = params.sessionId === sessionId && active && !stopped && active.input.tool_context.unavailable_reason === 'none' && fileKind && allow;
                 record('permission_decided', { ...counts, ...resolved, session_match: params.sessionId === sessionId, active: !!active, yielded: active?.yielded, call_hash: typeof params.toolCall?.toolCallId === 'string' ? createHash('sha256').update(params.toolCall.toolCallId).digest('hex').slice(0, 16) : undefined, decision: allowed ? 'allow_once' : reject ? 'reject_once' : 'cancelled', permission_enabled: active?.input.tool_context.permission_enabled, reason: !active || stopped || params.sessionId !== sessionId ? 'invalid_session' : active.input.tool_context.unavailable_reason !== 'none' ? active.input.tool_context.unavailable_reason : fileKind && allow ? 'none' : 'unavailable' });
@@ -618,7 +645,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
             },
         }), stream);
         record('initialize_started');
-        const handshake = await connection.initialize({ protocolVersion: acp.PROTOCOL_VERSION, clientCapabilities: { fs: { readTextFile: true, writeTextFile: true }, terminal: true }, clientInfo: { name: 'godot-editor', version: '1.0.0' } });
+        const handshake = await connection.initialize({ protocolVersion: acp.PROTOCOL_VERSION, clientCapabilities: { fs: { readTextFile: true, writeTextFile: input.tool_context.writes_allowed }, terminal: true }, clientInfo: { name: 'godot-editor', version: '1.0.0' } });
         if (handshake.protocolVersion !== acp.PROTOCOL_VERSION || !handshake.agentCapabilities?.promptCapabilities?.embeddedContext) throw api.bridgeError('INVALID_RESPONSE');
         imageSupported = handshake.agentCapabilities?.promptCapabilities?.image === true;
         record('initialize_completed', { protocol_version: handshake.protocolVersion, image_supported: imageSupported, embedded_context: handshake.agentCapabilities?.promptCapabilities?.embeddedContext === true });
@@ -633,6 +660,9 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     };
     const submit = async input => {
         input = api.validateInput(input);
+        const capabilities = JSON.stringify([input.tool_context.consultation_only, input.tool_context.writes_allowed, input.tool_context.execution_allowed]);
+        if (capabilityBinding !== undefined && capabilityBinding !== capabilities) throw api.bridgeError('INVALID_REQUEST');
+        capabilityBinding = capabilities;
         input.workspace = workspacePaths(input, cwd);
         if (agentId !== undefined && (input.agent_id || 'default') !== agentId) throw api.bridgeError('INVALID_REQUEST');
         if (active) {
@@ -649,7 +679,19 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                 const item = pending.get(result.tool_call_id);
                 pending.delete(result.tool_call_id);
                 record('host_file_result', { operation: item.name, success: result.godot_file_success === true, content_bytes: Buffer.byteLength(result.content), call_hash: createHash('sha256').update(result.tool_call_id).digest('hex').slice(0, 16), pending_count: pending.size });
-                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery'].includes(item.name)) {
+                if (item.hostAction && ['read_file', 'read_script', 'list_scripts', 'list_directory'].includes(item.name)) {
+                    if (item.name === 'read_file' || item.name === 'read_script') {
+                        item.resolve(result.godot_file_success === true ? { ok: true, content: result.content } : { ok: false, error: 'Godot did not confirm file read success' });
+                    } else {
+                        try {
+                            const listing = JSON.parse(result.content);
+                            if (!listing || !Array.isArray(listing[item.name === 'list_scripts' ? 'paths' : 'entries'])) throw new Error('Invalid host listing');
+                            item.resolve({ ok: true, result: listing });
+                        } catch (_) { item.resolve({ ok: false, error: 'Godot did not confirm a valid directory listing' }); }
+                    }
+                    continue;
+                }
+                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review'].includes(item.name)) {
                     try {
                         const actionResult = JSON.parse(result.content);
                         if (!actionResult || typeof actionResult.ok !== 'boolean') throw new Error('Invalid host action result');

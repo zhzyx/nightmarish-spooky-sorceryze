@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "native_headless_spatial_command_validation",
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "ok": true,
+  "checks": [
+    "native polygon data mutation, readback, undo and redo",
+    "native CollisionPolygon2D points",
+    "confirmation rejects edited or replaced actual node",
+    "scene ownership, traversal and invalid point boundaries",
+    "actual native 2D pan/zoom and 3D orbit center/angle/distance, bounded field rejection",
+    "native world ray mesh hit and selected-object world/local/view delta transform plus undo and selection drift rejection",
+    "overflowing transform is rejected before native mutation",
+    "camera readback accepts real_t quantization for decimal 0.3 while returning actual native values",
+    "actual AnimationTrackEditor key selection and deselection reads back actual native selection",
+    "native animation add/remove track, insert/move/remove key and undo/redo",
+    "typed internal copy/cut/paste clipboard is atomic and undoable without OS clipboard",
+    "animation forbids event tracks, collisions, resource drift and playing player",
+    "native atlas cells paint/erase/readback/undo/redo; invalid atlas rejected",
+    "host tool permission and consultation gates retained",
+    "read observations leave animation and tileset serializable metadata unchanged",
+    "unsupported existing animation event track fails closed",
+    "animation resource remains alive through changed callback deleting its scene owner; actual failed readback is reported"
+  ],
+  "check_groups_passed": 17,
+  "editor_sha256": "eecfa6a8d6eb0d26ad886b26104a193cc9445e5ae8f5e621ed41d416b82df675",
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_spatial_actions.cpp": "866b5008b0d97481b39ea715ecf45436e5da910a5b12602ed17b22044664ce9c",
+    "editor/docks/ai_chat_editor_spatial_actions.h": "3195fe3f84f84c369fefb1d1309450c51aa12ae67fc0140f283d810ecaad0f79",
+    "tests/editor/spatial_command_gaps.gd": "e771887444eeb07bb8407c3b00cdc84168728c4fb4d6f902f523f73d7aa99e08",
+    "tests/editor/run_spatial_command_gaps.py": "23bd6a2b61af613b633a8731faa84c558c66941c85a85d11caaec2aab1016438"
+  },
+  "isolation": {
+    "private_editor_copy": true,
+    "private_project": true,
+    "private_editor_settings": true,
+    "real_editor_settings_unchanged": true,
+    "production_editor_or_project_operated": false
+  },
+  "confirmation_evidence": "HTTP proposals required manual_confirmation_required despite auto execution enabled. An isolated test script emits the native confirmation signal; this validates the approval state machine, not real human approval or production permission.",
+  "runtime_scope": "Native headless editor HTTP and native data/viewport/undo paths; no LLM/provider execution, OS input, native menu/pixel/IME/hardware validation.",
+  "diagnostics": "Normal headless editor exit reports RID/ObjectDB teardown warnings; this report does not claim clean native teardown or pixel rendering correctness."
+}

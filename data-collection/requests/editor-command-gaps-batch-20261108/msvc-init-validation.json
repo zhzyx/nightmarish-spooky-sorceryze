@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "append_only_msvc_pagination_correction",
+  "baseline_source_commit": "43ea506919abc4e1108976742e3170a81884c742",
+  "baseline_signed_head": "d539e1b8f4477e405c837fc3490218ecbb613d05",
+  "superseded_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/565",
+  "observed_failure": "MSVC C4701 on potentially uninitialized limit in read_semantic_actions; two exact-head MSVC editor jobs failed while static checks, clang-cl editor and export templates passed.",
+  "failure_jobs": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42457708425/job/128660239577",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42457716549/job/128660291824"
+  ],
+  "fix": "Initialize both output locals before existing bounded validators; accepted pages and failure returns are unchanged. Four native assertions cover default discovery, total, no Object string conversion and rejected zero limit.",
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_registry.cpp": "a4f7fa8bbd19121ade13e5bd21297e8fddc4da91ada5381d5556c91a7c2e220d",
+    "tests/editor/test_ai_chat_editor_complex.cpp": "3f50968ebc015ff374f744b2ed3cc333e89375fd001cfe5c5c27b31bae735ee4"
+  },
+  "independent_review_sha256": "bdb17cddab46b6ba17f5480b04fb7756a07641335f18ffe03b916b420bf8382d",
+  "strict_objects": {
+    "ok": true,
+    "log_sha256": "fb9b7ee1bff5557b71c91a90e0faa936cfb1da1e51edfc00a6a956d59bb87a33",
+    "arguments": "macos arm64 editor vulkan=no tests=yes warnings=extra werror=yes strict_checks=yes; registry and its native tests"
+  },
+  "normal_build": {
+    "ok": true,
+    "log_sha256": "d3472be9cefc0fc53b8e5fcde2633229b28d0d3dc5df244940f635a13381be0b",
+    "editor_sha256": "fc91ebe1df7bbcdddcb0bf0dc413b4cdeac89658608ba00238ab32c04042fe9e"
+  },
+  "native_regression": {
+    "ok": true,
+    "editor_sha256": "fc91ebe1df7bbcdddcb0bf0dc413b4cdeac89658608ba00238ab32c04042fe9e",
+    "cases_passed": 23,
+    "assertions_passed": 350,
+    "output_sha256": "ac6551e84c4c45638e549d793ba942f583e8b4b91fa72ded5f1926f291a17520",
+    "expected_diagnostics": "Two intentional synchronous free-in-signal cases retain engine destructor diagnostics without crashes."
+  },
+  "evidence_continuity": "Original full and first CI-correction records remain unchanged. Prior chat/spatial/runtime/mounted/ACP reports retain their real artifacts and source snapshots; initialization only changes a guarded read branch and independent review verifies no behavior change. No unrelated suite was relabeled as a rerun.",
+  "successor_ci": "Pending a new signed candidate and its actual exact-head CI; no main merge claimed.",
+  "scope_limits": "All originally recorded native-subset, OS, account/provider, hardware, clipboard/visual limits remain."
+}

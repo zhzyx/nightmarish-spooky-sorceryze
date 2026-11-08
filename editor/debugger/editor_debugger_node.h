@@ -181,6 +181,7 @@ public:
 	ScriptEditorDebugger *get_current_debugger() const;
 	ScriptEditorDebugger *get_default_debugger() const;
 	ScriptEditorDebugger *get_debugger(int p_debugger) const;
+	int get_debugger_count() const;
 	int get_debugger_id(const ScriptEditorDebugger *p_debugger);
 
 	void debug_next();

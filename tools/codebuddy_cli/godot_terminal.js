@@ -6,6 +6,8 @@ const os = require('node:os');
 const { spawn, execFile } = require('node:child_process');
 const { randomUUID } = require('node:crypto');
 
+const READ_ONLY_HOST_ACTIONS = new Set(['get_parent_context', 'read_logs', 'get_editor_state', 'read_file', 'read_script', 'list_scripts', 'list_directory']);
+
 function bashExecutable(env = process.env, platform = process.platform) {
     if (platform !== 'win32') return '/bin/bash';
     const candidates = [env.CODEBUDDY_GIT_BASH_PATH, path.resolve(__dirname, "../../project/runtime/git-bash/bin/bash.exe"), path.join(env.ProgramFiles || 'C:/Program Files', 'Git/bin/bash.exe'), path.join(env.LOCALAPPDATA || '', 'Programs/Git/bin/bash.exe')];
@@ -20,7 +22,7 @@ function bashExecutable(env = process.env, platform = process.platform) {
 function terminalArguments(params, workspace) {
     if (!params || typeof params.command !== 'string' || !params.command.trim() || params.command.includes('\0') || (params.args !== undefined && (!Array.isArray(params.args) || params.args.length))) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
     const reserved = hostActionRequest(params.command);
-    if (params.command.length > 12000 && (reserved?.name !== 'complete_delivery' || Buffer.byteLength(params.command, 'utf8') > 65600)) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
+    if (params.command.length > 12000 && (!['complete_delivery', 'delegate_review'].includes(reserved?.name) || Buffer.byteLength(params.command, 'utf8') > (reserved.name === 'delegate_review' ? 32832 : 65600))) throw new Error('Invalid Bash command; pass a complete command string without separate args.');
     if (params.env !== undefined && (!Array.isArray(params.env) || params.env.length)) throw new Error('Terminal environment overrides are not supported.');
     const cwd = params.cwd ?? workspace.workspace_root ?? workspace.project_root;
     if (typeof cwd !== 'string' || !path.isAbsolute(cwd) || cwd.includes('\0') || !fs.statSync(cwd).isDirectory()) throw new Error('An existing absolute terminal working directory is required.');
@@ -33,9 +35,9 @@ function terminalArguments(params, workspace) {
 function hostActionRequest(command) {
     if (!command.trim().startsWith('godot-host-action')) return null;
     const text = command.trim();
-    const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|build_engine|restart_engine|rollback_engine)$/.exec(text);
+    const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|list_scripts|build_engine|restart_engine|rollback_engine)$/.exec(text);
     if (plain) return { name: plain[1], arguments: {} };
-    const action = /^godot-host-action (editor_action|route_engine_message|complete_delivery) ([\s\S]+)$/.exec(text);
+    const action = /^godot-host-action (editor_action|route_engine_message|complete_delivery|delegate_review|read_file|read_script|list_directory) ([\s\S]+)$/.exec(text);
     if (action) {
         const limit = action[1] === 'complete_delivery' ? 65536 : 32768;
         if (action[2].length < 2 || (action[1] === 'complete_delivery' ? Buffer.byteLength(action[2], 'utf8') : action[2].length) > limit) throw new Error('Godot host action JSON exceeds its size limit.');
@@ -152,7 +154,7 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
                 const bytes = Buffer.from(JSON.stringify(result));
                 // Log and parent-context snapshots are bounded by Godot. Keep
                 // the JSON envelope intact even for escaped or non-ASCII text.
-                const outputByteLimit = ['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message'].includes(request.name) ? 256 * 1024 : args.outputByteLimit;
+                const outputByteLimit = [...READ_ONLY_HOST_ACTIONS, 'editor_action', 'route_engine_message'].includes(request.name) ? 256 * 1024 : args.outputByteLimit;
                 const terminal = { status, exit: Promise.resolve(status), output: bytes.subarray(Math.max(0, bytes.length - outputByteLimit)), truncated: bytes.length > outputByteLimit };
                 terminals.set(id, terminal);
                 finished({ terminalId: id, exit_status: status, timed_out: false, output_truncated: terminal.truncated, output: redactOutput(terminal.output.toString('utf8'), env) });
@@ -230,4 +232,4 @@ function createTerminals({ approve, validate, hostAction, stateChanged = () => {
     };
 }
 
-module.exports = { bashExecutable, terminalArguments, hostActionName, hostActionRequest, createTerminals, redactOutput };
+module.exports = { READ_ONLY_HOST_ACTIONS, bashExecutable, terminalArguments, hostActionName, hostActionRequest, createTerminals, redactOutput };

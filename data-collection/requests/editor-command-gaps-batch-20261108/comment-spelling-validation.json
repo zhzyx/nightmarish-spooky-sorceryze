@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "comment_only_static_correction",
+  "failed_pr": 568,
+  "failed_signed_head": "52467a18bc838c888d9293da7f9fabf573aa73dc",
+  "failed_check": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42461234335/job/128670766809",
+  "diagnosis": "codespell rewrote one comment word catalogue to catalog; remaining hooks passed; Windows jobs skipped after static failure",
+  "source_change": "tests/editor/run_chat_command_gaps.py comment only",
+  "checks": [
+    "codespell 2.4.2 all PR paths passed",
+    "ruff check passed",
+    "ruff format check passed",
+    "mypy 2.4 passed"
+  ],
+  "runner_sha256": "16870424eb58efd837fffbbf97a4543b5b0f5978e8b8da7555d2155510d55129",
+  "limits": [
+    "No native test execution is relabeled for comment-only source update.",
+    "Previous failed head remains failed; successor CI and main readback remain necessary."
+  ]
+}

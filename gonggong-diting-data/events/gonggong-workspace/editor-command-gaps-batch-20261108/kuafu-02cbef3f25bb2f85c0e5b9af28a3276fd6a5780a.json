@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-02cbef3f25bb2f85c0e5b9af28a3276fd6a5780a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5e99cd03da1742f478e924a6a9837a7acd6bfec4336129713167a8c04deacd06",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/560",
+    "action": "delivery",
+    "detection_head": "bd89a144800f2cde301dcdc13dda137926599d82",
+    "context_sha256": "4728365ca769f7d611f16e2e35a2522898a5606d0b8b9993438edb8ebec4678d",
+    "operator": "kaiyunxue",
+    "worker": "codex-command-gaps-batch",
+    "authority_ref": "Issue559 authorized implementation and delivery",
+    "evidence": "data-collection/requests/editor-command-gaps-batch-20261108/immutable-event-static-correction.json",
+    "diagnosis": "Diting correctly refused historical event byte mutation. Exact original bytes restored from verified archive. Final static policy exception is limited to that single full immutable-event path, matching an existing exact receipt precedent; all product/test and other records remain checked. Independent final review required.",
+    "next_action": "Finish final index checks and signed successor exact CI; preserve original failed attempts",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T08:09:45.902093+00:00",
+    "attempted": null,
+    "repair_owner": "codex-command-gaps-batch",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-08T08:11:43.917827+00:00",
+  "sha256": "d33b89751f260ca2111520dbf34497420f7050cf5e67b57f7218d900288dee48"
+}

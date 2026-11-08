@@ -33,6 +33,8 @@
 #include "core/io/image.h"
 
 namespace WebPCommon {
+// Read header dimensions without allocating decoded pixels.
+Error webp_get_dimensions(const uint8_t *p_buffer, int p_size, int &r_width, int &r_height);
 // Given an image, pack this data into a WebP file.
 Vector<uint8_t> _webp_lossy_pack(const Ref<Image> &p_image, float p_quality);
 Vector<uint8_t> _webp_lossless_pack(const Ref<Image> &p_image);

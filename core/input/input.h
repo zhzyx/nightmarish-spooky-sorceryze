@@ -151,6 +151,8 @@ private:
 		};
 		bool api_pressed = false;
 		float api_strength = 0.0;
+		bool semantic_pressed = false;
+		float semantic_strength = 0.0;
 		HashMap<int, DeviceState> device_states;
 
 		// Cache.
@@ -466,6 +468,9 @@ public:
 
 	void set_mouse_position(const Point2 &p_posf);
 
+	// Native debugger-only action source; intentionally not bound to scripts.
+	void semantic_action_press(const StringName &p_action, float p_strength);
+	void semantic_action_release(const StringName &p_action);
 	void action_press(const StringName &p_action, float p_strength = 1.f);
 	void action_release(const StringName &p_action);
 

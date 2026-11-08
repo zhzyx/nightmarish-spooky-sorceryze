@@ -34,6 +34,9 @@
 
 namespace PNGDriverCommon {
 
+// Read header dimensions without allocating decoded pixels.
+Error png_get_dimensions(const uint8_t *p_source, size_t p_size, int &r_width, int &r_height);
+
 // Attempt to load png from buffer (p_source, p_size) into p_image
 Error png_to_image(const uint8_t *p_source, size_t p_size, bool p_force_linear, Ref<Image> p_image);
 

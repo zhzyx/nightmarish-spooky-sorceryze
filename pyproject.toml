@@ -73,9 +73,13 @@ skip = [
 	"core/string/locales.h",
 	# Preserve this immutable receipt; its corrected prose is appended separately.
 	"data-collection/editor-unified-settings-main-integration-review-20261108.json",
+	"data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
+	"data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-independent-review.json",
 	"DONORS.md",
 	"editor/import/unicode_ranges.inc",
 	"editor/project_converter_3_to_4.cpp",
+	# Preserve this exact immutable quality-event receipt with its original quoted typo.
+	"gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json",
 	"platform/android/java/lib/src/main/java/com/*",
 	"platform/web/package-lock.json",
 	"tools/codebuddy_cli/package-lock.json",

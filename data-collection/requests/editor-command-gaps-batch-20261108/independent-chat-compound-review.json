@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_chat_and_compound_review",
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "reviewer": "spatial_animation native subagent",
+  "scope": "Independent of chat-host and compound/native-control authors; reviewer authored spatial helper, which is excluded from this independent review.",
+  "result": "passed_static_scope_after_verified_corrections",
+  "checks": [
+    "Host-only chat dispatch retains allow-tools and consultation gates before requests and after real native confirmation.",
+    "New chat mutations keep fresh manual confirmation and actual host/session generation, session content, hierarchy, queues and candidate binding snapshots.",
+    "Managed child lifecycle is refused for direct child close/rename; parent close retains native destructive scope and child recursion.",
+    "Mounted-host send validates actual mounted Control/tree/composer parent and existing conversation/candidate/Issue binding before ordinary send.",
+    "Compound declarations select only advertised supported native descendant actions and recheck protected/page-only ancestors; no arbitrary method/signal dispatcher was added.",
+    "MenuBar, Tree cell and RichText metadata actions re-resolve actual target identity/state after confirmation and return native delivery plus actual readback, without claiming downstream business completion.",
+    "CodeBuddy read-only sessions advertise only host-mediated Read and the exact reserved read-only host facade. Native Glob/Grep are disabled. Host read_file/read_script/list_directory use bounded validated arguments; write callbacks, real shell commands, nested delegation and production host actions remain denied.",
+    "Final host-command correction reread: mounted host_instance accepts only finite interoperable integers, schedule titles are stripped before native LineEdit assignment, and history/change-view actions fail unless the actual native dialog is visible.",
+    "Final PNG header reader reread: failed begin-read or PNG_IMAGE_FAILED rejects dimensions and frees native header state before returning; no decoded pixels are allocated by the dimension query."
+  ],
+  "corrected_findings": [
+    {
+      "id": "compound_raw_metadata_stringification",
+      "severity": "P2",
+      "evidence": "editor/docks/ai_chat_editor_registry.cpp",
+      "finding": "Hashing unvalidated declaration extras could invoke Object string conversion during preview.",
+      "verified_correction": "Declaration hash uses validated aliases containing only bounded strings and child identity."
+    },
+    {
+      "id": "tree_edit_signal_lifetime",
+      "severity": "P1",
+      "evidence": "scene/gui/tree.cpp",
+      "finding": "item_edited callbacks can free the Tree before subsequent native accessibility work.",
+      "verified_correction": "ObjectDB identity is rechecked after item_edited and custom_item_clicked signals."
+    },
+    {
+      "id": "missing_compound_metadata_logs",
+      "severity": "P2",
+      "evidence": "editor/docks/ai_chat_editor_registry.cpp",
+      "finding": "Absent declaration metadata generated repeated engine errors during ordinary discovery.",
+      "verified_correction": "has_meta guard returns before reading absent declaration data."
+    },
+    {
+      "id": "attachment_decode_allocation",
+      "severity": "P2",
+      "evidence": [
+        "editor/docks/ai_chat_host_commands.cpp",
+        "drivers/png/png_driver_common.cpp",
+        "modules/jpg/image_loader_libjpeg_turbo.cpp",
+        "modules/webp/webp_common.cpp"
+      ],
+      "finding": "Compressed-image bytes were decoded before the chat pixel/dimension limits were checked.",
+      "verified_correction": "The same bounded immutable byte buffer is first inspected by native PNG begin-read/header+free, TurboJPEG decompress-header+destroy, or WebPGetInfo. Width/height positivity, <=8192 bounds and <=32MP product are checked before full pixel decode. The post-decode bounds remain. This verification is source-level; runtime allocation tests belong to the chat runner."
+    }
+  ],
+  "pending_review_items": [],
+  "limitations": [
+    "Static independent review is not a claim of all-window runtime, OS/native-window, pixel, focus/IME or hardware validation.",
+    "Provider CodeBuddy execution and real account authentication were not run by this reviewer; callback restrictions and current tool binding were read from source.",
+    "Chat lifecycle and compound native runtime reports belong to their actual runners and are not substituted by this static review.",
+    "No production application, project, conversation owner, binding, queue or history was changed by this reviewer."
+  ],
+  "source_manifest": {
+    "editor/docks/ai_chat_host_commands.cpp": "864485370f2b88f1c3ffc67c093929cc1a26caf9ea6de93ccfbd3990bdd74901",
+    "editor/docks/ai_chat_dock.cpp": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+    "editor/docks/ai_chat_sub_agents.cpp": "bf1a42cfce94132e9aac3817497914c474b0bd038233e5195761e40ee0211dcd",
+    "editor/docks/ai_chat_editor_registry.cpp": "1cbfeb6fc6d9948b359a8eaeb6c5412c02c4cae99350847cfeed2413684e24e7",
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "24f7f8542166abaea34b357915e0a68a8aa4f9da7ba13d564c835b49ff948f1a",
+    "scene/gui/tree.cpp": "ca961b96252e61510039585e92d92112b69660697aa34dc3d1d5b69ca81a0191",
+    "scene/gui/menu_bar.cpp": "fbec59f8e96ff57fbecea65d9cbe11cc32d3c23c7f697f1a6b490d5b690059e4",
+    "scene/gui/rich_text_label.cpp": "d12811bc8bcc331e8fdd55b2f9d5673f2b76865da5cd22f3183a249e5b53644f",
+    "tools/codebuddy_cli/godot_acp.js": "c2eca43f85fbf8473ff8d1ef676c58a6f3fb5b4553562c546e0612dcce8087d1",
+    "tools/codebuddy_cli/godot_bridge.js": "a216b344d03884e15795389504810f24697c5eff7799c4dfdb18305fe6990bba",
+    "tools/codebuddy_cli/godot_terminal.js": "415da2d538473c295bd7a34e7af3098de1253bec23ac6fce13bcb1bc319f0cec",
+    "drivers/png/png_driver_common.cpp": "f6de340a6940c96d605ebcbae86e14eabaa3b8a29807f12e8ccc1eb24032241b",
+    "drivers/png/png_driver_common.h": "af2af9c1a67201fa0d3014e505ee40bed936888b6398b6deab60c99d204e92df",
+    "modules/jpg/image_loader_libjpeg_turbo.cpp": "1fc822ceb4594e9c651e9ceca1b6439b0b73d0ac928a53235b599cad06b59e7e",
+    "modules/jpg/image_loader_libjpeg_turbo.h": "cbb0eb8d501b102c95d40dac3c0afad5ee948f4722ed388da53c544bfd6412a1",
+    "modules/webp/webp_common.cpp": "952b2ac2a8390d0d08b2c1ad3eb1a5b7d0587a4664d8200a3ce64998ae980500",
+    "modules/webp/webp_common.h": "8fbb4c601ba76ead9cd4fbdd76cdfd9f9799df50d52457ca1d4bf13b4118fa57"
+  }
+}

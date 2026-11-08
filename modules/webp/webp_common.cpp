@@ -36,6 +36,10 @@
 #include <webp/encode.h>
 
 namespace WebPCommon {
+Error webp_get_dimensions(const uint8_t *p_buffer, int p_size, int &r_width, int &r_height) {
+	return WebPGetInfo(p_buffer, p_size, &r_width, &r_height) && r_width > 0 && r_height > 0 ? OK : ERR_FILE_CORRUPT;
+}
+
 Vector<uint8_t> _webp_lossy_pack(const Ref<Image> &p_image, float p_quality) {
 	ERR_FAIL_COND_V(p_image.is_null() || p_image->is_empty(), Vector<uint8_t>());
 

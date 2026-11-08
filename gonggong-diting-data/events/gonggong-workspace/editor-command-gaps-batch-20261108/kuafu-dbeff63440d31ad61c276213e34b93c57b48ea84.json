@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dbeff63440d31ad61c276213e34b93c57b48ea84",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4753a8e6c2e464f55196e3319e16f1e34e15b22daa1350b976d4cb40a5659f23",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/560",
+    "action": "validation",
+    "detection_head": "6e50f89070c109604b23034586f2d9aa4b78fd46",
+    "context_sha256": "4728365ca769f7d611f16e2e35a2522898a5606d0b8b9993438edb8ebec4678d",
+    "operator": "kaiyunxue",
+    "worker": "codex-command-gaps-batch",
+    "authority_ref": "Issue559 authorized implementation and delivery",
+    "evidence": "data-collection/requests/editor-command-gaps-batch-20261108/tree-boundary-independent-revalidation.json",
+    "diagnosis": "Actual native SceneTree generic cell edit bypassed manual confirmation. Guard now rejects both actual ancestor and native callback owner; existing dedicated scene action retained. Independent actual native five-group regression passed. PR566 additionally failed MSVC C4456; equivalent spatial local rename prepared.",
+    "next_action": "Submit independently reviewed successor, run full exact CI, merge only safe passing successor and read main",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T07:45:21.145483+00:00",
+    "attempted": null,
+    "repair_owner": "codex-command-gaps-batch",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-08T07:54:22.350610+00:00",
+  "sha256": "6bc25b39800e6c81fb25dea531858f68a8ef28b5884f5055ccc057a995726fa3"
+}

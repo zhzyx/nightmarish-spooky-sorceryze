@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-command-gaps-batch-native-validation-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T06:55:00.579781+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "codex-command-gaps-batch",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "operator": "kaiyunxue",
+    "stage": "isolated_native_validation",
+    "state": "supported_native_subsets_validated; original_scope_not_exhaustively_complete",
+    "source_manifest_sha256": "8f8c4ff803d2f069b8990c98f57607a3f43511480bc127280a03b7928a1158fa",
+    "editor_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+    "validation": {
+      "native_cases": 23,
+      "native_assertions": 346,
+      "chat_checks": 44,
+      "spatial_groups": 17,
+      "runtime_groups": 3,
+      "mounted_codebuddy_history_checks": 11,
+      "codebuddy_protocol_cases": 65
+    },
+    "independent_review": "final native subagent with no implementation authorship; source and report manifest bound",
+    "native_confirmations_are_simulated": true,
+    "production_editor_modified": false,
+    "real_provider_account_exercised": false,
+    "remaining_scope_ref": "design-docs/editor-command-gaps-batch-20261108.md",
+    "issue_completion": "keep original Issue open for unsupported and unknown scope",
+    "usage": null,
+    "usage_unknown_reason": "Host does not expose native subagent usage",
+    "evidence_files": [
+      {
+        "path": "data-collection/requests/editor-command-gaps-batch-20261108/build-validation.json",
+        "sha256": "4511fc4ed0aab5828ff1728e74dbf52d85f23d409b031eca7bca811e98cdc708"
+      },
+      {
+        "path": "data-collection/requests/editor-command-gaps-batch-20261108/final-independent-review.json",
+        "sha256": "56ff312682901c95320c8f5b718f2e4bd1c2b942a3705ec4e02cbf29b04e8d2e"
+      }
+    ],
+    "delivery_state": "Original candidate validated; CI correction and exact-head CI still pending. No main merge or full original scope completion claimed."
+  },
+  "evidence_refs": [],
+  "sha256": "470a729b95897832add6cf11e8be12c91735786807c444d1ac8211d6dad105bd"
+}

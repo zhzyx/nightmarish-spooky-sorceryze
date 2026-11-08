@@ -2293,7 +2293,11 @@ void Window::popup_centered_ratio(float p_ratio) {
 
 void Window::popup(const Rect2i &p_screen_rect) {
 	ERR_MAIN_THREAD_GUARD;
+	const ObjectID instance = get_instance_id();
 	emit_signal(SNAME("about_to_popup"));
+	if (!ObjectDB::get_instance(instance)) {
+		return;
+	}
 
 	Rect2i screen_rect = p_screen_rect;
 	if (screen_rect != Rect2i()) {

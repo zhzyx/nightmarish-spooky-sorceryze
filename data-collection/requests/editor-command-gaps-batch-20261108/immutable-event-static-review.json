@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_immutable_event_static_review",
+  "result": "no_blocker_for_exact_historical_event_exception",
+  "findings": [],
+  "event": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json",
+    "sha256": "4cba5b0cddd6c16c3803314442a97d1e25294a1aba25c6b1b9e4bc6e7ea7185e",
+    "exact_original_git_and_archive_bytes_restored": true
+  },
+  "checker_configuration": {
+    "path": "pyproject.toml",
+    "baseline_sha256": "71e50a761c5e63ca1aab5b68e7df20a5d66ea097660f7a67c841c2032b49b045",
+    "candidate_sha256": "2ead80ef04a5ef7df7215b3c33e8432cf64fe2e45ef874ded4775a846a00a36d",
+    "only_change": "One explanatory comment and one full immutable event path added to the existing codespell skip list; no wildcard, directory or word-list addition.",
+    "parsed_toml_other_values_unchanged": true
+  },
+  "correction_record_sha256": "a0e6f54421ceb9475c385bfb3cc3f1117aa2c0ea159414b4519eb825804021d5",
+  "checks": [
+    "Historical event is byte-identical to its declared source commit and recoverable original archive.",
+    "Two ordinary JSON reports remain parsed-value equivalent to their archived originals.",
+    "No product or test logic change is introduced by this final correction."
+  ],
+  "historical_note": "The earlier encoding review describes an attempted state rejected by the immutable-history gate. Its claim of no checker configuration change does not describe this final state. This final state explicitly introduces the single exact artifact exception and restores the event bytes.",
+  "limits": [
+    "Final complete-index spelling check, immutable-history gate and exact successor CI must be established by actual execution.",
+    "No prior failed head or runtime result is relabeled as passed."
+  ],
+  "production_state_changed": false
+}

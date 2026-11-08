@@ -32,6 +32,18 @@
 
 #include <turbojpeg.h>
 
+Error jpeg_turbo_get_dimensions(const uint8_t *p_buffer, int p_size, int &r_width, int &r_height) {
+	tjhandle decoder = tj3Init(TJINIT_DECOMPRESS);
+	if (!decoder) {
+		return FAILED;
+	}
+	const bool valid = tj3DecompressHeader(decoder, p_buffer, p_size) == 0;
+	r_width = valid ? tj3Get(decoder, TJPARAM_JPEGWIDTH) : 0;
+	r_height = valid ? tj3Get(decoder, TJPARAM_JPEGHEIGHT) : 0;
+	tj3Destroy(decoder);
+	return valid && r_width > 0 && r_height > 0 ? OK : ERR_FILE_CORRUPT;
+}
+
 Error jpeg_turbo_load_image_from_buffer(Image *p_image, const uint8_t *p_buffer, int p_buffer_len) {
 	tjhandle tj_instance = tj3Init(TJINIT_DECOMPRESS);
 	if (tj_instance == nullptr) {

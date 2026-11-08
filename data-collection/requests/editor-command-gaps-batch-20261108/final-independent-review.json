@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "kind": "final_independent_read_only_candidate_review",
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "baseline": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "reviewer": "final_independent_review native subagent; no implementation authorship",
+  "result": "no_new_blocking_finding_identified_in_reviewed_snapshot",
+  "findings": [],
+  "reviewed_scope": [
+    "Outer tool permission/consultation checks; host-only chat dispatch; fresh manual confirmation and actual session/owner snapshots.",
+    "Mounted Control, composer parent, generation, Issue/request and candidate owner guards; ordinary native send path.",
+    "New attachment paths use bounded immutable bytes and native header-only dimensions before decoded pixel allocation.",
+    "CodeBuddy tool allowlist, immutable mode tuple, write/terminal/permission callback refusal, host-mediated readonly facade and native second-level consultation gate.",
+    "Native target and resource identity, metadata observer lifetime, finite transform validation, actual animated target/property validation, UndoRedo receivers and post-mutation readback.",
+    "Compound declaration closure, protection ancestors, deep duplicated forwarded arguments, typed native Tree/RichText/Menu actions, callback-deletion lifetime checks.",
+    "Game debugger peer/generation/runtime token, bounded receipts, independent InputMap action source and timed release; editor-only capture scope."
+  ],
+  "evidence_review": [
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/chat-native-validation.json",
+      "sha256": "428a4f3cf276b0b4bd580af88ce643b789c993ee9edcf17cd4a920d0eba130c6",
+      "ok": true,
+      "artifact_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+      "checks": 0,
+      "cases": 44,
+      "test_cases": null,
+      "assertions": null,
+      "source_manifest_mismatches": []
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/native-unit-validation.json",
+      "sha256": "5d477af8d02748b2529545c4f8be8bb5cc0cebd91271db6e8c1d12c0824508dc",
+      "ok": true,
+      "artifact_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+      "checks": 0,
+      "cases": 0,
+      "test_cases": {
+        "passed": 23,
+        "failed": 0
+      },
+      "assertions": {
+        "passed": 346,
+        "failed": 0
+      },
+      "source_manifest_mismatches": []
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/codebuddy-protocol-validation.json",
+      "sha256": "235138e8952ac7666eaeb14b6f5d83eb6d67f8ad56932fb6b803da8ab8c4161c",
+      "ok": true,
+      "artifact_sha256": null,
+      "checks": 0,
+      "cases": 0,
+      "test_cases": null,
+      "assertions": null,
+      "source_manifest_mismatches": []
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/runtime-native-validation.json",
+      "sha256": "95bf22bbc7cca02e4629e444badd0bf230a27e7450cad3a068a7b8d95299cd84",
+      "ok": true,
+      "artifact_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+      "checks": 3,
+      "cases": 0,
+      "test_cases": null,
+      "assertions": null,
+      "source_manifest_mismatches": []
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/spatial-native-validation.json",
+      "sha256": "d578c3e3cb4d9d4a045abafb23e5dfb04874c29a1d621d2c6557ac5420df3354",
+      "ok": true,
+      "artifact_sha256": "eecfa6a8d6eb0d26ad886b26104a193cc9445e5ae8f5e621ed41d416b82df675",
+      "checks": 17,
+      "cases": 0,
+      "test_cases": null,
+      "assertions": null,
+      "source_manifest_mismatches": []
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/codebuddy-native-validation.json",
+      "sha256": "c571290ec0b22307d05fa89f2292bd1a9f6625f94f4bc6941b6e79a47a50ebd0",
+      "ok": true,
+      "artifact_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+      "checks": 11,
+      "cases": 0,
+      "test_cases": null,
+      "assertions": null,
+      "source_manifest_mismatches": []
+    }
+  ],
+  "verification_method": "Read current production diff/new helpers and relevant existing native entry points; inspect existing runner code and actual local/public test reports; reuse prior scoped independent reviews. No duplicate runtime suite was executed by this reviewer.",
+  "source_manifest": {
+    "core/input/input.cpp": "46dbf7f92862b6e192866f21a92dbd87a5eac34d4836106ad23c56816ee71038",
+    "core/input/input.h": "20011a5436935bf8312c880a96c2da0af821c1b4745c3f0fcb0d4c71c2515964",
+    "drivers/png/png_driver_common.cpp": "f6de340a6940c96d605ebcbae86e14eabaa3b8a29807f12e8ccc1eb24032241b",
+    "drivers/png/png_driver_common.h": "af2af9c1a67201fa0d3014e505ee40bed936888b6398b6deab60c99d204e92df",
+    "editor/debugger/editor_debugger_node.cpp": "ed63d5d8f54d96ba59aee01ededbc4a74e669b077b59252af1a12f508a0bfc4f",
+    "editor/debugger/editor_debugger_node.h": "e4f5c577539dd9974fdafd8a9b9ec05ad6e3db0f6705acabaca999178173537e",
+    "editor/debugger/script_editor_debugger.cpp": "e6c6b09e31f1c6c9a8f2e42ad19c03a5fa93adc53837e785a5910fdf03e17ba7",
+    "editor/debugger/script_editor_debugger.h": "80aa1c26fed7fddd525e1cce340476a6b9117f0837540ac2c1b5d23587d39216",
+    "editor/docks/ai_chat_dock.cpp": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+    "editor/docks/ai_chat_dock.h": "86ec244fd76e1e10ffcc5483c254389813917cd8732834a18d81fb68a89a2580",
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "24f7f8542166abaea34b357915e0a68a8aa4f9da7ba13d564c835b49ff948f1a",
+    "editor/docks/ai_chat_editor_control.cpp": "912b6670ab6b7afa95dd2cbbf18a0ce06789cd97b9c580f6cf18a14c7fc5e229",
+    "editor/docks/ai_chat_editor_registry.cpp": "1cbfeb6fc6d9948b359a8eaeb6c5412c02c4cae99350847cfeed2413684e24e7",
+    "editor/docks/ai_chat_editor_runtime_actions.cpp": "deba3417974b65f8ac9f3e826736b56ebf1aa9f9a6493a6ff1c4318433bef4ed",
+    "editor/docks/ai_chat_editor_runtime_actions.h": "29f8210854b1387de4fe4bb60ce773b1a3c6facd654b1d861918ca11c8ab777d",
+    "editor/docks/ai_chat_editor_spatial_actions.cpp": "866b5008b0d97481b39ea715ecf45436e5da910a5b12602ed17b22044664ce9c",
+    "editor/docks/ai_chat_editor_spatial_actions.h": "3195fe3f84f84c369fefb1d1309450c51aa12ae67fc0140f283d810ecaad0f79",
+    "editor/docks/ai_chat_host_commands.cpp": "864485370f2b88f1c3ffc67c093929cc1a26caf9ea6de93ccfbd3990bdd74901",
+    "editor/docks/ai_chat_sub_agents.cpp": "bf1a42cfce94132e9aac3817497914c474b0bd038233e5195761e40ee0211dcd",
+    "editor/docks/ai_chat_sub_agents.h": "97597f8344303072b1696f556e3e951abb20c3ff8a0f13cc7e2ed0d2057ec3cc",
+    "modules/jpg/image_loader_libjpeg_turbo.cpp": "1fc822ceb4594e9c651e9ceca1b6439b0b73d0ac928a53235b599cad06b59e7e",
+    "modules/jpg/image_loader_libjpeg_turbo.h": "cbb0eb8d501b102c95d40dac3c0afad5ee948f4722ed388da53c544bfd6412a1",
+    "modules/webp/webp_common.cpp": "952b2ac2a8390d0d08b2c1ad3eb1a5b7d0587a4664d8200a3ce64998ae980500",
+    "modules/webp/webp_common.h": "8fbb4c601ba76ead9cd4fbdd76cdfd9f9799df50d52457ca1d4bf13b4118fa57",
+    "scene/debugger/scene_debugger.cpp": "2741cfd62eeca902dc1dd96274ae09e9305cf1d9fa2979bfb3047bd6666c4ff2",
+    "scene/debugger/scene_debugger.h": "24e1da59dab16eda0025e90ed7f6f60aafff35336149a1855fa37e94c948e9d8",
+    "scene/gui/menu_bar.cpp": "fbec59f8e96ff57fbecea65d9cbe11cc32d3c23c7f697f1a6b490d5b690059e4",
+    "scene/gui/menu_bar.h": "687dd9d80022baaa5883a3b2bfe47db52b6d646979349e316a83b3ac99a1f182",
+    "scene/gui/rich_text_label.cpp": "d12811bc8bcc331e8fdd55b2f9d5673f2b76865da5cd22f3183a249e5b53644f",
+    "scene/gui/rich_text_label.h": "ffdeb0868cb9af239b9f70f567ec0d2f5ef6ae883c80447b1163aab07f337e40",
+    "scene/gui/tree.cpp": "ca961b96252e61510039585e92d92112b69660697aa34dc3d1d5b69ca81a0191",
+    "scene/gui/tree.h": "4ed544ee0b1465af862ca82985dec73ef521c01b97ef56deceea7aa44d1da6e0",
+    "scene/main/window.cpp": "6669e2659992ac935686d5a6826806fd4ead7950c31ba3ddeacee943a115d3fa",
+    "tools/codebuddy_cli/godot_acp.js": "c2eca43f85fbf8473ff8d1ef676c58a6f3fb5b4553562c546e0612dcce8087d1",
+    "tools/codebuddy_cli/godot_bridge.js": "a216b344d03884e15795389504810f24697c5eff7799c4dfdb18305fe6990bba",
+    "tools/codebuddy_cli/godot_terminal.js": "415da2d538473c295bd7a34e7af3098de1253bec23ac6fce13bcb1bc319f0cec"
+  },
+  "remaining_scope_and_limits": [
+    "No claim of all 15 categories being exhaustively supported across every editor surface or plugin. Pure self-drawn plugin internals and unadapted actions remain outside the fixed native/declared descendant vocabulary.",
+    "2D geometry pick, multi-selection/sub-gizmos, skinned/particle/plugin pick, unsupported animation/event/audio/bezier/compressed tracks, terrain/scene-collection painting and polygon holes retain explicit limits.",
+    "Real provider/account execution, actual human approval, clipboard positive path, GUI screenshot pixel/global OS menu, IME/focus/hardware and OS permissions were not exercised by this reviewer.",
+    "Private provider/Issue/native confirmation fixtures are tests, not real account authorization or production business acceptance. Read-only transport restrictions are not an independent OS filesystem sandbox or absolute credential isolation.",
+    "Spatial report uses its actually tested earlier artifact with matching scoped source manifest; it must not be relabeled as an execution on the final image-decoder-only rebuild.",
+    "CI, signed PR, remote main integration and original Issue completion are outside this read-only review and require their own real receipts."
+  ],
+  "production_state_changed": false
+}

@@ -59,6 +59,16 @@ static bool check_error(const png_image &image) {
 	return false;
 }
 
+Error png_get_dimensions(const uint8_t *p_source, size_t p_size, int &r_width, int &r_height) {
+	png_image image = {};
+	image.version = PNG_IMAGE_VERSION;
+	const bool valid = png_image_begin_read_from_memory(&image, p_source, p_size) != 0 && !PNG_IMAGE_FAILED(image) && image.width > 0 && image.height > 0 && image.width <= INT32_MAX && image.height <= INT32_MAX;
+	r_width = valid ? int(image.width) : 0;
+	r_height = valid ? int(image.height) : 0;
+	png_image_free(&image);
+	return valid ? OK : ERR_FILE_CORRUPT;
+}
+
 Error png_to_image(const uint8_t *p_source, size_t p_size, bool p_force_linear, Ref<Image> p_image) {
 	png_image png_img;
 	memset(&png_img, 0, sizeof(png_img));

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cb9c0f9f72f490da08247816af6e5322b28495c7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d2274b8da20eb55247667c811b2f91f873075f1c69156f9a9b2bc67bdf49051a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/559",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/560",
+    "action": "delivery",
+    "detection_head": "bd89a144800f2cde301dcdc13dda137926599d82",
+    "context_sha256": "4728365ca769f7d611f16e2e35a2522898a5606d0b8b9993438edb8ebec4678d",
+    "operator": "kaiyunxue",
+    "worker": "codex-command-gaps-batch",
+    "authority_ref": "Issue559 authorized implementation and delivery",
+    "evidence": "data-collection/requests/editor-command-gaps-batch-20261108/collected-records-static-final-correction.json",
+    "diagnosis": "Collection source guard also correctly required ordinary collected reports byte-immutable. Final state restores all three original collected records exactly and adds only their three full file paths to existing codespell receipt exclusions. No product/test/directory/word-list exceptions; prior attempts retained separately.",
+    "next_action": "Verify final three exact originals and narrow policy independently, then full-index static and immutable formal gate before signing; require complete successor CI and main readback",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T08:12:22.359571+00:00",
+    "attempted": null,
+    "repair_owner": "codex-command-gaps-batch",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-08T08:13:38.330750+00:00",
+  "sha256": "c8a15263bdb30971e0bf5c9be525ad3d921d6b9188d61063f0f285bb402fb7ab"
+}
