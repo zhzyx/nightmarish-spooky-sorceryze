@@ -20,6 +20,8 @@ var target_edit: LineEdit
 var texture: TextureRect
 var viewport: SubViewport
 var mesh_container: SubViewportContainer
+var mesh_focus := Vector3.ZERO
+var mesh_frame_distance := 1.0
 var preview_root: Node3D
 var dialog: ConfirmationDialog
 var nodes: Array = []
@@ -303,6 +305,8 @@ func _ready():
 	mesh_container = container
 	container.custom_minimum_size = Vector2(360, 280)
 	container.stretch = true
+	container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击恢复视角"
+	container.gui_input.connect(_mesh_preview_input)
 	inspector.add_child(container)
 	container.hide()
 	viewport = SubViewport.new()
@@ -886,10 +890,40 @@ func frame_mesh():
 		var radius = maxf(bounds.size.length() * 0.5, 0.05)
 		var camera = preview_root.get_child(0) as Camera3D
 		var distance = radius / sin(deg_to_rad(camera.fov * 0.5)) * 1.15
+		mesh_focus = center
+		mesh_frame_distance = distance
 		camera.position = center + Vector3(0.5, 0.3, 1).normalized() * distance
 		camera.near = maxf(radius / 1000, 0.001)
 		camera.far = radius * 20
 		camera.look_at(center)
+
+func _mesh_preview_input(event: InputEvent):
+	if not is_instance_valid(preview_scene) or preview_node.is_empty(): return
+	var camera := preview_root.get_child(0) as Camera3D
+	var offset := camera.position - mesh_focus
+	var distance := offset.length()
+	if distance <= 0.0: return
+	if event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+		var azimuth: float = atan2(offset.x, offset.z) - event.relative.x * 0.009
+		var elevation := clampf(asin(clampf(offset.y / distance, -1.0, 1.0)) + event.relative.y * 0.009, -1.5, 1.5)
+		offset = Vector3(sin(azimuth) * cos(elevation), sin(elevation), cos(azimuth) * cos(elevation)) * distance
+	elif event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_MIDDLE:
+		var pixel_scale := 2.0 * distance * tan(deg_to_rad(camera.fov * 0.5)) / maxf(mesh_container.size.y, 1.0)
+		mesh_focus += (camera.basis.y * event.relative.y - camera.basis.x * event.relative.x) * pixel_scale
+	elif event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+			frame_mesh()
+			mesh_container.accept_event()
+			return
+		if event.button_index not in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]: return
+		var direction := -1.0 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0
+		var zoom := pow(1.18, direction * maxf(event.factor, 0.1))
+		offset = offset.normalized() * clampf(distance * zoom, mesh_frame_distance * 0.1, mesh_frame_distance * 3.0)
+	else:
+		return
+	camera.position = mesh_focus + offset
+	camera.look_at(mesh_focus)
+	mesh_container.accept_event()
 
 func set_owners(node: Node, root: Node):
 	for child in node.get_children():

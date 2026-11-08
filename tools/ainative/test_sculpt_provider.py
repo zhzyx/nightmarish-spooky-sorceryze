@@ -20,7 +20,7 @@ from anatomy_base import AGE_SOURCE_SHA256
 from anatomy_base import SOURCE_SHA256 as ANATOMY_SOURCE_SHA256
 from anatomy_body import BODY_SOURCE_SHA256
 from character_detail import resolve_detail
-from comfy_provider import register
+from comfy_provider import digest, register
 from executor import check_content
 from extensions import NodeRegistry, validate_outputs
 from organic_detail import expand_patterns
@@ -40,8 +40,11 @@ from sculpt_provider import (
     _WORKERS,
     CALIBRATION_SCOPE,
     SculptProvider,
+    frame_turnaround_panels,
     load_operator_calibration,
     modeling_quality_policy,
+    selected_turnaround_panels,
+    sheet_evidence,
 )
 from test_modeling_provider import FAKE_CS
 
@@ -160,7 +163,7 @@ def calibration_fixture(builder):
         baseline_builder_sha256=hashlib.sha256(builder.read_bytes()).hexdigest(),
         baseline_runtime_sha256={
             name + "_sha256": hashlib.sha256(builder.with_name(name + ".py").read_bytes()).hexdigest()
-            for name in ("anatomy_base", "anatomy_body", "character_detail", "organic_detail")
+            for name in ("anatomy_base", "anatomy_body", "character_detail", "organic_detail", "period_groom")
         },
         panels=[
             dict(
@@ -187,7 +190,13 @@ class CalibrationTests(unittest.TestCase):
         self.directory = Path(self.temporary.name)
         self.builder = self.directory / "sculpt_builder.py"
         self.builder.write_text("# fixed synthetic test builder\n", encoding="utf-8")
-        for name in ("anatomy_base.py", "anatomy_body.py", "character_detail.py", "organic_detail.py"):
+        for name in (
+            "anatomy_base.py",
+            "anatomy_body.py",
+            "character_detail.py",
+            "organic_detail.py",
+            "period_groom.py",
+        ):
             self.builder.with_name(name).write_text("# fixed synthetic data\n", encoding="utf-8")
         self.value = calibration_fixture(self.builder)
 
@@ -275,7 +284,7 @@ class CalibrationTests(unittest.TestCase):
         self.assertFalse((self.directory / "changed-state" / KEY).exists())
 
     def test_changed_detail_code_invalidates_calibration_before_model_use(self):
-        for name in ("character_detail.py", "organic_detail.py"):
+        for name in ("character_detail.py", "organic_detail.py", "period_groom.py"):
             path = self.builder.with_name(name)
             original = path.read_bytes()
             with self.subTest(dependency=name):
@@ -286,6 +295,137 @@ class CalibrationTests(unittest.TestCase):
 
 
 class SculptPlanTests(unittest.TestCase):
+    def test_single_sheet_counts_distinct_named_views_and_requires_separate_panels(self):
+        panels = [
+            dict(view="front", box=[0, 0, 0.5, 0.5]),
+            dict(view="back", box=[0.5, 0, 1, 0.5]),
+            dict(view="front", box=[0, 0.5, 0.4, 1]),
+            dict(view="profile_left_facing", box=[0.4, 0.5, 0.6, 1]),
+            dict(view="back", box=[0.6, 0.5, 1, 1]),
+        ]
+        self.assertEqual(sheet_evidence(panels)["distinct_named_directions"], 3)
+        uncertain = [dict(view="unknown", box=[0, 0, 1, 1])]
+        self.assertEqual(sheet_evidence(uncertain)["distinct_named_directions"], 0)
+        for invalid in ([], panels + [panels[0]], [dict(view="front", box=[0, 0, -1, 1])]):
+            with self.assertRaisesRegex(ValueError, "reference_panels"):
+                sheet_evidence(invalid)
+
+    def test_registered_operator_picks_largest_observed_panel_per_required_direction(self):
+        front = dict(view="front", box=[0, 0, 0.5, 0.5])
+        back = dict(view="back", box=[0.5, 0, 1, 0.5])
+        side = dict(view="profile_right_facing", box=[0.3, 0.5, 0.6, 1])
+        smaller = dict(view="front", box=[0, 0.5, 0.25, 1])
+        evidence = sheet_evidence([smaller, back, side, front])
+        self.assertEqual(selected_turnaround_panels(evidence), [front, back, side])
+        with self.assertRaisesRegex(ValueError, "turnaround_needs_three_views"):
+            selected_turnaround_panels(sheet_evidence([front, back]))
+
+    def test_panel_framing_preserves_observations_and_respects_other_figures(self):
+        front = dict(view="front", box=[0.05, 0.03, 0.44, 0.45])
+        back = dict(view="back", box=[0.53, 0.03, 0.98, 0.45])
+        second_front = dict(view="front", box=[0.01, 0.54, 0.40, 0.96])
+        side = dict(view="profile_left_facing", box=[0.44, 0.54, 0.56, 0.96])
+        panels = [front, back, second_front, side]
+        original = copy.deepcopy(panels)
+        framed = frame_turnaround_panels(sheet_evidence(panels), [front, back, side])
+        self.assertEqual(original, panels)
+        self.assertLess(framed[2]["box"][0], 0.42)
+        self.assertGreater(framed[2]["box"][0], second_front["box"][2])
+        self.assertLessEqual(framed[0]["box"][2], framed[1]["box"][0])
+        self.assertLessEqual(framed[1]["box"][3], framed[2]["box"][1])
+
+    def test_diagonally_adjacent_subjects_stay_in_separate_frames(self):
+        front = dict(view="front", box=[0.1, 0.1, 0.4, 0.4])
+        back = dict(view="back", box=[0.42, 0.42, 0.72, 0.72])
+        other_front = dict(view="front", box=[0.76, 0.76, 0.97, 0.98])
+        framed = frame_turnaround_panels(sheet_evidence([front, back, other_front]), [front, back])
+        self.assertTrue(any(framed[0]["box"][axis + 2] <= framed[1]["box"][axis] for axis in (0, 1)))
+        self.assertTrue(any(framed[1]["box"][axis + 2] <= other_front["box"][axis] for axis in (0, 1)))
+
+    def test_optional_face_receipt_is_bound_to_both_fixed_inputs(self):
+        prior = dict(helper_sha256="1" * 64, body_sha256="2" * 64)
+        config = dict(source_sha256="3" * 64, face_prior=prior)
+        receipt = dict(
+            builder_sha256="4" * 64,
+            source_image_sha256=config["source_sha256"],
+            registration_sha256=digest(config),
+            observed_colors=True,
+            exact_hidden_surface_recovery_claimed=False,
+        )
+        validate = SculptProvider._validate_registered_surface
+        with self.assertRaisesRegex(ValueError, "builder_failed"):
+            validate(receipt, config, receipt["builder_sha256"])
+        receipt["sampling"] = dict(face_geometry=dict(prior, applied=False))
+        validate(receipt, config, receipt["builder_sha256"])
+        for name, invalid in (("body_sha256", "5" * 64), ("helper_sha256", None), ("applied", 1)):
+            altered = copy.deepcopy(receipt)
+            altered["sampling"]["face_geometry"][name] = invalid
+            with self.assertRaisesRegex(ValueError, "builder_failed"):
+                validate(altered, config, receipt["builder_sha256"])
+        config.pop("face_prior")
+        receipt["registration_sha256"] = digest(config)
+        with self.assertRaisesRegex(ValueError, "builder_failed"):
+            validate(receipt, config, receipt["builder_sha256"])
+
+    def test_registered_export_checks_actual_color_and_index_values(self):
+        position = struct.pack("<12f", 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+        colors = bytearray(struct.pack("<16f", *([0.2, 0.3, 0.4, 1.0] * 4)))
+        indices = bytearray(struct.pack("<12H", 0, 2, 1, 0, 1, 3, 1, 2, 3, 2, 0, 3))
+        primitive = dict(attributes={"POSITION": 0, "COLOR_0": 1}, indices=2)
+        document = dict(
+            asset=dict(version="2.0"),
+            buffers=[dict(byteLength=136)],
+            meshes=[dict(primitives=[primitive])],
+            nodes=[dict(mesh=0)],
+            scenes=[dict(nodes=[0])],
+            scene=0,
+            accessors=[
+                dict(bufferView=0, type="VEC3", componentType=5126, count=4),
+                dict(bufferView=1, type="VEC4", componentType=5126, count=4),
+                dict(bufferView=2, type="SCALAR", componentType=5123, count=12),
+            ],
+            bufferViews=[
+                dict(buffer=0, byteOffset=0, byteLength=48),
+                dict(buffer=0, byteOffset=48, byteLength=64),
+                dict(buffer=0, byteOffset=112, byteLength=24),
+            ],
+        )
+
+        def blob():
+            raw = json.dumps(document).encode()
+            raw += b" " * (-len(raw) % 4)
+            binary = position + colors + indices
+            return (
+                struct.pack("<4sII", b"glTF", 2, 28 + len(raw) + len(binary))
+                + struct.pack("<I4s", len(raw), b"JSON")
+                + raw
+                + struct.pack("<I4s", len(binary), b"BIN\0")
+                + binary
+            )
+
+        receipt = dict(vertices=4, triangles=4)
+        SculptProvider._validate_registered_glb(blob(), receipt)
+        for invalid in (float("nan"), float("inf"), 2.0, -0.2):
+            struct.pack_into("<f", colors, 0, invalid)
+            with self.subTest(color=invalid), self.assertRaisesRegex(ValueError, "mesh_invalid"):
+                SculptProvider._validate_registered_glb(blob(), receipt)
+        struct.pack_into("<f", colors, 0, 0.2)
+        for index in (2, 99):
+            struct.pack_into("<H", indices, 0, index)
+            with self.subTest(index=index), self.assertRaisesRegex(ValueError, "mesh_invalid"):
+                SculptProvider._validate_registered_glb(blob(), receipt)
+        struct.pack_into("<H", indices, 0, 0)
+        for field, value in (("byteOffset", -1), ("byteStride", 3), ("byteLength", 48)):
+            with self.subTest(field=field):
+                original = document["bufferViews"][1].copy()
+                document["bufferViews"][1][field] = value
+                with self.assertRaisesRegex(ValueError, "mesh_invalid"):
+                    SculptProvider._validate_registered_glb(blob(), receipt)
+                document["bufferViews"][1] = original
+        document["accessors"][1]["sparse"] = {}
+        with self.assertRaisesRegex(ValueError, "mesh_invalid"):
+            SculptProvider._validate_registered_glb(blob(), receipt)
+
     def test_trusted_anatomy_data_change_invalidates_runtime_fingerprint(self):
         with tempfile.TemporaryDirectory(prefix="sculpt-runtime-fingerprint-") as temporary:
             directory = Path(temporary)
@@ -676,6 +816,7 @@ class SculptTests(unittest.TestCase):
             "anatomy_body.py",
             "character_detail.py",
             "organic_detail.py",
+            "period_groom.py",
         ):
             shutil.copy2(BUILDER.with_name(name), runtime / name)
         calibration_fixture(runtime / "sculpt_builder.py")
@@ -909,6 +1050,63 @@ class SculptTests(unittest.TestCase):
         check_content(dict(payload=dict(provenance=dict(instruction_receipt=receipt))))
         self.assertFalse((directory / "builder.stdout").exists())
 
+    def test_single_image_turnaround_passes_to_builder_as_one_source_and_three_observed_directions(self):
+        self.use_synthetic_calibration_runtime()
+        # This test exercises model selection and its bound receipt only.
+        builder = Path(self.config["builder_path"])
+        builder.with_name("turnaround_surface.py").write_bytes(b"# synthetic fixed geometry helper\n")
+        self.provider = SculptProvider(self.config)
+        image = image_artifact("sheet", bytes((32, 64, 96)))
+        request = dict(
+            node="image_to_mesh",
+            version="1",
+            inputs={"source": {"id": image["id"], "revision": image["revision"]}},
+            parameters={"prompt": "reconstruct turnaround"},
+            context=[],
+        )
+        manifest = dict(schema_version=1, artifacts=[image])
+        plan = self.provider.plan(request, manifest)
+        response = copy.deepcopy(PLAN)
+        response.update(
+            character=character_defaults(), regions=[], materials=[], sheet_construction="registered_turnaround"
+        )
+        response["completion"] = dict(mode="reference_constrained", inferred_regions=["character"])
+        response["reference_panels"] = [
+            dict(view="front", box=[0, 0, 0.5, 0.5]),
+            dict(view="back", box=[0.5, 0, 1, 0.5]),
+            dict(view="profile_left_facing", box=[0, 0.5, 1, 1]),
+        ]
+        (self.directory / "plan.json").write_text(json.dumps(response), encoding="utf-8")
+        record = dict(
+            request=request,
+            manifest=manifest,
+            fingerprint=self.provider.fingerprint,
+            created=time.time(),
+            heartbeat=time.time(),
+            stage="intent",
+            plan=plan,
+        )
+        with self.provider.db() as db:
+            db.execute("INSERT INTO jobs VALUES(?,?)", (KEY, json.dumps(record)))
+            db.execute("INSERT INTO leases VALUES(?,?,0)", (KEY, time.time()))
+        directory = self.directory / "state" / KEY
+        directory.mkdir()
+        instructions, receipt = self.provider._instructions(KEY, plan, directory)
+        self.assertNotIn("reference_panels", instructions)
+        self.assertNotIn("sheet_construction", instructions)
+        self.assertEqual(receipt["sheet_construction"], "registered_turnaround")
+        self.assertEqual(receipt["observed_selected_panels"], receipt["sheet_view_evidence"]["panels"])
+        self.assertEqual(len(receipt["registered_panels"]), 3)
+        self.assertEqual(receipt["distinct_reference_images"], 1)
+        evidence = receipt["sheet_view_evidence"]
+        self.assertEqual(evidence["source_sha256"], image["revision"])
+        self.assertEqual(evidence["distinct_named_directions"], 3)
+        self.assertEqual(receipt["operator_calibration"]["attachment_index"], 2)
+        self.assertEqual(
+            receipt["hidden_surface_policy"], "single_sheet_multiple_observed_views_hidden_surfaces_remain_ambiguous"
+        )
+        check_content(dict(instruction_receipt=receipt))
+
     def test_refuses_third_reference_or_global_context_instead_of_ignoring_it(self):
         artifact = image_artifact("front", b"\x20\x40\x60")
         manifest = dict(schema_version=1, artifacts=[artifact])
@@ -996,6 +1194,7 @@ class SculptTests(unittest.TestCase):
             "anatomy_body.py",
             "character_detail.py",
             "organic_detail.py",
+            "period_groom.py",
             "anatomy_calibration.py",
         ):
             with self.subTest(missing=missing):
@@ -1008,6 +1207,7 @@ class SculptTests(unittest.TestCase):
                     "anatomy_body.py",
                     "character_detail.py",
                     "organic_detail.py",
+                    "period_groom.py",
                     "anatomy_calibration.py",
                 ):
                     if other != missing:

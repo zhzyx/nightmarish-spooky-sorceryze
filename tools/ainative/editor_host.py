@@ -94,6 +94,14 @@ def compile_graph(model):
                 if ext not in (".png", ".jpg", ".jpeg", ".glb", ".gltf"):
                     raise ValueError("unsupported asset")
                 payload = snapshot_file(path) if path else dict(n[field + "_snapshot"])
+                # Some export tools give JPEG bytes a PNG suffix. Use the immutable
+                # snapshot header for the image decoder and keep its original digest.
+                if ext in (".png", ".jpg", ".jpeg"):
+                    signature = base64.b64decode(payload["content_base64"][:12], validate=True)
+                    if signature.startswith(b"\x89PNG\r\n\x1a\n"):
+                        ext = ".png"
+                    elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
+                        ext = ".jpg"
                 payload["extension"] = ext
                 # glTF must be self-contained; external buffers/textures are not snapshotted.
                 if field == "image_context" and ext not in (".png", ".jpg", ".jpeg"):

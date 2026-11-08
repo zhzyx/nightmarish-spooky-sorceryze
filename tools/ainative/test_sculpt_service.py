@@ -30,7 +30,7 @@ class SculptServiceTests(unittest.TestCase):
         self.anatomy.touch()
         self.body_anatomy = self.builder.with_name("anatomy_body.py")
         self.body_anatomy.touch()
-        for name in ("character_detail.py", "organic_detail.py"):
+        for name in ("character_detail.py", "organic_detail.py", "period_groom.py"):
             self.builder.with_name(name).touch()
         self.calibration = self.builder.with_name("anatomy_calibration.py")
         self.calibration.touch()
@@ -78,6 +78,7 @@ class SculptServiceTests(unittest.TestCase):
             self.calibration,
             self.builder.with_name("character_detail.py"),
             self.builder.with_name("organic_detail.py"),
+            self.builder.with_name("period_groom.py"),
         ):
             with self.subTest(dependency=dependency.name):
                 dependency.unlink()

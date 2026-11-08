@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-registered-candidate-review",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T19:13:04.224201+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "scoped_solver_and_node_integration_reviewed_parent_open",
+    "tests": {
+      "real_single_sheet_node_checks": 34,
+      "actual_result_triangles": 526056,
+      "actual_result_vertices": 263030,
+      "application_component_regressions": 122,
+      "native_old_entry_checks": 187,
+      "widget_and_node_checks": 282,
+      "native_mouse_checks": 37,
+      "platform_exclusion": "One macOS-specific Control-click case on Windows",
+      "new_portable_clothing_runner_checks": 8
+    },
+    "implementation": {
+      "editor/gui/progress_dialog.cpp": "398d97c037c30a90d6281ad3091b2bd6bb988b51a299ed3d10d846204d4b582b",
+      "misc/scripts/derive_maliang_calibration.py": "86a0eb88fc015a0dc80db1429e43797cbb1f754cb0eab551a6a8a2bf72dc025e",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "6ace4009ea6c83b1ef49a3033c182b1788e5a2dd6440c97323dc9cd68955eb78",
+      "tests/editor/run_sculpt_cli.py": "1449a2516a606406395767cbcb7262981e2f0cf02e76f2df30c899a71c25c9db",
+      "tests/editor/sculpt_cli_acceptance.gd": "e7f10b32bb36a0b581f9def26d8b562d86a009b964d6a7270924977778f0331e",
+      "tools/ainative/anatomy_calibration.py": "36b380de71c7c4c3efcb0f948b5fa50bc49d5aa89b3b0d38262e0f2e87f0fb50",
+      "tools/ainative/character_detail.py": "85539a704fb62ae5df13813dd844a1212871e950323e657c6c951ba64cee8a84",
+      "tools/ainative/codex_provider.py": "1a869f17ded280d50592990dcd52c22e6d624ace9fc5689dbcf57c2ae2335f15",
+      "tools/ainative/editor_host.py": "2a711f117c95353fdfcdda8051308d7f4e5ae10e737e3d7947dfcd236db59cc9",
+      "tools/ainative/generation_service.py": "56baee742b8befc518b2fe5e260fba4422b79ea72ba3c249dc9fb5ce8e7ad42c",
+      "tools/ainative/period_groom.py": "d46fe6aceaec2ace96b5eabf39c36b3ad5a2e2e528eb3990c9bef9e8dc48508d",
+      "tools/ainative/sculpt_builder.py": "ca44efd4a28135f12758bc41cd72c6e3a46600f00c2eb1d2fd8b2cea02c37154",
+      "tools/ainative/sculpt_provider.py": "f29e264d6a67f65ab8fcf771e3ed0d020f6cf0e1bf5756d42136e6e679e5ea20",
+      "tools/ainative/test_editor_host.py": "4181365250b1afca996cd6e01e93301bda770b3185be6008dd510cf1c7f8af25",
+      "tools/ainative/test_jpeg_validation.py": "7f272174d028224f9da787f8293967fc6d32cfdf8ec5c1ade30531b67f78ef3f",
+      "tools/ainative/test_period_clothing.py": "e8444336622fb1db02f1a9f6531de262f109c292500de62ddbbc316b7c11e146",
+      "tools/ainative/test_period_groom.py": "7b07d2f76a2d90045473babb06137be13483ad6313903f67ce5c368a9620337e",
+      "tools/ainative/test_sculpt_provider.py": "f08e6c5e36cd50567563c05b1265992052fa8e15f8b2e002c87c1cf101817536",
+      "tools/ainative/test_sculpt_service.py": "b8ad4db2af09eaef061a39d565b04177c085cd6a569cc0a7d8d6ab38d2e1b708",
+      "tools/ainative/test_turnaround_face.py": "6dbb62db8d326f493cff5d81763236b654f4052708dceab78e6b86c7b0ec4827",
+      "tools/ainative/test_turnaround_surface.py": "9227bcdcf8629a71904716cc0284201f51222045c5cdf7ca9a0522bd08229000",
+      "tools/ainative/turnaround_face.py": "b8339125946faf04b67f7bae232aec226a5a5ded82802d0691787a9ffe0210a2",
+      "tools/ainative/turnaround_surface.py": "8428fd1d494de501185f7cebc7859a690e02aa4873ec94c66cd175f2959cb81d"
+    },
+    "evidence_sha256": {
+      "deployed_editor_widgets_and_actual_pointer_events": "7780b66041facc2583a123892e21b82e8001a16ef6dfd64b81a378846bd53c92",
+      "terminal_branch_followup": "5c4dbd7bf03fe5eef59685f0a603da82f3826f6963101bb441ef358d737ea94e",
+      "heldout_surface_and_optout": "dda32bd74d1384d086ed8c6411fd8bc83bd1bc58cd3a65a3e38ad27d1bae9293",
+      "host_face_binding_guard": "ca2feee218976360fd96d2afd6d441c28cab95725238f3f57746e408dd990d2b",
+      "registered_surface_and_face_release": "baba4961b31c8e92c55f2f9818d8d25542d53cd409f3b2a269c84caf542f2b57",
+      "clothing_and_native_controls": "fb71ed04ef047ac83d6d18e817dea8aeb853ce2ff1ae58d0d8b8abf5c9adde42"
+    },
+    "privacy": "Reference images, derived meshes, face observations, runtime logs and desktop paths are intentionally local.",
+    "candidate_scope": "Authenticated CLI observes the original sheet; the fixed operator reconstructs bounded 3D geometry with sampled colors. A fixed neutral anatomical prior is fitted only when the source supports registration.",
+    "visual_review": "The paired eye regions, nasal bridge and mouth now have visible depth in untextured views. Lateral cranial bands, beard and neck transitions, overlapping feet and fine finger/toe separation limit fidelity. Unobserved surfaces remain inferred. Artistic approval is open.",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-registered-native-first",
+    "maliang-gpt-modeling-20261108-registered-native-retest"
+  ],
+  "sha256": "3c16024dc3837f53b0598eb3ab5848bdc7ed093923df865a16ec77416cdd08f6"
+}

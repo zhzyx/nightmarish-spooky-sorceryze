@@ -17,12 +17,16 @@ from anatomy_base import AGE_DELTAS, AGE_SOURCE_SHA256, HEAD_FACES, HEAD_VERTICE
 from anatomy_base import SOURCE_SHA256 as ANATOMY_BASE_SHA256  # noqa: E402
 from character_detail import (
     PATCH_POCKET_SCOPE,
+    cross_collar_accessories,
     detail_schema,
+    enclose_tunic_over_trousers,
     eyebrow_accessories,
     fabric_outward_offset,
     face_detail_offset,
     hair_detail_mask,
     hair_detail_offset,
+    period_fabric_offset,
+    period_surface_fold_offset,
     resolve_detail,
     trouser_waist,
 )
@@ -35,6 +39,12 @@ from organic_detail import (  # noqa: E402
     validate_caps,
     validate_patterns,
 )
+from period_groom import (  # noqa: E402
+    build_period_groom,
+    measure_groom_spec,
+    period_groom_schema,
+    resolve_period_groom,
+)
 
 KINDS = ("box", "ellipsoid", "capsule", "cylinder", "loft", "cage")
 MAX_PLAN_BYTES = 2 * 1024 * 1024
@@ -45,6 +55,12 @@ MAX_VOXELS = 64000000
 RADIAL = 32
 LOFT_STEPS = 8
 CHARACTER_AGE_WEIGHTS = {"adult": 0.0, "mature": 0.35, "elder": 0.65}
+
+
+def resolve_arm_angle(character):
+    value = character.get("arm_angle_degrees")
+    require(value is None or _number(value, 20, 75), "character_arm_angle_invalid")
+    return 65.0 if value is None else float(value)
 
 
 def resolve_age_blend(character):
@@ -128,7 +144,7 @@ def _validate_character(character):
         "accent_color",
     }
     optional_colors = {"trouser_color", "footwear_color"}
-    optional = optional_colors | {"age_blend", "detail"}
+    optional = optional_colors | {"age_blend", "detail", "arm_angle_degrees", "period_groom"}
     require(isinstance(character, dict) and keys <= set(character) <= keys | optional, "character_fields_invalid")
     require(
         character["style"] in ("realistic", "stylized")
@@ -138,16 +154,19 @@ def _validate_character(character):
     )
     require(
         character["hair"] in ("short", "short_wavy", "bald")
-        and character["clothing"] in ("tshirt_trousers", "robe_belt", "coverall"),
+        and character["clothing"] in ("tshirt_trousers", "robe_belt", "coverall", "cross_collar_tunic"),
         "character_outfit_invalid",
     )
-    require(character["footwear"] in ("shoes", "sandals"), "character_footwear_invalid")
+    require(character["footwear"] in ("shoes", "sandals", "barefoot"), "character_footwear_invalid")
     resolve_detail(character)
+    resolve_arm_angle(character)
+    resolve_period_groom(character)
     require(
         all(_number(character[key], *bounds) for key, bounds in CHARACTER_LIMITS.items()), "character_morph_invalid"
     )
     require(
-        character["clothing"] != "robe_belt" or character["hem_height"] < character["belt_height"] - 0.025,
+        character["clothing"] not in ("robe_belt", "cross_collar_tunic")
+        or character["hem_height"] < character["belt_height"] - 0.025,
         "character_belt_above_hem_required",
     )
     require(
@@ -396,8 +415,8 @@ def modeling_schema():
             key: dict(type="number", minimum=bounds[0], maximum=bounds[1]) for key, bounds in FACE_LIMITS.items()
         }),
         hair=dict(type="string", enum=["short", "short_wavy", "bald"]),
-        clothing=dict(type="string", enum=["tshirt_trousers", "robe_belt", "coverall"]),
-        footwear=dict(type="string", enum=["shoes", "sandals"]),
+        clothing=dict(type="string", enum=["tshirt_trousers", "robe_belt", "coverall", "cross_collar_tunic"]),
+        footwear=dict(type="string", enum=["shoes", "sandals", "barefoot"]),
     )
     for key in ("skin_color", "hair_color", "cloth_color", "accent_color"):
         character_properties[key] = vector(4, 0, 1)
@@ -407,6 +426,11 @@ def modeling_schema():
         "Realistic eyes .8..1.2; stylized eyes .8..1.6. Stylized values above1 scale eyelids and globes consistently."
     )
     character_properties["detail"] = detail_schema()
+    character_properties["period_groom"] = period_groom_schema()
+    character_properties["arm_angle_degrees"] = dict(
+        anyOf=[dict(type="null"), dict(type="number", minimum=20, maximum=75)],
+        description="A-pose arm angle in degrees DOWN FROM HORIZONTAL; null preserves historical 65 degrees. The same two-bone pose moves body, hands, and garment.",
+    )
     character_properties["age_blend"] = dict(anyOf=[dict(type="null"), dict(type="number", minimum=0, maximum=1)])
     return obj(
         dict(
@@ -685,7 +709,8 @@ def _canonical_body(character):
         elbow = [shoulder[i] + (elbow[i] - shoulder[i]) * c["limb_length"] for i in range(3)]
         wrist = [shoulder[i] + (wrist[i] - shoulder[i]) * c["limb_length"] for i in range(3)]
         sign = 1 if shoulder[0] >= 0 else -1
-        direction = [sign * math.sin(math.radians(25)), -math.cos(math.radians(25)), 0]
+        angle = math.radians(resolve_arm_angle(c))
+        direction = [sign * math.cos(angle), -math.sin(angle), 0]
         upper = rotation_between([elbow[i] - shoulder[i] for i in range(3)], direction)
         elbow_pos = [
             shoulder[i] + value for i, value in enumerate(rotate(upper, [elbow[i] - shoulder[i] for i in range(3)]))
@@ -853,7 +878,11 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
     clip_hem = max(hem, hip_y - 0.02 * c["height"])
     neck_top = land.get("chin", land["jaw"])[1] - 0.045 * scale
     belt = c["belt_height"] * c["height"]
-    v_bottom = min(belt + 0.20 * scale, neck_top - 0.10 * scale)
+    v_bottom = (
+        neck_top - 0.105 * scale
+        if c["clothing"] == "cross_collar_tunic"
+        else min(belt + 0.20 * scale, neck_top - 0.10 * scale)
+    )
     # The decorative GI belt may sit low; trousers must always retain their seat.
     waist = trouser_waist(hem, hip_y + 0.035 * c["height"], c["height"], c["clothing"])
     cuff = (land["ankleL"][1] + land["ankleR"][1]) / 2 + 0.005 * c["height"]
@@ -894,7 +923,7 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
                 if z > 0
                 else 0.2 * scale
             )
-            if c["clothing"] != "robe_belt" or inner_layer:
+            if c["clothing"] not in ("robe_belt", "cross_collar_tunic") or inner_layer:
                 v = 0.2 * scale
             masks = [
                 (y - cuff if kind == "coverall" else y - clip_hem) if arm < 0.1 else 1,
@@ -1017,7 +1046,9 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
             ease = (0.0007 + (0.005 - 0.0007) * hair_root_blend) * scale
         elif kind in ("shirt", "coverall"):
             waist_weight = (
-                math.exp(-0.5 * ((point[1] - belt) / (0.07 * scale)) ** 2) if c["clothing"] == "robe_belt" else 0
+                math.exp(-0.5 * ((point[1] - belt) / (0.07 * scale)) ** 2)
+                if c["clothing"] in ("robe_belt", "cross_collar_tunic")
+                else 0
             )
             ease = (
                 0.025 - 0.015 * waist_weight + 0.010 * math.exp(-0.5 * ((point[1] - clip_hem) / (0.07 * scale)) ** 2)
@@ -1076,8 +1107,21 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
             expanded = [
                 value + direction * (minimum_clearance - clearance) for value, direction in zip(expanded, normal)
             ]
+        if c["clothing"] == "cross_collar_tunic":
+            expanded = period_fabric_offset(point, expanded, normal, arm, canonical, c, kind)
         vertices.append(expanded)
         mask_values.append(masks)
+    if c["clothing"] == "cross_collar_tunic" and kind == "trousers":
+        for point in vertices:
+            side = 1 if point[0] >= 0 else -1
+            cx, cz = sample_envelope(cuff, side)[:2]
+            gather = 1 - _smoothstep(cuff + 0.008 * scale, cuff + 0.125 * scale, point[1])
+            x, z = point[0] - cx, point[2] - cz
+            distance = math.hypot(x, z)
+            desired = (0.041 + 0.0025 * math.sin(10 * math.atan2(z, x))) * scale
+            if distance > desired:
+                ratio = 1 + (desired / distance - 1) * gather
+                point[0], point[2] = cx + x * ratio, cz + z * ratio
     faces = [[mapping[index] for index in face] for face in faces]
     if kind == "shirt" and hem < clip_hem - 1e-6:
         counts = {}
@@ -1100,9 +1144,10 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
             require(len(loop) <= len(edges), "garment_hem_loop_invalid")
         require(len(loop) == len(edges), "garment_hem_multiple_loops")
         original = list(loop)
-        for step in (1, 2):
+        extension_steps = 6 if c["clothing"] == "cross_collar_tunic" else 2
+        for step in range(1, extension_steps + 1):
             next_loop = []
-            t = step / 2
+            t = step / extension_steps
             for index in original:
                 point = vertices[index]
                 next_loop.append(len(vertices))
@@ -1205,6 +1250,21 @@ def _garment_shell(canonical, c, kind, inner_layer=False):
                 previous, current = current, following
             require(len(loop) == len(adjacency), "garment_neck_rim_multiple_loops")
             details["neck_rim"] = [list(vertices[index]) for index in loop]
+        if c["clothing"] == "cross_collar_tunic":
+            endpoints = sorted(index for index, neighbors in adjacency.items() if len(neighbors) == 1)
+            require(
+                len(endpoints) == 2 and all(len(neighbors) in (1, 2) for neighbors in adjacency.values()),
+                "period_back_collar_boundary_invalid",
+            )
+            path = [endpoints[0]]
+            previous = None
+            while path[-1] != endpoints[1]:
+                following = next(index for index in adjacency[path[-1]] if index != previous)
+                require(following not in path, "period_back_collar_boundary_invalid")
+                previous = path[-1]
+                path.append(following)
+            require(len(path) == len(adjacency), "period_back_collar_boundary_invalid")
+            details["period_neck_path"] = [list(vertices[index]) for index in path]
         if c["clothing"] == "coverall":
             require(len(details["neck_rim"]) >= 4, "garment_neck_rim_missing")
     if kind in ("trousers", "coverall"):
@@ -1417,6 +1477,12 @@ def _compile_character(original):
     result["materials"] += [
         dict(name="AnatomySkin", color=c["skin_color"], roughness=0.75),
         dict(name="AnatomyHair", color=c["hair_color"], roughness=0.82),
+        dict(
+            name="AnatomyHairGray",
+            color=[0.45 * value + 0.55 * gray for value, gray in zip(c["hair_color"][:3], (0.30, 0.29, 0.27))]
+            + [c["hair_color"][3]],
+            roughness=0.88,
+        ),
         dict(name="AnatomyCloth", color=c["cloth_color"], roughness=0.8),
         dict(name="AnatomyTrouserCloth", color=c.get("trouser_color") or c["cloth_color"], roughness=0.8),
         dict(name="AnatomyFootwear", color=c.get("footwear_color") or c["accent_color"], roughness=0.7),
@@ -1438,6 +1504,7 @@ def _compile_character(original):
         "no_subdivision": [],
         "neckline_pins": {},
         "body_metadata": canonical,
+        "period_groom": [],
     }
 
     def add(
@@ -1711,7 +1778,7 @@ def _compile_character(original):
                 role="accessory",
                 material="AnatomyFootwear",
             )
-        else:
+        elif c["footwear"] == "shoes":
             front_height = max(point[1] / scale for point in foot if point[2] / scale >= zmin + 0.55 * fl) + 0.025
             toe_height = max(0.070, front_height - 0.015)
             sections = [
@@ -1889,6 +1956,9 @@ def _compile_character(original):
         add("TrouserCuff" + label, "cage", vertices=vv, faces=ff, role="accessory", material="AnatomyCloth")
     for kind in ("coverall",) if c["clothing"] == "coverall" else ("shirt", "trousers"):
         garment_vertices, garment_faces, collars, details = _garment_shell(canonical, c, kind)
+        if c["clothing"] == "cross_collar_tunic" and kind == "shirt":
+            trouser_control, _, _, _ = _garment_shell(canonical, c, "trousers")
+            garment_vertices = enclose_tunic_over_trousers(garment_vertices, trouser_control, c)
         add(
             kind,
             "cage",
@@ -2001,6 +2071,45 @@ def _compile_character(original):
                 group="no_subdivision",
                 trusted_cloth=True,
             )
+        if c["clothing"] == "cross_collar_tunic" and kind == "shirt":
+            for item in cross_collar_accessories(
+                canonical, c, dict(vertices=garment_vertices, faces=garment_faces, details=details)
+            ):
+                add(
+                    item["name"],
+                    "cage",
+                    vertices=item["vertices"],
+                    faces=item["faces"],
+                    role="accessory",
+                    material=item["material"],
+                    group="no_subdivision",
+                    trusted_cloth=True,
+                    trusted_accessory=True,
+                )
+            belt_y = c["belt_height"] * c["height"]
+            belt_vertices, belt_faces = _fitted_strap(
+                garment_vertices,
+                garment_faces,
+                belt_y - 0.017 * scale,
+                belt_y + 0.017 * scale,
+                details["belt_center"],
+                scale,
+                clearance=0.009,
+                thickness=0.003,
+            )
+            # The fixed section sampler walks clockwise from +X; reverse the
+            # resulting new belt shell once so its source winding is outward.
+            belt_faces = [list(reversed(face)) for face in belt_faces]
+            add(
+                "CrossCollarBelt",
+                "cage",
+                vertices=belt_vertices,
+                faces=belt_faces,
+                role="accessory",
+                material="AnatomyAccent",
+                group="no_subdivision",
+                trusted_accessory=True,
+            )
         if kind == "coverall":
             belt_y = c["belt_height"] * c["height"]
             vv, ff = _fitted_strap(
@@ -2048,7 +2157,19 @@ def _compile_character(original):
             material="AnatomyHair",
             group="no_subdivision",
         )
-    if c["hair"] in ("short", "short_wavy"):
+    for spec in build_period_groom(canonical, c):
+        measure = measure_groom_spec(spec)
+        groups["period_groom"].append(dict(name="Anatomy_" + spec["name"], material=spec["material"], **measure))
+        add(
+            spec["name"],
+            "cage",
+            vertices=spec["vertices"],
+            faces=spec["faces"],
+            role="accessory",
+            material=spec["material"],
+            group="no_subdivision",
+        )
+    if resolve_period_groom(c) is None and c["hair"] in ("short", "short_wavy"):
         hair_vertices, hair_faces, _, _ = _garment_shell(canonical, c, "hair")
         add(
             "Hair",
@@ -2854,8 +2975,24 @@ def build(plan, output_path, renders=False):
                         )
                     modifier.vertex_group = group.name
                 _apply(obj, modifier, bpy)
+            if character["clothing"] == "cross_collar_tunic" and obj.name in ("Anatomy_shirt", "Anatomy_trousers"):
+                modifier = obj.modifiers.new("FixedLinenControlRefinement", "SUBSURF")
+                modifier.levels = modifier.render_levels = 1
+                _apply(obj, modifier, bpy)
+                obj.data.update()
+                kind = "shirt" if obj.name == "Anatomy_shirt" else "trousers"
+                for vertex in obj.data.vertices:
+                    point = [vertex.co.x, vertex.co.z, -vertex.co.y]
+                    normal = [vertex.normal.x, vertex.normal.z, -vertex.normal.y]
+                    delta = period_surface_fold_offset(point, normal, anatomy_groups["body_metadata"], character, kind)
+                    vertex.co += Vector((delta[0], -delta[2], delta[1]))
+                obj.data.update()
             modifier = obj.modifiers.new("FixedGarmentThickness", "SOLIDIFY")
-            modifier.thickness = (0.002 if obj.name == "Anatomy_Hair" else 0.004) * character["height"] / 1.8
+            modifier.thickness = (
+                (0.002 if obj.name == "Anatomy_Hair" or character["clothing"] == "cross_collar_tunic" else 0.004)
+                * character["height"]
+                / 1.8
+            )
             modifier.offset = 0
             modifier.use_even_offset = False
             modifier.use_rim = True
@@ -3150,7 +3287,7 @@ def build(plan, output_path, renders=False):
         generated_code_executed=False,
         runtime_input_sha256={
             name + "_sha256": hashlib.sha256(Path(__file__).with_name(name + ".py").read_bytes()).hexdigest()
-            for name in ("character_detail", "organic_detail")
+            for name in ("character_detail", "organic_detail", "period_groom")
         },
     )
     if character is not None:
@@ -3181,6 +3318,25 @@ def build(plan, output_path, renders=False):
             "garment_coverage": "single_connected_coverall"
             if character["clothing"] == "coverall"
             else "overlapping_full_outfit_waist",
+            "requested_arm_angle_degrees": character.get("arm_angle_degrees"),
+            "effective_arm_angle_degrees": resolve_arm_angle(character),
+            "period_groom": dict(
+                requested=character.get("period_groom"),
+                effective=resolve_period_groom(character),
+                meshes=anatomy_groups["period_groom"],
+            )
+            if resolve_period_groom(character) is not None
+            else None,
+            "period_clothing": dict(
+                kind="right_closing_cross_collar_tunic_v1",
+                outer_lapel_direction="subject_left_neck_to_subject_right_waist",
+                belt_knot_side="subject_left_positive_x",
+                footwear=character["footwear"],
+                continuous_back=True,
+                gathered_trouser_ankles=True,
+            )
+            if character["clothing"] == "cross_collar_tunic"
+            else None,
             "requested_age_blend": character.get("age_blend"),
             "effective_age_blend": resolve_age_blend(character),
             "fixed_small_accessory_uv_segments": [24, 16],
@@ -3196,7 +3352,9 @@ def build(plan, output_path, renders=False):
             "fixed_minimum_body_subdivision": 1,
             "garment_surface_implementation": "clipped_canonical_surface_with_solid_cloth_thickness",
             "effective_garment_subdivision": max(1, subdivision),
-            "garment_thickness": 0.004 * character["height"] / 1.8,
+            "garment_thickness": (0.002 if character["clothing"] == "cross_collar_tunic" else 0.004)
+            * character["height"]
+            / 1.8,
             "hair_shell_thickness": 0.002 * character["height"] / 1.8 if character["hair"] != "bald" else 0,
             "framing_landmarks_not_visual_acceptance": landmarks,
         }

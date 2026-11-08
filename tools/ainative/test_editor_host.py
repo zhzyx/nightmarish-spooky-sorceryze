@@ -171,6 +171,28 @@ class BridgeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "cycle"):
                 dispatch(args, {"model": cycle, "target": "first"})
 
+    def test_image_suffix_follows_immutable_bytes_in_sources_context_and_saved_snapshots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            png = (root / "sample.png").read_bytes()
+            jpg = b"\xff\xd8\xff\xe0" + b"JPEG header detection" + b"\xff\xd9"
+            (root / "export.png").write_bytes(jpg)
+            (root / "reference.jpg").write_bytes(png)
+            workflow = model(root / "export.png")
+            node = workflow["nodes"][0]
+            node["image_context"] = str(root / "reference.jpg")
+            _, assets = compile_graph(workflow)
+            for artifact, (field, data, extension) in zip(
+                assets["artifacts"], (("source", jpg, ".jpg"), ("image_context", png, ".png"))
+            ):
+                self.assertEqual(artifact["payload"]["extension"], extension)
+                self.assertEqual(artifact["revision"], hashlib.sha256(data).hexdigest())
+                snapshot = dict(artifact["payload"], extension=Path(node[field]).suffix)
+                node[field] = ""
+                node[field + "_snapshot"] = snapshot
+            self.assertEqual(compile_graph(workflow)[1], assets)
+
     def test_preview_preserves_snapshot_and_rejects_tampered_materialization(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

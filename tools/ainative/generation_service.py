@@ -326,6 +326,7 @@ def _blender_runtime(config):
                 "anatomy_body.py",
                 "character_detail.py",
                 "organic_detail.py",
+                "period_groom.py",
                 "anatomy_calibration.py",
             )
         )

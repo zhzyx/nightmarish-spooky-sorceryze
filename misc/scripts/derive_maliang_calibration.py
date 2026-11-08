@@ -32,6 +32,7 @@ def source_hashes(builder):
         "anatomy_body_sha256": sha(builder.with_name("anatomy_body.py")),
         "character_detail_sha256": sha(builder.with_name("character_detail.py")),
         "organic_detail_sha256": sha(builder.with_name("organic_detail.py")),
+        "period_groom_sha256": sha(builder.with_name("period_groom.py")),
     }
 
 
@@ -131,6 +132,12 @@ def derive(args):
             label="STYLIZED EXAMPLE: head_ratio=6, eye_size=1.5, smile=0.6, brow=0.25",
             style="stylized",
         ),
+        dict(
+            age="mature",
+            blend=0.4,
+            label="WRAP EXAMPLE: cross collar, loose sleeves, swept bun, bare feet",
+            style="realistic",
+        ),
     ]
     panels = []
     blender_versions = set()
@@ -139,7 +146,7 @@ def derive(args):
     draw.text((12, 10), "FIXED OPERATOR BASELINE - NOT A USER TARGET OR RECONSTRUCTION", fill=(255, 213, 128))
     draw.text(
         (12, 32),
-        "Rows 1-3: face factors=1, head_ratio=7.5, height=1.8m, bald A-pose. Row 4 is an explicit style example.",
+        "Rows 1-3: face factors=1, head_ratio=7.5, height=1.8m, bald A-pose. Rows 4-5 show style and garment options.",
         fill="white",
     )
     draw.text(
@@ -170,6 +177,16 @@ def derive(args):
                 brow_raise=0.25,
                 forehead_height=-0.15,
                 pocket_size=0.0,
+            )
+        if age == "mature":
+            character.update(
+                clothing="cross_collar_tunic",
+                footwear="barefoot",
+                arm_angle_degrees=40,
+                sleeve_length=0.96,
+                hem_height=0.42,
+                trouser_width=1.1,
+                period_groom=dict(version=1, hairstyle="swept_back_bun", facial_hair="moustache_goatee"),
             )
         plan = dict(
             version=2,

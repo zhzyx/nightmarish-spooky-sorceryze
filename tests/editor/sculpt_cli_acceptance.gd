@@ -88,6 +88,12 @@ func run():
 		if not verify(reference_images.size()==2 and cli_receipt.get("distinct_reference_images",0)==2,"both distinct reference sheets reached actual CLI request"): return
 		if not verify(reference_images[0].get("reference_sha256","")==FileAccess.get_sha256(config.source) and reference_images[1].get("reference_sha256","")==FileAccess.get_sha256(config.reference),"source and reference ordering and exact reference digests retained"): return
 		if not verify(reference_images[0].role=="source" and reference_images[1].role=="reference","source and reference semantic roles retained"): return
+	if int(config.get("expect_sheet_directions", 0)) > 0:
+		var images: Array = cli_receipt.get("reference_images", [])
+		var sheet: Dictionary = cli_receipt.get("sheet_view_evidence", {})
+		if not verify(cli_receipt.get("distinct_reference_images") == 1 and images.size() == 1 and images[0].get("reference_sha256") == FileAccess.get_sha256(config.source), "one original sheet reached CLI with its exact file bytes"): return
+		if not verify(sheet.get("source_sha256") == FileAccess.get_sha256(config.source) and sheet.get("distinct_named_directions") == config.expect_sheet_directions, "reported panel directions agree with observed sheet and repeated views count once"): return
+		if not verify(sheet.get("source") == "cli_observed_panels" and not provenance.get("exact_hidden_surface_recovery_claimed", true), "sheet evidence distinguishes model observations from hidden surface recovery"): return
 	var calibration: Dictionary=cli_receipt.get("operator_calibration",{})
 	if not verify(calibration.get("role")=="internal_fixed_operator_calibration" and calibration.get("user_reference",true)==false and calibration.get("image_sha256","")==config.get("expected_calibration_png_sha256","") and not str(config.get("expected_calibration_png_sha256","")).is_empty(),"actual CLI receipt binds the separate internal baseline purpose and exact PNG digest"): return
 	var user_images: Array=cli_receipt.get("reference_images",[])
@@ -102,6 +108,51 @@ func run():
 		if mesh.mesh!=null:
 			for surface in mesh.mesh.get_surface_count(): vertices+=mesh.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX].size()
 	result["vertices"]=vertices
+	if config.get("expect_registered_surface", false):
+		var builder: Dictionary = provenance.get("builder_receipt", {})
+		if not verify(builder.get("construction_operator") == "registered_turnaround", "the registered surface operator built this GLB"): return
+		var registered: Dictionary = builder.get("quality", {}).get("registered_surface", {})
+		if not verify(registered.get("source_sha256") == FileAccess.get_sha256(config.source), "registered geometry and color bind the original user image"): return
+		if config.get("expect_registered_face", false):
+			if not verify(registered.get("face_geometry", {}).get("applied") == true, "the registered face was fitted in mesh geometry"): return
+		var imported_colors := 0
+		var varying_colors := false
+		for item in panel.preview_scene.find_children("*", "MeshInstance3D", true, false):
+			if item.mesh == null: continue
+			for index in item.mesh.get_surface_count():
+				var arrays: Array = item.mesh.surface_get_arrays(index)
+				if arrays[Mesh.ARRAY_COLOR] is PackedColorArray:
+					var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
+					imported_colors += colors.size()
+					for color in colors:
+						if not color.is_equal_approx(colors[0]):
+							varying_colors = true
+							break
+		if not verify(imported_colors == vertices and varying_colors, "Godot imported varying surface colors for every registered vertex"): return
+		var camera := panel.preview_root.get_child(0) as Camera3D
+		var initial := camera.transform
+		var drag := InputEventMouseMotion.new()
+		drag.button_mask = MOUSE_BUTTON_MASK_LEFT
+		drag.relative = Vector2(210, 16)
+		panel.mesh_container.gui_input.emit(drag)
+		if not verify(not camera.transform.is_equal_approx(initial), "drag rotates the preview camera around the model"): return
+		var before_zoom := camera.position.distance_to(panel.mesh_focus)
+		var wheel := InputEventMouseButton.new()
+		wheel.button_index = MOUSE_BUTTON_WHEEL_UP
+		wheel.pressed = true
+		panel.mesh_container.gui_input.emit(wheel)
+		if not verify(camera.position.distance_to(panel.mesh_focus) < before_zoom, "wheel zooms in on the native mesh"): return
+		var initial_focus: Vector3 = panel.mesh_focus
+		drag.button_mask = MOUSE_BUTTON_MASK_MIDDLE
+		drag.relative = Vector2(0, 65)
+		panel.mesh_container.gui_input.emit(drag)
+		if not verify(not initial_focus.is_equal_approx(panel.mesh_focus), "middle drag pans to inspect a model detail"): return
+		var reset := InputEventMouseButton.new()
+		reset.button_index = MOUSE_BUTTON_LEFT
+		reset.pressed = true
+		reset.double_click = true
+		panel.mesh_container.gui_input.emit(reset)
+		if not verify(camera.transform.is_equal_approx(initial), "double click restores the original camera frame"): return
 	if not verify(vertices>0,"generated Mesh contains actual vertices"): return
 	panel.target_edit.text=config.output.path_join("asset.tscn"); panel.review_publish()
 	if not verify(not panel.confirmation.is_empty(),"mesh scene publication reviewed"): return

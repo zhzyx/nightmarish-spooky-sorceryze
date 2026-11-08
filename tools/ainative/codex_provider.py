@@ -133,6 +133,155 @@ def check_cli(path):
     return result
 
 
+def validate_jpeg(data):
+    """Validate bounded 8-bit sequential/progressive JPEG container structure.
+
+    This checks frame/quantization/Huffman/scan dependencies, entropy-byte
+    framing and complete EOI. It does not reconstruct pixels or claim to detect
+    every invalid entropy code; the real image decoder still owns that step.
+    """
+    require(isinstance(data, bytes) and 4 < len(data) <= MAX_BYTES and data[:2] == b"\xff\xd8", "cli_output_invalid")
+    offset, frame, scans, restart = 2, None, 0, 0
+    quant, huffman, observed = set(), set(), set()
+    segments = 0
+    while offset < len(data):
+        segments += 1
+        require(segments <= 65536 and data[offset] == 255, "cli_output_invalid")
+        while offset < len(data) and data[offset] == 255:
+            offset += 1
+        require(offset < len(data), "cli_output_invalid")
+        marker = data[offset]
+        offset += 1
+        if marker == 0xD9:
+            require(
+                frame is not None and scans > 0 and observed == set(frame[3]) and offset == len(data),
+                "cli_output_invalid",
+            )
+            return dict(width=frame[0], height=frame[1])
+        require(
+            marker not in (0, 1, 0xD8) and not 0xD0 <= marker <= 0xD7 and offset + 2 <= len(data), "cli_output_invalid"
+        )
+        size = struct.unpack_from(">H", data, offset)[0]
+        require(size >= 2 and offset + size <= len(data), "cli_output_invalid")
+        body = data[offset + 2 : offset + size]
+        offset += size
+        if marker in (0xC0, 0xC1, 0xC2):
+            require(frame is None and len(body) >= 6, "cli_output_invalid")
+            precision, height, width, count = struct.unpack_from(">BHHB", body)
+            require(
+                precision == 8
+                and count in (1, 3, 4)
+                and len(body) == 6 + 3 * count
+                and 0 < width <= 8192
+                and 0 < height <= 8192
+                and width * height * count <= MAX_BYTES,
+                "cli_output_invalid",
+            )
+            components = {}
+            for index in range(count):
+                name, sampling, table = body[6 + 3 * index : 9 + 3 * index]
+                require(
+                    name not in components and 1 <= sampling >> 4 <= 4 and 1 <= sampling & 15 <= 4 and table <= 3,
+                    "cli_output_invalid",
+                )
+                components[name] = table
+            frame = (width, height, marker, components)
+        elif marker == 0xDB:
+            index = 0
+            require(bool(body), "cli_output_invalid")
+            while index < len(body):
+                kind = body[index]
+                width = 2 if kind >> 4 == 1 else 1
+                require(
+                    kind >> 4 in (0, 1) and kind & 15 <= 3 and index + 1 + 64 * width <= len(body), "cli_output_invalid"
+                )
+                values = struct.unpack_from(">64H" if width == 2 else ">64B", body, index + 1)
+                require(all(values), "cli_output_invalid")
+                quant.add(kind & 15)
+                index += 1 + 64 * width
+        elif marker == 0xC4:
+            index = 0
+            require(bool(body), "cli_output_invalid")
+            while index < len(body):
+                require(index + 17 <= len(body), "cli_output_invalid")
+                kind, counts = body[index], body[index + 1 : index + 17]
+                count = sum(counts)
+                require(
+                    kind >> 4 in (0, 1) and kind & 15 <= 3 and 0 < count <= 256 and index + 17 + count <= len(body),
+                    "cli_output_invalid",
+                )
+                space = 1
+                for value in counts:
+                    space = space * 2 - value
+                    require(space >= 0, "cli_output_invalid")
+                symbols = body[index + 17 : index + 17 + count]
+                require(len(set(symbols)) == count and (kind >> 4 != 0 or max(symbols) <= 11), "cli_output_invalid")
+                huffman.add((kind >> 4, kind & 15))
+                index += 17 + count
+        elif marker == 0xDD:
+            require(len(body) == 2, "cli_output_invalid")
+            restart = struct.unpack(">H", body)[0]
+        elif marker == 0xDA:
+            require(frame is not None and len(body) >= 6, "cli_output_invalid")
+            count = body[0]
+            require(1 <= count <= len(frame[3]) and len(body) == 4 + 2 * count, "cli_output_invalid")
+            start, end, approx = body[-3:]
+            high, low = approx >> 4, approx & 15
+            require(high <= 13 and low <= 13 and (high == 0 or high == low + 1), "cli_output_invalid")
+            require(
+                (start == 0 and end == 63 and approx == 0)
+                if frame[2] != 0xC2
+                else (0 <= start <= end <= 63 and (end == 0 if start == 0 else count == 1)),
+                "cli_output_invalid",
+            )
+            selected = set()
+            for index in range(count):
+                name, tables = body[1 + index * 2 : 3 + index * 2]
+                require(
+                    name in frame[3]
+                    and name not in selected
+                    and tables >> 4 <= 3
+                    and tables & 15 <= 3
+                    and frame[3][name] in quant,
+                    "cli_output_invalid",
+                )
+                if start == 0 and high == 0:
+                    require((0, tables >> 4) in huffman, "cli_output_invalid")
+                if end > 0:
+                    require((1, tables & 15) in huffman, "cli_output_invalid")
+                selected.add(name)
+            if start == 0:
+                observed.update(selected)
+            scans += 1
+            require(scans <= 1024, "cli_output_invalid")
+            entropy_bytes, expected_restart = 0, 0
+            while offset < len(data):
+                if data[offset] != 255:
+                    entropy_bytes += 1
+                    offset += 1
+                    continue
+                marker_start = offset
+                while offset < len(data) and data[offset] == 255:
+                    offset += 1
+                require(offset < len(data), "cli_output_invalid")
+                value = data[offset]
+                if value == 0:
+                    require(offset == marker_start + 1, "cli_output_invalid")
+                    entropy_bytes += 1
+                    offset += 1
+                elif 0xD0 <= value <= 0xD7:
+                    require(restart > 0 and value == 0xD0 + expected_restart, "cli_output_invalid")
+                    expected_restart = (expected_restart + 1) % 8
+                    offset += 1
+                else:
+                    offset = marker_start
+                    break
+            require(entropy_bytes > 0, "cli_output_invalid")
+        else:
+            require(0xE0 <= marker <= 0xEF or marker == 0xFE, "cli_output_invalid")
+    raise ValueError("cli_output_invalid")
+
+
 def validate_png(data):
     """Decode PNG chunks, CRCs, zlib stream and scanline filters (bounded)."""
     require(8 < len(data) <= MAX_BYTES and data[:8] == b"\x89PNG\r\n\x1a\n", "cli_output_invalid")

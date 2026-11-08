@@ -10,6 +10,320 @@ import math
 
 PATCH_POCKET_SCOPE = "raised patch panel, no functional pocket interior"
 
+
+def period_fabric_offset(point, expanded, normal, arm, canonical, character, kind):
+    """Fixed linen fit for the right-closing tunic, in the posed BODY frame.
+
+    Small irregular compression folds are localized at the belt, elbows and
+    ankle. They are geometry, not an image projection or a cloth simulation.
+    Historical outfits never call this function.
+    """
+    if kind not in ("shirt", "trousers"):
+        return expanded
+    height = character["height"]
+    scale = height / 1.8
+    detail = resolve_detail(character)
+    x, y, z = point
+    result = list(expanded)
+    belt = character["belt_height"] * height
+    if kind == "shirt":
+        neck_top = canonical["landmarks"]["chin"][1] - 0.045 * scale
+        neck_distance = neck_top + 0.45 * abs(x) - y
+        neck_blend = _smooth(0, 0.045 * height, max(0, neck_distance))
+        close = [a + b * 0.002 * scale for a, b in zip(point, normal)]
+        result = [a + (b - a) * neck_blend for a, b in zip(close, result)]
+        side = "L" if x >= 0 else "R"
+        shoulder = canonical["landmarks"]["shoulder" + side]
+        wrist = canonical["landmarks"]["wrist" + side]
+        delta = [b - a for a, b in zip(shoulder, wrist)]
+        length = math.sqrt(sum(value * value for value in delta))
+        axis = [value / length for value in delta]
+        along = sum((a - b) * direction for a, b, direction in zip(point, shoulder, axis))
+        t = max(0, min(1, along / length))
+        center = [value + direction * along for value, direction in zip(shoulder, axis)]
+        radial = [value - origin for value, origin in zip(point, center)]
+        radius = math.sqrt(sum(value * value for value in radial))
+        if radius > 1e-8 and arm > 0.10:
+            theta = math.atan2(radial[2], radial[0] * axis[1] - radial[1] * axis[0])
+            base = (0.086 - 0.048 * t + 0.009 * math.sin(math.pi * t)) * scale
+            compression = math.exp(-(((t - 0.53) / 0.16) ** 2)) + 0.75 * math.exp(-(((t - 0.91) / 0.12) ** 2))
+            fold = 0.005 * scale * compression * (0.45 + 0.55 * detail["fold_amplitude"])
+            fold *= 0.5 + 0.5 * math.sin(51 * t + 1.3 * math.sin(theta) + 0.7 * math.sin(2.3 * theta))
+            target_radius = max(radius + 0.006 * scale, base + fold)
+            target = [value + offset * target_radius / radius for value, offset in zip(center, radial)]
+            blend = _smooth(0.10, 0.65, arm)
+            result = [a + (b - a) * blend for a, b in zip(result, target)]
+        theta = math.atan2(z, x)
+        gather = math.exp(-(((y - belt - 0.035 * scale) / (0.075 * scale)) ** 2))
+        fold = 0.004 * scale * gather * (0.4 + 0.6 * detail["fold_amplitude"])
+        fold *= 0.5 + 0.5 * math.sin(13 * theta + 0.8 * math.sin(3 * theta) + 4 * y / height)
+        result = [value + offset * fold * (1 - min(1, arm)) for value, offset in zip(result, normal)]
+    else:
+        angle = math.atan2(z, x - math.copysign(0.10 * scale, x))
+        ankle = sum(canonical["landmarks"]["ankle" + side][1] for side in ("L", "R")) / 2
+        knee = sum(canonical["landmarks"]["knee" + side][1] for side in ("L", "R")) / 2
+        gather = math.exp(-(((y - ankle - 0.06 * scale) / (0.09 * scale)) ** 2))
+        gather += 0.45 * math.exp(-(((y - knee) / (0.11 * scale)) ** 2))
+        fold = 0.004 * scale * gather * (0.5 + 0.5 * detail["fold_amplitude"])
+        fold *= 0.5 + 0.5 * math.sin(15 * angle + 0.9 * math.sin(3 * angle) + 7 * y / height)
+        result = [value + offset * fold for value, offset in zip(result, normal)]
+    _require(all(math.isfinite(value) and abs(value) <= 8 for value in result), "period_fabric_nonfinite")
+    return result
+
+
+def period_surface_fold_offset(point, normal, canonical, character, kind):
+    """Bounded compression ridges evaluated on a refined cloth surface.
+
+    Each oblique crease has its own center and width. This avoids a uniform
+    horizontal wave/checker pattern and retains folds after surface refinement.
+    Positive normal displacement keeps the established skin clearance.
+    """
+    height = character["height"]
+    scale = height / 1.8
+    amplitude = (0.0015 + 0.007 * resolve_detail(character)["fold_amplitude"]) * scale
+    x, y, z = point
+    land = canonical["landmarks"]
+    amount = 0.0
+    if kind == "shirt":
+        side = "L" if x >= 0 else "R"
+        shoulder, wrist = land["shoulder" + side], land["wrist" + side]
+        delta = [b - a for a, b in zip(shoulder, wrist)]
+        length = math.sqrt(sum(value * value for value in delta))
+        axis = [value / length for value in delta]
+        along = sum((a - b) * direction for a, b, direction in zip(point, shoulder, axis))
+        t = along / length
+        center = [value + direction * along for value, direction in zip(shoulder, axis)]
+        radial = [value - origin for value, origin in zip(point, center)]
+        theta = math.atan2(radial[2], radial[0] * axis[1] - radial[1] * axis[0])
+        sleeve_mask = _smooth(0.17 * scale, 0.28 * scale, abs(x))
+        for center_t, width, shift, strength in (
+            (0.36, 0.026, 0.027, 0.65),
+            (0.48, 0.021, -0.030, 1),
+            (0.61, 0.029, 0.035, 0.75),
+            (0.76, 0.022, -0.024, 0.95),
+            (0.88, 0.018, 0.020, 0.8),
+            (0.94, 0.015, -0.012, 0.45),
+        ):
+            amount += (
+                amplitude
+                * strength
+                * math.exp(-(((t - center_t - shift * math.sin(theta + center_t * 6)) / width) ** 2))
+                * sleeve_mask
+            )
+        belt = character["belt_height"] * height
+        theta = math.atan2(z, x)
+        for angle, width, phase in (
+            (-2.2, 0.18, 0.2),
+            (-0.65, 0.20, -0.5),
+            (0.55, 0.16, 0.8),
+            (1.9, 0.23, -0.4),
+            (2.7, 0.18, 0.4),
+        ):
+            angular = math.atan2(math.sin(theta - angle), math.cos(theta - angle))
+            amount += (
+                amplitude
+                * 0.55
+                * math.exp(-((angular / width) ** 2))
+                * math.exp(-(((y - belt - phase * 0.045 * scale) / (0.095 * scale)) ** 2))
+                * (1 - sleeve_mask)
+            )
+    elif kind == "trousers":
+        side = "L" if x >= 0 else "R"
+        ankle, knee = land["ankle" + side], land["knee" + side]
+        angle = math.atan2(z - ankle[2], x - ankle[0])
+        for offset, width, tilt, strength in (
+            (0.045, 0.012, 0.008, 0.7),
+            (0.085, 0.014, -0.010, 0.95),
+            (0.135, 0.021, 0.015, 0.6),
+        ):
+            center = ankle[1] + (offset + tilt * math.sin(angle + offset * 15)) * scale
+            amount += amplitude * strength * math.exp(-(((y - center) / (width * scale)) ** 2))
+        amount += (
+            amplitude * 0.45 * math.exp(-(((y - knee[1] + 0.025 * scale * math.sin(angle)) / (0.028 * scale)) ** 2))
+        )
+    amount = min(0.020 * scale, max(0.0, amount))
+    return [direction * amount for direction in normal]
+
+
+def cross_collar_accessories(canonical, character, garment):
+    """Right-closing layered front, fitted collar, left-waist knot and tails.
+
+    +X is the subject's left. The outer lapel starts at that neck side and
+    crosses down to the subject's right waist. The knot is deliberately at
+    +X, independently of the lapel direction. The underlying shirt retains
+    its continuous back and shoulder surface.
+    """
+    _require(character["clothing"] == "cross_collar_tunic", "period_clothing_invalid")
+    height = character["height"]
+    scale = height / 1.8
+    details = garment["details"]
+    vertices, faces = garment["vertices"], garment["faces"]
+    project = _projector(vertices, faces, 0.055 * scale)
+    hem, belt, neck = details["hem"], character["belt_height"] * height, details["neck_top"]
+    bottom, top = hem + 0.008 * scale, neck - 0.022 * scale
+    arms = details["arms"]
+    torso = [point for point, arm in zip(vertices, arms) if arm < 0.1]
+
+    def half_width(y):
+        nearest_y = min(abs(point[1] - y) for point in torso)
+        values = [abs(point[0]) for point in torso if abs(point[1] - y) <= nearest_y + 0.018 * scale]
+        return max(0.065 * scale, max(values) * 0.90)
+
+    def closing_edge(y):
+        t = max(0, min(1, (neck - y) / max(0.1 * scale, neck - belt)))
+        value = (0.064 - 0.250 * t) * scale
+        if y > details["v_bottom"]:
+            edge = (y - details["v_bottom"]) * 0.065 * scale / (neck + 0.05 * scale - details["v_bottom"])
+            value = max(value, edge + 0.004 * scale)
+        return max(-half_width(y), value)
+
+    # A real closed layered panel, sampled densely enough to retain its curved
+    # drape without globally subdividing thin trim into the underlying cloth.
+    side = 25
+    back = []
+    for row in range(side):
+        y = bottom + (top - bottom) * row / (side - 1)
+        left, right = closing_edge(y), half_width(y)
+        _require(right > left + 0.005 * scale, "period_overlap_panel_invalid")
+        for column in range(side):
+            x = left + (right - left) * column / (side - 1)
+            compression = math.exp(-(((y - belt + 0.04 * scale) / (0.13 * scale)) ** 2))
+            fold = 0.0015 * scale * compression * (0.5 + 0.5 * math.sin(25 * x / height + 2 * y / height))
+            back.append([x, y, project(x, y) + 0.004 * scale + fold])
+    panel_vertices, panel_faces = _solid_grid(back, side, 0.0015 * scale)
+    result = [_cage("RightClosingFrontPanel", panel_vertices, panel_faces)]
+    # The stand collar follows the actual surviving back-neck clipping edge.
+    # It is not located from a guessed chest height or a floating front badge.
+    neck_path = details["period_neck_path"]
+    band_vertices = []
+    center_z = sum(point[2] for point in neck_path) / len(neck_path)
+    for point in neck_path:
+        outward = [point[0], 0, point[2] - center_z]
+        length = math.hypot(outward[0], outward[2])
+        _require(length > 1e-8, "period_collar_center_invalid")
+        outward = [value / length for value in outward]
+        for dy, offset in ((-0.012, 0.001), (0.008, 0.001), (0.008, 0.003), (-0.012, 0.003)):
+            band_vertices.append([
+                point[0] + outward[0] * offset * scale,
+                point[1] + dy * scale,
+                point[2] + outward[2] * offset * scale,
+            ])
+    band_faces = [[3, 2, 1, 0], [len(band_vertices) - 4 + i for i in range(4)]]
+    for start in range(0, len(band_vertices) - 4, 4):
+        for i in range(4):
+            band_faces.append([start + i, start + (i + 1) % 4, start + 4 + (i + 1) % 4, start + 4 + i])
+    volume = sum(
+        sum(
+            band_vertices[face[0]][i]
+            * (
+                band_vertices[face[j]][(i + 1) % 3] * band_vertices[face[j + 1]][(i + 2) % 3]
+                - band_vertices[face[j]][(i + 2) % 3] * band_vertices[face[j + 1]][(i + 1) % 3]
+            )
+            for i in range(3)
+        )
+        for face in band_faces
+        for j in range(1, len(face) - 1)
+    )
+    _require(abs(volume) > 1e-12, "period_collar_volume_invalid")
+    if volume < 0:
+        band_faces = [list(reversed(face)) for face in band_faces]
+    result.append(_cage("ActualBackNeckStandCollar", band_vertices, band_faces))
+    outer = []
+    for step in range(25):
+        y = neck - 0.022 * scale + (belt - neck + 0.022 * scale) * step / 24
+        outer.append((closing_edge(y) + 0.012 * scale, y))
+    vv, ff = _closed_ribbon(outer, 0.030 * character["lapel_width"] * scale, 0.002 * scale, 0.007 * scale, project)
+    result.append(_cage("RightClosingOuterLapel", vv, ff))
+    inner = [
+        (-0.058 * scale + 0.071 * scale * step / 15, neck - 0.020 * scale - 0.105 * scale * step / 15)
+        for step in range(16)
+    ]
+    vv, ff = _closed_ribbon(inner, 0.026 * character["lapel_width"] * scale, 0.002 * scale, 0.004 * scale, project)
+    result.append(_cage("RightClosingInnerLapel", vv, ff))
+    knot_x = 0.76 * half_width(belt)
+    vv, ff = _closed_panel(
+        knot_x - 0.018 * scale,
+        knot_x + 0.018 * scale,
+        belt - 0.020 * scale,
+        belt + 0.020 * scale,
+        0.010 * scale,
+        0.014 * scale,
+        project,
+    )
+    result.append(_cage("LeftWaistKnot", vv, ff, "AnatomyAccent"))
+    for index, (length, sway) in enumerate((
+        (min(0.33 * scale, belt - hem + 0.02 * scale), 0.010),
+        (min(0.20 * scale, belt - hem + 0.01 * scale), 0.028),
+    )):
+        path = []
+        for step in range(24):
+            t = step / 23
+            path.append((
+                knot_x + (index * 0.015 + sway * math.sin(t * math.pi * 0.6)) * scale,
+                belt - 0.008 * scale - length * t,
+            ))
+        vv, ff = _closed_ribbon(
+            path, (0.027 if index == 0 else 0.022) * scale, 0.0025 * scale, (0.025 + index * 0.004) * scale, project
+        )
+        result.append(_cage("LeftWaistTail" + str(index + 1), vv, ff, "AnatomyAccent"))
+    return result
+
+
+def enclose_tunic_over_trousers(vertices, trousers, character):
+    """Fit the hanging tunic outside the actual generated trouser envelope.
+
+    The lower coat and trousers share an outfit but have different ease. Using
+    the naked hips for both permits loose trouser seats to pierce a narrow coat.
+    A smooth, bounded superellipse uses the actual trouser sections instead.
+    Only this new tunic path calls it; no source plan or trouser point changes.
+    """
+    scale = character["height"] / 1.8
+    hem = character["hem_height"] * character["height"]
+    belt = character["belt_height"] * character["height"]
+    _require(belt > hem, "period_enclosure_range_invalid")
+    clearance = 0.025 * scale
+    count = 20
+    rows = []
+    for index in range(count):
+        y = hem + (belt + 0.03 * scale - hem) * index / (count - 1)
+        gap = min(abs(point[1] - y) for point in trousers)
+        points = [point for point in trousers if abs(point[1] - y) <= gap + 0.018 * scale]
+        center_z = (min(point[2] for point in points) + max(point[2] for point in points)) / 2
+        rows.append([
+            0,
+            center_z,
+            max(abs(point[0]) for point in points) + clearance,
+            max(point[2] - center_z for point in points) + clearance,
+            max(center_z - point[2] for point in points) + clearance,
+        ])
+    # Radius maxima are taken over a short neighboring window for clearance;
+    # centers are averaged so irregular sample bins cannot create melted lumps.
+    original = [list(row) for row in rows]
+    for index, row in enumerate(rows):
+        nearby = original[max(0, index - 2) : min(count, index + 3)]
+        row[1] = sum(other[1] for other in nearby) / len(nearby)
+        for channel in (2, 3, 4):
+            row[channel] = max(other[channel] for other in nearby)
+    result = []
+    for point in vertices:
+        x, y, z = point
+        blend = 1 - _smooth(belt - 0.025 * scale, belt + 0.025 * scale, y)
+        position = max(0, min(count - 1, (y - hem) / (belt + 0.03 * scale - hem) * (count - 1)))
+        index = min(count - 2, int(position))
+        t = position - index
+        _, cz, rx, front, back = [a + t * (b - a) for a, b in zip(rows[index], rows[index + 1])]
+        radial = ((abs(x) / rx) ** 4 + (abs(z - cz) / (front if z >= cz else back)) ** 4) ** 0.25
+        if blend and 1e-8 < radial < 1:
+            ratio = 1 + blend * (1 / radial - 1)
+            x, z = x * ratio, cz + (z - cz) * ratio
+        result.append([x, y, z])
+    _require(
+        all(all(math.isfinite(value) and abs(value) <= 8 for value in point) for point in result),
+        "period_enclosure_nonfinite",
+    )
+    return result
+
+
 DETAIL_LIMITS = {
     "cloth_ease": (0.0, 1.0),
     "fold_amplitude": (0.0, 1.0),
@@ -232,8 +546,12 @@ def trouser_waist(shirt_hem_y, body_waist_y, height, clothing):
     """
     _require(_number(height, 0.8, 2.4), "detail_height_invalid")
     _require(_number(shirt_hem_y, 0, height) and _number(body_waist_y, 0, height), "detail_waist_invalid")
-    _require(clothing in ("tshirt_trousers", "robe_belt", "coverall"), "detail_clothing_invalid")
-    return float(body_waist_y) if clothing == "robe_belt" else max(float(body_waist_y), shirt_hem_y + 0.015 * height)
+    _require(clothing in ("tshirt_trousers", "robe_belt", "coverall", "cross_collar_tunic"), "detail_clothing_invalid")
+    return (
+        float(body_waist_y)
+        if clothing in ("robe_belt", "cross_collar_tunic")
+        else max(float(body_waist_y), shirt_hem_y + 0.015 * height)
+    )
 
 
 def _projector(vertices, faces, maximum_gap):

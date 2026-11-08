@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-registered-native-retest",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T19:00:42.084534+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "nodes_and_geometry_checked_fidelity_open",
+    "case": "one private multiview sheet of a standing adult, three distinct directions",
+    "reference_and_outputs": "user image, crops, meshes and renders remain private",
+    "operator": "registered_turnaround",
+    "engine_sha256": "ba3e1f6dff519834a3ca8bdada964d6b8666c26012f09615dcf89b94c8fbbefd",
+    "runtime_sha256": {
+      "sculpt_provider.py": "f29e264d6a67f65ab8fcf771e3ed0d020f6cf0e1bf5756d42136e6e679e5ea20",
+      "turnaround_surface.py": "8428fd1d494de501185f7cebc7859a690e02aa4873ec94c66cd175f2959cb81d",
+      "turnaround_face.py": "b8339125946faf04b67f7bae232aec226a5a5ded82802d0691787a9ffe0210a2"
+    },
+    "native_linked_node_checks": 34,
+    "all_native_checks_passed": true,
+    "actual_export_reloaded": true,
+    "vertices": 263030,
+    "triangles": 526056,
+    "mesh_bytes": 16835084,
+    "single_closed_body": true,
+    "source_image_verified": true,
+    "prior_fitted": true,
+    "actual_operator_selected_by": "ChatGPT-authenticated Codex CLI from original image and subject description",
+    "unobserved_surfaces": "inferred",
+    "training": "case-guided implementation and validation only",
+    "visual_acceptance": "open, evaluate reimported color and neutral material views",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "checks_in_scope": [
+      "real native image-to-mesh and linked offline-copy nodes",
+      "view rotation, panning, zoom, reset and reopening the actual result"
+    ]
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-runtime-verification-human-rejection"
+  ],
+  "sha256": "439cf048854d8604c6e1de2db786bd15bf9c63d58f481522d212e90ab3872b90"
+}
