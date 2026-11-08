@@ -71,6 +71,9 @@ var service_choice: OptionButton
 var endpoint_edit: LineEdit
 var image_model_choice: OptionButton
 var mesh_model_choice: OptionButton
+var image_model_label: Label
+var mesh_model_label: Label
+var cli_billing: Label
 var service_status: Label
 var service_capability_labels: Dictionary = {}
 var service_config_path = ""
@@ -442,7 +445,7 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	nodes.append({"id": id, "type": kind, "version": "1", "provider": "comfy", "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
+	nodes.append({"id": id, "type": kind, "version": "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
 	rebuild()
 	select_node(id)
 
@@ -461,7 +464,8 @@ func rebuild():
 		node.title = data.id + " / " + node_label(data.get("type", "copy"))
 		node.position_offset = Vector2(data.x, data.y)
 		var label = Label.new()
-		label.text = "本机离线复制" if data.get("type", "copy") == "copy" else node_label(data.type) + ('（Codex CLI / 本机模型）' if _service_mode() == 'codex' else '（ComfyUI）')
+		label.name = 'GeneratorDescription'
+		label.text = _generator_description(data)
 		node.add_child(label)
 		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
 		graph.add_child(node)
@@ -1165,7 +1169,7 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else "comfy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
@@ -1281,16 +1285,16 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	title.text = "生成服务"
 	service_fields.add_child(title)
 	service_choice = OptionButton.new()
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）']]:
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
 	cli_fields = VBoxContainer.new()
 	service_fields.add_child(cli_fields)
 	var cli_label = Label.new()
-	cli_label.text = '马良图像 Codex CLI（保留独立任务服务快照）'
+	cli_label.text = '马良 Codex CLI（保留独立任务服务快照）'
 	cli_fields.add_child(cli_label)
-	cli_path_edit = line(cli_fields, '马良图像 Codex CLI 程序', str(settings.get_value('service', 'cli_path', 'codex')))
+	cli_path_edit = line(cli_fields, '马良 Codex CLI 程序', str(settings.get_value('service', 'cli_path', 'codex')))
 	var cli_picker = FileDialog.new()
 	cli_picker.title = '选择已登录的 Codex CLI'
 	cli_picker.access = FileDialog.ACCESS_FILESYSTEM
@@ -1300,18 +1304,21 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	button(cli_fields, '选择 Codex CLI…', func(): cli_picker.popup_centered_ratio(0.7))
 	button(cli_fields, '保存 CLI 与生成服务设置', save_service_settings)
 	var billing = Label.new()
+	cli_billing = billing
 	billing.text = '复用 Codex CLI 当前的 ChatGPT 登录；图像生成与编辑计入同一 Codex 额度。网格由本机模型执行。'
 	billing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	cli_fields.add_child(billing)
 	cli_path_edit.text_changed.connect(func(_text): _service_settings_changed())
 	endpoint_edit = line(service_fields, "生成服务地址，如 http://127.0.0.1:8188", "http://127.0.0.1:8188")
 	var image_label = Label.new()
+	image_model_label = image_label
 	image_label.text = "图像模型"
 	service_fields.add_child(image_label)
 	image_model_choice = OptionButton.new()
 	image_model_choice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	service_fields.add_child(image_model_choice)
 	var mesh_label = Label.new()
+	mesh_model_label = mesh_label
 	mesh_label.text = "网格模型"
 	service_fields.add_child(mesh_label)
 	mesh_model_choice = OptionButton.new()
@@ -1347,12 +1354,15 @@ func _restore_service_settings(settings: ConfigFile):
 	service_ui_loading = true
 	if FileAccess.file_exists(service_config_path):
 		var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_config_path))
-		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy", 'codex']:
+		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy", 'codex', 'codex_modeling']:
 			service_saved = {"schema_version":1, "mode":loaded.mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
-			service_choice.select(3 if service_saved.mode == 'codex' else 1 if service_saved.mode == "comfy" else 0)
-			if service_saved.mode == 'codex':
+			service_choice.select(4 if service_saved.mode == 'codex_modeling' else 3 if service_saved.mode == 'codex' else 1 if service_saved.mode == "comfy" else 0)
+			if service_saved.mode in ['codex', 'codex_modeling']:
 				service_saved['cli_path'] = str(loaded.get('cli_path', 'codex'))
 				cli_path_edit.text = service_saved.cli_path
+			if service_saved.mode == 'codex_modeling':
+				service_saved['godot_path'] = str(loaded.get('godot_path', ''))
+				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1364,6 +1374,16 @@ func _restore_service_settings(settings: ConfigFile):
 	service_ui_loading = false
 	_update_service_summary()
 
+func _generator_description(data: Dictionary) -> String:
+	var kind = str(data.get('type', 'copy'))
+	if kind == 'copy': return '本机离线复制'
+	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if kind.ends_with('mesh') else '（GPT CLI）')
+	return node_label(kind) + ('（Codex CLI / 本机模型）' if _service_mode() == 'codex' else '（ComfyUI）')
+
+func _generator_provider(kind: String) -> String:
+	if _service_mode() == 'codex_modeling': return 'codex-modeling' if kind.ends_with('mesh') else 'codex'
+	return 'comfy'
+
 func _service_mode() -> String:
 	if service_choice == null or service_choice.selected < 0: return "offline"
 	return str(service_choice.get_item_metadata(service_choice.selected))
@@ -1374,9 +1394,14 @@ func _model_name(choice: OptionButton) -> String:
 
 func service_draft() -> Dictionary:
 	var value = {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
-	if value.mode == 'codex':
+	if value.mode in ['codex', 'codex_modeling']:
 		value['cli_path'] = cli_path_edit.text.strip_edges()
 		value.image_model = 'builtin'
+	if value.mode == 'codex_modeling':
+		value.endpoint = ''
+		value.mesh_model = ''
+		value['godot_path'] = OS.get_executable_path()
+		value['builder_path'] = ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join('modeling_builder.gd'))
 	return value
 
 func _set_model_options(choice: OptionButton, names: Array, selected_name: String, detected: bool):
@@ -1403,28 +1428,47 @@ func _service_settings_changed():
 func _update_service_summary():
 	if service_choice == null: return
 	var mode = _service_mode()
-	if parameter_form != null: parameter_form.set_cli_mode(mode == 'codex')
-	if cli_fields != null: cli_fields.visible = mode == 'codex'
+	var cli_mode = mode in ['codex', 'codex_modeling']
+	var modeling_mode = mode == 'codex_modeling'
+	if graph != null:
+		for data in nodes:
+			var description = graph.get_node_or_null(NodePath(str(data.id) + '/GeneratorDescription'))
+			if description is Label: description.text = _generator_description(data)
+	if parameter_form != null:
+		parameter_form.set_cli_mode(cli_mode)
+		parameter_form.set_modeling_mode(modeling_mode)
+	if cli_fields != null: cli_fields.visible = cli_mode
+	if cli_billing != null:
+		cli_billing.text = '图像与建模指令均使用当前 Codex CLI 登录额度；Godot 根据指令构造 Mesh。无需 ComfyUI 或本机三维模型；复杂人物和有机造型的效果仍需验证。' if modeling_mode else '复用 Codex CLI 当前的 ChatGPT 登录；图像生成与编辑计入同一 Codex 额度。网格由本机模型执行。'
 	if managed_comfy_panel != null: managed_comfy_panel.visible = mode == 'codex'
-	if service_guide != null: service_guide.visible = mode != 'codex'
-	if mode == 'codex' and _model_name(image_model_choice) != 'builtin':
+	if service_guide != null: service_guide.visible = not cli_mode
+	if cli_mode and _model_name(image_model_choice) != 'builtin':
 		_set_model_options(image_model_choice, ['builtin'], 'builtin', true)
-	endpoint_edit.visible = mode != 'codex'
-	endpoint_edit.editable = mode == "comfy"
-	image_model_choice.disabled = mode != "comfy"
+	endpoint_edit.visible = not cli_mode
+	endpoint_edit.editable = mode == 'comfy'
+	image_model_choice.visible = not modeling_mode
+	mesh_model_choice.visible = not modeling_mode
+	if image_model_label != null: image_model_label.visible = not modeling_mode
+	if mesh_model_label != null: mesh_model_label.visible = not modeling_mode
+	image_model_choice.disabled = mode != 'comfy'
 	mesh_model_choice.disabled = mode not in ['comfy', 'codex']
-	if mode == "offline":
-		service_status.text = "当前为离线复制演示；不提供图像或网格生成。选择 ComfyUI 并连接真实服务后才能生成。"
-	elif mode == "legacy":
-		service_status.text = "正在兼容已有的高级服务配置。新用户请使用 ComfyUI 选项完成界面配置。"
+	if mode == 'offline':
+		service_status.text = '当前为离线复制演示；不提供图像或网格生成。请选择生成方式并保存。'
+	elif mode == 'legacy':
+		service_status.text = '正在兼容已有的高级服务配置。'
 	elif service_report.is_empty():
-		service_status.text = ('图像使用当前 CLI 登录额度；网格需要本机模型。请检测并保存。' if mode == 'codex' else "已恢复服务设置，待检测；运行前会检查连接与模型。") if service_draft() == service_saved else "服务设置尚未保存。请检测连接、选择模型，再保存。"
+		if service_draft() != service_saved:
+			service_status.text = '服务设置尚未保存。请检测连接并保存。' if modeling_mode else '服务设置尚未保存。请检测连接、选择模型，再保存。'
+		elif modeling_mode:
+			service_status.text = 'GPT CLI 输出建模指令，Godot 构造网格；已恢复设置，待检测。'
+		else:
+			service_status.text = '图像使用当前 CLI 登录额度；网格需要本机模型。请检测并保存。' if mode == 'codex' else '已恢复服务设置，待检测；运行前会检查连接与模型。'
 	for kind in service_capability_labels:
 		var label: Label = service_capability_labels[kind]
-		if kind == "copy": label.text = node_label(kind) + "：可用，不调用模型"
-		elif mode == "offline": label.text = node_label(kind) + "：不可用，尚未连接真实生成服务"
-		elif mode == "legacy": label.text = node_label(kind) + "：由已有高级配置检查"
-		else: label.text = node_label(kind) + "：待检测"
+		if kind == 'copy': label.text = node_label(kind) + '：可用，不调用模型'
+		elif mode == 'offline': label.text = node_label(kind) + '：不可用，尚未连接真实生成服务'
+		elif mode == 'legacy': label.text = node_label(kind) + '：由已有高级配置检查'
+		else: label.text = node_label(kind) + ('：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
 
 func _using_legacy_service() -> bool:
 	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
@@ -1474,7 +1518,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -1485,7 +1529,7 @@ func check_service():
 	if _service_mode() == "legacy":
 		service_status.text = "旧配置由原服务适配器检查。选择 ComfyUI 可在本界面检测地址与模型。"
 		return
-	service_status.text = "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
+	service_status.text = "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
 	launch("service-check", {"service":service_draft()})
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
@@ -1509,15 +1553,15 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
-	if _service_mode() not in ['comfy', 'codex']:
+	if _service_mode() not in ['comfy', 'codex', 'codex_modeling']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
-	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty()
-	if _service_mode() != 'codex' and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
+	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty() and _service_mode() != 'codex_modeling'
+	if _service_mode() not in ['codex', 'codex_modeling'] and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
 		return "该节点的图像重绘需要图像模型，请检测模型并保存选择。" if redraw else "尚未选择图像模型，请检测当前服务中的模型并保存选择。"
-	if kind.ends_with("mesh") and service_saved.mesh_model.is_empty():
+	if kind.ends_with("mesh") and _service_mode() != 'codex_modeling' and service_saved.mesh_model.is_empty():
 		return "尚未选择网格模型，请检测当前服务中的模型并保存选择。"
 	if not service_report.is_empty() and service_report_draft == JSON.stringify(service_draft()):
 		if redraw:

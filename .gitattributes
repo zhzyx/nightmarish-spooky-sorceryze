@@ -50,3 +50,6 @@ archive/olympus-retired-20261104/** -text -whitespace
 # Preserve bytes of the exact Yanluo v0.1.2 candidate approved by the user.
 customizations/components/yanluo/component.json -text whitespace=cr-at-eol
 customizations/components/yanluo/reporting.json -text whitespace=cr-at-eol
+
+# Preserve the exact native-host snapshot referenced by Issue #543 immutable request.
+data-collection/maliang-gpt-modeling-20261108-host-snapshot.json -text whitespace=cr-at-eol

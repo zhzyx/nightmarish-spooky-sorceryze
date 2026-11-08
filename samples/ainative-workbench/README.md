@@ -90,3 +90,13 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 CLI 请求保留私有任务意图与产物来源；取消、失败或重开不明结果不会自动重新请求。CLI 原生网络重试可能耗时。工作流只保存输入快照和生成参数，CLI 路径、本机模型配置及原始日志留在本机。本模式不使用 Comfy Credits、独立 API Key 或自建云端服务；Mesh 为当前本机模型支持的未贴图几何。
 
 `codex_cli_acceptance.gd` 是另行明确授权的真实生成验收入口，需要私有配置中的 `real_inference_authorized=true`；常规后台回归不会调用模型。它实际执行出图、编辑、图生网格、预览、发布及保存工作流，失败写回执并退出。原生引擎内置入口另由 `tests/editor/run_ainative_builtin.py` 验证。
+
+## GPT CLI 指令建模（无需 ComfyUI）
+
+在统一“设置 → AI”中选择“GPT CLI 图像与指令建模”，填写已有 ChatGPT 登录的 Codex 可执行文件并检测、保存。文生图/图生图继续使用 CLI 图像能力；文字/图片生成网格由 CLI 返回结构化建模计划，再交给引擎内置 Godot 构造器导出 GLB。此模式不连接 ComfyUI、不加载专用三维 AI 权重，也不要求 Blender。
+
+节点画布、连线、文字和图片上下文、逐节点运行预览、会话历史、工作流保存重开及资源发布沿用现有入口。首轮网格支持盒、球、圆柱、胶囊、圆环的有限组合、变换和颜色；适合简单物体、规则结构和风格化原型。图像输入用于推断几何布局，不能保证恢复隐藏表面或复杂人物细节。网格采样参数在该模式隐藏，因为不会调用扩散三维模型。
+
+计划经过格式、数值范围和资源上限校验后，由固定代码解释；不执行模型返回的 Python/GDScript/系统命令。每次运行保留 CLI 与构造器的真实回执；失败、取消或结果不明不会自动重新请求。旧 Codex+本机网格和 ComfyUI 模式、历史工作流及已生成资产仍可读取。
+
+离线检查包含 `modeling_builder_acceptance.gd`、`modeling_ui_acceptance.gd`、`test_modeling_provider.py` 和 `test_modeling_service.py`。`tests/editor/run_modeling_cli.py` 仅在显式 `--real-cli` 下执行一次真实建模请求，需要已有 CLI 登录；它使用独立编辑器副本，输出目录应选在系统临时目录并保持路径简短。

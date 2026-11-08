@@ -1,0 +1,11 @@
+{
+  "id": "codex-native-host",
+  "version": "20261108",
+  "authority": "Current user chat selecting GPT CLI modeling and retaining node workflows",
+  "workers": [
+    "/root/modeling_provider",
+    "/root/godot_builder",
+    "/root/modeling_ui"
+  ],
+  "scope": "Actual native implementation workers, separate files, current explicit event; no persistent dispatch service"
+}

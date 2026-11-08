@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "state": "passed",
+  "integrated_main": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+  "binary_sha256": "077001347cb854552581f6f372538462913b0cc913b3b1bf562fa2f77866351c",
+  "bundle_version": "fd3493910581c628a5af865390959cc516349a7b5ae37b1917b32b34449c3357",
+  "installed_bundle_matches_source": true,
+  "native_builtin": {
+    "state": "passed",
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ]
+  },
+  "real_project_configuration_and_prior_mesh_reopen": {
+    "checks": {
+      "capture": true,
+      "comfy_controls_hidden": true,
+      "image_ready": true,
+      "modeling_ready": true,
+      "no_comfy_lease": true,
+      "nodes_and_edge_reopened": true,
+      "python_valid": true,
+      "real_generated_mesh_reopened": true,
+      "saved_builder_valid": true,
+      "saved_mode_restored": true
+    },
+    "ok": true
+  },
+  "reused_paid_evidence": "data-collection/maliang-gpt-modeling-20261108-validation.json",
+  "reuse_basis": "All5 modeling runtime source files byte-identical; only upstream main-screen route/control changes integrated. No repeated paid CLI request, no provider fingerprint migration or old binary relabeling. New actual compiled binary and native renderer checked separately.",
+  "independent_delta_review": "data-collection/maliang-gpt-modeling-20261108-main-integration-review.json"
+}

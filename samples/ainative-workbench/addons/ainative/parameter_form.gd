@@ -27,6 +27,7 @@ var _display_text: Dictionary = {}
 var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
 var _cli_mode = false
+var _modeling_mode = false
 
 func _init():
 	name = "GenerationParameterForm"
@@ -165,14 +166,25 @@ func set_cli_mode(enabled: bool):
 	_cli_mode = enabled
 	_apply_cli_controls()
 
+func set_modeling_mode(enabled: bool):
+	_modeling_mode = enabled
+	_apply_cli_controls()
+
 func _apply_cli_controls():
 	var generator = kind != 'copy'
-	cli_hint.visible = _cli_mode and generator
-	rows.seed.visible = generator and (not _cli_mode or kind.ends_with('mesh'))
+	var modeling_mesh = _modeling_mode and kind.ends_with('mesh')
+	cli_hint.visible = (_cli_mode or _modeling_mode) and generator
+	cli_hint.text = 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if _modeling_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('建模要求' if modeling_mesh else '提示词')
+	for key in ['width', 'height']:
+		rows[key].visible = generator and not modeling_mesh
+	for key in ['mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
+		rows[key].visible = kind.ends_with('mesh') and not _modeling_mode
+	rows.seed.visible = generator and not _modeling_mode and (not _cli_mode or kind.ends_with('mesh'))
 	rows.seed.get_child(0).text = '网格随机种子' if _cli_mode and kind.ends_with('mesh') else '随机种子'
-	rows.steps.visible = generator and not _cli_mode
-	rows.denoise.visible = not _cli_mode and kind in ['image_to_image', 'image_to_mesh']
-	advanced_toggle.visible = generator and (not _cli_mode or kind.ends_with('mesh'))
+	rows.steps.visible = generator and not _cli_mode and not _modeling_mode
+	rows.denoise.visible = not _cli_mode and not _modeling_mode and kind in ['image_to_image', 'image_to_mesh']
+	advanced_toggle.visible = generator and not _modeling_mode and (not _cli_mode or kind.ends_with('mesh'))
 	if not advanced_toggle.visible: advanced_box.hide()
 
 func set_developer_mode(enabled: bool):
