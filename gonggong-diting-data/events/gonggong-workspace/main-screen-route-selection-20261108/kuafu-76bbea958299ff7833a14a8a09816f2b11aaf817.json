@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-76bbea958299ff7833a14a8a09816f2b11aaf817",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "main-screen-route-selection-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "07c3146625a5ebfae27a6c8fdc8f7f5815ec1bcebd8a6251e44d1ed72081cae1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+    "action": "validation",
+    "detection_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-main-screen-route-fix",
+    "authority_ref": "Existing user fix-on-discovery mandate, delegated Issue483 acceptance and recorded Issue542 execution authority",
+    "evidence": "Issue483 old545 actual route and isolated PR510 binary96c: POST/receipt ok true visible false, GET state and selected remain previous screen",
+    "diagnosis": "Automatic make_visible is blocked by current main-screen can_switch_dock=false; operation returns ok without selected or visible postconditions; F08 tests excluded AI Chat and asserted only ok",
+    "next_action": "Use existing native force_focus_dock for explicit navigation and selected/visible postconditions; private production POST receipt GET state/list regression",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:06:49.085127+00:00",
+    "attempted": "Actual isolated old binary test failed with live POST receipt state and list evidence; latest a144 static route remains identical",
+    "repair_owner": "codex-main-screen-route-fix",
+    "continuable": "Parent483 native self-compile acceptance continues independently"
+  },
+  "occurred_at": "2026-11-08T03:09:55.903040+00:00",
+  "sha256": "ddf979ea8feb70076e023904d83b5cb37565110c2eb1f73d273b9b33fbc3c631"
+}

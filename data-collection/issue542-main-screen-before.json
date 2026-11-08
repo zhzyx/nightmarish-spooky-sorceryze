@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "request_id": "main-screen-route-selection-20261108",
+  "issue_number": 542,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+  "related_issues": [483, 386],
+  "observation": "Actual private headless editor regression, independent of the parent's older GUI observation",
+  "binary_source_main": "28b495d14c9756eda49b341473713cbcda457ec5",
+  "binary_sha256": "96c266153587939fe0dc6720e2fc29244f06d5ebe25fc28d76d2b394c7997ddd",
+  "test_source_sha256": "d243868c268ef192008e95997b8f4a15b0650a82fbade7b632d4e2865ee28be1",
+  "private_self_contained": true,
+  "user_desktop_driven": false,
+  "before_main_screen": "AI Chat",
+  "requested_main_screen": "AINative",
+  "post": {
+    "ok": true,
+    "routed": true,
+    "route": "engine_control",
+    "routing_status": "completed",
+    "source": "external.coverage",
+    "visible": false
+  },
+  "get_receipt": {
+    "ok": true,
+    "routing_status": "completed",
+    "visible": false
+  },
+  "get_state_main_screen": "AI Chat",
+  "list_selected": ["AI Chat"],
+  "requested_screen_selected": false,
+  "regression_exit_code": 1,
+  "interpretation": "The production request and saved receipt claim completion while the requested screen was neither selected nor visible.",
+  "older_parent_observation": {
+    "source_head_prefix": "54596091",
+    "from": "AINative",
+    "target": "AI Chat",
+    "visible": false,
+    "scope": "Separate actual GUI observation reported by the parent acceptance owner; not presented as this newer-binary test."
+  }
+}

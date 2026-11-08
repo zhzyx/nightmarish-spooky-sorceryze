@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "reviewer_task": "native-subagent: main_screen_route_review",
+  "issue_number": 542,
+  "request_id": "main-screen-route-selection-20261108",
+  "review_result": "no_blocking_findings",
+  "baseline_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+  "frozen_files_sha256": {
+    "editor/docks/ai_chat_editor_control.cpp": "dab53f577b5802d0e96ecee468e7088b44415ac09bb3d14dcac1477852433387",
+    "tests/editor/run_editor_command_coverage.py": "d243868c268ef192008e95997b8f4a15b0650a82fbade7b632d4e2865ee28be1",
+    "bin/godot.macos.editor.arm64": "ecc599ec8cb2bfe5bb61941f0da7f76ad8960f0db216fd59d1da69ceb79476a4"
+  },
+  "code_scope": [
+    "editor/docks/ai_chat_editor_control.cpp",
+    "tests/editor/run_editor_command_coverage.py"
+  ],
+  "reviewed_supporting_implementation": [
+    "EditorDockManager::force_focus_dock/focus_dock/_make_dock_visible",
+    "EditorMainScreen::can_switch_dock",
+    "AIChatEditorControl::route_message/execute",
+    "AIChatDock::_editor_bridge_request",
+    "EditorClient::route/status/state",
+    "editor_command_coverage.gd"
+  ],
+  "personally_performed": [
+    "read-only source and test diff review",
+    "independent SHA256 of frozen source, runner and current candidate binary",
+    "git diff --check",
+    "Python AST parse",
+    "independent consistency assertions over author-run before/after evidence",
+    "read-only comparison of old 28b and baseline a144 main_screen implementation"
+  ],
+  "runtime_execution_by_reviewer": false,
+  "author_run_evidence": {
+    "before": {
+      "path": "issue542-command-before-v2.log",
+      "source": "28b495d14c9756eda49b341473713cbcda457ec5",
+      "binary_sha256_author_record": "96c266153587939fe0dc6720e2fc29244f06d5ebe25fc28d76d2b394c7997ddd",
+      "observed": "AI Chat to AINative POST and GET receipt claim completed/ok with visible=false while GET state and list still select AI Chat; strengthened runner rejects this",
+      "old_binary_digest_personally_recomputed": false
+    },
+    "build": {
+      "path": "issue542-build.log",
+      "result": "scons done building targets; 00:04:32.35; changed C++ compilation present"
+    },
+    "after": {
+      "report": "issue542-command-after.json",
+      "stdout_log": "issue542-command-after.log",
+      "result": "20 checks passed; 8 distinct request readbacks have matching POST and GET receipt, correct GET state, exactly target selected and visible; first three targets AINative, AI Chat, 2D; unknown target failed with unchanged state"
+    },
+    "native_units_initial": {
+      "path": "issue542-native-state-units.log",
+      "result": "FAILED setup: tests/data not found, followed by SIGSEGV; not accepted as a product-path test result"
+    },
+    "native_units_corrected": {
+      "path": "issue542-native-state-units-corrected.log",
+      "result": "6 cases passed; 85 assertions passed; zero failures"
+    }
+  },
+  "evidence_sha256": {
+    "issue542-command-before-v2.log": "dd6950d16af619512704ecd7ec07293b05671783a12f3282339beadbc0de4fd2",
+    "issue542-build.log": "2134113c11f82fd8d0f04fd42e805c4c5a8cfa9290e20517ea127d8833415952",
+    "issue542-command-after.json": "e60907361bef2369a88a2ef0c5384dd15e93d7d8811a0c197b08946dfc9c57ec",
+    "issue542-command-after.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "issue542-native-state-units.log": "c7e99d804c9bb77c294385bd60d7b8c28d471ad23a7ed12a5fd0a6170d0f255c",
+    "issue542-native-state-units-corrected.log": "77931f09801eabc1e55c1d711045a3e339eeab4b0e932eb9c86ce63e21670c8d"
+  },
+  "correctness_conclusions": [
+    "Explicit main_screen routing uses the existing native forced-focus path and checks actual current tab control identity plus tree/window visibility before success.",
+    "Unknown or unsuccessful selection returns ok=false, with route_message converting that to routing_status=failed.",
+    "Permission and consultation checks precede effects; write/approval, identity/idempotency and autoexec entrypoints were not modified.",
+    "Regression coverage uses actual production HTTP POST, receipt GET and state GET; list readback checks unique selection and visibility; no EditorInterface substitute switches the main screen.",
+    "Existing dynamic screen coverage remains."
+  ],
+  "findings": [],
+  "limits": [
+    "No reviewer-run editor compilation or editor process; runtime conclusions rely on inspected author-run logs and report.",
+    "No visual/pixel or user GUI acceptance performed.",
+    "Does not assert old a144 binary runtime failure: before runtime uses 28b; source comparison confirms the same old main_screen call in 28b and a144.",
+    "Review binds the two frozen source files and listed evidence, not later delivery/index changes or parent Issue 483 business acceptance."
+  ],
+  "source_ref_issue_gui_user_config_mutations_by_reviewer": false,
+  "original_private_review_sha256": "e4295ca1071eb5f54944c2d4a957ffc6d219c97324130ebde332ea5998f0dede",
+  "public_evidence_refs": [
+    "data-collection/issue542-main-screen-before.json",
+    "data-collection/issue542-main-screen-after.json"
+  ],
+  "redaction_scope": "Host-local artifact paths replaced by basename labels; original private review remains unchanged."
+}
