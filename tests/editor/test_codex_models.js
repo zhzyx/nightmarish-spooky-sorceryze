@@ -8,7 +8,7 @@ const { listModels, argumentsFor, validateRequest } = require('../../tools/codex
 
 async function fixture(source, callback) {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-models-test-'));
-    const entry = path.join(dir, 'codex');
+    const entry = path.join(dir, 'codex.js');
     fs.writeFileSync(entry, '#!' + process.execPath + '\n' + source, { mode: 0o700 });
     try { await callback(entry); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 }

@@ -60,7 +60,10 @@ const ERROR_MESSAGES = {
     CLI_NOT_FOUND: 'CodeBuddy CLI entry is missing. Check the configured entry path or reinstall the pinned CLI package.',
     NATIVE_COMPONENT_MISSING: 'CodeBuddy native job-object.node is missing or cannot be loaded. Restore the pinned CLI dependencies; this is not a login error.',
     PROCESS_BOUNDARY_FAILED: 'The CLI process lifetime boundary could not be established. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',
-    INVALID_REQUEST: 'The Godot CLI request is invalid or exceeds the context limit.',
+    INVALID_REQUEST: 'The local CLI bridge rejected the request format.',
+    UNSUPPORTED_HOST_TOOL: 'The editor offered a tool this CLI bridge does not support. Check the installed editor and bridge versions.',
+    REQUEST_SIZE_LIMIT: 'The local CLI request file exceeds 1 MiB.',
+    CONTEXT_LIMIT: 'The CLI reported that the model context limit was exceeded.',
     AUTH_REQUIRED: 'CodeBuddy CLI reported an authentication error. Complete official CLI Login.',
     MODEL_UNAVAILABLE: 'CodeBuddy CLI reported an unavailable model. Check the configured model ID and account access.',
     IMAGE_UNSUPPORTED: 'The CLI connection does not support image input. Images were not submitted to the model; their previews remain in this conversation.',
@@ -119,6 +122,7 @@ function classifyDiagnostics(text) {
     if (/job-object|MODULE_NOT_FOUND|cannot find module/i.test(text)) return 'NATIVE_COMPONENT_MISSING';
     if (/not logged|unauthori[sz]ed|please.*login|authentication (?:required|failed)|api key.*missing|未登录|请.*登录/i.test(text)) return 'AUTH_REQUIRED';
     if (/invalid model|unknown model|model.*not (?:found|available)|unsupported model|无效.*模型/i.test(text)) return 'MODEL_UNAVAILABLE';
+    if (/\bcontext_length_exceeded\b|maximum context length|ran out of room in the model's context window|exceeds? (?:the |its )?context window|exceeded (?:the |your )?(?:model's )?context window/i.test(text)) return 'CONTEXT_LIMIT';
     if (/ECONNREFUSED|ENOTFOUND|ETIMEDOUT|fetch failed|connection (?:failed|refused)/i.test(text)) return 'NETWORK_ERROR';
     return 'PROCESS_EXIT';
 }
@@ -155,6 +159,8 @@ function validateInput(input) {
     state.execution_allowed = context.execution_allowed ?? (context.permission_enabled && !state.consultation_only);
     if (state.consultation_only && (context.writes_allowed !== false || context.execution_allowed !== false)) throw bridgeError('INVALID_REQUEST');
     if (!context.permission_enabled && (state.writes_allowed || state.execution_allowed)) throw bridgeError('INVALID_REQUEST');
+    if (input.available_tools.some(tool => typeof tool?.function?.name !== 'string')) throw bridgeError('INVALID_REQUEST');
+    if (input.available_tools.some(tool => !ACTIONS.has(tool.function.name))) throw bridgeError('UNSUPPORTED_HOST_TOOL');
     if (state.consultation_only && input.available_tools.some(tool => !READ_ONLY_HOST_ACTIONS.has(tool.function?.name))) throw bridgeError('INVALID_REQUEST');
     for (const field of ['file_changes_require_approval', 'execution_requires_approval']) {
         if (context[field] !== undefined) {
@@ -186,7 +192,6 @@ function validateInput(input) {
         }
         if (total > 512 * 1024) throw bridgeError('INVALID_REQUEST');
     }
-    if (input.available_tools.some(tool => !ACTIONS.has(tool.function?.name))) throw bridgeError('INVALID_REQUEST');
     return { ...input, tool_context: state };
 }
 
@@ -325,9 +330,10 @@ async function main() {
         } else {
             const inputPath = process.argv[4];
             try {
-                if (!inputPath || !path.isAbsolute(inputPath) || fs.statSync(inputPath).size > 1024 * 1024) throw bridgeError('INVALID_REQUEST');
+                if (!inputPath || !path.isAbsolute(inputPath)) throw bridgeError('INVALID_REQUEST');
+                if (fs.statSync(inputPath).size > 1024 * 1024) throw bridgeError('REQUEST_SIZE_LIMIT');
                 input = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
-            } catch (_) { throw bridgeError('INVALID_REQUEST'); }
+            } catch (error) { throw error.bridgeCode ? error : bridgeError('INVALID_REQUEST'); }
             const prompt = buildPrompt(input);
             if (input.messages.some(message => message.images?.length)) throw bridgeError('IMAGE_UNSUPPORTED');
             const instructions = 'Reply in the user language. Return only JSON matching this schema: ' + JSON.stringify(SCHEMA)

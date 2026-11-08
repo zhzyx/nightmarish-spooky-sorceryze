@@ -8,6 +8,14 @@ const input = {
     tool_context: { permission_enabled: true, tool_rounds: 0, max_tool_rounds: null },
 };
 
+test('consultation distinguishes malformed tools, version skew and disallowed writes', () => {
+    const tool_context = { ...input.tool_context, consultation_only: true, writes_allowed: false, execution_allowed: false };
+    for (const [tool, code] of [[null, 'INVALID_REQUEST'], [{ function: { name: 'future_read_tool' } }, 'UNSUPPORTED_HOST_TOOL'],
+        [{ function: { name: 'write_file' } }, 'INVALID_REQUEST']]) {
+        assert.throws(() => validateRequest({ ...input, tool_context, available_tools: [tool] }), { bridgeCode: code });
+    }
+});
+
 const typedTool = {
     type: 'function', function: { name: 'run_command', parameters: {
         type: 'object', additionalProperties: false, required: ['command'], properties: {
@@ -178,6 +186,9 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"中文回复","actions":[]}' } },
                 { type: 'turn.completed', usage: {} },
             ], success: true },
+            { events: [{ type: 'error', message: "Codex ran out of room in the model's context window." },
+                { type: 'turn.failed', error: { message: 'Turn failed' } }], success: false, exitCode: 1, errorCode: 'CONTEXT_LIMIT' },
+            { events: [{ type: 'turn.failed', error: { code: 'context_length_exceeded' } }], success: false, exitCode: 1, errorCode: 'CONTEXT_LIMIT' },
             { events: [{ type: 'turn.failed', error: { message: 'authentication required' } }], success: false, exitCode: 23, errorCode: 'AUTH_REQUIRED' },
             { events: [{ type: 'error', message: 'private-token-must-not-leak' }], success: false, exitCode: 17, errorCode: 'PROCESS_EXIT' },
             { events: [{ type: 'item.completed', item: { type: 'agent_message', text: '{"content":"unfinished","actions":[]}' } }], success: false },

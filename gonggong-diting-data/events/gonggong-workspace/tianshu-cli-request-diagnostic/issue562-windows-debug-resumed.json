@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue562-windows-debug-resumed",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-request-diagnostic",
+  "kind": "request",
+  "occurred_at": "2026-11-08T17:00:25.0654306Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/562",
+  "agent": {
+    "id": "codex-562",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "user-authorized-codex-chat:repository-instructions",
+    "version": "host-version-unreported"
+  },
+  "payload": {
+    "intent": "Continue Windows bridge debugging for 562 and verify the original 534 binding",
+    "design_document": "design-docs/tianshu-cli-request-diagnostic.md"
+  },
+  "evidence_refs": [],
+  "sha256": "e7091a8c266466473108d287af47fa272b22306cd0b9670ea2bc0f004e0a8bfc"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2ea6114e11281fed662b39591f9b06af333714c6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-request-diagnostic",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/562",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c4b77051881461c3eed73ef77d27103f0f4e11be54b7beae979578e1a3e4f2d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/562",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/579",
+    "action": "validation",
+    "detection_head": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "context_sha256": "e0bcbe0f9629722df9e5f93400958341ca330a84be124bd1bef969f684162467",
+    "operator": "Sail-Li",
+    "worker": "codex-562",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/562",
+    "evidence": "Full git-check identified the independent review dispatch event under this request as untracked",
+    "diagnosis": "The independent review started after the candidate was staged, creating its required Diting dispatch event.",
+    "next_action": "Stage the authenticated dispatch and terminal events for #562 and rerun the original formal gate after review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T17:04:25.907255+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T17:06:26.950665+00:00",
+  "sha256": "7eb68a6f9093663a8284b0a73b0ee5d3d72b891a1392a00015755b1ca268df92"
+}
