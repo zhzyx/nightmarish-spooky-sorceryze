@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "kind": "append_only_final_guard_ci_policy_correction",
+  "request_id": "kuafu-context-receipt-20261108",
+  "issue_number": 544,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "previous_records_preserved": {
+    "original_premerge_violation_pr": 546,
+    "original_premerge_step_passed": false,
+    "original_corrective_guard_sha256": "3b67977a59018a90eb95bfa9ec2e952ab139d2a99fd06aae55e524705a6e1ae8",
+    "previous_corrective_pr": 550,
+    "previous_signed_head": "721528054014df351e32fd28bec7bfc77f8c4b71",
+    "previous_guard_executed_against_real_github": false,
+    "reason_for_new_signed_candidate": "The original private guard required at least 25 jobs; existing runner policy produces 20 jobs for an evidence-only PR. Preserve the old reports and sign this appended policy correction before using the revised guard."
+  },
+  "actual_repository_ci_policy": {
+    "source": ".github/workflows/runner.yml",
+    "source_sha256": "737883c9846f6b6e746abe6676c89a2f82a7cdb019211a53c07f3ad3d866eaac",
+    "windows_condition_line": 61,
+    "windows_condition": "needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'",
+    "evidence_only_pr": "PR Windows umbrella may be skipped; push Windows matrix still runs. This is the existing repository policy, not a changed workflow.",
+    "observed_previous_signed_candidate": {
+      "head": "721528054014df351e32fd28bec7bfc77f8c4b71",
+      "checks": 20,
+      "success": 7,
+      "configured_skipped": 13
+    },
+    "new_candidate_ci": "Pending at record time; previous PR checks are not used as evidence for the new signed head."
+  },
+  "final_guard": {
+    "source": "private guarded_merge_v2.py",
+    "source_sha256": "76977cc6692edba3a6f80768cdcd3dae780b5bbdc9a9ababccf220a287871645",
+    "changes_from_previous_guard": "Replace fixed job count with all reported jobs terminal SUCCESS/SKIPPED, exactly one successful Issue association and both successful static checks, and exact-head completed/success workflow runs for GHA push, GHA pull_request and Issue association pull_request_target.",
+    "unchanged_controls": [
+      "Reviewed product byte hashes",
+      "Exact open signed head and CLEAN state",
+      "Authoritative main equals checked PR base",
+      "Authoritative writer inspection of Issue544/request/signed head/current base and no overlap",
+      "Final fresh main read equals checked base",
+      "One synchronous process; every nonzero command result or failed predicate raises before normal match-head merge",
+      "No admin, force, second mutation outlet or overlap-only exception"
+    ],
+    "bounded_workflow_listing": "The CLI default list limit may safely refuse a missing required run after many reruns; missing evidence cannot pass.",
+    "atomicity_limit": "The GitHub merge command pins head, not a remote atomic base compare-and-swap. Re-read main immediately before merge and verify the actual merge first parent after mutation; unexpected drift prevents closure."
+  },
+  "author_control_flow_regression": {
+    "passed": 30,
+    "all_cli_calls_mocked": true,
+    "report_sha256": "52138a5b70efeee4411c8b8b56c24e30338e8409e4b4232d2e6b9ce36c48cf0c",
+    "test_source_sha256": "653174606b7a5f2e4325b1b20ae92d2b668fc924270e3d4051c1753d2f79bc57"
+  },
+  "independent_review": {
+    "reviewer": "root, non-author of this private guard delta",
+    "actually_executed_mock_tests": 30,
+    "all_passed": true,
+    "all_cli_calls_mocked": true,
+    "output_sha256": "52138a5b70efeee4411c8b8b56c24e30338e8409e4b4232d2e6b9ce36c48cf0c",
+    "actually_read": [
+      "The 24-line guard CI policy delta",
+      "runner.yml line61"
+    ],
+    "conclusion": "No blocker within this narrow control-flow and CI applicability scope. No actual merge executed and no retroactive PR546 premerge pass."
+  },
+  "cases": [
+    {
+      "case": "valid20",
+      "passed": true,
+      "merge_calls": 1,
+      "failure": null
+    },
+    {
+      "case": "valid25",
+      "passed": true,
+      "merge_calls": 1,
+      "failure": null
+    },
+    {
+      "case": "wrong_pr_head",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "pending_check",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "failed_check",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "missing_association",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "skipped_association",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "missing_static",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "skipped_static",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "missing_workflow",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "pending_workflow",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "failed_workflow",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "wrong_workflow_head",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "initial_main_drift",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "final_main_drift",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "inspect_rejected",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "inspect_wrong_issue",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "pr_bad_json",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "JSONDecodeError"
+    },
+    {
+      "case": "runs_bad_json",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "JSONDecodeError"
+    },
+    {
+      "case": "inspect_bad_json",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "JSONDecodeError"
+    },
+    {
+      "case": "pr_null",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "TypeError"
+    },
+    {
+      "case": "runs_null",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "TypeError"
+    },
+    {
+      "case": "workflow_timeout",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "TimeoutExpired"
+    },
+    {
+      "case": "source_hash_mismatch",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "ValueError"
+    },
+    {
+      "case": "exit7_read_pr",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "CalledProcessError"
+    },
+    {
+      "case": "exit7_workflow_runs",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "CalledProcessError"
+    },
+    {
+      "case": "exit7_read_main",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "CalledProcessError"
+    },
+    {
+      "case": "exit7_verified_writer_inspect",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "CalledProcessError"
+    },
+    {
+      "case": "exit7_final_main_read",
+      "passed": true,
+      "merge_calls": 0,
+      "failure": "CalledProcessError"
+    },
+    {
+      "case": "exit7_merge",
+      "passed": true,
+      "merge_calls": 1,
+      "failure": "CalledProcessError"
+    }
+  ],
+  "limits": [
+    "No product or workflow source changes in this appended evidence.",
+    "No production GUI, App, global configuration, credentials or original native business candidate touched.",
+    "New exact signed-head CI, actual guarded merge, authoritative main readback and normal nonempty receive remain required before closing Issue544."
+  ],
+  "latest_base_integration": {
+    "base": "3a596e24bff2e7c02ad8e55bbfc062916880de9e",
+    "local_merge": "d80bed9771ab124c41d5d35558df3b18f23c471c",
+    "upstream_paths": [
+      ".pre-commit-config.yaml",
+      "data-collection/maliang-gpt-modeling-20261108-ci-format-correction.json",
+      "data-collection/maliang-gpt-modeling-20261108-ci-format-review.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-0674ee2222bfd02e94d85eac7e642a8fd01523c3.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-21746607c0077a9cded94883266129cb4ffab635.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-2e8b95dc29594311fee942fa8f6615234797ffbe.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-6e7e32bbeee4c44f8757da08774e179e5387589e.json"
+    ],
+    "conflicts": false,
+    "scope": "Seven upstream paths: one exact Maliang host-snapshot exclusion in pre-commit config and six unrelated immutable evidence/events. No Kuafu, framework, runner or owned report path changed. Normal merge used authenticated actor identity per invocation; no global Git config changed.",
+    "product_hashes_unchanged": true
+  }
+}
