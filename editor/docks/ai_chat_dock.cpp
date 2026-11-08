@@ -5405,8 +5405,14 @@ void AIChatDock::_poll_cli() {
 
 					} else if (code == "PROCESS_BOUNDARY_FAILED") {
 						reason = TTR("The CLI process lifetime boundary could not be established. No actions were executed.");
+					} else if (code == "UNSUPPORTED_HOST_TOOL") {
+						reason = TTR("The editor offered a tool the CLI bridge does not support. Check the installed editor and bridge versions.");
+					} else if (code == "REQUEST_SIZE_LIMIT") {
+						reason = TTR("The local CLI request file exceeds 1 MiB.");
+					} else if (code == "CONTEXT_LIMIT") {
+						reason = TTR("The CLI reported that the model context limit was exceeded.");
 					} else if (code == "INVALID_REQUEST") {
-						reason = TTR("The CLI request is invalid or exceeds the context limit.");
+						reason = TTR("The local CLI bridge rejected the request format.");
 					}
 				}
 			}

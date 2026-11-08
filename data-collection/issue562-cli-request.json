@@ -1,0 +1,29 @@
+{
+  "issue_number": 562,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/562",
+  "request_id": "tianshu-cli-request-diagnostic",
+  "related_issue": 534,
+  "installed_exe_sha256": "99477c203287ea7ea7650146b7016f6e6bba058d364ae814758304109b3c62c5",
+  "installation_source_before": "d492e0b4",
+  "installation_source_after": "a144411f",
+  "matching_build": "769c03bd",
+  "probe": {
+    "aligned_bridge": "sentinel started; offline completion received",
+    "request_bytes": 1114,
+    "tools": 18,
+    "historical_payload": false,
+    "old_bridge": "INVALID_REQUEST, sentinel not started"
+  },
+  "windows_cli": "0.167.0-alpha.3.2",
+  "configured_model": "gpt-6-astra",
+  "model_list_verified": true,
+  "original_reasoning_effort": null,
+  "original_request_bytes": null,
+  "original_token_count": null,
+  "checks": [
+    "57 Windows Node bridge and model tests passed",
+    "Malformed JSON, unsupported tool and over-1-MiB requests rejected before sentinel launch with three distinct codes",
+    "Cross-checkout install rejected mismatched bridge before copying files"
+  ],
+  "real_issue_534_replayed": false
+}

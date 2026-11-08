@@ -225,7 +225,7 @@ function createTraceLog(directory, maxBytes = 8 * 1024 * 1024) {
         stop_reason: ['end_turn', 'max_tokens', 'max_turn_requests', 'refusal', 'cancelled', 'other'],
         timeout_kind: ['idle', 'hard'],
         failure_hint: ['AUTH_REQUIRED', 'NETWORK_ERROR', 'MODEL_UNAVAILABLE', 'NATIVE_COMPONENT_MISSING'],
-        code: ['TIMEOUT', 'OUTPUT_LIMIT', 'PROCESS_EXIT', 'PROCESS_START', 'AUTH_REQUIRED', 'NETWORK_ERROR', 'MODEL_UNAVAILABLE', 'NATIVE_COMPONENT_MISSING', 'RESULT_FAILED', 'INVALID_REQUEST', 'INVALID_RESPONSE', 'BRIDGE_ERROR', 'IMAGE_UNSUPPORTED', 'TOOL_ROUND_LIMIT_REACHED', 'TOOLS_DISABLED', 'CLI_CANCELLED', 'EDIT_MATCH_FAILED'],
+        code: ['TIMEOUT', 'OUTPUT_LIMIT', 'PROCESS_EXIT', 'PROCESS_START', 'AUTH_REQUIRED', 'NETWORK_ERROR', 'MODEL_UNAVAILABLE', 'NATIVE_COMPONENT_MISSING', 'RESULT_FAILED', 'UNSUPPORTED_HOST_TOOL', 'REQUEST_SIZE_LIMIT', 'CONTEXT_LIMIT', 'INVALID_REQUEST', 'INVALID_RESPONSE', 'BRIDGE_ERROR', 'IMAGE_UNSUPPORTED', 'TOOL_ROUND_LIMIT_REACHED', 'TOOLS_DISABLED', 'CLI_CANCELLED', 'EDIT_MATCH_FAILED'],
     };
     try { fs.mkdirSync(directory, { recursive: true }); } catch (_) { enabled = false; }
     return {
@@ -806,7 +806,8 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
             if (stopped) break;
             if (Buffer.byteLength(line) > 8192) throw api.bridgeError('INVALID_REQUEST');
             const request = JSON.parse(line);
-            if (typeof request.path !== 'string' || !path.isAbsolute(request.path) || fs.statSync(request.path).size > 1024 * 1024 || request.reset !== undefined && typeof request.reset !== 'boolean') throw api.bridgeError('INVALID_REQUEST');
+            if (typeof request.path !== 'string' || !path.isAbsolute(request.path) || request.reset !== undefined && typeof request.reset !== 'boolean') throw api.bridgeError('INVALID_REQUEST');
+            if (fs.statSync(request.path).size > 1024 * 1024) throw api.bridgeError('REQUEST_SIZE_LIMIT');
             const input = api.validateInput(parseHostJson(fs.readFileSync(request.path, 'utf8')));
             if (request.reset) {
                 if (agentId !== undefined && (input.agent_id || 'default') !== agentId) throw api.bridgeError('INVALID_REQUEST');
