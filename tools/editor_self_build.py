@@ -467,9 +467,14 @@ def main(argv=None):
                 # Older running hosts understand only raw executables and their
                 # adjacent manifests. A native-aware caller explicitly opts in.
                 if args.artifact_layout == "native_app":
-                    from editor_native_app import EXECUTABLE_RELATIVE, app_for_executable, package_app
+                    from editor_native_app import (
+                        EXECUTABLE_RELATIVE,
+                        app_for_executable,
+                        native_output_dir,
+                        package_app,
+                    )
 
-                    native_app = Path(str(artifact) + ".app")
+                    native_app = native_output_dir(ROOT) / (artifact.name + ".app")
                     running_app = app_for_executable(args.current.resolve())
                     if running_app == native_app:
                         raise ValueError("Refusing to overwrite the running editor App")

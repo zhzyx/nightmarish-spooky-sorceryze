@@ -86,6 +86,7 @@ class AIChatDock : public EditorDock {
 	String gonggong_receipt_path;
 	uint64_t gonggong_receipt_generation = 0;
 	String gonggong_recovered_result;
+	String gonggong_recovery_ack_token;
 	bool gonggong_recovery_can_send = false;
 	bool _record_gonggong(const String &p_kind, const String &p_phase, const String &p_status);
 	Callable gonggong_receipt_continuation;
@@ -344,7 +345,10 @@ class AIChatDock : public EditorDock {
 	bool models_loading = false;
 	bool cli_listing_models = false;
 	String model_request_key;
+	String model_request_config;
 	Array model_catalog;
+	String model_catalog_config;
+	Dictionary discovered_model_catalogs;
 
 	void _refresh_models();
 	void _refresh_codex_models_on_start();
@@ -490,6 +494,7 @@ class AIChatDock : public EditorDock {
 		String cli_model;
 		String codex_model;
 		Array model_catalog;
+		String model_catalog_config;
 		int backend = 1;
 		int scroll = 0;
 		bool follow_latest = true;

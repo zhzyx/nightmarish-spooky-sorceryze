@@ -15,12 +15,12 @@ import base64
 import binascii
 import json
 import os
-from pathlib import Path
 import subprocess
-import sys
 import time
+from pathlib import Path
 
 ACK_POLL_SECONDS = 0.2
+ACK_STABILITY_SECONDS = 5.0
 
 
 def write_report(path, **data):
@@ -31,7 +31,7 @@ def write_report(path, **data):
 
 
 def process_is_running(pid):
-    """Report whether a process is alive, without ever signalling it."""
+    """Report whether a process is alive, without ever signaling it."""
     if not isinstance(pid, int) or pid <= 0 or pid == os.getpid():
         return False
     if os.name != "nt":
@@ -110,7 +110,9 @@ def main(argv=None):
     if not report.parent.is_dir():
         parser.error("The report directory must already exist")
     try:
-        decoded = base64.b64decode(args.editor_args_b64, validate=True).decode("utf-8") if args.editor_args_b64 else "[]"
+        decoded = (
+            base64.b64decode(args.editor_args_b64, validate=True).decode("utf-8") if args.editor_args_b64 else "[]"
+        )
         editor_arguments = json.loads(decoded)
     except (ValueError, UnicodeDecodeError, binascii.Error) as error:
         parser.error(f"Invalid editor arguments: {error}")
@@ -131,8 +133,13 @@ def main(argv=None):
     except OSError:
         pass
     if not wait_for_exit(args.wait_pid, args.exit_timeout):
-        write_report(report, status="failed", binary=str(new), previous=str(old),
-                     error="The outgoing editor is still running; no second editor was started")
+        write_report(
+            report,
+            status="failed",
+            binary=str(new),
+            previous=str(old),
+            error="The outgoing editor is still running; no second editor was started",
+        )
         return 1
     try:
         child = launch(new, editor_arguments)
@@ -145,26 +152,51 @@ def main(argv=None):
             pass
         return 1
     deadline = time.monotonic() + args.ack_timeout
-    while time.monotonic() < deadline:
-        if args.ack.exists() and acknowledged(args.ack.resolve(), args.token, new):
-            write_report(report, status="started", binary=str(new), previous=str(old))
-            return 0
-        if child.poll() is not None:
+    acknowledged_at = None
+    while time.monotonic() < deadline or acknowledged_at is not None:
+        has_ack = args.ack.exists() and acknowledged(args.ack.resolve(), args.token, new)
+        returncode = child.poll()
+        if returncode is not None:
+            if has_ack and returncode == 0:
+                # A normal close after readiness is not a failed startup and
+                # must not reopen a project the user just closed.
+                write_report(report, status="started", binary=str(new), previous=str(old), closed_normally=True)
+                return 0
             # Started and died, or never got far enough to acknowledge: the known
             # good executable is restored instead of leaving the user with none.
-            error = f"The rebuilt editor exited with code {child.returncode} before acknowledging"
+            phase = "after acknowledging" if has_ack or acknowledged_at is not None else "before acknowledging"
+            exit_error = f"The rebuilt editor exited with code {returncode} {phase}"
             try:
                 launch(old, editor_arguments)
             except OSError as failure:
-                write_report(report, status="failed", binary=str(new), previous=str(old),
-                             error=f"{error}; rollback also failed: {failure}")
+                write_report(
+                    report,
+                    status="failed",
+                    binary=str(new),
+                    previous=str(old),
+                    error=f"{exit_error}; rollback also failed: {failure}",
+                )
                 return 1
-            write_report(report, status="rolled_back", binary=str(new), previous=str(old), error=error)
+            write_report(report, status="rolled_back", binary=str(new), previous=str(old), error=exit_error)
             return 1
+        now = time.monotonic()
+        if has_ack:
+            if acknowledged_at is None:
+                acknowledged_at = now
+            if now - acknowledged_at >= ACK_STABILITY_SECONDS:
+                write_report(report, status="started", binary=str(new), previous=str(old))
+                return 0
+        else:
+            acknowledged_at = None
         time.sleep(ACK_POLL_SECONDS)
     # Still alive but silent. It is not killed, and no competing editor is added.
-    write_report(report, status="startup_unconfirmed", binary=str(new), previous=str(old),
-                 error="The rebuilt editor did not acknowledge a working AI dock in time")
+    write_report(
+        report,
+        status="startup_unconfirmed",
+        binary=str(new),
+        previous=str(old),
+        error="The rebuilt editor did not acknowledge a working AI dock in time",
+    )
     return 1
 
 

@@ -11,6 +11,7 @@ import os
 import plistlib
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -40,6 +41,41 @@ def manifest_path(app):
     return Path(str(app) + ".candidate.json")
 
 
+def native_output_dir(root):
+    """Derive the local artifact store without creating or trusting a path."""
+    root = Path(root).resolve(strict=True)
+    if sys.platform != "darwin":
+        return root / "bin"
+    import pwd
+
+    source = str(root)
+    home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+    return (
+        home
+        / "Library/Application Support/gonggong/engine-artifacts"
+        / hashlib.sha256(source.encode("utf-8")).hexdigest()
+    )
+
+
+def prepare_native_output_dir(root):
+    output = native_output_dir(root)
+    if not output.is_absolute() or output.resolve() != output:
+        raise ValueError("candidate_native_app_path_invalid")
+    missing = []
+    for path in (output, *output.parents):
+        if path.is_symlink() or (path.exists() and not path.is_dir()):
+            raise ValueError("candidate_native_app_path_invalid")
+        if not path.exists():
+            missing.append(path)
+    for path in reversed(missing):
+        path.mkdir(mode=0o700, exist_ok=True)
+        if path.is_symlink() or not path.is_dir():
+            raise ValueError("candidate_native_app_path_invalid")
+    if output.resolve() != output:
+        raise ValueError("candidate_native_app_path_invalid")
+    return output
+
+
 def app_for_executable(executable):
     executable = Path(executable)
     app = executable.parent.parent.parent
@@ -63,6 +99,22 @@ def verify_signature(app):
         raise ValueError(
             "candidate_native_signature_invalid: " + result.stderr.decode("utf-8", errors="replace").strip()[:2000]
         )
+
+
+def clear_staged_signing_metadata(app):
+    """Remove codesign-prohibited metadata only from the new staging copy."""
+    for path in (Path(app), *Path(app).rglob("*")):
+        result = subprocess.run(["/usr/bin/xattr", "-s", str(path)], capture_output=True, timeout=30)
+        if result.returncode:
+            raise ValueError("candidate_native_metadata_cleanup_failed")
+        attributes = result.stdout.splitlines()
+        for name in ("com.apple.FinderInfo", "com.apple.ResourceFork"):
+            if name.encode("ascii") in attributes:
+                result = subprocess.run(
+                    ["/usr/bin/xattr", "-s", "-d", name, str(path)], capture_output=True, timeout=30
+                )
+                if result.returncode:
+                    raise ValueError("candidate_native_metadata_cleanup_failed")
 
 
 def copy_app(source, destination):
@@ -117,7 +169,7 @@ def descriptor(root, app):
     root, app = Path(root).resolve(strict=True), Path(app)
     if (
         not app.is_absolute()
-        or app.parent != root / "bin"
+        or (app.parent != root / "bin" and app.parent != native_output_dir(root))
         or app.suffix != ".app"
         or app.is_symlink()
         or app.resolve() != app
@@ -180,11 +232,13 @@ def package_app(root, artifact, binding, project, destination, template=None):
     template = Path(template) if template else root / "misc/dist/macos_tools.app"
     if template.is_symlink() or not template.is_dir():
         raise ValueError("candidate_native_template_invalid")
+    if destination.parent != root / "bin":
+        prepare_native_output_dir(root)
     # Stage entirely before replacing a previous inactive output slot. Every
     # byte in the final bundle, including the locator, precedes signing.
     with tempfile.TemporaryDirectory(prefix=".native-package-", dir=destination.parent) as temporary:
         staged = Path(temporary) / destination.name
-        shutil.copytree(template, staged, symlinks=True)
+        copy_app(template, staged)
         for relative in ("Contents", "Contents/MacOS", "Contents/Resources", "Contents/Info.plist", ORIGIN_RELATIVE):
             path = staged / relative
             if path.is_symlink() or path.resolve() != path:
@@ -210,13 +264,16 @@ def package_app(root, artifact, binding, project, destination, template=None):
         locator.parent.mkdir(parents=True, exist_ok=True)
         expected = origin_value(root, binding, project, destination)
         locator.write_text(json.dumps(expected, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
+        clear_staged_signing_metadata(staged)
         result = subprocess.run(
             ["/usr/bin/codesign", "--force", "--deep", "--sign", "-", str(staged)],
             capture_output=True,
             timeout=120,
         )
         if result.returncode:
-            raise ValueError("candidate_native_signing_failed")
+            raise ValueError(
+                "candidate_native_signing_failed: " + result.stderr.decode("utf-8", errors="replace").strip()[:2000]
+            )
         verify_bundle(staged, expected)
         if destination.exists():
             shutil.rmtree(destination)

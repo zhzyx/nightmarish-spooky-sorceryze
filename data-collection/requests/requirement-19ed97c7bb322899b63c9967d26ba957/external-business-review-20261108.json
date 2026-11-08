@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "issue": 483,
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "external_read_only_business_review_of_native_initial_patch",
+  "status": "changes_requested",
+  "authority": "Original user authorized interruption and repair of failures during the engine Agent workflow acceptance.",
+  "review_report_sha256": "c70d5ca104fdbb187190f2850d944fc0211f58c0bf98c2d40e9d00090f553e38",
+  "reviewed_source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "9c888b60593f0dbfd6a5e6cec88fe6ba8ac152dbe44dcc2cfcf078ef343cbbc0",
+    "editor/docks/ai_chat_dock.h": "98ebd0181089c69a3a191f78c50552e5f2513b8b9d480ab60cb39acd080eb4a2",
+    "tests/editor/run_model_autofetch.py": "c95718820218d841c941296dcf7b0487e6bfe4dcc493c13a12419e141a428402",
+    "editor/docks/gonggong_panel.cpp": "95f4e01b3cac7d908e7592534575c2afa0593142d5ea1aa45c8665bfac8b003e",
+    "editor/docks/gonggong_runtime_config.cpp": "ab5e3ad24a2800d5ae3ecb85c98ec84a5e86feead5a1d5d5959eee9f75380494",
+    "design-docs/unified-runtime-native-entry-20261107.md": "2f03568082bdcc66a7f0399e4d5a9ca102937940d2b7a9e540387c1064bbcab6"
+  },
+  "findings": [
+    {
+      "id": "stale-session-catalog-wins",
+      "priority": "P2",
+      "blocking_this_business_acceptance": true,
+      "file": "editor/docks/ai_chat_dock.cpp",
+      "line": 3553,
+      "title": "A stored session catalog masks later successful discovery for the same config",
+      "reproduction": [
+        "Allow successful catalog C1 on tab A.",
+        "Create/switch to tab B; A captures nonempty C1 with config signature K.",
+        "Complete a normal successful Codex login in B and let the automatic catalog refresh produce changed advertised catalog C2 under the same executable/node signature K.",
+        "Switch to A after refresh completes."
+      ],
+      "actual_static_result": "_restore_agent chooses p_session.model_catalog=C1 solely because session config K matches current K and C1 is nonempty; the current discovered_model_catalogs[K]=C2 branch is not evaluated. A displays stale advertised IDs/efforts while a new tab uses C2.",
+      "impact": "Removed models and changed reasoning capabilities can remain advertised in old sessions after login auto-refresh. Independent selection preservation does not require old advertised catalog restoration.",
+      "guards_checked": "This is a normal completed refresh followed by an allowed tab switch. Neither models_loading guards nor request_generation cancellation prevent the branch.",
+      "certainty": "Static deterministic under changed catalog C2; no GUI/runtime reproduction performed.",
+      "test_gap": "New session-reuse case observes only one discovery, then a connection change. It never refreshes K a second time before revisiting an archived nonempty session."
+    },
+    {
+      "id": "response-filed-under-current-config",
+      "priority": "P2",
+      "blocking_this_business_acceptance": true,
+      "file": "editor/docks/ai_chat_dock.cpp",
+      "line": 4732,
+      "title": "A response can be cached under a config that did not launch it",
+      "preconditions": [
+        "Two ordinary non-self-contained editor windows share the documented effective runtime configuration.",
+        "Relevant Codex/node path is configuration-derived, not pinned by startup environment override.",
+        "A model-list query remains in flight during a normal valid path edit in the other idle window."
+      ],
+      "reproduction": [
+        "A launches model discovery from effective runtime config K1.",
+        "B edits shared Codex/node paths to valid config K2 while A waits for the model-list response.",
+        "A receives successful K1 catalog after the shared config edit."
+      ],
+      "actual_static_result": "A request_generation remains current because B changes only shared configuration, not A local request state. _models_completed validates generation at4687 but recomputes current effective config K2 at4732 and stores K1 response in discovered_model_catalogs[K2] at4736. New tab restores K2 with K1 advertised catalog.",
+      "guards_checked": "The local UI is correctly locked by _set_busy:1581-82; GongGongPanel::set_runtime_field:266 also rejects local API changes while task_locked. Therefore a same-window forced signal edit is not claimed as a valid reproduction. These per-window guards do not lock another idle window. read_effective() reloads the shared config document each call; _models_completed has no launch-signature comparison.",
+      "contract_refs": [
+        "design-docs/unified-runtime-native-entry-20261107.md:15 (cross-window effective configuration)",
+        "editor/docks/gonggong_runtime_config.cpp:300 (read_effective reload)",
+        "editor/docks/ai_chat_dock.cpp:4687 (generation guard)",
+        "editor/docks/ai_chat_dock.cpp:4732 (current signature)",
+        "editor/docks/ai_chat_dock.cpp:4736 (cache assignment)"
+      ],
+      "certainty": "Static deterministic under the documented cross-window config-change preconditions; no live multi-window/runtime reproduction performed."
+    }
+  ],
+  "validation": "Static control-flow review only. No runtime reproduction of these two findings is claimed. Same-window task locking was explicitly considered; the second finding requires a separate ordinary window editing shared durable configuration.",
+  "actual_interruption": "Root invoked normal engine chat_stop for the exact original owner/generation. Actual build status is cancelled: Build cancelled; current editor unchanged. Original native patch and partial compilation cache retained.",
+  "required_next_steps": "Original native Agent corrects catalog freshness and query identity boundaries, adds normal isolated regression cases, resumes existing helper build and continues actual internal child/parent/Git delivery. Do not count this cancelled initial draft as acceptance.",
+  "external_product_edits_in_this_review": false,
+  "overall_workflow_accepted": false
+}

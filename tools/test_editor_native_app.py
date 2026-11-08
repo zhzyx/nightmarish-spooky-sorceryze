@@ -1,5 +1,6 @@
 """Real codesign checks on private temporary Apps; never launch a user App."""
 
+import hashlib
 import json
 import plistlib
 import subprocess
@@ -19,6 +20,11 @@ class NativeAppTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="private_sc_native_app_")
         self.addCleanup(self.temp.cleanup)
         self.folder = Path(self.temp.name).resolve()
+        self.home = self.folder / "private-user"
+        user = type("FixtureUser", (), {"pw_dir": str(self.home)})()
+        home_patch = patch("pwd.getpwuid", return_value=user)
+        home_patch.start()
+        self.addCleanup(home_patch.stop)
         self.root = self.folder / "source"
         self.root.mkdir()
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
@@ -97,6 +103,98 @@ class NativeAppTests(unittest.TestCase):
             native.origin_value(self.root, self.binding, self.project, self.app),
         )
 
+    def test_local_store_is_pure_and_derived_from_canonical_utf8_source(self):
+        source = self.folder / "源 root with space"
+        source.mkdir()
+        expected = (
+            self.home
+            / "Library/Application Support/gonggong/engine-artifacts"
+            / hashlib.sha256(str(source.resolve()).encode("utf-8")).hexdigest()
+        )
+        self.assertEqual(native.native_output_dir(source), expected)
+        self.assertFalse(self.home.exists())
+        self.assertNotEqual(native.native_output_dir(self.root), expected)
+
+    def test_local_store_preserves_existing_directories_and_uses_private_new_directories(self):
+        existing = self.home / "Library/Application Support/gonggong"
+        existing.mkdir(parents=True)
+        existing.chmod(0o750)
+        self.app = native.native_output_dir(self.root) / self.app.name
+        self.package()
+        path, value = self.manifest()
+        self.assertEqual(native.validate_native_app(self.root, value, path), self.app)
+        self.assertEqual(existing.stat().st_mode & 0o777, 0o750)
+        self.assertEqual(self.app.parent.stat().st_mode & 0o777, 0o700)
+        self.assertEqual(self.app.parent.parent.stat().st_mode & 0o777, 0o700)
+        self.assertEqual(path.parent, self.app.parent)
+        installed = self.folder / "Installed Local Store.app"
+        native.copy_app(self.app, installed)
+        native.verify_bundle(
+            installed, native.read_locator(self.app / native.EXECUTABLE_RELATIVE), value["artifact_sha256"]
+        )
+
+    def test_local_store_rejects_other_source_and_arbitrary_output_parent(self):
+        self.app = native.native_output_dir(self.root) / self.app.name
+        self.package()
+        other = self.folder / "other-source"
+        other.mkdir()
+        with self.assertRaisesRegex(ValueError, "app_path_invalid"):
+            native.descriptor(other, self.app)
+        with self.assertRaisesRegex(ValueError, "app_path_invalid"):
+            native.descriptor(self.root, self.folder / self.app.name)
+
+    def test_local_store_rejects_linked_ancestor_before_writing(self):
+        self.home.mkdir()
+        outside = self.folder / "outside"
+        outside.mkdir()
+        (self.home / "Library").symlink_to(outside, target_is_directory=True)
+        self.app = native.native_output_dir(self.root) / self.app.name
+        with self.assertRaisesRegex(ValueError, "app_path_invalid"):
+            self.package()
+        self.assertEqual(list(outside.iterdir()), [])
+
+    def test_signing_cleans_only_staged_finder_metadata_and_preserves_source(self):
+        resource = self.template / "Contents/Resources/fixture.txt"
+        resources = resource.parent
+        prohibited = {"com.apple.FinderInfo": b"TEST" + bytes(28), "com.apple.ResourceFork": b"fixture fork"}
+        retained = {
+            "com.apple.quarantine": b"0081;00000000;NativeFixture;",
+            "org.gonggong.native-fixture": b"preserved metadata",
+        }
+        for path in (self.template, resources, resource):
+            for name, value in {**prohibited, **retained}.items():
+                if name == "com.apple.ResourceFork" and path.is_dir():
+                    continue
+                subprocess.run(["/usr/bin/xattr", "-s", "-w", "-x", name, value.hex(), str(path)], check=True)
+        resource.chmod(0o640)
+
+        def metadata(path):
+            return {
+                name: bytes.fromhex(
+                    subprocess.check_output(["/usr/bin/xattr", "-s", "-p", "-x", name, str(path)]).decode()
+                )
+                for name in subprocess.check_output(["/usr/bin/xattr", "-s", str(path)]).decode().splitlines()
+            }
+
+        before = {path: metadata(path) for path in (self.template, resources, resource)}
+        self.package()
+        native.verify_signature(self.app)
+        for source, attributes in before.items():
+            self.assertEqual(metadata(source), attributes)
+            copied = self.app / source.relative_to(self.template)
+            copied_attributes = metadata(copied)
+            for name in prohibited:
+                self.assertNotIn(name, copied_attributes)
+            for name, value in retained.items():
+                if name == "com.apple.quarantine":
+                    # ditto may normalize quarantine flags/agent metadata, but
+                    # the downloaded-file restriction must remain in place.
+                    self.assertTrue(int(copied_attributes[name].split(b";")[0], 16) & 1)
+                else:
+                    self.assertEqual(copied_attributes[name], value)
+        self.assertEqual(resource.stat().st_mode & 0o777, 0o640)
+        self.assertEqual((self.app / resource.relative_to(self.template)).stat().st_mode & 0o777, 0o640)
+
     def test_refuses_shell_as_native_executable(self):
         shell = self.folder / "shell"
         shell.write_text("#!/bin/sh\nexit 0\n")
@@ -134,6 +232,27 @@ class NativeAppTests(unittest.TestCase):
         with patch.object(native, "verify_signature", side_effect=ValueError("fixture_signature_failed")):
             with self.assertRaisesRegex(ValueError, "fixture_signature_failed"):
                 self.package()
+        self.assertEqual(original, native.digest(self.app / native.EXECUTABLE_RELATIVE))
+        native.verify_signature(self.app)
+
+    def test_signing_failure_keeps_bounded_tool_reason_and_existing_slot(self):
+        self.package()
+        original = native.digest(self.app / native.EXECUTABLE_RELATIVE)
+        stderr = b"fixture codesign reason: \xff" + b"x" * 3000
+        real_run = subprocess.run
+
+        def reject_signing(arguments, *args, **kwargs):
+            if arguments[0] == "/usr/bin/codesign" and "--force" in arguments:
+                return subprocess.CompletedProcess(arguments, 1, b"", stderr)
+            return real_run(arguments, *args, **kwargs)
+
+        with patch.object(native.subprocess, "run", side_effect=reject_signing):
+            with self.assertRaises(ValueError) as caught:
+                self.package()
+        self.assertEqual(
+            str(caught.exception),
+            "candidate_native_signing_failed: " + stderr.decode("utf-8", errors="replace").strip()[:2000],
+        )
         self.assertEqual(original, native.digest(self.app / native.EXECUTABLE_RELATIVE))
         native.verify_signature(self.app)
 

@@ -360,7 +360,13 @@ def candidate_digest(common, repository, issue, request_id, owner):
 
 def inherited_launch(workspace, common, repository, origin, folder, actual_launch):
     """Follow only a private binding tied to this source or this exact artifact."""
-    from editor_native_app import app_for_executable, read_locator, validate_native_app, verify_bundle
+    from editor_native_app import (
+        app_for_executable,
+        native_output_dir,
+        read_locator,
+        validate_native_app,
+        verify_bundle,
+    )
 
     actual_locator = None
     if app_for_executable(actual_launch):
@@ -391,7 +397,12 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             continue
         if (
             not source.is_absolute()
-            or manifest_path.parent != source / "bin"
+            or not source.is_dir()
+            or source.resolve() != source
+            or (
+                manifest_path.parent != source / "bin"
+                and (sys.platform != "darwin" or manifest_path.parent != native_output_dir(source))
+            )
             or manifest_path.is_symlink()
             or manifest_path.resolve() != manifest_path
         ):
@@ -404,6 +415,8 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
                 raise CandidateError("candidate_inherited_artifact_invalid") from None
             continue
         native = "native_app" in manifest
+        if not native and manifest_path.parent != source / "bin":
+            raise CandidateError("candidate_inherited_artifact_invalid")
         installed_native = (
             native
             and str(manifest_path) == located_manifest

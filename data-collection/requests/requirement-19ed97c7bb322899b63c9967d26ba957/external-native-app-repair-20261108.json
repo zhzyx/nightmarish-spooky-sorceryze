@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "issue": 483,
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "external_native_packaging_repair_handoff",
+  "authority": "Original user authorized observation of the internal Agent workflow, interruption, repair and restart when failures are found.",
+  "incident": "950ae5c153f69afb9958433b038962d96009bf61d689b5bcfacfdf83195cdadb",
+  "previous_repair_record": "external-restart-repair-20261108.json",
+  "native_agent_progress": {
+    "original_owner_and_snapshot_preserved": true,
+    "agent_fast_forward_to_main": "54596091c40873d6c56890c715919b18278d36e2",
+    "observed_in_actual_history": "Original native Agent run_command git merge --ff-only origin/main returned exit0, cef3a3af..54596091; matching branch reflog records 2026-11-07T18:10:08Z.",
+    "correction": "Earlier external packaging invocation descriptions retained a hard-coded cef3 source_head. Those descriptions are stale; source manifest and actual branch reflog take precedence. No failed package is counted as published.",
+    "before_packaging_transition": "Root requested real engine chat_stop, verified no unsaved scene/script and backed up history before terminating only its own paused raw validation editor. No history, journal or original candidate identity was edited."
+  },
+  "packaging_failure": {
+    "actual_failed_supported_builds": 3,
+    "observed": "The actual CloudDrive-managed candidate/bin App root acquired or exposed codesign-prohibited FinderInfo with FileProvider metadata. Targeted removal, normal system-temp signed copy back to bin, and hidden/nosync retained copies did not sustain strict verification.",
+    "source_of_initial_cli_visibility_difference": "Not established; CLI enumeration was not proof of native absence.",
+    "failed_attempts_preserved": true,
+    "old_user_app_unchanged": true
+  },
+  "external_repair": {
+    "actors": "Codex root temporary takeover; Python implementation config_bootstrap_plan, C++ runtime_entry_fix, independent reviews cross-checked authors and a fresh reviewer.",
+    "files": {
+      "tools/editor_native_app.py": "c5f031d65d6b2e8822ec038939f947d459b107897adf794ca9e3b605a85cd1d2",
+      "tools/editor_self_build.py": "fd67442e952edadca03e238088478bba919cecf961ae5fced3ca7da3118a5894",
+      "tools/editor_engine_candidate.py": "65d711d27191c69488e98a0e01384be33fa2282da3e02b516ec8cfc202ec717f",
+      "tools/test_editor_native_app.py": "46f3e307f5ae66b8a6af0c2890679b661711bfc13331120a3dbb3f8585fbaa1d",
+      "tools/test_editor_engine_candidate.py": "123b95276bd283c64aa412d1eac5ba7ac3fb450185a707f9ef22f94e033e8569",
+      "tests/editor/test_editor_self_build.py": "b8b54a371520efd5a46fba60b1e19f7eb6503e2444d392b9ff87c35c4fd15f44",
+      "editor/docks/gonggong_engine_origin.cpp": "b6c2dc5da811bf1088dfc8b92869b8a6e7fbf2cd657b5e69197aeff3c52cbc32",
+      "editor/docks/gonggong_engine_origin.h": "cfb2cc3fc1f4af75bf6b649d78818a877709c952466e2b1a37778257f12f4c94",
+      "editor/docks/ai_chat_host_runtime.h": "82a050a0b7f126bb817d658c6dd20a169cc397628ca2524d1fd30a9ac5da28ae",
+      "tests/editor/test_runtime_config.cpp": "547d4a6ba715d322975a56a79f7c006cbf48fda634c423e26b00ac431aac2c47"
+    },
+    "behavior": [
+      "Keep raw executable layout and legacy native source/bin compatibility.",
+      "Generate new native App in the one OS-user local Application Support artifact directory derived from canonical source UTF8 full SHA256. Reject arbitrary, cross-source or linked paths.",
+      "Match C++ cold-start and self-build/restart path checks to the same derivation using real system-user home, independent of HOME overrides.",
+      "Retain all private binding, source-input, artifact hash, exact same-byte smoke, strict signature, ready-publication and delivery/acceptance checks.",
+      "Only remove FinderInfo/ResourceFork from a newly owned staging copy, preserving source and other metadata including quarantine. Whole-App copies preserve signatures and are not re-signed."
+    ]
+  },
+  "actual_build": {
+    "source_head": "54596091c40873d6c56890c715919b18278d36e2",
+    "source_digest": "2014c3aa9212a01f7cf9c70552b612253bf66ddfdb675a72cda93793cc5e841c",
+    "source_inputs": 16470,
+    "artifact_sha256": "eecab85852b3fb7004d3d86d170865b7bd96ae65bfb417119cddd96c82a4dbeb",
+    "manifest_sha256": "43fb54958b0fb6be08d12f57d406164116af59eefd7852f97293fe89af1e2628",
+    "strict_signature": true,
+    "ready_binding_matches": true
+  },
+  "validation": {
+    "existing_python_tests_passed": 89,
+    "actual_template_compiled_macho_local_store_packaging_and_whole_copy_retained_strict_checks_passed": 8,
+    "fresh_full_native_app_build_and_startup_smokes": "passed exit0",
+    "actual_native_gui_handoff": "pending at record creation"
+  },
+  "remaining": [
+    "Actual App zero-argument launch and source/configuration verification",
+    "Native Agent model catalog implementation, self-build/restart, read-only child acceptance and automatic parent return",
+    "Signed source delivery, exact CI, main and complete_delivery for Issue483",
+    "Final supported original-user App activation and cold acceptance under Issue462/393/390"
+  ],
+  "overall_workflow_accepted": false,
+  "original_user_application_cold_launch_accepted": false,
+  "publication_hold": "All root-controlled main publication, including documentation and signing, remains paused for the authorized unified-update coordination window. Local work continues."
+}

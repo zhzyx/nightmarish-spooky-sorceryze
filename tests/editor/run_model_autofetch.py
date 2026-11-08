@@ -93,6 +93,82 @@ func _run():
             finish(false, "Codex advertised catalog missing")
             return
         checks.append("startup fetched advertised Codex model once")
+    elif case_name == "session-reuse":
+        if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex"):
+            finish(false, "initial Codex catalog missing")
+            return
+        var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
+        var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
+        var tabs = dock.find_child("AgentTabs", true, false)
+        field.text = "parent-choice"
+        field.text_changed.emit(field.text)
+        dock.find_child("AddAgent", true, false).pressed.emit()
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex"):
+            finish(false, "new session did not reuse discovered catalog")
+            return
+        field.text = "child-choice"
+        field.text_changed.emit(field.text)
+        tabs.current_tab = 0
+        tabs.tab_changed.emit(0)
+        if field.text != "parent-choice" or not catalog_has("fixture-codex"):
+            finish(false, "parent selection or catalog lost")
+            return
+        tabs.current_tab = 1
+        tabs.tab_changed.emit(1)
+        if field.text != "child-choice" or not catalog_has("fixture-codex"):
+            finish(false, "child selection or catalog lost")
+            return
+        if not await stable_count("codex-model-list", 1):
+            finish(false, "session creation triggered duplicate discovery")
+            return
+        var entry = dock.get_environment_settings_control().find_child("CodexEntry", true, false)
+        entry.text = OS.get_environment("ACCEPT_ALT_CODEX")
+        entry.text_changed.emit(entry.text)
+        if catalog_has("fixture-codex"):
+            finish(false, "old catalog remained after connection changed")
+            return
+        checks.append("new session reused catalog without query; selections stayed independent; config change invalidated old catalog")
+    elif case_name == "session-catalog-freshness":
+        if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex-old"):
+            finish(false, "initial catalog C1 missing")
+            return
+        var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
+        var tabs = dock.find_child("AgentTabs", true, false)
+        field.text = "parent-choice"
+        field.text_changed.emit(field.text)
+        dock.find_child("AddAgent", true, false).pressed.emit()
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex-old"):
+            finish(false, "B did not reuse C1")
+            return
+        field.text = "child-choice"
+        field.text_changed.emit(field.text)
+        dock.get_ai_settings_control().find_child("CodexLogin", true, false).pressed.emit()
+        if not await wait_count("codex-login-success", 1) or not await wait_count("codex-model-list", 2, 20.0) or not await wait_backend_ready("fixture-codex-new"):
+            finish(false, "login refresh did not produce C2")
+            return
+        tabs.current_tab = 0
+        tabs.tab_changed.emit(0)
+        if field.text != "parent-choice" or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "A restored stale C1 instead of latest C2 or lost its selection")
+            return
+        tabs.current_tab = 1
+        tabs.tab_changed.emit(1)
+        if field.text != "child-choice" or not catalog_has("fixture-codex-new"):
+            finish(false, "B lost C2 or its independent selection")
+            return
+        checks.append("same-connection login refresh replaced archived C1 with C2; independent choices survived")
+    elif case_name == "shared-config-inflight":
+        if not await wait_count("codex-model-list", 2, 20.0) or not await wait_backend_ready("fixture-codex-new"):
+            finish(false, "shared C2 change did not trigger a current-connection query")
+            return
+        if catalog_has("fixture-codex-old"):
+            finish(false, "C1 response polluted the current C2 catalog")
+            return
+        dock.find_child("AddAgent", true, false).pressed.emit()
+        if not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "new session reused a C1 response under C2")
+            return
+        checks.append("external shared-config edit during in-flight C1 query retained only C2 catalog")
     elif case_name in ["codex-login", "codex-busy-login", "codex-status-login-race"]:
         await create_timer(0.6).timeout
         if events("codex-model-list") != 0:
@@ -152,8 +228,10 @@ func _run():
         if not await wait_count("codex-model-list", 1) or not await stable_count("codex-model-list", 1):
             finish(false, "failure caused repeated model queries")
             return
+        dock.find_child("AdvancedToggle", true, false).pressed.emit()
+        await process_frame
         if "已获取" in status.text or catalog_has("fixture-codex") or status.text.is_empty() or not status.is_visible_in_tree():
-            finish(false, "catalog failure not visibly distinguished from success")
+            finish(false, "catalog failure not visibly distinguished from success after opening AI settings")
             return
         checks.append("catalog failure visible without retry loop")
     elif case_name in ["api-chat-startup", "api-responses-startup", "codebuddy-startup"]:
@@ -194,11 +272,12 @@ if a[:2]==['login','status']:
     event('codex-login-status')
     if case in ['codex-status-timeout','codex-status-config-change']: time.sleep(90)
     if case=='codex-status-login-race' and not (state/'logged-in').exists(): time.sleep(4); sys.exit(1)
+    if case=='session-catalog-freshness' and (state/'refresh-login').exists(): sys.exit(0)
     sys.exit(0 if (state/'logged-in').exists() else 1)
 if a and a[0]=='login':
     event('codex-login-start')
     time.sleep(0.8)
-    (state/'logged-in').touch(); event('codex-login-success'); sys.exit(0)
+    (state/'logged-in').touch(); (state/'refresh-login').touch(); event('codex-login-success'); sys.exit(0)
 if a and a[0]=='app-server':
     for line in sys.stdin:
         p=json.loads(line)
@@ -208,7 +287,17 @@ if a and a[0]=='app-server':
             event('codex-model-list')
             if case=='codex-catalog-failure':
                 print(json.dumps({'id':p['id'],'error':{'code':-32603,'message':'offline catalog failure'}}),flush=True);continue
-            result={'data':[{'id':'fixture-codex','model':'fixture-codex','displayName':'Offline Codex','isDefault':True}],'nextCursor':None}
+            model = 'fixture-codex'
+            if case == 'session-catalog-freshness':
+                model = 'fixture-codex-new' if (state/'refresh-login').exists() else 'fixture-codex-old'
+            elif case == 'shared-config-inflight':
+                # Keep the C1 response in flight while the independent test
+                # controller changes the shared durable configuration.
+                time.sleep(1.0)
+                model = 'fixture-codex-old'
+            elif case == 'shared-config-current':
+                model = 'fixture-codex-new'
+            result={'data':[{'id':model,'model':model,'displayName':'Offline Codex','isDefault':True}],'nextCursor':None}
         else: result={}
         print(json.dumps({'id':p['id'],'result':result}),flush=True)
     sys.exit(0)
@@ -238,6 +327,9 @@ process.stdin.on('data', chunk => {
 
 CASES = [
     "codex-startup",
+    "session-reuse",
+    "session-catalog-freshness",
+    "shared-config-inflight",
     "codex-login",
     "codex-busy-login",
     "codex-status-timeout",
@@ -305,12 +397,23 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
         (project / "accept.gd").write_text(GDSCRIPT, encoding="utf-8")
         if case not in ["codex-login", "codex-busy-login", "codex-status-login-race"]:
             (state / "logged-in").touch()
+        config_file = root / "bin/editor_data/gonggong/config.json"
+        config_file.parent.mkdir(parents=True, exist_ok=True)
+        config_file.write_text(
+            json.dumps({"schema_version": 1, "runtimes": {"codex": str(root / "fake-codex"), "node": str(node)}}),
+            encoding="utf-8",
+        )
         codex = root / "fake-codex"
         codex.write_text(
             "#!"
             + sys.executable
             + "\n"
-            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr(case)),
+            + FAKE_CODEX
+            .replace("__STATE__", repr(str(state)))
+            .replace("__CASE__", repr(case))
+            .replace("__CONFIG_PATH__", repr(str(config_file)))
+            .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
+            .replace("__NODE__", repr(str(node))),
             encoding="utf-8",
         )
         codex.chmod(0o755)
@@ -319,7 +422,12 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             "#!"
             + sys.executable
             + "\n"
-            + FAKE_CODEX.replace("__STATE__", repr(str(state))).replace("__CASE__", repr("codex-startup")),
+            + FAKE_CODEX
+            .replace("__STATE__", repr(str(state)))
+            .replace("__CASE__", repr("shared-config-current" if case == "shared-config-inflight" else "codex-startup"))
+            .replace("__CONFIG_PATH__", repr(str(config_file)))
+            .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
+            .replace("__NODE__", repr(str(node))),
             encoding="utf-8",
         )
         alt_codex.chmod(0o755)
@@ -380,6 +488,28 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             encoding="utf-8",
         )
         output = root / "result.json"
+        config_writer = None
+        if case == "shared-config-inflight":
+
+            def change_shared_config():
+                events_file = state / "events.jsonl"
+                import time
+
+                deadline = time.monotonic() + 20
+                while time.monotonic() < deadline:
+                    if events_file.exists() and any(
+                        '"kind": "codex-model-list"' in line or '"kind":"codex-model-list"' in line
+                        for line in events_file.read_text(encoding="utf-8").splitlines()
+                    ):
+                        replacement = {"schema_version": 1, "runtimes": {"codex": str(alt_codex), "node": str(node)}}
+                        temporary = config_file.with_suffix(".json.tmp")
+                        temporary.write_text(json.dumps(replacement), encoding="utf-8")
+                        temporary.replace(config_file)
+                        return
+                    time.sleep(0.02)
+
+            config_writer = threading.Thread(target=change_shared_config, daemon=True)
+            config_writer.start()
         environment = {
             **{
                 key: value

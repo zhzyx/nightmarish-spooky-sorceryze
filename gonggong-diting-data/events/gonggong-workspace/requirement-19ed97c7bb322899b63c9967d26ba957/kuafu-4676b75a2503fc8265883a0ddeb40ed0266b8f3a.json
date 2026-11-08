@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4676b75a2503fc8265883a0ddeb40ed0266b8f3a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "950ae5c153f69afb9958433b038962d96009bf61d689b5bcfacfdf83195cdadb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "action": "validation",
+    "detection_head": "54596091c40873d6c56890c715919b18278d36e2",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-root-01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "authority_ref": "codex-user-engine-workflow-observation-interrupt-repair-20261107",
+    "evidence": "Actual native_app packaging failure retained before retry: staged codesign rejected resource fork/Finder information. Previous raw binary build and original session recovery passed, but native App packaging did not.",
+    "diagnosis": "Apple QA1940 prohibits FinderInfo and ResourceFork inside signed bundles. The packaging stage lacked targeted cleanup; actual source template had provenance attributes but no prohibited attributes, so the exact source of forbidden staging metadata is not established. Independent review passed a staging-only correction preserving sources, custom attributes, mode and quarantine; 9 real temporary-App codesign tests passed.",
+    "next_action": "Retry the same supported high-level native_app build using the existing Issue483 binding and current saved runtimes; verify actual complete App and continue original engine chat. Retain first failed packaging and restart evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T18:21:46.189416+00:00",
+    "attempted": "Frozen staging-only cleanup of the two exact prohibited metadata names before signing. No source/user App metadata removal, journal edits or ad-hoc App publication.",
+    "repair_owner": "Root temporary authorized repair; config_bootstrap_plan implementation, runtime_entry_fix independent review.",
+    "continuable": "Local retry is running; production App and full business workflow acceptance remain pending."
+  },
+  "occurred_at": "2026-11-07T18:22:23.183020+00:00",
+  "sha256": "e190205ed4ccb5a68bbc032ad7944ce86b2031313f6d93384d2ffe86285ae33b"
+}

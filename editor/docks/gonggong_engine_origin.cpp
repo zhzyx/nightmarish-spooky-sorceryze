@@ -35,7 +35,36 @@
 #include "core/io/json.h"
 #include "core/os/os.h"
 
+#ifdef MACOS_ENABLED
+#include <pwd.h>
+#include <unistd.h>
+#endif
+
 namespace {
+#ifdef MACOS_ENABLED
+bool unlinked_absolute_path(const String &p_path) {
+	if (!p_path.is_absolute_path() || p_path.simplify_path() != p_path) {
+		return false;
+	}
+	const Ref<DirAccess> access = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
+	if (access.is_null()) {
+		return false;
+	}
+	String path = p_path;
+	while (!path.is_empty()) {
+		if (access->is_link(path)) {
+			return false;
+		}
+		const String parent = path.get_base_dir();
+		if (parent == path) {
+			break;
+		}
+		path = parent;
+	}
+	return true;
+}
+#endif
+
 String text_field(const Dictionary &p_value, const String &p_key) {
 	const Variant value = p_value.get(p_key, Variant());
 	return value.get_type() == Variant::STRING ? String(value) : String();
@@ -119,7 +148,9 @@ Dictionary read_origin() {
 	const String manifest_file = text_field(locator, "candidate_manifest");
 	const String binding_file = text_field(locator, "binding_path");
 	const Variant version = locator.get("schema_version", Variant());
-	if ((version.get_type() != Variant::INT && version.get_type() != Variant::FLOAT) || double(version) != 1.0 || !source.is_absolute_path() || directory(source) != source || !FileAccess::exists(source.path_join("SConstruct")) || !manifest_file.is_absolute_path() || manifest_file.get_base_dir() != source.path_join("bin")) {
+	const String native_directory = GongGongEngineOrigin::native_artifact_directory(source);
+	const bool manifest_directory_matches = manifest_file.get_base_dir() == source.path_join("bin") || (!native_directory.is_empty() && manifest_file.get_base_dir() == native_directory);
+	if ((version.get_type() != Variant::INT && version.get_type() != Variant::FLOAT) || double(version) != 1.0 || !source.is_absolute_path() || directory(source) != source || !FileAccess::exists(source.path_join("SConstruct")) || !manifest_file.is_absolute_path() || !manifest_directory_matches) {
 		return result;
 	}
 	const String common = common_directory(source);
@@ -173,6 +204,26 @@ Dictionary GongGongEngineOrigin::read() {
 String GongGongEngineOrigin::source_root() {
 	const Dictionary origin = read();
 	return bool(origin.get("ok", false)) ? String(origin.get("source_root", "")) : String();
+}
+
+String GongGongEngineOrigin::native_artifact_directory(const String &p_source) {
+#ifdef MACOS_ENABLED
+	if (!unlinked_absolute_path(p_source)) {
+		return String();
+	}
+	// Match Python pwd.getpwuid(os.getuid()), independently of HOME overrides.
+	struct passwd user = {};
+	struct passwd *found = nullptr;
+	char buffer[16384];
+	if (getpwuid_r(getuid(), &user, buffer, sizeof(buffer), &found) != 0 || !found || !found->pw_dir) {
+		return String();
+	}
+	const String directory = String::utf8(found->pw_dir).path_join("Library/Application Support/gonggong/engine-artifacts").path_join(p_source.sha256_text());
+	return unlinked_absolute_path(directory) ? directory : String();
+#else
+	(void)p_source;
+	return String();
+#endif
 }
 
 bool GongGongEngineOrigin::uses_default_project(const List<String> &p_arguments) {

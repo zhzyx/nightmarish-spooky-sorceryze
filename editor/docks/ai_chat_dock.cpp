@@ -941,12 +941,11 @@ void AIChatDock::_load_resume() {
 		}
 		snapshot_state["engine_candidate"] = candidate;
 	}
-	if (!restart.is_empty()) {
-		// Written before anything else can fail: this is the proof of a working
-		// dock that the build check and the restart watchdog are waiting for.
-		AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
-	}
 	if (bool(journal.get("smoke_check", false))) {
+		// Offline startup probes do not resume a production tool or model turn.
+		if (!restart.is_empty()) {
+			AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
+		}
 		AIChatResume::clear_journal();
 		AIChatResume::clear_report();
 		return;
@@ -979,7 +978,7 @@ void AIChatDock::_load_resume() {
 	if (switched) {
 		result["ok"] = true;
 		result["note"] = "The editor is now running the rebuilt executable and its AI dock is working, so the edited C++ is active. This conversation continued in the new process; do not rebuild again for the same change. Verify the intended behavior before reporting success.";
-		_append(U"编辑器", String(U"已切换到新编辑器版本并恢复本次任务：") + OS::get_singleton()->get_executable_path());
+		_append(U"编辑器", String(U"已启动新版编辑器，正在恢复本次任务：") + OS::get_singleton()->get_executable_path());
 	} else {
 		result["ok"] = false;
 		result["note"] = rolled_back ? "The rebuilt editor did not come up with a working AI dock, so the previous executable was restored automatically. The edited C++ is NOT active. Investigate the build log and the editor output before rebuilding." : "The editor is running an unexpected executable after the handoff. The edited C++ may not be active. Confirm the running version with the user before continuing.";
@@ -990,6 +989,7 @@ void AIChatDock::_load_resume() {
 	}
 	const String awaited = restart.get("tool_call_id", "");
 	if (awaited.is_empty()) {
+		AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
 		return; // A restart from the UI button has no tool call to answer.
 	}
 	const int agent = journal["agent"];
@@ -1032,8 +1032,9 @@ void AIChatDock::_load_resume() {
 	_get_editor_control()->cancel_guidance();
 	turn_model_requests = 0;
 	_set_busy(true);
-	_append_work(String(U"版本切换完成，继续处理中断前的工具调用：") + String(restart.get("tool_name", "build_engine")));
+	_append_work(String(U"正在接回版本切换前的工具调用：") + String(restart.get("tool_name", "build_engine")));
 	gonggong_recovered_result = JSON::stringify(result);
+	gonggong_recovery_ack_token = restart["token"];
 	gonggong_recovery_can_send = can_send;
 	_begin_gonggong_context(); // Keep journal/report until fresh binding and result receipt succeed.
 	if (!can_send) {
@@ -2836,6 +2837,16 @@ void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool 
 }
 
 void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state) {
+	// The mandatory result receipt and original session are ready. Publish the
+	// handoff before advancing the batch, so a failed write is safe to retry.
+	if (!gonggong_recovered_result.is_empty() && !gonggong_recovery_ack_token.is_empty()) {
+		if (AIChatResume::write_ack(gonggong_recovery_ack_token, OS::get_singleton()->get_executable_path()) != OK) {
+			_append(TTR("Error"), U"本会话的工具结果已校验，但版本切换回执写入失败。已暂停接续并保留原续跑记录。");
+			_set_busy(false);
+			return;
+		}
+		gonggong_recovery_ack_token = String();
+	}
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	const String name = function.get("name", "");
@@ -3518,6 +3529,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.cli_model = cli_model->get_text();
 	state.codex_model = codex_model->get_text();
 	state.model_catalog = model_catalog.duplicate(true);
+	state.model_catalog_config = model_catalog_config;
 	state.backend = backend->get_selected();
 	state.scroll = chat_follow_latest ? chat_scroll->get_v_scroll() : chat_scroll_position;
 	state.follow_latest = chat_follow_latest;
@@ -3586,7 +3598,10 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	tool_rounds = 0;
 	details_dialog->hide();
 	details_text->set_text(String());
-	_apply_models(p_session.model_catalog);
+	const String config = _model_config_signature();
+	const Array catalog = Array(discovered_model_catalogs.get(config, Array()));
+	_apply_models(catalog);
+	model_catalog_config = config;
 	_set_busy(false);
 	set_process(cli_process_id >= 0);
 }
@@ -4346,6 +4361,7 @@ LineEdit *AIChatDock::_active_model_field() const {
 
 void AIChatDock::_sync_model_picker() {
 	_apply_models(Array());
+	model_catalog_config = _model_config_signature();
 }
 
 void AIChatDock::_apply_models(const Array &p_models) {
@@ -4549,6 +4565,11 @@ void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_f
 }
 
 void AIChatDock::_model_config_changed(const String &p_text) {
+	const String config = _model_config_signature();
+	if (model_catalog_config != config) {
+		_apply_models(Array(discovered_model_catalogs.get(config, Array())));
+		model_catalog_config = config;
+	}
 	if (model_config_timer && model_config_timer->is_inside_tree()) {
 		model_config_timer->start();
 	}
@@ -4683,6 +4704,8 @@ void AIChatDock::_refresh_models() {
 	if (busy || models_loading) {
 		return;
 	}
+	// Bind the response to the effective connection used to launch this query.
+	model_request_config = _model_config_signature(runtime);
 	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
 	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
 		if (!_validate_cli(runtime)) {
@@ -4764,6 +4787,8 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 	}
 	models_loading = false;
 	model_request_key = String();
+	const String request_config = model_request_config;
+	model_request_config = String();
 	_set_busy(false);
 	// Discovery may have blocked the batch's one queued dispatch. Only wake
 	// live ownership; the dispatcher rechecks permissions, pause and receipts.
@@ -4772,6 +4797,14 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 	}
 	if (pending_model_sources) {
 		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+	}
+	// Another editor window can change the shared runtime while this request is
+	// in flight. Discard its response and refresh the current connection.
+	if (request_config != _model_config_signature()) {
+		_model_config_changed(String());
+		model_status->set_text(U"连接配置已变化，正在获取当前连接的模型列表。");
+		_request_model_refresh(2);
+		return;
 	}
 	JSON json;
 	if (p_result != HTTPRequest::RESULT_SUCCESS || p_code < 200 || p_code >= 300 || json.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) != OK || json.get_data().get_type() != Variant::DICTIONARY) {
@@ -4800,7 +4833,13 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 		model_status->set_text(U"未返回可用模型列表。可在“设置 → AI”手动填写模型 ID。");
 		return;
 	}
+	const String config = request_config;
+	if (!discovered_model_catalogs.has(config) && discovered_model_catalogs.size() >= 8) {
+		discovered_model_catalogs.clear();
+	}
+	discovered_model_catalogs[config] = Array(entries).duplicate(true);
 	_apply_models(entries);
+	model_catalog_config = config;
 	model_status->set_text(U"模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。");
 }
 
@@ -6236,6 +6275,7 @@ void AIChatDock::_stop() {
 	}
 	_get_editor_control()->cancel_guidance();
 	gonggong_recovered_result = String();
+	gonggong_recovery_ack_token = String();
 	gonggong_recovery_can_send = false;
 	if (snapshot_restoring) {
 		_reject_snapshot_restore();
