@@ -395,9 +395,9 @@ class CandidateTests(unittest.TestCase):
         home_patch.start()
         self.addCleanup(home_patch.stop)
 
-    def built_native_candidate(self, local_store=False):
+    def built_native_candidate(self, local_store=False, entry_parent=None):
         self.private_native_home()
-        initial_app = self.folder / "Original Native.app"
+        initial_app = (entry_parent or self.folder) / "Original Native.app"
         initial = initial_app / native.EXECUTABLE_RELATIVE
         initial.parent.mkdir(parents=True)
         shutil.copyfile("/usr/bin/true", initial)

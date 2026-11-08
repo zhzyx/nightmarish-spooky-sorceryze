@@ -126,7 +126,9 @@ def copy_app(source, destination):
     # signatures codesign gives non-Mach-O nested components (e.g. alternate
     # template plists). ditto preserves those without re-signing anything.
     result = subprocess.run(
-        ["/usr/bin/ditto", "--rsrc", "--extattr", str(source), str(destination)], capture_output=True, timeout=120
+        ["/usr/bin/ditto", "--rsrc", "--extattr", "--qtn", str(source), str(destination)],
+        capture_output=True,
+        timeout=120,
     )
     if result.returncode:
         raise ValueError("candidate_native_copy_failed")

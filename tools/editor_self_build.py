@@ -24,21 +24,34 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def configuration_snapshot(current):
     """An App's build record is external; Godot itself has no slot in its name."""
+    import editor_managed_native_entry as managed
     from editor_native_app import app_for_executable, read_locator, validate_native_app, verify_bundle
 
     app = app_for_executable(current)
+    managed_path = app and (app.is_symlink() or managed.in_snapshot_store(app, ROOT))
     previous = Path(str(app if app else current) + ".build.json")
-    if previous.is_file():
+    if previous.is_file() and not managed_path:
         return json.loads(previous.read_text(encoding="utf-8"))
     if app:
         try:
             locator = read_locator(current)
         except FileNotFoundError:
+            if managed_path:
+                raise ValueError("build_managed_entry_unregistered") from None
             return {}
         manifest_path = Path(locator["candidate_manifest"])
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         validate_native_app(locator["source_root"], manifest, manifest_path)
-        verify_bundle(app, read_locator(manifest["executable"]), manifest["artifact_sha256"])
+        if managed_path:
+            from editor_engine_candidate import identity
+
+            initial = Path(manifest["binding"]["initial_launch_executable"])
+            common, _, _ = identity(Path(locator["source_root"]))
+            record = managed.registered_entry(initial, common, expected_manifest=manifest_path)
+            if app not in (app_for_executable(initial), Path(record["canonical_payload"])):
+                raise ValueError("build_managed_entry_changed")
+        else:
+            verify_bundle(app, read_locator(manifest["executable"]), manifest["artifact_sha256"])
         return manifest["build_options"]
     return {}
 

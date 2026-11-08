@@ -1,0 +1,104 @@
+{
+  "schema_version": 2,
+  "kind": "issue569_independent_final_raw_metadata_review",
+  "issue": 569,
+  "decision": "PASS",
+  "scope": "Final frozen7sources at freezev3. Independent source/delta review,14 real Mac unit transactions and current complete production-template fixture raw verification. Remote signedCI/main and572 composition remain distinct release gates.",
+  "source_freeze": {
+    "path_private_location_redacted": true,
+    "sha256": "2bb53810d91849073b80f1a894f29b23dd13280b18057a97d4b7598d51a2253f"
+  },
+  "source_hashes_before_and_after_exact": {
+    "tools/editor_managed_native_entry.py": "ef804f9d2a4bb76efb2dc6580ab997e9f00731a227d0cfba5d7c0a77853abc3f",
+    "tools/editor_candidate_activation.py": "d7dd5b7ea514e6cbf5722dadb793809357975e70314f23607f1f470a8d0c56a3",
+    "tools/editor_engine_candidate.py": "fe19cadd5ae92edf932808ef5440ea95173f76583640e950b2569bbe9542e44b",
+    "tools/editor_native_app.py": "ffbc9671c36d2ab9e88238491d6eeb51da2c2062d76e310395437c96c5abf4a7",
+    "tools/editor_self_build.py": "818c5ac67e7cc9c86286af9e95db54f4c9770f24f6a1758fb6004511e43ccbeb",
+    "tools/test_editor_managed_native_entry.py": "e275754fd1d71aa008fc8e10e9d06ba2b42df4f0e48ba8e34111cf0eb0442bc6",
+    "tools/test_editor_engine_candidate.py": "4390bd98f7cf5bd26e5d3ea55e27504c1a813ab0444b2dd002eee748b050f899"
+  },
+  "prior_independent_review": {
+    "path_private_location_redacted": true,
+    "sha256": "e7bfffa4720baeecfc9396c8be1e482f583bb9073ccebe472a68ba6bde317850"
+  },
+  "prior_evidence_limit_correction": "The previous xattr -p fingerprint hashed CLI text truncated at binary NUL and appended newline. It could not prove complete raw attribute equality. Previous PASS and all original reports are retained only for their actual execution scope, not reinterpreted as raw verification or the later complete-template composition.",
+  "actual_failure_preserved": [
+    {
+      "path_private_location_redacted": true,
+      "sha256": "af1606969782a1a0a7e691a39293144350b07246231943b69c7c9e9138b98ad2"
+    },
+    {
+      "path_private_location_redacted": true,
+      "sha256": "750f3bda3d3471484cdb2a288e34de0b21e644c5d7ec065d30a6ce8846ea5f0f"
+    },
+    {
+      "path_private_location_redacted": true,
+      "sha256": "3b1f25768ce49007ce41f99fc5999770ae4a005bdf5636b1beae4993d4f39b38"
+    }
+  ],
+  "independent_raw_diagnosis": {
+    "path_private_location_redacted": true,
+    "sha256": "2d60d156dddfd179307b21509a6ef202b9582048d029416d0d5b1261bfe93097"
+  },
+  "narrow_delta_review": [
+    "Binary attributes now use hex decoding; independent Darwin libc verification validates all current names/values, including NUL and zero-length bytes.",
+    "Only source-proven missing empty non-quarantine attributes are restored on this invocation unpublished owned copy; nonempty loss/value change remains rejected.",
+    "Darwin setxattr six-argument ABI uses XATTR_CREATE|XATTR_NOFOLLOW=3. Concurrent new value causes EEXIST17 without overwrite; no quarantine writes.",
+    "Full raw comparison/strict verification and source-before/source-after equality remain mandatory after restoration.",
+    "Identity schema2 separates raw-fingerprint semantics; full MF/sourceDigest/C/S/tree/sourceRoot key retained.",
+    "Activation receipt records restored empty attributes; no source/MF/binding/CodeResources editing or re-signing.",
+    "Prior immutable store/source validation, exclusive publication, rollback, registered candidate/build consumers unchanged."
+  ],
+  "independently_executed": [
+    {
+      "command": "python3.12 -B -m unittest -v test_editor_managed_native_entry",
+      "cwd_private_location_redacted": true,
+      "exit_code": 0,
+      "tests_total": 14,
+      "passed": 14,
+      "skipped": 0,
+      "seconds": 30.817,
+      "includes": [
+        "binary NUL and empty attrs raw exactness",
+        "complete macos_tools.app template empty non-MachO CodeSignature preservation",
+        "real create-only race retains external nonempty value",
+        "prior11 signed copy/update/inheritance/rollback/race/owner/receipt tests"
+      ]
+    },
+    {
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "b9502c9d4caf6bdd240a41324c84736033196f25b78ee87ba134c42fd65e0f63"
+      },
+      "checks": {
+        "existing_author_full_template_fixture_readonly": true,
+        "paths": 310,
+        "raw_attributes": 326,
+        "empty_attributes_source_plus_payload": 4,
+        "libc_list_and_get_vs_helper_all_match": true,
+        "source_and_payload_allbytes_modes_rawattrs_match_accepted_record": true,
+        "source_logical_payload_strict": true,
+        "registered_entry": true,
+        "source_manifest_sha_pin": true,
+        "source_unchanged_during_review": true
+      },
+      "note": "Actual compiled input hash93dab083... and packaged signed Mach-O055f841b... are distinct recorded values; no binary recompile claim."
+    }
+  ],
+  "author_timed_full_template_report": {
+    "report": {
+      "path_private_location_redacted": true,
+      "sha256": "5c79bcb23a66302bea65bd329926bd5ecf2f5ece3acd9204bcf6bc2e550809ff"
+    },
+    "scope": "Author actually ran1/3/10 second source/payload retention and both strict signatures plus default reuse. Reviewer current raw checks used final v3. Timed phases are not claimed as reviewer execution."
+  },
+  "release_boundaries": [
+    "RT572 native managed composition is pending at report creation and must be read separately before final integration approval.",
+    "No remote CI/main or new signed candidate verification is included in this report.",
+    "Original6ef C, original MF/binding/source, production92413/Apps/GUI/global settings/history were not operated.",
+    "No original483 production activation or originalC cold binary launch performed.",
+    "This report does not claim whole editor Agent workflow closure."
+  ],
+  "remaining_findings": [],
+  "original_private_report_sha256": "1d2d7fd36c56d0d0786a73b09545e933783861e6a537d350691cd2bc8663e8b8"
+}
