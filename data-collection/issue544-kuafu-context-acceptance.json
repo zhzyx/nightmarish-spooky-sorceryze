@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "validation",
+  "request_id": "kuafu-context-receipt-20261108",
+  "issue_number": 544,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "source_base": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+  "source_files": {
+    "customizations/components/issue-workorders/kuafu_incident.py": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+    "customizations/components/issue-workorders/test_kuafu_incident.py": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777"
+  },
+  "checks": {
+    "before": {
+      "tests": 13,
+      "failures": 6,
+      "errors": 2,
+      "log_sha256": "a88b20176cf8ac39946c6dd8c18726bad75b8560e89c5c1813e4d0a9d3da588b",
+      "meaning": "Real aliases and missing empty-output refusal reproduce before production changes; includes private subtest failures."
+    },
+    "directed_after": {
+      "passed": 13,
+      "log_sha256": "af8c2e000c03bfd6569cc80aebcffb4297a64e92ec8600346519e9faa81f90c4"
+    },
+    "kuafu_regression": {
+      "passed": 36,
+      "log_sha256": "5419357009b6b481c47e3c4ac41ffb83d3cbb1870e443dff1acc902bd68f8a10"
+    },
+    "static": [
+      "Ruff check passed",
+      "Ruff format unchanged",
+      "codespell passed",
+      "git diff --check passed"
+    ],
+    "independent_review": {
+      "path": "data-collection/issue544-kuafu-context-independent-review.json",
+      "sha256": "ec73522e2b322ee54f456dc558a96c46e48ac0693d03f2d31ea819fdd97fcaf2",
+      "verdict": "pass",
+      "actual_context_cases": 7,
+      "supplemental_receipt_cases": 6
+    }
+  },
+  "environment": {
+    "platform": "macOS",
+    "python": "3.12.16",
+    "node": "v24.22.1"
+  },
+  "canonical_temporary_correct_context": {
+    "bytes": 6179,
+    "sha256": "c1b09b963b9e48b279bd2ebc57114017bc4825ed03bf0c0f039cdf11d3329825",
+    "admitted_role": "kuafu 0.5.1",
+    "actual_full_context_read_by_executor": true,
+    "temporary_method": "Canonical normal CLI under the authenticated Issue544 host mandate while receiver repair is pending",
+    "not_a_forged_standard_received_file": true
+  },
+  "preserved_history": {
+    "original_issue": 542,
+    "empty_context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_received_sha256": "b5a8121b4c50c08eebbc54f026c511fe33757dfaa30e1ba70dc693567de516ac",
+    "original_event_sha256": "d9aafed3598c6b6da77597eb8578b6de6c883fe3d29929b78603da642fd17f41",
+    "originals_changed": false,
+    "correction_event": "kuafu-context-correction-20261108"
+  },
+  "limits": [
+    "No GUI, app rebuild/restart, original business Agent changes or user global configuration edits.",
+    "No framework/Agent definition or CLI import guard changes.",
+    "Local real CLI was macOS; do not claim Windows execution before actual CI.",
+    "Publication and authoritative-main verification are not yet covered by this local acceptance file."
+  ],
+  "fixed_candidate_real_handoff": {
+    "incident": "5f62195d126159d805f5c11a067fa012d8363166f8e2c1ea60e67fb3c2796efd",
+    "source_issue": 544,
+    "receiver_exit_code": 0,
+    "context_bytes": 6114,
+    "context_sha256": "e08ff1668ac0357fe1b52cafb4bcf73197a26f41cb046e7fd518a1adffb30145",
+    "stderr_bytes": 0,
+    "real_received_file_sha256": "c27eea7dadffef4068ef049cfb19d231deb9fb2a91d28fe8d8fddb8e36a6451d",
+    "role_version": "0.5.1",
+    "operator": "kaiyunxue",
+    "assessment_state": "recorded_file",
+    "assessment_event_sha256": "b88aa4df462eb596a1bf30f91dbe283446eb2690cc00c83246d3a2e747c73377",
+    "assessment_timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544#issuecomment-6716764550",
+    "diting_consumption": null,
+    "role_framework_source": "authoritative main package; unchanged role definition",
+    "receiver_source": "reviewed fix candidate, not yet delivered main",
+    "old_empty_context_receipt_rewritten": false
+  },
+  "delivery_base_integration": {
+    "main": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "method": "normal fast-forward, preserving staged task files",
+    "conflicts": false,
+    "product_and_test_hashes_unchanged": true,
+    "scope": "Upstream Issue542 UI route and evidence only; framework and reviewed Kuafu source unchanged."
+  }
+}

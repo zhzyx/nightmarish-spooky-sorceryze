@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "issue": 544,
+  "request_id": "kuafu-context-receipt-20261108",
+  "reviewed_at_utc": "2026-11-08T03:30:34.042611+00:00",
+  "reviewer": "independent artifact_consumer_audit subagent; not an implementation author",
+  "verdict": "pass",
+  "blocking_findings": [],
+  "scope": {
+    "tracked_source_files": [
+      "customizations/components/issue-workorders/kuafu_incident.py",
+      "customizations/components/issue-workorders/test_kuafu_incident.py"
+    ],
+    "base_sha": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "actual_head_sha": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "freeze_sha256": "97da8ad72eddd7a6c6f6290e4607759a0aed73c56ba6f865b08553563437ea08",
+    "reviewed_file_sha256": {
+      "customizations/components/issue-workorders/kuafu_incident.py": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+      "customizations/components/issue-workorders/test_kuafu_incident.py": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777"
+    },
+    "hashes_rechecked_after_tests": true
+  },
+  "code_assessment": [
+    {
+      "file": "customizations/components/issue-workorders/kuafu_incident.py",
+      "line": 285,
+      "finding": "Trusted framework temporary snapshot root is strictly resolved before yielding; a /var or explicit directory alias no longer propagates into the Node CLI entry comparison."
+    },
+    {
+      "file": "customizations/components/issue-workorders/kuafu_incident.py",
+      "line": 338,
+      "finding": "Node entry script is strictly resolved. The existing CLI, environment filtering, timeout, admission/integrity checks and host authorization flow are preserved."
+    },
+    {
+      "file": "customizations/components/issue-workorders/kuafu_incident.py",
+      "line": 350,
+      "finding": "Strict UTF-8 decoding and Unicode whitespace rejection occur before reporting profile reads, context hashing and received.json lookup/write. Decode/process/path failures leave an existing received receipt untouched."
+    },
+    {
+      "file": "customizations/components/issue-workorders/kuafu_incident.py",
+      "line": 356,
+      "finding": "Existing write-once receipt comparison is unchanged. Identical nonempty retries remain byte-identical; changed context is rejected without rewriting the prior receipt."
+    }
+  ],
+  "independent_validation": {
+    "python": "Python 3.12.16",
+    "node": "Node v24.22.1",
+    "node_version": "v24.22.1",
+    "platform": "darwin",
+    "context_unittests": {
+      "run": 7,
+      "passed": 7,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "test_kuafu_incident.ContextHandoffTests",
+      "real_cli_cases": [
+        "canonical private framework root",
+        "explicit directory symlink alias",
+        "macOS /var alias of /private/var fixture"
+      ],
+      "log_sha256": "8a9e61f1d61e15749f6388f055fbf480fed4304e7d440ad150fd651637bf5bf1"
+    },
+    "supplemental_existing_receipt_checks": {
+      "passed": 6,
+      "cases": [
+        {
+          "case": "invalid_utf8",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        },
+        {
+          "case": "unicode_blank",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        },
+        {
+          "case": "empty",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        },
+        {
+          "case": "process_exit",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        },
+        {
+          "case": "process_timeout",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        },
+        {
+          "case": "missing_script_strict_resolve",
+          "rejected": true,
+          "existing_receipt_unchanged": true
+        }
+      ],
+      "receipt_sha256": "01e0f795d629335a6142dd622ddf0aada5e0e3d6aafd9becd4b194af849b1934",
+      "remote_github_calls_allowed": false
+    },
+    "remote_guard": "Python host.work_items.gh denied by default throughout the independent run; trusted snapshot unit overrides with a local mock. The real Node context CLI and imported integrity/admission/reporting files were inspected and only perform local reads plus the local Python package-integrity child."
+  },
+  "author_evidence_reviewed_not_independently_rerun": {
+    "directed": {
+      "passed": 13,
+      "log_sha256": "af8c2e000c03bfd6569cc80aebcffb4297a64e92ec8600346519e9faa81f90c4"
+    },
+    "kuafu_regression": {
+      "passed": 36,
+      "log_sha256": "5419357009b6b481c47e3c4ac41ffb83d3cbb1870e443dff1acc902bd68f8a10"
+    }
+  },
+  "limits": [
+    "Review covers the two frozen Python source changes and their local failure/retry behavior.",
+    "No production Issue message, GitHub API call, authoritative-main fetch, production receipt access, GUI action, or application process operation was performed.",
+    "No author source file was edited. Only private temporary fixtures, independent logs and this report were written.",
+    "This review does not attest publication, live host authorization, or Issue acceptance."
+  ],
+  "publication_copy": {
+    "private_original_sha256": "3c8137e3aa5f137f16eb7b43377069db9fba1f3d252216fb3a1a13d4f9b4e932",
+    "change": "Implementation author removed private absolute paths and replaced private log paths with actual hashes; independent scope/findings/results unchanged."
+  }
+}

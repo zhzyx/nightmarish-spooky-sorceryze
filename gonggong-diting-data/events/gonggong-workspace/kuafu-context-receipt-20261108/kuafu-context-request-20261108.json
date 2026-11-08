@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-context-receipt-20261108",
+  "occurred_at": "2026-11-08T03:29:50.981806+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "agent": {
+    "id": "codex-kuafu-context-receipt",
+    "origin": "authenticated-github-issue-host",
+    "version": "host-snapshot",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "evidence_refs": [],
+  "kind": "request",
+  "event_id": "kuafu-context-request-20261108",
+  "payload": {
+    "issue_number": 544,
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "title": "夸父通过链接入口跳过职责加载却记录空上下文成功回执",
+    "issue_updated_at": "2026-11-08T03:24:23Z",
+    "issue_body_sha256": "5bf3af5212283c22523fcfe6390c6258ff632f52d7f0830042d2e7a9cc56d2c6",
+    "operator": "kaiyunxue",
+    "authority_ref": "User authorized fixing observed engine workflow blockers; root delegated Issue544 in an isolated checkout",
+    "related_issues": [
+      483,
+      542
+    ],
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured",
+    "host_authority_granted_by_event": false
+  },
+  "sha256": "0fc74c0e27e23bcf8ca5d7f6315a172718186beb080ca28ff60dd0ab804d79a4"
+}

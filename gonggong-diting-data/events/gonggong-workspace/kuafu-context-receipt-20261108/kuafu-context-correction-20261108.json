@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-context-receipt-20261108",
+  "occurred_at": "2026-11-08T03:29:50.981806+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "agent": {
+    "id": "codex-kuafu-context-receipt",
+    "origin": "authenticated-github-issue-host",
+    "version": "host-snapshot",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "evidence_refs": [],
+  "kind": "correction",
+  "event_id": "kuafu-context-correction-20261108",
+  "payload": {
+    "issue_number": 544,
+    "related_issue": 542,
+    "operator": "kaiyunxue",
+    "executor": "codex-kuafu-context-receipt",
+    "context_loading_method": "normal canonical CLI; current admitted framework; actual executor read full returned context",
+    "context_bytes": 6179,
+    "context_sha256": "c1b09b963b9e48b279bd2ebc57114017bc4825ed03bf0c0f039cdf11d3329825",
+    "original_event_id": "kuafu-76bbea958299ff7833a14a8a09816f2b11aaf817",
+    "original_event_sha256": "d9aafed3598c6b6da77597eb8578b6de6c883fe3d29929b78603da642fd17f41",
+    "original_received_sha256": "b5a8121b4c50c08eebbc54f026c511fe33757dfaa30e1ba70dc693567de516ac",
+    "original_context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "correction": "The earlier empty stdout hash and recorded_file assessment do not establish that Kuafu duties/admission context ran. Preserve the originals; this new bug tracks repair and genuine nonempty verification.",
+    "old_received_modified": false,
+    "old_event_modified": false,
+    "prior_context_retroactively_validated": false,
+    "parent_business_accepted": false,
+    "cross_request_relation": "Related original is cited in payload; no invalid cross-request supersedes graph link is claimed."
+  },
+  "sha256": "eaed581b3c41205a527ddbf6c3a318326831ebd7756ab3cdaad41ec1074bedcb"
+}

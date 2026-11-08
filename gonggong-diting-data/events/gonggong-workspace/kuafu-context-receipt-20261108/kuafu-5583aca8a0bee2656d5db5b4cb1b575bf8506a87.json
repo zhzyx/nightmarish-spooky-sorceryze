@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5583aca8a0bee2656d5db5b4cb1b575bf8506a87",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-context-receipt-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5f62195d126159d805f5c11a067fa012d8363166f8e2c1ea60e67fb3c2796efd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "action": "user-report",
+    "detection_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "context_sha256": "e08ff1668ac0357fe1b52cafb4bcf73197a26f41cb046e7fd518a1adffb30145",
+    "operator": "kaiyunxue",
+    "worker": "codex-kuafu-context-receipt",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "evidence": "Immutable Issue542 empty-context records and independent normal CLI alias reproduction; Issue544 fixed local context suite13 and Kuafu regression36 pass with independent review",
+    "diagnosis": "Noncanonical temporary framework entry did not match the existing module CLI guard; Node exited0 without duties. The caller previously accepted empty stdout. The candidate resolves both paths and rejects empty or Unicode-whitespace UTF8 context before writing a successful receipt.",
+    "next_action": "Deliver reviewed candidate through exact CI and authoritative main, then repeat the real receiver using delivered source before closing only Issue544; do not retroactively validate old Issue542 receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:33:05.465424+00:00",
+    "attempted": "Normal canonical CLI versus explicit symlink and macOS var alias; fixed receive now returns6114 bytes with stderr0 using the admitted main Kuafu role",
+    "repair_owner": "codex-kuafu-context-receipt",
+    "continuable": "Candidate local verification passed; publication and original business acceptance remain separate"
+  },
+  "occurred_at": "2026-11-08T03:33:46.602727+00:00",
+  "sha256": "b88aa4df462eb596a1bf30f91dbe283446eb2690cc00c83246d3a2e747c73377"
+}
