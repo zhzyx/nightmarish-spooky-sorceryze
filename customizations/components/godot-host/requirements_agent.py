@@ -530,12 +530,19 @@ def _intake(root, request, bridge):
             "phase": "requirements_scope",
             "remote_created": False,
         }
+    direct_continuation = False
     if design["decision"] == "continue":
         if not existing or existing.get("state") != "open" or len(work.request_ids(existing.get("body", ""))) != 1:
             saved["phase"] = "proposal_invalid"
             save(journal, saved)
             raise ValueError("Yanshi continuation does not match a real open bound Issue")
         issue_number, request_id = number, next(iter(work.request_ids(existing.get("body", ""))))
+        direct_continuation = request_id.startswith("daqian-direct-")
+        if direct_continuation:
+            # The board owns the explicit start decision. Verify its receipt
+            # and actor before publishing an amendment to that Issue.
+            routing, api = bridge.direct_adapter()
+            routing.chat_context(root, {"issue_number": issue_number, "request_id": request_id}, api)
         revision = "<!-- requirement-revision:" + digest + " -->"
         comments = json.loads(
             work.gh(
@@ -622,7 +629,7 @@ def _intake(root, request, bridge):
         save(journal, saved)
     bridge.enqueue(root, saved["event"])
     bridge.flush(root)
-    if not design["questions"]:
+    if not design["questions"] and not direct_continuation:
         check_cancel()
         started = bridge.issue_start(root, binding)
         if not started["ok"]:

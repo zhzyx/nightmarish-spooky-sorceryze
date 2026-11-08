@@ -857,6 +857,7 @@ def issue_agent(root, request):
         login_command=login_command,
         host_environment=host_environment,
         issue_start=issue_start,
+        direct_adapter=direct_adapter,
         enqueue=enqueue,
         flush=flush,
         outbox_lock=outbox_lock,

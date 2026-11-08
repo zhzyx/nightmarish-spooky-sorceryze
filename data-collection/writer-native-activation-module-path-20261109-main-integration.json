@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "issue_number": 591,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/591",
+  "request_id": "writer-native-activation-module-path-20261109",
+  "kind": "normal_main_integration_after_precise_ci",
+  "original_candidate": "6a873146bd6fa3298072ef1b1af8612791b3af98",
+  "original_signed_commit": "00e154846b4d5f13d33237d7ced5a6f63c3dbcf8",
+  "original_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/602",
+  "old_tested_base": "5f7b4656afd4199a0b7344420ec8b0665c38aa16",
+  "actual_main_to_integrate": "057fcb24143f181b5688ddbb6e349016eef1d2d5",
+  "original_ci": {
+    "passed": 25,
+    "success": 11,
+    "configured_skipped": 14,
+    "exact_workflows": 3,
+    "scope": "Only original signed head/base, not combined057f tree."
+  },
+  "promotion_refusal": {
+    "reference": "host-private://writer-native-activation-module-path-20261109/exact-ci-main-drift-observation.json",
+    "sha256": "57c4ec39157c6ccfca6cd2994dcf84aacdf9993d8afee6fd192236691324e8fc"
+  },
+  "integration": {
+    "reference": "host-private://writer-native-activation-module-path-20261109/second-integration-verification-v2.json",
+    "sha256": "7eccab1bfd56f6b3eff6308226b56e20188bc54c5556d8aa04759cec4da55b12"
+  },
+  "original_bad_description": {
+    "original": {
+      "reference": "host-private://writer-native-activation-module-path-20261109/second-integration-verification.json",
+      "sha256": "dd7c1cbc58de3a0075a673b4b9ddc3e03eb3171bf7583bd8917f43d027f944c2"
+    },
+    "correction": {
+      "reference": "host-private://writer-native-activation-module-path-20261109/second-integration-verification-invalid-status.json",
+      "sha256": "d48a19289d4b9e15cd180448a95100a95d0c9c28538a43621709122c8e13b95b"
+    },
+    "cause": "First manual no-commit merge exit128 for missing default committer. No merge happened; a subsequent hash-only script wrongly described staged merge. Retained/corrected, not gate evidence."
+  },
+  "actual_merge": "Per-command authenticated gh actor identity only; no global configuration. Normal merge exit0/MERGE_HEAD057f verified before stage naming. No rebase/force or old history rewrite.",
+  "frozen_nine_files_unchanged": true,
+  "original_business": {
+    "reference": "host-private://issue591-real-inspect590-20261109/actual-business-readback.json",
+    "sha256": "90662792f51a8920e00d35ea7e30a91bada084d5ac83d8f1fcd9e29ce355340f",
+    "candidate_at_execution": "6a873146bd6fa3298072ef1b1af8612791b3af98",
+    "executed_before_ci_and_main": true,
+    "actual_result": "activated, reused=true; all App/manifest/binding/config/source guards unchanged; only main_commit/reused launcher metadata changed.",
+    "reuse_scope": "Retain original transaction. Candidate callable/dependency blobs are identical; do not replay production or claim old exact index reverified."
+  },
+  "required_next": "Independent narrow interface/blob review, formal gate before merge commit, normal new writer signature/newPR and exact newCI. Old602 superseded only after actual newPR; main/591 closure held for Root.",
+  "independent_integration_review": {
+    "status": "PASS",
+    "reference": "host-private://issue591-independent-second-integration-supplement-20261109.json",
+    "sha256": "85f07dbb633482cb98fbf4564b5d8e9b481674187bff40a6a1e0d8edfd18e5a7",
+    "scope": "Actual HEAD/MERGE_HEAD/no unmerged/9working+stage hashes, all22 upstream paths and changed Tianshu/Daqian interfaces read; no activation import/authority dependency change. Prior runtime tests retained without rerun."
+  }
+}
