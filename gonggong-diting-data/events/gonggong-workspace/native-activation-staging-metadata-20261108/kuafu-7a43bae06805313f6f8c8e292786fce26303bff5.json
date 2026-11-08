@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7a43bae06805313f6f8c8e292786fce26303bff5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-activation-staging-metadata-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5d42b95576f148e963d6f9b656df83cec3f8acb2f99b2acc9ee0c51cf27843eb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "action": "delivery",
+    "detection_head": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+    "context_sha256": "0c7d376f3061e3bea5231bfe482b45d3c14398bec78377ddc41ed34e3adccab9",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "diagnosis": "Actual native finalization closed Issue483 but retained activation_pending. Strict validation rejected FinderInfo on the new destination copy before replacing the old entry. Author and independent real signed private-App probes confirm that FileProvider adds the 32-byte FinderInfo bundle flag after copy/rename; explicit removal and one zero normalization each pass immediately but the attribute returns within one to three seconds. The source App bytes and attributes remain unchanged. No production metadata was modified. One-time stage cleanup alone is not a durable fix.",
+    "next_action": "Keep source C, signed source App and old entry unchanged. Implement and review only permitted owned-copy metadata handling and safe rollback; verify a durable outcome before claiming the original pending activation repaired. Preserve the reproduced environment limitation rather than weaken strict validation or clear unrelated attributes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T08:06:07.769981+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T08:15:13.268835+00:00",
+  "sha256": "61d64ed62a661dc6f169eb9fcef9552fd02bd22a2621d85e96c0f40aeee50a2e"
+}

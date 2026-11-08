@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "event_id": "native-activation-validation-and-source-correction-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-activation-staging-metadata-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T08:59:09.090023+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+  "agent": {
+    "id": "codex-native-activation-metadata",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "stage": "final_private_validation",
+    "actual_issue_body_api_sha256": "16afca19a4ad6ea1813197777061a5c12f2caa10bdbd9170b6aa9a7544c394fd",
+    "correction": {
+      "prior_event": "native-activation-managed-entry-scope-20261108",
+      "field": "issue_body_sha256",
+      "actual_meaning": "SHA256 of gh --jq body stdout, including its added newline; not exact API JSON body",
+      "prior_value_preserved": "7cef91ef944e1d24e11f4dbef2a73143ec8deb2f66a07df4fbb7576c46d59aa5"
+    },
+    "validation": {
+      "tools_regression_passed": 87,
+      "selfbuild_regression_passed": 13,
+      "staged_static_applicable_hooks": "passed",
+      "retained_Documents_logical_entry_strict_seconds": [
+        1,
+        3,
+        10
+      ],
+      "retained_probe_sha256": "07adde4a9aff3bfaefe488c99f5a49d2f525a9970ae825fc1c19e8c8c8e2d2d5"
+    },
+    "preserved_failed_setup": [
+      "first unit command used tools-prefixed file while already in tools cwd",
+      "first recovery fixture wrote external ok field into private journal; corrected fixture reads actual journal",
+      "selfbuild standalone Python lacked SCons; existing SCons venv passed13",
+      "first retained probe auto-cleaned at process exit; new own fixture detached cleanup for independent readback"
+    ],
+    "production_activation_executed": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [
+    "native-activation-managed-entry-scope-20261108"
+  ],
+  "sha256": "adc28d39cfb62ad163d4c61bf0e92b06e6c085f711527fe4c7ea105313d056ec"
+}

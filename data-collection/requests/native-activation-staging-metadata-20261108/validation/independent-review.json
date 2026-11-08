@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "kind": "issue569_independent_readonly_review",
+  "issue": 569,
+  "request_id": "native-activation-staging-metadata-20261108",
+  "decision": "PASS",
+  "decision_scope": "Frozen seven Python production/test sources only; no remaining P1/P2 found. Independent source review and disposable real Mac fixture verification; author still owns formal signing/CI/main and original production activation.",
+  "source_freeze": {
+    "path_private_location_redacted": true,
+    "sha256": "abd1cbb6169d535567d7623232115488ed01e24818c96e6fdc27dcf761b430ac"
+  },
+  "source_hashes_before_and_after_exact": {
+    "tools/editor_managed_native_entry.py": "9cbd01cd98e03fce15bdf65935e2c49fba918c5682b0cbd8a77f21baf74dae44",
+    "tools/editor_candidate_activation.py": "7ba329d8615f527fb1937a94ef6ef472c26a842f4c10a828c9b9be4eafc3f9b3",
+    "tools/editor_engine_candidate.py": "fe19cadd5ae92edf932808ef5440ea95173f76583640e950b2569bbe9542e44b",
+    "tools/editor_native_app.py": "ffbc9671c36d2ab9e88238491d6eeb51da2c2062d76e310395437c96c5abf4a7",
+    "tools/editor_self_build.py": "818c5ac67e7cc9c86286af9e95db54f4c9770f24f6a1758fb6004511e43ccbeb",
+    "tools/test_editor_managed_native_entry.py": "2bcf884e3acebb5bc86ec6cc6742a40ed3a233263c633b159b532d2f8e84c77a",
+    "tools/test_editor_engine_candidate.py": "4390bd98f7cf5bd26e5d3ea55e27504c1a813ab0444b2dd002eee748b050f899"
+  },
+  "independently_executed": [
+    {
+      "check": "real Mac signed managed App unit transactions",
+      "command": "python3.12 -B -m unittest -v test_editor_managed_native_entry",
+      "cwd_private_location_redacted": true,
+      "exit_code": 0,
+      "tests_total": 11,
+      "passed": 11,
+      "skipped": 0,
+      "seconds": 24.438,
+      "boundaries": [
+        "source bytes/modes/custom attributes preserved",
+        "quarantine presence retained with platform difference recorded without manual rewrite",
+        "same Mach-O with different acceptance gets distinct complete immutable payload",
+        "full manifest or payload mutation refused",
+        "unregistered/relative/foreign-owner logical links refused",
+        "candidate inheritance and build options require registered exact snapshot; .build.json bypass refused",
+        "new candidate update preserves prior payload and logical entry",
+        "postpublish verification failure restores old inode",
+        "source rename race restores unknown entry instead of deleting it",
+        "destination race does not overwrite unknown entry",
+        "interrupted publication requires same full context"
+      ]
+    },
+    {
+      "check": "private Mac exclusive rename API",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "6727961c79bf754de96157a6b1ae6092a3e646797a723d676e4bd9dc8136028b"
+      },
+      "tests_total": 4,
+      "passed": 4,
+      "source_helper_matches_final_freeze": true
+    },
+    {
+      "check": "existing final Docs fixture current read-only verification",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "4858bc3c9ab1eb44eba6a415c70f790796012217fb64f9ec7ce1111b23828e5e"
+      },
+      "checks": [
+        "registered_entry readback",
+        "logical+canonical payload strict signatures",
+        "complete CLI-visible byte/mode/xattr source/payload fingerprints unchanged",
+        "exact logical readlink/executable resolution",
+        "full source manifest SHA pin"
+      ]
+    }
+  ],
+  "static_review": [
+    "snapshot key binds full original manifest SHA/sourceDigest/C/S/tree/sourceRoot/owner/Issue/request/logical entry/source bundle",
+    "source bundle and installed complete sealed copy are separate; source MF/binding/CodeResources and original sealed locator are not edited or re-signed",
+    "only host-derived nonCloud store; existing snapshot verified rather than overwritten/normalized",
+    "new publication uses native exclusive rename, moved source inode verification, and owned-link rollback; unknown external entry is preserved",
+    "existing global native descriptor is not relaxed to arbitrary symlinks; narrow registered managed consumer validates private receipt, original binding/source and exact snapshot",
+    "normal copy path retained; initial managed mode is explicit trusted CLI opt-in; later default reuse requires registered managed receipt",
+    "ditto explicitly preserves quarantine; no broad xattr deletion or manual quarantine rewriting added"
+  ],
+  "review_findings_resolved": [
+    {
+      "priority": "P2",
+      "finding": "check/overwrite rename could move or overwrite an external replacement",
+      "resolution": "RENAME_EXCL on move/publication/recovery, moved backup inode check, guarded rollback; independently executed actual race tests"
+    }
+  ],
+  "author_evidence_read": [
+    {
+      "check": "own Docs logical entry retention at1/3/10 seconds, default reuse",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "07adde4a9aff3bfaefe488c99f5a49d2f525a9970ae825fc1c19e8c8c8e2d2d5"
+      },
+      "execution": "author; independently current read-only checked afterwards, timed phases not attributed to reviewer"
+    },
+    {
+      "check": "87 Python regressions",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "8a5205c3f262b7316204dcd9dc721a26c452db70d93c4ecd5aa9e64c76dace6c"
+      },
+      "execution": "author; reviewer read final87/OK summary only"
+    },
+    {
+      "check": "13 selfbuild regressions",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "9781e17eae1faff22f7fda70c8c01bb5ce500e4490218bb80b59a6c8c2ffea95"
+      },
+      "execution": "author; reviewer read final13/OK summary only; embedded intentional SCons failure is a tested negative path"
+    },
+    {
+      "check": "all applicable staged-file static hooks",
+      "report": {
+        "path_private_location_redacted": true,
+        "sha256": "45b2b5ae78731ed6257f580db9d3f193f655d968eb2e88a9057f6dac429a45e2"
+      },
+      "execution": "author; reviewer read statuses including formatting/mypy/codespell/file-format/integrity; not remote CI"
+    }
+  ],
+  "preserved_failures_and_limits": [
+    "Earlier stage-only/postrename attribute deletion probes failed again after1s; original reports preserved and not recast as solution.",
+    "First author final Docs report paths were unavailable during reviewer check after TemporaryDirectory exit cleanup. Author supplied a new explicitly retained fixture; previous report unchanged, second current check passed.",
+    "Author earlier standalone Python selfbuild environment missed SCons; preserved first failure is not recast as product pass.",
+    "Synthetic offline Issue/C/S fixture declarations do not constitute real GitHub CI or original Issue483 acceptance.",
+    "No original6ef/C source, MF/binding, production92413, UserApplications target, GUI or global config/history was changed.",
+    "No original C binary startup was independently executed; old-C cold-launch receipt-pin behavior is not asserted by this review.",
+    "No formal remote CI/main merge, production activation, or end-to-end editor workflow completion is claimed."
+  ],
+  "original_private_report_sha256": "e7bfffa4720baeecfc9396c8be1e482f583bb9073ccebe472a68ba6bde317850"
+}
