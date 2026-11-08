@@ -30,8 +30,6 @@
 
 #include "ai_chat_resume.h"
 
-#include "ai_chat_tools.h"
-
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/io/compression.h"
@@ -41,6 +39,7 @@
 #include "core/math/math_funcs.h"
 #include "core/os/os.h"
 #include "core/templates/hash_set.h"
+#include "editor/docks/ai_chat_tools.h"
 #include "editor/file_system/editor_paths.h"
 
 namespace {
