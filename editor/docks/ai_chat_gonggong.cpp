@@ -109,7 +109,8 @@ bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, c
 	}
 	if (p_kind == "request" || p_kind == "request_end" || p_kind == "step") {
 		const Dictionary agent = gonggong_reporting["agent"];
-		emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), p_kind, p_phase, p_status);
+		const String board = _daqian_board_workspace();
+		emit_signal("daqian_work_event", board.is_empty() ? gonggong_report_root : board, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), p_kind, p_phase, p_status);
 	}
 	set_meta("gonggong_reporting", "queued");
 	return true;
@@ -288,6 +289,28 @@ static String last_user_content(const Array &p_messages) {
 	return result;
 }
 
+String AIChatDock::_daqian_board_workspace() const {
+	const String workspace = String(EDITOR_GET("gonggong/workspace")).strip_edges();
+	EditorSettings *settings = EditorSettings::get_singleton();
+	const Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const Dictionary access = settings->get_project_metadata("daqian_access", workspace.sha256_text(), Dictionary());
+	const Dictionary actor = access.get("actor", Dictionary());
+	const String user = actor.get("user_id", "");
+	const String repo = actor.get("repo_id", "");
+	const String scope = entry.get("scope", "");
+	if (workspace.is_empty() || user.is_empty() || repo.is_empty() || gonggong_reporting.get("actor", "") != user ||
+			gonggong_reporting.get("source_ref", "") != "https://github.com/" + String(actor.get("repo", "")) + "/issues/" + String(entry.get("issue_number", "")) ||
+			gonggong_reporting.get("request_ref", "") != entry.get("request_id", "")) {
+		return String();
+	}
+	// Mounting a legacy session through the verified board upgrades its scope.
+	if (scope.is_empty() ? workspace != gonggong_report_root : scope != (workspace + "|" + repo + "|" + user).sha256_text()) {
+		return String();
+	}
+	return workspace;
+}
+
 bool AIChatDock::_direct_daqian_task() const {
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
 	const Dictionary entry = bindings.get(conversation_id, Dictionary());
@@ -310,6 +333,12 @@ void AIChatDock::_begin_gonggong_context() {
 	for (const Variant &entry : messages) {
 		const Dictionary message = entry;
 		if (bool(message.get("steering", false)) && message.get("steering_snapshot", "") == snapshot_id) {
+			// A plain execution request adds no requirements. Re-read the
+			// existing direct Issue context even when its candidate predates
+			// the host's current amendment adapter.
+			if (direct && String(message.get("content", "")).strip_edges() == U"执行" && !message.has("images")) {
+				continue;
+			}
 			amendment = true;
 			break;
 		}
@@ -488,6 +517,13 @@ void AIChatDock::_poll_gonggong_context() {
 		const Array missing = result.get("environment_missing", Array());
 		if (missing.size() > 0 && _start_igniter(missing)) {
 			return; // Environment gaps enter the local configuration igniter, not "blocked".
+		}
+		if (issue_guide_state == "retrying" && _direct_daqian_task()) {
+			set_meta("gonggong_status", "blocked");
+			issue_guide_state = "agent_error";
+			_append(TTR("Error"), String(U"天枢原工单校验未通过，请核对后回复「重试」：") + error);
+			_set_busy(false);
+			return;
 		}
 		if (issue_guide_state == "retrying") {
 			// A guided binding that intake rejects keeps the conversation in the guide.
@@ -751,7 +787,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		return;
 	}
 	if (issue_guide_state == "agent_error") {
-		if (AIChatIssueGuide::is_retry(p_text)) {
+		if (AIChatIssueGuide::is_retry(p_text) || (_direct_daqian_task() && p_text.strip_edges() == U"执行")) {
 			if (_direct_daqian_task()) {
 				_issue_guide_retry();
 				return;
