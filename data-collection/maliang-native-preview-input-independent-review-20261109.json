@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_native_root_input_test",
+  "reviewer": "mesh_audit",
+  "authorship": "Reviewer authored only private test fixtures, not reviewed product controls.",
+  "decision": "pass_for_preview_camera_input_on_the_exact_binary_and_source",
+  "binary_sha256": "318916bac780c1c4b5b1f3d19a5e48e450b4c449d5cd28a4a3bb64ac34660d4e",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "6ace4009ea6c83b1ef49a3033c182b1788e5a2dd6440c97323dc9cd68955eb78"
+  },
+  "deployed_workbench_sha256": "8f44d57723e3e3eb190e0391c872f06834c611b68c698d94090b7b7dcaa74c5f",
+  "deployed_source_equivalence": "Exact source bytes after the normal built-in res://addons/ainative/ preload prefix rewrite; no other difference.",
+  "execution": {
+    "kind": "Actual isolated offscreen native editor, actual saved colored GLB, disconnected local-copy node only.",
+    "returncode": 0,
+    "checks": 37,
+    "all_checks_passed": true,
+    "injection": "Actual InputEventMouseButton and InputEventMouseMotion objects injected through the root viewport push_input method; no direct call to the product input handler.",
+    "target_center_within_visible_root_and_scroll_control": true,
+    "delivered_mouse_motion": 3,
+    "delivered_mouse_buttons": 210,
+    "paid_cli_calls": 0
+  },
+  "proven_behaviors": [
+    "Left-button drag changes camera position while preserving focus distance.",
+    "Middle-button drag moves camera and focus by the same vector and preserves camera orientation.",
+    "Wheel-up decreases distance; wheel-down restores it. Repeated wheel input respects 0.1 and 3.0 times the frame-distance bounds.",
+    "Double-click restores the complete framed camera transform after orbit, pan and zoom.",
+    "Run identity, transport serial, current result, preview identity and executor database bytes remain unchanged during camera input. No job starts and the graph remains idle.",
+    "The isolated executor database contains one successful run with only the disconnected local-copy node; the saved source GLB digest remains unchanged."
+  ],
+  "native_camera_measurements": {
+    "minimum_distance": 0.200745090842247,
+    "maximum_distance": 6.02235269546509,
+    "pan_delta": [
+      0.325530856847763,
+      0.150415182113647,
+      -0.0871524810791016
+    ],
+    "reset_transform_approximately_equal": true
+  },
+  "private_reproducer_sha256": "3b5758e8389a3c9cc6d0f54af460d9c77769b1dfb991c8b0840204ddea7bd5c2",
+  "limitations": [
+    "This input test establishes camera interaction and no regeneration; it does not accept mesh likeness, reconstruction quality or inferred hidden surfaces.",
+    "Native forced-exit logs contain existing rendering resource cleanup warnings; no claim of a warning-free shutdown.",
+    "The native editor was tested offscreen at its actual root viewport size; physical mouse feel and every display layout were not tested."
+  ],
+  "privacy": "Public source and binary identifiers, generic behavior assertions and camera measurements only; original image paths, image content, generated asset data and workflow identity remain private."
+}

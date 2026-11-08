@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import re
+import struct
 import subprocess
 import sys
 import time
@@ -18,11 +19,12 @@ from pathlib import Path
 import codex_provider
 import modeling_provider
 from character_detail import resolve_detail
-from codex_provider import _creationflags, _environment, resolve_cli, validate_png
+from codex_provider import _creationflags, _environment, resolve_cli, validate_jpeg, validate_png
 from comfy_provider import digest, register
 from extensions import NodeRegistry, canonical, require, validate_invocation
 from modeling_provider import ModelingProvider, check_modeling_cli, validate_mesh
 from organic_detail import expand_patterns
+from period_groom import MAX_GROOM_TRIANGLES, MAX_GROOM_VERTICES, resolve_period_groom
 from sculpt_builder import (
     CHARACTER_AGE_WEIGHTS,
     LOFT_STEPS,
@@ -35,6 +37,7 @@ from sculpt_builder import (
     _loft_sections,
     modeling_schema,
     resolve_age_blend,
+    resolve_arm_angle,
     validate_plan,
 )
 
@@ -49,6 +52,7 @@ MESSAGES = dict(modeling_provider.MESSAGES)
 MESSAGES.update(
     builder_missing="未找到 Blender、内置建模工具或其固定解剖数据，请检查环境设置和引擎安装。",
     builder_failed="Blender 有机网格构造或质量校验失败；指令和私有诊断已保留。",
+    turnaround_failed="多视图轮廓构造失败。请检查正、背、侧三图是否完整、背景单一，以及各视图是否为同一姿势，视图诊断已保留。",
     builder_timeout="Blender 有机网格构造超时，已停止本任务进程。",
     mesh_invalid="构造器未返回通过质量校验的非空网格，未发布结果。",
     plan_invalid="有机建模指令格式无效或超出受支持范围，未执行生成代码。",
@@ -65,6 +69,92 @@ def _uncertainty(image_count):
     if image_count == 1:
         return "plausible_single_view_hidden_surface_backfill"
     return "multiple_reference_images_constrain_inference_hidden_surfaces_remain_ambiguous"
+
+
+# Panel coordinates and orientations are model observations about one immutable
+# image. They are never presented as calibrated cameras or independent files.
+PANEL_DIRECTIONS = ("front", "back", "profile_left_facing", "profile_right_facing", "unknown")
+
+
+def sheet_evidence(panels):
+    require(isinstance(panels, list) and 1 <= len(panels) <= 8, "reference_panels_invalid")
+    directions = set()
+    boxes = []
+    for panel in panels:
+        require(isinstance(panel, dict) and set(panel) == {"view", "box"}, "reference_panels_invalid")
+        view, box = panel["view"], panel["box"]
+        require(view in PANEL_DIRECTIONS and isinstance(box, list) and len(box) == 4, "reference_panels_invalid")
+        require(all(type(v) in (int, float) and 0 <= v <= 1 for v in box), "reference_panels_invalid")
+        x0, y0, x1, y1 = box
+        require(x1 - x0 >= 0.02 and y1 - y0 >= 0.02, "reference_panels_invalid")
+        for previous in boxes:
+            overlap = max(0, min(previous[2], x1) - max(previous[0], x0)) * max(
+                0, min(previous[3], y1) - max(previous[1], y0)
+            )
+            smaller = min((x1 - x0) * (y1 - y0), (previous[2] - previous[0]) * (previous[3] - previous[1]))
+            require(overlap <= 0.1 * smaller, "reference_panels_overlap")
+        boxes.append(box)
+        if view != "unknown":
+            directions.add(view)
+    return dict(source="cli_observed_panels", panels=panels, distinct_named_directions=len(directions))
+
+
+def selected_turnaround_panels(evidence):
+    """Select one full panel per orientation, preferring the highest-resolution instance."""
+    chosen = []
+    for allowed in (("front",), ("back",), ("profile_left_facing", "profile_right_facing")):
+        choices = [panel for panel in evidence["panels"] if panel["view"] in allowed]
+        require(bool(choices), "turnaround_needs_three_views")
+
+        def area(panel):
+            x0, y0, x1, y1 = panel["box"]
+            return (x1 - x0) * (y1 - y0)
+
+        chosen.append(max(choices, key=area))
+    return chosen
+
+
+def frame_turnaround_panels(evidence, selected):
+    """Include nearby background without taking a neighboring subject's observed box."""
+    result = []
+    for panel in selected:
+        box = panel["box"]
+        dx, dy = (min(0.04, (box[i + 2] - box[i]) * 0.28) for i in (0, 1))
+        padded = [max(0, box[0] - dx), max(0, box[1] - dy), min(1, box[2] + dx), min(1, box[3] + dy)]
+        for neighbor in evidence["panels"]:
+            if neighbor == panel:
+                continue
+            other = neighbor["box"]
+            gaps = [max(other[i] - box[i + 2], box[i] - other[i + 2]) for i in (0, 1)]
+            axis = 0 if gaps[0] >= gaps[1] else 1
+            if gaps[axis] < 0:
+                padded = list(box)  # Preserve an existing overlap exactly.
+                break
+            # Both panels choose the same separating axis and boundary, even
+            # at diagonal corners. Give a narrower profile more background.
+            extent = box[axis + 2] - box[axis]
+            other_extent = other[axis + 2] - other[axis]
+            if other[axis + 2] <= box[axis]:
+                boundary = (other[axis + 2] * other_extent + box[axis] * extent) / (extent + other_extent)
+                padded[axis] = max(padded[axis], min(box[axis], boundary))
+            else:
+                boundary = (box[axis + 2] * extent + other[axis] * other_extent) / (extent + other_extent)
+                padded[axis + 2] = min(padded[axis + 2], max(box[axis + 2], boundary))
+        result.append(dict(view=panel["view"], box=padded))
+    return result
+
+
+def sheet_panel_schema():
+    panel = dict(
+        type="object",
+        properties=dict(
+            view=dict(type="string", enum=list(PANEL_DIRECTIONS)),
+            box=dict(type="array", minItems=4, maxItems=4, items=dict(type="number", minimum=0, maximum=1)),
+        ),
+        required=["view", "box"],
+        additionalProperties=False,
+    )
+    return dict(type="array", minItems=1, maxItems=8, items=panel)
 
 
 def modeling_quality_policy():
@@ -92,26 +182,17 @@ def modeling_quality_policy():
     )
 
 
+CALIBRATED_HELPERS = ("anatomy_base", "anatomy_body", "character_detail", "organic_detail", "period_groom")
+DETAIL_HELPERS = ("character_detail", "organic_detail", "period_groom")
+
+
 def _runtime_inputs(builder):
+    files = {"builder": builder}
+    for name in (*CALIBRATED_HELPERS, "anatomy_calibration", "turnaround_surface", "turnaround_face"):
+        files[name] = builder.with_name(name + ".py")
     return {
-        "builder_sha256": hashlib.sha256(builder.read_bytes()).hexdigest() if builder.is_file() else None,
-        "anatomy_base_sha256": hashlib.sha256(builder.with_name("anatomy_base.py").read_bytes()).hexdigest()
-        if builder.with_name("anatomy_base.py").is_file()
-        else None,
-        "anatomy_body_sha256": hashlib.sha256(builder.with_name("anatomy_body.py").read_bytes()).hexdigest()
-        if builder.with_name("anatomy_body.py").is_file()
-        else None,
-        "character_detail_sha256": hashlib.sha256(builder.with_name("character_detail.py").read_bytes()).hexdigest()
-        if builder.with_name("character_detail.py").is_file()
-        else None,
-        "organic_detail_sha256": hashlib.sha256(builder.with_name("organic_detail.py").read_bytes()).hexdigest()
-        if builder.with_name("organic_detail.py").is_file()
-        else None,
-        "anatomy_calibration_sha256": hashlib.sha256(
-            builder.with_name("anatomy_calibration.py").read_bytes()
-        ).hexdigest()
-        if builder.with_name("anatomy_calibration.py").is_file()
-        else None,
+        name + "_sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+        for name, path in files.items()
     }
 
 
@@ -158,8 +239,7 @@ def load_operator_calibration(builder):
             and re.fullmatch(r"[a-f0-9]{64}", data["png_sha256"])
             and data["baseline_builder_sha256"] == runtime["builder_sha256"]
             and isinstance(data["baseline_runtime_sha256"], dict)
-            and set(data["baseline_runtime_sha256"])
-            == {"anatomy_base_sha256", "anatomy_body_sha256", "character_detail_sha256", "organic_detail_sha256"}
+            and set(data["baseline_runtime_sha256"]) == {name + "_sha256" for name in CALIBRATED_HELPERS}
             and all(
                 value is not None and value == runtime[name] for name, value in data["baseline_runtime_sha256"].items()
             ),
@@ -346,7 +426,7 @@ class SculptProvider(ModelingProvider):
             if payload["extension"].lower() == ".png":
                 validate_png(data)
             else:
-                require(data.startswith(b"\xff\xd8") and data.endswith(b"\xff\xd9"), "invalid_input")
+                validate_jpeg(data)
             image["artifact"] = artifact
         builder = Path(self.config["builder_path"])
         require(
@@ -359,6 +439,7 @@ class SculptProvider(ModelingProvider):
                     "anatomy_body.py",
                     "character_detail.py",
                     "organic_detail.py",
+                    "period_groom.py",
                     "anatomy_calibration.py",
                 )
             ),
@@ -509,6 +590,7 @@ class SculptProvider(ModelingProvider):
             "The character operator deforms one continuous fixed body cage and preserves its wrist/neck/hand topology instead of voxel-remeshing the skin. For this body path finish.voxel_size remains requested provenance and is not an effective skin-remesh resolution; explicit organic-region reconstruction uses its documented voxel path. Do not claim a smaller requested voxel value added detail to the continuous body. "
             "For image-led humans choose the character style, head_ratio, head/neck dimensions, body build and facial morphs to match the observed reference, not a generic 7.5-head default. Honor explicit user-requested edits without replacing unrelated visible identity, proportions or clothing. When there are NO USER reference images, semi-realistic/realistic humans may use style=realistic with head_ratio near 7.2 to 8.0 and head/neck factors near 1.0; text-only stylized humans may use style=stylized with head_ratio nearer 5.5 to 7.0. Match observed/requested age, shoulders/hips, limbs/hands and facial structure within the supported controls, using supported hair and clothing choices/colors. The operator supplies anatomy; morph parameters refine the target silhouette. Fixed control bounds/pose cannot establish exact likeness for arbitrary references; keep unsupported or occluded details as inference. Text-only generation remains available but is secondary to image-led acceptance. "
             "Match image-led clothing controls to actual garment geometry: hem_height is the lowest garment Y divided by total character height, and belt_height is belt Y divided by total height. Sleeve_length is the fraction of shoulder-to-wrist distance covered by the sleeve, so preserve observed exposed forearms. Use trouser_width for observed loose or close-fitting trousers, footwear=sandals for visibly open footwear or shoes for closed footwear, and lapel_width for the visible wrap/collar width. The robe_belt option uses the selected hem height and does not imply a floor-length robe. Do not let clothing defaults replace visible jacket length, sleeves, trousers or sandals. Set character.trouser_color and character.footwear_color from separately observed trouser and shoe/sandal colors; null falls back to cloth_color and accent_color respectively. Do not force differently colored trousers to inherit a shirt's color. "
+            "Look at each distinct direction in a supplied contact sheet. For a visible wrapped cross-collar tunic over gathered ankle trousers, use cross_collar_tunic: the overlapping lapel crosses from the subject's left neck to right waist, with sash ends hanging on the subject's left. Choose footwear=barefoot for bare feet. Match the actual shoulder-to-wrist slope with arm_angle_degrees, measured DOWN FROM HORIZONTAL, range 20..75; 65 is the older default. For an observed swept-back topknot use the period_groom object with hairstyle=swept_back_bun; choose moustache_goatee or none from the observed facial hair. It replaces the base hair shell, so do not duplicate its bun, temples or beard as primitive regions. Use null for this option on other hairstyles. "
             "Match the actual clothing type: coverall constructs continuous torso/leg clothing with a turn-down collar, front placket and waistband; use it for an observed joined utility suit, instead of approximating that target with a cropped T-shirt. tshirt_trousers is a full shirt-and-trousers outfit with covered waist; robe_belt is a wrapped jacket with an inner front layer. "
             "character.detail is optional/null for legacy behavior. Its nullable bounded fields control cloth_ease and positive fabric fold_amplitude (0..1), short_wavy hair_volume (0..1), canonical-X hair_sweep (-1..1), smile (0..1), brow_raise and forehead_height (-1..1), and observed patch-pocket size (0..1). Positive forehead raises the upper skull, negative shortens it; positive brow raises it, positive smile lifts mouth corners. These are geometry controls, not a cloth simulator or invented teeth. Choose them from visible reference structure. "
             "hair=short is close cropped; use short_wavy with observed volume/sweep for a tousled or swept short hairstyle and nape coverage. Stylized eye_size may reach 1.6 with consistently enlarged eyelids/globes; realistic eye_size remains at most 1.2 with anatomical globe size. An observed friendly stylized face needs actual smile/brow/eye shape controls, rather than only a style label. "
@@ -521,11 +603,11 @@ class SculptProvider(ModelingProvider):
             "Respect requested silhouette, proportions, front/back and side depth, anatomical landmarks, facial features, clothing construction and material colors. A complete back, sides and underside must exist in geometry. "
             "Material RGBA factors are linear scene albedo, not sRGB display pixel values (for example sRGB 0.5 corresponds to about 0.214 linear). Estimate the observed base material separately from light/shadow, retain its palette, and avoid over-bright plastic colors for realistic references. "
             "For an organic nonhuman object, build continuous organic shape with requested asymmetric details and a plausible complete back and underside. "
-            "With one distinct USER reference image, infer unseen geometry plausibly; do not claim exact hidden-surface recovery. Set completion.mode=plausible for text-only or single-USER-view generation and list inferred region names. With multiple distinct USER reference views, set reference_constrained and constrain a single consistent 3D shape using all USER images; list remaining inferred regions. Internal calibration is never target evidence. "
+            "Count views inside a single turnaround sheet. When the schema includes reference_panels, report separate nonoverlapping panel rectangles (normalized [left,top,right,bottom], origin top left) of the USER image, excluding calibration. Classify each by facing direction; use unknown for ambiguous/cropped/three-quarter views. Repeated fronts or backs add detail but do not add a viewing direction. One ordinary photo is one panel, never subdivide its body into views. Set completion.mode=reference_constrained for a single sheet with two or more distinct named directions, or for multiple distinct user attachments; otherwise use plausible. Report unseen regions as inferred in both cases. "
             "IMPORTANT: completion.inferred_regions is an array of UNIQUE EXACT CASE-SENSITIVE names copied from regions[].name or repeat_patterns[].name, plus the single reserved name 'character' when a non-null character operator is present. Do not list the operator's internal generated part names. Never put explanatory prose, category descriptions or other names into this array. For a text-only request include EVERY explicit region name, repeat-pattern name and 'character' if used because no geometry is observed; a character-only text request therefore uses ['character']. For image references, list the exact declared names/reserved character name whose geometry is inferred or backfilled. "
             "USER reference image ordering and semantic roles: "
             + canonical(image_roles)
-            + ". Host hidden-surface evidence policy: "
+            + ". Initial file-level policy (refined by observed sheet panels where supplied): "
             + plan["hidden_surface_policy"]
             + ". Distinct USER target-image evidence count: "
             + str(plan["distinct_reference_images"])
@@ -540,6 +622,22 @@ class SculptProvider(ModelingProvider):
             + canonical(dict(subject=plan["prompt"], context=plan["context"]))
         )
         schema = modeling_schema()
+        if plan["distinct_reference_images"] == 1:
+            schema["properties"]["reference_panels"] = sheet_panel_schema()
+            schema["required"].append("reference_panels")
+            if self.runtime_inputs["turnaround_surface_sha256"]:
+                schema["properties"]["sheet_construction"] = dict(
+                    type="string", enum=["registered_turnaround", "model_plan"]
+                )
+                schema["required"].append("sheet_construction")
+                prompt += (
+                    "\nFor sheet_construction choose registered_turnaround when the user wants a faithful copy of an isolated standing human, "
+                    "the same full subject appears in aligned near-orthographic FRONT, BACK and PROFILE panels with a uniform background, "
+                    "and the user does not request a changed pose, clothing, shape or style. This operator constructs a closed colored surface "
+                    "using the observed silhouettes and preserves the source view colors, including lighting. Each selected rectangle must include "
+                    "the entire subject and some surrounding background, with no other figures or labels. Provide the normal character descriptor "
+                    "and height, no additional regions or repeat patterns. Otherwise select model_plan. Never invent a missing view."
+                )
         schema["properties"]["completion"]["properties"]["inferred_regions"]["description"] = (
             "Unique exact case-sensitive strings copied from regions[].name or repeat_patterns[].name, plus reserved 'character' when that operator is non-null; no explanatory prose or internal generated part names. "
             "For text-only generation include every explicit region name, repeat-pattern name and 'character' if used."
@@ -613,7 +711,27 @@ class SculptProvider(ModelingProvider):
         )
         require(output_data is not None, "cli_output_invalid")
         try:
-            instructions = validate_plan(json.loads(output_data.decode("utf-8")))
+            response = json.loads(output_data.decode("utf-8"))
+            require(isinstance(response, dict), "plan_fields_invalid")
+            mode = response.pop("sheet_construction", "model_plan")
+            require(mode in ("registered_turnaround", "model_plan"), "turnaround_mode_invalid")
+            evidence = None
+            if "reference_panels" in response:
+                require(plan["distinct_reference_images"] == 1, "reference_panels_invalid")
+                evidence = sheet_evidence(response.pop("reference_panels"))
+                evidence["source_sha256"] = image_roles[0]["reference_sha256"]
+            instructions = validate_plan(response)
+            selected = None
+            if mode == "registered_turnaround":
+                require(
+                    evidence is not None
+                    and self.runtime_inputs["turnaround_surface_sha256"]
+                    and instructions.get("character") is not None
+                    and not instructions["regions"]
+                    and not instructions.get("repeat_patterns"),
+                    "turnaround_request_invalid",
+                )
+                selected = selected_turnaround_panels(evidence)
             if plan["distinct_reference_images"] == 0:
                 inferred_names = {region["name"] for region in instructions["regions"]}
                 inferred_names.update(pattern["name"] for pattern in (instructions.get("repeat_patterns") or []))
@@ -629,9 +747,15 @@ class SculptProvider(ModelingProvider):
                 key, plan_validation_reason=reason if re.fullmatch(r"[a-z_]{1,80}", reason) else "plan_data_invalid"
             )
             raise ValueError("plan_invalid") from None
+        sheet_multiview = evidence is not None and evidence["distinct_named_directions"] >= 2
+        actual_policy = (
+            "single_sheet_multiple_observed_views_hidden_surfaces_remain_ambiguous"
+            if sheet_multiview
+            else plan["hidden_surface_policy"]
+        )
         require(
             instructions["completion"]["mode"]
-            == ("reference_constrained" if plan["distinct_reference_images"] >= 2 else "plausible"),
+            == ("reference_constrained" if sheet_multiview or plan["distinct_reference_images"] >= 2 else "plausible"),
             "plan_invalid",
         )
         receipt = dict(
@@ -640,7 +764,11 @@ class SculptProvider(ModelingProvider):
             instructions_sha256=digest(instructions),
             reference_images=image_roles,
             distinct_reference_images=plan["distinct_reference_images"],
-            hidden_surface_policy=plan["hidden_surface_policy"],
+            hidden_surface_policy=actual_policy,
+            sheet_view_evidence=evidence,
+            sheet_construction=mode,
+            observed_selected_panels=selected,
+            registered_panels=frame_turnaround_panels(evidence, selected) if selected else None,
             exact_hidden_surface_recovery_claimed=False,
         )
         self.write(key, instruction_receipt=receipt)
@@ -662,6 +790,36 @@ class SculptProvider(ModelingProvider):
             _runtime_inputs(Path(self.config["builder_path"])) == self.runtime_inputs,
             "builder_failed",
         )
+        builder = Path(self.config["builder_path"])
+        script = builder
+        input_paths = [directory / "validated-plan.json"]
+        registration = None
+        if cli_receipt.get("sheet_construction") == "registered_turnaround":
+            image = record["plan"]["images"][0]["artifact"]["payload"]
+            source = directory / ("reference-1" + image["extension"].lower())
+            require(
+                source.is_file()
+                and not source.is_symlink()
+                and source.stat().st_size <= MAX_IMAGE_BYTES
+                and hashlib.sha256(source.read_bytes()).hexdigest() == image["content_sha256"],
+                "invalid_input",
+            )
+            registration = dict(
+                version=1,
+                source_sha256=image["content_sha256"],
+                source_plan_sha256=digest(instructions),
+                height=instructions["character"]["height"],
+                panels=cli_receipt["registered_panels"],
+            )
+            if instructions["character"]["style"] == "realistic" and self.runtime_inputs["turnaround_face_sha256"]:
+                registration["face_prior"] = {
+                    "helper_sha256": self.runtime_inputs["turnaround_face_sha256"],
+                    "body_sha256": self.runtime_inputs["anatomy_body_sha256"],
+                }
+            config_path = directory / "registration.json"
+            config_path.write_bytes(canonical(registration).encode("utf-8"))
+            input_paths = [source, config_path]
+            script = builder.with_name("turnaround_surface.py")
         exit_code = self._run_owned(
             key,
             [
@@ -669,10 +827,12 @@ class SculptProvider(ModelingProvider):
                 "--background",
                 "--factory-startup",
                 "--disable-autoexec",
+                "--python-exit-code",
+                "1",
                 "--python",
-                self.config["builder_path"],
+                str(script),
                 "--",
-                str(directory / "validated-plan.json"),
+                *(str(path) for path in input_paths),
                 str(output),
             ],
             directory,
@@ -683,15 +843,16 @@ class SculptProvider(ModelingProvider):
             return
         require(
             exit_code == 0 and output.is_file() and not output.is_symlink() and output.stat().st_size <= MAX_GLB_BYTES,
-            "builder_failed",
+            "turnaround_failed" if registration else "builder_failed",
         )
         require(
             _runtime_inputs(Path(self.config["builder_path"])) == self.runtime_inputs,
             "builder_failed",
         )
         builder_log = (directory / "builder.stdout").read_bytes()
+        success_marker = b"MALIANG_TURNAROUND_BUILD_OK" if registration else b"MALIANG_SCULPT_BUILD_OK"
         require(
-            b"MALIANG_SCULPT_BUILD_OK" in builder_log and b"Traceback (most recent call last)" not in builder_log,
+            success_marker in builder_log and b"Traceback (most recent call last)" not in builder_log,
             "builder_failed",
         )
         data = output.read_bytes()
@@ -705,11 +866,6 @@ class SculptProvider(ModelingProvider):
         native_receipt_bytes = native_path.read_bytes()
         native_receipt = json.loads(native_receipt_bytes.decode("utf-8"))
         self._validate_quality_receipt(native_receipt, sha, digest(instructions))
-        require(
-            native_receipt.get("runtime_input_sha256")
-            == {name: self.runtime_inputs[name] for name in ("character_detail_sha256", "organic_detail_sha256")},
-            "builder_failed",
-        )
         public_quality = {
             name: native_receipt[name]
             for name in (
@@ -722,6 +878,172 @@ class SculptProvider(ModelingProvider):
                 "vertices",
             )
         }
+        if registration:
+            self._validate_registered_glb(data, native_receipt)
+            self._validate_registered_surface(
+                native_receipt, registration, self.runtime_inputs["turnaround_surface_sha256"]
+            )
+            require(geometry["vertices"] == native_receipt["vertices"], "mesh_invalid")
+            public_quality["registered_surface"] = dict(
+                source_sha256=registration["source_sha256"],
+                registration_sha256=digest(registration),
+                views=registration["panels"],
+                height=registration["height"],
+                surface_color="view_sampled_with_source_illumination",
+                camera_calibrated=False,
+                exact_hidden_surface_recovery_claimed=False,
+            )
+            if "face_prior" in registration:
+                face = native_receipt["sampling"]["face_geometry"]
+                public_quality["registered_surface"]["face_geometry"] = dict(
+                    applied=face["applied"],
+                    method="image_registered_neutral_face_depth",
+                    helper_sha256=face["helper_sha256"],
+                    body_sha256=face["body_sha256"],
+                )
+            construction = "registered_turnaround"
+        else:
+            self._parametric_quality(native_receipt, public_quality, instructions)
+            construction = (
+                "parametric_character" if instructions.get("character") is not None else "explicit_organic_regions"
+            )
+        builder_receipt = dict(
+            exit_code=exit_code,
+            builder_sha256=self.runtime_inputs["turnaround_surface_sha256"] if registration else self.builder_digest,
+            runtime_input_sha256=self.runtime_inputs,
+            stdout_sha256=hashlib.sha256((directory / "builder.stdout").read_bytes()).hexdigest(),
+            output_sha256=sha,
+            native_receipt_sha256=hashlib.sha256(native_receipt_bytes).hexdigest(),
+            numerical_surface_adjustments=self._numerical_provenance(native_receipt) if not registration else None,
+            geometry=geometry,
+            quality=public_quality,
+            construction_operator=construction,
+        )
+        self.write(key, builder_receipt=builder_receipt)
+        artifact = dict(
+            id="codex-sculpt-" + key,
+            revision=sha,
+            type="mesh",
+            payload=dict(
+                content_base64=base64.b64encode(data).decode(),
+                content_sha256=sha,
+                extension=".glb",
+                bytes=len(data),
+                provenance=dict(
+                    provider="codex-sculpt",
+                    cli_version=record["cli_report"]["version"],
+                    auth_mode="chatgpt",
+                    execution="validated_organic_plan_in_fixed_blender_interpreter",
+                    instructions_sha256=digest(instructions),
+                    instruction_receipt=cli_receipt,
+                    builder_receipt=builder_receipt,
+                    request_sha256=digest(record["request"]),
+                    source_manifest_sha256=digest(record["manifest"]),
+                    hidden_surface_policy=cli_receipt["hidden_surface_policy"],
+                    exact_hidden_surface_recovery_claimed=False,
+                    generated_code_executed=False,
+                ),
+            ),
+        )
+        self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[artifact]))
+
+    @staticmethod
+    def _validate_registered_glb(data, receipt):
+        """Inspect the exported colors and triangle indices as consumed by Godot."""
+        try:
+            size = struct.unpack_from("<I", data, 12)[0]
+            document = json.loads(data[20 : 20 + size])
+            binary = memoryview(data)[28 + size :]
+            meshes = document["meshes"]
+            require(len(meshes) == 1 and len(meshes[0]["primitives"]) == 1, "mesh_invalid")
+            primitive = meshes[0]["primitives"][0]
+            require(primitive.get("mode", 4) == 4, "mesh_invalid")
+            accessors, views = document["accessors"], document["bufferViews"]
+            nvertices, nindices = receipt["vertices"], 3 * receipt["triangles"]
+
+            def values(index, count, kinds, components):
+                require(type(index) is int and 0 <= index < len(accessors), "mesh_invalid")
+                accessor = accessors[index]
+                vi, component, kind = accessor["bufferView"], accessor["componentType"], accessor["type"]
+                require(
+                    type(vi) is int
+                    and 0 <= vi < len(views)
+                    and type(accessor["count"]) is int
+                    and accessor["count"] == count
+                    and component in components
+                    and kind in kinds
+                    and "sparse" not in accessor,
+                    "mesh_invalid",
+                )
+                expected_normalized = kind != "SCALAR" and component != 5126
+                require(accessor.get("normalized", False) is expected_normalized, "mesh_invalid")
+                view = views[vi]
+                item = struct.Struct("<" + {5121: "B", 5123: "H", 5125: "I", 5126: "f"}[component] * kinds[kind])
+                scalar_bytes = item.size // kinds[kind]
+                offset, local, length = view.get("byteOffset", 0), accessor.get("byteOffset", 0), view["byteLength"]
+                stride = view.get("byteStride", item.size)
+                require(
+                    type(view.get("buffer", 0)) is int
+                    and view.get("buffer", 0) == 0
+                    and all(type(v) is int and v >= 0 for v in (offset, local, length, stride))
+                    and item.size <= stride <= 252
+                    and stride % scalar_bytes == 0
+                    and (offset + local) % scalar_bytes == 0
+                    and offset + length <= len(binary)
+                    and local + (count - 1) * stride + item.size <= length,
+                    "mesh_invalid",
+                )
+                start = offset + local
+                if stride == item.size:
+                    return item.iter_unpack(binary[start : start + count * stride])
+                return (item.unpack_from(binary, start + i * stride) for i in range(count))
+
+            positions = primitive["attributes"]["POSITION"]
+            require(
+                type(positions) is int
+                and 0 <= positions < len(accessors)
+                and accessors[positions]["count"] == nvertices,
+                "mesh_invalid",
+            )
+            color_id = primitive["attributes"]["COLOR_0"]
+            colors = values(color_id, nvertices, {"VEC3": 3, "VEC4": 4}, (5121, 5123, 5126))
+            if accessors[color_id]["componentType"] == 5126:
+                require(all(all(math.isfinite(c) and 0 <= c <= 1 for c in rgba) for rgba in colors), "mesh_invalid")
+            indices = values(primitive["indices"], nindices, {"SCALAR": 1}, (5121, 5123, 5125))
+            for (i,), (j,), (k,) in zip(indices, indices, indices):
+                require(max(i, j, k) < nvertices and i != j and i != k and j != k, "mesh_invalid")
+        except (KeyError, IndexError, TypeError, struct.error):
+            raise ValueError("mesh_invalid") from None
+
+    @staticmethod
+    def _validate_registered_surface(receipt, config, helper_sha):
+        require(
+            isinstance(helper_sha, str)
+            and receipt.get("builder_sha256") == helper_sha
+            and receipt.get("source_image_sha256") == config["source_sha256"]
+            and receipt.get("registration_sha256") == digest(config)
+            and receipt.get("observed_colors") is True
+            and receipt.get("exact_hidden_surface_recovery_claimed") is False,
+            "builder_failed",
+        )
+        sampling = receipt.get("sampling")
+        face = sampling.get("face_geometry") if isinstance(sampling, dict) else None
+        if "face_prior" in config:
+            require(
+                isinstance(face, dict)
+                and type(face.get("applied")) is bool
+                and all(face.get(k) == v for k, v in config["face_prior"].items()),
+                "builder_failed",
+            )
+        else:
+            require(face is None, "builder_failed")
+
+    def _parametric_quality(self, native_receipt, public_quality, instructions):
+        require(
+            native_receipt.get("runtime_input_sha256")
+            == {name + "_sha256": self.runtime_inputs[name + "_sha256"] for name in DETAIL_HELPERS},
+            "builder_failed",
+        )
         if "expanded_plan_sha256" in native_receipt:
             require(
                 isinstance(native_receipt["expanded_plan_sha256"], str)
@@ -747,48 +1069,10 @@ class SculptProvider(ModelingProvider):
             public_quality["character_operator"].update(
                 self._detail_provenance(character_operator, instructions["character"])
             )
+            public_quality["character_operator"].update(
+                self._clothing_and_groom(character_operator, instructions["character"])
+            )
             require(native_receipt.get("internal_voxel_fills") == [], "builder_failed")
-        builder_receipt = dict(
-            exit_code=exit_code,
-            builder_sha256=self.builder_digest,
-            runtime_input_sha256=self.runtime_inputs,
-            stdout_sha256=hashlib.sha256((directory / "builder.stdout").read_bytes()).hexdigest(),
-            output_sha256=sha,
-            native_receipt_sha256=hashlib.sha256(native_receipt_bytes).hexdigest(),
-            numerical_surface_adjustments=self._numerical_provenance(native_receipt),
-            geometry=geometry,
-            quality=public_quality,
-            construction_operator="parametric_character"
-            if instructions.get("character") is not None
-            else "explicit_organic_regions",
-        )
-        self.write(key, builder_receipt=builder_receipt)
-        artifact = dict(
-            id="codex-sculpt-" + key,
-            revision=sha,
-            type="mesh",
-            payload=dict(
-                content_base64=base64.b64encode(data).decode(),
-                content_sha256=sha,
-                extension=".glb",
-                bytes=len(data),
-                provenance=dict(
-                    provider="codex-sculpt",
-                    cli_version=record["cli_report"]["version"],
-                    auth_mode="chatgpt",
-                    execution="validated_organic_plan_in_fixed_blender_interpreter",
-                    instructions_sha256=digest(instructions),
-                    instruction_receipt=cli_receipt,
-                    builder_receipt=builder_receipt,
-                    request_sha256=digest(record["request"]),
-                    source_manifest_sha256=digest(record["manifest"]),
-                    hidden_surface_policy=record["plan"]["hidden_surface_policy"],
-                    exact_hidden_surface_recovery_claimed=False,
-                    generated_code_executed=False,
-                ),
-            ),
-        )
-        self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[artifact]))
 
     @staticmethod
     def _validate_quality_receipt(receipt, sha, plan_sha):
@@ -830,6 +1114,73 @@ class SculptProvider(ModelingProvider):
             "builder_failed",
         )
         return dict(requested_detail=character.get("detail"), effective_detail=expected, garment_coverage=coverage)
+
+    @staticmethod
+    def _clothing_and_groom(operator, character):
+        angle = resolve_arm_angle(character)
+        garment = None
+        if character["clothing"] == "cross_collar_tunic":
+            garment = dict(
+                kind="right_closing_cross_collar_tunic_v1",
+                outer_lapel_direction="subject_left_neck_to_subject_right_waist",
+                belt_knot_side="subject_left_positive_x",
+                footwear=character["footwear"],
+                continuous_back=True,
+                gathered_trouser_ankles=True,
+            )
+        require(
+            canonical(operator.get("requested_arm_angle_degrees")) == canonical(character.get("arm_angle_degrees"))
+            and type(operator.get("effective_arm_angle_degrees")) in (int, float)
+            and operator["effective_arm_angle_degrees"] == angle
+            and canonical(operator.get("period_clothing")) == canonical(garment),
+            "builder_failed",
+        )
+        groom = operator.get("period_groom")
+        effective = resolve_period_groom(character)
+        if effective is None:
+            require(groom is None, "builder_failed")
+        else:
+            require(
+                isinstance(groom, dict)
+                and set(groom) == {"requested", "effective", "meshes"}
+                and canonical(groom["requested"]) == canonical(character["period_groom"])
+                and canonical(groom["effective"]) == canonical(effective),
+                "builder_failed",
+            )
+            names = {"PeriodSweptScalp", "PeriodBun"}
+            if effective["temple_gray"] > 0:
+                names.update(("PeriodGrayTempleL", "PeriodGrayTempleR"))
+            if effective["facial_hair"] == "moustache_goatee":
+                names.update(("PeriodMoustacheL", "PeriodMoustacheR", "PeriodGoatee"))
+            meshes = groom["meshes"]
+            require(isinstance(meshes, list) and len(meshes) == len(names), "builder_failed")
+            totals = [0, 0]
+            for mesh in meshes:
+                require(isinstance(mesh, dict) and isinstance(mesh.get("name"), str), "builder_failed")
+                name = mesh["name"].removeprefix("Anatomy_")
+                require(mesh["name"] == "Anatomy_" + name and name in names, "builder_failed")
+                names.remove(name)
+                require(
+                    mesh.get("material") == ("AnatomyHairGray" if "GrayTemple" in name else "AnatomyHair")
+                    and mesh.get("closed_oriented") is True
+                    and type(mesh.get("components")) is int
+                    and mesh["components"] == 1
+                    and all(
+                        type(mesh.get(k)) in (int, float) and math.isfinite(mesh[k]) and mesh[k] > 1e-12
+                        for k in ("minimum_triangle_area", "signed_volume")
+                    )
+                    and all(type(mesh.get(k)) is int and mesh[k] >= 4 for k in ("vertices", "triangles")),
+                    "builder_failed",
+                )
+                totals[0] += mesh["vertices"]
+                totals[1] += mesh["triangles"]
+            require(totals[0] <= MAX_GROOM_VERTICES and totals[1] <= MAX_GROOM_TRIANGLES, "builder_failed")
+        return dict(
+            requested_arm_angle_degrees=character.get("arm_angle_degrees"),
+            effective_arm_angle_degrees=angle,
+            period_clothing=garment,
+            period_groom=groom,
+        )
 
     @staticmethod
     def _organic_provenance(report, instructions):

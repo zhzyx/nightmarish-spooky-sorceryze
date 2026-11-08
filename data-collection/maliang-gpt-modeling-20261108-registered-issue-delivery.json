@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "work_order_delivery_evidence",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "scope": "Registered multiview reconstruction and interactive mesh preview",
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-registered-native-first",
+    "maliang-gpt-modeling-20261108-registered-native-retest",
+    "maliang-gpt-modeling-20261108-registered-candidate-review"
+  ],
+  "reconciled_base": "f9c45dece1c75b415be13a98639888ed0fbc1c3c",
+  "staged_modeling_diff_preserved_during_fast_forward": true,
+  "current_base_editor_sha256": "7a0190158f8b7029abf4862d3e9f0052a67154b143b953731b9b09c51b27f997",
+  "current_base_native_old_entries": "passed",
+  "current_base_installed_bundle_matches_source": true,
+  "visual_acceptance": "open"
+}

@@ -190,7 +190,11 @@ void ProgressDialog::_popup() {
 }
 
 void ProgressDialog::_reparent_and_show() {
-	Window *current_window = SceneTree::get_singleton()->get_root()->get_last_exclusive_window();
+	if (!is_inside_tree() || tasks.is_empty()) {
+		return; // The deferred popup can outlive its task.
+	}
+	// An editor started with a SceneTree script can have a different global tree.
+	Window *current_window = get_tree()->get_root()->get_last_exclusive_window();
 	ERR_FAIL_NULL(current_window);
 	reparent(current_window);
 

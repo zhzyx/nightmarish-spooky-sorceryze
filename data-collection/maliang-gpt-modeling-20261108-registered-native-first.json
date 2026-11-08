@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-registered-native-first",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T18:35:08.763104+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "native_pipeline_passed_visual_defects_reproduced",
+    "case": "one private multiview sheet of a standing adult, three distinct directions",
+    "reference_and_outputs": "user image, crops, meshes and renders remain private",
+    "operator": "registered_turnaround",
+    "engine_sha256": "d0fb7a90ce05c805b9e3b7a0049f07f572236bad7e1445ce956ad868351946fb",
+    "runtime_sha256": {
+      "sculpt_provider.py": "63a03c8a86a58c72a6d36ea764294346b035c47f1a04b512932fdf00997d28b9",
+      "turnaround_surface.py": "b605e3bc2e79db75ac53224ac29b43bcfc49e6e60a847750adb2d9b7e9332bb3"
+    },
+    "native_linked_node_checks": 29,
+    "all_native_checks_passed": true,
+    "actual_export_reloaded": true,
+    "vertices": 252698,
+    "triangles": 505392,
+    "mesh_bytes": 16173832,
+    "single_closed_body": true,
+    "source_image_verified": true,
+    "prior_fitted": false,
+    "actual_operator_selected_by": "ChatGPT-authenticated Codex CLI from original image and subject description",
+    "unobserved_surfaces": "inferred",
+    "training": "case-guided implementation and validation only",
+    "visual_acceptance": "open, evaluate reimported color and neutral material views",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "diagnosis": "Native viewport imported varying color on every vertex. Three-quarter view showed profile hand color on clothing. Neutral material exposed insufficient facial projection, and the profile feet were shorter than the reference."
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-runtime-verification-human-rejection"
+  ]
+}

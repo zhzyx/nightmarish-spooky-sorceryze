@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_source_and_synthetic_protocol_review",
+  "issue_number": 543,
+  "reviewer": "mesh_audit",
+  "authorship": "Reviewer did not author reviewed production changes; private synthetic fixtures only.",
+  "decision": "approved_for_the_exact_source_and_protocol_scope_below",
+  "source_sha256": {
+    "tools/ainative/sculpt_provider.py": "63a03c8a86a58c72a6d36ea764294346b035c47f1a04b512932fdf00997d28b9",
+    "tools/ainative/test_sculpt_provider.py": "0fe469f5b26412481237a70aa9aa1df3d978f3137ebffec1ac68036e1a056799",
+    "tools/ainative/editor_host.py": "2a711f117c95353fdfcdda8051308d7f4e5ae10e737e3d7947dfcd236db59cc9",
+    "tools/ainative/test_editor_host.py": "4181365250b1afca996cd6e01e93301bda770b3185be6008dd510cf1c7f8af25",
+    "tools/ainative/codex_provider.py": "1a869f17ded280d50592990dcd52c22e6d624ace9fc5689dbcf57c2ae2335f15",
+    "tools/ainative/test_codex_provider.py": "2f75d2c71335caf5009c14a5c37a006a598adec878eaf912990e29b66109ad75",
+    "tools/ainative/test_jpeg_validation.py": "7f272174d028224f9da787f8293967fc6d32cfdf8ec5c1ade30531b67f78ef3f",
+    "editor/gui/progress_dialog.cpp": "398d97c037c30a90d6281ad3091b2bd6bb988b51a299ed3d10d846204d4b582b"
+  },
+  "reviewed_contracts": [
+    "One immutable image remains one user image. Observed panel orientations and normalized boxes are recorded separately; duplicates do not become independent files or calibrated cameras.",
+    "The registered route requires observed front, back and one profile direction, a character descriptor, no explicit regions or repeated patterns, and the fixed sibling helper. The CLI selects bounded data, never executable code or paths.",
+    "Largest observed panel per required orientation is selected. Observed boxes are preserved separately from bounded host registration padding. Padding contains original boxes, respects selected and nonselected neighbors, and preserves existing overlap without expanding it.",
+    "The host writes canonical registration binding immutable source bytes, validated plan digest, character height and registered panels. Runtime input hashes are checked before and after fixed Blender execution.",
+    "The output route requires its own success marker, common measured receipt bounds, helper/source/registration digests, actual finite [0,1] floating vertex colors, supported normalized integer colors, bounded actual triangle indices, and agreement of exported vertex count.",
+    "The result identifies registered_turnaround and view-sampled surface colors with source illumination. Camera calibration and exact hidden-surface recovery remain false. Character parameter controls other than registered height are not represented as effective solver controls.",
+    "Immutable image bytes determine PNG versus JPEG decoder extension consistently for source and context snapshots, without changing the content digest.",
+    "JPEG validation is bounded structural validation, not pixel or entropy decoding; truncated signatures and malformed frame/table/scan structures are rejected.",
+    "ProgressDialog uses its actual SceneTree and ignores a deferred popup after its task or tree has ended."
+  ],
+  "independently_executed": {
+    "unit_tests": {
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 45.578,
+      "names": [
+        "test_sculpt_provider.SculptPlanTests",
+        "test_sculpt_provider.SculptTests.test_single_image_turnaround_passes_to_builder_as_one_source_and_three_observed_directions",
+        "test_editor_host",
+        "test_jpeg_validation",
+        "test_codex_provider"
+      ],
+      "source_unchanged": true
+    },
+    "adversarial_and_dispatch": {
+      "checks": 18,
+      "names": [
+        "valid_actual_bin",
+        "reject_actual_color_nan",
+        "reject_actual_color_infinity",
+        "reject_actual_color_above_one",
+        "reject_actual_color_negative",
+        "reject_actual_index_99",
+        "reject_actual_index_2",
+        "reject_color_view_byteOffset",
+        "reject_color_view_byteStride",
+        "reject_color_view_byteLength",
+        "reject_sparse_colors",
+        "diagonal_and_nonselected_original_counterexample",
+        "preexisting_overlap_preserved",
+        "400_seeded_valid_eight_panel_sheets",
+        "mocked_registered_work_valid",
+        "mocked_registered_work_source_changed",
+        "mocked_registered_work_bad_helper_receipt",
+        "mocked_registered_work_bad_color"
+      ],
+      "randomized_valid_sheet_cases": 400,
+      "source_unchanged": true,
+      "paid_cli_calls": 0,
+      "solver_executions": 0,
+      "user_images_used": false
+    },
+    "static": {
+      "ruff_check": "pass; seven Python files",
+      "ruff_format": "pass; seven Python files",
+      "mypy": "pass; three runtime Python files"
+    }
+  },
+  "corrected_counterexamples": [
+    {
+      "defect": "Registered output gate previously accepted actual NaN/Infinity/out-of-range COLOR_0 values and invalid triangle indices.",
+      "result": "Current exact source rejects all reproduced invalid BIN cases and accepts a valid closed tetrahedron fixture."
+    },
+    {
+      "defect": "Independent padding of diagonally adjacent panel bounds could take pixels from another observed subject, including unselected panels.",
+      "result": "Current pairwise separating-axis bounds pass the original counterexample, preexisting-overlap case, and 400 deterministic eight-panel cases without mutation or added intersection."
+    }
+  ],
+  "native_progress_dialog": {
+    "independently_checked": "Provided before/after native evidence plus source diff; no reviewer native rebuild or execution.",
+    "same_fixture_inputs": true,
+    "checks_each": 22,
+    "all_checks_passed_each": true,
+    "current_window_null_errors_before": 2,
+    "current_window_null_errors_after": 0,
+    "unrelated_exit_resource_warnings_present": true
+  },
+  "synthetic_reproducer_sha256": "b33b9430be26b14e8654a6c4b7cad76ca64322d10ac289bca720728080f58bd8",
+  "unresolved_blockers_in_reviewed_scope": [],
+  "exclusions": [
+    "The new turnaround_surface solver implementation, its still-changing segmentation/frame-fit behavior and actual reconstruction quality are outside this approval.",
+    "No assertion of likeness, realism, hidden-surface truth, camera calibration, arbitrary-model intent recognition or user visual acceptance.",
+    "The mocked worker validates routing and receipts; it does not execute or validate solver geometry. Registered route selection constraints about faithful-copy intent rely on the supplied bounded model observation and instruction.",
+    "No paid model requests, original user image files, original generated assets, job state or production source files were modified by this review.",
+    "Native preview orbit/zoom input behavior is a separate pending runtime check."
+  ],
+  "privacy": "This public record contains public source identifiers and synthetic check conclusions only; no user image paths, crops, content, generated asset data or original workflow identifiers."
+}

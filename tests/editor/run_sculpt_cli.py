@@ -48,11 +48,29 @@ def main():
     parser.add_argument("--subject-file", required=True, type=Path)
     parser.add_argument("--source", type=Path)
     parser.add_argument("--reference", type=Path)
+    parser.add_argument(
+        "--expect-sheet-directions",
+        type=int,
+        choices=range(1, 5),
+        help="Check a single turnaround sheet against the known number of distinct named directions",
+    )
+    parser.add_argument(
+        "--expect-registered-surface",
+        action="store_true",
+        help="Require the actual registered surface operator and portable vertex colors",
+    )
     parser.add_argument("--capture", action="store_true")
+    parser.add_argument("--expect-registered-face", action="store_true", help="Require actual fitted facial geometry")
     parser.add_argument("--real-cli", action="store_true", help="Authorize one real CLI sculpt request")
     args = parser.parse_args()
     if not args.real_cli:
         parser.error("--real-cli is required; this check consumes the existing CLI account's model usage")
+    if args.expect_sheet_directions and (not args.source or args.reference):
+        parser.error("--expect-sheet-directions needs one source sheet")
+    if args.expect_registered_surface and not args.expect_sheet_directions:
+        parser.error("--expect-registered-surface needs a sheet direction expectation")
+    if args.expect_registered_face and not args.expect_registered_surface:
+        parser.error("--expect-registered-face needs --expect-registered-surface")
     expected_calibration = calibration_png_sha256()
     base = args.output.resolve()
     base.mkdir(parents=True, exist_ok=False)
@@ -78,6 +96,9 @@ def main():
                 cli=str(args.cli.resolve(strict=True)),
                 output=str(output),
                 capture=args.capture,
+                expect_sheet_directions=args.expect_sheet_directions or 0,
+                expect_registered_surface=args.expect_registered_surface,
+                expect_registered_face=args.expect_registered_face,
                 expected_calibration_png_sha256=expected_calibration,
             )
         ),
