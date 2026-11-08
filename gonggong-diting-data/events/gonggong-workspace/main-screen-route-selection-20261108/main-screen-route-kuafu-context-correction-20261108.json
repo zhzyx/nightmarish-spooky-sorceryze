@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "main-screen-route-kuafu-context-correction-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "main-screen-route-selection-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T03:24:28.648699+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+  "agent": {
+    "id": "codex-main-screen-route-fix",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-host-correction"
+  },
+  "payload": {
+    "correction": "Earlier Kuafu tool receipt had empty context bytes and is not valid role/admission evidence. It remains immutable. A separate canonical-path delivery incident now loaded and verified the actual Kuafu context before assessment.",
+    "invalid_intake_incident": "07c3146625a5ebfae27a6c8fdc8f7f5815ec1bcebd8a6251e44d1ed72081cae1",
+    "invalid_context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "valid_intake_incident": "ec7b3207a78bd17ee659328d881757986db88a8f4793ac2f43ad172426abcfd0",
+    "valid_context_sha256": "d704d2f5141f2e26945c5897f0511cfb3781e4a501fb04acb70c03580445f4a2",
+    "valid_context_bytes": 6167,
+    "original_events_and_private_receipts_modified": false,
+    "scope": "Evidence correction only; product source, permissions and formal delivery gate unchanged"
+  },
+  "evidence_refs": [
+    "kuafu-76bbea958299ff7833a14a8a09816f2b11aaf817",
+    "main-screen-route-request-20261108",
+    "kuafu-00989d1f80d0f1542c80468d9e5174bf2b764530"
+  ],
+  "supersedes": "kuafu-76bbea958299ff7833a14a8a09816f2b11aaf817",
+  "sha256": "ed73bbeeba6554fde58e9fead7b0fe4b67090fb8b5f470b8a3bdd74e6dc084b9"
+}

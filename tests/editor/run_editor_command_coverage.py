@@ -110,11 +110,92 @@ def main():
                 assert route_action("describe_target", target="plugin.coverage_alias")["value"] == "original"
                 screens = route_action("list_main_screens")
                 assert screens["ok"] and len(screens["main_screens"]) > 5, screens
+                discovered_screens = {screen["name"]: screen for screen in screens["main_screens"]}
+                main_screen_readbacks = []
+
+                def switch_main_screen(name):
+                    before = client.state()
+                    assert before["ok"], before
+                    # Send the production POST once, then independently read its receipt and live state.
+                    switched_result = route_action("main_screen", target=name)
+                    request_id = f"action-{counter}"
+                    receipt = client.status(request_id, "coverage")
+                    state = client.state()
+                    observed = route_action("list_main_screens")
+                    expected = {
+                        "ok": True,
+                        "routed": True,
+                        "route": "engine_control",
+                        "routing_status": "completed",
+                        "request_id": request_id,
+                        "source": "external.coverage",
+                        "action": "main_screen",
+                        "target": name,
+                        "visible": True,
+                    }
+                    fields = (*expected, "error")
+                    readback = {
+                        "from": before["main_screen"],
+                        "target": name,
+                        "post": {field: switched_result.get(field) for field in fields},
+                        "receipt": {field: receipt.get(field) for field in fields},
+                        "state": {field: state.get(field) for field in ("ok", "main_screen")},
+                        "list_ok": observed.get("ok"),
+                        "main_screens": observed.get("main_screens"),
+                    }
+                    main_screen_readbacks.append(readback)
+                    assert all(switched_result.get(field) == value for field, value in expected.items()), readback
+                    assert all(receipt.get(field) == value for field, value in expected.items()), readback
+                    assert state["ok"] and state["main_screen"] == name, readback
+                    assert observed["ok"], readback
+                    selected = [screen["name"] for screen in observed["main_screens"] if screen["selected"]]
+                    assert selected == [name], readback
+                    actual = {screen["name"]: screen for screen in observed["main_screens"]}
+                    assert actual[name].get("visible") is True and not actual[name]["hidden"], readback
+                    previous = before["main_screen"]
+                    if previous != name and previous in actual:
+                        assert not actual[previous]["selected"] and actual[previous].get("visible") is False, readback
+
+                for name in ("AINative", "AI Chat", "2D"):
+                    assert name in discovered_screens and not discovered_screens[name]["hidden"], screens
+                    switch_main_screen(name)
+                missing_screen = "coverage.unknown_main_screen"
+                assert missing_screen not in discovered_screens, screens
+                before_missing = client.state()
+                assert before_missing["ok"], before_missing
+                missing_result = route_action("main_screen", target=missing_screen)
+                missing_request_id = f"action-{counter}"
+                missing_receipt = client.status(missing_request_id, "coverage")
+                after_missing = client.state()
+                missing_expected = {
+                    "ok": False,
+                    "error": "unknown_main_screen",
+                    "routed": True,
+                    "route": "engine_control",
+                    "routing_status": "failed",
+                    "request_id": missing_request_id,
+                    "source": "external.coverage",
+                }
+                missing_readback = {
+                    "target": missing_screen,
+                    "post": {field: missing_result.get(field) for field in missing_expected},
+                    "receipt": {field: missing_receipt.get(field) for field in missing_expected},
+                    "before": {field: before_missing.get(field) for field in ("ok", "main_screen")},
+                    "after": {field: after_missing.get(field) for field in ("ok", "main_screen")},
+                }
+                assert all(missing_result.get(field) == value for field, value in missing_expected.items()), (
+                    missing_readback
+                )
+                assert all(missing_receipt.get(field) == value for field, value in missing_expected.items()), (
+                    missing_readback
+                )
+                assert after_missing["ok"] and after_missing["main_screen"] == before_missing["main_screen"], (
+                    missing_readback
+                )
                 switched = 0
                 for screen in screens["main_screens"]:
                     if screen["name"] not in ("2D", "3D", "Script", "AssetLib", "AI Chat") and not screen["hidden"]:
-                        switched_result = route_action("main_screen", target=screen["name"])
-                        assert switched_result["ok"], switched_result
+                        switch_main_screen(screen["name"])
                         switched += 1
                 assert switched > 0
                 resource_message, resource_preview = manual("open_resource", target="res://fixture-gradient.tres")
@@ -482,7 +563,7 @@ def main():
                             "passed": True,
                             "checks": [
                                 "core and explicit alias metadata with live protection",
-                                "dynamic screens",
+                                "dynamic screens with HTTP receipt/state/selection/visibility readback",
                                 "resource open/path rejection",
                                 "scene pagination",
                                 "target pagination",
@@ -502,6 +583,8 @@ def main():
                                 "900 second restart expiry",
                                 "headless scene run and stop",
                             ],
+                            "main_screen_readbacks": main_screen_readbacks,
+                            "unknown_main_screen_readback": missing_readback,
                             "visual_acceptance": "not performed",
                         },
                         indent=2,

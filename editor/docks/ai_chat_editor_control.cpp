@@ -44,6 +44,7 @@
 #include "editor/docks/ai_chat_editor_settings_actions.h"
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/editor_dock.h"
+#include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/scene_tree_dock.h"
 #include "editor/editor_data.h"
@@ -1370,6 +1371,7 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 			entry["layout_key"] = dock->get_effective_layout_key();
 			entry["selected"] = main_screen->get_current_tab() == i;
 			entry["hidden"] = main_screen->is_tab_hidden(i);
+			entry["visible"] = dock->is_visible_in_tree() && dock->get_window() && dock->get_window()->is_visible();
 			screens.push_back(entry);
 		}
 		result["main_screens"] = screens;
@@ -1426,10 +1428,17 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		EditorSettingsDialog::get_singleton()->popup_edit_settings();
 		EditorSettingsDialog::get_singleton()->show_general_section(target.to_lower());
 	} else if (action == "main_screen") {
-		if (target.is_empty() || !main_screen_dock(target)) {
+		EditorDock *dock = target.is_empty() ? nullptr : main_screen_dock(target);
+		if (!dock) {
 			return outcome(false, "unknown_main_screen");
 		}
-		main_screen_dock(target)->make_visible();
+		EditorDockManager::get_singleton()->force_focus_dock(dock);
+		if (EditorNode::get_editor_main_screen()->get_current_tab_control() != dock) {
+			return outcome(false, "main_screen_not_selected");
+		}
+		if (!dock->is_visible_in_tree() || !dock->get_window() || !dock->get_window()->is_visible()) {
+			return outcome(false, "main_screen_not_visible");
+		}
 	} else if (action == "select_node") {
 		Node *root = editor->get_edited_scene_root();
 		NodePath path(target);

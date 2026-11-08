@@ -1,0 +1,966 @@
+{
+  "schema_version": 1,
+  "request_id": "main-screen-route-selection-20261108",
+  "issue_number": 542,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+  "base_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+  "source_files": {
+    "editor/docks/ai_chat_editor_control.cpp": "dab53f577b5802d0e96ecee468e7088b44415ac09bb3d14dcac1477852433387",
+    "tests/editor/run_editor_command_coverage.py": "d243868c268ef192008e95997b8f4a15b0650a82fbade7b632d4e2865ee28be1"
+  },
+  "platform": "macos arm64, Apple Clang, tests=yes, headless private self-contained editor",
+  "binary_sha256": "ecc599ec8cb2bfe5bb61941f0da7f76ad8960f0db216fd59d1da69ceb79476a4",
+  "build": {
+    "passed": true,
+    "elapsed_seconds": 272.35,
+    "options": {
+      "platform": "macos",
+      "target": "editor",
+      "arch": "arm64",
+      "tests": true,
+      "dev_build": false,
+      "debug_symbols": false,
+      "vulkan": false,
+      "metal": true,
+      "opengl3": true,
+      "angle": false,
+      "accesskit": false,
+      "lto": "none"
+    }
+  },
+  "command_regression": {
+    "passed": true,
+    "checks": [
+      "core and explicit alias metadata with live protection",
+      "dynamic screens with HTTP receipt/state/selection/visibility readback",
+      "resource open/path rejection",
+      "scene pagination",
+      "target pagination",
+      "state endpoint",
+      "exact cancellation",
+      "session rejection",
+      "manual-only chat requests",
+      "stale draft rejection",
+      "typed settings and disk conflict",
+      "restart recovery without replay",
+      "corrupt receipts fail closed",
+      "8192 target and 50000 node boundaries",
+      "scene edits and selection",
+      "animation paths and undo",
+      "field and popup observations",
+      "model index beyond 100 stale binding",
+      "900 second restart expiry",
+      "headless scene run and stop"
+    ],
+    "main_screen_readbacks": [
+      {
+        "from": "AI Chat",
+        "target": "AINative",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-12",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AINative",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-12",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AINative",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "AINative"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": true,
+            "title": "马良",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "AINative",
+        "target": "AI Chat",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-14",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AI Chat",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-14",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AI Chat",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "AI Chat"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": true,
+            "title": "AI Chat",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "AI Chat",
+        "target": "2D",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-16",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "2D",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-16",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "2D",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "2D"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": true,
+            "title": "2D",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "2D",
+        "target": "AINative",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-19",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AINative",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-19",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "AINative",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "AINative"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": true,
+            "title": "马良",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "AINative",
+        "target": "Daqian",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-21",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Daqian",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-21",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Daqian",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "Daqian"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": true,
+            "title": "天枢",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "Daqian",
+        "target": "Game",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-23",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Game",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-23",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Game",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "Game"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": true,
+            "title": "Game",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "Game",
+        "target": "Asset Store",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-25",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Asset Store",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-25",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "Asset Store",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "Asset Store"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": true,
+            "title": "Asset Store",
+            "visible": true
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": false,
+            "title": "设置",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "from": "Asset Store",
+        "target": "UnifiedSettings",
+        "post": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-27",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "UnifiedSettings",
+          "visible": true,
+          "error": null
+        },
+        "receipt": {
+          "ok": true,
+          "routed": true,
+          "route": "engine_control",
+          "routing_status": "completed",
+          "request_id": "action-27",
+          "source": "external.coverage",
+          "action": "main_screen",
+          "target": "UnifiedSettings",
+          "visible": true,
+          "error": null
+        },
+        "state": {
+          "ok": true,
+          "main_screen": "UnifiedSettings"
+        },
+        "list_ok": true,
+        "main_screens": [
+          {
+            "hidden": false,
+            "layout_key": "AIChatMainScreen",
+            "name": "AI Chat",
+            "selected": false,
+            "title": "AI Chat",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "AINativeMainScreen",
+            "name": "AINative",
+            "selected": false,
+            "title": "马良",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "DaqianMainScreen",
+            "name": "Daqian",
+            "selected": false,
+            "title": "天枢",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "2D",
+            "name": "2D",
+            "selected": false,
+            "title": "2D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "3D",
+            "name": "3D",
+            "selected": false,
+            "title": "3D",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Script",
+            "name": "Script",
+            "selected": false,
+            "title": "Script",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Game",
+            "name": "Game",
+            "selected": false,
+            "title": "Game",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "Asset Store",
+            "name": "Asset Store",
+            "selected": false,
+            "title": "Asset Store",
+            "visible": false
+          },
+          {
+            "hidden": false,
+            "layout_key": "UnifiedSettingsMainScreen",
+            "name": "UnifiedSettings",
+            "selected": true,
+            "title": "设置",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "unknown_main_screen_readback": {
+      "target": "coverage.unknown_main_screen",
+      "post": {
+        "ok": false,
+        "error": "unknown_main_screen",
+        "routed": true,
+        "route": "engine_control",
+        "routing_status": "failed",
+        "request_id": "action-18",
+        "source": "external.coverage"
+      },
+      "receipt": {
+        "ok": false,
+        "error": "unknown_main_screen",
+        "routed": true,
+        "route": "engine_control",
+        "routing_status": "failed",
+        "request_id": "action-18",
+        "source": "external.coverage"
+      },
+      "before": {
+        "ok": true,
+        "main_screen": "2D"
+      },
+      "after": {
+        "ok": true,
+        "main_screen": "2D"
+      }
+    },
+    "visual_acceptance": "not performed"
+  },
+  "native_state_semantic_units": {
+    "passed": true,
+    "test_cases": 6,
+    "assertions": 85,
+    "private_self_contained": true,
+    "test_data": "Read-only source tests/data link inside private temporary working directory"
+  },
+  "initial_unit_fixture_failure": {
+    "exit_signal": "SIGSEGV after test_setup FAILED",
+    "setup_error": "Test data not found; private working directory did not contain tests/data",
+    "test_cases_passed": 5,
+    "test_cases_failed": 1,
+    "resolution": "Corrected only private test fixture according to Main::test_setup; product source and binary unchanged; six cases then passed."
+  },
+  "boundaries": {
+    "user_desktop_driven": false,
+    "user_app_changed": false,
+    "original_session_changed": false,
+    "global_configuration_written": false,
+    "installed_or_activated": false,
+    "parent483_workflow_accepted": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "main-screen-route-request-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "main-screen-route-selection-20261108",
+  "kind": "request",
+  "occurred_at": "2026-11-08T03:23:13.299465+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/542",
+  "agent": {
+    "id": "codex-main-screen-route-fix",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "outcome": "Repair explicit main_screen false-success navigation and deliver through normal main workflow",
+    "operator": "kaiyunxue",
+    "issue_title": "修复主屏命令未切换却返回成功",
+    "issue_updated_at": "2026-11-08T03:20:45Z",
+    "issue_body_sha256": "df65a5e354bd177bf0d2959032dd9515bdedef80caf802e2297bc4f8ff0d5ec7",
+    "execution_authority_ref": "Existing Codex user fix-on-discovery and command-gap delivery mandate, delegated from Issue483 acceptance; recorded in Issue542 body",
+    "parent_issue": 483,
+    "related_closed_issue": 386,
+    "event_is_not_a_tool_authorization_grant": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [],
+  "sha256": "901d0e0662ae2a507abdc82e196397172bc7edc1dc8399b964b6b78aca942660"
+}
