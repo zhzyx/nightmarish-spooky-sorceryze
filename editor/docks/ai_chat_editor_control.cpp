@@ -791,7 +791,7 @@ bool AIChatEditorControl::_persist_routes() const {
 		record["fingerprint"] = entry.value.fingerprint;
 		record["updated"] = entry.value.updated;
 		// Persist outcome metadata, never composer text, prior values or credentials.
-		for (const String &field : { "ok", "error", "routing_status", "routed", "route", "request_id", "source", "idempotency_window_seconds" }) {
+		for (const String &field : { "ok", "error", "routing_status", "routed", "route", "request_id", "source", "idempotency_window_seconds", "instruction_submitted", "business_completed" }) {
 			if (entry.value.result.has(field)) {
 				summary[field] = entry.value.result[field];
 			}
@@ -957,9 +957,13 @@ Dictionary AIChatEditorControl::cancel_route(const Dictionary &p_message, const 
 	return result;
 }
 
-Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context) {
+Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context, bool p_trusted_instruction) {
 	if (!p_tools_allowed || p_consultation) {
 		return outcome(false, "permission_denied");
+	}
+	const Variant requested_operation = p_message.get("operation", Variant());
+	if (requested_operation.get_type() == Variant::DICTIONARY && Dictionary(requested_operation).get("action", "") == "chat_submit_instruction" && (!p_host_context || !p_trusted_instruction)) {
+		return outcome(false, "trusted_desktop_peer_required");
 	}
 	if (JSON::stringify(p_message).utf8().length() > 32768) {
 		return outcome(false, "message_too_large");
@@ -1050,7 +1054,7 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 				operation[field] = p_message[field];
 			}
 		}
-		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed, p_host_context);
+		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed, p_host_context, p_trusted_instruction);
 		result["routing_status"] = bool(result.get("confirmation_required", false)) ? "awaiting_confirmation" : bool(result.get("ok", false)) ? "completed"
 																																			  : "failed";
 	}
@@ -1252,7 +1256,7 @@ Dictionary AIChatEditorControl::get_state(const PackedStringArray &p_secrets) co
 	return bound_state(result, p_secrets);
 }
 
-Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context) {
+Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed, bool p_host_context, bool p_trusted_instruction) {
 	if (!p_tools_allowed || p_consultation) {
 		return outcome(false, "permission_denied");
 	}
@@ -1260,6 +1264,15 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return outcome(false, "invalid_action");
 	}
 	const String action = p_args["action"];
+	if (action == "chat_submit_instruction") {
+		// A JSON field, model tool, or authenticated TCP request cannot mint
+		// this capability. Only the verified native desktop peer calls it.
+		if (!p_host_context || !p_trusted_instruction || !chat_instruction_handler.is_valid()) {
+			return outcome(false, "trusted_desktop_peer_required");
+		}
+		const Variant result = chat_instruction_handler.call(p_args);
+		return result.get_type() == Variant::DICTIONARY ? Dictionary(result) : outcome(false, "host_action_unavailable");
+	}
 	if (action.begins_with("chat_")) {
 		if (!p_host_context || !chat_host_handler.is_valid()) {
 			return outcome(false, "host_only_action");

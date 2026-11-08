@@ -49,6 +49,7 @@ class AIChatEditorControl : public Control {
 	HashMap<String, Target> targets;
 	AIChatEditorRegistry *registry = nullptr;
 	Callable chat_host_handler;
+	Callable chat_instruction_handler;
 	struct RoutedRequest {
 		String fingerprint;
 		Dictionary result;
@@ -98,6 +99,7 @@ public:
 	static Array tool_definitions();
 	static bool handles(const String &p_name);
 	void set_chat_host_handler(const Callable &p_handler) { chat_host_handler = p_handler; }
+	void set_chat_instruction_handler(const Callable &p_handler) { chat_instruction_handler = p_handler; }
 	static bool valid_project_path(const String &p_path);
 	static Array target_ids();
 	static bool save_setting_snapshot(const String &p_path, const String &p_original, const String &p_target, const Variant &p_value, String &r_error);
@@ -112,8 +114,8 @@ public:
 	void cancel_guidance();
 	void suspend_guidance();
 	Dictionary get_state(const PackedStringArray &p_secrets = PackedStringArray()) const;
-	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false);
-	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false);
+	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false, bool p_trusted_instruction = false);
+	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false, bool p_trusted_instruction = false);
 	Dictionary route_status(const String &p_request_id, const String &p_source) const;
 	Dictionary route_events(int64_t p_after, int p_limit = 100) const;
 	Dictionary cancel_route(const Dictionary &p_message, const String &p_reason);

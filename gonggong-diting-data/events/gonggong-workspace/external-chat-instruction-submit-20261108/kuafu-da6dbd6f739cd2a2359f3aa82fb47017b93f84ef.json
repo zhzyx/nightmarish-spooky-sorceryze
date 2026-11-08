@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-da6dbd6f739cd2a2359f3aa82fb47017b93f84ef",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "external-chat-instruction-submit-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3d44dde9d3b2ef6aa3827d0da75b35c784ae773d0b09312d32ca46d6df21c4dd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "action": "validation",
+    "detection_head": "6618df1f07137b589607ba7c13a6a28f2c718fff",
+    "context_sha256": "f0b2c6d6d9cb4f1e058b0a7e499d29f7121bd254355a6bda649a32cabd03aa20",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42450226834/job/128637649816",
+    "diagnosis": "Exact PR static checks failed in ctypes field-list type inference, root-relative include normalization and copyright header padding. The minimal fix enumerates the same ABI fields and normalizes only includes and comments; existing runtime evidence remains scoped to its original hashes.",
+    "next_action": "Run the complete changed-file static hooks, independently verify unchanged ctypes layout and narrow source delta, then submit a new exact signed candidate and verify all applicable CI before main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T05:22:04.150462+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T05:23:02.212479+00:00",
+  "sha256": "8b4dd772e1df9371cc31087bdc4538c8335841c748ecbdd9998efb2051299cdd"
+}

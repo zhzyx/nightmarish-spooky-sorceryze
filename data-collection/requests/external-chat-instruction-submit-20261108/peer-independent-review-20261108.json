@@ -1,0 +1,28 @@
+{
+  "issue": 554,
+  "reviewer": "root non-author",
+  "time_utc": "2026-11-08T04:58:03.797082+00:00",
+  "source_hashes": {
+    "editor/docks/ai_chat_external_peer.h": "383817178c80a70ea1d39ae5735edfbc73a254f79a420c6e7f69a05968bc5647",
+    "editor/docks/ai_chat_external_peer.cpp": "4d97a742aa176409846e66ebeead7dbf89fdcfdbc2e6bc97a2374ecdad94075e",
+    "tests/editor/test_ai_chat_external_peer.cpp": "1b4e1a25021697cd02c55dba37262ab004b83a8307176b4c1240fd695fdf0c8a"
+  },
+  "freeze_sha256": "637746ae58ac067d158610aa0d6a105a8f7793bd2a010b56b9e38f08397644b3",
+  "static_review": "Read complete production helper and tests, plus exact v1-to-v3 terminal patch. Kernel AF_UNIX/PID/UID/audit guest; fixed official Desktop+Team signing requirement; all actual same-UID ancestors checked twice for birth,ppid,code fingerprint; any Godot/unknown/cross-UID/truncation rejected. Actual final user process must have stable kernel PPID1; no protected PID1 metadata fabricated or used as authority. Single valid Desktop leaf also remains subject to exact signing+UID+PPID1. No file-token/source-string trust. NonMac refuses.",
+  "performed_by_reviewer": [
+    {
+      "kind": "Actual linked private native unit",
+      "artifact_sha256": "ea604c1e3b3f4368bdb5e84a2487a46417551bfb084655dc90b5543b24144ae1",
+      "cases_passed": 5,
+      "assertions_passed": 47,
+      "exit_code": 0,
+      "log": "host-private/issue554-root-peer-unit-v3.log",
+      "log_sha256": "8a5e0b9801d0313d2300987dc0dc9f1c380d9839aad755f23685e62aebac5e10"
+    }
+  ],
+  "observed_failure_preserved": "Earlier PID1 proc_pidinfo unavailable made whole-chain collection fail; old default fixture and strengthened negative failures remain recorded. No former result reclassified as new success.",
+  "decision": "PASS helper scope, no remaining blocker found",
+  "limits": "Does not accept main socket/chat/JSON protocol/idempotence pipeline, bootstrap, native483 real Agent or original Applications entry. Author-reported real external peer positive is distinct; root did not run that fixture yet.",
+  "private_original_sha256": "1548c198b8631c832eb8c7e92e9d2ac2f884b704e879c57b2bb7ade05f8a16b9",
+  "public_copy_note": "Only private filesystem paths were redacted; scope, findings, execution attribution, fixed hashes and limitations are retained."
+}

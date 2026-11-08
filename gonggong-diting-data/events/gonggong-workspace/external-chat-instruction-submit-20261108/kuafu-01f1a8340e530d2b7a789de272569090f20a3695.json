@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-01f1a8340e530d2b7a789de272569090f20a3695",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "external-chat-instruction-submit-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4d5063637423b69ac027ffdd0a7b670d9572aff5f4f6bb9799ce1646e9570122",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "action": "intake",
+    "detection_head": "fec580fe81d0cd6e083956a44a0c0d316c728c20",
+    "context_sha256": "f0b2c6d6d9cb4f1e058b0a7e499d29f7121bd254355a6bda649a32cabd03aa20",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "diagnosis": "组件工作者首轮intake调用遗漏必需tenant参数，宿主准确拒绝且保留失败；补--tenant gonggong-workspace后已真实回读开放typebug/inprogress。此为本任务调用参数错误，不修改产品授权或框架准入。",
+    "next_action": "保留原失败和正确重读证据；继续以真实工单554执行正式门禁、精确候选CI与main，不把错误调用追认为通过。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:39:16.510286+00:00",
+    "attempted": "组件工作者已在同一隔离554树正确重读tenant；主责已查看私有原incident并接回，此事件不需另开产品修复。",
+    "repair_owner": "codex:/root/config_bootstrap_plan",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T05:14:23.739390+00:00",
+  "sha256": "e9f1769dc6160eb7b129cb6c0b9f61c70e15866e701b58a57ee5f91c472cb33b"
+}

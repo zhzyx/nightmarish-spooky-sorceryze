@@ -6394,6 +6394,7 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 		control = memnew(AIChatEditorControl);
 		editor_control_id = control->get_instance_id();
 		control->set_chat_host_handler(callable_mp(this, &AIChatDock::_chat_host_action));
+		control->set_chat_instruction_handler(callable_mp(this, &AIChatDock::_chat_instruction_action));
 	}
 	return control;
 }
@@ -7117,6 +7118,7 @@ void fragment() {
 	AIChatEditorBridge *editor_bridge = memnew(AIChatEditorBridge);
 	editor_bridge->set_name("AIEditorControlBridge");
 	editor_bridge->set_handler(callable_mp(this, &AIChatDock::_editor_bridge_request));
+	editor_bridge->set_instruction_handler(callable_mp(this, &AIChatDock::_chat_instruction_request));
 	add_child(editor_bridge);
 	codex_login_timer = memnew(Timer);
 	codex_login_timer->set_wait_time(1.0);

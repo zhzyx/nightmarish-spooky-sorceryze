@@ -423,6 +423,10 @@ class AIChatDock : public EditorDock {
 	Dictionary pending_editor_action;
 	Dictionary pending_external_editor_message;
 	Dictionary _editor_bridge_request(const Dictionary &p_envelope);
+	Dictionary _chat_instruction_context() const;
+	String _chat_instruction_blocked_reason() const;
+	Dictionary _chat_instruction_action(const Dictionary &p_args);
+	Dictionary _chat_instruction_request(const Dictionary &p_message);
 	Dictionary _chat_host_action(const Dictionary &p_args, bool p_confirmed);
 	void _finish_external_editor_request();
 	void _cancel_external_editor_request(const String &p_reason);

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "issue": 554,
+  "request_id": "external-chat-instruction-submit-20261108",
+  "previous_source_commit": "6618df1f07137b589607ba7c13a6a28f2c718fff",
+  "previous_signed_head": "bac273e011db667b3ec0e01b2b8ff3afd1d1c8fb",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42450226834/job/128637649816",
+  "diagnosis": [
+    "Mypy inferred an incompatible object type for the concatenated ctypes field list.",
+    "Include validator requires repository-relative paths for the two newly named translation units.",
+    "Copyright checker normalized filename padding in five headers/source files."
+  ],
+  "correction": "Enumerate the same ctypes ABI fields; normalize include paths/order and filename padding only. No authorization, submission, persistence or model behavior changes.",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_bridge.h": "4c1e56507801138e85511327660c801314061179685159c27dcf08164d7b5c5c",
+    "editor/docks/ai_chat_editor_instruction_bridge.cpp": "8bae63c87c8b16f69d46b1bfe6a55506fc8d5140ada0fcb719898064a4142db6",
+    "editor/docks/ai_chat_external_chat.cpp": "f967909721ac13ff70a999333078d830b870cd7fee7f93f4a1921bca20e3e90c",
+    "editor/docks/ai_chat_external_peer.cpp": "43b428c894652c53cae96a38a813e26021001325e94fe5740df0dcfe404b689a",
+    "editor/docks/ai_chat_external_peer.h": "527c90f64908809c0d502ecab1c808558babdd4ac893f0b5a41cdd6ab5da4fcd",
+    "tests/editor/test_ai_chat_external_peer.cpp": "10696734869320580e6a4e671ce5f1501a87d3ed836abf9e5a3c5affe125a297",
+    "tools/editor_instruction_client.py": "18298867a41d3ea1bcd7fc5820eebf29845e331b2ab8cac172f71e682a2a242d"
+  },
+  "patch_sha256": "5d70c572af508de471bde9ac7bb5b651996be633ee32d6c29549674b18fed015",
+  "changed_file_static_checks": {
+    "status": "passed",
+    "log_sha256": "036629ee5f5f88c56262d3ce659c157f912f966f52d151a93b8ed15dc8fe3cfe"
+  },
+  "original_runtime_evidence": "validation-20261108.json",
+  "scope": "The original independent 39-check native evidence remains tied to its original source/artifact hashes. This follow-up records only the non-behavioral static correction; it does not claim a rebuilt native artifact or production GUI acceptance.",
+  "independent_narrow_review": {
+    "status": "passed",
+    "report_sha256": "dc69ff9d45a4ebf48330ce9679788b1837debd424340b1feb50778cbd167c44a",
+    "scope": "Independently compared all 7 frozen file hashes, identical C++ bodies after banner/include normalization, identical resolved headers, client AST outside the ctypes field-list expression, and actual Apple Python old/new libproc struct layout and current-process reads.",
+    "ctypes": {
+      "field_count": 22,
+      "size": 136,
+      "alignment": 8,
+      "old_new_types_sizes_offsets_equal": true,
+      "real_current_process_reads_equal": true
+    },
+    "limits": "No editor connection or repeated native 39-check runtime run; original native acceptance retains its original hashes."
+  }
+}

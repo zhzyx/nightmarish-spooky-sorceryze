@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "issue": 554,
+  "request_id": "external-chat-instruction-submit-20261108",
+  "source_base": "234e37d4aaa43d9679b52461478299fb87cd1b25",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "91f54829dc7c1e6a4d306c7d987a79f737c13b813e8197c179bf8fed7ac09197",
+    "editor/docks/ai_chat_dock.h": "2dc5be33273518fafee37994cb4a91f3a63ce8117aa72792fc9f275a6d1ee4de",
+    "editor/docks/ai_chat_editor_bridge.cpp": "ac6a78882b0a53536e4fb5b37fe01ae224c4f9d5003d92553b905dd483fe7c43",
+    "editor/docks/ai_chat_editor_bridge.h": "ff11ec447d35b6540693b39182f831b56b36f394f1aa03fc33fed89c1b0e5642",
+    "editor/docks/ai_chat_editor_control.cpp": "752ccb76b1f1a1451fea06f72e88dd32beb85b731be7c5c4e4a938f20f111df9",
+    "editor/docks/ai_chat_editor_control.h": "8fa102a3503e1bad2f6e0d2d2dd5f0c754ef6f8ce88a6358a9150c269ba288b5",
+    "editor/docks/ai_chat_editor_instruction_bridge.cpp": "806a7e8fc98ed0345452682c5d3163dcd2d2d3915c8fc90ce8205269c7349687",
+    "editor/docks/ai_chat_external_chat.cpp": "c2009bcd1fdcf94276f6fc682841480317dda9d97a0931aeb42efbed76539838",
+    "editor/docks/ai_chat_external_peer.cpp": "4d97a742aa176409846e66ebeead7dbf89fdcfdbc2e6bc97a2374ecdad94075e",
+    "editor/docks/ai_chat_external_peer.h": "383817178c80a70ea1d39ae5735edfbc73a254f79a420c6e7f69a05968bc5647",
+    "tests/editor/external_chat_submit.gd": "594e2c3d6ef09adf1e6620fea4d3d3dae8bbd83123b29d2e3a7a4c29206d27ea",
+    "tests/editor/run_external_chat_submit.py": "dec289af99015a493d40d0b40f27884b2d4863c6a81f39067193ceeb13b9c912",
+    "tests/editor/test_ai_chat_external_peer.cpp": "1b4e1a25021697cd02c55dba37262ab004b83a8307176b4c1240fd695fdf0c8a",
+    "tools/editor_instruction_client.py": "5cbf840b89e6f7e8489c65d64c64d50ff124866359bd7591933d5e258438d6bd"
+  },
+  "raw_artifact_sha256": "436a29a53dd64487f03842ab7c6b1a12a171efeb241168fd1219a3dacf600870",
+  "platform": "macos-arm64",
+  "scons_options": {
+    "platform": "macos",
+    "arch": "arm64",
+    "target": "editor",
+    "tests": "yes",
+    "debug_symbols": "no",
+    "vulkan": "no",
+    "accesskit": "no",
+    "dev_build": "no"
+  },
+  "author_native": {
+    "ok": true,
+    "checks": [
+      "kernel_verified_desktop_peer",
+      "known_parent_candidate_owner",
+      "atomic_submit_requested",
+      "same_id_does_not_resend",
+      "changed-id-payload",
+      "same_id_changed_payload_refused",
+      "internal_model_tool_refused",
+      "pending-parent-close",
+      "close_cancel_restores_availability",
+      "ordinary_tcp_cannot_submit",
+      "tcp_cannot_recover_as_trusted_peer",
+      "context-boolean",
+      "context-fraction",
+      "context-unsafe",
+      "context-extra",
+      "context-missing",
+      "draft-race",
+      "nonempty-draft",
+      "human_draft_preserved",
+      "disabled-tools",
+      "disabled-automatic",
+      "disabled-consultation",
+      "child-parent-only",
+      "unknown-owner",
+      "original_parent_restored",
+      "apple_python_from_engine_refused",
+      "unknown_intermediate_code_refused",
+      "client_kernel_engine_pid_check",
+      "fake_server_received_no_instruction",
+      "ordinary_workflow_busy_submit",
+      "queue-race",
+      "durable_receipt_restored",
+      "restart_does_not_replay",
+      "durable-save-failure",
+      "journal_failure_has_no_send",
+      "one_original_candidate",
+      "foreign_owner_fixture_loaded",
+      "foreign-owner-with-matching-context",
+      "foreign_owner_has_no_model_call"
+    ],
+    "report_sha256": "f76ca23b9bdc2eff288b768ae00c61c8aa546e32c9ce68508ff8f2c30735b756"
+  },
+  "independent_native": {
+    "ok": true,
+    "checks": [
+      "kernel_verified_desktop_peer",
+      "known_parent_candidate_owner",
+      "atomic_submit_requested",
+      "same_id_does_not_resend",
+      "changed-id-payload",
+      "same_id_changed_payload_refused",
+      "internal_model_tool_refused",
+      "pending-parent-close",
+      "close_cancel_restores_availability",
+      "ordinary_tcp_cannot_submit",
+      "tcp_cannot_recover_as_trusted_peer",
+      "context-boolean",
+      "context-fraction",
+      "context-unsafe",
+      "context-extra",
+      "context-missing",
+      "draft-race",
+      "nonempty-draft",
+      "human_draft_preserved",
+      "disabled-tools",
+      "disabled-automatic",
+      "disabled-consultation",
+      "child-parent-only",
+      "unknown-owner",
+      "original_parent_restored",
+      "apple_python_from_engine_refused",
+      "unknown_intermediate_code_refused",
+      "client_kernel_engine_pid_check",
+      "fake_server_received_no_instruction",
+      "ordinary_workflow_busy_submit",
+      "queue-race",
+      "durable_receipt_restored",
+      "restart_does_not_replay",
+      "durable-save-failure",
+      "journal_failure_has_no_send",
+      "one_original_candidate",
+      "foreign_owner_fixture_loaded",
+      "foreign-owner-with-matching-context",
+      "foreign_owner_has_no_model_call"
+    ],
+    "report_sha256": "61889a25cab70730581a6c674a823bc5e21604de16c77e9e4ca86be21eb9032d"
+  },
+  "actual_identity": {
+    "external_official_desktop_allowed": true,
+    "apple_python_from_godot_rejected": "godot_ancestor",
+    "unknown_interpreter_rejected": "unrecognized_ancestor_code",
+    "desktop_identifier": "com.openai.codex",
+    "desktop_team_identifier": "2DC432GLL2"
+  },
+  "peer_native_unit": {
+    "cases": 5,
+    "assertions": 47,
+    "status": "passed",
+    "scope": "Fixed same peer sources; author component test plus root independent execution, distinct from the full native fixture"
+  },
+  "normal_private_startup": {
+    "same_bytes": true,
+    "version_exit": 0,
+    "editor_exit": 0,
+    "chat_dock_present": true,
+    "instruction_bridge_present": true,
+    "original_bin_marker_free": true
+  },
+  "preserved_failures": [
+    {
+      "case": "initial fixture startup",
+      "fact": "A fixture typing/setup issue failed before model execution; retained, corrected, and not credited as acceptance."
+    },
+    {
+      "case": "closed Unix peer query",
+      "fact": "Client queried LOCAL_PEERPID after normal server disconnect; retained failure, now checks kernel peer before send and engine birth before/after."
+    },
+    {
+      "case": "peer PID1 collection",
+      "fact": "Normal-user SDK probe cannot read PID1; old strengthened test failed 44/45. The helper now uses two actual final-process PPID==1 observations, never synthesized PID1 identity."
+    },
+    {
+      "case": "JSON numeric comparison",
+      "fact": "Real signed peer admitted but protocol rejected JSON FLOAT1 against native INT1; corrected exact safe numeric parsing and tested booleans/fractions/unsafe integers/extra or missing keys."
+    },
+    {
+      "case": "fixture parent switch",
+      "fact": "Fixture emitted tab_selected while the real control listens to tab_changed; real host correctly rejected unknown owner. Correct native tab change is now used."
+    },
+    {
+      "case": "test import ordering",
+      "fact": "The fixture import failed before startup after formatting moved dynamic imports; retained and corrected using explicit importlib loading."
+    }
+  ],
+  "limits": [
+    "API responses and Issue transport are offline fixtures; this is real native tool/dispatch/receipt/OS-identity execution, not production LLM acceptance.",
+    "IME preedit protection is inspected and compiled; no real user input-method interaction was performed.",
+    "macOS only for the new trusted channel; existing TCP confirmations and other-platform behavior are preserved.",
+    "This raw is a local maintenance observation, not a signed App, formal candidate binding, installed original user entry, or a native483 build_engine result.",
+    "Native483 and original user-entry activation/cold-start acceptance remain owned by the original parent task."
+  ]
+}

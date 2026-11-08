@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "issue": 554,
+  "reviewer": "readonly_child_tool (not the Issue554 implementation author; prior Issue551 work is separate baseline)",
+  "created_at_utc": "2026-11-08T05:14:29.467043+00:00",
+  "verdict": "pass",
+  "remaining_blockers": [],
+  "fixed_scope": {
+    "freeze_path": "host-private/issue554-source-review-freeze-v2.json",
+    "freeze_sha256": "b15fa7335f79b01be4c95810e99c67a1b9cc5d83dcb05a073b25bf3203778c5b",
+    "source_root": "repository_root",
+    "source_head": "234e37d4aaa43d9679b52461478299fb87cd1b25",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "91f54829dc7c1e6a4d306c7d987a79f737c13b813e8197c179bf8fed7ac09197",
+      "editor/docks/ai_chat_dock.h": "2dc5be33273518fafee37994cb4a91f3a63ce8117aa72792fc9f275a6d1ee4de",
+      "editor/docks/ai_chat_editor_bridge.cpp": "ac6a78882b0a53536e4fb5b37fe01ae224c4f9d5003d92553b905dd483fe7c43",
+      "editor/docks/ai_chat_editor_bridge.h": "ff11ec447d35b6540693b39182f831b56b36f394f1aa03fc33fed89c1b0e5642",
+      "editor/docks/ai_chat_editor_control.cpp": "752ccb76b1f1a1451fea06f72e88dd32beb85b731be7c5c4e4a938f20f111df9",
+      "editor/docks/ai_chat_editor_control.h": "8fa102a3503e1bad2f6e0d2d2dd5f0c754ef6f8ce88a6358a9150c269ba288b5",
+      "editor/docks/ai_chat_editor_instruction_bridge.cpp": "806a7e8fc98ed0345452682c5d3163dcd2d2d3915c8fc90ce8205269c7349687",
+      "editor/docks/ai_chat_external_chat.cpp": "c2009bcd1fdcf94276f6fc682841480317dda9d97a0931aeb42efbed76539838",
+      "editor/docks/ai_chat_external_peer.cpp": "4d97a742aa176409846e66ebeead7dbf89fdcfdbc2e6bc97a2374ecdad94075e",
+      "editor/docks/ai_chat_external_peer.h": "383817178c80a70ea1d39ae5735edfbc73a254f79a420c6e7f69a05968bc5647",
+      "tests/editor/external_chat_submit.gd": "594e2c3d6ef09adf1e6620fea4d3d3dae8bbd83123b29d2e3a7a4c29206d27ea",
+      "tests/editor/run_external_chat_submit.py": "dec289af99015a493d40d0b40f27884b2d4863c6a81f39067193ceeb13b9c912",
+      "tests/editor/test_ai_chat_external_peer.cpp": "1b4e1a25021697cd02c55dba37262ab004b83a8307176b4c1240fd695fdf0c8a",
+      "tools/editor_instruction_client.py": "5cbf840b89e6f7e8489c65d64c64d50ff124866359bd7591933d5e258438d6bd"
+    },
+    "artifact_sha256": "436a29a53dd64487f03842ab7c6b1a12a171efeb241168fd1219a3dacf600870",
+    "pre_run_source_artifact_match": true,
+    "post_run_source_artifact_drift": false,
+    "artifact_level": "Ordinary raw maintenance editor, copied by the runner into a private self-contained _sc_ instance; not a signed native App or a production work-order binding."
+  },
+  "source_review": [
+    {
+      "topic": "Separate trusted lane before cache",
+      "result": "Only the native AF_UNIX handler passes both host_context and trusted_instruction capability. JSON fields do not create that C++ capability. route_message rejects an untrusted chat_submit_instruction before route-cache lookup, and execute repeats the capability check. The new private methods are not script-bound. Existing HTTP chat_* confirmation and external source prefix remain intact.",
+      "refs": [
+        "ai_chat_external_chat.cpp:_chat_instruction_request",
+        "ai_chat_editor_control.cpp:route_message/execute",
+        "ai_chat_dock.cpp:_editor_bridge_request/_bind_methods"
+      ]
+    },
+    {
+      "topic": "Socket and client identity",
+      "result": "Server uses a private short mkdtemp directory, owner permissions, nonblocking bounded clients, CLOEXEC/no-SIGPIPE, inode-aware cleanup and production kernel/Security peer verification at accept and before dispatch. Client uses explicit observed engine PID, kernel LOCAL_PEERPID before sending, and real process birth before/after. Writable discovery is an address hint rather than authority. A normal server closing after a complete reply is supported without relying on a closed fd still reporting its peer.",
+      "refs": [
+        "ai_chat_editor_instruction_bridge.cpp",
+        "tools/editor_instruction_client.py"
+      ]
+    },
+    {
+      "topic": "Full actual ancestry",
+      "result": "Final helper captures both observed process chains, checks effective/real/saved UID, birth, parent links, code fingerprint and trusted desktop identity, rejects Godot or unknown code anywhere in the observed chain, and terminates only when the actual last observed process reports parent PID1 in both captures. It neither fabricates PID1 facts nor stops early at desktop. Actual kernel positive and negative cases are covered by the independent native run; pure C++ helper units were not executed by this reviewer.",
+      "refs": [
+        "ai_chat_external_peer.cpp:read_peer/capture_chain/validate_chain/verify"
+      ]
+    },
+    {
+      "topic": "Known owner and current context",
+      "result": "Only a current bound top-level production parent with tools and automatic execution can submit. _validate_engine_candidate checks the host binding and owner==conversation plus Issue/request before execution. Full expected-context keys and finite exact JSON integral values are compared; caller-supplied context never replaces owner authority. Shared availability logic exposes and enforces actual blocked state.",
+      "refs": [
+        "ai_chat_external_chat.cpp:expected_context_matches/_chat_instruction_context/_chat_instruction_blocked_reason/_chat_instruction_action",
+        "ai_chat_engine_candidate.cpp:_validate_engine_candidate (unchanged baseline)"
+      ]
+    },
+    {
+      "topic": "Draft, IME and closing parent",
+      "result": "Nonempty committed draft, attachments and queue drift are preserved. IME composition is included in context and rejected without cancel/apply_ime or set_text; this IME part was statically reviewed, not exercised with a real OS IME. A visible close confirmation for this exact active parent blocks submission; canceling that dialog restores availability, proven by the native fixture. An old pending id alone does not block later work."
+    },
+    {
+      "topic": "Regular workflow and durable outcomes",
+      "result": "One main-thread operation sets text and calls the existing _send path, retaining normal steering/queue/intake rather than caller-written history. Existing route journal persists execution uncertainty before effects and bounded outcome metadata afterward; instruction_submitted and business_completed=false survive restart. Exact same-id retries recover receipts and do not replay. Pre-effect persistence failure has no send; post-effect crash uncertainty remains unknown under the existing route design, not a claim of business completion. No new credential or approval-switch action is exposed."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "severity": "P2",
+      "finding": "An empty committed text buffer could still contain a human IME preedit, which set_text would interrupt.",
+      "resolution": "Author added ime_composing to expected context and has_ime_text rejection; no IME cancellation or commit is performed.",
+      "verification": "Final source inspection and compiled frozen bytes; actual IME GUI behavior was not dynamically tested."
+    },
+    {
+      "severity": "P2",
+      "finding": "Submitting behind the active parent close-confirmation modal could start work that the pending close then stops and removes.",
+      "resolution": "Author added visible close-confirmation plus matching active pending-close parent guard, with ordinary native close and cancel controls in the private fixture.",
+      "verification": "Independent pending-parent-close and close_cancel_restores_availability checks passed on final bytes."
+    }
+  ],
+  "independently_executed": {
+    "command": "/usr/bin/python3 tests/editor/run_external_chat_submit.py --godot bin/godot.macos.editor.arm64 --node <host-private-path> --untrusted-python <host-private-path> --out /tmp/issue554-independent-final-native.json",
+    "exit_code": 0,
+    "report_path": "host-private/issue554-independent-final-native.json",
+    "report_sha256": "61889a25cab70730581a6c674a823bc5e21604de16c77e9e4ca86be21eb9032d",
+    "ok": true,
+    "passed_check_count": 39,
+    "checks": [
+      "kernel_verified_desktop_peer",
+      "known_parent_candidate_owner",
+      "atomic_submit_requested",
+      "same_id_does_not_resend",
+      "changed-id-payload",
+      "same_id_changed_payload_refused",
+      "internal_model_tool_refused",
+      "pending-parent-close",
+      "close_cancel_restores_availability",
+      "ordinary_tcp_cannot_submit",
+      "tcp_cannot_recover_as_trusted_peer",
+      "context-boolean",
+      "context-fraction",
+      "context-unsafe",
+      "context-extra",
+      "context-missing",
+      "draft-race",
+      "nonempty-draft",
+      "human_draft_preserved",
+      "disabled-tools",
+      "disabled-automatic",
+      "disabled-consultation",
+      "child-parent-only",
+      "unknown-owner",
+      "original_parent_restored",
+      "apple_python_from_engine_refused",
+      "unknown_intermediate_code_refused",
+      "client_kernel_engine_pid_check",
+      "fake_server_received_no_instruction",
+      "ordinary_workflow_busy_submit",
+      "queue-race",
+      "durable_receipt_restored",
+      "restart_does_not_replay",
+      "durable-save-failure",
+      "journal_failure_has_no_send",
+      "one_original_candidate",
+      "foreign_owner_fixture_loaded",
+      "foreign-owner-with-matching-context",
+      "foreign_owner_has_no_model_call"
+    ],
+    "errors": [],
+    "model_requests": [
+      "DESIGN_BATCH_WARMUP",
+      "EXTERNAL_CHAT_SUBMITTED",
+      "EXTERNAL_CHAT_SUBMITTED",
+      "EXTERNAL_CHAT_HOLD",
+      "FIXTURE_QUEUED_MESSAGE"
+    ],
+    "actual_peer_allow": {
+      "authenticated_desktop_peer": true,
+      "peer_pid": 38630,
+      "trusted_desktop_pid": 13259,
+      "engine_pid": 38653
+    },
+    "actual_engine_child_deny": {
+      "engine_pid": 38653,
+      "error": "godot_ancestor",
+      "ok": false,
+      "protocol_version": 1
+    },
+    "actual_unknown_client_deny": {
+      "engine_pid": 38653,
+      "error": "unrecognized_ancestor_code",
+      "ok": false,
+      "protocol_version": 1
+    }
+  },
+  "verification_limits": [
+    "This reviewer did not edit Issue554 source, create a PR, perform a merge, or close an Issue.",
+    "Only the final frozen private offline model/Issue fixture was executed by this reviewer. Earlier author runs, failed preparations and root/peer unit executions are not counted as reviewer execution.",
+    "No process12311, source6ef, user GUI/App/history or global configuration was operated on or modified. Source14 and artifact hashes were checked before and after.",
+    "The IME guard is statically established; no real OS IME or visual screenshot acceptance is claimed.",
+    "No Windows CI/main delivery, production LLM, original native483 self-compilation/resume, final native App installation or original user entry acceptance is claimed.",
+    "The feature is limited to a known bound current top-level production parent on macOS. New/unbound parent, child/consultation, credential or approval changes and non-macOS trusted submission are not added by this capability."
+  ],
+  "overall_original_workflow_closed": false,
+  "private_original_sha256": "1dc5211d81454b982ba7fa31ab3cf4c2b2b4fc21431b2ef45576640e538b27c6",
+  "public_copy_note": "Only private filesystem paths were redacted; scope, findings, execution attribution, fixed hashes and limitations are retained."
+}
