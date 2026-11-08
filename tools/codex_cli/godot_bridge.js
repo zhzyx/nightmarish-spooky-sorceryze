@@ -120,10 +120,11 @@ function completion(text, input) {
 
 async function run(entry, request) {
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
-    if (fs.statSync(request).size > 1024 * 1024) throw bridgeError('INVALID_REQUEST');
+    if (fs.statSync(request).size > 1024 * 1024) throw bridgeError('REQUEST_SIZE_LIMIT');
     let input;
-    try { input = validateRequest(JSON.parse(fs.readFileSync(request, 'utf8'))); }
+    try { input = JSON.parse(fs.readFileSync(request, 'utf8')); }
     catch (_) { throw bridgeError('INVALID_REQUEST'); }
+    input = validateRequest(input);
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-codex-'));
     // TerminateProcess skips JS exit handlers. A pipe held by the bridge closes
     // even on forced cancellation; start its cleanup listener outside the CLI job.
@@ -213,6 +214,7 @@ async function run(entry, request) {
         const code = await closed;
         pending += decoder.end();
         if (pending) consume(pending);
+        if (failure === 'PROCESS_EXIT') failure = classifyDiagnostics(stderr + '\n' + lastError);
         if (failure) throw bridgeError(failure, code);
         if (code !== 0) throw bridgeError(classifyDiagnostics(stderr + '\n' + lastError), code);
         if (!done || !result) throw bridgeError(lastError ? classifyDiagnostics(lastError) : 'EMPTY_RESPONSE');
@@ -234,7 +236,8 @@ async function run(entry, request) {
 // parity for custom CLI configurations before enabling non-default providers.
 async function listModels(entry, { timeoutMs = 30000 } = {}) {
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
-    const child = spawn(entry, ['app-server'], { windowsHide: true, detached: process.platform !== 'win32',
+    const javascript = entry.endsWith('.js') || entry.endsWith('.mjs');
+    const child = spawn(javascript ? process.execPath : entry, javascript ? [entry, 'app-server'] : ['app-server'], { windowsHide: true, detached: process.platform !== 'win32',
         cwd: os.tmpdir(), stdio: ['pipe', 'pipe', 'pipe'] });
     const stop = () => {
         if (!child.pid) return;
