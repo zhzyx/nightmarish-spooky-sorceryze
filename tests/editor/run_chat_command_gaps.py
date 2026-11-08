@@ -185,7 +185,7 @@ def main():
                     records.append({"case": action, "state": "passed", "confirmation": "private native signal"})
                     return detail(terminal)
 
-                # Wait for the actual fixture connection catalogue, including
+                # Wait for the actual fixture connection catalog, including
                 # its advertised reasoning metadata, before session switching.
                 until(
                     lambda: (

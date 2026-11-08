@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_comment_spelling_review",
+  "baseline_source_commit": "4d32195dd978266f9d6fc63e9af34189b78febed",
+  "scope": [
+    "tests/editor/run_chat_command_gaps.py"
+  ],
+  "finding_count": 0,
+  "result": "comment_only_ast_equivalent",
+  "manifest": {
+    "tests/editor/run_chat_command_gaps.py": {
+      "baseline_sha256": "5e6079fc26a80edab3875da326ab15b51c289726d36257421613aa0b364a0aa9",
+      "candidate_sha256": "16870424eb58efd837fffbbf97a4543b5b0f5978e8b8da7555d2155510d55129"
+    }
+  },
+  "checks": [
+    "Current tracked unstaged diff consists solely of catalogue to catalog in a Python comment.",
+    "Exact byte replacement verified; all other runner bytes unchanged.",
+    "Python AST identical with attributes excluded; no executable behavior changed."
+  ],
+  "limits": [
+    "No tests rerun for this comment-only change.",
+    "No existing signed evidence or report modified."
+  ],
+  "production_state_changed": false
+}
