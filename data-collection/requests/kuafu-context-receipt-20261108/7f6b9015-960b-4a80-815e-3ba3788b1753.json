@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "kuafu-context-receipt-20261108",
+  "collected_at": "2026-11-08T03:30:30.469182+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/github-05536f69e5988ab9a1853c0400f45e3cbc28865c1cab6f535a4934f05bb53de5.json",
+      "sha256": "fe5b0adc2c3b7e30484d0d5d49ff353561bb437837dc9879eafd3fc81c1ca20c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-05536f69e5988ab9a1853c0400f45e3cbc28865c1cab6f535a4934f05bb53de5",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-context-correction-20261108.json",
+      "sha256": "d3dc925cff89cf91dc130e48b941ced3725ec2bfead6ce1e8d1d99279e03d3b3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-context-correction-20261108",
+      "origin": "authenticated-github-issue-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-context-request-20261108.json",
+      "sha256": "5ea2edaee6da4c4f79b5e58a88adbbb3d858c9a279a804fc530e823bed9a73a3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-context-request-20261108",
+      "origin": "authenticated-github-issue-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 544,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544"
+}

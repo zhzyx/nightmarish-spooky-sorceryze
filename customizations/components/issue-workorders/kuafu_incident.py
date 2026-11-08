@@ -282,7 +282,7 @@ def trusted_framework(root, repository):
     archive = git(root, "archive", "--format=zip", commit, "framework")
     with tempfile.TemporaryDirectory() as directory, zipfile.ZipFile(io.BytesIO(archive)) as snapshot:
         snapshot.extractall(directory)
-        yield Path(directory) / "framework"
+        yield (Path(directory) / "framework").resolve(strict=True)
 
 
 def references_issue(body, repository, number):
@@ -335,7 +335,7 @@ def bind_context(framework, folder, record, args, identity):
     if read(file) != mandate:
         raise ValueError("Incident already bound to a different operator, worker or mandate; reconcile the handoff")
     context = subprocess.check_output(
-        ["node", str(framework / "tools/agent-context.mjs"), "kuafu", str(file)],
+        ["node", str((framework / "tools/agent-context.mjs").resolve(strict=True)), "kuafu", str(file)],
         cwd=framework,
         env=dict(
             {
@@ -347,6 +347,8 @@ def bind_context(framework, folder, record, args, identity):
         ),
         timeout=120,
     )
+    if not context.decode("utf-8").strip():
+        raise ValueError("Kuafu context is empty; receive was not confirmed")
     profile = read(framework / "agents/kuafu/reporting.json")["component"]
     binding = dict(
         mandate, context_sha256=sha(context), definition_sha256=profile["entry_sha256"], version=profile["version"]
