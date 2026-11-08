@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "request_id": "tianshu-continuous-api",
+  "issue_number": 592,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+  "requirements": "design-docs/tianshu-continuous-api.md",
+  "implementation_issues": [
+    594,
+    595,
+    599
+  ],
+  "deferred_issue": 593,
+  "authentication": "Codex CLI reported Logged in using ChatGPT; independent API key not required",
+  "verification": {
+    "operator": "Sail-Li",
+    "tested_platform": "Windows x86_64, headless Godot editor",
+    "real_consultation": {
+      "task": "Read an isolated file using the editor tool, return its random content verbatim. Fresh editor processes on the same machine, requested gpt-6.1-sol.",
+      "before_first_stage_ms": 935,
+      "before_completion_ms": 239088,
+      "after_first_stage_ms": 921,
+      "after_completion_ms": 134748,
+      "run_count_per_variant": 1,
+      "scope": "Historical diagnostic of the retired alternate-provider experiment, superseded by the original-provider system proxy build. Not the final speed comparison."
+    },
+    "bridge_regressions": 18,
+    "scoped_outbox_tests": 38,
+    "storage_load_5962_events_median_seconds": {
+      "before": 1.208521,
+      "after": 0.720269,
+      "samples_per_variant": 5
+    },
+    "deployment_python_flush_seconds": {
+      "single_cold": 1.017302,
+      "single_warm": 0.923335,
+      "eight_envelopes": 7.7072
+    },
+    "native_direct_fixture": "Passed issue restart, selection change and original binding. Uses isolated Issue and model transports.",
+    "native_cli_comparison": "Separate raw CLI runs did not return the expected file content under the tested Windows sandbox policies; no successful speed ratio claimed.",
+    "original_provider_issue_run": {
+      "issue": 599,
+      "request_id": "tianshu-codex-cli-progress",
+      "case": "Fresh isolated Godot workbench opened an existing assigned Issue, selected Codex gpt-6.1-sol using the logged-in subscription. The model proposed read_file, Godot executed it and the model returned the exact random contents.",
+      "cli": "0.167.0-alpha.3.2",
+      "editor_sha256": "1f67ff476c4ece04826b3a0b49e5780acf86f3ff06838b7c8f848b84277b8ea2",
+      "first_cli_event_visible_ms": 24184,
+      "final_answer_ms": 80915,
+      "extra_confirmations": 0,
+      "run_count": 1,
+      "terminal_event": "f5473cc94ef49109bc404688a9fbe840c75f8f8d8e496cbfa6503158d7e4fe41",
+      "tool_rounds": 1
+    },
+    "deployment_python_batch": {
+      "events_in_copied_dataset": 6003,
+      "cold_single_seconds": 0.95048,
+      "warm_single_seconds": 0.93754,
+      "batch_size": 64,
+      "batch_seconds": 1.25956,
+      "all_receipts_returned": true
+    }
+  },
+  "incident_issues": [
+    597,
+    605
+  ],
+  "delivery": "candidate validation; main and complete business acceptance tracked separately",
+  "outstanding": [
+    "Verify external side effects and unknown receipts across an actual editor restart.",
+    "Measure paired successful native Codex and workbench tasks under equivalent host policies.",
+    "Verify reductions in CLI launches or realized independent tool batching across representative work."
+  ]
+}

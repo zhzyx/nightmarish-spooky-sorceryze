@@ -23,7 +23,7 @@ class CandidateError(ValueError):
     pass
 
 
-def git(root, *arguments, check=True, raw=False):
+def git(root, *arguments, check=True, raw=False, env=None):
     try:
         result = subprocess.run(
             [os.environ.get("GONGGONG_GIT", "git"), "-C", str(root), *arguments],
@@ -31,6 +31,7 @@ def git(root, *arguments, check=True, raw=False):
             text=not raw,
             encoding=None if raw else "utf-8",
             timeout=120,
+            env=env,
         )
     except (OSError, subprocess.TimeoutExpired):
         raise CandidateError("candidate_git_unavailable") from None
@@ -610,6 +611,13 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
                 initial_launch, inherited_binding = inherited_launch(
                     workspace, common, repository, origin, folder, launch.resolve()
                 )
+            fetch_environment = None
+            if sys.platform == "win32" and origin.lower().startswith("https://github.com/"):
+                from editor_network_proxy import windows_https_proxy_environment
+
+                proxy = windows_https_proxy_environment(["github.com"], os.environ)
+                if proxy:
+                    fetch_environment = {**os.environ, **proxy}
             git(
                 workspace,
                 "fetch",
@@ -617,6 +625,7 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
                 "--no-write-fetch-head",
                 "origin",
                 "refs/heads/main:refs/remotes/origin/main",
+                env=fetch_environment,
             )
             base = git(workspace, "rev-parse", "--verify", "refs/remotes/origin/main^{commit}").stdout.strip()
             binding = dict(

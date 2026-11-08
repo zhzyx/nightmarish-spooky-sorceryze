@@ -178,6 +178,7 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
         const cases = [
             { events: [
                 { type: 'thread.started', thread_id: 'mock' },
+                { type: 'turn.started' },
                 { type: 'item.completed', item: { type: 'agent_message', text: '{"content":"中文回复","actions":[]}' } },
                 { type: 'turn.completed', usage: {} },
             ], success: true },
@@ -205,11 +206,17 @@ test('Codex subprocess handles UTF-8 JSONL, failed turns and missing completion 
                 for (let i = 0; i < bytes.length; i++) process.stdout.write(bytes.subarray(i, i + 1));
                 process.exitCode = ${scenario.exitCode || 0};
             });`);
-            const result = spawnSync(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request],
+            const progress = scenario.events[0].type === 'thread.started';
+            const result = spawnSync(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request, ...(progress ? ['--progress'] : [])],
                 { encoding: 'utf8', timeout: 10000 });
             assert(!result.error, String(result.error));
             assert(!result.stdout.includes('private-token'));
-            const packet = JSON.parse(result.stdout);
+            const packets = result.stdout.split('\n').map(line => JSON.parse(line));
+            const packet = packets.pop();
+            assert.deepEqual(packets, progress ? [
+                { event: 'codex_progress', activity: 'thread_started' },
+                { event: 'codex_progress', activity: 'turn_started' },
+            ] : []);
             if (scenario.success) {
                 assert.equal(result.status, 0, result.stdout);
                 assert.equal(packet.choices[0].message.content, '中文回复');
@@ -341,4 +348,40 @@ test('cancelling a pending image request removes private attachments', async () 
         if (child && child.exitCode === null) child.kill();
         fs.rmSync(directory, { recursive: true, force: true });
     }
+});
+
+
+test('Codex batches 17 independent reads in one turn and rejects oversized or mixed batches atomically', () => {
+    const reads = Array.from({ length: 17 }, (_, i) => ({ name: 'read_file', arguments: JSON.stringify({ path: 'fixture-' + i }) }));
+    const wire = actions => JSON.stringify({ content: '', actions });
+    assert.equal(completion(wire(reads), input).choices[0].message.tool_calls.length, 17);
+    assert.equal(completion(wire(Array.from({ length: 32 }, () => reads[0])), input).choices[0].message.tool_calls.length, 32);
+    assert.throws(() => completion(wire(Array.from({ length: 33 }, () => reads[0])), input));
+    const mixedInput = { ...input, available_tools: [...input.available_tools, typedTool] };
+    assert.throws(() => completion(wire([...reads, { name: 'run_command', arguments: { command: 'echo forbidden-large-batch' } }]), mixedInput));
+    assert.equal(completion(wire(reads.slice(0, 8)), input).choices[0].message.tool_calls.length, 8);
+    const { outputSchemaFor } = require('../../tools/codex_cli/action_schema');
+    const { SCHEMA } = require('../../tools/codex_cli/godot_bridge');
+    assert.equal(outputSchemaFor(input, SCHEMA).properties.actions.maxItems, 32);
+});
+
+
+
+test('Windows proxy honors explicit settings and applies verified system HTTPS mapping only to child', () => {
+    const { proxyEnvironment } = require('../../tools/codex_cli/godot_bridge');
+    let calls = 0;
+    const invoke = () => { calls++; return { status: 0, stdout: JSON.stringify({ HTTPS_PROXY: 'http://127.0.0.1:1234', NO_PROXY: 'chatgpt.com' }) }; };
+    const python = require('node:path').resolve('python.exe');
+    const original = { KEEP: 'yes' };
+    const actual = proxyEnvironment(original, python, 'win32', invoke);
+    assert.equal(actual.HTTPS_PROXY, 'http://127.0.0.1:1234');
+    assert.equal(actual.NO_PROXY, 'chatgpt.com');
+    assert.equal(original.HTTPS_PROXY, undefined);
+    for (const key of ['https_proxy', 'HTTP_PROXY', 'ALL_PROXY', 'NO_PROXY', 'OPENAI_BASE_URL']) {
+        assert.equal(proxyEnvironment({ [key]: 'explicit' }, python, 'win32', invoke).HTTPS_PROXY, undefined);
+    }
+    assert.equal(calls, 1);
+    assert.equal(proxyEnvironment({}, python, 'linux', invoke).HTTPS_PROXY, undefined);
+    assert.equal(proxyEnvironment({}, python, 'win32', () => ({ status: 1 })).HTTPS_PROXY, undefined);
+    assert.equal(proxyEnvironment({}, python, 'win32', () => ({ status: 0, stdout: '{}' })).HTTPS_PROXY, undefined);
 });

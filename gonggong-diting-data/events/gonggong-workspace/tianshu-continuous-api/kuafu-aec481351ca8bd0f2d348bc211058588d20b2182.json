@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-aec481351ca8bd0f2d348bc211058588d20b2182",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-continuous-api",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0cf0edd912cd7538b6a258a44c57f418e7cad04e6e75f21312fc4efb5cea6525",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/597",
+    "action": "dispatch",
+    "detection_head": "f9c45dece1c75b415be13a98639888ed0fbc1c3c",
+    "context_sha256": "0401fb5ce242c1f1fe265edcf0f8e39ddcdfeb8d33209f43f1eef3cae61defbd",
+    "operator": "Sail-Li",
+    "worker": "Codex-host-Sail-Li",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42514404135",
+    "diagnosis": "原派发已启动工作者，投递谛听信封时独立 record 子进程用尽15秒预算。真实终态已核验并释放，主单没有重复启动。平台每条验证均执行全库路径解析，跨工单积压会竞争同一队列。",
+    "next_action": "关联 #595 对当前工单及显式依赖定向投递并减少无缓存的解析开销，核验原调度回执与主线交付，保留未覆盖的慢存储诊断。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T19:18:53.176865+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T19:49:02.682575+00:00",
+  "sha256": "cd8df962142e2ebeeb73e9c5bc17c6d2ffdc8536d20bcdf5509058ec84dd6387"
+}

@@ -44,6 +44,11 @@ _igniter = importlib.util.module_from_spec(_igniter_spec)
 _igniter_spec.loader.exec_module(_igniter)
 
 
+RECEIPT_PROTOCOL = "gonggong-scoped-batch-receipts-v1"
+RECEIPT_EXECUTION_SECONDS = 120
+RECEIPT_LOCK_WAIT_SECONDS = RECEIPT_EXECUTION_SECONDS + 5
+
+
 def storage_entry():
     # Execute only the installed host adapter. The selected project supplies data.
     installation = Path(__file__).resolve().parents[3]
@@ -92,46 +97,109 @@ def outbox_lock(folder, deadline):
                 fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
-def flush(root):
+def flush(root, scope=None):
     root = Path(root).resolve()
-    deadline = time.monotonic() + 15
+    deadline = time.monotonic() + RECEIPT_LOCK_WAIT_SECONDS
     with outbox_lock(root / ".gonggong-outbox/chat", deadline):
-        return flush_locked(root, deadline)
+        return flush_locked(root, deadline, scope)
 
 
-def flush_locked(root, deadline):
+def scoped_pending(pending_files, scope):
+    if set(scope) != {"tenant_id", "request_id", "source_ref"} or not all(
+        isinstance(value, str) and value for value in scope.values()
+    ):
+        raise ValueError("Complete outbox request scope required")
+    envelopes = {}
+    selected = []
+    for path in pending_files:
+        if path.is_symlink():
+            raise ValueError("Linked outbox entry is not allowed")
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(envelope, dict):
+            raise ValueError("Invalid outbox envelope")
+        if any(
+            not isinstance(envelope.get(key), str) or not envelope[key]
+            for key in ("tenant_id", "event_id", "request_id", "source_ref")
+        ):
+            raise ValueError("Unattributed outbox envelope")
+        identity = (envelope["tenant_id"], envelope["event_id"])
+        envelopes.setdefault(identity, []).append((path, envelope))
+        if all(envelope.get(key) == value for key, value in scope.items()):
+            selected.append(identity)
+
+    ordered = []
+    visiting = set()
+    visited = set()
+
+    def visit(identity):
+        if identity in visiting:
+            raise ValueError("Cyclic outbox dependencies; envelopes retained")
+        if identity in visited:
+            return
+        visiting.add(identity)
+        if len(envelopes[identity]) != 1:
+            raise ValueError("Duplicate outbox event identity")
+        path, envelope = envelopes[identity][0]
+        refs = list(envelope.get("evidence_refs", []))
+        if "supersedes" in envelope:
+            refs.append(envelope["supersedes"])
+        for ref in refs:
+            predecessor = (identity[0], ref)
+            if predecessor in envelopes:
+                visit(predecessor)
+        visiting.remove(identity)
+        visited.add(identity)
+        ordered.append(path)
+
+    for identity in selected:
+        visit(identity)
+    return ordered
+
+
+def flush_locked(root, deadline, scope=None):
     """Idempotent durable file outbox. Only delete an envelope after a real receipt."""
     root = Path(root).resolve()
     outbox = root / ".gonggong-outbox/chat"
-    receipts = []
-    for pending in sorted(outbox.glob("*.json")):
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
-            raise ValueError("Diting flush time budget reached; remaining envelopes retained")
-        if pending.is_symlink():
-            raise ValueError("Linked outbox entry is not allowed")
+    pending_files = sorted(outbox.glob("*.json"))
+    if scope is not None:
+        pending_files = scoped_pending(pending_files, scope)
+    if any(path.is_symlink() for path in pending_files):
+        raise ValueError("Linked outbox entry is not allowed")
+    if pending_files:
         recorded = subprocess.run(
-            [
-                sys.executable,
-                "-I",
-                storage_entry(),
-                "record",
-                "--repo",
-                str(root),
-                "--input",
-                str(pending),
-            ],
+            [sys.executable, "-I", storage_entry(), "record-batch", "--repo", str(root)],
+            input=json.dumps([str(path) for path in pending_files]),
             capture_output=True,
             text=True,
             encoding="utf-8",
-            timeout=remaining,
+            timeout=120,
             env=host_environment(root),
         )
         if recorded.returncode:
-            raise ValueError("Diting receipt failed; envelope retained: " + recorded.stderr.strip())
-        receipts.append(json.loads(recorded.stdout))
-        pending.unlink(missing_ok=True)
-    return {"ok": True, "state": "recorded_file", "receipts": receipts, "git_committed": False}
+            raise ValueError("Diting batch receipt failed; envelopes retained: " + recorded.stderr.strip())
+        result = json.loads(recorded.stdout)
+        if result.get("ok") is not True or len(result.get("receipts", [])) != len(pending_files):
+            raise ValueError("Incomplete Diting batch receipt; envelopes retained")
+        for pending, receipt in zip(pending_files, result["receipts"]):
+            envelope = json.loads(pending.read_text(encoding="utf-8"))
+            body = {key: value for key, value in envelope.items() if key != "sha256"}
+            digest = hashlib.sha256(
+                json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode(
+                    "utf-8"
+                )
+            ).hexdigest()
+            if (
+                not isinstance(receipt, dict)
+                or receipt.get("state") != "recorded_file"
+                or receipt.get("tenant_id") != envelope.get("tenant_id")
+                or receipt.get("event_id") != envelope.get("event_id")
+                or receipt.get("sha256") != digest
+            ):
+                raise ValueError("Unmatched Diting batch receipt; envelopes retained")
+        for pending in pending_files:
+            pending.unlink(missing_ok=True)
+        return {"ok": True, "state": "recorded_file", "receipts": result["receipts"], "git_committed": False}
+    return {"ok": True, "state": "recorded_file", "receipts": [], "git_committed": False}
 
 
 def enqueue(root, event):
@@ -359,7 +427,8 @@ def chat(root, request, tenant):
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
     issue = issue_binding(root, request, tenant)
-    flush(root)  # An earlier failed delivery blocks the next model/tool round.
+    receipt_scope = {"tenant_id": tenant, "request_id": request["request_id"], "source_ref": issue["url"]}
+    flush(root, receipt_scope)  # Required predecessors in this request must have receipts.
     binding = {
         "tenant_id": tenant,
         "request_ref": request["request_id"],
@@ -478,7 +547,7 @@ def chat(root, request, tenant):
         }
         enqueue(root, event)
         try:
-            result["receipt"] = flush(root)
+            result["receipt"] = flush(root, receipt_scope)
         except (OSError, ValueError, subprocess.TimeoutExpired) as error:
             return {"ok": False, "agent_execution_enabled": False, "error": str(error)}
         result["context_ready"] = result["ok"]
@@ -955,6 +1024,9 @@ def main():
     parser.add_argument("--tenant", default="gonggong-workspace")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--request", type=Path)
+    parser.add_argument("--receipt-tenant")
+    parser.add_argument("--receipt-request")
+    parser.add_argument("--receipt-source")
     args = parser.parse_args()
     try:
         if args.action == "chat":
@@ -981,7 +1053,14 @@ def main():
                 request["_cancel_path"] = str(args.request)
             result = GUIDE_ACTIONS[args.action](Path(args.workspace).resolve(), request)
         elif args.action == "flush":
-            result = flush(Path(args.workspace))
+            scope = None
+            if any((args.receipt_tenant, args.receipt_request, args.receipt_source)):
+                scope = {
+                    "tenant_id": args.receipt_tenant,
+                    "request_id": args.receipt_request,
+                    "source_ref": args.receipt_source,
+                }
+            result = flush(Path(args.workspace), scope)
         else:
             result = execute(args.workspace, args.action, args.tenant)
     except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:

@@ -18,6 +18,21 @@ func canvas_turn(panel, binding: Dictionary, question: String) -> Dictionary:
 		"selection":{"backend":0, "id":"chosen-execution-model"}}
 
 
+func check_worker_progress(workspace) -> void:
+	var panel = workspace.get_script().new()
+	var item := {"url":"https://github.com/example/repo/issues/1", "number":1, "request":"original", "source_sha256":"revision", "status":"in-progress", "workers":["original worker"]}
+	panel.chat_work[item.url] = {"worker":{"version":"revision", "step":"chat"}}
+	panel.fresh_progress = false
+	check(panel._work_summary(item, {}).state != "running", "Stale workers must not imply live progress")
+	panel.fresh_progress = true
+	panel.offline = true
+	check(panel._work_summary(item, {}).state != "running", "Offline workers must not imply live progress")
+	panel.offline = false
+	check(panel._work_summary(item, {}).state == "running", "Fresh worker receipts must retain live progress")
+	item.closed = true
+	check(panel._work_summary(item, {}).state == "completed", "Closure is authoritative")
+	panel.free()
+
 func run() -> void:
 	await create_timer(1.0).timeout
 	var repo := OS.get_environment("DAQIAN_TEST_REPO")
@@ -29,6 +44,9 @@ func run() -> void:
 	var chat = root.find_child("AI Chat", true, false)
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await panel.refresh()
+	check_worker_progress(panel)
+	var unavailable: String = chat.open_daqian_chat("https://github.com/example/repo/issues/112233", 112233, "missing-original", "", false, {}, true, "", true)
+	check("原工作者对话" in unavailable, "Missing original worker must not create a replacement conversation")
 	if OS.get_environment("DAQIAN_TEST_RESTART") == "1":
 		await resume_after_restart(panel, chat, dock, repo)
 		return
@@ -108,7 +126,7 @@ func run() -> void:
 	check(panel.publish_button.text == "开始推进", "URL-only legacy receipt leaked into another request")
 	altered.request = binding.request
 	panel._update_direct_action()
-	check(panel.publish_button.text == "查看推进对话", "Verified legacy binding did not recover")
+	check(panel.publish_button.text == "继续原工单对话", "Verified legacy binding did not recover")
 	panel.saved.direct_started.clear()
 	panel.current = source
 	panel.board.issues = previous
@@ -203,7 +221,7 @@ func resume_after_restart(panel, chat, dock, repo: String) -> void:
 	await panel.editor.await_graph_projection()
 	prepare = panel.editor.canvas.get_node("wf-prepare")
 	action = prepare.get_node("IssueAction")
-	check(panel.publish_button.text == "查看推进对话" and prepare.get_meta("flow_state") == "revisitable", "Successful session highlighted as a new task")
+	check(panel.publish_button.text == "继续原工单对话" and prepare.get_meta("flow_state") == "revisitable", "Successful session highlighted as a new task")
 	check(action.text == panel.publish_button.text and action.get_theme_stylebox("normal").border_color == Color("#a8e1b9"), "Completed session lacks matching revisitable action")
 	var closed := binding.duplicate()
 	closed.closed = true

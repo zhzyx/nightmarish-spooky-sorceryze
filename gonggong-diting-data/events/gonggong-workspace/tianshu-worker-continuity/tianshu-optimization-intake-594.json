@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-optimization-intake-594",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-worker-continuity",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+  "kind": "request",
+  "occurred_at": "2026-11-08T20:04:03.254960+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "outcome": "Recover the original work-order worker with its verified receipts",
+    "scope": "Godot Tianshu editor; no API key required",
+    "issue_number": 594,
+    "authority": "user goal and repository collaborator write access",
+    "design": "design-docs/tianshu-continuous-api.md"
+  },
+  "sha256": "3995f41ad51686935711601bf7162ed725eb784fffdb37459246e9c54056f759"
+}
