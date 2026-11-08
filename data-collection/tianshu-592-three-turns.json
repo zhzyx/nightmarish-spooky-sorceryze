@@ -1,0 +1,27 @@
+{
+  "request_id": "tianshu-continuous-api",
+  "issue_number": 592,
+  "executed_issue": 599,
+  "scenario": "One real logged-in Godot CLI owner reads one randomly generated file, then answers two history-only follow-ups in the same issue. Both follow-up answers matched exact expected suffixes of the original content.",
+  "model": "gpt-6.1-sol",
+  "api_key_required": false,
+  "timings_ms": {
+    "first_stage": 18077,
+    "first_complete": 73518,
+    "follow_up_1": 19788,
+    "follow_up_2": 20154
+  },
+  "additional_clicks": 0,
+  "run_count": 1,
+  "completed_receipts": [
+    "6afd12275e143772dc1cf53280e195c876dc98e84707f68f050a9220ef4f97d8",
+    "b74c6b05a7a8ac20ed34d868f7537a128ff26fc7edfbae48e32a144e3c52b907",
+    "da3de6283f31d62286a0dd7ca03bb5eff64c16b1f3f70204bddc5de2ba38896e"
+  ],
+  "tests": {
+    "godot_bridge": 18,
+    "host_receipts": 38,
+    "codebuddy_compatibility": 37
+  },
+  "scope": "Includes source checks and native model execution; no native Codex speed ratio inferred. External side-effect recovery and representative batching remain open."
+}

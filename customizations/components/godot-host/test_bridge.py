@@ -610,8 +610,8 @@ with b['outbox_lock'](root, time.monotonic() + 3):
 
 class StorageValidationCostTests(unittest.TestCase):
     def test_batch_interrupt_after_parent_allows_graph_and_retry(self):
-        import runpy
         import copy
+        import runpy
 
         storage = (
             Path(bridge.__file__).resolve().parents[3]
