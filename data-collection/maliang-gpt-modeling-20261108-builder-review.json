@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "state": "passed",
+  "reviewer": "independent modeling_ui agent; did not author or modify builder files",
+  "scope": "Read-only review of the fixed declarative Godot builder and exact source acceptance. No review of self-authored UI files.",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+    "samples/ainative-workbench/modeling_builder_acceptance.gd": "a5c79f393de39f0f24c771bed15db7fd1e606bdac97c00d36ab53aaf54935e3c"
+  },
+  "findings": [],
+  "checks": [
+    "Exact fields, version and five primitive allowlist; no model-generated scripts or dynamic execution",
+    "One to sixty-four parts and bounded names without path/node-special characters, control characters or trimmed whitespace",
+    "Finite typed vector components, rotation and coordinate/size/color limits; booleans rejected",
+    "Fixed bounded primitive tessellation, native materials, ownership and transform application",
+    "Geometry is nonempty and finite with exact part count before GLB export",
+    "Absolute new GLB only; existing output or receipt rejected; source, output size and GLB magic checked",
+    "Exact-current 25 native validation/export/round-trip/rejection checks passed",
+    "Six independent standalone CLI cases passed: new export with matching receipt, existing output, existing receipt, executable field, oversized input, non-GLB output",
+    "LF normalization revision verified by exact reconstruction of the previously reviewed CRLF byte hash; behavior and acceptance coverage unchanged"
+  ],
+  "evidence": {
+    "private_validation": "project/build-support/builder-evidence/modeling-builder/review-validation.json",
+    "validation_sha256": "c5a51288c2f51eccad92d8f35e7a25a2bd3f5284601f6285b931f9c706734033",
+    "old_validation_note": "Original validation.json predates trim rejection; independent rerun binds current builder and 25-check acceptance."
+  },
+  "limitations": [
+    "Reviewed fixed primitive construction only; no claim about complex-organic modeling quality",
+    "Output arguments are trusted host-local paths in an exclusive per-job directory; no untrusted model file paths accepted"
+  ],
+  "revisions": [
+    {
+      "date": "2026-11-08",
+      "reason": "Repository LF normalization and private evidence relocation after independent review; no logical source change",
+      "previous_source_sha256": {
+        "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "37d4e54f4473409129e1b00aa4339b8d468254cdfb1d6b30c36e9bf10d8c06c3",
+        "samples/ainative-workbench/modeling_builder_acceptance.gd": "a5c79f393de39f0f24c771bed15db7fd1e606bdac97c00d36ab53aaf54935e3c"
+      },
+      "current_source_sha256": {
+        "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+        "samples/ainative-workbench/modeling_builder_acceptance.gd": "a5c79f393de39f0f24c771bed15db7fd1e606bdac97c00d36ab53aaf54935e3c"
+      },
+      "source_equivalence": {
+        "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "previous CRLF bytes reconstructed exactly from current LF bytes",
+        "samples/ainative-workbench/modeling_builder_acceptance.gd": "unchanged bytes"
+      },
+      "previous_evidence": {
+        "private_validation": "runtime/modeling-builder/review-validation.json",
+        "validation_sha256": "c5a51288c2f51eccad92d8f35e7a25a2bd3f5284601f6285b931f9c706734033",
+        "old_validation_note": "Original validation.json predates trim rejection; independent rerun binds current builder and 25-check acceptance."
+      },
+      "evidence_equivalence": "Moved evidence bytes match the original validation_sha256 exactly; original test run remains unmodified",
+      "verification": "Read current bytes, reject remaining CRLF, reconstruct previous CRLF byte digest exactly for changed file; unchanged acceptance hash retained. No repeat model request or behavioral rerun required for newline-only normalization."
+    }
+  ]
+}

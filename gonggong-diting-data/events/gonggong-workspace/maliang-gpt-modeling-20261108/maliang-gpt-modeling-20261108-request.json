@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "request",
+  "occurred_at": "2026-11-08T03:18:05.847228+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "intent": "GPT CLI instructions to Godot Mesh without ComfyUI, retaining node workflow",
+    "authorization_ref": "codex:user:20261108:gpt-modeling-node-workflow",
+    "native_workers": [
+      "/root/modeling_provider",
+      "/root/godot_builder",
+      "/root/modeling_ui"
+    ],
+    "state": "in_progress",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "68e4e29b7e328f095b58578991d4c7e7ff45f19329e4db78a74cd7b7cdce0be6"
+}

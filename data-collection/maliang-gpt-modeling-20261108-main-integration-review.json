@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "independent_upstream_integration_source_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "reviewer": "Codex child /root/modeling_provider, read-only upstream delta audit",
+  "reviewed_at_utc": "2026-11-08T03:42:19.869642+00:00",
+  "state": "approved_with_required_native_revalidation",
+  "old_base_commit": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+  "new_base_commit": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+  "upstream_changed_files": [
+    "data-collection/issue542-independent-review.json",
+    "data-collection/issue542-main-screen-after.json",
+    "data-collection/issue542-main-screen-before.json",
+    "data-collection/requests/main-screen-route-selection-20261108/15b9992a-3cd1-4e85-a644-e5167cdcabc6.json",
+    "data-collection/requests/main-screen-route-selection-20261108/e9ce7b5e-d933-4cea-b3c6-0bc6551a099e.json",
+    "design-docs/main-screen-route-selection-20261108.md",
+    "editor/docks/ai_chat_editor_control.cpp",
+    "gonggong-diting-data/events/gonggong-workspace/main-screen-route-selection-20261108/kuafu-00989d1f80d0f1542c80468d9e5174bf2b764530.json",
+    "gonggong-diting-data/events/gonggong-workspace/main-screen-route-selection-20261108/kuafu-76bbea958299ff7833a14a8a09816f2b11aaf817.json",
+    "gonggong-diting-data/events/gonggong-workspace/main-screen-route-selection-20261108/main-screen-route-kuafu-context-correction-20261108.json",
+    "gonggong-diting-data/events/gonggong-workspace/main-screen-route-selection-20261108/main-screen-route-request-20261108.json",
+    "tests/editor/run_editor_command_coverage.py"
+  ],
+  "upstream_runtime_delta": {
+    "file": "editor/docks/ai_chat_editor_control.cpp",
+    "new_source_sha256": "dab53f577b5802d0e96ecee468e7088b44415ac09bb3d14dcac1477852433387",
+    "interfaces": [
+      "list_main_screens adds a visible boolean; existing name/title/layout_key/selected/hidden fields remain.",
+      "main_screen resolves the same EditorDock and uses existing force_focus_dock instead of make_visible.",
+      "main_screen now refuses success unless the requested tab is selected and its dock/window are visible; new failure codes main_screen_not_selected/main_screen_not_visible."
+    ],
+    "other_changes": "tests/editor/run_editor_command_coverage.py adds HTTP receipt/state/selection/visibility readbacks and unknown-screen negative coverage; remaining upstream changes are evidence/design records."
+  },
+  "unchanged_modeling_runtime_sha256": {
+    "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+    "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+    "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "8f50a7adf1fe508e65fb73788dcdf29fa86aaf9f4f7a9274ab6e1b0c6be77ac2",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361"
+  },
+  "interaction_assessment": [
+    "No upstream overlap with the five reviewed bundled modeling runtime sources, bundle construction, provider configuration, GPT CLI invocation, plan schema/interpreter, GLTF generation or GLB decoding.",
+    "AINative native tab identity and workbench loading remain unchanged. Routed main-screen activation now focuses and verifies the same tab; downstream layout/focus callbacks can run and must be checked on the rebuilt native editor.",
+    "The fixed mesh builder runs as a headless SceneTree process and does not call the semantic editor-control route changed upstream."
+  ],
+  "paid_cli_evidence_reuse": {
+    "allowed": true,
+    "scope": "Reuse the recorded one-request GPT CLI structured-plan/model-output evidence and artifact as historical actual inference for unchanged provider/plan/builder sources. Do not relabel the old executable hash as an actual paid run on the integrated build.",
+    "required_conditions": [
+      "The five modeling runtime source hashes remain equal to the paid-validation source hashes.",
+      "Rebuild the exact integrated candidate and verify its installed bundle equals those source hashes.",
+      "Run native modeling/tab/settings/preview/publication/reopen regression on that rebuilt candidate without another paid CLI request; decoding the recorded actual output and/or constructing a known validated plan is sufficient for affected native integration.",
+      "Retain the old paid run and failures as historical evidence, and append new integrated-build hashes/check outcomes separately."
+    ],
+    "recorded_request_count": 1,
+    "recorded_glb_sha256": "02fbe9b5226f122117fc025d974e4aa42e44f34b14632d752b5d07330f6704f3"
+  },
+  "risks_and_required_checks": [
+    {
+      "risk": "Routed main-screen selection is now stricter and triggers focus callbacks.",
+      "required": "Verify AINative/AI Chat/2D tab selection and visibility on rebuilt native editor; preserve explicit failures for invalid routes."
+    },
+    {
+      "risk": "A source-only audit cannot prove the newly compiled native bundle or renderer.",
+      "required": "Run no-paid native bundle/GLB preview and settings save/reopen regression, record actual binary and bundle hashes."
+    }
+  ],
+  "not_performed": [
+    "No source mutation, compilation, new online inference or native runtime tests in this independent audit. Root owns integrated rebuild and runtime revalidation."
+  ],
+  "conclusion": "No source-level interaction requires repeating paid GPT inference. Native tab/bundle/preview revalidation remains required before integrated delivery."
+}

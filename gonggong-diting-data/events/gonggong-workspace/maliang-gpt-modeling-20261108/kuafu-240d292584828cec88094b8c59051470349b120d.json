@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-240d292584828cec88094b8c59051470349b120d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f46ef80f9671373930a750dc1d696fd7e74fa252935dfd3abf047254f242dc14",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/547",
+    "action": "delivery",
+    "detection_head": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "context_sha256": "364e5b8318395e3b2b351173444e7fd5255592b8fcee1fb51f00e6849f0e6bc7",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "Current user GPT CLI modeling delivery request in this chat",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-main-integration-review.json",
+    "diagnosis": "Gate correctly refused a CRLF evidence work file whose staged Git blob was LF. Normalized task JSON source envelopes/review to actual staged LF bytes; immutable event content and snapshot identity unchanged, dedicated host snapshot retains explicit -text preservation.",
+    "next_action": "Stage exact evidence bytes and rerun the original submit; retain full failure history and require exact CI/main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:44:51.973912+00:00",
+    "attempted": "Inspected attributes and byte counts, corrected task evidence line endings only.",
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T03:45:46.519402+00:00",
+  "sha256": "9a755fedde76311f3c40daf24df93f75e68914140acabf14ea91b0c1789600ad"
+}

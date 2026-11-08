@@ -49,6 +49,7 @@ MESSAGES = {
     "node_unsupported": "当前生成服务不支持该节点类型。请检查节点类型及“本机设置”的服务模式。",
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
     "editor_command_failed": "操作未完成。请检查节点输入与本机设置；本机诊断已记录不含凭据的错误类别。",
+    "modeling_runtime_missing": "指令建模需要有效的 Godot 程序和内置构造工具，请使用包含该功能的马良引擎。",
 }
 
 
@@ -76,6 +77,8 @@ def settings(value):
         "image_model",
         "mesh_model",
         "cli_path",
+        "godot_path",
+        "builder_path",
     }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
@@ -83,7 +86,7 @@ def settings(value):
     if (
         result["schema_version"] != 1
         or isinstance(result["schema_version"], bool)
-        or result["mode"] not in ("offline", "comfy", "codex")
+        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling")
     ):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
@@ -94,11 +97,16 @@ def settings(value):
             name.startswith(("/", "\\")) or ".." in name.replace("\\", "/").split("/") or any(ord(c) < 32 for c in name)
         ):
             raise ServiceError("service_config_invalid")
-    if result["mode"] == "codex":
+    if result["mode"] in ("codex", "codex_modeling"):
         result.setdefault("cli_path", "codex")
         if not isinstance(result["cli_path"], str) or not result["cli_path"].strip():
             raise ServiceError("cli_unavailable")
     elif "cli_path" in result:
+        raise ServiceError("service_config_invalid")
+    if result["mode"] == "codex_modeling":
+        if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
+            raise ServiceError("modeling_runtime_missing")
+    elif any(key in result for key in ("godot_path", "builder_path")):
         raise ServiceError("service_config_invalid")
     if result["mode"] in ("comfy", "codex"):
         try:
@@ -195,6 +203,8 @@ def capability(kind, config, info, models, extra_image=False):
 def _probe_service(value):
     try:
         config = settings(value)
+        if config["mode"] == "codex_modeling":
+            return _probe_modeling(config), {}
         if config["mode"] == "codex":
             return _probe_codex(config)
         if config["mode"] == "offline":
@@ -247,6 +257,41 @@ def _probe_service(value):
 
 def check_service(value):
     return _probe_service(value)[0]
+
+
+def _probe_modeling(config):
+    from codex_provider import check_cli
+    from modeling_provider import check_modeling_cli
+
+    cli = check_modeling_cli(config["cli_path"])
+    image_cli = check_cli(config["cli_path"])
+    runtime = all(Path(config[key]).is_file() for key in ("godot_path", "builder_path"))
+    ready = cli.get("connected", False) and runtime
+    mesh = dict(
+        ready=ready,
+        code="" if ready else cli.get("code") or "modeling_runtime_missing",
+        message="GPT 建模指令与 Godot 构造器已就绪；适合原语组合，复杂人物与有机造型尚未验证。"
+        if ready
+        else cli.get("message", "")
+        if not cli.get("connected")
+        else MESSAGES["modeling_runtime_missing"],
+        missing_nodes=[],
+    )
+    image = dict(
+        ready=image_cli.get("connected", False),
+        code=image_cli.get("code", ""),
+        message=image_cli.get("message", ""),
+        missing_nodes=[],
+    )
+    return dict(
+        mode="codex_modeling",
+        connected=ready,
+        cli=cli,
+        models=dict(image=["builtin"], mesh=[]),
+        capabilities=dict(text_to_image=image, image_to_image=image, text_to_mesh=mesh, image_to_mesh=mesh),
+        backend_revision=cli.get("version", "") + "|godot-modeling-v1",
+        message="图像由 Codex CLI 生成；网格由 GPT 建模指令和 Godot 构造，无需 ComfyUI 或三维 AI 权重。",
+    )
 
 
 def _probe_codex(config):
@@ -319,6 +364,30 @@ def prepare_provider(config, model, database, run_id):
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
     if not generated:
         return registry, providers, {"mode": "offline"}
+    if config["mode"] == "codex_modeling":
+        from codex_provider import CodexProvider
+        from modeling_provider import ModelingProvider
+
+        report = _probe_modeling(config)
+        for node in generated:
+            capability_report = report["capabilities"][node["type"]]
+            if not capability_report["ready"]:
+                raise ServiceError(capability_report.get("code", "service_not_configured"))
+        provider_config = dict(
+            cli_path=config["cli_path"],
+            storage=str(Path(database).resolve().parent / "modeling-state"),
+            godot_path=config["godot_path"],
+            builder_path=config["builder_path"],
+        )
+        image_config = dict(
+            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=None
+        )
+        register(registry)
+        providers["codex-modeling"] = ModelingProvider(provider_config)
+        providers["codex"] = CodexProvider(image_config)
+        for node in generated:
+            node["provider"] = "codex-modeling" if node["type"].endswith("mesh") else "codex"
+        return registry, providers, dict(mode="codex_modeling", provider=provider_config, image_provider=image_config)
     if config["mode"] == "codex":
         from codex_provider import CodexProvider
 
@@ -404,6 +473,13 @@ def restore_provider(snapshot):
 
         register(registry)
         providers["codex"] = CodexProvider(snapshot["provider"])
+    elif snapshot["mode"] == "codex_modeling":
+        from codex_provider import CodexProvider
+        from modeling_provider import ModelingProvider
+
+        register(registry)
+        providers["codex-modeling"] = ModelingProvider(snapshot["provider"])
+        providers["codex"] = CodexProvider(snapshot["image_provider"])
     return registry, providers
 
 

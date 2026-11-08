@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "state": "passed",
+  "platform": "Windows x64 / MSVC14.5 / SDK10.0.26100.0",
+  "base_commit": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+  "source_sha256": {
+    "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+    "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+    "samples/ainative-workbench/addons/ainative/modeling_builder.gd": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "8f50a7adf1fe508e65fb73788dcdf29fa86aaf9f4f7a9274ab6e1b0c6be77ac2",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361"
+  },
+  "editor_sha256": "2662c46dffe596ca3a5c37d12fd448989e60dce9d5d5d20be223a3cbe3c15d4d",
+  "tests": {
+    "modeling_backend_and_service": 19,
+    "prior_codex_provider": 19,
+    "prior_generation_service": 11,
+    "modeling_ui": 48,
+    "prior_parameter_form": 37,
+    "prior_node_preview": 35,
+    "builder_native": 25,
+    "builder_independent_cli": 6,
+    "builtin_runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true,
+        "checks": 102
+      },
+      {
+        "name": "independent-project",
+        "passed": true,
+        "checks": 58
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true,
+        "checks": 22
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true,
+        "checks": 5
+      }
+    ],
+    "installed_bundle_matches_source": true,
+    "ruff": "passed",
+    "mypy": "passed"
+  },
+  "real_cli": {
+    "passed": true,
+    "request_count": 1,
+    "parts": 33,
+    "vertices": 5610,
+    "cli_turn_usage": {
+      "input_tokens": 10666,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2120,
+      "reasoning_output_tokens": 0
+    },
+    "scope": "Actual ChatGPT-authenticated GPT CLI structured modeling -> fixed Godot primitives -> GLB -> linked copy-node preview -> publication -> workflow reopen. No ComfyUI service/weights.",
+    "output_glb_sha256": "02fbe9b5226f122117fc025d974e4aa42e44f34b14632d752b5d07330f6704f3",
+    "workflow_sha256": "4bd3472432384ab3b15afadbc3073462dc9fb07c6eaf01fa471cf2cf19c295f2",
+    "screenshot_sha256": "dadf6453f64b7de14001a559f0d9f47088cee00b08dcaabdf7f51677ce2526f4"
+  },
+  "prior_failures": [
+    {
+      "stage": "test_isolation",
+      "failure": "output directory inherited workspace, refused before launching editor/CLI",
+      "resolution": "used non-workspace system temporary directory"
+    },
+    {
+      "stage": "builtin_regression",
+      "failure": "old exact service-mode count assertion",
+      "resolution": "updated expectation to include new mode; all four runs passed"
+    },
+    {
+      "stage": "first_real_acceptance",
+      "failure": "Windows long-path directory creation failed before CLI invocation",
+      "resolution": "short exclusive system temporary path; failed intent retained and not replayed"
+    }
+  ],
+  "limitations": [
+    "Primitive composition only; complex organic/person fidelity unverified",
+    "Reference image geometry is approximation; no hidden-surface reconstruction guarantee",
+    "Native editor teardown resource diagnostics remain in raw logs; not claimed zero diagnostics"
+  ],
+  "independent_reviews": [
+    "data-collection/maliang-gpt-modeling-20261108-independent-review.json",
+    "data-collection/maliang-gpt-modeling-20261108-builder-review.json"
+  ],
+  "digest_representation": "LF source bytes, matching bundled runtime and Git index; host snapshot retains original bytes",
+  "local_configuration_reopen": {
+    "checks": {
+      "comfy_controls_hidden": true,
+      "image_ready": true,
+      "modeling_ready": true,
+      "no_comfy_lease": true,
+      "python_valid": true,
+      "saved_builder_valid": true,
+      "saved_mode_restored": true
+    },
+    "ok": true
+  }
+}

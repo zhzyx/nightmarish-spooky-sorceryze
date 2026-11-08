@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6626fe478e8452b4e4997ef2ba83e353ef4bcd3a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e5df3c9c4126fe30fe7f55b5469b7ea498aa028ee5d7cde68e23af0edf83099f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/547",
+    "action": "delivery",
+    "detection_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "context_sha256": "364e5b8318395e3b2b351173444e7fd5255592b8fcee1fb51f00e6849f0e6bc7",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "Current user GPT CLI modeling delivery request in this chat",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/a144411fb39d6470ed2b70a9f6ea6ad8220695ac..fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "diagnosis": "Submission correctly refused because main advanced. The12-file upstream delta changes semantic main-screen selection and its tests, with no overlap in the5 modeling runtime files. Independent delta review confirms unchanged CLI, builder, GLTF and plan source inputs. Task worktree integrated fa6386c6, rebuilt successfully; targeted native revalidation in progress. Historical one-request paid inference remains separately attributed to its original binary.",
+    "next_action": "Finish integrated native bundle/tab/settings/mesh-reopen checks, then rerun the original submission and exact-head CI; close only after remote delivery readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:39:33.453947+00:00",
+    "attempted": "Initial writer_submit refused before signing; saved candidate, inspected upstream diff, fast-forwarded isolated task worktree, restored exact candidate index, rebuilt.",
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T03:43:55.304986+00:00",
+  "sha256": "7557ac6eaaa928f9ffa9e1536b603a9b4d462fba6e4fb68ce5244dce7922d333"
+}
