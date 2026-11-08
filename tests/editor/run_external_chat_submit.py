@@ -20,6 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
+from external_chat_consultation import consultation_reply, run_consultation
 from run_design_batch import BRIDGE, git, tool_call
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -53,11 +54,24 @@ def main():
     parser.add_argument("--node", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--untrusted-python", type=Path)
+    parser.add_argument("--scenario", choices=("production", "consultation"), default="production")
     args = parser.parse_args()
     if sys.platform != "darwin":
         parser.error("This native OS peer acceptance is macOS only")
     os.environ.pop("GONGGONG_WORKSPACE", None)
     report = {"ok": False, "model": "offline typed-loop fixture, not production LLM", "checks": [], "errors": []}
+    report["source_sha256"] = {
+        name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
+        for name in (
+            "editor/docks/ai_chat_dock.cpp",
+            "editor/docks/ai_chat_dock.h",
+            "editor/docks/ai_chat_external_chat.cpp",
+            "tools/editor_instruction_client.py",
+            "tests/editor/run_external_chat_submit.py",
+            "tests/editor/external_chat_consultation.py",
+            "tests/editor/external_chat_submit.gd",
+        )
+    }
     process = None
     calls = []
     release_hold = threading.Event()
@@ -140,6 +154,17 @@ def main():
             + repr(str(ROOT / "tools"))
             + ")\nfrom editor_instruction_client import EditorInstructionClient,InstructionClientError\ntry: result=EditorInstructionClient(sys.argv[1],int(sys.argv[2])).context()\nexcept InstructionClientError as e: result={'ok':False,'error':str(e)}\nPath(sys.argv[3]).write_text(json.dumps(result))\n"
         )
+        consultation_target = project / "consultation-sentinel.txt"
+        consultation_target.write_text("CONSULTATION_READ_SENTINEL")
+        gh_calls = folder / "gh-calls.jsonl"
+        gh.write_text(
+            gh.read_text().replace(
+                "import json,sys\n",
+                "import json,sys\nfrom pathlib import Path\nPath("
+                + repr(str(gh_calls))
+                + ").open('a').write(json.dumps(sys.argv[1:])+'\\n')\n",
+            )
+        )
 
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_):
@@ -157,7 +182,9 @@ def main():
                     body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                     prompt = next(x["content"] for x in reversed(body["messages"]) if x["role"] == "user")
                     calls.append(prompt)
-                    if prompt == "DESIGN_BATCH_WARMUP":
+                    if args.scenario == "consultation":
+                        message = consultation_reply(body, consultation_target, hold_started, release_hold)
+                    elif prompt == "DESIGN_BATCH_WARMUP":
                         message = {"role": "assistant", "content": "EXTERNAL_WARMUP_OK"}
                     elif prompt == "EXTERNAL_CHAT_SUBMITTED":
                         results = [
@@ -217,6 +244,8 @@ def main():
                     self.end_headers()
                     self.wfile.write(data)
                 except Exception as error:
+                    if args.scenario == "consultation" and isinstance(error, (BrokenPipeError, ConnectionResetError)):
+                        return
                     report["errors"].append(type(error).__name__ + ": " + str(error))
                     self.send_error(500)
 
@@ -253,6 +282,7 @@ def main():
             DESIGN_BATCH_ENDPOINT=endpoint,
             DESIGN_BATCH_FINALIZED="# Private fixture\n",
             EXTERNAL_CHAT_PEER_PROBE=str(peer_probe),
+            EXTERNAL_CHAT_SCENARIO=args.scenario,
             GONGGONG_GH=str(gh),
             GONGGONG_GIT=str(git_wrapper),
             PATH=str(folder) + os.pathsep + env.get("PATH", ""),
@@ -301,6 +331,25 @@ def main():
 
         try:
             client = start()
+            if args.scenario == "consultation":
+                run_consultation(
+                    client,
+                    fixture,
+                    check,
+                    rejected,
+                    wait_text,
+                    calls,
+                    report,
+                    hold_started,
+                    release_hold,
+                    EditorClient(project, process.pid),
+                )
+                check("no_issue_intake_or_write", not gh_calls.exists())
+                check("no_production_candidate_created", not (original / ".git/gonggong-engine-candidates").exists())
+                check("no_model_file_write", consultation_target.read_text() == "CONSULTATION_READ_SENTINEL")
+                check("no_model_command_execution", not (project / "forbidden-command").exists())
+                report["ok"] = not report["errors"]
+                return 0 if report["ok"] else 1
             initial = client.context()
             report["initial_peer_reply"] = initial
             expected = initial["context"]
@@ -377,10 +426,10 @@ def main():
             rejected(client, "nonempty-draft", "NEVER_SEND", client.context()["context"], "draft_not_empty")
             check("human_draft_preserved", fixture("read")["draft"] == "unsent human draft")
             fixture("draft", "")
-            for name in ("tools", "automatic", "consultation"):
-                fixture(name, name == "consultation")
+            for name in ("tools", "automatic"):
+                fixture(name, False)
                 rejected(client, "disabled-" + name, "NEVER_SEND", client.context()["context"], "permission_denied")
-                fixture(name, name != "consultation")
+                fixture(name, True)
             fixture("child")
             rejected(client, "child-parent-only", "NEVER_SEND", client.context()["context"], "parent_session_required")
             fixture("parent")

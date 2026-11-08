@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "consultation-command-input-request-20261109",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "consultation-command-input-20261109",
+  "kind": "request",
+  "occurred_at": "2026-11-08T18:38:50.600816+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/585",
+  "agent": {
+    "id": "runtime-entry-fix",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "outcome": "Support explicit trusted Desktop read-only text submission into the user-selected idle top-level consultation without granting production tools or ordinary HTTP writes.",
+    "operator": "kaiyunxue",
+    "issue_title": "修复已选仅咨询会话缺少受信命令文字输入",
+    "issue_updated_at": "2026-11-08T18:29:34Z",
+    "issue_body_sha256": "ffd1b521121d71d289430cbc63dc37b99c0e49f592749aea990cd4c876474281",
+    "execution_authority_ref": "Human requested automatic command input for their selected consultation; original authorized workflow verification includes discovered-blocker repair and normal delivery. Root coordinates isolated ownership and retains main merge hold for independent safety review.",
+    "related_issues": [
+      390,
+      393,
+      559
+    ],
+    "event_is_not_a_tool_authorization_grant": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [],
+  "sha256": "e48db4123e18eb1bea2a8ef02977e77f28806a4c9cf018b79fef775c01a028c9"
+}

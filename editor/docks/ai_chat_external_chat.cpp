@@ -91,26 +91,47 @@ Dictionary AIChatDock::_chat_instruction_context() const {
 	const String blocked = _chat_instruction_blocked_reason();
 	context["instruction_available"] = blocked.is_empty();
 	context["blocked_reason"] = blocked;
+	const String consultation_blocked = _chat_instruction_blocked_reason(true);
+	context["consultation_instruction_available"] = consultation_blocked.is_empty();
+	context["consultation_blocked_reason"] = consultation_blocked;
 	const String retry_blocked = _delivery_retry_blocked_reason();
 	context["delivery_retry_available"] = retry_blocked.is_empty();
 	context["delivery_retry_blocked_reason"] = retry_blocked;
 	return context;
 }
 
-String AIChatDock::_chat_instruction_blocked_reason() const {
-	if (!input || !allow_tools || !auto_execute_commands || !consultation_only || !allow_tools->is_pressed() || !auto_execute_commands->is_pressed() || consultation_only->is_pressed() || (busy && consultation_turn)) {
+String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) const {
+	if (!input || !allow_tools || !auto_execute_commands || !consultation_only || !auto_execute_commands->is_pressed()) {
+		return "permission_denied";
+	}
+	const bool consultation = p_force_consultation || consultation_only->is_pressed();
+	if (!consultation && (!allow_tools->is_pressed() || (busy && consultation_turn))) {
 		return "permission_denied";
 	}
 	if (sub_agents.has(active_agent) || scheduled_agents.has(active_agent)) {
 		return "parent_session_required";
 	}
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
-	if (conversation_id.is_empty() || snapshot_id.is_empty() || String(candidate.get("owner", "")).is_empty() || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id"))) {
-		return "known_work_order_owner_required";
-	}
-	String owner_error;
-	if (!_validate_engine_candidate(owner_error)) {
-		return "known_work_order_owner_required";
+	if (consultation) {
+		// A selected consultation is a new read-only turn, never steering or
+		// permission to resume an older queued production message.
+		if (busy) {
+			return "consultation_busy";
+		}
+		if (queue_paused || !queued_messages.is_empty()) {
+			return "consultation_queue_pending";
+		}
+		if (conversation_id.is_empty()) {
+			return "chat_input_unavailable";
+		}
+	} else {
+		const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+		if (conversation_id.is_empty() || snapshot_id.is_empty() || String(candidate.get("owner", "")).is_empty() || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id"))) {
+			return "known_work_order_owner_required";
+		}
+		String owner_error;
+		if (!_validate_engine_candidate(owner_error)) {
+			return "known_work_order_owner_required";
+		}
 	}
 	if (history_restoring || !history_writable) {
 		return "history_unavailable";
@@ -174,19 +195,20 @@ Dictionary AIChatDock::_chat_instruction_action(const Dictionary &p_args) {
 	Dictionary result;
 	result["ok"] = false;
 	const Dictionary context = _chat_instruction_context();
-	const String blocked = context["blocked_reason"];
-	if (!blocked.is_empty() && blocked != "draft_not_empty") {
-		result["error"] = blocked;
-		return result;
-	}
 	const Variant value = p_args.get("value", Variant());
 	if (value.get_type() != Variant::DICTIONARY) {
 		result["error"] = "invalid_instruction_value";
 		return result;
 	}
 	const Dictionary instruction = value;
-	if (instruction.size() != 2 || instruction.get("text", Variant()).get_type() != Variant::STRING || instruction.get("expected", Variant()).get_type() != Variant::DICTIONARY) {
+	const bool force_consultation = instruction.has("consultation_only");
+	if (instruction.size() != (force_consultation ? 3 : 2) || (force_consultation && (instruction["consultation_only"].get_type() != Variant::BOOL || !bool(instruction["consultation_only"]))) || instruction.get("text", Variant()).get_type() != Variant::STRING || instruction.get("expected", Variant()).get_type() != Variant::DICTIONARY) {
 		result["error"] = "invalid_instruction_value";
+		return result;
+	}
+	const String blocked = _chat_instruction_blocked_reason(force_consultation);
+	if (!blocked.is_empty() && blocked != "draft_not_empty") {
+		result["error"] = blocked;
 		return result;
 	}
 	const String text = instruction["text"];
@@ -207,7 +229,7 @@ Dictionary AIChatDock::_chat_instruction_action(const Dictionary &p_args) {
 	// No confirmation is manufactured, and no history is written by the caller.
 	const String previous_draft = input->get_text();
 	input->set_text(text);
-	_send();
+	_send_with_mode(force_consultation);
 	if (!input->get_text().is_empty()) {
 		if (input->get_text() == text) {
 			input->set_text(previous_draft);
@@ -252,13 +274,17 @@ Dictionary AIChatDock::_chat_instruction_request(const Dictionary &p_message) {
 		return control->route_status(p_message.get("request_id", ""), "desktop.codex");
 	}
 	const bool retry = kind == "retry-delivery";
-	if ((!retry && (kind != "submit" || p_message.size() != 5 || !p_message.has("text"))) || (retry && p_message.size() != 4) || !p_message.has("expected")) {
+	const bool force_consultation = !retry && p_message.has("consultation_only");
+	if ((!retry && (kind != "submit" || p_message.size() != (force_consultation ? 6 : 5) || !p_message.has("text") || (force_consultation && (p_message["consultation_only"].get_type() != Variant::BOOL || !bool(p_message["consultation_only"]))))) || (retry && p_message.size() != 4) || !p_message.has("expected")) {
 		result["error"] = "invalid_instruction_message";
 		return result;
 	}
 	Dictionary value;
 	if (!retry) {
 		value["text"] = p_message["text"];
+		if (force_consultation) {
+			value["consultation_only"] = true;
+		}
 	}
 	value["expected"] = p_message["expected"];
 	Dictionary operation;

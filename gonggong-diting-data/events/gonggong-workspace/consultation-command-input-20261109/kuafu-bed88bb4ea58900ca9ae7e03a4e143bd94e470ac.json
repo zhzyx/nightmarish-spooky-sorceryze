@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bed88bb4ea58900ca9ae7e03a4e143bd94e470ac",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "consultation-command-input-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/585",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8ab10768554ff864ba53f654782adba8d82706916115dae75c924e6e6af8347f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/585",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/585",
+    "action": "user-report",
+    "detection_head": "dd4bdf8a5b13aaf615ea9e2f4626c0546819401b",
+    "context_sha256": "7ac797a89d00a793de6b85356560f41c49b2c5dcf4b0572756501d9995d17a05",
+    "operator": "kaiyunxue",
+    "worker": "/root/runtime_entry_fix",
+    "authority_ref": "Human selected consultation and explicitly requested automatic command text input; original authorization covers discovered-blocker repair, compilation, independent acceptance, and delivery. Root coordinates the isolated repair; main merge remains on hold for independent security review.",
+    "evidence": "Actual user-selected top-level consultation returned permission_denied through ordinary HTTP. Existing trusted Desktop text submit rejects consultation before its read-only send pipeline. Private failure evidence retained; no message sent.",
+    "diagnosis": "Trusted instruction guard conflates production tool/Issue ownership with consultation text admission. Existing manual send captures consultation and enforces read-only backend and tool policy; ordinary HTTP write denial remains intentional.",
+    "next_action": "Implement only trusted Desktop UDS admission for idle selected top-level consultation with empty unpaused queue and composer; retain fresh context, peer identity, ordinary HTTP denial and production ownership. Verify isolated native positive/refusals/tool bounds and obtain independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T18:27:52.304618+00:00",
+    "attempted": null,
+    "repair_owner": "/root/runtime_entry_fix",
+    "continuable": "Isolated repair may proceed under original human authorization; production app/session/configuration remain untouched."
+  },
+  "occurred_at": "2026-11-08T18:28:33.552387+00:00",
+  "sha256": "c9c995cae8ce6b628c94dba2ea83293a7afc1f1bd7dcc7d5c0f76689c8641096"
+}

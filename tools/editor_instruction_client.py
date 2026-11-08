@@ -143,14 +143,17 @@ class EditorInstructionClient:
     def context(self):
         return self.request({"protocol_version": 1, "kind": "context"})
 
-    def submit(self, text, expected, request_id):
-        return self.request({
+    def submit(self, text, expected, request_id, *, consultation_only=False):
+        message = {
             "protocol_version": 1,
             "kind": "submit",
             "request_id": request_id,
             "text": text,
             "expected": expected,
-        })
+        }
+        if consultation_only:
+            message["consultation_only"] = True
+        return self.request(message)
 
     def status(self, request_id):
         return self.request({"protocol_version": 1, "kind": "status", "request_id": request_id})
@@ -175,10 +178,18 @@ def main():
     context.add_argument(
         "--wait", type=float, default=0, help="Wait up to 60 seconds for instruction_available; read-only polling"
     )
+    context.add_argument(
+        "--consultation-only", action="store_true", help="Wait for the per-message read-only text route"
+    )
     submit = commands.add_parser("submit", help="Atomically submit ordinary text through the normal editor workflow")
     submit.add_argument("--text-file", required=True, help="UTF-8 file or - for stdin, at most 8192 bytes")
     submit.add_argument("--expected", required=True, type=Path, help="Previously read context JSON file")
     submit.add_argument("--request-id", default=None)
+    submit.add_argument(
+        "--consultation-only",
+        action="store_true",
+        help="Restrict this message to consultation without changing the selected mode or tool permissions",
+    )
     retry = commands.add_parser(
         "retry-delivery", help="Retry only the original verified pending activation; never submit new acceptance"
     )
@@ -197,7 +208,9 @@ def main():
             while (
                 args.wait
                 and result.get("ok")
-                and not result.get("context", {}).get("instruction_available")
+                and not result.get("context", {}).get(
+                    "consultation_instruction_available" if args.consultation_only else "instruction_available"
+                )
                 and time.monotonic() < deadline
             ):
                 time.sleep(min(0.2, max(0, deadline - time.monotonic())))
@@ -224,7 +237,12 @@ def main():
             expected = json.loads(args.expected.read_text(encoding="utf-8"))
             if isinstance(expected, dict) and "context" in expected:
                 expected = expected["context"]
-            result = client.submit(data.decode("utf-8"), expected, args.request_id or uuid.uuid4().hex)
+            result = client.submit(
+                data.decode("utf-8"),
+                expected,
+                args.request_id or uuid.uuid4().hex,
+                consultation_only=args.consultation_only,
+            )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("ok") else 1
     except InstructionClientError as error:

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "issue_number": 585,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/585",
+  "request_id": "consultation-command-input-20261109",
+  "base_commit": "dd4bdf8a5b13aaf615ea9e2f4626c0546819401b",
+  "implementation": "Trusted Desktop UDS can explicitly restrict one text message to consultation without changing UI mode or tool permissions. Selected consultation accepts unbound idle parent text. Normal production ownership and ordinary HTTP remain unchanged.",
+  "artifact_sha256": "5d535087132d3fb7b5a6647858116987e06741d9841ce359c94046a8088c0dd5",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "b8aa8afa4a50d6a644802a8a6cdf47061445803dec0eb0e4ecf924ed07b044c3",
+    "editor/docks/ai_chat_dock.h": "17a6fe98b985d0615e79b818665fd3cc38fc70143594cf401bf3e9954f6f6380",
+    "editor/docks/ai_chat_external_chat.cpp": "f5adbcc2989f7356babef46dbe1f0bdb59d385b8b64e62ebf0a544dbd771aecb",
+    "tools/editor_instruction_client.py": "53afeab3233fb4b37966ade27cddf3a28218b436487fceffa109adb63efdc73e",
+    "tests/editor/external_chat_submit.gd": "68d23587b3fbf49166b6b9c6f75500f755ba673e6c5dface99b025195e2e70a1",
+    "tests/editor/run_external_chat_submit.py": "189d6a974dca97164f972de4f6e3dea1bee416ffec15ad9f19f13387a16de363",
+    "tests/editor/external_chat_consultation.py": "aa06ba40ce6eefe1010bb35aca13e109cb9a561db836e097dff0102b561dac6c"
+  },
+  "validation": {
+    "native_consultation": {
+      "passed": true,
+      "checks": 47,
+      "report": {
+        "reference": "host-private://consultation-command-input-20261109/native-consultation-v4.json",
+        "sha256": "e959b45947a409430eb6ffab5932f867c670a0911a56950e617a825a99bb3b59"
+      }
+    },
+    "native_production_regression": {
+      "passed": true,
+      "checks": 37,
+      "report": {
+        "reference": "host-private://consultation-command-input-20261109/native-production-regression-v1.json",
+        "sha256": "54a81a378752f19a02facfb2e42b29d3231a0f985d3aea25a85ff3c693b0a9d6"
+      },
+      "source_scope": "Same four product sources and artifact; later consultation-only fixture commands are not used by this production scenario."
+    },
+    "compile": {
+      "passed": true,
+      "platform": "macOS arm64",
+      "seconds": 17.09,
+      "log": {
+        "reference": "host-private://consultation-command-input-20261109/build-v2.log",
+        "sha256": "92ae6468a2e152bfbb50def6e56b1ceaa7f83a63ba9a08ca365496db8bb8d0cc"
+      }
+    },
+    "fixed_precommit": {
+      "passed": true,
+      "log": {
+        "reference": "host-private://consultation-command-input-20261109/fixed-static-v1.log",
+        "sha256": "9053a4bb9bf8d78201dbd3fa883c94ba8a6619c46a43e71ac7f39a403433e965"
+      }
+    },
+    "diff_check": {
+      "passed": true
+    },
+    "independent_safety_review": {
+      "status": "passed",
+      "reviewer": "/root/readonly_child_tool",
+      "report": {
+        "reference": "host-private://issue585-independent-safety-review-20261109.json",
+        "sha256": "0152c833cb3b6e5ece309de9c079287d4afb26a4337abf7e935259e403a52061"
+      },
+      "personally_run": "Same frozen artifact and seven sources; native UDS consultation 47/47, 10.368 seconds. Full product delta and unchanged channel/tool boundaries statically reviewed. Author production37/static reports read but not independently rerun."
+    }
+  },
+  "boundaries": {
+    "native_peer": "Actual official Desktop ancestry and Apple system Python verified by kernel socket peer identity.",
+    "model_and_github": "Offline local fixtures only; no production provider or remote Issue mutation in the native tests.",
+    "no_local_tools": "Text succeeds; unsolicited tool call is denied and the existing turn is stopped.",
+    "local_tools_enabled": "Existing bounded reads succeed; write, command, build, restart, delegation, finalization and configuration operations are rejected.",
+    "persistent_state": "Normal manual-send chat/snapshot/connection persistence remains; this is not a zero-write claim. User configuration/history/app are not used.",
+    "ime": "Unchanged guard statically preserved; no physical IME test claimed.",
+    "new_app_acceptance": "Root owns final App packaging and live user acceptance; not performed by this source repair."
+  },
+  "preserved_failed_fixture_attempts": [
+    {
+      "reference": "host-private://consultation-command-input-20261109/native-consultation-v1.json",
+      "sha256": "ea8e9418d884de073f4b1d18a440a7f59a2569797d7c97c8e8970a4b0f64fe48"
+    },
+    {
+      "reference": "host-private://consultation-command-input-20261109/native-consultation-v2.json",
+      "sha256": "af1b9614c85ad938123ab4711cdf375f85313cd96ba1b60da577a70e08f999ec"
+    },
+    {
+      "reference": "host-private://consultation-command-input-20261109/native-consultation-v3.json",
+      "sha256": "a43ad2c8c3788653f381a627bce43a057ec66678f6201d1aad29c0b7204bed13"
+    }
+  ],
+  "main_merge": "held for independent Root security review and release"
+}

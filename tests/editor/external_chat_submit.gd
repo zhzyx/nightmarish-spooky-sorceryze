@@ -39,6 +39,10 @@ func run() -> void:
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup:
 		setup.hide()
+	var consultation := OS.get_environment("EXTERNAL_CHAT_SCENARIO") == "consultation"
+	if consultation:
+		# Match an explicitly selected new parent, not the never-selected ctor slot.
+		dock.find_child("AddAgent", true, false).pressed.emit()
 	var ai = dock.get_ai_settings_control()
 	ai.find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
 	ai.find_child("APIModel", true, false).text = "external-chat-fixture"
@@ -46,12 +50,14 @@ func run() -> void:
 	ai.find_child("AllowTools", true, false).button_pressed = true
 	ai.find_child("AutoApplyFileChanges", true, false).button_pressed = true
 	ai.find_child("AutoExecuteCommands", true, false).button_pressed = true
-	dock.find_child("ConsultationOnly", true, false).button_pressed = false
+	dock.find_child("ConsultationOnly", true, false).button_pressed = consultation
+	if consultation:
+		ai.find_child("AllowTools", true, false).button_pressed = false
 	for unused in 300:
 		if dock.find_child("Stop", true, false).disabled and not dock.find_child("Send", true, false).disabled:
 			break
 		await create_timer(0.03).timeout
-	if OS.get_environment("EXTERNAL_CHAT_PHASE") != "restore":
+	if not consultation and OS.get_environment("EXTERNAL_CHAT_PHASE") != "restore":
 		send_text("DESIGN_BATCH_WARMUP")
 		for unused in 1500:
 			if "EXTERNAL_WARMUP_OK" in chat_text() and dock.find_child("Stop", true, false).disabled:
@@ -75,6 +81,18 @@ func run() -> void:
 					dock.find_child("ConsultationOnly", true, false).button_pressed = command.value
 				elif name == "queue":
 					send_text("FIXTURE_QUEUED_MESSAGE")
+				elif name == "stop":
+					dock.find_child("Stop", true, false).pressed.emit()
+				elif name == "remove_queue":
+					dock.find_child("RemoveQueuedMessage", true, false).pressed.emit()
+				elif name == "attachment":
+					var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+					image.fill(Color.BLUE)
+					var path := ProjectSettings.globalize_path("res://fixture-attachment.png")
+					assert(image.save_png(path) == OK)
+					dock.find_child("AIImagePicker", true, false).files_selected.emit(PackedStringArray([path]))
+				elif name == "remove_attachment":
+					dock.find_child("RemoveImage", true, false).pressed.emit()
 				elif name == "new_parent":
 					dock.find_child("AddAgent", true, false).pressed.emit()
 				elif name == "first_parent":
@@ -95,5 +113,5 @@ func run() -> void:
 					write_json("res://external-ack-%d.json" % last_command, {"ok": true})
 					quit()
 					return
-				write_json("res://external-ack-%d.json" % last_command, {"ok": true, "draft": dock.find_child("ChatInput", true, false).text, "text": chat_text(), "busy": not dock.find_child("Stop", true, false).disabled, "send_enabled": not dock.find_child("Send", true, false).disabled})
+				write_json("res://external-ack-%d.json" % last_command, {"ok": true, "draft": dock.find_child("ChatInput", true, false).text, "text": chat_text(), "busy": not dock.find_child("Stop", true, false).disabled, "send_enabled": not dock.find_child("Send", true, false).disabled, "consultation": dock.find_child("ConsultationOnly", true, false).button_pressed, "tools": ai.find_child("AllowTools", true, false).button_pressed})
 		await create_timer(0.03).timeout
