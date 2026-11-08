@@ -107,6 +107,12 @@ void AIChatEditorBridge::_start() {
 	discovery["session"] = session;
 	discovery["url"] = "http://127.0.0.1:" + itos(port);
 	discovery["token"] = token;
+	_start_instructions();
+#ifdef MACOS_ENABLED
+	if (!instruction_socket.is_empty()) {
+		discovery["instruction_socket"] = instruction_socket;
+	}
+#endif
 	discovery["routing"] = "When the user intends an engine operation, discover targets, then POST /v1/messages with intent=engine_operation, request_id, source and a declarative operation. Natural language alone returns planning_required, never an execution claim.";
 	if (!file->store_string(JSON::stringify(discovery)) || file->get_error() != OK) {
 		file->close();
@@ -119,6 +125,7 @@ void AIChatEditorBridge::_start() {
 
 void AIChatEditorBridge::_stop() {
 	set_process(false);
+	_stop_instructions();
 	for (Client &client : clients) {
 		client.peer->disconnect_from_host();
 	}
@@ -272,6 +279,7 @@ void AIChatEditorBridge::_dispatch(Client &p_client) {
 }
 
 void AIChatEditorBridge::_poll() {
+	_poll_instructions();
 	if (server.is_null()) {
 		return;
 	}

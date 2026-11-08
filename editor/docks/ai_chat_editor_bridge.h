@@ -48,10 +48,32 @@ class AIChatEditorBridge : public Node {
 	Ref<TCPServer> server;
 	Vector<Client> clients;
 	Callable handler;
+	Callable instruction_handler;
 	String token;
 	String session;
 	String descriptor;
 	int port = 0;
+#ifdef MACOS_ENABLED
+	struct InstructionClient {
+		int fd = -1;
+		PackedByteArray input;
+		PackedByteArray output;
+		int sent = 0;
+		uint64_t started = 0;
+	};
+	int instruction_server = -1;
+	int instruction_directory_fd = -1;
+	String instruction_directory;
+	String instruction_socket;
+	uint64_t instruction_directory_inode = 0;
+	uint64_t instruction_directory_device = 0;
+	uint64_t instruction_inode = 0;
+	uint64_t instruction_device = 0;
+	Vector<InstructionClient> instruction_clients;
+#endif
+	void _start_instructions();
+	void _stop_instructions();
+	void _poll_instructions();
 
 	void _poll();
 	void _dispatch(Client &p_client);
@@ -64,5 +86,6 @@ protected:
 
 public:
 	void set_handler(const Callable &p_handler) { handler = p_handler; }
+	void set_instruction_handler(const Callable &p_handler) { instruction_handler = p_handler; }
 	~AIChatEditorBridge();
 };

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0e18a55cea69e270c86dd30d9c32f3949c4b36f6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "external-chat-instruction-submit-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ae23aac223dd530a846cfe8553909fa9e3e43eb7a3c4a8354441568168b79258",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "action": "user-report",
+    "detection_head": "fec580fe81d0cd6e083956a44a0c0d316c728c20",
+    "context_sha256": "f0b2c6d6d9cb4f1e058b0a7e499d29f7121bd254355a6bda649a32cabd03aa20",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/554",
+    "diagnosis": "现有chat_compose和chat_send_request均需逐项界面确认，不能通过命令原子续接已授权指令；普通HTTP仅同用户可读bearer，不能据source字符串授予免确认权限。已核实macOS具备内核Unix peer身份与动态Apple签名核验，可限定官方Codex桌面祖先且先拒Godot进程链。",
+    "next_action": "主责在独立候选新增仅macOS专用Unix入口和原子普通指令提交；现有TCP及内部模型工具拒该动作，保留原确认边界，完成私有原生测试、独立审查与精确CI/main。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:31:31.813388+00:00",
+    "attempted": "只读核对实际桥认证、文件读取、命令profile和本机SDK及官方桌面代码签名，未读取真实token或操作生产入口。",
+    "repair_owner": "codex:/root/config_bootstrap_plan",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T04:36:49.884201+00:00",
+  "sha256": "e3393dac236c18a214516d27c47e33e18e5c941700d7ede9c5dc8023a8529f16"
+}
