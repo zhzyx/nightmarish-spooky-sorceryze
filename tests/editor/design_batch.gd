@@ -174,6 +174,15 @@ func _run():
 		return
 	var settings = EditorInterface.get_editor_settings()
 	var mode := OS.get_environment("DESIGN_BATCH_CASE")
+	if OS.get_environment("DESIGN_BATCH_PHASE") == "review-restore":
+		await create_timer(0.5).timeout
+		_check(dock.find_child("Stop", true, false).disabled, "Cold review replayed without user resume")
+		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
+		dock.find_child("ConsultationOnly", true, false).button_pressed = false
+		dock.find_child("ResumeMessageQueue", true, false).pressed.emit()
+		await _wait_marker("REVIEW_TAMPER_ACTUAL_READ_OK")
+		_finish()
+		return
 	if OS.get_environment("DESIGN_BATCH_PHASE") == "restore":
 		await create_timer(2.0).timeout
 		_check(dock.find_child("Stop", true, false).disabled, "Cold history started a request")
@@ -262,7 +271,19 @@ func _run():
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text = "relative-node"
 		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT")
 		dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")
+	if mode.begins_with("review"):
+		settings.set_setting("ai_chat/parallel_work_orders_config", "res://must-not-dispatch-production.json")
 	_send("DESIGN_BATCH_START")
+	if mode in ["review-stop", "review-parent-stop"]:
+		if not await _wait_file("review-running" if mode == "review-stop" else "review-parent-waiting"):
+			_finish()
+			return
+		dock.find_child("Stop", true, false).pressed.emit()
+		await create_timer(2.5).timeout
+		_check(dock.find_child("Stop", true, false).disabled, "Stopped review started another request")
+		_check(not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text(), "Stopped review returned as accepted")
+		_finish()
+		return
 	if mode.begins_with("models-"):
 		await _observe_models(mode)
 		_finish()

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6dc016e2bb8cfacf30105464f132ab3cb6e6087b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "internal-readonly-review-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/551",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6d600da3f3a6a5addad38e90a9ab51cbaa56932616ffc45299834534a16abad1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/551",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/551",
+    "action": "delivery",
+    "detection_head": "fec580fe81d0cd6e083956a44a0c0d316c728c20",
+    "context_sha256": "8826524c972c1bb4b71e24d6d3aae97d6a87fb0c961f7ac6f818207f4443bfca",
+    "operator": "kaiyunxue",
+    "worker": "codex-internal-readonly-review",
+    "authority_ref": "Existing Issue551 delegated repair and normal delivery mandate; actual notes-input validation failure in isolated publication",
+    "evidence": "Writer CLI exit1 before commit/push/PR: notes contained reserved GongGong association lines which writer itself adds",
+    "diagnosis": "Operator notes format error, not product or permission failure. Original private notes and refusal preserved; remove reserved association headers from input notes only, retaining scope and validation.",
+    "next_action": "Stage newly recorded actual incident evidence; rerun the same normal writer with corrected private notes; exact signed CI/main remains unverified until actual receipts",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:26:24.171541+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T04:27:26.226515+00:00",
+  "sha256": "19fed5f26343f778d47dbe6e70bab7bbcb9b28927f9070800ab05c6d43f78549"
+}

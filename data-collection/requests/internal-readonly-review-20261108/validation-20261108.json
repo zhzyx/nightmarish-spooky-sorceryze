@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "request_id": "internal-readonly-review-20261108",
+  "issue_number": 551,
+  "created_at": "2026-11-08T04:24:45.313475+00:00",
+  "source_base": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+  "source_files_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "3a3e5d4290be7edef3b27ff708beb4f781eaa2905ee657e72b7386764980ac0f",
+    "editor/docks/ai_chat_dock.h": "594d7b472d2fc917ad609a1e5d6d730f8b76b3625c2ca68d30a94d0ac668f4a1",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "ea672bc5d40bee437eae7a8a01abd1536b10ac8463c7dc04ea2206c0ce837b6f",
+    "editor/docks/ai_chat_sub_agents.cpp": "bfc076a046b50b029bf07b8d19175bf9ffe1e5059db10ebd10e20f63d408f9d6",
+    "tests/editor/design_batch.gd": "c78b2b12f023245a1c1ad37869795569efd8fa5699f6f5316fea24036f05db5d",
+    "tests/editor/run_design_batch.py": "0e1573334a1a8671760fb62c425c9d381b0df379786da0571da471cc4663ca5c",
+    "tests/editor/test_codex_bridge.js": "2f8cf1cea66c1372cde2ba7efbae4868ff9484d99633dd0a99a2d8cb83f8b0a4",
+    "tools/codebuddy_cli/godot_bridge.js": "96e199df9e8a0ceb8c7523e327e52f0a09b5b1d1ae72387bf1a09d04e8b15af4",
+    "tools/codex_cli/godot_bridge.js": "466cdf1e249c987bca105baedfc77164f4f3c1ad34f14262f2d4d80a5726805a"
+  },
+  "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+  "build": {
+    "platform": "macos",
+    "arch": "arm64",
+    "target": "editor",
+    "tests": true,
+    "vulkan": false,
+    "accesskit": false,
+    "debug_symbols": false,
+    "exit_code": 0,
+    "elapsed_seconds": 11.98,
+    "compatible_read_only_object_cache_reused": true,
+    "source_or_user_runtime_tree_mutated": false
+  },
+  "native_offline_fixtures": [
+    {
+      "case": "review",
+      "ok": true,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "report_sha256": "cb902355641d4ebfdd095c916cf45b9066eecacd85c209ba6e7388c15b1280d6",
+      "startup_isolated": true,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3,
+        "return": 2,
+        "tamper": 3
+      },
+      "parent_return_count": 1,
+      "errors": [],
+      "execution_owner": "independent-reviewer"
+    },
+    {
+      "case": "review-parent-stop",
+      "ok": true,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "report_sha256": "46a7f717031a018af667d8ac3f986e5c93623684d41b33a2a50ad6a27e85acdb",
+      "startup_isolated": true,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2
+      },
+      "parent_return_count": 0,
+      "errors": [],
+      "execution_owner": "independent-reviewer"
+    },
+    {
+      "case": "review-stop",
+      "ok": true,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "report_sha256": "74f6a710735a9052b6cc6003b72f1ae9ddbdb3c149b4716d6460d5551ba32de5",
+      "startup_isolated": true,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 1
+      },
+      "parent_return_count": 0,
+      "errors": [],
+      "execution_owner": "implementation-author"
+    },
+    {
+      "case": "production-design-normal",
+      "ok": true,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "report_sha256": "b1c0128a3b7c510c176979c7c1e300fcf2f49ae6944e008b5ca033d2fe9d51f5",
+      "startup_isolated": true,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "errors": [],
+      "execution_owner": "implementation-author"
+    }
+  ],
+  "other_checks": {
+    "native_unit": {
+      "cases": 7,
+      "assertions": 235,
+      "passed": true
+    },
+    "codex_bridge": {
+      "tests": 15,
+      "passed": true
+    },
+    "ruff": "passed",
+    "clang_format": "passed",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "These are actual isolated native host/typed API fixture executions, not production LLM or user GUI acceptance.",
+    "The original native Issue483 owner must integrate main, self-build/restart and exercise delegate_review with its real work order before the original end-to-end workflow can be accepted.",
+    "CodeBuddy native review is explicitly unsupported. An extra combined Codex/CodeBuddy suite run had 46 passes and 5 dependency-setup failures (CodeBuddy alone: 31 passes, 5 setup failures) because this isolated tree has no pinned node_modules; it is not recorded as a full pass.",
+    "The first cold-resume fixture omitted its intentionally unsaved fake API key; later valid fixture passed. The v4 seeded-history fixture omitted mandatory fields and correctly caused host history protection; v4b corrected fixture fields without product/artifact changes. Original failure records remain private and unchanged."
+  ],
+  "business_accepted_original_issue483": null,
+  "user_gui_or_configuration_changed": false,
+  "independent_review": {
+    "path": "data-collection/requests/internal-readonly-review-20261108/independent-review-20261108.json",
+    "sha256": "99b31f3edd5c23fc25168988c952bcefbc6dc00018cdb37b8b63cbad43d88c21",
+    "verdict": "pass"
+  },
+  "integrated_main": "fec580fe81d0cd6e083956a44a0c0d316c728c20",
+  "integrated_main_scope": "15 upstream paths: evidence and one pre-commit formatting exclusion, no reviewed product/test source changes; actual binary build base remains ed65."
+}

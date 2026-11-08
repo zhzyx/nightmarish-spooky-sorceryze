@@ -27,6 +27,9 @@ ROOT = Path(__file__).resolve().parents[2]
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
+    "review",
+    "review-stop",
+    "review-parent-stop",
     "normal",
     "failure",
     "timeout",
@@ -63,6 +66,8 @@ from pathlib import Path
 storage_path=Path(os.environ['DESIGN_BATCH_SOURCE'])/'customizations/platforms/data-collection/git-files/storage/diting_files.py'
 spec=importlib.util.spec_from_file_location('fixture_storage',storage_path); storage=importlib.util.module_from_spec(spec); spec.loader.exec_module(storage)
 args=sys.argv[1:]; action=args[0]; root=Path(args[args.index('--workspace')+1]); out=Path(args[args.index('--out')+1])
+if os.environ.get('DESIGN_BATCH_CASE','').startswith('review'):
+ with open(os.environ['DESIGN_BATCH_BRIDGE_AUDIT'],'a') as audit: audit.write(action+'\n')
 request=json.loads(Path(args[args.index('--request')+1]).read_text()) if '--request' in args else {}
 reporting={'tenant_id':'fixture','request_ref':'design-batch-fixture','source_ref':'https://github.com/example/design-batch/issues/441','agent':{'id':'yanshi','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}
 if action=='issue-agent':
@@ -182,6 +187,51 @@ def main():
             'config_version=5\n[application]\nconfig/name="Design Batch Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         )
         shutil.copyfile(Path(__file__).with_name("design_batch.gd"), project / "gate.gd")
+        if args.case.startswith("review"):
+            # A previously blocked external design child remains waiting after
+            # restore. Delegating a review must never dispatch that production
+            # worker, including at the parent's review-return boundary.
+            history_folder = project / ".godot/editor"
+            history_folder.mkdir(parents=True)
+            base_agent = {
+                "backend": 0,
+                "model": "design-batch-fixture",
+                "cli_model": "",
+                "codex_model": "",
+                "messages": [],
+                "transcript": [],
+                "queued_messages": [],
+                "queue_paused": False,
+                "draft": "",
+                "draft_images": [],
+            }
+            parent_agent = {**base_agent, "id": 0, "conversation_id": "a" * 32, "title": "Fixture parent"}
+            prior_child = {
+                **base_agent,
+                "id": 1,
+                "conversation_id": "b" * 32,
+                "title": "Unrelated blocked production",
+                "sub_agent": {
+                    "source": "design",
+                    "state": "waiting",
+                    "parent": 0,
+                    "work_order": 1,
+                    "request_id": REQUEST,
+                    "issue_number": 441,
+                    "parallel_external": True,
+                    "parallel_receipt": {"state": "blocked_fixture_only"},
+                },
+            }
+            (history_folder / "ai_chat_history.json").write_text(
+                json.dumps({
+                    "version": 1,
+                    "active_agent": 0,
+                    "next_agent": 2,
+                    "agents": [parent_agent, prior_child],
+                    "scheduled_tasks": [],
+                    "sub_agent_spawned": {},
+                })
+            )
         issue = {
             "number": 441,
             "html_url": "https://github.com/example/design-batch/issues/441",
@@ -273,6 +323,112 @@ def main():
             assert matches, ("Missing typed host batch envelope", prompt[:1500])
             return matches[0]
 
+        def review_response(body, prompt):
+            names = {tool["function"]["name"] for tool in body.get("tools", [])}
+            results = {entry["tool_call_id"]: entry["content"] for entry in body["messages"] if entry["role"] == "tool"}
+            if prompt == "DESIGN_BATCH_WARMUP":
+                stages["warmup"] += 1
+                candidate("parent")
+                return {"role": "assistant", "content": "DESIGN_BATCH_WARMUP_OK"}
+            if prompt == "DESIGN_BATCH_START":
+                stages["parent"] += 1
+                assert "delegate_review" in names
+                if stages["parent"] == 1:
+                    return tool_call(
+                        "delegate", "delegate_review", {"prompt": "REVIEW_CHILD_READ_ONLY", "title": "Fixture review"}
+                    )
+                queued = json.loads(results["delegate"])
+                assert queued["ok"] and queued["state"] == "queued" and queued["read_only"] is True
+                assert queued["business_accepted"] is None
+                if args.case == "review-parent-stop":
+                    (project / "review-parent-waiting").touch()
+                    time.sleep(2.0)
+                return {"role": "assistant", "content": "DESIGN_BATCH_PARENT_DESIGN_OK"}
+            if prompt in {"REVIEW_CHILD_READ_ONLY", "REVIEW_TAMPER_MODE"}:
+                stage = "review" if prompt == "REVIEW_CHILD_READ_ONLY" else "tamper"
+                stages[stage] += 1
+                assert names == {
+                    "read_file",
+                    "read_script",
+                    "read_logs",
+                    "list_scripts",
+                    "list_directory",
+                    "get_editor_state",
+                    "get_parent_context",
+                }, names
+                assert len(bindings()) == 1, "Read-only child created a production candidate"
+                assert not list(targets["parent"].glob("data-collection/outbox/parallel-*.json")), (
+                    "Review dispatched a production CLI batch"
+                )
+                if stages[stage] == 1:
+                    if args.case == "review-stop":
+                        (project / "review-running").touch()
+                        time.sleep(2.0)
+                    message = tool_call(stage + "-context", "get_parent_context", {})
+                    message["tool_calls"].append(
+                        tool_call(stage + "-read", "read_file", {"path": str(targets["parent"] / "fixture-input.txt")})[
+                            "tool_calls"
+                        ][0]
+                    )
+                    return message
+                if stages[stage] == 2:
+                    context = json.loads(results[stage + "-context"])
+                    assert context["ok"] and context["untrusted"] and context["request_id"] == REQUEST
+                    assert (
+                        "UNTRUSTED_FIXTURE_FILE" in results[stage + "-read"] and SECRET not in results[stage + "-read"]
+                    )
+                    # An adversarial API response deliberately proposes tools
+                    # absent from its schema. The actual host must reject all.
+                    forbidden = {
+                        "write_file": {"path": str(targets["parent"] / "forbidden.txt"), "content": "bad"},
+                        "run_command": {"command": "touch forbidden-command"},
+                        "build_engine": {},
+                        "delegate_review": {"prompt": "recursive"},
+                        "complete_delivery": {},
+                        "editor_action": {"action": "main_screen", "value": "2D"},
+                    }
+                    message = {"role": "assistant", "content": "Adversarial fixture only", "tool_calls": []}
+                    for name, arguments in forbidden.items():
+                        message["tool_calls"].append(
+                            tool_call(stage + "-deny-" + name, name, arguments)["tool_calls"][0]
+                        )
+                    return message
+                assert stages[stage] == 3
+                denied = [value for key, value in results.items() if key.startswith(stage + "-deny-")]
+                assert len(denied) == 6 and all("Consultation only permits read tools" in value for value in denied)
+                assert not (targets["parent"] / "forbidden.txt").exists()
+                assert not (targets["parent"] / "forbidden-command").exists()
+                return {
+                    "role": "assistant",
+                    "content": "REVIEW_CHILD_ACTUAL_READ_OK" if stage == "review" else "REVIEW_TAMPER_ACTUAL_READ_OK",
+                }
+            stages["return"] += 1
+            assert stages["return"] <= 2, "Duplicate review parent return"
+            if stages["return"] == 1:
+                receipt = receipts_from_prompt(prompt)
+                parent_returns.append(receipt)
+                assert receipt["read_only_review"] is True and receipt["business_accepted"] is None
+                assert receipt["workspace"] == str(targets["parent"])
+                assert len(receipt["order"]) == 1
+                child = receipt["children"][str(receipt["order"][0])]
+                assert child["transport_completed"] is True and child["state"] == "completed"
+                assert child["host_bound_source_root"] == child["workspace"] == str(targets["parent"])
+                assert child["receipt_count"] == 8 and child["failed_receipt_count"] == 6
+                assert (
+                    child["child_report"]["untrusted"] is True
+                    and child["child_report"]["text"] == "REVIEW_CHILD_ACTUAL_READ_OK"
+                )
+                ref = child["receipt_ref"]
+                envelope = json.loads(Path(ref["path"]).read_text())
+                assert (
+                    ref["available"]
+                    and hashlib.sha256(envelope["payload"].encode()).hexdigest() == ref["sha256"] == envelope["sha256"]
+                )
+                return tool_call("review-parent-receipt", "read_file", {"path": ref["path"]})
+            assert "REVIEW_CHILD_ACTUAL_READ_OK" in results["review-parent-receipt"]
+            assert len(bindings()) == 1
+            return {"role": "assistant", "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"}
+
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_):
                 pass
@@ -337,6 +493,15 @@ def main():
                     prompt = next(
                         message["content"] for message in reversed(body["messages"]) if message["role"] == "user"
                     )
+                    if args.case.startswith("review"):
+                        message = review_response(body, prompt)
+                        data = json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                        self.send_response(200)
+                        self.send_header("Content-Type", "application/json")
+                        self.send_header("Content-Length", str(len(data)))
+                        self.end_headers()
+                        self.wfile.write(data)
+                        return
                     if prompt == "DESIGN_BATCH_WARMUP":
                         stage = "warmup"
                     elif prompt == "DESIGN_BATCH_START":
@@ -700,6 +865,7 @@ def main():
             DESIGN_BATCH_NODE=str(args.node.resolve()),
             DESIGN_BATCH_ENDPOINT=endpoint,
             DESIGN_BATCH_FINALIZED=FINALIZED,
+            DESIGN_BATCH_BRIDGE_AUDIT=str(folder / "bridge-audit.txt"),
             DESIGN_BATCH_CASE=args.case,
             DESIGN_BATCH_PHASE="initial",
             DESIGN_BATCH_EXPECT_STALLED="1" if args.expect_stalled else "0",
@@ -712,6 +878,30 @@ def main():
             result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=240)
             report_path = project / "design-batch-report.json"
             report = json.loads(report_path.read_text()) if report_path.exists() else {}
+            if args.case == "review" and result.returncode == 0 and report.get("ok"):
+                # Tamper only this exited private fixture's saved queue. The
+                # user explicitly resumes it through its normal native button.
+                history_path = project / ".godot/editor/ai_chat_history.json"
+                history = json.loads(history_path.read_text())
+                child = next(
+                    agent for agent in history["agents"] if agent.get("sub_agent", {}).get("source") == "review"
+                )
+                child["queued_messages"] = [
+                    {"role": "user", "content": "REVIEW_TAMPER_MODE", "consultation_only": False}
+                ]
+                child["queue_paused"] = True
+                history["active_agent"] = child["id"]
+                history_path.write_text(json.dumps(history))
+                env["DESIGN_BATCH_PHASE"] = "review-restore"
+                second = subprocess.run(command, env=env, capture_output=True, text=True, timeout=60)
+                restored = {
+                    "exit_code": second.returncode,
+                    "editor": json.loads(report_path.read_text()),
+                    "new_requests": 0,
+                }
+                assert stages["tamper"] == 3
+                audit = (folder / "bridge-audit.txt").read_text().splitlines()
+                assert audit.count("issue-agent") == 2, "A read-only child reentered production intake"
             if args.case == "cold" and result.returncode == 0:
                 prior = len(calls)
                 # A saved host token is data, not live authorization. Seed one
@@ -815,7 +1005,9 @@ def main():
                 )
             except (AssertionError, ValueError, KeyError) as error:
                 errors.append(repr(error))
-        successful = args.case in {"normal", "failure", "timeout", "stale-retry"} or args.case in MODELS_WAKE_CASES
+        successful = (
+            args.case in {"normal", "failure", "timeout", "stale-retry", "review"} or args.case in MODELS_WAKE_CASES
+        )
         expected_returns = 1 if successful else 0
         ok = (
             result.returncode == 0
@@ -824,7 +1016,18 @@ def main():
             and bool(events)
             and len(parent_returns) == expected_returns
         )
-        if successful:
+        if args.case in {"review-stop", "review-parent-stop"}:
+            ok = ok and not parent_returns and stages["return"] == 0 and len(bindings()) == 1
+            ok = ok and stages["review"] == (1 if args.case == "review-stop" else 0)
+        elif args.case == "review":
+            ok = (
+                ok
+                and stages["parent"] == 2
+                and stages["review"] == 3
+                and stages["return"] == 2
+                and stages["tamper"] == 3
+            )
+        elif successful:
             ok = ok and stages["return"] == 3 and stages["child1"] == 3 and stages["child2"] == (3 if full_batch else 0)
             if args.case == "stale-retry":
                 ok = (

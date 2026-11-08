@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "internal-readonly-review-request-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "internal-readonly-review-20261108",
+  "kind": "request",
+  "occurred_at": "2026-11-08T04:21:49.282517+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/551",
+  "agent": {
+    "id": "codex-internal-readonly-review",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "outcome": "Repair model-facing host-enforced internal read-only reviewer creation and real return to original parent",
+    "operator": "kaiyunxue",
+    "issue_title": "修复原生 Agent 无法发起宿主强制只读子验收",
+    "issue_updated_at": "2026-11-08T04:13:58Z",
+    "issue_body_sha256": "383055d38e8c9902fe042713febe21ce982bd1ad91902a14e9b787640b1b98e2",
+    "parent_issue": 483,
+    "execution_authority_ref": "User original editor-native full workflow verification and fix-on-discovery request; actual delegation from its acceptance owner in the same Codex session",
+    "event_is_not_a_tool_authorization_grant": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [],
+  "sha256": "e0b9c2dae3d168f36e3283caf932b2e7b094fc1f95aae160b981711855075e91"
+}
