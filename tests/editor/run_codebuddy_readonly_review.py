@@ -24,6 +24,8 @@ from run_design_batch import BRIDGE, git, tool_call
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("editor_client", ROOT / "tools/editor_control_client.py")
+if spec is None or spec.loader is None:
+    raise RuntimeError("Editor client module loader is unavailable")
 client_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(client_module)
 

@@ -2566,9 +2566,9 @@ Dictionary ScriptEditorDebugger::get_semantic_input_state() const {
 }
 
 void ScriptEditorDebugger::request_semantic_input(const Dictionary &p_request) {
-	Array data;
-	data.push_back(p_request);
-	_put_msg("scene:semantic_input", data);
+	Array semantic_request_data;
+	semantic_request_data.push_back(p_request);
+	_put_msg("scene:semantic_input", semantic_request_data);
 }
 
 void ScriptEditorDebugger::_msg_semantic_input(uint64_t p_thread_id, const Array &p_data) {

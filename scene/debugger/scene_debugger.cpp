@@ -750,7 +750,7 @@ Error SceneDebugger::_msg_semantic_input(const Array &p_args) {
 		receipt["ok"] = true;
 		receipt["status"] = "observed";
 		receipt["actions"] = actions;
-		receipt["actions_truncated"] = InputMap::get_singleton()->get_action_map().size() > actions.size();
+		receipt["actions_truncated"] = int64_t(InputMap::get_singleton()->get_action_map().size()) > int64_t(actions.size());
 	} else if (args.get("runtime_token", "") != semantic_input_token) {
 		receipt["error"] = "game_runtime_changed";
 	} else {

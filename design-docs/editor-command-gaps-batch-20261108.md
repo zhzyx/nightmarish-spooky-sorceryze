@@ -67,3 +67,7 @@
 真实账号/provider、真实剪贴板图片、生产历史差异、GUI截图像素及macOS全局菜单视觉、IME/焦点/硬件仍按证据分别保留未知。非空历史diff已通过私有candidate的实际native write_file创建真实snapshot并打开真实差异页验证，未伪造历史。私有夹具的provider/工单/账号是明确mock，模拟宿主确认信号不是真人批准。只读限制不等于独立OS沙箱或绝对凭据读取隔离。5类原人工确认和7类OS/认证/视觉边界仍保留，未绕过。
 
 验证记录的编译artifact、源manifest、测试组和独立审查见同需求data-collection目录。已实现接口、静态核查、私有原生测试、真实生产验收、CI、签名交付与main回读分别记录。原#483生产编辑器/owner/项目/队列/历史和用户应用均不由本任务修改或重启。
+
+## CI修正来源
+
+首个签名候选c8a966（作者40b89ac）在PR #564的静态与Windows严格编译检查失败，未合入。修正importlib loader空值保护、规范include/版权头、继承成员同名局部变量以及有界计数的整数符号比较；未放宽警告、权限或CI。原始测试/独立审查原件保留，增量证明及必要重编/复验另存ci-correction-validation.json与ci-correction-independent-review.json。远端成功、main合入及原单整体验收仍各自需要真实回执。
