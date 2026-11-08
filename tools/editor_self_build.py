@@ -567,7 +567,7 @@ def main(argv=None):
                     exit_code=0,
                     log=str(log_path),
                     configuration=options,
-                    candidate_manifest=manifest,
+                    candidate_manifest=Path(manifest).as_posix() if manifest is not None else None,
                 )
                 return 0
             finally:

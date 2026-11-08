@@ -190,6 +190,19 @@ public:
 		return true;
 	}
 
+	static bool ready_artifact_matches(const String &p_executable, const Variant &p_reported_manifest, const Dictionary &p_binding, String &r_error) {
+		const String expected = candidate_manifest_path(p_executable);
+		String reported = p_reported_manifest.get_type() == Variant::STRING ? String(p_reported_manifest) : String();
+#ifdef WINDOWS_ENABLED
+		reported = reported.replace_char('\\', '/');
+#endif
+		if (reported != expected) {
+			r_error = "candidate_artifact_manifest_path_mismatch";
+			return false;
+		}
+		return artifact_matches(p_executable, expected, p_binding, r_error);
+	}
+
 	static bool source_matches(const String &p_python, const String &p_worker, const String &p_manifest, const Dictionary &p_binding, String &r_error) {
 		if (!executable_exists(p_python) || !FileAccess::exists(p_worker)) {
 			r_error = "candidate_source_verifier_missing";
