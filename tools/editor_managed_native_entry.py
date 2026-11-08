@@ -51,6 +51,27 @@ def rename_exclusive(source, destination):
         raise OSError(number, os.strerror(number))
 
 
+def create_empty_attribute(path, name):
+    """Restore an absent empty value atomically, without following links."""
+    require(sys.platform == "darwin", "activation_managed_platform_unsupported")
+    import ctypes
+
+    library = ctypes.CDLL("/usr/lib/libSystem.B.dylib", use_errno=True)
+    create = library.setxattr
+    create.argtypes = [
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.c_void_p,
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.c_int,
+    ]
+    create.restype = ctypes.c_int
+    if create(os.fsencode(path), name.encode("utf-8"), None, 0, 0, 3):  # XATTR_CREATE | XATTR_NOFOLLOW
+        number = ctypes.get_errno()
+        raise OSError(number, os.strerror(number))
+
+
 def owned_json(path):
     path = Path(path)
     require(
@@ -74,7 +95,7 @@ def context(manifest_path, manifest, report):
             isinstance(value, str) and re.fullmatch(r"[a-f0-9]{40}", value), "activation_managed_acceptance_missing"
         )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "entry_type": ENTRY_TYPE,
         "source_root": binding["source_root"],
         "common_dir": binding["common_dir"],
@@ -127,9 +148,12 @@ def attributes(path):
     result = subprocess.run(["/usr/bin/xattr", "-s", str(path)], capture_output=True, check=True, timeout=30)
     values = {}
     for name in result.stdout.decode("utf-8").splitlines():
-        raw = subprocess.run(
-            ["/usr/bin/xattr", "-s", "-p", name, str(path)], capture_output=True, check=True, timeout=30
+        encoded = subprocess.run(
+            ["/usr/bin/xattr", "-s", "-p", "-x", name, str(path)], capture_output=True, check=True, timeout=30
         ).stdout
+        # Plain xattr -p truncates binary values at NUL. Decode its complete
+        # hexadecimal representation, including a genuine zero-length value.
+        raw = bytes.fromhex(encoded.decode("ascii"))
         # Only existence/length/digest is retained; never where-from URLs.
         values[name] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
     return values
@@ -170,6 +194,36 @@ def copy_metadata(source, copied):
         if old_quarantine != new_quarantine:
             differences.append({"path": name, "source": old_quarantine, "copy": new_quarantine})
     return differences
+
+
+def preserve_empty_attributes(stage, source):
+    """ditto omits empty xattrs, including ad-hoc non-Mach-O CodeSignature.
+
+    Restore only missing, proven-empty values on this new private copy. Never
+    rewrite a value or quarantine, and still require exact raw equality below.
+    """
+    require(
+        stage.is_dir() and not stage.is_symlink() and stage.resolve() == stage and stage.stat().st_uid == os.getuid(),
+        "activation_managed_copy_invalid",
+    )
+    copied = fingerprint(stage)
+    require(source.keys() == copied.keys(), "activation_managed_copy_changed")
+    restored = []
+    for name, expected in source.items():
+        actual = copied[name]
+        require(
+            {k: v for k, v in expected.items() if k != "attrs"} == {k: v for k, v in actual.items() if k != "attrs"},
+            "activation_managed_copy_changed",
+        )
+        for attribute, value in expected["attrs"].items():
+            if (
+                value == {"bytes": 0, "sha256": hashlib.sha256(b"").hexdigest()}
+                and attribute not in actual["attrs"]
+                and attribute != "com.apple.quarantine"
+            ):
+                create_empty_attribute(stage / name, attribute)
+                restored.append({"path": name, "attribute": attribute, **value})
+    return restored
 
 
 def verify_snapshot(identity):
@@ -225,6 +279,7 @@ def create_snapshot(manifest_path, manifest, report):
     with tempfile.TemporaryDirectory(prefix=".launch-snapshot-", dir=folder.parent) as temporary:
         stage = Path(temporary) / "Engine.app"
         native.copy_app(source, stage)
+        restored = preserve_empty_attributes(stage, before)
         native.verify_bundle(stage, expected, identity["artifact_sha256"])
         copied = fingerprint(stage)
         differences = copy_metadata(before, copied)
@@ -247,6 +302,7 @@ def create_snapshot(manifest_path, manifest, report):
                 "source_fingerprint": before,
                 "payload_fingerprint": copied,
                 "quarantine_differences": differences,
+                "restored_empty_attributes": restored,
             }
             with (folder / "context.json").open("x", encoding="utf-8") as stream:
                 json.dump(record, stream, ensure_ascii=False, sort_keys=True)

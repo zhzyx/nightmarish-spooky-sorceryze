@@ -28,3 +28,7 @@
 4. 完整变更静态检查、必要 macOS 实测、独立审查、正式 gate/writer、精确 CI、main 及本单权威终态回读完成。
 
 原483 pending 恢复与原用户入口实际安装/冷启动不在本单冒称完成；提供已交付可信 helper 的精确调用方式，由原宿主继续实测。
+
+## 完整模板复制保真补充
+
+组合验收实际发现 ditto 会漏掉 alternate Info plist 上存在但长度为零的 CodeSignature 属性。原生 getxattr 与十六进制读取交叉核实；普通 xattr -p 还会在 NUL 处截断二进制值，因此改为完整 hex 解码记录原始长度/摘要。仅在本次新建且 owned 的副本上，对源已证实为零长度且目标缺失的非 quarantine 属性执行 CREATE|NOFOLLOW 原子创建；已有属性不重写，EEXIST 拒绝并保留外部值。随后仍要求完整 raw 属性/文件字节/模式精确及 strict 签名，绝不忽略 cs.* 差异。原 v1 PR573、失败和旧证据保留，新版本另签发；572组合及精确CI未完成前不合入。

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "issue": 569,
+  "request_id": "native-activation-staging-metadata-20261108",
+  "baseline_commit": "21c9530919c1b129cf9f42ca972aa2bfe7f9cfab",
+  "head_at_freeze": "31ab832abeee30ba7aff98bc56228571c4177fac",
+  "source_files": {
+    "tools/editor_managed_native_entry.py": "ef804f9d2a4bb76efb2dc6580ab997e9f00731a227d0cfba5d7c0a77853abc3f",
+    "tools/editor_candidate_activation.py": "d7dd5b7ea514e6cbf5722dadb793809357975e70314f23607f1f470a8d0c56a3",
+    "tools/editor_engine_candidate.py": "fe19cadd5ae92edf932808ef5440ea95173f76583640e950b2569bbe9542e44b",
+    "tools/editor_native_app.py": "ffbc9671c36d2ab9e88238491d6eeb51da2c2062d76e310395437c96c5abf4a7",
+    "tools/editor_self_build.py": "818c5ac67e7cc9c86286af9e95db54f4c9770f24f6a1758fb6004511e43ccbeb",
+    "tools/test_editor_managed_native_entry.py": "e275754fd1d71aa008fc8e10e9d06ba2b42df4f0e48ba8e34111cf0eb0442bc6",
+    "tools/test_editor_engine_candidate.py": "4390bd98f7cf5bd26e5d3ea55e27504c1a813ab0444b2dd002eee748b050f899"
+  },
+  "source_freeze_sha256": "2bb53810d91849073b80f1a894f29b23dd13280b18057a97d4b7598d51a2253f",
+  "preserved_original_candidate": "31ab832abeee30ba7aff98bc56228571c4177fac",
+  "preserved_original_signed_head": "29bc1e0d86de645a4299ccbd2069f26b6c347207",
+  "original_pr": 573,
+  "original_pr_status": "superseded by full-template preservation fix; never merged",
+  "root_cause": "ditto omits existing0-byte non-MachO CodeSignature attrs; plain xattr -p truncates values at NUL",
+  "repair": "hex-decode complete raw values; only restore source-proven missing empty non-quarantine attrs on new owned copy with native CREATE|NOFOLLOW; EEXIST rejects instead of overwrite; all raw attrs and strict still checked",
+  "actual_author_tests": {
+    "managed14": {
+      "passed": 14,
+      "private_log_sha256": "f358c72e0f27c1153d51109ada06c780554a9e2de5343d85cf4f7dc657c6986d"
+    },
+    "full_production_template_compiled_native_Documents_entry": {
+      "input_macho_sha256": "93dab083db486337c6d0c304cf2922f0864cac1791c5b6a23e6d1ff500d45c59",
+      "strict_and_full_raw_retention_seconds": [
+        1,
+        3,
+        10
+      ],
+      "private_report_sha256": "5c79bcb23a66302bea65bd329926bd5ecf2f5ece3acd9204bcf6bc2e550809ff",
+      "source_and_payload_unchanged": true
+    }
+  },
+  "independent_review": {
+    "path": "data-collection/requests/native-activation-staging-metadata-20261108/validation/independent-raw-review-v2.json",
+    "sha256": "30bc149b35407322f5b7598f4e96c9a8c129e26452aa458d476dbe56584680f5",
+    "original_private_sha256": "1d2d7fd36c56d0d0786a73b09545e933783861e6a537d350691cd2bc8663e8b8"
+  },
+  "572_combination": "pending before new signing; merge requires separate actual pass",
+  "metadata_correction": "freeze-v2 inherited baseline into head; original preserved, freeze-v3 explicitly records baseline21c/currenthead31ab; source hashes determined independently",
+  "scope_excluded": [
+    "production483 recovery",
+    "original user Applications cold launch",
+    "new receipt enforcement in immutable old binary"
+  ]
+}

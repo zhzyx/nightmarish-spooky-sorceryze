@@ -489,6 +489,7 @@ def install_managed_native_link(manifest, manifest_path, report, app, journal_pa
             "source_digest": accepted["source_digest"],
             "payload_context": accepted,
             "quarantine_differences": snapshot["quarantine_differences"],
+            "restored_empty_attributes": snapshot.get("restored_empty_attributes", []),
             "artifact_sha256": manifest["artifact_sha256"],
             "executable": manifest["executable"],
             "stage": str(stage),

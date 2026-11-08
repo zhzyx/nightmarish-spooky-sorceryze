@@ -90,6 +90,69 @@ class ManagedEntryTests(unittest.TestCase):
         self.assertEqual(before, managed.fingerprint(source))
         self.assertEqual(result["quarantine_differences"], managed.copy_metadata(before, copied))
 
+    def test_binary_and_empty_attributes_are_exact_raw_values(self):
+        path = self.folder / "binary-attribute"
+        path.write_text("private fixture")
+        raw = b"prefix\x00middle\x00suffix\xff"
+        for attribute, value in (("local.binary.fixture", raw), ("local.empty.fixture", b"")):
+            subprocess.run(["/usr/bin/xattr", "-s", "-w", "-x", attribute, value.hex(), str(path)], check=True)
+        import hashlib
+
+        actual = managed.attributes(path)
+        self.assertEqual(actual["local.binary.fixture"], {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()})
+        self.assertEqual(actual["local.empty.fixture"], {"bytes": 0, "sha256": hashlib.sha256(b"").hexdigest()})
+
+    def test_full_production_template_preserves_empty_signature_attributes(self):
+        initial, binding, source, manifest, report = self.fixture()
+        root = Path(binding["source_root"])
+        template = Path(__file__).resolve().parents[1] / "misc/dist/macos_tools.app"
+        native.package_app(root, "/usr/bin/true", binding, self.root, source, template)
+        manifest = Path(
+            artifact_manifest(
+                root,
+                source / native.EXECUTABLE_RELATIVE,
+                binding,
+                self.root,
+                {"extra_suffix": "self_update_a"},
+                source_snapshot(root),
+                source,
+            )
+        )
+        path, private = self.journal(binding)
+        private["artifact_manifest"] = str(manifest)
+        path.write_text(json.dumps(private))
+        before = managed.fingerprint(source)
+        result = self.activate(manifest, report)
+        payload = Path(result["canonical_payload"])
+        self.assertEqual(before, managed.fingerprint(payload))
+        self.assertEqual(before, managed.fingerprint(source))
+        native.verify_signature(payload)
+        native.verify_signature(native.app_for_executable(initial))
+        restored = {(x["path"], x["attribute"]) for x in result["restored_empty_attributes"]}
+        for alternate in ("Info_arm64.plist", "Info_x86_64.plist"):
+            self.assertIn(("Contents/" + alternate, "com.apple.cs.CodeSignature"), restored)
+
+    def test_empty_attribute_race_does_not_overwrite_new_value(self):
+        source, stage = self.folder / "source-metadata", self.folder / "owned-copy"
+        source.mkdir()
+        stage.mkdir()
+        for folder in (source, stage):
+            (folder / "file").write_text("private fixture")
+        subprocess.run(["/usr/bin/xattr", "-w", "-x", "local.empty.fixture", "", str(source / "file")], check=True)
+        before = managed.fingerprint(source)
+        create = managed.create_empty_attribute
+
+        def race(path, name):
+            subprocess.run(["/usr/bin/xattr", "-w", name, "external value", str(path)], check=True)
+            return create(path, name)
+
+        with mock.patch.object(managed, "create_empty_attribute", side_effect=race):
+            with self.assertRaises(OSError) as error:
+                managed.preserve_empty_attributes(stage, before)
+        self.assertEqual(error.exception.errno, 17)
+        value = subprocess.check_output(["/usr/bin/xattr", "-p", "local.empty.fixture", str(stage / "file")])
+        self.assertEqual(value, b"external value\n")
+
     def test_same_executable_new_acceptance_has_distinct_immutable_snapshot(self):
         _, _, _, manifest, report = self.fixture()
         first = self.activate(manifest, report)
