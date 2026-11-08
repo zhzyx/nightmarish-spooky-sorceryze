@@ -38,5 +38,6 @@ class GongGongEngineOrigin {
 public:
 	static Dictionary read();
 	static String source_root();
+	static String native_artifact_directory(const String &p_source);
 	static bool uses_default_project(const List<String> &p_arguments);
 };

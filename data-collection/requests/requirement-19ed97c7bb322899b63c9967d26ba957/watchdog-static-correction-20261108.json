@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "issue483_watchdog_static_correction",
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "issue_number": 483,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+  "source_head_at_build": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "source_digest": "9139cf2f000442d9ca4278afd92a202f3bb12d62fd2c4f3fa610d98b139e0d0c",
+  "artifact_sha256": "34bed8476d2013a20a09d352b15e6e4d9e1eb64d2dafc476954985601e4059f7",
+  "source_input_count": 16508,
+  "corrected_source_sha256": {
+    "tools/editor_restart_watchdog.py": "c48a9e4aa4932833be46d65e6740b4de559294b711dff5b33ef6b506327c9b76",
+    "tests/editor/test_editor_restart_watchdog.py": "9ff729ba196d5c0644334966dd4ef5f84e743a827f040edcde160f897b3c61b7"
+  },
+  "corrections": [
+    "Use a separate exit_error variable in the watchdog exit branch",
+    "Assert the imported watchdog test spec and loader exist",
+    "Correct signaling spelling in a comment"
+  ],
+  "verification": {
+    "mypy_2_4_0": "passed on 10 Python source files",
+    "codespell_2_4_2": "passed on the 19 product delta files",
+    "ruff_no_fix": "passed on 10 Python source files",
+    "ruff_format_check": "10 files already formatted",
+    "watchdog_unittest": {
+      "run": 16,
+      "passed": 15,
+      "platform_skipped": 1
+    },
+    "build_engine_restart": "succeeded with vulkan=no, accesskit=no, tests=yes, debug_symbols=no",
+    "manifest_binary_sha256_match": true
+  },
+  "prior_evidence_retained": [
+    "34bed8476d2013a20a09d352b15e6e4d9e1eb64d2dafc476954985601e4059f7",
+    "002ffff7f44bff703f0dbc7034b6b7c835ff0ce7bdc0c12d5b33cdb1036815f0"
+  ],
+  "limits": [
+    "The latest source digest differs from both earlier frozen manifests; their source identities are not reused.",
+    "The 14 model cases were run on the earlier formatted build; only watchdog files changed afterward.",
+    "TextServerFallback was not compiled or runtime tested.",
+    "Original Applications entry and cold start remain under Issue #462.",
+    "Formal gate, signed PR, exact CI, main merge, and final delivery remain pending."
+  ]
+}

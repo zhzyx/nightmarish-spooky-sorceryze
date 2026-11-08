@@ -1,0 +1,38 @@
+{
+  "binary_sha256": "5a2b54aa4351d0e094c5d88d30f05002728851c93ef1285cb51a6572c91bcf07",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "68eaa221110b1f9237cef2389171e1cbf632ac3f1c30875e03990219409f3c38",
+    "editor/docks/ai_chat_dock.h": "ab64da6d5206415da1b14a06da53a069c690d04f3f0dd633f19a74825c797d3b",
+    "tools/codex_cli/godot_bridge.js": "40930a75182c6b4e4450d2afe62e48532229650de27a80bff107af5c85f310c7",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31"
+  },
+  "source_unchanged": true,
+  "provider": "Offline CLI/HTTP fixtures; real editor binary; no real inference",
+  "isolated_settings": true,
+  "results": [
+    {
+      "case": "codex-catalog-failure",
+      "checks": [
+        "manual refresh button absent",
+        "catalog failure visible without retry loop"
+      ],
+      "error": "",
+      "heartbeat": 135,
+      "model_status": "CLI 拒绝模型列表查询，请检查登录状态、服务配置或 CLI 版本后重试。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-eetwaxvc/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-eetwaxvc",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16233
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16235
+        }
+      ]
+    }
+  ],
+  "ok": true
+}

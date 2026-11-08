@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "issue": 483,
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "external_repair_during_native_workflow_acceptance",
+  "authority": "Original user authorized observing the internal Agent workflow and interrupting to repair discovered failures",
+  "incident": "d02e2fbb5b2d96ca4269defc1fb88116b98128c9de0e706f7a69dbf9e3d9895d",
+  "original_attempt": {
+    "source_head": "68fe8c9e0d77b5979b724ba483ccfb409e783e50",
+    "artifact_sha256": "4f37d6adb15c23a9d048b81647fc92aea5fcefabce8c3875d0290b1e4c0e5c7b",
+    "native_build_and_startup_checks": "passed",
+    "actual_gui_restart": "failed: real process crashed after early dock acknowledgement; original parent did not continue",
+    "first_restart_counted_as_passed": false,
+    "original_binary_manifest_crash_history_and_resume": "retained unchanged before repair"
+  },
+  "repair": {
+    "execution": "External Codex root temporarily took over the interrupted candidate; text implementation delegated to runtime_entry_fix. This was not an unattended success of the original restart.",
+    "scope": [
+      "Enable existing thread-safe shaped-RID storage for Advanced and Fallback without disabling RichTextLabel background layout",
+      "Delay production readiness acknowledgement until original session recovery and mandatory tool-result receipt callback",
+      "Keep acknowledgement write failure retryable before advancing the tool batch",
+      "Observe the acknowledged successor for five seconds; roll back an abnormal exit, preserve normal close and never kill a live unconfirmed editor"
+    ],
+    "source_head": "cef3a3af07168711b117e2947d0f86c012dba510",
+    "uncommitted_repair_will_be_reviewed_and_delivered_with_this_issue": true,
+    "artifact_sha256": "33e0b35bad6f2f96d2657fec5b98b3e278d4bfa10a210f58b190ad05b8bb6b13",
+    "manifest_sha256": "a94ca6b9bb775d3f7bc3bcde93239786fbeee20e01f476864cd4a60b1a7af02b",
+    "source_digest": "d57061fd544844e036833016061c611b8bf5382699234b2fc9b0c079d80d63eb"
+  },
+  "validation": {
+    "real_existing_self_build_helper_exit_code": 0,
+    "startup_smokes": "passed",
+    "watchdog_tests": {
+      "passed": 15,
+      "platform_skipped": 1,
+      "windows_only_quoting_test_executed": false
+    },
+    "normal_private_text_server_test": {
+      "interface": "TextServerAdvanced",
+      "created_independent_shapes": 10000,
+      "allocation_phase_stable_reads": 37120,
+      "mismatches": 0,
+      "exit_code": 0,
+      "fallback": "not compiled in this artifact; no runtime pass claimed"
+    },
+    "independent_static_review_sha256": "1d6a46509cc2d28db907da33aa602a4908fb2f0b1ba1e5e48c5943f34c86fefa",
+    "independent_final_test_source_review_sha256": "f1a3695f905e2af00fc32d55d6eac7762d66f2129dcc763564b36928b2217770"
+  },
+  "actual_recovery": {
+    "launcher": "Repaired existing watchdog, original pending journal and nonce; no manual journal/history editing",
+    "original_conversation_preserved": true,
+    "original_snapshot_preserved": true,
+    "actual_tool_result_recovered": true,
+    "new_ack_utc": "2026-11-07T18:05:14.188463Z",
+    "watchdog_confirmed_after_observation_utc": "2026-11-07T18:05:19.251954Z",
+    "real_successor_observed_alive_after_seconds": 83,
+    "actual_main_screen": "AI Chat",
+    "actual_open_scene": "res://main.tscn"
+  },
+  "still_pending": [
+    "Native Agent implements and verifies model catalog reuse",
+    "Actual read-only child acceptance and automatic parent return",
+    "Signed source delivery, exact CI, main and complete_delivery for Issue483",
+    "Final native user application entry and zero-argument cold launch under remaining installation acceptance"
+  ],
+  "overall_workflow_accepted": false,
+  "original_user_application_cold_launch_accepted": false
+}

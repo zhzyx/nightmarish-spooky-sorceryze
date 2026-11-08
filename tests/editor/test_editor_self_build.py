@@ -289,7 +289,8 @@ class SelfBuildTests(unittest.TestCase):
             binding_path.write_text(json.dumps(binding))
             checked = dict(binding, source_root=str(root), binding_path=str(binding_path))
             raw = root / "bin/godot.macos.editor.arm64.self_update_a"
-            app = Path(str(raw) + ".app")
+            local_store = root / "private-local-store"
+            app = local_store / (raw.name + ".app")
 
             class Child:
                 pid = 123
@@ -323,6 +324,7 @@ class SelfBuildTests(unittest.TestCase):
                 patch.object(manifests, "artifact_manifest", side_effect=manifest),
                 patch.object(manifests, "verify_source", return_value={"ok": True}),
                 patch.object(native, "package_app", side_effect=package) as packaged,
+                patch.object(native, "native_output_dir", return_value=local_store),
                 patch.object(worker, "private_check_editor", side_effect=lambda artifact, directory: artifact),
                 patch.object(worker, "write_resume_fixture", return_value="mock-token"),
                 patch.object(worker, "resume_ack_error", return_value=""),

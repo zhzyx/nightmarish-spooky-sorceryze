@@ -2,15 +2,16 @@ import base64
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("editor_restart_watchdog", ROOT / "tools/editor_restart_watchdog.py")
+assert spec is not None and spec.loader is not None
 watchdog = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(watchdog)
 
@@ -45,7 +46,7 @@ class Child:
 
 class Fixture:
     def __init__(self, directory):
-        self.base = Path(directory)
+        self.base = Path(directory).resolve()
         self.new = self.base / "godot.new.exe"
         self.old = self.base / "godot.old.exe"
         self.ack = self.base / "ack.json"
@@ -55,19 +56,36 @@ class Fixture:
         self.launched = []
 
     def write_ack(self, token=TOKEN, executable=None, dock_ready=True):
-        self.ack.write_text(json.dumps({
-            "token": token,
-            "dock_ready": dock_ready,
-            "executable": str(executable or self.new),
-        }), encoding="utf-8")
+        self.ack.write_text(
+            json.dumps({
+                "token": token,
+                "dock_ready": dock_ready,
+                "executable": str(executable or self.new),
+            }),
+            encoding="utf-8",
+        )
 
     def arguments(self, ack_timeout=1.0):
-        return ["--new", str(self.new), "--old", str(self.old), "--ack", str(self.ack),
-                "--report", str(self.report), "--token", TOKEN, "--wait-pid", str(DEAD_PID),
-                "--ack-timeout", str(ack_timeout),
-                # Editor arguments look like options, which is exactly why they
-                # must survive the watchdog's own option parsing untouched.
-                "--editor-args-b64", encode_editor_arguments(["--editor", "--path", str(self.base)])]
+        return [
+            "--new",
+            str(self.new),
+            "--old",
+            str(self.old),
+            "--ack",
+            str(self.ack),
+            "--report",
+            str(self.report),
+            "--token",
+            TOKEN,
+            "--wait-pid",
+            str(DEAD_PID),
+            "--ack-timeout",
+            str(ack_timeout),
+            # Editor arguments look like options, which is exactly why they
+            # must survive the watchdog's own option parsing untouched.
+            "--editor-args-b64",
+            encode_editor_arguments(["--editor", "--path", str(self.base)]),
+        ]
 
     def outcome(self):
         return json.loads(self.report.read_text(encoding="utf-8"))
@@ -75,7 +93,11 @@ class Fixture:
 
 class RestartWatchdogTests(unittest.TestCase):
     def run_watchdog(self, fixture, launcher, ack_timeout=1.0):
-        with patch.object(watchdog, "launch", launcher), patch.object(watchdog, "ACK_POLL_SECONDS", 0.01):
+        with (
+            patch.object(watchdog, "launch", launcher),
+            patch.object(watchdog, "ACK_POLL_SECONDS", 0.01),
+            patch.object(watchdog, "ACK_STABILITY_SECONDS", 0.03),
+        ):
             return watchdog.main(fixture.arguments(ack_timeout))
 
     def test_acknowledged_handoff_keeps_the_new_editor(self):
@@ -95,6 +117,122 @@ class RestartWatchdogTests(unittest.TestCase):
             self.assertEqual(fixture.launched, [fixture.new])
             self.assertEqual(seen, [["--editor", "--path", str(fixture.base)]])
             self.assertEqual(fixture.outcome()["status"], "started")
+
+    def test_an_acknowledging_editor_that_exits_with_an_error_is_rolled_back(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Fixture(directory)
+
+            def launcher(executable, arguments):
+                fixture.launched.append(Path(executable))
+                if Path(executable) == fixture.new:
+                    fixture.write_ack()
+                    return Child(7)
+                return Child()
+
+            self.assertEqual(self.run_watchdog(fixture, launcher), 1)
+            self.assertEqual(fixture.launched, [fixture.new, fixture.old])
+            self.assertIn("after acknowledging", fixture.outcome()["error"])
+
+    def test_acknowledgement_is_observed_before_handoff_is_confirmed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Fixture(directory)
+
+            class EarlyExit(Child):
+                def __init__(self):
+                    super().__init__()
+                    self.polls = 0
+
+                def poll(self):
+                    self.polls += 1
+                    return 7 if self.polls >= 3 else None
+
+            def launcher(executable, arguments):
+                fixture.launched.append(Path(executable))
+                if Path(executable) == fixture.new:
+                    fixture.write_ack()
+                    return EarlyExit()
+                return Child()
+
+            self.assertEqual(self.run_watchdog(fixture, launcher), 1)
+            self.assertEqual(fixture.outcome()["status"], "rolled_back")
+            self.assertEqual(fixture.launched, [fixture.new, fixture.old])
+
+    def test_normal_close_after_acknowledging_does_not_reopen_the_project(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Fixture(directory)
+
+            def launcher(executable, arguments):
+                fixture.launched.append(Path(executable))
+                fixture.write_ack()
+                return Child(0)
+
+            self.assertEqual(self.run_watchdog(fixture, launcher), 0)
+            self.assertEqual(fixture.launched, [fixture.new])
+            self.assertTrue(fixture.outcome()["closed_normally"])
+
+    def test_readiness_observation_can_finish_after_the_ack_deadline(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Fixture(directory)
+
+            class Clock:
+                value = 0.0
+
+                def monotonic(self):
+                    return self.value
+
+                def sleep(self, seconds):
+                    self.value += seconds
+
+            clock = Clock()
+
+            def launcher(executable, arguments):
+                fixture.launched.append(Path(executable))
+                fixture.write_ack()
+                return Child()
+
+            with (
+                patch.object(watchdog.time, "monotonic", clock.monotonic),
+                patch.object(watchdog.time, "sleep", clock.sleep),
+            ):
+                self.assertEqual(self.run_watchdog(fixture, launcher, ack_timeout=0.01), 0)
+            self.assertGreaterEqual(clock.value, 0.03)
+            self.assertEqual(fixture.outcome()["status"], "started")
+
+    def test_real_process_exit_after_acknowledging_is_observed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Fixture(directory)
+            fixture.new = Path(sys.executable).resolve()
+            payload = json.dumps({"token": TOKEN, "dock_ready": True, "executable": str(fixture.new)})
+            script = (
+                "import sys,time; from pathlib import Path; "
+                f"Path({str(fixture.ack)!r}).write_text({payload!r},encoding='utf-8'); "
+                "time.sleep(0.03); sys.exit(7)"
+            )
+            arguments = fixture.arguments(ack_timeout=5.0)
+            arguments[arguments.index("--editor-args-b64") + 1] = encode_editor_arguments(["-c", script])
+            real_launch = watchdog.launch
+            children = []
+
+            def launcher(executable, editor_arguments):
+                fixture.launched.append(Path(executable))
+                if Path(executable) == fixture.new:
+                    child = real_launch(executable, editor_arguments)
+                    children.append(child)
+                    return child
+                return Child()
+
+            try:
+                with (
+                    patch.object(watchdog, "launch", launcher),
+                    patch.object(watchdog, "ACK_POLL_SECONDS", 0.005),
+                    patch.object(watchdog, "ACK_STABILITY_SECONDS", 0.1),
+                ):
+                    self.assertEqual(watchdog.main(arguments), 1)
+                self.assertEqual(fixture.launched, [fixture.new, fixture.old])
+                self.assertIn("after acknowledging", fixture.outcome()["error"])
+            finally:
+                for child in children:
+                    child.wait(timeout=5)
 
     def test_editor_that_dies_without_acknowledging_is_rolled_back(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -183,7 +321,10 @@ class RestartWatchdogTests(unittest.TestCase):
             arguments = fixture.arguments()
             arguments[arguments.index("--wait-pid") + 1] = str(os.getppid())
             arguments += ["--exit-timeout", "0.2"]
-            with patch.object(watchdog, "launch", launcher), patch.object(watchdog, "process_is_running", lambda pid: True):
+            with (
+                patch.object(watchdog, "launch", launcher),
+                patch.object(watchdog, "process_is_running", lambda pid: True),
+            ):
                 self.assertEqual(watchdog.main(arguments), 1)
             self.assertEqual(fixture.outcome()["status"], "failed")
 
@@ -218,11 +359,26 @@ class RestartWatchdogTests(unittest.TestCase):
             # is the only way the acknowledgement can ever appear.
             payload = json.dumps({"token": TOKEN, "dock_ready": True, "executable": sys.executable})
             editor_arguments = ["-c", f"open({str(ack)!r}, 'w', encoding='utf-8').write({payload!r})"]
-            arguments = ["-u", str(ROOT / "tools/editor_restart_watchdog.py"),
-                         "--new", sys.executable, "--old", str(old), "--ack", str(ack),
-                         "--report", str(report), "--token", TOKEN, "--wait-pid", str(DEAD_PID),
-                         "--ack-timeout", "60",
-                         "--editor-args-b64", encode_editor_arguments(editor_arguments)]
+            arguments = [
+                "-u",
+                str(ROOT / "tools/editor_restart_watchdog.py"),
+                "--new",
+                sys.executable,
+                "--old",
+                str(old),
+                "--ack",
+                str(ack),
+                "--report",
+                str(report),
+                "--token",
+                TOKEN,
+                "--wait-pid",
+                str(DEAD_PID),
+                "--ack-timeout",
+                "60",
+                "--editor-args-b64",
+                encode_editor_arguments(editor_arguments),
+            ]
             command = " ".join(quote_like_godot(value) for value in [sys.executable, *arguments])
             result = subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace", timeout=180)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -247,11 +403,17 @@ class SelfBuildResumeCheckTests(unittest.TestCase):
             self.assertEqual(journal["restart"]["tool_call_id"], journal["tool_calls"][0]["id"])
             self.assertIn("never acknowledged", self.worker.resume_ack_error(project, token, artifact))
             ack = project / ".godot/editor/ai_chat_restart_ack.json"
-            ack.write_text(json.dumps({"token": "other", "dock_ready": True, "executable": str(artifact)}), encoding="utf-8")
+            ack.write_text(
+                json.dumps({"token": "other", "dock_ready": True, "executable": str(artifact)}), encoding="utf-8"
+            )
             self.assertIn("different handoff", self.worker.resume_ack_error(project, token, artifact))
-            ack.write_text(json.dumps({"token": token, "dock_ready": False, "executable": str(artifact)}), encoding="utf-8")
+            ack.write_text(
+                json.dumps({"token": token, "dock_ready": False, "executable": str(artifact)}), encoding="utf-8"
+            )
             self.assertIn("different handoff", self.worker.resume_ack_error(project, token, artifact))
-            ack.write_text(json.dumps({"token": token, "dock_ready": True, "executable": str(artifact)}), encoding="utf-8")
+            ack.write_text(
+                json.dumps({"token": token, "dock_ready": True, "executable": str(artifact)}), encoding="utf-8"
+            )
             # A journal that survives would be answered again on every later start.
             self.assertIn("did not consume", self.worker.resume_ack_error(project, token, artifact))
             (project / ".godot/editor/ai_chat_resume.json").unlink()
