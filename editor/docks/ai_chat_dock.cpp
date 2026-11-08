@@ -1821,6 +1821,11 @@ void AIChatDock::_send() {
 		return;
 	}
 	const String command = input->get_text().strip_edges();
+	if (busy && draft_images.is_empty() && (command == U"执行" || command == U"确认") && !_get_daqian_approval().is_empty()) {
+		input->set_text(String());
+		_append(TTR("Editor"), U"请返回天枢本工单并点击「查看待确认操作」，在卡片上选择执行并确认。当前操作仍在等待批准。");
+		return;
+	}
 	if (busy && draft_images.is_empty() && (AIChatIssueGuide::is_cancel(command) || command == U"停止" || command.to_lower() == "stop")) {
 		_cancel_design_batch(active_agent);
 		input->set_text(String());
@@ -2739,7 +2744,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		confirmation->set_title(TTR("Approve Local Command"));
 		preview->set_text(_redact(String("Shell: ") + (backend->get_selected() == 1 ? "Bash (Git Bash on Windows)" : "PowerShell on Windows / sh on Unix") + "\nWorking directory: " + pending_cwd + "\nTimeout: " + itos(process_timeout_seconds) + " seconds\n\n" + pending_command + "\n\n" + TTR("This command runs with your OS permissions, outside any sandbox. It may modify or delete files, access the network, or start other processes. File undo does not undo commands. Stop/timeout terminates the launched shell but is not a guarantee that all descendants stop. Only approve commands you trust.")));
 		_set_activity(U"等待你确认命令执行");
-		_append(U"进度", U"AI 提议执行本机命令，正在等待你的确认。完整命令在确认窗口中查看。");
+		_append(U"进度", U"AI 提议执行本机命令，正在等待你的确认。请先核对完整命令。");
 		_show_confirmation();
 		return;
 	}
@@ -2943,6 +2948,7 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 	daqian_approval_generation = session_generation;
 	daqian_approval["token"] = new_conversation_id();
 	daqian_approval["root"] = gonggong_report_root;
+	daqian_approval["board_workspace"] = _daqian_board_workspace();
 	daqian_approval["url"] = gonggong_reporting.get("source_ref", "");
 	daqian_approval["request"] = gonggong_reporting.get("request_ref", "");
 	daqian_approval["actor"] = gonggong_reporting.get("actor", "");
@@ -2969,7 +2975,9 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 		return true;
 	}
 	const Dictionary agent = gonggong_reporting["agent"];
-	emit_signal("daqian_work_event", gonggong_report_root, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), "step", "confirmation", "waiting");
+	_set_activity(U"等待在天枢工单的操作确认卡上批准");
+	_append(U"进度", U"在天枢返回本工单，点击「查看待确认操作」，核对详情后在卡片上选择执行并确认。");
+	emit_signal("daqian_work_event", daqian_approval["board_workspace"], gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), "step", "confirmation", "waiting");
 	emit_signal("daqian_approval_changed");
 	return true;
 }
@@ -2998,6 +3006,7 @@ Dictionary AIChatDock::_get_daqian_approval() const {
 	if (source.is_empty() || (source.contains("://") && source != url) || !url.ends_with("/issues/" + number) ||
 			!AIChatIssueGuide::is_bound(number.to_int(), entry.get("request_id", "")) || entry.get("request_id", "") != daqian_approval["request"] ||
 			String(daqian_approval["token"]).is_empty() || String(daqian_approval["actor"]).is_empty() || version.length() != 64 || !version.is_valid_hex_number(false) ||
+			String(daqian_approval["board_workspace"]).is_empty() || daqian_approval["board_workspace"] != _daqian_board_workspace() ||
 			gonggong_report_root.is_empty() || gonggong_report_root != _workflow_root() || daqian_approval["root"] != gonggong_report_root ||
 			gonggong_reporting.get("source_ref", "") != url || gonggong_reporting.get("request_ref", "") != daqian_approval["request"] ||
 			gonggong_reporting.get("actor", "") != daqian_approval["actor"] || gonggong_reporting.get("source_sha256", "") != version ||
@@ -4124,6 +4133,9 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		_unmount_daqian_chat();
 	}
 	const bool confirmed = !p_selection.is_empty();
+	const bool retry_guide = current_matches && p_embedded && !p_preview && p_source == issue_url &&
+			p_issue > 0 && _direct_daqian_task() && issue_guide_state == "agent_error" && issue_guide_pid < 0 &&
+			bool(p_selection.get("retry_existing", false)) && p_selection.has("execution_receipt");
 	String model_id;
 	if (confirmed) {
 		if (p_selection.get("backend", Variant()).get_type() != Variant::INT || p_selection.get("id", Variant()).get_type() != Variant::STRING) {
@@ -4140,7 +4152,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		if (p_message.strip_edges().is_empty() || p_message.length() > 16000) {
 			return U"请填写需求，正文最多 16000 个字符。";
 		}
-		if (gonggong_pid >= 0 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
+		if (gonggong_pid >= 0 || (!issue_guide_state.is_empty() && !retry_guide) || !igniter_state.is_empty()) {
 			return U"请先在 AI 对话中处理进行中的工单或环境配置。";
 		}
 	}
@@ -4212,6 +4224,12 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		}
 		_active_model_field()->set_text(model_id);
 		_apply_models(model_catalog);
+		if (retry_guide) {
+			snapshot_state["daqian_execution"] = p_selection["execution_receipt"];
+			snapshot_state["daqian_model"] = model_id;
+			_issue_guide_retry();
+			return busy ? String() : String(U"未能恢复原工单的消息，请在关联会话中核对。");
+		}
 		daqian_preview_source = p_preview ? (p_preview_receipt.is_empty() ? p_source : p_preview_receipt) : String();
 		daqian_preview_conversation = conversation_id;
 		consultation_only->set_pressed(p_preview);

@@ -1,0 +1,40 @@
+{
+  "request_id": "tianshu-candidate-approval-retry",
+  "issue_number": 582,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+  "source_base": "398376dda58218facce39aaf7733339bbc592526",
+  "path_base": "repository_root",
+  "original_report": {
+    "related_issues": [
+      534,
+      562
+    ],
+    "observed": "Original Windows worker proposed a local command. User reported an invisible approval and inactive retry. The cancelled tool was followed by 执行 and an issue-start identity check."
+  },
+  "cause": [
+    "Approval used candidate execution root as the UI board root.",
+    "Toolbar retry only focused the stage. Direct Issue amendments called generic issue-start with number and request ID, missing the expected actor."
+  ],
+  "verification": [
+    {
+      "state": "passed",
+      "runner": "tests/editor/run_daqian_node_approval.py",
+      "result": "DAQIAN_INLINE_APPROVAL_OK",
+      "editor_sha256": "c12d718cf3e2a1aa372f0f4fd324d50efcdb34362a47bc71873d5e6df30be8c6",
+      "scope": "Windows headless native editor, local Issue and model transports, two distinct real Git worktrees and production command provenance guard. Pending approval survived chat 执行, showed details, rejected wrong board, wrong actor, changed Issue revision and stale token. Two confirmation clicks executed once in candidate only. During an active chat a separate 执行 continued the original Issue against a bridge fixture rejecting generic issue-agent. A forced HTTP 401 produced 重试推进 and pressing the toolbar button resumed the same conversation."
+    },
+    {
+      "state": "passed",
+      "runner": "customizations/components/godot-host/test_requirements_agent.py",
+      "result": "30 tests passed",
+      "scope": "Direct amendment validates original start receipt before publishing. Missing receipt prevents comment and issue-start; retry succeeds after restored validation."
+    },
+    {
+      "state": "passed",
+      "runner": "tests/editor/run_daqian_node_approval.py",
+      "editor_sha256": "ea3b946054473c382b8e3d0542ed2c22549ddc0f46bcb6c93759d2aa3b3a85dc",
+      "scope": "Final isolated Windows build: linked draft with stale creation metadata, same-worker guide error after a real amendment and toolbar retry, authenticated board/candidate/step checks, duplicate and stale confirmation rejection. Pre-existing sparse draft receipt recovered its canonical board row without a new binding signal."
+    }
+  ],
+  "original_editor_acceptance": "Original #534 worker in the Windows preview: board and candidate differed, authenticated approval card and details both visible; manually approved native image job returned succeeded; editor received matching PNG digest; subsequent distinct command required separate approval."
+}

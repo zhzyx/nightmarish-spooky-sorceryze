@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue582-native-retry-report",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-candidate-approval-retry",
+  "kind": "request",
+  "occurred_at": "2026-11-08T18:02:10.4703707Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+  "agent": {
+    "id": "codex-original-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat:repository-instructions"
+  },
+  "payload": {
+    "design_document": "design-docs/tianshu-candidate-approval-retry.md",
+    "intent": "Repair real candidate confirmation visibility and unresponsive retry on the original Windows workbench"
+  },
+  "evidence_refs": [],
+  "sha256": "8638091ec95323ecc9f335d0464a2dbd26143fc9ce04dc5b56ca088597cd6a67"
+}

@@ -124,7 +124,7 @@ func _document_anchor(lines: PackedStringArray, op: Dictionary) -> int:
 
 
 func matching_operation(item: Dictionary, op: Dictionary, root: String, user_id: String) -> Dictionary:
-	if op.is_empty() or op.root != root or op.actor != user_id or op.url != item.get("url") or op.request != item.get("request") or op.source_sha256 != item.get("source_sha256", ""):
+	if op.is_empty() or root.is_empty() or op.get("board_workspace", "") != root or op.actor != user_id or op.url != item.get("url") or op.request != item.get("request") or op.source_sha256 != item.get("source_sha256", ""):
 		return {}
 	return op
 
