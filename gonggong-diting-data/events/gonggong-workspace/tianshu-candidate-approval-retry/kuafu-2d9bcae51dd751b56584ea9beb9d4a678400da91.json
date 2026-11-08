@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2d9bcae51dd751b56584ea9beb9d4a678400da91",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-candidate-approval-retry",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0355a9ad7417f46b48e9b540769541517b8b9537e9837399c74264692ab271b4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+    "action": "delivery",
+    "detection_head": "398376dda58218facce39aaf7733339bbc592526",
+    "context_sha256": "69dc15467a854c66661d2739c564d1cf144fabcf20cbf2fe1d1d3f81adefb659",
+    "operator": "Sail-Li",
+    "worker": "codex-582-delivery",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/582",
+    "evidence": "Release #584 advanced main after #582 review; candidate patch blob pairs match the prior reviewed patch after integrating its main.",
+    "diagnosis": "Target main moved during review. Candidate branch fast-forwarded to latest main while preserving all staged work-order changes.",
+    "next_action": "Rebuild, rerun the native approval/retry regression and sign against updated main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T18:32:09.341165+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T18:35:10.344083+00:00",
+  "sha256": "cab76f4091979435cb0aa86841a5834e2de480999dfb7af08fb9b2dddccf6c00"
+}

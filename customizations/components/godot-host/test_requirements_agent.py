@@ -166,6 +166,25 @@ class RequirementsTests(unittest.TestCase):
         self.work.issue.assert_not_called()
         self.assertEqual(len(self.comments), 1)
 
+    def test_direct_steering_requires_original_start_receipt(self):
+        key = "daqian-direct-" + "a" * 20
+        self.existing["body"] = f"<!-- gonggong-request:{key} -->"
+        self.request.update(issue_number=17, request_id=key, continuation_only=True)
+        self.design["decision"] = "continue"
+        routing = Mock()
+        self.bridge.direct_adapter = Mock(return_value=(routing, self.bridge))
+        routing.chat_context.side_effect = ValueError("missing original receipt")
+        with self.assertRaisesRegex(ValueError, "missing original receipt"):
+            self.invoke()
+        self.bridge.issue_start.assert_not_called()
+        self.assertEqual(self.comments, [])
+        routing.chat_context.side_effect = None
+        result = self.invoke()
+        self.assertTrue(result["ready"])
+        routing.chat_context.assert_called_with(self.root, {"issue_number": 17, "request_id": key}, self.bridge)
+        self.bridge.issue_start.assert_not_called()
+        self.work.issue.assert_not_called()
+
     def test_steering_validates_binding_and_host_flag_before_model(self):
         for flag in [1, "true", None]:
             self.request.update(continuation_only=flag)
