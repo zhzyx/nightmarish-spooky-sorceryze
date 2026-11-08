@@ -118,7 +118,7 @@ func run() -> void:
 		await create_timer(0.05).timeout
 	var op: Dictionary = chat.get_daqian_approval()
 	if op.is_empty():
-		for label in chat.find_children("*", "RichTextLabel", true, false):
+		for label in view.find_children("*", "RichTextLabel", true, false):
 			print(label.get_parsed_text().right(300))
 		push_error("Bound tool never offered an inline approval")
 		quit(1)
@@ -129,6 +129,25 @@ func run() -> void:
 		push_error("The pending tool was not projected after the issue-start receipt")
 		quit(1)
 		return
+	check(op.board_workspace == repo and op.root != op.board_workspace, "Candidate and board roots did not diverge")
+	check(panel.details_panel.matching_operation(row, op, op.root, "42").is_empty(), "Candidate path was accepted as board identity")
+	check(panel.details_panel.matching_operation(row, op, repo, "99").is_empty(), "Another board actor saw the operation")
+	check(panel.publish_button.text == "查看待确认操作", "Pending approval was hidden by retry or view")
+	await panel._open_issue_conversation()
+	var approval_input = view.find_child("ChatInput", true, false)
+	approval_input.text = "执行"
+	view.find_child("Send", true, false).pressed.emit()
+	check(chat.get_daqian_approval().get("token") == op.token, "Chat text consumed the pending card")
+	# A published draft retains its creation receipt, not the current board version.
+	var original_key: String = panel.current
+	panel.saved.get_or_add("linked", {})["draft_approval_test"] = {"number":row.number,"request":row.request}
+	panel.current = "draft_approval_test"
+	check(panel._direct_binding().get("url") == row.url, "Persisted sparse draft did not recover its verified board row")
+	panel.publish_button.pressed.emit()
+	await process_frame
+	panel.current = original_key
+	panel.saved.linked.erase("draft_approval_test")
+	check(not panel.conversation.visible and panel.editor.canvas.is_visible_in_tree(), "Approval navigation left the card hidden")
 	var card = panel.editor.canvas.get_node("wf-operation")
 	check(card.get_meta("flow_state") == "awaiting_approval", "Missing waiting state")
 	check(not chat.find_child("AIFileApproval", true, false).visible, "Unexpected approval dialog")
@@ -146,7 +165,7 @@ func run() -> void:
 	check(panel.details_panel.details_document.get_parsed_text().contains("Bound section") and panel.details_panel.details_document.get_v_scroll_bar().value > 0, "Document did not scroll to the bound section")
 	check(panel.details_panel._document_anchor(PackedStringArray(["# Other"]), op) == -1, "Unbound prose should not be highlighted")
 	check_replaced_button(panel, row, op)
-	var marker := repo.path_join("executions")
+	var marker := str(op.root).path_join("executions")
 	check(not FileAccess.file_exists(marker), "Reading details executed the tool")
 	check(not chat.confirm_daqian_approval("obsolete-token"), "Wrong token was accepted")
 	# The board source changes between opening the details and pressing Confirm.
@@ -168,6 +187,7 @@ func run() -> void:
 	while panel.editor.workflow.get("operation", {}).get("state") != "completed" and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
 	check(FileAccess.get_file_as_string(marker).strip_edges() == "once", "Expected a single command execution")
+	check(not FileAccess.file_exists(repo.path_join("executions")), "Command wrote to board instead of the candidate")
 	check(not chat.confirm_daqian_approval(op.token) and chat.get_daqian_approval().is_empty(), "Consumed token was reused")
 	check(not panel.details_panel.visible and panel.editor.workflow.get("operation", {}).get("state") == "completed", "Missing terminal state")
 	await panel._start_or_view_direct(panel._direct_binding())
@@ -196,6 +216,44 @@ func run() -> void:
 		for label in view.find_children("*", "RichTextLabel", true, false):
 			print(label.get_parsed_text().right(350))
 	check(replied and dock.is_visible_in_tree(), "Follow-up did not return in the bound Tianshu conversation")
+	var send = view.find_child("Send", true, false)
+	input.text = "Wait for steering"
+	send.pressed.emit()
+	deadline = Time.get_ticks_msec() + 12000
+	while not FileAccess.file_exists(repo.path_join("awaiting-steering")) and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+	input.text = "执行"
+	send.pressed.emit()
+	check(await wait_for_reply(view, "Continued original Issue"), "Execution steering entered generic Issue intake")
+	input.text = "Fail this turn"
+	send.pressed.emit()
+	deadline = Time.get_ticks_msec() + 12000
+	while panel.publish_button.text != "重试推进" and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+	check(panel.publish_button.text == "重试推进", "Failed candidate turn did not expose retry")
+	panel._leave_conversation()
+	panel.publish_button.pressed.emit()
+	check(await wait_for_reply(view, "Retry reached original conversation"), "Retry did not resume bound chat from toolbar: " + panel.notice.text)
+	# A failed requirements recheck keeps the guide in agent_error, unlike an HTTP failure.
+	DirAccess.remove_absolute(repo.path_join("awaiting-steering"))
+	await panel._start_or_view_direct(panel._direct_binding(), "Wait for steering")
+	deadline = Time.get_ticks_msec() + 12000
+	while not FileAccess.file_exists(repo.path_join("awaiting-steering")) and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+	input.text = "Retain the amended icon scope"
+	send.pressed.emit()
+	check(await wait_for_reply(view, "fixture requirements recheck failed"), "Failed amendment did not enter guide error state")
+	deadline = Time.get_ticks_msec() + 8000
+	while panel.publish_button.text != "重试推进" and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+	check(panel.publish_button.text == "重试推进", "Guide error did not expose toolbar retry")
+	panel._leave_conversation()
+	panel.publish_button.pressed.emit()
+	var restored := await wait_for_reply(view, "Amendment resumed on original Issue")
+	check(restored, "Toolbar did not retry the failed amendment: " + panel.notice.text)
+	if not restored:
+		quit(1)
+		return
 	panel._leave_conversation()
 	check(panel.flow_split.is_visible_in_tree() and chat.find_child("AIWorkspacePages", true, false) != null, "Normal editor views were not restored")
 	await check_native_canvas(panel, row)
@@ -203,6 +261,16 @@ func run() -> void:
 		print("DAQIAN_INLINE_APPROVAL_OK")
 	await create_timer(0.8).timeout
 	quit(1 if failed else 0)
+
+func wait_for_reply(view, phrase: String) -> bool:
+	var deadline := Time.get_ticks_msec() + 16000
+	while Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+		for label in view.find_children("*", "RichTextLabel", true, false):
+			if phrase in label.get_parsed_text():
+				return true
+	return false
+
 
 func check_native_canvas(panel, row: Dictionary) -> void:
 	var canvas = panel.canvas_panel

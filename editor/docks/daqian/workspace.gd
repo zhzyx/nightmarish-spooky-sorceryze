@@ -1017,9 +1017,16 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 
 
 func _locate_operation(token: String) -> void:
-	if _pending_operation(_conversation_binding()).get("token", "") == token and editor.canvas.has_node("wf-operation/ApprovalActions"):
+	if token.is_empty() or _pending_operation(editor.workflow.get("item", {})).get("token", "") != token:
+		notice.text = "待确认操作已改变，请核对当前工单。"
+		return
+	_leave_conversation()
+	if editor.canvas.has_node("wf-operation/ApprovalActions"):
 		editor.focus_flow_node("wf-operation")
 		editor.canvas.get_node("wf-operation/ApprovalActions/Decision").grab_focus()
+		notice.text = "请在操作确认卡选择查看详情或执行，再点击确认。"
+	else:
+		notice.text = "当前操作卡尚未载入，请刷新工单后再查看。"
 
 
 func _apply_issue_model() -> void:
@@ -3511,6 +3518,8 @@ func _issue_action(binding: Dictionary) -> Dictionary:
 		return {"kind":"wait", "text":"需求标识已改变"}
 	if binding.get("closed", false):
 		return {"kind":"wait", "text":"工单已关闭"}
+	if str(binding.get("url", "")).is_empty() or not binding.has("status"):
+		return {"kind":"wait", "text":"正在核对关联工单"}
 	var key := _routing_key(binding)
 	if starting_direct.has(_start_key(binding)):
 		return {"kind":"wait", "text":"正在核对开工回执…"}
@@ -3521,6 +3530,8 @@ func _issue_action(binding: Dictionary) -> Dictionary:
 			if original.get("url") == binding.url and original.get("request") == binding.request and original.get("number") == binding.number:
 				started = binding.request
 				break
+	if not _pending_operation(binding).is_empty():
+		return {"kind":"approval", "text":"查看待确认操作"}
 	for turn in execution_turns.values():
 		if turn.key == _execution_key(binding):
 			return {"kind":"view", "text":"查看推进对话"} if started == binding.request else {"kind":"wait", "text":"推进对话处理中…"}
@@ -3556,7 +3567,12 @@ func _publish_or_follow() -> void:
 			_chat_action("discuss")
 		"clarify":
 			_start_or_view_direct(binding)
-		"judge", "retry", "start", "view", "resume":
+		"approval":
+			_locate_operation(_pending_operation(binding).get("token", ""))
+		"resume":
+			notice.text = "正在核对当前工单和推进会话…"
+			await _start_or_view_direct(binding)
+		"judge", "retry", "start", "view":
 			var id := _issue_action_stage(_issue_action(binding).kind)
 			var button := editor.canvas.get_node_or_null(NodePath(id + "/IssueAction")) as Button
 			if button:
@@ -3573,9 +3589,14 @@ func _direct_binding() -> Dictionary:
 				break
 	if not str(binding.get("request", "")).begins_with("daqian-direct-"):
 		return {}
+	var url := str(binding.get("url", ""))
+	if current.begins_with("https://"):
+		if not url.is_empty() and url != current:
+			return {"error":"工单绑定已改变，请核对原始需求标识。"}
+		url = current
 	for row in board.get("issues", []):
-		if row.url == binding.get("url", ""):
-			if row.get("request", "") != binding.request or row.number != binding.number:
+		if row.url == url or (url.is_empty() and row.number == binding.get("number")):
+			if row.get("request", "") != binding.request or row.number != binding.get("number"):
 				return {"error":"工单绑定已改变，请核对原始需求标识。"}
 			return row
 	return binding
@@ -3598,10 +3619,14 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 	# Opening an already verified question is local; submitting its answer rechecks access.
 	var local_question := action == "clarify" and fresh_progress and not offline and user.has("user_id") and picker_scope == root and binding == _direct_binding()
 	if not local_question and not await _fresh_access():
+		if source == current and epoch == selection_epoch:
+			notice.text = "当前协作者身份未核实，请刷新工单后重试。"
 		return
 	if source != current or epoch != selection_epoch or user != actor or root != _repo():
 		return
 	if (not turn.is_empty() and not _canvas_matches(turn)) or binding != _direct_binding() or action != _issue_action(binding).get("kind"):
+		notice.text = "工单或推进步骤已更新，请核对当前卡片。"
+		_sync_workflow()
 		return
 	var url: String = binding.url
 	if action == "clarify":
@@ -3676,6 +3701,8 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 		execution_turns[token] = {"root":root, "actor":user, "key":_execution_key(binding)}
 		selection = selection.duplicate()
 		selection.execution_receipt = {"token":token}
+		if action == "resume" and operation.is_empty():
+			selection.retry_existing = true
 	var error: String = chat.open_daqian_chat(url, int(binding.number), binding.request, message, false, selection, true)
 	if not error.is_empty():
 		if not token.is_empty():
@@ -4204,7 +4231,7 @@ func _next_question() -> String:
 
 func _respond_to_wait() -> void:
 	var item := _conversation_binding()
-	var pending := _pending_operation(item)
+	var pending := _pending_operation(editor.workflow.get("item", {}))
 	if not pending.is_empty():
 		_locate_operation(pending.token)
 		return
@@ -4405,8 +4432,17 @@ func _issue_bound(source: String, number: int, request_id: String, details := {}
 		return
 	if not saved.has("linked"):
 		saved.linked = {}
-	saved.linked[source] = {"number":number,"request":request_id}
-	saved.linked[source].merge(details)
+	var existing: Dictionary = saved.linked.get(source, {})
+	var receipt := {"number":number, "request":request_id}
+	if existing.get("number") == number and existing.get("request") == request_id:
+		receipt.merge(existing)
+	receipt.merge(details, true)
+	if receipt.get("url", "").is_empty():
+		for row in board.get("issues", []):
+			if row.get("number") == number and row.get("request") == request_id and (not source.begins_with("https://") or row.url == source):
+				receipt.url = row.url
+				break
+	saved.linked[source] = receipt
 	var numbers: Array = saved.get("following",[])
 	if number not in numbers:
 		numbers.append(number)
