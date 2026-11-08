@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "writer-native-activation-module-path-request-20261109",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "writer-native-activation-module-path-20261109",
+  "kind": "request",
+  "occurred_at": "2026-11-08T19:23:12.407976+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/591",
+  "agent": {
+    "id": "runtime-entry-fix",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "outcome": "Repair isolated writer post-readback native activation dependency imports without altering accepted App artifacts or activation authority.",
+    "operator": "kaiyunxue",
+    "issue_title": "修复签发CLI原生入口核验的模块查找失败",
+    "issue_updated_at": "2026-11-08T19:16:39Z",
+    "issue_body_sha256": "cde112851d14ba0c1095321c0a77ea3236cf943ced549e2f301ecbe9411b8e81",
+    "execution_authority_ref": "Original human authorization covers end-to-end engine delivery and discovered-blocker repair. Root delegates only isolated writer native activation import repair to runtime_entry_fix; original accepted App and SourceInputs remain unchanged. Main merge and bug closure require Root review and actual original business readback.",
+    "related_issues": [
+      393,
+      462
+    ],
+    "event_is_not_a_tool_authorization_grant": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [],
+  "sha256": "7c84f82ccb1488f37816fe575450c88751a37fface91040689f4683ffa237e92"
+}

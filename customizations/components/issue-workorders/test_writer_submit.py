@@ -1,5 +1,9 @@
+import contextlib
 import copy
+import io
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -65,6 +69,71 @@ class WriterTests(unittest.TestCase):
                     self.assertEqual(submission.issue_receipt(*args), "signed")
                 git.assert_not_called()
                 mutate.assert_not_called()
+
+
+class ActivationInvocationTests(unittest.TestCase):
+    def test_fixed_installed_process_keeps_repository_and_report_as_data(self):
+        repo = Path("quoted repo ' 空间; ignored")
+        report = {"pr_state": "MERGED", "text": "quote '\"\n; arbitrary-looking data"}
+        paths, modules = list(sys.path), dict(sys.modules)
+        with patch.object(
+            submission.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess([], 0, '{"state":"not_applicable"}', ""),
+        ) as run:
+            self.assertEqual(submission.engine_launch_activation(repo, report), {"state": "not_applicable"})
+        arguments = run.call_args.args[0]
+        self.assertEqual(arguments[:7], [sys.executable, "-E", "-s", "-B", "-X", "utf8", "-c"])
+        self.assertEqual(arguments[-1], str(repo))
+        self.assertNotIn(report["text"], arguments[-2])
+        self.assertEqual(run.call_args.kwargs["cwd"], Path(submission.__file__).resolve().parents[3] / "tools")
+        self.assertEqual(json.loads(run.call_args.kwargs["input"]), report)
+        self.assertTrue(run.call_args.kwargs["check"])
+        self.assertEqual(sys.path, paths)
+        self.assertEqual(sys.modules, modules)
+
+    def test_invalid_child_output_is_not_an_activation_receipt(self):
+        for text in (
+            "not json",
+            "[]",
+            "null",
+            '{"state":"unknown"}',
+            '{"state":"activated"}',
+            '{"state":"activated","ok":false}',
+            '{"state":"activated","ok":true} trailing',
+        ):
+            with (
+                self.subTest(text=text),
+                patch.object(submission.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, text, "")),
+            ):
+                with self.assertRaises(ValueError):
+                    submission.engine_launch_activation(Path("."), {})
+
+    def test_child_errors_preserve_confirmed_merge_and_sanitize_public_result(self):
+        report = {"pr_state": "MERGED", "candidate": "a" * 40, "current_main": "b" * 40}
+        for error in (
+            subprocess.CalledProcessError(1, ["private command"], stderr="private stderr"),
+            ValueError("private invalid child output"),
+            UnicodeDecodeError("utf-8", b"\xff", 0, 1, "private decode failure"),
+        ):
+            output = io.StringIO()
+            with (
+                self.subTest(error=type(error).__name__),
+                patch.object(sys, "argv", ["writer_submit.py", "--repo", ".", "--inspect-pr", "7"]),
+                patch.object(submission.work_items, "config", return_value=({"repository": "fixture/repo"}, [])),
+                patch.object(submission.issue_gate, "check_repository"),
+                patch.object(submission, "inspect_pr", return_value=dict(report)),
+                patch.object(submission, "engine_launch_activation", side_effect=error),
+                contextlib.redirect_stdout(output),
+            ):
+                submission.main()
+            result = json.loads(output.getvalue())
+            for key, value in report.items():
+                self.assertEqual(result[key], value)
+            self.assertEqual(
+                result["engine_launch_activation"], {"state": "pending", "error": "activation_adapter_failed"}
+            )
+            self.assertNotIn("private", output.getvalue())
 
 
 class HandoffTests(unittest.TestCase):
