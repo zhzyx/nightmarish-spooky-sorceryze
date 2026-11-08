@@ -304,7 +304,15 @@ protected:
 	void _notification(int p_what);
 	static void _bind_methods();
 
+private:
+	uint64_t semantic_input_generation = 0;
+	Dictionary semantic_input_receipt;
+	Dictionary semantic_input_last_action;
+	void _msg_semantic_input(uint64_t p_thread_id, const Array &p_data);
+
 public:
+	Dictionary get_semantic_input_state() const;
+	void request_semantic_input(const Dictionary &p_request);
 	void request_remote_objects(const TypedArray<uint64_t> &p_obj_ids, bool p_update_selection = true);
 	void update_remote_object(ObjectID p_obj_id, const String &p_prop, const Variant &p_value, const String &p_field = "");
 	void change_canvas_item_objects(const Dictionary &p_states);

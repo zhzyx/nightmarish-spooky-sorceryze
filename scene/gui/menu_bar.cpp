@@ -161,7 +161,12 @@ void MenuBar::_open_popup(int p_index, bool p_focus_item) {
 		rect.position.x += item_rect.size.x - pm->get_size().width;
 	}
 	pm->set_position(rect.position);
+	const ObjectID instance = get_instance_id();
+	const ObjectID popup_instance = pm->get_instance_id();
 	pm->popup();
+	if (!ObjectDB::get_instance(instance) || !ObjectDB::get_instance(popup_instance)) {
+		return;
+	}
 
 	if (p_focus_item) {
 		for (int i = 0; i < pm->get_item_count(); i++) {
@@ -1001,6 +1006,20 @@ PopupMenu *MenuBar::get_menu_popup(int p_idx) const {
 	} else {
 		return nullptr;
 	}
+}
+
+bool MenuBar::open_menu(int p_menu) {
+	if (p_menu < 0 || p_menu >= get_menu_count() || is_menu_disabled(p_menu) || is_menu_hidden(p_menu) || !is_inside_tree()) {
+		return false;
+	}
+	PopupMenu *popup = get_menu_popup(p_menu);
+	if (!popup) {
+		return false;
+	}
+	if (!popup->is_visible()) {
+		_open_popup(p_menu);
+	}
+	return true;
 }
 
 String MenuBar::get_tooltip(const Point2 &p_pos) const {

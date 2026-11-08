@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_static_code_review",
+  "reviewer": "/root/complex_semantics",
+  "scope": [
+    "runtime InputMap semantic pulse source, debugger generation and receipts, editor viewport capture",
+    "spatial camera, selected transform, mesh ray, native polygon/tile/animation actions"
+  ],
+  "reviewed_sources": {
+    "editor/docks/ai_chat_editor_runtime_actions.cpp": "deba3417974b65f8ac9f3e826736b56ebf1aa9f9a6493a6ff1c4318433bef4ed",
+    "editor/debugger/script_editor_debugger.cpp": "e6c6b09e31f1c6c9a8f2e42ad19c03a5fa93adc53837e785a5910fdf03e17ba7",
+    "editor/debugger/script_editor_debugger.h": "80aa1c26fed7fddd525e1cce340476a6b9117f0837540ac2c1b5d23587d39216",
+    "scene/debugger/scene_debugger.cpp": "2741cfd62eeca902dc1dd96274ae09e9305cf1d9fa2979bfb3047bd6666c4ff2",
+    "scene/debugger/scene_debugger.h": "24e1da59dab16eda0025e90ed7f6f60aafff35336149a1855fa37e94c948e9d8",
+    "core/input/input.cpp": "46dbf7f92862b6e192866f21a92dbd87a5eac34d4836106ad23c56816ee71038",
+    "core/input/input.h": "20011a5436935bf8312c880a96c2da0af821c1b4745c3f0fcb0d4c71c2515964",
+    "editor/docks/ai_chat_editor_spatial_actions.cpp": "866b5008b0d97481b39ea715ecf45436e5da910a5b12602ed17b22044664ce9c",
+    "editor/docks/ai_chat_editor_spatial_actions.h": "3195fe3f84f84c369fefb1d1309450c51aa12ae67fc0140f283d810ecaad0f79"
+  },
+  "resolved_findings": [
+    {
+      "id": "runtime-device-source",
+      "problem": "Using general Input.action_release cleared concurrent device/API input.",
+      "resolution": "Dedicated unbound native semantic source is merged independently and releases only its own state."
+    },
+    {
+      "id": "runtime-json-camera-size",
+      "problem": "Viewport size was a non-JSON Vector2 in confirmation state.",
+      "resolution": "Capture confirmation size is now a two-element JSON array."
+    },
+    {
+      "id": "runtime-receipt-capacity",
+      "problem": "InputMap names and received runtime dictionary were not bounded.",
+      "resolution": "Actions limited by count, per-name length and total bytes; received receipt limited to 8192 JSON bytes and bounded request ID."
+    },
+    {
+      "id": "spatial-persistent-read-side-effect",
+      "problem": "Reading animation/tile state inserted observer metadata into serializable edited resources.",
+      "resolution": "Observer strong references now belong to the editor UndoRedoManager rather than edited Resource metadata."
+    },
+    {
+      "id": "spatial-transform-finiteness",
+      "problem": "Finite old transform multiplied by a bounded scale could produce nonfinite output before setter.",
+      "resolution": "Resulting transform and determinant are checked before mutation."
+    },
+    {
+      "id": "spatial-camera-readback",
+      "problem": "Viewport setters did not propagate failed/mismatched readback.",
+      "resolution": "Readback failure is propagated and actual camera fields compared against requested fields, with numeric tolerance only on the result, not confirmation state."
+    },
+    {
+      "id": "spatial-native-property-applicability",
+      "problem": "Allowed property name alone did not establish that an animation target had an applicable scalar native property.",
+      "resolution": "Existing and new property tracks verify get_native succeeds with a bounded scalar value; no scripted getter is invoked. Invalid class/property combinations are rejected."
+    },
+    {
+      "id": "spatial-animation-target-identities",
+      "problem": "Animation paths alone could resolve a replaced node under the same path after a preview.",
+      "resolution": "Confirmation state binds each existing animated node instance/parent and the newly added track target instance/parent, in addition to animation root and edited-scene identity."
+    },
+    {
+      "id": "spatial-animation-callback-lifetime",
+      "problem": "Native Animation setter signals could synchronously release the final scene reference to the edited resource.",
+      "resolution": "NativeSpatialEdit::animation retains a strong local Ref<Animation> throughout every setter, copy and readback."
+    }
+  ],
+  "assessment": "No unresolved blocking issue identified in the reviewed source snapshot; compilation and business fixture evidence are separate.",
+  "limits": [
+    "Independent of runtime/spatial implementation; reviewer also authored complex control and CodeBuddy JS changes, which are excluded from this independent review.",
+    "Static review is not a claim that all windows or platforms were exercised.",
+    "Dedicated input source preserves simulated device state; no actual keyboard, pointer or physical controller verification was performed by this reviewer.",
+    "Pulse duration uses the unscaled game main loop; debugger breaks may defer timer release and completion receipt.",
+    "Capture is editor viewport only; headless rejection does not verify rendered PNG capture, native menus, OS windows, IME or hardware.",
+    "Spatial actions retain explicit native data/type/ownership/capacity limits and do not cover all plugin gizmos, render geometry or native drawing tools."
+  ],
+  "review_round": "Final scoped source reinspection after native scalar applicability, animated-node identity and strong-reference lifetime fixes; fixture execution remains separate."
+}

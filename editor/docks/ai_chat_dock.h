@@ -428,6 +428,7 @@ class AIChatDock : public EditorDock {
 	Dictionary _chat_instruction_action(const Dictionary &p_args);
 	Dictionary _chat_instruction_request(const Dictionary &p_message);
 	Dictionary _chat_host_action(const Dictionary &p_args, bool p_confirmed);
+	Dictionary _chat_extended_host_action(const Dictionary &p_args, bool p_confirmed);
 	void _finish_external_editor_request();
 	void _cancel_external_editor_request(const String &p_reason);
 	String pending_action;

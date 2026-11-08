@@ -68,6 +68,8 @@ private:
 	static HashMap<String, ParseMessageFunc> message_handlers;
 	static void _init_message_handlers();
 
+	static Error _msg_semantic_input(const Array &p_args);
+	static void _release_semantic_input(const StringName &p_action, const Dictionary &p_receipt);
 	static Error _msg_setup_scene(const Array &p_args);
 	static Error _msg_setup_game_view(const Array &p_args);
 	static Error _msg_setup_embedded_shortcuts(const Array &p_args);

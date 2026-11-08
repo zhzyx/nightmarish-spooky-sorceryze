@@ -20,7 +20,7 @@ async function main() {
     const args = process.argv.slice(2);
     assert.equal(process.env.CODEBUDDY_CODE_DISABLE_TERMINAL_TITLE, '1', 'Godot CLI started with automatic title inference enabled');
     for (const flag of ['--strict-mcp-config', '--no-session-persistence']) assert(args.includes(flag));
-    assert(args.includes('--acp') ? ['', 'Read,Edit,Write,Glob,Grep,Bash,BashOutput,KillShell'].includes(args[args.indexOf('--tools') + 1]) : args[args.indexOf('--tools') + 1] === '');
+    assert(args.includes('--acp') ? ['', 'Read,Edit,Write,Glob,Grep,Bash,BashOutput,KillShell', 'Read,Bash'].includes(args[args.indexOf('--tools') + 1]) : args[args.indexOf('--tools') + 1] === '');
     assert.equal(args[args.indexOf('--setting-sources') + 1], '');
     assert.deepEqual(JSON.parse(args[args.indexOf('--mcp-config') + 1]), { mcpServers: {} });
     assert.equal(JSON.parse(args[args.indexOf('--settings') + 1]).disableAllHooks, true);
@@ -36,7 +36,7 @@ async function main() {
         let connection;
         connection = new acp.AgentSideConnection(() => ({
             initialize: async params => {
-                assert.deepEqual(params.clientCapabilities.fs, { readTextFile: true, writeTextFile: true });
+                assert.deepEqual(params.clientCapabilities.fs, { readTextFile: true, writeTextFile: !['Read,Bash', ''].includes(args[args.indexOf('--tools') + 1]) });
                 assert.equal(params.clientCapabilities.terminal, true);
                 return { protocolVersion: acp.PROTOCOL_VERSION, agentCapabilities: { promptCapabilities: { embeddedContext: true, image: true } } };
             },
@@ -58,7 +58,7 @@ async function main() {
                 assert.equal(params.sessionId, session.id);
                 const text = params.prompt[0].type === 'text' ? params.prompt[0].text : '';
                 const actionResult = params.prompt.find(block => block.resource?.uri === 'godot://host/action-result');
-                assert(actionResult || text === '' || text.startsWith('case:'), 'User text acquired a bridge prefix');
+                assert(actionResult || text === '' || (text.startsWith('case:') || text.includes('case:readonly_boundary') || text.includes('current_host_design_batch')), 'User text acquired a bridge prefix');
                 assert(!text.includes('CLI-native execution is disabled'));
                 const recovery = params.prompt.find(block => block.resource?.uri === 'godot://conversation/recovery');
                 const blocks = params.prompt.filter(block => block.type === 'image');
@@ -148,6 +148,59 @@ async function main() {
                         assert(error.message.includes('disabled'));
                     }
                     await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: disabled ? 'NATIVE_LOGS_DISABLED_OK' : 'NATIVE_LOGS_ON_DEMAND_OK' } } });
+                    return { stopReason: 'end_turn' };
+                }
+                if (text.includes('current_host_design_batch')) {
+                    assert.equal(state.consultation_only, false);
+                    const receipt = JSON.parse(text.slice(text.indexOf('{')));
+                    assert.equal(receipt.source, 'current_host_design_batch');
+                    assert.equal(receipt.read_only_review, true);
+                    assert.equal(receipt.business_accepted, null);
+                    const children = Object.values(receipt.children);
+                    assert.equal(children.length, 1);
+                    assert.equal(children[0].transport_completed, true);
+                    assert.equal(children[0].child_report.text, 'READONLY_BOUNDARY_OK');
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'READONLY_PARENT_RETURN_OK' } } });
+                    return { stopReason: 'end_turn' };
+                }
+                if (text === 'case:readonly_parent') {
+                    const terminal = await connection.createTerminal({ sessionId: session.id, command: 'godot-host-action delegate_review ' + JSON.stringify({ prompt: 'case:readonly_boundary', title: 'CodeBuddy readonly boundary' }) });
+                    const output = await terminal.currentOutput();
+                    assert.equal(JSON.parse(output.output).ok, true);
+                    await terminal.release();
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'READONLY_PARENT_WAITING' } } });
+                    return { stopReason: 'end_turn' };
+                }
+                if (text === 'case:readonly_reads') {
+                    assert.equal(args[args.indexOf('--tools') + 1], 'Read,Bash');
+                    const requests = ['godot-host-action list_scripts', 'godot-host-action list_directory {"path":"res://"}', 'godot-host-action read_script {"path":"res://review.gd","offset":1,"limit":10}'];
+                    for (const command of requests) {
+                        const terminal = await connection.createTerminal({ sessionId: session.id, command });
+                        const output = await terminal.currentOutput();
+                        const result = JSON.parse(output.output);
+                        assert.equal(result.ok, true);
+                        await terminal.release();
+                    }
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'READONLY_HOST_READS_OK' } } });
+                    return { stopReason: 'end_turn' };
+                }
+                if (text.includes('case:readonly_boundary')) {
+                    assert.equal(state.consultation_only, true);
+                    assert.equal(state.writes_allowed, false);
+                    assert.equal(state.execution_allowed, false);
+                    for (const kind of ['edit', 'delete', 'move', 'execute']) {
+                        const permission = await connection.requestPermission({ sessionId: session.id, toolCall: { toolCallId: 'readonly-' + kind, kind, rawInput: { command: 'printf forbidden' } }, options: [{ optionId: 'allow', name: 'Allow once', kind: 'allow_once' }, { optionId: 'reject', name: 'Reject once', kind: 'reject_once' }] });
+                        assert.equal(permission.outcome.optionId, 'reject');
+                    }
+                    await assert.rejects(connection.writeTextFile({ sessionId: session.id, path: path.join(process.cwd(), 'readonly-forbidden.txt'), content: 'forbidden' }));
+                    for (const command of ['printf forbidden', 'godot-host-action build_engine', 'godot-host-action delegate_review {"prompt":"nested"}', 'godot-host-action read_file {"path":"res://x","command":"forbidden"}', 'godot-host-action get_parent_context; printf forbidden']) {
+                        await assert.rejects(connection.createTerminal({ sessionId: session.id, command }));
+                    }
+                    const terminal = await connection.createTerminal({ sessionId: session.id, command: 'godot-host-action get_parent_context' });
+                    const output = await terminal.currentOutput();
+                    assert.equal(JSON.parse(output.output).ok, true);
+                    await terminal.release();
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'READONLY_BOUNDARY_OK' } } });
                     return { stopReason: 'end_turn' };
                 }
                 if (text.startsWith('case:host_action')) {

@@ -37,11 +37,14 @@ TEST_FORCE_LINK(test_ai_chat_editor_complex)
 #include "core/object/callable_mp.h"
 #include "editor/docks/ai_chat_editor_registry.h"
 #include "editor/scene/curve_editor_plugin.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/graph_edit.h"
 #include "scene/gui/graph_node.h"
 #include "scene/gui/item_list.h"
 #include "scene/gui/line_edit.h"
+#include "scene/gui/menu_bar.h"
 #include "scene/gui/popup_menu.h"
+#include "scene/gui/rich_text_label.h"
 #include "scene/gui/tree.h"
 #include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
@@ -59,6 +62,16 @@ struct Observer : Object {
 		graph = nullptr;
 	}
 	GraphEdit *graph = nullptr;
+	Tree *tree = nullptr;
+	MenuBar *bar = nullptr;
+	void delete_tree() {
+		memdelete(tree);
+		tree = nullptr;
+	}
+	void delete_bar() {
+		memdelete(bar);
+		bar = nullptr;
+	}
 	void activated(int p_index) { requests += p_index + 1; }
 	void tree_activated() { requests++; }
 	void connection(StringName p_from, int p_from_port, StringName p_to, int p_to_port) {
@@ -66,6 +79,164 @@ struct Observer : Object {
 		graph->connect_node(p_from, p_from_port, p_to, p_to_port);
 	}
 };
+
+struct MetadataStringTrap : Object {
+	int calls = 0;
+	String _to_string() override {
+		calls++;
+		return "MetadataStringTrap";
+	}
+};
+
+TEST_CASE("[SceneTree][AIChat][Complex] Compound declarations map only native descendants and recheck declarations") {
+	AIChatEditorRegistry registry;
+	VBoxContainer *owner = memnew(VBoxContainer);
+	SceneTree::get_singleton()->get_root()->add_child(owner);
+	LineEdit *line = memnew(LineEdit);
+	line->set_name("Value");
+	owner->add_child(line);
+	Array declarations;
+	Dictionary declaration;
+	declaration["name"] = "rename";
+	declaration["target"] = "Value";
+	declaration["action"] = "set_text";
+	MetadataStringTrap trap;
+	declaration["ignored_object"] = &trap;
+	declarations.push_back(declaration);
+	owner->set_meta("ai_control_semantic_actions", declarations);
+	Dictionary args = JSON::parse_string("{\"action\":\"invoke_semantic_action\",\"value\":{\"name\":\"rename\",\"arguments\":{\"value\":\"new name\"}}}");
+	Dictionary preview = registry.perform(owner, "compound", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	CHECK(line->get_text().is_empty());
+	line->set_text("changed");
+	CHECK(registry.perform(owner, "compound", authorize(args, preview), true)["error"] == Variant("semantic_target_changed_since_confirmation"));
+	preview = registry.perform(owner, "compound", args, false);
+	CHECK(bool(registry.perform(owner, "compound", authorize(args, preview), true)["ok"]));
+	CHECK(line->get_text() == "new name");
+	CHECK(trap.calls == 0);
+	line->set_secret(true);
+	CHECK(registry.perform(owner, "compound", args, false)["error"] == Variant("semantic_declaration_unavailable"));
+	line->set_secret(false);
+	owner->set_meta("ai_control_page_only", true);
+	CHECK(registry.perform(owner, "compound", args, false)["error"] == Variant("semantic_declaration_unavailable"));
+	memdelete(owner);
+}
+
+TEST_CASE("[SceneTree][AIChat][Complex] Declared Tree cell edits preserve native column and stale guards") {
+	AIChatEditorRegistry registry;
+	Tree *tree = memnew(Tree);
+	SceneTree::get_singleton()->get_root()->add_child(tree);
+	tree->set_columns(3);
+	TreeItem *item = tree->create_item();
+	item->set_cell_mode(1, TreeItem::CELL_MODE_CHECK);
+	item->set_editable(1, true);
+	item->set_cell_mode(2, TreeItem::CELL_MODE_STRING);
+	item->set_editable(2, true);
+	Observer observer;
+	tree->connect("item_edited", callable_mp(&observer, &Observer::tree_activated));
+	Dictionary args = JSON::parse_string("{\"action\":\"edit_tree_cell\",\"index\":0,\"column\":1,\"value\":true}");
+	Dictionary preview = registry.perform(tree, "tree", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	CHECK_FALSE(item->is_checked(1));
+	item->set_text(2, "changed other column");
+	CHECK(registry.perform(tree, "tree", authorize(args, preview), true)["error"] == Variant("target_changed_since_confirmation"));
+	preview = registry.perform(tree, "tree", args, false);
+	Dictionary applied = registry.perform(tree, "tree", authorize(args, preview), true);
+	CHECK(bool(applied["ok"]));
+	CHECK(item->is_checked(1));
+	CHECK(tree->get_edited() == item);
+	CHECK(tree->get_edited_column() == 1);
+	CHECK(observer.requests == 1);
+	args["column"] = 0;
+	CHECK(registry.perform(tree, "tree", args, false)["error"] == Variant("tree_cell_not_editable"));
+	tree->set_meta("ai_control_exclude", true);
+	CHECK(registry.perform(tree, "tree", args, false)["error"] == Variant("protected_target"));
+	memdelete(tree);
+}
+
+TEST_CASE("[SceneTree][AIChat][Complex] Semantic Tree edit tolerates immediate native callback deletion") {
+	AIChatEditorRegistry registry;
+	Observer observer;
+	observer.tree = memnew(Tree);
+	SceneTree::get_singleton()->get_root()->add_child(observer.tree);
+	TreeItem *item = observer.tree->create_item();
+	item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
+	item->set_editable(0, true);
+	observer.tree->connect("item_edited", callable_mp(&observer, &Observer::delete_tree));
+	Dictionary args = JSON::parse_string("{\"action\":\"edit_tree_cell\",\"index\":0,\"column\":0,\"value\":true}");
+	Dictionary preview = registry.perform(observer.tree, "tree", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	Dictionary done = registry.perform(observer.tree, "tree", authorize(args, preview), true);
+	CHECK(bool(done["requested"]));
+	CHECK_FALSE(bool(done["target_available"]));
+	CHECK(observer.tree == nullptr);
+}
+
+TEST_CASE("[SceneTree][AIChat][Complex] Menu opening tolerates immediate about-to-popup deletion") {
+	AIChatEditorRegistry registry;
+	Observer observer;
+	observer.bar = memnew(MenuBar);
+	observer.bar->set_prefer_global_menu(false);
+	SceneTree::get_singleton()->get_root()->add_child(observer.bar);
+	PopupMenu *popup = memnew(PopupMenu);
+	popup->set_name("File");
+	popup->add_item("Save");
+	observer.bar->add_child(popup);
+	popup->connect("about_to_popup", callable_mp(&observer, &Observer::delete_bar));
+	Dictionary args = JSON::parse_string("{\"action\":\"open_menubar_menu\",\"index\":0}");
+	Dictionary preview = registry.perform(observer.bar, "bar", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	Dictionary done = registry.perform(observer.bar, "bar", authorize(args, preview), true);
+	CHECK(bool(done["requested"]));
+	CHECK_FALSE(bool(done["target_available"]));
+	CHECK(observer.bar == nullptr);
+}
+
+TEST_CASE("[SceneTree][AIChat][Complex] MenuBar discovery and native opening reject stale and protected popup") {
+	AIChatEditorRegistry registry;
+	MenuBar *bar = memnew(MenuBar);
+	bar->set_prefer_global_menu(false);
+	SceneTree::get_singleton()->get_root()->add_child(bar);
+	PopupMenu *popup = memnew(PopupMenu);
+	popup->set_name("File");
+	bar->add_child(popup);
+	popup->add_item("Save");
+	Dictionary read;
+	read["action"] = "read_menubar_menus";
+	Dictionary page = registry.perform(bar, "bar", read, false);
+	CHECK(bool(page["ok"]));
+	CHECK(int(page["total"]) == 1);
+	Dictionary args = JSON::parse_string("{\"action\":\"open_menubar_menu\",\"index\":0}");
+	Dictionary preview = registry.perform(bar, "bar", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	popup->set_meta("ai_control_exclude", true);
+	CHECK(registry.perform(bar, "bar", authorize(args, preview), true)["error"] == Variant("menu_unavailable"));
+	popup->remove_meta("ai_control_exclude");
+	preview = registry.perform(bar, "bar", args, false);
+	CHECK(bool(registry.perform(bar, "bar", authorize(args, preview), true)["ok"]));
+	CHECK(popup->is_visible());
+	memdelete(bar);
+}
+
+TEST_CASE("[SceneTree][AIChat][Complex] RichText links are indexed actual metadata with content revalidation") {
+	AIChatEditorRegistry registry;
+	RichTextLabel *label = memnew(RichTextLabel);
+	SceneTree::get_singleton()->get_root()->add_child(label);
+	label->push_meta("native-link");
+	label->add_text("Open");
+	label->pop();
+	Dictionary args = JSON::parse_string("{\"action\":\"activate_richtext_link\",\"index\":0}");
+	Dictionary preview = registry.perform(label, "label", args, false);
+	REQUIRE(bool(preview.get("confirmation_required", false)));
+	label->clear();
+	label->push_meta("different-link");
+	label->add_text("Open");
+	label->pop();
+	CHECK(registry.perform(label, "label", authorize(args, preview), true)["error"] == Variant("target_changed_since_confirmation"));
+	preview = registry.perform(label, "label", args, false);
+	CHECK(bool(registry.perform(label, "label", authorize(args, preview), true)["ok"]));
+	memdelete(label);
+}
 
 TEST_CASE("[SceneTree][AIChat][Complex] Popup Window activation uses native IDs and stale guards") {
 	AIChatEditorRegistry registry;

@@ -188,6 +188,7 @@ public:
 	bool is_menu_hidden(int p_menu) const;
 
 	PopupMenu *get_menu_popup(int p_menu) const;
+	bool open_menu(int p_menu);
 
 	virtual String get_tooltip(const Point2 &p_pos) const override;
 

@@ -865,6 +865,8 @@ public:
 	void push_paragraph(HorizontalAlignment p_alignment, Control::TextDirection p_direction = Control::TEXT_DIRECTION_INHERITED, const String &p_language = "", TextServer::StructuredTextParser p_st_parser = TextServer::STRUCTURED_TEXT_DEFAULT, BitField<TextServer::JustificationFlag> p_jst_flags = TextServer::JUSTIFICATION_WORD_BOUND | TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_SKIP_LAST_LINE | TextServer::JUSTIFICATION_DO_NOT_SKIP_SINGLE_LINE, const PackedFloat32Array &p_tab_stops = PackedFloat32Array());
 	void push_indent(int p_level);
 	void push_list(int p_level, ListType p_list, bool p_capitalize, const String &p_bullet = String::utf8("•"));
+	Array get_semantic_meta_links(int p_limit = 4097) const;
+	bool activate_meta(int p_index);
 	void push_meta(const Variant &p_meta, MetaUnderline p_underline_mode = META_UNDERLINE_ALWAYS, const String &p_tooltip = String());
 	void push_hint(const String &p_string);
 	void push_table(int p_columns, InlineAlignment p_alignment = INLINE_ALIGNMENT_TOP, int p_align_to_row = -1, const String &p_name = String());

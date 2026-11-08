@@ -1,0 +1,1159 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "issue_number": 559,
+  "kind": "derived_baseline_inventory_not_runtime_acceptance",
+  "audited_main": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "source_audit_sha256": "f52ae7902e5915798c02773098ca7699161b53ef090bc7dfdb3a5bfaf4055268",
+  "summary_counts": {
+    "1_command_paths": 6,
+    "2_commands_with_fresh_human_confirmation": 5,
+    "3_missing_or_incomplete_declarative_paths": 15,
+    "4_human_os_visual_boundaries": 7
+  },
+  "categories": {
+    "1_command_paths": [
+      {
+        "id": "C1-discovery-navigation",
+        "interface_or_operation": "编辑器状态、主屏、场景/脚本定位和可发现控件读取",
+        "current_api": [
+          "get_editor_state",
+          "editor_action/find_targets,describe_target,list_main_screens,inspect_ui,inspect_scene",
+          "main_screen,open_scene,open_script,select_node,open_target,reveal_target,focus,highlight",
+          "read_text,read_items,read_menu_items,read_curve,read_gradient,read_graph_*"
+        ],
+        "why_or_remaining_need": "这些读取/导航已有受控语义入口，不需要截图和坐标才能定位。仍服从工具许可、目标可见性、保护子树、分页/容量。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1259,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1372,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 448,
+            "note": ""
+          }
+        ],
+        "runtime_evidence": "既有#386文档和私有原生回归；本审计没有重跑当前b21 binary。"
+      },
+      {
+        "id": "C1-standard-complex-writes",
+        "interface_or_operation": "普通文本/选项/按钮/数值/颜色/滚动，Popup/Tree/ItemList、Curve/Gradient、GraphEdit已列出的业务动作",
+        "current_api": [
+          "set_text,append_text,replace_text_range,select_text_range,submit_text,undo_text",
+          "set_value,select_option,press,select_tree_item,expand_tree_item,select_item,select_tab,set_color,scroll_to",
+          "activate_menu_item,open_menu_submenu,activate_tree_item,tree_context_menu,activate_item,item_context_menu",
+          "curve_*,gradient_*,graph_connect,graph_disconnect,graph_move_node,undo_resource_edit,redo_resource_edit"
+        ],
+        "why_or_remaining_need": "有原生语义和旧值/实例重验；通常只设confirmation_required。现有自动执行已开启时宿主可确认后执行，不应误列为每次强制人工。自动执行关闭时仍会出现批准UI。目标必须广告该动作，不能由这个列表推定任意自绘控件受支持。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 992,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 869,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 2612,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3335,
+            "note": ""
+          }
+        ],
+        "runtime_evidence": "原#386的20通用/11复杂组留证；部分包含宿主确认回调，不等于所有界面无人批准。"
+      },
+      {
+        "id": "C1-safe-settings-resource-open",
+        "interface_or_operation": "允许范围的项目/外观设置与已知资源路径打开",
+        "current_api": [
+          "get_project_setting,get_editor_setting,create_project_setting,update_project_setting,set_editor_setting,reset_editor_setting",
+          "set_project_setting,clear_project_setting,open_resource"
+        ],
+        "why_or_remaining_need": "声明式路径已在；写与加载预览能沿已开启的自动执行策略确认。EditorSettings专用API只允许外观/字体/语言等白名单，凭据/AI权限等不由此开放。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_settings_actions.cpp",
+            "line": 53,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_settings_actions.cpp",
+            "line": 152,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_settings_actions.cpp",
+            "line": 215,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1491,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3335,
+            "note": ""
+          }
+        ],
+        "runtime_evidence": "历史设置/资源往返夹具；不是b21新运行或所有设置项支持。"
+      },
+      {
+        "id": "C1-chat-read-stop",
+        "interface_or_operation": "AI Chat状态和停止当前任务",
+        "current_api": [
+          "host-only chat_state(limit,offset)",
+          "host-only chat_stop(value={conversation_id,generation})"
+        ],
+        "why_or_remaining_need": "读取与精确实例停止是chat_*人工确认策略的例外；停止不等于关闭/删除会话。chat_state包含既有隐藏子/定时会话的global tab index。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3107,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3117,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3134,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3149,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3315,
+            "note": ""
+          }
+        ]
+      },
+      {
+        "id": "C1-554-bound-parent-submit",
+        "interface_or_operation": "macOS已有绑定顶层生产父的普通文本续接/steering",
+        "current_api": [
+          "/usr/bin/python3 tools/editor_instruction_client.py --project PROJECT --instance OBSERVED_PID context --wait 30",
+          "submit --text-file UTF8_FILE --expected CONTEXT_JSON --request-id UNIQUE",
+          "status UNIQUE",
+          "内部固定能力 chat_submit_instruction；不是普通TCP/模型可授予的action"
+        ],
+        "why_or_remaining_need": "已通过真实OS身份与原生发送/回执私有夹具，无需拆成两次UI确认。仅官方Codex桌面可验证祖先+Apple系统Python入口；当前父必须工具/自动执行已授权、非咨询且有同Issue/request/candidate owner。新空白父、子/定时会话、挂载天枢host、草稿或图片、IME预编辑、恢复/构建等待和权限关闭均不由此自动支持。instruction_submitted只表示进入正常_send，business_completed=false。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 94,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 145,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 186,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1267,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_instruction_bridge.cpp",
+            "line": 71,
+            "note": ""
+          },
+          {
+            "file": "tools/editor_instruction_client.py",
+            "line": 159,
+            "note": ""
+          }
+        ],
+        "runtime_evidence": {
+          "report": "data-collection/requests/external-chat-instruction-submit-20261108/validation-20261108.json",
+          "scope": "macOS arm64同436a29a5 raw作者及非作者39项私有原生夹具、peer5/47；非真实生产LLM、非本次UI实测、非所有平台。"
+        }
+      },
+      {
+        "id": "C1-551-review-tool",
+        "interface_or_operation": "已绑定生产父派生内部只读子验收并自动回父",
+        "current_api": [
+          "delegate_review(prompt,title?)",
+          "get_parent_context"
+        ],
+        "why_or_remaining_need": "有专用模型工具，父正常结束后宿主执行并回传真实受限回执；只读子不能写/执行/再委派或交付，传输完成不自动等于业务验收。限已授权API/Codex父；不是手动普通子会话创建，也不是CodeBuddy通道已支持。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 122,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 139,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 211,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 476,
+            "note": ""
+          },
+          {
+            "file": "design-docs/internal-readonly-review-20261108.md",
+            "line": 13,
+            "note": ""
+          }
+        ],
+        "runtime_evidence": {
+          "report": "data-collection/requests/internal-readonly-review-20261108/validation-20261108.json",
+          "scope": "7原生/235断言、真实私有typed native review/stop/production design fixtures；生产原483最终闭环仍单独验收。"
+        }
+      }
+    ],
+    "2_commands_with_fresh_human_confirmation": [
+      {
+        "id": "C2-blank-first-message",
+        "interface_or_operation": "Fresh blank parent first normal instruction",
+        "current_api": "chat_new_session -> chat_compose -> chat_send_request, each with native human confirmation",
+        "why_or_remaining_need": "554 requires nonempty conversation/snapshot/candidate owner plus valid existing Issue/request binding; blank session returns known_work_order_owner_required. Cannot use 554 to create/bind first task.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 94,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 102,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3217,
+            "note": ""
+          }
+        ],
+        "resolution_class": "现有命令+每次新人工确认；不是全部无API。"
+      },
+      {
+        "id": "C2-chat-mutations",
+        "interface_or_operation": "会话切换、选已列出模型、连接方式/endpoint、显示连接页、草稿/发送、队列操作、登录发起",
+        "current_api": [
+          "chat_select_session(index),chat_select_model(index),chat_set_backend(value),chat_set_endpoint(value),chat_show_connection",
+          "chat_compose(value),chat_send_request,chat_queue_remove(index),chat_queue_resume,chat_login_request"
+        ],
+        "why_or_remaining_need": "这些host-only命令均强制manual_confirmation_required，即使自动执行开着也要当前人工批准。已有child/scheduled会话可从chat_state全局index选择；不能把切换它们列无API。554的专用文本续接不豁免这些任意chat动作。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3217,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3231,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3335,
+            "note": ""
+          }
+        ],
+        "resolution_class": "保留明确人工边界，不能用source文本/token伪装确认。"
+      },
+      {
+        "id": "C2-scene-writes",
+        "interface_or_operation": "场景创建/删除/改名/移动/多选/有限属性/资源赋值/信号连接断开/停止运行",
+        "current_api": [
+          "scene_create_node,scene_delete_node,scene_rename_node,scene_reparent_node,scene_select_nodes",
+          "scene_set_property,scene_assign_resource,scene_connect_signal,scene_disconnect_signal,stop_project"
+        ],
+        "why_or_remaining_need": "现有专用场景命令在执行前明确要求新人工确认，autoexec不能跳过。支持的原生类型、引用域、实例/继承和快照容量仍有限。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 683,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 986,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3335,
+            "note": ""
+          }
+        ],
+        "resolution_class": "已有声明式语义；人工确认不是命令缺失。"
+      },
+      {
+        "id": "C2-run-project",
+        "interface_or_operation": "运行项目/指定场景",
+        "current_api": [
+          "run_project",
+          "run_scene(target)"
+        ],
+        "why_or_remaining_need": "明确manual_confirmation_required；执行仅返回run_requested，游戏实际启动/运行/业务正确需要后续证据。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 749,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 795,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 811,
+            "note": ""
+          }
+        ],
+        "resolution_class": "真实运行安全边界。"
+      },
+      {
+        "id": "C2-import-export",
+        "interface_or_operation": "资源导入/另存、项目/pack/ZIP/.app导出",
+        "current_api": [
+          "scene_import_resource",
+          "scene_export_resource",
+          "project_export(preset,format,debug,destination)"
+        ],
+        "why_or_remaining_need": "已实现，但全部明确manual_confirmation_required，且源/目标路径、资源/模板/插件类型与引用闭包必须可验证；不得把既有命令误列成完全鼠标专用。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_scene_completion.cpp",
+            "line": 500,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_completion.cpp",
+            "line": 828,
+            "note": ""
+          }
+        ],
+        "resolution_class": "已有命令，权限/批准和有限支持仍生效。"
+      }
+    ],
+    "3_missing_or_incomplete_declarative_paths": [
+      {
+        "id": "C3-parent_close_rename",
+        "interface_or_operation": "关闭/重命名AI Chat父会话标签",
+        "current_api": "Native UI tab_close_pressed -> _agent_close_requested; right-click rename dialog; no close/rename in _chat_host_action allowlist",
+        "why_or_remaining_need": "AI Chat root is page_only; generic press/select/text API cannot reach protected descendants. Closing populated/busy parent explicitly opens destructive-history confirmation. chat_stop stops work but does not close.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3649,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3713,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3727,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6417,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6568,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 287,
+            "note": ""
+          }
+        ],
+        "absence_scope": "missing declared host/model/desktop action",
+        "runtime_verified": false
+      },
+      {
+        "id": "C3-ordinary_manual_child_create_close",
+        "interface_or_operation": "新建/关闭普通手动子会话及父子层级管理",
+        "current_api": "Protected AddSubAgent button -> _add_sub_agent; native subtab close -> _agent_close_requested. Existing child can be selected using global chat_select_session index.",
+        "why_or_remaining_need": "No manual-child create/close action in chat host allowlist. delegate_review is a separate authorized read-only review workflow, not ordinary child creation. Production design children are also a separate finalized-work-order path.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 516,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 520,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 610,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 211,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 287,
+            "note": ""
+          }
+        ],
+        "absence_scope": "missing declared ordinary child lifecycle action",
+        "runtime_verified": false
+      },
+      {
+        "id": "C3-scheduler_task_lifecycle",
+        "interface_or_operation": "定时器任务列表/详情/CRUD/启停/立即运行/选择任务/关闭运行会话",
+        "current_api": "Protected native ScheduledTasks/AddScheduledTask/EditScheduledTask/DeleteScheduledTask/ScheduledTaskEnabled/RunScheduledTaskNow/confirmation dialogs; existing scheduled chat tab may be selected by global chat_select_session index",
+        "why_or_remaining_need": "No scheduler task action or structured task schema in chat host allowlist or model tool definitions. Current UI callbacks directly operate host scheduler; generic registry blocked by AI Chat page_only. Existing session selection does not set selected_schedule or replace task-definition CRUD.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 128,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 158,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 173,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 190,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 407,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_scheduler.cpp",
+            "line": 415,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 120,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6417,
+            "note": ""
+          }
+        ],
+        "absence_scope": "missing declared scheduler definition/action API",
+        "runtime_verified": false
+      },
+      {
+        "id": "C3-manual_model_reasoning",
+        "interface_or_operation": "AI设置：手动模型ID与推理强度",
+        "current_api": "chat_select_model(index) only selects existing picker row; UI APIModel/CLIModel/CodexModel/ReasoningEffort callbacks exist",
+        "why_or_remaining_need": "No manual id/reasoning action in chat allowlist. AI settings page_only; generic EditorSettings API only appearance allowlist, ai_chat namespace blocked.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3235,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6621,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6675,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6700,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6724,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6741,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_settings_actions.cpp",
+            "line": 53,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 269,
+            "note": ""
+          }
+        ],
+        "absence_scope": "missing declared host action",
+        "runtime_verified": false
+      },
+      {
+        "id": "C3-runtime_paths_cli_configuration",
+        "interface_or_operation": "AI设置/共工环境：Node、Codex、工作流/编译Python和CodeBuddy入口路径",
+        "current_api": "ClassDB binds get_runtime_configuration, prepare_runtime_configuration, set_runtime_field(field,value), refresh_runtime_controls. set_runtime_field delegates validated shared runtime update with environment lock. CodeBuddy bridge/entry remain native fields.",
+        "why_or_remaining_need": "Do not call runtime configuration UI-only: a semantic script API exists. Current published model/HTTP/chat/UDS routes do not expose it; protected environment page prevents generic control fallback. Arbitrary script execution/config-file edits are not a declared supported UI command route.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3854,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 4504,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 4516,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/gonggong_panel.cpp",
+            "line": 265,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6627,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6713,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6739,
+            "note": ""
+          }
+        ],
+        "absence_scope": "script API exists; missing declared AI/HTTP/trusted-desktop operation",
+        "runtime_verified": false
+      },
+      {
+        "id": "C3-chat-attachments",
+        "interface_or_operation": "AI Chat添加图片/从剪贴板粘图/删除附件/带附件原子提交",
+        "current_api": "现有_choose_images/_paste_image/_add_image/_remove_image原生UI回调；无已发布chat_*附件动作，554仅text",
+        "why_or_remaining_need": "聊天页受page_only保护，泛型press/set_text不能进入附件按钮；554遇draft_images_present明确拒绝，不等于图像输入或图像能力整体不存在。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 1263,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 1297,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 1341,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6988,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 145,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 382,
+            "note": ""
+          }
+        ],
+        "absence_scope": "公开语义附件操作缺失；UI或未来受控附件API。"
+      },
+      {
+        "id": "C3-viewport-spatial-gestures",
+        "interface_or_operation": "2D/3D视口相机平移/绕转/自由缩放、射线拾取和gizmo拖拽等指针手势",
+        "current_api": "没有公开viewport_*或mouse/key/pointer injection action；scene_set_property可完成白名单对象位置/旋转/缩放，main_screen可切2D/3D",
+        "why_or_remaining_need": "这些视口手势实际由InputEvent处理；registry给这类自绘Control的通用动作不包含坐标拖拽/相机语义。不能把整个2D/3D页面都说成不可命令：对象变换和按钮已有其它路径。",
+        "evidence": [
+          {
+            "file": "editor/scene/3d/node_3d_editor_viewport.cpp",
+            "line": 2041,
+            "note": ""
+          },
+          {
+            "file": "editor/scene/3d/node_3d_editor_viewport.cpp",
+            "line": 2051,
+            "note": ""
+          },
+          {
+            "file": "editor/scene/canvas_item_editor_plugin.cpp",
+            "line": 1053,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 177,
+            "note": ""
+          }
+        ],
+        "absence_scope": "该具体手势缺声明式入口；脚本/文件修改不是当前实时视口动作。"
+      },
+      {
+        "id": "C3-timeline-keys",
+        "interface_or_operation": "动画时间轴的关键帧/轨道选择、拖动/剪切复制等时间轴编辑手势",
+        "current_api": "无timeline/keyframe/track专用editor_action；可操作广告出的普通播放按钮/数值输入，不代表完整时间轴支持",
+        "why_or_remaining_need": "AnimationTrackEdit通过自身gui_input处理键鼠；复杂控件闭集只有PopupMenu/CurveEdit/GradientEdit/GraphEdit等。Curve资源编辑不是动画轨道关键帧接口。",
+        "evidence": [
+          {
+            "file": "editor/animation/animation_track_editor.cpp",
+            "line": 3081,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 444,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          }
+        ],
+        "absence_scope": "专用时间轴语义缺失，不能以已有Curve API充当覆盖。"
+      },
+      {
+        "id": "C3-tile-polygon-paint",
+        "interface_or_operation": "TileMap画布笔刷/自由涂绘、2D多边形逐点拖拽",
+        "current_api": "没有tile brush/cell/polygon-point命令；已有场景/资源/普通控件操作为部分替代",
+        "why_or_remaining_need": "本地编辑器使用forward_canvas_gui_input/forward_gui_input坐标事件。公开控制动作和scene_set_property白名单没有这类画布数据或手势语义。",
+        "evidence": [
+          {
+            "file": "modules/tilemap/editor/tile_map_layer_editor.cpp",
+            "line": 553,
+            "note": ""
+          },
+          {
+            "file": "editor/scene/2d/abstract_polygon_2d_editor.cpp",
+            "line": 368,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 177,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 444,
+            "note": ""
+          }
+        ],
+        "absence_scope": "具体画布操作缺受控语义；不是整页所有按钮无命令。"
+      },
+      {
+        "id": "C3-custom-compound-controls",
+        "interface_or_operation": "未在actions中广告的自绘/插件操作，Tree多列单元格/checkbox编辑、RichText元数据链接等",
+        "current_api": "generic动作闭集+四种复杂target；Tree可读/选/展开/激活/context，但没有任意列编辑/checkbox setter；RichTextLabel不属于可编辑文本类",
+        "why_or_remaining_need": "find/describe只能广告实际能力。即使能够聚焦/高亮自绘Control也不能推出可编辑它的内部元素。新插件未声明的语义仍要增加适配；不能用截图读到元素就声称有受控动作。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 451,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 770,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 792,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 444,
+            "note": ""
+          }
+        ],
+        "absence_scope": "接口闭集外的具体动作，无通用任意点击/事件注入兜底；运行时第三方插件未逐个观察。"
+      },
+      {
+        "id": "C3-live-game-input",
+        "interface_or_operation": "运行中嵌入/独立游戏的键盘、鼠标、手柄游戏输入",
+        "current_api": "run_project/run_scene/stop_project存在；editor_action没有游戏InputEvent/控制器注入接口",
+        "why_or_remaining_need": "启动/停止与测试脚本不是实时驱动游戏窗口；GameView现有嵌入/快捷键调试内部机制未发布为此路由动作。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_scene_actions.cpp",
+            "line": 683,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1633,
+            "note": ""
+          },
+          {
+            "file": "editor/run/game_view_plugin.cpp",
+            "line": 170,
+            "note": ""
+          }
+        ],
+        "absence_scope": "当前公开编辑器命令协议无实时游戏输入；不否认项目可自建自动测试。"
+      },
+      {
+        "id": "C3-menu-open-and-direct-capture",
+        "interface_or_operation": "稳定打开标准/全局MenuBar菜单及直接获取当前编辑器截图回执",
+        "current_api": "已有原生editor/take_screenshot；可见PopupMenu可read_menu_items/activate_menu_item，compact Main Menu Button可press；没有open_menubar_menu或capture_editor专用公开action",
+        "why_or_remaining_need": "普通/原生MenuBar不是BaseButton，registry没列其打开菜单动作；PopupMenu首次动作先要求可见。已有截图命令不应漏记，但不能保证对当前Mac全局菜单无需先人工打开。截图延时写user://，现路由也不返回最终PNG路径/摘要。",
+        "evidence": [
+          {
+            "file": "editor/editor_node.cpp",
+            "line": 8291,
+            "note": ""
+          },
+          {
+            "file": "editor/editor_node.cpp",
+            "line": 8411,
+            "note": ""
+          },
+          {
+            "file": "editor/editor_node.cpp",
+            "line": 8443,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_complex_actions.cpp",
+            "line": 559,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 420,
+            "note": ""
+          },
+          {
+            "file": "editor/editor_node.cpp",
+            "line": 4114,
+            "note": ""
+          }
+        ],
+        "absence_scope": "稳定公开触发/回执缺口，不是引擎完全没有截图功能。"
+      },
+      {
+        "id": "C3-local-change-history-ui",
+        "interface_or_operation": "AI Chat修改记录/本轮差异/历史快照浏览页",
+        "current_api": "原生LocalSnapshotHistory、ViewSessionChanges及_show_snapshot_history/_show_snapshot_changes存在；没有对应chat_*或UDS操作",
+        "why_or_remaining_need": "AI Chat页/子窗口受page_only；当前声明式命令不能直接打开该浏览页。已有文件/父上下文工具可在授权内读取相关已保存数据，不等于必须截图才能读任何变更信息。真正还原需另行确认且不由这个缺口授予权限。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3166,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6845,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 7141,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 7298,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 7676,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 287,
+            "note": ""
+          }
+        ],
+        "absence_scope": "界面打开/分页浏览的专用路由缺失；原生回调和文件读取能力仍存在。"
+      },
+      {
+        "id": "C3-mounted-host-chat",
+        "interface_or_operation": "天枢/大千挂载的AI Chat宿主页之普通外部文本续接",
+        "current_api": "当前普通chat_* mutation在daqian_chat_host有效时editor_busy；554 context明确host_chat_mounted",
+        "why_or_remaining_need": "现有native host挂载和其业务脚本回调不能据此当通用外部chat command。受保护页面没有generic composer兜底；必须另外核实该host自身事件/owner语义，不能绕过当前拒绝。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3162,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3950,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 133,
+            "note": ""
+          }
+        ],
+        "absence_scope": "通用外部聊天控制路由未覆盖此挂载模式；不宣称天枢自身全部业务无API。"
+      },
+      {
+        "id": "C3-CodeBuddy-review",
+        "interface_or_operation": "CodeBuddy原生连接下的内部只读子验收",
+        "current_api": "delegate_review仅API/Codex，backend==1明确拒；其它CodeBuddy编辑器/文件工具按原支持范围工作",
+        "why_or_remaining_need": "不能把生产子会话提示词写“只读”作为同等权限实现；目前需改用受支持通道或未来补该只读通道。此为通道能力缺口，不表示所有CodeBuddy操作需要鼠标。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_sub_agents.cpp",
+            "line": 211,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 139,
+            "note": ""
+          },
+          {
+            "file": "design-docs/internal-readonly-review-20261108.md",
+            "line": 27,
+            "note": ""
+          }
+        ],
+        "absence_scope": "该具体工具的通道缺失，非整体界面不可命令。"
+      }
+    ],
+    "4_human_os_visual_boundaries": [
+      {
+        "id": "C4-official_auth",
+        "interface_or_operation": "官方账号登录/切换身份/密码、2FA与浏览器授权",
+        "current_api": null,
+        "why_or_remaining_need": "chat_login_request starts login, but account selection/password/2FA/consent and terminal/browser authentication remain human in official flow; no credential injection/read/copy API. Static code and documentation only; no real authentication executed in this audit.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3247,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 4808,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 4820,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 4878,
+            "note": ""
+          }
+        ],
+        "resolution_class": "保留授权/凭据边界，不作为允许模型自我授权的待修bug。"
+      },
+      {
+        "id": "C4-credentials_tool_permission_policy",
+        "interface_or_operation": "API凭据、工具许可、自动应用/执行与仅咨询策略开关",
+        "current_api": null,
+        "why_or_remaining_need": "API secret and allow-tools/autoexecute/autoapply/consultation policy controls have no declared model self-authorization command. Secret and ai_chat/gonggong settings are protected. Treat this as authorization boundary, not defect to bypass.",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3275,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6702,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 6752,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 263,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_settings_actions.cpp",
+            "line": 53,
+            "note": ""
+          }
+        ],
+        "resolution_class": "保留授权/凭据边界，不作为允许模型自我授权的待修bug。"
+      },
+      {
+        "id": "C4-os-file-panels",
+        "interface_or_operation": "macOS等真正原生文件/保存对话框及外部终端/浏览器界面",
+        "current_api": "引擎内open_scene/open_script/open_resource/资源导入导出可给已知路径跳过许多文件框；没有控制NSOpenPanel/NSSavePanel/外部应用控件的editor_action",
+        "why_or_remaining_need": "native FileDialog调用DisplayServer，OS窗口不在Godot Node注册表中。Godot自己绘制的FileDialog普通控件可另行被发现，不要混为所有文件框都没命令。",
+        "evidence": [
+          {
+            "file": "editor/gui/editor_file_dialog.cpp",
+            "line": 69,
+            "note": ""
+          },
+          {
+            "file": "scene/gui/file_dialog.cpp",
+            "line": 70,
+            "note": ""
+          },
+          {
+            "file": "scene/gui/file_dialog.cpp",
+            "line": 88,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 385,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1468,
+            "note": ""
+          }
+        ],
+        "resolution_class": "OS/外部应用人机边界，不能通过放宽page_only绕过。"
+      },
+      {
+        "id": "C4-actual-human-approvals",
+        "interface_or_operation": "明确要求真人的批准、取消/继续恢复、破坏性关闭确认",
+        "current_api": "批准UI由宿主confirmation回调处理；HTTP只有state/messages/requests/events/cancel，没有approve endpoint",
+        "why_or_remaining_need": "Scene和chat manual标记不能由JSON p_confirmed/source或普通bearer升级。关闭/恢复是原始业务语义，不把自动程序确认说成真人确认。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3217,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3335,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_dock.cpp",
+            "line": 3360,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_bridge.cpp",
+            "line": 224,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_bridge.cpp",
+            "line": 261,
+            "note": ""
+          }
+        ],
+        "resolution_class": "保留审批边界；潜在受控主体验证设计由未来任务另审。"
+      },
+      {
+        "id": "C4-os-permissions-lock",
+        "interface_or_operation": "系统权限提示、文稿访问/TCC、锁屏解锁等OS所有者操作",
+        "current_api": "当前editor_action/host chat/UDS没有授予OS隐私权限或解锁系统的入口",
+        "why_or_remaining_need": "这不是聊天文本输入缺口；系统权限和解锁由用户在正常系统流程决定。Root此前观察过文稿授权/锁屏，本审计没有重演或声称任何平台均已验证。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_control.cpp",
+            "line": 1633,
+            "note": ""
+          },
+          {
+            "file": "design-docs/editor-command-coverage-20261107.md",
+            "line": 49,
+            "note": ""
+          }
+        ],
+        "resolution_class": "用户/OS控制边界；不是截图或光标自动化即可合法代替批准。"
+      },
+      {
+        "id": "C4-visual-ime-hardware",
+        "interface_or_operation": "真实像素布局、遮挡/DPI、系统焦点、IME预编辑/快捷键/物理输入设备与真实动态扩展库交互的验收",
+        "current_api": "有inspect_ui几何、focus、scroll/reveal/highlight、字符串输入及原生viewport截图；但这些回执不等于硬件/原生窗口/像素显示正确",
+        "why_or_remaining_need": "现有报告明确未做相应真实视觉/IME/OS/扩展动态库验收；554遇IME预编辑明确拒绝。普通写入中文文本已有语义通道，不能将其说成一律要用IME/光标输入。",
+        "evidence": [
+          {
+            "file": "design-docs/editor-command-coverage-20261107.md",
+            "line": 49,
+            "note": ""
+          },
+          {
+            "file": "design-docs/editor-command-coverage-20261107.md",
+            "line": 75,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 542,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_external_chat.cpp",
+            "line": 142,
+            "note": ""
+          },
+          {
+            "file": "scene/gui/text_edit.cpp",
+            "line": 2150,
+            "note": ""
+          }
+        ],
+        "resolution_class": "仍需针对目标真实渲染/输入设备单独验收；未实测不是自动判功能缺失。"
+      },
+      {
+        "id": "C4-host-policy-exclusions",
+        "interface_or_operation": "secret/exclude/page_only和编辑场景对象被泛型UI通道排除的区域",
+        "current_api": "安全专项chat/scene/settings API只能覆盖各自明确子集；secret字段和宿主授权字段没有通用读取/点击兜底",
+        "why_or_remaining_need": "祖先保护每次解析和执行都重验；保护是刻意边界，不是移除它就算批量修复。缺少安全专项接口可列入第3类，凭据/权限本身继续人工。",
+        "evidence": [
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 263,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 287,
+            "note": ""
+          },
+          {
+            "file": "editor/docks/ai_chat_editor_registry.cpp",
+            "line": 411,
+            "note": ""
+          }
+        ],
+        "resolution_class": "保留保护；按业务只增加明确受控API。"
+      }
+    ]
+  },
+  "limitation": "This is a source-derived inventory. Historical runtime references are not new runtime coverage for this candidate."
+}

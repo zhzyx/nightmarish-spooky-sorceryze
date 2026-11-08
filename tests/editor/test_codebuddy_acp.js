@@ -27,7 +27,7 @@ async function bridge(t, url, agentId, options = {}) {
     });
     const submit = async (messages, rounds = 0, model = 'mock-model', legacyEncoding = false, expectError = false, reset = false) => {
         const file = path.join(directory, ++number + '.json');
-        let body = JSON.stringify({ messages, model, agent_id: agentId, available_tools: options.tools || definitions, tool_definitions: options.tools || definitions, tool_context: { permission_enabled: true, tool_rounds: rounds, max_tool_rounds: null } });
+        let body = JSON.stringify({ messages, model, agent_id: agentId, available_tools: options.tools || definitions, tool_definitions: options.tools || definitions, tool_context: { permission_enabled: true, tool_rounds: rounds, max_tool_rounds: null, ...options.context } });
         if (legacyEncoding) body = body.replace(/\\u001b/g, '\x1b').replace(/\\u000b/g, '\\v');
         fs.writeFileSync(file, body);
         child.stdin.write(JSON.stringify({ path: file, ...(reset ? { reset: true } : {}) }) + '\n');
@@ -264,4 +264,45 @@ test('ACP steering reset closes detached commands and isolates old prompt and pi
     assert.equal(idle.choices[0].message.content, 'RESET_OK');
     assert.equal(idle.transport.session_id, revised.transport.session_id);
     assert(!submit.trace().some(row => row.event === 'request_failed'));
+});
+
+
+test('CodeBuddy read-only session rejects writes, real shell and same-process capability escalation', { timeout: 30000 }, async t => {
+    const options = { tools: [...definitions, { function: { name: 'get_parent_context' } }], context: { consultation_only: true, writes_allowed: false, execution_allowed: false } };
+    const submit = await bridge(t, '', 'readonly_agent', options);
+    const proposal = await submit([{ role: 'user', content: 'case:readonly_boundary' }]);
+    const call = proposal.choices[0].message.tool_calls[0];
+    assert.equal(call.function.name, 'get_parent_context');
+    const done = await submit([proposal.choices[0].message, { role: 'tool', tool_call_id: call.id, content: JSON.stringify({ ok: true, role: 'readonly-parent' }) }], 1);
+    assert.equal(done.choices[0].message.content, 'READONLY_BOUNDARY_OK');
+    options.context = { consultation_only: false, writes_allowed: true, execution_allowed: true };
+    const denied = await submit([{ role: 'user', content: 'case:readonly_escalation' }], 0, 'mock-model', false, true);
+    assert.equal(denied.error.code, 'INVALID_REQUEST');
+});
+
+
+test('CodeBuddy production parent dispatches native delegate_review through the reserved facade', { timeout: 30000 }, async t => {
+    const tools = [...definitions, ...['run_command', 'delegate_review'].map(name => ({ function: { name } }))];
+    const submit = await bridge(t, '', 'readonly_parent_agent', { tools });
+    const proposal = await submit([{ role: 'user', content: 'case:readonly_parent' }]);
+    const call = proposal.choices[0].message.tool_calls[0];
+    assert.equal(call.function.name, 'delegate_review');
+    assert.deepEqual(JSON.parse(call.function.arguments), { prompt: 'case:readonly_boundary', title: 'CodeBuddy readonly boundary' });
+    const done = await submit([proposal.choices[0].message, { role: 'tool', tool_call_id: call.id, content: JSON.stringify({ ok: true, status: 'scheduled' }) }], 1);
+    assert.equal(done.choices[0].message.content, 'READONLY_PARENT_WAITING');
+});
+
+
+test('Read-only CodeBuddy discovery and script reads stay on typed host requests', { timeout: 30000 }, async t => {
+    const tools = ['read_file', 'list_scripts', 'list_directory', 'read_script'].map(name => ({ function: { name } }));
+    const submit = await bridge(t, '', 'readonly_reads_agent', { tools, context: { consultation_only: true, writes_allowed: false, execution_allowed: false } });
+    let proposal = await submit([{ role: 'user', content: 'case:readonly_reads' }]);
+    const expected = ['list_scripts', 'list_directory', 'read_script'];
+    for (let i = 0; i < expected.length; i++) {
+        const call = proposal.choices[0].message.tool_calls[0];
+        assert.equal(call.function.name, expected[i]);
+        const content = i === 0 ? JSON.stringify({ paths: ['res://review.gd'] }) : i === 1 ? JSON.stringify({ entries: [{ path: 'res://review.gd', directory: false }] }) : JSON.stringify({ content: 'extends Node', offset: 1 });
+        proposal = await submit([proposal.choices[0].message, { role: 'tool', tool_call_id: call.id, content, godot_file_success: i === 2 }], i + 1);
+    }
+    assert.equal(proposal.choices[0].message.content, 'READONLY_HOST_READS_OK');
 });

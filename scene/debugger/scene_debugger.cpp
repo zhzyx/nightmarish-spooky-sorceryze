@@ -35,6 +35,7 @@
 #include "core/debugger/engine_debugger.h"
 #include "core/debugger/remote_debugger.h"
 #include "core/input/input.h"
+#include "core/input/input_map.h"
 #include "core/input/shortcut.h"
 #include "core/io/dir_access.h"
 #include "core/io/resource_loader.h"
@@ -73,6 +74,12 @@
 #include "servers/physics_3d/physics_server_3d.h"
 #endif
 
+#ifdef DEBUG_ENABLED
+static String semantic_input_token;
+static StringName semantic_input_held;
+static HashSet<String> semantic_input_ids;
+#endif
+
 SceneDebugger::SceneDebugger() {
 	singleton = this;
 
@@ -86,6 +93,12 @@ SceneDebugger::SceneDebugger() {
 
 SceneDebugger::~SceneDebugger() {
 #ifdef DEBUG_ENABLED
+	if (semantic_input_held != StringName() && Input::get_singleton()) {
+		Input::get_singleton()->semantic_action_release(semantic_input_held);
+	}
+	semantic_input_held = StringName();
+	semantic_input_token = String();
+	semantic_input_ids.clear();
 	if (LiveEditor::singleton) {
 		EngineDebugger::unregister_message_capture("scene");
 		memdelete(LiveEditor::singleton);
@@ -684,6 +697,93 @@ Error SceneDebugger::_msg_report_window_focused(const Array &p_args) {
 
 HashMap<String, SceneDebugger::ParseMessageFunc> SceneDebugger::message_handlers;
 
+// Bounded game actions. No keyboard, pointer, focus or OS event injection.
+
+void SceneDebugger::_release_semantic_input(const StringName &p_action, const Dictionary &p_receipt) {
+	if (!singleton || semantic_input_held != p_action || p_receipt.get("runtime_token", "") != semantic_input_token) {
+		return;
+	}
+	Input::get_singleton()->semantic_action_release(p_action);
+	semantic_input_held = StringName();
+	Dictionary receipt = p_receipt.duplicate(true);
+	receipt["status"] = "released";
+	if (InputMap::get_singleton()->has_action(p_action)) {
+		receipt["strength"] = Input::get_singleton()->get_action_strength(p_action);
+	} else {
+		receipt["ok"] = false;
+		receipt["error"] = "game_action_removed";
+	}
+	Array data;
+	data.push_back(receipt);
+	EngineDebugger::get_singleton()->send_message("scene:semantic_input", data);
+}
+
+Error SceneDebugger::_msg_semantic_input(const Array &p_args) {
+	if (p_args.size() != 1 || p_args[0].get_type() != Variant::DICTIONARY) {
+		return ERR_INVALID_PARAMETER;
+	}
+	const Dictionary args = p_args[0];
+	Dictionary receipt;
+	receipt["ok"] = false;
+	receipt["editor_generation"] = args.get("editor_generation", Variant());
+	receipt["request_id"] = args.get("request_id", "");
+	if (semantic_input_token.is_empty()) {
+		semantic_input_token = itos(OS::get_singleton()->get_process_id()) + ":" + uitos(OS::get_singleton()->get_ticks_usec());
+	}
+	receipt["runtime_token"] = semantic_input_token;
+	const String operation = args.get("operation", "");
+	if (operation == "query") {
+		Array actions;
+		int action_bytes = 0;
+		for (const KeyValue<StringName, InputMap::Action> &entry : InputMap::get_singleton()->get_action_map()) {
+			if (actions.size() >= 100) {
+				break;
+			}
+			const String name = entry.key;
+			const int bytes = name.utf8().length();
+			if (name.length() > 128 || action_bytes + bytes > 4096) {
+				continue;
+			}
+			actions.push_back(name);
+			action_bytes += bytes;
+		}
+		receipt["ok"] = true;
+		receipt["status"] = "observed";
+		receipt["actions"] = actions;
+		receipt["actions_truncated"] = InputMap::get_singleton()->get_action_map().size() > actions.size();
+	} else if (args.get("runtime_token", "") != semantic_input_token) {
+		receipt["error"] = "game_runtime_changed";
+	} else {
+		const Variant action_value = args.get("name", Variant());
+		const StringName name = action_value.get_type() == Variant::STRING ? StringName(String(action_value)) : StringName();
+		const Variant duration = args.get("duration", Variant()), strength = args.get("strength", Variant());
+		const String id = args.get("request_id", "");
+		if (operation != "pulse" || name == StringName() || String(name).length() > 128 || !InputMap::get_singleton()->has_action(name) || !duration.is_num() || !Math::is_finite(double(duration)) || double(duration) < 0.01 || double(duration) > 2.0 || !strength.is_num() || !Math::is_finite(double(strength)) || double(strength) <= 0.0 || double(strength) > 1.0 || id.is_empty() || id.length() > 128) {
+			receipt["error"] = "invalid_game_action";
+		} else if (semantic_input_ids.has(id)) {
+			receipt["error"] = "duplicate_game_request";
+		} else if (semantic_input_ids.size() >= 1000) {
+			receipt["error"] = "game_request_capacity";
+		} else if (semantic_input_held != StringName() || Input::get_singleton()->is_action_pressed(name) || SceneTree::get_singleton()->is_paused()) {
+			receipt["error"] = "game_input_busy";
+		} else {
+			semantic_input_ids.insert(id);
+			semantic_input_held = name;
+			Input::get_singleton()->semantic_action_press(name, double(strength));
+			receipt["ok"] = true;
+			receipt["status"] = "started";
+			receipt["duration_clock"] = "game_main_loop_unscaled; debugger breaks defer timer and completion receipt";
+			receipt["name"] = String(name);
+			receipt["strength"] = Input::get_singleton()->get_action_strength(name);
+			SceneTree::get_singleton()->create_timer(double(duration), true, false, true)->connect(SNAME("timeout"), callable_mp_static(SceneDebugger::_release_semantic_input).bind(name, receipt), Object::CONNECT_ONE_SHOT);
+		}
+	}
+	Array data;
+	data.push_back(receipt);
+	EngineDebugger::get_singleton()->send_message("scene:semantic_input", data);
+	return OK;
+}
+
 Error SceneDebugger::parse_message(void *p_user, const String &p_msg, const Array &p_args, bool &r_captured) {
 	ERR_FAIL_NULL_V(SceneTree::get_singleton(), ERR_UNCONFIGURED);
 	ERR_FAIL_NULL_V(LiveEditor::get_singleton(), ERR_UNCONFIGURED);
@@ -708,6 +808,7 @@ Error SceneDebugger::parse_message(void *p_user, const String &p_msg, const Arra
 }
 
 void SceneDebugger::_init_message_handlers() {
+	message_handlers["semantic_input"] = _msg_semantic_input;
 	message_handlers["setup_scene"] = _msg_setup_scene;
 	message_handlers["setup_game_view"] = _msg_setup_game_view;
 	message_handlers["setup_embedded_shortcuts"] = _msg_setup_embedded_shortcuts;

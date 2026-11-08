@@ -929,6 +929,7 @@ public:
 
 	RID get_custom_drawing_canvas_item() const { return custom_ci; }
 
+	bool edit_cell(TreeItem *p_item, int p_column, const Variant &p_value);
 	TreeItem *get_edited() const;
 	int get_edited_column() const;
 

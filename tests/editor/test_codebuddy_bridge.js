@@ -68,7 +68,7 @@ test('Godot action permission is distinct from disabled CLI-native execution', (
     assert(!prompt.includes('You have no tools'));
     assert(!prompt.includes('JSON action proposals'));
     const payload = JSON.parse(prompt);
-    assert.deepEqual(payload.tool_context, { permission_enabled: true, tool_rounds: 2, max_tool_rounds: null, remaining_tool_rounds: null, unavailable_reason: 'none' });
+    assert.deepEqual(payload.tool_context, { permission_enabled: true, tool_rounds: 2, max_tool_rounds: null, remaining_tool_rounds: null, unavailable_reason: 'none', consultation_only: false, writes_allowed: true, execution_allowed: true });
     assert(sessionInstructions().includes('authoritative permissions'));
     assert.deepEqual(payload.messages, input.messages);
 });
@@ -615,4 +615,20 @@ test('Failed, malformed, excessive and forbidden actions are rejected', () => {
     assert.throws(() => normalizeResult({ structured_output: { content: '', actions: [{ name: 'write_script', arguments: {} }] } }, false));
     assert.throws(() => normalizeResult({ structured_output: { content: '', actions: Array(9).fill({ name: 'read_logs', arguments: {} }) } }, true));
     assert.throws(() => normalizeResult({ result: 'bad JSON' }, true));
+});
+
+
+test('Read-only CodeBuddy capability tuple is preserved and rejects contradictory or writable tools', () => {
+    const request = { messages: [{ role: 'user', content: 'Review' }], model: '', available_tools: [{ function: { name: 'read_file' } }], tool_context: { permission_enabled: true, tool_rounds: 0, max_tool_rounds: null, consultation_only: true, writes_allowed: false, execution_allowed: false } };
+    const validated = validateInput(request);
+    assert.equal(validated.tool_context.consultation_only, true);
+    assert.equal(validated.tool_context.writes_allowed, false);
+    assert.equal(validated.tool_context.execution_allowed, false);
+    assert.throws(() => validateInput({ ...request, tool_context: { ...request.tool_context, writes_allowed: true } }), { bridgeCode: 'INVALID_REQUEST' });
+    assert.throws(() => validateInput({ ...request, available_tools: [{ function: { name: 'delegate_review' } }] }), { bridgeCode: 'INVALID_REQUEST' });
+    const args = sessionArguments('', '', true, true);
+    assert.equal(args[args.indexOf('--tools') + 1], 'Read,Bash');
+    assert(!args[args.indexOf('--tools') + 1].includes('Write'));
+    assert(!args[args.indexOf('--tools') + 1].includes('Glob'));
+    assert(!args[args.indexOf('--tools') + 1].includes('Grep'));
 });

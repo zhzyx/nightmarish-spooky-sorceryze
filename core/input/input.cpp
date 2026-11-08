@@ -1512,6 +1512,40 @@ Point2 Input::warp_mouse_motion(const Ref<InputEventMouseMotion> &p_motion, cons
 	return rel_warped;
 }
 
+void Input::semantic_action_press(const StringName &p_action, float p_strength) {
+	ERR_FAIL_COND(!InputMap::get_singleton()->has_action(p_action));
+	ActionState &state = action_states[p_action];
+	if (!state.cache.pressed) {
+		state.pressed_event_id = ObjectID();
+		state.pressed_physics_frame = Engine::get_singleton()->get_physics_frames() + 1;
+		state.pressed_process_frame = Engine::get_singleton()->get_process_frames();
+	}
+	state.exact = true;
+	state.semantic_pressed = true;
+	state.semantic_strength = CLAMP(p_strength, 0.0f, 1.0f);
+	_update_action_cache(p_action, state);
+}
+
+void Input::semantic_action_release(const StringName &p_action) {
+	// Never clear device_states or the project's API action source.
+	ActionState *state = action_states.getptr(p_action);
+	if (!state) {
+		return;
+	}
+	state->semantic_pressed = false;
+	state->semantic_strength = 0.0f;
+	if (!InputMap::get_singleton()->has_action(p_action)) {
+		action_states.erase(p_action);
+		return;
+	}
+	_update_action_cache(p_action, *state);
+	if (!state->cache.pressed) {
+		state->released_event_id = ObjectID();
+		state->released_physics_frame = Engine::get_singleton()->get_physics_frames() + 1;
+		state->released_process_frame = Engine::get_singleton()->get_process_frames();
+	}
+}
+
 void Input::action_press(const StringName &p_action, float p_strength) {
 	ERR_FAIL_COND_MSG(!InputMap::get_singleton()->has_action(p_action), InputMap::get_singleton()->suggest_actions(p_action));
 
@@ -1985,6 +2019,12 @@ void Input::_update_action_cache(const StringName &p_action_name, ActionState &r
 			r_action_state.cache.strength = MAX(r_action_state.cache.strength, device_state.strength[i]);
 			r_action_state.cache.raw_strength = MAX(r_action_state.cache.raw_strength, device_state.raw_strength[i]);
 		}
+	}
+
+	if (r_action_state.semantic_pressed) {
+		r_action_state.cache.pressed = true;
+		r_action_state.cache.strength = MAX(r_action_state.cache.strength, r_action_state.semantic_strength);
+		r_action_state.cache.raw_strength = MAX(r_action_state.cache.raw_strength, r_action_state.semantic_strength);
 	}
 
 	if (r_action_state.api_pressed) {

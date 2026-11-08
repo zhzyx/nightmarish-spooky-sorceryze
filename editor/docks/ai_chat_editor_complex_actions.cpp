@@ -46,7 +46,9 @@
 #include "scene/gui/graph_edit.h"
 #include "scene/gui/graph_node.h"
 #include "scene/gui/item_list.h"
+#include "scene/gui/menu_bar.h"
 #include "scene/gui/popup_menu.h"
+#include "scene/gui/rich_text_label.h"
 #include "scene/gui/tree.h"
 #include "scene/main/scene_tree.h"
 
@@ -264,6 +266,37 @@ String metadata_identity(const Variant &p_value, int p_depth, int &r_budget) {
 // Full bounded state is hashed for confirmation; only requested pages are exposed.
 Array entries(Node *p_node) {
 	Array a;
+	if (MenuBar *bar = Object::cast_to<MenuBar>(p_node)) {
+		for (int i = 0; i < MIN(bar->get_menu_count(), 4096); i++) {
+			Dictionary d;
+			d["index"] = i;
+			d["title"] = bar->get_menu_title(i).left(120);
+			d["title_hash"] = bar->get_menu_title(i).sha256_text();
+			d["disabled"] = bar->is_menu_disabled(i);
+			d["hidden"] = bar->is_menu_hidden(i);
+			PopupMenu *popup = bar->get_menu_popup(i);
+			d["popup_instance"] = popup ? int64_t(popup->get_instance_id()) : 0;
+			d["popup_visible"] = popup && popup->is_visible();
+			a.push_back(d);
+		}
+		return a;
+	}
+	if (RichTextLabel *label = Object::cast_to<RichTextLabel>(p_node)) {
+		Array metadata = label->get_semantic_meta_links();
+		for (int i = 0; i < MIN(metadata.size(), 4096); i++) {
+			Dictionary d;
+			d["index"] = i;
+			int budget = 512;
+			String identity = metadata_identity(metadata[i], 0, budget);
+			d["metadata_hash"] = identity.sha256_text();
+			d["metadata_unavailable"] = identity.is_empty();
+			if (metadata[i].get_type() == Variant::STRING) {
+				d["text"] = String(metadata[i]).left(256);
+			}
+			a.push_back(d);
+		}
+		return a;
+	}
 	if (PopupMenu *menu = Object::cast_to<PopupMenu>(p_node)) {
 		for (int i = 0; i < MIN(menu->get_item_count(), 4096); i++) {
 			Dictionary d;
@@ -363,6 +396,29 @@ Array entries(Node *p_node) {
 			d["selected"] = item->is_selected(0);
 			d["selectable"] = item->is_selectable(0);
 			d["collapsed"] = item->is_collapsed();
+			Array cells;
+			for (int col = 0; col < MIN(tree->get_columns(), 64); col++) {
+				Dictionary cell;
+				cell["column"] = col;
+				cell["mode"] = item->get_cell_mode(col);
+				cell["editable"] = item->is_editable(col);
+				cell["text_hash"] = item->get_text(col).sha256_text();
+				cell["text"] = item->get_text(col).left(256);
+				double minimum, maximum, step;
+				item->get_range_config(col, minimum, maximum, step);
+				cell["minimum"] = minimum;
+				cell["maximum"] = maximum;
+				cell["step"] = step;
+				cell["checked"] = item->is_checked(col);
+				cell["range"] = item->get_range(col);
+				int cell_budget = 512;
+				String cell_metadata = metadata_identity(item->get_metadata(col), 0, cell_budget);
+				cell["metadata_hash"] = cell_metadata.sha256_text();
+				cell["metadata_unavailable"] = cell_metadata.is_empty();
+				cells.push_back(cell);
+			}
+			d["cells"] = cells;
+			d["columns_truncated"] = tree->get_columns() > 64;
 			a.push_back(d);
 		}
 	} else if (ItemList *items = Object::cast_to<ItemList>(p_node)) {
@@ -402,6 +458,12 @@ Array connections(GraphEdit *p_graph) {
 	return a;
 }
 int count(Node *p_node, const Array &p_entries) {
+	if (MenuBar *bar = Object::cast_to<MenuBar>(p_node)) {
+		return bar->get_menu_count();
+	}
+	if (RichTextLabel *label = Object::cast_to<RichTextLabel>(p_node)) {
+		return label->get_semantic_meta_links().size();
+	}
 	if (PopupMenu *menu = Object::cast_to<PopupMenu>(p_node)) {
 		return menu->get_item_count();
 	}
@@ -442,11 +504,11 @@ Dictionary page(const Array &p_entries, int p_total, int p_limit, int p_offset) 
 } // namespace
 
 bool AIChatEditorComplexActions::target(Node *p_node) {
-	return Object::cast_to<PopupMenu>(p_node) || Object::cast_to<CurveEdit>(p_node) || Object::cast_to<GradientEdit>(p_node) || Object::cast_to<GraphEdit>(p_node);
+	return Object::cast_to<Tree>(p_node) || Object::cast_to<MenuBar>(p_node) || Object::cast_to<RichTextLabel>(p_node) || Object::cast_to<PopupMenu>(p_node) || Object::cast_to<CurveEdit>(p_node) || Object::cast_to<GradientEdit>(p_node) || Object::cast_to<GraphEdit>(p_node);
 }
 
 bool AIChatEditorComplexActions::supports(const String &p_action) {
-	return p_action == "read_menu_items" || p_action == "activate_menu_item" || p_action == "open_menu_submenu" || p_action == "read_curve" || p_action == "curve_preset" || p_action == "curve_add_point" || p_action == "curve_remove_point" || p_action == "curve_set_point" || p_action == "curve_set_tangents" || p_action == "curve_set_tangent_modes" || p_action == "read_gradient" || p_action == "gradient_add_point" || p_action == "gradient_remove_point" || p_action == "gradient_set_color" || p_action == "gradient_reverse" || p_action == "gradient_set_offset" || p_action == "undo_resource_edit" || p_action == "redo_resource_edit" || p_action == "read_graph_nodes" || p_action == "read_graph_ports" || p_action == "read_graph_connections" || p_action == "graph_connect" || p_action == "graph_disconnect" || p_action == "graph_move_node" || p_action == "activate_tree_item" || p_action == "tree_context_menu" || p_action == "activate_item" || p_action == "item_context_menu";
+	return p_action == "read_menubar_menus" || p_action == "open_menubar_menu" || p_action == "read_tree_cells" || p_action == "edit_tree_cell" || p_action == "read_richtext_links" || p_action == "activate_richtext_link" || p_action == "read_menu_items" || p_action == "activate_menu_item" || p_action == "open_menu_submenu" || p_action == "read_curve" || p_action == "curve_preset" || p_action == "curve_add_point" || p_action == "curve_remove_point" || p_action == "curve_set_point" || p_action == "curve_set_tangents" || p_action == "curve_set_tangent_modes" || p_action == "read_gradient" || p_action == "gradient_add_point" || p_action == "gradient_remove_point" || p_action == "gradient_set_color" || p_action == "gradient_reverse" || p_action == "gradient_set_offset" || p_action == "undo_resource_edit" || p_action == "redo_resource_edit" || p_action == "read_graph_nodes" || p_action == "read_graph_ports" || p_action == "read_graph_connections" || p_action == "graph_connect" || p_action == "graph_disconnect" || p_action == "graph_move_node" || p_action == "activate_tree_item" || p_action == "tree_context_menu" || p_action == "activate_item" || p_action == "item_context_menu";
 }
 
 Array AIChatEditorComplexActions::actions(Node *p_node) {
@@ -455,7 +517,13 @@ Array AIChatEditorComplexActions::actions(Node *p_node) {
 	if (bound.is_valid() && !native_resource(bound)) {
 		return a;
 	}
-	if (Object::cast_to<PopupMenu>(p_node)) {
+	if (Object::cast_to<MenuBar>(p_node)) {
+		a.push_back("read_menubar_menus");
+		a.push_back("open_menubar_menu");
+	} else if (Object::cast_to<RichTextLabel>(p_node)) {
+		a.push_back("read_richtext_links");
+		a.push_back("activate_richtext_link");
+	} else if (Object::cast_to<PopupMenu>(p_node)) {
 		a.push_back("read_menu_items");
 		a.push_back("activate_menu_item");
 		a.push_back("open_menu_submenu");
@@ -472,6 +540,8 @@ Array AIChatEditorComplexActions::actions(Node *p_node) {
 			a.push_back(s);
 		}
 	} else if (Object::cast_to<Tree>(p_node)) {
+		a.push_back("read_tree_cells");
+		a.push_back("edit_tree_cell");
 		a.push_back("activate_tree_item");
 		a.push_back("tree_context_menu");
 	} else if (Object::cast_to<ItemList>(p_node)) {
@@ -560,6 +630,77 @@ Dictionary AIChatEditorComplexActions::perform(Node *p_node, const String &p_id,
 		return result(false, "target_not_visible");
 	}
 	const Dictionary before = state(p_node);
+	if (action == "open_menubar_menu" || action == "edit_tree_cell" || action == "activate_richtext_link") {
+		if (bool(before.get("capacity_exceeded", false))) {
+			return result(false, "item_capacity_exceeded");
+		}
+		int selected = -1;
+		if (!integer(p_args.get("index", Variant()), 0, int(before["count"]) - 1, selected)) {
+			return result(false, "invalid_item_index");
+		}
+		MenuBar *bar = Object::cast_to<MenuBar>(p_node);
+		Tree *tree = Object::cast_to<Tree>(p_node);
+		TreeItem *cell_item = tree ? tree_item(tree, selected) : nullptr;
+		int column = 0;
+		Variant value = p_args.get("value", Variant());
+		if (bar && (bar->is_menu_disabled(selected) || bar->is_menu_hidden(selected) || !bar->get_menu_popup(selected) || AIChatEditorRegistry::is_protected(bar->get_menu_popup(selected)) || bool(bar->get_menu_popup(selected)->get_meta("ai_control_page_only", false)))) {
+			return result(false, "menu_unavailable");
+		}
+		if (tree) {
+			if (!cell_item || tree->get_columns() > 64 || !integer(p_args.get("column", Variant()), 0, tree->get_columns() - 1, column) || !cell_item->is_editable(column)) {
+				return result(false, "tree_cell_not_editable");
+			}
+			int metadata_budget = 512;
+			if (metadata_identity(cell_item->get_metadata(column), 0, metadata_budget).is_empty()) {
+				return result(false, "item_metadata_capacity_exceeded");
+			}
+			const TreeItem::TreeCellMode mode = cell_item->get_cell_mode(column);
+			if ((mode == TreeItem::CELL_MODE_CHECK && value.get_type() != Variant::BOOL) || (mode == TreeItem::CELL_MODE_STRING && (value.get_type() != Variant::STRING || String(value).length() > 8192)) || (mode != TreeItem::CELL_MODE_CHECK && mode != TreeItem::CELL_MODE_STRING && mode != TreeItem::CELL_MODE_RANGE)) {
+				return result(false, "invalid_tree_cell_value");
+			}
+			if (mode == TreeItem::CELL_MODE_RANGE) {
+				double min, max, step;
+				cell_item->get_range_config(column, min, max, step);
+				if (!number(value, min, max)) {
+					return result(false, "invalid_tree_cell_value");
+				}
+			}
+		}
+		if (RichTextLabel *label = Object::cast_to<RichTextLabel>(p_node)) {
+			const Array metadata = label->get_semantic_meta_links();
+			int budget = 512;
+			if (selected >= metadata.size() || metadata_identity(metadata[selected], 0, budget).is_empty()) {
+				return result(false, "link_metadata_unavailable");
+			}
+		}
+		Dictionary d = result(false);
+		d["target"] = p_id;
+		d["target_instance"] = int64_t(p_node->get_instance_id());
+		d["old_value"] = before;
+		d["new_value"] = p_args;
+		if (!p_confirmed) {
+			d["confirmation_required"] = true;
+			return d;
+		}
+		const Variant expected_instance = p_args.get("expected_target_instance", Variant());
+		if (!number(expected_instance, 1, 9007199254740991.0) || double(expected_instance) != Math::floor(double(expected_instance)) || int64_t(expected_instance) != int64_t(p_node->get_instance_id()) || p_args.get("expected_old_value", Variant()).get_type() != Variant::DICTIONARY || JSON::parse_string(JSON::stringify(p_args["expected_old_value"])) != JSON::parse_string(JSON::stringify(before))) {
+			return result(false, "target_changed_since_confirmation");
+		}
+		const ObjectID object = p_node->get_instance_id();
+		bool applied = bar ? bar->open_menu(selected) : tree ? tree->edit_cell(cell_item, column, value)
+															 : Object::cast_to<RichTextLabel>(p_node)->activate_meta(selected);
+		Node *current = ObjectDB::get_instance<Node>(object);
+		bool available = current && current->is_inside_tree() && !AIChatEditorRegistry::is_protected(current);
+		d["ok"] = applied;
+		d["requested"] = applied;
+		d["business_completed"] = false;
+		d["target_available"] = available;
+		d["readback"] = available ? state(current) : Dictionary();
+		if (!applied) {
+			d["error"] = "native_action_unavailable";
+		}
+		return d;
+	}
 	if (action.begins_with("read_")) {
 		int limit = 0, offset = 0;
 		if (!integer(p_args.get("limit", 100), 1, 100, limit) || !integer(p_args.get("offset", 0), 0, 4096, offset)) {

@@ -266,6 +266,10 @@ ScriptEditorDebugger *EditorDebuggerNode::get_debugger(int p_id) const {
 	return Object::cast_to<ScriptEditorDebugger>(tabs->get_tab_control(p_id));
 }
 
+int EditorDebuggerNode::get_debugger_count() const {
+	return tabs->get_tab_count();
+}
+
 int EditorDebuggerNode::get_debugger_id(const ScriptEditorDebugger *p_debugger) {
 	for (int i = 0; i < tabs->get_tab_count(); i++) {
 		const ScriptEditorDebugger *debugger = Object::cast_to<ScriptEditorDebugger>(tabs->get_tab_control(i));

@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "editor_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+  "checks": [
+    "mounted native owner bound",
+    "wrong host rejected",
+    "manual confirmation preserved with autoexec",
+    "mounted original send accepted",
+    "actual native write_file changed only the owned private candidate sentinel",
+    "chat_history returned actual snapshot; manually confirmed chat_show_changes opened native nonempty diff with exact changed content",
+    "CodeBuddy parent delegated actual native reviewer",
+    "readonly ACP write/permission/terminal attacks rejected",
+    "typed native child report automatically returned to parent",
+    "single existing candidate retained",
+    "readonly sentinel absent"
+  ],
+  "provider": "offline ACP fixture only",
+  "limitations": [
+    "No production LLM/account/OS or pixel acceptance claimed",
+    "Native confirmation is simulated only inside the private fixture",
+    "ACP provider is simulated; actual vendor model behavior, authentication and OS filesystem isolation are not verified"
+  ],
+  "fixture_sources": {
+    "tests/editor/run_codebuddy_readonly_review.py": "2578a957d7b64265948a7cb31ffb5dedaaa9792777c9f3fbef2c788f7c49e71e",
+    "tests/editor/codebuddy_readonly_review.gd": "a003d4d4693d4f31203f087576d185ec183ed6f34cb060e8bb335277672ceeb3",
+    "tests/editor/mock_codebuddy_cli.js": "6cda9315047815189a412b0d4709148bd89cbfe04bd1d0169cde62509be8ae59"
+  },
+  "scope": "Private native mounted send, actual history diff and CodeBuddy ACP reviewer/parent lifecycle; production account and OS behavior remain unverified."
+}

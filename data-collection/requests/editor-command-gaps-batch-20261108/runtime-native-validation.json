@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "editor_sha256": "020d9caf558e86e282e72831572db8f322d01c9978b5e3fc7c712bac52fdd156",
+  "checks": [
+    "headless capture explicit rejection; missing debugger session rejected",
+    "real debugger peer query, observed InputMap action pulse, timed release and runtime receipt",
+    "duration/token/permission rejection"
+  ],
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "private_native_runtime_validation",
+  "confirmation": "Private native confirmation signals; not human approvals",
+  "source_manifest": {
+    "editor/docks/ai_chat_editor_runtime_actions.cpp": "deba3417974b65f8ac9f3e826736b56ebf1aa9f9a6493a6ff1c4318433bef4ed",
+    "editor/debugger/script_editor_debugger.cpp": "e6c6b09e31f1c6c9a8f2e42ad19c03a5fa93adc53837e785a5910fdf03e17ba7",
+    "editor/debugger/editor_debugger_node.cpp": "ed63d5d8f54d96ba59aee01ededbc4a74e669b077b59252af1a12f508a0bfc4f",
+    "scene/debugger/scene_debugger.cpp": "2741cfd62eeca902dc1dd96274ae09e9305cf1d9fa2979bfb3047bd6666c4ff2",
+    "core/input/input.cpp": "46dbf7f92862b6e192866f21a92dbd87a5eac34d4836106ad23c56816ee71038",
+    "tests/editor/run_runtime_command_gaps.py": "b8f6cb14f91693af3fc13742d23e6759dacdc0a9d9f5ce62986c16acf5d2dd77",
+    "tests/editor/runtime_command_gaps.gd": "6e1c56cd1c0d5a20324100c0b666f1229d6c9cc002e9b7cad5b47f7c581b0bd0"
+  },
+  "limits": [
+    "No hardware keyboard, mouse or gamepad acceptance; game actions use an independent semantic source.",
+    "Headless capture only verifies explicit unavailability; actual GUI screenshot pixels and global OS menus not tested.",
+    "Private editor exits reported RID/ObjectDB cleanup warnings; no claim of warning-free shutdown."
+  ]
+}

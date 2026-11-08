@@ -3951,6 +3951,28 @@ void RichTextLabel::_normalize_subtags(Vector<String> &subtags) {
 	}
 }
 
+Array RichTextLabel::get_semantic_meta_links(int p_limit) const {
+	Array metadata;
+	for (Item *item = main; item && metadata.size() < p_limit; item = _get_next_item(item, true)) {
+		if (item->type == ITEM_META) {
+			metadata.push_back(static_cast<ItemMeta *>(item)->meta);
+		}
+	}
+	return metadata;
+}
+
+bool RichTextLabel::activate_meta(int p_index) {
+	if (p_index < 0 || p_index >= 4096) {
+		return false;
+	}
+	Array metadata = get_semantic_meta_links();
+	if (p_index >= metadata.size()) {
+		return false;
+	}
+	emit_signal(SNAME("meta_clicked"), metadata[p_index]);
+	return true;
+}
+
 bool RichTextLabel::_find_meta(Item *p_item, Variant *r_meta, ItemMeta **r_item) {
 	Item *item = p_item;
 

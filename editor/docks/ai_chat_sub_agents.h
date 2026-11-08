@@ -47,6 +47,11 @@ public:
 	static constexpr int MAX_CONTEXT_RECORD_CHARS = 8000;
 	static constexpr int MAX_CONTEXT_BYTES = 48 * 1024;
 
+	// These backends have host-enforced read-only transport boundaries.
+	static bool supports_read_only_backend(int p_backend) {
+		return p_backend >= 0 && p_backend <= 3;
+	}
+
 	static bool is_state(const String &p_state) {
 		return p_state == "manual" || p_state == "waiting" || p_state == "pending_host" || p_state == "running" || p_state == "review" || p_state == "completed" || p_state == "failed" || p_state == "interrupted";
 	}

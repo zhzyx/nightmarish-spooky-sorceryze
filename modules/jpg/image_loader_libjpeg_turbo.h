@@ -32,6 +32,9 @@
 
 #include "core/io/image_loader.h"
 
+// Read header dimensions without allocating decoded pixels.
+Error jpeg_turbo_get_dimensions(const uint8_t *p_buffer, int p_size, int &r_width, int &r_height);
+
 class ImageLoaderLibJPEGTurbo : public ImageFormatLoader {
 public:
 	virtual Error load_image(Ref<Image> p_image, Ref<FileAccess> f, BitField<ImageFormatLoader::LoaderFlags> p_flags, float p_scale);
