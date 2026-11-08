@@ -25,6 +25,28 @@ class GateTests(unittest.TestCase):
     def check(self, value=None):
         return gate.check_issue(value or self.issue, "test/repo", 6, "req-6", {"type:development"})
 
+    def test_bound_issue_does_not_grant_membership_from_public_read_or_partial_labels(self):
+        row = dict(
+            number=6,
+            title="work",
+            url=self.issue["html_url"],
+            state="OPEN",
+            body=self.issue["body"],
+            updatedAt=self.issue["updated_at"],
+            labels={"nodes": self.issue["labels"], "pageInfo": {"hasNextPage": False}},
+        )
+        repo = dict(nameWithOwner="test/repo", databaseId=12, viewerPermission="WRITE", issue=row)
+        response = dict(data={"viewer": {"login": "alice", "databaseId": 7}, "repository": repo})
+        with patch.object(gate.work_items, "gh", side_effect=lambda *args: json.dumps(response)) as gh:
+            source, actor = gate.read_bound_issue("test/repo", 6)
+            self.assertEqual(actor["user_id"], "7")
+            self.assertEqual(self.check(source), self.check())
+            gh.assert_called_once()
+            repo["viewerPermission"] = "READ"
+            self.assertIsNone(gate.read_bound_issue("test/repo", 6)[1])
+            row["labels"]["pageInfo"]["hasNextPage"] = True
+            self.assertEqual(gate.read_bound_issue("test/repo", 6), (None, None))
+
     def test_storage_adapter_rejects_unregistered_import_before_execution(self):
         self.setup_gate()
         storage = "customizations/platforms/data-collection/git-files/storage"

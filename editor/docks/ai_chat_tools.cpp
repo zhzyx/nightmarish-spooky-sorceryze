@@ -714,3 +714,7 @@ bool AIChatTools::apply_snapshot_transition(const Dictionary &p_snapshot, bool p
 	}
 	return true;
 }
+
+bool AIChatTools::is_read_only_tool(const String &p_name) {
+	return p_name == "get_editor_state" || p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory" || p_name == "get_parent_context";
+}

@@ -350,6 +350,33 @@ Dictionary make_resume_journal(const String &p_content = "task") {
 	return journal;
 }
 
+TEST_CASE("[AIChat] Resume validates expanded Codex read batches") {
+	Dictionary journal = make_resume_journal();
+	journal.erase("restart");
+	journal["backend"] = 2;
+	Array calls = journal["tool_calls"];
+	calls.clear();
+	for (int i = 0; i < 32; i++) {
+		Dictionary function;
+		function["name"] = "read_file";
+		function["arguments"] = "{}";
+		Dictionary call;
+		call["function"] = function;
+		call["id"] = "read-" + itos(i);
+		call["type"] = "function";
+		calls.push_back(call);
+	}
+	journal["tool_index"] = 21;
+	CHECK(AIChatResume::journal_valid(journal));
+	journal["backend"] = 1;
+	CHECK_FALSE(AIChatResume::journal_valid(journal));
+	journal["backend"] = 2;
+	Dictionary last = calls[31];
+	Dictionary function = last["function"];
+	function["name"] = "run_command";
+	CHECK_FALSE(AIChatResume::journal_valid(journal));
+}
+
 TEST_CASE("[AIChat] Resume journal legacy JSON and compact encoding remain compatible") {
 	const Dictionary journal = make_resume_journal(String::utf8("保留用户约束\n"));
 	Dictionary restored;

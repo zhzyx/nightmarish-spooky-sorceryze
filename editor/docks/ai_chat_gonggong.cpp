@@ -421,7 +421,10 @@ void AIChatDock::_begin_gonggong_context() {
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	gonggong_report_root = root;
 	gonggong_report_python = python;
-	const String bridge = gonggong_report_root.path_join("tools/gonggong_bridge.py");
+	// Keep the host protocol on the editor version when resuming an older candidate.
+	// The request still reads the candidate's own framework, Issue gate and data.
+	const String installed_bridge = _engine_root().path_join("customizations/components/godot-host/bridge.py");
+	const String bridge = snapshot_state.has("engine_candidate") && FileAccess::exists(installed_bridge) ? installed_bridge : gonggong_report_root.path_join("tools/gonggong_bridge.py");
 	if (root.is_empty() || !FileAccess::exists(bridge)) {
 		issue_guide_outcome = outcome;
 		issue_guide_state = "agent_error";
