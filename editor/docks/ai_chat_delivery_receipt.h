@@ -41,7 +41,11 @@ class AIChatDeliveryReceipt {
 
 public:
 	static bool matches(const Dictionary &p_value, const Dictionary &p_expected) {
-		if (!number_is(p_value.get("schema_version", Variant()), 1) || p_value.get("kind", "") != "native_delivery_finalization") {
+		const String kind = p_expected.get("kind", "native_delivery_finalization");
+		if (!number_is(p_value.get("schema_version", Variant()), 1) || p_value.get("kind", "") != kind) {
+			return false;
+		}
+		if (kind == "native_delivery_retry" && (p_value.get("host_action_request_id", "") != p_expected.get("host_action_request_id", "") || p_value.get("original_journal_sha256", "") != p_expected.get("original_journal_sha256", "") || p_value.get("host_instance_id", "") != p_expected.get("host_instance_id", "") || !number_is(p_value.get("engine_pid", Variant()), p_expected["engine_pid"]))) {
 			return false;
 		}
 		for (const String &key : { String("owner"), String("snapshot_id"), String("nonce"), String("source_root") }) {

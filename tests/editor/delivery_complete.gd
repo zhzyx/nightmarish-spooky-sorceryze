@@ -47,6 +47,10 @@ func _run():
 	node.text_changed.emit(node.text)
 	environment.find_child("CLIBridge", true, false).text = OS.get_environment("DELIVERY_FIXTURE_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
 	var mode := OS.get_environment("DELIVERY_FIXTURE_CASE")
+	var retry_case := mode.begins_with("retry")
+	if retry_case and OS.get_environment("DELIVERY_FIXTURE_PHASE") == "restore":
+		await _retry_commands()
+		return
 	if OS.get_environment("DELIVERY_FIXTURE_PHASE") == "cold":
 		await create_timer(2.0).timeout
 		_finish(dock.get_meta("gonggong_status", "") != "delivery_completed", "Cold history does not restore a live terminal capability")
@@ -55,8 +59,11 @@ func _run():
 	dock.find_child("ConsultationOnly", true, false).button_pressed = mode == "consultation"
 	ai.find_child("AutoApplyFileChanges", true, false).button_pressed = true
 	ai.find_child("AutoExecuteCommands", true, false).button_pressed = mode not in ["approval", "inline-approval"]
-	# Model setting refreshes must finish before this fixture starts its turn.
-	await create_timer(0.5).timeout
+	# Wait for actual readiness rather than racing the deferred model refresh.
+	for unused in 1000:
+		if dock.find_child("Stop", true, false).disabled and not dock.find_child("Send", true, false).disabled:
+			break
+		await create_timer(0.02).timeout
 	var approval = dock.find_child("AIFileApproval", true, false)
 	approval.visibility_changed.connect(func(): approval_events.append({"visible": approval.visible, "embedded": approval.is_embedded(), "window_id": approval.get_window_id()}))
 	_send("DELIVERY_COMPLETE_START")
@@ -89,6 +96,11 @@ func _run():
 			boundary_applied = true
 		var status: String = dock.get_meta("gonggong_status", "")
 		var idle: bool = dock.find_child("Stop", true, false).disabled
+		if retry_case:
+			FileAccess.open("res://retry-progress.json", FileAccess.WRITE).store_string(JSON.stringify({"status": status, "idle": idle, "text": _text()}))
+		if retry_case and status == "delivery_pending" and idle:
+			await _retry_commands()
+			return
 		if mode in ["normal", "cold"] and status == "delivery_completed" and idle:
 			await create_timer(0.3).timeout
 			_finish(boundary_applied and "交付已回读" in _text())
@@ -119,3 +131,39 @@ func _run():
 			_finish(false, "Unexpected fixture or worker failure")
 			return
 	_finish(false, "Timed out: " + mode)
+
+func _retry_commands():
+	FileAccess.open("res://retry-ready.json", FileAccess.WRITE).store_string(JSON.stringify({"pid": OS.get_process_id()}))
+	var last_id := 0
+	var deadline := Time.get_ticks_msec() + 120000
+	while Time.get_ticks_msec() < deadline:
+		await create_timer(0.02).timeout
+		if not FileAccess.file_exists("res://retry-command.json"):
+			continue
+		var command = JSON.parse_string(FileAccess.get_file_as_string("res://retry-command.json"))
+		if not command is Dictionary or int(command.get("id", 0)) <= last_id:
+			continue
+		last_id = int(command.id)
+		match command.name:
+			"tools":
+				dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = command.value
+			"automatic":
+				dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = command.value
+			"consultation":
+				dock.find_child("ConsultationOnly", true, false).button_pressed = command.value
+			"draft":
+				dock.find_child("ChatInput", true, false).text = command.value
+			"child":
+				dock.find_child("AddSubAgent", true, false).pressed.emit()
+			"parent":
+				dock.find_child("SubAgentTabs", true, false).tab_selected.emit(0)
+			"stop":
+				dock.find_child("Stop", true, false).pressed.emit()
+			"quit":
+				_finish(true, "Private terminal retry fixture completed")
+				return
+			"finish":
+				_finish(dock.get_meta("gonggong_status", "") == "delivery_completed", "Actual host retry terminal status")
+				return
+		FileAccess.open("res://retry-command-result.json", FileAccess.WRITE).store_string(JSON.stringify({"id": last_id, "status": dock.get_meta("gonggong_status", "")}))
+	_finish(false, "Private retry fixture timed out")

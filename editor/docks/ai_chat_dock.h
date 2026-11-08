@@ -438,6 +438,13 @@ class AIChatDock : public EditorDock {
 	String pending_action;
 	Dictionary pending_delivery_request;
 	Dictionary delivery_receipt;
+	Dictionary delivery_retry_route;
+	String delivery_retry_instance;
+	String _delivery_retry_blocked_reason() const;
+	Dictionary _pending_delivery_retry() const;
+	Dictionary _run_delivery_retry(const Dictionary &p_args);
+	void _begin_delivery_retry();
+	void _finish_delivery_retry(const String &p_process_result);
 	String delivery_request_path;
 	String delivery_result_path;
 	void _run_delivery_tool(const Dictionary &p_arguments);
