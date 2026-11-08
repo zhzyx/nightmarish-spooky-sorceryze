@@ -185,6 +185,16 @@ def main():
                     records.append({"case": action, "state": "passed", "confirmation": "private native signal"})
                     return detail(terminal)
 
+                # Wait for the actual fixture connection catalogue, including
+                # its advertised reasoning metadata, before session switching.
+                until(
+                    lambda: (
+                        "high"
+                        in detail(operation("chat_configuration")[1])
+                        .get("configuration", {})
+                        .get("supported_reasoning", [])
+                    )
+                )
                 parent = read("chat_sessions")["rows"][0]["agent_id"]
                 ident, result = operation("chat_rename_session", agent_id=parent, value="Renamed parent")
                 assert result.get("manual_confirmation_required") and command("state")["title"] != "Renamed parent", (

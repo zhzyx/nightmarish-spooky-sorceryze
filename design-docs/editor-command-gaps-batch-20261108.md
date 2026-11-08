@@ -75,3 +75,5 @@
 第二个签名候选d539e1（作者43ea5069，PR #565）的静态检查、clang-cl编辑器和导出模板已通过，但MSVC编辑器在新动作列表分页报C4701。另加offset/limit显式初始化及四个实际原生断言；msvc-init-validation.json与独立增量审查保留这个失败及后继验证，不覆盖旧报告，不放宽编译警告。
 
 第三个候选374cdb（PR #566）未合入：MSVC编辑器在Polygon2D/CollisionPolygon2D相邻分支发现C4456，修正仅为后一局部变量更名。同时独立实际原生检查复现SceneTreeEditor通用Tree单元格编辑可经自动执行绕过专用场景改名的真人确认。新增保护按真实SceneTreeEditor祖先及原生回调所有者拒绝该通用写入口，提示使用已有scene_rename_node；普通Tree仍保留原有行为。5组原生回归覆盖专用确认、普通Tree、重挂载和复合声明，原始发现及修复独立证据另存tree-boundary-*，不覆盖早期审查。额外-Wshadow-all探测在未修改的dynamic_bvh.h既有字段遮蔽处失败，未修改该无关文件，亦不记为通过；常规构建和实际后继CI分别核验。
+
+签发前main前进至6d67fe74（PR #567），本隔离分支整合其模型目录按连接缓存及重启恢复回执修正，两个共享AI Chat文件自动合并无冲突。旧聊天夹具直接赋APIKey文本而没有原生text_changed事件，新目录正确拒绝复用旧连接缓存；修正仅在私有夹具触发正常配置事件并等待实际reasoning广告，生产判断未放宽。整合重编与定向回归、独立审查另存main-integration-*；上游原件不改。

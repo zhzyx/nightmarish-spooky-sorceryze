@@ -23,7 +23,9 @@ func run() -> void:
 	assert(image.save_jpg("res://tiny.jpg") == OK)
 	assert(image.save_webp("res://tiny.webp", false) == OK)
 	var settings = dock.get_ai_settings_control()
-	settings.find_child("APIKey", true, false).text = "private-fixture-secret"
+	var key_field = settings.find_child("APIKey", true, false)
+	key_field.text = "private-fixture-secret"
+	key_field.text_changed.emit(key_field.text)
 	settings.find_child("AllowTools", true, false).button_pressed = true
 	settings.find_child("AutoExecuteCommands", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false

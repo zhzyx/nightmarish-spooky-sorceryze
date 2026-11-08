@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_main_integration_source_review",
+  "reviewer": "final_independent_review; no merge or production source edits",
+  "batch_source_commit": "c2170f6a97337d206e35b8b6e1da42b489c8ced4",
+  "integrated_main_commit": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+  "merge_base": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "result": "no_blocking_production_integration_conflict_identified; fixture_event_mismatch_diagnosed",
+  "findings": [],
+  "integrated_files": {
+    "editor/docks/ai_chat_dock.cpp": {
+      "batch_sha256": "f36eb6821aad7be3532e805853ef1b835e97c2f2a8808f0b63f5f2d55a91e2b3",
+      "main_sha256": "04922830668232b17898fa60d5bbb3e8c06154fcc48908bb2316ef88086976af",
+      "integrated_sha256": "0cb072f757e8791f6aeb5c00ad34cee875e275eeb106a7e48eb9e38e77b880cc",
+      "nonoverlapping_edit_groups": {
+        "batch": 14,
+        "main": 17
+      },
+      "exact_combination_of_both_branch_edits": true
+    },
+    "editor/docks/ai_chat_dock.h": {
+      "batch_sha256": "86ec244fd76e1e10ffcc5483c254389813917cd8732834a18d81fb68a89a2580",
+      "main_sha256": "60ff194b2e6d4324a5c717aa949d44ddd76cb941730e426f4ecce4b2bb6e9f0c",
+      "integrated_sha256": "1b8b6c3ff9ea807e5701132434783b32d0f9c09da00a8d8cd1a09b3b75e6998e",
+      "nonoverlapping_edit_groups": {
+        "batch": 1,
+        "main": 4
+      },
+      "exact_combination_of_both_branch_edits": true
+    }
+  },
+  "unchanged_upstream_carry": {
+    "editor/docks/ai_chat_host_runtime.h": {
+      "integrated_sha256": "a284e1ea9ffe276499f1b5c455de7ba79b673e56647f349971f3a95b8cf56e20",
+      "byte_identical_to_main": true
+    },
+    "editor/docks/gonggong_engine_origin.cpp": {
+      "integrated_sha256": "b6c2dc5da811bf1088dfc8b92869b8a6e7fbf2cd657b5e69197aeff3c52cbc32",
+      "byte_identical_to_main": true
+    },
+    "editor/docks/gonggong_engine_origin.h": {
+      "integrated_sha256": "cfb2cc3fc1f4af75bf6b649d78818a877709c952466e2b1a37778257f12f4c94",
+      "byte_identical_to_main": true
+    }
+  },
+  "related_source_manifest": {
+    "editor/docks/ai_chat_host_commands.cpp": "a09561da343b129b3815eb2efee3b6c8f5ab724a228dd24bc000d3a5f49c7250",
+    "editor/docks/ai_chat_sub_agents.cpp": "bf1a42cfce94132e9aac3817497914c474b0bd038233e5195761e40ee0211dcd",
+    "tools/codebuddy_cli/godot_acp.js": "c2eca43f85fbf8473ff8d1ef676c58a6f3fb5b4553562c546e0612dcce8087d1",
+    "tools/codebuddy_cli/godot_bridge.js": "a216b344d03884e15795389504810f24697c5eff7799c4dfdb18305fe6990bba",
+    "tests/editor/chat_command_gaps.gd": "819b73758e3ac3793aeaf123cf178598a07098f760d730937ed54157b3c1867c",
+    "scene/gui/line_edit.cpp": "4bcc62103671992ad2b7cc5457b166bab3d787ec37151ae5499fe1c6fc45a858",
+    "tests/editor/run_chat_command_gaps.py": "5e6079fc26a80edab3875da326ab15b51c289726d36257421613aa0b364a0aa9"
+  },
+  "compatibility_assessment": [
+    "Dock CPP and header contain the exact union of both branches nonoverlapping line edits: no intent from either branch was dropped by the automatic merge.",
+    "Session capture retains model_catalog_config; restore selects the discovered catalog for the actual current effective connection signature rather than a stale per-session catalog. Newly added manual child and schedule lifecycle still use that existing capture/restore path and preserve generation changes.",
+    "New chat model/reasoning commands remain subject to current advertised picker metadata and fresh manual confirmation. Backend/runtime setters still use native callbacks; catalog invalidation can correctly make a previously observed reasoning effort unavailable until discovery completes.",
+    "CodeBuddy consultation tool closure, immutable read-only transport mode, second-level native consultation gate and production-parent-only delegation remain unchanged by upstream model-cache work.",
+    "Restart tool acknowledgments now remain pending until the original session and mandatory result receipt are ready; new chat mutations and session switches already reject while recovered_result is pending. Stop clears the ack token along with recovery state. No new host action bypasses those guards.",
+    "Native artifact locator/runtime files carried by main are byte-identical to that upstream commit; this review does not replace their separate upstream business acceptance."
+  ],
+  "fixture_diagnosis": {
+    "observed_failure": "Integrated private chat runner rejected chat_set_reasoning(high) as unsupported_reasoning_effort after session lifecycle operations.",
+    "source_explanation": "The private gate sets APIKey.text directly without emitting the native text_changed configuration event. The connection signature includes the API-key hash. The older initial catalog may therefore belong to the pre-edit signature; new session restore correctly refuses to reuse it under the changed key. LineEdit::set_text delegates to _set_text without emitting text_changed.",
+    "required_test_correction": "In the private fixture, emit text_changed after setting the synthetic API key and wait for actual fresh reasoning/model capability advertisement, rather than only Send becoming enabled. This models the real native UI edit path, as upstream auto-fetch fixtures already do.",
+    "must_not_change": "Do not remove signature binding, restore stale catalogs across connections or relax supported_reasoning_effort validation to satisfy the test.",
+    "runtime_verification_status": "Source diagnosis and fixture-only correction independently verified. Parent reports integrated upstream auto-fetch three cases, Tree five groups and native unit 23/350 passed; corrected chat execution was still running at this review update, so it is not marked passed here.",
+    "reviewed_test_correction": "Private gate now emits native text_changed immediately after setting its synthetic API key; runner polls chat_configuration.supported_reasoning for the actual high advertisement before session switching. This adds observation of real discovery rather than injecting model capabilities or weakening any product check."
+  },
+  "limits": [
+    "This is a read-only integration/source review; no additional test suites were executed by this reviewer.",
+    "Integrated rebuild, chat/Tree/native/model-autofetch reruns and exact signed-candidate CI/main receipts must be recorded by their actual executors.",
+    "Prior independent reviews and vulnerability/repair reports remain preserved; this record is additive and does not relabel earlier artifacts as integrated executions."
+  ],
+  "production_state_changed": false
+}
