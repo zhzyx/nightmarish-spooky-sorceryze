@@ -1,0 +1,403 @@
+{
+  "binary_sha256": "5a2b54aa4351d0e094c5d88d30f05002728851c93ef1285cb51a6572c91bcf07",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "68eaa221110b1f9237cef2389171e1cbf632ac3f1c30875e03990219409f3c38",
+    "editor/docks/ai_chat_dock.h": "ab64da6d5206415da1b14a06da53a069c690d04f3f0dd633f19a74825c797d3b",
+    "tools/codex_cli/godot_bridge.js": "40930a75182c6b4e4450d2afe62e48532229650de27a80bff107af5c85f310c7",
+    "tools/codebuddy_cli/godot_bridge.js": "12397964fe0b4dd243863ed78528b9c4103d4a143c8d13c355073b3e916f1e31"
+  },
+  "source_unchanged": true,
+  "provider": "Offline CLI/HTTP fixtures; real editor binary; no real inference",
+  "isolated_settings": true,
+  "results": [
+    {
+      "case": "codex-startup",
+      "checks": [
+        "manual refresh button absent",
+        "startup fetched advertised Codex model once"
+      ],
+      "error": "",
+      "heartbeat": 134,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-jc32kq1q/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-jc32kq1q",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16499
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16504
+        }
+      ]
+    },
+    {
+      "case": "session-reuse",
+      "checks": [
+        "manual refresh button absent",
+        "new session reused catalog without query; selections stayed independent; config change invalidated old catalog"
+      ],
+      "error": "",
+      "heartbeat": 133,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-odg5eowi/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-odg5eowi",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16512
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16514
+        }
+      ]
+    },
+    {
+      "case": "session-catalog-freshness",
+      "checks": [
+        "manual refresh button absent",
+        "same-connection login refresh replaced archived C1 with C2; independent choices survived"
+      ],
+      "error": "",
+      "heartbeat": 163,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-m87_f3im/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-m87_f3im",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16533
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16535
+        },
+        {
+          "kind": "codex-login-start",
+          "pid": 16537
+        },
+        {
+          "kind": "codex-login-success",
+          "pid": 16537
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16541
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16545
+        }
+      ]
+    },
+    {
+      "case": "shared-config-inflight",
+      "checks": [
+        "manual refresh button absent",
+        "external shared-config edit during in-flight C1 query retained only C2 catalog"
+      ],
+      "error": "",
+      "heartbeat": 159,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-acz1mgsa/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-acz1mgsa",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16558
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16560
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16561
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16565
+        }
+      ]
+    },
+    {
+      "case": "codex-login",
+      "checks": [
+        "manual refresh button absent",
+        "login completed, catalog eventually fetched exactly once"
+      ],
+      "error": "",
+      "heartbeat": 222,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-m9u0q7vn/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-m9u0q7vn",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16575
+        },
+        {
+          "kind": "codex-login-start",
+          "pid": 16581
+        },
+        {
+          "kind": "codex-login-success",
+          "pid": 16581
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16582
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16584
+        }
+      ]
+    },
+    {
+      "case": "codex-busy-login",
+      "checks": [
+        "manual refresh button absent",
+        "login completed, catalog eventually fetched exactly once",
+        "busy chat finished and pending login event survived"
+      ],
+      "error": "",
+      "heartbeat": 256,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-ri2ao4hp/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-ri2ao4hp",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16656
+        },
+        {
+          "kind": "codex-login-start",
+          "pid": 16657
+        },
+        {
+          "kind": "codex-offline-chat",
+          "pid": 16660
+        },
+        {
+          "kind": "codex-login-success",
+          "pid": 16657
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16661
+        },
+        {
+          "kind": "codex-offline-chat-done",
+          "pid": 16660
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16663
+        }
+      ]
+    },
+    {
+      "case": "codex-status-timeout",
+      "checks": [
+        "manual refresh button absent",
+        "UI heartbeat continued during bounded auth-status timeout"
+      ],
+      "error": "",
+      "heartbeat": 550,
+      "model_status": "Codex 登录状态检查超时；模型列表未刷新。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-5vx61a3b/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-5vx61a3b",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16676
+        }
+      ]
+    },
+    {
+      "case": "codex-catalog-failure",
+      "checks": [
+        "manual refresh button absent",
+        "catalog failure visible without retry loop"
+      ],
+      "error": "",
+      "heartbeat": 132,
+      "model_status": "CLI 拒绝模型列表查询，请检查登录状态、服务配置或 CLI 版本后重试。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-xtz_nl3z/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-xtz_nl3z",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16689
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16693
+        }
+      ]
+    },
+    {
+      "case": "codex-status-config-change",
+      "checks": [
+        "manual refresh button absent",
+        "changed config superseded a pending stale auth-status check"
+      ],
+      "error": "",
+      "heartbeat": 184,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-gv0q9o1h/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-gv0q9o1h",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16699
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16700
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16702
+        }
+      ]
+    },
+    {
+      "case": "codex-status-login-race",
+      "checks": [
+        "manual refresh button absent",
+        "login completed, catalog eventually fetched exactly once",
+        "successful login superseded an older auth-status failure"
+      ],
+      "error": "",
+      "heartbeat": 225,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-jjpr1aj6/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-jjpr1aj6",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16711
+        },
+        {
+          "kind": "codex-login-start",
+          "pid": 16712
+        },
+        {
+          "kind": "codex-login-success",
+          "pid": 16712
+        },
+        {
+          "kind": "codex-login-status",
+          "pid": 16713
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16717
+        }
+      ]
+    },
+    {
+      "case": "api-chat-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "error": "",
+      "heartbeat": 90,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-i_vjoil0/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-i_vjoil0",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "api-model-list"
+        }
+      ]
+    },
+    {
+      "case": "api-responses-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "error": "",
+      "heartbeat": 87,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-2vik02_5/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-2vik02_5",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "api-model-list"
+        }
+      ]
+    },
+    {
+      "case": "codebuddy-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "error": "",
+      "heartbeat": 93,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-zjg3zhf9/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-zjg3zhf9",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codebuddy-model-list",
+          "pid": 16763
+        }
+      ]
+    },
+    {
+      "case": "backend-switch",
+      "checks": [
+        "manual refresh button absent",
+        "all configured backend switches repopulated catalog once"
+      ],
+      "error": "",
+      "heartbeat": 293,
+      "model_status": "模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。",
+      "ok": true,
+      "user_data": "/private/var/folders/vv/dy3mzc3s4gq9fpd9np24g_xh0000gn/T/issue387-independent-m0fx2bz3/private-profile/home/Library/Application Support/Godot/app_userdata/Issue387IndependentAcceptance-issue387-independent-m0fx2bz3",
+      "returncode": 0,
+      "events": [
+        {
+          "kind": "codex-login-status",
+          "pid": 16770
+        },
+        {
+          "kind": "codex-model-list",
+          "pid": 16772
+        },
+        {
+          "kind": "api-model-list"
+        },
+        {
+          "kind": "api-model-list"
+        },
+        {
+          "kind": "codebuddy-model-list",
+          "pid": 16775
+        }
+      ]
+    }
+  ],
+  "ok": true
+}

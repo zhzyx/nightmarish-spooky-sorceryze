@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "issue483_current_candidate_validation",
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "issue_number": 483,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+  "source_head_at_build": "b21a9cd1ea6c9e922765a60e22cae4e0014a82fd",
+  "source_digest": "79de6c04a97108fed3ac0e78e29dc8a109d2bce135c472e8cd9b1762268187a7",
+  "artifact_sha256": "002ffff7f44bff703f0dbc7034b6b7c835ff0ce7bdc0c12d5b33cdb1036815f0",
+  "source_inputs_checked": 16508,
+  "source_inputs_missing": 0,
+  "source_inputs_changed": 0,
+  "build_options": {
+    "vulkan": "no",
+    "accesskit": "no",
+    "tests": "yes",
+    "debug_symbols": "no"
+  },
+  "validation": {
+    "model_autofetch_cases": 14,
+    "model_autofetch_passed": 14,
+    "model_autofetch_report_sha256": "b3b22881073a1b285a021c7e7b5ce9242e74f2be3562ce19001eac6578e3eae4",
+    "formatted_test_ast_equivalent": true,
+    "ruff_version": "0.17.1",
+    "ruff_format_check_passed": true,
+    "ruff_lint_passed": true
+  },
+  "prior_artifact_evidence": {
+    "artifact_sha256": "34bed8476d2013a20a09d352b15e6e4d9e1eb64d2dafc476954985601e4059f7",
+    "startup_build_packaging_tests_passed": 89,
+    "platform_tests_skipped": 1,
+    "text_server_advanced_independent_shapes": 10000,
+    "text_server_advanced_reads": 57984,
+    "text_server_advanced_mismatches": 0,
+    "scope": "Historical evidence before the test-script-only Ruff formatting change; these checks were not rerun against the new artifact."
+  },
+  "limits": [
+    "TextServerFallback was not compiled and has no runtime acceptance.",
+    "The concurrency check did not assert font rendering or vertical layout.",
+    "The first real GUI restart crash remains a failed historical attempt.",
+    "The original Applications entry and cold-start acceptance remain with Issue #462.",
+    "Signed commit, exact CI, main merge, Issue closure and final delivery are pending."
+  ]
+}

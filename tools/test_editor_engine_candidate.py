@@ -389,7 +389,14 @@ class CandidateTests(unittest.TestCase):
         _, binding = self.journal(result)
         self.assertEqual(binding["initial_launch_inherited_from"], first["binding_path"])
 
-    def built_native_candidate(self):
+    def private_native_home(self):
+        user = type("FixtureUser", (), {"pw_dir": str(self.folder / "private-user")})()
+        home_patch = mock.patch("pwd.getpwuid", return_value=user)
+        home_patch.start()
+        self.addCleanup(home_patch.stop)
+
+    def built_native_candidate(self, local_store=False):
+        self.private_native_home()
         initial_app = self.folder / "Original Native.app"
         initial = initial_app / native.EXECUTABLE_RELATIVE
         initial.parent.mkdir(parents=True)
@@ -411,7 +418,8 @@ class CandidateTests(unittest.TestCase):
         result = candidate.prepare(self.root, 390, "runtime-test", "native-chat", launch_executable=initial)
         target = Path(result["source_root"])
         (target / "bin").mkdir()
-        app = target / "bin/godot.self_update_a.app"
+        output = native.native_output_dir(target) if local_store else target / "bin"
+        app = output / "godot.self_update_a.app"
         native.package_app(target, "/usr/bin/true", result, self.root, app, initial_app)
         manifest = artifact_manifest(
             target,
@@ -435,6 +443,43 @@ class CandidateTests(unittest.TestCase):
         )
         self.assertEqual(result["initial_launch_executable"], str(initial))
         self.assertEqual(self.journal(result)[1]["initial_launch_inherited_from"], first["binding_path"])
+
+    @unittest.skipUnless(sys.platform == "darwin", "real local-store native lineage")
+    def test_local_store_native_candidate_preserves_binding_and_original_entry(self):
+        initial, first, app, manifest = self.built_native_candidate(local_store=True)
+        self.assertEqual(manifest.parent, native.native_output_dir(first["source_root"]))
+        result = candidate.prepare(
+            self.root, 391, "next-request", "new-chat", launch_executable=app / native.EXECUTABLE_RELATIVE
+        )
+        self.assertEqual(result["initial_launch_executable"], str(initial))
+        self.assertEqual(self.journal(result)[1]["initial_launch_inherited_from"], first["binding_path"])
+
+    @unittest.skipUnless(sys.platform == "darwin", "real installed local-store native lineage")
+    def test_installed_local_store_copy_inherits_accepted_external_manifest(self):
+        initial, first, app, _ = self.built_native_candidate(local_store=True)
+        installed = initial.parent.parent.parent
+        shutil.rmtree(installed)
+        native.copy_app(app, installed)
+        result = candidate.prepare(self.root, 391, "next-request", "new-chat", launch_executable=initial)
+        self.assertEqual(result["initial_launch_executable"], str(initial))
+        self.assertEqual(self.journal(result)[1]["initial_launch_inherited_from"], first["binding_path"])
+
+    @unittest.skipUnless(sys.platform == "darwin", "native store must not admit raw artifacts")
+    def test_raw_artifact_cannot_inherit_from_native_store(self):
+        self.private_native_home()
+        _, first, artifact, manifest = self.built_candidate()
+        output = native.prepare_native_output_dir(first["source_root"])
+        moved_artifact = output / artifact.name
+        moved_manifest = Path(str(moved_artifact) + ".candidate.json")
+        shutil.move(artifact, moved_artifact)
+        value = json.loads(manifest.read_text())
+        value["executable"] = str(moved_artifact)
+        moved_manifest.write_text(json.dumps(value))
+        binding_path, binding = self.journal(first)
+        binding["artifact_manifest"] = str(moved_manifest)
+        binding_path.write_text(json.dumps(binding))
+        with self.assertRaisesRegex(candidate.CandidateError, "candidate_inherited_artifact_invalid"):
+            candidate.prepare(self.root, 391, "next-request", "new-chat", launch_executable=moved_artifact)
 
     @unittest.skipUnless(sys.platform == "darwin", "real installed native App lineage")
     def test_installed_exact_native_copy_inherits_external_manifest(self):

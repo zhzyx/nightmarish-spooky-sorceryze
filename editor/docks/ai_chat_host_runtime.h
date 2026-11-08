@@ -144,7 +144,12 @@ public:
 		const String app = native_app_for_executable(executable);
 		const String output = app.is_empty() ? executable : app;
 		const String file = output.get_file();
-		return output.get_base_dir().nocasecmp_to(p_source.path_join("bin").replace("\\", "/").simplify_path()) == 0 && file.begins_with("godot.") && file.contains(".editor.") && (file.contains(".self_update_a.") || file.ends_with(".self_update_a") || file.contains(".self_update_b.") || file.ends_with(".self_update_b"));
+		bool directory_matches = output.get_base_dir().nocasecmp_to(p_source.path_join("bin").replace("\\", "/").simplify_path()) == 0;
+		if (!app.is_empty()) {
+			const String native_directory = GongGongEngineOrigin::native_artifact_directory(p_source);
+			directory_matches = directory_matches || (!native_directory.is_empty() && output.get_base_dir() == native_directory);
+		}
+		return directory_matches && file.begins_with("godot.") && file.contains(".editor.") && (file.contains(".self_update_a.") || file.ends_with(".self_update_a") || file.contains(".self_update_b.") || file.ends_with(".self_update_b"));
 	}
 
 	static bool artifact_matches(const String &p_executable, const String &p_manifest, const Dictionary &p_binding, String &r_error) {

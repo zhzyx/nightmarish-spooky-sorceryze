@@ -261,5 +261,26 @@ TEST_CASE("[Editor][RuntimeConfig] Native App self-update uses only its external
 	CHECK(AIChatHostRuntime::candidate_manifest_path(executable) == app + ".candidate.json");
 	CHECK(AIChatHostRuntime::candidate_manifest_path(executable) != executable + ".candidate.json");
 }
+
+TEST_CASE("[Editor][RuntimeConfig] Native artifact directory is bound to source and OS user") {
+	const String source = "/private/fixture";
+	const String directory = GongGongEngineOrigin::native_artifact_directory(source);
+#ifdef MACOS_ENABLED
+	REQUIRE_FALSE(directory.is_empty());
+	CHECK(directory.get_file() == source.sha256_text());
+	CHECK(directory.get_base_dir().ends_with("/Library/Application Support/gonggong/engine-artifacts"));
+	const String app = directory.path_join("godot.macos.editor.arm64.self_update_b.app");
+	const String executable = app.path_join("Contents/MacOS/Godot");
+	CHECK(AIChatHostRuntime::self_update_path_matches(executable, source));
+	CHECK_FALSE(AIChatHostRuntime::self_update_path_matches(directory.path_join("godot.macos.editor.arm64.self_update_b"), source));
+	CHECK_FALSE(AIChatHostRuntime::self_update_path_matches(executable, "/another/source"));
+	CHECK_FALSE(AIChatHostRuntime::self_update_path_matches(directory.path_join("other.app/Contents/MacOS/Godot"), source));
+	CHECK_FALSE(AIChatHostRuntime::self_update_path_matches(directory.path_join("extra/godot.macos.editor.arm64.self_update_b.app/Contents/MacOS/Godot"), source));
+	CHECK(GongGongEngineOrigin::native_artifact_directory("relative/source").is_empty());
+	CHECK(GongGongEngineOrigin::native_artifact_directory("/private/fixture/../fixture").is_empty());
+#else
+	CHECK(directory.is_empty());
+#endif
+}
 } // namespace TestRuntimeConfig
 #endif

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5e5059d11099a89ba5b30cfa793ce4983a99c216",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d02e2fbb5b2d96ca4269defc1fb88116b98128c9de0e706f7a69dbf9e3d9895d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "action": "validation",
+    "detection_head": "68fe8c9e0d77b5979b724ba483ccfb409e783e50",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "kaiyunxue",
+    "worker": "codex-root-01a1b41f-8907-7f92-a860-1ba585079f4f",
+    "authority_ref": "codex-user-engine-workflow-observation-interrupt-repair-20261107",
+    "evidence": "immutable crash report sha256:5685c2ec3b4ee0b51d5d019e1fdca1aca7320be672eac34640bca169feeaf72d; exact binary UUID and TEXT symbolication verified",
+    "diagnosis": "真实引擎内build_engine成功后，新GUI进程58225在早期dock_ready回执后约一秒崩溃，原父工具轮没有接续。精确同字节符号定位为TextParagraph::get_size和RichTextLabel后台排版；原EditorHelp修复仍在，不把此崩溃误归旧问题。共享shaped RID表的并发访问保护需修正并复验，具体触发条件尚待核验。watchdog收到早期ACK即退出，故此次post-ACK崩溃未自动回退。",
+    "next_action": "原生483进程已退出，root按用户原有中断修复授权临时接管本次候选，保留原失败binary、manifest、history和resume journal；在同Issue范围修正文本共享表与重启接续就绪边界，独立审查及实际构建复验后恢复原manual7继续模型列表业务、只读子验收和真实complete_delivery。不得手改journal伪造成功或把初次restart算通过。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-07T17:31:55.188802+00:00",
+    "attempted": "本地启动smokes成功；真实GUI初次重启失败；匹配Mach-O UUID与TEXT逐字节后的符号定位完成；未修改原聊天历史或续跑记录。",
+    "repair_owner": "root负责临时接手与watchdog，runtime_entry_fix负责文本并发源修；最终独立验证另派未实施者",
+    "continuable": "其他已授权发布不受影响；483真实续聊待修复后恢复，当前不能记作流程闭环"
+  },
+  "occurred_at": "2026-11-07T17:42:12.446669+00:00",
+  "sha256": "52ed0c3522275402a01ff5f9777242f0729fa1fe8347b970a12436a932fccf33"
+}
