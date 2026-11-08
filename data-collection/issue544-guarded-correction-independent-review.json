@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "issue": 544,
+  "reviewed_at_utc": "2026-11-08T04:00:42.396237+00:00",
+  "reviewer": "artifact_consumer_audit independent reviewer",
+  "verdict": "pass",
+  "blocking_findings": [],
+  "guard": {
+    "sha256": "3b67977a59018a90eb95bfa9ec2e952ab139d2a99fd06aae55e524705a6e1ae8",
+    "product_source_sha256": {
+      "customizations/components/issue-workorders/kuafu_incident.py": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+      "customizations/components/issue-workorders/test_kuafu_incident.py": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777"
+    },
+    "target_repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "static_assessment": [
+      "Every subprocess result is checked synchronously; a nonzero return code raises CalledProcessError.",
+      "Malformed or wrong-shaped JSON, pending/failed checks, wrong PR head/state, first/last main mismatch, writer inspection identity/base rejection, source hash mismatch and exceptions stop publish before its final mutation.",
+      "The sole production mutation is a normal gh pr merge --merge --match-head-commit inside publish after the guarded checks; no admin/force flag or second merge outlet exists in this script.",
+      "The except block records stopped and re-raises; it does not return a swallowed error or issue another merge."
+    ],
+    "independent_mock_cases": [
+      {
+        "case": "exit7_read_pr",
+        "passed": true,
+        "mocked_cli_calls": 1,
+        "merge_calls": 0,
+        "failure": "CalledProcessError",
+        "audit_sha256": "842568016f92d47c432b374440674e864ca727861bba84a3c03b25aa7d8867ef"
+      },
+      {
+        "case": "exit7_read_main",
+        "passed": true,
+        "mocked_cli_calls": 2,
+        "merge_calls": 0,
+        "failure": "CalledProcessError",
+        "audit_sha256": "df9b46550a6f66632299b1001e4930728c12f7e186baf6074871a8796c4269d6"
+      },
+      {
+        "case": "exit7_verified_writer_inspect",
+        "passed": true,
+        "mocked_cli_calls": 3,
+        "merge_calls": 0,
+        "failure": "CalledProcessError",
+        "audit_sha256": "84c967ab32e36ec57389a811a743b90aacdab795f3f973ebe422d70d2f3ff6a7"
+      },
+      {
+        "case": "exit7_final_main_read",
+        "passed": true,
+        "mocked_cli_calls": 4,
+        "merge_calls": 0,
+        "failure": "CalledProcessError",
+        "audit_sha256": "d02bc03346396a81d0f45446270b197f37d67480fe344c90d812e372b966184d"
+      },
+      {
+        "case": "exit7_merge",
+        "passed": true,
+        "mocked_cli_calls": 5,
+        "merge_calls": 1,
+        "failure": "CalledProcessError",
+        "audit_sha256": "e5a27de9abf3f3a34c306d58d3d7d960d63e0d848f1b9c57e2a9561d426f1784"
+      },
+      {
+        "case": "pr_invalid_json",
+        "passed": true,
+        "mocked_cli_calls": 1,
+        "merge_calls": 0,
+        "failure": "JSONDecodeError",
+        "audit_sha256": "f947b4b3d7f1c3f0e64dd207d549e1903c75e82746eee5c426dfd378e4a85681"
+      },
+      {
+        "case": "inspect_invalid_json",
+        "passed": true,
+        "mocked_cli_calls": 3,
+        "merge_calls": 0,
+        "failure": "JSONDecodeError",
+        "audit_sha256": "ee7861d8504c3600382c51b64bd437c01a4112a1cd157a3ca416c168b4777957"
+      },
+      {
+        "case": "pr_null_json",
+        "passed": true,
+        "mocked_cli_calls": 1,
+        "merge_calls": 0,
+        "failure": "TypeError",
+        "audit_sha256": "61adac7154fd3b39c7b207bc6d7e92268a09b6542a374e9df0abe503326b758f"
+      },
+      {
+        "case": "pending_checks",
+        "passed": true,
+        "mocked_cli_calls": 1,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "a235290b7b7c4a89a4fd45f6ec7c1211804011df5e0c4296649f37ec63411320"
+      },
+      {
+        "case": "wrong_head",
+        "passed": true,
+        "mocked_cli_calls": 1,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "bdbadb311868bdf9bb978505f144829b28b31ec879574b2d94f180d42b3a51c1"
+      },
+      {
+        "case": "initial_main_drift",
+        "passed": true,
+        "mocked_cli_calls": 2,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "4ffa5875dd527a3655bf9c4cf0af3bbe94f97f4b87ad8065c46613cefb895c6a"
+      },
+      {
+        "case": "final_main_drift",
+        "passed": true,
+        "mocked_cli_calls": 4,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "f3715d5ad62117ab4584dccae389f1a98ff6bfaa53e8ca694bcbbe22cebe9279"
+      },
+      {
+        "case": "inspect_rejected",
+        "passed": true,
+        "mocked_cli_calls": 3,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "39ad27c5e023ec7f870de10bcb387d743dcad15f8f18ce29a592bcdd8c5cfb69"
+      },
+      {
+        "case": "inspect_wrong_issue",
+        "passed": true,
+        "mocked_cli_calls": 3,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "6b78944ccc1b2508e272d0bf5333505724e1a668231b413ec0e105cf5f1ceea5"
+      },
+      {
+        "case": "inspect_timeout",
+        "passed": true,
+        "mocked_cli_calls": 3,
+        "merge_calls": 0,
+        "failure": "TimeoutExpired",
+        "audit_sha256": "3fad4c48fd147668db0c1f60227fbe5e2f40663d3b7e8c2f26ad676186b10b01"
+      },
+      {
+        "case": "product_hash_mismatch",
+        "passed": true,
+        "mocked_cli_calls": 0,
+        "merge_calls": 0,
+        "failure": "ValueError",
+        "audit_sha256": "86214e2e0aa67df7a23be52a7f9f1a0c407bcfc3c5730883f2fc1dd75a6d8221"
+      },
+      {
+        "case": "valid",
+        "passed": true,
+        "mocked_cli_calls": 5,
+        "merge_calls": 1,
+        "failure": null,
+        "audit_sha256": "2723d3fd8057bfd8cced48472aa6b162010aa478532cc1c86c2468a4e15449c8"
+      }
+    ],
+    "independent_mock_passed": 17,
+    "all_subprocess_run_calls_mocked": true,
+    "real_github_or_merge_executed": false
+  },
+  "public_copy_review": {
+    "public_path": "data-collection/issue544-postmerge-combination-independent-review.json",
+    "public_sha256": "c0d88bb912fdc39939bf14db7aa84a3ac423af9be7b476a48a070cb8fc6312d4",
+    "private_original_sha256": "c3bb808747757117d1c059a43ce0289ec0b99cc63b45927729c3b4962d5fbb14",
+    "exactly_allowed_private_path_removals_plus_publication_note": true,
+    "findings_scope_verdict_source_hashes_unchanged": true,
+    "independently_run_regression_36_unchanged": true,
+    "fresh_case_count_3_and_context_receipt_hashes_unchanged": true,
+    "owned_path_count_13_and_hashes_unchanged": true
+  },
+  "author_mock_evidence_read_not_rerun_verbatim": {
+    "sha256": "7e00fbaf253c4ed62ddb1abc68cf7938cdee9a84ef4a2693c46fef8c17645aab",
+    "author_cases": 7
+  },
+  "limits": [
+    "This is a review of the fixed private script and fully mocked control flow, not evidence that a real corrective PR was inspected or merged.",
+    "The final main read and the remote merge are not an atomic compare-and-swap on base. A main change after the final read is outside this script's local observation window; --match-head-commit pins PR head only.",
+    "Real branch protection, writer inspection authority and GitHub merge behavior were not mocked into production proof.",
+    "A nonzero merge result is raised; an ambiguous remote mutation still requires authoritative readback before any retry.",
+    "This postmerge correction does not retroactively authorize PR #546 or turn its failed premerge base check into a pass.",
+    "No product source, original review report, old receipt, Issue state or production publication was changed. Only this private review and synthetic audit fixtures were written."
+  ],
+  "publication_copy": {
+    "private_original_sha256": "95914663e37ff0380bc782181f2d9a9bb5b587b234153b9ce6c96e5bc6e67f9f",
+    "change": "Private host-script/log paths removed and public report path made repository-relative; findings and actual mock results unchanged."
+  }
+}

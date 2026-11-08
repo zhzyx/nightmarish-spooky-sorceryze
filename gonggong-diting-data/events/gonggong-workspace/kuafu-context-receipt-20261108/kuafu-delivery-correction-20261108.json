@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-delivery-correction-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-context-receipt-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T03:59:57.010077+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 544,
+    "operator": "kaiyunxue",
+    "worker": "codex-kuafu-delivery-correction",
+    "incident": "e56f03168e2edd917601d0d41120a3191e93658c4a137bd7a7794741ffd7af1f",
+    "context_sha256": "0f3bc71e56978acd309980bcaea50fa960a243a34a3df1d0d20ebbd085e77e08",
+    "original_pr": 546,
+    "original_premerge_result": "failed guard exit1 followed by an unintended subsequent normal merge",
+    "premerge_step_retroactively_passed": false,
+    "actual_merged_main": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "independent_combination_validation": {
+      "full_kuafu_tests_passed": 36,
+      "three_fresh_context_paths_passed": true,
+      "scope": "postmerge compatibility and actual local behavior, not premerge authorization"
+    },
+    "evidence_file": "data-collection/issue544-delivery-correction-20261108.json",
+    "evidence_file_sha256": "6ff73a52d72f45c07308a67669ac81bb162f1833a1f730d129c59494f9b957c4",
+    "next_action": "Normal evidence-only corrective PR and exact CI; one synchronous fail-fast guarded final merge; keep544 open until authoritative corrective-main and receive readback.",
+    "old_reports_and_receipts_changed": false,
+    "business_parent_accepted": false
+  },
+  "sha256": "d969b4b43e55729e6dce4dd6dd57f6c219c143e3eb28240d9d91cb2f55127151"
+}

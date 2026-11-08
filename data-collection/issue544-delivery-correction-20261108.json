@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "correction_and_postmerge_validation",
+  "request_id": "kuafu-context-receipt-20261108",
+  "issue_number": 544,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "original_delivery_deviation": {
+    "pull_request": 546,
+    "source_candidate": "793f7ca53b004844012bc631310e26d8a806a4d5",
+    "signed_head": "e8ef08ba04fbab1b89c13f2ae8f0834ce193df6f",
+    "checked_base": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "observed_premerge_main": "73d6b25d8fd4aba27f01df2a8a2c74573999372b",
+    "guard_result": {
+      "chunk_id": "4a820c",
+      "exit_code": 1,
+      "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 3, in <module>\nAssertionError\n"
+    },
+    "actual_merge": {
+      "command": "gh pr merge 546 --repo zhzyx/nightmarish-spooky-sorceryze --merge --match-head-commit e8ef08ba04fbab1b89c13f2ae8f0834ce193df6f",
+      "exit_code": 0,
+      "merge_commit": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+      "merged_at": "2026-11-08T03:49:05Z"
+    },
+    "cause": "Outer functions.exec printed a failed tool result but did not inspect exit_code/abort before dispatching the next merge tool call. This was the executor orchestration error, not a passed guard.",
+    "premerge_step_passed": false,
+    "failure_pack_sha256": "d177e1a7b9e16dcb513da5443bdb63f47d36b29e6b7fa4f41daec95e4574360d",
+    "original_evidence_unchanged": true
+  },
+  "real_delivery_incident": {
+    "id": "e56f03168e2edd917601d0d41120a3191e93658c4a137bd7a7794741ffd7af1f",
+    "action": "delivery",
+    "actual_role_context_bytes": 6118,
+    "context_sha256": "0f3bc71e56978acd309980bcaea50fa960a243a34a3df1d0d20ebbd085e77e08",
+    "received_sha256": "a921d99d464c3f7ae14eecd7961862e2d1a9649d6b5275d9fb91ec932a240ff1",
+    "assessment_event_sha256": "f9f14434aba649472bd3ea47ea6ce848b7f05a4ce01d9dce6751899d6bf89159",
+    "assessment_timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544#issuecomment-6716947577",
+    "consumption": null
+  },
+  "actual_combination_validation": {
+    "main": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "upstream_paths": 27,
+    "owned_paths": 13,
+    "product_source_hashes": {
+      "customizations/components/issue-workorders/kuafu_incident.py": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+      "customizations/components/issue-workorders/test_kuafu_incident.py": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777"
+    },
+    "author_full_kuafu_tests": {
+      "passed": 36,
+      "log_sha256": "6ed89fbe95d3b87900d3107ec8670b517abf5462e465fd2ff6ca58499f514ee7"
+    },
+    "independently_executed": {
+      "full_kuafu_passed": 36,
+      "fresh_context_cases": 3,
+      "review_path": "data-collection/issue544-postmerge-combination-independent-review.json",
+      "review_sha256": "c0d88bb912fdc39939bf14db7aa84a3ac423af9be7b476a48a070cb8fc6312d4"
+    },
+    "no_retroactive_premerge_pass": true
+  },
+  "corrective_delivery_plan": {
+    "changes": "Append evidence and review only, no product code or old report/receipt rewrite",
+    "base": "actual combined main",
+    "gate": "Normal source gate/writer, exact signed-head applicable CI, authoritative main/Issue readback",
+    "final_mutation_control": "Single synchronous guarded Python process; explicit return-code failure and every failed head/CI/main/inspect predicate raises before merge; final main is re-read immediately before mutation",
+    "guard_source_sha256": "3b67977a59018a90eb95bfa9ec2e952ab139d2a99fd06aae55e524705a6e1ae8",
+    "guard_control_flow_checks": {
+      "kind": "private mocked CLI control-flow regression; no production API or mutation",
+      "source": "guarded_merge.py",
+      "cases": [
+        {
+          "case": "command_exit7",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "CalledProcessError"
+        },
+        {
+          "case": "wrong_head",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "ValueError"
+        },
+        {
+          "case": "pending_checks",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "ValueError"
+        },
+        {
+          "case": "initial_main_drift",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "ValueError"
+        },
+        {
+          "case": "handoff_rejected",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "ValueError"
+        },
+        {
+          "case": "final_main_drift",
+          "passed": true,
+          "merge_calls": 0,
+          "failure": "ValueError"
+        },
+        {
+          "case": "valid",
+          "passed": true,
+          "merge_calls": 1,
+          "failure": null
+        }
+      ],
+      "passed": 7,
+      "all_cli_calls_mocked": true
+    },
+    "base_drift_policy": "Stop before mutation; integrate current main, reissue and wait for exact new CI. No overlap-only exception."
+  },
+  "limits": [
+    "These are postmerge observations and actual local tests, not retroactive premerge authorization or signing.",
+    "The corrective PR and its exact CI/main receipt are separate pending actions at record time.",
+    "Issue544 remains OPEN until corrective main and normal receive readback; original business Issues are not closed by this evidence."
+  ]
+}

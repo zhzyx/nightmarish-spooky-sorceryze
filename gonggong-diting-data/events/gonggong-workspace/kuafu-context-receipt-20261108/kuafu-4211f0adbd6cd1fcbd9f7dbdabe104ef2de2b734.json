@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4211f0adbd6cd1fcbd9f7dbdabe104ef2de2b734",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-context-receipt-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e56f03168e2edd917601d0d41120a3191e93658c4a137bd7a7794741ffd7af1f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "action": "delivery",
+    "detection_head": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "context_sha256": "0f3bc71e56978acd309980bcaea50fa960a243a34a3df1d0d20ebbd085e77e08",
+    "operator": "kaiyunxue",
+    "worker": "codex-kuafu-delivery-correction",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/544",
+    "evidence": "PR546 actual premerge tool chunk4a820c exit1; premerge main73d6 versus checkedbasefa638; normal merge nevertheless createded65 at03:49:05Z. Original snapshots preserved with deviation pack SHA256 d177e1a7b9e16dcb513da5443bdb63f47d36b29e6b7fa4f41daec95e4574360d.",
+    "diagnosis": "The executor failed to branch on the failed guard tool result and dispatched the next mutation. This was an avoidable orchestration error; PR546 premerge integration/resigning was not passed. No force/admin/history rewrite occurred. Postmerge source equivalence and fresh context checks cannot retroactively validate that step.",
+    "next_action": "Keep544 OPEN. Submit evidence-only corrective PR from actual combined main with independent36-case and three-fresh-alias verification. Require a single fail-fast guarded publisher for all exact CI/head/main checks plus merge; any returncode or base drift stops before mutation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:53:33.778767+00:00",
+    "attempted": "Actual ed65 complete Kuafu36 passed; independent reviewer repeated36 and three fresh canonical/link/macOS-var context receipts.27upstream no conflict and13owned paths exactly match signed candidate.",
+    "repair_owner": "codex-kuafu-delivery-correction",
+    "continuable": "Corrective delivery is in progress; no closure or retrospective premerge pass is claimed"
+  },
+  "occurred_at": "2026-11-08T03:55:11.553900+00:00",
+  "sha256": "f9f14434aba649472bd3ea47ea6ce848b7f05a4ce01d9dce6751899d6bf89159"
+}
