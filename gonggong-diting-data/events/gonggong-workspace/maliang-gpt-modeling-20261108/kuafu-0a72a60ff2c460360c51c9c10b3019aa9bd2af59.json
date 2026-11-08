@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0a72a60ff2c460360c51c9c10b3019aa9bd2af59",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a7182b765b6370108e4fab8c7eb4dd3007c818734a77fe6400c530f3799b8ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "validation",
+    "detection_head": "3a596e24bff2e7c02ad8e55bbfc062916880de9e",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-ci-script-mode-correction.json",
+    "diagnosis": "Exact-head PR577 CI failed only shebang/executable mode for the calibration deriver. Source bytes291ec78ac remain unchanged; Git100755 fixes intended portable direct invocation. All other PR static checks passed.",
+    "next_action": "Formally reissue corrected signed candidate, supersede unmerged577, verify every new exact-head check and main readback; continue human appearance revision without closing543.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:38:55.215921+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T16:07:48.342930+00:00",
+  "sha256": "85ef8cfa7be142cbfddfcc608ac3efd4a0e423268291104bad0adbf64ba39116"
+}
