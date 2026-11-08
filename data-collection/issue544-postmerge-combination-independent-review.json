@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "issue": 544,
+  "review_type": "independent_postmerge_combination_validation",
+  "reviewed_at_utc": "2026-11-08T03:54:18.389548+00:00",
+  "reviewer": "artifact_consumer_audit independent subagent; not implementation author",
+  "verdict": "pass",
+  "blocking_findings": [],
+  "scope": {
+    "merged_commit": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "merged_parents": [
+      "73d6b25d8fd4aba27f01df2a8a2c74573999372b",
+      "e8ef08ba04fbab1b89c13f2ae8f0834ce193df6f"
+    ],
+    "previous_base": "fa6386c6e566c91ecf729ff0e4f658513693e7e0",
+    "advanced_main": "73d6b25d8fd4aba27f01df2a8a2c74573999372b",
+    "signed_candidate": "e8ef08ba04fbab1b89c13f2ae8f0834ce193df6f",
+    "reviewed_source_sha256": {
+      "customizations/components/issue-workorders/kuafu_incident.py": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+      "customizations/components/issue-workorders/test_kuafu_incident.py": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777"
+    },
+    "clean_author_workspace_before_and_after": true,
+    "source_hashes_rechecked_after_tests": true
+  },
+  "independently_run_regression": {
+    "tests_run": 36,
+    "passed": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": [
+      "test_kuafu_github",
+      "test_kuafu_incident"
+    ],
+    "log_sha256": "b08deb6f897157c0102c68edee9b709c6f6f91b2a93d91987c1fa1169a85fd21",
+    "default_remote_github_guard": "work_items.gh, kuafu_github.gh, real GitHub get/pages/post and gh/networking-git subprocess commands denied; individual unit fixtures use their own local mocks",
+    "unexpected_remote_calls": []
+  },
+  "fresh_context_validation": {
+    "entrypoint": "current merged kuafu_incident.bind_context with an independent complete private framework snapshot; production main CLI authentication flow not invoked",
+    "framework_package_lock_sha256": "ddaf84e4f21a2ed5c6db7aee9f4d8dbd6b2e68410159ab448e0fb5132fb13d7a",
+    "cases": [
+      {
+        "case": "canonical",
+        "fresh_incident_folder": true,
+        "mandate_preexisted": false,
+        "receipt_preexisted": false,
+        "context_nonempty_utf8": true,
+        "kuafu_heading_present": true,
+        "host_mandate_present": true,
+        "request_id_present": true,
+        "context_sha256": "b794b2b05d3becf1a09bc3f9675066c8830fc61905f0b7689f1f0f61a0001717",
+        "receipt_sha256": "4e649356b130207a7bf4b0c27e60126ba3602d1cbc029641830eb44bb4fbe9d2",
+        "mandate_sha256": "2e189e363a81602e85d7fe72c573d59c1e9edf390826a5535f2cade6f02bab71",
+        "binding_matches_received_bytes": true,
+        "received_context_sha256_matches_actual_context": true,
+        "context_length_bytes": 5994
+      },
+      {
+        "case": "explicit_directory_symlink",
+        "fresh_incident_folder": true,
+        "mandate_preexisted": false,
+        "receipt_preexisted": false,
+        "context_nonempty_utf8": true,
+        "kuafu_heading_present": true,
+        "host_mandate_present": true,
+        "request_id_present": true,
+        "context_sha256": "b794b2b05d3becf1a09bc3f9675066c8830fc61905f0b7689f1f0f61a0001717",
+        "receipt_sha256": "4e649356b130207a7bf4b0c27e60126ba3602d1cbc029641830eb44bb4fbe9d2",
+        "mandate_sha256": "2e189e363a81602e85d7fe72c573d59c1e9edf390826a5535f2cade6f02bab71",
+        "binding_matches_received_bytes": true,
+        "received_context_sha256_matches_actual_context": true,
+        "context_length_bytes": 5994
+      },
+      {
+        "case": "macos_var_alias",
+        "fresh_incident_folder": true,
+        "mandate_preexisted": false,
+        "receipt_preexisted": false,
+        "context_nonempty_utf8": true,
+        "kuafu_heading_present": true,
+        "host_mandate_present": true,
+        "request_id_present": true,
+        "context_sha256": "b794b2b05d3becf1a09bc3f9675066c8830fc61905f0b7689f1f0f61a0001717",
+        "receipt_sha256": "4e649356b130207a7bf4b0c27e60126ba3602d1cbc029641830eb44bb4fbe9d2",
+        "mandate_sha256": "2e189e363a81602e85d7fe72c573d59c1e9edf390826a5535f2cade6f02bab71",
+        "binding_matches_received_bytes": true,
+        "received_context_sha256_matches_actual_context": true,
+        "context_length_bytes": 5994
+      }
+    ],
+    "all_three_context_bytes_identical": true,
+    "all_three_received_bytes_identical": true,
+    "same_mandate_in_three_separate_fresh_incident_folders": true
+  },
+  "upstream_combination_assessment": {
+    "upstream_changed_path_count": 27,
+    "upstream_changed_paths": [
+      ".gitattributes",
+      "data-collection/maliang-gpt-modeling-20261108-builder-review.json",
+      "data-collection/maliang-gpt-modeling-20261108-host-snapshot.json",
+      "data-collection/maliang-gpt-modeling-20261108-independent-review.json",
+      "data-collection/maliang-gpt-modeling-20261108-integrated-validation.json",
+      "data-collection/maliang-gpt-modeling-20261108-main-integration-review.json",
+      "data-collection/maliang-gpt-modeling-20261108-request.json",
+      "data-collection/maliang-gpt-modeling-20261108-validation-event.json",
+      "data-collection/maliang-gpt-modeling-20261108-validation.json",
+      "design-docs/maliang-gpt-modeling-20261108.md",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-240d292584828cec88094b8c59051470349b120d.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-6626fe478e8452b4e4997ef2ba83e353ef4bcd3a.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/maliang-gpt-modeling-20261108-request.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/maliang-gpt-modeling-20261108-validation.json",
+      "samples/ainative-workbench/README.md",
+      "samples/ainative-workbench/addons/ainative/modeling_builder.gd",
+      "samples/ainative-workbench/addons/ainative/parameter_form.gd",
+      "samples/ainative-workbench/addons/ainative/workbench.gd",
+      "samples/ainative-workbench/modeling_builder_acceptance.gd",
+      "samples/ainative-workbench/modeling_ui_acceptance.gd",
+      "tests/editor/ainative_builtin.gd",
+      "tests/editor/modeling_cli_acceptance.gd",
+      "tests/editor/run_modeling_cli.py",
+      "tools/ainative/generation_service.py",
+      "tools/ainative/modeling_provider.py",
+      "tools/ainative/test_modeling_provider.py",
+      "tools/ainative/test_modeling_service.py"
+    ],
+    "overlapping_owned_write_paths": [],
+    "framework_tree_ids": {
+      "fa6386c6e566c91ecf729ff0e4f658513693e7e0": "7bd7ca67d342d9ddcc3062927c838ddf5698d564",
+      "73d6b25d8fd4aba27f01df2a8a2c74573999372b": "7bd7ca67d342d9ddcc3062927c838ddf5698d564",
+      "e8ef08ba04fbab1b89c13f2ae8f0834ce193df6f": "7bd7ca67d342d9ddcc3062927c838ddf5698d564",
+      "ed65c907e7125fffef5ea87b92f3ab8aff1d401b": "7bd7ca67d342d9ddcc3062927c838ddf5698d564"
+    },
+    "framework_bytes_unchanged": true,
+    "framework_role_assembly_and_issue_entrypoint_and_workflow_paths_changed": [],
+    "gitattributes_change": "Only one exact Issue #543 snapshot path gains -text whitespace=cr-at-eol; no wildcard or existing rule changes. framework/** -text and LF rules for the two Python source files are unchanged.",
+    "new_exact_attribute_path": "data-collection/maliang-gpt-modeling-20261108-host-snapshot.json",
+    "direct_kuafu_interface_conflicts_found": false,
+    "owned_paths_compared_to_signed_candidate": [
+      {
+        "path": "customizations/components/issue-workorders/kuafu_incident.py",
+        "signed_sha256": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+        "merged_sha256": "d6691c724812374fc8d944a0541ce0355b292cc0dfd4491c919d9b266a8c7202",
+        "unchanged": true
+      },
+      {
+        "path": "customizations/components/issue-workorders/test_kuafu_incident.py",
+        "signed_sha256": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777",
+        "merged_sha256": "a834f11ee03b99187d759ba4807691a9917041c42f71e47c300dfaa062e4e777",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/issue-events/05536f69e5988ab9a1853c0400f45e3cbc28865c1cab6f535a4934f05bb53de5/envelope.json",
+        "signed_sha256": "d8abdf7befa3a567383774079f48ad870ef971202269bdfdf72ac44bd1acb417",
+        "merged_sha256": "d8abdf7befa3a567383774079f48ad870ef971202269bdfdf72ac44bd1acb417",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/issue-events/05536f69e5988ab9a1853c0400f45e3cbc28865c1cab6f535a4934f05bb53de5/receipt.json",
+        "signed_sha256": "0e47884f7d6e0d4bfc9ec1c89add8fa6978d48d9eb2fd9fd807c3b3a850f61ae",
+        "merged_sha256": "0e47884f7d6e0d4bfc9ec1c89add8fa6978d48d9eb2fd9fd807c3b3a850f61ae",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/issue544-kuafu-context-acceptance.json",
+        "signed_sha256": "defdc494a1472ce9a105ee7ecaaa862a11e22c71914a33638c290b82d4a0beca",
+        "merged_sha256": "defdc494a1472ce9a105ee7ecaaa862a11e22c71914a33638c290b82d4a0beca",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/issue544-kuafu-context-independent-review.json",
+        "signed_sha256": "ec73522e2b322ee54f456dc558a96c46e48ac0693d03f2d31ea819fdd97fcaf2",
+        "merged_sha256": "ec73522e2b322ee54f456dc558a96c46e48ac0693d03f2d31ea819fdd97fcaf2",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/requests/kuafu-context-receipt-20261108/1f60bc79-cb64-4a06-be4f-0bda0d6e1439.json",
+        "signed_sha256": "c2ca639ee68b9a562d9878c3ba5f6e119d0d791d5e26e907b44ea3978d3a064e",
+        "merged_sha256": "c2ca639ee68b9a562d9878c3ba5f6e119d0d791d5e26e907b44ea3978d3a064e",
+        "unchanged": true
+      },
+      {
+        "path": "data-collection/requests/kuafu-context-receipt-20261108/7f6b9015-960b-4a80-815e-3ba3788b1753.json",
+        "signed_sha256": "bb59b662e7cee3b59030e238ac64ea7f8248b6d035d26f02ceb16594da20e662",
+        "merged_sha256": "bb59b662e7cee3b59030e238ac64ea7f8248b6d035d26f02ceb16594da20e662",
+        "unchanged": true
+      },
+      {
+        "path": "design-docs/kuafu-context-receipt-20261108.md",
+        "signed_sha256": "efb3ec755676cf37a371e0ec6d34f0d4b2270a75f1b1e5c8bb4b5a37947b0088",
+        "merged_sha256": "efb3ec755676cf37a371e0ec6d34f0d4b2270a75f1b1e5c8bb4b5a37947b0088",
+        "unchanged": true
+      },
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/github-05536f69e5988ab9a1853c0400f45e3cbc28865c1cab6f535a4934f05bb53de5.json",
+        "signed_sha256": "fe5b0adc2c3b7e30484d0d5d49ff353561bb437837dc9879eafd3fc81c1ca20c",
+        "merged_sha256": "fe5b0adc2c3b7e30484d0d5d49ff353561bb437837dc9879eafd3fc81c1ca20c",
+        "unchanged": true
+      },
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-5583aca8a0bee2656d5db5b4cb1b575bf8506a87.json",
+        "signed_sha256": "39f0239bfed55b674701646b48f27fb6a99da3b2356ff4569ebcdd3d50441d34",
+        "merged_sha256": "39f0239bfed55b674701646b48f27fb6a99da3b2356ff4569ebcdd3d50441d34",
+        "unchanged": true
+      },
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-context-correction-20261108.json",
+        "signed_sha256": "d3dc925cff89cf91dc130e48b941ced3725ec2bfead6ce1e8d1d99279e03d3b3",
+        "merged_sha256": "d3dc925cff89cf91dc130e48b941ced3725ec2bfead6ce1e8d1d99279e03d3b3",
+        "unchanged": true
+      },
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-context-request-20261108.json",
+        "signed_sha256": "5ea2edaee6da4c4f79b5e58a88adbbb3d858c9a279a804fc530e823bed9a73a3",
+        "merged_sha256": "5ea2edaee6da4c4f79b5e58a88adbbb3d858c9a279a804fc530e823bed9a73a3",
+        "unchanged": true
+      }
+    ]
+  },
+  "runtime": {
+    "platform": "darwin",
+    "platform_release": "24.3.0",
+    "machine": "arm64",
+    "python_version": "3.12.16",
+    "node_version": "v24.22.1"
+  },
+  "preserved_prior_evidence": {
+    "original_independent_review_sha256": "3c8137e3aa5f137f16eb7b43377069db9fba1f3d252216fb3a1a13d4f9b4e932",
+    "premerge_handoff_sha256": "4f395a2b2c573b50e8623292e7d5c97b7e91c0f0282ac5ce42eef942d1e24190"
+  },
+  "limits": [
+    "This is postmerge compatibility and local behavior evidence for ed65c907, not a premerge authorization, re-signing, or premerge gate pass.",
+    "No merged CI result, live GitHub authorization, remote deployment, actual production intake, Issue acceptance or closure is asserted.",
+    "The prior base-advance assertion failure remains a real premerge failure; this validation does not retroactively cure it.",
+    "No product source, module CLI guard, author-tree file, Issue state, production receipt, application GUI, or application process was changed.",
+    "Only independent private fixtures, logs and this report were written. Issue #544 closure remains outside this review."
+  ],
+  "publication_copy": {
+    "private_original_sha256": "c3bb808747757117d1c059a43ce0289ec0b99cc63b45927729c3b4962d5fbb14",
+    "change": "Only private absolute paths removed; independent findings, scope, source hashes and actual results unchanged."
+  }
+}
