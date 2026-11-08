@@ -155,6 +155,14 @@ class EditorInstructionClient:
     def status(self, request_id):
         return self.request({"protocol_version": 1, "kind": "status", "request_id": request_id})
 
+    def retry_delivery(self, expected, request_id):
+        return self.request({
+            "protocol_version": 1,
+            "kind": "retry-delivery",
+            "request_id": request_id,
+            "expected": expected,
+        })
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -171,6 +179,11 @@ def main():
     submit.add_argument("--text-file", required=True, help="UTF-8 file or - for stdin, at most 8192 bytes")
     submit.add_argument("--expected", required=True, type=Path, help="Previously read context JSON file")
     submit.add_argument("--request-id", default=None)
+    retry = commands.add_parser(
+        "retry-delivery", help="Retry only the original verified pending activation; never submit new acceptance"
+    )
+    retry.add_argument("--expected", required=True, type=Path, help="Fresh context from this running parent")
+    retry.add_argument("--request-id", default=None)
     status = commands.add_parser("status", help="Recover a receipt without repeating submission")
     status.add_argument("request_id")
     args = parser.parse_args()
@@ -191,6 +204,13 @@ def main():
                 result = client.context()
         elif args.command == "status":
             result = client.status(args.request_id)
+        elif args.command == "retry-delivery":
+            if args.expected.stat().st_size > 16384:
+                raise InstructionClientError("invalid_expected_context")
+            expected = json.loads(args.expected.read_text(encoding="utf-8"))
+            if isinstance(expected, dict) and "context" in expected:
+                expected = expected["context"]
+            result = client.retry_delivery(expected, args.request_id or uuid.uuid4().hex)
         else:
             if args.text_file == "-":
                 data = sys.stdin.buffer.read(8193)

@@ -793,7 +793,7 @@ bool AIChatEditorControl::_persist_routes() const {
 		record["fingerprint"] = entry.value.fingerprint;
 		record["updated"] = entry.value.updated;
 		// Persist outcome metadata, never composer text, prior values or credentials.
-		for (const String &field : { "ok", "error", "routing_status", "routed", "route", "request_id", "source", "idempotency_window_seconds", "instruction_submitted", "business_completed" }) {
+		for (const String &field : { "ok", "error", "routing_status", "routed", "route", "request_id", "source", "idempotency_window_seconds", "instruction_submitted", "business_completed", "delivery_retry_started", "completion_verified", "delivery_stage", "worker_receipt_sha256" }) {
 			if (entry.value.result.has(field)) {
 				summary[field] = entry.value.result[field];
 			}
@@ -880,7 +880,7 @@ void AIChatEditorControl::_restore_routes() {
 			result["ok"] = false;
 			result["routing_status"] = "cancelled";
 			result["error"] = "interrupted_by_editor_restart";
-		} else if (status == "execution_interrupted") {
+		} else if (status == "execution_interrupted" || (status == "running" && bool(result.get("delivery_retry_started", false)))) {
 			// The effect may have happened before the final receipt reached disk.
 			// Preserve uncertainty and never replay or claim it was cancelled.
 			result["ok"] = false;
@@ -944,6 +944,32 @@ Dictionary AIChatEditorControl::route_status(const String &p_request_id, const S
 	return result;
 }
 
+bool AIChatEditorControl::finish_delivery_retry_route(const Dictionary &p_message, const Dictionary &p_result) {
+	const String key = "desktop.codex:" + String(p_message.get("request_id", ""));
+	RoutedRequest *request = routed_requests.getptr(key);
+	if (!request || !bool(request->result.get("delivery_retry_started", false))) {
+		return false;
+	}
+	Dictionary result = p_result.duplicate(true);
+	result["request_id"] = p_message["request_id"];
+	result["source"] = "desktop.codex";
+	result["route"] = "engine_control";
+	result["routed"] = true;
+	result["delivery_retry_started"] = true;
+	result["routing_status"] = bool(result.get("ok", false)) ? "completed" : "failed";
+	request->result = result;
+	request->updated = route_clock();
+	_publish_route_event(result);
+	routes_store_healthy = _persist_routes();
+	if (!routes_store_healthy) {
+		request->result["ok"] = false;
+		request->result["business_completed"] = false;
+		request->result["routing_status"] = "execution_unknown";
+		request->result["error"] = "delivery_retry_receipt_not_persisted";
+	}
+	return routes_store_healthy;
+}
+
 Dictionary AIChatEditorControl::cancel_route(const Dictionary &p_message, const String &p_reason) {
 	const String key = String(p_message.get("source", "internal-ai")) + ":" + String(p_message.get("request_id", ""));
 	Dictionary result = outcome(false, p_reason);
@@ -964,7 +990,7 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 		return outcome(false, "permission_denied");
 	}
 	const Variant requested_operation = p_message.get("operation", Variant());
-	if (requested_operation.get_type() == Variant::DICTIONARY && Dictionary(requested_operation).get("action", "") == "chat_submit_instruction" && (!p_host_context || !p_trusted_instruction)) {
+	if (requested_operation.get_type() == Variant::DICTIONARY && (Dictionary(requested_operation).get("action", "") == "chat_submit_instruction" || Dictionary(requested_operation).get("action", "") == "retry_pending_delivery") && (!p_host_context || !p_trusted_instruction)) {
 		return outcome(false, "trusted_desktop_peer_required");
 	}
 	if (JSON::stringify(p_message).utf8().length() > 32768) {
@@ -1057,8 +1083,9 @@ Dictionary AIChatEditorControl::route_message(const Dictionary &p_message, bool 
 			}
 		}
 		result = execute(operation, p_tools_allowed, p_consultation, p_confirmed, p_host_context, p_trusted_instruction);
-		result["routing_status"] = bool(result.get("confirmation_required", false)) ? "awaiting_confirmation" : bool(result.get("ok", false)) ? "completed"
-																																			  : "failed";
+		result["routing_status"] = bool(result.get("delivery_retry_started", false)) && bool(result.get("ok", false)) ? "running" : bool(result.get("confirmation_required", false)) ? "awaiting_confirmation"
+				: bool(result.get("ok", false))																																		 ? "completed"
+																																													 : "failed";
 	}
 	result["routed"] = true;
 	result["route"] = "engine_control";
@@ -1266,7 +1293,7 @@ Dictionary AIChatEditorControl::execute(const Dictionary &p_args, bool p_tools_a
 		return outcome(false, "invalid_action");
 	}
 	const String action = p_args["action"];
-	if (action == "chat_submit_instruction") {
+	if (action == "chat_submit_instruction" || action == "retry_pending_delivery") {
 		// A JSON field, model tool, or authenticated TCP request cannot mint
 		// this capability. Only the verified native desktop peer calls it.
 		if (!p_host_context || !p_trusted_instruction || !chat_instruction_handler.is_valid()) {

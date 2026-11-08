@@ -30,6 +30,7 @@
 
 #include "core/io/json.h"
 #include "core/math/math_funcs.h"
+#include "core/os/os.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_editor_control.h"
 #include "editor/docks/ai_chat_issue_guide.h"
@@ -66,6 +67,8 @@ Dictionary AIChatDock::_chat_instruction_context() const {
 	Dictionary context;
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	context["version"] = 1;
+	context["engine_pid"] = OS::get_singleton()->get_process_id();
+	context["host_instance_id"] = delivery_retry_instance;
 	context["conversation_id"] = conversation_id;
 	context["generation"] = int64_t(session_generation);
 	context["snapshot_id"] = snapshot_id;
@@ -88,6 +91,9 @@ Dictionary AIChatDock::_chat_instruction_context() const {
 	const String blocked = _chat_instruction_blocked_reason();
 	context["instruction_available"] = blocked.is_empty();
 	context["blocked_reason"] = blocked;
+	const String retry_blocked = _delivery_retry_blocked_reason();
+	context["delivery_retry_available"] = retry_blocked.is_empty();
+	context["delivery_retry_blocked_reason"] = retry_blocked;
 	return context;
 }
 
@@ -133,6 +139,9 @@ String AIChatDock::_chat_instruction_blocked_reason() const {
 	if (daqian_chat_host.is_valid()) {
 		return "host_chat_mounted";
 	}
+	if (!delivery_retry_route.is_empty()) {
+		return "terminal_retry_in_progress";
+	}
 	if (!delivery_receipt.is_empty()) {
 		return "work_order_complete";
 	}
@@ -152,6 +161,16 @@ String AIChatDock::_chat_instruction_blocked_reason() const {
 }
 
 Dictionary AIChatDock::_chat_instruction_action(const Dictionary &p_args) {
+	if (p_args.get("action", "") == "retry_pending_delivery") {
+		const Variant value = p_args.get("value", Variant());
+		if (value.get_type() != Variant::DICTIONARY || Dictionary(value).size() != 1 || Dictionary(value).get("expected", Variant()).get_type() != Variant::DICTIONARY || !expected_context_matches(Dictionary(value)["expected"], _chat_instruction_context())) {
+			Dictionary rejected;
+			rejected["ok"] = false;
+			rejected["error"] = "chat_instruction_state_changed";
+			return rejected;
+		}
+		return _run_delivery_retry(p_args);
+	}
 	Dictionary result;
 	result["ok"] = false;
 	const Dictionary context = _chat_instruction_context();
@@ -232,15 +251,21 @@ Dictionary AIChatDock::_chat_instruction_request(const Dictionary &p_message) {
 	if (kind == "status") {
 		return control->route_status(p_message.get("request_id", ""), "desktop.codex");
 	}
-	if (kind != "submit" || p_message.size() != 5 || !p_message.has("text") || !p_message.has("expected")) {
+	const bool retry = kind == "retry-delivery";
+	if ((!retry && (kind != "submit" || p_message.size() != 5 || !p_message.has("text"))) || (retry && p_message.size() != 4) || !p_message.has("expected")) {
 		result["error"] = "invalid_instruction_message";
 		return result;
 	}
 	Dictionary value;
-	value["text"] = p_message["text"];
+	if (!retry) {
+		value["text"] = p_message["text"];
+	}
 	value["expected"] = p_message["expected"];
 	Dictionary operation;
-	operation["action"] = "chat_submit_instruction";
+	operation["action"] = retry ? "retry_pending_delivery" : "chat_submit_instruction";
+	if (retry) {
+		operation["host_action_request_id"] = p_message.get("request_id", Variant());
+	}
 	operation["value"] = value;
 	Dictionary message;
 	message["intent"] = "engine_operation";

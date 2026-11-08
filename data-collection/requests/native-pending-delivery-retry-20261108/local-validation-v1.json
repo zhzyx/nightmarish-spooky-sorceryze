@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "request_id": "native-pending-delivery-retry-20261108",
+  "issue_number": 572,
+  "kind": "local_validation",
+  "state": "passed",
+  "base": "21c9530919c1b129cf9f42ca972aa2bfe7f9cfab",
+  "artifact_sha256": "59c5114653f04adb44ca03e58bc38918afc68b15fcc096e4e3027a7fd80b270a",
+  "source_hashes": {
+    "tools/editor_delivery_retry.py": "fe98c958baa9aab3cb1f5f7726f721d773b531e4c94cf1c6c63dba4014097706",
+    "tools/editor_delivery_finalize.py": "2b3296cbf460cd236456ed6165c5f5ecff2600dc0b7a0dea39e0994ccdfc067c",
+    "editor/docks/ai_chat_delivery_retry.cpp": "bba33cbedbf5e0ab58d94b70f60ae81807dd3ca416ce9377a4280df576f6a943",
+    "editor/docks/ai_chat_delivery.cpp": "099b2d84c852de245fde7d0d82b6aa72d659d25bdb478455bede64e60b97ee5d",
+    "editor/docks/ai_chat_delivery_receipt.h": "51dc2d9965e125ede14d74659705f596f21835268d5c3433767994ed5dd4a247",
+    "editor/docks/ai_chat_external_chat.cpp": "5bab2aad3d79eaccbd8ccce5b0d5560e979b5f6658386b7004e0189f9aaec44a",
+    "editor/docks/ai_chat_dock.cpp": "e6dfe5304b1395f5607042af70f98ad7ace2325788487fafb9d1e002b435b4e2",
+    "editor/docks/ai_chat_dock.h": "be9118db8685bd4712445052dc863ded6769509fabcd48b93ee0a763509218b7",
+    "editor/docks/ai_chat_editor_control.cpp": "d13d5ccb7ec5b9dd4187c0d690878e48054d968451762bceb0c86e70f98cbb0c",
+    "editor/docks/ai_chat_editor_control.h": "b4a654d66a1788490d10b7f493d051cfe2516e1b1bc69bf7f90d2ad401720a50",
+    "tools/editor_instruction_client.py": "c82a414d88690ec6df28db72e85f15b32db9b255e570d50a0bd15327da8ac2a8",
+    "tools/codebuddy_cli/godot_bridge.js": "dbf0f019a8f9f2140cfcdc378b5f425c242ca255d1a02a6195efab8d947cfaf6"
+  },
+  "native_current": {
+    "cold_restart": {
+      "checks": 23,
+      "result": "passed",
+      "original_generation": 2,
+      "live_generation": 1,
+      "old_process_context_rejected": true,
+      "evidence": {
+        "host_private_ref": "host-private://issue572/native-v3-domain-cold.json",
+        "sha256": "1bae1ace4bab1aec5390afb6af445e38e18387a284a5d807375f114135a8a7a0"
+      }
+    },
+    "managed_integration": {
+      "checks": 26,
+      "result": "passed",
+      "mode": "managed_native_app_link",
+      "explicit_registration_then_default_reuse": true,
+      "original_journal_unchanged": true,
+      "recovery_model_requests": 0,
+      "recovery_issue_writes": 0,
+      "synthetic_initial_model_requests": 1,
+      "evidence": {
+        "host_private_ref": "host-private://issue572/native-v5-managed-retained.json",
+        "sha256": "f318e139dfb8020ae95838c031f6c26afff9bde70a89c486d0d4695a642b166d"
+      },
+      "assembly": {
+        "host_private_ref": "host-private://issue572/combo-installation-v3.json",
+        "sha256": "eaf351b20f2dd7c39fbb765bef249d38f1d8088740a39e114affbfa87ca17b55"
+      }
+    }
+  },
+  "python_current": {
+    "cases": 13,
+    "result": "passed",
+    "scope": "Real temporary Git/private records with remote and activation fixtures; includes strict fresh process domain validation",
+    "evidence": {
+      "host_private_ref": "host-private://issue572/python-instance-domain-tests.log",
+      "sha256": "26928cf84aa18f022aefcece43aa88d7c1266afd48e7d0d6ad1a951ac3d33ad5"
+    }
+  },
+  "independent_review": {
+    "host_private_ref": "host-private://issue572/issue572-independent-final-review.json",
+    "sha256": "5af0222e9e50a8d1132d44b80548955f6d80e78f81b8b108f21e44fbba269dcc"
+  },
+  "independent_retained_readback": {
+    "host_private_ref": "host-private://issue572/issue572-independent-retained-combo-readonly-check.json",
+    "sha256": "716245a9c084975f8da297192254bbf627f5f5af6a87a8eba1f0690b6852c1f9"
+  },
+  "prior_native_scope": {
+    "artifact_sha256": "93dab083db486337c6d0c304cf2922f0864cac1791c5b6a23e6d1ff500d45c59",
+    "boundary_checks": 25,
+    "stop_checks": 15,
+    "normal_close_unknown_checks": 14,
+    "limits": "These cases preceded the narrowly reviewed process-domain delta. They are not claimed as reviewer execution of the new artifact.",
+    "reports": [
+      {
+        "host_private_ref": "host-private://issue572/native-v2-retry-boundaries.json",
+        "sha256": "c110247ef6732a6898d7fcdd9a62f68a96266909444ba4d3182a86999e39cb21"
+      },
+      {
+        "host_private_ref": "host-private://issue572/issue572-reviewer-native-stop-v2.json",
+        "sha256": "fa8e40e93f97883315f4820a4c72466abaf42c197383f47e3a595dfe7abb947f"
+      },
+      {
+        "host_private_ref": "host-private://issue572/native-v2-interrupted.json",
+        "sha256": "910fdd6a16bc14bc3ca9d8110b383245567b38811b08a3384f260a8e43de5991"
+      }
+    ]
+  },
+  "fixed_static_preflight": {
+    "result": "passed",
+    "product_source_changes_by_hooks": [],
+    "evidence": {
+      "host_private_ref": "host-private://issue572/preflight-instance-domain.json",
+      "sha256": "ccb8482e659275659af5c52617b0331b042e80e9286a81c6a5a0a6c0ddc3d0fe"
+    }
+  },
+  "preserved_failures": {
+    "source": "Existing host-private reports remain unchanged; no failure was relabeled passed.",
+    "cases": [
+      "Initial intake rejected missing request marker; corrected actual Issue then real intake passed",
+      "Private App editor_data seed/readiness/binding-path/bin-ignore fixture failures before successful native path",
+      "Reviewer first Stop fixture NameError; corrected fixture import then new independent report passed",
+      "First combined install missing exact trusted distribution registration; gate correctly rejected",
+      "First combined native source copy lost signature attributes; actual pending CLI receipt preserved and Issue569 fixed with exact raw/create-only metadata preservation"
+    ]
+  },
+  "limits": [
+    "No production editor, original483 source C/manifest/worker receipt, user App, global runtime configuration or history was changed by this implementation.",
+    "The managed integration uses a private synthetic signed-PR service/local bare Git. It verifies host execution, strict signature, immutable source/receipt identities and default mode reuse; it does not claim production GitHub or original483 recovery.",
+    "Actual Windows runtime acceptance is not claimed. The Desktop terminal retry channel is macOS only.",
+    "Remote exact CI, main and this Issue final status are still pending and will be reread after formal delivery."
+  ],
+  "native_receipt_unit_current": {
+    "cases": 1,
+    "assertions": 39,
+    "result": "passed",
+    "artifact_sha256": "59c5114653f04adb44ca03e58bc38918afc68b15fcc096e4e3027a7fd80b270a",
+    "host_private_ref": "host-private://issue572/native-receipt-unit-domain.json",
+    "sha256": "ce452a9111039eaf88a9995f4eba566d3ee69f23abd9616ef3242e44ebc8314d"
+  }
+}

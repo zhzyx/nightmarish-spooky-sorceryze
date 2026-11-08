@@ -36,6 +36,7 @@
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_delivery_receipt.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/ai_chat_editor_control.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
@@ -119,7 +120,14 @@ bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> 
 		return false;
 	}
 	r_executable = GongGongRuntimeConfig::path(p_runtime, "workflow_python");
-	const String worker = _engine_root().path_join("tools/editor_delivery_finalize.py");
+	const String worker = _engine_root().path_join(delivery_retry_route.is_empty() ? "tools/editor_delivery_finalize.py" : "tools/editor_delivery_retry.py");
+	if (!delivery_retry_route.is_empty()) {
+		const Dictionary route = _get_editor_control()->route_status(delivery_retry_route["request_id"], "desktop.codex");
+		if (!bool(route.get("delivery_retry_started", false)) || bool(route.get("receipt_persistence_failed", false))) {
+			_finish_tool("Error: The terminal retry host-action receipt was not persisted.");
+			return false;
+		}
+	}
 	if (r_executable.is_empty() || !FileAccess::exists(r_executable) || !FileAccess::exists(worker)) {
 		_finish_tool("Error: The installed delivery worker or workflow Python is missing.");
 		return false;
@@ -156,6 +164,9 @@ void AIChatDock::_capture_delivery_result(Dictionary &r_process_result) {
 	const int64_t bytes = file.is_valid() ? int64_t(file->get_length()) : -1;
 	const Variant parsed = file.is_valid() && bytes <= 256 * 1024 ? JSON::parse_string(file->get_as_text()) : Variant();
 	file.unref();
+	if (!delivery_retry_route.is_empty() && bytes >= 0 && bytes <= 256 * 1024) {
+		r_process_result["delivery_worker_result_sha256"] = FileAccess::get_sha256(delivery_result_path);
+	}
 	Dictionary result = parsed.get_type() == Variant::DICTIONARY ? Dictionary(parsed) : Dictionary();
 	const Dictionary guard = r_process_result.get("provenance_guard", Dictionary());
 	const bool process_ok = int(r_process_result.get("exit_code", -1)) == 0 && !bool(r_process_result.get("timed_out", true)) && guard.get("ok", Variant()).get_type() == Variant::BOOL && bool(guard["ok"]);

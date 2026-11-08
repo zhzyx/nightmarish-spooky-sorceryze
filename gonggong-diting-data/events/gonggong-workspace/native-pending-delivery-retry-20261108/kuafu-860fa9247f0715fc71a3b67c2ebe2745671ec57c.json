@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-860fa9247f0715fc71a3b67c2ebe2745671ec57c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-pending-delivery-retry-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/572",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a3ce3a45ae2df12221245e6b188d6be79185b4c0ccd9bcfd1b6f4766b2c55d4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/572",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/572",
+    "action": "intake",
+    "detection_head": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+    "context_sha256": "3203622680e87f7466f9513540aa5bca10d5450586e84feb986acd082c1cd114",
+    "operator": "kaiyunxue",
+    "worker": "/root/runtime_entry_fix",
+    "authority_ref": "User-authorized workflow repair delegated by /root in current Codex task; actual collaborator kaiyunxue",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/572",
+    "diagnosis": "Initial new Issue omitted canonical request marker; real Issue corrected with the same stable request. Original 483 completion_verified activation_pending has no host recovery action. No production state changed.",
+    "next_action": "Re-run real intake then implement isolated terminal retry under 572; preserve original483 pending evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T08:21:58.373961+00:00",
+    "attempted": null,
+    "repair_owner": "/root/runtime_entry_fix",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-08T08:22:29.969992+00:00",
+  "sha256": "dd139363ce191324fed5fa6fb48f54e8eb06dfb612d8ddf58f6d3fc728fb2e6c"
+}

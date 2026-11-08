@@ -117,6 +117,7 @@ public:
 	Dictionary execute(const Dictionary &p_args, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false, bool p_trusted_instruction = false);
 	Dictionary route_message(const Dictionary &p_message, bool p_tools_allowed, bool p_consultation, bool p_confirmed = false, bool p_host_context = false, bool p_trusted_instruction = false);
 	Dictionary route_status(const String &p_request_id, const String &p_source) const;
+	bool finish_delivery_retry_route(const Dictionary &p_message, const Dictionary &p_result);
 	Dictionary route_events(int64_t p_after, int p_limit = 100) const;
 	Dictionary cancel_route(const Dictionary &p_message, const String &p_reason);
 	void clear_highlight();

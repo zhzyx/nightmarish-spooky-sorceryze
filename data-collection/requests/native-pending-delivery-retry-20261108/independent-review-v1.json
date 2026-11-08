@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "request_id": "native-pending-delivery-retry-20261108",
+  "issue_number": 572,
+  "kind": "independent_review",
+  "reviewer": "/root/readonly_child_tool",
+  "verdict": "passed",
+  "report": {
+    "host_private_ref": "host-private://issue572/issue572-independent-final-review.json",
+    "sha256": "5af0222e9e50a8d1132d44b80548955f6d80e78f81b8b108f21e44fbba269dcc"
+  },
+  "current_product_hashes": {
+    "tools/editor_delivery_retry.py": "fe98c958baa9aab3cb1f5f7726f721d773b531e4c94cf1c6c63dba4014097706",
+    "tools/editor_delivery_finalize.py": "2b3296cbf460cd236456ed6165c5f5ecff2600dc0b7a0dea39e0994ccdfc067c",
+    "editor/docks/ai_chat_delivery_retry.cpp": "bba33cbedbf5e0ab58d94b70f60ae81807dd3ca416ce9377a4280df576f6a943",
+    "editor/docks/ai_chat_delivery.cpp": "099b2d84c852de245fde7d0d82b6aa72d659d25bdb478455bede64e60b97ee5d",
+    "editor/docks/ai_chat_delivery_receipt.h": "51dc2d9965e125ede14d74659705f596f21835268d5c3433767994ed5dd4a247",
+    "editor/docks/ai_chat_external_chat.cpp": "5bab2aad3d79eaccbd8ccce5b0d5560e979b5f6658386b7004e0189f9aaec44a",
+    "editor/docks/ai_chat_dock.cpp": "e6dfe5304b1395f5607042af70f98ad7ace2325788487fafb9d1e002b435b4e2",
+    "editor/docks/ai_chat_dock.h": "be9118db8685bd4712445052dc863ded6769509fabcd48b93ee0a763509218b7",
+    "editor/docks/ai_chat_editor_control.cpp": "d13d5ccb7ec5b9dd4187c0d690878e48054d968451762bceb0c86e70f98cbb0c",
+    "editor/docks/ai_chat_editor_control.h": "b4a654d66a1788490d10b7f493d051cfe2516e1b1bc69bf7f90d2ad401720a50",
+    "tools/editor_instruction_client.py": "c82a414d88690ec6df28db72e85f15b32db9b255e570d50a0bd15327da8ac2a8",
+    "tools/codebuddy_cli/godot_bridge.js": "dbf0f019a8f9f2140cfcdc378b5f425c242ca255d1a02a6195efab8d947cfaf6"
+  },
+  "scope": "Non-author source review plus current retained native combination/source-manifest/private-journal/new-worker-receipt/strict-signature/raw-fingerprint readback. Author runtime reports and reviewer prior Stop/unit execution are distinguished in the original report.",
+  "remaining_p1_p2": 0,
+  "limits": [
+    "No production operation or Windows execution by reviewer",
+    "Not a statement that original483 or its user entry has been recovered"
+  ]
+}

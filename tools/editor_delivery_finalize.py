@@ -192,14 +192,22 @@ def issue_readback(repository, number, request_id, known_types):
 
 def acceptance_declaration(value):
     require(isinstance(value, list) and 0 < len(value) <= 64, "The complete original acceptance checklist is required")
-    for item in value:
+    for index, item in enumerate(value):
         require(
             isinstance(item, dict) and set(item) == {"id", "module", "acceptance", "state", "evidence"},
-            "Invalid acceptance declaration",
+            f"Invalid acceptance declaration at item {index + 1}",
         )
         require(
             all(isinstance(item[key], str) and 0 < len(item[key]) <= 4096 for key in item),
-            "Acceptance fields must be bounded text",
+            f"Acceptance fields must be bounded text at item {index + 1}",
+        )
+        require(
+            item["state"] in {"done", "remaining", "unknown"},
+            f"Invalid state at item {index + 1} ({item['id']}): use done, remaining or unknown",
+        )
+        require(
+            item["state"] == "done",
+            f"Acceptance item {index + 1} ({item['id']}) is {item['state']}; only done may complete delivery",
         )
     result = yanluo_progress.assess(value)
     require(result["complete"], "Remaining or unknown acceptance must keep the Issue open")

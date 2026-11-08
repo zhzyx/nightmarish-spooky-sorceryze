@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import plistlib
 import shlex
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ import sys
 import tempfile
 import threading
 import traceback
+from contextlib import nullcontext
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -22,6 +24,12 @@ CASES = (
     "normal",
     "cold",
     "activation-pending",
+    "retry",
+    "retry-cold",
+    "retry-boundaries",
+    "retry-stop",
+    "retry-interrupted",
+    "retry-managed",
     "reject-before-mutation",
     "forged-stdout",
     "approval",
@@ -75,12 +83,13 @@ elif a and a[0]=='api':
  endpoint=a[1]
  if endpoint=='repos/example/test/issues/390':value=d['issue']
  elif endpoint=='repos/example/test/issues/390/comments':value=[d['comments']]
+ elif endpoint.startswith('repos/example/test/commits/') and endpoint.endswith('/pulls'):value=[{'number':7,'merged_at':'fixture-readback','base':{'ref':'main'}}]
  else:raise SystemExit('Forbidden fixture endpoint')
 elif a[:2]==['pr','view']:
  value=dict(d['pr']);value['statusCheckRollup']=[{'name':'offline fixture check','status':'COMPLETED','conclusion':'SUCCESS'}]
  if 'headRefOid,statusCheckRollup' in a:
   stage=Path(os.environ['DELIVERY_FIXTURE_STAGE']);stage.write_text(str(os.getpid()))
-  time.sleep(30 if os.environ['DELIVERY_FIXTURE_CASE']=='stop' else 0.3)
+  time.sleep(30 if os.environ['DELIVERY_FIXTURE_CASE']=='stop' or (os.environ['DELIVERY_FIXTURE_CASE'] in {'retry-stop','retry-interrupted'} and d['issue']['state']=='closed') else 0.3)
 elif a[:2]==['issue','view']:
  value=dict(d['issue']);value['url']=value.pop('html_url');value['state']=value['state'].upper();value['stateReason']='COMPLETED' if d['issue']['state']=='closed' else None
 elif a[:2]==['issue','comment']:
@@ -111,10 +120,24 @@ def main():
     parser.add_argument("--node", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--case", choices=CASES, default="normal")
+    parser.add_argument(
+        "--installation", type=Path, help="Private frozen combined helper installation for integration tests"
+    )
+    parser.add_argument(
+        "--retain-fixture",
+        action="store_true",
+        help="Retain this newly created private fixture and its exact artifact directories for independent review",
+    )
     args = parser.parse_args()
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    installation = args.installation.resolve(strict=True) if args.installation else ROOT
     errors, calls = [], []
-    with tempfile.TemporaryDirectory(prefix="native-delivery-共工 space-") as temp:
+    scope = (
+        nullcontext(tempfile.mkdtemp(prefix="native-delivery-共工 space-"))
+        if args.retain_fixture
+        else tempfile.TemporaryDirectory(prefix="native-delivery-共工 space-")
+    )
+    with scope as temp:
         folder = Path(temp).resolve()
         original = folder / "original"
         original.mkdir()
@@ -131,7 +154,7 @@ def main():
         (original / ".github").mkdir()
         (original / ".github/labels.json").write_text('[{"name":"type:bug"}]')
         (original / "SConstruct").write_text("# offline fixture only\n")
-        (original / ".gitignore").write_text(".gonggong-outbox/\n.godot/\n")
+        (original / ".gitignore").write_text(".gonggong-outbox/\n.godot/\nbin/\n")
         (original / "tools").mkdir()
         (original / "tools/gonggong_bridge.py").write_text(BRIDGE)
         (original / "tools/editor_self_build.py").write_text("# fixture source marker\n")
@@ -184,11 +207,32 @@ def main():
             + " if x=='https://github.com/example/test.git' else x for x in a]\n if any('https://github.com/' in x for x in a):raise SystemExit('Network Git forbidden by fixture')\n os.execv('/usr/bin/git',['git',*a])\n"
         )
         git_wrapper.chmod(0o700)
-        binary = copy_editor(args.godot, folder / "isolated-editor")
+        retry_case = args.case.startswith("retry")
+        if retry_case:
+            if sys.platform != "darwin":
+                raise RuntimeError("The trusted Desktop retry acceptance is macOS only")
+            app = folder / "Original Private.app"
+            (app / "Contents").mkdir(parents=True)
+            binary = copy_editor(args.godot, app / "Contents/MacOS")
+            binary.rename(binary.with_name("Godot"))
+            binary = binary.with_name("Godot")
+            (app / "Contents/Info.plist").write_bytes(
+                plistlib.dumps({
+                    "CFBundleExecutable": "Godot",
+                    "CFBundleIdentifier": "org.godotengine.private-delivery-retry",
+                    "CFBundlePackageType": "APPL",
+                })
+            )
+        else:
+            binary = copy_editor(args.godot, folder / "isolated-editor")
+        editor_data = (folder if retry_case else binary.parent) / "editor_data"
+        editor_data.mkdir(exist_ok=True)
+        if retry_case:
+            (folder / "_sc_").touch()
         # A private bare development installation has a source ancestor; it
         # never infers installed code from the user's configurable CLI path.
         (folder / "SConstruct").write_text("# private development installation fixture\n")
-        (folder / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
+        (folder / "tools").symlink_to(installation / "tools", target_is_directory=True)
         artifact_sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
         prepared = {}
 
@@ -200,6 +244,9 @@ def main():
             ]
             assert len(bindings) == 1, bindings
             binding = bindings[0]
+            binding["binding_path"] = str(
+                Path(binding["common_dir"]) / "gonggong-engine-candidates" / (delivery_digest(binding) + ".json")
+            )
             target = Path(binding["source_root"])
             git(target, "add", "--", "design-docs/" + REQUEST + ".md", "gonggong-diting-data/events/fixture/" + REQUEST)
             git(target, "commit", "-m", "fixture candidate including design and actual pre-sign events")
@@ -230,13 +277,56 @@ def main():
                 "signature": {"isValid": True, "wasSignedByGitHub": True},
             }
             state_path.write_text(json.dumps(state))
+            if retry_case:
+                sys.path.insert(0, str(installation / "tools"))
+                from editor_source_manifest import artifact_manifest, source_snapshot
+
+                raw = target / "bin/godot.macos.editor.arm64.self_update_a"
+                raw.parent.mkdir()
+                subprocess.run(["/bin/cp", "-c", str(binary), str(raw)], check=True)
+                if args.case == "retry-managed":
+                    from editor_native_app import EXECUTABLE_RELATIVE, native_output_dir, package_app
+
+                    prepared["managed_source_directory"] = str(native_output_dir(target))
+                    native = package_app(
+                        target,
+                        raw,
+                        binding,
+                        project,
+                        native_output_dir(target) / (raw.name + ".app"),
+                        template=ROOT / "misc/dist/macos_tools.app",
+                    )
+                    manifest = Path(
+                        artifact_manifest(
+                            target,
+                            native / EXECUTABLE_RELATIVE,
+                            binding,
+                            project,
+                            {"offline_fixture": True},
+                            source_snapshot(target),
+                            native_app=native,
+                        )
+                    )
+                    prepared["managed_source_directory"] = str(native.parent)
+                    prepared["trusted_installation"] = str(installation)
+                else:
+                    manifest = Path(
+                        artifact_manifest(
+                            target, raw, binding, project, {"offline_fixture": True}, source_snapshot(target)
+                        )
+                    )
+                binding["artifact_manifest"] = str(manifest)
+                Path(binding["binding_path"]).write_text(json.dumps(binding))
+                prepared["ready_manifest"] = str(manifest)
+                prepared["ready_manifest_bytes"] = manifest.read_bytes()
+                manifest.unlink()  # Explicit missing-sidecar failure; exact bytes restored before retry.
             if args.case == "activation-pending":
                 binding_path = (
                     Path(binding["common_dir"]) / "gonggong-engine-candidates" / (delivery_digest(binding) + ".json")
                 )
                 binding["artifact_manifest"] = str(folder / "missing-manifest.json")
                 binding_path.write_text(json.dumps(binding))
-            prepared.update(candidate=candidate, signed_commit=signed, target=str(target))
+            prepared.update(candidate=candidate, signed_commit=signed, target=str(target), tree=tree)
             return prepared
 
         class Handler(BaseHTTPRequestHandler):
@@ -326,14 +416,14 @@ def main():
             "ai_chat/backend": 0,
             "ai_chat/endpoint": endpoint,
             "ai_chat/model": "offline-delivery-fixture",
-            "ai_chat/editor_control_bridge_enabled": False,
+            "ai_chat/editor_control_bridge_enabled": retry_case,
         }
-        (binary.parent / "editor_data/editor_settings-4.8.tres").write_text(
+        (editor_data / "editor_settings-4.8.tres").write_text(
             '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
             + "\n".join(key + " = " + json.dumps(value) for key, value in settings.items())
             + "\n"
         )
-        config = binary.parent / "editor_data/gonggong/config.json"
+        config = editor_data / "gonggong/config.json"
         config.parent.mkdir()
         config.write_text(
             json.dumps({
@@ -375,17 +465,26 @@ def main():
             DELIVERY_FIXTURE_PHASE="initial",
             DELIVERY_FIXTURE_STATE=str(state_path),
             DELIVERY_FIXTURE_STAGE=str(folder / "finalizer-running"),
+            DELIVERY_FIXTURE_ACCEPTANCE_OUT=str(args.out.resolve()),
             GONGGONG_GH=str(gh),
             GONGGONG_GIT=str(git_wrapper),
             PATH=str(folder) + os.pathsep + os.environ.get("PATH", ""),
         )
         command = [str(binary), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"]
         try:
-            process = subprocess.run(command, env=env, capture_output=True, text=True, timeout=150)
+            if retry_case:
+                from run_delivery_retry import exercise_retry
+
+                process, retry_acceptance = exercise_retry(
+                    command, env, project, original, prepared, args.case, folder, calls
+                )
+            else:
+                retry_acceptance = None
+                process = subprocess.run(command, env=env, capture_output=True, text=True, timeout=150)
             report_path = project / "delivery-report.json"
             report = json.loads(report_path.read_text()) if report_path.exists() else {}
             state = json.loads(state_path.read_text())
-            expected_closed = args.case in {"normal", "cold", "activation-pending", "receipt-failure"}
+            expected_closed = retry_case or args.case in {"normal", "cold", "activation-pending", "receipt-failure"}
             assert (state["issue"]["state"] == "closed") == expected_closed, state
             assert not (folder / "unexpected-terminal-intake").exists(), "Completed Issue was re-admitted as production"
             assert len(calls) == (
@@ -394,7 +493,8 @@ def main():
             assert report.get("ok") and process.returncode == 0, report
             history = json.loads((project / ".godot/editor/ai_chat_history.json").read_text())
             if expected_closed or args.case == "partial-failure":
-                assert len(history["agents"]) == 1 and not history.get("sub_agent_spawned"), history
+                expected_agents = 2 if args.case == "retry-boundaries" else 1
+                assert len(history["agents"]) == expected_agents and not history.get("sub_agent_spawned"), history
                 agent = history["agents"][0]
                 assert agent["queue_paused"] and any(
                     item.get("content") == "QUEUED_AFTER_DELIVERY_MUST_REMAIN_PAUSED"
@@ -429,9 +529,33 @@ def main():
             state = json.loads(state_path.read_text())
         finally:
             server.shutdown()
+            # Only this random fixture source/context can own these store names.
+            # No user configuration or unrelated artifact is enumerated/deleted.
+            for key in ("managed_payload_directory", "managed_source_directory"):
+                if prepared.get(key) and not args.retain_fixture:
+                    path = Path(prepared[key])
+                    if not path.exists() and not path.is_symlink():
+                        continue
+                    allowed = (
+                        path.parent.name in {"engine-artifacts", "engine-launch-payloads"}
+                        and len(path.name) == 64
+                        and all(c in "0123456789abcdef" for c in path.name)
+                    )
+                    if not allowed or path.is_symlink() or path.resolve() != path or path.stat().st_uid != os.getuid():
+                        raise RuntimeError("Refuse non-owned private fixture cleanup")
+                    shutil.rmtree(path)
         result = {
             "ok": ok,
             "case": args.case,
+            "retained_fixture": {
+                "root": str(folder),
+                "source_artifact_directory": prepared.get("managed_source_directory"),
+                "immutable_payload_directory": prepared.get("managed_payload_directory"),
+                "ownership": "New private offline fixture created by this invocation only; not production",
+            }
+            if args.retain_fixture
+            else None,
+            "retry_acceptance": locals().get("retry_acceptance"),
             "artifact_sha256": artifact_sha256,
             "model_request_count": len(calls),
             "fixture_tool_results": [

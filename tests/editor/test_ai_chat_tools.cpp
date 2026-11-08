@@ -90,6 +90,24 @@ TEST_CASE("[Editor][AIChat] Delivery receipt binds private worker identity and e
 	Array labels = issue["labels"];
 	labels.push_back("status:in-progress");
 	CHECK_FALSE(AIChatDeliveryReceipt::completed(changed, expected));
+	Dictionary live = expected.duplicate(true);
+	live["kind"] = "native_delivery_retry";
+	live["host_action_request_id"] = "desktop-retry";
+	live["original_journal_sha256"] = String("f").repeat(64);
+	live["engine_pid"] = 123;
+	live["host_instance_id"] = String("e").repeat(32);
+	Dictionary retried = receipt.duplicate(true);
+	for (const String &key : { String("kind"), String("host_action_request_id"), String("original_journal_sha256"), String("engine_pid"), String("host_instance_id") }) {
+		retried[key] = live[key];
+	}
+	CHECK(AIChatDeliveryReceipt::completed(retried, live));
+	CHECK_FALSE(AIChatDeliveryReceipt::matches(receipt, live));
+	CHECK_FALSE(AIChatDeliveryReceipt::matches(retried, expected));
+	for (const String &key : { String("host_action_request_id"), String("original_journal_sha256"), String("engine_pid"), String("host_instance_id") }) {
+		Dictionary foreign = retried.duplicate(true);
+		foreign[key] = "foreign";
+		CHECK_FALSE(AIChatDeliveryReceipt::matches(foreign, live));
+	}
 }
 
 Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat") {
