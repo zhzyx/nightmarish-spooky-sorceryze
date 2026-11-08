@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  ai_chat_editor_instruction_bridge.cpp                                             */
+/*  ai_chat_editor_instruction_bridge.cpp                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,12 +28,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "ai_chat_editor_bridge.h"
-#include "ai_chat_external_peer.h"
-
 #include "core/io/json.h"
 #include "core/os/os.h"
 #include "core/os/time.h"
+#include "editor/docks/ai_chat_editor_bridge.h"
+#include "editor/docks/ai_chat_external_peer.h"
 
 #ifdef MACOS_ENABLED
 #include <fcntl.h>

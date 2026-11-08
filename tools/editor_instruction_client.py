@@ -24,9 +24,18 @@ class InstructionClientError(Exception):
 
 class _BsdInfo(ctypes.Structure):
     _fields_ = [
-        (name, ctypes.c_uint32)
-        for name in ("flags", "status", "xstatus", "pid", "ppid", "uid", "gid", "ruid", "rgid", "svuid", "svgid", "rfu")
-    ] + [
+        ("flags", ctypes.c_uint32),
+        ("status", ctypes.c_uint32),
+        ("xstatus", ctypes.c_uint32),
+        ("pid", ctypes.c_uint32),
+        ("ppid", ctypes.c_uint32),
+        ("uid", ctypes.c_uint32),
+        ("gid", ctypes.c_uint32),
+        ("ruid", ctypes.c_uint32),
+        ("rgid", ctypes.c_uint32),
+        ("svuid", ctypes.c_uint32),
+        ("svgid", ctypes.c_uint32),
+        ("rfu", ctypes.c_uint32),
         ("comm", ctypes.c_char * 16),
         ("name", ctypes.c_char * 32),
         ("nfiles", ctypes.c_uint32),
