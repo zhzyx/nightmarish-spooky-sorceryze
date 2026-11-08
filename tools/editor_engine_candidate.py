@@ -360,6 +360,7 @@ def candidate_digest(common, repository, issue, request_id, owner):
 
 def inherited_launch(workspace, common, repository, origin, folder, actual_launch):
     """Follow only a private binding tied to this source or this exact artifact."""
+    import editor_managed_native_entry as managed
     from editor_native_app import (
         app_for_executable,
         native_output_dir,
@@ -422,6 +423,19 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             and str(manifest_path) == located_manifest
             and actual_launch == Path(previous.get("initial_launch_executable", ""))
         )
+        managed_record = None
+        if native and str(manifest_path) == located_manifest:
+            initial = Path(previous.get("initial_launch_executable", ""))
+            initial_app = app_for_executable(initial)
+            if (initial_app and initial_app.is_symlink()) or managed.in_snapshot_store(actual_launch, source):
+                try:
+                    managed_record = managed.registered_entry(initial, common, expected_manifest=manifest_path)
+                    payload_executable = Path(managed_record["payload_executable"])
+                    if actual_launch != payload_executable:
+                        raise ValueError("candidate_managed_executable_changed")
+                except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+                    raise CandidateError("candidate_inherited_artifact_invalid") from None
+                installed_native = True
         if source != workspace and executable != actual_launch and not installed_native:
             continue
         if (
@@ -489,7 +503,7 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
         if native:
             try:
                 validate_native_app(source, manifest, manifest_path)
-                if installed_native:
+                if installed_native and managed_record is None:
                     # An installed entry may inherit only this exact accepted,
                     # sealed artifact. No arbitrary nested executable is allowed.
                     verify_bundle(
@@ -503,12 +517,14 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             or not Path(initial).is_absolute()
             or not Path(initial).is_file()
             or Path(initial).is_symlink()
-            or Path(initial).resolve() != Path(initial)
+            or (Path(initial).resolve() != Path(initial) and managed_record is None)
         ):
             raise CandidateError("candidate_inherited_launch_invalid")
-        proven[str(Path(initial).resolve())] = str(path)
+        proven[str(Path(initial))] = str(path)
     if len(proven) > 1:
         raise CandidateError("candidate_inherited_launch_ambiguous")
+    if not proven and managed.in_snapshot_store(actual_launch, workspace):
+        raise CandidateError("candidate_managed_entry_unregistered")
     return next(iter(proven.items())) if proven else (str(actual_launch), "")
 
 
@@ -581,6 +597,16 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
                 launch = Path(launch_executable)
                 if not launch.is_absolute() or not launch.is_file():
                     raise CandidateError("candidate_launch_executable_invalid")
+                from editor_native_app import app_for_executable
+
+                launch_app = app_for_executable(launch)
+                if launch_app and launch_app.is_symlink():
+                    import editor_managed_native_entry as managed
+
+                    try:
+                        managed.registered_entry(launch, common)
+                    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+                        raise CandidateError("candidate_managed_entry_unregistered") from None
                 initial_launch, inherited_binding = inherited_launch(
                     workspace, common, repository, origin, folder, launch.resolve()
                 )

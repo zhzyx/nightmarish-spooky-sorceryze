@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "event_id": "native-activation-managed-entry-scope-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-activation-staging-metadata-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T08:55:52.042361+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+  "agent": {
+    "id": "codex-native-activation-metadata",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "stage": "implementation_and_private_validation",
+    "root_authorized_refinement": "explicit managed native App link to immutable full sealed-copy snapshot after repeated FinderInfo re-add; source/old App/binding/manifest unchanged",
+    "issue_body_sha256": "7cef91ef944e1d24e11f4dbef2a73143ec8deb2f66a07df4fbb7576c46d59aa5",
+    "actual_tests": {
+      "managed_signed_transactions": {
+        "passed": 11,
+        "log_sha256": "c64000c648a0f768d01bafb6c7b368061dc47d2da80d450ec709b96bc7051136"
+      },
+      "Documents_owned_logical_entry": {
+        "strict_after_seconds": [
+          1,
+          3,
+          10
+        ],
+        "source_and_copy_unchanged": true,
+        "report_sha256": "3a392c6c50338a0c2708fb9979fb7bfe72e762b3637f26f15c28da833bce78e2"
+      }
+    },
+    "scope_excluded": [
+      "production483 recovery",
+      "original user App installation",
+      "new receipt enforcement in immutable old binary"
+    ],
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [
+    "native-activation-metadata-request-20261108"
+  ],
+  "sha256": "7640300c17efd6bbe34a9428e3d0b4e39f3a325b73abc5fe1e3ed44e98564137"
+}

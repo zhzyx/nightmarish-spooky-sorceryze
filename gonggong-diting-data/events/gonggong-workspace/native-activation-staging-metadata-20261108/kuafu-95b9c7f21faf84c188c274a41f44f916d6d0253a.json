@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-95b9c7f21faf84c188c274a41f44f916d6d0253a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-activation-staging-metadata-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5d42b95576f148e963d6f9b656df83cec3f8acb2f99b2acc9ee0c51cf27843eb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "action": "delivery",
+    "detection_head": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+    "context_sha256": "0c7d376f3061e3bea5231bfe482b45d3c14398bec78377ddc41ed34e3adccab9",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/573",
+    "diagnosis": "Complete production-template integration rejected v1 because ditto omits existing zero-length com.apple.cs.CodeSignature attributes on two alternate Info plists. Native getxattr and hex decoding confirm true length0; plain xattr output had also truncated binary values at NUL. v3 reads exact raw hex and recreates only proven absent empty non-quarantine attributes on the new owned copy with CREATE|NOFOLLOW; any changed/nonempty value remains rejected and strict signature unchanged.",
+    "next_action": "Independent final14 signed/private tests plus exact569+572 real managed registration/default-retry composition, then normal new signed candidate and exactCI/main. Preserve old PR573/SourceC/S and all failures; do not activate production.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T08:06:07.769981+00:00",
+    "attempted": "Full production template+compiled93dab MachO ownDocs link passed strict and complete raw source/copy fingerprints at1/3/10 seconds; final14 source-frozen tests passed including concurrent-attribute EEXIST preservation. First reassessment changed mandate wording and was correctly rejected; repeat uses original admitted Issue authority without modifying old receipt.",
+    "repair_owner": "codex:/root/config_bootstrap_plan",
+    "continuable": "Final independent review and combined native test underway; production remains held by parent"
+  },
+  "occurred_at": "2026-11-08T09:17:17.665865+00:00",
+  "sha256": "525b35fc416b7136243b7ed0b19cc3a04ef7e2038ab077cc0f3047188aa6df85"
+}

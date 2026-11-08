@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "issue": 569,
+  "request_id": "native-activation-staging-metadata-20261108",
+  "source_base": "21c9530919c1b129cf9f42ca972aa2bfe7f9cfab",
+  "source_files": {
+    "tools/editor_managed_native_entry.py": "9cbd01cd98e03fce15bdf65935e2c49fba918c5682b0cbd8a77f21baf74dae44",
+    "tools/editor_candidate_activation.py": "7ba329d8615f527fb1937a94ef6ef472c26a842f4c10a828c9b9be4eafc3f9b3",
+    "tools/editor_engine_candidate.py": "fe19cadd5ae92edf932808ef5440ea95173f76583640e950b2569bbe9542e44b",
+    "tools/editor_native_app.py": "ffbc9671c36d2ab9e88238491d6eeb51da2c2062d76e310395437c96c5abf4a7",
+    "tools/editor_self_build.py": "818c5ac67e7cc9c86286af9e95db54f4c9770f24f6a1758fb6004511e43ccbeb",
+    "tools/test_editor_managed_native_entry.py": "2bcf884e3acebb5bc86ec6cc6742a40ed3a233263c633b159b532d2f8e84c77a",
+    "tools/test_editor_engine_candidate.py": "4390bd98f7cf5bd26e5d3ea55e27504c1a813ab0444b2dd002eee748b050f899"
+  },
+  "author_executed": [
+    {
+      "check": "tools_regression",
+      "passed": 87,
+      "status": "passed",
+      "private_original_sha256": "8a5205c3f262b7316204dcd9dc721a26c452db70d93c4ecd5aa9e64c76dace6c"
+    },
+    {
+      "check": "selfbuild_regression",
+      "passed": 13,
+      "status": "passed",
+      "private_original_sha256": "9781e17eae1faff22f7fda70c8c01bb5ce500e4490218bb80b59a6c8c2ffea95"
+    },
+    {
+      "check": "managed_transactions",
+      "passed": 11,
+      "status": "passed",
+      "private_original_sha256": "c64000c648a0f768d01bafb6c7b368061dc47d2da80d450ec709b96bc7051136"
+    },
+    {
+      "check": "staged_static_hooks",
+      "passed": null,
+      "status": "passed",
+      "private_original_sha256": "45b2b5ae78731ed6257f580db9d3f193f655d968eb2e88a9057f6dac429a45e2"
+    },
+    {
+      "check": "own_documents_entry_retention",
+      "passed": 3,
+      "status": "passed",
+      "private_original_sha256": "07adde4a9aff3bfaefe488c99f5a49d2f525a9970ae825fc1c19e8c8c8e2d2d5"
+    }
+  ],
+  "independent_review": {
+    "path": "data-collection/requests/native-activation-staging-metadata-20261108/validation/independent-review.json",
+    "sha256": "93d1ffa251a1183b00f9b39cb0e1a696a7f90367762998846f0c77638127d039",
+    "original_private_sha256": "e7bfffa4720baeecfc9396c8be1e482f583bb9073ccebe472a68ba6bde317850"
+  },
+  "quarantine_contract": "ditto --qtn, OS natural copy normalization recorded as existence/length/digest; never manually edited or interpreted as stronger",
+  "not_claimed": [
+    "production483 activation recovery",
+    "original user entry installation/cold launch",
+    "receipt-pin enforcement added to immutable old binary"
+  ],
+  "preserved_failures": [
+    "stage and postrename FinderInfo cleanup was not durable",
+    "initial test setup cwd/import error",
+    "initial recovery fixture mistakenly persisted outer return ok field",
+    "standalone Python lacked SCons, corrected existing SCons venv passed",
+    "first timed fixture auto-cleaned at process exit; new retained fixture independently rechecked",
+    "first from-ref hook invocation skipped staged changes; real staged run passed"
+  ],
+  "issue_body_source_correction_event": "native-activation-validation-and-source-correction-20261108"
+}

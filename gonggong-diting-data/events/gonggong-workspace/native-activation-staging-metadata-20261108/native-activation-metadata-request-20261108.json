@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "native-activation-metadata-request-20261108",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-activation-staging-metadata-20261108",
+  "kind": "request",
+  "occurred_at": "2026-11-08T08:17:01.278860+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/569",
+  "agent": {
+    "id": "codex-native-activation-metadata",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "explicit-authorized-host-request"
+  },
+  "payload": {
+    "outcome": "Repair metadata handling on newly owned native-App activation copies while preserving exact signed bytes, strict verification and immutable old source bindings",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/config_bootstrap_plan",
+    "issue_title": "原生应用激活副本的 Finder 元数据导致严格签名失败",
+    "issue_updated_at": "2026-11-08T08:15:18Z",
+    "issue_body_sha256": "64150e8d6526c1fe79ebbec0e4028bde54783dbb7aa9e33bdb7bff93819691ea",
+    "execution_authority_ref": "Original user fix-on-discovery/main mandate and parent host delegated source repair after genuine Issue483 activation_pending",
+    "parent_issue": 483,
+    "event_is_not_a_tool_authorization_grant": true,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured"
+  },
+  "evidence_refs": [],
+  "sha256": "6ec289e9cb427e3e61c6937c129572ee38cc167ca593122b98153cdf9d803ab1"
+}

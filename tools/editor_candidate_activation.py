@@ -247,7 +247,7 @@ def launcher_text(executable, project):
     )
 
 
-def install_app(manifest, journal_path, prior=None):
+def install_app(manifest, journal_path, prior=None, *, entry_type=None, manifest_path=None, report=None):
     initial = Path(manifest["binding"]["initial_launch_executable"])
     if (
         sys.platform != "darwin"
@@ -257,10 +257,18 @@ def install_app(manifest, journal_path, prior=None):
     ):
         raise ActivationError("activation_original_entry_not_managed_app")
     app = initial.parent.parent.parent
-    if app.is_symlink() or initial.is_symlink():
-        raise ActivationError("activation_original_entry_invalid")
     if "native_app" in manifest:
+        if entry_type == "native_app_copy" and prior and prior.get("entry_type") == "managed_native_app_link":
+            raise ActivationError("activation_entry_type_changed")
+        if entry_type == "managed_native_app_link" or (prior and prior.get("entry_type") == "managed_native_app_link"):
+            return install_managed_native_link(manifest, manifest_path, report, app, journal_path, prior)
+        if entry_type not in (None, "native_app_copy"):
+            raise ActivationError("activation_entry_type_invalid")
+        if app.is_symlink() or initial.is_symlink():
+            raise ActivationError("activation_original_entry_invalid")
         return install_native_app(manifest, app, journal_path, prior)
+    if entry_type not in (None, "native_app_copy") or app.is_symlink() or initial.is_symlink():
+        raise ActivationError("activation_original_entry_invalid")
     wanted = launcher_text(manifest["executable"], manifest["project_root"])
     if prior and prior.get("state") == "activated" and initial.is_file() and initial.read_bytes() == wanted.encode():
         command(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)])
@@ -405,7 +413,127 @@ def install_native_app(manifest, app, journal_path, prior=None):
         raise
 
 
-def activate(manifest_path, report):
+def install_managed_native_link(manifest, manifest_path, report, app, journal_path, prior=None):
+    import editor_managed_native_entry as managed
+    from editor_native_app import EXECUTABLE_RELATIVE
+
+    initial = app / EXECUTABLE_RELATIVE
+    if str(initial) != manifest["binding"]["initial_launch_executable"] or app.parent.resolve() != app.parent:
+        raise ActivationError("activation_original_entry_invalid")
+
+    def identity(path):
+        info = path.lstat()
+        return [info.st_dev, info.st_ino, info.st_uid]
+
+    def same(path, expected):
+        return (path.exists() or path.is_symlink()) and identity(path) == expected
+
+    def remove_new_link(path, expected):
+        if path.is_symlink() and same(path, expected):
+            path.unlink()
+
+    try:
+        if prior and prior.get("state") in ("prepared", "old_saved"):
+            if prior.get("entry_type") != managed.ENTRY_TYPE:
+                raise ActivationError("activation_previous_copy_recovery_required")
+            backup, stage = Path(prior["backup"]), Path(prior["stage"])
+            if (
+                backup.parent != app.parent
+                or stage.parent != app.parent
+                or not backup.name.startswith(app.stem + "-previous-")
+                or not stage.name.startswith("." + app.stem + "-activate-")
+            ):
+                raise ActivationError("activation_recovery_record_invalid")
+            payload = Path(prior["canonical_payload"])
+            if prior.get("payload_context") != managed.context(manifest_path, manifest, report):
+                raise ActivationError("activation_recovery_context_changed")
+            if same(app, prior.get("new_link_identity")):
+                managed.verify_link(app, payload, prior["payload_context"])
+                result = dict(prior, state="activated", reused=True)
+                atomic_json(journal_path, result)
+                return result
+            if not (app.exists() or app.is_symlink()) and same(backup, prior.get("old_entry_identity")):
+                managed.rename_exclusive(backup, app)
+            if not same(app, prior.get("old_entry_identity")):
+                raise ActivationError("activation_recovery_entry_changed")
+            remove_new_link(stage, prior.get("new_link_identity"))
+            prior = prior.get("previous")
+        if app.is_symlink():
+            old = managed.registered_entry(initial, Path(manifest["binding"]["common_dir"]), record=prior)
+        else:
+            if prior and prior.get("entry_type") == managed.ENTRY_TYPE:
+                raise ActivationError("activation_managed_entry_changed")
+            old = prior
+            if not app.is_dir() or app.lstat().st_uid != os.getuid() or initial.is_symlink() or not initial.is_file():
+                raise ActivationError("activation_original_entry_invalid")
+        accepted, payload, snapshot = managed.create_snapshot(manifest_path, manifest, report)
+        if old and old.get("entry_type") == managed.ENTRY_TYPE and old.get("payload_context") == accepted:
+            managed.verify_link(app, payload, accepted)
+            return dict(old, state="activated", reused=True)
+        token = uuid.uuid4().hex
+        stage = app.with_name("." + app.stem + "-activate-" + token + ".app")
+        backup = app.with_name(app.stem + "-previous-" + token + ".app")
+        os.symlink(str(payload), stage, target_is_directory=True)
+        link_identity = identity(stage)
+        old_identity = identity(app)
+        state = {
+            "state": "prepared",
+            "entry_type": managed.ENTRY_TYPE,
+            "entry": str(app),
+            "logical_entry": str(initial),
+            "canonical_payload": str(payload),
+            "payload_executable": str(payload / EXECUTABLE_RELATIVE),
+            "source_bundle": accepted["source_bundle"],
+            "source_manifest": accepted["source_manifest"],
+            "source_manifest_sha256": accepted["source_manifest_sha256"],
+            "source_digest": accepted["source_digest"],
+            "payload_context": accepted,
+            "quarantine_differences": snapshot["quarantine_differences"],
+            "restored_empty_attributes": snapshot.get("restored_empty_attributes", []),
+            "artifact_sha256": manifest["artifact_sha256"],
+            "executable": manifest["executable"],
+            "stage": str(stage),
+            "backup": str(backup),
+            "new_link_identity": link_identity,
+            "old_entry_identity": old_identity,
+            "previous": {k: v for k, v in old.items() if k != "previous"} if old else None,
+            "source_commit": report["candidate"],
+            "signed_commit": report["signed_commit"],
+            "tree": report["tree"],
+        }
+        try:
+            managed.verify_link(stage, payload, accepted)
+            atomic_json(journal_path, state)
+            if not same(app, old_identity):
+                raise ActivationError("activation_original_entry_changed")
+            managed.rename_exclusive(app, backup)
+            if not same(backup, old_identity):
+                # Preserve an entry swapped into the source between our check
+                # and rename; restore only into an unoccupied logical name.
+                if not (app.exists() or app.is_symlink()):
+                    managed.rename_exclusive(backup, app)
+                raise ActivationError("activation_original_entry_changed")
+            state["state"] = "old_saved"
+            atomic_json(journal_path, state)
+            managed.rename_exclusive(stage, app)
+            if not same(app, link_identity):
+                raise ActivationError("activation_managed_entry_changed")
+            managed.verify_link(app, payload, accepted)
+            state["state"] = "activated"
+            atomic_json(journal_path, state)
+            return state
+        except Exception:
+            if same(app, link_identity):
+                managed.rename_exclusive(app, stage)
+            if not (app.exists() or app.is_symlink()) and same(backup, old_identity):
+                managed.rename_exclusive(backup, app)
+            remove_new_link(stage, link_identity)
+            raise
+    except managed.ManagedEntryError as error:
+        raise ActivationError(str(error)) from None
+
+
+def activate(manifest_path, report, entry_type=None):
     manifest, common, binding = verified_manifest(manifest_path, report)
     folder = common / "gonggong-engine-launchers"
     if folder.is_symlink():
@@ -415,11 +543,15 @@ def activate(manifest_path, report):
     journal_path = folder / (key + ".json")
     with lock(folder / (key + ".lock")):
         prior = read_json(journal_path) if journal_path.exists() else None
-        result = install_app(manifest, journal_path, prior)
+        result = install_app(
+            manifest, journal_path, prior, entry_type=entry_type, manifest_path=manifest_path, report=report
+        )
         result.update(
             activation_mode="accepted_candidate",
             main_commit=report["current_main"],
             source_commit=report["candidate"],
+            signed_commit=report.get("signed_commit"),
+            tree=report.get("tree"),
             main_advanced=report["current_main"] != report["candidate"],
             version_description="Startup is pinned to the accepted candidate contained in main; later main commits are not claimed to be in this artifact.",
             repository=report["repository"],
@@ -430,7 +562,7 @@ def activate(manifest_path, report):
     return dict(ok=True, **result)
 
 
-def after_delivery(repo, report):
+def after_delivery(repo, report, entry_type=None):
     """Only pass reports returned by writer_submit.inspect_pr's real readback."""
     if report.get("pr_state") != "MERGED":
         return {"state": "awaiting_main"}
@@ -451,7 +583,7 @@ def after_delivery(repo, report):
     if len(matches) != 1:
         return {"state": "pending", "error": "activation_candidate_ambiguous"}
     try:
-        return activate(matches[0], report)
+        return activate(matches[0], report, entry_type=entry_type)
     except (ActivationError, OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
         # Never let a secondary activation error turn a confirmed merge into an unknown merge.
         return {"state": "pending", "error": str(error) if isinstance(error, ActivationError) else "activation_failed"}
@@ -461,6 +593,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--entry-type", choices=("native_app_copy", "managed_native_app_link"))
     args = parser.parse_args()
     try:
         manifest = read_json(args.manifest)
@@ -478,7 +611,9 @@ def main():
         accepted = [p for p in prs if p.get("merged_at") and p.get("base", {}).get("ref") == "main"]
         if len(accepted) != 1:
             raise ActivationError("activation_main_receipt_missing")
-        result = activate(args.manifest, writer_submit.inspect_pr(root, repository, accepted[0]["number"]))
+        result = activate(
+            args.manifest, writer_submit.inspect_pr(root, repository, accepted[0]["number"]), entry_type=args.entry_type
+        )
     except (ActivationError, OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
         result = {
             "ok": False,
