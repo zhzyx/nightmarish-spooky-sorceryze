@@ -213,8 +213,8 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 		return "Error: A read-only review requires an authorized active API/Codex parent with no pending batch, queue or restore. No reviewer was started.";
 	}
 	const int64_t issue = _work_order_binding("issue_number").to_int();
-	const String request = _work_order_binding("request_id");
-	if (!AIChatIssueGuide::is_bound(issue, request) || !snapshot_state.has("engine_candidate")) {
+	const String review_request = _work_order_binding("request_id");
+	if (!AIChatIssueGuide::is_bound(issue, review_request) || !snapshot_state.has("engine_candidate")) {
 		return "Error: A review must belong to the existing bound parent work order and candidate. No new Issue or candidate was created.";
 	}
 	const Variant prompt_value = p_arguments.get("prompt", Variant());
@@ -223,25 +223,25 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 		return "Error: Review arguments require a prompt and optional title only.";
 	}
 	const String prompt = String(prompt_value).strip_edges();
-	const String title = String(title_value).strip_edges();
-	if (prompt.is_empty() || prompt.utf8().length() > AIChatSubAgents::MAX_WORK_ORDER_CHARS || title.length() > 80) {
+	const String review_title = String(title_value).strip_edges();
+	if (prompt.is_empty() || prompt.utf8().length() > AIChatSubAgents::MAX_WORK_ORDER_CHARS || review_title.length() > 80) {
 		return "Error: Review prompt must contain 1-8192 UTF-8 bytes and title at most 80 characters.";
 	}
 	Dictionary info;
 	info["source"] = "review";
 	info["state"] = "waiting";
 	info["work_order"] = 0;
-	info["request_id"] = request;
+	info["request_id"] = review_request;
 	info["issue_number"] = issue;
-	info["title"] = title;
-	const int id = _create_sub_agent(active_agent, title.is_empty() ? String(U"只读验收") : title.left(AIChatSubAgents::MAX_TITLE_CHARS), info, prompt);
+	info["title"] = review_title;
+	const int id = _create_sub_agent(active_agent, review_title.is_empty() ? String(U"只读验收") : review_title.left(AIChatSubAgents::MAX_TITLE_CHARS), info, prompt);
 	if (id < 0) {
 		return "Error: Read-only reviewer limit reached or history is unavailable.";
 	}
 	// Carry the parent's exact candidate as read-only provenance. Consultation
 	// bypasses production intake and never asks the host to prepare a candidate.
 	agent_sessions[id].snapshot_state["engine_candidate"] = Dictionary(snapshot_state["engine_candidate"]).duplicate(true);
-	_register_design_batch(active_agent, request, issue, id);
+	_register_design_batch(active_agent, review_request, issue, id);
 	if (!design_batches.has(active_agent)) {
 		agent_sessions[id].queued_messages.clear();
 		sub_agents[id]["state"] = "failed";

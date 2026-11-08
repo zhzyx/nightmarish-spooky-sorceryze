@@ -1,0 +1,20 @@
+{
+  "reviewer": "root non-author",
+  "time_utc": "2026-11-08T04:35:42.390996+00:00",
+  "scope": "Only the post-MSVC failure local variable rename delta from reviewed v4b. Actual patch read: request/title -> review_request/review_title at all uses, no changed keys/logic/permissions.",
+  "freeze_sha256": "122de0e36cb81487014f056c880a8fc06b41c48c5c26af7d6bc56a8aab4bc89b",
+  "all_9_frozen_source_hashes_match": true,
+  "actual_author_directed_report_read": {
+    "path": "<private-evidence>/issue551-msvc-rename-review.json",
+    "sha256": "5f19ade7f63af03bd55df804d3d668547503acc521ae7db961b1aa57d7a09f01",
+    "ok": true,
+    "errors": [],
+    "artifact_sha256": "05af5f4f4595caa1e73a9c4be3a963a8e86cc80d3111d503890660f20827bde6"
+  },
+  "decision": "PASS narrow nonfunctional rename delta",
+  "limits": "Root read and hash checked, did not rerun author native case. Prior independent v4b runtime review remains distinct. Mac compile does not prove Windows recovery; newly signed exact-head Windows CI is mandatory. Prior failed553 remains failure.",
+  "public_copy": {
+    "original_private_sha256": "0408db09e9feb1db56db823599125f6f072552f0cf0c097835f0a68935320ee3",
+    "transformation": "Private filesystem paths only replaced with neutral placeholders; all findings, scope, hashes and limitations preserved."
+  }
+}
