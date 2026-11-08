@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "issue600-original-windows-ready-rejected",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-ready-manifest-restart",
+  "kind": "request",
+  "occurred_at": "2026-11-08T19:40:35.4913558Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/600",
+  "agent": {
+    "id": "codex-original-host",
+    "version": "host-version-unreported",
+    "origin": "user-authorized-codex-chat:repository-instructions",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "design_document": "design-docs/windows-ready-manifest-restart.md",
+    "intent": "Resume original Windows editor operation after ready artifact was rejected"
+  },
+  "evidence_refs": [],
+  "sha256": "ecb629f864ef6bf4fbe2d493bd0400f97f79feac4f7b11f0a660183fcdb0407b"
+}

@@ -5807,11 +5807,10 @@ void AIChatDock::_poll_engine_build() {
 	const int exit_code = OS::get_singleton()->get_process_exit_code(engine_build_pid);
 	engine_build_pid = -1;
 	const String executable = String(status.get("executable", "")).replace("\\", "/").simplify_path();
-	const String candidate_manifest = AIChatHostRuntime::candidate_manifest_path(executable);
 	if (exit_code == 0 && stage == "ready" && int(status.get("exit_code", -1)) == 0 && AIChatHostRuntime::self_update_path_matches(executable, engine_build_root) && FileAccess::exists(executable) && executable.nocasecmp_to(OS::get_singleton()->get_executable_path().replace("\\", "/")) != 0) {
 		if (snapshot_state.has("engine_candidate")) {
 			String manifest_error;
-			if (String(status.get("candidate_manifest", "")) != candidate_manifest || !AIChatHostRuntime::artifact_matches(executable, candidate_manifest, snapshot_state["engine_candidate"], manifest_error)) {
+			if (!AIChatHostRuntime::ready_artifact_matches(executable, status.get("candidate_manifest", Variant()), snapshot_state["engine_candidate"], manifest_error)) {
 				Dictionary failure;
 				failure["ok"] = false;
 				failure["error"] = manifest_error;

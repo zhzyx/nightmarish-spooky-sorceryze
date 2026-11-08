@@ -43,6 +43,24 @@ TEST_FORCE_LINK(test_runtime_config)
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
 
+TEST_CASE("[Editor][AIChat] Ready build validates the reported sibling manifest before trusting its contents") {
+	const String executable = OS::get_singleton()->get_executable_path().get_base_dir().path_join("missing-ready-test.exe");
+	const String manifest = AIChatHostRuntime::candidate_manifest_path(executable);
+	String error;
+	CHECK_FALSE(AIChatHostRuntime::ready_artifact_matches(executable, Variant(), Dictionary(), error));
+	CHECK(error == "candidate_artifact_manifest_path_mismatch");
+	CHECK_FALSE(AIChatHostRuntime::ready_artifact_matches(executable, manifest + ".other", Dictionary(), error));
+	CHECK(error == "candidate_artifact_manifest_path_mismatch");
+	CHECK_FALSE(AIChatHostRuntime::ready_artifact_matches(executable, manifest, Dictionary(), error));
+	CHECK(error == "candidate_artifact_manifest_missing");
+	CHECK_FALSE(AIChatHostRuntime::ready_artifact_matches(executable, manifest.replace_char('/', '\\'), Dictionary(), error));
+#ifdef WINDOWS_ENABLED
+	CHECK(error == "candidate_artifact_manifest_missing");
+#else
+	CHECK(error == "candidate_artifact_manifest_path_mismatch");
+#endif
+}
+
 TEST_CASE("[Editor][AIChat] Recorded candidate directory preserves identity across native path separators") {
 	const String path = AIChatHostRuntime::canonical_directory(OS::get_singleton()->get_executable_path().get_base_dir());
 	REQUIRE_FALSE(path.is_empty());

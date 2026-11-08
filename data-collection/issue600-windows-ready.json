@@ -1,0 +1,22 @@
+{
+  "issue_number": 600,
+  "request_id": "windows-ready-manifest-restart",
+  "related_issue": 534,
+  "old_host_result": {
+    "error": "",
+    "ok": false
+  },
+  "producer_stage": "ready",
+  "producer_exit_code": 0,
+  "source_digest": "ae4a6a5f71177c91f911cf2d592c2e23727f8cd5a8f6fe946f6d6a11ad044bd2",
+  "artifact_sha256": "885ef034e3180f4f285ba3661f9dfd16f9aeaceb330f3b042b6e1fab13cc641b",
+  "artifact_hash_reverified": true,
+  "source_manifest_verification": "ok",
+  "raw_path_equal": false,
+  "windows_separator_equivalence": true,
+  "tests": [
+    "Native Windows case: 8 assertions including malformed and mismatching paths; matched path still proceeds to independent manifest validation",
+    "13 self-build tests passed with SCons build interpreter"
+  ],
+  "live_restart": "Original #534 worker restarted via native build_engine on Windows. The active editor process executable matched the ready candidate path and artifact SHA-256. Its original conversation reported restart recovery and forwarded the resumed tool result."
+}

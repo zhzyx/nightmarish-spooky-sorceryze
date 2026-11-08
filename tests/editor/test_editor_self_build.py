@@ -348,7 +348,7 @@ class SelfBuildTests(unittest.TestCase):
             expected_manifest = Path(str(app if native_app else raw) + ".candidate.json")
             self.assertEqual(result["stage"], "ready")
             self.assertEqual(result["executable"], str(expected))
-            self.assertEqual(result["candidate_manifest"], str(expected_manifest))
+            self.assertEqual(result["candidate_manifest"], expected_manifest.as_posix())
             self.assertEqual(json.loads(binding_path.read_text())["artifact_manifest"], str(expected_manifest))
             self.assertEqual(packaged.called, native_app)
             if native_app:
