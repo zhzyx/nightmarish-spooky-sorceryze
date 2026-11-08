@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "request_id": "unified-runtime-native-entry-20261107",
+  "scope": "Final native candidate build, original-project startup, and original parent delivery recovery; original Applications entry acceptance remains separate.",
+  "product_source_changed_by_this_evidence": false,
+  "build": {
+    "source_head": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "stage": "ready",
+    "exit_code": 0,
+    "artifact_layout": "native_app",
+    "artifact_sha256": "ba791f851238c0c5847d67cd445fc33174148c6c14fa0abafc9b6258c80966e7",
+    "manifest_sha256": "8c96dc6713a015accfca647652e0d2b42887b0d1cb7dfcd03b3339ef47d318e0",
+    "source_digest": "62f69713515d3b2e8d3927b29654add79a81d782e82308c3fb14bd7a60744f43",
+    "source_input_count": 16531,
+    "build_status_sha256": "374bd0f5935058a3911f77c933ec5806c90396ab34e0ebf9348bd9f5b0c5b22d",
+    "build_log_sha256": "bdbd48a666bec87bf3ae7d5796d2d460283d11c2988d5d7794e993f4e73d28ab",
+    "sealed_origin_targets_original_project": true,
+    "strict_signature_verified": true
+  },
+  "validation": {
+    "native_origin_resume_fixture": {
+      "ok": true,
+      "mode": "Isolated fixture; does not substitute for production zero-argument startup",
+      "report_sha256": "5ea079f52bf0f4744d3c8dcff25876d58ff8b3e9cd907c1cc9069e02fb3e6852",
+      "source_and_artifact_tampering_rejected": true,
+      "resume_cases_passed": 5
+    },
+    "model_autofetch": {
+      "mode": "Isolated headless fixtures with offline providers and an exact-byte copy of the final signed Mach-O",
+      "artifact_sha256": "ba791f851238c0c5847d67cd445fc33174148c6c14fa0abafc9b6258c80966e7",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 120.353,
+      "source_unchanged": true,
+      "independent_review_sha256": "5b3d2af95a9512bdda93aeef16ed509c2ec74c32a02b72f15e98b087f1a6248b"
+    },
+    "production_candidate": {
+      "normal_zero_argument_launch": true,
+      "original_project_and_parent_restored": true,
+      "persistent_codex_node_workflow_and_build_paths_read_from_live_host": true,
+      "external_coordinator_maintenance_required": true,
+      "system_documents_permission_required": true,
+      "real_provider_chat_executed": false
+    }
+  },
+  "original_parent_recovery": {
+    "issue": 483,
+    "pull_request": 567,
+    "candidate": "28cc3af9f1459c1b2dcfaa9cd4e9316c2b461814",
+    "signed_commit": "f58dea264e21b49beaaa3b4be42aecd1c8361b16",
+    "route": "Authenticated Desktop command to the live engine's native retry-delivery host action",
+    "routing_status": "completed",
+    "business_completed": true,
+    "completion_verified": true,
+    "worker_stage": "completed",
+    "activation_state": "activated",
+    "activation_entry_type": "managed_native_app_link",
+    "activation_reused": true,
+    "original_generation": 1,
+    "live_generation": 0,
+    "original_transaction_journal_unchanged": true,
+    "worker_receipt_sha256": "d3b44fc4ce5c3a89fdac9f3f0e59e0ed8a9c069e5593558ea9eab237c80ca34c",
+    "independent_review_sha256": "a4c0d62926e7a8ad4b0baac4d5f570c0e4d139a4e06c1041b2b02eb74eaf009a",
+    "environment_recovery": "An earlier retry failed during validation because Git could not read an evicted local pack index. A coordinator repaired the Git caches before the successful native retry. This was not an uninterrupted autonomous first pass."
+  },
+  "post_main_acceptance": {
+    "original_applications_entry_activation": "pending",
+    "original_applications_entry_cold_launch": "pending",
+    "real_provider_chat": "pending",
+    "followup_issues": [390, 393],
+    "note": "Candidate readiness, this evidence commit, and the original private-entry recovery do not alone complete the original Applications-entry acceptance."
+  }
+}

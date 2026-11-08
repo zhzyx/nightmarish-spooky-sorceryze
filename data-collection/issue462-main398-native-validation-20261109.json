@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "issue": 462,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "scope": "Replacement native candidate after integrating accepted main; original Applications-entry acceptance remains a separate post-main step.",
+  "product_source_changed_by_this_evidence_commit": false,
+  "prior_candidate_record": "data-collection/issue462-final-native-entry-validation-20261109.json",
+  "prior_candidate_record_sha256": "2edd8632433690d34f0f5da846466309abd1b35e04cd9edc1d81a66968a91bdb",
+  "integration": {
+    "previous_build_head": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "accepted_main": "398376dda58218facce39aaf7733339bbc592526",
+    "upstream_pull_request": 578,
+    "upstream_issue": 543,
+    "source_input_paths_changed": 30,
+    "excluded_evidence_paths_changed": 77,
+    "method": "Normal fast-forward of the existing prepared candidate followed by the supported incremental native_app build",
+    "blocker_issue": 581
+  },
+  "build": {
+    "source_head": "398376dda58218facce39aaf7733339bbc592526",
+    "stage": "ready",
+    "exit_code": 0,
+    "seconds": 209.3,
+    "artifact_layout": "native_app",
+    "artifact_sha256": "fe1a34bd2b53322cacb7c336bc792fe82d5a2a4f1e08351d5cd307d29dc259fc",
+    "manifest_sha256": "e844cf8e7f6668f0b120a9f9da77ee21c814fed75dcfb4b6a760736cec5410b4",
+    "source_digest": "3df89f875ec4d1e1b3cffcf6f2e40e53772c31a8ae36595ff5c4ff788aa60d6e",
+    "source_input_count": 16551,
+    "build_status_sha256": "ed54a452e4c33eb01c56b84b8688bb68e91101fc5010521c84363e6b507ba69a",
+    "build_log_sha256": "bf9202f350e004ed25879351e3a2ad953e018c62be04128fdad9e16a60455508",
+    "sealed_origin_targets_original_project": true,
+    "strict_signature_verified": true,
+    "built_in_resume_checks_passed": 5
+  },
+  "validation": {
+    "bundle_dependency_unit": {
+      "passed": 1,
+      "failed": 0,
+      "summary_sha256": "ae5823e5a3e6323f187cb1af3152a38c130f4a14089aaa1f9cbeba116a44921e"
+    },
+    "integrated_native_bundle": {
+      "mode": "Isolated native projects and relocated runtime scripts; no model inference",
+      "runs": 4,
+      "checks_passed": 187,
+      "checks_failed": 0,
+      "seconds": 23.261,
+      "installed_bundle_matches_source": true,
+      "artifact_and_registered_source_inputs_unchanged": true,
+      "report_sha256": "d710ac0b21b23aad979bf7d351fe98a6fa7f82059ac40174dc86a52584907c4c",
+      "independent_summary_sha256": "01c031391d47ea788310cbf7342948a34e55eeb561697a04a5f5ebeed674b0ea",
+      "limitation": "Exit-time resource-release diagnostics are retained; this check does not establish their root cause or repair."
+    },
+    "model_autofetch": {
+      "mode": "One isolated run with offline providers and an exact-byte copy of this final signed Mach-O",
+      "artifact_sha256": "fe1a34bd2b53322cacb7c336bc792fe82d5a2a4f1e08351d5cd307d29dc259fc",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 123.974,
+      "source_guard_unchanged": true,
+      "independent_review_sha256": "41504f6e6b0bd46c99a16f73bb4acac4041520718f0d5caff5bd8784452c857b"
+    },
+    "real_codex_provider_readonly": {
+      "login_status_exit_code": 0,
+      "logged_in": true,
+      "model_list_exit_code": 0,
+      "model_count": 8,
+      "models_with_reasoning_information": 8,
+      "persistent_configuration_unchanged": true,
+      "chat_sent": false,
+      "summary_sha256": "18756f7cc716ce7d1b5d704243303cab1c6cf7f318fd517fff32d0fc9a8514e1",
+      "scope": "Direct calls through the configured official CLI and bridge; live-editor catalog loading and chat acceptance remain separate."
+    },
+    "production_candidate": {
+      "normal_zero_argument_launch_requested": true,
+      "startup_completed": true,
+      "system_documents_permission": "Granted by the user before startup completed",
+      "original_project_restored": true,
+      "original_parent_session_restored": true,
+      "persistent_runtime_paths_read_from_live_host": true,
+      "automatic_catalog_loaded": true,
+      "advertised_model_count": 8,
+      "supported_reasoning_choices": 7,
+      "live_readback_sha256": "5dad2b5d2416c017615ee76bc09fe78594b1cc9641f9dd0baf83c234d03ef5c8",
+      "real_provider_chat_executed": false
+    }
+  },
+  "post_main_acceptance": {
+    "original_applications_entry_activation": "pending",
+    "original_applications_entry_cold_launch": "pending",
+    "real_provider_chat": "pending",
+    "followup_issues": [390, 393]
+  }
+}
