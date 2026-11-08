@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "independent_final_immutable_collected_records_review",
+  "result": "no_blocker_for_three_exact_historical_record_exceptions",
+  "findings": [],
+  "records": [
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-independent-review.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "sha256": "4d7ee60bac2ad135df7a9f38ed0cba8a0b40135f491a5230c5cc50e8eea5c048",
+      "exact_git_archive_and_current_bytes_equal": true
+    },
+    {
+      "path": "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "sha256": "214aecd53387df483785b47749a03ab4a6fbed1785413d77510eca2c7ff68772",
+      "exact_git_archive_and_current_bytes_equal": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json",
+      "source_commit": "bd89a144800f2cde301dcdc13dda137926599d82",
+      "sha256": "4cba5b0cddd6c16c3803314442a97d1e25294a1aba25c6b1b9e4bc6e7ea7185e",
+      "exact_git_archive_and_current_bytes_equal": true
+    }
+  ],
+  "archive_sha256": "0b9cf83ed68c1d94873ea632f1fbce6361d987b206a2671324f031119eb47087",
+  "correction_record_sha256": "1c42f4d0e0bb6ac707804549e6e0d1853d81c2a296c098535223163ff88db29a",
+  "checker_configuration": {
+    "path": "pyproject.toml",
+    "baseline_sha256": "71e50a761c5e63ca1aab5b68e7df20a5d66ea097660f7a67c841c2032b49b045",
+    "candidate_sha256": "d190b093539b2aa3be69d7fb70acd11d43da9dde9f03e35eed5933ba50202939",
+    "added_exact_paths": [
+      "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
+      "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-independent-review.json",
+      "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json"
+    ],
+    "existing_entries_order_and_all_other_toml_values_unchanged": true
+  },
+  "checks": [
+    "All three collected records are restored byte-for-byte to archived originals and their declared committed sources.",
+    "Configuration diff consists solely of three full historical record paths and one explanatory comment. No new directory wildcard, product/test exclusion or word-list change.",
+    "Final correction record accurately distinguishes rejected Unicode representation attempts from restored final bytes."
+  ],
+  "limits": [
+    "Prior encoding and single-event reviews describe earlier rejected snapshots, not this final state.",
+    "Final complete staged-index spelling check, immutable formal gate, exact successor CI and main readback still require actual execution.",
+    "This report makes no new runtime or human-approval claim."
+  ],
+  "production_state_changed": false
+}

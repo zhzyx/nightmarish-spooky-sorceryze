@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "kind": "final_immutable_collected_records_static_correction",
+  "rejected_attempts": [
+    "Diting history guard rejected quality-event byte change",
+    "Collection source guard also rejected equivalent ordinary-report byte changes"
+  ],
+  "final_correction": "All three original collected records restored byte-for-byte, SHA-verified against archive and committed source. Existing codespell skip list gets only those three exact full file paths. No directory wildcard or product/test/word-list exclusion.",
+  "exact_paths": [
+    "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-independent-review.json",
+    "data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
+    "gonggong-diting-data/events/gonggong-workspace/editor-command-gaps-batch-20261108/kuafu-5d59b8ed57bac44eedb68b07b2b851c8d344e1e4.json"
+  ],
+  "archive": "data-collection/requests/editor-command-gaps-batch-20261108/immutable-originals-archive.json",
+  "scope": "Prior Unicode representation reports are retained as records of rejected attempts and do not describe final delivered bytes. No product or test execution semantics changed.",
+  "verification_required": "Final full staged index codespell, immutable formal gate, exact successor CI and main readback"
+}
