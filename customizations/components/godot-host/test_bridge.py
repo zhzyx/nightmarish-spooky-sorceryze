@@ -14,6 +14,22 @@ bridge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bridge)
 
 
+def batch_receipt(kwargs):
+    import hashlib
+
+    receipts = []
+    for path in json.loads(kwargs["input"]):
+        envelope = json.loads(Path(path).read_text(encoding="utf-8"))
+        body = {key: value for key, value in envelope.items() if key != "sha256"}
+        digest = hashlib.sha256(
+            json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        receipts.append(
+            dict(state="recorded_file", tenant_id=envelope["tenant_id"], event_id=envelope["event_id"], sha256=digest)
+        )
+    return json.dumps(dict(ok=True, receipts=receipts))
+
+
 class IssueIntakeRecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -47,6 +63,7 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
         for code in ["GITHUB_NETWORK", "GITHUB_HTTP_429", "GITHUB_HTTP_500", "GITHUB_HTTP_503"]:
             with (
                 self.subTest(code=code),
+                patch.object(bridge.time, "monotonic", side_effect=(10.0 + i / 10 for i in range(100))),
                 patch.object(
                     bridge.subprocess,
                     "run",
@@ -214,11 +231,11 @@ class ChatGateTests(unittest.TestCase):
                 return types.SimpleNamespace(
                     returncode=0 if ok else 1, stdout="FRAMEWORK" if ok else "", stderr="admission blocked"
                 )
-            event = json.loads(Path(command[-1]).read_text())
+            event = json.loads(Path(json.loads(kwargs["input"])[0]).read_text())
             self.assertNotIn(self.request["outcome"], json.dumps(event))
             self.assertEqual(event["payload"]["context_accepted"], ok)
             return types.SimpleNamespace(
-                returncode=0 if receipt_ok else 1, stdout='{"state":"recorded_file"}', stderr="receipt unavailable"
+                returncode=0 if receipt_ok else 1, stdout=batch_receipt(kwargs), stderr="receipt unavailable"
             )
 
         return run
@@ -376,7 +393,7 @@ class ChatGateTests(unittest.TestCase):
 
         def deliver(*args, **kwargs):
             time.sleep(0.15)
-            return types.SimpleNamespace(returncode=0, stdout='{"state":"recorded_file"}', stderr="")
+            return types.SimpleNamespace(returncode=0, stdout=batch_receipt(kwargs), stderr="")
 
         with (
             patch.object(bridge.subprocess, "run", side_effect=deliver) as run,
@@ -385,6 +402,313 @@ class ChatGateTests(unittest.TestCase):
             results = list(pool.map(lambda _: bridge.flush(self.root), range(2)))
         self.assertTrue(all(result["ok"] for result in results))
         self.assertEqual(run.call_count, 1)
+
+
+class ScopedOutboxTests(unittest.TestCase):
+    def test_failed_other_request_is_retained_without_blocking_current(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            other = {
+                "event_id": "z-other",
+                "tenant_id": "tenant",
+                "request_id": "other",
+                "source_ref": "https://example/issues/1",
+            }
+            current = {
+                "event_id": "a-current",
+                "tenant_id": "tenant",
+                "request_id": "current",
+                "source_ref": "https://example/issues/2",
+            }
+            bridge.enqueue(root, other)
+            bridge.enqueue(root, current)
+            scope = {key: current[key] for key in ("tenant_id", "request_id", "source_ref")}
+            with (
+                patch.object(bridge, "storage_entry", return_value="storage.py"),
+                patch.object(bridge, "host_environment", return_value={}),
+                patch.object(
+                    bridge.subprocess,
+                    "run",
+                    side_effect=lambda *args, **kwargs: types.SimpleNamespace(
+                        returncode=0, stdout=batch_receipt(kwargs), stderr=""
+                    ),
+                ) as run,
+            ):
+                self.assertTrue(bridge.flush(root, scope)["ok"])
+                self.assertEqual(run.call_count, 1)
+                self.assertTrue((root / ".gonggong-outbox/chat/z-other.json").exists())
+                self.assertFalse((root / ".gonggong-outbox/chat/a-current.json").exists())
+                run.side_effect = None
+                run.return_value = types.SimpleNamespace(returncode=1, stdout="", stderr="failed")
+                with self.assertRaises(ValueError):
+                    bridge.flush(root, {key: other[key] for key in scope})
+                self.assertTrue((root / ".gonggong-outbox/chat/z-other.json").exists())
+
+    def test_cross_scope_predecessor_failure_blocks_current_and_retains_both(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            other = {"event_id": "z-other", "tenant_id": "tenant", "request_id": "other", "source_ref": "issue-1"}
+            current = {
+                "event_id": "a-current",
+                "tenant_id": "tenant",
+                "request_id": "current",
+                "source_ref": "issue-2",
+                "evidence_refs": ["z-other"],
+            }
+            bridge.enqueue(root, other)
+            bridge.enqueue(root, current)
+            scope = {key: current[key] for key in ("tenant_id", "request_id", "source_ref")}
+            with (
+                patch.object(bridge, "storage_entry", return_value="storage.py"),
+                patch.object(bridge, "host_environment", return_value={}),
+                patch.object(
+                    bridge.subprocess,
+                    "run",
+                    return_value=types.SimpleNamespace(returncode=1, stdout="", stderr="failed dependency"),
+                ) as run,
+            ):
+                with self.assertRaises(ValueError):
+                    bridge.flush(root, scope)
+                self.assertEqual(run.call_count, 1)
+                self.assertEqual(len(list((root / ".gonggong-outbox/chat").glob("*.json"))), 2)
+
+    def test_same_scope_cycle_is_rejected_before_delivery(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            scope = {
+                "tenant_id": "tenant",
+                "request_id": "current",
+                "source_ref": "issue-2",
+            }
+            for event_id, predecessor in (("a", "z"), ("z", "a")):
+                bridge.enqueue(
+                    root,
+                    {
+                        **scope,
+                        "event_id": event_id,
+                        "evidence_refs": [predecessor],
+                    },
+                )
+            with patch.object(bridge.subprocess, "run") as run:
+                with self.assertRaisesRegex(ValueError, "Cyclic"):
+                    bridge.flush(root, scope)
+                run.assert_not_called()
+            self.assertEqual(len(list((root / ".gonggong-outbox/chat").glob("*.json"))), 2)
+
+    def test_unrelated_duplicate_identity_does_not_block_selected_scope(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            other = dict(tenant_id="tenant", event_id="other", request_id="other", source_ref="issue-1")
+            current = dict(tenant_id="tenant", event_id="current", request_id="current", source_ref="issue-2")
+            bridge.enqueue(root, other)
+            outbox = root / ".gonggong-outbox/chat"
+            (outbox / "duplicate.json").write_text(json.dumps(other), encoding="utf-8")
+            bridge.enqueue(root, current)
+            scope = {key: current[key] for key in ("tenant_id", "request_id", "source_ref")}
+            selected = bridge.scoped_pending(sorted(outbox.glob("*.json")), scope)
+            self.assertEqual([path.name for path in selected], ["current.json"])
+            self.assertEqual(len(list(outbox.glob("*.json"))), 3)
+
+    def test_duplicate_explicit_predecessor_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            other = dict(tenant_id="tenant", event_id="other", request_id="other", source_ref="issue-1")
+            current = dict(
+                tenant_id="tenant",
+                event_id="current",
+                request_id="current",
+                source_ref="issue-2",
+                evidence_refs=["other"],
+            )
+            bridge.enqueue(root, other)
+            outbox = root / ".gonggong-outbox/chat"
+            (outbox / "duplicate.json").write_text(json.dumps(other), encoding="utf-8")
+            bridge.enqueue(root, current)
+            scope = {key: current[key] for key in ("tenant_id", "request_id", "source_ref")}
+            with self.assertRaisesRegex(ValueError, "Duplicate"):
+                bridge.scoped_pending(sorted(outbox.glob("*.json")), scope)
+            self.assertEqual(len(list(outbox.glob("*.json"))), 3)
+
+    def test_unmatched_batch_receipts_retain_every_envelope(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for identity in ("a", "b"):
+                bridge.enqueue(
+                    root, dict(event_id=identity, tenant_id="tenant", request_id="request", source_ref="issue")
+                )
+            result = types.SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"ok": True, "receipts": [{"state": "queued"}, {"state": "queued"}]}),
+                stderr="",
+            )
+            with (
+                patch.object(bridge, "storage_entry", return_value="storage.py"),
+                patch.object(bridge, "host_environment", return_value={}),
+                patch.object(bridge.subprocess, "run", return_value=result),
+            ):
+                with self.assertRaisesRegex(ValueError, "Unmatched"):
+                    bridge.flush(root)
+            self.assertEqual(len(list((root / ".gonggong-outbox/chat").glob("*.json"))), 2)
+
+
+class ProcessOutboxLockTests(unittest.TestCase):
+    def holder(self, root):
+        import subprocess
+        import sys
+
+        script = """import runpy, time, pathlib, sys
+b = runpy.run_path(sys.argv[1])
+root = pathlib.Path(sys.argv[2])
+with b['outbox_lock'](root, time.monotonic() + 3):
+    print('locked', flush=True)
+    while not (root / 'release').exists():
+        time.sleep(.01)
+"""
+        script_path = root / "holder.py"
+        script_path.write_text(script, encoding="utf-8")
+        process = subprocess.Popen(
+            [sys.executable, str(script_path), str(Path(bridge.__file__).resolve()), str(root)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.addCleanup(process.stdout.close)
+        self.addCleanup(process.stderr.close)
+        self.addCleanup(lambda: process.kill() if process.poll() is None else None)
+        ready = process.stdout.readline().strip()
+        self.assertEqual(ready, "locked", process.stderr.read() if not ready else "")
+        return process
+
+    def test_independent_process_waits_for_healthy_owner(self):
+        import threading
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            owner = self.holder(root)
+            release = threading.Timer(0.15, lambda: (root / "release").touch())
+            release.start()
+            try:
+                with bridge.outbox_lock(root, time.monotonic() + 1):
+                    self.assertTrue((root / "release").exists())
+            finally:
+                release.join()
+            self.assertEqual(owner.wait(timeout=3), 0)
+
+    def test_independent_process_stalled_owner_remains_bounded(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            owner = self.holder(root)
+            try:
+                with self.assertRaisesRegex(ValueError, "delivery busy"):
+                    with bridge.outbox_lock(root, time.monotonic() + 0.1):
+                        self.fail("Stalled owner must not be bypassed")
+            finally:
+                (root / "release").touch()
+            self.assertEqual(owner.wait(timeout=3), 0)
+        self.assertGreater(bridge.RECEIPT_LOCK_WAIT_SECONDS, bridge.RECEIPT_EXECUTION_SECONDS)
+
+
+class StorageValidationCostTests(unittest.TestCase):
+    def test_batch_interrupt_after_parent_allows_graph_and_retry(self):
+        import runpy
+        import copy
+
+        storage = (
+            Path(bridge.__file__).resolve().parents[3]
+            / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
+        )
+        module = runpy.run_path(str(storage))
+        source = next((storage.parents[5] / "gonggong-diting-data/events").rglob("*.json"))
+        template = json.loads(source.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = root / "data"
+            data.mkdir()
+            paths = []
+            for identity, refs in (("child", ["parent"]), ("parent", [])):
+                value = copy.deepcopy(template)
+                value.pop("sha256", None)
+                value.pop("supersedes", None)
+                value.update(event_id=identity, evidence_refs=refs)
+                path = root / (identity + ".json")
+                path.write_text(json.dumps(value), encoding="utf-8")
+                paths.append(path)
+
+            def load(_):
+                records = {}
+                for path in data.rglob("*.json"):
+                    value = module["event"](json.loads(path.read_text(encoding="utf-8")))
+                    records[(value["tenant_id"], value["event_id"])] = value
+                module["graph"](records)
+                return root, data, {}, records, []
+
+            atomic = module["atomic_new"]
+            writes = []
+
+            def interrupt(path, value):
+                writes.append(value["event_id"])
+                if len(writes) == 2:
+                    raise OSError("simulated interruption")
+                atomic(path, value)
+
+            function = module["record_batch"]
+            with patch.dict(
+                function.__globals__,
+                {"load": load, "merged_records": lambda _, records: dict(records), "atomic_new": interrupt},
+            ):
+                with self.assertRaises(OSError):
+                    function(root, paths)
+                self.assertEqual(writes, ["parent", "child"])
+                load(root)  # Persisted prefix remains a valid graph.
+            with patch.dict(function.__globals__, {"load": load, "merged_records": lambda _, records: dict(records)}):
+                result = function(root, paths)
+            self.assertEqual([item["event_id"] for item in result["receipts"]], ["child", "parent"])
+            self.assertTrue(result["receipts"][1]["idempotent"])
+            self.assertEqual(len(load(root)[3]), 2)
+
+    def test_batch_replays_load_once_and_return_each_receipt(self):
+        import runpy
+
+        storage = (
+            Path(bridge.__file__).resolve().parents[3]
+            / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
+        )
+        module = runpy.run_path(str(storage))
+        root = storage.parents[5]
+        inputs = list((root / "gonggong-diting-data/events").rglob("*.json"))[:2]
+        function = module["record_batch"]
+        with patch.dict(function.__globals__, {"load": unittest.mock.Mock(wraps=module["load"])}):
+            result = function(root, inputs)
+            self.assertEqual(function.__globals__["load"].call_count, 2)
+            self.assertEqual(
+                function.__globals__["load"].call_args_list,
+                [unittest.mock.call(root), unittest.mock.call(root, historical=True)],
+            )
+        self.assertTrue(result["ok"])
+        self.assertEqual(len(result["receipts"]), 2)
+        self.assertTrue(all(receipt["idempotent"] for receipt in result["receipts"]))
+
+    def test_uncached_load_does_not_resolve_each_event(self):
+        import runpy
+
+        storage = (
+            Path(bridge.__file__).resolve().parents[3]
+            / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
+        )
+        module = runpy.run_path(str(storage))
+        root = storage.parents[5]
+        original = Path.resolve
+        event_resolutions = []
+
+        def resolve(path, *args, **kwargs):
+            if path.suffix == ".json" and "events" in path.parts:
+                event_resolutions.append(path)
+            return original(path, *args, **kwargs)
+
+        with patch.object(Path, "resolve", resolve):
+            _, _, _, records, _ = module["load"](root)
+        self.assertTrue(records)
+        self.assertEqual(event_resolutions, [])
 
 
 if __name__ == "__main__":

@@ -38,7 +38,7 @@ function outputSchemaFor(input, base) {
         },
     }));
     return { ...base, properties: { ...base.properties, actions: {
-        type: 'array', maxItems: variants.length ? 8 : 0,
+        type: 'array', maxItems: variants.length ? 32 : 0,
         items: variants.length === 1 ? variants[0] : variants.length ? { anyOf: variants } : base.properties.actions.items,
     } } };
 }

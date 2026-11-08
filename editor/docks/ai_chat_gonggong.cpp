@@ -123,10 +123,24 @@ void AIChatDock::_flush_gonggong(const Callable &p_continuation) {
 		}
 		return;
 	}
-	gonggong_receipt_continuation = p_continuation;
-	gonggong_continuation_generation = session_generation;
-	gonggong_receipt_reflush = gonggong_receipt_pid >= 0;
-	if (!gonggong_receipt_reflush) {
+	String provenance_error;
+	if (!_recover_active_provenance(provenance_error) ||
+			(snapshot_state.has("engine_candidate") && !_validate_engine_candidate(provenance_error))) {
+		_design_reporting_blocked(session_generation);
+		set_meta("gonggong_reporting", "pending_retry");
+		_append(TTR("Error"), provenance_error);
+		if (p_continuation.is_valid()) {
+			_set_busy(false);
+		}
+		return;
+	}
+	Dictionary batch;
+	batch["root"] = gonggong_report_root;
+	batch["scope"] = gonggong_reporting.duplicate(true);
+	batch["generation"] = session_generation;
+	batch["continuation"] = p_continuation;
+	gonggong_receipt_queue.push_back(batch);
+	if (gonggong_receipt_pid < 0) {
 		_start_gonggong_flush();
 	}
 }
@@ -146,6 +160,10 @@ void AIChatDock::_poll_gonggong_receipt() {
 	if (parsed.get_type() == Variant::DICTIONARY) {
 		result = parsed;
 	}
+	_finish_gonggong_receipt(result);
+}
+
+void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
 	Callable continuation = gonggong_receipt_continuation;
 	gonggong_receipt_continuation = Callable();
 	const bool current = busy && gonggong_continuation_generation == session_generation;
@@ -153,20 +171,20 @@ void AIChatDock::_poll_gonggong_receipt() {
 	if (!ok) {
 		_design_reporting_blocked(gonggong_receipt_generation);
 	}
-	if (gonggong_receipt_reflush) {
-		gonggong_receipt_reflush = false;
-		if (gonggong_receipt_generation != session_generation) {
-			// The old source has no final acknowledgment. Another workspace's
-			// fresh flush cannot release that live batch's completion event.
-			_design_reporting_blocked(gonggong_receipt_generation);
-			_resume_design_completions(gonggong_receipt_generation);
-		}
-		// A previous flush cannot acknowledge envelopes queued after it started.
-		// Terminal envelopes also require a fresh flush, but never resume work.
-		_flush_gonggong(current ? continuation : Callable());
-		return;
+	if (!gonggong_receipt_queue.is_empty()) {
+		callable_mp(this, &AIChatDock::_start_gonggong_flush).call_deferred();
 	}
-	_resume_design_completions(gonggong_receipt_generation);
+	bool generation_pending = false;
+	for (int i = 0; i < gonggong_receipt_queue.size(); i++) {
+		const Dictionary pending_batch = gonggong_receipt_queue[i];
+		if (uint64_t(pending_batch["generation"]) == gonggong_receipt_generation) {
+			generation_pending = true;
+			break;
+		}
+	}
+	if (!generation_pending) {
+		_resume_design_completions(gonggong_receipt_generation);
+	}
 	if (design_batches.has(active_agent) || _design_child_parent(active_agent) >= 0) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 	}
@@ -175,7 +193,8 @@ void AIChatDock::_poll_gonggong_receipt() {
 	}
 	set_meta("gonggong_reporting", ok ? "recorded_file" : "pending_retry");
 	if (!ok) {
-		_append(TTR("Error"), U"GongGong 文件回执失败，队列已保留，后续模型及工具执行已阻止。");
+		const String detail = _redact(String(result.get("error", "")).strip_edges()).left(320);
+		_append(TTR("Error"), String(U"GongGong 文件回执失败，队列已保留。") + (detail.is_empty() ? String(U"未收到可读取的投递结果。") : detail));
 		if (current && continuation.is_valid()) {
 			_set_busy(false);
 		}
@@ -198,44 +217,69 @@ void AIChatDock::_end_gonggong(const String &p_status) {
 	}
 	_record_gonggong("coverage", "native_chat_messages_and_tools", "metadata_only_usage_unavailable");
 	_record_gonggong("request_end", "chat", p_status);
+	_flush_gonggong(Callable());
 	gonggong_reporting.clear();
 	gonggong_running_steps.clear();
-	_flush_gonggong(Callable());
 }
 
 void AIChatDock::_start_gonggong_flush() {
 	if (gonggong_receipt_pid >= 0) {
 		return;
 	}
+	if (gonggong_receipt_queue.is_empty()) {
+		return;
+	}
+	const Dictionary batch = gonggong_receipt_queue[0];
+	gonggong_receipt_queue.remove_at(0);
+	gonggong_receipt_root = batch["root"];
+	gonggong_receipt_scope = batch["scope"];
+	gonggong_receipt_generation = batch["generation"];
+	gonggong_continuation_generation = gonggong_receipt_generation;
+	gonggong_receipt_continuation = batch["continuation"];
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const String workflow_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	String provenance_error;
-	if (workflow_python.is_empty() || !_recover_active_provenance(provenance_error, runtime)) {
-		_design_reporting_blocked();
-		set_meta("gonggong_reporting", "pending_retry");
-		_append(TTR("Error"), provenance_error);
-		gonggong_receipt_continuation = Callable();
-		_set_busy(false);
+	// Resolve the adapter from the running engine's verified installation. The
+	// work-order candidate can legitimately contain an older bridge protocol.
+	const String installed_bridge = _engine_root().path_join("customizations/components/godot-host/bridge.py");
+	const bool scoped_protocol = FileAccess::exists(installed_bridge) &&
+			FileAccess::get_file_as_string(installed_bridge).contains("gonggong-scoped-batch-receipts-v1");
+	// Older installed hosts retain their complete, gated outbox drain protocol.
+	// Scope is still mandatory above the transport; never substitute an empty one.
+	const String receipt_bridge = scoped_protocol ? installed_bridge : gonggong_receipt_root.path_join("tools/gonggong_bridge.py");
+	String provenance_error = "receipt_scope_or_installed_bridge_missing";
+	if (workflow_python.is_empty() || _engine_root().is_empty() || !FileAccess::exists(receipt_bridge) || gonggong_receipt_root.is_empty() ||
+			String(gonggong_receipt_scope.get("tenant_id", String())).is_empty() ||
+			String(gonggong_receipt_scope.get("request_ref", String())).is_empty() ||
+			String(gonggong_receipt_scope.get("source_ref", String())).is_empty()) {
+		Dictionary failure;
+		failure["ok"] = false;
+		failure["error"] = provenance_error;
+		_finish_gonggong_receipt(failure);
 		return;
 	}
 	gonggong_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-receipt-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
 	List<String> arguments;
-	for (const String &arg : { gonggong_report_root.path_join("tools/gonggong_bridge.py"), String("flush"), String("--workspace"), gonggong_report_root, String("--out"), gonggong_receipt_path }) {
+	for (const String &arg : { receipt_bridge, String("flush"), String("--workspace"), gonggong_receipt_root, String("--out"), gonggong_receipt_path }) {
 		arguments.push_back(arg);
+	}
+	if (scoped_protocol) {
+		arguments.push_back("--receipt-tenant");
+		arguments.push_back(gonggong_receipt_scope.get("tenant_id", String()));
+		arguments.push_back("--receipt-request");
+		arguments.push_back(gonggong_receipt_scope.get("request_ref", String()));
+		arguments.push_back("--receipt-source");
+		arguments.push_back(gonggong_receipt_scope.get("source_ref", String()));
 	}
 	ProcessID pid = 0;
 	if (OS::get_singleton()->create_process(workflow_python, arguments, &pid) != OK) {
-		_design_reporting_blocked();
-		set_meta("gonggong_reporting", "pending_retry");
-		if (gonggong_receipt_continuation.is_valid()) {
-			gonggong_receipt_continuation = Callable();
-			_set_busy(false);
-		}
+		Dictionary failure;
+		failure["ok"] = false;
+		failure["error"] = "receipt_process_start_failed";
+		_finish_gonggong_receipt(failure);
 		return;
 	}
 	gonggong_receipt_pid = pid;
-	gonggong_receipt_generation = session_generation;
 	if (!gonggong_receipt_timer) {
 		gonggong_receipt_timer = memnew(Timer);
 		gonggong_receipt_timer->set_wait_time(0.1);
@@ -317,7 +361,11 @@ bool AIChatDock::_direct_daqian_task() const {
 	const String request_id = entry.get("request_id", "");
 	const String number = entry.get("issue_number", "");
 	const String source = entry.get("issue_url", entry.get("source", ""));
-	return request_id.begins_with("daqian-direct-") && AIChatIssueGuide::is_bound(number.to_int(), request_id) && source.ends_with("/issues/" + number);
+	// The workbench also opens Issues created outside its own intake form.
+	// Their stable request IDs come from the repository. The host rechecks
+	// the Issue, request and current actor before each model/tool round.
+	const bool workbench_issue = !String(entry.get("scope", "")).is_empty() && source.begins_with("https://github.com/");
+	return (workbench_issue || request_id.begins_with("daqian-direct-")) && AIChatIssueGuide::is_bound(number.to_int(), request_id) && source.ends_with("/issues/" + number);
 }
 
 void AIChatDock::_begin_gonggong_context() {

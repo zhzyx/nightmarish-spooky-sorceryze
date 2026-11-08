@@ -2420,7 +2420,22 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		}
 	}
 	if (!tool_calls.is_empty()) {
-		if (!allow_tools->is_pressed() || tool_calls.size() > 8 || String(choice.get("finish_reason", "")) == "length") {
+		bool expanded_codex_reads = backend->get_selected() == 2 && tool_calls.size() <= 32;
+		for (const Variant &entry : tool_calls) {
+			if (entry.get_type() != Variant::DICTIONARY) {
+				expanded_codex_reads = false;
+				break;
+			}
+			Dictionary call = entry;
+			Variant function_value = call.get("function", Variant());
+			if (function_value.get_type() != Variant::DICTIONARY) {
+				expanded_codex_reads = false;
+				break;
+			}
+			Dictionary function = function_value;
+			expanded_codex_reads = expanded_codex_reads && consultation_read_tool(function.get("name", ""));
+		}
+		if (!allow_tools->is_pressed() || (tool_calls.size() > 8 && !expanded_codex_reads) || String(choice.get("finish_reason", "")) == "length") {
 			const String reason = !allow_tools->is_pressed() ? String(U"本地工具权限已关闭，未执行本次操作。") : String(U"模型工具响应超过单批数量或输出长度限制，未执行本次操作。这不是权限未开放。");
 			_append(TTR("Error"), reason);
 			_stop();
@@ -3917,7 +3932,7 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("launch_daqian_routing", "binding", "selection"), &AIChatDock::_launch_daqian_routing);
 	ClassDB::bind_method(D_METHOD("get_legacy_candidate_failure", "owner", "workspace", "issue"), &AIChatDock::_get_legacy_candidate_failure);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
-	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()));
+	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_daqian_chat);
 	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_daqian_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
@@ -4061,7 +4076,7 @@ static bool has_personal_daqian_binding(const String &p_scope, const String &p_s
 	return false;
 }
 
-String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt) {
+String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt, bool p_existing_only) {
 	daqian_mount_conversation = String();
 	if (p_source.is_empty() || p_issue < 0 || ((p_issue == 0) != p_request.is_empty())) {
 		return U"工单绑定不完整。";
@@ -4183,11 +4198,14 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 			break;
 		}
 	}
-	if (index < 0 && !unverified_legacy) {
+	if (index < 0 && !unverified_legacy && !p_existing_only) {
 		index = published_draft;
 	}
 	if (index < 0 && unverified_legacy) {
 		return U"找到旧版关联对话，但无法核实所属账号。请切回原工作区和账号后再打开；原对话仍可从 AI Chat 查看。";
+	}
+	if (p_existing_only && index < 0) {
+		return U"此工单已有开工记录，但当前编辑器没有找到原工作者对话。请核对原工作区、账号和交接记录。";
 	}
 	if (models_loading) {
 		// Resume catalog discovery after the explicit work-order action.
@@ -5024,6 +5042,8 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	arguments.push_back("chat");
 	arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
 	arguments.push_back(cli_input_path);
+	arguments.push_back("--progress");
+	arguments.push_back(GongGongRuntimeConfig::path(runtime, "workflow_python"));
 	Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
 	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 		_release_cli_request();
@@ -5254,18 +5274,45 @@ void AIChatDock::_poll_cli() {
 	const bool timeout = cli_listing_models ? now - cli_started > 35000 : (!cli_session || cli_waiting) && (now - cli_last_activity > 310000 || now - cli_started > 1810000);
 	const bool running = OS::get_singleton()->is_process_running(cli_process_id);
 	int newline = -1;
-	if (cli_session) {
+	const bool codex_chat = !cli_session && !cli_listing_models && !cli_input_path.is_empty() && backend->get_selected() == 2;
+	if (cli_session || codex_chat) {
 		for (int i = 0; i < cli_output.size(); i++) {
 			if (cli_output[i] == '\n') {
 				newline = i;
 				break;
 			}
 		}
-		if (!cli_waiting && newline < 0 && !running) {
+		if (cli_session && !cli_waiting && newline < 0 && !running) {
 			_cancel_cli();
 			set_process(process_id >= 0);
 			return;
 		}
+	}
+	if (codex_chat && newline >= 0 && !timeout && !cli_truncated) {
+		// Only stage notifications are incremental. Keep every other byte for
+		// final validation after EOF and the actual bridge exit status.
+		JSON progress;
+		if (progress.parse(String::utf8(reinterpret_cast<const char *>(cli_output.ptr()), newline)) == OK && progress.get_data().get_type() == Variant::DICTIONARY) {
+			const Dictionary response = progress.get_data();
+			if (response.get("event", "") == "codex_progress") {
+				cli_output = cli_output.slice(newline + 1);
+				if (busy && cli_generation == request_generation) {
+					const String stage = response.get("activity", "");
+					if (stage == "thread_started") {
+						_set_activity(U"Codex 已建立会话");
+					} else if (stage == "turn_started") {
+						_set_activity(U"Codex 已开始处理本轮请求");
+					} else if (stage == "transport_error") {
+						_set_activity(U"Codex 连接报告异常，正在等待本轮结果");
+					}
+					cli_last_activity = now;
+				}
+				return;
+			}
+		}
+	}
+	if (codex_chat) {
+		newline = -1;
 	}
 	if (!timeout && !cli_truncated && newline < 0 && (running || received)) {
 		return;

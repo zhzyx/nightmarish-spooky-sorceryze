@@ -849,8 +849,11 @@ func _conversation_binding() -> Dictionary:
 func _bind_conversation(binding: Dictionary) -> String:
 	if not is_instance_valid(chat):
 		return "推进对话尚未就绪。"
-	return chat.open_daqian_chat(binding.get("url", current), int(binding.get("number", 0)),
-		str(binding.get("request", "")), "", false, {}, true)
+	var url: String = binding.get("url", current)
+	var request: String = binding.get("request", "")
+	var existing_only := _has_started_worker(binding)
+	return chat.open_daqian_chat(url, int(binding.get("number", 0)),
+		request, "", false, {}, true, "", existing_only)
 
 
 func _mount_conversation(binding: Dictionary, next := "") -> void:
@@ -3505,6 +3508,19 @@ func _execution_finished(receipt: Dictionary, error: String, past_preflight: boo
 	_queue_save()
 
 
+func _has_started_worker(binding: Dictionary) -> bool:
+	var url: String = binding.get("url", current)
+	var request: String = binding.get("request", "")
+	if request.is_empty():
+		return false
+	var started = saved.get("direct_started", {}).get(url)
+	if started is bool and started:
+		for original in saved.get("linked", {}).values():
+			if original.get("url") == url and original.get("request") == request and original.get("number") == binding.get("number"):
+				return true
+	return started is String and started == request
+
+
 func _issue_action(binding: Dictionary) -> Dictionary:
 	if binding.is_empty():
 		if current.begins_with("draft_") and (saved.get("submitted", {}).has(current) or saved.get("linked", {}).has(current)):
@@ -3523,22 +3539,16 @@ func _issue_action(binding: Dictionary) -> Dictionary:
 	var key := _routing_key(binding)
 	if starting_direct.has(_start_key(binding)):
 		return {"kind":"wait", "text":"正在核对开工回执…"}
-	var started = saved.get("direct_started", {}).get(binding.url)
-	if started is bool and started:
-		# Older versions stored a URL-only flag. Recover its request from the original draft.
-		for original in saved.get("linked", {}).values():
-			if original.get("url") == binding.url and original.get("request") == binding.request and original.get("number") == binding.number:
-				started = binding.request
-				break
+	var started := _has_started_worker(binding)
 	if not _pending_operation(binding).is_empty():
 		return {"kind":"approval", "text":"查看待确认操作"}
 	for turn in execution_turns.values():
 		if turn.key == _execution_key(binding):
-			return {"kind":"view", "text":"查看推进对话"} if started == binding.request else {"kind":"wait", "text":"推进对话处理中…"}
+			return {"kind":"view", "text":"查看推进对话"} if started else {"kind":"wait", "text":"推进对话处理中…"}
 	if saved.get("execution_errors", {}).has(_execution_key(binding)) and binding.get("status") in ["in-progress", "in-review"]:
 		return {"kind":"resume", "text":"重试推进", "detail":saved.execution_errors[_execution_key(binding)]}
-	if started is String and started == binding.request:
-		return {"kind":"view", "text":"查看推进对话"}
+	if started:
+		return {"kind":"view", "text":"继续原工单对话"}
 	if binding.get("status") not in ["planned", "in-progress", "in-review"]:
 		return {"kind":"wait", "text":"等待工单就绪"}
 	if saved.get("direct_start_receipts", {}).get(binding.url) == binding.request:
@@ -3642,6 +3652,9 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 	if not bind_error.is_empty():
 		notice.text = bind_error
 		return
+	if started and operation.is_empty():
+		_mount_conversation(binding)
+		return
 	var catalog: Dictionary = chat.get_daqian_models()
 	var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
 	if _needs_model(catalog, selection) and (not started or not operation.is_empty()):
@@ -3658,7 +3671,10 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 
 	var message := operation
 	if message.is_empty() and not started:
-		message = "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
+		if action == "resume":
+			message = "继续已绑定的原工单 #%d：先回读原工作者、在途状态和既有操作回执，保留原需求与授权；未知回执先核实，禁止重复开工或重复执行副作用。仅在原工作者可安全接续时推进剩余验收，受阻时报告具体恢复条件。" % int(binding.number)
+		else:
+			message = "核对已绑定工单 #%d 的最新需求、依赖和验收条件，按共工流程开始推进。" % int(binding.number)
 	if action == "start":
 		var key := _routing_key(binding)
 		var start_key := _start_key(binding)
@@ -4264,13 +4280,13 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 	var url: String = item.get("url", "")
 	if item.get("closed", false):
 		return {"state":"completed", "text":"工单已关闭"}
-	var names := PackedStringArray(item.get("workers", [])) if fresh_progress else PackedStringArray()
+	var names := PackedStringArray(item.get("workers", [])) if fresh_progress and not offline else PackedStringArray()
 	var waiting := PackedStringArray()
 	var key := _routing_key(item)
 	var stage := _routing_stage(item)
 	if not stage.is_empty():
 		names.append("司南 · 需求判断" if stage == "sinan" else "偃师 · 需求分析")
-	for worker in chat_work.get(url, {}):
+	for worker in (chat_work.get(url, {}) if fresh_progress and not offline else {}):
 		var activity: Dictionary = chat_work[url][worker]
 		if item.get("source_sha256") != activity.version:
 			continue

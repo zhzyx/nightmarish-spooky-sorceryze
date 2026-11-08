@@ -91,7 +91,9 @@ class AIChatDock : public EditorDock {
 	bool _record_gonggong(const String &p_kind, const String &p_phase, const String &p_status);
 	Callable gonggong_receipt_continuation;
 	uint64_t gonggong_continuation_generation = 0;
-	bool gonggong_receipt_reflush = false;
+	Array gonggong_receipt_queue;
+	String gonggong_receipt_root;
+	Dictionary gonggong_receipt_scope;
 	void _flush_gonggong(const Callable &p_continuation);
 	void _start_gonggong_flush();
 	void _send_completion_after_receipt();
@@ -99,6 +101,7 @@ class AIChatDock : public EditorDock {
 	void _tool_after_receipt(uint64_t p_session);
 	void _finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state);
 	void _poll_gonggong_receipt();
+	void _finish_gonggong_receipt(const Dictionary &p_result);
 	void _end_gonggong(const String &p_status);
 	bool _direct_daqian_task() const;
 	String _daqian_board_workspace() const;
@@ -729,7 +732,7 @@ class AIChatDock : public EditorDock {
 	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
 	void _set_issue_model_config(Dictionary &r_request, const Dictionary &p_runtime = Dictionary()) const;
 	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());
-	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt);
+	String _open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt, bool p_existing_only);
 
 protected:
 	static void _bind_methods();

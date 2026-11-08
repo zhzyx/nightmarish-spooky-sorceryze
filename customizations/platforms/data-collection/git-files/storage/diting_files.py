@@ -208,7 +208,7 @@ def load(repo, historical=False, cache=None):
         # Cache only successful event validation, scoped to a live caller session.
         # Exact bytes, never timestamps, decide reuse. Graph checks always run.
         content = p.read_bytes()
-        key_path = str(p.resolve())
+        key_path = str(p.resolve()) if cache is not None else None
         previous = cache.get(key_path) if cache is not None else None
         if previous is not None and previous[0] == content:
             raw, v = previous[1], previous[2]
@@ -300,6 +300,48 @@ def record(repo, input_path):
     return {"state": "recorded_file", "path": str(target), "sha256": v["sha256"], "git_committed": False}
 
 
+def record_batch(repo, input_paths):
+    repo, data, _, records, _ = load(repo)
+    combined = merged_records(repo, records)
+    staged = []
+    receipts = []
+    for input_path in input_paths:
+        v = event(read(input_path))
+        key = (v["tenant_id"], v["event_id"])
+        receipt = {"tenant_id": key[0], "event_id": key[1], "sha256": v["sha256"]}
+        if key in combined:
+            if combined[key] != v:
+                raise ValueError("Same identity with different content")
+            receipts.append({**receipt, "state": "recorded_file", "idempotent": True, "git_committed": False})
+            continue
+        combined[key] = v
+        staged.append(v)
+        receipts.append({**receipt, "state": "recorded_file", "git_committed": False})
+    # Validate the complete union before the first durable write, including history.
+    graph(combined)
+    remaining = {(v["tenant_id"], v["event_id"]): v for v in staged}
+    written = set()
+
+    def persist(key):
+        if key in written:
+            return
+        v = remaining[key]
+        refs = list(v["evidence_refs"])
+        if "supersedes" in v:
+            refs.append(v["supersedes"])
+        for ref in refs:
+            predecessor = (key[0], ref)
+            if predecessor in remaining:
+                persist(predecessor)
+        target = data / "events" / v["tenant_id"] / v["request_id"] / (v["event_id"] + ".json")
+        atomic_new(target, v)
+        written.add(key)
+
+    for key in remaining:
+        persist(key)
+    return {"ok": True, "receipts": receipts, "git_committed": False}
+
+
 def git_check(repo, committed=False, cache=None):
     repo, data, meta, records, allfiles = load(repo, cache=cache)
     problems = []
@@ -382,7 +424,7 @@ def analyze(repo, tenant):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["init", "record", "validate", "analyze", "git-check"])
+    p.add_argument("command", choices=["init", "record-batch", "record", "validate", "analyze", "git-check"])
     p.add_argument("--repo", required=True)
     p.add_argument("--input")
     p.add_argument("--tenant")
@@ -391,6 +433,13 @@ if __name__ == "__main__":
     try:
         if a.command == "init":
             result = init(a.repo)
+        elif a.command == "record-batch":
+            import sys
+
+            paths = json.load(sys.stdin)
+            if not isinstance(paths, list) or any(not isinstance(path, str) for path in paths):
+                raise ValueError("Batch input paths required")
+            result = record_batch(a.repo, paths)
         elif a.command == "record":
             if not a.input:
                 raise ValueError("--input required")

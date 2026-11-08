@@ -100,8 +100,9 @@ class Model(BaseHTTPRequestHandler):
         message = {"role": "assistant", "content": "Receipt rechecked" if followup else "Verified"}
         if last_user["content"] == "执行":
             message["content"] = "Continued original Issue"
-        if any(turn.get("content") == "Fail this turn" for turn in messages) and "核对已绑定工单" in str(
-            last_user["content"]
+        retry_text = str(last_user["content"])
+        if any(turn.get("content") == "Fail this turn" for turn in messages) and (
+            "已绑定" in retry_text and "#210" in retry_text and ("继续" in retry_text or "核对" in retry_text)
         ):
             message["content"] = "Retry reached original conversation"
         if last_user["content"] == "Retain the amended icon scope":
@@ -283,7 +284,11 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
                 timeout=120,
             )
         except subprocess.TimeoutExpired as exc:
-            raise SystemExit(((exc.stdout or b"") + (exc.stderr or b"")).decode(errors="replace")) from exc
+
+            def decoded(value):
+                return value.decode(errors="replace") if isinstance(value, bytes) else (value or "")
+
+            raise SystemExit(decoded(exc.stdout) + decoded(exc.stderr)) from exc
         server.shutdown()
         log = result.stdout + result.stderr
         if result.returncode or "DAQIAN_INLINE_APPROVAL_OK" not in log or "SCRIPT ERROR" in log:

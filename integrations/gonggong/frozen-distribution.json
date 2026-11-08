@@ -260,7 +260,7 @@
   },
   "platform_files": {
     "customizations/platforms/data-collection/git-files/storage": {
-      "diting_files.py": "6ee6f823ffc7bc632616f48241c7740e01f4c3291835ed4d592befff2406040f",
+      "diting_files.py": "2963243e8382a74b486e9447d56e1b598ca0e9bfd09e45374eca1b5dfcfc9f47",
       "event.schema.json": "22fe532e3cd17be7a73c66b9f0689965412e0c50a938988c7d4bda6b6bff1aae",
       "README.md": "7c26f2f5ac81862d0a86ac2800ba37f1c37c88e052f8b2d43c43bebb0480c679",
       "reporting.json": "f220ad69a3439a4d89db40ee4ed4765ffff68627aaeef9d0965f6111eaf13b6b"

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-optimization-intake-595",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-api-bench",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/595",
+  "kind": "request",
+  "occurred_at": "2026-11-08T20:04:04.068841+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "outcome": "Isolate receipt failures and verify latency and execution in Godot",
+    "scope": "Godot Tianshu editor; no API key required",
+    "issue_number": 595,
+    "authority": "user goal and repository collaborator write access",
+    "design": "design-docs/tianshu-continuous-api.md"
+  },
+  "sha256": "4ae28e8aaf1c951baf148f7f2774ad2c7750907089f8670190acb69f5e04e357"
+}

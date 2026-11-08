@@ -28,7 +28,7 @@ class Chat extends Control:
 	var last := []
 	func get_daqian_models() -> Dictionary:
 		return {"backend":0, "current":"first", "options":[{"id":"second"}]}
-	func open_daqian_chat(source, number, request, message, preview, selection, embedded, preview_receipt := "") -> String:
+	func open_daqian_chat(source, number, request, message, preview, selection, embedded, preview_receipt := "", _existing_only := false) -> String:
 		last = [source, number, request, message, preview, selection, embedded, preview_receipt]
 		return ""
 

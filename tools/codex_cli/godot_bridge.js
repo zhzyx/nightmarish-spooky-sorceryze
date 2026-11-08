@@ -36,11 +36,12 @@ const SCHEMA = {
     },
 };
 
-function argumentsFor(model, schema, images = [], effort = '') {
+function argumentsFor(model, schema, images = [], effort = '', environment = process.env) {
     const args = ['exec', '--json', '--ephemeral', '--ignore-user-config', '--ignore-rules',
         '--skip-git-repo-check', '--sandbox', 'read-only', '--color', 'never',
         '-c', 'approval_policy="never"', '-c', 'features.shell_tool=false', '-c', 'features.apply_patch_freeform=false',
         '-c', 'web_search="disabled"', '--output-schema', schema];
+    // Provider selection and credential-bound endpoints must stay with the user's configured route.
     if (model) args.push('--model', model);
     if (effort) {
         if (!['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(effort)) throw bridgeError('INVALID_REQUEST');
@@ -75,6 +76,7 @@ function promptFor(input) {
         + 'Inside object arguments, use ordinary string values: do not JSON.stringify values or add a second layer of escaping. '
         + 'For typed optional fields use null to omit them and preserve host defaults. '
         + 'Godot executes actions with its permission, approval and snapshot workflow and returns results next turn. '
+        + 'Group up to 32 independent read-only queries of known files in one actions array to avoid extra model turns. Batches containing any other action remain limited to 8; never combine dependent operations. Wait for required results before proposing dependent writes or builds. '
         + 'For engine-operation intent, automatically discover targets with editor_action/find_targets and enter route_engine_message with intent=engine_operation, a unique request_id, source=codex and one declarative operation. New pages register automatically; inspect their actual capabilities. Use start_guidance for multiple steps. A natural-language-only request returns planning_required: plan and submit a new request_id. Repeat identical IDs only for result recovery. '
         + 'Never claim success without a successful tool result. Respect rejected actions. '
         + 'Use an empty actions array when no action is needed or tool permission is disabled. '
@@ -95,7 +97,8 @@ function completion(text, input) {
         envelope = JSON.parse(text);
         reason = 'response_shape';
         if (!envelope || typeof envelope.content !== 'string' || !Array.isArray(envelope.actions)
-            || envelope.actions.length > 8) throw new Error();
+            || envelope.actions.length > 32
+            || (envelope.actions.length > 8 && envelope.actions.some(action => !READ_TOOLS.has(action?.name)))) throw new Error();
         const allowed = new Map(input.available_tools.map(tool => [tool.function.name, tool.function]));
         const actions = [];
         for (const action of envelope.actions) {
@@ -115,10 +118,44 @@ function completion(text, input) {
         error.actionIndex = actionIndex;
         throw error;
     }
-    return normalizeResult({ structured_output: envelope }, input.available_tools.length > 0);
+    // Keep the legacy normalizer's eight-action boundary intact for other clients.
+    const normalized = normalizeResult({ structured_output: { ...envelope, actions: envelope.actions.slice(0, 8) } }, input.available_tools.length > 0);
+    if (envelope.actions.length > 8) {
+        const calls = normalized.choices[0].message.tool_calls;
+        for (let offset = 8; offset < envelope.actions.length; offset += 8) {
+            const chunk = normalizeResult({ structured_output: { content: '', actions: envelope.actions.slice(offset, offset + 8) } }, input.available_tools.length > 0);
+            calls.push(...chunk.choices[0].message.tool_calls.map((call, index) => ({ ...call, id: 'cli_' + (offset + index) })));
+        }
+    }
+    return normalized;
 }
 
-async function run(entry, request) {
+
+// Windows Internet Settings discovery stays in a bounded helper; never print its data.
+// Explicit operator network settings always win, including an explicit bypass list.
+function proxyEnvironment(env, python, platform = process.platform, invoke = spawnSync) {
+    const result = { ...env, NO_COLOR: '1' };
+    if (platform !== 'win32' || !python || !path.isAbsolute(python)
+        || Object.keys(env).some(key => /^(https?_proxy|all_proxy|no_proxy|openai_base_url)$/i.test(key) && env[key])) return result;
+    const helper = path.join(__dirname, '../editor_network_proxy.py');
+    let receipt;
+    try { receipt = invoke(python, ['-I', helper, 'chatgpt.com', 'api.openai.com'], { windowsHide: true, encoding: 'utf8', timeout: 3000, maxBuffer: 16384, env }); } catch (_) { return result; }
+    if (receipt.status !== 0) return result;
+    try {
+        const data = JSON.parse(receipt.stdout);
+        if (typeof data.HTTPS_PROXY !== 'string' || !data.HTTPS_PROXY || /[\r\n]/.test(data.HTTPS_PROXY)) return result;
+        const proxy = /^[a-z][a-z0-9+.-]*:\/\//i.test(data.HTTPS_PROXY) ? data.HTTPS_PROXY : 'http://' + data.HTTPS_PROXY;
+        const parsed = new URL(proxy);
+        if (!['http:', 'https:', 'socks5:', 'socks5h:'].includes(parsed.protocol) || parsed.username || parsed.password) return result;
+        const bypass = data.NO_PROXY ? data.NO_PROXY.split(',') : [];
+        if (bypass.some(host => !['chatgpt.com', 'api.openai.com'].includes(host))) return result;
+        result.HTTPS_PROXY = proxy;
+        if (bypass.length) result.NO_PROXY = bypass.join(',');
+    } catch (_) { /* Unknown discovery keeps the original network environment. */ }
+    return result;
+}
+
+async function run(entry, request, onProgress, workflowPython) {
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
     if (fs.statSync(request).size > 1024 * 1024) throw bridgeError('REQUEST_SIZE_LIMIT');
     let input;
@@ -172,7 +209,7 @@ async function run(entry, request) {
         // JS entry support is useful for npm installations and offline protocol tests.
         const javascript = entry.endsWith('.js') || entry.endsWith('.mjs');
         child = spawn(javascript ? process.execPath : entry, javascript ? [entry, ...args] : args,
-            { cwd: directory, env: { ...process.env, NO_COLOR: '1' }, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+            { cwd: directory, env: proxyEnvironment(process.env, workflowPython), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
         let pending = '';
         let result = '';
         let done = false;
@@ -180,11 +217,20 @@ async function run(entry, request) {
         let lastError = '';
         let stderr = '';
         let bytes = 0;
+        let lastActivity = '';
         const decoder = new StringDecoder('utf8');
         const consume = line => {
             if (!line.trim()) return;
             let packet;
             try { packet = JSON.parse(line); } catch (_) { failure = 'INVALID_RESPONSE'; stop(); return; }
+            // Only publish fixed stages. Tool proposals stay private until the final schema check.
+            const activity = packet.type === 'thread.started' ? 'thread_started' :
+                packet.type === 'turn.started' ? 'turn_started' :
+                packet.type === 'error' ? 'transport_error' : '';
+            if (activity && activity !== lastActivity) {
+                onProgress?.(activity);
+                lastActivity = activity;
+            }
             // Codex emits error events while retrying a disconnected stream. Only
             // turn.failed is terminal; a later turn.completed may still succeed.
             if (packet.type === 'error') lastError = JSON.stringify(packet);
@@ -311,13 +357,15 @@ async function listModels(entry, { timeoutMs = 30000 } = {}) {
     }
 }
 
-module.exports = { listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
+module.exports = { proxyEnvironment, listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
     if (!['chat', 'models'].includes(process.argv[2])) {
         process.stdout.write(JSON.stringify({ error: { code: 'INVALID_REQUEST' } }));
         process.exitCode = 1;
     } else {
-        (process.argv[2] === 'models' ? listModels(process.argv[3]) : run(process.argv[3], process.argv[4])).then(
+        const onProgress = process.argv[5] === '--progress' ? activity =>
+            process.stdout.write(JSON.stringify({ event: 'codex_progress', activity }) + '\n') : null;
+        (process.argv[2] === 'models' ? listModels(process.argv[3]) : run(process.argv[3], process.argv[4], onProgress, process.argv[6])).then(
             result => process.stdout.write(JSON.stringify(result)),
             error => {
                 const safe = serializeError(error);

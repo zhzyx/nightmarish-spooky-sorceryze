@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-optimization-intake-599",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-codex-cli-progress",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/599",
+  "kind": "request",
+  "occurred_at": "2026-11-08T20:04:02.365081+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "outcome": "Verify Codex UI stages, tool batches and subscription transport latency",
+    "scope": "Godot Tianshu editor; no API key required",
+    "issue_number": 599,
+    "authority": "user goal and repository collaborator write access",
+    "design": "design-docs/tianshu-continuous-api.md"
+  },
+  "sha256": "24dd37aee3c89d92a533ed4855a81a54edf43b004b2097cc94becb8b64d6966a"
+}
