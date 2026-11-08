@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "issue_number": 591,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/591",
+  "request_id": "writer-native-activation-module-path-20261109",
+  "base_commit": "5f7b4656afd4199a0b7344420ec8b0665c38aa16",
+  "source_sha256": {
+    "customizations/components/issue-workorders/writer_submit.py": "66f1c21229bd023310c8dab4112fc8161f76acda859c72be425b5b04a5a113dc",
+    "customizations/components/issue-workorders/test_writer_submit.py": "825d80cb11b45d4e172f69185b48ca5597da9278ea4c168b991c8fec4a9a74a2",
+    "tools/test_writer_native_activation.py": "99cfd7328d915b68f4138cb4e8b85465e021d1c905e9355fbd1294ba04db6ff4"
+  },
+  "unchanged_dependency_sha256": {
+    "tools/editor_candidate_activation.py": "d7dd5b7ea514e6cbf5722dadb793809357975e70314f23607f1f470a8d0c56a3",
+    "tools/editor_native_app.py": "ffbc9671c36d2ab9e88238491d6eeb51da2c2062d76e310395437c96c5abf4a7",
+    "tools/editor_managed_native_entry.py": "ef804f9d2a4bb76efb2dc6580ab997e9f00731a227d0cfba5d7c0a77853abc3f",
+    "tools/editor_engine_candidate.py": "fe19cadd5ae92edf932808ef5440ea95173f76583640e950b2569bbe9542e44b",
+    "tools/editor_source_manifest.py": "57b18fdf8076f6a4c03570309a45357028416486f0be55dddd4c515ea7b6d316",
+    "tools/editor_delivery_finalize.py": "2b3296cbf460cd236456ed6165c5f5ecff2600dc0b7a0dea39e0994ccdfc067c"
+  },
+  "change": "Only writer post-readback activation runs in a separate fixed installed tools process. Parent import path/cache and validation helpers are unchanged. Repo/report are argv/JSON data; no shell or caller code/path.",
+  "original_failure": {
+    "reference": "host-private://issue462-final-consultation-20261109/final-main-activation.stderr",
+    "sha256": "d460b64496a9dc818a6638a1d356708664cb5c6e5ea23cf512611a9fbfe406ca",
+    "result": "ModuleNotFoundError after confirmed PR590 main readback; original failed receipt preserved."
+  },
+  "validation": {
+    "writer_unit": {
+      "passed": 10,
+      "failed": 0,
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/writer-unit-final.log",
+        "sha256": "52b778c0ec2a278535e5f434ef688ff90c3468b2afb9d2fd0b1929d943265132"
+      }
+    },
+    "clean_native_cli": {
+      "passed": 3,
+      "failed": 0,
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/native-cli-final.log",
+        "sha256": "9341e8dfcc9775fb30b1e5b19a5c8275ffbc043cd3586bcc6d487aa472790d8a"
+      },
+      "scope": "Real isolated Git, real ad-hoc App signature/copy/reuse/refusal, mocked GH read-only source/signature envelope. No production state or real remote mutation."
+    },
+    "ordinary_activation": {
+      "passed": 16,
+      "failed": 0,
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/ordinary-native-worker-regression.log",
+        "sha256": "72704fc0d8196ec189ba86a80f639c1913449d0aff2b33176dfaeef04fdb5786"
+      },
+      "scope": "Unchanged helper native/raw provenance, signature, source, acceptance and interrupted-swap contracts."
+    },
+    "fixed_static": {
+      "passed": true,
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/fixed-static-final.log",
+        "sha256": "f994ca48259e8761ed1813faa297e82c36de219436b3083e398d72b67ad9f339"
+      }
+    },
+    "independent_review": {
+      "status": "PASS",
+      "reviewer": "/root/readonly_child_tool",
+      "reference": "host-private://issue591-independent-final-safety-review-20261109.json",
+      "sha256": "f7553a2c90926e6b9da659a7380149802fdf554b73b5810a20580039a3979bf7",
+      "personally_run": "Three final clean CLI cases, 3 passed/0 skipped, 4.044 seconds; all owned and six unchanged dependency hashes matched before and after. Author writer10/ordinary16/static reports read, not rerun by reviewer."
+    }
+  },
+  "retained_failed_attempts": {
+    "native_cli_v1": {
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/native-cli-v1.log",
+        "sha256": "788648131ec88aab46a4acd8c1a82662040ac7356156de9ccf117d8d186022de"
+      },
+      "reason": "Fixture insteadOf rewrote remote get-url, causing correct repository admission refusal before activation; private fetch-only Git wrapper used in final run."
+    },
+    "static_v1": {
+      "log": {
+        "reference": "host-private://writer-native-activation-module-path-20261109/fixed-static-v1.log",
+        "sha256": "4566d6b7af9b8ac8969efd15bf91d218d9bd48fef5f14bfbd3669c9f452d66df"
+      },
+      "reason": "Author omitted configured Node PATH on first local preflight. The hook accurately refused; final workflow used explicit Node bin PATH and GONGGONG_GH, with all checks passing."
+    }
+  },
+  "artifact_scope": {
+    "no_app_compilation_or_production_app_write": true,
+    "no_old_manifest_source_inputs_binding_or_receipt_relabel": true,
+    "new_source_inputs_warning": "This script remains a source input; the existing C629 manifest continues to describe its original accepted inputs. The new trusted checkout can inspect that original artifact without overwriting its source root."
+  },
+  "original_business_readback": "Pending Root run of new trusted writer --inspect-pr590 after main. Existing App/manifest/binding/source should be reused; launcher receipt may update real main/reused metadata under the unchanged helper contract.",
+  "main_merge_and_issue_close": "Held for Root independent review, release and original business verification.",
+  "original_base_commit": "f9c45dece1c75b415be13a98639888ed0fbc1c3c",
+  "integration_after_writer_refusal": {
+    "original_writer_exit_code": 1,
+    "original_refusal": {
+      "reference": "host-private://writer-native-activation-module-path-20261109/writer.stderr",
+      "sha256": "7a725862335e05a48bcfc8dc9b8a33f4086265aa3d321ed1b73dcf0b32628dc6"
+    },
+    "method": "Normal fast-forward to actual accepted main after the signing refusal.",
+    "upstream_changed_paths": 35,
+    "owned_and_dependency_hashes_unchanged": true,
+    "verification": {
+      "reference": "host-private://writer-native-activation-module-path-20261109/integration-verification.json",
+      "sha256": "32655fd3cda6d6da22a988fdf4e66c6c4ed14352b296597808715f4209c6ee2e"
+    },
+    "scope": "Upstream anatomy/UI/test/evidence paths do not change the fixed writer/native activation dependencies; reuse exact-byte targeted tests, no App artifact claim.",
+    "independent_review": {
+      "status": "PASS",
+      "reference": "host-private://issue591-independent-integration-supplement-20261109.json",
+      "sha256": "bda2fa267cf2ab8658c063ff18e243bd05d8217909271be74fb40953e4faf1b6",
+      "scope": "35 actual upstream paths and relevant image/progress-dialog changes reviewed; all nine frozen files and Git-backed gate/work_items dependencies unchanged. No duplicate test execution claimed."
+    }
+  }
+}

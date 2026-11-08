@@ -427,6 +427,41 @@ def submit(repo, issue, request, title, notes):
     }
 
 
+def engine_launch_activation(repo, report):
+    # Run at the installed tools entry point, where native/managed dependencies
+    # have normal script-directory imports. Never alter the writer's import
+    # path/cache or interpret report fields as Python or shell source.
+    tools = Path(__file__).resolve().parents[3] / "tools"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-E",
+            "-s",
+            "-B",
+            "-X",
+            "utf8",
+            "-c",
+            "import json, sys\n"
+            "import editor_candidate_activation\n"
+            "print(json.dumps(editor_candidate_activation.after_delivery(sys.argv[1], json.load(sys.stdin))))\n",
+            str(repo),
+        ],
+        cwd=tools,
+        input=json.dumps(report),
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
+    )
+    value = json.loads(result.stdout)
+    require(
+        isinstance(value, dict)
+        and value.get("state") in {"awaiting_main", "not_applicable", "pending", "activated"}
+        and (value.get("state") != "activated" or value.get("ok") is True),
+        "Invalid activation adapter result",
+    )
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path.cwd())
@@ -447,16 +482,8 @@ def main():
         report = inspect_pr(repo, repository, args.inspect_pr)
         # A verified merge/acceptance readback is the event that advances a
         # host-owned editor's stable startup entry. No timer or PR prose grants it.
-        import importlib.util
-
-        activation_path = Path(__file__).resolve().parents[3] / "tools/editor_candidate_activation.py"
-        spec = importlib.util.spec_from_file_location("editor_candidate_activation", activation_path)
         try:
-            if spec is None or spec.loader is None:
-                raise ValueError("activation adapter unavailable")
-            activation = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(activation)
-            report["engine_launch_activation"] = activation.after_delivery(repo, report)
+            report["engine_launch_activation"] = engine_launch_activation(repo, report)
         except (OSError, ValueError, KeyError, subprocess.SubprocessError):
             report["engine_launch_activation"] = {"state": "pending", "error": "activation_adapter_failed"}
         print(json.dumps(report, ensure_ascii=False))

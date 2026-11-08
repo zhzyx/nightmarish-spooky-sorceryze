@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "writer-native-activation-module-path-20261109",
+  "collected_at": "2026-11-08T19:48:52.215579+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/writer-native-activation-module-path-20261109/kuafu-01ab8ac8ff659ec2cb0ee82f3affe44cc194fd04.json",
+      "sha256": "002d42077a91b1f77ef1975fa7f5c6dd7f7078584544598698f4858f05171471",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-01ab8ac8ff659ec2cb0ee82f3affe44cc194fd04",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/writer-native-activation-module-path-20261109/kuafu-458e5772d6d48f24f6360252fa7a589e82bee243.json",
+      "sha256": "732ad615322a963bac59b5b4c6d1cf4eca25dcf4f6cbb61bb2d784a7e035c95e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-458e5772d6d48f24f6360252fa7a589e82bee243",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/writer-native-activation-module-path-20261109/kuafu-f4eec4390f8429136784f493b332067dec933f6e.json",
+      "sha256": "fd4a9e683d13eb7bba63bd05750dfb15c275c52cedea112ec4b8ce1e58943474",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-f4eec4390f8429136784f493b332067dec933f6e",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/writer-native-activation-module-path-20261109/writer-native-activation-module-path-request-20261109.json",
+      "sha256": "dadad1e2bdb756637eb1e42828ea598f6fa724d2b2be7163a56c6054e520cc75",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "writer-native-activation-module-path-request-20261109",
+      "origin": "explicit-authorized-host-request"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 591,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/591"
+}
