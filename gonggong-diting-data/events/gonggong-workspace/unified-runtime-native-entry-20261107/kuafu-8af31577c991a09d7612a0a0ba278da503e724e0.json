@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8af31577c991a09d7612a0a0ba278da503e724e0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9525d0d19aadfd2660fb59e01b226c6a1c6a711604079b5f0121cc112efd61fc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/581",
+    "action": "delivery",
+    "detection_head": "398376dda58218facce39aaf7733339bbc592526",
+    "context_sha256": "421ec2e36b4ff5efcd6c07be810fd7212ccbc790f476e5d2e2080819bbf88e38",
+    "operator": "kaiyunxue",
+    "worker": "codex-desktop/root-issue462-final-delivery",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/581",
+    "diagnosis": "The candidate data-collection evidence used numeric issue=462. The registered PR pairing check accepts issue as a URL, issue_url as a URL, or issue_number as an integer; it correctly rejected that numeric issue field. No product code or binary defect is indicated by this rejection.",
+    "next_action": "Add the explicit canonical Issue462 URL to the latest evidence, stage it, verify the specific pairing check, and rerun the complete formal signed-submission gate. Preserve the historical evidence and the unchanged tested native package.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T18:03:31.771806+00:00",
+    "attempted": "The exact evidence pairing function now reports matching_event=true and matching_collection=true after the one-field metadata correction. The full signed submission and exact CI remain required.",
+    "repair_owner": "codex-desktop/root-issue462-final-delivery",
+    "continuable": "The correction changes only excluded evidence metadata; source inputs and signed package remain unchanged."
+  },
+  "occurred_at": "2026-11-08T18:07:08.345173+00:00",
+  "sha256": "69a35ecf62cf0ce06e8052442f3a5cca4d45ef07ba83d365ac37cd65a57f54cf"
+}

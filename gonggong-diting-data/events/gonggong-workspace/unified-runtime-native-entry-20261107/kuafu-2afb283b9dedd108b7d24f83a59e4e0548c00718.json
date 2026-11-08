@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2afb283b9dedd108b7d24f83a59e4e0548c00718",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1c9cbc9a2405e702516f4d1fdd0951afe2af36effac79ee3d1377b77113745dc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/581",
+    "action": "delivery",
+    "detection_head": "3dd281d74fe6def18e98c9feb71ad26877bb1254",
+    "context_sha256": "421ec2e36b4ff5efcd6c07be810fd7212ccbc790f476e5d2e2080819bbf88e38",
+    "operator": "kaiyunxue",
+    "worker": "codex-desktop/root-issue462-final-delivery",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/3dd281d74fe6def18e98c9feb71ad26877bb1254..398376dda58218facce39aaf7733339bbc592526",
+    "diagnosis": "The final evidence signing gate correctly rejected base F after PR 578 advanced main. The one staged evidence file has no overlapping upstream write path, but upstream changes include bundled runtime inputs and copyright data, so the prior F package cannot represent the integrated source.",
+    "next_action": "The original Root host will fast-forward its own prepared Issue462 candidate to the verified main commit, use the supported incremental native_app build, validate the new artifact and affected behavior, then retry the signed Issue462 delivery and exact CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T17:23:14.478485+00:00",
+    "attempted": "One formal writer submission was blocked before a candidate commit or PR was created. The original native Issue483 retry remains independently verified completed.",
+    "repair_owner": "codex-desktop/root-issue462-final-delivery",
+    "continuable": "Local integration and build can continue within the existing user mandate; original Applications-entry and real-provider chat acceptance remain pending."
+  },
+  "occurred_at": "2026-11-08T17:28:51.230491+00:00",
+  "sha256": "3a5191824dde95ef4bec16a16db125d8c0a95e22e1b8ea352e1f3e2153a6201b"
+}
