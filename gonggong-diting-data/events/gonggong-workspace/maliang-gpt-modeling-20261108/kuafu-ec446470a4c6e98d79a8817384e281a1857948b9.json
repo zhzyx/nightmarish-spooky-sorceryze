@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ec446470a4c6e98d79a8817384e281a1857948b9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a7182b765b6370108e4fab8c7eb4dd3007c818734a77fe6400c530f3799b8ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "validation",
+    "detection_head": "3a596e24bff2e7c02ad8e55bbfc062916880de9e",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-runtime-verification-human-rejection.json",
+    "diagnosis": "Strict image-led runtime independently passes57 component and66 service tests,187 native and179 UI checks. User explicitly rejects actual R3 humans as toy-like; visual scope remains unaccepted. Organic N12 now passes spacing but has a tiny enclosed negative-volume VDB cavity and an over-budget requested subdivision; original failure retained.",
+    "next_action": "Deliver verified strict-node foundation without closing543 or556; continue major face/clothing/hair/material revision and bounded same-resolution organic fusion diagnosis, preserving clay QA and all original jobs.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:38:55.215921+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T15:52:08.795097+00:00",
+  "sha256": "2299b64228cf0cfaba522ed028479521cb19f922ff174ca598ab34a9712baa83"
+}

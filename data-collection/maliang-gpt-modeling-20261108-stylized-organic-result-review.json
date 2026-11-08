@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_stylized_organic_visual_geometry_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "related_bug_number": 556,
+  "reviewer": "Codex child /root/mesh_audit; no source edits, model calls, plan rebuilds or output retouching",
+  "reviewed_at_utc": "2026-11-08T09:10:11.896668+00:00",
+  "state": "native_pipeline_and_actual_geometry_pass_stylized_and_organic_reference_fidelity_failed",
+  "scope": "Actual final native n6/n7 exported GLBs compared with supplied references using original-material and clay imported-GLB renders. Structural passes are recorded separately from visual target acceptance.",
+  "cases": [
+    {
+      "case": "n6-stylized",
+      "state": "native_pipeline_and_geometry_pass_reference_fidelity_failed",
+      "source_glb_sha256": "f76ca515ec57b7ad9dd997088bec806cb3ed331e3e9108ce963734ef7daec5af",
+      "source_glb_bytes": 16165500,
+      "source_plan_sha256": "3bbc68177058289c22e9a123c32907f99de460d774397ba159b9231af2f1a426",
+      "acceptance_json_sha256": "411897a6cd34d9cf1525ed997e6ade020ed7bcd70988db9b34000ed7dae20841",
+      "native_checks_passed": 26,
+      "native_ok": true,
+      "node_states": {
+        "n8677948": "succeeded",
+        "n8715992": "succeeded"
+      },
+      "vertices": 378318,
+      "triangles": 756608,
+      "body_components": 1,
+      "body_manifold_native_receipt": true,
+      "completion": {
+        "inferred_regions": [
+          "character"
+        ],
+        "mode": "reference_constrained"
+      },
+      "reference_images": [
+        {
+          "path": "D:\\m543\\style-ref1\\reference_front.png",
+          "sha256": "df62d0fcce16d08632baaa34ad5ecce4f55415e2798ae48d8e7b13bbc196b3f4"
+        },
+        {
+          "path": "D:\\m543\\style-ref1\\reference_back.png",
+          "sha256": "d408e5dacf81c408473b37393f88f98f7513fc1db8716ebc99492e68a8253838"
+        }
+      ],
+      "distinct_user_reference_images": 2,
+      "hidden_surface_policy": "multiple_reference_images_constrain_inference_hidden_surfaces_remain_ambiguous",
+      "exact_hidden_surface_recovery_claimed": false,
+      "calibration": {
+        "role": "internal_fixed_operator_calibration",
+        "user_reference": false,
+        "image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413"
+      },
+      "actual_render_evidence": {
+        "directory": "D:\\m543\\final-visuals\\stylized",
+        "report_sha256": "f92d94d12e8a1f52e293a1dff4d81df83d53c89e50f3911ec8037d6ecf2af655",
+        "renderer_sha256": "32df3aa65985e548a9480908c31fb60a627fb3c2a4ab87d648be52e7bd2762b6",
+        "normalization": "uniform full-object vertical height to1.8m",
+        "uniform_scale": 0.9921525595370606,
+        "source_geometry_saved_or_rebuilt": false,
+        "images_sha256": {
+          "back.png": "e6a641d802c7e78a6c2adf0ac645a07bb8ddbab7d3436789999e4ecd06c29995",
+          "face_front.png": "c29c1b95fa9f91d7502323d11a47da3a0a2c9e5390e1968002ef2404fbe0ce92",
+          "face_right.png": "17365897b306bb79037625dcb579374841e0a93188a1aef2c347d1e263e81a0d",
+          "front.png": "ac9a15ff3742c35c3011d5c0d0fc5a1b14269d33486a993d96d0e092b961a554",
+          "right.png": "96f8620d16271976ef51faae44f2061b696e238050fd324b1094d87aa638b857",
+          "threequarter.png": "b0fc1a7fcb7a84da8cf3d0d9ecb8aff887521e5eb4f1a027d2706530fed59910"
+        }
+      },
+      "target": "Young stylized man with swept wavy brown hair, large rounded eyes, arched brows, friendly smile, continuous teal collared short-sleeve coverall and brown boots; front and back references.",
+      "requested_head_ratio": 7,
+      "positive_observations": [
+        "Complete adult A-pose body, hands/fingers, broad teal garment palette and brown footwear are present.",
+        "Requested head ratio7.0 gives plausible adult proportions; this alone does not retain the target stylized facial/head silhouette."
+      ],
+      "failed_criteria": [
+        {
+          "criterion": "outfit construction and front/back consistency",
+          "observation": "A wide exposed skin band separates cropped T-shirt and trousers in front/back/profile, whereas reference is a joined coverall. Pointed collar, open placket and waist construction are absent.",
+          "evidence": [
+            "front.png",
+            "back.png",
+            "right.png"
+          ],
+          "severity": "high"
+        },
+        {
+          "criterion": "hair silhouette and multiview consistency",
+          "observation": "Reference swept wavy hair with volume, locks and lower nape coverage becomes a smooth close scalp cap, visibly wrong in front/back/profile.",
+          "evidence": [
+            "front.png",
+            "back.png",
+            "face_front.png",
+            "face_right.png"
+          ],
+          "severity": "high"
+        },
+        {
+          "criterion": "facial stylization",
+          "observation": "Reference large round eyes, visible arched brows and friendly smile are replaced by narrow neutral canonical features; facial style/identity is not retained.",
+          "evidence": [
+            "face_front.png",
+            "face_right.png",
+            "front reference"
+          ],
+          "severity": "high"
+        },
+        {
+          "criterion": "footwear detail",
+          "observation": "Brown footwear category is present, but output has a simplified rounded wedge/block shape rather than reference boot/sole/heel construction.",
+          "evidence": [
+            "front.png",
+            "right.png"
+          ],
+          "severity": "medium"
+        }
+      ],
+      "source_plan_observation": "Genuine plan hem_height=.602 and belt_height=.602 were preserved. Fixed trouser seat waist sits lower; native success did not prevent an exposed midriff. This is an observed result/control coverage limitation, not malformed input."
+    },
+    {
+      "case": "n7-organic",
+      "state": "native_pipeline_and_geometry_pass_reference_fidelity_failed",
+      "source_glb_sha256": "8c04d8cb113bbc7999425ff8bc1c6a234c936a4452b7377074a1e6317b8f3185",
+      "source_glb_bytes": 29002856,
+      "source_plan_sha256": "55f09e20cf7e98b9862de56ea00ac483392e4c0ef1ee58c79a1bdedb76d47597",
+      "acceptance_json_sha256": "4f9c5e024ccc944d8ddd352f980116381515b8089b0b32f3914d4c60dde128a1",
+      "native_checks_passed": 23,
+      "native_ok": true,
+      "node_states": {
+        "n7948466": "succeeded",
+        "n7986511": "succeeded"
+      },
+      "vertices": 616010,
+      "triangles": 1231952,
+      "body_components": 1,
+      "body_manifold_native_receipt": true,
+      "completion": {
+        "inferred_regions": [
+          "mantle",
+          "head",
+          "arm_upper_left",
+          "arm_rear_left",
+          "arm_middle_left",
+          "arm_lower_left",
+          "arm_front_left",
+          "arm_front_right",
+          "arm_lower_right",
+          "arm_upper_right",
+          "eye_left_ridge",
+          "eye_right_ridge",
+          "eye_left",
+          "eye_right",
+          "pupil_left",
+          "pupil_right",
+          "sucker_01",
+          "sucker_02",
+          "sucker_03",
+          "sucker_04",
+          "sucker_05",
+          "sucker_06",
+          "sucker_07",
+          "sucker_08",
+          "sucker_09",
+          "sucker_10",
+          "sucker_11",
+          "sucker_12"
+        ],
+        "mode": "plausible"
+      },
+      "reference_images": [
+        {
+          "path": "D:\\m543\\organic-ref1\\reference.png",
+          "sha256": "5080799ccff61cb610b086d0adba12e993d690e84e5c98e80dd5289462673b5d"
+        }
+      ],
+      "distinct_user_reference_images": 1,
+      "hidden_surface_policy": "plausible_single_view_hidden_surface_backfill",
+      "exact_hidden_surface_recovery_claimed": false,
+      "calibration": {
+        "role": "internal_fixed_operator_calibration",
+        "user_reference": false,
+        "image_sha256": "aa9f64c6d209caf5a998ef6061e3bceb1d3c2b8fb35b5a0e01c97a87c826b413"
+      },
+      "actual_render_evidence": {
+        "directory": "D:\\m543\\final-visuals\\organic",
+        "report_sha256": "719fe3fff46822176b12b410d21adb8edf77230245d7c48cf7244a5a6bb2b753",
+        "renderer_sha256": "272e94e4531d9dc8c7ce5bf70a5e40191ddd1dd2a2ed8f0db6f70adaffd78464",
+        "normalization": "uniform longest full-object extent to1.8m",
+        "uniform_scale": 0.5592803043772002,
+        "source_geometry_saved_or_rebuilt": false,
+        "images_sha256": {
+          "back.png": "85e5abff6c3b57c26c63231fff16f4b4415d23ba617ac7e5a29d07e8a58a7531",
+          "clay_back.png": "59b8687706739a1069c7921d5ad926c69d21ab9847180c6cf8f0680829843a40",
+          "clay_front.png": "efefcdbef08327e9454f664e99e40ac32d0540e3b65f748d8e88c69d51f5e870",
+          "clay_right.png": "e3594a8287dfc59b35dc9f34157463b3b51bc0e4ec1b5a70765409c495bd6adc",
+          "clay_threequarter.png": "33eeea421becd8b0891bd315a7b7afe1733e6b654bebbad47a0327c6d8d2a756",
+          "front.png": "bf1b4fc9f19d6847e3eed5a8aff1354c917733a067d765b2c142a38bf953d530",
+          "right.png": "bf08fa212571b70b74b78d3c2269ebeef1a3b1676360925dd9091fc36a4e464e",
+          "threequarter.png": "76cea491a85c08e824c38efe25366a2f4d0a141746e8ea8471d8fee8b65074df"
+        }
+      },
+      "target": "Realistic orange octopus with large rounded mantle, eight curling attached arms, continuous organic transitions and dense paired sucker structure; one source image.",
+      "recognized_arm_count": 8,
+      "source_arm_regions": [
+        "arm_upper_left",
+        "arm_rear_left",
+        "arm_middle_left",
+        "arm_lower_left",
+        "arm_front_left",
+        "arm_front_right",
+        "arm_lower_right",
+        "arm_upper_right"
+      ],
+      "positive_observations": [
+        "Orange octopus is recognizable; a mantle/head and eight curved arm tips are present.",
+        "All eight source arm regions feed the same single connected closed BODY; back and side geometry are nonempty.",
+        "One-view completion remains plausible and exact hidden-surface recovery is explicitly not claimed."
+      ],
+      "failed_criteria": [
+        {
+          "criterion": "continuous organic transitions",
+          "observation": "Arm/head roots retain abrupt flat-ended/collar-like seams; central back is a flat trapezoid plate, rather than a continuous soft organic junction. Defects persist in clay.",
+          "evidence": [
+            "front.png",
+            "back.png",
+            "right.png",
+            "clay_back.png",
+            "clay_right.png"
+          ],
+          "severity": "high"
+        },
+        {
+          "criterion": "mantle surface form",
+          "observation": "Mantle has conspicuous broad facets/bands and a pinched irregular top silhouette, unlike the smoothly rounded reference mantle. Visible in original materials and clay.",
+          "evidence": [
+            "front.png",
+            "right.png",
+            "clay_front.png",
+            "clay_right.png"
+          ],
+          "severity": "high"
+        },
+        {
+          "criterion": "suckers and surface detail",
+          "observation": "Reference dense paired sucker rows become12 sparse bead-like ellipsoids; skin detail/material variation and natural eye integration are largely lost, leaving a toy-like result.",
+          "evidence": [
+            "front.png",
+            "threequarter.png",
+            "source reference"
+          ],
+          "severity": "high"
+        }
+      ],
+      "hidden_back_assessment": "Only completeness/plausibility can be checked for unseen back/underside from this one source image; no reference-consistency or exact hidden-surface truth pass is issued."
+    }
+  ],
+  "independent_actual_glb_geometry": {
+    "result": "Both actual GLBs pass finite-position/index validation, bound output limits, per-object exact-coordinate-welded edge incidence2, connectedness, positive signed volume and nondegenerate triangles. All intentional separate scene parts are closed; one connected BODY per asset is confirmed separately.",
+    "report_path": "project/build-support/final-stylized-organic-qa-20261108/actual-glb-geometry-checks.json",
+    "report_sha256": "be44f0fde11e2d4cfdc75edfb21ee87f2e41564d301c24336e10ca0d44a5a6ce",
+    "style_scene_parts": 14,
+    "organic_scene_parts": 17,
+    "actual_source_glb_hashes_unchanged": true,
+    "limits": "Both remain below2M triangles/1M vertices/64MiB. Geometric validity does not certify smooth transitions or reference fidelity."
+  },
+  "acceptance_conclusion": "Neither inspected target earns a full visual/reference-fidelity pass. Native pipeline success and structurally valid meshes do not complete the user acceptance for stylized characters or organic forms. Preserve these original runs as evidence and resolve the recorded geometry/control-detail limitations in subsequent candidates.",
+  "scope_boundaries": [
+    "Photo and elder result visual review is assigned separately; this record makes no finding for those targets.",
+    "This result review does not modify or revoke the earlier exact-source protocol/builder/data component reviews; it records actual target fidelity failures those unit/component checks cannot establish.",
+    "Single-view organic hidden geometry is inferred. Nonempty complete geometry is not evidence of exact unseen-surface recovery."
+  ]
+}

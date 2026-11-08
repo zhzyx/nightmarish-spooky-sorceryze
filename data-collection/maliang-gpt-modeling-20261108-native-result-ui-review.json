@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "state": "passed_narrow_ui_source_review",
+  "reviewer": "modeling_ui agent; reviewed only the new root-authored invalid_result status hint, not own prior UI implementation",
+  "source_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "4712726cb6e2ca9da223716b58642885e6a7294d10cdf57008788225f03b9da0"
+  },
+  "scope": "Read-only accuracy and safe user-facing error display review; final compiled native checks remain root responsibility.",
+  "reviewed_behavior": [
+    "Hint appears only when node.state is failed AND error is the fixed invalid_result code.",
+    "Historical running nodes with invalid_result do not falsely display that execution has stopped.",
+    "The Chinese message accurately says validation stopped this result, asks to retain its record, and suggests running the node again after correction.",
+    "No provider exception text, raw modeling JSON, credentials or content bytes are displayed.",
+    "This display does not retry, resubmit, mutate a provider receipt or claim a failed result succeeded."
+  ],
+  "findings": [],
+  "native_runtime_acceptance_claimed": false,
+  "lf_only": true
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-image-led-steering",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T05:02:07.965767+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "correction": "Latest user steering prioritizes image-to-mesh and actual multiview human references; text-only modeling remains available at lower acceptance priority.",
+    "authority_ref": "codex:user:20261108:image-led-modeling-priority",
+    "state": "in_progress",
+    "acceptance_order": [
+      "image-led multiview semi-realistic human",
+      "image-led stylized human when reference inputs are available, with stylized same-round requirement retained",
+      "organic shape and actual multiview back/occluded consistency",
+      "text-only modeling as secondary pipeline evidence"
+    ],
+    "image_evidence": "All supplied views are primary for silhouette, body/head proportions, facial structure and identity, clothing, pose and front/back depth; a workflow source/reference label does not demote the second view.",
+    "text_semantics": "Full text is retained as supplemental intent or explicit requested edits; original context roles/constraint strength remain in force. Do not overwrite visible reference identity/proportions with generic defaults except an explicit user-requested change.",
+    "numeric_weight_claimed": false,
+    "unsupported_claims": [
+      "No diffusion-style numerical prompt weight is claimed for GPT CLI",
+      "No exact hidden-surface recovery is claimed from a single image",
+      "Duplicate-image inputs do not establish distinct views",
+      "Text-only or old robot evidence cannot replace actual image-led multiview acceptance"
+    ],
+    "planned_backend": "GPT CLI structured plans + fixed local Blender geometry interpreter; no ComfyUI/3D neural weights",
+    "acceptance_state": "pending_actual_image_led_and_multiview_validation",
+    "issue_closure_allowed": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-request",
+    "maliang-gpt-modeling-20261108-complex-criteria-correction"
+  ],
+  "supersedes": "maliang-gpt-modeling-20261108-complex-criteria-correction"
+}

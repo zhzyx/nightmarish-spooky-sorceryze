@@ -1,6 +1,8 @@
 """Synthetic fault injection only. No actual model/API or geometry generation."""
 
+import base64
 import copy
+import hashlib
 import json
 import subprocess
 import sys
@@ -9,7 +11,7 @@ import threading
 import unittest
 from pathlib import Path
 
-from executor import Executor, snapshot_file
+from executor import Executor, check_content, snapshot_file
 from extensions import NodeRegistry
 
 
@@ -99,6 +101,39 @@ def fixture():
 def build_cli_fixture():
     """Explicit synthetic factory for subprocess bridge tests; never a real provider."""
     return fixture()[0], {"synthetic": SyntheticProvider()}
+
+
+class InlineContentTests(unittest.TestCase):
+    def test_reference_and_provenance_digests_do_not_claim_inline_content(self):
+        sha = hashlib.sha256(b"reference bytes are stored separately").hexdigest()
+        check_content({
+            "provenance": {
+                "sha256": sha,
+                "source_sha256": {"base.obj": sha},
+                "reference_images": [{"reference_sha256": sha, "role": "source", "index": 1}],
+            }
+        })
+
+    def test_inline_content_requires_both_string_fields(self):
+        for invalid in (
+            {"content_sha256": "0" * 64},
+            {"content_base64": "ZGF0YQ=="},
+            {"content_base64": 123, "content_sha256": "0" * 64},
+            {"content_base64": "ZGF0YQ==", "content_sha256": None},
+        ):
+            with self.subTest(fields=sorted(invalid)), self.assertRaisesRegex(ValueError, "inline content requires"):
+                check_content({"nested": [invalid]})
+
+    def test_real_inline_bytes_and_digest_are_still_validated(self):
+        data = b"actual inline artifact bytes\x00\xff"
+        valid = {
+            "content_base64": base64.b64encode(data).decode("ascii"),
+            "content_sha256": hashlib.sha256(data).hexdigest(),
+        }
+        check_content({"nested": [valid]})
+        for invalid in (dict(valid, content_base64="not valid base64!"), dict(valid, content_sha256="0" * 64)):
+            with self.subTest(), self.assertRaises(ValueError):
+                check_content({"nested": [invalid]})
 
 
 class ExecutorTests(unittest.TestCase):
@@ -245,8 +280,81 @@ class ExecutorTests(unittest.TestCase):
         self.executor.step(run)
         self.provider.result_manifest = lambda job_id: {"schema_version": 1, "artifacts": []}
         self.executor.step(run)
-        self.assertEqual(self.executor.status(run)["state"], "running")
+        self.assertEqual(self.executor.status(run)["state"], "failed")
+        self.assertEqual(self.executor.status(run)["nodes"]["first"]["error"], "invalid_result")
         self.assertEqual(self.executor.db.execute("SELECT count(*) FROM cache").fetchone()[0], 0)
+        self.assertEqual(self.provider.submits, 1)
+
+    def test_invalid_inline_result_fails_durably_without_polling_or_resubmitting(self):
+        run = self.create()
+        self.executor.step(run)
+        calls = []
+        original = self.provider.result_manifest
+
+        def invalid_result(job_id):
+            calls.append(job_id)
+            manifest = original(job_id)
+            manifest["artifacts"][0]["payload"] = {"content_sha256": "0" * 64}
+            return manifest
+
+        self.provider.result_manifest = invalid_result
+        status = self.executor.step(run)
+        self.assertEqual(status["state"], "failed")
+        self.assertEqual(status["nodes"]["first"]["error"], "invalid_result")
+        self.assertEqual(status["nodes"]["first"]["job"]["state"], "succeeded")
+        self.assertIsNone(status["nodes"]["first"]["result"])
+        self.executor.close()
+        self.executor = self.open()
+        for _ in range(3):
+            self.assertEqual(self.executor.step(run)["state"], "failed")
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(self.provider.submits, 1)
+        self.assertEqual(self.executor.db.execute("SELECT count(*) FROM cache").fetchone()[0], 0)
+        self.assertEqual(self.executor.db.execute("SELECT count(*) FROM assets").fetchone()[0], 1)
+        with self.assertRaisesRegex(ValueError, "publishable"):
+            self.executor.export(run)
+        with self.assertRaisesRegex(ValueError, "successful result"):
+            self.executor.export_node(run, "first")
+        with self.assertRaisesRegex(ValueError, "confirmed provider failure"):
+            self.executor.retry(run, "first")
+
+    def test_transient_result_fetch_error_can_recover_without_resubmission(self):
+        run = self.create()
+        self.executor.step(run)
+        calls = []
+        original = self.provider.result_manifest
+
+        def fetch(job_id):
+            calls.append(job_id)
+            if len(calls) == 1:
+                raise OSError("secret transport failure must not persist")
+            return original(job_id)
+
+        self.provider.result_manifest = fetch
+        status = self.executor.step(run)
+        self.assertEqual(status["state"], "running")
+        self.assertEqual(status["nodes"]["first"]["error"], "provider_operation_failed")
+        self.assertNotIn("secret transport", json.dumps(status))
+        self.assertEqual(self.executor.step(run)["state"], "succeeded")
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(self.provider.submits, 1)
+
+    def test_digest_metadata_can_be_published_and_cached(self):
+        original = self.provider.result_manifest
+
+        def result(job_id):
+            manifest = original(job_id)
+            manifest["artifacts"][0]["payload"]["provenance"] = {
+                "sha256": "0" * 64,
+                "reference_images": [{"index": 1, "reference_sha256": "1" * 64, "role": "source"}],
+            }
+            return manifest
+
+        self.provider.result_manifest = result
+        output = self.finish(self.create())
+        metadata = output["manifest"]["artifacts"][-1]["payload"]["provenance"]
+        self.assertEqual(metadata["reference_images"][0]["reference_sha256"], "1" * 64)
+        self.finish(self.create())
         self.assertEqual(self.provider.submits, 1)
 
     def test_immutable_and_content_model_context_invalidation(self):
@@ -403,8 +511,10 @@ class ExecutorTests(unittest.TestCase):
         conflicting["artifacts"][0]["payload"] = {"synthetic": "conflicting"}
         self.provider.result_manifest = lambda job_id: conflicting
         status = self.executor.step(self.create())
+        self.assertEqual(status["state"], "failed")
         self.assertEqual(status["nodes"]["first"]["error"], "invalid_result")
         self.assertTrue(status["nodes"]["first"]["job"]["job_id"])
+        self.assertEqual(status["nodes"]["first"]["job"]["state"], "succeeded")
         self.assertEqual(self.executor.db.execute("SELECT count(*) FROM cache").fetchone()[0], 0)
 
 

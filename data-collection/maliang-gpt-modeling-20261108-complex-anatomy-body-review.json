@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "occurred_at": "2026-11-08T06:31:20.283509+00:00",
+  "state": "passed_fixed_asset_data_only",
+  "reviewer": "independent modeling_ui agent; did not author or modify body data/reproducer",
+  "scope": "Pinned CC0 body/target/rig DATA provenance, literal-only safety, source-index geometry/age/weights/landmark trace, independent reconstruction and static manifold invariants. No GPT reconstruction or visual/business-quality pass.",
+  "source_sha256": {
+    "tools/ainative/anatomy_body.py": "4b6c4da9ba930ff34ffbd7442539b95ef380034b1973ac007faa4f7ca7f4b479",
+    "misc/scripts/derive_maliang_body.py": "649f23802d264ba489dc5220dc04fe79ca142c14c0437cce79d1a9ad6cf9a0dc",
+    "tools/ainative/test_anatomy_body.py": "f7528835e047ec8e751e63b3d49b4a9c9c38e5df4667e7f4733803f823424433"
+  },
+  "upstream": {
+    "repository": "makehumancommunity/makehuman",
+    "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+    "source_sha256": {
+      "base.obj": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+      "caucasian-male-young.target": "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+      "caucasian-male-old.target": "b0d2b1d58cba0358af59833740e70229265f7da1c20a11240f4123b7192cfd6d",
+      "default.mhskel": "99f179bce0aa850b45d4191a1d0d234c5851f881c057439470ded3bddf729a24",
+      "default_weights.mhw": "0f3641d651ae3d00ad6b4ccee43142edb109d3bd909d27d9e4139ef1beed8625"
+    },
+    "fresh_official_rig_data": [
+      {
+        "path": "makehuman/data/rigs/default.mhskel",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default.mhskel",
+        "sha256": "99f179bce0aa850b45d4191a1d0d234c5851f881c057439470ded3bddf729a24",
+        "bytes": 117790,
+        "license": "CC0",
+        "matches_fresh_official_fetch": true
+      },
+      {
+        "path": "makehuman/data/rigs/default_weights.mhw",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default_weights.mhw",
+        "sha256": "0f3641d651ae3d00ad6b4ccee43142edb109d3bd909d27d9e4139ef1beed8625",
+        "bytes": 897521,
+        "license": "CC0",
+        "matches_fresh_official_fetch": true
+      }
+    ],
+    "mesh_and_target_provenance": "Same exact OBJ and young/old bytes independently verified in previous baseline and age reviews",
+    "license_observation": "Both official rig/weight JSON files explicitly declare CC0. Pinned LICENSE.md distinguishes AGPL program code from CC0 graphical assets, listing the base mesh/proxies and targets/modifiers among its examples.",
+    "subject_inference": "Source artist-baseline filenames are provenance only; no identity or ethnicity inferred from the user subject. No MakeHuman program code imported or copied."
+  },
+  "geometry_trace": {
+    "source_body_group_only": true,
+    "source_indices_unique_sorted_exact": true,
+    "vertices": 13380,
+    "quads": 13378,
+    "source_faces_and_winding_exact": true,
+    "base_plus_young_normalization_exact_to_10_decimals": true,
+    "old_minus_young_vectors_exact_to_10_decimals": true,
+    "normalization": {
+      "floor_y": -8.181,
+      "height": 17.481299999999997,
+      "center_x": 0.0,
+      "center_z": 1.4011500000000001
+    },
+    "age_0_65_source_space_consistency_max_rounding_error": 8.180398719526139e-11,
+    "crown_source_index": 881,
+    "chin_source_index": 991,
+    "helper_objects_retained": false
+  },
+  "rig_trace": {
+    "method": "Independently traverse official bone ancestry, collect per-source-index weights and use math.fsum per family divided by all official weights. Independently calculate joint means using official bone head/tail joint-index lists.",
+    "roots": [
+      "upperarm01.L",
+      "upperarm01.R",
+      "wrist.L",
+      "wrist.R"
+    ],
+    "descendant_counts": [
+      24,
+      24,
+      20,
+      20
+    ],
+    "arm_weights_exact": true,
+    "hand_weights_exact": true,
+    "all_retained_vertices_have_source_weight_denominator": true,
+    "landmarks_and_digit_tips_exact": true,
+    "joint_anchor_geometry_note": "Some official rig landmark means use non-BODY helper vertex indices as numeric anchors, but only source BODY faces/vertices are retained as mesh geometry.",
+    "landmark_trace_sha256": "dd5f9f55fde984199b8020a560d49defc586a0e7ae8911d675d2951c3013d965"
+  },
+  "reproduction": {
+    "raw_generated_literal_data_exact": true,
+    "raw_output_sha256": "7bba75073f585ceef6e1ef1bc41552a32395f8fa09d115f985d0ea16a61d580b",
+    "authoring_format_step": "Apply repository Ruff format to the NEW private generated file using the same installed Ruff version",
+    "after_format_exact_byte_match": true,
+    "formatted_sha256": "4b6c4da9ba930ff34ffbd7442539b95ef380034b1973ac007faa4f7ca7f4b479",
+    "output_preexisted": false
+  },
+  "static_regression": {
+    "tests": 14,
+    "exit_code": 0,
+    "checks": [
+      "literal AST constants only",
+      "pinned source provenance",
+      "finite vertices",
+      "quad indices and positive fan triangle areas",
+      "closed oriented two-face edges",
+      "single connected component and no unused vertices",
+      "single manifold vertex fan",
+      "finite positive signed volume",
+      "ground0 crown1",
+      "age vector length/finite/nonzero",
+      "unique source indices",
+      "finite bounded arm/hand pairs summing at most1 and hand subset of arm",
+      "finite landmarks/frame heights with matching age keys",
+      "five finite digit anchors per hand"
+    ],
+    "ruff_check_no_fix": "passed",
+    "ruff_format_check": "passed",
+    "mypy": "passed",
+    "lf_only": true
+  },
+  "limitations": [
+    "This fixed generic artist baseline is not reference reconstruction. Image-driven shape, pose, clothing, hidden-surface consistency and final output realism require separate validation.",
+    "Data topology checks do not establish runtime deformation quality or absence of self-intersections under all parameter combinations.",
+    "No model calls, neural weights, user reference geometry, or MakeHuman program logic used in this review."
+  ],
+  "prior_reviews": [
+    "maliang-gpt-modeling-20261108-complex-anatomy-data-review.json",
+    "maliang-gpt-modeling-20261108-complex-anatomy-age-review.json"
+  ]
+}

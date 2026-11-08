@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-prompt-source-research",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T04:55:50.437820+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "research_verified_adaptation_in_progress",
+    "authority": "codex:user:20261108:research-hunyuan3d-comfyui-prompt-supplements",
+    "sources": [
+      {
+        "repo": "Tencent-Hunyuan/Hunyuan3D-2",
+        "commit": "f8db63096c8282cb27354314d896feba5ba6ff8a",
+        "path": "hy3dgen/text2image.py",
+        "blob_sha": "2c8a3ab373750ab8ab12a497f15a03179f49ea07",
+        "sha256": "fe1de90daa8f2581163f913df4a68505c13926732f880661f7ea156027d54d8a",
+        "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/f8db63096c8282cb27354314d896feba5ba6ff8a/hy3dgen/text2image.py"
+      },
+      {
+        "repo": "Tencent-Hunyuan/Hunyuan3D-2",
+        "commit": "f8db63096c8282cb27354314d896feba5ba6ff8a",
+        "path": "hy3dgen/shapegen/preprocessors.py",
+        "blob_sha": "8a9cb9ea1591363fb77f4e02351a0f945e3bc1ab",
+        "sha256": "284dc24fabbf974bd6793ebd58e95b7700550d90371cacb96ad0889ec558de1e",
+        "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/f8db63096c8282cb27354314d896feba5ba6ff8a/hy3dgen/shapegen/preprocessors.py"
+      },
+      {
+        "repo": "Comfy-Org/ComfyUI",
+        "commit": "bdb0816a292d221efeb6ec4ae41bcdff3f91fc86",
+        "path": "comfy_extras/nodes_hunyuan3d.py",
+        "blob_sha": "82439449515a92a7033c2e097ec753cc7da3dde1",
+        "sha256": "c6268e3e2f087516bc840f96ee785a84c81c2090146cc26639e72663d841244d",
+        "url": "https://github.com/Comfy-Org/ComfyUI/blob/bdb0816a292d221efeb6ec4ae41bcdff3f91fc86/comfy_extras/nodes_hunyuan3d.py"
+      },
+      {
+        "repo": "Comfy-Org/ComfyUI",
+        "commit": "bdb0816a292d221efeb6ec4ae41bcdff3f91fc86",
+        "path": "nodes.py",
+        "blob_sha": "e279ae2fec49c23a97f2079b63b696aa0510de50",
+        "sha256": "4cfd9be3754f9dc25213febdf96b690d6e32007c2e539d37e799d82226d758c5",
+        "url": "https://github.com/Comfy-Org/ComfyUI/blob/bdb0816a292d221efeb6ec4ae41bcdff3f91fc86/nodes.py"
+      },
+      {
+        "repo": "Comfy-Org/ComfyUI",
+        "commit": "bdb0816a292d221efeb6ec4ae41bcdff3f91fc86",
+        "path": "README.md",
+        "blob_sha": "b4621ab134fe4a21f1183daf19f79d3e11595502",
+        "sha256": "1f5452375de6170925930393ade6380f73a01974d00c7e784d1521a86e5b388a",
+        "url": "https://github.com/Comfy-Org/ComfyUI/blob/bdb0816a292d221efeb6ec4ae41bcdff3f91fc86/README.md"
+      }
+    ],
+    "findings": [
+      "Hunyuan3D text2image appends asset background/style/quality terms and supplies a negative prompt covering anatomy, proportions, missing/extra limbs, fused digits and long necks. This is its text-to-image stage, not a GPT modeling-code system prompt.",
+      "Hunyuan3D multiview preprocessing tags and orders front,left,back,right explicitly; ComfyUI multiview conditioning preserves semantic view identities through position embeddings.",
+      "ComfyUI core CLIPTextEncode tokenizes user text; Hunyuan3D shape conditioning uses vision embeddings and zero negative embeddings. Core nodes do not automatically inject universal anatomy instructions.",
+      "ComfyUI emphasis and dynamic-prompt syntax depends on diffusion encoder/frontend; it is not a GPT structured-plan weighting API."
+    ],
+    "adaptation": [
+      "Preserve complete user subject and explicit requested style; never port HunyuanDiT sixty-character truncation or force cartoon style.",
+      "Condition human-only positive anatomy targets and explicit negative failure criteria; do not apply human digit/limb counts to organic nonhumans.",
+      "Require coherent view labels and shared geometry; unspecified viewpoints remain unknown rather than silently assuming front.",
+      "Use one ChatGPT-authenticated CLI plan call and fixed trusted local interpreter; do not load ComfyUI or neural 3D weights."
+    ],
+    "code_copied": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-complex-criteria-correction",
+    "maliang-gpt-modeling-20261108-real-human-first-failure"
+  ]
+}

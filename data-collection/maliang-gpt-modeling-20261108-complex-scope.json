@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-complex-scope",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T04:08:34.554340+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "correction": "User explicitly includes complex characters, organic forms and hidden-surface reconstruction in this same acceptance round; primitive robot is basic partial evidence only.",
+    "authority_ref": "codex:user:20261108:complex-scope-correction",
+    "state": "in_progress",
+    "planned_backend": "GPT CLI structured plans + fixed local Blender geometry interpreter; no ComfyUI/3D neural weights",
+    "previous_feature_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/548",
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-request"
+  ]
+}

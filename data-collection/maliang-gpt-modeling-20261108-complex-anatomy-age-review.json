@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "occurred_at": "2026-11-08T05:37:06.064116+00:00",
+  "state": "passed_data_revision_only",
+  "reviewer": "independent modeling_ui agent; did not author or modify anatomy data/reproducer",
+  "scope": "Pinned CC0 age-shape data provenance, source vertex mapping, exact reproduction, unchanged base head and static geometry regression. This is not a GPT reconstruction or visible aging/reference-quality pass.",
+  "source_sha256": {
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "misc/scripts/derive_maliang_anatomy.py": "2d5c6af0fc8dd33dd5f4de9ad40127676f263220f99738acd91a31bc0f783df0",
+    "tools/ainative/test_anatomy_base.py": "5efedb6af5206bc64e09f5f5b21576a52db5aa0ed80feba6772adf133ab93075"
+  },
+  "upstream": {
+    "repository": "makehumancommunity/makehuman",
+    "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+    "age_sources_young_then_old": [
+      {
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "sha256": "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+        "bytes": 396479,
+        "matches_fresh_official_fetch": true,
+        "rows": 19150,
+        "cc0_header": true
+      },
+      {
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "sha256": "b0d2b1d58cba0358af59833740e70229265f7da1c20a11240f4123b7192cfd6d",
+        "bytes": 400125,
+        "matches_fresh_official_fetch": true,
+        "rows": 19158,
+        "cc0_header": true
+      }
+    ],
+    "license_scope": "Both target headers explicitly CC0; same pinned LICENSE.md and LICENSE.ASSETS.md verified in prior independent baseline review",
+    "subject_inference": "None. Upstream ethnic filenames identify source provenance only and do not describe or infer the reference subject's ethnicity."
+  },
+  "reproduction": {
+    "command_arguments": [
+      "Blender",
+      "--background",
+      "--factory-startup",
+      "--disable-autoexec",
+      "--python",
+      "misc/scripts/derive_maliang_anatomy.py",
+      "--",
+      "pinned base.obj",
+      "NEW private output.py",
+      "pinned young.target",
+      "pinned old.target"
+    ],
+    "exact_byte_match": true,
+    "sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "previous_baseline_sha256": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0",
+    "unchanged_base_data": {
+      "SOURCE_SHA256": true,
+      "HEAD_VERTICES": true,
+      "HEAD_FACES": true,
+      "EYE_CENTERS": true
+    }
+  },
+  "independent_source_trace": {
+    "method": "Invert documented normalization and independently find unique original OBJ body coordinates, then calculate round((old-young)/(top-chin),8) using source vertex indices. No BMesh custom index layer trusted.",
+    "derived_vertices": 4290,
+    "uniquely_matched_original_vertices": 4244,
+    "new_neck_plane_intersections": 46,
+    "new_intersection_age_vectors_zero": true,
+    "ambiguous_matches": 0,
+    "delta_mismatches": 0,
+    "trace_sha256": "6dca97ee9aa41cd8fc33b79a32b950975847e06623d6ef6d8185049553b8c99e",
+    "nonzero_vectors": 4244,
+    "maximum_normalized_displacement": 0.20002210055690797,
+    "age_vector_count_equals_head_vertex_count": true
+  },
+  "static_regression": {
+    "tests": 11,
+    "returncode": 0,
+    "checks": [
+      "data-only AST including both new constants",
+      "pinned OBJ and ordered age target hashes",
+      "finite three-component age vectors matched to derived vertex count",
+      "nonzero age deformation bounded below one quarter of normalized head height",
+      "finite base vertices",
+      "valid nondegenerate triangles",
+      "oriented closed edges",
+      "one connected component",
+      "single manifold face fan per vertex",
+      "positive signed volume",
+      "eye anchors inside base bounds"
+    ],
+    "ruff_check": "passed --no-fix",
+    "ruff_format_check": "passed",
+    "mypy": "passed",
+    "source_lf_only": true
+  },
+  "limitations": [
+    "Fixed generic CC0 anatomy/age basis is not user-asset cloning and is not itself image reconstruction.",
+    "Topology/finite displacement checks do not establish facial aging, realism, hidden-surface agreement, or reconstruction quality. Aged generated probe and actual multi-view GPT output remain separate visual acceptance work.",
+    "No MakeHuman program logic was imported, no neural weights, no paid calls, and no OLD MAN geometry used in this derivation review."
+  ],
+  "prior_review": "maliang-gpt-modeling-20261108-complex-anatomy-data-review.json"
+}

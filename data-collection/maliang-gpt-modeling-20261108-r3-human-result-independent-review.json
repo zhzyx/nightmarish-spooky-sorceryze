@@ -1,0 +1,274 @@
+{
+  "scope": "Independent assessment of the three actual R3 native human outputs, not a plan rebuild, source approval, or acceptance of a later runtime candidate",
+  "reviewer": "mesh_audit, independent of runtime and provider implementation authors",
+  "method": "Direct visual inspection of bound user reference sheets and actual exported GLB render views, plus independent raw GLB data validation",
+  "observations_are_qualitative": true,
+  "no_pixel_similarity_threshold_or_identity_score_invented": true,
+  "geometry": {
+    "path": "D:\\Projects\\godot-maliang-complex-modeling-20261108\\project\\build-support\\r3-human-independent-qa-20261108\\actual-glb-geometry.json",
+    "sha256": "74c080ac0d4812e7e803630dc88d1e4f2c3ac1b13f6e36077e743d92a9f85079",
+    "bytes": 25016
+  },
+  "geometry_scope": "Actual finite float32 positions and valid triangle indices; exact coincident-position weld per object has one component, two incident faces per edge, positive signed volume and no zero-area triangle. This is not a global self-intersection, contact, surface identity or reference-fidelity certificate.",
+  "native_scope": "Each original acceptance file has 26 passing pipeline checks. Those original R3 jobs remain bound to their own embedded source; this review does not relabel them as fresh runs of the later provider/service fix.",
+  "source_changes_made": false,
+  "paid_model_calls_made": false,
+  "original_artifacts_changed": false,
+  "cases": [
+    {
+      "label": "n8-photo-r3",
+      "actual_export": {
+        "path": "D:\\m543\\n8-photo-r3\\output\\asset.glb",
+        "sha256": "04c14b52a534e8a55aa1d094198b07f34d6663b21a56ff134d3ad58062279672",
+        "bytes": 17435524
+      },
+      "acceptance": {
+        "path": "D:\\m543\\n8-photo-r3\\output\\acceptance.json",
+        "sha256": "571114a541ea574d1bf517f2ecadeda0641f65ff9e2c6377e5b484341c0c7ce7",
+        "bytes": 13674
+      },
+      "builder_receipt": {
+        "path": "D:\\m543\\n8-photo-r3\\engine\\editor_data\\ainative\\projects\\afb004c9ef7d3ea07d130e3119afe6d39e21f0559030e7bea57c266189f806a2\\sculpt-state\\92404418375fbb94826cca52de14cb8cb22a92ae55eef00387817768c3ac2f78\\result.glb.receipt.json",
+        "sha256": "1e6f8b764fa6df3470f7e4024932bcdcfdce668f2dde758bf72f8e92c816bc57",
+        "bytes": 17240
+      },
+      "source_plan_sha256": "0a37dd04cce81468100c59c656e78ccdc17adec1897a6c4a595aa338f16af6c5",
+      "runtime_input_sha256": {
+        "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+        "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+      },
+      "completion": {
+        "inferred_regions": [
+          "character"
+        ],
+        "mode": "reference_constrained"
+      },
+      "exact_hidden_surface_recovery_claimed": false,
+      "references": [
+        {
+          "path": "D:\\m543\\real-ref2\\reference_front.png",
+          "sha256": "aa2e0323f8681499da4ea5058ffad46fbd7919c9e239e5945d8096d3e596b290",
+          "bytes": 914300
+        },
+        {
+          "path": "D:\\m543\\real-ref2\\reference_back_profile.png",
+          "sha256": "a03f3db971f4f2ea6b12e4818b50159a95ded541e2cf43a6f2227480d2fdf89f",
+          "bytes": 931769
+        }
+      ],
+      "render_report": {
+        "path": "D:\\m543\\r3-visual-photo\\render-report.json",
+        "sha256": "2a2ec9d8b5a0f32b48cd6ee23b46e22d7effe76ca7ffab869107766332b5f104",
+        "bytes": 4037
+      },
+      "inspected_views": [
+        {
+          "path": "D:\\m543\\r3-visual-photo\\front.png",
+          "sha256": "66d17ac01f93343e4277db50e61ed7a1b8c41ac7b200013b810297172ca0c816",
+          "bytes": 706704
+        },
+        {
+          "path": "D:\\m543\\r3-visual-photo\\back.png",
+          "sha256": "3129bf75b88e5b133c48fa0d294d3abb88ca70f1d5b1b4623d1a1add6c7b462a",
+          "bytes": 702738
+        },
+        {
+          "path": "D:\\m543\\r3-visual-photo\\face_front.png",
+          "sha256": "ed61f8bf173c6cdbc3da238fe79f3dcfb8286f054bb7ceb8262d8d54fcd51dc4",
+          "bytes": 554825
+        },
+        {
+          "path": "D:\\m543\\r3-visual-photo\\face_right.png",
+          "sha256": "17235c2eb9081f31a6a4a7eb46580010e5ffee37d46577944da4156a6b9170e0",
+          "bytes": 534819
+        }
+      ],
+      "observed_successes": [
+        "Complete plausible adult proportions with coherent head, neck, limbs, hands and closed footwear are visible from front and back.",
+        "Navy short-sleeve shirt, light gray trousers and dark shoes retain the target clothing categories and color grouping.",
+        "The shirt covers the waist; front and back describe the same clothing and body rather than a front-only surface.",
+        "Face has a coherent nose, mouth, eyes and ears in front and profile, rather than disconnected primitive landmarks."
+      ],
+      "observed_reference_gaps": [
+        "Shoulders and sleeves form a broad high rounded silhouette and the neckline is visibly more open than the observed reference. These are shape differences, not solely missing texture.",
+        "The hair is a smooth high cap with a continuous sharp hairline rather than the reference's short irregular locks and natural nape.",
+        "The smooth generic face, strip eyebrows, narrow eyes and soft cheek/nose forms do not retain the reference's mature regional facial shape. Skin detail alone cannot reproduce every silhouette difference.",
+        "Trousers are smooth tubes with raised cuffs absent from the reference; the photographed pocket, seam and fold structure is not represented. Rear footwear also shows light horizontal marks absent from the reference, with their component identity not diagnosed by this visual assessment."
+      ],
+      "verdict": "Basic complete human and outfit category demonstrated; reference fidelity remains incomplete and is not accepted by this review"
+    },
+    {
+      "label": "n9b-stylized-r3",
+      "actual_export": {
+        "path": "D:\\m543\\n9b-stylized-r3\\output\\asset.glb",
+        "sha256": "024d38e881d5e77bf740d1305a8b59e7e5af133761220da0a123f7d508779faa",
+        "bytes": 3502480
+      },
+      "acceptance": {
+        "path": "D:\\m543\\n9b-stylized-r3\\output\\acceptance.json",
+        "sha256": "25435992e421831c22837443e633963e9b302cf4a26bf17cd326020bc3b7ab57",
+        "bytes": 13666
+      },
+      "builder_receipt": {
+        "path": "D:\\m543\\n9b-stylized-r3\\engine\\editor_data\\ainative\\projects\\52bd9cc3a806e83c89b5a0e74e14b71c837d30c1260125a0d3c92387f6280c6b\\sculpt-state\\916aa485804862a1642d8ac46def8fc956f4fd298b39be549996a75b089966e6\\result.glb.receipt.json",
+        "sha256": "0d6020c225290986817669fc841241367ea5d581f9e9eef4df5b168b7edc7772",
+        "bytes": 19065
+      },
+      "source_plan_sha256": "8a343ed09b4b155da0cd509253cc6b45a9198d132d36ac2b2b5fddba1e2bc72c",
+      "runtime_input_sha256": {
+        "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+        "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+      },
+      "completion": {
+        "inferred_regions": [
+          "character"
+        ],
+        "mode": "reference_constrained"
+      },
+      "exact_hidden_surface_recovery_claimed": false,
+      "references": [
+        {
+          "path": "D:\\m543\\style-ref1\\reference_front.png",
+          "sha256": "df62d0fcce16d08632baaa34ad5ecce4f55415e2798ae48d8e7b13bbc196b3f4",
+          "bytes": 610663
+        },
+        {
+          "path": "D:\\m543\\style-ref1\\reference_back.png",
+          "sha256": "d408e5dacf81c408473b37393f88f98f7513fc1db8716ebc99492e68a8253838",
+          "bytes": 609219
+        }
+      ],
+      "render_report": {
+        "path": "D:\\m543\\r3-visual-stylized\\render-report.json",
+        "sha256": "f12ddbf8a67ad7fa597665a126773a46ecde0f46debb13e88e8201a6cbc063b5",
+        "bytes": 4028
+      },
+      "inspected_views": [
+        {
+          "path": "D:\\m543\\r3-visual-stylized\\front.png",
+          "sha256": "42727a5eafee0d5e04bc24cd9e7e3a09946f69a9d11c4be77b8ad1a873643186",
+          "bytes": 726381
+        },
+        {
+          "path": "D:\\m543\\r3-visual-stylized\\back.png",
+          "sha256": "9be05d7d517c6e86cd2ce250c47febf4f62d6c074a8911a0f91582efdacbb7ca",
+          "bytes": 718129
+        },
+        {
+          "path": "D:\\m543\\r3-visual-stylized\\right.png",
+          "sha256": "c87792cedc57392d36ca3dba75153a9b6f8e039a6740c4ff5fdcda5862db512f",
+          "bytes": 686534
+        },
+        {
+          "path": "D:\\m543\\r3-visual-stylized\\face_front.png",
+          "sha256": "3ba80158eee79833e14b74548d4d678dbb2ec5927755c615e64bbab32714d66a",
+          "bytes": 562103
+        },
+        {
+          "path": "D:\\m543\\r3-visual-stylized\\face_right.png",
+          "sha256": "aa8427c20841c41bcd79dfbc69081b6836b3163aa91620fb0caaaf7cc07018ed",
+          "bytes": 535508
+        }
+      ],
+      "observed_successes": [
+        "Continuous teal coverall, short sleeves, waist band and brown footwear are recognizable. The earlier separate-shirt midriff gap is absent in this actual new result.",
+        "Front, back and profile are coherent views of a complete human with the same outfit.",
+        "A small lip expression and shaped eyebrows are present; the head is not a blank sphere."
+      ],
+      "observed_reference_gaps": [
+        "The head reads small relative to the broad shoulders and the face retains narrow eyes and a largely neutral generic construction, unlike the target's large open friendly eyes and softer stylized proportions.",
+        "The hairstyle remains a smooth cap/quiff. Distinct swept wavy locks and the layered back/nape silhouette visible in both target sheets are absent.",
+        "The collar consists of two oversized rounded front plates rather than the target's compact folded pointed lapels. This is visible geometry rather than a fabric texture omission.",
+        "The coverall lacks the target's local cloth folds and shaped seams; the waist band and cuffs are rigid raised rings.",
+        "Back and profile show skin-colored triangular exposure immediately above the rear shoes/cuffs. The reference has continuous trousers over covered boot heels. This needs a separate component/coverage check before being called a diagnosed mesh intersection."
+      ],
+      "verdict": "Basic complete human and outfit category demonstrated; reference fidelity remains incomplete and is not accepted by this review"
+    },
+    {
+      "label": "n11-elder-r3",
+      "actual_export": {
+        "path": "D:\\m543\\n11-elder-r3\\output\\asset.glb",
+        "sha256": "c2548ad3e5d2e0ac8a1a52de9dfb3c7cc966797f5c7484204b457a2c75854ed3",
+        "bytes": 4490096
+      },
+      "acceptance": {
+        "path": "D:\\m543\\n11-elder-r3\\output\\acceptance.json",
+        "sha256": "617f8c754b2fc1aed044840e74d161a29a179b6f3f44b7d0ddfbac9c99be70cb",
+        "bytes": 13670
+      },
+      "builder_receipt": {
+        "path": "D:\\m543\\n11-elder-r3\\engine\\editor_data\\ainative\\projects\\210e76802d72e1b46c3cfc6f07ecca33e8f23b13032da24ceb22368eeeba199d\\sculpt-state\\44dcd0792f5276d3671b6d6b2e9609dec4ac2d0ff924555fb3c557b3072ce7e7\\result.glb.receipt.json",
+        "sha256": "cc1bceffd4c2a09d42106b768c1630e2b33b0fb1dd08943871eebe1c6c233bfa",
+        "bytes": 25287
+      },
+      "source_plan_sha256": "e69105ebf92265b66e881dfb2efda77dae9bfdae4e852ba1e339eedc454c10d2",
+      "runtime_input_sha256": {
+        "character_detail_sha256": "7ce0bd69f8d83e15be4e9ad8e07735c1dbdf1027c9247efa485e6b92fa43a75b",
+        "organic_detail_sha256": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691"
+      },
+      "completion": {
+        "inferred_regions": [
+          "character"
+        ],
+        "mode": "reference_constrained"
+      },
+      "exact_hidden_surface_recovery_claimed": false,
+      "references": [
+        {
+          "path": "C:\\Users\\kaiyu\\AppData\\Local\\Temp\\s543refs\\reference_sheet_front.png",
+          "sha256": "42906d8c3ab2b557ddf79fc3faaf59b1afa8d5e20b6869059647c4c8edd01585",
+          "bytes": 854626
+        },
+        {
+          "path": "C:\\Users\\kaiyu\\AppData\\Local\\Temp\\s543refs\\reference_sheet_back_profile.png",
+          "sha256": "f83313b71a209ff043a267a3ab2b6cc0310aa9b558c1209e36e826985748704c",
+          "bytes": 832218
+        }
+      ],
+      "render_report": {
+        "path": "D:\\m543\\r3-visual-elder\\comparison-manifest.json",
+        "sha256": "d1533bbd41f240b9f246b9a30a1370a72f615e9b5fe639c0f9bba6a1455af081",
+        "bytes": 5003
+      },
+      "inspected_views": [
+        {
+          "path": "D:\\m543\\r3-visual-elder\\compare_front_body.png",
+          "sha256": "424d4573205606423f12d31556b63828d6d8c6917000c2224411b08328ac30f4",
+          "bytes": 765668
+        },
+        {
+          "path": "D:\\m543\\r3-visual-elder\\compare_back_body.png",
+          "sha256": "16bf895579126288ba217ead1491157e24c52016bb5faee2c6596ba0851540c1",
+          "bytes": 734607
+        },
+        {
+          "path": "D:\\m543\\r3-visual-elder\\compare_front_face.png",
+          "sha256": "39c876c199c1355777659170bc82db078b294d0ef52629f9fb67dd47f21eb2a2",
+          "bytes": 650268
+        },
+        {
+          "path": "D:\\m543\\r3-visual-elder\\compare_right_face.png",
+          "sha256": "65cd2b5fea0e5ce5c43c1d35c0d36c7ab8611181c091a71fd6aa9eb4c5f6ec91",
+          "bytes": 625676
+        }
+      ],
+      "observed_successes": [
+        "Bald elderly character, wrap jacket, tied belt, loose trousers and sandals are recognizable in the actual output.",
+        "Age changes produce a visible aged face with coherent nose, ears, mouth and jaw in front and profile.",
+        "The jacket covers the torso and has an inner overlap, belt, front panels and a raised pocket. Back and front retain the same clothing structure.",
+        "The supplied comparison panels use the same orthographic cameras, neutral clay and uniform height normalization for reference and candidate."
+      ],
+      "observed_reference_gaps": [
+        "The candidate's broad high rounded shoulders and thick straight sleeves differ conspicuously from the reference's slim sloping shoulders. The difference persists in both front and back views.",
+        "The candidate is a plausible generic elder, but its wider jaw, fuller chin and cheek/profile structure do not reproduce the target's gaunt facial shape. Raised strip eyebrows are conspicuous.",
+        "The jacket and trousers remain rigid flat envelopes with limited local folding, rather than the reference's draped sleeves, waist gathering and soft trouser folds.",
+        "The back neck opening and shoulder shape do not reproduce the reference's close rear collar and sloping upper back. The direct back reference provides evidence for this difference."
+      ],
+      "verdict": "Basic complete human and outfit category demonstrated; reference fidelity remains incomplete and is not accepted by this review"
+    }
+  ],
+  "overall_verdict": "Pipeline and basic complete human/category construction demonstrated; realistic and stylized reference fidelity remain incomplete",
+  "material_limit": "Simplified materials explain some missing surface detail. They do not explain the observed shoulder, collar, hairstyle, eye and facial silhouette differences. Texture projection can improve appearance but cannot alone establish the missing shape consistency.",
+  "acceptance_limit": "No exact identity metric was specified or invented. The negative fidelity finding is based on visible requested shape/style/back-reference features, not failure to match every source pixel. Parent retains the final business acceptance decision.",
+  "organic_status": "The latest genuine N12 organic job failed body_disconnected after spacing passed. No new native organic success is inferred from these three human cases. Failed runs and older visual records remain unchanged."
+}

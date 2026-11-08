@@ -53,6 +53,10 @@ def check_content(value):
             not set(value) & {"uri", "url", "path", "source_path"}, "external references require snapshot_file content"
         )
         if "content_base64" in value or "content_sha256" in value:
+            require(
+                isinstance(value.get("content_base64"), str) and isinstance(value.get("content_sha256"), str),
+                "inline content requires content_base64 and content_sha256 strings",
+            )
             data = base64.b64decode(value["content_base64"], validate=True)
             require(hashlib.sha256(data).hexdigest() == value["content_sha256"], "content digest mismatch")
         for child in value.values():
@@ -304,6 +308,7 @@ class Executor:
         provider = self.providers[node["provider"]]
         snapshot, result, error = None, None, None
         raw = None
+        validating_result = False
         try:
             if action != "cancel":
                 require(
@@ -332,12 +337,15 @@ class Executor:
                     snapshot["error"] = "provider_failed"  # Never persist provider error text.
                 if snapshot["state"] == "succeeded":
                     result = provider.result_manifest(snapshot["job_id"])
+                    validating_result = True
                     validate_outputs(
                         self.registry, node["request"]["node"], node["request"]["version"], snapshot["outputs"], result
                     )
                     check_content(result)
         except Exception:
-            error = "provider_operation_failed"  # Safe fixed code; exception messages may contain secrets.
+            # Fetch failures may recover. Rechecking a locally invalid terminal
+            # result cannot recover and must not poll the same succeeded job forever.
+            error = "invalid_result" if validating_result else "provider_operation_failed"
         with self.transaction():
             run = self._read(run_id)
             current = run["nodes"][node_id]
@@ -353,9 +361,19 @@ class Executor:
             if snapshot is not None:
                 # Persist a known job even if fetching/validating its result failed.
                 if error:
-                    if current["job"] is None:
-                        current["job"] = {"job_id": snapshot["job_id"], "state": "queued", "outputs": {}, "error": None}
-                    current["state"] = "running"
+                    if error == "invalid_result":
+                        # Keep the provider's real succeeded receipt; this is a
+                        # host validation failure, not a retryable provider failure.
+                        current.update(state="failed", job=snapshot, result=None)
+                    else:
+                        if current["job"] is None:
+                            current["job"] = {
+                                "job_id": snapshot["job_id"],
+                                "state": "queued",
+                                "outputs": {},
+                                "error": None,
+                            }
+                        current["state"] = "running"
                 else:
                     validate_job(snapshot, current["job"])
                     if result is not None:
@@ -369,14 +387,7 @@ class Executor:
                             )
                         except (ValueError, KeyError, TypeError):
                             self.db.execute("ROLLBACK TO result_assets")
-                            current.update(state="running", error="invalid_result", result=None)
-                            if current["job"] is None:
-                                current["job"] = {
-                                    "job_id": snapshot["job_id"],
-                                    "state": "queued",
-                                    "outputs": {},
-                                    "error": None,
-                                }
+                            current.update(state="failed", error="invalid_result", job=snapshot, result=None)
                             self._write(run)
                             return self.status(run_id)
                         finally:

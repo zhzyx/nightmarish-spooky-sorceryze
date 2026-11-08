@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "occurred_at": "2026-11-08T06:47:43.225692+00:00",
+  "state": "passed_forearm_asset_delta_only",
+  "reviewer": "independent modeling_ui agent; no body helper/reproducer edits",
+  "scope": "Focused independent review of two added forearm data constants. No claim about runtime pose deformation, clothing, GPT reconstruction or visual/business quality.",
+  "source_sha256": {
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+    "misc/scripts/derive_maliang_body.py": "4ad8cf41c818a2e4d2e38b1813a9a196bd8c4d8dffebe03611b2070fa2548f7a",
+    "tools/ainative/test_anatomy_body.py": "85d0b73774b9d7dba204683b2d62c2142542d08c04442c7c6a278829b789df39"
+  },
+  "previous_body_helper_sha256": "4b6c4da9ba930ff34ffbd7442539b95ef380034b1973ac007faa4f7ca7f4b479",
+  "added_constants": [
+    "BODY_FOREARM_CHAIN_BONES",
+    "BODY_FOREARM_WEIGHTS"
+  ],
+  "unchanged_prior_constants": {
+    "BODY_SOURCE_SHA256": true,
+    "BODY_NORMALIZATION": true,
+    "BODY_BASE_HEAD_FRAME": true,
+    "BODY_HEAD_FRAME": true,
+    "BODY_SOURCE_INDICES": true,
+    "BODY_VERTICES": true,
+    "BODY_AGE_DELTAS": true,
+    "BODY_FACES": true,
+    "BODY_ARM_WEIGHTS": true,
+    "BODY_HAND_WEIGHTS": true,
+    "BODY_LANDMARKS": true,
+    "BODY_LANDMARK_AGE_DELTAS": true,
+    "BODY_DIGIT_TIPS": true,
+    "BODY_DIGIT_TIP_AGE_DELTAS": true
+  },
+  "source_provenance": "Same five exact pinned CC0 mesh/target/rig-data bytes as the previous approved body data review; no new dependency or source file. Source artist-baseline filenames remain provenance only, not identity/ethnicity inference.",
+  "independent_trace": {
+    "method": "For each official bone, traverse parent ancestry to lowerarm01.L/R roots; independently sum its source-index weights with math.fsum, divide by ALL official source vertex weights, then round10.",
+    "roots": [
+      "lowerarm01.L",
+      "lowerarm01.R"
+    ],
+    "descendant_counts": [
+      22,
+      22
+    ],
+    "exact_bone_name_sets": true,
+    "forearm_pairs": 13380,
+    "exact_source_sum_matrix": true,
+    "all_finite_0_1": true,
+    "pair_sums_at_most_one": true,
+    "hand_within_forearm_within_arm": true
+  },
+  "reproduction": {
+    "raw_literal_data_exact": true,
+    "raw_output_sha256": "fbcdcde6b8c89ec15427e634bf5b1ecda53e23e7e0b79e709fc5f065fe86ee56",
+    "authoring_format_step": "Same installed repository Ruff format applied only to NEW private output",
+    "after_format_exact_byte_match": true,
+    "formatted_sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+  },
+  "static_regression": {
+    "tests": 15,
+    "exit_code": 0,
+    "delta_checks": [
+      "data-only AST includes exactly the two new constants",
+      "forearm pairs cover mesh, finite[0,1], sum<=1",
+      "HAND<=FOREARM<=ARM",
+      "unique sided bone-name chains include forearm root and wrist"
+    ],
+    "ruff_check_no_fix": "passed",
+    "ruff_format_check": "passed",
+    "mypy": "passed",
+    "lf_only": true
+  },
+  "geometry_changed": false,
+  "model_calls": 0,
+  "prior_review": "maliang-gpt-modeling-20261108-complex-anatomy-body-review.json",
+  "limitations": [
+    "Data hierarchy consistency does not prove two-bone pose deformation or garment mask quality.",
+    "All prior approved review records remain unchanged. New actual posed outputs require separate visual and geometry checks."
+  ]
+}

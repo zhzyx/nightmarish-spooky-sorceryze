@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "event_id": "maliang-gpt-modeling-20261108-realism-priority-steering",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T05:28:13.560936+00:00",
+  "payload": {
+    "correction": "Latest user says current test images still look too cartoonish and final output needs greater realism. Image-led realistic human reconstruction is the primary acceptance case; stylized remains secondary in this round.",
+    "authority_ref": "codex:user:20261108:less-cartoon-more-realistic",
+    "state": "in_progress",
+    "acceptance_order": [
+      "actual multiview image-led realistic human with observed identity and age",
+      "stylized image-led human as secondary retained scope",
+      "organic shape and multiview back/occluded consistency",
+      "text-only pipeline as secondary evidence"
+    ],
+    "visible_quality": [
+      "physical skull and facial planes",
+      "believable muscle and bony landmarks",
+      "natural garment thickness and drape",
+      "observed aging must alter geometry rather than only an elder metadata label"
+    ],
+    "reference_priority": "Preserve observed reference identity, age-related shape, proportions and clothing; realism does not authorize replacing reference observations with generic human defaults.",
+    "acceptance_state": "pending_actual_realistic_image_led_visual_and_native_node_validation",
+    "issue_closure_allowed": false,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-image-led-steering",
+    "maliang-gpt-modeling-20261108-real-human-first-failure"
+  ],
+  "supersedes": "maliang-gpt-modeling-20261108-image-led-steering"
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-ci-script-mode-correction",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T16:06:59.325560+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "portable_script_mode_fixed_bytes_unchanged",
+    "original_pr": 577,
+    "failed_exact_head": "f432d5a6f94c5072b84f484851eb13de2665e33d",
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42497743462",
+    "failure": "check-shebang-scripts-are-executable",
+    "path": "misc/scripts/derive_maliang_calibration.py",
+    "previous_mode": "100644",
+    "corrected_mode": "100755",
+    "source_sha256": "291ec78ac1b25b75695c1d11600f632b4c54c6374c29ab904fd458da68f46e39",
+    "source_bytes_unchanged": true,
+    "runtime_and_calibration_bytes_unchanged": true,
+    "other_pr_static_checks_passed": [
+      "ruff check",
+      "ruff format",
+      "mypy",
+      "codespell",
+      "file-format",
+      "snapshot integrity"
+    ],
+    "no_runtime_test_retagging": true,
+    "next_action": "Formal reissue with corrected exact candidate, supersede unmerged577 and wait every exact-head check; human appearance task continues and543 remains open."
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-foundation-latest-main-validation"
+  ]
+}

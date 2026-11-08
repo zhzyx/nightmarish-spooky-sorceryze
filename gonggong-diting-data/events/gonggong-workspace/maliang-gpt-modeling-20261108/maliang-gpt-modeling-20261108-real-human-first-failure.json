@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-real-human-first-failure",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T04:45:55.970218+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "failed",
+    "candidate_binary_sha256": "c668391db2052a17cadba5888ea689512f96f8229cfb4551e3d81dfac72f634c",
+    "failure_stage": "semantic_plan_validation_before_blender",
+    "code": "completion_regions_invalid",
+    "original_job_terminal": "failed_immutable",
+    "original_mesh_published": false,
+    "raw_instructions_sha256": "f345acdc41a141d04f1a1f9d7bcc8f1484a8cc9fc0992d7436dbe6e10bb52e44",
+    "cli_events_sha256": "128d514914e9764294df4c853cc6e0f5881a2f06092b70e9fad018b93e72c095",
+    "cli_completed_turns": 1,
+    "actual_cli_usage": {
+      "input_tokens": 11420,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 13937,
+      "reasoning_output_tokens": 90
+    },
+    "diagnostic_only": {
+      "derivation": "Only completion.inferred_regions replaced with exact region names, original failed job untouched",
+      "source_metadata_sha256": "86faaa56afb5d3548048b12b8cfad634f3d1e83b6a85c7e8fa31c94bd6e15b89",
+      "derived_plan_sha256": "5094dd493f6bda439dba5d4f369d39c296f1297e4eb7da0d84418237b49ace30",
+      "builder_receipt_sha256": "97e21b4d4bf6ee9d32d1caa3a4a189ed0f324203c32238156cfac08f511a59cb",
+      "geometry": {
+        "vertices": 19250,
+        "triangles": 38436,
+        "body_components": 1,
+        "body_manifold": true,
+        "body_volume": 0.05999737323294729
+      },
+      "visual_review": "failed: elongated neck, distorted face, mitten fingers, disconnected-looking clothing seams; complete backs alone do not establish reference consistency",
+      "business_acceptance": false
+    },
+    "required_next_action": "Correct annotation contract and failed-turn accounting; implement anatomically controlled construction, then new real requests and separate multiview visual checks",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-complex-scope",
+    "maliang-gpt-modeling-20261108-complex-criteria-correction"
+  ],
+  "sha256": "97faa81cf2debaa2f7f6e9ea1bfab3a0264cd6e61d6da2adc895bc81edc196e3"
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "event_id": "maliang-gpt-modeling-20261108-trusted-anatomy-age-revision",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:35:47.989933+00:00",
+  "payload": {
+    "state": "age_data_prepared_pending_independent_revision_review_and_visual_acceptance",
+    "helper_sha256": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "reproducer_sha256": "2d5c6af0fc8dd33dd5f4de9ad40127676f263220f99738acd91a31bc0f783df0",
+    "previous_helper_sha256": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0",
+    "head_vertices_faces_and_eye_anchors_unchanged": true,
+    "age_vectors": 4290,
+    "nonzero_age_vectors": 4244,
+    "maximum_normalized_vector_length": 0.20002210055690797,
+    "source_target_sha256": [
+      "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+      "b0d2b1d58cba0358af59833740e70229265f7da1c20a11240f4123b7192cfd6d"
+    ],
+    "derivation": "Old minus young of same pinned CC0 target basis, mapped only to exact surviving original OBJ vertices through preserved integer source IDs. Neck-plane intersection vertices get zero rather than fabricated indices. Scale by original crown/chin height. No source program logic copied.",
+    "meaning": "Age geometry basis only; asset filenames do not assert or infer ethnicity of reference subjects. Runtime applies age weight before facial morphs; actual visual reference agreement remains pending.",
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-trusted-anatomy-data",
+    "maliang-gpt-modeling-20261108-age-target-research"
+  ],
+  "sha256": "a773a01edfa9a79135c6f865acab8c0249d02090521d739dfa2b1a0fc8a4a218"
+}

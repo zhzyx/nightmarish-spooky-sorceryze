@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-fresh-human-native-results",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T08:06:02.680132+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "partial_native_success_with_primary_photo_geometry_failure",
+    "main_revision": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+    "editor_sha256": "420fc9af8c602463266d09cc6ed178d74fe3e6db8b344839504e0c1f91f9fb93",
+    "source_sha256": {
+      "tools/ainative/sculpt_provider.py": "02478ce8a2a068595ab0bef00c3f96df594c009cd5666b1075fa829352d659f5",
+      "tools/ainative/sculpt_builder.py": "3d6d93551965170164d0b5a6ad0a05e79e6e96933833abb3a1190e1ce5861b90",
+      "tools/ainative/executor.py": "91f3cd3e778c50487119f059508358e4512dd347f069c7d4c0414c2f8c4b6801"
+    },
+    "cases": [
+      {
+        "case": "n2-photo",
+        "native_pipeline_passed": false,
+        "native_checks": 11,
+        "backend_terminal": "failed",
+        "stage": "builder",
+        "failure_code": "region_not_closed_manifold",
+        "original_terminal_immutable": true,
+        "raw_plan_sha256": "107c3a5b44e18aadf87e90cccbb0f197092f003f33040f51e2d8c062a2b75f15",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 15287,
+          "output_tokens": 498,
+          "reasoning_output_tokens": 101
+        },
+        "cli_events_sha256": "1ba21b2da4124bb8f673164ae6c88dbf64492f6e8b9868063ca71ef6783cd5f9",
+        "raw_output_sha256": "107c3a5b44e18aadf87e90cccbb0f197092f003f33040f51e2d8c062a2b75f15",
+        "mesh_sha256": null,
+        "visual_acceptance": "pending_actual_reference_comparison",
+        "scope": "Actual fresh two-reference GPT CLI and native linked nodes; separate geometry/visual acceptance retained"
+      },
+      {
+        "case": "n3-elder",
+        "native_pipeline_passed": true,
+        "native_checks": 24,
+        "backend_terminal": "succeeded",
+        "stage": "builder",
+        "failure_code": null,
+        "original_terminal_immutable": true,
+        "raw_plan_sha256": "3706beb7955386187508faac838deef7a5db9292205165f702e87a39e1c14222",
+        "actual_cli_usage": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 17693,
+          "output_tokens": 704,
+          "reasoning_output_tokens": 138
+        },
+        "cli_events_sha256": "ce4a4870e42e460b144d2aa7fc86ae9687885bde7253f62c17986f724f651dd0",
+        "raw_output_sha256": "161a202238c0d87fa931dd589312035d5693a95314da3a83e95d107b8d348d63",
+        "mesh_sha256": "5f4035daf4fb10c36eee0c28ec3bd8040faa154b12cbe89662bfe56dbe873fe6",
+        "visual_acceptance": "pending_actual_reference_comparison",
+        "scope": "Actual fresh two-reference GPT CLI and native linked nodes; separate geometry/visual acceptance retained"
+      }
+    ],
+    "diagnosis": "Reserved reference digest collision and endless executor polling fixed: actual elder linked pipeline passes; distinct-color photographic character plan exposes an initial per-region closed/manifold failure in the fixed constructor. Exact offending region under diagnosis.",
+    "next_action": "Retain both real terminals. Diagnose and rebuild unchanged photographic plan, add regression, independently review and rerun final native photo; inspect actual successful elder output against views. Do not count reference photographs or diagnostic replays as modeling acceptance.",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-native-result-validation-failure",
+    "maliang-gpt-modeling-20261108-realistic-photo-reference"
+  ],
+  "sha256": "a2f84cb0ec28a0a3dea01bb1747ac24750562342986d41a6be73baa8ef7c9629"
+}

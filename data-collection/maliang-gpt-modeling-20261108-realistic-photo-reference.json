@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-realistic-photo-reference",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T07:42:11.808637+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "reference_input_ready",
+    "scope": "Actual GPT CLI fictional photorealistic multi-view INPUT IMAGE generation only; no mesh generation, likeness or overall acceptance",
+    "online_entry": "Existing ChatGPT authenticated Codex CLI native ImageGen",
+    "source_image_sha256": "0d421e7108c27e4eff25bb7f507bcb5ae96ca1ea9d015a7a2e0e5a955198acba",
+    "provider_sha256": "0d6c10e5dc37bac5df2b6c1d8203808596471c27660bf5ff46e90f21072d3ca1",
+    "prompt_sha256": "a5a27056fc7a64fc9a935556d39ea93e2dec7ddb31538d3ae1f56273ffe839ca",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "actual_cli_usage": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 43648,
+      "input_tokens": 60144,
+      "output_tokens": 532,
+      "reasoning_output_tokens": 6
+    },
+    "image_cost": null,
+    "cli_events_sha256": "4d96cf89e275335194f14e15c44deab8c37f7ae42fd4ad7c2a2a807614be70c0",
+    "derived_input_images": [
+      {
+        "file": "reference_front.png",
+        "box": [
+          0,
+          0,
+          627,
+          1254
+        ],
+        "sha256": "aa2e0323f8681499da4ea5058ffad46fbd7919c9e239e5945d8096d3e596b290"
+      },
+      {
+        "file": "reference_back_profile.png",
+        "box": [
+          627,
+          0,
+          1254,
+          1254
+        ],
+        "sha256": "a03f3db971f4f2ea6b12e4818b50159a95ded541e2cf43a6f2227480d2fdf89f"
+      }
+    ],
+    "preprocessing": "Two exact non-overlapping equal vertical crops only; no resizing, retouching or invented views",
+    "visual_observations": [
+      "Photographic skin and facial planes rather than earlier cartoon reference",
+      "Same adult and navy T-shirt/gray trousers in front and back",
+      "Explicit front face and right-profile face views; hidden detail remains ambiguous"
+    ],
+    "next_action": "Run actual final-candidate image-to-mesh node pipeline, inspect real generated anatomy/face/clothes and multiple-view consistency separately"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-realism-priority-steering"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0d39cbb9ed79207e533d8dc061d49399061b6993",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a7182b765b6370108e4fab8c7eb4dd3007c818734a77fe6400c530f3799b8ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556",
+    "action": "validation",
+    "detection_head": "3a596e24bff2e7c02ad8e55bbfc062916880de9e",
+    "context_sha256": "81915796ef5fff2a90c5fdec3a2fad0423d09d48d79102fec5c2261dbc98eb78",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-fresh-human-native-results.json",
+    "diagnosis": "Real fresh elder native pipeline passed24 checks and rebuilt native suite passed187. Primary photographic character plan now fails region_not_closed_manifold in fixed Blender constructor; original paid task remains failed.",
+    "next_action": "Diagnose exact photo-plan region without weakening checks, repair fixed constructor and regress unchanged plan, then independently verify fresh final native photo and visual comparisons.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T04:38:55.215921+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T08:07:28.643060+00:00",
+  "sha256": "99711bb4f9c2c2f62bb938c6f7f226659cf0c894107680d8d27ea77f9e81df5e"
+}

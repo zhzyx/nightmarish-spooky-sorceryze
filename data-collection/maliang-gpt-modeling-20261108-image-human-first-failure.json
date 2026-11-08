@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-image-human-first-failure",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:33:39.919216+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "failed",
+    "stage": "builder_geometry_validation",
+    "code": "body_disconnected",
+    "original_terminal_immutable": true,
+    "mesh_published": false,
+    "scope": "Actual two-reference GPT image-to-mesh prototype against immutable source snapshot; not final native or visual acceptance",
+    "source_sha256": {
+      "sculpt_provider.py": "06adedd05fff5e7d65d29e3b7ca68f2b0919ec65b43ddc87694603edfb31a372",
+      "sculpt_builder.py": "9256c1a673c5dd28801075142b742fc8fcb0c1ed9de3729944afcf67fdbb0e47",
+      "anatomy_base.py": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0"
+    },
+    "raw_instructions_sha256": "6649c944b6c82a7d3db800078248f5d56949d173e8e6da862f4bb3e0d639fdce",
+    "validated_plan_sha256": "6649c944b6c82a7d3db800078248f5d56949d173e8e6da862f4bb3e0d639fdce",
+    "cli_events_sha256": "80c89a08668610ba06ced997023285e65cf08e96755ddba7fb3cb553f7438120",
+    "actual_cli_usage": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 0,
+      "input_tokens": 17227,
+      "output_tokens": 432,
+      "reasoning_output_tokens": 74
+    },
+    "references": [
+      {
+        "view": "front full body and face",
+        "sha256": "42906d8c3ab2b557ddf79fc3faaf59b1afa8d5e20b6869059647c4c8edd01585"
+      },
+      {
+        "view": "back full body and right face profile",
+        "sha256": "f83313b71a209ff043a267a3ab2b6cc0310aa9b558c1209e36e826985748704c"
+      }
+    ],
+    "completion": {
+      "inferred_regions": [
+        "character"
+      ],
+      "mode": "reference_constrained"
+    },
+    "observed_plan_features": {
+      "style": "realistic",
+      "age": "elder",
+      "head_ratio": 7.15,
+      "neck_length": 0.88,
+      "hem_height": 0.45,
+      "sleeve_length": 0.76,
+      "trouser_width": 1.28,
+      "footwear": "sandals"
+    },
+    "finish": {
+      "smooth_iterations": 2,
+      "subdivision": 1,
+      "voxel_size": 0.004
+    },
+    "planning_note": "Schema and ordered image conditioning passed; observed output controls match visible short wrap jacket, loose trousers, sandals and elderly face intent. This does not prove actual geometry/visual agreement.",
+    "next_action": "Repair and regression-test exact unchanged genuine plan in fixed interpreter; retain original failed terminal and no automatic CLI replay.",
+    "bug_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-image-led-steering",
+    "maliang-gpt-modeling-20261108-trusted-anatomy-data"
+  ]
+}

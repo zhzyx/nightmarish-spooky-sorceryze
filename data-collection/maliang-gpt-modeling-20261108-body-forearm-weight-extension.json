@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "event_id": "maliang-gpt-modeling-20261108-body-forearm-weight-extension",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T06:42:15.960148+00:00",
+  "payload": {
+    "state": "fixed_data_forearm_extension_verified_independent_delta_review_pending",
+    "authority_ref": "codex:user:20261108:less-cartoon-more-realistic",
+    "sources": [
+      {
+        "path": "makehuman/data/3dobjs/base.obj",
+        "sha256": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/3dobjs/base.obj",
+        "declared_license": "CC0-1.0"
+      },
+      {
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "sha256": "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "declared_license": "CC0-1.0"
+      },
+      {
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "sha256": "b0d2b1d58cba0358af59833740e70229265f7da1c20a11240f4123b7192cfd6d",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "declared_license": "CC0-1.0"
+      },
+      {
+        "path": "makehuman/data/rigs/default.mhskel",
+        "sha256": "99f179bce0aa850b45d4191a1d0d234c5851f881c057439470ded3bddf729a24",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default.mhskel",
+        "declared_license": "CC0-1.0"
+      },
+      {
+        "path": "makehuman/data/rigs/default_weights.mhw",
+        "sha256": "0f3641d651ae3d00ad6b4ccee43142edb109d3bd909d27d9e4139ef1beed8625",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default_weights.mhw",
+        "declared_license": "CC0-1.0"
+      }
+    ],
+    "license_scope_url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md",
+    "license_scope": "Targets and bundled graphical data are CC0; exact rig/skeletal-weight JSON declares CC0. No MakeHuman AGPL program code is used.",
+    "produced_files": {
+      "tools/ainative/anatomy_body.py": {
+        "sha256": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+        "bytes": 2498218,
+        "encoding": "UTF-8 without BOM, LF",
+        "kind": "literal ordinary asset data only"
+      },
+      "misc/scripts/derive_maliang_body.py": {
+        "sha256": "4ad8cf41c818a2e4d2e38b1813a9a196bd8c4d8dffebe03611b2070fa2548f7a",
+        "kind": "original stdlib authoring program; pinned local inputs; no network or MakeHuman program imports",
+        "bytes": 10925
+      }
+    },
+    "derivation": {
+      "baseline": "base + pinned male-young target as declared artist baseline, not an ethnicity or identity inference",
+      "age_delta": "(old-young) / SAME young-baseline body height",
+      "retained_group": "body only; all source helper, joint, rig and genital-helper groups excluded",
+      "vertices": 13380,
+      "quad_faces": 13378,
+      "source_indices": [
+        0,
+        13379
+      ],
+      "normalization": {
+        "floor_y": -8.181,
+        "height": 17.481299999999997,
+        "center_x": 0.0,
+        "center_z": 1.4011500000000001
+      },
+      "baseline_floor_y": 0,
+      "baseline_height": 1,
+      "head_frame": {
+        "origin": [
+          0.0,
+          0.9345929651,
+          -0.042605527
+        ],
+        "height": 0.1308140699
+      },
+      "arm_weights": "For each side sum weights in upperarm01 descendants (24bones), divide by sum of ALL source vertex weights; rounding normalization explicitly applied.",
+      "hand_weights": "For each side sum wrist descendants (20bones), same all-weight denominator.",
+      "side_labels": "Official L is positive X, R negative X; original side labels preserved.",
+      "landmarks": "Means of pinned mhskel joint source-index arrays after applying same baseline and normalization; crown chosen from BODY maximum Y, chin alias is source991, source delta means scaled by SAME height.",
+      "head_frame_note": "BODY_HEAD_FRAME uses actual young crown/chin and head depth center; separate BODY_BASE_HEAD_FRAME retains legacy raw base frame for provenance.",
+      "forearm_weights": "For each side sum exact lowerarm01 descendants (22bones including wrist/hands/fingers), divide by the same ALL official source vertex-weight sum; round to10decimals. BODY_FOREARM_CHAIN_BONES explicitly records included names."
+    },
+    "private_checks": {
+      "literal_data_ast_only": true,
+      "finite_data_and_bounded_arm_hand_weights": true,
+      "baseline_ground_height": true,
+      "closed_edge_and_vertex_manifold": true,
+      "one_body_component": true,
+      "positive_signed_volume": true,
+      "zero_degenerate_triangles": true,
+      "geometry_matrix": "Prior8age×rest/whole-arm25-degree checks remain valid for unchanged body/arm data. New forearm weights were data-validated independently; two-bone elbow pose execution remains builder validation.",
+      "vertices_preserved": true,
+      "face_topology_preserved": true,
+      "capped_or_removed_faces": 0,
+      "source_reference_mesh_imported": false,
+      "neural_weights_loaded": false,
+      "makehuman_program_code_imported": false
+    },
+    "integration_state": "Builder integrating two fixed bone rotations using additional literal skeletal-weight DATA; no GPT char API or original h1 plan change.",
+    "business_acceptance": "pending actual same-subject multiview image-led realism, clothing, hidden/back consistency and native node roundtrip",
+    "issue_closure_allowed": false,
+    "model_calls_performed": 0,
+    "usage": null,
+    "source_commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+    "correction": "Actual continuous-body diagnostic shows source forearms bend forward; existing whole-arm rotation cannot produce the required fixed A pose. Add exact ordinary skeletal-weight DATA for a second elbow rotation; no new rig framework or model call.",
+    "prior_data_sha256": "4b6c4da9ba930ff34ffbd7442539b95ef380034b1973ac007faa4f7ca7f4b479",
+    "prior_reproducer_sha256": "649f23802d264ba489dc5220dc04fe79ca142c14c0437cce79d1a9ad6cf9a0dc",
+    "forearm_delta_checks": {
+      "all_prior_assignment_constants_unchanged": true,
+      "body_coordinates_faces_age_landmarks_and_other_weights_unchanged": true,
+      "only_added_assignments": [
+        "BODY_FOREARM_WEIGHTS",
+        "BODY_FOREARM_CHAIN_BONES"
+      ],
+      "per_side_chain_bones": 22,
+      "weight_pairs": 13380,
+      "source_sum_independently_recomputed": true,
+      "finite_0_1": true,
+      "hand_weight_le_forearm_weight_le_arm_weight": true,
+      "new_upstream_inputs": false,
+      "neural_or_program_weights": false,
+      "new_two_bone_posed_geometry_acceptance": "pending builder tests and visual review"
+    }
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-continuous-body-data"
+  ],
+  "supersedes": "maliang-gpt-modeling-20261108-continuous-body-data"
+}

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "independent_final_complex_builder_review",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "reviewer": "Codex child /root/mesh_audit; did not author builder, tests or fixed asset data",
+  "reviewed_at_utc": "2026-11-08T07:29:56.230036+00:00",
+  "state": "approved_fixed_interpreter_component_contract_business_acceptance_pending",
+  "scope": "Independent read-only audit and actual Blender tests of frozen builder only. Provider/service and third-party asset derivation conclusions are outside this approval; dependency file hashes are bound below.",
+  "source_sha256": {
+    "tools/ainative/sculpt_builder.py": "2ebe4bb836ffea0b8bc03d593783ee690225ccaa416d5bd00fcab8c403e7a515",
+    "tools/ainative/test_sculpt_builder.py": "eb37d47fa33d369c74ecd167947fc006169305d3886f406060d3292042ec8b06"
+  },
+  "dependency_sha256": {
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04"
+  },
+  "source_encoding": "All four files UTF-8, no BOM, LF; hashes unchanged across final tests and static checks",
+  "resolved_findings": [
+    {
+      "finding": "Legal trouser_width=0.8 produced negative shell ease in earlier candidate",
+      "fix": "Positive base ease floor and final source-normal clearance floor; lower width reduces looseness rather than pushing into skin",
+      "verification": "Independent pure source trace at stylized width0.8 measures minimum raw trouser clearance 0.011999999999999957m; real Blender stylized short-hair width0.8 case passes"
+    },
+    {
+      "finding": "Legacy mathematical hair cap could lie about1cm inside the morphed stylized scalp",
+      "fix": "Hair is clipped and offset from the same morphed canonical BODY surface, then closed with fixed Solidify",
+      "verification": "Independent raw source-normal trace measures minimum hair clearance 0.004999999999999891m; old _head_point hair generation path is no longer used"
+    }
+  ],
+  "findings": [],
+  "verified_design": [
+    "Strict bounded JSON-v2 fields and scalar character controls; no model-selected script, import, operator, executable command or file path. Blender operations and output paths are fixed trusted implementation/host arguments.",
+    "Continuous canonical BODY uses fixed age/shape data, official arm/forearm/hand weights, and two-bone A-pose transforms; canonical deformation keeps BODY connected before any explicitly requested added body regions; there is no head/neck/hand skin splicing.",
+    "Head, eye and face controls use immutable aged anchors; below-hip limb warp is continuous. Tests check actual height/head-ratio and straight upper/forearm alignment at bounded limb/height cases.",
+    "Garment/hair patches retain shared clip-edge intersection vertices and explicitly close thickness; skin and every final accessory are checked for one component, edge/vertex manifold topology, positive signed volume and zero-area triangles.",
+    "Generic loft/cage/primitive route still uses bounded voxel fusion with remove_disconnected=false. Disconnected external bodies are refused; no largest-component or external-anatomy filtering exists.",
+    "Certified internal-negative-cavity utility remains separately adversarial-tested; final continuous-body production path performs no skin VDB and reports empty internal_voxel_fills.",
+    "Constrained triangulation preserves boundary edges and uses a validated interior Steiner point only when required; final topology is rechecked. Numerical vertex merging/dissolving and inserted triangulation vertices are disclosed in cleanup.",
+    "Original canonical source-plan digest is retained separately from expanded data digest. Ordinary fixed asset source hashes, actual age coefficient and requested/effective smoothing/subdivision/no-voxel semantics are exposed truthfully.",
+    "Plan, grid, vertex, triangle and GLB byte budgets are bounded; actual post-modifier geometry totals and data hash gate export. Existing output/receipt/render files are never overwritten."
+  ],
+  "tests": {
+    "builder_suite": {
+      "result": "23 tests passed, no skips",
+      "seconds": 35.14,
+      "blender": "Actual installed Blender5.1.0 background factory startup and disable-autoexec",
+      "log_path": "project/build-support/mesh-audit-final-20261108/builder-tests-final23.log",
+      "log_sha256": "09c8a8ff0f975f43146dafb3bd9019ce138be2fc87bd09d42cbce13aaf4cf0b9",
+      "source_binding_sha256": "c29324e2e27edbe1fcb7ad1962d9f237b2081d47aa675a7179192ca7747d1041"
+    },
+    "static": {
+      "result": "Ruff check --no-fix, Ruff format --check and MyPy passed",
+      "report_path": "project/build-support/mesh-audit-final-20261108/static-final.json",
+      "sha256": "1fa0360d3f946126abd6d2c4d7775fe15c9a0397a4e64bfee8abd3cac51134cd"
+    },
+    "raw_clearance": {
+      "result": "Trousers and hair positive source-normal clearance at legal stylized width0.8",
+      "scope": "Pure fixed-surface regression at stylized width0.8; raw source-normal clearance before Blender modifiers, not final collision or visual acceptance",
+      "cases": {
+        "trousers": {
+          "width": 0.8,
+          "vertices": 1459,
+          "faces": 1416,
+          "minimum_source_normal_clearance_m": 0.011999999999999957,
+          "required_m": 0.012
+        },
+        "hair": {
+          "width": 0.8,
+          "vertices": 255,
+          "faces": 224,
+          "minimum_source_normal_clearance_m": 0.004999999999999891,
+          "required_m": 0.0045
+        }
+      },
+      "sha256": "673b1ae4f81350b8f5b9bfff211942052bf62fab680002a3dba0535e3a8b8ef1"
+    },
+    "historical_test_only_correction": "Initial independent21-test run had2 obsolete analytic-body assertions; owner updated continuous-body contract assertions and added standalone Steiner and canonical control regressions. Final23-test exact-source run passed."
+  },
+  "actual_h1_diagnostic": {
+    "scope": "Existing genuine GPT source plan reinterpreted by fixed builder; not a new CLI request or final user-facing visual acceptance",
+    "source_plan_sha256": "6649c944b6c82a7d3db800078248f5d56949d173e8e6da862f4bb3e0d639fdce",
+    "glb_sha256": "0fe19e8b53ea83d3c12009102e3560f25506b7c6db8b9d1d57f37a7f1d143904",
+    "geometry": {
+      "vertices": 107304,
+      "triangles": 214552,
+      "bytes": 3863976,
+      "body_components": 1,
+      "body_manifold": true,
+      "body_volume": 0.0759735586665112
+    },
+    "raw_receipt_sha256": "5379ec071400e0a6846e5a27f27d72b050b41b1edbb42ab87ea61c16c0364a52"
+  },
+  "limitations": [
+    "Closed manifold and positive volume do not establish reference fidelity, all requested semantic features, photorealism, clothing-body collision freedom or absence of geometric self-intersections.",
+    "Source-normal clearance check covers raw patch generation; final Blender topology tests do not substitute for visible garment/scalp clearance under all shapes.",
+    "Generic voxel fusion can smooth or erase sub-resolution detail; actual organic output views and requested branch/arm counts still require separate inspection.",
+    "Character API covers bounded fixed A-pose/control ranges; review does not establish arbitrary pose, identity or hidden-surface reconstruction accuracy.",
+    "Mesh is static sculpt output; animation-ready retopology, skeleton/rig output and UV/texture fidelity are not established by this component review."
+  ],
+  "business_acceptance": {
+    "state": "pending",
+    "note": "Actual final-native image-to-mesh generation, realistic/stylized/organic results and multiview back/occluded reference agreement remain separate root responsibilities. Keep issue543 open until its full criteria are met."
+  },
+  "mutations": "Created only new audit evidence files; no product source, tests, helper data, old review or original job terminal modified; no paid CLI/model calls."
+}

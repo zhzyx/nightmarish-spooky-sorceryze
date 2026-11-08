@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-gpt-modeling-20261108-review-publication-line-ending-correction",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "correction",
+  "occurred_at": "2026-11-08T15:59:07.540982+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "state": "new_review_normalized_before_first_commit",
+    "source_review": "maliang-gpt-modeling-20261108-r3-human-result-independent-review.json",
+    "original_issued_sha256": "44f74d65a9ee76bc6e41561d483035f141ec6e7cf411cfdb3e9352141d758096",
+    "published_utf8_lf_sha256": "cb541d369308330888ec7398152838ec0136248cda87d440286e0ea00deb9826",
+    "original_raw_private_copy_retained": true,
+    "only_crlf_to_lf_changed": true,
+    "json_semantics_identical": true,
+    "no_committed_json_rewritten": true,
+    "review_scope_and_conclusion_unchanged": true,
+    "reason": "Git index normalizes new JSON to LF; formal gate correctly requires source and staged receipt byte equality. Earlier local evidence refs to44f74d identify the retained original bytes; this append maps them to the first published LF representation.",
+    "original_delivery_block_incident": "f0eba575d45c2b2c4e7d233bb1b74eb2527f17fe6e4b405735d86c46744bc536"
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-runtime-verification-human-rejection"
+  ]
+}

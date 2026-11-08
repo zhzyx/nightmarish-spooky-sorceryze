@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "state": "passed",
+  "reviewer": "independent modeling_ui agent; did not author or modify anatomy data/reproducer",
+  "scope": "Read-only fixed anatomical asset-data provenance and exact reproduction review. No claim about GPT reconstruction, model execution, facial resemblance or actual character output quality.",
+  "source_sha256": {
+    "tools/ainative/anatomy_base.py": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0",
+    "misc/scripts/derive_maliang_anatomy.py": "c817d164f4dfb6523d169f82663e604d5c4d0ef55ea35347a70edea1b16d248b"
+  },
+  "upstream": {
+    "repository": "makehumancommunity/makehuman",
+    "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+    "source_files": [
+      {
+        "path": "makehuman/data/3dobjs/base.obj",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/3dobjs/base.obj",
+        "sha256": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+        "bytes": 1749303,
+        "matches_private_source": true
+      },
+      {
+        "path": "LICENSE.md",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md",
+        "sha256": "edd99571ca62698f78c943fd4fffb159a413c315fa0d4819d3cec5cadaf8b4f1",
+        "bytes": 3598,
+        "matches_private_source": true
+      },
+      {
+        "path": "LICENSE.ASSETS.md",
+        "official_pinned_url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.ASSETS.md",
+        "sha256": "f6089cba01cb570a24712b41ab8a586ccd3cc5ef53dc266ca50b95c288956d2c",
+        "bytes": 6962,
+        "matches_private_source": true
+      }
+    ],
+    "license_observations": [
+      "Pinned base.obj header explicitly states release as CC0 in September2020 and names Data Collection AB, Joel Palmius and Jonas Hauquier",
+      "Pinned LICENSE.md distinguishes AGPL program logic from graphical assets, expressly including base mesh and proxies among CC0 assets",
+      "Pinned LICENSE.ASSETS.md contains Creative Commons CC0 1.0 Universal text"
+    ],
+    "copied_scope": "Derived geometry data from the body group only; no MakeHuman program logic, rig/proxy assets or user OLD MAN reference mesh copied"
+  },
+  "derivation": {
+    "pinned_obj_sha256": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+    "operations": [
+      "Parse OBJ vertex data and only faces under g body",
+      "Delete unused vertices and bisect at original Y=6.0, retaining head side",
+      "Cap boundary openings, triangulate, remove degenerate edges and recalculate outward face winding",
+      "Normalize crown/chin head span around Y=0 while retaining short neck extension; preserve Y-up/+Z-front coordinates",
+      "Round fixed vertex coordinates to eight decimals and emit literal vertex/triangle/eye-center tuples"
+    ],
+    "exact_reproduction": true,
+    "reproduced_sha256": "0d949c0eb363b67678a542e0a7e914e4cce582873dab24f4a0519969b6e6b4c0",
+    "data_only_ast": "Docstring plus four literal constants SOURCE_SHA256,EYE_CENTERS,HEAD_VERTICES,HEAD_FACES; no imports, calls, functions or model code in the data helper"
+  },
+  "geometry": {
+    "vertices": 4290,
+    "triangles": 8576,
+    "edges": 12864,
+    "connected_components": 1,
+    "closed_oriented_two_face_edges": true,
+    "edge_manifold": true,
+    "vertex_manifold": true,
+    "zero_area_triangles": 0,
+    "positive_volume": true,
+    "signed_volume_normalized_bmesh": 0.3134934280152471,
+    "euler_characteristic": 2
+  },
+  "findings": [],
+  "evidence": {
+    "official-source-verification.json": {
+      "path": "project/build-support/anatomy-data-review/official-source-verification.json",
+      "sha256": "95c473ab9ba7e7356bdc51d6eb44a3654de2a0ff8db8e75f46d001ced29d25f2"
+    },
+    "reproduction.json": {
+      "path": "project/build-support/anatomy-data-review/reproduction.json",
+      "sha256": "9d1ea493f4c7a6b90ec9ce8cd99c7ab6d62357eb52db8252caf91f86101b8cc0"
+    },
+    "reproduce.log": {
+      "path": "project/build-support/anatomy-data-review/reproduce.log",
+      "sha256": "ef129ed474264b46e4c2315023e2362329bc7bf76aa04cfdf80bf374969ba448"
+    },
+    "numeric-geometry.json": {
+      "path": "project/build-support/anatomy-data-review/numeric-geometry.json",
+      "sha256": "9c5869e8d5fc99d730ab8a748e9cc8d0ad2f64b7e005ad6d810f9f448630217a"
+    },
+    "bmesh-geometry.json": {
+      "path": "project/build-support/anatomy-data-review/bmesh-geometry.json",
+      "sha256": "98d97ef97ad4a7ca218ff64ce23281ad0b2e05f44dc662b21d6481b8f2511d61"
+    },
+    "geometry.log": {
+      "path": "project/build-support/anatomy-data-review/geometry.log",
+      "sha256": "45c02ee279223e2ffbae78d4ba255992f6c24798f7455e51b15644c900152a23"
+    }
+  },
+  "limitations": [
+    "This is a fixed CC0 anatomical baseline, not a neural model, GPT-generated head or source-reference reconstruction",
+    "Reusing this base unchanged cannot satisfy image-to-mesh resemblance or multi-view consistency acceptance",
+    "Root owns COPYRIGHT/NOTICE and upstream source-event integration; this review does not replace that project-level work",
+    "Complex-character visual quality and actual paid CLI image-to-mesh acceptance remain separate and unverified here"
+  ]
+}

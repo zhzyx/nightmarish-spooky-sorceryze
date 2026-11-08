@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "event_id": "maliang-gpt-modeling-20261108-dense-native-preview",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:59:20.079389+00:00",
+  "payload": {
+    "state": "passed",
+    "scope": "Existing actual GPT-plan-derived dense mesh imported through two linked OFFLINE COPY nodes, preview, publication and workflow reopen; no new model inference and no final visual acceptance",
+    "editor_sha256": "503c1221924ecd84fd9dd181f5c771811832aeb1ee2780b88c98be535a56e05b",
+    "main_revision": "b21a9cd1",
+    "source_glb_sha256": "ec601a182974933c6f74d38ae07e71a400457c8bda422ddb8237d9afcee53203",
+    "input_triangles": 1986126,
+    "output_vertices": 993095,
+    "checks": [
+      {
+        "label": "native Maliang entry exists",
+        "passed": true
+      },
+      {
+        "label": "native bundled workbench loaded",
+        "passed": true
+      },
+      {
+        "label": "explicit offline copy mode used without CLI calls",
+        "passed": true
+      },
+      {
+        "label": "actual dense GLB source accepted",
+        "passed": true
+      },
+      {
+        "label": "linked node workflow saved",
+        "passed": true
+      },
+      {
+        "label": "native host operation completed",
+        "passed": true
+      },
+      {
+        "label": "both linked offline-copy nodes succeed for actual generated mesh",
+        "passed": true
+      },
+      {
+        "label": "generated GLB loaded in downstream node preview",
+        "passed": true
+      },
+      {
+        "label": "node result retained in preview history",
+        "passed": true
+      },
+      {
+        "label": "generated Mesh contains actual vertices",
+        "passed": true
+      },
+      {
+        "label": "mesh scene publication reviewed",
+        "passed": true
+      },
+      {
+        "label": "native host operation completed",
+        "passed": true
+      },
+      {
+        "label": "generated scene published",
+        "passed": true
+      },
+      {
+        "label": "workflow reopen preserves both nodes and edge",
+        "passed": true
+      },
+      {
+        "label": "saved output reopens without another CLI request",
+        "passed": true
+      },
+      {
+        "label": "native preview screenshot saved",
+        "passed": true
+      }
+    ],
+    "test_script_sha256": "9c0c49487e9ecb61902d870c0783653cba2f26cccc9d517c0db0d57d2fc1ed03",
+    "runner_sha256": "7798ef3ca47becc815293598e8fcd9f72afd0825e67d7b60296a28d4b198e379",
+    "report_sha256": "3f8ab45de30194a20ee03d9d1d99794ec8387f0ad9ec32e5b3f7a37361803bba",
+    "native_screenshot_sha256": "ac1cd2570edb40ae15dd78bd22d0a4b8a6086a7a0ed8dce6e87ef7d24a89a5dd",
+    "script_errors": false,
+    "known_diagnostics": "Existing current_window progress dialog and editor teardown RID/resource leak messages retained in private log; do not claim diagnostic-free exit",
+    "paid_cli_calls": 0,
+    "business_visual_acceptance": false
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-image-human-first-failure"
+  ]
+}

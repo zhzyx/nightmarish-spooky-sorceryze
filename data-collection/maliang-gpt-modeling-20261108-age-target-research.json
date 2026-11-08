@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "event_id": "maliang-gpt-modeling-20261108-age-target-research",
+  "kind": "step",
+  "occurred_at": "2026-11-08T05:28:13.560936+00:00",
+  "payload": {
+    "state": "pinned_data_available_not_integrated_or_accepted",
+    "authority_ref": "codex:user:20261108:less-cartoon-more-realistic",
+    "sources": [
+      {
+        "repository": "makehumancommunity/makehuman",
+        "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-young.target",
+        "sha256": "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+        "git_blob_sha1": "c3b82f92c5ced85599199cd184b0faf3b3fc6881",
+        "bytes": 396479,
+        "delta_rows": 19150,
+        "vertex_index_range": [
+          0,
+          19149
+        ],
+        "declared_license": "CC0-1.0",
+        "license_header_lines": [
+          3,
+          4
+        ],
+        "program_code": false
+      },
+      {
+        "repository": "makehumancommunity/makehuman",
+        "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+        "path": "makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-male-old.target",
+        "sha256": "b0d2b1d58cba0358af59833740e70229265f7da1c20a11240f4123b7192cfd6d",
+        "git_blob_sha1": "07b1f5526a3139dbd528efe07452d0a454106d0d",
+        "bytes": 400125,
+        "delta_rows": 19158,
+        "vertex_index_range": [
+          0,
+          19157
+        ],
+        "declared_license": "CC0-1.0",
+        "license_header_lines": [
+          3,
+          4
+        ],
+        "program_code": false
+      }
+    ],
+    "license_evidence": {
+      "scope_url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md",
+      "scope_sha256": "edd99571ca62698f78c943fd4fffb159a413c315fa0d4819d3cec5cadaf8b4f1",
+      "asset_license_url": "https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.ASSETS.md",
+      "asset_license_sha256": "f6089cba01cb570a24712b41ab8a586ccd3cc5ef53dc266ca50b95c288956d2c",
+      "scope_lines": [
+        47,
+        56
+      ],
+      "finding": "Official license explicitly distinguishes AGPL program logic from CC0 bundled assets including targets and modifiers. Both exact target headers independently declare CC0."
+    },
+    "measured_data": {
+      "union_vertex_indices": 19158,
+      "nonzero_old_minus_young_deltas": 19152,
+      "maximum_raw_delta_length": 0.7067970005595666,
+      "zero_for_absent_sparse_row": true
+    },
+    "proposed_use": "Use bounded old-minus-young sparse vertex displacement only as an age-shape basis on the same fixed base mesh, with original OBJ index mapping retained by the reproducible head-data derivation.",
+    "limitations": [
+      "No ethnicity is inferred from user images or assigned to the user subject; source filenames identify upstream files only.",
+      "Do not apply source vertex indices directly to clipped/capped derived head vertex indices.",
+      "Coordinate conversion and normalization must match pinned Y-up source OBJ and documented head derivation.",
+      "Age basis is ordinary geometry data, not a neural model or a clone of user reference mesh.",
+      "Actual visible aging, realism and reference agreement remain unvalidated by this data-availability research."
+    ],
+    "makehuman_program_code_copied": false,
+    "neural_weights_downloaded": false,
+    "helper_modified": false,
+    "paid_model_calls": 0,
+    "usage": null
+  },
+  "evidence_refs": [
+    "maliang-gpt-modeling-20261108-realism-priority-steering",
+    "maliang-gpt-modeling-20261108-trusted-anatomy-data"
+  ]
+}
