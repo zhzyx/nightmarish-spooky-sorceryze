@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9a405d5f62bdd14392c8c297de5826ea3106cc35",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f6f965ef2d2700ac70e7ecea8ca458e607930395d0405fdebc27394c3aebe6ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/588",
+    "action": "validation",
+    "detection_head": "4bb462209e08db16a6895eeab83933c6054b6bc4",
+    "context_sha256": "1f56629b48e4bbd02b2e95f2201c7b5e851f276859ed4bd4cc3908f3d3f45115",
+    "operator": "kaiyunxue",
+    "worker": "codex-desktop/root-issue462-final-delivery",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+    "evidence": "Formal framework validator failed before submission; its direct diagnostic reports node executable missing. The configured installed Node is valid; adding its directory only to this host command environment makes the unchanged trusted validator exit0.",
+    "diagnosis": "The publisher omitted the workflow Node directory from its shell PATH. No engine, persistent configuration, product source, gate definition or artifact defect was found.",
+    "next_action": "Keep original failure and received role context, use the valid workflow runtime environment, rerun the unchanged formal gate on this candidate, include the actual recovery evidence and continue normal delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T18:55:46.637131+00:00",
+    "attempted": "Direct unchanged framework validator exit0 after correcting only the host command environment; prior receive without Node failed and was retained separately.",
+    "repair_owner": "codex-desktop/root-issue462-final-delivery",
+    "continuable": "Original human authorization covers finishing this delivery; no permission, source or global environment change is required."
+  },
+  "occurred_at": "2026-11-08T18:58:56.460955+00:00",
+  "sha256": "26ee649313630fb3d81041e5f508c74fa9aa24a07a3020bd5e96474d939d770e"
+}
