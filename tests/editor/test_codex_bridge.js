@@ -92,11 +92,15 @@ test('consultation preserves host mode and rejects write capabilities before sub
         consultation_only: true, writes_allowed: false, execution_allowed: false } };
     assert.equal(validateRequest(consultation).tool_context.consultation_only, true);
     for (const name of ['write_file', 'write_script', 'run_command', 'build_engine', 'restart_engine',
-        'rollback_engine', 'complete_delivery', 'run_test', 'check_script', 'get_parent_context']) {
+        'rollback_engine', 'complete_delivery', 'run_test', 'check_script', 'delegate_review']) {
         const broadened = { ...consultation, available_tools: [{ type: 'function', function: { name } }] };
         assert.throws(() => validateRequest(broadened));
         assert.throws(() => completion(JSON.stringify({ content: '', actions: [{ name, arguments: '{}' }] }), broadened));
     }
+    const parentRead = { ...consultation, available_tools: [{ type: 'function', function: { name: 'get_parent_context' } }] };
+    assert.equal(validateRequest(parentRead).tool_context.consultation_only, true);
+    assert.equal(completion(JSON.stringify({ content: '', actions: [{ name: 'get_parent_context', arguments: '{}' }] }), parentRead)
+        .choices[0].message.tool_calls[0].function.name, 'get_parent_context');
     assert.throws(() => validateRequest({ ...consultation, tool_context: { ...consultation.tool_context, writes_allowed: true } }));
     assert.equal(completion('{"content":"read","actions":[{"name":"read_file","arguments":"{}"}]}', consultation).choices[0].finish_reason, 'tool_calls');
 });

@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "issue": 551,
+  "reviewer": "config_bootstrap_plan (not source author)",
+  "created_at_utc": "2026-11-08T04:25:10.546435+00:00",
+  "verdict": "pass",
+  "remaining_blockers": [],
+  "fixed_scope": {
+    "freeze_path": "<private-evidence>/issue551-source-review-freeze-v4b.json",
+    "freeze_sha256": "eb30aa0e134f52db6a7c6b601f511fa2257872430169adc5a0805ee7b914bd0c",
+    "source_root": "<task-worktree>",
+    "source_head": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "3a3e5d4290be7edef3b27ff708beb4f781eaa2905ee657e72b7386764980ac0f",
+      "editor/docks/ai_chat_dock.h": "594d7b472d2fc917ad609a1e5d6d730f8b76b3625c2ca68d30a94d0ac668f4a1",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "ea672bc5d40bee437eae7a8a01abd1536b10ac8463c7dc04ea2206c0ce837b6f",
+      "editor/docks/ai_chat_sub_agents.cpp": "bfc076a046b50b029bf07b8d19175bf9ffe1e5059db10ebd10e20f63d408f9d6",
+      "tests/editor/design_batch.gd": "c78b2b12f023245a1c1ad37869795569efd8fa5699f6f5316fea24036f05db5d",
+      "tests/editor/run_design_batch.py": "0e1573334a1a8671760fb62c425c9d381b0df379786da0571da471cc4663ca5c",
+      "tests/editor/test_codex_bridge.js": "2f8cf1cea66c1372cde2ba7efbae4868ff9484d99633dd0a99a2d8cb83f8b0a4",
+      "tools/codebuddy_cli/godot_bridge.js": "96e199df9e8a0ceb8c7523e327e52f0a09b5b1d1ae72387bf1a09d04e8b15af4",
+      "tools/codex_cli/godot_bridge.js": "466cdf1e249c987bca105baedfc77164f4f3c1ad34f14262f2d4d80a5726805a"
+    },
+    "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+    "post_test_source_and_artifact_drift": false
+  },
+  "source_review": [
+    {
+      "topic": "Host-enforced read-only",
+      "result": "Review identity is host sub_agent.source=review. Initial child queue sets consultation_only=true; _send forces it; _start_message ORs review metadata with every message mode, so manual/saved false cannot expand permissions. Host tool execution rejects non-read tools before dispatch; Codex bridge validates the same read allowlist.",
+      "refs": [
+        "ai_chat_sub_agents.cpp:_is_review_child/_create_sub_agent",
+        "ai_chat_dock.cpp:_send/_start_message/_tool_after_receipt/_start_codex",
+        "tools/codex_cli/godot_bridge.js:READ_TOOLS/validateRequest/completion"
+      ]
+    },
+    {
+      "topic": "Parent context",
+      "result": "get_parent_context is added to the consultation read allowlist and Codex read allowlist. Both API and Codex advertisements hide it from parents; host still rejects callers without sub-agent identity. Existing bounded/redacted/untrusted parent context implementation is reused."
+    },
+    {
+      "topic": "Scope, owner and no production intake",
+      "result": "delegate_review requires an authorized busy top-level API/Codex production parent with real bound Issue/request and existing engine_candidate. It copies the exact candidate and requirement workspace into the child. Read-only completion bypasses production framework/Issue/candidate creation. Parent owner/snapshot/request/Issue/workspace, child generation/conversation/snapshot and live token are checked by reused batch guards."
+    },
+    {
+      "topic": "Real bounded receipts and return",
+      "result": "Each actual host tool result is collected before event recording. Final child sidecar is atomically written, payload SHA-bound and required available for review; inability to save marks reporting_blocked and cannot wake parent production. Return includes an explicitly untrusted bounded report excerpt and business_accepted=null, not approval. Original parent consumes exactly its live batch marker; stale/cold tokens do not grant continuation."
+    },
+    {
+      "topic": "Failure and pause boundaries",
+      "result": "Failed/stopped delegating parent cancels its batch, so queued reviewer cannot start. Child transport failure is reported incomplete; Stop/queue pause/tools off/owner or binding drift and blocked receipt checks remain. Cold restoration does not replay a reviewer; explicit resume still enforces read-only metadata."
+    },
+    {
+      "topic": "Existing production design behavior",
+      "result": "Normal design children keep prior production semantics and prior report text. Review batch suppresses implicit production spawning both on delegate completion and review-return completion. Review child/live review batch/return snapshot bypass external production CLI dispatch; a new user turn clears the temporary snapshot marker and restores normal behavior."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "root-P2-finalized-design-extra-children",
+      "origin": "Root independent review",
+      "fix_reviewed": "_spawn_work_order_agents returns for active read-only batch; review parent return snapshot suppresses subsequent automatic production spawn."
+    },
+    {
+      "id": "independent-P2-prior-waiting-external-design-dispatch",
+      "origin": "This independent review",
+      "fix_reviewed": "_dispatch_parallel_sub_agents checks read-only child/live batch/return snapshot before preparing runtime or dispatching. Combined native fixture seeds a valid waiting blocked external design child and nonempty external config and proves no production outbox."
+    },
+    {
+      "id": "review-report-notice",
+      "origin": "This independent review, non-blocking accuracy note",
+      "fix_reviewed": "Review notice accurately labels inline reviewer report excerpt as untrusted; normal design wording remains unchanged."
+    }
+  ],
+  "independently_executed": {
+    "codex_bridge": {
+      "command": "node --test tests/editor/test_codex_bridge.js",
+      "tests": 15,
+      "passed": 15,
+      "failed": 0,
+      "note": "Executed by reviewer; source unchanged in final freeze. Tool output retained in this agent turn."
+    },
+    "native_typed_loop": [
+      {
+        "path": "<private-evidence>/issue551-independent-review-v4b.json",
+        "sha256": "cb902355641d4ebfdd095c916cf45b9066eecacd85c209ba6e7388c15b1280d6",
+        "ok": true,
+        "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+        "stages": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 3,
+          "return": 2,
+          "tamper": 3
+        },
+        "parent_returns": 1,
+        "errors": []
+      },
+      {
+        "path": "<private-evidence>/issue551-independent-review-parent-stop-v4b.json",
+        "sha256": "46a7f717031a018af667d8ac3f986e5c93623684d41b33a2a50ad6a27e85acdb",
+        "ok": true,
+        "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+        "stages": {
+          "warmup": 1,
+          "parent": 2
+        },
+        "parent_returns": 0,
+        "errors": []
+      }
+    ],
+    "native_assertions": "Review case used 7 read-only advertised tools, actually read file/parent context, rejected 6 adversarial non-read actions, observed exactly one parent return with 8 actual receipts (6 denied), actual receipt SHA and parent reread, no second candidate/intake, no external production outbox. It cold-restored a saved false-mode queue and native explicit resume remained read-only. Parent-stop case observed reviewer=0 and return=0.",
+    "execution_isolation": "Existing runner copied the fixed editor to a private system temporary _sc_ tree, private settings/runtime JSON/local Git+GH/HTTP fixtures. No user App, history, GUI desktop, global configuration or production model calls were used."
+  },
+  "preserved_failed_executions": [
+    {
+      "path": "<private-evidence>/issue551-independent-review-v4.json",
+      "sha256": "b8fd0f5268a0b4843e83d184b30511fee9c0c672560282717f2824ba4a2bcd3c",
+      "ok": false,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "stages": {
+        "warmup": 1,
+        "parent": 2
+      },
+      "parent_returns": 0,
+      "errors": [
+        "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+      ]
+    },
+    {
+      "path": "<private-evidence>/issue551-independent-review-parent-stop-v4.json",
+      "sha256": "5873dac679433435c79ed96b9b8bb0672d4b68dad435f40927660703e556cb90",
+      "ok": false,
+      "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+      "stages": {
+        "warmup": 1,
+        "parent": 2
+      },
+      "parent_returns": 0,
+      "errors": [
+        "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+      ]
+    }
+  ],
+  "failed_execution_explanation": "Initial v4 fixture seed omitted valid_history-required cli_model/draft_images. Host rejected invalid history and kept history_writable=false; delegate correctly returned a real Error. These runs remain failed and are not credited. Author corrected fixture fields only; production code and fixed binary did not change. Reviewer checked valid_history field checks and read actual Error in failed report.",
+  "author_evidence_read_not_independently_executed": {
+    "reports": [
+      {
+        "path": "<private-evidence>/issue551-v4-design-normal.json",
+        "sha256": "b1c0128a3b7c510c176979c7c1e300fcf2f49ae6944e008b5ca033d2fe9d51f5",
+        "ok": true,
+        "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+        "stages": {
+          "warmup": 1,
+          "parent": 1,
+          "child1": 3,
+          "child2": 3,
+          "return": 3
+        },
+        "parent_returns": 1,
+        "errors": []
+      },
+      {
+        "path": "<private-evidence>/issue551-v4b-review-stop.json",
+        "sha256": "74f6a710735a9052b6cc6003b72f1ae9ddbdb3c149b4716d6460d5551ba32de5",
+        "ok": true,
+        "artifact_sha256": "1bfdd060edd7f0e56d09598675e8f81aebe44e019b58a1d3b737b15acaa4d35e",
+        "stages": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 1
+        },
+        "parent_returns": 0,
+        "errors": []
+      }
+    ],
+    "unit_log": {
+      "path": "<private-evidence>/issue551-v4-unit.log",
+      "cases": 7,
+      "assertions": 235,
+      "status": "SUCCESS",
+      "execution": "author"
+    },
+    "scope_note": "Normal production design two-child loop and child-stop behavior are author runtime evidence read by reviewer, not reviewer executions."
+  },
+  "limitations": [
+    "No real provider/LLM production acceptance, user GUI or Native483 install/restart was executed. The model protocol and Issue service were controlled offline fixtures, while native editor state/tool/receipt/dispatch code executed normally.",
+    "This pass is bound to the exact final freeze source hashes and fixed artifact, not future source changes, final PR CI/main, or the parent business acceptance declaration.",
+    "Durable receipt-save failure and broad owner/Stop guard matrix were inspected in source; this reviewer did not claim a new independent filesystem-failure runtime test or full native build."
+  ],
+  "subsequent_main_fast_forward": {
+    "workspace_head": "fec580fe81d0cd6e083956a44a0c0d316c728c20",
+    "changed_paths": [
+      ".pre-commit-config.yaml",
+      "data-collection/issue544-delivery-correction-20261108.json",
+      "data-collection/issue544-final-guard-ci-policy-review.json",
+      "data-collection/issue544-guarded-correction-independent-review.json",
+      "data-collection/issue544-postmerge-combination-independent-review.json",
+      "data-collection/maliang-gpt-modeling-20261108-ci-format-correction.json",
+      "data-collection/maliang-gpt-modeling-20261108-ci-format-review.json",
+      "data-collection/requests/kuafu-context-receipt-20261108/c97225bb-87f8-4dd2-a1fd-c4d05849be65.json",
+      "design-docs/kuafu-context-delivery-correction-20261108.md",
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-4211f0adbd6cd1fcbd9f7dbdabe104ef2de2b734.json",
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-context-receipt-20261108/kuafu-delivery-correction-20261108.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-0674ee2222bfd02e94d85eac7e642a8fd01523c3.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-21746607c0077a9cded94883266129cb4ffab635.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-2e8b95dc29594311fee942fa8f6615234797ffbe.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-gpt-modeling-20261108/kuafu-6e7e32bbeee4c44f8757da08774e179e5387589e.json"
+    ],
+    "reviewed_nine_sources_unchanged": true,
+    "artifact_rebuilt_for_new_head": false,
+    "note": "The 1bfdd artifact was compiled at ed65 base plus frozen changes; the FF changes do not intersect reviewed files. Exact signed-head CI remains required; no claim that the full new HEAD was rebuilt locally."
+  },
+  "public_copy": {
+    "original_private_sha256": "65f89085fab1cbc1ad8391d90aa36864223fdce70b5747e14f9482b3c87a202c",
+    "transformation": "Only private filesystem paths were replaced with neutral placeholders. Findings, scope, hashes, test counts and limitations are unchanged."
+  }
+}

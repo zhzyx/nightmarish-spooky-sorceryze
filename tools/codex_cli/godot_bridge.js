@@ -10,7 +10,7 @@ const { outputSchemaFor, argumentsForHost } = require('./action_schema');
 const { validateInput, normalizeResult, classifyDiagnostics, bridgeError, serializeError, ACTIONS } = require('../codebuddy_cli/godot_bridge');
 
 const LIMIT = 2 * 1024 * 1024;
-const READ_TOOLS = new Set(['read_file', 'read_script', 'read_logs', 'list_scripts', 'list_directory', 'get_editor_state']);
+const READ_TOOLS = new Set(['read_file', 'read_script', 'read_logs', 'list_scripts', 'list_directory', 'get_editor_state', 'get_parent_context']);
 
 function validateRequest(raw) {
     const input = validateInput(raw);

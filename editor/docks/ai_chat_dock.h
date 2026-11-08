@@ -585,7 +585,9 @@ class AIChatDock : public EditorDock {
 	int design_child_starting = -1;
 	int design_parent_starting = -1;
 	uint64_t design_last_blocked_generation = UINT64_MAX;
-	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue);
+	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue, int p_review = -1);
+	bool _is_review_child() const;
+	String _delegate_review(const Dictionary &p_arguments);
 	void _cancel_design_batch(int p_agent);
 	bool _design_parent_matches(int p_parent, const Dictionary &p_batch) const;
 	int _design_child_parent(int p_child) const;

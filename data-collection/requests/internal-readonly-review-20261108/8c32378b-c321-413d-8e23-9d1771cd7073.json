@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "internal-readonly-review-20261108",
+  "collected_at": "2026-11-08T04:36:24.182552+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/internal-readonly-review-20261108/internal-readonly-review-request-20261108.json",
+      "sha256": "d4f6f97e1c1a1905ead8db687a04369e3309c91da95e1810a88a7e130df133d2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "internal-readonly-review-request-20261108",
+      "origin": "explicit-authorized-host-request"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/internal-readonly-review-20261108/kuafu-3eb87a8c9dcbbfc253cfc2e7f6fd4fd077e7fd3a.json",
+      "sha256": "dbde9e588d35fe2e001aae09641a708f44977aec44f64c0aea20f8f08c7f00ed",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-3eb87a8c9dcbbfc253cfc2e7f6fd4fd077e7fd3a",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/internal-readonly-review-20261108/kuafu-6dc016e2bb8cfacf30105464f132ab3cb6e6087b.json",
+      "sha256": "b1350a0203ce047782ba8cd1672cf02e4e47f88ac7d3d6e2006c5b3b35ad1712",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-6dc016e2bb8cfacf30105464f132ab3cb6e6087b",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/internal-readonly-review-20261108/kuafu-e965ce74bfd726b16c2346b220034022663793f9.json",
+      "sha256": "8f82b2f88bb28d44a3d65d07d719ef5175668d5eeedbb5849fc61f7cec010cbb",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-e965ce74bfd726b16c2346b220034022663793f9",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/551"
+}

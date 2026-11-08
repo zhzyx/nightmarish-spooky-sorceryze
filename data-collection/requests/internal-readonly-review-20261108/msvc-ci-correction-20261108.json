@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "request_id": "internal-readonly-review-20261108",
+  "issue_number": 551,
+  "created_at": "2026-11-08T04:36:23.480705+00:00",
+  "original_failed_candidate": {
+    "pr": 553,
+    "source": "bd115bf530083ae4b857790c8ec291d540f4524e",
+    "signed": "bd29dd494fef4a057874855140cedcf970060c1a",
+    "push_workflow_run": 42446935718,
+    "status": "failure",
+    "phase": "Windows MSVC Compilation",
+    "diagnostic": [
+      "C4458: local request hides inherited member",
+      "C4458: local title hides inherited member",
+      "C2220: warning treated as error"
+    ],
+    "merged": false
+  },
+  "repair": {
+    "scope": "Rename only two local identifiers in delegate_review to review_request/review_title at every use; no tool JSON keys, policy, warning flags or behavior changes.",
+    "source_base": "bd115bf530083ae4b857790c8ec291d540f4524e",
+    "source_files_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "3a3e5d4290be7edef3b27ff708beb4f781eaa2905ee657e72b7386764980ac0f",
+      "editor/docks/ai_chat_dock.h": "594d7b472d2fc917ad609a1e5d6d730f8b76b3625c2ca68d30a94d0ac668f4a1",
+      "editor/docks/ai_chat_sub_agent_receipts.h": "ea672bc5d40bee437eae7a8a01abd1536b10ac8463c7dc04ea2206c0ce837b6f",
+      "editor/docks/ai_chat_sub_agents.cpp": "47dcf945a55ea7a4def9c2391752d3d93e3e4b9c579e1f6651ec86a53f686e69",
+      "tests/editor/design_batch.gd": "c78b2b12f023245a1c1ad37869795569efd8fa5699f6f5316fea24036f05db5d",
+      "tests/editor/run_design_batch.py": "0e1573334a1a8671760fb62c425c9d381b0df379786da0571da471cc4663ca5c",
+      "tests/editor/test_codex_bridge.js": "2f8cf1cea66c1372cde2ba7efbae4868ff9484d99633dd0a99a2d8cb83f8b0a4",
+      "tools/codebuddy_cli/godot_bridge.js": "96e199df9e8a0ceb8c7523e327e52f0a09b5b1d1ae72387bf1a09d04e8b15af4",
+      "tools/codex_cli/godot_bridge.js": "466cdf1e249c987bca105baedfc77164f4f3c1ad34f14262f2d4d80a5726805a"
+    },
+    "artifact_sha256": "05af5f4f4595caa1e73a9c4be3a963a8e86cc80d3111d503890660f20827bde6",
+    "macos_rebuild": {
+      "exit_code": 0,
+      "elapsed_seconds": 12.27
+    },
+    "targeted_native_review_case": {
+      "ok": true,
+      "report_sha256": "5f19ade7f63af03bd55df804d3d668547503acc521ae7db961b1aa57d7a09f01",
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3,
+        "return": 2,
+        "tamper": 3
+      },
+      "parent_return_count": 1,
+      "errors": []
+    },
+    "independent_delta_review": {
+      "path": "data-collection/requests/internal-readonly-review-20261108/msvc-rename-independent-review-20261108.json",
+      "sha256": "233b35a4340e9f55c0b345296129c880a0da44ee9c7e47021c4835687dcfac21",
+      "verdict": "pass",
+      "reviewer_scope": "Independent source/hash and author result read, not reviewer execution of this new binary."
+    }
+  },
+  "preserved_prior_evidence": "Prior independent native runtime cases, initial failure logs and all prior public reports remain unchanged; this is an additive correction.",
+  "windows_ci_recovery": null,
+  "main_delivery": null,
+  "original_issue483_business_accepted": null,
+  "next": "Normal signed candidate plus fresh exact-head full CI and main readback required; macOS success does not establish MSVC recovery."
+}
