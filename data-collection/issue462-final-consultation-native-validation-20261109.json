@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "issue_number": 462,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "scope": "Final consultation-enabled native component candidate; original user installation, cold launch and provider chat remain explicit Root acceptance under issues 390 and 393.",
+  "product_source_changed_by_this_evidence_commit": false,
+  "dependency": {
+    "issue": 585,
+    "pull_request": 587,
+    "source_candidate": "32a66548715d2979cfaeea05464e7e142917840f",
+    "signed_candidate": "6ae4b945222a75e04dd7e223a00cc6eefef0f8de",
+    "main_merge": "4bb462209e08db16a6895eeab83933c6054b6bc4",
+    "exact_signed_ci": {
+      "success": 11,
+      "configured_skip": 14,
+      "failed": 0,
+      "pending": 0,
+      "terminal_verification_sha256": "e67db17b3075dc2be48e283ddd36f8a0f6e8bf8917f6ef6d02916d43ba91bd7a"
+    },
+    "main_delivery_receipt_sha256": "817a797ec47db9ccc3a38e2ce531c97508d5914debf561f9d8f61813830172c8",
+    "standard_full_source_input_verification_after_main": {
+      "ok": true,
+      "source_digest": "fee96bc7381057b72a3aa4ea1f47e22d561860666df7fed220c581063daf5a1c",
+      "manifest_keeps_actual_buildhead": true
+    }
+  },
+  "build": {
+    "stage": "ready",
+    "exit_code": 0,
+    "actual_source_head": "32a66548715d2979cfaeea05464e7e142917840f",
+    "artifact_sha256": "cc71da63479869a65f4b97f092582012140c64284135c287fc73accdf09babe7",
+    "manifest_sha256": "6d308f800674de59723a9133ed8637856cffce17a595c028dbfbe0d3982501ba",
+    "source_digest": "fee96bc7381057b72a3aa4ea1f47e22d561860666df7fed220c581063daf5a1c",
+    "source_input_count": 16552,
+    "artifact_layout": "native_app",
+    "status_sha256": "bfae0fdfbdd517c93fa59333c8c69e58f3d991b19d90375189f7effcbae48427",
+    "log_sha256": "87b94386993ba4a6d04b81602f7e9aff692c9d7c63e346873b7e462ea6d076fd",
+    "built_in_resume_checks_passed": 5,
+    "actual_scons_compile_seconds": 18.06,
+    "independent_app_source_review_sha256": "636ef6b2d5df79abdcd498df10ae8f56149e6aa64cb5c2a33c1cf78fbca7c971"
+  },
+  "validation": {
+    "final_binary_consultation": {
+      "passed": 47,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 10.544612291,
+      "real_kernel_authenticated_desktop_peer": true,
+      "model": "isolated offline provider fixture",
+      "independent_review_sha256": "7ddd3d4e34de7ec5c72fbfb6b19f2a2e47f527ebc7dfdce0781c4799e9a71e3d",
+      "raw_success_report_sha256": "1df28c2156fb0e433a2046e3df3b57808f0f003667ea60f47f1c50b8955afda2",
+      "timing_adapter": "Private fixture waits for fresh consultation availability before the cold CLI submit. That cold submission succeeded on its first request ID without adapter new-ID retries. All original assertions and deliberate same-ID idempotency replays remain; those replays produced no duplicate model effect. Frozen product and repository fixtures unchanged.",
+      "first_failure_preserved": {
+        "report_sha256": "efcd5f2c0ac0f5d918ff5113e5d3666884547ddd68657531b6cccd31ff6db1af",
+        "reason": "Definite models_loading rejection before submission",
+        "checks_passed": 9,
+        "checks_not_executed": 38,
+        "model_requests": 0,
+        "counted_as_pass": false
+      }
+    },
+    "source_production_regression": {
+      "passed": 37,
+      "artifact_sha256": "5d535087132d3fb7b5a6647858116987e06741d9841ce359c94046a8088c0dd5",
+      "scope": "Author run against the same four frozen product source files; not repeated on the final signed application.",
+      "report_sha256": "54a81a378752f19a02facfb2e42b29d3231a0f985d3aea25a85ff3c693b0a9d6"
+    },
+    "unchanged_protection_review": {
+      "ime_and_history_unavailable": "Accepted by exact unchanged common-guard code review; no physical IME or history-fault injection is claimed.",
+      "independent_scope_review_sha256": "f0565489f16073fa5bc655d5f3a3cc0d9ed5db0fa92f13de53dbb278c6394315"
+    },
+    "prior_model_and_bundle_evidence": {
+      "record": "data-collection/issue462-main398-native-validation-20261109.json",
+      "applicability_review_sha256": "ab82fb8bbf4897b6720b117f44046f2a50bb883e2fea0f33ce7f9dfa801cde1e",
+      "model_cases": 14,
+      "ainative_checks": 187,
+      "bundle_dependency_unit": 1,
+      "scope": "Prior fe1 artifact runs retained with exact unchanged relevant function, helper and 64 bundle-input proof. They are not represented as runs of the new cc71 binary."
+    }
+  },
+  "accepted_stage_responsibility": {
+    "internal_component_acceptance": "Native configuration, packaging and consultation component evidence accepted by Root with independent reviews.",
+    "receiving_owner": "Original Root execution chat",
+    "receiving_issues": [
+      390,
+      393
+    ],
+    "original_applications_entry_installation": "pending",
+    "original_applications_entry_zero_argument_cold_launch": "pending",
+    "real_provider_chat_via_trusted_engine_command": "pending",
+    "overall_user_goal_completed": false
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "native-component-acceptance-20261109-c32",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "unified-runtime-native-entry-20261107",
+  "kind": "coverage",
+  "occurred_at": "2026-11-08T18:55:09.266321+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/462",
+  "agent": {
+    "id": "yanluo",
+    "version": "0.1.2",
+    "definition_sha256": "7b9c1df79a4a4ade270db529ac9854d1e388f565f408d26b7ee26a12fa8f7ee1",
+    "origin": "approved host delivery role, loaded by Root for the explicitly authorized final delivery"
+  },
+  "payload": {
+    "operator": "kaiyunxue",
+    "execution_host": "Codex Desktop Root",
+    "state": "native_candidate_validation_complete_final_evidence_delivery_pending",
+    "artifact_sha256": "cc71da63479869a65f4b97f092582012140c64284135c287fc73accdf09babe7",
+    "manifest_sha256": "6d308f800674de59723a9133ed8637856cffce17a595c028dbfbe0d3982501ba",
+    "actual_build_head": "32a66548715d2979cfaeea05464e7e142917840f",
+    "accepted_dependency_main": "4bb462209e08db16a6895eeab83933c6054b6bc4",
+    "native_consultation_checks_passed": 47,
+    "scope_decision": "Root accepts original user entry installation, zero-argument cold launch and real provider chat under issues390/393; these remain pending.",
+    "overall_user_goal_completed": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured by host",
+    "consumption": null
+  },
+  "evidence_refs": [],
+  "sha256": "e368855065353bf0ffb345e97ef7ab5ba27b45864336a814425fd262926b7e28"
+}
