@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2e8b95dc29594311fee942fa8f6615234797ffbe",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-gpt-modeling-20261108",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "850b82ee05d586438738b363bca2130055753848c9543a185b785d6a6e17954d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/547",
+    "action": "delivery",
+    "detection_head": "ed65c907e7125fffef5ea87b92f3ab8aff1d401b",
+    "context_sha256": "364e5b8318395e3b2b351173444e7fd5255592b8fcee1fb51f00e6849f0e6bc7",
+    "operator": "kaiyunxue",
+    "worker": "codex-native-root",
+    "authority_ref": "Current user GPT CLI modeling delivery request in this chat",
+    "evidence": "data-collection/maliang-gpt-modeling-20261108-ci-format-correction.json",
+    "diagnosis": "Submission notes incorrectly included GongGong association trailers which writer_submit inserts itself. Removed the duplicate metadata from private notes; source candidate and immutable evidence unchanged.",
+    "next_action": "Rerun writer_submit with private plain validation notes, then exact-head CI and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-08T03:55:05.984203+00:00",
+    "attempted": null,
+    "repair_owner": "codex-native-root",
+    "continuable": "yes"
+  },
+  "occurred_at": "2026-11-08T03:55:55.796275+00:00",
+  "sha256": "afe3feba3b35ada2a4ddca9ebe40b902ff56f1a1a67cb52291805bcaee3b9771"
+}

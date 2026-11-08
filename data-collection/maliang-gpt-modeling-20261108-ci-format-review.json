@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-gpt-modeling-20261108",
+  "issue_number": 543,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/543",
+  "kind": "independent_source_review",
+  "reviewed_at_utc": "2026-11-08T03:50:40.631712+00:00",
+  "reviewer": "Codex child /root/godot_builder, independent reviewer of other agents integration",
+  "state": "approved",
+  "approval_scope": "Reviewed source integration only; actual paid CLI, compiled native bundle and business acceptance remain root responsibility.",
+  "source_sha256": {
+    "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+    "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+    "tools/ainative/test_modeling_provider.py": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+    "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "8f50a7adf1fe508e65fb73788dcdf29fa86aaf9f4f7a9274ab6e1b0c6be77ac2",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361",
+    "samples/ainative-workbench/modeling_ui_acceptance.gd": "01d8ec43715b2d8ce269e1f4c10f6a56e2488b3383ddfbce046354cf8b5b88a2",
+    "tests/editor/modeling_cli_acceptance.gd": "2f68a3d4c0526f95fbe2c5df9357ecf415dc6b2af77e870c81a07db3dbecebf8",
+    "tests/editor/run_modeling_cli.py": "bf9ab7204f209ef5b619d9d6e523239173d04f9855f746174f9929a87d496412",
+    "tests/editor/ainative_builtin.gd": "2b393bd39e8e504d9a8b6e822bc94c633244e86f03baaa649780dcef0ad62a2c",
+    ".gitattributes": "2e459f27e15dd976112bf871bb19db48225aad9bd97021155db7621b8117442d",
+    ".pre-commit-config.yaml": "5407253bf7d09cd27a61d5c5579c293641a3d4503ee8c41b465e9086c90901ae"
+  },
+  "self_authored_excluded": [
+    "samples/ainative-workbench/addons/ainative/modeling_builder.gd",
+    "samples/ainative-workbench/modeling_builder_acceptance.gd"
+  ],
+  "source_review_checks": [
+    {
+      "area": "No ComfyUI runtime dependency in new mode",
+      "result": "passed",
+      "basis": "codex_modeling branches before HTTP discovery; mesh provider never creates ComfyProvider or managed-comfy jobs. Shared legacy modules supply registry/hash/GLB validation utilities only; no ComfyUI installation, server or model-weight call is made."
+    },
+    {
+      "area": "Model output boundary",
+      "result": "passed",
+      "basis": "CLI uses read-only mode, disables command/external/image tools for modeling, requires completed turn and structured output. Closed schema and host validation reject executable fields, unknown primitives, invalid or unbounded values and duplicate names before fixed builder invocation."
+    },
+    {
+      "area": "Immutable intent, cancellation and unknown recovery",
+      "result": "passed",
+      "basis": "SQLite INSERT OR IGNORE and fingerprint/request/manifest checks prevent duplicate intent replay; inherited atomic write preserves terminal records. Owned Popen handles implement cancellation and bounded timeouts; stale heartbeat results in unknown failure, without new CLI calls or killing persisted PIDs."
+    },
+    {
+      "area": "Frozen provider snapshots",
+      "result": "passed",
+      "basis": "generation_service persists modeling and image provider configurations separately and restores them from run snapshot. Existing Executor.step compares current provider manifest with captured manifest; builder/source fingerprint changes fail instead of being silently adopted."
+    },
+    {
+      "area": "Mesh evidence and publication",
+      "result": "passed",
+      "basis": "Provider verifies nonempty finite GLB position data, native success marker, matching sidecar output hash, mesh vertex count and requested part count. Published artifact provenance retains instruction/event digests, actual reported token fields and builder receipts, without local executable/input paths."
+    },
+    {
+      "area": "Node workflow preservation",
+      "result": "passed",
+      "basis": "New service appends its identifier without reordering existing modes. Existing node types, context/edge data, explicit preview actions and shared workflow serialization remain intact. New routing assigns only mesh nodes to codex-modeling and image nodes to the existing CLI image provider."
+    },
+    {
+      "area": "Settings and parameter behavior",
+      "result": "passed",
+      "basis": "Modeling mode removes endpoint/model-weight and Comfy startup requirements. Trusted Godot/builder paths are resolved locally and excluded from shared workflow data; irrelevant sampler controls are hidden; image-to-mesh text is passed as modeling context instead of requiring an image redraw."
+    },
+    {
+      "area": "Real acceptance boundary",
+      "result": "passed",
+      "basis": "modeling_cli_acceptance.gd requires explicit real_cli_authorized config and exercises linked text-to-mesh/copy nodes, native preview, publication and saved workflow reopen. It does not present a synthetic provider as a real GPT call."
+    },
+    {
+      "area": "Isolated real-CLI runner and opt-in capture followup",
+      "result": "passed",
+      "basis": "run_modeling_cli.py refuses execution without --real-cli before creating output; requires new output directory, copies editor through checked copy_editor, uses private project/config and bounded subprocess, and does not drive the user desktop. Existing isolation helper rejects inherited workspace/env binding. Capture is an explicit flag rendering only the private window offscreen."
+    },
+    {
+      "area": "Portable backend test engine discovery",
+      "result": "passed",
+      "basis": "test_modeling_provider.py now uses explicit AINATIVE_TEST_GODOT, repository binaries or PATH rather than a developer-private path. Synthetic failure/cancel tests can use their fixture for path validation; actual builder success test explicitly skips when a real engine is unavailable, preventing fake inference success claims."
+    },
+    {
+      "area": "Builtin mode regression expectation",
+      "result": "passed",
+      "basis": "ainative_builtin.gd only appends codex_modeling to its exact supported-mode expectation. It preserves existing mode order and all capability/runtime behavior assertions."
+    },
+    {
+      "area": "Git normalization and narrow immutable snapshot attributes",
+      "result": "passed",
+      "basis": "Every changed reviewed raw source hash is explained by exact CRLF-to-LF normalization; reconstructing CRLF bytes from current LF bytes reproduces each previous digest. Current runtime deployment representation matches all five actually installed bundle files byte for byte. .gitattributes exception names only the Issue543 host snapshot and preserves the exact definition digest already referenced by its immutable request event; no general JSON or whitespace checks are disabled."
+    },
+    {
+      "area": "Narrow CI formatter correction for immutable request snapshot",
+      "result": "passed",
+      "basis": "CI log identifies only file-format rewriting the Issue543 host snapshot CRLF bytes. Actual configuration delta adds one exact named path under the existing hook-specific exclude, retaining global checks and existing anchors. Positive target and eight neighboring valid-file negative tests pass; existing runtime source hashes and immutable snapshot digest remain unchanged."
+    }
+  ],
+  "findings": [],
+  "resolved_during_review": [
+    "Schema/host/builder name whitespace validation aligned; source review requested adjustment, builder self-authored adjustment excluded from independent approval.",
+    "CLI prompt now documents capsule base dimensions as 0.5 x 1 x 0.5 to match fixed primitive scale semantics."
+  ],
+  "validation_executed_by_reviewer": {
+    "command": "python -X utf8 -m unittest test_modeling_provider test_modeling_service -v",
+    "working_directory": "tools/ainative",
+    "result": "passed again after portable path change; 19 executed, no skips",
+    "test_count": 19,
+    "scope": "Synthetic executable CLI fixture plus real isolated Godot builder; no online model calls.",
+    "environment": {
+      "AINATIVE_TEST_GODOT": "explicit verified isolated real Godot engine supplied"
+    }
+  },
+  "limits": [
+    "No quality approval for complex organic forms, characters, rigging or arbitrary generated executable scripts.",
+    "Source approval does not assert real CLI account availability, exact native bundle installation or clean editor teardown.",
+    "Any reviewed-file byte change requires targeted review update; self-authored builder must be reviewed by another reviewer."
+  ],
+  "review_revisions": [
+    {
+      "reviewed_at_utc": "2026-11-08T03:26:46.392942+00:00",
+      "review_sha256": "2afffb888c422b1bed699ea5c16aacc11ad105fad96c492a7f84f754fe3d2379",
+      "source_sha256": {
+        "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+        "tools/ainative/modeling_provider.py": "0c52615faa11a6ac7aa850059126a209f0461ca25f58317c301cdc52298ea3a0",
+        "tools/ainative/test_modeling_provider.py": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+        "tools/ainative/test_modeling_service.py": "5db2e873d04176d4e23d2073f6f6e6445feecf72ea1bdaf167f662bc567fc6c4",
+        "samples/ainative-workbench/addons/ainative/workbench.gd": "2e8d55734418a10ca0a676512137bd4f5fcb504f7bdec238487958fde2f8318a",
+        "samples/ainative-workbench/addons/ainative/parameter_form.gd": "37e12bf0c4767d50bbd4bbd8f04ae3df0a6c909146f61494c05049604006d203",
+        "samples/ainative-workbench/modeling_ui_acceptance.gd": "aba86fa017372c86dd96b044d18372b6494ece495151b78ec52bd916cf3ab0a8",
+        "tests/editor/modeling_cli_acceptance.gd": "f56b0367cea594f68f87f5842142050385e7c804acdf1aa2c8c11a03700dc032",
+        "tests/editor/run_modeling_cli.py": "9240652754a26ee2a419d2e7c6b4a644afa3caa1819c4cb24ce1b52648d001ef",
+        "tests/editor/ainative_builtin.gd": "f963e4742337f9d013c97455f2d84c56b776b39db2ac9c51112095e62837af45"
+      },
+      "reason": "Initial review before opt-in runner, screenshot capture, builtin mode expectation and portable test-path updates."
+    },
+    {
+      "reviewed_at_utc": "2026-11-08T03:31:25.502342+00:00",
+      "review_sha256": "41028c3305499069f410444c4804a13e8b1cec3b403ee552848431a6eaafc184",
+      "source_sha256": {
+        "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+        "tools/ainative/modeling_provider.py": "0c52615faa11a6ac7aa850059126a209f0461ca25f58317c301cdc52298ea3a0",
+        "tools/ainative/test_modeling_provider.py": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+        "tools/ainative/test_modeling_service.py": "5db2e873d04176d4e23d2073f6f6e6445feecf72ea1bdaf167f662bc567fc6c4",
+        "samples/ainative-workbench/addons/ainative/workbench.gd": "2e8d55734418a10ca0a676512137bd4f5fcb504f7bdec238487958fde2f8318a",
+        "samples/ainative-workbench/addons/ainative/parameter_form.gd": "37e12bf0c4767d50bbd4bbd8f04ae3df0a6c909146f61494c05049604006d203",
+        "samples/ainative-workbench/modeling_ui_acceptance.gd": "aba86fa017372c86dd96b044d18372b6494ece495151b78ec52bd916cf3ab0a8",
+        "tests/editor/modeling_cli_acceptance.gd": "f56b0367cea594f68f87f5842142050385e7c804acdf1aa2c8c11a03700dc032",
+        "tests/editor/run_modeling_cli.py": "9240652754a26ee2a419d2e7c6b4a644afa3caa1819c4cb24ce1b52648d001ef",
+        "tests/editor/ainative_builtin.gd": "f963e4742337f9d013c97455f2d84c56b776b39db2ac9c51112095e62837af45"
+      },
+      "reason": "Pre-stage line endings revision: reviewed source content unchanged except exact CRLF-to-LF normalization. Previous hashes retained."
+    },
+    {
+      "reviewed_at_utc": "2026-11-08T03:38:55.210128+00:00",
+      "review_sha256": "620e2592e286c2f122f834b8601866892206f34ee31ee17e293aa43ac1e769b5",
+      "source_sha256": {
+        "tools/ainative/generation_service.py": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+        "tools/ainative/modeling_provider.py": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+        "tools/ainative/test_modeling_provider.py": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+        "tools/ainative/test_modeling_service.py": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+        "samples/ainative-workbench/addons/ainative/workbench.gd": "8f50a7adf1fe508e65fb73788dcdf29fa86aaf9f4f7a9274ab6e1b0c6be77ac2",
+        "samples/ainative-workbench/addons/ainative/parameter_form.gd": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361",
+        "samples/ainative-workbench/modeling_ui_acceptance.gd": "01d8ec43715b2d8ce269e1f4c10f6a56e2488b3383ddfbce046354cf8b5b88a2",
+        "tests/editor/modeling_cli_acceptance.gd": "2f68a3d4c0526f95fbe2c5df9357ecf415dc6b2af77e870c81a07db3dbecebf8",
+        "tests/editor/run_modeling_cli.py": "bf9ab7204f209ef5b619d9d6e523239173d04f9855f746174f9929a87d496412",
+        "tests/editor/ainative_builtin.gd": "2b393bd39e8e504d9a8b6e822bc94c633244e86f03baaa649780dcef0ad62a2c",
+        ".gitattributes": "2e459f27e15dd976112bf871bb19db48225aad9bd97021155db7621b8117442d"
+      },
+      "reason": "Source approval before narrow existing file-format hook exception required by exact immutable host snapshot."
+    }
+  ],
+  "opt_in_guard_validation": {
+    "command": "python -X utf8 tests/editor/run_modeling_cli.py --godot bin/godot.windows.editor.x86_64.exe --cli VERIFIED_LOCAL_CLI --output runtime/should-not-be-created-without-optin",
+    "result": "refused as expected: --real-cli required",
+    "output_directory_created": false,
+    "model_called": false
+  },
+  "normalization_review": {
+    "state": "approved",
+    "transitions": {
+      "tools/ainative/generation_service.py": {
+        "previous_sha256": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+        "current_sha256": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb",
+        "proof": "unchanged"
+      },
+      "tools/ainative/modeling_provider.py": {
+        "previous_sha256": "0c52615faa11a6ac7aa850059126a209f0461ca25f58317c301cdc52298ea3a0",
+        "current_sha256": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "tools/ainative/test_modeling_provider.py": {
+        "previous_sha256": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+        "current_sha256": "f12b2db6e18b7f5728fc9115b4b65d22431b9c86a5f7329f1a6b07a1927e9bf4",
+        "proof": "unchanged"
+      },
+      "tools/ainative/test_modeling_service.py": {
+        "previous_sha256": "5db2e873d04176d4e23d2073f6f6e6445feecf72ea1bdaf167f662bc567fc6c4",
+        "current_sha256": "2f2005508df0031f12f53a1a4e9395cd42928490a2726868143dff88afbe1c81",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "samples/ainative-workbench/addons/ainative/workbench.gd": {
+        "previous_sha256": "2e8d55734418a10ca0a676512137bd4f5fcb504f7bdec238487958fde2f8318a",
+        "current_sha256": "8f50a7adf1fe508e65fb73788dcdf29fa86aaf9f4f7a9274ab6e1b0c6be77ac2",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "samples/ainative-workbench/addons/ainative/parameter_form.gd": {
+        "previous_sha256": "37e12bf0c4767d50bbd4bbd8f04ae3df0a6c909146f61494c05049604006d203",
+        "current_sha256": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "samples/ainative-workbench/modeling_ui_acceptance.gd": {
+        "previous_sha256": "aba86fa017372c86dd96b044d18372b6494ece495151b78ec52bd916cf3ab0a8",
+        "current_sha256": "01d8ec43715b2d8ce269e1f4c10f6a56e2488b3383ddfbce046354cf8b5b88a2",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "tests/editor/modeling_cli_acceptance.gd": {
+        "previous_sha256": "f56b0367cea594f68f87f5842142050385e7c804acdf1aa2c8c11a03700dc032",
+        "current_sha256": "2f68a3d4c0526f95fbe2c5df9357ecf415dc6b2af77e870c81a07db3dbecebf8",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "tests/editor/run_modeling_cli.py": {
+        "previous_sha256": "9240652754a26ee2a419d2e7c6b4a644afa3caa1819c4cb24ce1b52648d001ef",
+        "current_sha256": "bf9ab7204f209ef5b619d9d6e523239173d04f9855f746174f9929a87d496412",
+        "proof": "exact_CRLF_to_LF_only"
+      },
+      "tests/editor/ainative_builtin.gd": {
+        "previous_sha256": "f963e4742337f9d013c97455f2d84c56b776b39db2ac9c51112095e62837af45",
+        "current_sha256": "2b393bd39e8e504d9a8b6e822bc94c633244e86f03baaa649780dcef0ad62a2c",
+        "proof": "exact_CRLF_to_LF_only"
+      }
+    },
+    "native_bundle_matches": {
+      "tools/modeling_provider.py": {
+        "matches_current_normalized_bundle_source": true,
+        "installed_sha256": "9dc13f3af8f73ab4f11184ad01dc8d27e4882464b4ff18f87e2c90dbd8eb9bfc"
+      },
+      "tools/generation_service.py": {
+        "matches_current_normalized_bundle_source": true,
+        "installed_sha256": "146f7ea73470513da420b3bd97bd32f8370705bb70c07331ebf002de643ce4bb"
+      },
+      "scripts/workbench.gd": {
+        "matches_current_normalized_bundle_source": true,
+        "installed_sha256": "194711d589e4101e24121a2341aee3853b19be07d53a56c53106913cd576620e"
+      },
+      "scripts/parameter_form.gd": {
+        "matches_current_normalized_bundle_source": true,
+        "installed_sha256": "e11635c74a718b5f1ad3c6631c56fc335a588bd594b6462c101169f29cca5361"
+      },
+      "scripts/modeling_builder.gd": {
+        "matches_current_normalized_bundle_source": true,
+        "installed_sha256": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d"
+      }
+    },
+    "self_authored_builder_bundle_match_is_factual_only": true,
+    "host_snapshot_preserved_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "ci_format_correction_review": {
+    "state": "approved",
+    "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42444100927",
+    "actual_delta": "One exact path alternative added to existing file-format hook exclude; all other configuration bytes unchanged",
+    "regex_tests": [
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261108-host-snapshot.json",
+        "previously_excluded": false,
+        "now_excluded": true,
+        "passed": true
+      },
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261108-host-snapshot.json.bak",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261108-host-snapshot.jsonx",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "x/data-collection/maliang-gpt-modeling-20261108-host-snapshot.json",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261109-host-snapshot.json",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261108-validation.json",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "data-collection/maliang-gpt-modeling-20261108-host-snapshot.JSON",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "other/maliang-gpt-modeling-20261108-host-snapshot.json",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      },
+      {
+        "path": "data-collection/x-maliang-gpt-modeling-20261108-host-snapshot.json",
+        "previously_excluded": false,
+        "now_excluded": false,
+        "passed": true
+      }
+    ],
+    "host_snapshot_unchanged_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27",
+    "runtime_source_changed": false,
+    "existing_anchoring_convention_preserved": true,
+    "scope_note": "Neighbor tests use valid ordinary repository filenames. Python-re trailing-newline behavior was considered, but newline filenames are outside this fixed Windows snapshot correction and Rust prek compatibility requires retaining the existing repository regex convention; no new anchor dialect was introduced."
+  }
+}
