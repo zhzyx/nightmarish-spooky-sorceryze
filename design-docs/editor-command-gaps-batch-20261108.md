@@ -71,3 +71,5 @@
 ## CI修正来源
 
 首个签名候选c8a966（作者40b89ac）在PR #564的静态与Windows严格编译检查失败，未合入。修正importlib loader空值保护、规范include/版权头、继承成员同名局部变量以及有界计数的整数符号比较；未放宽警告、权限或CI。原始测试/独立审查原件保留，增量证明及必要重编/复验另存ci-correction-validation.json与ci-correction-independent-review.json。远端成功、main合入及原单整体验收仍各自需要真实回执。
+
+第二个签名候选d539e1（作者43ea5069，PR #565）的静态检查、clang-cl编辑器和导出模板已通过，但MSVC编辑器在新动作列表分页报C4701。另加offset/limit显式初始化及四个实际原生断言；msvc-init-validation.json与独立增量审查保留这个失败及后继验证，不覆盖旧报告，不放宽编译警告。

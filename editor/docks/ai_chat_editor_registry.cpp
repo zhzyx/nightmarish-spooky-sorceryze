@@ -834,7 +834,7 @@ Dictionary AIChatEditorRegistry::perform(Node *p_node, const String &p_id, const
 		}
 		if (action == "read_semantic_actions") {
 			Dictionary response = registry_result(true);
-			int64_t offset, limit;
+			int64_t offset = 0, limit = 0;
 			if (!registry_integer(p_args.get("offset", 0), 0, 64, offset) || !registry_integer(p_args.get("limit", 64), 1, 64, limit)) {
 				return registry_result(false, "invalid_semantic_page");
 			}

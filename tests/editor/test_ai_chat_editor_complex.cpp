@@ -104,6 +104,14 @@ TEST_CASE("[SceneTree][AIChat][Complex] Compound declarations map only native de
 	declaration["ignored_object"] = &trap;
 	declarations.push_back(declaration);
 	owner->set_meta("ai_control_semantic_actions", declarations);
+	Dictionary listing;
+	listing["action"] = "read_semantic_actions";
+	Dictionary listed = registry.perform(owner, "compound", listing, false);
+	REQUIRE(bool(listed.get("ok", false)));
+	CHECK(int(listed["total"]) == 1);
+	CHECK(trap.calls == 0);
+	listing["limit"] = 0;
+	CHECK(registry.perform(owner, "compound", listing, false)["error"] == Variant("invalid_semantic_page"));
 	Dictionary args = JSON::parse_string("{\"action\":\"invoke_semantic_action\",\"value\":{\"name\":\"rename\",\"arguments\":{\"value\":\"new name\"}}}");
 	Dictionary preview = registry.perform(owner, "compound", args, false);
 	REQUIRE(bool(preview.get("confirmation_required", false)));
