@@ -42,6 +42,24 @@ jobs:
         with:
           name: windows-editor
           path: ${{ runner.temp }}/native-editor
+      - name: Verify the recipient can open a private delivery with the included extractor
+        shell: pwsh
+        run: |
+          $work = Join-Path $env:RUNNER_TEMP 'Maliang transfer smoke'
+          $source = Join-Path $work 'source'
+          $delivery = Join-Path $work 'delivery'
+          $weights = 'maliang-hunyuan/models/checkpoints/hunyuan3d-mini.safetensors'
+          New-Item -ItemType Directory -Force -Path (Split-Path (Join-Path $source $weights)) | Out-Null
+          Set-Content (Join-Path $source $weights) 'transport fixture'
+          Copy-Item "$env:SystemRoot/System32/where.exe" "$source/godot.windows.editor.x86_64.exe"
+          $rsa = [Security.Cryptography.RSA]::Create(2048)
+          $modulus = [Convert]::ToBase64String($rsa.ExportParameters($false).Modulus)
+          & ./tools/maliang_hunyuan/seal_windows_editor.ps1 -EditorDirectory $source -Destination $delivery -RecipientModulus $modulus
+          $receipt = Get-Content "$delivery/delivery.json" -Raw | ConvertFrom-Json
+          $password = [Text.Encoding]::ASCII.GetString($rsa.Decrypt([Convert]::FromBase64String($receipt.wrapped_password), [Security.Cryptography.RSAEncryptionPadding]::OaepSHA256))
+          $rsa.Dispose()
+          & "$delivery/extract/7z.exe" x -bso0 -bsp0 "-p$password" "-o$work/opened" "$delivery/$($receipt.archive)"
+          if ($LASTEXITCODE -ne 0 -or !(Test-Path "$work/opened/godot.windows.editor.x86_64.exe") -or (Get-Content "$work/opened/$weights") -ne 'transport fixture') { throw 'Private delivery could not be opened on Windows.' }
       - name: Package, relocate and generate with outbound access blocked
         shell: pwsh
         run: |
