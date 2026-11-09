@@ -93,6 +93,10 @@ jobs:
           platform: macos
           target: ${{ matrix.target }}
 
+      - name: Verify Tianshu package switching on arm64
+        if: matrix.target == 'editor'
+        run: python3 tests/editor/run_tianshu_ui_package.py --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-package.json"
+
       - name: Verify Tianshu creator navigation on arm64
         if: matrix.target == 'editor'
         run: |

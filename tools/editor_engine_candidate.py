@@ -501,6 +501,12 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             executable.read_bytes()
         ).hexdigest() != manifest.get("artifact_sha256"):
             raise CandidateError("candidate_inherited_artifact_invalid")
+        from package_tianshu_ui import verify_candidate_package
+
+        try:
+            verify_candidate_package(manifest)
+        except ValueError as error:
+            raise CandidateError(str(error)) from None
         if native:
             try:
                 validate_native_app(source, manifest, manifest_path)

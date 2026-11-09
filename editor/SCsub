@@ -2,6 +2,7 @@
 from misc.utility.scons_hints import *
 
 import os
+import sys
 
 import editor_builders
 from ainative import builders as ainative_builders
@@ -21,12 +22,23 @@ if env.editor_build:
         env.Run(ainative_builders.build_bundle),
     )
 
+    graph_sources = ["docks/daqian/graph_layout.gd", "docks/daqian/issue_graph.gd"]
+    desktop_ui = env["platform"] in ("windows", "macos", "linuxbsd")
+    if desktop_ui:
+        # A sibling build product. Changing its scripts must never relink the editor.
+        slot = env.extra_suffix if env["extra_suffix"] in ("self_update_a", "self_update_b") else ""
+        package = env.CommandNoCache(
+            f"#bin/tianshu-ui{slot}.json",
+            ["#tools/package_tianshu_ui.py", *graph_sources],
+            f'"{sys.executable}" "$SOURCE" --output "$TARGET"',
+        )
+        env.Requires("#bin/godot${PROGSUFFIX}", package)
+
     env.CommandNoCache(
         "docks/daqian_scripts.gen.h",
         [
             "docks/daqian/graph_rules.gd",
-            "docks/daqian/graph_layout.gd",
-            "docks/daqian/issue_graph.gd",
+            *([] if desktop_ui else graph_sources),
             "docks/daqian/operation_details.gd",
             "docks/daqian/issue_inspector.gd",
             "docks/daqian/canvas_context.gd",

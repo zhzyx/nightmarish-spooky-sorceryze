@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-815b0aeb7b44eb9c4a1ee34d58800e5f4d03b978b1a72b7dde95812c6f7b0cb0",
+  "kind": "analysis",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "id": "codex-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/687",
+  "occurred_at": "2026-11-09T21:56:39.157154+00:00",
+  "evidence_refs": [
+    "request-687-engine-build-placement",
+    "learn-2c64be17808db3a146c33849a3f04a278efdc535723a0831f8b6ef3d6427a643"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 3,
+    "previous": "ba2965f5ede679f50b0e7fc278ddff53860ba84bf9c5709bcff2afa9f638c910",
+    "action": "verify",
+    "details": {
+      "test": "Windows x86_64 / MSVC：两个真实工作树从正常构建入口并发，核对缓存与业务回执；在安装版切换天枢包、回退与拒绝不兼容 ABI；改变原生输入重算构建键。",
+      "expected": "同键仅一次实际编译，两份独立业务包回执；同一 EXE 布局 48→96→48；不兼容包拒绝；原生输入变化失效",
+      "observed": "同键仅一次实际编译，两份独立业务包回执；同一 EXE 布局 48→96→48；不兼容包拒绝；原生输入变化失效"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/engine-artifact-reuse-rollout-687.json",
+        "sha256": "7646e131c318e9299adbaf2603c28376c41a500678d0aebe5dc778dfce2efe67"
+      },
+      {
+        "path": "data-collection/tianshu-build-placement-687.json",
+        "sha256": "dbcc0364e5034d65885a936a14e7e3c988f6c7489781f817c8b22e9d4da6de34"
+      },
+      {
+        "path": "data-collection/tianshu-versioned-ui-package-689.json",
+        "sha256": "f58d9e9f6160b131d5376540859738a26365eb56d14de79facafa6259f7a8630"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/request-687-engine-build-placement.json",
+      "sha256": "71119c2024016dfe6f32d3bcec3531be1a597e3949161eaeaa48ce705c51cdbb"
+    }
+  },
+  "sha256": "d84b39950b7ea5692e9b3e5451e7c2de58871b1d0a4e79c82bb741cc4787c663"
+}

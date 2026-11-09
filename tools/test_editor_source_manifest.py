@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -40,6 +41,9 @@ class ManifestTests(unittest.TestCase):
         path = self.root / "new.py"
         path.write_text("new source")
         path.chmod(0o755)
+        if os.name == "nt":
+            self.assertEqual(source_snapshot(self.root)["source_inputs"]["new.py"]["mode"], "100644")
+            self.git("add", "--chmod=+x", "new.py")
         item = source_snapshot(self.root)["source_inputs"]["new.py"]
         self.assertEqual(item, {"mode": "100755", "sha256": hashlib.sha256(b"new source").hexdigest()})
 
@@ -53,6 +57,21 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(value["artifact_sha256"], hashlib.sha256(b"editor bytes").hexdigest())
         self.assertEqual(value["source_inputs"], before["source_inputs"])
         self.assertEqual(value["build_options"], {"arch": "arm64"})
+
+    def test_raw_slot_binds_its_own_package_on_restart(self):
+        artifact = self.root / "bin/godot.windows.editor.x86_64.self_update_a.exe"
+        artifact.parent.mkdir()
+        artifact.write_bytes(b"editor")
+        package = artifact.with_name("tianshu-ui.self_update_a.json")
+        package.write_bytes(b"accepted UI package")
+        artifact.with_name("tianshu-ui.json").write_bytes(b"other distribution")
+        path = artifact_manifest(self.root, artifact, {"issue": 689}, self.root, {}, source_snapshot(self.root))
+        expected = hashlib.sha256(package.read_bytes()).hexdigest()
+        self.assertEqual(json.loads(Path(path).read_text())["tianshu_ui_sha256"], expected)
+        self.assertTrue(verify_source(self.root, path)["ok"])
+        package.write_bytes(b"unexpected replacement")
+        with self.assertRaisesRegex(ValueError, "candidate_tianshu_ui_changed"):
+            verify_source(self.root, path)
 
     def test_source_change_during_build_never_publishes_manifest(self):
         artifact = self.root / "bin/editor"

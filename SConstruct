@@ -1273,6 +1273,19 @@ SConscript("main/SCsub")
 
 SConscript("platform/" + env["platform"] + "/SCsub")  # Build selected platform.
 
+# The native cache asks the configured SCons environment which compiler, SDK
+# and outputs it actually selected, including vcvars selections outside PATH.
+if ARGUMENTS.get("gonggong_native_probe"):
+    from tools.editor_native_cache import write_probe
+
+    write_probe(env, ARGUMENTS["gonggong_native_probe"], methods.get_git_info())
+    Exit(0)
+
+if env["platform"] == "windows":
+    from tools.editor_native_cache import restored_target_dependencies
+
+    restored_target_dependencies(env)
+
 # Microsoft Visual Studio Project Generation
 if env["vsproj"]:
     methods.generate_cpp_hint_file("cpp.hint")

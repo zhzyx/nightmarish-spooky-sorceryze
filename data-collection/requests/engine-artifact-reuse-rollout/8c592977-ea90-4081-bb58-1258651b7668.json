@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-artifact-reuse-rollout",
+  "collected_at": "2026-11-09T21:01:04.724219+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/request-687-engine-build-placement.json",
+      "sha256": "073d4a7cdb37ac40cfa2b960d17d33550aa48cfa2b2641ce2d3eb02f27b074ee",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-687-engine-build-placement",
+      "origin": "codex"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 687,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/687"
+}

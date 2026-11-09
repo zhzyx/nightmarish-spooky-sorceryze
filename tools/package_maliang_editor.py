@@ -30,6 +30,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import editor_native_app
+from package_tianshu_ui import installed_package
 
 RECIPE = Path(__file__).resolve().with_name("maliang_hunyuan")
 DISTRIBUTION = "maliang-hunyuan3d-2mini-v1"
@@ -397,6 +398,9 @@ def copy_editor(editor, staged, target):
             binary.parent.mkdir(parents=True, exist_ok=True)
             binary.unlink(missing_ok=True)
             copy_file(editor, binary)
+            package = installed_package(editor)
+            if package.is_file():
+                copy_file(package, installed_package(binary))
         editor_native_app.native_executable(binary)
         subprocess.run(["/usr/bin/lipo", str(binary), "-verify_arch", "arm64"], check=True)
         return binary
