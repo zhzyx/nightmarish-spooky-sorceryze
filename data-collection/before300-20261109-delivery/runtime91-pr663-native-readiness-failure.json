@@ -1,0 +1,19 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "pr": 663,
+  "signed_head": "b4835a154f9ddb6a2e875859009f326ea928e693",
+  "failed_pr_run": 42670943107,
+  "failed_job": 129347194665,
+  "push_run": 42670921044,
+  "push_runtime": "passed exactfullchain; distinguish from PR-side failure",
+  "actual_pr_process_cases": 3,
+  "actual_pr_journal_cases": 5,
+  "actual_pr_existing_cases": 7,
+  "native_error": "No first model fixture after manualdeploymentconfirmation within20seconds; negative popup geometry reported; originalturn retained, no POST/journals; setupstatus/cache not captured in first report.",
+  "cause": "not uniquely established; no blanket production defect claim",
+  "directed_fixture_delta": "Embedded headless1440x1000; explicitfreshcatalogsettle aftermissingruntimeedit; requireenabledconfirmation; bounded120sdeploymentmarker; retain setupcache/TextEdit diagnostics",
+  "new_base": "274605813c6fa2df1c65cb11d9de04a9da34e8a4",
+  "upstream_scope": "PR664 changedreadbatch ai_chat_dock.cpp/h; do not claim oldbinaryfullnewmain",
+  "next": "Independentdelta, localnormalfixture, exactnewWindowsCI beforemain/closure"
+}

@@ -1,0 +1,51 @@
+{
+  "issue": 91,
+  "kind": "independent read-only four-file native resume repair delta review",
+  "result": "no actionable defects found in the exact four-file delta",
+  "implementation_author": false,
+  "head": "1132f0b48dd51bff6d51c415ee529762890ad096",
+  "files": {
+    "tests/editor/requirements_intake.gd": "5c5b6657ce3b9b4717e2c55c24c865b87bd2474ffa266cfe5ed0776768f51b12",
+    "tests/editor/run_requirements_intake.py": "f1f08588a53c83fafc541711c08dc4bb3cd85bd8d00467c2a57b3178201efdf8",
+    "tools/editor_provenance_process.py": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    "tools/test_editor_provenance_process.py": "806281770be7da1172c81e824346e577a2e14af0b1888a5439bda643a1f04365"
+  },
+  "review": [
+    "GONGGONG_TEST_PYTHON supplies the bootstrap path to GD; inherited GONGGONG_PYTHON is removed from only the isolated editor child environment. Existing production runtime precedence remains unchanged. GD set_runtime_field return, effective paths entry, normalized spelling and non-environment source are checked for both real bootstrap and intentional missing interpreter.",
+    "The fixture implements exact GET /v1/models with a deterministic fixture model and maintains a separate catalog_requests list, preserving the 11 requirements POST / 7 development POST expectations. Explicit APIKey text_changed drives the normal debounced discovery path. A 15-second predicate requires actual current catalog success, then an enabled Send. It neither bypasses the send gate nor calls a model service outside the loopback fixture.",
+    "After the deliberate missing configuration, normal _send retains the same original demand; the fixed 0.2-second sleep becomes a 15-second predicate on the central settings environment page. Missing-Python label and hidden deployment confirmation remain mandatory. The unchanged next step explicitly opens and accepts confirmation; first intake waiting, 11 requirements, seven development calls, native read-tool continuation and real committed fixture receipts remain required for success.",
+    "The independent native temp directory is resolved while it exists, so Python, native editor and PowerShell receive the same long-path form; the outer TemporaryDirectory still owns cleanup. This is fixture path normalization only.",
+    "The Windows wrapper dynamically loads the existing fixed in-repository ownership helper, creates a unique private Job, and starts the editor using existing CREATE_SUSPENDED -> assignment -> resume ordering. It reuses established Kill-on-Job-close and liveness verification rather than adding a new Job implementation. In the communicate finally block, quiesce terminates only runnable members of this private Job and wait_empty verifies none remain; child.wait reaps the editor before the outer temp cleanup. No executable-name scans or cross-invocation kills are added. Spawn/assignment failure retains the existing cleanup path.",
+    "The shared WindowsJob.spawn change adds only optional env forwarding to Popen; default None preserves callers. The new env dictionary is child-only and does not mutate global os.environ. Test assertions preserve suspended/assignment/resume ordering and now check exact env forwarding.",
+    "No production runtime configuration, PowerShell deployment logic, baseline source, model backend or desktop control behavior changed in this delta."
+  ],
+  "independent_checks": {
+    "python_ast_three_files": "passed",
+    "ruff_check_no_cache": "passed",
+    "ruff_format_check_no_cache": "passed; three files already formatted",
+    "git_diff_check_four_files": "passed",
+    "targeted_portable_ownership_tests": "four passed: suspended assignment/resume+env, failed assignment, failed resume, background drain"
+  },
+  "observed_existing_mac_receipt": {
+    "source": "<private-evidence>/runtime91-native-fixture-mac.json",
+    "reviewer_did_not_run_native": true,
+    "ok": true,
+    "runtime_setup_and_resume": false,
+    "windows_owned_process_cleanup": "not applicable",
+    "catalog_requests": [
+      "/v1/models",
+      "/v1/models"
+    ],
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "native_read_roundtrips": 1,
+    "git_state": "committed",
+    "interpretation": "ordinary native regression passed with fixture services; this is not the Windows PowerShell deployment/resume branch"
+  },
+  "windows_boundary": "PR653 already supplies actual three interruption process cases, five journal fixtures and seven PowerShell regressions passing. The newly changed native runtime-source resume flow and Windows Job cleanup still require exact-candidate Windows CI execution. No future Windows success or whole Issue91 acceptance is claimed.",
+  "reviewer_actions": "Only source/diff/log/receipt reads, Python AST, four portable mocked ownership tests, Ruff and diff checks; wrote only this review JSON. No native run, model request, desktop operation, build, download, implementation edit, commit or push.",
+  "public_copy": {
+    "original_sha256": "0a6ea930d51286471796ff479727103501fd1cfb837446d8209ee67ebd9d5374",
+    "transformation": "private evidence path prefixes replaced; source hashes and findings unchanged"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8e06488ec818b00ae956229b2686531d9208fbd0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "eedc8c7f922bcb2fa1d5bcc3ce07eb718acbe25391d40bb83e550525e087dd3b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "validation",
+    "detection_head": "77008947e01b1133d9f87d377fee157e749835b6",
+    "context_sha256": "29227f506fda49f1a7c1116daff6d221810fa32bc67db3542dae8385e0044f29",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/runtime91-pr663-native-readiness-failure.json",
+    "diagnosis": "PR663 push全链通过，PR侧native在手动确认后无首marker，记录无效弹窗位置；唯一根因仍unknown。新夹具补几何、按钮就绪、部署预算与setup诊断，独立增量审查和普通mac恢复通过。",
+    "next_action": "在最新main精确候选运行原全部Windows进程、journal、部署与native恢复链；只有完整通过后合入并关闭。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:19:50.640768+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T18:34:19.157735+00:00",
+  "sha256": "d718972ad035f7826f339bcd2aa5975e8d3597368b3e011755dfcbf2a87fec9e"
+}

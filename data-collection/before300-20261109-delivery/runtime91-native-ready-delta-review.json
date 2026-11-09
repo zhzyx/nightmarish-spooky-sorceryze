@@ -1,0 +1,55 @@
+{
+  "issue": 91,
+  "kind": "independent narrow native fixture readiness and diagnostics delta review",
+  "result": "no actionable defect or weakened acceptance found in the exact reviewed delta",
+  "implementation_author": false,
+  "source_base": "77008947e01b1133d9f87d377fee157e749835b6",
+  "current_head": "274605813c6fa2df1c65cb11d9de04a9da34e8a4",
+  "files": {
+    "tests/editor/requirements_intake.gd": "12ecd92fc276570e837c5e1844d0d88f2087e5144df65052c0a80a5fbc820fa6",
+    "tests/editor/run_requirements_intake.py": "7f871038c4bf11c44799eeeb16371a606074ec633674d1cdb347fb7e43874c07",
+    "tools/configure_gonggong_runtime.ps1": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+    "tests/editor/run_runtime_setup_simulation.py": "8d58edd81c17cc0098e60cc134f24ef92ab4b5816d899f776766dcb528db1439",
+    "tools/editor_provenance_process.py": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "reviewed_delta_sha256": "01013ec78d0ebf83b893fa9566b59365d35ee55a8696fbce004ae6dacee79809",
+  "scope": "Combined working-tree and index two-fixture diff relative to sourcebase; current main2746 additionally changes ai_chat_dock.cpp/h from PR664, outside this delta. Previous full binary evidence does not certify current main2746 engine sources.",
+  "actual_failure_readback": {
+    "pr": 663,
+    "run": 42670943107,
+    "job": 129347194665,
+    "report": "<private-evidence>/pr663-runtime-pr-failure",
+    "three_interruption_process_cases": "passed",
+    "five_journal_fixtures": "passed",
+    "seven_powershell_regressions": "passed",
+    "native": "original demand and retained-original igniter notice present; confirmation opening reported invalid negative Window position; first loopback intake marker not reached in old nominal20sec; requests/journals empty, no setup cache/status captured",
+    "causality": "Does not establish a unique production failure cause. Separate reported Push success is not substituted for this failed PR run."
+  },
+  "review": [
+    "Embedding subwindows and setting the private headless root to 1440x1000 gives the confirmation a deterministic host rectangle without operating the user desktop. This tests native controls and signals under headless embedding; it does not claim physical OS input or display validation.",
+    "The final runtime edit still requires successful configured non-environment effective Python path. The added key text_changed follows the normal debounce/configuration callback and checks current model success plus enabled backend/Send before the original demand. It introduces no direct dispatch or disabled-control bypass.",
+    "The source waits for the real confirmation OK button to be enabled, then emits that button pressed. AcceptDialog connects that pressed signal to _ok_pressed, which emits confirmed, and GongGongPanel connects confirmed to start_setup. Thus deployment still runs through the existing confirmation handler, source checks, PowerShell doctor and actual original-demand resume; it does not invoke run_setup directly or write success markers.",
+    "Deployment branch gets 6000 iterations of 0.02-second timers while ordinary native retains1000. The exact first_intake_waiting file produced by the loopback model handler remains mandatory. The additional TextEdit diagnostics expose setup output when that marker is absent. No fallback turns a timeout into success.",
+    "Python now captures available gonggong-setup-*.json from the isolated editor cache after the editor process is complete/quiesced and before temporary cleanup. These are diagnostics only; final result still requires exit0, REQUIREMENTS_AGENT_NATIVE_OK, five Issues/documents, 11 requirements and seven development calls, native tool continuation and committed actual fixture events. Empty/missing setup reports do not satisfy acceptance.",
+    "PowerShell, interruption helper, Windows Job and CI sources are byte-identical to sourcebase and their prior reviewed hashes; this delta neither edits the old baseline nor expands production configuration or service scope."
+  ],
+  "semantic_limits": [
+    "The second key text_changed has the same HTTP endpoint/API-key signature. Consumed source2 deduplication may avoid another GET, and a previous valid status can make the check return immediately. This is a current-readiness recheck, not proof of a fresh catalog query after the Python edit. HTTP catalog identity does not include workflow_python.",
+    "6000 sequential20ms timers are nominal120 seconds; scheduling/frame delays mean this is not a strict120-second wall-clock deadline. The unchanged enclosing editor communicate watchdog remains240 seconds. Describe it as a longer bounded iteration wait under the global watchdog; use a tick deadline if a strict120-second wall-clock claim is required.",
+    "Window geometry and readiness hardening address plausible fixture preconditions and improve next-failure evidence; no unique cause for PR663 is certified and no future Windows pass is claimed.",
+    "An older private macOS binary may validate the ordinary script path, but cannot attest a full build of main2746 with its newer ai_chat_dock.cpp/h readbatch changes."
+  ],
+  "independent_checks": {
+    "python_ast": "passed for runner and read helper",
+    "ruff_check_no_cache": "passed for runner",
+    "ruff_format_check_no_cache": "passed for runner",
+    "git_diff_check_sourcebase": "passed for two fixture files",
+    "exact_unchanged_shared_sources": "passed for PS, simulation, Job and CI against sourcebase"
+  },
+  "reviewer_actions": "Only read source/diffs/CI artifacts and executed AST/Ruff/diff checks. Wrote only this JSON. No native run, model/provider call, desktop control, build, download, source edit, commit or push. Exact new Windows acceptance remains pending.",
+  "public_copy": {
+    "original_sha256": "ef8c9c083d8b322be26313a17db2582ad9e739a934c45edafbeac020802e8e43",
+    "transformation": "private prefixes replaced; checks and source hashes unchanged"
+  }
+}

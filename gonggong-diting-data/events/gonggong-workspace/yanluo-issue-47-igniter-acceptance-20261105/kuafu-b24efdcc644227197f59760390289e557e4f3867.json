@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b24efdcc644227197f59760390289e557e4f3867",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ef062eaeffab0aa2edc94a1d0895b29303e61f06d324489544324f3ab514da93",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "delivery",
+    "detection_head": "7c7a684840d7ef054fa5fa5be1df4041d120d1f0",
+    "context_sha256": "29227f506fda49f1a7c1116daff6d221810fa32bc67db3542dae8385e0044f29",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/runtime91-ci-correction.json",
+    "diagnosis": "Main advanced by seven nonoverlapping metadata files; preserved old worktree and applied cumulative own candidate to new isolated main9132 worktree. Three reviewed source hashes unchanged.",
+    "next_action": "Run formal writer gate from new integrated worktree and verify exact CI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T16:37:15.402804+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T16:49:47.929417+00:00",
+  "sha256": "09a2ef9b703ecd963acf6bc884ffc04f1ba7e8dca9294ca88ae357d4a0d83e23"
+}

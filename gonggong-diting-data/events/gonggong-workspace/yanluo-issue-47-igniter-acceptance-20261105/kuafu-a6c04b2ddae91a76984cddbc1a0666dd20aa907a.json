@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a6c04b2ddae91a76984cddbc1a0666dd20aa907a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "356d090d7baabe1a2ea526bc8b17de7f2dded23a0016b002b9d166927a9dc5e8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "dispatch",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/identity-rest-readback.json",
+    "diagnosis": "GraphQL viewer query TLS timeout blocked reviewer launch. Temporary host transport reads live authenticated REST user,repository and self collaborator permission, obtaining Sail-Li effective write, then normalizes identical identity fields. No cached permission or grant bypass. Actual independent reviewer launched/completed through normal native bridge; source operator module unchanged.",
+    "next_action": "Persist real identity receipt and exact independent review; continue signed91 delivery and Windows CI, preserving observed_model and usage unknown.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T15:18:28.626556+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T15:36:03.425687+00:00",
+  "sha256": "1dce785de08404f80774402865f656f18741c0ba3840ec4b5210c405de65211b"
+}

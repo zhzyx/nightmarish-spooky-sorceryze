@@ -1,0 +1,18 @@
+{
+  "issue": 91,
+  "base": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+  "previous_base": "274605813c6fa2df1c65cb11d9de04a9da34e8a4",
+  "integration": "PR664 read batch and PR666 preview retained; no overlapping own source paths. Latest native CPP and bridge changes require exact Windows CI; prior mac normal-run binary covers fixture behavior only.",
+  "sources": {
+    "tools/configure_gonggong_runtime.ps1": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+    "tests/editor/run_runtime_setup_simulation.py": "8d58edd81c17cc0098e60cc134f24ef92ab4b5816d899f776766dcb528db1439",
+    "tests/editor/requirements_intake.gd": "12ecd92fc276570e837c5e1844d0d88f2087e5144df65052c0a80a5fbc820fa6",
+    "tests/editor/run_requirements_intake.py": "7f871038c4bf11c44799eeeb16371a606074ec633674d1cdb347fb7e43874c07",
+    "tools/editor_provenance_process.py": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    "tools/test_editor_provenance_process.py": "806281770be7da1172c81e824346e577a2e14af0b1888a5439bda643a1f04365",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "windows_exact_candidate": "pending",
+  "usage": null,
+  "consumption": null
+}

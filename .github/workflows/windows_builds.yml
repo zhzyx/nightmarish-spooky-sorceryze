@@ -124,6 +124,22 @@ jobs:
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
 
+      - name: Runtime deployment interruption and original request recovery
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 10
+        run: |
+          git fetch --no-tags --depth=1 origin d237ef78cc394a98db85b6eb1b39f0184217297d
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_runtime_setup_simulation.py --godot ${{ matrix.bin }} --out runtime-report
+
+      - name: Upload runtime simulation report
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
+        uses: actions/upload-artifact@v7
+        with:
+          name: runtime-deployment-simulation
+          path: runtime-report/*
+          if-no-files-found: warn
+
       - name: Tianshu native editor graph
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
         run: |

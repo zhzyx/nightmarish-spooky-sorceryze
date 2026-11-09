@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$Workspace,
     [Parameter(Mandatory=$true)][string]$Out,
@@ -26,7 +26,18 @@ function Assert-Within([string]$Path, [string]$Base) {
     return $full
 }
 function Write-Json([string]$Path, $Value) {
-    [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12), [Text.UTF8Encoding]::new($false))
+    # Replace a complete same-directory journal; never expose a truncated JSON receipt.
+    $temporary = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
+    try {
+        $bytes = [Text.UTF8Encoding]::new($false).GetBytes(($Value | ConvertTo-Json -Depth 12))
+        $stream = [IO.File]::Open($temporary, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+        try { $stream.Write($bytes, 0, $bytes.Length); $stream.Flush($true) }
+        finally { $stream.Dispose() }
+        if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temporary, $Path, [NullString]::Value) }
+        else { [IO.File]::Move($temporary, $Path) }
+    } finally {
+        if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary }
+    }
 }
 function Hash([string]$Path) {
     $stream = [IO.File]::OpenRead($Path)
@@ -43,24 +54,41 @@ function Probe([string]$Name, [string]$Path) {
     } catch { return $false }
 }
 function Restore($Records, [string]$Folder) {
-    foreach ($item in @($Records)[($Records.Count - 1)..0]) {
+    $folderPath = Assert-Within $Folder (Join-Path $runtime '.gonggong-setup')
+    $seen = @{}
+    # Validate every path before withdrawing any component, including absent backups.
+    foreach ($item in @($Records)) {
+        if (-not $entries.ContainsKey([string]$item.name) -or $seen.ContainsKey([string]$item.name)) { throw 'Invalid deployment component record' }
+        $seen[[string]$item.name] = $true
         $target = Assert-Within $item.target $runtime
+        if ($target -ne (Join-Path $runtime $item.name)) { throw 'Unexpected deployment target' }
+        if ($item.backup) {
+            $backup = Assert-Within $item.backup $folderPath
+            if ($backup -ne (Join-Path $folderPath ($item.name + '-previous'))) { throw 'Unexpected deployment backup' }
+            if (-not (Test-Path -LiteralPath $backup) -and $item.phase -ne 'prepared') { throw 'Original runtime backup is missing; retain files for recovery' }
+        }
+        if ($item.phase -and $item.phase -notin @('prepared','deployed')) { throw 'Unsupported deployment journal phase' }
+    }
+    for ($index = $Records.Count - 1; $index -ge 0; $index--) {
+        $item = $Records[$index]
+        $target = $item.target
+        # A prepared record precedes moving the original. If its backup is absent,
+        # the original destination must be preserved. Existing configured receipts
+        # without a phase retain their previous deployed-record semantics.
+        if ($item.backup -and -not (Test-Path -LiteralPath $item.backup)) { continue }
         if (Test-Path -LiteralPath $target) {
-            $retained = Join-Path $Folder ($item.name + '-withdrawn-' + [guid]::NewGuid().ToString('N'))
+            $retained = Join-Path $folderPath ($item.name + '-withdrawn-' + [guid]::NewGuid().ToString('N'))
             Move-Item -LiteralPath $target -Destination $retained
         }
-        if ($item.backup -and (Test-Path -LiteralPath $item.backup)) {
-            $backup = Assert-Within $item.backup (Join-Path $runtime '.gonggong-setup')
-            Move-Item -LiteralPath $backup -Destination $target
-        }
+        if ($item.backup) { Move-Item -LiteralPath $item.backup -Destination $target }
     }
 }
 try {
     if (-not (Test-Path -LiteralPath (Join-Path $root 'CURRENT_FRAMEWORK.json'))) { throw 'Select the GongGong workspace containing CURRENT_FRAMEWORK.json' }
     if ($Rollback) {
         $file = Assert-Within $Rollback (Join-Path $runtime '.gonggong-setup')
-        $prior = Get-Content -LiteralPath $file -Raw | ConvertFrom-Json
-        if ($prior.workspace -ne $root -or $prior.state -ne 'configured') { throw 'No matching active deployment to roll back' }
+        $prior = Get-Content -LiteralPath $file -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($prior.workspace -ne $root -or $prior.state -notin @('configured','deploying')) { throw 'No matching active deployment to roll back' }
         if (@($prior.changed).Count) { Restore @($prior.changed) (Split-Path -Parent $file) }
         $prior.state = 'rolled_back'; Write-Json $file $prior
         Write-Json $Out @{ok=$true;state='rolled_back';receipt=$file;global_environment_changed=$false}
@@ -71,6 +99,7 @@ try {
     $transaction = Assert-Within (Join-Path $runtime ('.gonggong-setup/' + [guid]::NewGuid().ToString('N'))) $root
     New-Item -ItemType Directory -Force -Path $transaction | Out-Null
     $receipt = Join-Path $transaction 'receipt.json'
+    Write-Json $receipt @{state='deploying';workspace=$root;changed=$changed;journal_version=1}
     $paths = @{}
     foreach ($name in @('python','node','git')) {
         $local = Join-Path $runtime $entries[$name]
@@ -83,7 +112,7 @@ try {
         if (-not $SourceRuntime) { throw ('Missing ' + $name + ': choose the project/runtime directory from an extracted complete GongGong Windows package') }
         $source = [IO.Path]::GetFullPath($SourceRuntime)
         if ($source.TrimEnd('\','/') -eq ([IO.Path]::GetFullPath($runtime)).TrimEnd('\','/')) { throw 'The selected runtime is incomplete; choose another complete package' }
-        $manifest = Get-Content -LiteralPath (Join-Path $source 'installed.local.json') -Raw | ConvertFrom-Json
+        $manifest = Get-Content -LiteralPath (Join-Path $source 'installed.local.json') -Raw -Encoding UTF8 | ConvertFrom-Json
         if ($manifest.schema_version -ne 1 -or $manifest.path_base -ne 'runtime_directory') { throw 'Unsupported source runtime manifest' }
         $records = @($manifest.files | Where-Object { $_.path.StartsWith($name + '/') })
         if (-not @($records | Where-Object { $_.path -eq $entries[$name] }).Count) { throw ('Source package lacks ' + $name) }
@@ -102,17 +131,22 @@ try {
         if (-not (Probe $name $binary)) { throw ('Staged component failed execution check: ' + $name) }
         $destination = Assert-Within (Join-Path $runtime $name) $runtime
         $backup = ''
-        if (Test-Path -LiteralPath $destination) { $backup=Join-Path $transaction ($name+'-previous'); Move-Item -LiteralPath $destination -Destination $backup }
-        $changed += @{name=$name;target=$destination;backup=$backup;source_manifest_sha256=(Hash (Join-Path $source 'installed.local.json'));files=$records}
-        Write-Json $receipt @{state='deploying';workspace=$root;changed=$changed}
+        if (Test-Path -LiteralPath $destination) { $backup=Join-Path $transaction ($name+'-previous') }
+        $item = @{name=$name;target=$destination;backup=$backup;phase='prepared';source_manifest_sha256=(Hash (Join-Path $source 'installed.local.json'));files=$records}
+        $changed += $item
+        # Journal the intended mutation before moving either the old or staged tree.
+        Write-Json $receipt @{state='deploying';workspace=$root;changed=$changed;journal_version=1}
+        if ($backup) { Move-Item -LiteralPath $destination -Destination $backup }
         Move-Item -LiteralPath $stage -Destination $destination
+        $item.phase = 'deployed'
+        Write-Json $receipt @{state='deploying';workspace=$root;changed=$changed;journal_version=1}
         $paths[$name] = Join-Path $runtime $entries[$name]
     }
     $env:GONGGONG_PYTHON=$paths.python; $env:GONGGONG_NODE=$paths.node; $env:GONGGONG_GIT=$paths.git
     $env:PATH=(Split-Path -Parent $paths.node)+';'+(Split-Path -Parent $paths.git)+';'+$env:PATH
     $doctor = & $paths.python -X utf8 (Join-Path $root 'tools/gonggong_bridge.py') doctor --workspace $root 2>&1
     if ($LASTEXITCODE -ne 0) { throw ('Runtime probes passed; framework self-check did not pass. ' + ($doctor -join "`n")) }
-    if ($receipt) { Write-Json $receipt @{state='configured';workspace=$root;changed=$changed;paths=$paths;global_environment_changed=$false} }
+    if ($receipt) { Write-Json $receipt @{state='configured';workspace=$root;changed=$changed;journal_version=1;paths=$paths;global_environment_changed=$false} }
     Write-Json $Out @{ok=$true;state='configured';python=$paths.python;node=$paths.node;git=$paths.git;receipt=$receipt;changed=$changed;global_environment_changed=$false;chat_verified=$false}
 } catch {
     $failure=$_.Exception.Message
@@ -121,7 +155,7 @@ try {
         try { Restore $changed (Split-Path -Parent $receipt); $rollbackState='restored' }
         catch { $rollbackState='needs_recovery'; $failure += "`nRollback: " + $_.Exception.Message }
     }
-    if ($receipt) { Write-Json $receipt @{state='failed';workspace=$root;changed=$changed;error=$failure;rollback=$rollbackState} }
+    if ($receipt) { Write-Json $receipt @{state='failed';workspace=$root;changed=$changed;journal_version=1;error=$failure;rollback=$rollbackState} }
     Write-Json $Out @{ok=$false;state='repair_environment';error=$failure;receipt=$receipt;rollback=$rollbackState;global_environment_changed=$false}
     exit 1
 }

@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "native_page": true,
+  "runtime_setup_and_resume": false,
+  "catalog_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "windows_owned_process_cleanup": "not applicable",
+  "actual_native_read_tool_roundtrips": 1,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 11,
+  "development_calls": 7,
+  "issues_created": 5,
+  "events": 72,
+  "git_check": {
+    "git_state": "committed",
+    "files": 75,
+    "records": 72,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "supplement during intake amends the same Issue before the first development request",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call",
+    "clarification pauses and resumes the same requirement"
+  ],
+  "editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "fixture_events_imported": false
+}

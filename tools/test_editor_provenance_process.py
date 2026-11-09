@@ -62,10 +62,11 @@ class OwnershipUnitTests(unittest.TestCase):
         child = mock.Mock(pid=456)
         with mock.patch.object(processes.subprocess, "Popen", return_value=child) as spawn:
             with processes.WindowsJob("1" * 32, api) as job:
-                self.assertIs(job.spawn(["fixture", "arg"]), child)
+                self.assertIs(job.spawn(["fixture", "arg"], env={"FIXTURE_ONLY": "yes"}), child)
                 self.assertEqual(api.events[1:], [("assign", 123, 456), ("resume", 456)])
         self.assertEqual(spawn.call_args.kwargs["creationflags"], processes.CREATE_SUSPENDED)
         self.assertTrue(spawn.call_args.kwargs["close_fds"])
+        self.assertEqual(spawn.call_args.kwargs["env"], {"FIXTURE_ONLY": "yes"})
         self.assertEqual(api.events[-1], ("close", 123))
 
     def test_failed_assignment_kills_suspended_child_without_resuming(self):
