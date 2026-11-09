@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-d2df548faccb0d77058f04a2151c38b0b229ffe2b423ccad0ef8d04f34dda4b2",
+  "kind": "analysis",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "id": "codex-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/687",
+  "occurred_at": "2026-11-09T22:07:29.521805+00:00",
+  "evidence_refs": [
+    "request-687-engine-build-placement",
+    "learn-815b0aeb7b44eb9c4a1ee34d58800e5f4d03b978b1a72b7dde95812c6f7b0cb0"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 4,
+    "previous": "d84b39950b7ea5692e9b3e5451e7c2de58871b1d0a4e79c82bb741cc4787c663",
+    "action": "applied",
+    "details": {
+      "task": "合契在 #697 更新主线后的 #687 合入验证中召回已验证方法，重新检查实际编译消费者、独立工作树和业务包。",
+      "observed": "Windows MSVC 两份工作树共用一次原生编译，两份业务测试各自通过；同 EXE 完成 11 项切包验证；宿主临时状态不再触发额外构建。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/engine-artifact-reuse-rollout-687-release.json",
+        "sha256": "2ec812e1181a22016a6a8030abf477651a9ba506796133bcce9fb36bc86ea4e0"
+      },
+      {
+        "path": "data-collection/tianshu-build-placement-687-release.json",
+        "sha256": "2dc8bdbec4c8c20a8c93c71f6111e94bc00f39c7837c855d458c9151bb17033f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/request-687-engine-build-placement.json",
+      "sha256": "71119c2024016dfe6f32d3bcec3531be1a597e3949161eaeaa48ce705c51cdbb"
+    }
+  },
+  "sha256": "ae16e50c02b2f2a991f503fa27c7beae30e186e5eee61833871223e928e557a8"
+}

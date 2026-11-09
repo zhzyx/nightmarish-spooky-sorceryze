@@ -167,6 +167,10 @@ def get_version_info(module_version_string="", silent=False):
 
 def get_git_info():
     os.chdir(base_folder)
+    if os.getenv("GONGGONG_NATIVE_SOURCE_ARCHIVE") == "1":
+        # Shared binaries use Godot's source-archive identity. Request receipts
+        # separately carry the real producer and consumer commits.
+        return {"git_hash": "", "git_timestamp": 0}
 
     # Parse Git hash if we're in a Git repo.
     git_hash = ""
@@ -849,8 +853,14 @@ def show_progress(env):
                 percent = min(self.count * 99 // self.max, 99)
                 if percent != self.last_percent:
                     self.last_percent = percent
-                    self.write_status({"stage": "building", "percent": percent, "visited": self.count,
-                                       "total": self.max, "node": str(node), "estimated": True})
+                    self.write_status({
+                        "stage": "building",
+                        "percent": percent,
+                        "visited": self.count,
+                        "total": self.max,
+                        "node": str(node),
+                        "estimated": True,
+                    })
             if self.display:
                 percent = int(min(self.count * 100 / self.max, 100))
                 sys.stdout.write(f"\r[{percent:3d}%] ")
