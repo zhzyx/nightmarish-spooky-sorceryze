@@ -5656,7 +5656,16 @@ void AIChatDock::_poll_cli() {
 				cli_output = cli_output.slice(newline + 1);
 				if (busy && cli_generation == request_generation) {
 					const String stage = response.get("activity", "");
-					if (stage == "thread_started") {
+					if (stage == "content_preview") {
+						String content_preview = _redact(String(response.get("content_preview", "")).left(2048));
+						// Hold a trailing partial credential until it can be redacted in full.
+						for (const String &secret : { request_key, api_key->get_text() }) {
+							for (int count = MIN(secret.length() - 1, content_preview.length()); count > 0; count--) {
+								if (content_preview.ends_with(secret.left(count))) { content_preview = content_preview.left(content_preview.length() - count); break; }
+							}
+						}
+						_set_activity(String(U"Codex 正在生成（预览）：") + _redact(content_preview));
+					} else if (stage == "thread_started") {
 						_set_activity(U"Codex 已建立会话");
 					} else if (stage == "turn_started") {
 						_set_activity(U"Codex 已开始处理本轮请求");

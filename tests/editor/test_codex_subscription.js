@@ -12,7 +12,7 @@ const {Subscription} = require('../../tools/codex_cli/subscription_session');
 const bridge = path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js');
 
 test('only acknowledged history and unchanged scope can reuse a thread', async () => {
-    const sent = [];
+    const sent = [], previews = [];
     let n = 0;
     const rpc = {
         call: async (method, p) => {
@@ -27,6 +27,9 @@ test('only acknowledged history and unchanged scope can reuse a thread', async (
             sent.push(p);
             const id = 'turn-' + sent.length;
             setImmediate(() => {
+                rpc.notify({ method: 'item/agentMessage/delta', params: {threadId: 'wrong', turnId: id, delta: '{"content":"SECRET"'} });
+                rpc.notify({ method: 'item/agentMessage/delta', params: {threadId: p.threadId, turnId: id, delta: '{"content":"visible'} });
+                rpc.notify({ method: 'item/agentMessage/delta', params: {threadId: p.threadId, turnId: id, delta: '","actions":[{"name":"SECRET"}]}' } });
                 rpc.notify({
                     method: 'item/completed',
                     params: {threadId: p.threadId, turnId: id, item: {type: 'agentMessage', text: 'ok'}}
@@ -45,7 +48,7 @@ test('only acknowledged history and unchanged scope can reuse a thread', async (
         tool_context: {},
         messages: [{role: 'system', content: 'mandate 1'}, {role: 'user', content: 'one'}]
     };
-    const turn = (scope) => s.turn(input, scope, {}, JSON.stringify, () => {});
+    const turn = (scope) => s.turn(input, scope, {}, JSON.stringify, (stage, text) => { if (stage === 'content_preview') previews.push(text); });
     assert.equal((await turn('A')).mode, 'bootstrap');
     s.accepted({role: 'assistant', content: 'ok'});
     input.messages[0].content = 'mandate 2';
@@ -60,6 +63,7 @@ test('only acknowledged history and unchanged scope can reuse a thread', async (
     s.identity = async () => 'other';
     await assert.rejects(turn('B'));
     assert.equal(sent.length, 4);
+    assert.deepEqual(previews, ['visible', 'visible', 'visible', 'visible']);
 });
 
 for (const phase of ['app-server', 'exec'])
