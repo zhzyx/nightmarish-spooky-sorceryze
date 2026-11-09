@@ -463,15 +463,15 @@ void AIChatDock::_begin_gonggong_context() {
 	int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
 	String bound_request = String(_work_order_binding("request_id")).strip_edges();
 	String authority = "godot-editor:user-chat:" + conversation_id;
+	Dictionary delegation;
 	if (sub_agents.has(active_agent)) {
-		const Dictionary info = sub_agents[active_agent];
-		const int64_t child_issue = info.get("issue_number", 0);
-		const String child_request = info.get("request_id", "");
-		if (AIChatIssueGuide::is_bound(child_issue, child_request)) {
-			bound_issue = child_issue;
-			bound_request = child_request;
+		delegation = _child_delegation();
+		if (delegation.is_empty()) {
+			_append(TTR("Error"), U"无法核实子会话的父委托与原工单，本轮已停止。");
+			_set_busy(false);
+			return;
 		}
-		authority = "godot-editor:sub-agent:" + itos(int(info.get("parent", -1))) + ":" + conversation_id;
+		authority = delegation["authority_ref"];
 	}
 	if (!AIChatIssueGuide::is_bound(bound_issue, bound_request) && _start_issue_guide()) {
 		return;
@@ -482,7 +482,10 @@ void AIChatDock::_begin_gonggong_context() {
 	host["kind"] = "engine";
 	context_input["protocol_version"] = 1;
 	context_input["host"] = host;
-	context_input["agent_id"] = direct ? "sinan" : "yanshi";
+	context_input["agent_id"] = direct || !delegation.is_empty() ? "sinan" : "yanshi";
+	if (!delegation.is_empty()) {
+		context_input["delegation"] = delegation;
+	}
 	context_input["issue_number"] = bound_issue;
 	context_input["request_id"] = bound_request;
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
@@ -545,6 +548,15 @@ void AIChatDock::_poll_gonggong_context() {
 		result = parsed;
 	}
 	const bool cancelled = !busy || gonggong_generation != session_generation;
+	if (!cancelled && sub_agents.has(active_agent) && bool(result.get("ok", false))) {
+		const Dictionary binding = result.get("reporting", Dictionary());
+		const Dictionary delegation = _child_delegation();
+		if (delegation.is_empty() || binding.get("delegation", Variant()) != JSON::parse_string(JSON::stringify(delegation)) || Dictionary(binding.get("agent", Dictionary())).get("id", "") != "godot-editor-worker") {
+			_append(TTR("Error"), U"宿主未回读当前子工单的执行角色与父委托，本轮未发送。");
+			_set_busy(false);
+			return;
+		}
+	}
 	if (!cancelled && !command_recovery_reporting.is_empty() && result.get("reporting", Variant()) != command_recovery_reporting) {
 		completed_command_receipt_path = String();
 		command_recovery_reporting.clear();

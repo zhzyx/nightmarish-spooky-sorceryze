@@ -30,6 +30,7 @@
 
 #include "ai_chat_tools.h"
 
+#include "core/crypto/crypto_core.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
@@ -38,15 +39,18 @@
 namespace {
 bool read_script_bytes(const String &p_path, Vector<uint8_t> &r_bytes) {
 	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::READ);
-	if (file.is_null() || file->get_length() > AIChatTools::MAX_SCRIPT_BYTES) {
+	if (file.is_null()) {
 		return false;
 	}
 	const uint64_t length = file->get_length();
+	if (length > AIChatTools::MAX_SCRIPT_BYTES) {
+		return false;
+	}
 	r_bytes.resize(length);
 	if (length > 0 && file->get_buffer(r_bytes.ptrw(), length) != length) {
 		return false;
 	}
-	return file->get_error() == OK;
+	return file->get_length() == length && file->get_error() == OK;
 }
 
 bool decode_script_bytes(const Vector<uint8_t> &p_bytes, String &r_text) {
@@ -307,28 +311,36 @@ bool AIChatTools::resolve_script_path(const String &p_path, const String &p_root
 	return true;
 }
 
-bool AIChatTools::read_script(const String &p_absolute, String &r_content, String &r_error) {
+bool AIChatTools::read_script(const String &p_absolute, String &r_content, String &r_error, String *r_raw_sha256) {
 	Vector<uint8_t> bytes;
 	if (!read_script_bytes(p_absolute, bytes) || !decode_script_bytes(bytes, r_content)) {
 		r_error = "Cannot read a complete UTF-8 script within the 256 KiB limit.";
 		return false;
 	}
+	if (r_raw_sha256) {
+		uint8_t hash[32];
+		if (CryptoCore::sha256(bytes.ptr(), bytes.size(), hash) != OK) {
+			r_error = "Cannot hash review source.";
+			return false;
+		}
+		*r_raw_sha256 = String::hex_encode_buffer(hash, 32);
+	}
 	return true;
 }
 
 // Scan in bounded chunks so an excerpt never requires a full-file text snapshot.
-bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error) {
+bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error, String *r_raw_sha256) {
 	r_result.clear();
 	if (p_offset < 1 || p_limit < 1 || p_limit > 500) {
 		r_error = "Read offset must be a positive integer and limit must be 1-500 lines.";
 		return false;
 	}
 	Ref<FileAccess> file = FileAccess::open(p_absolute, FileAccess::READ);
-	if (file.is_null() || file->get_length() > MAX_READ_SCAN_BYTES) {
+	const uint64_t length = file.is_valid() ? file->get_length() : 0;
+	if (file.is_null() || length > MAX_READ_SCAN_BYTES) {
 		r_error = "Cannot scan a UTF-8 excerpt: file is inaccessible or exceeds the 16 MiB scan limit.";
 		return false;
 	}
-	const uint64_t length = file->get_length();
 	const int64_t last_line = int64_t(p_offset) + p_limit - 1;
 	int64_t line = 1;
 	Vector<uint8_t> excerpt;
@@ -336,11 +348,20 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 	int continuation = 0;
 	uint32_t codepoint = 0;
 	uint32_t minimum = 0;
+	CryptoCore::SHA256Context digest;
+	if (r_raw_sha256 && digest.start() != OK) {
+		r_error = "Cannot hash review source.";
+		return false;
+	}
 	uint64_t scanned = 0;
 	while (scanned < length) {
 		const uint64_t amount = MIN(uint64_t(sizeof(buffer)), length - scanned);
 		if (file->get_buffer(buffer, amount) != amount) {
 			r_error = "File changed or could not be read during the excerpt scan.";
+			return false;
+		}
+		if (r_raw_sha256 && digest.update(buffer, amount) != OK) {
+			r_error = "Cannot hash review source.";
 			return false;
 		}
 		for (uint64_t i = 0; i < amount; i++) {
@@ -398,6 +419,14 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 	if (JSON::stringify(result).utf8().length() > MAX_SCRIPT_BYTES) {
 		r_error = "Encoded excerpt exceeds the 256 KiB output limit; request fewer lines.";
 		return false;
+	}
+	if (r_raw_sha256) {
+		uint8_t hash[32];
+		if (digest.finish(hash) != OK) {
+			r_error = "Cannot hash review source.";
+			return false;
+		}
+		*r_raw_sha256 = String::hex_encode_buffer(hash, 32);
 	}
 	r_result = result;
 	return true;

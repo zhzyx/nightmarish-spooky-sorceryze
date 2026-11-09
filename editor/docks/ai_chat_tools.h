@@ -47,8 +47,8 @@ public:
 	static bool normalize_script_path(const String &p_path, String &r_path);
 	static bool resolve_script_path(const String &p_path, const String &p_root, String &r_absolute, String &r_error);
 	static bool resolve_directory(const String &p_path, const String &p_root, String &r_absolute, String &r_error);
-	static bool read_script(const String &p_absolute, String &r_content, String &r_error);
-	static bool read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error);
+	static bool read_script(const String &p_absolute, String &r_content, String &r_error, String *r_raw_sha256 = nullptr);
+	static bool read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error, String *r_raw_sha256 = nullptr);
 	static bool write_script(const String &p_absolute, const String &p_before, const String &p_after, bool p_existed, String &r_error, bool p_preserve_bom = true);
 	// Local, per-turn text snapshots. No repository or external process is used.
 	static bool save_snapshot(const String &p_path, const Dictionary &p_snapshot, String &r_error);

@@ -303,6 +303,54 @@ def request_identity(request):
     return {"id": host["id"], "kind": host["kind"]}, agent_id
 
 
+def worker_delegation(request, host, sponsor):
+    if "delegation" not in request:
+        return None
+    delegation = request["delegation"]
+    if (
+        host != {"id": "godot-editor", "kind": "engine"}
+        or request.get("protocol_version") != 1
+        or sponsor != "sinan"
+        or not isinstance(delegation, dict)
+        or set(delegation)
+        != {
+            "source",
+            "execution_role",
+            "parent_conversation",
+            "child_conversation",
+            "issue_number",
+            "request_id",
+            "work_order",
+            "scope_sha256",
+            "authority_ref",
+            "turn_scope_sha256",
+        }
+    ):
+        raise ValueError("Invalid editor worker delegation")
+    parent, child = (delegation[key] for key in ("parent_conversation", "child_conversation"))
+    if (
+        any(not isinstance(value, str) or not re.fullmatch(r"[a-f0-9]{32}", value) for value in (parent, child))
+        or parent == child
+        or delegation["authority_ref"] != "godot-editor:user-chat:" + parent
+        or delegation["authority_ref"] != request["authority_ref"]
+        or type(delegation["issue_number"]) is not int
+        or delegation["issue_number"] != request.get("issue_number")
+        or delegation["request_id"] != request["request_id"]
+        or delegation["execution_role"] != "implementation_worker"
+        or delegation["source"] not in ("manual", "design")
+        or type(delegation["work_order"]) is not int
+        or not (
+            1 <= delegation["work_order"] <= 999 if delegation["source"] == "design" else delegation["work_order"] == 0
+        )
+        or not isinstance(delegation["turn_scope_sha256"], str)
+        or not re.fullmatch(r"[a-f0-9]{64}", delegation["turn_scope_sha256"])
+        or not isinstance(delegation["scope_sha256"], str)
+        or not re.fullmatch(r"(?:[a-f0-9]{64})?", delegation["scope_sha256"])
+    ):
+        raise ValueError("Editor worker delegation does not match the bound work order")
+    return delegation
+
+
 def intake_failure_reason(stderr):
     """Classify trusted gate output without reflecting arbitrary stderr in the UI."""
     reason = stderr.strip()
@@ -453,6 +501,7 @@ def chat(root, request, tenant):
     permission_fields = ("tools_enabled", "file_changes_require_approval", "execution_requires_approval")
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
+    delegation = worker_delegation(request, host, agent_id)
     direct = request["request_id"].startswith("daqian-direct-")
     issue = issue_binding(root, request, tenant)
     source = issue.pop("verified_issue_source", {})
@@ -479,6 +528,19 @@ def chat(root, request, tenant):
             "definition_sha256": hashlib.sha256((framework / agent["entry"]).read_bytes()).hexdigest(),
         },
     }
+    if delegation:
+        # Sinan's admission covers coordination. Attribute actual steps to the
+        # embedded host worker and bind its role contract to this bridge revision.
+        worker_digest = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        binding["sponsor_agent_snapshot_ref"] = binding["agent_snapshot_ref"]
+        binding["agent"] = {
+            "id": "godot-editor-worker",
+            "version": "1",
+            "origin": "godot-editor",
+            "definition_sha256": worker_digest,
+        }
+        binding["agent_snapshot_ref"] = "godot-editor-worker@1#" + worker_digest
+        binding["delegation"] = delegation
     mandate = {
         "feature_id": request["request_id"],
         "outcome": request["outcome"],
@@ -501,6 +563,10 @@ def chat(root, request, tenant):
         "tool_permission": {k: request[k] for k in permission_fields},
         "reporting": binding,
     }
+    if delegation:
+        mandate["execution_role"] = (
+            "You are the delegated implementation worker. Sinan provides coordination governance."
+        )
     if direct:
         requirement = routing.chat_context(root, request, api, verified_source=source.get("row"), principal=principal)
         mandate["bound_requirement"] = requirement
@@ -577,6 +643,9 @@ def chat(root, request, tenant):
             },
             "evidence_refs": [],
         }
+        if delegation:
+            event["payload"]["delegation"] = delegation
+            event["payload"]["sponsor_agent_snapshot_ref"] = binding["sponsor_agent_snapshot_ref"]
         enqueue(root, event)
         try:
             result["receipt"] = flush(root, receipt_scope)
