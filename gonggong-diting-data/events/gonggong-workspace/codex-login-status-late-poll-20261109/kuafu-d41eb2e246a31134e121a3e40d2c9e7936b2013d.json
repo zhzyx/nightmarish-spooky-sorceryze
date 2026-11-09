@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d41eb2e246a31134e121a3e40d2c9e7936b2013d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "630d3dd6f74a4efc41dc73ba163aa4f4abbd4457e1b7f7782250a335d3c573a7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "action": "validation",
+    "detection_head": "0b10d334d3af5e80fde4c7a9adf38e1d2c527b4f",
+    "context_sha256": "72aab4e0590f20cca483129d165c3b63c88de031e87147fbd83ecb2d93eb9b08",
+    "operator": "kaiyunxue",
+    "worker": "root-codex-login-status-late-poll",
+    "authority_ref": "Original human authorizes discovered-blocker repair through main and original App; Root remains unique business executor and acceptance coordinator.",
+    "evidence": "PR627 main60745751; final artifact060a8cd1562eaa3548d20f9612f055f3b8ebfac2b4684fb71bbccffb85f6f39c; independent startup diagnosis7db9feaa87438b08a26664ac1f6be0cd2693b8e15264a4b4ae302a6ef0cb527e; fresh OS authorization request371.145 for PID30164.",
+    "diagnosis": "Final App source and independent artifact regressions pass, but real business startup remains unaccepted. Independent machine-code mapping places blocked open in source .git pointer read, before project/source hashing. Old user permission response referenced an exited previous build. Fresh zero-argument launch PID30164 now has explicit TCC DocumentsFolder code-requirement mismatch and AUTHREQ_PROMPTING at 19:38:51; this confirms a current macOS permission boundary. Full Access and engine commands cannot complete this system decision.",
+    "next_action": "Keep current PID30164; user has been asked to approve the current system prompt. After the real response, read fresh native command descriptor and test actual auto-catalog and consultation reply. Do not rebuild, bypass system authorization, close618, or activate original App before acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T11:40:26.673476+00:00",
+    "attempted": "Preserved original App/history/journals; independently symbolicated blocked read; requested normal file materialization; verified source inputs local; correlated old permission reply and fresh native launch with OS logs. No project or product source changed.",
+    "repair_owner": "Root business executor; independent verifier only supplied read-only diagnostics and artifact checks.",
+    "continuable": "Main delivery, final build, fixtures, provenance review and main handoff are complete. Current candidate business acceptance and original-entry acceptance remain pending."
+  },
+  "occurred_at": "2026-11-09T11:43:08.422286+00:00",
+  "sha256": "b9dc30fc54c170a740ad21c7cd5e0781099f075825c2a5fa0093b93135b6c6bf"
+}

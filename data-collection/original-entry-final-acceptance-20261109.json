@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-launch-receipt-20261107",
+  "issue_number": 393,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "recorded_at": "2026-11-09T15:33:33.702698+00:00",
+  "related_issues": [
+    390,
+    618,
+    483,
+    585,
+    559
+  ],
+  "scope": "Root actual original-entry acceptance and joint runtime/candidate handoff; metadata-only delivery after product PR627. No private history, message bodies, credentials or local paths are included.",
+  "metadata_base_main": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "accepted_product": {
+    "candidate": "0b10d334d3af5e80fde4c7a9adf38e1d2c527b4f",
+    "signed_commit": "23b6e139d368850514b6fe58608452b3fe06a1fd",
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/627",
+    "merge_commit": "60745751daca1121dddf4a6b623b3d4f3ad0a946",
+    "tree": "63e11ae037b67aba1d26bc9226d3e25b82245818",
+    "main_at_activation": "261a81025c7895ce424dadb618b6922f082195c3",
+    "activation_mode": "accepted_candidate",
+    "main_advanced": true,
+    "artifact_sha256": "060a8cd1562eaa3548d20f9612f055f3b8ebfac2b4684fb71bbccffb85f6f39c",
+    "manifest_sha256": "638e6c9948e32a4b570a9e8bc3687e3d4cc5a7cd38d074273b7936fc9729e73d",
+    "source_digest": "4a7b5510db7ef6ad2dd19840a291ee6e2804f7f7d5a9c831e362f2ac09f9ba55",
+    "source_input_count": 16568,
+    "native_platform": "macOS arm64",
+    "strict_native_app_signature_passed": true,
+    "original_entry_and_executable_regular_not_symlinks": true,
+    "previous_app_executable_sha256": "cc71da63479869a65f4b97f092582012140c64284135c287fc73accdf09babe7",
+    "full_previous_app_backup_preserved": true
+  },
+  "observed_original_entry": {
+    "scope": "Historical accepted run before explicitly releasing App/UI to the separately authorized later delivery; no claim about current later installed bytes.",
+    "pid": 34965,
+    "zero_argument_original_app_launch": true,
+    "scene": "res://main.tscn",
+    "unsaved_scenes": [],
+    "restored_session_ids": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "automatic_catalog_real_model_ids": [
+      "gpt-6.1-sol",
+      "gpt-6-astra",
+      "gpt-6-sol",
+      "gpt-6-luna",
+      "gpt-5.6-sol",
+      "gpt-6.1-terra",
+      "gpt-5.6-terra",
+      "gpt-5.6-luna",
+      "gpt-5.5"
+    ],
+    "automatic_catalog_real_count": 9,
+    "default_entry_count": 1,
+    "selected_model_preserved": "gpt-6-sol",
+    "manual_refresh_used": false,
+    "trusted_native_command": true,
+    "request_id": "25315ed1641e48fdbd72999df1e43aef",
+    "conversation_id": "b8eb6584efbb3bd5b4e5793cd7f787df",
+    "agent_id": 9,
+    "actual_new_user_message_count": 1,
+    "actual_new_provider_reply_count": 1,
+    "actual_provider_reply_sha256": "cd17406ceaaeeb328199624c0e97d9b92aecdcc3e42d9792d325a3390c2090b2",
+    "actual_new_tool_messages": 0,
+    "snapshot_id": "838aee16ecc5c17a771805298d2244a1",
+    "snapshot_changed_files": [],
+    "fresh_global_busy": false,
+    "active_session_before": 9,
+    "active_session_at_completion_readback": 5,
+    "submission_status_is_cached_submission_not_business_completion": true,
+    "completion_basis": "Actual newly persisted provider reply in the intended conversation, its new empty-change snapshot, and fresh global chat idle; not the cached submission status.",
+    "history_differences": {
+      "agent9": [
+        "one new consultation user message",
+        "one new provider assistant message",
+        "matching transcript entries",
+        "scroll",
+        "snapshot_id"
+      ],
+      "agent5": [
+        "view scroll changed",
+        "one editor welcome row appended; prior error history retained"
+      ],
+      "agents4_6_7_8": "byte-equivalent JSON fields",
+      "top_level": "only active_agent changed from 9 to 5; scheduling and other top-level state unchanged",
+      "drafts_queues_conversation_ids_and_model_selections": "preserved for all six sessions"
+    },
+    "preexisting_snapshot_file_count": 38,
+    "changed_preexisting_snapshots": [],
+    "unchanged_guards": [
+      "central_config",
+      "manifest",
+      "candidate_binding",
+      "previous_candidate_binding",
+      "original483_journal",
+      "original483_successful_retry",
+      "main_scene",
+      "source_head"
+    ],
+    "before_history_sha256": "749383a9bde87ea7c8519a1b27f1b2552864a76fd3ab4c3875a97f36662fcf81",
+    "after_history_sha256": "bd59e0ca35237d6c102428808cd64a87e9c7a547f679eabe0893203841ebdc68"
+  },
+  "acceptance_items": {
+    "393": [
+      {
+        "id": "393-1",
+        "state": "done",
+        "evidence": "Official finalizer checked bound Issue618/C4, real source inputs, artifact SHA and main ancestry before activation; immutable manifest and independent audit bind all16568 inputs."
+      },
+      {
+        "id": "393-2",
+        "state": "done",
+        "evidence": "Committed13 activation regressions cover uncommitted/unmerged source, artifact/source drift and preserving valid entry; actual first finalizer CI stop retained and exact failed CI rerun recovered before retry."
+      },
+      {
+        "id": "393-3",
+        "state": "done",
+        "evidence": "Component acceptance and completed618 preceded official atomic original full-App activation; real zero-argument original entry restored scene,6 sessions, automatic9-model catalog and trusted provider reply."
+      },
+      {
+        "id": "393-4",
+        "state": "done",
+        "evidence": "Historical isolated idempotency/interruption/recovery tests plus actual same-request successful retry; full previous native App backup preserved with verified cc71 digest. No rollback operation was claimed performed."
+      },
+      {
+        "id": "393-5",
+        "state": "done",
+        "evidence": "Official real delivery-finalization readback triggered accepted_candidate activation; no polling service or periodic scan added; PR creation alone was not accepted."
+      },
+      {
+        "id": "393-6",
+        "state": "done",
+        "evidence": "Historical13 activation/7 writer tests and independent CRLF probe; actual current C4 native build, full-input audit and original-entry joint390/393 reception complete the previously pending production consumer."
+      }
+    ],
+    "390": [
+      {
+        "id": "390-1",
+        "state": "done",
+        "evidence": "Historical native no-PATH Node subprocess reused configured Node and dedicated invalid-path cases; present original GUI used persisted runtime configuration for the actual provider reply."
+      },
+      {
+        "id": "390-2",
+        "state": "done",
+        "evidence": "Committed37 real-Git candidate tests plus actual isolated303 candidate journal, stable Issue/request/owner, sourceC4 and ordinary signed PR627/main."
+      },
+      {
+        "id": "390-3",
+        "state": "done",
+        "evidence": "Historical7 native offline requests/55 bridge tests cover candidate default command root, old-source write denial and project access. Real original project and frozen build source are distinct in current manifest."
+      },
+      {
+        "id": "390-4",
+        "state": "done",
+        "evidence": "Historical candidate/session/child ownership tests plus original483 real child-return to same parent and retained receipts. Current original-entry preservation does not rewrite historical child business_accepted:null."
+      },
+      {
+        "id": "390-5",
+        "state": "done",
+        "evidence": "Historical8 manifest/8 self-build tests cover create/delete/mode/drift; actualC4 macOS arm64 build ready and16568 input independent audit; current build options are those of its own manifest."
+      },
+      {
+        "id": "390-6",
+        "state": "done",
+        "evidence": "Actual independent product/component audits, exact PR627 CI and main receipt, official original-entry activation and real automatic-catalog/native-chat acceptance now complete the previously pending393/387 consumer scope."
+      }
+    ]
+  },
+  "historical_evidence_reused_without_rerun": [
+    "data-collection/issue390-runtime-candidate-validation-20261107.json",
+    "data-collection/issue390-ci-style-reverification-20261107.json",
+    "data-collection/engine-launch-receipt-20261107-final.json",
+    "data-collection/engine-launch-receipt-20261107-main-integration.json"
+  ],
+  "prior_actual_agent_workflow": {
+    "issue": 483,
+    "pull_request": 567,
+    "merge_commit": "6d67fe74dd0dea79e27c02ee9a995cdac3cc204f",
+    "self_build_and_restart_completed": true,
+    "readonly_child_return_completed": true,
+    "child_business_accepted": null,
+    "external_repairs_were_required": true,
+    "uninterrupted_first_attempt_claimed": false,
+    "retained_journal_sha256": "995657ce47d4b933e1b1935f8de9917e330734d759cfc495e9d96fd2c0150241",
+    "successful_retry_sha256": "38517a66dd268d52a5abae974ba34c0725a5dc51132024533558034729af3a93"
+  },
+  "private_receipt_digests": {
+    "official_completion_and_activation": {
+      "sha256": "901086bb6427562d81c39f7cd84e300013975aed5343791ee9db0a71b2dde20d",
+      "bytes": 7476,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "original_app_installed": {
+      "sha256": "7f5779aa6961251ea352c103fda5e7c14503cdff05faff9bcc4c98c2b3f7de55",
+      "bytes": 391,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "original_native_baseline": {
+      "sha256": "b1f712dafcd8fb0cba435d6af8d874e3f2211460519328049176120afc4acba4",
+      "bytes": 9233,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "original_native_completion": {
+      "sha256": "18c0bb48fdbe5a22dbc594b67f3d4bd975987911dd8bf56220139f4467e9d2e2",
+      "bytes": 5931,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "original_after_guards": {
+      "sha256": "76796e44ae03446981703fefceb880cdd547840c8d1fca93ed73c61b92f243b7",
+      "bytes": 6744,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "original_new_snapshot": {
+      "sha256": "6f664b5188b596b3fc34258979341bbafa6ba31138fad6a23c6fb9f79c562733",
+      "bytes": 802,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "candidate_independent_real_chat": {
+      "sha256": "988ae8edc8b1944d3e0fe635519ebc4a440279e4825a6935321f1a7899bd3eea",
+      "bytes": 12455,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "candidate_independent_component": {
+      "sha256": "a6489f49a693fcc9e64434aecde1ed439229b2674e9887f17513dc839b53b1e8",
+      "bytes": 13561,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "artifact_independent_final": {
+      "sha256": "847aaa8fc2372d4df60b2f237cbf25bc1d7c7978abf1ef489b369873bf12b8a5",
+      "bytes": 8006,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "old483_and585_independent": {
+      "sha256": "8d719bf389b4dc1ca1e79f3276067b572aa59fbb65ee122677d684fee791301f",
+      "bytes": 15646,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "scene_recovery": {
+      "sha256": "cbd101281de18087f1c8a180233bb850b0d2f9ceeb193326930b8162cb8b8476",
+      "bytes": 1544,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    },
+    "old_cloud_log_lossless_archive": {
+      "sha256": "8fcbe5f106e0dc5cbb2d82db0d9d264997c6e530241a962630be5eb18666b142",
+      "bytes": 577,
+      "storage": "private immutable host receipt; body and local paths omitted"
+    }
+  },
+  "independent_original_entry_review": {
+    "state": "passed",
+    "reviewer": "/root/original_entry_final_review",
+    "private_report_sha256": "1b2f9e1e3f2edf86229b628e37190f4d4e16907766fc1aaff82424c8aa8b6da2",
+    "checks_passed": 49,
+    "checks_total": 49,
+    "scope": "Same-round read-only review of immutable original-entry34965/060a receipts, original393/390 six-item checklists and these six metadata paths; eligible for normal signed metadata PR, exact CI and main before separate completed/done authority readback. No current App/UI was touched; only this digest and observed conclusion were filled after review."
+  },
+  "issue_completion_at_recording": {
+    "618": "CLOSED/completed/status:done by official finalizer",
+    "393": "OPEN until this metadata delivery reaches main and final authority readback",
+    "390": "OPEN until joint acceptance metadata reaches main and final authority readback"
+  },
+  "limitations": [
+    "Accepted product is fixedC4 contained in main, not a build of every later main commit or the separately coordinated611/632 artifact.",
+    "Original483 supplies the actual internal-agent implementation/self-build/child/main evidence; this last consultation probe supplies real original-entry connectivity, not a new tool-using implementation run.",
+    "Five-minute interactive-login timeout branch has static coverage only; no five-minute live fixture was claimed.",
+    "The scene and generated-cache recovery preserved original scene bytes and old cloud inode; iCloud and low-disk causal attribution remain unknown.",
+    "OS document permission, lock screen and visual judgment remain outside editor commands; historical OS confirmations do not imply a bypass.",
+    "Command interface gaps remain under separate559; this does not claim all editor pages or all Codex behavior have identical coverage.",
+    "Unified runtime configuration scope remains its own implementation; Node reuse alone is not claimed to satisfy all of it."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "native host did not expose actual billed tokens or cost",
+  "diting_consumption": null,
+  "metadata_delivery_recovery": {
+    "incident": "6226afe8cf644ef5e2375af3a7a829dec615832d849faa89f27384ec65e15463",
+    "first_attempt": "Signed submission stopped before commit at immutable history validator",
+    "cause": "Own sparse metadata checkout had not materialized read-only olympus-hermes-data; the history validator rejected missing working-copy history",
+    "repair": "Materialized that exact directory through ordinary Git sparse-checkout; no historical tracked content, validator or product input changed",
+    "directed_history_validator": {
+      "exit": 0,
+      "files": 6422,
+      "records": 6301,
+      "receipt_sha256": "1bd636cc1b9497924dd749cf99c914bd5b213b1dade275aba84b7e63b1062b55"
+    },
+    "kuafu_timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393#issuecomment-6744447508",
+    "actual_event": "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/kuafu-7c9fe0416e8680ae805e027cf0f17f67dc905fd2.json",
+    "event_canonical_sha256": "fbc2fd7a71dbe9a86d3c16f111748cab00733da24172af24fea129cf1003b85b",
+    "next_action": "Retry same normal signed-submit gate; exact CI/main and remote393/390 closure remain pending until authority readback",
+    "independent_delta_review": {
+      "state": "passed",
+      "private_report_sha256": "a8d4745d613608b3c3dea9b35bdfdd062e3b5d2c0fd77b484195bce38ed4e5fc",
+      "checks_passed": 18,
+      "checks_total": 18,
+      "scope": "Only sparse-checkout recovery metadata, actual Kuafu event, unchanged prior facts and seven staged paths. Signed writer retry, exact CI/main and remote closures remained pending at review."
+    }
+  }
+}

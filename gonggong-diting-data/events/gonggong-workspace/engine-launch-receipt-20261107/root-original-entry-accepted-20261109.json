@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "event_id": "root-original-entry-accepted-20261109",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-launch-receipt-20261107",
+  "kind": "step",
+  "occurred_at": "2026-11-09T15:34:21.354033+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "event": "original-entry-actual-acceptance",
+    "observer": "Root authorized external host",
+    "product_pr": 627,
+    "source_commit": "0b10d334d3af5e80fde4c7a9adf38e1d2c527b4f",
+    "artifact_sha256": "060a8cd1562eaa3548d20f9612f055f3b8ebfac2b4684fb71bbccffb85f6f39c",
+    "original_entry_zero_argument_cold_start": true,
+    "automatic_real_model_count": 9,
+    "restored_session_count": 6,
+    "actual_provider_reply_observed": true,
+    "new_tool_message_count": 0,
+    "snapshot_changed_files": [],
+    "global_chat_idle_observed": true,
+    "active_view_changed_from_9_to_5": true,
+    "retained_original_history_errors": true,
+    "prior_full_app_backup_retained": true,
+    "metadata_evidence": "data-collection/original-entry-final-acceptance-20261109.json",
+    "related_runtime_issue": 390,
+    "component_issue": 618,
+    "late_startup_event_preserved": true,
+    "later_original_app_ui_released_to_authorized_separate_delivery": true,
+    "remote393_390_completion": "pending metadata main delivery and authority readback",
+    "usage": null,
+    "usage_unknown_reason": "not exposed by native host",
+    "diting_consumption": null
+  },
+  "evidence_refs": [],
+  "sha256": "b9256eede929b75e7bdb8165716ea5d334f586bf2eaa6b2a45c48567badb9c3a"
+}
