@@ -1,0 +1,20 @@
+{
+  "issue": 49,
+  "base": "a7ea662405640ad6400c84a34a67715d86987730",
+  "dependency91_pr": 667,
+  "dependency91_main_verified": true,
+  "dependency91_source_tree_matches": true,
+  "native_source_unchanged_since_actual_main5f_build": true,
+  "native_build_editor_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+  "scope": "All own49 reviewed runtime/governance/native inputs match preceding main5f private build;91 main adds PS/fixtures/data only already integrated in that source. ExactWindowsCI still required.",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+    "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+    "tools/configure_gonggong_runtime.ps1": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93"
+  }
+}

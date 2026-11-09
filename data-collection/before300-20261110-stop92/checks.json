@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "checks": [
+    {
+      "command": [
+        "/private/tmp/daqian424-verified-style/bin/ruff",
+        "check",
+        "tests/editor/run_ai_chat_semantic.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/private/tmp/daqian424-verified-style/bin/ruff",
+        "format",
+        "--check",
+        "tests/editor/run_ai_chat_semantic.py"
+      ],
+      "exit_code": 0,
+      "output": "1 file already formatted\n"
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "-m",
+        "py_compile",
+        "tests/editor/run_ai_chat_semantic.py"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "tests/editor/ai_chat_semantic.gd",
+        "tests/editor/run_ai_chat_semantic.py"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "tests/editor/run_ai_chat_semantic.py",
+        "--godot",
+        "/unused",
+        "--manual-stop",
+        "--simulated-stop-input",
+        "mouse"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "outcome": "mutually exclusive modes rejected before any server/editor launch"
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "tests/editor/run_ai_chat_semantic.py",
+        "--godot",
+        "/unused",
+        "--signal-stop",
+        "--simulated-stop-input",
+        "mouse"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "outcome": "mutually exclusive modes rejected before any server/editor launch"
+    }
+  ],
+  "public_copy": {
+    "original_sha256": "283016b07ef2a01f97e1e9487d726fd6572d2a1d3b4fe50c08b30c0fe74068b1",
+    "transformation": "Original array wrapped as an object for PR_EVIDENCE_JSON; individual checks unchanged"
+  }
+}

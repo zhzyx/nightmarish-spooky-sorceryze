@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0b3d5f46ce4a421ba2e8391493d4193fb61dccc2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "48d195e98d62fad438e7ef42ff51b53b12351c42437ffb59d119a69964676e4c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "delivery",
+    "detection_head": "730ec455fdad5d9834c22a515f3ba7bece35b2da",
+    "context_sha256": "b04435f484763fafbacfbafc45a9e3b4893d258fd386c0c1761b670e4d7e4a31",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/673",
+    "diagnosis": "正式入口因他方670已先合入eec633而拒绝旧basea7，14路径与自身49改动无交叉。已从新可信main隔离整合保留全上游，自有原生源和十policy pins保持，受审两PS修复及日志格式归一保留；新精确候选ab0ea2e已签发PR673。",
+    "next_action": "等待673精确Windows10部署和native原需求恢复实际通过后按fresh main回读合入；旧669/672失败/过期版本由新PR承接，不能复用为完整新候选验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T19:02:33.005669+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T19:07:30.631958+00:00",
+  "sha256": "0e87334b5a00b553fc420f1efcaa4d9c6901d746118599f305058a25c75c31bb"
+}

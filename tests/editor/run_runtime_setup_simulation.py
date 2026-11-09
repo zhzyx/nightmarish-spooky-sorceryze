@@ -321,7 +321,7 @@ def main():
             baseline = folder / "baseline.ps1"
             baseline.write_bytes(baseline_result.stdout)
             report["baseline_script_sha256"] = digest(baseline)
-            package = folder / "simulated-runtime"
+            package = folder / "simulated-runtime-中文"
             report["fixture_files"] = make_package(package, tools)
             versions = {}
             for name, tool in tools.items():
@@ -367,7 +367,10 @@ def main():
                 value = read_json(output)
                 assert value["ok"] is True
                 if name == "runtime-setup":
-                    assert len(value["cases"]) == 7
+                    assert len(value["cases"]) == 10
+                    assert "governed host model step selects and validates a complete runtime package" in value["cases"]
+                    assert "changed host policy blocks model invocation before native selector starts" in value["cases"]
+                    assert "missing host policy blocks model invocation before native selector starts" in value["cases"]
                 else:
                     assert value["runtime_setup_and_resume"] is True
                 report[name] = value

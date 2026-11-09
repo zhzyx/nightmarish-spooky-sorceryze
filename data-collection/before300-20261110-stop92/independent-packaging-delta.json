@@ -1,0 +1,38 @@
+{
+  "issue": 92,
+  "parent_issue": 51,
+  "scope": "Only metadata wrapper/acceptance hash and one parent-document paragraph; earlier exact-source/42-check review remains historical.",
+  "outcome": "no actionable findings",
+  "findings": [],
+  "checks": [
+    "checks.json has object root, schema_version 1, and exactly unchanged six original checks",
+    "public_copy.original_sha256 equals original author top-level array bytes",
+    "acceptance.files checks.json SHA256 equals actual wrapped public artifact",
+    "All five current public JSON artifacts have object roots",
+    "Both exact reviewed test source SHA256 values are unchanged",
+    "Parent delta is solely one current-scope paragraph; all original history remains byte-for-byte intact",
+    "Headless input, recovery, stale isolation and 42-check statement agree with prior reviewed evidence; unknown original rootcause and physical/provider boundaries preserved",
+    "Parent explicitly retains open state before exact CI/main and closure readback; no future delivery certified",
+    "git diff HEAD --check on metadata/doc delta passed"
+  ],
+  "sha256": {
+    "original_author_checks": "283016b07ef2a01f97e1e9487d726fd6572d2a1d3b4fe50c08b30c0fe74068b1",
+    "wrapped_checks": "8b7e88ea01ae4f65ea3baf16037834bec29ebbee56c822a38fa8fbf25dd9660a",
+    "acceptance_snapshot": "37d3745f63368e85443c3214275973ab5d849e5b4fb7d19baefd99441f6cfe9a",
+    "parent_doc": "0608c65b9045560f7f2ee4fc9d02b8141fa6659d6d67e286fbbb81b49dc8415b"
+  },
+  "json_object_roots": {
+    "independent-evidence-checks.json": true,
+    "independent-review.json": true,
+    "acceptance.json": true,
+    "results.json": true,
+    "checks.json": true
+  },
+  "native_model_build_desktop_actions": false,
+  "prior_review_superseded": false,
+  "future_ci_main_certified": false,
+  "public_copy": {
+    "original_sha256": "d718ec151cd3383ffc2222658bdc7260288c1bd1666572f92ba96fe707135f3f",
+    "transformation": "private evidence prefixes replaced; findings unchanged"
+  }
+}

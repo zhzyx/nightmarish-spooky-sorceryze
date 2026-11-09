@@ -22,14 +22,75 @@ func chat_text() -> String:
 		text += label.get_parsed_text()
 	return text
 
+func simulated_stop_input(stop: Button, mode: String, report: Dictionary) -> bool:
+	# Only Godot's private viewport receives these events, never the OS desktop.
+	report["stop_trigger"] = "synthesized_viewport_" + mode
+	report["stop_visible"] = stop.is_visible_in_tree()
+	report["stop_has_area"] = stop.size.x > 0 and stop.size.y > 0
+	report["button_down_count"] = 0
+	report["pressed_count"] = 0
+	report["input_down_count"] = 0
+	report["input_up_count"] = 0
+	stop.button_down.connect(func(): report["button_down_count"] += 1)
+	stop.pressed.connect(func(): report["pressed_count"] += 1)
+	stop.gui_input.connect(func(event: InputEvent):
+		if (mode == "mouse" and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT) or (mode == "keyboard" and event is InputEventKey and event.is_action("ui_accept")):
+			report["input_down_count" if event.is_pressed() else "input_up_count"] += 1)
+	var viewport := stop.get_viewport()
+	report["viewport_embeds_windows"] = viewport.gui_embed_subwindows
+	var event: InputEvent
+	if mode == "mouse":
+		# Headless windows receive no OS enter event. Viewport's documented
+		# synthetic-input entry point establishes hover through normal GUI routing.
+		viewport.notify_mouse_entered()
+		var center := stop.get_global_transform_with_canvas() * (stop.size / 2)
+		report["stop_inside_viewport"] = viewport.get_visible_rect().has_point(center)
+		report["viewport_size"] = str(viewport.get_visible_rect().size)
+		report["stop_center"] = str(center)
+		var motion := InputEventMouseMotion.new()
+		motion.position = center
+		motion.global_position = center
+		viewport.push_input(motion, true)
+		report["stop_hovered"] = stop.is_hovered()
+		var hovered := viewport.gui_get_hovered_control()
+		report["hovered_control"] = str(hovered.name) if hovered != null else "none"
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.button_mask = MOUSE_BUTTON_MASK_LEFT
+		click.position = center
+		click.global_position = center
+		event = click
+	else:
+		stop.grab_focus()
+		await process_frame
+		report["stop_had_focus"] = stop.has_focus()
+		var key := InputEventKey.new()
+		key.keycode = KEY_SPACE
+		report["key_is_ui_accept"] = key.is_action("ui_accept")
+		event = key
+	event.set("pressed", true)
+	viewport.push_input(event, true)
+	await process_frame
+	report["active_after_input_down"] = not stop.disabled and report["button_down_count"] == 1 and report["pressed_count"] == 0
+	event.set("pressed", false)
+	if event is InputEventMouseButton:
+		event.button_mask = 0
+	viewport.push_input(event, true)
+	await process_frame
+	return report["button_down_count"] == 1 and report["pressed_count"] == 1 and report["input_down_count"] == 1 and report["input_up_count"] == 1
+
 func manual_stop():
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup != null:
 		setup.hide()
 	EditorInterface.set_main_screen_editor("AI Chat")
+	if not OS.get_environment("SEMANTIC_STOP_INPUT").is_empty():
+		root.size = Vector2i(1440, 1000)
+		await process_frame
+		await process_frame
 	dock.find_child("ChatInput", true, false).text = "highlight_tabs"
 	dock.find_child("Send", true, false).pressed.emit()
-	var deadline := Time.get_ticks_msec() + 30000
+	var deadline := Time.get_ticks_msec() + (30000 if OS.get_environment("SEMANTIC_STOP_INPUT").is_empty() else 10000)
 	while not FileAccess.file_exists("res://server-waiting") and Time.get_ticks_msec() < deadline:
 		var dialog = root.find_child("AIFileApproval", true, false)
 		if dialog and dialog.visible:
@@ -37,6 +98,7 @@ func manual_stop():
 			dialog.confirmed.emit()
 		await process_frame
 	if not FileAccess.file_exists("res://server-waiting"):
+		print("SEMANTIC_STOP_SETUP_FAILURE " + chat_text())
 		push_error("Delayed highlighted response not reached")
 		quit(1)
 		return
@@ -44,7 +106,14 @@ func manual_stop():
 	var report := {"overlay_before": root.find_child("AIEditorHighlight", true, false) != null, "stop_was_enabled": not stop.disabled}
 	stop.button_down.connect(func(): stop_started = Time.get_ticks_usec())
 	tracking_stop = true
-	if OS.get_environment("SEMANTIC_STOP_SIGNAL") == "1":
+	var input_mode := OS.get_environment("SEMANTIC_STOP_INPUT")
+	if not input_mode.is_empty():
+		if not await simulated_stop_input(stop, input_mode, report):
+			push_error("Synthesized Stop input did not traverse the button: " + JSON.stringify(report))
+			FileAccess.open("res://stop-report.json", FileAccess.WRITE).store_string(JSON.stringify(report))
+			quit(1)
+			return
+	elif OS.get_environment("SEMANTIC_STOP_SIGNAL") == "1":
 		await create_timer(0.25).timeout
 		stop_started = Time.get_ticks_usec()
 		stop.pressed.emit()
@@ -68,7 +137,8 @@ func manual_stop():
 	report["server_released_at_recovery"] = FileAccess.file_exists("res://server-released")
 	tracking_stop = false
 	report["frame_gap_seconds"] = max_frame_gap / 1000000.0
-	deadline = Time.get_ticks_msec() + 103000
+	var release_wait := 103000 if input_mode.is_empty() else (OS.get_environment("SEMANTIC_STOP_DELAY").to_int() + 3) * 1000
+	deadline = Time.get_ticks_msec() + release_wait
 	while not FileAccess.file_exists("res://server-response-finished") and Time.get_ticks_msec() < deadline:
 		await process_frame
 	await create_timer(0.3).timeout
@@ -116,6 +186,22 @@ func _run():
 	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-semantic"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "mock-key"
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	if not OS.get_environment("SEMANTIC_STOP_INPUT").is_empty():
+		# Route hover using viewport coordinates rather than a native window
+		# manager, which supplies no window-under-pointer state in headless mode.
+		root.gui_embed_subwindows = true
+		# Programmatic settings must finish their automatic model-list refresh
+		# against the local fixture before Send can start the delayed request.
+		var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
+		key.text_changed.emit(key.text)
+		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+		var ready_deadline := Time.get_ticks_msec() + 10000
+		while (backend.disabled or not "模型列表已获取" in status.text) and Time.get_ticks_msec() < ready_deadline:
+			await process_frame
+		if dock.find_child("Send", true, false).disabled or not "模型列表已获取" in status.text:
+			push_error("Send remained disabled after local model discovery")
+			quit(1)
+			return
 	if OS.get_environment("SEMANTIC_MANUAL_STOP") == "1":
 		await manual_stop()
 		return

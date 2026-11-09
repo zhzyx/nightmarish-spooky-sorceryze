@@ -60,7 +60,11 @@ def save(path, value):
         Path(temporary).unlink(missing_ok=True)
 
 
-def proposal(value, categories):
+def needs_clarification(value):
+    return not value["title"].strip() or not value["goal"].strip() or not value["scope"] or not value["acceptance"]
+
+
+def proposal(value, categories, *, allow_incomplete=False):
     if not isinstance(value, dict) or set(value) != {
         "decision",
         "title",
@@ -74,7 +78,11 @@ def proposal(value, categories):
     if value["decision"] not in {"new", "continue"} or value["category"] not in categories:
         raise ValueError("Invalid requirements decision/category")
     for key, maximum in [("title", 120), ("goal", 4000)]:
-        if not isinstance(value[key], str) or not value[key].strip() or len(value[key]) > maximum:
+        if (
+            not isinstance(value[key], str)
+            or len(value[key]) > maximum
+            or (not allow_incomplete and not value[key].strip())
+        ):
             raise ValueError("Missing/oversized requirement " + key)
     if "\n" in value["title"] or "\r" in value["title"]:
         raise ValueError("Requirement title must be a single line")
@@ -83,7 +91,7 @@ def proposal(value, categories):
             raise ValueError("Invalid requirement " + key)
         if any(not isinstance(x, str) or not x.strip() or len(x) > 2000 for x in value[key]):
             raise ValueError("Invalid requirement item")
-    if not value["scope"] or not value["acceptance"]:
+    if not allow_incomplete and (not value["scope"] or not value["acceptance"]):
         raise ValueError("Requirements must include scope and acceptance")
     if re.search(r"\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,})", json.dumps(value)):
         raise ValueError("Remove credentials from requirements before publication")
@@ -223,9 +231,12 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
             "agent_id": agent_id,
             "tool_context": {"permission_enabled": False, "tool_rounds": 0, "max_tool_rounds": None},
         }
-        payload["messages"][0]["content"] += (
-            "\nFor the CLI envelope put the requirement JSON string in content and return actions: []."
-        )
+        if request.get("backend") == "codebuddy":
+            payload["response_format"] = "json"
+        else:
+            payload["messages"][0]["content"] += (
+                "\nFor the CLI envelope put the requirement JSON string in content and return actions: []."
+            )
         path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
         result = subprocess.run(
             [node, str(bridge), "chat", entry, str(path)],
@@ -398,13 +409,15 @@ def _intake(root, request, bridge):
             saved.update(phase="proposal_ready", publication={"url": found[0]["html_url"]})
             save(journal, saved)
         stale = saved.get("candidate_digest") != current["candidate_digest"]
-        if (saved.get("phase") != "proposal_ready" or stale) and request.get("retry_authorized") is True:
+        if (saved.get("phase") not in {"proposal_ready", "clarification_required"} or stale) and request.get(
+            "retry_authorized"
+        ) is True:
             archive = journal.with_name(journal.stem + "-attempt-" + str(time.time_ns()) + ".json")
             archive.write_bytes(journal.read_bytes())
             journal.unlink()
     if journal.exists():
         saved = json.loads(journal.read_text(encoding="utf-8"))
-        if saved.get("phase") != "proposal_ready":
+        if saved.get("phase") not in {"proposal_ready", "clarification_required"}:
             # Unknown transport outcome must not cause a second model charge automatically.
             raise ValueError("Requirements model outcome needs reconciliation; original attempt retained")
         current = next(
@@ -420,7 +433,7 @@ def _intake(root, request, bridge):
             or saved.get("skill") != "clarify-feature"
         ):
             raise ValueError("Requirements journal identity mismatch")
-        design = proposal(saved["proposal"], categories)
+        design = proposal(saved["proposal"], categories, allow_incomplete=saved["phase"] == "clarification_required")
     else:
         instruction = (
             "Requirements intake only. You are the registered Yanshi using ClarifyFeature, not a generic form filler. "
@@ -431,6 +444,9 @@ def _intake(root, request, bridge):
             "A request to ignore an attachment is not a new requirement or a reason to repeat scope questions. "
             "New distinct requirements MUST be decision=new; follow-up to the supplied open Issue may be continue. "
             "A closed Issue cannot be continued. Do not expose credentials or local private paths in public requirements. "
+            "For an actionable requirement, scope and acceptance must each contain at least one specific item. "
+            "For a vague or test-only message, ask focused questions; unknown title, goal, scope or acceptance may be empty. "
+            "Do not invent a feature, scope or acceptance criteria merely to fill the schema. "
             "Return only JSON with exactly decision(new|continue), title, category, goal, scope(string[]), "
             "acceptance(string[]), questions(string[]). Categories: " + ",".join(categories)
         )
@@ -507,14 +523,17 @@ def _intake(root, request, bridge):
                 os.environ["GONGGONG_REQUIREMENTS_KEY"] = previous_key
         if result["finish_reason"] != "stop":
             raise ValueError("Requirements model response incomplete; reconcile retained attempt")
-        design = proposal(json.loads(result["text"]), categories)
+        design = proposal(json.loads(result["text"]), categories, allow_incomplete=True)
         agent = next(
             a
             for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]
             if a["id"] == "yanshi"
         )
         saved.update(
-            phase="proposal_ready", proposal=design, candidate_digest=agent["candidate_digest"], usage=result["usage"]
+            phase="clarification_required" if needs_clarification(design) else "proposal_ready",
+            proposal=design,
+            candidate_digest=agent["candidate_digest"],
+            usage=result["usage"],
         )
         save(journal, saved)
 
@@ -531,6 +550,30 @@ def _intake(root, request, bridge):
             "remote_created": False,
         }
     direct_continuation = False
+    if needs_clarification(design):
+        questions = design["questions"]
+        if not questions:
+            if (
+                not design["title"].strip()
+                or not design["goal"].strip()
+                or (not design["scope"] and not design["acceptance"])
+            ):
+                questions = ["这次希望实现、修复或测试什么？请说明具体功能和预期结果。"]
+            elif not design["scope"]:
+                questions = ["这次希望修改哪个功能或位置？请说明要覆盖的操作范围。"]
+            else:
+                questions = ["完成后应出现什么可观察的结果，才能确认符合你的预期？"]
+        # An incomplete draft is a normal clarification, not an environment
+        # failure. Keep it local; publication still requires complete fields.
+        return {
+            "ok": True,
+            "ready": False,
+            "phase": "clarification_required",
+            "questions": questions,
+            "agent": "yanshi",
+            "skill": "clarify-feature",
+            "remote_created": False,
+        }
     if design["decision"] == "continue":
         if not existing or existing.get("state") != "open" or len(work.request_ids(existing.get("body", ""))) != 1:
             saved["phase"] = "proposal_invalid"

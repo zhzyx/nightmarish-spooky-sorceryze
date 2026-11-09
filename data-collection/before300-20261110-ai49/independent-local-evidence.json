@@ -1,0 +1,392 @@
+{
+  "issue": 49,
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "mode": "Independent read-only local evidence audit; no rebuild, rerun or network",
+  "conclusion": "Actual private macOS editor build and ordinary isolated native result are evidenced and binary hashes match. They do not establish Windows runtime_source/bootstrap acceptance, real-provider acceptance, original PROCESS_EXIT root cause or old-window recovery. The two current fixture files are newer than the latest native receipt, so exact-current-fixture execution is not evidenced yet.",
+  "evidence_discovery": "rg --files <task-private>/before300-ai49-build; actual policy artifact is policy-source-pins.json, no pins.json assumed.",
+  "build": {
+    "preparation": {
+      "reason": "Three native C++ files changed; need actual private editor compilation. Clone own previous objects; SCons revalidates inputs.",
+      "base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+      "candidate": "staged20file integration, no main acceptance",
+      "command": "scons platform=macos arch=arm64 target=editor dev_build=no tests=no debug_symbols=no vulkan=no accesskit=no optimize=speed_trace lto=none -j4",
+      "cache_copy": "APFS independent copy of own previous633MiB bin/obj and SCons signatures; source unchanged",
+      "installation_changed": false,
+      "result": "Actual private native compile starting, source frozen; independent source review follows terminal cleanup",
+      "recorded_at": "2026-11-09T17:37:49.735000+00:00",
+      "source_sha256": {
+        "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+        "editor/docks/gonggong_panel.cpp": "e8d84601794a3fe38de8800603abf3bdd8dfeb79c64f9f1ef08c158817dcf81b",
+        "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033"
+      },
+      "started_at": "2026-11-09T17:42:24.046015+00:00"
+    },
+    "initial_failure": {
+      "artifact": "compile.log",
+      "observed": "First attempt could not find <task-private>/daqian-godot-build/bin/scons; this is not a successful compile receipt."
+    },
+    "retry": {
+      "artifact": "compile-retry.log",
+      "observed": "Log compiles ai_chat_gonggong.cpp and gonggong_panel.cpp and links bin/godot.macos.editor.arm64; ends scons: done building targets; elapsed 10.23s.",
+      "platform": "macos",
+      "arch": "arm64",
+      "target": "editor"
+    },
+    "host_boundary_rebuild": {
+      "artifact": "compile-host-boundary.log",
+      "observed": "Log recompiles gonggong_panel.cpp, relinks editor library and binary; ends scons: done building targets; elapsed 7.01s.",
+      "native_panel_source_sha256": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc"
+    },
+    "actual_binary": {
+      "path": "<repository>/.worktrees/before300-ai49-handoff-20261110/bin/godot.macos.editor.arm64",
+      "sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+      "matches_latest_native_receipt": true,
+      "mtime_ns": 1794248198902307727
+    },
+    "native_source_binding": {
+      "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+      "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+      "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033"
+    },
+    "binding_limits": "Build log, actual binary SHA and current native source hashes corroborate the reviewed private candidate. Log does not itself embed all source hashes; no clean full-tree reproducibility or installed/public artifact claim is made."
+  },
+  "ordinary_mac_native": {
+    "artifact": "native-intake-host-boundary.json",
+    "process_log_matches_json": true,
+    "report": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "windows_owned_process_cleanup": "not applicable",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+      "fixture_events_imported": false
+    },
+    "stdout_marker": "REQUIREMENTS_AGENT_NATIVE_OK present",
+    "debug_readback": {
+      "request_records": 19,
+      "requirements_journals": 11,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ]
+    },
+    "stderr_diagnostics_retained": [
+      "Could not create child process: System32/WindowsPowerShell/v1.0/powershell.exe",
+      "Plugin is not attached to debugger",
+      "Renderer/text/RichTextLabel RID and ObjectDB allocations reported leaked at exit"
+    ],
+    "meaning": "The ordinary headless fixture reports success and genuine local read-tool roundtrip with synthetic loopback model/GitHub. Not a zero-diagnostic run, real-service verification, Windows process cleanup pass or runtime-source deployment/recovery pass.",
+    "fixture_freshness": {
+      "native_receipt_mtime_ns": 1794248536147637356,
+      "current_sources": {
+        "tests/editor/requirements_intake.gd": {
+          "mtime_ns": 1794248830255242059,
+          "newer_than_native_receipt": true
+        },
+        "tests/editor/run_requirements_intake.py": {
+          "mtime_ns": 1794248830255466973,
+          "newer_than_native_receipt": true
+        }
+      },
+      "limitation": "Both current fixture files were modified after this receipt. Their present hashes are reviewed, but this run cannot be attributed to their exact latest versions. A targeted current-fixture rerun remains pending; this reviewer did not run it."
+    }
+  },
+  "acceptance_checklist": [
+    {
+      "id": "49-local-build",
+      "design_lines": [
+        7,
+        29,
+        31,
+        94,
+        117
+      ],
+      "acceptance": "Build changed native host and check ordinary request/intake/read/response transitions.",
+      "state": "verified_local_mac_with_limits",
+      "evidence": [
+        "compile-retry.log",
+        "compile-host-boundary.log",
+        "native-intake-host-boundary.json"
+      ],
+      "limits": "Latest actual mac binary is bound; current GD/Python fixture changes postdate run. Windows x64 build is pending."
+    },
+    {
+      "id": "49-intake-state",
+      "design_lines": [
+        11,
+        29,
+        100,
+        102,
+        104
+      ],
+      "acceptance": "Preserve intake supplements/queue, reuse correct Issue, cancel before publication, recover explicit model/GitHub retries, clarify incomplete drafts without publishing or replacing bindings.",
+      "state": "verified_local_mac_fixture_behavior",
+      "evidence": [
+        "native-intake-host-boundary.json",
+        "review.json",
+        "delta-review.json"
+      ],
+      "limits": "Nine ordinary cases, 11 requirements calls/7 development calls/1 native read/5 synthetic Issues/71 events. Exact latest fixture rerun and Windows branch remain pending; no production GitHub writes."
+    },
+    {
+      "id": "49-readonly-data",
+      "design_lines": [
+        100,
+        102,
+        104,
+        108,
+        110
+      ],
+      "acceptance": "Incomplete requirement schema remains strict for type/length/credentials; JSON data mode disables native tools and rejects actions.",
+      "state": "verified_local_static_and_targeted_tests",
+      "evidence": [
+        "review.json",
+        "host-boundary-delta.json"
+      ],
+      "limits": "Earlier independent targeted JSON tests passed and unchanged corresponding production source was hash-bound. Historical real CodeBuddy smokes apply to their own source only, not this full candidate."
+    },
+    {
+      "id": "49-windows-bootstrap",
+      "design_lines": [
+        19,
+        21,
+        29,
+        92,
+        94
+      ],
+      "acceptance": "Windows missing-runtime configuration, governed native selector UTF8/non-ASCII paths, Python/Node/Git/gh activation and restoration of the original request.",
+      "state": "pending_windows",
+      "evidence": [
+        "delta-review.json",
+        "host-boundary-delta.json"
+      ],
+      "limits": "Source reviewed; actual PowerShell5.1 parsing/execution, compiled Windows PE selector stdin/output, installed-host policy rejection and native runtime_source recovery are not exercised by mac runtime_setup_and_resume=false."
+    },
+    {
+      "id": "49-runtime-rollback",
+      "design_lines": [
+        21,
+        29,
+        33,
+        117
+      ],
+      "acceptance": "Checksum/probe validation, self-check failure restoration, explicit rollback and #91 interruption/journal recovery; editor launcher allows missing Python/Node.",
+      "state": "pending_windows_exact_integration",
+      "evidence": [
+        "delta-review.json"
+      ],
+      "limits": "#91 source reuse and combined seam statically reviewed; separate historical #91 execution is not an exact combined #49 Windows pass. Strict10-case Windows simulation and owned-process cleanup still required."
+    },
+    {
+      "id": "49-github-install-auth",
+      "design_lines": [
+        92,
+        94,
+        96
+      ],
+      "acceptance": "gh fixed official package verification, discovery, GitHub account authorization/repository access and resume only after actual checks.",
+      "state": "pending_windows_and_actual_account_acceptance",
+      "evidence": [
+        "host-boundary-delta.json"
+      ],
+      "limits": "Current host/helper/static pin review is verified; ordinary mac GitHub repair uses synthetic fixtures. Historical gh download/login record is not current-account or current-candidate evidence; no new download or login was performed."
+    },
+    {
+      "id": "49-original-visible-service",
+      "design_lines": [
+        5,
+        7,
+        38,
+        40,
+        42,
+        44,
+        58,
+        86
+      ],
+      "acceptance": "Representative question through the actual installed Windows visible AI panel, framework/bridge and real answer, or precise external failure evidence.",
+      "state": "unknown_original_failure_and_pending_current_windows_service",
+      "evidence": [
+        "design-docs/ai-chat-debug-20261104.md"
+      ],
+      "limits": "Original single real request ended PROCESS_EXIT with no completed response; its raw exit/stderr were not retained. Later independent real-provider successes cannot identify its unique cause. User previously skipped remaining original visible/service validation; skip is not a pass. Do not reopen stopped queue or repeat provider call without the current authorized scope."
+    },
+    {
+      "id": "49-process-diagnostics",
+      "design_lines": [
+        51,
+        53,
+        66,
+        71,
+        79
+      ],
+      "acceptance": "Retain safe useful exit diagnostics and request-file lifecycle, without leaking provider raw errors or credentials.",
+      "state": "historical_source_fix_verified_original_cause_unknown",
+      "evidence": [
+        "design-docs/ai-chat-debug-20261104.md"
+      ],
+      "limits": "Design records exit-code and lifetime fixes with old-candidate independent/Windows fixtures and historical main delivery. Those fix distinct local defects; causation for the original PROCESS_EXIT remains unknown and is not inferred from the current mac normal fixture."
+    },
+    {
+      "id": "49-old-window-queue",
+      "design_lines": [
+        49,
+        58,
+        79,
+        86,
+        88
+      ],
+      "acceptance": "Recovery of the previously interrupted window/check message/paused queue.",
+      "state": "unknown_user_stopped_or_skipped",
+      "evidence": [
+        "design-docs/ai-chat-debug-20261104.md"
+      ],
+      "limits": "Original recovery was stopped by Escape; test/check message remained paused. Current work preserves that stopped window/queue. New-session synthetic recovery is not proof of restoring that old window; do not claim complete or resume it in this audit."
+    },
+    {
+      "id": "49-delivery",
+      "design_lines": [
+        31,
+        75,
+        117
+      ],
+      "acceptance": "Review exact final main-based candidate, pass applicable CI, publish/read back main and resolve whole-Issue acceptance or explicitly map remaining scope.",
+      "state": "pending_delivery",
+      "evidence": [
+        "host-boundary-delta.json"
+      ],
+      "limits": "This private candidate is not main delivery/Issue closure. Root is progressing #91 CI then latest-main #49 integration; changed baseline requires affected exact-candidate checks. No remote read/write was performed in this audit."
+    },
+    {
+      "id": "49-out-of-scope",
+      "design_lines": [
+        17,
+        21,
+        31
+      ],
+      "acceptance": "Full cross-platform runtime deployment and automatic cross-restart session environment restoration.",
+      "state": "outside_original_windows_scope",
+      "evidence": [
+        "design-docs/ai-chat-debug-20261104.md"
+      ],
+      "limits": "Do not mark these done; #47 and appropriate remaining scope retain tracking."
+    }
+  ],
+  "current_reviewed_source_sha256": {
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+    "tools/run_gonggong_config_agent.ps1": "1c184443879a83a74bf50034f69361979e62c995182e7c9681868146ffd2333a",
+    "tools/gonggong_runtime_policy.ps1": "a4f379e83579ceb581fcb1e31eda114ae338bba4910f66ca35a42d02fdb3c318",
+    "tools/configure_gonggong_runtime.ps1": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9"
+  },
+  "design": {
+    "path": "design-docs/ai-chat-debug-20261104.md",
+    "sha256": "81184724b88540131514cd0e72f87db484972eb2b5438425f5836627ebaf44eb",
+    "read": "Full design including original acceptance, later scope, historical evidence, user skip and current handoff"
+  },
+  "policy_pin_check": "All ten policy-source-pins.json hashes match current raw files; pointer/frozen governance sources unchanged.",
+  "artifacts": {
+    "preparation.json": {
+      "path": "<task-private>/before300-ai49-build/preparation.json",
+      "sha256": "a563dd4528d14061ab92a5ccde868a8616cc8c3798200f1c25c4439acc29eb72",
+      "size": 1134
+    },
+    "compile.log": {
+      "path": "<task-private>/before300-ai49-build/compile.log",
+      "sha256": "fd43c797b453fb73492d3985affe2997400653f8155f51a11037d704fcb56b39",
+      "size": 76
+    },
+    "compile-retry.log": {
+      "path": "<task-private>/before300-ai49-build/compile-retry.log",
+      "sha256": "46537d2104b5c71705df1fb551edad5e856efa366ab7aec73668c17f871adbc3",
+      "size": 14005
+    },
+    "compile-host-boundary.log": {
+      "path": "<task-private>/before300-ai49-build/compile-host-boundary.log",
+      "sha256": "d6368138475c806b6098f7fbbb0721d39f3be2ccc77c1af3104202f6afcc8f3b",
+      "size": 725
+    },
+    "policy-source-pins.json": {
+      "path": "<task-private>/before300-ai49-build/policy-source-pins.json",
+      "sha256": "593edf00ce2e1c479dfcb08aa90d976f7216f39b4eac760416f6bf570a9327ca",
+      "size": 1052
+    },
+    "native-intake.json": {
+      "path": "<task-private>/before300-ai49-build/native-intake.json",
+      "sha256": "592d7c552fb22acefc9cbe1c16b3829ebc452a1252334ab8eb433b9a95ea1c34",
+      "size": 975
+    },
+    "native-intake-after91.json": {
+      "path": "<task-private>/before300-ai49-build/native-intake-after91.json",
+      "sha256": "2327f26d6754f4cce1822cdbc1757fba993eb79beff72ecb96f02b25275099e4",
+      "size": 1092
+    },
+    "native-intake-host-boundary.json": {
+      "path": "<task-private>/before300-ai49-build/native-intake-host-boundary.json",
+      "sha256": "9bceb8255c419df9ab5cbbde6ae1ef5adc8e75371444fa8fe378b1b646ee07eb",
+      "size": 1092
+    },
+    "native-intake-host-boundary.process.log": {
+      "path": "<task-private>/before300-ai49-build/native-intake-host-boundary.process.log",
+      "sha256": "7a1c1bff9a0ca13c6789f6ea039609aedae1aa5e63477c0cdd3adbe65644a5b9",
+      "size": 986
+    },
+    "native-intake-host-boundary.stdout.log": {
+      "path": "<task-private>/before300-ai49-build/native-intake-host-boundary.stdout.log",
+      "sha256": "4490a24616b4fca9c588f32ee4d9e6ff7eb10fd747645df37a0bf8881dedcf33",
+      "size": 1798
+    },
+    "native-intake-host-boundary.stderr.log": {
+      "path": "<task-private>/before300-ai49-build/native-intake-host-boundary.stderr.log",
+      "sha256": "aebfd91b0a57352a45eb7a6f2b6cbd5d40068d32df015c46b839507caa1f50dd",
+      "size": 556
+    },
+    "native-intake-host-boundary.debug.json": {
+      "path": "<task-private>/before300-ai49-build/native-intake-host-boundary.debug.json",
+      "sha256": "aac55cf2e5a8431722976772cb7944d512bcdb365b7a94e53504931b23f67ac7",
+      "size": 21123
+    }
+  },
+  "actions_not_taken": [
+    "No source/index/framework edits",
+    "No rebuild or test rerun",
+    "No Windows/PowerShell/provider/desktop/oldqueue actions",
+    "No network/publication/main/Issue changes"
+  ],
+  "overall_acceptance": "Not complete; exact Windows runtime-source candidate and current latest fixture execution remain pending, original service root cause and old-window recovery remain unknown.",
+  "original_receipt_sha256": "ca920a30b45ae38ce522d12f1ca9f392501a12c50239c039815f364332f84c8f"
+}

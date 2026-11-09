@@ -1,0 +1,189 @@
+{
+  "issue": 49,
+  "related_issues": [
+    51,
+    92
+  ],
+  "reviewer": "/root/sinan_2501840d1684dddf",
+  "implementation_authorship": false,
+  "mode": "independent read-only narrow source compatibility review",
+  "workspace": "<repository>/.worktrees/before300-final-62e450-20261110",
+  "observed_utc": "2026-11-09T20:59:08.356604+00:00",
+  "baseline": "62e450e1897c9c90a19664363f851d4b361eb958",
+  "previous_baseline": "a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd",
+  "trusted_main_pr": 684,
+  "authorization_ref": "user-chat-20261109-sail-before300",
+  "scope": "Only compatibility of trusted a681..62e450 design-finalization/dependency-acceptance interfaces with previously reviewed staged #49/#92. No repeat of full a681 review; no historical or unrelated trusted-main certification.",
+  "status": "no actionable integration findings",
+  "findings": [],
+  "source_sha256": {
+    "customizations/components/godot-host/bridge.py": "c98b6bf6d536c66ea8b4f0c3030d23cc314548e4b76504cc69eefb7c24f28e94",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/components/godot-host/test_bridge.py": "819e63b743d1380f0bf1dbc126392ccd3c79cc58b9ea581b0797cafc3ec044a5",
+    "editor/docks/ai_chat_dock.cpp": "465164a5c924cca426c39b14d939a86c346b82e243a65925a831a3dff9cb363a",
+    "editor/docks/ai_chat_dock.h": "fa1f0f85096264cb7ae0da55e1b9be5e37961a3e932415b05b4ce9c9d51841e4",
+    "editor/docks/ai_chat_engine_candidate.cpp": "65f63547dfff7ac5a6d34e5cbafbd0b8447f6a019121fd493024e593d2386c13",
+    "editor/docks/ai_chat_gonggong.cpp": "81ebd7fe7a9ef40f82c1a4f998e3e6317fb88f2ac2b4d1381db86900ecc5b0cf",
+    "editor/docks/ai_chat_host_runtime.h": "9af46de906b2b419e9bd0df8a387ee2251feefee8a0392cc04235977ce149044",
+    "editor/docks/ai_chat_sub_agents.cpp": "8ea2923bf2677faff3298fefd40dde93cbd2987dc0600bcc5cce9148ea7995af",
+    "editor/docks/ai_chat_sub_agents.h": "93006b30f18c15476e7b95270e26f6ca8774f3159e50c5632c1c2c8e0979234f",
+    "editor/docks/ai_chat_tools.cpp": "99d86212ded0b5d695a1892d3dcf80ae02354af5fb4bf2f1e125915bca236b2c",
+    "editor/docks/ai_chat_tools.h": "0929ace16769052db49f435dfb7ccd62b8d6bd15fef03caf3b67b9a288adc5f2",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "tests/editor/run_runtime_setup.py": "21376b769763a08d27b06326917c3cbe6c268f721558c27dae371d3406d572a4",
+    "tests/editor/run_runtime_setup_simulation.py": "8dc36ecd28704ad990080cc9bd63c5b9bb59c53cd685ea77c28cdddbd2ff9e69",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9",
+    "tests/editor/test_codebuddy_bridge.js": "7b0eac52909160abd56eaf69f73b3de0419ae132c1ba8fc3125f5ad744b1bf65",
+    "tools/codebuddy_cli/godot_bridge.js": "462e0ffaf43ab7a12b340cdaa5134a692ed80756d54a86738f3508b654cd11f0",
+    "tools/configure_gonggong_runtime.ps1": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+    "tools/godot_parallel/runner.mjs": "ce76be4da10d526f5a9c766298e8d91af0c0def9b5d79c8d275558efb35243c3",
+    "tools/gonggong_runtime_policy.ps1": "7f112b51fa15b6bfefd274697e1b731cf8d2e3f28513d93e3c3c6d3186259d52",
+    "tools/install_gonggong_github_cli.ps1": "b5b4cc79ba21ed5f2b9c3313f7a23380443cf48a5d90cf60522a6b9e6c8c4133",
+    "tools/run_gonggong_config_agent.ps1": "1c184443879a83a74bf50034f69361979e62c995182e7c9681868146ffd2333a"
+  },
+  "policy_pins_sha256": {
+    "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
+    "framework/framework-manifest.json": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+    "framework/foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
+    "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "framework/GOVERNANCE.md": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724",
+    "framework/specs/model-runtime.md": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a",
+    "framework/upstream/yuanheng/core.md": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202",
+    "framework/upstream/yuanheng/agents/yuanheng.md": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b",
+    "customizations/components/godot-host/README.md": "66a0acf47cbef976d4572bfd4e8f7e3bbb26e534e41860c20db435c880d1c434"
+  },
+  "input_mapping": {
+    "prior_review": "<private-prior-review>/review.json",
+    "prior_review_sha256": "b776caf4364d84f525ae95de4fd04a5a43a8d1460903efc0299e54e3e0a85e3b",
+    "main_interfaces_exact_HEAD": {
+      "editor/docks/ai_chat_dock.cpp": true,
+      "editor/docks/ai_chat_dock.h": true,
+      "editor/docks/ai_chat_sub_agents.cpp": true,
+      "editor/docks/ai_chat_sub_agents.h": true,
+      "tools/godot_parallel/runner.mjs": true
+    },
+    "main_staged_path_overlap": [],
+    "changed_existing_fingerprints_vs_prior": {
+      "editor/docks/ai_chat_dock.cpp": {
+        "prior": "66de8538cbee70b5ca4e74b019d2c0a2b12b4db259c957a44d94db7b02076eea",
+        "current": "465164a5c924cca426c39b14d939a86c346b82e243a65925a831a3dff9cb363a"
+      },
+      "editor/docks/ai_chat_dock.h": {
+        "prior": "6adcd069e69f35f01b2f3c43111ede2ac11eb996285dfdfb7dac4553dc238a42",
+        "current": "fa1f0f85096264cb7ae0da55e1b9be5e37961a3e932415b05b4ce9c9d51841e4"
+      },
+      "editor/docks/ai_chat_sub_agents.cpp": {
+        "prior": "da93a6c58ef01d26e579dd43f53625d2e5cc50016bd588da2a2125d58fec0203",
+        "current": "8ea2923bf2677faff3298fefd40dde93cbd2987dc0600bcc5cce9148ea7995af"
+      }
+    },
+    "unchanged_prior_owned_source": true,
+    "policy_pins_match_prior": true,
+    "worktree_matches_index_for_reviewed_source": true,
+    "stop92_tests_sha256": {
+      "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+      "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7"
+    },
+    "staged_paths_count": 119,
+    "full_staged_diff_sha256": "75b446d8feb434bc986f77144e5c0ee736927659430096c70858d19e3467551c",
+    "a681_to_62e450_diff_sha256": "f0df2de31baeed42c94d335822b3dc96813e5073478619d8296510f3e7dd46e4",
+    "index_entries_sha256": "7895a2890df10ecc60753b29027503d68379702c035c3d9dca1ef08745555c58",
+    "unchanged_function_bodies_vs_a681": {
+      "AIChatDock::_stop": "4c2ca5281d1b38862de49a4d7957763263d0caf5ed1dfda2ed0aea1059074323",
+      "AIChatDock::AIChatDock": "031ca2d2fbc2f5dc4a42f35dcfccc2ec5c514b4fc163a81de3a82779c00924d9"
+    }
+  },
+  "compatibility_assessment": [
+    {
+      "mapping": [
+        "editor/docks/ai_chat_dock.cpp:1771",
+        "editor/docks/ai_chat_dock.cpp:2171",
+        "editor/docks/ai_chat_sub_agents.cpp:407",
+        "editor/docks/ai_chat_sub_agents.cpp:427"
+      ],
+      "assessment": "New readiness/manual-attempt checks are limited to non-consultation design children; ordinary root intake and #49 clarification/configuration resume do not acquire a design-child prerequisite. Read-only consultation on a production child preserves its production terminal receipt and acceptance. The new true busy transition clears prior production acceptance/receipt before a new attempt."
+    },
+    {
+      "mapping": [
+        "editor/docks/ai_chat_sub_agents.cpp:893",
+        "editor/docks/ai_chat_sub_agents.cpp:923",
+        "editor/docks/ai_chat_sub_agents.cpp:965",
+        "editor/docks/ai_chat_sub_agents.cpp:1280",
+        "editor/docks/ai_chat_sub_agents.cpp:1368"
+      ],
+      "assessment": "Design approval is bound to parent workspace, Issue, request and document SHA256; predecessor acceptance is bound to its existing terminal file hash and saved operator/evidence. Parallel dispatch now explicitly reads request/Issue/workspace from the parent root, supplies declared order plus designSha256, and checks matching receipt identity. No #49 source writes overlap these interfaces."
+    },
+    {
+      "mapping": [
+        "editor/docks/ai_chat_dock.h:673",
+        "editor/docks/ai_chat_sub_agents.cpp:1029",
+        "tools/godot_parallel/runner.mjs:48",
+        "tools/godot_parallel/runner.mjs:60",
+        "tools/godot_parallel/runner.mjs:74"
+      ],
+      "assessment": "Existing two-argument _spawn_work_order_agents calls remain source compatible via the default Dictionary approval argument. The runner carries the optional designSha256 through jobs/tickets/reporting and rechecks exact design bytes in source/worker worktrees. Jobs without that optional field keep the existing unversioned compatibility path. None of the staged #49 runtime setup scripts or CodeBuddy JSON requirement transport calls the parallel runner."
+    },
+    {
+      "mapping": [
+        "editor/docks/ai_chat_dock.cpp:6851",
+        "editor/docks/ai_chat_sub_agents.cpp:215",
+        "editor/docks/ai_chat_sub_agents.cpp:1418",
+        "tests/editor/ai_chat_semantic.gd:25",
+        "tests/editor/ai_chat_semantic.gd:82"
+      ],
+      "assessment": "The complete _stop reset/cancellation body is byte-identical to a681, including design-batch cancellation, request/session generation increments, issue-guide/igniter cancellation, message clearing and delayed-result isolation. _cancel_design_batch and deferred child-finish generation checks are unchanged by new main. Stop92 synthesized private-viewport input and delayed-response recovery source hashes remain exactly the reviewed versions. This is source compatibility only, not a current native input result."
+    },
+    {
+      "mapping": [
+        "editor/docks/ai_chat_dock.cpp:7086",
+        "editor/docks/ai_chat_dock.cpp:7237",
+        "editor/docks/ai_chat_sub_agents.cpp:738",
+        "editor/docks/ai_chat_dock.h:655"
+      ],
+      "assessment": "Constructor body is byte-identical to a681. Its existing _build_sub_agent_ui call now creates and owns the design dialog/summary/evidence widgets; their pointers default to nullptr in the class and are initialized before user callbacks can run. The new widgets attach to the dock without calling session dispatch during construction. Existing GongGongPanel construction and configuration callback wiring remain intact."
+    },
+    {
+      "mapping": [
+        "editor/docks/ai_chat_gonggong.cpp:302",
+        "editor/docks/ai_chat_gonggong.cpp:1109",
+        "editor/docks/ai_chat_gonggong.cpp:1296",
+        "customizations/components/godot-host/requirements_agent.py:230",
+        "tools/codebuddy_cli/godot_bridge.js:155"
+      ],
+      "assessment": "All previously reviewed #49 bytes, including incomplete-draft clarification, tool-free JSON requirements config and independent Windows setup/recovery paths, match the prior review. _start_igniter still rejects children, scheduled work and recovery turns; setup completion only resumes the current matching igniter/environment_setup state. New design controls do not create a path around these parent-bound restrictions."
+    }
+  ],
+  "performed_static_checks": [
+    "Read local AGENTS.md and Godot silent-verification policy.",
+    "Read a681..62e450 native and runner delta plus current staged native integration hunks and relevant surrounding functions.",
+    "Compared main/staged path sets; no intersection.",
+    "Compared reviewed source/index bytes and five main interface files with exact HEAD.",
+    "Recomputed thirty source fingerprints, ten policy pins, prior review digest, staged diff digest and index-entry digest.",
+    "Compared complete _stop and constructor bodies with a681; unchanged.",
+    "Inspected newly adjusted main design-batch/parallel-dispatch fixtures as source only."
+  ],
+  "execution_not_claimed": [
+    "No tests, builds, model/provider calls, native editor, desktop, downloads, network, publication or Issue actions run by reviewer.",
+    "Root owns current compilation, native intake, two Stop and parallel tests; their results are not attested here.",
+    "Prior a681 or Windows/main35b receipts remain scoped to their original sources; no current CI/main acceptance or Issue completion is certified."
+  ],
+  "limits": [
+    "Only compatibility around new trusted main interfaces reviewed.",
+    "Original PROCESS_EXIT/deadlock cause remains unknown.",
+    "User-skipped old-window/queue and physical display/input/provider acceptance remain outside this review.",
+    "Source and index digests are observations at review time; later evidence additions require root to bind the final full candidate."
+  ],
+  "writes": [
+    "<private-review-output>/review.json"
+  ],
+  "source_index_framework_edited": false,
+  "original_review_sha256": "cb8bff2a085c579551c625ee8f51a554f6ff734b6b0d6289d0d3c3889adc9de5"
+}

@@ -1,0 +1,102 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Read-only exact-current-fixture rerun receipt audit only; no execution or expanded source review",
+  "conclusion": "Latest GD/Python fixture freshness gap is closed for the ordinary macOS native scenario. Current reviewed fixture hashes predate the new receipt; actual binary matches receipt SHA. Windows bootstrap/runtime_source remains pending.",
+  "receipt": {
+    "path": "<task-private>/before300-ai49-build/native-intake-final-fixture.json",
+    "mtime_ns": 1794249471656336203,
+    "report": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "windows_owned_process_cleanup": "not applicable",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+      "fixture_events_imported": false
+    },
+    "process_log_identical": true,
+    "stdout_success_marker": true
+  },
+  "source_and_binary": {
+    "tests/editor/requirements_intake.gd": {
+      "sha256": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+      "mtime_ns": 1794248830255242059,
+      "precedes_receipt": true
+    },
+    "tests/editor/run_requirements_intake.py": {
+      "sha256": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+      "mtime_ns": 1794248830255466973,
+      "precedes_receipt": true
+    },
+    "bin/godot.macos.editor.arm64": {
+      "sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+      "mtime_ns": 1794248198902307727,
+      "precedes_receipt": true
+    }
+  },
+  "debug": {
+    "request_records": 19,
+    "requirements_journals": 11,
+    "catalog_requests": [
+      "/v1/models",
+      "/v1/models"
+    ],
+    "setup_reports_key_present": true
+  },
+  "diagnostics_limits": [
+    "stderr still reports absent WindowsPowerShell child process, unattached debugger, Canvas/CanvasItem/ObjectDB leaks; stdout reports text/font/RichTextLabel RID allocations leaked at exit. The fixture success is not a zero-diagnostic or leak-free assertion.",
+    "runtime_setup_and_resume=false; WindowsJob cleanup not applicable. No PowerShell, governed native PE selector, runtime activation/rollback or original-request Windows recovery pass is claimed.",
+    "Loopback model/GitHub fixtures only; no real provider/account/old-window acceptance."
+  ],
+  "acceptance_judgment": {
+    "can_close_now": false,
+    "remaining_required_current_technical_work": "Exact Windows build/PowerShell/native selector/runtime_source recovery and applicable combined #91 simulation/CI still pending, followed by exact latest-main integration and delivery readback. These are executable technical checks, not a new human decision.",
+    "old_skipped_items": "The design records the user explicitly skipped remaining original visible-window/recovery validation and stopped that old window/queue. Preserve those items as user-skipped/unknown. Do not resume or retry them and do not describe them as passed.",
+    "original_process_exit": "Its unique cause remains unknown. Existing safe diagnostic/lifetime fixes and later fixture/provider successes do not prove causality. The design original acceptance allowed documenting a service failure and continuing independent fixes; it does not require inventing a unique cause.",
+    "scope_completion_after_checks": "For the presently delegated source-fix plus simulation delivery scope, those previously skipped old-window/queue and unknown original-cause items do not themselves require another human decision or prevent scoped acceptance after all current required Windows/exact-candidate checks and delivery succeed. The closure receipt must explicitly preserve skipped/unknown history and avoid claiming real-provider or old-window success.",
+    "when_a_person_decision_is_required": "Only if root determines the actual current authority still requires reopening real installed-Windows visible/provider/account or old-window recovery acceptance, rather than the explicitly delegated source/simulation scope. That would be a concrete scope/interaction decision; this audit neither creates it nor closes the Issue.",
+    "whole_original_success_claim": false
+  },
+  "artifact_sha256": {
+    "native-intake-final-fixture.json": "9bceb8255c419df9ab5cbbde6ae1ef5adc8e75371444fa8fe378b1b646ee07eb",
+    "native-intake-final-fixture.process.log": "7a1c1bff9a0ca13c6789f6ea039609aedae1aa5e63477c0cdd3adbe65644a5b9",
+    "native-intake-final-fixture.debug.json": "13d025b36c0f7427e01be3dfe083a72908a7e33d3c540fe089fc4921cf5cfe0b",
+    "native-intake-final-fixture.stdout.log": "a8ef99ce9ed3e3cb4cec5c91fb742a5d7c6919da9fef45d506caa902c5d96559",
+    "native-intake-final-fixture.stderr.log": "aebfd91b0a57352a45eb7a6f2b6cbd5d40068d32df015c46b839507caa1f50dd"
+  },
+  "actions_not_taken": [
+    "No source/index/rule edits",
+    "No run/build/provider/desktop action",
+    "No Windows certification",
+    "No network/main publication/Issue closure"
+  ],
+  "original_receipt_sha256": "7c55f932b56ef717ef852125521585826169eacec21475286b8eb6e32b1820ef"
+}

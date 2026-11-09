@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-66b5bcdbc09994d45a01a4889b7429bb356ab536",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8cb2b86ee14ade43a7d2748bf59bdbde651ceb44fa8e52242bc8b24ebea4e651",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "delivery",
+    "detection_head": "a7b1a95439966292e7099db64c6ee78282889da2",
+    "context_sha256": "3bd0aead75d8a5c6ccf108b5a82a0275ef9d7bacb1288257fdd657347b283c40",
+    "operator": "Sail-Li",
+    "worker": "codex:before300-sail-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "github:zhzyx/nightmarish-spooky-sorceryze:compare:a7b1a95439966292e7099db64c6ee78282889da2..a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd",
+    "diagnosis": "Main advanced through PR681 before signing. No combined commit or publication occurred. Source was integrated in a new isolated a681 worktree; both overlapping paths merged cleanly. Current local compile, 90 Python cases, 74 bridge tests, native requirements11/development7/read1 and both headless Stop inputs passed. Independent overlap review is running. These local results do not attest fresh Windows CI or main acceptance.",
+    "next_action": "Honor user instruction to let other publishing tasks finish first. Preserve candidate, finish independent local review, and wait for their actual completion receipt before signing, pushing or starting fresh CI. Re-read main then integrate any new source and reverify affected scope.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T20:18:39.436519+00:00",
+    "attempted": "Initial native commands lacked existing Node PATH and sandbox loopback permission; corrected invocation completed both cases. No product bypass or desktop input was used.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Local isolated evidence and review only; remote publication waits for other tasks completion receipt."
+  },
+  "occurred_at": "2026-11-09T20:50:36.872935+00:00",
+  "sha256": "b46265eb5ab93e3ef3366f5293195310722286ecbaf1ebd317d4a0012b127a10"
+}

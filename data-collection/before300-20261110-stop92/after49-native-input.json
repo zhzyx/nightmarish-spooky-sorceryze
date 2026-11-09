@@ -1,0 +1,117 @@
+{
+  "issue": 92,
+  "parent_issue": 51,
+  "integration_base": "eec6330c141021b15ea93e86a6abdb5ce199421f",
+  "pending49_source_candidate": "b44a43750975b0c85cb484573f573f0e7584d3a4",
+  "49_pr": 678,
+  "49_main_at_test": "not yet delivered; do not claim main acceptance",
+  "binary_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+  "binary_scope": "Private build on main5f+49. All five AI native source bytes match this integrated source; later Daqian SCsub/dock changes not in this binary, so no full newer-main binary claim. ExactWindowsCI remains required.",
+  "gh_fixture_literal_sha256": "d93abadd620cf03bfa942f67a27d5f6f4d8d9454f543aee6b4a58bd7bcb8a337",
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "tools/gonggong_bridge.py": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/check_gonggong_distribution.py": "f36d25ff5adf61fcf83ae932e77a2dc615227c7e4a72ede23fa7d1f4b4c8bf70",
+    "customizations/components/godot-host/bridge.py": "ff9c09591ce9340792b2d6b306a0f27c0d3dbf2fa90ab790f5793ad0edf5f262",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+    "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267",
+    "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+    "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033"
+  },
+  "cases": {
+    "mouse": {
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.021705,
+        "hovered_control": "Stop",
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_center": "(1398.0, 928.5)",
+        "stop_disabled_after": true,
+        "stop_has_area": true,
+        "stop_hovered": true,
+        "stop_inside_viewport": true,
+        "stop_seconds": 0.023218,
+        "stop_trigger": "synthesized_viewport_mouse",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true,
+        "viewport_size": "(1440.0, 1000.0)"
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "original_stdout_sha256": "0255113affcce35c704369bca130d553bdf63f6c423e3c6a82d56696a953112f",
+      "stderr_empty": true
+    },
+    "keyboard": {
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.025123,
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "key_is_ui_accept": true,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_disabled_after": true,
+        "stop_had_focus": true,
+        "stop_has_area": true,
+        "stop_seconds": 0.027215,
+        "stop_trigger": "synthesized_viewport_keyboard",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "original_stdout_sha256": "b038139bc088518d943a7638d2260e80afa91c1d8f189c597dec8bf5b5a336d3",
+      "stderr_empty": true
+    }
+  },
+  "original_deadlock_cause": "unknown; original symptom not reproduced",
+  "physical_input": false,
+  "real_provider": false,
+  "installation_changed": false,
+  "diting_consumption": null
+}

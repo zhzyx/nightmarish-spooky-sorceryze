@@ -1,6 +1,24 @@
 # 共工 Godot AI 对话实际调试
 
+## 2026-11-10 其他发布任务已验收，接续本批
+
+已回读其他发布者在 #671、#676、#677 的完整验收、精确签发检查和 main 接收回执（来源见 `data-collection/before300-20261110-final/other-publishers-completed.json`，路径以仓库根为基准）；用户要求的先后顺序已满足。新的隔离联合候选基于 main `62e450e1897c9c90a19664363f851d4b361eb958`，21 个新主线路径与本批写入无交叉，保留设计定版和前置验收后派发的新接口。
+
+本批实际重建 14.30 秒，原生需求 11 次／开发 7 次／读工具 1 次、两种无头 Stop、恢复和迟到结果隔离及 14 项并行执行器检查通过；未变化的 Python／桥接输入按原字节映射复用 a681 回执。当前证据见 `data-collection/before300-20261110-final/62e450-local-integration.json`。本次联合交付用相同生产候选核实 #49 修复后的取消／恢复与 #92 交互验收，主关联为 #49，#51/#92 分别核对整体验收。精确候选 CI、main 和关单尚待实际回读；原症状原因 unknown、原用户跳过的旧窗口／队列范围仍保留。
+
+## 2026-11-10 本批等待其他发布任务完成
+
+用户明确选择“先让其他任务完成”。本会话保留隔离联合候选，等待其他发布任务的实际完成回执后，再回读 main、复验受影响范围并开始本批新一轮签发、推送与 CI；不把等待时长或消息已发送视为交接完成。
+
+在 main `a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd` 上，本批 #49/#51/#92 本地整合已通过编译、90 项 Python 检查、74 项桥接检查、原生需求 11 次／开发 7 次／读工具 1 次以及无头鼠标和键盘 Stop 输入。独立只读审查未发现新主线接口与本批合并冲突。精确输入、二进制指纹和实际结果见 `data-collection/before300-20261110-final/a681-local-integration.json`（路径以仓库根为基准）。本地结果不代表新候选 Windows CI 或 main 验收；原始卡死原因仍为 unknown，旧窗口／队列的用户跳过范围继续保留。
+
 稳定需求 ID：gonggong-ai-chat-debug-20261104。
+
+## 2026-11-10 当前会话接续状态与验收边界
+
+用户已授权本会话接续 PR645 的整合与验收，保留原工作树、分支、PR 与已停止队列。当前仍在交付，未关闭原单。原独立配置实现的独立审查发现 UTF8 管道及治理上下文/真实宿主路径缺口，现已修复并通过定向审查：该步骤为当前编辑器宿主限域的路径选择，不新增框架 Agent 身份；从运行编辑器的宿主源根加载固定入口与十份精确政策摘要，读取完整元衡核心、模板和冻结纲领，拒绝缺失/损坏。工作区只作目标数据。上下文、操作范围和实测/未知分别留在 host-step 回执，未调用真实供应商或伪造 token 用量。
+
+本机 mac 私有增量编译与普通 native 需求入口通过 11/7/1/71（5 个夹具 Issue），Windows PowerShell、中文 PE 选择器、策略损坏前置拒绝、自动配置后恢复原需求仍由最新精确候选 CI 验证。旧原生回执晚于原源码但早于最后夹具准备修订，不能覆盖该夹具修订，定向补验已完成：同一私有二进制实际运行最终夹具，11/7/1/71、两次目录GET及committed检查通过，runtime_setup_and_resume=false；不扩展为Windows成功。证据以 `data-collection/before300-20261110-ai49/` 为基准；历史供应商失败、旧窗口/队列用户跳过和旧 PR 的运行声明仍保留原来源，不算当前候选实测。
 
 用户报告当前框架出现问题，要求打开 project 下的 Godot 编辑器，通过 AI 对话框实际提问并调试。范围为已安装 Windows x64 编辑器、当前项目、现有模型配置、桥接和必要子模块；先保留真实失败和日志，再修复直接原因并复测同一界面。实际供应商访问与模拟测试分别记录，不回写凭据，不修改其他在途任务。
 
@@ -86,3 +104,48 @@
 保持用户先前跳过的旧窗口/暂停队列原状，不重发原真实请求。后续仓库历史`data-collection/tianshu-live-ai-515.json`和`tianshu-subscription-session-599.json`包含Windows隔离原生Daqian/Codex真实答复及文件读取/追问，可以证明各自新链路的成功，不能反推旧PROCESS_EXIT的唯一原因，也不能声称恢复旧窗口成功。
 
 当前候选的原生需求入口、实际读文件、消息恢复及键盘事件已通过，但模型和GitHub均使用隔离夹具。#49继续保留原服务失败根因及原窗口恢复未知，未用新回环结果冒充整体完成。新证据见`data-collection/before300-20261109-followup/validation.json`（路径以仓库根为基准）。
+
+## 2026-11-05 点火后 GitHub CLI 缺失修复
+
+用户实际复测在点火后仍遇到 `gh_unavailable`：原自动配置只校验 Python、Node.js、Git，未覆盖建单所需的 GitHub CLI。此次在现有 Windows x64/MSVC 宿主范围补充第四个组件；优先复用本机路径，缺失时从 cli/cli 官方固定版本下载并校验 SHA-256，仅提取 gh.exe 到工作区 project/runtime。宿主桥接能在已运行编辑器中发现该本地组件。独立配置窗口分别显示本地组件配置、GitHub 登录、仓库只读访问；账号授权通过官方浏览器流程完成后自动恢复原需求。仅有本地运行库就绪不能显示为 GitHub/聊天已验证。
+
+必要验证为 Windows PowerShell 5.1 脚本解析、官方安装包校验及本地执行、宿主路径发现回归、隔离 GitHub/模型夹具下的原生配置与登录恢复链路。C++ 窗口和状态机发生变化，因此增量构建 Windows 编辑器。实际账号授权及仓库读取单列证据；不以测试夹具替代真实权限，也不向远端创建测试 Issue。用户已明确要求独立配置绕开共工建单入口，本次不让待修复的入口成为本机修复的前提。
+
+本机验证：Windows PowerShell 5.1 解析四个配置脚本通过，官方 gh 2.103.3 包 SHA-256 为 `98d0cfa794721665d7973dd728c78aff7bd836d58f10f6d7a03568eccb0a22e0`，实际安装并执行成功；真实独立 Codex Agent 选择四种可用组件，结果明确区分 `ok=true` 的本地部署与 `github.error=gh_unauthenticated`。宿主/需求入口 35 项 Python 回归通过；Windows 原生隔离回归通过 11 次需求调用、8 次开发调用和登录后续接，未向真实 GitHub 写入测试 Issue。运行中的旧编辑器占用主 exe，因此使用同一 SCons 链接输入生成 `bin/godot.windows.editor.x86_64.github.exe`，SHA-256 为 `8670d92ecb663d3f89002712bd2430cf78242b8913588e040006bb3873937281`；原生证据保存于宿主临时目录 `gonggong-native-github-repair.*`。真实 GitHub 账号登录尚待用户在已打开的终端/浏览器完成，不能记为权限验收通过。
+
+## 2026-11-05 不完整需求结果的澄清恢复
+
+用户报告 `Requirements must include scope and acceptance`。本地稳定请求摘要对应输入 `test`，旧实现将空范围/验收的模型草稿当作异常，前端统一提示环境、模型 API 或 GitHub 权限修复；失败日记只保留 model_attempted 状态，无法直接重用已完成的澄清结果。此次仍限定 Windows 宿主需求入口：不完整但结构合法的草稿保存在本地 clarification_required 状态，返回具体澄清问题；已有问题直接复用，模型未给问题时只询问缺失信息，不编造范围或验收，不发布不完整 Issue、不覆盖旧绑定。完整提案仍按原有 schema、准入、凭据和发布规则处理；同一草稿重试不重复调用模型，用户补充生成新版本并保留原稿。
+
+验收覆盖旧错误复现、范围/验收缺失时正常提问、无远端发布、原绑定保持、补充后续接、缓存复用与凭据拒绝。只在原生状态分支修改后增量编译 Windows 编辑器，不扩大到冻结框架、供应商传输协议或其他在途 UI 改动。
+
+真实 CodeBuddy / kimi-k3 只读补测还复现了 `test` 对应 goal 为空的同类结果，因此草稿阶段统一允许未知的标题/目标为空；类型、长度、凭据和字段集合检查仍执行，正式发布校验保持严格，任何必要信息不完整都先澄清。原生隔离用例同时覆盖空目标、空范围、空验收，不仅验证单一字段。
+
+修复后证据：27 项需求入口 Python 测试通过；Windows x64/MSVC 增量构建通过，编辑器 SHA-256 为 `e8880aba4b6ee0c6cc91c6943ea867149169b4143ea8693f451478b907976c6f`。原生隔离回归覆盖空目标/范围/验收的提问与补充后续接，通过 11 次需求调用、8 次开发调用、6 个夹具 Issue，日志位于宿主临时目录 `gonggong-native-incomplete-requirement-final.*`。真实 CodeBuddy / kimi-k3 对 `test` 的只读整理复测得到空 goal、scope、acceptance 和三个澄清问题，草稿解析成功并判定 clarification_required；该补测没有 GitHub 写入或开发执行。原始失败日记保留，旧请求通过用户“重试”授权重新整理；未删除或改写历史尝试。
+
+同次继续收到 CodeBuddy `INVALID_ACTION` 错误。旧单次 CLI 通道同时要求模型返回业务需求 JSON 和外层 `{content:string,actions:[]}`，直接返回业务对象或将 content 返回为对象都会被归为“malformed or forbidden action”。最小回归已重现同文案。需求入口改为显式只读 JSON 数据模式，直接接收业务对象，并兼容不含动作的旧包装；输入必须关闭工具，带工具动作的输出仍拒绝。正常开发对话的动作格式及权限校验保持原契约；不通过开放工具或重新登录来修复数据格式问题。
+
+该协议修复验证通过 CodeBuddy 桥接 37 项、需求入口 27 项和共享归一化器影响下的 Codex 桥接 6 项回归。真实 CodeBuddy / kimi-k3 以专用 JSON 模式分别处理 `test` 与“箭头指的地方 中文乱码”，均得到可解析草稿并进入 clarification_required；两次只读补测不调用生产工具、不写 GitHub。仅文本的“箭头”补测没有图片上下文，返回截图/位置澄清不等于已完成乱码修复。本次未更改或开放需求整理阶段的工具权限。
+
+
+## 2026-11-10 用户交接后的隔离整合范围
+
+用户指定当前 Codex 会话接续 #49，来源为真实 Issue 中 `progress:before300-20261110-user-handoff`。本轮从 main `9132b7cf` 的新隔离工作树仅整合 PR645 固定提交 `0b20b7e1b27dd8555448308c17d9e5a77b8db3cf` 自有 20 文件贡献，实际共同基线为 `ced0368bb2dd2a5d2199c1f3ec46760a3406dead`。上面 2026-11-05 的运行记录及随附证据是原发布者固定来源的历史陈述，保留其来源，不视为本轮候选实测。本轮保留当前统一运行配置、任务锁、已安装宿主定位、分请求回执及需求补充语义；Windows 独立配置 Agent 使用有效 Codex 路径，选定 Python/Node 写入统一配置，GitHub 检查通过后恢复原需求；非 Windows 保留现有点火器入口。
+
+本轮必要验证为变更宿主 Python 回归、CodeBuddy/Codex 桥接本地夹具、语法与格式检查。原生变更需由当前发布责任者在整合审查后协调候选构建及静默控件/状态补验；#91 的 Windows 事务中断恢复修复尚待其权威合入后整合和复验。没有向真实模型发请求、没有驱动桌面或恢复旧队列；不把夹具、原 PR 历史成功或局部测试当作真实 provider、原 PROCESS_EXIT 根因、Windows 新候选或整体验收。原发布者工作树、分支、PR 和停止的调查保持原状。
+
+2026-11-10 最新主线整合：保留 main `5f018f6d` 的 PR664 读批次和 PR666 结构化预览，原 #49 自有源无重叠。实际私有增量构建 11.65 秒，二进制 `0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e`；同一最终夹具在新二进制通过普通 mac 11/7/1/71 与两次目录 GET。此前二进制证据只保留历史范围；本回执与精确输入见 normal-mac-main5f.json。仍待91权威交付基线和本单Windows CI。
+
+#91 已由 PR667 实际合入 main `a7ea662405640ad6400c84a34a67715d86987730`。最终 #49 候选在此真实 main 上整合，原子journal/中断恢复依赖正式交付；对应树与91源提交一致，自己的源码和私有编译输入保持，映射见 main-after667-integration.json。Windows最终验证尚待本候选。
+
+PR669 实际 Windows push 构建/单测通过，3进程+5journal通过，新host选择步骤的policy pin首个Get-FileHash不可用，policy_verified/provider_started均false，native续接尚未执行。本次只将policy与同类gh安装包hash依赖改为既有配置脚本使用的.NET SHA256原字节流计算，保留十pin、官方hash、拒绝条件与资源清理。模块环境唯一原因unknown；新Windows仍待精确候选，不将旧失败合入。证据见 pr669-hash-command-failure.json。
+
+发布交接消息已送达但未收到暂停接受回执；他方 PR670 已先合入 main `eec6330c141021b15ea93e86a6abdb5ce199421f` 的14个天枢详情/文档路径。正式签发入口拒绝旧基线后，当前隔离候选保留全部上游并接新main，自有原生源与政策pin保持、两PS哈希修复保留。旧mac完整二进制不扩展到本新主线；完整精确Windows仍待。映射见 main-eec633-integration.json。失败日志派生件已按格式规则归一尾换行并保存原件SHA，不更改原CI证据。
+
+PR672 哈希修复的 Windows 实际报告已通过3进程+5journal+10部署场景（含中文PE、策略损坏/缺失前置拒绝与launcher）；随后native在GD74故意设missing Python时被runtime_environment_locked拒绝，构造期setup progress已存在、业务请求为0。夹具现在启动前写私有安装侧schema1有效Python/Node/fakeCodex，清该子进程的不可变覆盖，之后仍由原GD在真实目录就绪后设missing、发原需求并走自动配置/doctor及11/7/1验收。不禁用启动检查、锁或伪造成功；完整新Windows仍待。证据见 pr672-native-bootstrap-failure.json。
+
+PR678精确Windows两侧3进程+5journal+10部署+native11/7/1/5Issue/71事件均通过，Job核空，11CI成功/14跳过；随后main进入674→35b共享CLI新输入，未用旧通过合入新组合。35b原字节已保留并独立核对接口，重新私有构建13.03秒、74桥接本地测试及native11/7/1/71通过，最新bin8670a10a；两Stop集成回归也通过。实际源与历史精确Windows分目录留证，新完整Windows仍待最终base候选。独立审查职责完成，正确execution.finished和真实native状态验证后已释放该49review占用；未知471未动。
+
+发布依赖680已真实合入 main `a7b1a95439966292e7099db64c6ee78282889da2`，阎罗0.1.3定义/注册批准由当前注册表定位，不推断该定义批准授权本业务执行；本业务沿既有用户授权及本人正常PR路径。接新主线后49自身源码、十policy pins与35b实测native输入保持，新增上游无C++/SCsub变更；完整新候选CI仍待。见 main-after680-integration.json。
+
+当前最终交付范围：49、51、92在 main a7b1a954 的同一隔离候选整合，各自的独立源码审查/用户修订/历史unknown保留，不把任何局部或旧base通过直接当作本候选main验收。49原生生产源码与当前私有8670构建映射一致，92两测试源码保持原独立审查SHA；共同精确CI/main与逐项关单仍由当前会话连续完成。汇总见 data-collection/before300-20261110-final/combined-scope.json。

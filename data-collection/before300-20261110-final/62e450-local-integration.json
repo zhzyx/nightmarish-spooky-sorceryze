@@ -1,0 +1,51 @@
+{
+  "base": "62e450e1897c9c90a19664363f851d4b361eb958",
+  "issues": [
+    49,
+    51,
+    92
+  ],
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "customizations/components/godot-host/bridge.py": "c98b6bf6d536c66ea8b4f0c3030d23cc314548e4b76504cc69eefb7c24f28e94",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/host-agents.json": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "editor/docks/ai_chat_dock.cpp": "465164a5c924cca426c39b14d939a86c346b82e243a65925a831a3dff9cb363a",
+    "editor/docks/ai_chat_dock.h": "fa1f0f85096264cb7ae0da55e1b9be5e37961a3e932415b05b4ce9c9d51841e4",
+    "editor/docks/ai_chat_gonggong.cpp": "81ebd7fe7a9ef40f82c1a4f998e3e6317fb88f2ac2b4d1381db86900ecc5b0cf",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/daqian_dock.cpp": "d938fac02537479e22a6ed7857483e93a66b3a3f652c885349f8c53079a35414",
+    "editor/SCsub": "e1a5f07f19d8226ca20a0d290cc6be4257a2c3b67cc19c2264635e2b15602cf7"
+  },
+  "editor_sha256": "fee793caa3973c5d5b82e615beee253fff376579145604349d3562d2d17a1816",
+  "build": {
+    "result": "passed",
+    "seconds": 14.3,
+    "log_sha256": "ffed6d8b50165a48637dea5305647c643e1faf33652fcc9fa4822d6d22743e8c",
+    "preparation_note": "Own initial redundant full compile stopped after omitted .sconsign5 cache discovered; actual cache cloned and incrementally rebuilt successfully, no source change"
+  },
+  "reused_unaffected_tests": "62e450-reused-local-inputs.json",
+  "actual_parallel_tests": {
+    "passed": 14,
+    "failed": 0,
+    "log_sha256": "0c3fd335aa3f9b045d3ce92a756e43955c33082098dd6e24e13986442742cf9f"
+  },
+  "native": "62e450-native-intake.json",
+  "stop": "62e450-stop-input.json",
+  "independent_review": {
+    "path": "62e450-independent-integration.json",
+    "reviewer": "/root/sinan_2501840d1684dddf",
+    "findings": 0,
+    "original_review_sha256": "cb8bff2a085c579551c625ee8f51a554f6ff734b6b0d6289d0d3c3889adc9de5"
+  },
+  "publication_order_prerequisite": "other-publishers-completed.json actual671/676/677 acceptance receipts verified",
+  "fresh_windows_ci": "pending",
+  "main_acceptance": false,
+  "original_cause": "unknown",
+  "physical_input": false,
+  "real_provider": false,
+  "consumption": null
+}

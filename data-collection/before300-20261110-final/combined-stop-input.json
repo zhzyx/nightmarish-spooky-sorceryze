@@ -1,0 +1,114 @@
+{
+  "base": "a7b1a95439966292e7099db64c6ee78282889da2",
+  "issues": [
+    49,
+    51,
+    92
+  ],
+  "result": "passed",
+  "execution": "Actual finalcombinedROOT with current0.1.3 registration, same source-mapped8670 privateeditor; headless viewport input only",
+  "binary_sha256": "8670a10a7f2051baf998f6f695b88ae391d8299abfd2dc2de1810c1be5dfcd0f",
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "customizations/components/godot-host/bridge.py": "ff9c09591ce9340792b2d6b306a0f27c0d3dbf2fa90ab790f5793ad0edf5f262",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/host-agents.json": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "editor/docks/ai_chat_dock.cpp": "2e51f7826f4f9af5fe9626a21be962bd05db8dd01f2f3f8d94f07e524bb4bd9a",
+    "editor/docks/ai_chat_dock.h": "3889684bba6d63821831ef05bf7c28ef123f868b17ba2068fb523ec3e4cb288b",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/daqian_dock.cpp": "d938fac02537479e22a6ed7857483e93a66b3a3f652c885349f8c53079a35414",
+    "editor/SCsub": "e1a5f07f19d8226ca20a0d290cc6be4257a2c3b67cc19c2264635e2b15602cf7"
+  },
+  "cases": {
+    "mouse": {
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.026116,
+        "hovered_control": "Stop",
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_center": "(1398.0, 928.5)",
+        "stop_disabled_after": true,
+        "stop_has_area": true,
+        "stop_hovered": true,
+        "stop_inside_viewport": true,
+        "stop_seconds": 0.030218,
+        "stop_trigger": "synthesized_viewport_mouse",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true,
+        "viewport_size": "(1440.0, 1000.0)"
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "original_stdout_sha256": "b29dbd6547bb05563c5daed15c358b2e6759a58253f4afd25e449a39c199d89a",
+      "stderr_empty": true
+    },
+    "keyboard": {
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.022988,
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "key_is_ui_accept": true,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_disabled_after": true,
+        "stop_had_focus": true,
+        "stop_has_area": true,
+        "stop_seconds": 0.026751,
+        "stop_trigger": "synthesized_viewport_keyboard",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "original_stdout_sha256": "6e60a4acf5562547aa8259a799b78bfe3fbeb37db9c6d12ec2be80467cddbad6",
+      "stderr_empty": true
+    }
+  },
+  "original_deadlock_cause": "unknown",
+  "physical_input": false,
+  "real_provider": false,
+  "installation_changed": false,
+  "consumption": null
+}

@@ -1,0 +1,24 @@
+{
+  "base": "35bde7b4a27a842352b8da40151340a03d0fce1c",
+  "native_build_seconds": 13.03,
+  "editor_sha256": "8670a10a7f2051baf998f6f695b88ae391d8299abfd2dc2de1810c1be5dfcd0f",
+  "native_source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "2e51f7826f4f9af5fe9626a21be962bd05db8dd01f2f3f8d94f07e524bb4bd9a",
+    "editor/docks/ai_chat_dock.h": "3889684bba6d63821831ef05bf7c28ef123f868b17ba2068fb523ec3e4cb288b",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/daqian_dock.cpp": "d938fac02537479e22a6ed7857483e93a66b3a3f652c885349f8c53079a35414",
+    "editor/SCsub": "e1a5f07f19d8226ca20a0d290cc6be4257a2c3b67cc19c2264635e2b15602cf7"
+  },
+  "bridge_regression": {
+    "passed": 74,
+    "failed": 0,
+    "scope": "actual CodeBuddy bridge/ACP/Codex bridge/preview local fixtures on latestshared inputs"
+  },
+  "build_log_sha256": "30e2e54afb363df24f63ac6bf1aed85ca2956dc7bf3e6dac57376dfd4cc0df3e",
+  "test_log_sha256": "9cd7d933ca043de8803c0d13519ad7e554518bb2da309c1f651d2b7eac47a34e",
+  "installation_changed": false,
+  "provider_requests": false,
+  "next": "Wait for actual serialhandoff of currentYanluo registration publication, then fresh exactcandidate CI"
+}

@@ -1,0 +1,36 @@
+{
+  "issue": 49,
+  "base": "eec6330c141021b15ea93e86a6abdb5ce199421f",
+  "previous_base": "a7ea662405640ad6400c84a34a67715d86987730",
+  "upstream_pr": 670,
+  "upstream_paths": [
+    "customizations/components/godot-host/daqian/board.py",
+    "customizations/components/godot-host/daqian/test_issue_details.py",
+    "data-collection/tianshu-left-details-665.json",
+    "design-docs/tianshu-left-details.md",
+    "editor/SCsub",
+    "editor/docks/daqian/issue_graph.gd",
+    "editor/docks/daqian/issue_inspector.gd",
+    "editor/docks/daqian/workspace.gd",
+    "editor/docks/daqian_dock.cpp",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-left-details/dispatch-3fbf61296627419a8dffa9bfedec1b3d.json",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-left-details/dispatch-6e50e798a7224915bf35ca14752161ce.json",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-left-details/tianshu-left-details-intake.json",
+    "tests/editor/daqian_issue_details.gd",
+    "tests/editor/run_daqian_graph.py"
+  ],
+  "overlap_with_own_source": [],
+  "integration": "Preserve upstream Daqian sidebar/doc editing. Own AIChatDock/GongGong host native source and reviewed policy pins unchanged; current twoPS hash repair retained. Prior mac evidence covers those exact own native inputs only. New full Windows exact candidate remains mandatory.",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+    "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "tools/gonggong_runtime_policy.ps1": "7f112b51fa15b6bfefd274697e1b731cf8d2e3f28513d93e3c3c6d3186259d52",
+    "tools/install_gonggong_github_cli.ps1": "b5b4cc79ba21ed5f2b9c3313f7a23380443cf48a5d90cf60522a6b9e6c8c4133"
+  },
+  "communication": "PR668/670 coordination delivered; no accepted-pause receipt.670 merged first; signing old base correctly refused.",
+  "native_full_newbase_mac_build": "not run; do not extend prior binary receipt",
+  "exact_windows": "pending"
+}
