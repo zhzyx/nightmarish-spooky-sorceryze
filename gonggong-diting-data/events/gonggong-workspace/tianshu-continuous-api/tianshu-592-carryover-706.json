@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-592-carryover-706",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-continuous-api",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+  "kind": "handoff",
+  "occurred_at": "2026-11-09T22:52:02.2465620+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 592,
+    "request_id": "tianshu-continuous-api",
+    "operator": "Sail-Li",
+    "original_updated_at": "2026-11-09T19:24:49Z",
+    "successor": 706,
+    "completed_sub_issues": [
+      594,
+      595,
+      599,
+      620,
+      650,
+      652,
+      659
+    ],
+    "transferred_sub_issue": 593,
+    "verified_parent": 706,
+    "external_tracker": 662,
+    "event": "carryover_relationships_verified",
+    "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706"
+  },
+  "sha256": "3e252c8b2fd58745256fd4817be4f617d860c93e05c09cf68a001b272dbcbaf5"
+}

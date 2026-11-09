@@ -1,0 +1,21 @@
+{
+  "issue_number": 592,
+  "request_id": "tianshu-continuous-api",
+  "operator": "Sail-Li",
+  "original_updated_at": "2026-11-09T19:24:49Z",
+  "successor": 706,
+  "completed_sub_issues": [
+    594,
+    595,
+    599,
+    620,
+    650,
+    652,
+    659
+  ],
+  "transferred_sub_issue": 593,
+  "verified_parent": 706,
+  "external_tracker": 662,
+  "event": "carryover_relationships_verified",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706"
+}
