@@ -85,6 +85,7 @@ elif action=='chat':
  if 'delegation' in request:
   delegation=request['delegation']
   assert request['agent_id']=='sinan' and delegation['execution_role']=='implementation_worker'
+  if os.environ.get('DESIGN_BATCH_CASE')=='normal': assert delegation['work_order'] in (2,4)
   assert delegation['issue_number']==441 and delegation['request_id']=='design-batch-fixture'
   assert request['authority_ref']==delegation['authority_ref']=='godot-editor:user-chat:'+delegation['parent_conversation']
   reporting['agent']['id']='godot-editor-worker'
@@ -600,6 +601,10 @@ def main():
                         return
                     if prompt == "DESIGN_BATCH_WARMUP":
                         stage = "warmup"
+                    elif prompt == "DESIGN_BATCH_CHILD_CONSULT":
+                        stage = "consult"
+                    elif prompt == "DESIGN_BATCH_MANUAL_RETRY":
+                        stage = "retry"
                     elif prompt == "DESIGN_BATCH_START":
                         stage = "parent"
                     elif "DESIGN_BATCH_CHILD_1" in prompt:
@@ -612,7 +617,13 @@ def main():
                     calls.append({"stage": stage, "round": stages[stage]})
                     count = stages[stage]
                     finish = "stop"
-                    if stage == "warmup":
+                    if stage == "retry":
+                        stage = "child1"
+                    call_prefix = "retry" if prompt == "DESIGN_BATCH_MANUAL_RETRY" else stage
+                    if stage == "consult":
+                        assert args.case == "normal" and count == 1
+                        message = {"role": "assistant", "content": "DESIGN_BATCH_CHILD_CONSULT_OK"}
+                    elif stage == "warmup":
                         assert count == 1
                         candidate("parent")
                         message = {"role": "assistant", "content": "DESIGN_BATCH_WARMUP_OK"}
@@ -647,10 +658,10 @@ def main():
                         ), "Child workspace missing from authoritative context"
                         if count == 1:
                             message = tool_call(
-                                stage + "-read", "read_file", {"path": str(target / "fixture-input.txt")}
+                                call_prefix + "-read", "read_file", {"path": str(target / "fixture-input.txt")}
                             )
                             message["tool_calls"].append(
-                                tool_call(stage + "-parent", "get_parent_context", {})["tool_calls"][0]
+                                tool_call(call_prefix + "-parent", "get_parent_context", {})["tool_calls"][0]
                             )
                         elif count == 2:
                             results = {
@@ -658,11 +669,11 @@ def main():
                                 for entry in body["messages"]
                                 if entry["role"] == "tool"
                             }
-                            assert "UNTRUSTED_FIXTURE_FILE" in results[stage + "-read"]
-                            assert SECRET not in results[stage + "-read"], (
+                            assert "UNTRUSTED_FIXTURE_FILE" in results[call_prefix + "-read"]
+                            assert SECRET not in results[call_prefix + "-read"], (
                                 "Child file output leaked the fixture credential"
                             )
-                            context = json.loads(results[stage + "-parent"])
+                            context = json.loads(results[call_prefix + "-parent"])
                             assert context["ok"] is True and context["untrusted"] is True
                             check_runtime(context["host_runtime"])
                             if args.case in {"stop", "paused", "cold"}:
@@ -695,7 +706,7 @@ def main():
                             arguments = {"command": python_command(code)}
                             if args.case == "timeout":
                                 arguments["timeout_seconds"] = 1
-                            message = tool_call(stage + "-command", "run_command", arguments)
+                            message = tool_call(call_prefix + "-command", "run_command", arguments)
                         else:
                             assert count == 3, "Child unexpectedly retried or reran a completed task"
                             results = {
@@ -704,13 +715,13 @@ def main():
                                 if entry["role"] == "tool"
                             }
                             if args.case == "approval-stop":
-                                assert "User rejected" in results[stage + "-command"], (
+                                assert "User rejected" in results[call_prefix + "-command"], (
                                     "Stop did not return the actual host rejection"
                                 )
                                 assert not (target / (stage + "-verified.txt")).exists(), "Rejected command executed"
                                 message = {"role": "assistant", "content": "DESIGN_BATCH_APPROVAL_REJECTED_OK"}
                             else:
-                                actual = json.loads(results[stage + "-command"])
+                                actual = json.loads(results[call_prefix + "-command"])
                             if args.case == "failure":
                                 assert actual["exit_code"] == 7
                                 finish = "length"
@@ -963,7 +974,14 @@ def main():
             DESIGN_BATCH_SOURCE=str(ROOT),
             DESIGN_BATCH_NODE=str(args.node.resolve()),
             DESIGN_BATCH_ENDPOINT=endpoint,
-            DESIGN_BATCH_FINALIZED=FINALIZED,
+            DESIGN_BATCH_FINALIZED=(
+                FINALIZED.replace("1. DESIGN", "2. DESIGN").replace(
+                    "2. DESIGN_BATCH_CHILD_2", "4. DESIGN_BATCH_CHILD_2"
+                )
+                + "   - 依赖：工单 2。\n"
+                if args.case == "normal"
+                else FINALIZED
+            ),
             DESIGN_BATCH_BRIDGE_AUDIT=str(folder / "bridge-audit.txt"),
             DESIGN_BATCH_CASE=args.case,
             DESIGN_BATCH_PHASE="initial",
@@ -1142,6 +1160,8 @@ def main():
             )
         elif successful:
             ok = ok and stages["return"] == 3 and stages["child1"] == 3 and stages["child2"] == (3 if full_batch else 0)
+            if args.case == "normal":
+                ok = ok and stages["retry"] == 3 and stages["consult"] == 1
             if args.case == "stale-retry":
                 ok = (
                     ok

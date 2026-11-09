@@ -44,6 +44,33 @@ function workerCommand(config) {
     ? {backend: 'codex', executable: process.execPath, args: [config.codex, ...args]}
     : {backend: 'codex', executable: config.codex, args};
 }
+// A versioned editor dispatch is approved for the exact bytes in both checkouts.
+function verifyDesign(request, job) {
+  if (!Object.hasOwn(job, 'designSha256')) return;
+  const relative = path.join('design-docs', request.requestId + '.md');
+  for (const root of [request.workspace, job.cwd]) {
+    const file = path.join(root, relative);
+    if (!inside(canonical(root), canonical(file)) || fs.statSync(file).size > 1024 * 1024 ||
+        crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') !== job.designSha256) {
+      throw Error('Design differs from the confirmed version');
+    }
+  }
+}
+
+function restoreTicket(file, record, request) {
+  try {
+    const ticket = read(file);
+    if (ticket.designSha256 !== record.designSha256 ||
+        (record.designSha256 && (ticket.issue !== request.issue || ticket.requestId !== request.requestId || ticket.order !== record.order))) {
+      throw Error('Existing ticket belongs to a different or unversioned design');
+    }
+    Object.assign(record, ticket, {id:record.id});
+  } catch (error) {
+    record.state = 'reconcile_required';
+    record.reason = String(error.message);
+  }
+}
+
 export function prepare(request, config) {
   if (config.nativeWorkspaceWrite !== true || !config.authorityRef || !Number.isInteger(config.capacity) || config.capacity < 1 || config.capacity > 2) throw Error('Explicit native workspace-write mandate and capacity 1..2 required');
   if (![request.workspace,config.python].every(p=>typeof p==='string'&&path.isAbsolute(p))) throw Error('Workspace and executables must use absolute paths');
@@ -58,6 +85,7 @@ export function prepare(request, config) {
   const accepted = acceptedDependencies(config);
   return request.workers.map(worker => {
     if (!Number.isInteger(worker.id) || worker.id < 0 || ids.has(worker.id) || !Number.isInteger(worker.order) || worker.order < 1 || seen.has(worker.order)) throw Error('Invalid or duplicate work order'); seen.add(worker.order);ids.add(worker.id);
+    if (Object.hasOwn(worker, 'designSha256') && (typeof worker.designSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(worker.designSha256))) throw Error('Invalid confirmed design digest');
     const job = config.jobs.find(j => j.order === worker.order);
     if (!job || typeof worker.prompt !== 'string' || !worker.prompt.trim() || !Array.isArray(job.capabilities) || !job.capabilities.length) throw Error('Each work order needs explicit capabilities and workspace');
     if(typeof job.worktree!=='string'||!path.isAbsolute(job.worktree))throw Error('Worktree must be absolute');
@@ -80,7 +108,7 @@ export async function run(request, config, output, runtime = {}) {
     return JSON.parse(result.stdout);
   });
   const report=async (job,record)=>{
-    const receipt=await connector({order:job.order,model:job.model.id,workerBackend:job.launch.backend,...record});
+    const receipt=await connector({order:job.order,model:job.model.id,workerBackend:job.launch.backend,...(job.designSha256 ? {designSha256:job.designSha256} : {}),...record});
     if(receipt?.ok!==true || receipt.state!=='recorded_file')throw Error('No actual Diting file receipt');
     return receipt;
   };
@@ -88,13 +116,13 @@ export async function run(request, config, output, runtime = {}) {
   // Persistent exclusive intent is retained after crashes and unknown receipts.
   const reservation = output + '.running';
   durable(reservation,{requestId:request.requestId,authorityRef:config.authorityRef},true);
-  const result = {requestId:request.requestId,batchId:request.batchId,workers:jobs.map(j=>({id:j.id,order:j.order,model:j.model?.id??null,state:j.ready?'reserved':j.blocked}))};
+  const result = {requestId:request.requestId,batchId:request.batchId,workers:jobs.map(j=>({id:j.id,order:j.order,...(j.designSha256 ? {requestId:request.requestId,issue:request.issue,designSha256:j.designSha256} : {}),model:j.model?.id??null,state:j.ready?'reserved':j.blocked}))};
   // Reconciliation precedes current admission: an unavailable model cannot erase
   // an already-running/review worker's receipt or turn it into "never started".
   for(const job of jobs) {
     const existing=path.join(job.stateRoot,`parallel-ticket-${request.requestId}-${job.order}.json`);
     if(fs.existsSync(existing)) {
-      Object.assign(result.workers.find(w=>w.id===job.id),read(existing),{id:job.id});
+      restoreTicket(existing,result.workers.find(w=>w.id===job.id),request);
       job.existing=true;
     }
   }
@@ -111,9 +139,15 @@ export async function run(request, config, output, runtime = {}) {
         fs.mkdirSync(locks,{recursive:true});
         const resourceKey = crypto.createHash('sha256').update(process.platform==='win32'?job.cwd.toLowerCase():job.cwd).digest('hex');
         ticketFile=path.join(locks,`parallel-ticket-${request.requestId}-${job.order}.json`);
-        if (fs.existsSync(ticketFile)) {Object.assign(record,read(ticketFile),{id:job.id});continue;}
+        if (fs.existsSync(ticketFile)) {restoreTicket(ticketFile,record,request);continue;}
+        verifyDesign(request, job);
         record.workerBackend=job.launch.backend;
-        durable(ticketFile,{...record,state:'reconcile_required'},true);ticketOwned=true;
+        try {
+          durable(ticketFile,{...record,state:'reconcile_required'},true);ticketOwned=true;
+        } catch (error) {
+          if (error.code !== 'EEXIST') throw error;
+          restoreTicket(ticketFile,record,request);continue;
+        }
         resourceFile=path.join(locks,`parallel-resource-${resourceKey}.json`);
         durable(resourceFile,{requestId:request.requestId,order:job.order,output},true);resourceOwned=true;
         for(let slot=0;slot<config.capacity;slot++) {
@@ -128,6 +162,7 @@ export async function run(request, config, output, runtime = {}) {
         command(config.python,[path.join(job.cwd,'customizations/components/issue-workorders/issue_gate.py'),'--repo',job.cwd,'--issue',String(request.issue),'--request-id',request.requestId,'--tenant','gonggong-workspace','--intake-only'],job.cwd);
         command(config.python,[path.join(job.cwd,'framework/tools/verify_framework.py')],job.cwd);
         record.reportingPrepared=await report(job,{state:'prepared',kind:'handoff'});
+        verifyDesign(request, job);
         const transcript = `${output}.${job.id}.log`;
         const fd = fs.openSync(transcript,'wx',0o600);
         const stream = fs.createWriteStream(transcript,{fd});
@@ -155,6 +190,7 @@ export async function run(request, config, output, runtime = {}) {
                 record.reportingStarted=await report(job,{order:job.order,model:job.model.id,state:'running',kind:'step',pid:child.pid});
                 cancel();
                 if (child.exitCode !== null || child.signalCode !== null || child.stdin.destroyed) throw Error('Worker exited before prompt handoff');
+                verifyDesign(request, job);
                 child.stdin.end(`Follow AGENTS.md and the bound Issue. Work only in this isolated worktree. Do not merge, push, publish or manipulate the running editor. Return actual changes and tests for independent acceptance.\n${job.prompt}`, error => error ? failed(error) : delivered());
               } catch(error) {child.kill();failed(error);}
             });
@@ -166,7 +202,11 @@ export async function run(request, config, output, runtime = {}) {
               code===0&&!record.cancelRequested ? finished() : failed(Error('Worker exited without successful receipt'));
             });
           });
-          Promise.all([dispatched,closed]).then(resolve,reject);
+          Promise.allSettled([dispatched,closed]).then(outcomes=>{
+            const failure=outcomes.find(outcome=>outcome.status==='rejected');
+            if(failure) reject(failure.reason);
+            else resolve();
+          });
         });
         record.state='review'; // CLI success never establishes business acceptance.
       } catch(error) {record.state=launchAttempted?'reconcile_required':'blocked';record.reason=String(error.message);}

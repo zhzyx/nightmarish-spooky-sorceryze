@@ -668,7 +668,7 @@ TEST_CASE("[AIChat] Requirement context ignores malformed records and bounds ret
 TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized design") {
 	const String document = String(U"# 标题\r\n\r\n## 设计定版确认（2026-11-04）\r\n\r\n- 确认\r\n\r\n## 生产工单（拆分）\r\n\r\n（说明行）\r\n\r\n1. 第一张\r\n   - 目标：A\r\n   - 依赖：无。\r\n\r\n2. 第二张\r\n   - 依赖：工单 1。\r\n\r\n## 验证与采集证据\r\n\r\n1. 不是工单\r\n");
 	const Dictionary parsed = AIChatSubAgents::parse_work_orders(document);
-	CHECK(bool(parsed["finalized"]));
+	CHECK(bool(parsed["confirmation_section"]));
 	const Array orders = parsed["orders"];
 	REQUIRE(orders.size() == 2);
 	const Dictionary first = orders[0];
@@ -681,8 +681,20 @@ TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized des
 	CHECK_FALSE(String(second["body"]).contains(U"不是工单"));
 
 	const Dictionary draft = AIChatSubAgents::parse_work_orders(U"# 标题\n\n## 生产工单\n\n1. 未定版\n");
-	CHECK_FALSE(bool(draft["finalized"]));
+	CHECK_FALSE(bool(draft["confirmation_section"]));
 	CHECK(Array(draft["orders"]).size() == 1);
+
+	CHECK(bool(parsed["valid"]));
+	CHECK(Array(first["dependencies"]).is_empty());
+	REQUIRE(Array(second["dependencies"]).size() == 1);
+	CHECK(int(Array(second["dependencies"])[0]) == 1);
+	CHECK_FALSE(bool(AIChatSubAgents::parse_work_orders(U"## 设计定版确认（待批准）\n## 生产工单\n1. draft")["confirmation_section"]));
+	const String prefix = U"## 设计定版确认\n## 生产工单\n1. One\n2. Two\n3. Three\n - 依赖：";
+	const Dictionary ranged = AIChatSubAgents::parse_work_orders(prefix + U"工单 1–2。");
+	REQUIRE(bool(ranged["valid"]));
+	CHECK(Array(Dictionary(Array(ranged["orders"])[2])["dependencies"]).size() == 2);
+	CHECK_FALSE(bool(AIChatSubAgents::parse_work_orders(prefix + U"工单 2–4")["valid"]));
+	CHECK_FALSE(bool(AIChatSubAgents::parse_work_orders(prefix + U"未知")["valid"]));
 
 	String many = U"## 设计定版确认\n## 生产工单\n";
 	for (int i = 1; i <= 20; i++) {
@@ -697,7 +709,7 @@ TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized des
 	CHECK(title.ends_with(U"…"));
 
 	const String prompt = AIChatSubAgents::work_order_prompt("Agent 1", 1, 2, first, 47, "requirement-x");
-	CHECK(prompt.contains(U"工单 1/2"));
+	CHECK(prompt.contains(U"工单 1（第 1 项，共 2 项）"));
 	CHECK(prompt.contains("Issue #47"));
 	CHECK(prompt.contains("design-docs/requirement-x.md"));
 	CHECK(prompt.contains("get_parent_context"));

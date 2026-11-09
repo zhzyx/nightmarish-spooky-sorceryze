@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-54bb85fcb5414a4f7990d123d3ca510cba01042b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-child-design-dependencies",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "55fbc0ba1c143e9ea68cd8683026071265b7d1ab51a1079298c5b0012da0d26a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+    "action": "validation",
+    "detection_head": "eec6330c141021b15ea93e86a6abdb5ce199421f",
+    "context_sha256": "2b2fc67e8d8e92852106594a941b3d7a55c672fe59eb4339dbd4de06d1b86900",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_2303a55d8531a93c",
+    "authority_ref": "codex-user-01a1c1a6-e32a-7613-8803-fa3927c2bde6-agent-review-fixes",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42683702518",
+    "diagnosis": "Candidate collection JSON was written with Windows CRLF while the staged Git blob has LF. Formal validation requires exact bytes.",
+    "next_action": "Write the verified staged LF bytes to the collection source and rerun the original gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T19:28:37.013460+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T19:30:01.709130+00:00",
+  "sha256": "ac444c7ee0f8d664a61e60a61095cf2d3a1346109615d96cdec8704ee1bd33c3"
+}

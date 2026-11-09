@@ -652,6 +652,14 @@ class AIChatDock : public EditorDock {
 	TabBar *sub_agent_tabs = nullptr;
 	Button *add_sub_agent = nullptr;
 	Button *spawn_sub_agents = nullptr;
+	ConfirmationDialog *design_dialog = nullptr;
+	Label *design_summary = nullptr;
+	LineEdit *design_evidence = nullptr;
+	Dictionary pending_design_action;
+	Dictionary _read_design(int p_parent) const;
+	bool _design_child_ready(int p_child) const;
+	bool _prepare_manual_design_attempt();
+	void _confirm_design_action();
 	void _build_sub_agent_ui(VBoxContainer *p_page, int p_position);
 	void _load_sub_agents(const Dictionary &p_data);
 	void _refresh_sub_agents();
@@ -662,7 +670,7 @@ class AIChatDock : public EditorDock {
 	int _create_sub_agent(int p_parent, const String &p_title, const Dictionary &p_info, const String &p_prompt);
 	void _add_sub_agent();
 	void _spawn_sub_agents_pressed();
-	bool _spawn_work_order_agents(int p_parent, bool p_explicit);
+	bool _spawn_work_order_agents(int p_parent, bool p_explicit, const Dictionary &p_approval = Dictionary());
 	bool _resume_work_order_agents(int p_parent, const String &p_request_id);
 	void _sub_agent_dispatch();
 	void _sub_agent_finished(int p_agent, bool p_completed, uint64_t p_generation);

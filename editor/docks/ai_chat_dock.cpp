@@ -1816,10 +1816,12 @@ void AIChatDock::_set_busy(bool p_busy) {
 			scheduled_agents[active_agent]["state"] = turn_completed ? "completed" : "failed";
 		}
 	}
-	if (sub_agents.has(active_agent) && (String(sub_agents[active_agent].get("source", "")) == "design" || _is_review_child())) {
-		if (p_busy) {
+	if (sub_agents.has(active_agent) && ((!consultation_turn && String(sub_agents[active_agent].get("source", "")) == "design") || _is_review_child())) {
+		if (p_busy && !was_busy) {
+			sub_agents[active_agent].erase("acceptance");
+			sub_agents[active_agent].erase("terminal_receipt");
 			sub_agents[active_agent]["state"] = "running";
-		} else if (was_busy) {
+		} else if (was_busy && !p_busy) {
 			sub_agents[active_agent]["state"] = turn_completed ? "completed" : "failed";
 		}
 	}
@@ -2167,6 +2169,10 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 }
 
 bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection) {
+	if (!bool(p_message.get("consultation_only", false)) && sub_agents.has(active_agent) && String(sub_agents[active_agent].get("source", "")) == "design" && !_design_child_ready(active_agent)) {
+		_append(TTR("Editor"), U"工单的设计版本、绑定或前置验收尚未通过。请核对设计版本，在前置子会话验收后继续。");
+		return false;
+	}
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (!pending_external_editor_message.is_empty()) {
@@ -2236,6 +2242,11 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	}
 	EditorSettings::get_singleton()->set_setting("ai_chat/backend", backend->get_selected());
 	EditorSettings::save();
+	const bool manual_design = !consultation_turn && sub_agents.has(active_agent) && sub_agents[active_agent].get("source", "") == "design" && design_child_starting != active_agent;
+	if (manual_design && !_prepare_manual_design_attempt()) {
+		_append(TTR("Editor"), U"当前工单无法建立新的执行回执。请先核对在途执行及回执，回到父会话点「继续落地」。");
+		return false;
+	}
 	if (conversation_id.is_empty()) {
 		conversation_id = new_conversation_id();
 	}
@@ -2298,7 +2309,13 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 		// fresh user requirement. Framework/Issue/provenance gates still run.
 		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, text, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	}
+	if (manual_design) {
+		design_child_starting = active_agent;
+	}
 	_set_busy(true);
+	if (manual_design) {
+		design_child_starting = -1;
+	}
 	_queue_history_save();
 	_save_history();
 	_request_completion();

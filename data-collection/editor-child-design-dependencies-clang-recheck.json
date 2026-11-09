@@ -1,0 +1,31 @@
+{
+  "request_id": "editor-child-design-dependencies",
+  "issue_number": 677,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+  "corrects": "data-collection/editor-child-design-dependencies-validation.json",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42690005194/job/129407302008",
+  "failure": "clang-cl -Werror,-Wtrigraphs in the dated confirmation heading pattern",
+  "correction": "Check YYYY-MM-DD length, digits and dash positions directly. Keep the host's separate version-bound operator confirmation.",
+  "source_files": {
+    "editor/docks/ai_chat_sub_agents.h": "93006b30f18c15476e7b95270e26f6ca8774f3159e50c5632c1c2c8e0979234f"
+  },
+  "editor_binary_sha256": "181bcfcaff58bbf816ff37c86c2b273963da1ef467cd3a2e1375579e71e50317",
+  "native_unit_tests": {
+    "passed": 45,
+    "assertions": 638
+  },
+  "native_normal": {
+    "passed": true,
+    "stage_requests": {
+      "warmup": 1,
+      "parent": 1,
+      "child1": 3,
+      "consult": 1,
+      "retry": 3,
+      "child2": 3,
+      "return": 3
+    },
+    "parent_returns": 1
+  },
+  "remote_clang_recheck": "pending at candidate submission"
+}

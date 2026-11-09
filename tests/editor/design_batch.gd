@@ -166,6 +166,78 @@ func _finish():
 	_file("design-batch-report.json", JSON.stringify(report))
 	quit(0 if failure.is_empty() else 1)
 
+var drift_checked := false
+
+func _confirm_fixture_design(confirmation):
+	if not confirmation.visible or confirmation.title != "确认设计定版":
+		return
+	if OS.get_environment("DESIGN_BATCH_CASE") == "normal" and not drift_checked:
+		drift_checked = true
+		var summary = confirmation.find_child("DesignSummary", true, false)
+		var directory: String = summary.text.split("\n")[2]
+		var path := directory.path_join("design-docs/design-batch-fixture.md")
+		var before := FileAccess.get_file_as_bytes(path)
+		if not _check(not before.is_empty(), "Cannot read the isolated candidate design"):
+			return
+		var draft := before.get_string_from_utf8().replace("## 设计定版确认", "## 设计定版确认（待批准）")
+		FileAccess.open(path, FileAccess.WRITE).store_string(draft)
+		confirmation.get_ok_button().pressed.emit()
+		var tabs = dock.find_child("SubAgentTabs", true, false)
+		_check(tabs.tab_count == 1, "Changed bytes were dispatched using a stale confirmation")
+		var spawn = dock.find_child("SpawnWorkOrderAgents", true, false)
+		var deadline := Time.get_ticks_msec() + 10000
+		while dock.get_meta("gonggong_reporting", "") != "recorded_file" and Time.get_ticks_msec() < deadline:
+			await create_timer(0.05).timeout
+		spawn.pressed.emit()
+		_check(not confirmation.visible and tabs.tab_count == 1, "Draft heading offered production dispatch")
+		FileAccess.open(path, FileAccess.WRITE).store_buffer(before)
+		spawn.pressed.emit()
+		return
+	confirmation.get_ok_button().pressed.emit()
+
+func _verify_dependency_handoff():
+	var spawn = dock.find_child("SpawnWorkOrderAgents", true, false)
+	var tabs = dock.find_child("SubAgentTabs", true, false)
+	var deadline := Time.get_ticks_msec() + 60000
+	while Time.get_ticks_msec() < deadline and spawn.text != "验收当前工单":
+		await create_timer(0.05).timeout
+	if not _check(spawn.text == "验收当前工单", "Missing business acceptance action after predecessor transport completed"):
+		return
+	await create_timer(0.5).timeout
+	if not _check(tabs.current_tab == 1 and tabs.get_tab_tooltip(2) == "等待执行", "Dependent ran before user acceptance"):
+		return
+	if not _check(tabs.get_tab_title(1).begins_with("子2 ·") and tabs.get_tab_title(2).begins_with("子4 ·"), "Tab labels lost the declared work order numbers"):
+		return
+	var consultation = dock.find_child("ConsultationOnly", true, false)
+	consultation.button_pressed = true
+	_send("DESIGN_BATCH_CHILD_CONSULT")
+	if not await _wait_marker("DESIGN_BATCH_CHILD_CONSULT_OK"):
+		return
+	consultation.button_pressed = false
+	if not _check(spawn.text == "验收当前工单" and tabs.get_tab_tooltip(2) == "等待执行", "Consultation invalidated the production receipt"):
+		return
+	var confirmation = dock.find_child("WorkOrderConfirmation", true, false)
+	spawn.pressed.emit()
+	if not _check(confirmation.visible and confirmation.title == "验收当前工单", "Missing terminal evidence dialog"):
+		return
+	var summary = confirmation.find_child("DesignSummary", true, false)
+	var old_summary: String = summary.text
+	confirmation.get_cancel_button().pressed.emit()
+	_send("DESIGN_BATCH_MANUAL_RETRY")
+	deadline = Time.get_ticks_msec() + 60000
+	while Time.get_ticks_msec() < deadline and (not dock.find_child("Stop", true, false).disabled or spawn.text != "验收当前工单"):
+		await create_timer(0.05).timeout
+	spawn.pressed.emit()
+	if not _check(confirmation.visible and summary.text != old_summary and tabs.get_tab_tooltip(2) == "等待执行", "Manual production attempt did not return fresh evidence"):
+		return
+	var evidence = confirmation.find_child("WorkOrderAcceptanceEvidence", true, false)
+	confirmation.get_ok_button().pressed.emit()
+	if not _check(tabs.get_tab_tooltip(2) == "等待执行", "Empty evidence authorized dependency"):
+		return
+	spawn.pressed.emit()
+	evidence.text = "Verified the isolated fixture's file and command results in the source-bound terminal receipt."
+	confirmation.get_ok_button().pressed.emit()
+
 func _run():
 	dock = root.find_child("AI Chat", true, false)
 	if dock == null:
@@ -207,6 +279,12 @@ func _run():
 	settings.set_setting("gonggong/issue_number", "999")
 	settings.set_setting("gonggong/request_id", "design-batch-global-sentinel")
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
+	# The private fixture's operator confirms the specific design shown by the host.
+	var design_confirmation = dock.find_child("WorkOrderConfirmation", true, false)
+	design_confirmation.visibility_changed.connect(func():
+		if design_confirmation.visible and design_confirmation.title == "确认设计定版":
+			_confirm_fixture_design.call_deferred(design_confirmation)
+	)
 	dock.connect("daqian_work_event", _work_event)
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup != null:
@@ -279,6 +357,8 @@ func _run():
 		_check(dock.get_meta("queued_message_count", -1) == 0, "Stale review is still queued")
 		_finish()
 		return
+	if mode == "normal":
+		await _verify_dependency_handoff()
 	if mode in ["review-stop", "review-parent-stop"]:
 		if not await _wait_file("review-running" if mode == "review-stop" else "review-parent-waiting"):
 			_finish()
