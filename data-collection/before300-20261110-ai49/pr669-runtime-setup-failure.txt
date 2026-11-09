@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+
+  File "<fixture-path-1>\tests\editor\run_runtime_setup.py", line 212, in <module>
+
+    main()
+
+    ~~~~^^
+
+  File "<fixture-path-1>\tests\editor\run_runtime_setup.py", line 136, in main
+
+    assert agent.returncode == 0 and agent_value["ok"], (agent.stderr.decode(errors="replace"), agent_value)
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AssertionError: ('', {'ok': False, 'error': "The term 'Get-FileHash' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.", 'global_environment_changed': False, 'agent': {'read_only_discovery': True, 'provider_started': False, 'registered_framework_agent': False, 'policy_verified': False, 'kind': 'codex-runtime-config', 'provider_completed': False, 'independent_from_gonggong': False, 'usage': None}, 'state': 'agent_failed'})
+

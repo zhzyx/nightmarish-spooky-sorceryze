@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-649081abf4946fc0082017cec57577b95cfb13e5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d19f9601770b25c3a59f18cf02b683629b49bea68a0bd2808568b93ec274f3c0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "validation",
+    "detection_head": "12c1a23bc1e7cbbb9b99e73dcf6b82218cab31d7",
+    "context_sha256": "b04435f484763fafbacfbafc45a9e3b4893d258fd386c0c1761b670e4d7e4a31",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261110-ai49/pr669-hash-command-failure.json",
+    "diagnosis": "实际Windows报告3进程和5journal通过，随后新policy pin步骤Get-FileHash不可用，policy_verified/provider_started均false。模块环境唯一原因unknown。policy及同类archive hash改用既有configure同式.NET SHA256原字节流；摘要、拒绝和清理保持，独立二文件增量审查无findings。",
+    "next_action": "精确新候选复验全部10部署、中文选择器、策略缺失/损坏拒绝、原生自动配置后原需求恢复及Job核空；未通过不合入。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:56:34.701153+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T18:59:52.770333+00:00",
+  "sha256": "b25695253642bda139495892a4221f0b7f59b3e611de8483e567fe19ce8b4506"
+}

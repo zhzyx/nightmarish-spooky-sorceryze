@@ -37,7 +37,11 @@ New-Item -ItemType Directory -Force -Path $transaction | Out-Null
 $archive = Join-Path $transaction 'github-cli.zip'
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $archive -TimeoutSec 120
-if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $archiveHash) {
+$archiveStream = [IO.File]::OpenRead($archive)
+$archiveAlgorithm = [Security.Cryptography.SHA256]::Create()
+try { $actualArchiveHash = ([BitConverter]::ToString($archiveAlgorithm.ComputeHash($archiveStream))).Replace('-','').ToLowerInvariant() }
+finally { $archiveStream.Dispose(); $archiveAlgorithm.Dispose() }
+if ($actualArchiveHash -ne $archiveHash) {
     throw 'The official GitHub CLI archive checksum did not match; nothing was installed.'
 }
 Add-Type -AssemblyName System.IO.Compression.FileSystem

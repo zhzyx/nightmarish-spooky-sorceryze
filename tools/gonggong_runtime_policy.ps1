@@ -34,7 +34,10 @@ function Read-RuntimeHostPolicy([string]$OperationId, [string]$InventoryHash) {
             $cursor = Split-Path -Parent $cursor
         }
         if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw ('Trusted host policy source is missing: ' + $relative) }
-        $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+        $stream = [IO.File]::OpenRead($file)
+        $algorithm = [Security.Cryptography.SHA256]::Create()
+        try { $actual = ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace('-','').ToLowerInvariant() }
+        finally { $stream.Dispose(); $algorithm.Dispose() }
         if ($actual -ne [string]$property.Value) { throw ('Trusted host policy changed; revalidate this host release: ' + $relative) }
         $hashes[$relative] = $actual
         $texts[$relative] = [IO.File]::ReadAllText($file, [Text.UTF8Encoding]::new($false, $true))

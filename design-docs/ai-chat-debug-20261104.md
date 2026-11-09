@@ -125,3 +125,5 @@
 2026-11-10 最新主线整合：保留 main `5f018f6d` 的 PR664 读批次和 PR666 结构化预览，原 #49 自有源无重叠。实际私有增量构建 11.65 秒，二进制 `0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e`；同一最终夹具在新二进制通过普通 mac 11/7/1/71 与两次目录 GET。此前二进制证据只保留历史范围；本回执与精确输入见 normal-mac-main5f.json。仍待91权威交付基线和本单Windows CI。
 
 #91 已由 PR667 实际合入 main `a7ea662405640ad6400c84a34a67715d86987730`。最终 #49 候选在此真实 main 上整合，原子journal/中断恢复依赖正式交付；对应树与91源提交一致，自己的源码和私有编译输入保持，映射见 main-after667-integration.json。Windows最终验证尚待本候选。
+
+PR669 实际 Windows push 构建/单测通过，3进程+5journal通过，新host选择步骤的policy pin首个Get-FileHash不可用，policy_verified/provider_started均false，native续接尚未执行。本次只将policy与同类gh安装包hash依赖改为既有配置脚本使用的.NET SHA256原字节流计算，保留十pin、官方hash、拒绝条件与资源清理。模块环境唯一原因unknown；新Windows仍待精确候选，不将旧失败合入。证据见 pr669-hash-command-failure.json。
