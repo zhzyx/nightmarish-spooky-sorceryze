@@ -544,6 +544,14 @@ void AIChatDock::_poll_gonggong_context() {
 		result = parsed;
 	}
 	const bool cancelled = !busy || gonggong_generation != session_generation;
+	if (!cancelled && !command_recovery_reporting.is_empty() && result.get("reporting", Variant()) != command_recovery_reporting) {
+		completed_command_receipt_path = String();
+		command_recovery_reporting.clear();
+		gonggong_recovered_result = String();
+		_append(TTR("Error"), U"原命令的工作者或授权绑定已变化，结果仍保留在中断记录。");
+		_set_busy(false);
+		return;
+	}
 	if (!gonggong_reporting.is_empty() && result.get("reporting", Variant()).get_type() == Variant::DICTIONARY && gonggong_reporting != Dictionary(result["reporting"])) {
 		_append(TTR("Error"), U"GongGong 本轮框架或上报绑定已变化，请结束本轮并重新发送。");
 		_set_busy(false);

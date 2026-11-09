@@ -779,11 +779,15 @@ def quiesce_owned_group(pgid, expected_identity):
     raise GuardError("provenance_group_termination_unverified")
 
 
-def run_guard(binding_path, argv, profile=None, timeout=None, cwd=None, result_path=None, cancel_file=None):
+def run_guard(
+    binding_path, argv, profile=None, timeout=None, cwd=None, result_path=None, cancel_file=None, invocation=None
+):
     owned_jobs = []
     try:
         try:
-            return _run_guard(binding_path, argv, profile, timeout, cwd, result_path, cancel_file, owned_jobs)
+            return _run_guard(
+                binding_path, argv, profile, timeout, cwd, result_path, cancel_file, owned_jobs, invocation
+            )
         finally:
             for job in reversed(owned_jobs):
                 job.close()
@@ -806,8 +810,10 @@ def checkpoint_failure(result, result_path):
     return EXIT_VIOLATION
 
 
-def _run_guard(binding_path, argv, profile, timeout, cwd, result_path, cancel_file, owned_jobs):
+def _run_guard(binding_path, argv, profile, timeout, cwd, result_path, cancel_file, owned_jobs, invocation):
     binding, digest = bound(binding_path)
+    if invocation is not None and not re.fullmatch("[a-f0-9]{64}", invocation):
+        raise GuardError("invalid_command_invocation")
     if not argv or (timeout is not None and not 0 < timeout <= 86400):
         raise GuardError("provenance_command_invalid")
     marker = cancel_path(cancel_file, Path(binding["source_root"]))
@@ -831,9 +837,13 @@ def _run_guard(binding_path, argv, profile, timeout, cwd, result_path, cancel_fi
         record.update(state="violated", started=False)
         archive(path, record)
         return checkpoint_failure(proof, result_path)
+    if invocation is not None:
+        record["invocation"] = invocation
     if marker is not None:
         record["cancel_file"] = str(marker)
         candidates.atomic_json(path, record)
+    if invocation is not None:
+        publish_result(result_path, {"state": "running", "token": record["token"]})
     job = None
     if os.name == "nt":
         job = processes.WindowsJob(record["token"])
@@ -1077,12 +1087,56 @@ def recover(binding_path):
     return response
 
 
+def completed_command(binding_path, result_path, invocation):
+    """Recover only a terminal receipt from this exact guarded invocation."""
+    binding, digest = bound(binding_path)
+    receipt = read_json(result_path)
+    token = receipt.get("token", "")
+    if not isinstance(token, str) or not re.fullmatch("[a-f0-9]{32}", token):
+        raise GuardError("command_outcome_unknown")
+    folder = guard_folder(binding, digest)
+    closed = folder / "closed" / (token + ".json")
+    pending = folder / "pending" / (token + ".json")
+    record = read_json(closed if closed.exists() else pending)
+    if (
+        not isinstance(invocation, str)
+        or not re.fullmatch("[a-f0-9]{64}", invocation)
+        or record.get("invocation") != invocation
+        or record.get("token") != token
+        or record.get("binding") != binding
+        or record.get("cancel_file") != str(Path(str(result_path) + ".cancel"))
+    ):
+        raise GuardError("command_outcome_unknown")
+    if not closed.exists():
+        if alive(record.get("runner")):
+            return {"pending": True, "runner_pid": record["runner"]["pid"]}
+        raise GuardError("command_outcome_unknown")
+    code = record.get("child_exit_code")
+    if (
+        record.get("state") != "completed"
+        or type(code) is not int
+        or code < 0
+        or receipt.get("ok") is not True
+        or receipt.get("state") != "verified"
+        or receipt.get("cancelled") is not False
+        or receipt.get("command_exit_code") != code
+    ):
+        raise GuardError("command_outcome_unknown")
+    return {
+        "exit_code": code,
+        "provenance_guard": {"ok": True, "state": "verified", "token": token},
+        "output_available": False,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binding", required=True, type=Path)
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--run", action="store_true")
     action.add_argument("--recover", action="store_true")
+    action.add_argument("--completed-command", type=Path)
+    parser.add_argument("--invocation")
     parser.add_argument("--profile")
     parser.add_argument("--timeout-seconds", type=float)
     parser.add_argument("--result", type=Path)
@@ -1090,6 +1144,9 @@ def main():
     parser.add_argument("argv", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     try:
+        if args.completed_command:
+            print(json.dumps(completed_command(args.binding, args.completed_command, args.invocation)), flush=True)
+            return 0
         if args.recover:
             result = recover(args.binding)
             print(json.dumps(result, ensure_ascii=False), flush=True)
@@ -1102,6 +1159,7 @@ def main():
             args.timeout_seconds,
             result_path=args.result,
             cancel_file=args.cancel_file,
+            invocation=args.invocation,
         )
     except Exception as error:
         code = str(error) if isinstance(error, (GuardError, candidates.CandidateError)) else "provenance_guard_failed"

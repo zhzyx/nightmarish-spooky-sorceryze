@@ -312,6 +312,10 @@ class ProvenanceGuardTests(unittest.TestCase):
                 "--binding",
                 str(self.binding),
                 "--run",
+                "--invocation",
+                "a" * 64,
+                "--cancel-file",
+                str(result_path) + ".cancel",
                 "--result",
                 str(result_path),
                 "--",
@@ -329,6 +333,20 @@ class ProvenanceGuardTests(unittest.TestCase):
         result = json.loads(result_path.read_text())
         self.assertTrue(result["ok"])
         self.assertEqual(result["command_exit_code"], 7)
+
+        recovered = guard.completed_command(self.binding, result_path, "a" * 64)
+        self.assertEqual(recovered["exit_code"], 7)
+        self.assertFalse(recovered["output_available"])
+        with self.assertRaisesRegex(guard.GuardError, "command_outcome_unknown"):
+            guard.completed_command(self.binding, result_path, "b" * 64)
+        other = self.folder / "unrelated-result.json"
+        other.write_bytes(result_path.read_bytes())
+        with self.assertRaisesRegex(guard.GuardError, "command_outcome_unknown"):
+            guard.completed_command(self.binding, other, "a" * 64)
+        result["command_exit_code"] = 0
+        result_path.write_text(json.dumps(result))
+        with self.assertRaisesRegex(guard.GuardError, "command_outcome_unknown"):
+            guard.completed_command(self.binding, result_path, "a" * 64)
 
     def test_preexisting_cancel_marker_prevents_command_start(self):
         marker = self.folder / "cancel-before-start"

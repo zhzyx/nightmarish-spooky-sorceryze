@@ -1,0 +1,15 @@
+{
+  "request_id": "tianshu-worker-continuity",
+  "issue_number": 594,
+  "parent_issue": 592,
+  "base": "721524e16bfedbc31995487f2eecda13f7e67fd8",
+  "environment": "Windows x64; actual compiled headless Godot editor in disposable projects, loopback model and authorization fixture, real guarded subprocess; no paid API",
+  "trigger": "After the command appends once, kill only the disposable editor while the guard and child remain live; reopen the same project.",
+  "checks": [
+    {"test": "run_daqian_node_approval.py --command-restart", "result": "DAQIAN_COMMAND_RESTART_OK", "conversation": "ce8d326b02e45d19875e117050e24a36", "call": "fixture-command", "effects": 1, "restored_exit_code": 0, "history_consumption": "one; reinstating original journal after durable history commit does not add a duplicate step"},
+    {"test": "run_daqian_node_approval.py --command-restart --changed-actor", "result": "DAQIAN_COMMAND_RESTART_OK", "conversation": "4094d08ea41bef836a18e30a65044804", "incorrect_actor": "refused, journal retained", "original_actor": "result recovered without replay", "queued_message": "retained"},
+    {"test": "run_daqian_node_approval.py --command-restart --stop-watch", "result": "DAQIAN_COMMAND_WATCH_STOP_OK", "outcome": "stop revoked observation, original evidence preserved; simulated interruption after durable stop does not reattach"},
+    {"test": "run_daqian_node_approval.py", "result": "DAQIAN_INLINE_APPROVAL_OK"}
+  ],
+  "limits": ["Source/build delivery, not a change to an already-running user editor.", "A missing, cancelled, unowned or unverifiable receipt is never treated as success. Standard output is not reconstructed.", "Full Windows provenance tests: 41 run, 6 skipped, 2 failures and 2 errors also reproduced on baseline; targeted invocation/path/exit checks pass."]
+}

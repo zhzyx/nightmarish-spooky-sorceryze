@@ -124,9 +124,21 @@ class Model(BaseHTTPRequestHandler):
                         "function": {
                             "name": "run_command",
                             "arguments": json.dumps({
-                                "command": "Add-Content -Encoding ascii executions once"
+                                "command": (
+                                    "Add-Content -Encoding ascii executions once"
+                                    + (
+                                        "; while (!(Test-Path release-command)) { Start-Sleep -Milliseconds 100 }"
+                                        if self.server.restart
+                                        else ""
+                                    )
+                                )
                                 if os.name == "nt"
-                                else "echo once >> executions",
+                                else "echo once >> executions"
+                                + (
+                                    "; while [ ! -e release-command ]; do sleep 0.1; done"
+                                    if self.server.restart
+                                    else ""
+                                ),
                             }),
                         },
                     }
@@ -142,7 +154,93 @@ class Model(BaseHTTPRequestHandler):
         self.wfile.write(response)
 
 
-def run(binary):
+def check_command_restart(command, env, project, changed_actor, stop_watching):
+    marker = None
+    with (project / "child.log").open("wb") as log:
+        process = subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT)
+        try:
+            deadline = time.monotonic() + 90
+            while time.monotonic() < deadline and process.poll() is None:
+                marker = next(project.glob("godot-candidate-*/executions"), None)
+                history = project / ".godot/editor/ai_chat_history.json"
+                if (
+                    marker
+                    and marker.read_text().strip() == "once"
+                    and history.exists()
+                    and "Preserve original queued work" in history.read_text(encoding="utf-8")
+                ):
+                    break
+                time.sleep(0.1)
+            else:
+                raise AssertionError(
+                    "Command effect missing: " + (project / "child.log").read_text(errors="replace")[-3000:]
+                )
+        finally:
+            process.kill()
+            process.wait(timeout=15)
+    journal = project / ".godot/editor/ai_chat_resume.json"
+    original_journal = journal.read_bytes()
+    initial = json.loads(original_journal)
+    assert initial["conversation"] == initial["candidate"]["owner"] and initial["reporting"]["source_ref"].endswith(
+        "/210"
+    )
+    assert initial["tool_calls"][initial["tool_index"]]["id"] == "fixture-command"
+    shutil.copyfile(Path(__file__).with_name("daqian_command_reopen.gd"), project / "reopen.gd")
+    reopened = [*command[:-1], "res://reopen.gd"]
+
+    def observe():
+        completed = subprocess.run(reopened, env=env, capture_output=True, timeout=45)
+        assert completed.returncode == 0, completed.stderr.decode(errors="replace")
+        return json.loads((project / "observed.json").read_text(encoding="utf-8"))
+
+    changed = project / ".fixture" / "changed-authority"
+    if changed_actor:
+        env["DAQIAN_CHANGED_AUTHORITY"] = "1"
+        changed.touch()
+    env["DAQIAN_RELEASE_MARKER"] = str(marker.with_name("release-command"))
+    if stop_watching:
+        env["DAQIAN_STOP_WATCH"] = "1"
+    terminal = observe()
+    if stop_watching:
+        assert terminal["stopped"] and not terminal["journal"] and terminal["watched"], terminal
+        assert marker.read_text().splitlines() == ["once"] and list(
+            journal.parent.glob(journal.name + ".pending-*.stopped-*")
+        )
+        assert not any("此步骤已返回结果" in item for item in [terminal["text"]])
+        journal.write_bytes(original_journal)  # Interruption after durable stop, before unlink.
+        after_stop = observe()
+        assert not after_stop["watched"] and not after_stop["journal"] and marker.read_text().splitlines() == ["once"]
+        print("DAQIAN_COMMAND_WATCH_STOP_OK")
+        return
+    assert terminal["watched"], terminal
+    if changed_actor:
+        assert terminal["journal"] and terminal["rejected"], terminal
+        changed.unlink()
+        del env["DAQIAN_CHANGED_AUTHORITY"]
+        del env["DAQIAN_RELEASE_MARKER"]
+        terminal = observe()
+    assert not terminal["journal"] and marker.read_text().splitlines() == ["once"], terminal
+    assert not list(journal.parent.glob(journal.name + ".pending-*"))
+    history = json.loads((journal.parent / "ai_chat_history.json").read_text(encoding="utf-8"))
+    worker = next(agent for agent in history["agents"] if agent["conversation_id"] == initial["conversation"])
+    results = [turn for turn in worker["messages"] if turn.get("tool_call_id") == "fixture-command"]
+    assert len(results) == 1 and json.loads(results[0]["content"])["exit_code"] == 0, results
+    assert [turn["content"] for turn in worker["queued_messages"]] == ["Preserve original queued work"]
+    assert worker["queue_paused"]
+    # Recreate the crash window after durable history replacement but before journal removal.
+    journal.write_bytes(original_journal)
+    retries = observe()
+    assert not retries["journal"] and marker.read_text().splitlines() == ["once"], retries
+    after = json.loads((journal.parent / "ai_chat_history.json").read_text(encoding="utf-8"))
+    restored = next(agent for agent in after["agents"] if agent["conversation_id"] == initial["conversation"])
+    assert sum(turn.get("tool_call_id") == "fixture-command" for turn in restored["messages"]) <= 1
+    assert sum("此步骤已返回结果" in str(item) for item in restored["transcript"]) == sum(
+        "此步骤已返回结果" in str(item) for item in worker["transcript"]
+    )
+    print("DAQIAN_COMMAND_RESTART_OK", initial["conversation"], initial["tool_calls"][initial["tool_index"]]["id"])
+
+
+def run(binary, restart=False, changed_actor=False, stop_watching=False):
     os.environ.pop("GONGGONG_WORKSPACE", None)
     with (
         tempfile.TemporaryDirectory(prefix="daqian-approval-", ignore_cleanup_errors=os.name == "nt") as tmp,
@@ -162,6 +260,7 @@ def run(binary):
             encoding="utf-8",
         )
         workspace = project / ".fixture"
+        server.restart = restart
         server.workspace = workspace
         threading.Thread(target=server.serve_forever, daemon=True).start()
         project.joinpath("project.godot").write_text(
@@ -204,7 +303,7 @@ def run(binary):
             agent=dict(id="sinan", version="1", definition_sha256="0" * 64, origin="offline-fixture"),
         )
         bridge.write_text(
-            """import json,runpy,sys
+            """import json,os,runpy,sys
 from pathlib import Path
 row = {!r}
 action = sys.argv[1]
@@ -239,6 +338,8 @@ elif action == 'issue-start':
 else:
     assert action == 'chat'
     result = {!r}
+    if os.environ.get("DAQIAN_CHANGED_AUTHORITY") == "1":
+        result["reporting"]["actor"] = "changed"
 Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encoding="utf-8")
 """.format(row, str(STORAGE), dict(ok=True, context="Fixture", reporting=reporting)),
             encoding="utf-8",
@@ -264,18 +365,26 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
             DAQIAN_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
         )
         try:
+            command = [
+                str(isolated_editor),
+                "--headless",
+                "--editor",
+                "--log-file",
+                str(project / "editor.log"),
+                "--path",
+                str(project),
+                "--script",
+                "res://test.gd",
+            ]
+            if restart:
+                env["DAQIAN_TEST_COMMAND_RESTART"] = "1"
+                try:
+                    check_command_restart(command, env, project, changed_actor, stop_watching)
+                finally:
+                    server.shutdown()
+                return
             result = subprocess.run(
-                [
-                    str(isolated_editor),
-                    "--headless",
-                    "--editor",
-                    "--log-file",
-                    str(project / "editor.log"),
-                    "--path",
-                    str(project),
-                    "--script",
-                    "res://test.gd",
-                ],
+                command,
                 env=env,
                 capture_output=True,
                 text=True,
@@ -299,4 +408,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
-    run(parser.parse_args().godot)
+    parser.add_argument("--command-restart", action="store_true")
+    parser.add_argument("--changed-actor", action="store_true")
+    parser.add_argument("--stop-watch", action="store_true")
+    args = parser.parse_args()
+    run(args.godot, args.command_restart, args.changed_actor, args.stop_watch)
