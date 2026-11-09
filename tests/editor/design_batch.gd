@@ -274,6 +274,11 @@ func _run():
 	if mode.begins_with("review"):
 		settings.set_setting("ai_chat/parallel_work_orders_config", "res://must-not-dispatch-production.json")
 	_send("DESIGN_BATCH_START")
+	if mode.begins_with("review-stale-"):
+		await _wait_marker("子工单回传已失效")
+		_check(dock.get_meta("queued_message_count", -1) == 0, "Stale review is still queued")
+		_finish()
+		return
 	if mode in ["review-stop", "review-parent-stop"]:
 		if not await _wait_file("review-running" if mode == "review-stop" else "review-parent-waiting"):
 			_finish()

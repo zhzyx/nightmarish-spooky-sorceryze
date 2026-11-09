@@ -97,7 +97,7 @@ bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p
 	return true;
 }
 
-bool AIChatDock::_validate_engine_candidate(String &r_error) const {
+bool AIChatDock::_validate_engine_candidate(String &r_error, const String &p_review_owner) const {
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {
 		// Non-engine hosts and isolated mock workspaces keep their project behavior.
@@ -114,7 +114,7 @@ bool AIChatDock::_validate_engine_candidate(String &r_error) const {
 			return false;
 		}
 	}
-	if (String(candidate["owner"]) != conversation_id || int64_t(candidate["issue"]) != String(_work_order_binding("issue_number")).to_int() || candidate["request_id"] != _work_order_binding("request_id")) {
+	if (String(candidate["owner"]) != (p_review_owner.is_empty() ? conversation_id : p_review_owner) || int64_t(candidate["issue"]) != String(_work_order_binding("issue_number")).to_int() || candidate["request_id"] != _work_order_binding("request_id")) {
 		r_error = "candidate_issue_mismatch: active Issue or conversation changed.";
 		return false;
 	}

@@ -320,6 +320,54 @@ class ChatGateTests(unittest.TestCase):
         self.assertEqual(run.call_args_list[0].args[0][-2], "kuafu")
         self.assertEqual(result["reporting"]["agent"]["id"], "kuafu")
 
+    def test_editor_worker_separates_coordinator_admission_from_execution(self):
+        manifest = self.root / "framework/framework-manifest.json"
+        data = json.loads(manifest.read_text())
+        data["agents"][0]["id"] = "sinan"
+        manifest.write_text(json.dumps(data))
+        delegation = {
+            "execution_role": "implementation_worker",
+            "source": "design",
+            "work_order": 1,
+            "parent_conversation": "1" * 32,
+            "child_conversation": "2" * 32,
+            "issue_number": 6,
+            "request_id": "fixture",
+            "scope_sha256": "0" * 64,
+            "turn_scope_sha256": "3" * 64,
+            "authority_ref": "godot-editor:user-chat:" + "1" * 32,
+        }
+        host = {"id": "godot-editor", "kind": "engine"}
+        request = dict(
+            self.request,
+            protocol_version=1,
+            host=host,
+            agent_id="sinan",
+            issue_number=6,
+            authority_ref=delegation["authority_ref"],
+            delegation=delegation,
+        )
+        with patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run:
+            result = bridge.chat(self.root, request, "test")
+        self.assertEqual(run.call_args_list[0].args[0][-2], "sinan")
+        binding = result["reporting"]
+        self.assertEqual(binding["agent"]["id"], "godot-editor-worker")
+        self.assertTrue(binding["sponsor_agent_snapshot_ref"].startswith("sinan@"))
+        self.assertTrue(binding["agent_snapshot_ref"].startswith("godot-editor-worker@"))
+        self.assertEqual(binding["delegation"], delegation)
+        with patch.object(bridge.subprocess, "run") as run:
+            for drift in (
+                {"issue_number": 7},
+                {"request_id": "other"},
+                {"work_order": 0},
+                {"independence": True},
+                {"child_conversation": delegation["parent_conversation"]},
+                {"execution_role": "sinan"},
+            ):
+                with self.subTest(drift=drift), self.assertRaises(ValueError):
+                    bridge.chat(self.root, dict(request, delegation=dict(delegation, **drift)), "test")
+            run.assert_not_called()
+
     def test_invalid_identity_never_launches_loader(self):
         for changes in (
             {"protocol_version": 2},

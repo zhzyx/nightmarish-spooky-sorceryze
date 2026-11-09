@@ -30,6 +30,7 @@
 
 #include "editor/docks/ai_chat_sub_agents.h"
 
+#include "core/crypto/crypto_core.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
@@ -38,6 +39,7 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_sub_agent_receipts.h"
+#include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
@@ -51,6 +53,82 @@
 
 namespace {
 constexpr int64_t MAX_DESIGN_DOCUMENT_BYTES = 1024 * 1024;
+
+String review_head(const String &p_root) {
+	List<String> args;
+	for (const String &arg : { String("-C"), p_root, String("rev-parse"), String("--verify"), String("HEAD^{commit}") }) {
+		args.push_back(arg);
+	}
+	String git = OS::get_singleton()->get_environment("GONGGONG_GIT");
+	String output;
+	int code = -1;
+	if (OS::get_singleton()->execute(git.is_empty() ? String("git") : git, args, &output, &code) != OK || code != 0) {
+		return String();
+	}
+	const String head = output.strip_edges();
+	return (head.length() == 40 || head.length() == 64) && head.is_valid_hex_number(false) ? head : String();
+}
+
+// Return a complete private recheck key. Never reopen a clipped display path
+// or follow a symlink/junction when deciding whether a report is current.
+String review_relative_file(const String &p_root, const String &p_absolute) {
+	const String root = p_root.replace_char('\\', '/').simplify_path();
+	const String prefix = root.trim_suffix("/") + "/";
+	const String path = p_absolute.replace_char('\\', '/').simplify_path();
+#ifdef WINDOWS_ENABLED
+	if (path.left(prefix.length()).nocasecmp_to(prefix) != 0) {
+#else
+	if (!path.begins_with(prefix)) {
+#endif
+		return String();
+	}
+	const String relative = path.substr(prefix.length());
+	Ref<DirAccess> directory = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
+	String segment = path;
+	while (segment.length() >= root.length()) {
+		if (directory->is_link(segment)) {
+			return String();
+		}
+		const String parent = segment.get_base_dir();
+		if (parent == segment) {
+			break;
+		}
+		segment = parent;
+	}
+	return relative;
+}
+
+bool review_files_current(const String &p_root, const Dictionary &p_files) {
+	for (const Variant &key : p_files.keys()) {
+		const String relative = key;
+		const String path = p_root.path_join(relative);
+		if (relative.is_empty() || review_relative_file(p_root, path) != relative) {
+			return false;
+		}
+		Ref<FileAccess> file = FileAccess::open(path, FileAccess::READ);
+		if (file.is_null()) {
+			return false;
+		}
+		const uint64_t size = file->get_length();
+		CryptoCore::SHA256Context digest;
+		if (size > AIChatTools::MAX_READ_SCAN_BYTES || digest.start() != OK) {
+			return false;
+		}
+		uint8_t buffer[16384];
+		for (uint64_t offset = 0; offset < size;) {
+			const uint64_t amount = MIN(uint64_t(sizeof(buffer)), size - offset);
+			if (file->get_buffer(buffer, amount) != amount || digest.update(buffer, amount) != OK) {
+				return false;
+			}
+			offset += amount;
+		}
+		uint8_t hash[32];
+		if (file->get_error() != OK || file->get_length() != size || digest.finish(hash) != OK || String::hex_encode_buffer(hash, 32) != String(p_files[key])) {
+			return false;
+		}
+	}
+	return true;
+}
 
 Dictionary user_message(const String &p_content) {
 	Dictionary message;
@@ -208,6 +286,47 @@ bool AIChatDock::_is_review_child() const {
 	return sub_agents.has(active_agent) && String(sub_agents[active_agent].get("source", "")) == "review";
 }
 
+Dictionary AIChatDock::_child_delegation() const {
+	const Dictionary info = sub_agents[active_agent];
+	const int parent = info["parent"];
+	if (!agent_sessions.has(parent) || !AIChatIssueGuide::is_bound(info.get("issue_number", 0), info.get("request_id", "")) ||
+			_work_order_binding("issue_number", parent).to_int() != int64_t(info["issue_number"]) || _work_order_binding("request_id", parent) != String(info["request_id"])) {
+		return Dictionary();
+	}
+	const AgentSession &session = agent_sessions[parent];
+	if (session.conversation_id.is_empty() || conversation_id.is_empty()) {
+		return Dictionary();
+	}
+	Dictionary delegation;
+	delegation["source"] = info["source"];
+	delegation["execution_role"] = _is_review_child() ? "read_only_reviewer" : "implementation_worker";
+	delegation["parent_conversation"] = session.conversation_id;
+	delegation["child_conversation"] = conversation_id;
+	delegation["issue_number"] = int64_t(info["issue_number"]);
+	delegation["request_id"] = info["request_id"];
+	delegation["work_order"] = int64_t(info.get("number", info["work_order"]));
+	delegation["turn_scope_sha256"] = snapshot_state.get("child_turn_scope_sha256", "");
+	delegation["scope_sha256"] = info.get("scope_sha256", "");
+	delegation["authority_ref"] = "godot-editor:user-chat:" + session.conversation_id;
+	if (_is_review_child()) {
+		const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+		String error;
+		if (candidate.is_empty() || candidate != Dictionary(session.snapshot_state.get("engine_candidate", Dictionary())) ||
+				String(info.get("parent_governance_sha256", "")).length() != 64 || !_validate_engine_candidate(error, session.conversation_id)) {
+			return Dictionary();
+		}
+		delegation["sponsor_agent"] = info["sponsor_agent"];
+		delegation["parent_governance_sha256"] = info["parent_governance_sha256"];
+		delegation["parent_snapshot"] = info["parent_snapshot"];
+		delegation["candidate_head"] = info.get("candidate_head", "");
+		delegation["candidate_branch"] = candidate["branch"];
+		delegation["candidate_base_sha"] = candidate["base_sha"];
+		delegation["candidate_root"] = candidate["source_root"];
+		delegation["independence"] = "unknown";
+	}
+	return delegation;
+}
+
 String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 	if (!busy || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !AIChatSubAgents::supports_read_only_backend(backend->get_selected()) || !history_writable || snapshot_transaction_failed || snapshot_restoring || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || design_batches.has(active_agent) || queue_paused || !queued_messages.is_empty()) {
 		return "Error: A read-only review requires an authorized active parent with no pending batch, queue or restore. No reviewer was started.";
@@ -228,12 +347,19 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 		return "Error: Review prompt must contain 1-8192 UTF-8 bytes and title at most 80 characters.";
 	}
 	Dictionary info;
+	info["candidate_head"] = review_head(_candidate_root());
+	if (String(info["candidate_head"]).is_empty()) {
+		return "Error: Unable to bind the current review commit.";
+	}
 	info["source"] = "review";
 	info["state"] = "waiting";
 	info["work_order"] = 0;
 	info["request_id"] = review_request;
 	info["issue_number"] = issue;
 	info["title"] = review_title;
+	info["parent_snapshot"] = snapshot_id;
+	info["parent_governance_sha256"] = gonggong_governance_digest.is_empty() ? gonggong_context.sha256_text() : gonggong_governance_digest;
+	info["sponsor_agent"] = gonggong_reporting.get("agent", Dictionary());
 	const int id = _create_sub_agent(active_agent, review_title.is_empty() ? String(U"只读验收") : review_title.left(AIChatSubAgents::MAX_TITLE_CHARS), info, prompt);
 	if (id < 0) {
 		return "Error: Read-only reviewer limit reached or history is unavailable.";
@@ -277,11 +403,12 @@ void AIChatDock::_design_turn_started() {
 	Dictionary child = children[active_agent];
 	child["state"] = "running";
 	child["generation"] = int64_t(session_generation);
+	child["delegation"] = _child_delegation();
 	child["conversation_id"] = conversation_id;
 	child["snapshot_id"] = snapshot_id;
 }
 
-void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String &p_result, bool p_file_success, bool p_terminal) {
+void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String &p_result, bool p_file_success, bool p_terminal, const String &p_read_sha256) {
 	const int parent = _design_child_parent(active_agent);
 	if (parent < 0) {
 		return;
@@ -293,6 +420,46 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 		return;
 	}
 	Dictionary receipt = AIChatSubAgentReceipts::summarize(p_tool, p_result, p_file_success, p_terminal);
+	if (_is_review_child() && p_file_success && (p_tool == "read_file" || p_tool == "read_script")) {
+		// Record the scope of successful host reads. The result digest covers
+		// exactly the returned (possibly excerpted and redacted) content.
+		const int index = tool_index + read_batch_results.size();
+		if (index >= 0 && index < tool_calls.size()) {
+			const Dictionary call = tool_calls[index];
+			const Dictionary function = call.get("function", Dictionary());
+			const Dictionary args = JSON::parse_string(function.get("arguments", ""));
+			const String target = args.get("path", "");
+			String absolute;
+			String error;
+			const String relative = _resolve(target, absolute, error) ? review_relative_file(_candidate_root(), absolute) : String();
+			receipt["target_path_sha256"] = absolute.sha256_text();
+			receipt["raw_file_sha256"] = p_read_sha256;
+			receipt["read_mode"] = args.has("offset") || args.has("limit") ? "line_range" : "whole_file";
+			if (args.has("offset") || args.has("limit")) {
+				receipt["requested_offset"] = args.get("offset", 1);
+				receipt["requested_limit"] = args.get("limit", 200);
+			}
+			Dictionary files = batch.get("review_files", Dictionary());
+			if (relative.is_empty() || p_read_sha256.length() != 64 || (files.has(relative) && files[relative] != p_read_sha256) || (!files.has(relative) && files.size() >= 256)) {
+				batch["review_source_unverified"] = true;
+			} else {
+				files[relative] = p_read_sha256;
+				receipt["candidate_relative_path"] = _redact(relative).left(512);
+			}
+			batch["review_files"] = files;
+			// Keep source evidence after the bounded tool transcript rolls over.
+			if (files.has(relative)) {
+				Dictionary manifest = batch.get("review_source_manifest", Dictionary());
+				Dictionary entry;
+				entry["path"] = _redact(relative).left(512);
+				entry["raw_sha256"] = files[relative];
+				manifest[relative.sha256_text()] = entry;
+				batch["review_source_manifest"] = manifest;
+			}
+		} else {
+			batch["review_source_unverified"] = true;
+		}
+	}
 	child["host_bound_source_root"] = _candidate_root();
 	child["workspace"] = _workflow_root();
 	child["issue_number"] = _work_order_binding("issue_number").to_int();
@@ -318,6 +485,10 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 	}
 	Dictionary body = child.duplicate(true);
 	body.erase("receipt_ref");
+	if (bool(batch.get("read_only_review", false))) {
+		body["review_source_manifest"] = batch.get("review_source_manifest", Dictionary());
+		body["review_source_unverified"] = batch.get("review_source_unverified", false);
+	}
 	body["source"] = "current_host_design_batch";
 	body["batch_token"] = batch["token"];
 	body["child_id"] = active_agent;
@@ -403,6 +574,10 @@ bool AIChatDock::_design_child_finished(int p_agent, bool p_completed, uint64_t 
 	child["child_report"] = report;
 	Dictionary body = child.duplicate(true);
 	body.erase("receipt_ref");
+	if (bool(batch.get("read_only_review", false))) {
+		body["review_source_manifest"] = batch.get("review_source_manifest", Dictionary());
+		body["review_source_unverified"] = batch.get("review_source_unverified", false);
+	}
 	body["source"] = "current_host_design_batch";
 	body["batch_token"] = batch["token"];
 	body["child_id"] = p_agent;
@@ -437,6 +612,21 @@ bool AIChatDock::_design_return_allowed(int p_parent, const Dictionary &p_messag
 		return false;
 	}
 	const Dictionary batch = design_batches[p_parent];
+	if (bool(batch.get("read_only_review", false))) {
+		String error;
+		const Array order = batch["order"];
+		const Dictionary children = batch["children"];
+		const Dictionary child = children[order[0]];
+		const Dictionary delegation = child.get("delegation", Dictionary());
+		const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+		if (candidate.is_empty() || delegation.get("candidate_root", "") != candidate.get("source_root", "") ||
+				delegation.get("candidate_branch", "") != candidate.get("branch", "") || delegation.get("candidate_base_sha", "") != candidate.get("base_sha", "") ||
+				delegation.get("parent_snapshot", "") != snapshot_id || !_validate_engine_candidate(error) ||
+				bool(batch.get("review_source_unverified", false)) || !review_files_current(_candidate_root(), batch.get("review_files", Dictionary())) ||
+				String(delegation.get("candidate_head", "")).is_empty() || delegation["candidate_head"] != review_head(_candidate_root())) {
+			return false;
+		}
+	}
 	const Dictionary marker = p_message.get("design_batch_return", Dictionary());
 	return !bool(batch.get("reporting_blocked", false)) && String(batch.get("state", "")) == "queued" && String(marker.get("token", "")) == String(batch.get("token", "")) && _design_parent_matches(p_parent, batch);
 }
@@ -452,6 +642,8 @@ bool AIChatDock::_queue_design_parent_result(int p_parent) {
 	}
 	Dictionary result = batch.duplicate(true);
 	result.erase("state");
+	result.erase("review_files");
+	result.erase("review_source_manifest");
 	result["source"] = "current_host_design_batch";
 	result["business_accepted"] = Variant();
 	result["host_runtime"] = _current_host_runtime_metadata();
@@ -596,6 +788,7 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 	agent_sessions.insert(id, session);
 	Dictionary info = p_info.duplicate(true);
 	info["parent"] = p_parent;
+	info["scope_sha256"] = p_prompt.is_empty() ? String() : p_prompt.sha256_text();
 	sub_agents.insert(id, info);
 	agent_tabs->set_block_signals(true);
 	const int tab = agent_tabs->get_tab_count();
@@ -772,7 +965,7 @@ void AIChatDock::_sub_agent_dispatch() {
 	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
 		return;
 	}
-	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.size() == 1 && Dictionary(queued_messages[0]).has("design_batch_return") && _design_return_allowed(active_agent, queued_messages[0])) {
+	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.size() == 1 && Dictionary(queued_messages[0]).has("design_batch_return") && design_batches.has(active_agent) && !bool(design_batches[active_agent].get("reporting_blocked", false))) {
 		callable_mp(this, &AIChatDock::_dispatch_queued_message).call_deferred(active_agent);
 		return;
 	}
@@ -1163,7 +1356,7 @@ String AIChatDock::_parent_context_result() const {
 	result["ok"] = true;
 	result["parent_title"] = _agent_title(parent);
 	result["parent_conversation_id"] = session.conversation_id;
-	result["work_order"] = info.get("work_order", 0);
+	result["work_order"] = info.get("number", info.get("work_order", 0));
 	result["request_id"] = info.get("request_id", "");
 	result["host_runtime"] = _current_host_runtime_metadata();
 	result["records"] = records;
@@ -1173,7 +1366,7 @@ String AIChatDock::_parent_context_result() const {
 		const Dictionary sibling = sub_agents.get(id);
 		Dictionary item;
 		item["title"] = _agent_title(id);
-		item["work_order"] = sibling.get("work_order", 0);
+		item["work_order"] = sibling.get("number", sibling.get("work_order", 0));
 		item["state"] = sibling.get("state", "manual");
 		item["self"] = id == active_agent;
 		siblings.push_back(item);

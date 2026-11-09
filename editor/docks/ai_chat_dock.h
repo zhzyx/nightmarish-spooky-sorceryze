@@ -189,7 +189,7 @@ class AIChatDock : public EditorDock {
 	void _cancel_engine_candidate();
 	String _candidate_root() const;
 	String _workflow_root(int p_agent = -1) const;
-	bool _validate_engine_candidate(String &r_error) const;
+	bool _validate_engine_candidate(String &r_error, const String &p_review_owner = String()) const;
 	bool _recover_active_provenance(String &r_error, const Dictionary &p_runtime = Dictionary()) const;
 
 	String engine_status_path;
@@ -631,12 +631,13 @@ class AIChatDock : public EditorDock {
 	uint64_t design_last_blocked_generation = UINT64_MAX;
 	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue, int p_review = -1);
 	bool _is_review_child() const;
+	Dictionary _child_delegation() const;
 	String _delegate_review(const Dictionary &p_arguments);
 	void _cancel_design_batch(int p_agent);
 	bool _design_parent_matches(int p_parent, const Dictionary &p_batch) const;
 	int _design_child_parent(int p_child) const;
 	void _design_turn_started();
-	void _record_design_tool_receipt(const String &p_tool, const String &p_result, bool p_file_success, bool p_terminal = false);
+	void _record_design_tool_receipt(const String &p_tool, const String &p_result, bool p_file_success, bool p_terminal = false, const String &p_read_sha256 = String());
 	void _design_reporting_blocked(uint64_t p_generation = 0);
 	void _resume_design_completions(uint64_t p_generation);
 	bool _design_child_finished(int p_agent, bool p_completed, uint64_t p_generation);
@@ -727,7 +728,7 @@ class AIChatDock : public EditorDock {
 	void _publish_read_batch(uint64_t p_session);
 	void _show_tool_result(const Dictionary &p_call, const String &p_result);
 	void _append_tool_message(const String &p_result, bool p_file_success, bool p_structured_state);
-	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);
+	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false, const String &p_read_sha256 = String());
 	void _show_confirmation();
 	void _restore_confirmation_parent();
 	void _confirm_action();

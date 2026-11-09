@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-child-role-governance-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-child-role-governance",
+  "kind": "request",
+  "occurred_at": "2026-11-09T19:26:04.855319+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/676",
+  "agent": {
+    "id": "codex-editor-role-implementation-worker",
+    "origin": "codex-native-child",
+    "version": "not-reported-by-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "scope": "实现原工单编辑器设计子工单和只读审查角色、治理委托与回执绑定",
+    "design_document": "design-docs/editor-child-role-governance.md",
+    "authority_ref": "codex-user-01a1c1a6-e32a-7613-8803-fa3927c2bde6-agent-review-fixes",
+    "source_revision": "f3368a25c504d48a6680e424d14059ba8288793895c15c23c01c3bce58ab32ff"
+  },
+  "evidence_refs": [],
+  "sha256": "c4987c8f4d85eef6e637ecdac6a7364d504c8e4f323051f08b82245adcf46b5a"
+}

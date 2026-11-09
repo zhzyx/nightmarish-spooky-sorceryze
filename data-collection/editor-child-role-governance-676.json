@@ -1,0 +1,114 @@
+{
+  "request_id": "editor-child-role-governance",
+  "issue_number": 676,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/676",
+  "base": "35bde7b4a27a842352b8da40151340a03d0fce1c",
+  "intake_receipt": {
+    "state": "recorded_file",
+    "path": "gonggong-diting-data/events/gonggong-workspace/editor-child-role-governance/editor-child-role-governance-intake.json",
+    "sha256": "c4987c8f4d85eef6e637ecdac6a7364d504c8e4f323051f08b82245adcf46b5a",
+    "git_committed": false
+  },
+  "python_tests": {
+    "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_bridge.py",
+    "tests": 42,
+    "passed": true
+  },
+  "path_base": "repository_root",
+  "native_headless_fixture": {
+    "editor_sha256": "f3f735bc29e3133817100f922ae4849c0b0d8a3a72f267d92d63f697ab4c7c06",
+    "runner": "tests/editor/run_design_batch.py",
+    "platform": "Windows x86_64",
+    "services": "offline HTTP model and Issue fixtures",
+    "cases": {
+      "normal": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1,
+          "child1": 3,
+          "child2": 3,
+          "return": 3
+        },
+        "parent_return_count": 1,
+        "recorded_event_files": 119,
+        "receipt_files": 2
+      },
+      "review": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 3,
+          "return": 2,
+          "tamper": 3
+        },
+        "parent_return_count": 1,
+        "recorded_event_files": 33,
+        "receipt_files": 1,
+        "role": "read_only_reviewer",
+        "independence": "unknown",
+        "candidate_head": "c81829b0ceb57ef1dca40bfaea93d4b647fd78d5",
+        "business_accepted": null,
+        "file_reads": [
+          {
+            "candidate_relative_path": "fixture-input.txt",
+            "read_mode": "whole_file",
+            "raw_file_sha256": "e9d73df3269254ceec1d7148687850cc5857a7e235564c4981a0bb8f11099f4c",
+            "result_sha256": "34f1e21ffd9e08b2c7ffe4403c4e17429317e8b8adfae239de6bd3e211abd7a0"
+          }
+        ],
+        "forbidden_calls_denied": 6
+      },
+      "consultation": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 1
+        },
+        "parent_return_count": 0,
+        "recorded_event_files": 7,
+        "receipt_files": 0
+      },
+      "review-stale-bytes": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 3
+        },
+        "parent_return_count": 0,
+        "recorded_event_files": 20,
+        "receipt_files": 1,
+        "original_review_report_preserved": true,
+        "stale_notice_and_queue_release": true
+      },
+      "review-stale-head": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 3
+        },
+        "parent_return_count": 0,
+        "recorded_event_files": 20,
+        "receipt_files": 1,
+        "original_review_report_preserved": true,
+        "stale_notice_and_queue_release": true
+      },
+      "review-stale-link": {
+        "ok": true,
+        "stage_requests": {
+          "warmup": 1,
+          "parent": 2,
+          "review": 3
+        },
+        "parent_return_count": 0,
+        "recorded_event_files": 20,
+        "receipt_files": 1,
+        "original_review_report_preserved": true,
+        "stale_notice_and_queue_release": true
+      }
+    }
+  }
+}

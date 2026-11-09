@@ -2019,7 +2019,7 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 	if (design_return && !_design_return_allowed(p_agent, message)) {
 		queued_messages.remove_at(0);
 		_cancel_design_batch(p_agent);
-		_append(TTR("Editor"), U"子工单回传已失效或当前权限不允许接续，未自动执行。请核对当前会话与授权后继续。");
+		_append(TTR("Editor"), U"子工单回传已失效或当前权限不允许接续。原始回执已保留；请核对授权并针对当前候选重新发起审查。");
 		_refresh_message_queue();
 		_queue_history_save();
 		if (!queued_messages.is_empty()) {
@@ -2258,6 +2258,9 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 			snapshot_state["daqian_execution"] = p_daqian_selection["execution_receipt"];
 		}
 	}
+	if (sub_agents.has(active_agent)) {
+		snapshot_state["child_turn_scope_sha256"] = text.sha256_text();
+	}
 	snapshot_state["summary"] = _redact(text.left(160));
 	snapshot_state["messages_before"] = JSON::parse_string(_redact(JSON::stringify(messages)));
 	snapshot_state["files"] = Array();
@@ -2371,6 +2374,15 @@ void AIChatDock::_request_completion() {
 	}
 	if (consultation_turn) {
 		gonggong_context = "Consultation only: read code and answer questions. No writes, execution, builds or Issue operations are permitted.";
+		if (_is_review_child()) {
+			const Dictionary delegation = _child_delegation();
+			if (delegation.is_empty()) {
+				_append(TTR("Error"), U"无法核实只读审查的父委托、工单或候选，请在原父会话重新发起审查。");
+				_set_busy(false);
+				return;
+			}
+			gonggong_context += "\nHost review delegation (independence unknown): " + JSON::stringify(delegation);
+		}
 		set_meta("gonggong_status", "consultation_only");
 		_send_completion_after_receipt();
 		return;
@@ -3071,6 +3083,8 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		return;
 	}
 	if (name == "read_script" || name == "read_file") {
+		String raw_sha256;
+		String *digest = _is_review_child() ? &raw_sha256 : nullptr;
 		if (arguments.has("offset") || arguments.has("limit")) {
 			const Variant offset = arguments.get("offset", 1);
 			const Variant limit = arguments.get("limit", 200);
@@ -3079,18 +3093,18 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 				return;
 			}
 			Dictionary result;
-			if (!AIChatTools::read_script_range(absolute, int(offset), int(limit), result, error)) {
+			if (!AIChatTools::read_script_range(absolute, int(offset), int(limit), result, error, digest)) {
 				_finish_tool("Error: " + error);
 				return;
 			}
-			_finish_tool(JSON::stringify(result), true);
+			_finish_tool(JSON::stringify(result), true, false, raw_sha256);
 		} else {
 			String content;
-			if (!AIChatTools::read_script(absolute, content, error)) {
+			if (!AIChatTools::read_script(absolute, content, error, digest)) {
 				_finish_tool("Error: " + error);
 				return;
 			}
-			_finish_tool(content, true);
+			_finish_tool(content, true, false, raw_sha256);
 		}
 		return;
 	}
@@ -3144,7 +3158,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	_show_confirmation();
 }
 
-void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
+void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state, const String &p_read_sha256) {
 	if (restoring_command_offer) {
 		// A missing cwd or a changed binding is a failed revalidation, not a
 		// result for the original command. Keep the rest of its batch paused.
@@ -3165,7 +3179,7 @@ void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool 
 		const Dictionary function = call["function"];
 		// The operation already happened. Keep its bounded actual status even
 		// when mandatory event recording subsequently refuses continuation.
-		_record_design_tool_receipt(function.get("name", ""), _redact(p_result), p_file_success);
+		_record_design_tool_receipt(function.get("name", ""), _redact(p_result), p_file_success, false, p_read_sha256);
 	}
 	_daqian_tool_result(p_result, p_file_success);
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {

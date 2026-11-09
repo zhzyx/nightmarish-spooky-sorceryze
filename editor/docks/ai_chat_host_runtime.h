@@ -96,19 +96,22 @@ public:
 		for (const bool ancestry : { false, true }) {
 			List<String> args;
 			args.push_back("-C");
-			args.push_back(source);
+			args.push_back(ancestry ? source : String(p_candidate["common_dir"]));
 			if (ancestry) {
 				for (const String &arg : { String("merge-base"), String("--is-ancestor"), String(p_candidate["base_sha"]), String("HEAD") }) {
 					args.push_back(arg);
 				}
 			} else {
+				// Ask Git from the recorded common directory. A matching repository
+				// returns "./" even when Windows console decoding cannot represent its path.
+				args.push_back("--git-dir=" + source.path_join(".git"));
 				args.push_back("rev-parse");
-				args.push_back("--path-format=absolute");
+				args.push_back("--path-format=relative");
 				args.push_back("--git-common-dir");
 			}
 			String output;
 			int code = -1;
-			if (OS::get_singleton()->execute(git, args, &output, &code) != OK || code != 0 || (!ancestry && !AIChatHostRuntime::matches_recorded_directory(output.strip_edges(), p_candidate["common_dir"]))) {
+			if (OS::get_singleton()->execute(git, args, &output, &code) != OK || code != 0 || (!ancestry && output.strip_edges().trim_suffix("/") != ".")) {
 				r_error = "candidate_repository_or_base_changed: source identity must be revalidated.";
 				return false;
 			}
