@@ -1,0 +1,11 @@
+{
+  "request_id": "maliang-hunyuan-desktop-packaging",
+  "issue_number": 616,
+  "parent_issue": 611,
+  "previous_pr": 625,
+  "previous_windows_run": 42604346878,
+  "diagnosis": "The standalone PowerShell SDK bootstrap installed components under LocalAppData; the MSYS build expected bin/build_deps. The Windows workflow now calls the repository Windows editor build and consumes its windows-editor artifact in the same run.",
+  "workflow_sha256": "70b4c4aa0b6a000ad5d1d4df44acfe3e3e5deb2ffcafd6fbea399ceb5ca4db08",
+  "previous_style_run": 42604346976,
+  "notice": "The official byte-pinned upstream Notice is excluded from editorial spelling changes."
+}

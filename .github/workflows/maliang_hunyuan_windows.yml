@@ -16,59 +16,9 @@ permissions:
 jobs:
   editor:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: windows-latest
-    timeout-minutes: 120
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.sha }}
-          submodules: recursive
-          persist-credentials: false
-      - uses: ./.github/actions/godot-cache-restore
-        with:
-          cache-name: windows-editor
-        continue-on-error: true
-      - uses: ./.github/actions/godot-deps
-        with:
-          python-version: "3.12"
-      - name: Prepare the Windows graphics and accessibility libraries
-        id: sdk
-        shell: pwsh
-        run: |
-          $flags = foreach ($component in @{
-            d3d12 = 'install_d3d12_sdk_windows.py'
-            angle = 'install_angle.py'
-            accesskit = 'install_accesskit.py'
-          }.GetEnumerator()) {
-            python "./misc/scripts/$($component.Value)" | Out-Host
-            if ($LASTEXITCODE -eq 0) { "$($component.Key)=yes" } else { "$($component.Key)=no" }
-          }
-          "flags=$($flags -join ' ')" >> $env:GITHUB_OUTPUT
-          exit 0
-      - name: Build the editor from this candidate
-        uses: ./.github/actions/godot-build
-        with:
-          platform: windows
-          target: editor
-          scons-flags: >-
-            dev_mode=yes debug_symbols=no module_text_server_fb_enabled=yes
-            windows_subsystem=console ${{ steps.sdk.outputs.flags }}
-      - name: Prepare native editor files
-        shell: pwsh
-        run: |
-          if (!(Test-Path bin/godot.windows.editor.x86_64.exe)) { throw "Missing candidate editor" }
-          Remove-Item bin/build_deps -Recurse -Force -ErrorAction SilentlyContinue
-          Get-ChildItem bin -File | Where-Object Extension -in '.exp','.lib','.pdb' | Remove-Item
-      - uses: actions/upload-artifact@v7
-        with:
-          name: maliang-native-editor-${{ github.sha }}
-          path: |
-            bin/**
-            !bin/obj/**
-            !bin/build_deps/**
-            !bin/maliang-hunyuan/**
-          retention-days: 1
-          if-no-files-found: error
+    uses: ./.github/workflows/windows_builds.yml
+    with:
+      editor_only: true
 
   package-and-run:
     needs: editor
@@ -84,7 +34,7 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@v8
         with:
-          name: maliang-native-editor-${{ github.sha }}
+          name: windows-editor
           path: ${{ runner.temp }}/native-editor
       - name: Package, relocate and generate with outbound access blocked
         shell: pwsh
