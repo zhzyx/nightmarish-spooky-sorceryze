@@ -89,6 +89,10 @@ class AIChatDock : public EditorDock {
 	String gonggong_recovered_result;
 	String gonggong_recovery_ack_token;
 	Dictionary command_recovery_reporting;
+	String command_offer_id;
+	String command_offer_path;
+	bool restoring_command_offer = false;
+	bool _consume_command_offer();
 	bool gonggong_recovery_can_send = false;
 	bool _record_gonggong(const String &p_kind, const String &p_phase, const String &p_status);
 	Callable gonggong_receipt_continuation;

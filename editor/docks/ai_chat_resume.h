@@ -67,6 +67,7 @@ public:
 	static bool decode_journal(const String &p_body, Dictionary &r_journal);
 	static bool read_journal(Dictionary &r_journal);
 	static Error write_journal(const Dictionary &p_journal, Dictionary *r_stats = nullptr);
+	static Error write_command_offer(const Dictionary &p_journal, String &r_marker);
 	static void clear_journal();
 
 	static Error write_ack(const String &p_token, const String &p_executable);
