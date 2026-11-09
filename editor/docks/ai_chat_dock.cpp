@@ -4872,8 +4872,10 @@ void AIChatDock::_start_codex_status_check(uint8_t p_sources) {
 void AIChatDock::_poll_codex_login() {
 	const uint64_t now = OS::get_singleton()->get_ticks_msec();
 	if (codex_status_pid >= 0) {
-		const bool timeout = now - codex_status_started > 10000;
-		if (timeout || !OS::get_singleton()->is_process_running(codex_status_pid)) {
+		const bool running = OS::get_singleton()->is_process_running(codex_status_pid);
+		// A delayed editor poll must still consume a completed child's real result.
+		const bool timeout = running && now - codex_status_started > 10000;
+		if (timeout || !running) {
 			const int code = timeout ? -1 : OS::get_singleton()->get_process_exit_code(codex_status_pid);
 			if (timeout) {
 				OS::get_singleton()->kill(codex_status_pid);
@@ -4893,8 +4895,9 @@ void AIChatDock::_poll_codex_login() {
 		}
 	}
 	if (codex_login_pid >= 0) {
-		const bool timeout = now - codex_login_started > 300000;
-		if (timeout || !OS::get_singleton()->is_process_running(codex_login_pid)) {
+		const bool running = OS::get_singleton()->is_process_running(codex_login_pid);
+		const bool timeout = running && now - codex_login_started > 300000;
+		if (timeout || !running) {
 			const int code = timeout ? -1 : OS::get_singleton()->get_process_exit_code(codex_login_pid);
 			if (timeout) {
 				OS::get_singleton()->kill(codex_login_pid);

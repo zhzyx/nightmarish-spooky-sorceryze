@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "request_id": "codex-login-status-late-poll-20261109",
+  "issue_number": 618,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "scope": "Local source checkpoint before a new official build; not a delivery or business acceptance receipt",
+  "base_commit": "b0da58651e2323c283b50e8642f43b251856489a",
+  "implementation_owner": "root-login-status-late-poll-20261109",
+  "intake": {
+    "status": "passed",
+    "tenant": "gonggong-workspace",
+    "same_issue_and_request": true,
+    "separate_official_candidate": true
+  },
+  "predecessor_reproduction": {
+    "binary_sha256": "cc71da63479869a65f4b97f092582012140c64284135c287fc73accdf09babe7",
+    "mode": "Exact-byte isolated editor copy, private settings, offline CLI fixture, real native callback",
+    "actual_outcome": "failed",
+    "condition": "Successful status subprocess already exited before an eleven-second event-loop pause",
+    "observed": "Native status reports timeout and does not request model/list",
+    "does_not_prove_real_provider_model_discovery": true
+  },
+  "change": {
+    "completed_process_exit_code_preserved": true,
+    "deadline_only_applies_while_child_running": true,
+    "branches": ["login status", "interactive login"],
+    "new_regression": "codex-completed-status-delayed-poll"
+  },
+  "local_checks": {
+    "python_syntax": "passed",
+    "git_diff_check": "passed"
+  },
+  "remaining_before_delivery": [
+    "Independent static review reference",
+    "Official build from exact committed source HEAD",
+    "Dynamic model-refresh and still-running-timeout regression on new artifact",
+    "Independent final review",
+    "Formal signed PR, exact CI and normal main merge",
+    "Original App installation, real cold-start nonempty catalog and native readonly chat"
+  ],
+  "business_accepted": false,
+  "remote_merge_verified": false,
+  "diting_consumption": null
+}
