@@ -25,10 +25,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument(
-    "--scenario", choices=["graph", "parallel", "entry", "inputs", "multi_issue", "publish", "direct"], default="graph"
+    "--scenario",
+    choices=["graph", "parallel", "entry", "inputs", "multi_issue", "publish", "direct", "details"],
+    default="graph",
 )
 args = parser.parse_args()
 scenarios = {
+    "details": ("daqian_issue_details.gd", "DAQIAN_DETAILS_OK"),
     "direct": ("daqian_direct.gd", "DAQIAN_DIRECT_OK"),
     "graph": ("daqian_graph.gd", "DAQIAN_GRAPH_TEST passed"),
     "publish": ("daqian_publish.gd", "DAQIAN_PUBLISH_OK"),
@@ -142,7 +145,7 @@ else: sys.exit(1)
             DAQIAN_TEST_REPO=str(Path(__file__).resolve().parents[2]),
             DAQIAN_TEST_PYTHON=sys.executable,
         )
-    if args.scenario in {"publish", "direct"}:
+    if args.scenario in {"publish", "direct", "details"}:
         # Exercise the actual UI, chat session and subprocess boundary without creating a real Issue.
         workspace = project / ".fixture"
         labels = workspace / ".github/labels.json"
@@ -156,6 +159,13 @@ from pathlib import Path
 if '--end-session' in sys.argv: sys.exit(0)
 actor = dict(login='tester', user_id='42', repo='fixture/board', repo_id='1')
 result = {'access': actor} if '--access-only' in sys.argv else {'board': dict(actor, issues=[], verified_at='fixture')}
+if '--request' in sys.argv:
+    req = json.loads(Path(sys.argv[sys.argv.index('--request')+1]).read_text(encoding='utf-8'))
+    doc = Path(__file__).with_name('fixture-' + str(req['number']) + '.md')
+    if req['action'] == 'save_document':
+        doc.write_text(req['markdown'], encoding='utf-8')
+    result = {'document': dict(path='design-docs/test.md', markdown=doc.read_text(encoding='utf-8') if doc.exists() else 'original', revision='rev', editable=True),
+              'related': [dict(url='https://github.com/fixture/board/issues/77', relation='父工单', title='Related', status='closed')]}
 Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))
 """,
             encoding="utf-8",
@@ -248,6 +258,8 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
         if args.scenario == "publish"
         else "native editor controls, unknown publication replay, switched selection during start and recovery in a second editor process"
         if args.scenario == "direct"
+        else "native issue inspector, workflow selection, linked issue, draft isolation, revert and save/reopen"
+        if args.scenario == "details"
         else "native editor; fixture graph source, execution state, model catalog and 55-issue board",
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)

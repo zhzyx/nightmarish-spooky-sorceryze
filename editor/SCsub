@@ -28,6 +28,7 @@ if env.editor_build:
             "docks/daqian/graph_layout.gd",
             "docks/daqian/issue_graph.gd",
             "docks/daqian/operation_details.gd",
+            "docks/daqian/issue_inspector.gd",
             "docks/daqian/canvas_context.gd",
             "docks/daqian/workspace.gd",
             "docks/daqian/model_settings.gd",

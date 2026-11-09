@@ -130,6 +130,11 @@ var reply_button: Button
 var sending_answers := {}
 var operation_history := {}
 var flow_split := SplitContainer.new()
+var inspector_script: Script
+var issue_inspector
+var issue_split := SplitContainer.new()
+var inspector_sessions := {}
+var inspector_key := ""
 var details_script: Script
 var details_panel
 var clarification_dialog := ConfirmationDialog.new()
@@ -330,6 +335,9 @@ func _ready() -> void:
 		saved.erase("positions")
 		_layout_board()
 		_queue_save())
+	overview.node_selected.connect(func(card):
+		if card.has_meta("issue_url"):
+			_preview_board_issue(card.get_meta("issue_url")))
 	overview.popup_request.connect(func(_position): _compose_requirement())
 	canvas_column.add_child(overview)
 	overview.resized.connect(_queue_board_layout)
@@ -358,6 +366,10 @@ func _ready() -> void:
 	issue_list.set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_CENTER)
 	issue_list.set_column_custom_minimum_width(2, roundi(120 * scale_factor))
 	issue_list.add_theme_constant_override("v_separation", roundi(5 * scale_factor))
+	issue_list.item_selected.connect(func():
+		var selected := issue_list.get_selected()
+		if selected and selected.get_metadata(0) is Dictionary:
+			_preview_board_issue(selected.get_metadata(0).url))
 	issue_list.item_activated.connect(func():
 		var selected := issue_list.get_selected()
 		if selected and selected.visible and selected.get_metadata(0) is Dictionary:
@@ -433,6 +445,12 @@ func _ready() -> void:
 	flow_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	canvas_column.add_child(flow_split)
 	flow_split.add_child(editor)
+	editor.canvas.node_selected.connect(_inspect_card)
+	editor.graph_projection_finished.connect(_refresh_selected_card)
+	editor.card_states_refreshed.connect(_refresh_selected_card)
+	editor.draft_changed.connect(_refresh_selected_card)
+	issue_inspector.save_requested.connect(_document_action.bind(true))
+	issue_inspector.reload_requested.connect(_document_action.bind(false))
 	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow_split.hide()
 	_build_operation_details(flow_split)
@@ -760,7 +778,12 @@ func _build_workbench() -> void:
 	inspector_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(inspector_split)
 	canvas_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	inspector_split.add_child(canvas_column)
+	issue_split.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inspector_split.add_child(issue_split)
+	issue_inspector = inspector_script.new()
+	issue_split.add_child(issue_inspector)
+	issue_inspector.hide()
+	issue_split.add_child(canvas_column)
 	conversation.name = "ConversationInspector"
 	conversation.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	inspector_split.add_child(conversation)
@@ -1062,6 +1085,154 @@ func _apply_issue_model() -> void:
 		await _chat_action(next)
 
 
+func _inspect_card(card: Node) -> void:
+	if not card is GraphNode or current.is_empty():
+		return
+	var id := str(card.name)
+	var plan: Dictionary = editor._display_plan()
+	if not plan.nodes.has(id):
+		return
+	var connected := PackedStringArray()
+	for edge in plan.edges:
+		var other := ""
+		if edge.to == id:
+			other = edge.from
+		elif edge.from == id:
+			other = edge.to
+		if plan.nodes.has(other):
+			var direction := "前置" if edge.to == id else "后续"
+			connected.append("%s · %s" % [direction, plan.nodes[other].title])
+	var node: Dictionary = plan.nodes[id].duplicate()
+	if node.get("kind") == "image":
+		node.value = node.get("caption", "图片")
+	var source: String = str(editor.context.get("sources", {}).get(id, ""))
+	if not source.is_empty():
+		node.value = str(node.get("value", "")) + "\n\n来源 · " + source
+	issue_inspector.show()
+	issue_inspector.show_card(id, node, graph_script.FlowCanvas.state_text(card.get_meta("flow_state", "pending")), connected)
+
+
+func _refresh_selected_card() -> void:
+	if issue_inspector.node_id.is_empty():
+		return
+	var card: Node = editor.canvas.get_node_or_null(NodePath(issue_inspector.node_id))
+	if card:
+		_inspect_card(card)
+	else:
+		issue_inspector.show_overview()
+
+
+func _leave_issue_inspector() -> void:
+	if inspector_sessions.has(inspector_key):
+		var state: Dictionary = inspector_sessions[inspector_key]
+		state.draft = issue_inspector.field.text if issue_inspector.dirty() else null
+		if state.draft == null and not state.saving:
+			inspector_sessions.erase(inspector_key)
+	inspector_key = ""
+	if is_instance_valid(issue_inspector):
+		issue_inspector.hide()
+
+
+func _preview_board_issue(url: String) -> void:
+	if not current.is_empty() or actor.is_empty() or not is_instance_valid(issue_inspector):
+		return
+	if inspector_sessions.get(inspector_key, {}).get("item", {}).get("url") == url:
+		return
+	_leave_issue_inspector()
+	_open_issue_inspector(url)
+
+
+func _open_issue_inspector(id: String) -> void:
+	var item: Dictionary = editor.workflow.get("item", {}) if not current.is_empty() else {}
+	for row in board.get("issues", []):
+		if row.url == id:
+			item = row
+			break
+	issue_inspector.show_overview()
+	issue_inspector.visible = not item.is_empty()
+	issue_inspector.busy = false
+	issue_inspector.set_document({})
+	issue_inspector.set_related([], "关联工单待核实", graph_script.FlowCanvas.state_text)
+	issue_inspector.feedback.text = ""
+	issue_inspector.summary.text = str(item.get("title", ""))
+	_bind_issue_link(issue_inspector.issue_link, item)
+	if item.is_empty():
+		return
+	if item.has("status"):
+		issue_inspector.summary.text += " · " + graph_script.FlowCanvas.state_text(_display_state(item))
+	inspector_key = JSON.stringify([_repo(), actor.get("user_id", ""), item.url, item.get("request", "")])
+	if not inspector_sessions.has(inspector_key):
+		var preview: Dictionary = item.get("design_document", {}).duplicate()
+		preview.editable = false
+		inspector_sessions[inspector_key] = {"document":preview, "draft":null, "saving":false}
+	var state: Dictionary = inspector_sessions[inspector_key]
+	state.item = item
+	issue_inspector.busy = state.saving
+	issue_inspector.set_document(state.document, state.draft)
+	if not state.saving:
+		_document_action(false)
+
+
+func _document_action(saving: bool) -> void:
+	var key := inspector_key
+	if not inspector_sessions.has(key) or issue_inspector.busy:
+		return
+	var state: Dictionary = inspector_sessions[key]
+	if offline or actor.is_empty():
+		issue_inspector.feedback.text = "离线快照 · 恢复连接后可刷新详情"
+		return
+	var origin := _repo()
+	var principal := actor.duplicate()
+	var epoch := selection_epoch
+	var request := {"action":"save_document" if saving else "details", "number":int(state.item.number),
+		"request":state.item.get("request", "")}
+	state.draft = issue_inspector.field.text if issue_inspector.dirty() else null
+	if saving:
+		if state.draft == null or not state.document.get("editable", false):
+			return
+		request.merge({"path":state.document.path, "revision":state.document.revision, "markdown":state.draft})
+		state.saving = true
+	issue_inspector.busy = true
+	issue_inspector._buttons()
+	issue_inspector.feedback.text = "正在保存…" if saving else "正在读取详情…"
+	if not saving:
+		await get_tree().process_frame
+		if epoch != selection_epoch or key != inspector_key or not is_same(inspector_sessions.get(key), state):
+			return
+	var args := _board_entry_args(origin.path_join("customizations/components/godot-host/daqian/board.py"))
+	args.append_array(["--repo",origin,"--editor-session",editor_session,"--expected-user",str(principal.user_id)])
+	var result := await _host_command(args, "--result", request)
+	if origin != _repo() or principal != actor or not inspector_sessions.has(key) or not is_same(inspector_sessions[key], state):
+		return
+	if not saving and (epoch != selection_epoch or key != inspector_key):
+		return
+	state.saving = false
+	if result.get("session_changed", false):
+		_forget(str(result.get("error", "编辑器身份已切换，请重新连接")))
+		return
+	var message := str(result.get("error", result.get("warning", "")))
+	if result.has("document"):
+		if saving or state.draft == null:
+			state.document = result.document
+			state.draft = null
+		elif state.document.get("revision") != result.document.get("revision"):
+			message = "文档版本已变化。请保留需要的文字，撤销修改后刷新。"
+		if saving:
+			message = "已保存到工作区"
+	if key != inspector_key:
+		return
+	issue_inspector.busy = false
+	issue_inspector.set_document(state.document, state.draft)
+	if result.has("related"):
+		issue_inspector.set_related(result.related, "暂无关联工单" if message.is_empty() else "关联工单未核实", graph_script.FlowCanvas.state_text)
+	elif not saving:
+		issue_inspector.set_related([], "关联工单未核实", graph_script.FlowCanvas.state_text)
+	if saving and epoch != selection_epoch and result.has("document"):
+		_document_action(false)
+	else:
+		issue_inspector.feedback.text = message
+
+
 func _build_operation_details(split: SplitContainer) -> void:
 	details_panel = details_script.new()
 	split.add_child(details_panel)
@@ -1073,8 +1244,8 @@ func _build_operation_details(split: SplitContainer) -> void:
 
 func _adapt_layout() -> void:
 	var inspector_width := minf(size.x * 0.38, 420 * get_theme_default_base_scale())
-	canvas_column.size_flags_stretch_ratio = maxf(1.0, size.x / maxf(inspector_width, 1.0) - 1.0)
-	var canvas_width := minf(canvas_column.size.x, size.x) if conversation.visible else size.x
+	issue_split.size_flags_stretch_ratio = maxf(1.0, size.x / maxf(inspector_width, 1.0) - 1.0)
+	var canvas_width := minf(issue_split.size.x, size.x) if conversation.visible else size.x
 	var columns := 4 if canvas_width >= 860 * get_theme_default_base_scale() else 3
 	if issue_list.columns != columns:
 		issue_list.columns = columns
@@ -1087,6 +1258,8 @@ func _adapt_layout() -> void:
 			for item: TreeItem in issue_rows.values():
 				_set_owner_cell(item, item.get_metadata(0))
 	var narrow := canvas_width < 720.0 * get_theme_default_base_scale()
+	issue_split.vertical = narrow
+	issue_inspector.custom_minimum_size = Vector2(0, 180) * get_theme_default_base_scale() if narrow else Vector2(280, 0) * get_theme_default_base_scale()
 	flow_split.vertical = narrow
 	details_panel.custom_minimum_size.x = 0 if narrow else 320 * get_theme_default_base_scale()
 
@@ -1316,6 +1489,7 @@ func _exit_tree() -> void:
 
 
 func _capture_before_navigation() -> void:
+	_leave_issue_inspector()
 	if current.begins_with("draft_"):
 		_save()
 	elif not current.is_empty():
@@ -2042,6 +2216,7 @@ func _gate_visibility(opened: bool) -> void:
 	editor.visible = opened and not current.is_empty()
 	flow_split.visible = editor.visible
 	if not opened:
+		_leave_issue_inspector()
 		details_panel.dismiss()
 		models_dialog.hide()
 		if get_meta("unified_settings", false): models_dialog.clear_embedded_access()
@@ -2064,6 +2239,8 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 
 
 func _forget(reason: String) -> void:
+	_leave_issue_inspector()
+	inspector_sessions.clear()
 	canvas_panel.clear_session()
 	_leave_conversation()
 	_stop_progress_watch()
@@ -2222,6 +2399,8 @@ func get_model_settings_control() -> Control:
 
 func _use_personal_board(auth: Dictionary) -> void:
 	if actor != auth or picker_scope != _repo():
+		_leave_issue_inspector()
+		inspector_sessions.clear()
 		canvas_panel.clear_session()
 		_stop_progress_watch()
 		_stop_debug(false,true)
@@ -2767,6 +2946,8 @@ func _set_project(enabled: bool) -> void:
 		personal_snapshot = {}
 	# A refresh may have started against the old board during the project fetch.
 	scope_epoch += 1
+	if current.is_empty():
+		_leave_issue_inspector()
 	project_mode = enabled
 	zoom_anchor = Vector2.INF
 	zoom_crossed = false
@@ -4015,6 +4196,7 @@ func _show_issue(id: String, snapshot: Dictionary) -> void:
 	_sync_workflow(false)
 	flow_split.show()
 	editor.show()
+	_open_issue_inspector(id)
 	editor.draw_graph(id.begins_with("https://"))
 	actions.show()
 	actions.get_child(0).visible = id.begins_with("draft_")
@@ -4316,6 +4498,8 @@ func _work_summary(item: Dictionary, judged: Dictionary) -> Dictionary:
 func _set_issue_brief(item: Dictionary, progress: Dictionary) -> void:
 	_bind_issue_link(issue_link, item)
 	work_status.visible = not item.is_empty() or not progress.is_empty()
+	if inspector_sessions.get(inspector_key, {}).get("item", {}).get("url", "") == item.get("url") and item.has("status"):
+		issue_inspector.summary.text = str(item.get("title", "")) + " · " + graph_script.FlowCanvas.state_text(_display_state(item))
 	if work_status.visible:
 		work_status.text = "当前状态 · " + graph_script.FlowCanvas.state_text(_display_state(item)) if item.has("status") else "当前进度"
 		if not progress.is_empty():
