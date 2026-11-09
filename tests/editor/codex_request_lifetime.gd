@@ -55,6 +55,9 @@ func _run():
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = folder.path_join("entry.js")
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
 	dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "lifetime-fixture"
+	# This fixture only owns transport and temporary-file lifetime. Real work-order
+	# authorization, candidate creation and tool receipts have separate native checks.
+	dock.find_child("ConsultationOnly", true, false).button_pressed = true
 	for name in ["success", "failure", "cancel", "start_failure"]:
 		if name == "start_failure":
 			# Configure an invalid executable while idle. A consultation skips the

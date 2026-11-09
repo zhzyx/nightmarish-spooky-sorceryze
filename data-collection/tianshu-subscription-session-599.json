@@ -1,0 +1,67 @@
+{
+  "request_id": "tianshu-codex-cli-progress",
+  "issue_number": 599,
+  "parent_issue": 592,
+  "base": "2de7647655b41d672c03cb7d0e922b292ecc3df6",
+  "model": "gpt-6.1-sol",
+  "account": "existing Codex personal subscription; no API key",
+  "platform": "Windows x86_64; native isolated Godot editor, authenticated Issue, real local file and two short follow-ups validated exactly",
+  "samples": [
+    {
+      "stage": "first implementation",
+      "first_file_answer_ms": 89932,
+      "followups_ms": [
+        13002,
+        13889
+      ],
+      "followup_transport": [
+        "bootstrap",
+        "bootstrap"
+      ],
+      "completed_receipt_sha256": [
+        "3d1bd7f6752a9c08504bbf35d076b6ec9daf9f125ae7f3f8a44ef9c349b78690",
+        "ceba933408d59e753c2a032330a1f2da24d73c5747dca302d2db5db6c3bfe8c6",
+        "1f9c210c8bdcab89a8b27fb01db58ef399a5c5ea2958221623a93373bafff505"
+      ]
+    },
+    {
+      "stage": "bind governance and refresh question",
+      "first_file_answer_ms": 59144,
+      "followups_ms": [
+        12007,
+        9913
+      ],
+      "followup_transport": [
+        "bootstrap",
+        "incremental"
+      ],
+      "completed_receipt_sha256": [
+        "99a63ebb6add09c1916a896a368ce80abe7a5764ab17b7fa1a234aff8b033aad",
+        "aeb18666e8ae8eb846e8c60939e1d67931befd64d15d8c0d0db9cb7fdd43202e",
+        "f714f943ddb80771e5a7cd8f0198986f8e3344ed81df2747643f70bdc4ceb64c"
+      ]
+    },
+    {
+      "stage": "verify prior assistant reply too",
+      "first_file_answer_ms": 56803,
+      "followups_ms": [
+        13379,
+        8154
+      ],
+      "followup_transport": [
+        "bootstrap",
+        "incremental"
+      ],
+      "completed_receipt_sha256": [
+        "576f1192d4e7dd90cd6fc6afb1314752bcf10ca2125b48d2c4904ce41059bc86",
+        "2290cdc2954e7b48c19a07e148a371db6ad3604f9e4427c927386b9dc1da0329",
+        "9e93dcc7bbaea9259ea7e654112aa987bcc3d68a582732cda7b757f62c51e89c"
+      ]
+    }
+  ],
+  "additional_clicks_per_sample": 0,
+  "last_sample_first_observed_cli_stage_ms": 18570,
+  "last_incremental_non_system_message_count": 2,
+  "comparison": "Before the resident transport on this machine: 85.780 s, 16.821 s, 17.478 s. Different runs, not a controlled model-speed ratio. Native comparison ~4.2 and ~4.5 seconds for two follow-ups; remaining gap.",
+  "scope": "New Windows editor and installed bridge with a verifiable personal subscription. No unsupported automatic replay; images and unsupported setups retain exec compatibility."
+}

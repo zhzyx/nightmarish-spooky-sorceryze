@@ -271,6 +271,21 @@ def host_environment(root):
     return env
 
 
+def governance_fingerprint(context, mandate):
+    # The rendered framework must end with exactly the authenticated mandate. Its user
+    # outcome is sent in full on this turn; all other fields/revisions invalidate reuse.
+    prefix, separator, rendered = context.partition(
+        "\nHost mandate (actual identity and permission must be authenticated by host):\n"
+    )
+    try:
+        if separator and json.loads(rendered) == mandate:
+            policy = [prefix, {key: value for key, value in mandate.items() if key != "outcome"}]
+            return hashlib.sha256(json.dumps(policy, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+    except ValueError:
+        pass
+    return hashlib.sha256(context.encode("utf-8")).hexdigest()
+
+
 def request_identity(request):
     # Legacy Godot callers remain supported; protocol v1 requires explicit identity.
     if "protocol_version" not in request and "host" not in request:
@@ -525,6 +540,7 @@ def chat(root, request, tenant):
                 "ok": ok,
                 "agent_execution_enabled": False,
                 "context": process.stdout if ok else "",
+                "governance_sha256": governance_fingerprint(process.stdout, mandate) if ok else "",
                 "error": "" if ok else process.stderr.strip() or "Framework returned no context",
             }
         except (OSError, ValueError, subprocess.TimeoutExpired) as error:

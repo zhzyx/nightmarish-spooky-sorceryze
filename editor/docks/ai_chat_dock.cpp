@@ -5147,7 +5147,20 @@ void AIChatDock::_login_cli() {
 void AIChatDock::_start_codex(const Array &p_messages) {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
-	_cancel_cli();
+#ifdef WINDOWS_ENABLED
+	const bool native_session = FileAccess::exists(_engine_root().path_join("tools/codex_cli/subscription_session.js")) && !GongGongRuntimeConfig::path(runtime, "workflow_python").is_empty();
+#else
+	const bool native_session = false;
+#endif
+	String environment;
+	for (const String &key : { String("CODEX_HOME"), String("HOME"), String("USERPROFILE"), String("APPDATA"), String("LOCALAPPDATA"), String("CODEX_API_KEY"), String("OPENAI_API_KEY"), String("OPENAI_BASE_URL"), String("OPENAI_ORG_ID"), String("OPENAI_PROJECT_ID"), String("CHATGPT_BASE_URL"), String("HTTPS_PROXY"), String("HTTP_PROXY"), String("ALL_PROXY"), String("NO_PROXY"), String("SSL_CERT_FILE"), String("NODE_EXTRA_CA_CERTS") }) {
+		environment += key + ":" + OS::get_singleton()->get_environment(key).sha256_text() + "\n";
+	}
+	const String configuration = "codex:" + (JSON::stringify(runtime) + environment).sha256_text() + ":" + GongGongRuntimeConfig::path(runtime, "codex") + "\n" + GongGongRuntimeConfig::path(runtime, "node") + "\n" + GongGongRuntimeConfig::path(runtime, "workflow_python") + "\n" + conversation_id;
+	if (!native_session || !cli_session || cli_configuration != configuration || cli_waiting || !OS::get_singleton()->is_process_running(cli_process_id)) {
+		_cancel_cli();
+	}
+
 	Dictionary payload;
 	payload["messages"] = p_messages;
 	payload["model"] = codex_model->get_text().strip_edges();
@@ -5168,8 +5181,8 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	payload["available_tools"] = permitted_tools;
 	Dictionary context = tool_context(allow_tools->is_pressed(), tool_rounds, !consultation_turn && auto_apply_file_changes->is_pressed(), !consultation_turn && auto_execute_commands->is_pressed(), !consultation_turn && engine_auto_restart->is_pressed());
 	context["consultation_only"] = consultation_turn;
-	context["writes_allowed"] = !consultation_turn;
-	context["execution_allowed"] = !consultation_turn;
+	context["writes_allowed"] = allow_tools->is_pressed() && !consultation_turn;
+	context["execution_allowed"] = allow_tools->is_pressed() && !consultation_turn;
 	payload["tool_context"] = context;
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
@@ -5197,23 +5210,55 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 		_set_busy(false);
 		return;
 	}
-	List<String> arguments;
-	arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
-	arguments.push_back("chat");
-	arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
-	arguments.push_back(cli_input_path);
-	arguments.push_back("--progress");
-	arguments.push_back(GongGongRuntimeConfig::path(runtime, "workflow_python"));
-	Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
-	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
-		_release_cli_request();
-		_append(TTR("Error"), U"无法启动 Codex 桥接。");
-		_set_busy(false);
-		return;
+	if (!native_session) {
+		List<String> arguments;
+		arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+		arguments.push_back("chat");
+		arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
+		arguments.push_back(cli_input_path);
+		arguments.push_back("--progress");
+		arguments.push_back(GongGongRuntimeConfig::path(runtime, "workflow_python"));
+		Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
+		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
+			_release_cli_request();
+			_append(TTR("Error"), U"无法启动 Codex 桥接。");
+			_set_busy(false);
+			return;
+		}
+		cli_process_id = process["pid"];
+		cli_stdout = process["stdio"];
+		cli_stderr = process["stderr"];
+	} else {
+		if (!cli_session) {
+			List<String> arguments;
+			arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+			arguments.push_back("session");
+			arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
+			arguments.push_back(GongGongRuntimeConfig::path(runtime, "workflow_python"));
+			Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
+			if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
+				_release_cli_request();
+				_append(TTR("Error"), U"无法启动 Codex 桥接。");
+				_set_busy(false);
+				return;
+			}
+			cli_process_id = process["pid"];
+			cli_stdout = process["stdio"];
+			cli_stderr = process["stderr"];
+			cli_session = true;
+			cli_configuration = configuration;
+		}
+		Dictionary submission;
+		submission["path"] = cli_input_path;
+		submission["scope"] = (conversation_id + "\n" + _candidate_root() + "\n" + JSON::stringify(gonggong_reporting) + "\n" + (gonggong_governance_digest.length() == 64 ? gonggong_governance_digest : gonggong_context.sha256_text())).sha256_text();
+		if (!cli_stdout->store_string(JSON::stringify(submission) + "\n")) {
+			_cancel_cli();
+			_append(TTR("Error"), U"未能提交到 Codex 会话，未自动重试。");
+			_set_busy(false);
+			return;
+		}
+		cli_waiting = true;
 	}
-	cli_process_id = process["pid"];
-	cli_stdout = process["stdio"];
-	cli_stderr = process["stderr"];
 	cli_started = OS::get_singleton()->get_ticks_msec();
 	cli_last_activity = cli_started;
 	cli_generation = ++request_generation;
@@ -5434,7 +5479,7 @@ void AIChatDock::_poll_cli() {
 	const bool timeout = cli_listing_models ? now - cli_started > 35000 : (!cli_session || cli_waiting) && (now - cli_last_activity > 310000 || now - cli_started > 1810000);
 	const bool running = OS::get_singleton()->is_process_running(cli_process_id);
 	int newline = -1;
-	const bool codex_chat = !cli_session && !cli_listing_models && !cli_input_path.is_empty() && backend->get_selected() == 2;
+	const bool codex_chat = !cli_listing_models && !cli_input_path.is_empty() && backend->get_selected() == 2;
 	if (cli_session || codex_chat) {
 		for (int i = 0; i < cli_output.size(); i++) {
 			if (cli_output[i] == '\n') {
@@ -5471,7 +5516,7 @@ void AIChatDock::_poll_cli() {
 			}
 		}
 	}
-	if (codex_chat) {
+	if (codex_chat && !cli_session) {
 		newline = -1;
 	}
 	if (!timeout && !cli_truncated && newline < 0 && (running || received)) {

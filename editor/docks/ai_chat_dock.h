@@ -75,6 +75,7 @@ class AIChatDock : public EditorDock {
 	uint64_t gonggong_generation = 0;
 	bool gonggong_resume = false;
 	String gonggong_context;
+	String gonggong_governance_digest;
 	String gonggong_input_path;
 	String gonggong_output_path;
 	Dictionary gonggong_reporting;

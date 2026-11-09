@@ -111,7 +111,12 @@ def main():
             for name in ["framework", "customizations", ".github"]:
                 shutil.copytree(ROOT / name, root / name, ignore=shutil.ignore_patterns("__pycache__"))
             (root / "tools/codex_cli").mkdir(parents=True)
-            for relative in ("tools/check_gonggong_distribution.py", "integrations/gonggong/frozen-distribution.json"):
+            for relative in (
+                "tools/check_gonggong_distribution.py",
+                "tools/gonggong_runtime_config.py",
+                "tools/editor_network_proxy.py",
+                "integrations/gonggong/frozen-distribution.json",
+            ):
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / relative, root / relative)
             shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
