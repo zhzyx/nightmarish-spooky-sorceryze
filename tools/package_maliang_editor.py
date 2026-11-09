@@ -378,8 +378,18 @@ def copy_editor(editor, staged, target):
         template = editor if app else Path(__file__).resolve().parents[1] / "misc/dist/macos_tools.app"
         editor_native_app.copy_app(template, staged)
         validate_links(staged)
-        with (staged / "Contents/Info.plist").open("rb") as stream:
-            executable = plistlib.load(stream)["CFBundleExecutable"]
+        info_path = staged / "Contents/Info.plist"
+        with info_path.open("rb") as stream:
+            info = plistlib.load(stream)
+        # The editor template predates the minimum OS of the ARM Torch wheels.
+        minimum = info.get("LSMinimumSystemVersion", "0")
+        info["LSMinimumSystemVersion"] = "14.0" if int(minimum.split(".")[0]) < 14 else minimum
+        arch_minimum = info.setdefault("LSMinimumSystemVersionByArchitecture", {})
+        if int(arch_minimum.get("arm64", "0").split(".")[0]) < 14:
+            arch_minimum["arm64"] = info["LSMinimumSystemVersion"]
+        with info_path.open("wb") as stream:
+            plistlib.dump(info, stream)
+        executable = info["CFBundleExecutable"]
         if not executable or Path(executable).name != executable or executable in (".", ".."):
             raise ValueError("Invalid CFBundleExecutable.")
         binary = staged / "Contents/MacOS" / executable

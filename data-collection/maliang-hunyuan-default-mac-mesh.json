@@ -1,0 +1,21 @@
+{
+  "request_id": "maliang-bundled-hunyuan3d",
+  "issue_number": 611,
+  "integration_base": "60745751daca1121dddf4a6b623b3d4f3ad0a946",
+  "platform": "macOS Apple M1, macOS 15.3.1, 16 GiB",
+  "shipped_macos_minimum": "14.0",
+  "device": "mps",
+  "ui_parameters": "Editor defaults, empty prompt",
+  "source_sha256": "4c7157447b020ecb1a0cb755fe0569620247bf5def9f7c4409f063ac479509a9",
+  "checkpoint_sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b",
+  "inference_seconds_from_server_log": 129.49,
+  "initial_configuration": "fresh",
+  "cli_connected": false,
+  "preview_and_reopened_vertices": 41217,
+  "scene_sha256": "7249e53e500b7e9734d0a7607619b4ada1054deaa09a4236239ad975e3636cdb",
+  "glb_sha256": "396fb7f6eb74ea12d9ceba0877e705b9e61b1530e29266fd526ab5c7c2b5d81f",
+  "glb_bytes": 1991656,
+  "package_signature_after_generation": "codesign --verify --deep --strict passed",
+  "model_test_source_base": "b50bc74739948367ba523d991d00fdab194efb00",
+  "model_test_editor_sha256": "b525b2d0455314f8a68115d4b26da54a4c85189abaf9129bb4a8f44372671fd7"
+}
