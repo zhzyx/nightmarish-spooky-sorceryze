@@ -14,7 +14,6 @@ signal configure_model
 signal draft_changed
 signal applied(issue_id: String, revision: String)
 
-const LABELS := {"text":"文本", "image":"图片", "question":"待用户答复", "task":"Agent 任务", "join":"结果汇总"}
 const DATA := Color("#64c6e8")
 const AFTER := Color("#eecb86")
 
@@ -36,15 +35,13 @@ var card_sizes := {}
 var layout_columns: Array = []
 var layout_pending := false
 var host_apply: Callable
-var canvas: IssueCanvas
+var canvas: FlowCanvas
 var running_nodes: Label
 var notice: Label
-var add_menu: MenuButton
 var apply_button: Button
 var picker: FileDialog
 var pending_image := ""
 var clipboard_image: Callable = DisplayServer.clipboard_get_image
-var menu_at := Vector2(80, 100)
 var host_read: Callable
 var generation := 0
 var applying := false
@@ -55,7 +52,7 @@ var graph_projection_suspended := false
 const GRAPH_SLICE_US := 3000
 
 
-# Keep the GraphEdit wire for hit testing, dragging, zoom and the minimap.
+# Keep native GraphEdit wires for zoom and the minimap.
 # Only its material changes. A shared static shader lets idle graphs stop repainting.
 class FlowCanvas extends GraphEdit:
 	const COLORS := {"receipt": Color("#92969b"), "action": Color("#59e47c"), "revisit": Color("#aecfb7"), "pending": Color("#8290a5"), "running": Color("#45c9ff"),
@@ -79,6 +76,13 @@ void fragment() {
 }"""
 	var materials := {}
 	var lines := {}
+
+	# Projected dependencies need port positions for rendering only.
+	func _is_in_input_hotzone(_node: Object, _port: int, _mouse_position: Vector2) -> bool:
+		return false
+
+	func _is_in_output_hotzone(_node: Object, _port: int, _mouse_position: Vector2) -> bool:
+		return false
 
 	func _init() -> void:
 		# GraphEdit scales its cards; rasterize their glyphs at the resulting viewport scale.
@@ -204,6 +208,10 @@ class SizeableCard extends GraphNode:
 	var start_pointer := Vector2.ZERO
 	var start_rect := Rect2()
 
+	func _init() -> void:
+		# Keep keyboard focus on the card controls instead of the wire anchors.
+		slots_focus_mode = Control.FOCUS_CLICK
+
 	func _edges(at: Vector2) -> Vector2i:
 		var margin := 5.0 * get_theme_default_base_scale()
 		return Vector2i(int(at.x >= size.x - margin) - int(at.x <= margin), int(at.y >= size.y - margin) - int(at.y <= margin))
@@ -240,24 +248,12 @@ class SizeableCard extends GraphNode:
 				accept_event()
 
 
-class IssueCanvas extends FlowCanvas:
-	var controller
-	func _is_node_hover_valid(a: StringName, ap: int, b: StringName, bp: int) -> bool:
-		return controller.preview_edge(a, ap, b, bp) == ""
-
-
 func _ready() -> void:
 	visibility_changed.connect(func():
 		if graph_projection_suspended and is_visible_in_tree():
 			draw_graph(true))
 	var toolbar := HFlowContainer.new()
 	add_child(toolbar)
-	add_menu = MenuButton.new()
-	add_menu.text = "添加节点"
-	toolbar.add_child(add_menu)
-	for kind in LABELS:
-		add_menu.get_popup().add_item(LABELS[kind])
-	add_menu.get_popup().id_pressed.connect(func(i): add_node(LABELS.keys()[i], menu_at))
 	apply_button = Button.new()
 	apply_button.text = "应用更改"
 	apply_button.pressed.connect(apply_draft)
@@ -278,24 +274,11 @@ func _ready() -> void:
 	running_nodes.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	running_nodes.add_theme_color_override("font_color", FlowCanvas.COLORS.running)
 	add_child(running_nodes)
-	canvas = IssueCanvas.new()
-	canvas.controller = self
+	canvas = FlowCanvas.new()
 	canvas.name = "IssueCanvas"
 	canvas.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	canvas.right_disconnects = true
-	# Let our validator explain mismatches during hover, before GraphEdit accepts a drop.
-	canvas.add_valid_connection_type(0,1)
-	canvas.add_valid_connection_type(1,0)
-	canvas.connection_drag_started.connect(_mark_targets)
-	canvas.connection_drag_ended.connect(_reset_ports)
 	canvas.zoom_min = 0.16
 	canvas.zoom_max = 1.6
-	canvas.connection_request.connect(connect_ports)
-	canvas.disconnection_request.connect(disconnect_ports)
-	canvas.popup_request.connect(func(_point):
-		menu_at = (canvas.get_local_mouse_position() + canvas.scroll_offset) / canvas.zoom
-		add_menu.show_popup())
-	canvas.connection_drag_ended.connect(func(): canvas.queue_redraw())
 	add_child(canvas)
 	picker = FileDialog.new()
 	picker.access = FileDialog.ACCESS_FILESYSTEM
@@ -328,18 +311,6 @@ func bind_issue(id: String, snapshot: Dictionary, apply_port: Callable, read_por
 	debug_models = {}
 	if is_node_ready() and render_now:
 		draw_graph()
-
-
-func add_node(kind: String, at: Vector2) -> String:
-	if not LABELS.has(kind):
-		return ""
-	var id := "n_" + Crypto.new().generate_random_bytes(12).hex_encode()
-	draft.nodes[id] = {"kind":kind, "title":LABELS[kind], "value":""}
-	positions[id] = at
-	menu_at = at + Vector2(42, 42)
-	_render_node(id, draft.nodes[id])
-	draft_changed.emit()
-	return id
 
 
 func _label(value: String) -> Label:
@@ -388,7 +359,7 @@ func _render_node(id: String, item: Dictionary) -> void:
 	var request: Dictionary = context.get("questions",{}).get(id,{})
 	var recorded: Dictionary = context.get("answers",{}).get(id,{})
 	view.resizable = false
-	view.position_offset = positions.get(id, menu_at)
+	view.position_offset = positions.get(id, Vector2(80, 100))
 	view.dragged.connect(func(_from,to):
 		positions[id] = to
 		_queue_layout()
@@ -483,11 +454,6 @@ func _render_node(id: String, item: Dictionary) -> void:
 		configure.text = "添加供应商 API"
 		configure.pressed.connect(func(): configure_model.emit())
 		view.add_child(configure)
-		var attach := Button.new()
-		attach.name = "Attach"
-		attach.text = "补充图片输入"
-		attach.pressed.connect(func(): add_image_for_task(id))
-		view.add_child(attach)
 		var choose := OptionButton.new()
 		choose.add_item("调试 · 自动分配")
 		for model in ["调试 · Claude","调试 · Gemini","调试 · GPT","调试 · DeepSeek"]:
@@ -643,7 +609,6 @@ func _update_card(view: GraphNode) -> void:
 			view.get_node(NodePath(field)).editable = not locked
 	if view.has_node("PlanModel"):
 		view.get_node("PlanModel").disabled = locked
-		view.get_node("Attach").visible = not locked
 	if view.has_node("PickImage"):
 		var disabled: bool = locked and (not context.get("can_answer", false) or not context.get("questions", {}).has(id) or context.get("answers", {}).has(id))
 		view.get_node("PickImage").disabled = disabled
@@ -668,23 +633,6 @@ func refresh_states() -> void:
 			_update_card(child)
 	canvas.refresh_wires()
 	_update_running_nodes()
-
-
-func add_image_for_task(id: String) -> String:
-	if not draft.nodes.has(id) or draft.nodes[id].kind != "task" or context.get("states",{}).get(id,"") in rules.ACTIVE:
-		return ""
-	var task_view := canvas.get_node(NodePath(id)) as GraphNode
-	var image_id := add_node("image",task_view.position_offset - Vector2(320,0))
-	var edge := {"from":image_id,"to":id,"kind":"data"}
-	var error: String = rules.edge_error(draft,edge,context)
-	if error:
-		notice.text = error
-		return image_id
-	draft.edges.append(edge)
-	_draw_edge(edge)
-	pending_image = image_id
-	draft_changed.emit()
-	return image_id
 
 
 func set_image(id: String, image: Image) -> void:
@@ -1257,49 +1205,6 @@ func _wire_key(edge: Dictionary, nodes: Dictionary) -> Array:
 	return [StringName(edge.from), output, StringName(edge.to), input]
 
 
-func _edge(a: StringName, ap: int, b: StringName, bp: int) -> Dictionary:
-	var source := canvas.get_node_or_null(NodePath(String(a))) as GraphNode
-	var target := canvas.get_node_or_null(NodePath(String(b))) as GraphNode
-	if not source or not target or ap < 0 or bp < 0 or ap >= source.get_output_port_count() or bp >= target.get_input_port_count():
-		return {}
-	var type := source.get_output_port_type(ap)
-	if type != target.get_input_port_type(bp):
-		return {}
-	return {"from":String(a), "to":String(b), "kind":"data" if type == 0 else "after"}
-
-
-func preview_edge(a: StringName, ap: int, b: StringName, bp: int) -> String:
-	var edge := _edge(a,ap,b,bp)
-	var error := "端口方向或类型不匹配"
-	if not edge.is_empty():
-		error = rules.edge_error(draft, edge, context)
-		if error == "" and context.get("states", {}).get(String(b), "") in rules.ACTIVE:
-			error = "目标节点已启动，输入已锁定"
-	notice.text = error if error else "可以连接"
-	return error
-
-
-func connect_ports(a: StringName, ap: int, b: StringName, bp: int) -> void:
-	if preview_edge(a,ap,b,bp) != "":
-		return
-	var edge := _edge(a,ap,b,bp)
-	draft.edges.append(edge)
-	_draw_edge(edge)
-	notice.text = "连线已加入草稿"
-	draft_changed.emit()
-
-
-func disconnect_ports(a: StringName, ap: int, b: StringName, bp: int) -> void:
-	var edge := _edge(a,ap,b,bp)
-	if edge in context.get("protected_edges", []) or context.get("states", {}).get(String(b), "") in rules.ACTIVE:
-		notice.text = "该连线由框架或已开始的执行保护"
-		return
-	if edge in draft.edges:
-		draft.edges.erase(edge)
-		canvas.disconnect_flow(a,ap,b,bp)
-		draft_changed.emit()
-
-
 func apply_draft() -> void:
 	if applying:
 		return
@@ -1351,28 +1256,3 @@ func set_debug_state(event: Dictionary) -> void:
 		_update_card(view)
 		canvas.refresh_wires(view.name)
 		_update_running_nodes()
-
-
-func _mark_targets(start: StringName, port: int, output: bool) -> void:
-	for child in canvas.get_children():
-		if not child is GraphNode:
-			continue
-		var view := child as GraphNode
-		var count := view.get_input_port_count() if output else view.get_output_port_count()
-		for index in count:
-			var edge := _edge(start,port,view.name,index) if output else _edge(view.name,index,start,port)
-			var legal: bool = not edge.is_empty() and rules.edge_error(draft,edge,context)=="" and context.get("states",{}).get(edge.to,"") not in rules.ACTIVE
-			var color := Color("#91e7b8") if legal else Color("#646771")
-			if output:
-				view.set_slot_color_left(view.get_input_port_slot(index),color)
-			else:
-				view.set_slot_color_right(view.get_output_port_slot(index),color)
-
-
-func _reset_ports() -> void:
-	for child in canvas.get_children():
-		if child is GraphNode:
-			child.set_slot_color_left(0,DATA)
-			child.set_slot_color_right(0,DATA)
-			child.set_slot_color_left(1,AFTER)
-			child.set_slot_color_right(1,AFTER)
