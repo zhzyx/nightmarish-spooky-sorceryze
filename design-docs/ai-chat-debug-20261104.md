@@ -129,3 +129,5 @@
 PR669 实际 Windows push 构建/单测通过，3进程+5journal通过，新host选择步骤的policy pin首个Get-FileHash不可用，policy_verified/provider_started均false，native续接尚未执行。本次只将policy与同类gh安装包hash依赖改为既有配置脚本使用的.NET SHA256原字节流计算，保留十pin、官方hash、拒绝条件与资源清理。模块环境唯一原因unknown；新Windows仍待精确候选，不将旧失败合入。证据见 pr669-hash-command-failure.json。
 
 发布交接消息已送达但未收到暂停接受回执；他方 PR670 已先合入 main `eec6330c141021b15ea93e86a6abdb5ce199421f` 的14个天枢详情/文档路径。正式签发入口拒绝旧基线后，当前隔离候选保留全部上游并接新main，自有原生源与政策pin保持、两PS哈希修复保留。旧mac完整二进制不扩展到本新主线；完整精确Windows仍待。映射见 main-eec633-integration.json。失败日志派生件已按格式规则归一尾换行并保存原件SHA，不更改原CI证据。
+
+PR672 哈希修复的 Windows 实际报告已通过3进程+5journal+10部署场景（含中文PE、策略损坏/缺失前置拒绝与launcher）；随后native在GD74故意设missing Python时被runtime_environment_locked拒绝，构造期setup progress已存在、业务请求为0。夹具现在启动前写私有安装侧schema1有效Python/Node/fakeCodex，清该子进程的不可变覆盖，之后仍由原GD在真实目录就绪后设missing、发原需求并走自动配置/doctor及11/7/1验收。不禁用启动检查、锁或伪造成功；完整新Windows仍待。证据见 pr672-native-bootstrap-failure.json。

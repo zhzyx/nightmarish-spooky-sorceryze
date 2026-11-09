@@ -279,7 +279,12 @@ def main():
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
-        env.pop("GONGGONG_PYTHON", None)
+        for name in ("GONGGONG_PYTHON", "GONGGONG_NODE", "GONGGONG_CODEX"):
+            env.pop(name, None)
+        bootstrap_runtimes = {"workflow_python": sys.executable, "node": shutil.which("node")}
+        assert bootstrap_runtimes["node"], "Native fixture needs the existing host Node"
+        env["GONGGONG_GIT"] = shutil.which("git")
+        assert env["GONGGONG_GIT"], "Native fixture needs the existing host Git"
         if args.runtime_source or direct_runtime:
             runtime_source = args.runtime_source.resolve() if args.runtime_source else None
             env["GONGGONG_RUNTIME_SOURCE"] = str(runtime_source) if runtime_source else ""
@@ -302,6 +307,17 @@ def main():
                 },
             )
             env["GONGGONG_TEST_CODEX"] = str(fake_codex)
+            bootstrap_runtimes["codex"] = str(fake_codex)
+
+        # The panel checks runtime readiness in its constructor's deferred work.
+        # Establish the valid bootstrap before the editor starts, then let the
+        # scene driver deliberately remove Python after catalog readiness. A
+        # startup environment override would freeze the field and prevent that.
+        bootstrap_config = installation / "editor_data/gonggong/config.json"
+        bootstrap_config.parent.mkdir(parents=True, exist_ok=True)
+        bootstrap_config.write_text(
+            json.dumps({"schema_version": 1, "runtimes": bootstrap_runtimes}) + "\n", encoding="utf-8"
+        )
 
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(name, None)
@@ -397,6 +413,7 @@ def main():
             "native_page": True,
             "runtime_setup_and_resume": bool(args.runtime_source or direct_runtime),
             "catalog_requests": catalog_requests,
+            "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
             "windows_owned_process_cleanup": "verified Job empty" if os.name == "nt" else "not applicable",
             "actual_native_read_tool_roundtrips": tool_roundtrips,
             "actual_yanshi_admission": True,
