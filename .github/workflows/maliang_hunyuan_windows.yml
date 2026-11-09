@@ -1,6 +1,11 @@
 name: Maliang offline Windows editor
 on:
   workflow_dispatch:
+    inputs:
+      recipient_modulus:
+        description: Optional recipient RSA public modulus (base64, exponent 65537) for a private Windows installer
+        type: string
+        required: false
   pull_request:
     paths:
       - ".github/workflows/maliang_hunyuan_windows.yml"
@@ -52,3 +57,27 @@ jobs:
             ${{ runner.temp }}/Maliang acceptance/report/*.json
             ${{ runner.temp }}/Maliang acceptance/report/*.log
           if-no-files-found: warn
+      - name: Prepare the accepted Windows editor for the recipient
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        shell: pwsh
+        env:
+          RECIPIENT_MODULUS: ${{ inputs.recipient_modulus }}
+        run: |
+          & ./tools/maliang_hunyuan/seal_windows_editor.ps1 -EditorDirectory "$env:RUNNER_TEMP/Maliang acceptance/Relocated edition" -Destination "$env:RUNNER_TEMP/Maliang delivery" -RecipientModulus $env:RECIPIENT_MODULUS
+      - name: Deliver the private Windows installer
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: Maliang-Windows-x64-${{ github.run_id }}
+          path: ${{ runner.temp }}/Maliang delivery/
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save the small private-delivery receipt separately
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: Maliang-Windows-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/Maliang delivery/delivery.json
+          if-no-files-found: error
+          retention-days: 30
