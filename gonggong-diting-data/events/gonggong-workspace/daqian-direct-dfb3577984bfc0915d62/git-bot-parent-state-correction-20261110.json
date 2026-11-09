@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "event_id": "git-bot-parent-state-correction-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "step",
+  "occurred_at": "2026-11-09T22:03:12.749660+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "45fefae7adc5e30434dfde491c6d87be7922d940734c9156039eb0b5bc2f834c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "correction": "prior parent_overall open was an intended state before authoritative readback; PR697 had auto-closed parent on merge",
+    "source_fix_and_nine_bug_receipts": "unchanged",
+    "parent_readback": {
+      "labels": [
+        "type:bug",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "state": "open",
+      "state_reason": "reopened",
+      "updated_at": "2026-11-09T22:02:19Z"
+    },
+    "receipt": {
+      "created_at": "2026-11-09T22:02:18Z",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426#issuecomment-6752637578"
+    },
+    "description_corrected": true,
+    "remaining": [
+      "696",
+      "255",
+      "264",
+      "278",
+      "662",
+      "525",
+      "556",
+      "563"
+    ]
+  },
+  "supersedes": "git-bot-actions-recovery-20261110",
+  "evidence_refs": [
+    "git-bot-actions-recovery-20261110"
+  ],
+  "sha256": "81167d739fcff4ce661eeeecf421ae56b14af5edff03b26c69270c6280b08145"
+}

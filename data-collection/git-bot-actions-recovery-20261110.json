@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "observed_at": "2026-11-09T22:03:12.735164+00:00",
+  "source_baseline": "40df26164b8b6298902bfa44cedc29cf35828775",
+  "closed_bugs": [
+    {
+      "number": 629,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/629#issuecomment-6752377978",
+      "comment_id": 6752377978,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:49:41Z",
+        "updated_at": "2026-11-09T21:49:41Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/629"
+      }
+    },
+    {
+      "number": 513,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/513#issuecomment-6752381530",
+      "comment_id": 6752381530,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:49:52Z",
+        "updated_at": "2026-11-09T21:49:52Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/513"
+      }
+    },
+    {
+      "number": 468,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/468#issuecomment-6752385350",
+      "comment_id": 6752385350,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:50:02Z",
+        "updated_at": "2026-11-09T21:50:03Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/468"
+      }
+    },
+    {
+      "number": 467,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/467#issuecomment-6752389375",
+      "comment_id": 6752389375,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:50:14Z",
+        "updated_at": "2026-11-09T21:50:15Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/467"
+      }
+    },
+    {
+      "number": 458,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/458#issuecomment-6752393230",
+      "comment_id": 6752393230,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:50:25Z",
+        "updated_at": "2026-11-09T21:50:26Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/458"
+      }
+    },
+    {
+      "number": 396,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/396#issuecomment-6752397042",
+      "comment_id": 6752397042,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:50:36Z",
+        "updated_at": "2026-11-09T21:50:37Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/396"
+      }
+    },
+    {
+      "number": 614,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/614#issuecomment-6752401023",
+      "comment_id": 6752401023,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T21:50:47Z",
+        "updated_at": "2026-11-09T21:50:48Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/614"
+      }
+    },
+    {
+      "number": 660,
+      "operator": "Sail-Li",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/660#issuecomment-6752400954",
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "workspace:gonggong",
+          "status:done"
+        ],
+        "updated_at": "2026-11-09T21:50:54Z"
+      }
+    },
+    {
+      "number": 675,
+      "operator": "Sail-Li",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/675#issuecomment-6752414622",
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "workspace:gonggong",
+          "status:done"
+        ],
+        "updated_at": "2026-11-09T21:51:34Z"
+      }
+    }
+  ],
+  "workflow_inventory": [
+    {
+      "workflow_id": 403785504,
+      "latest": null
+    },
+    {
+      "workflow_id": 403785506,
+      "latest": null
+    },
+    {
+      "workflow_id": 403785507,
+      "latest": null
+    },
+    {
+      "workflow_id": 403785508,
+      "id": 42404182116,
+      "name": "🍎 macOS Builds",
+      "status": "completed",
+      "conclusion": "success",
+      "head_branch": "codex/submit/Sail-Li/471/7baa7a790cafa3dcc6fb9f02e1bea34413856f79",
+      "head_sha": "9920de634e2fe388bfa1ec949dcb0418631a18d0",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42404182116"
+    },
+    {
+      "workflow_id": 403785510,
+      "id": 42252615189,
+      "name": "📊 Static Checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_branch": "codex/submit/Sail-Li/189/f6371035c079c4803dda8bc1056157eacf380016",
+      "head_sha": "e6498fcfd7b33fbf479174dea447647784e6ee02",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42252615189"
+    },
+    {
+      "workflow_id": 403785512,
+      "latest": null
+    },
+    {
+      "workflow_id": 403785513,
+      "latest": null
+    },
+    {
+      "workflow_id": 403785515,
+      "id": 42075592190,
+      "name": "🏁 Windows Builds",
+      "status": "completed",
+      "conclusion": "success",
+      "head_branch": "codex/submit/Sail-Li/138/09474f3e72103ba247e25bbd2522eb345f571536",
+      "head_sha": "dde16903a4f1f55b7ffa07304813ab25bae6cb46",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42075592190"
+    },
+    {
+      "workflow_id": 411967718,
+      "id": 42614984815,
+      "name": "Maliang offline Windows editor",
+      "status": "completed",
+      "conclusion": "success",
+      "head_branch": "codex/submit/kaiyunxue/616/3edaa2cfd49d617a26ee7b4655021a9a150bb307",
+      "head_sha": "49649f5e3ef018f38bc1fe09e58ca4a3165cce2b",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42614984815"
+    }
+  ],
+  "remaining": {
+    "696": {
+      "state": "awaiting_original_publisher",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/696#issuecomment-6752419713"
+    },
+    "255": "original diagnosis and original-operation recheck unavailable",
+    "264": "recovery_candidate observed, original operation not verified",
+    "278": "original installation evidence unavailable",
+    "662": "real CodeBuddy account and latency acceptance remains",
+    "525": "original continue operation recheck remains",
+    "556": "original provider/visual/host business acceptance remains",
+    "563": "original host business acceptance remains"
+  },
+  "progress_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426#issuecomment-6752439146",
+  "framework_skill": "framework/skills/kuafu/SKILL.md",
+  "source_fix": {
+    "pr": 697,
+    "head": "bbb36063af3b5e80ffba4900c8d6f9c3c7dc0e70",
+    "windows_ci": "passed",
+    "pr_run": 42706022786,
+    "push_run": 42706001960,
+    "msvc_job": 129463174664,
+    "runtime_summary_sha256": "f1177f95532f7a939b42695bf430ed1237bfba3aed082ee944b3fab6e2e3cbe8",
+    "runtime_cases": {
+      "interruption": 3,
+      "journal": 5,
+      "deployment": 10,
+      "requirements_intake_ok": true,
+      "runtime_setup_and_resume": true
+    },
+    "merge": {
+      "headRefOid": "bbb36063af3b5e80ffba4900c8d6f9c3c7dc0e70",
+      "mergeCommit": {
+        "oid": "392ef366255fb1815a8e1cc2a6d8b0c8ece58c84"
+      },
+      "mergedAt": "2026-11-09T21:58:10Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/697"
+    },
+    "main_readback": "392ef366255fb1815a8e1cc2a6d8b0c8ece58c84",
+    "signed_head_is_ancestor_of_main": true
+  },
+  "parent_overall": "open",
+  "inventory_observed_at": "2026-11-09T21:53:02.098568+00:00",
+  "parent_auto_close_correction": {
+    "source": "PR697 closed-event closer read back through GitHub GraphQL",
+    "closed_at": "2026-11-09T21:58:11Z",
+    "cause": "The PR description contained a closing-keyword phrase inside an English negation; GitHub linked and closed the parent on merge.",
+    "original_description_corrected": true,
+    "readback": {
+      "labels": [
+        "type:bug",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "state": "open",
+      "state_reason": "reopened",
+      "updated_at": "2026-11-09T22:02:19Z"
+    },
+    "receipt": {
+      "created_at": "2026-11-09T22:02:18Z",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426#issuecomment-6752637578"
+    },
+    "prior_event_parent_state": "open was intended, not verified at that event; append-only correction supersedes that event"
+  }
+}
