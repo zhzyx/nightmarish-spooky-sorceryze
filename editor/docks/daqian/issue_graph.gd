@@ -2,6 +2,7 @@
 extends VBoxContainer
 
 signal graph_rebuilding
+signal card_states_refreshed
 signal stage_controls_requested(id: String, card: GraphNode)
 signal workflow_reply_requested
 signal clarification_draft_changed(text: String)
@@ -633,6 +634,7 @@ func refresh_states() -> void:
 			_update_card(child)
 	canvas.refresh_wires()
 	_update_running_nodes()
+	card_states_refreshed.emit()
 
 
 func set_image(id: String, image: Image) -> void:

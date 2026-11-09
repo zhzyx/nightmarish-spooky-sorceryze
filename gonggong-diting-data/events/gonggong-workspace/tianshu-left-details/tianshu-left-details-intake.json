@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-left-details-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-left-details",
+  "kind": "request",
+  "occurred_at": "2026-11-09T18:31:24.692040+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/665",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "payload": {
+    "design_document": "design-docs/tianshu-left-details.md",
+    "intent": "天枢左侧板块与工单详情、工作区文档编辑保存和撤销"
+  },
+  "evidence_refs": [],
+  "sha256": "3b96778a0e91a9a3cc1b874a1a63116136ae5b68c4964a5e603909eb51a74515"
+}

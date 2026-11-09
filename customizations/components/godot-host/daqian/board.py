@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
@@ -80,29 +81,257 @@ def source_plan(issue, request_id):
     return result
 
 
+DOCUMENT_LIMIT = 512 * 1024
+
+
+def document_path(root, relative):
+    parts = relative.split("/")
+    if (
+        parts[0] != "design-docs"
+        or not relative.endswith(".md")
+        or any(
+            part in ("", ".", "..")
+            or part.endswith((".", " "))
+            or re.search(r'[<>:"\\|?*\x00-\x1f]', part)
+            or re.match(r"^(CON|PRN|AUX|NUL|COM[1-9¹²³]|LPT[1-9¹²³])(?:\.|$)", part, re.I)
+            for part in parts
+        )
+    ):
+        raise ValueError("文档路径无效")
+    path = root.resolve().joinpath(*parts)
+    if path.resolve() != path:
+        raise ValueError("文档路径包含重定向")
+    return path
+
+
 def design_document(root, body):
     """Read the document named by the work-order envelope, or its published copy."""
     match = re.match(
         r"^<!-- (?:gonggong|olympus)-request:[a-z0-9-]+ -->\n\n需求文档：`(design-docs/[^`\n]+\.md)`\n\n",
         (body or "").replace("\r\n", "\n"),
     )
-    if not match:
+    ids = work_items.request_ids(body)
+    if len(ids) != 1:
         return {}
-    relative = match[1]
-    parts = relative.split("/")
-    if any(part in ("", ".", "..") or "\\" in part or ":" in part for part in parts):
+    explicit = re.findall(r"^(?:需求|设计)文档[：:]\s*`?(design-docs/[^`\r\n]+\.md)`?\s*$", body or "", re.M)
+    if match:
+        relative = match[1]
+    elif len(set(explicit)) == 1:
+        relative = explicit[0]
+    elif not explicit:
+        relative = f"design-docs/{next(iter(ids))}.md"
+    else:
         return {}
     try:
-        path = (root / relative).resolve()
-        if not path.is_relative_to(root.resolve() / "design-docs"):
+        path = document_path(root, relative)
+        if path.is_file():
+            with path.open("rb") as stream:
+                data = stream.read(DOCUMENT_LIMIT + 1)
+            if len(data) <= DOCUMENT_LIMIT:
+                return {
+                    "path": relative,
+                    "markdown": data.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n"),
+                    "source": "工作区",
+                    "revision": hashlib.sha256(data).hexdigest(),
+                    "editable": True,
+                }
             return {}
-        if path.is_file() and path.stat().st_size <= 512 * 1024:
-            return {"path": relative, "markdown": path.read_text(encoding="utf-8"), "source": "工作区"}
-    except (OSError, RuntimeError, UnicodeError):
-        pass
+    except (OSError, RuntimeError, ValueError):
+        return {}
+    if not match:
+        return {}
     snapshot = match.string[match.end() :].rsplit("\n\n<!-- gonggong-host-git:", 1)[0]
     snapshot = snapshot.rsplit("\n\n执行授权来源（由调用宿主核实，不代替候选准入）：", 1)[0]
-    return {"path": relative, "markdown": snapshot.rstrip(), "source": "工单发布版本"}
+    snapshot = re.sub(r"^\[查看主线设计（合入后可用）\]\([^\n]*\)\n\n", "", snapshot).rstrip()
+    return {
+        "path": relative,
+        "markdown": snapshot,
+        "source": "工单发布版本",
+        "revision": "published-" + hashlib.sha256(snapshot.encode()).hexdigest(),
+        "editable": True,
+    }
+
+
+def related_issues(repo, row):
+    number = row["number"]
+    endpoint = f"repos/{repo}/issues/{number}"
+    related = {}
+    warnings = []
+    issue_url = re.compile(r"https://github\.com/([\w.-]+/[\w.-]+)/issues/([1-9][0-9]*)$")
+
+    def add(issue, relation):
+        url = issue.get("html_url", "")
+        if not issue_url.fullmatch(url) or url == row["html_url"] or "pull_request" in issue:
+            return
+        statuses = [x["name"][7:] for x in issue.get("labels", []) if x["name"].startswith("status:")]
+        status = issue["state"]
+        if status != "closed" and len(statuses) == 1:
+            status = statuses[0]
+        entry = related.setdefault(url, {"url": url, "title": issue["title"], "status": status, "relations": []})
+        if relation not in entry["relations"]:
+            entry["relations"].append(relation)
+
+    def native(spec):
+        path, relation = spec
+        try:
+            if path == "parent":
+                issues = [json.loads(work_items.gh("api", f"{endpoint}/parent"))]
+            else:
+                pages = json.loads(work_items.gh("api", f"{endpoint}/{path}?per_page=100", "--paginate", "--slurp"))
+                issues = [i for page in pages for i in page]
+                if path == "timeline":
+                    issues = [
+                        i["source"]["issue"]
+                        for i in issues
+                        if i.get("event") == "cross-referenced" and (i.get("source") or {}).get("issue")
+                    ]
+            return relation, issues, ""
+        except work_items.GitHubCommandError as error:
+            if path == "parent" and error.http_status == 404:
+                return relation, [], ""
+            return relation, [], f"{relation}读取失败（{error}）"
+
+    specs = [
+        ("parent", "父工单"),
+        ("sub_issues", "子工单"),
+        ("dependencies/blocked_by", "依赖"),
+        ("dependencies/blocking", "被依赖"),
+        ("timeline", "反向引用"),
+    ]
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        for relation, issues, warning in pool.map(native, specs):
+            if warning:
+                warnings.append(warning)
+            for issue in issues:
+                add(issue, relation)
+
+    references = re.compile(
+        r"https://github\.com/([\w.-]+/[\w.-]+)/issues/(\d+)\b|(?<![\w/#])(?:(\b[\w.-]+/[\w.-]+))?#(\d+)\b"
+    )
+    targets = set()
+    for match in references.finditer(row.get("body") or ""):
+        target = match[1] or match[3] or repo
+        ref = match[2] or match[4]
+        url = f"https://github.com/{target}/issues/{ref}"
+        if url == row["html_url"] or not issue_url.fullmatch(url):
+            continue
+        if url in related:
+            if "正文引用" not in related[url]["relations"]:
+                related[url]["relations"].append("正文引用")
+        else:
+            targets.add((target, ref, url))
+    for target, ref, url in sorted(targets):
+        try:
+            issue = json.loads(work_items.gh("api", f"repos/{target}/issues/{ref}"))
+            if issue["html_url"].casefold() == url.casefold():
+                add(issue, "正文引用")
+        except work_items.GitHubCommandError as error:
+            warnings.append(f"{target}#{ref} 状态读取失败（{error}）")
+            related[url] = {"url": url, "title": f"{target}#{ref}", "status": "未知", "relations": ["正文引用"]}
+    for entry in related.values():
+        entry["relation"] = "、".join(entry.pop("relations"))
+    return list(related.values()), "；".join(warnings)
+
+
+def bound_issue(repo, request):
+    number = request.get("number")
+    if type(number) is not int or number <= 0:
+        raise ValueError("工单编号无效")
+    row = json.loads(work_items.gh("api", f"repos/{repo}/issues/{number}"))
+    markers = work_items.request_ids(row.get("body"))
+    binding = next(iter(markers)) if len(markers) == 1 else ""
+    if (
+        row.get("number") != number
+        or "pull_request" in row
+        or row.get("html_url") != f"https://github.com/{repo}/issues/{number}"
+        or request.get("request") != binding
+    ):
+        raise ValueError("工单绑定已更改，请刷新")
+    return row
+
+
+def write_access(actor):
+    repo = json.loads(work_items.gh("api", f"repos/{actor['repo']}"))
+    return (
+        str(repo["id"]) == actor["repo_id"]
+        and repo["full_name"].casefold() == actor["repo"].casefold()
+        and repo.get("permissions", {}).get("push") is True
+    )
+
+
+def document_bytes(original, markdown):
+    """Keep original line endings for the unchanged prefix and suffix of an edit."""
+    lines = re.split(rb"\r\n|\n|\r", original)
+    endings = re.findall(rb"\r\n|\n|\r", original)
+    edited = re.split(rb"\r\n|\n|\r", markdown.encode())
+    preferred = max(dict.fromkeys(endings), key=endings.count) if endings else b"\n"
+    separators = [preferred] * (len(edited) - 1)
+    prefix = 0
+    while prefix < min(len(endings), len(separators)) and lines[prefix] == edited[prefix]:
+        separators[prefix] = endings[prefix]
+        prefix += 1
+    for i in range(1, min(len(endings), len(separators)) - prefix + 1):
+        if lines[-i - 1] != edited[-i - 1]:
+            break
+        separators[-i] = endings[-i]
+    return b"".join(line + separator for line, separator in zip(edited, separators)) + edited[-1]
+
+
+def issue_request(root, actor, request):
+    action = request["action"]
+    if action not in {"details", "save_document"}:
+        raise ValueError("未知工单操作")
+    issue = bound_issue(actor["repo"], request)
+    document = design_document(root, issue.get("body"))
+    if action == "details":
+        if document:
+            document["editable"] = write_access(actor)
+        related, warning = related_issues(actor["repo"], issue)
+        return {"document": document, "related": related, "warning": warning}
+    if not document or request.get("path") != document["path"]:
+        raise ValueError("工单未绑定此设计文档")
+    fresh = collaborator(root)
+    if any(fresh[k] != actor[k] for k in ("repo", "repo_id", "user_id")) or not write_access(fresh):
+        raise ValueError("当前账号无此仓库的写入权限")
+    markdown = request.get("markdown")
+    if not isinstance(markdown, str) or len(markdown.encode()) > DOCUMENT_LIMIT:
+        raise ValueError("文档必须是 512 KiB 以内的 Markdown 文本")
+    from issue_events import event_lock
+
+    relative = document["path"]
+    path = document_path(root, relative)
+    lock_key = hashlib.sha256(os.path.normcase(str(path)).encode()).hexdigest()
+    lock = Path(tempfile.gettempdir()) / "gonggong-document-locks" / lock_key
+    with event_lock(lock):
+        # Re-read both bindings after acquiring the lock; other windows can edit the same document.
+        issue = bound_issue(actor["repo"], request)
+        current = design_document(root, issue.get("body"))
+        if not current or current["path"] != relative or current["revision"] != request.get("revision"):
+            raise ValueError("设计文档已变更，请保留草稿并重新载入")
+        path = document_path(root, relative)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = markdown.encode()
+        if current["source"] == "工作区":
+            original = path.read_bytes()
+            if hashlib.sha256(original).hexdigest() != current["revision"]:
+                raise ValueError("设计文档已变更，请保留草稿并重新载入")
+            payload = document_bytes(original, markdown)
+        if len(payload) > DOCUMENT_LIMIT:
+            raise ValueError("文档超过 512 KiB")
+        descriptor, name = tempfile.mkstemp(dir=path.parent)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            if current["source"] == "工单发布版本":
+                os.link(name, path)
+            else:
+                os.chmod(name, path.stat().st_mode)
+                os.replace(name, path)
+        finally:
+            Path(name).unlink(missing_ok=True)
+        return {"document": design_document(root, issue.get("body"))}
 
 
 def project_row(root, receipts, actor, row):
@@ -140,6 +369,8 @@ def project_row(root, receipts, actor, row):
     if item["request"] and not item["request"].startswith("daqian-direct-"):
         item["source_sha256"] = progress.issue_route.digest([item["url"], item["request"], item["updated"]])
     item["design_document"] = design_document(root, row.get("body")) if item["request"] else {}
+    if item["design_document"]:
+        item["design_document"]["editable"] = False  # A board snapshot has no fresh write-access receipt.
     item["routing_receipt"] = progress.route_for_row(root, receipts, actor, row, item)
     item["workers"] = progress.workers_for_row(receipts, repo, row, item)
     item.update(source_plan(row, item["request"]))
@@ -254,6 +485,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--result", type=Path)
+    parser.add_argument("--request", type=Path, help="Read one issue or save its bound workspace document")
     parser.add_argument("--follow", nargs="*", type=int, default=[])
     parser.add_argument("--editor-session", default="")
     parser.add_argument("--end-session", action="store_true")
@@ -278,7 +510,12 @@ def main():
         actor = session_actor(args.repo, args.editor_session, allow_login=args.access_only and not args.expected_user)
         if args.expected_user and actor["user_id"] != args.expected_user:
             raise AccessDenied("当前登录账号已切换")
-        if args.access_only:
+        if args.request:
+            try:
+                result = issue_request(args.repo, actor, json.loads(args.request.read_text(encoding="utf-8")))
+            except (ValueError, KeyError, OSError, TypeError) as error:
+                result = {"error": str(error)}
+        elif args.access_only:
             result = {"access": actor}
         elif args.delta:
             if not args.editor_session or args.expected_user != actor["user_id"]:

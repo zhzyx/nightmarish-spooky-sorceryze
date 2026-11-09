@@ -1,0 +1,28 @@
+{
+  "request_id": "tianshu-left-details",
+  "issue_number": 665,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/665",
+  "base": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+  "editor_sha256": "2a237edc0edbd1e274f87a6d0201bcc215e373fe497c885ddba6397c6fa5e34e",
+  "headless_scenarios": [
+    "details",
+    "graph",
+    "direct"
+  ],
+  "backend_tests": {
+    "issue_details": 6,
+    "existing_board_and_delta": 10
+  },
+  "live": [
+    "#665 bound local design document read, edit, save, and byte-identical restore including mixed line endings",
+    "#650 and #659 native relation and reference reads, including closed issues"
+  ],
+  "independent_review": {
+    "worker": "sinan_881a642ab527bc64",
+    "scope": "frontend and editor registration",
+    "findings_verified": [
+      "selected card on lightweight state update",
+      "closed issue with outdated open workflow label"
+    ]
+  }
+}
