@@ -1,0 +1,61 @@
+{
+  "request_id": "daqian-direct-e7b19bb55d61d110914a",
+  "issue": 534,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/534",
+  "artwork_source_sha256": "43e82a44e19a434e7a3948bbf898c93c94eaf7219538c4c817c5129ad733c735",
+  "icons": {
+    "Godot": [
+      16,
+      16
+    ],
+    "GodotMonochrome": [
+      16,
+      16
+    ],
+    "GodotFile": [
+      64,
+      64
+    ],
+    "DefaultProjectIcon": [
+      128,
+      128
+    ],
+    "TitleBarLogo": [
+      100,
+      24
+    ],
+    "Logo": [
+      187,
+      69
+    ]
+  },
+  "executables": {
+    "godot.windows.editor.x86_64.exe": {
+      "sha256": "9fb52b35ad9c6c6ea5f3196f6c78c40d80cc3544ac4572ecf82d32f961aa3ab3",
+      "resource_frames_matched": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ]
+    },
+    "godot.windows.editor.x86_64.console.exe": {
+      "sha256": "bb8df4dbb80b3543cc97c4e84d3973aa07c60d484f30e81e96905d4f46cf00b8",
+      "resource_frames_matched": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ]
+    }
+  },
+  "original_splash_sha256": "1ec92aba81b52ec52ae86d85277768e2b5d672cef41b8359a0a13c5e96ac2b02",
+  "about_control": "About Godot... menu activated; visible texture 187x69, stretch mode KEEP_ASPECT_CENTERED.",
+  "title_control": "Headless project manager; visible 100x24 title button."
+}

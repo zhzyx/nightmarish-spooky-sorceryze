@@ -1,0 +1,37 @@
+{
+  "request_id": "daqian-direct-e7b19bb55d61d110914a",
+  "issue": 534,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/534",
+  "observations": {
+    "boot-window.png": {
+      "window_pixels": [
+        800,
+        600
+      ],
+      "portrait_matching_samples": 935,
+      "portrait_tested_samples": 935,
+      "sampling": "Every third pixel in the original portrait box with alpha at least 250. Sum of absolute RGB channel differences below 18."
+    },
+    "project-manager-title.png": {
+      "capture_pixels": [
+        1152,
+        72
+      ],
+      "logo_origin": [
+        12,
+        10
+      ],
+      "portrait_pixels": [
+        24,
+        24
+      ],
+      "candidate_portrait_correlation": 0.99999358,
+      "previous_portrait_correlation": 0.61201942,
+      "wordmark_correlation": 0.99999866
+    }
+  },
+  "sha256": {
+    "boot-window.png": "f279bbfd8f71289f3667b3cb44b9af316a6e1e34268ff22fcf7ca16b1e9d6ecc",
+    "project-manager-title.png": "d81f69dd4d65e63da09242a7e03206b264d0d2ef9b30c1d1ae845346259a3df5"
+  }
+}
