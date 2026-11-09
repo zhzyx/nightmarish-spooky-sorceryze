@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-144c5c6b24be889ff6e64be2908ea7aa292c9c66",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-continuous-api",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "29ed59e7342f1640091c5b81412f4c9b8f5f4e2d3e7584b2fa96d4019a17d633",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/707",
+    "action": "delivery",
+    "detection_head": "e103cdeae43ccc967871039e9eb9f854d39d91ab",
+    "context_sha256": "419c65c1862512ca9898a608320418131a69e1affeeb1de6296b0b20a33c66ad",
+    "operator": "Sail-Li",
+    "worker": "Codex-host-Sail-Li",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42715759384",
+    "diagnosis": "Git HTTPS 直连 github.com:443 在 21 秒后连接失败。GitHub API 可用，本机 Windows 配置了本地代理。",
+    "next_action": "Sail-Li 将当前签发进程接入既有系统代理，在原工作树重新验证和签发，核对 PR 与主线。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T22:52:50.897822+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T22:54:52.252601+00:00",
+  "sha256": "66a058d631b0b3da3025c12318abcb82d06f19e8fa6759713341acfaabe8a968"
+}
