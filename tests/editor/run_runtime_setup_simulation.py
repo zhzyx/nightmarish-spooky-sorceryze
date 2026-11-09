@@ -311,7 +311,7 @@ def main():
         "cases": [],
     }
     with tempfile.TemporaryDirectory(prefix="gonggong-windows-simulation-") as temporary:
-        folder = Path(temporary)
+        folder = Path(temporary).resolve()
         paths = [folder, ROOT, args.godot.resolve(), *tools.values(), Path.home(), Path(tempfile.gettempdir())]
         try:
             baseline_result = run(

@@ -1,0 +1,17 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "pr": 651,
+  "signed_head": "e1dc5116fa9b22d2d2c397efcf4d878775d960ad",
+  "failed_runs": [
+    42658870119,
+    42659552097
+  ],
+  "observed": "Both startup_failure before any jobs; exact original rerun rejected403 cannot be retried; edited event same head also startup_failure.",
+  "authoritative_source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42659552097",
+  "page_annotation": "Workflows blocked by scheduled brownout of default pull_request_target protection for affected public repositories; window ends2026-11-09T18:00:00Z.",
+  "security_policy_changed": false,
+  "recovery": "After declared brownout end, trigger existing edited event for same signed head and verify actual issue-association check success. Do not merge while required check missing.",
+  "static_checks": "two success",
+  "windows_checks": "in progress; runtime acceptance pending"
+}

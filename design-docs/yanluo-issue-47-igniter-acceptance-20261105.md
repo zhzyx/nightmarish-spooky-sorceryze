@@ -52,3 +52,5 @@
 PR643的真实Windows PowerShell5.1回执已确认旧main脚本中断后拒绝回退，baseline原字节SHA保持4fd2e45c…bf206d。候选随后在File.Replace第三参数失败：PowerShell5.1把$null绑定为空字符串。新候选仅将其改为[NullString]::Value，保留原子替换；按静态检查移除纯ASCII脚本的BOM。两行增量已由原独立审查者核查，新Windows正向结果仍待精确候选CI，不提前关闭91。首次失败和工具版本见data-collection/before300-20261109-delivery/runtime91-first-windows-failure.json。
 
 自有回执与包清单按UTF8显式读回，候选替换场景复用原断言覆盖中文工作区；不额外宣称旧编码问题已单独复现。最终增量静态审查无问题，仍以新精确Windows运行回执验收。
+
+2026-11-10 第二轮真实Windows：PS5原子写入修正后，精确旧main负例、中文路径替换中断恢复和全新部署中断恢复共3场景通过；随后手写prepared-before-backup夹具因Python临时目录8.3别名与PS展开长名不一致遭严格workspace校验拒绝，整轮仍失败，后续5journal/7回归及原需求恢复未完成。仅将既存临时根Path(temporary).resolve()后生成所有夹具，不放宽生产边界。独立增量审查通过，完整精确Windows复验仍待。关联CI另遇GitHub已公告默认pull_request_target暂停，至2026-11-09T18:00Z；不修改安全策略，窗口结束后重试既有触发器。
