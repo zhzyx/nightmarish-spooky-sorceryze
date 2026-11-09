@@ -98,11 +98,41 @@ public:
 		return true;
 	}
 
-	// A finalized design document has a "设计定版确认" heading and a
-	// "## 生产工单" section whose top-level numbered items are the work orders.
+	// Accept individual earlier order numbers and inclusive ranges used by legacy designs.
+	static bool parse_dependencies(String p_value, const Array &p_prior, Array &r_dependencies) {
+		p_value = p_value.strip_edges().trim_suffix(U"。").strip_edges();
+		if (p_value == U"无") {
+			return true;
+		}
+		p_value = p_value.replace(U"工单", "").replace(U"、", ",").replace(U"，", ",").replace(U"–", "-").replace(U"—", "-");
+		for (const String &part : p_value.split(",")) {
+			const Vector<String> ends = part.strip_edges().split("-");
+			if (ends.is_empty() || ends.size() > 2 || !ends[0].strip_edges().is_valid_int() || !ends[ends.size() - 1].strip_edges().is_valid_int()) {
+				return false;
+			}
+			const int64_t first = ends[0].strip_edges().to_int();
+			const int64_t last = ends[ends.size() - 1].strip_edges().to_int();
+			if (first < 1 || last < first || last > 999 || last - first >= MAX_CHILDREN_PER_PARENT) {
+				return false;
+			}
+			for (int number = first; number <= last; number++) {
+				if (!p_prior.has(number)) {
+					return false;
+				}
+				if (!r_dependencies.has(number)) {
+					r_dependencies.push_back(number);
+				}
+			}
+		}
+		return !p_value.is_empty();
+	}
+
 	static Dictionary parse_work_orders(const String &p_document) {
 		Dictionary result;
-		bool finalized = false;
+		bool confirmation_section = false;
+		bool valid = true;
+		Array prior;
+		Array dependencies;
 		bool in_section = false;
 		Array orders;
 		Dictionary current;
@@ -112,6 +142,9 @@ public:
 			if (current.is_empty()) {
 				return;
 			}
+			current["dependencies"] = dependencies;
+			dependencies = Array();
+			prior.push_back(current["number"]);
 			current["body"] = body.strip_edges().left(MAX_WORK_ORDER_CHARS);
 			orders.push_back(current);
 			current = Dictionary();
@@ -120,8 +153,10 @@ public:
 		for (const String &line : lines) {
 			const String stripped = line.strip_edges();
 			if (stripped.begins_with("#")) {
-				if (stripped.contains(U"设计定版确认")) {
-					finalized = true;
+				const String dated = stripped.trim_prefix(U"## 设计定版确认（").trim_suffix(U"）");
+				if (stripped == U"## 设计定版确认" || stripped == U"## 设计定版确认：当前操作者代表任务" ||
+						(stripped == String(U"## 设计定版确认（") + dated + U"）" && dated.match("????-??-??") && dated.replace("-", "").is_valid_int())) {
+					confirmation_section = true;
 				}
 				if (stripped.begins_with("# ") || stripped.begins_with("## ")) {
 					if (in_section) {
@@ -140,20 +175,27 @@ public:
 			if (!indented && parse_numbered(line, number, title)) {
 				flush();
 				if (orders.size() >= MAX_CHILDREN_PER_PARENT) {
+					valid = false;
 					break;
 				}
+				valid = valid && number > 0 && !prior.has(number);
 				current["number"] = number;
 				current["title"] = title;
 				continue;
 			}
 			if (!current.is_empty()) {
+				const String field = stripped.trim_prefix("- ").strip_edges().replace(U"：", ":");
+				if (field.begins_with(U"依赖:") || field.begins_with(U"业务依赖:")) {
+					valid = parse_dependencies(field.substr(field.find(":") + 1), prior, dependencies) && valid;
+				}
 				body += line + "\n";
 			}
 		}
 		if (in_section) {
 			flush();
 		}
-		result["finalized"] = finalized;
+		result["confirmation_section"] = confirmation_section;
+		result["valid"] = valid;
 		result["orders"] = orders;
 		return result;
 	}
@@ -171,7 +213,7 @@ public:
 	}
 
 	static String work_order_prompt(const String &p_parent, int p_order, int p_total, const Dictionary &p_work_order, int64_t p_issue, const String &p_request_id) {
-		String prompt = vformat(U"你是父 Agent「%s」派生的子 Agent，负责落地生产工单 %d/%d：%s\n\n", p_parent, p_order, p_total, String(p_work_order.get("title", "")));
+		String prompt = vformat(U"你是父 Agent「%s」派生的子 Agent，负责落地生产工单 %d（第 %d 项，共 %d 项）：%s\n\n", p_parent, int(p_work_order["number"]), p_order, p_total, String(p_work_order.get("title", "")));
 		const String body = p_work_order.get("body", "");
 		if (!body.is_empty()) {
 			prompt += body + "\n\n";

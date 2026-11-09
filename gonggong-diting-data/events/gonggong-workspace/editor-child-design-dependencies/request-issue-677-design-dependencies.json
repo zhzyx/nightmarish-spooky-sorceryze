@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-child-design-dependencies",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "kind": "request",
+  "event_id": "request-issue-677-design-dependencies",
+  "occurred_at": "2026-11-09T19:28:06.491384+00:00",
+  "payload": {
+    "source_revision": "6dcab4170aca18f90481f2700c8853f0e08030d804d29babf6c06b61be061a39",
+    "scope": "Implement version-bound operator confirmation and verify predecessor business acceptance before editor child dispatch.",
+    "worker_id": "/root/sinan_2303a55d8531a93c",
+    "usage": null
+  },
+  "evidence_refs": [
+    "dispatch-0b5ca8fe986e4f019d2283a76b0b381a"
+  ],
+  "sha256": "bb6e79624cd9677d14981df9def60e7fa38bcfcbe9fcda68ef53f8c9501c3614"
+}

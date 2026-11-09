@@ -1,0 +1,66 @@
+{
+  "issue_number": 677,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+  "request_id": "editor-child-design-dependencies",
+  "tested_with_role_candidate": "71e1ee26c4a85ee75896347de4f8a77ad7d09567",
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "465164a5c924cca426c39b14d939a86c346b82e243a65925a831a3dff9cb363a",
+    "editor/docks/ai_chat_dock.h": "fa1f0f85096264cb7ae0da55e1b9be5e37961a3e932415b05b4ce9c9d51841e4",
+    "editor/docks/ai_chat_sub_agents.cpp": "8ea2923bf2677faff3298fefd40dde93cbd2987dc0600bcc5cce9148ea7995af",
+    "editor/docks/ai_chat_sub_agents.h": "4b9accf1745112a81d01c2658ed663e0ecab8e0cafcce8bd2dbbc1818c9766e4",
+    "tests/editor/design_batch.gd": "7751d085e7a049798109713270e137e8b1d00564e66bf27e7e3995c2be9c6f2c",
+    "tests/editor/parallel_dispatch_editor_live.gd": "4734dec71a673151c3ae23b286f83fae5f976665e8d5dd91614474dce019f513",
+    "tests/editor/run_design_batch.py": "26ee1bc4c7bcdb2609186f0bddb757dd730a20acbf20f60587478b37f91b1f35",
+    "tests/editor/runtime_candidate.gd": "5ea68a177febf417c99aa58cbff99ee86dc6196ed21030b8b2df139b8c1c7b40",
+    "tests/editor/test_ai_chat_tools.cpp": "43eee2dc2dba29a0d6812b04b2cce7b62eab01b87ad0e77061da576c4f03aafa",
+    "tests/editor/test_parallel_work_orders.mjs": "0c2ec82a7d28c240d040c70b38f20f3c339a358034a1c0798a2f87281cb5e029",
+    "tools/godot_parallel/runner.mjs": "ce76be4da10d526f5a9c766298e8d91af0c0def9b5d79c8d275558efb35243c3"
+  },
+  "build": "Windows x86_64 editor; headless; offline model and Issue fixtures",
+  "editor_binary_sha256": "15f26978858fc713ed8cca180e7f3588c0c17be626321acd56eef439d3ed28da",
+  "native_cases": {
+    "normal": {
+      "passed": true,
+      "parent_returns": 1
+    },
+    "review": {
+      "passed": true,
+      "parent_returns": 1
+    },
+    "cold": {
+      "passed": true,
+      "parent_returns": 0
+    },
+    "failure": {
+      "passed": true,
+      "parent_returns": 1
+    },
+    "review-stale-head": {
+      "passed": true,
+      "parent_returns": 0
+    },
+    "review-stale-bytes": {
+      "passed": true,
+      "parent_returns": 0
+    },
+    "review-stale-link": {
+      "passed": true,
+      "parent_returns": 0
+    }
+  },
+  "parallel_runner_tests": {
+    "passed": 14,
+    "failed": 0
+  },
+  "native_unit_tests": {
+    "passed": 45,
+    "assertions": 638
+  },
+  "acceptance": [
+    "Draft title and stale confirmation rejected; actual native confirmation binds issue and exact design bytes.",
+    "Design declares work orders 2 and 4. Worker context, tabs, prompts and dependency handoff use declared numbers.",
+    "Transport completion and empty evidence cannot release a dependent. Manual consultation preserves the receipt; a production retry obtains a new terminal receipt. Explicit acceptance then allows completion.",
+    "Parallel launcher verifies both worktree designs at execution and handles old, mismatched and raced tickets without replay."
+  ],
+  "independent_review": "/root/sinan_0a3165cc10d0ab01"
+}

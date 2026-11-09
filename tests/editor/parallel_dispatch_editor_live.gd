@@ -32,6 +32,12 @@ func _run():
 	for control in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands"]:
 		_chat_setting(dock, control).button_pressed = true
 	dock.find_child("SpawnWorkOrderAgents", true, false).pressed.emit()
+	var confirmation = dock.find_child("WorkOrderConfirmation", true, false)
+	if not confirmation.visible:
+		push_error("The design confirmation is unavailable")
+		quit(1)
+		return
+	confirmation.get_ok_button().pressed.emit()
 	var result_path = ""
 	var deadline = Time.get_ticks_msec() + 600000
 	while Time.get_ticks_msec() < deadline:

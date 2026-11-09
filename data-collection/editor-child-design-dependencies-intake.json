@@ -1,0 +1,15 @@
+{
+  "request_id": "editor-child-design-dependencies",
+  "issue_number": 677,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677",
+  "source_revision": "6dcab4170aca18f90481f2700c8853f0e08030d804d29babf6c06b61be061a39",
+  "dispatch": "dispatch-0b5ca8fe986e4f019d2283a76b0b381a",
+  "request_event": "request-issue-677-design-dependencies",
+  "event_sha256": "bb6e79624cd9677d14981df9def60e7fa38bcfcbe9fcda68ef53f8c9501c3614",
+  "validation": [
+    "git diff --check",
+    "Python compile check of tests/editor/run_design_batch.py",
+    "node --test tests/editor/test_parallel_work_orders.mjs: 14 passed (includes versioned launch and ticket reconciliation)"
+  ],
+  "business_acceptance": "pending candidate headless integration run"
+}

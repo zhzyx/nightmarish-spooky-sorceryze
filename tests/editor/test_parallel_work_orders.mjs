@@ -9,7 +9,7 @@ import {prepare,run as runHost} from '../../tools/godot_parallel/runner.mjs';
 const run=(request,config,output)=>runHost(request,config,output,{report:async()=>({ok:true,state:'recorded_file',fixture:true})});
 function fixture(t) {
   const base=fs.mkdtempSync(path.join(os.tmpdir(),'godot-parallel-'));
-  t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
+  t.after(()=>fs.rmSync(base,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
   const root=path.join(base,'repo');fs.mkdirSync(root);
   const git=(...args)=>execFileSync('git',args,{cwd:root,stdio:'pipe'});
   git('init');git('config','user.name','Fixture');git('config','user.email','fixture@example.invalid');
@@ -187,4 +187,74 @@ test('child exit before prompt handoff retains an unknown work order',async t=>{
     return {ok:true,state:'recorded_file'};
   }});
   assert.equal(result.workers[0].state,'reconcile_required');
+});
+
+function versionedFixture(t) {
+  const f = fixture(t);
+  configureCommand(f);
+  f.request.workers = f.request.workers.slice(0, 1);
+  f.config.jobs[0].order = f.request.workers[0].order = 4;
+  const bytes = Buffer.from('## 生产工单\r\n2. One\r\n4. Two\r\n');
+  f.request.workers[0].designSha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+  for (const root of [f.request.workspace, f.config.jobs[0].worktree]) {
+    fs.mkdirSync(path.join(root,'design-docs'));
+    fs.writeFileSync(path.join(root,'design-docs','fixture-request.md'),bytes);
+  }
+  return f;
+}
+
+test('confirmed CLI design must match both checkouts before preparation and after reporting', async t => {
+  for (const side of ['source','worker']) {
+    for (const phase of ['initial','prepared','running']) {
+      const f = versionedFixture(t);
+      const root = side === 'source' ? f.request.workspace : f.config.jobs[0].worktree;
+      const drift = () => fs.appendFileSync(path.join(root,'design-docs','fixture-request.md'),'changed');
+      if (phase === 'initial') drift();
+      const result = await runHost(f.request,f.config,f.output,{report:async event=>{
+        if (event.state === phase) drift();
+        return {ok:true,state:'recorded_file'};
+      }});
+      assert.equal(result.workers[0].state, phase === 'running' ? 'reconcile_required' : 'blocked');
+      assert.match(result.workers[0].reason,/Design differs/);
+      assert.ok(!fs.existsSync(path.join(f.config.jobs[0].worktree,'worker-result.json')));
+    }
+  }
+});
+
+test('replay accepts only the same Issue, declared order and exact version', async t => {
+  const f = versionedFixture(t);
+  const first = await run(f.request,f.config,f.output);
+  const record = first.workers[0];
+  assert.equal(record.state,'review');
+  assert.equal(record.order,4);
+  assert.equal(record.designSha256,f.request.workers[0].designSha256);
+  const ticket = path.join(f.request.workspace,'data-collection/outbox/parallel-ticket-fixture-request-4.json');
+  for (const patch of [{issue:2},{order:2},{requestId:'other'},{designSha256:'0'.repeat(64)},{designSha256:undefined}]) {
+    const previous = JSON.stringify({...record,...patch});
+    fs.writeFileSync(ticket,previous);
+    const replay = await run(f.request,f.config,f.output);
+    assert.equal(replay.workers[0].state,'reconcile_required');
+    assert.equal(replay.workers[0].pid,undefined);
+    assert.equal(fs.readFileSync(ticket,'utf8'),previous);
+  }
+  fs.writeFileSync(ticket,JSON.stringify(record));
+  const replay = await run(f.request,f.config,f.output);
+  assert.deepEqual(replay.workers,first.workers);
+});
+
+test('a ticket appearing after initial reconciliation cannot be adopted by a different design', async t => {
+  const f = versionedFixture(t);
+  f.config.capacity = 1;
+  const second = f.config.jobs[1];
+  second.order = 9;
+  f.request.workers.push({...f.request.workers[0],id:2,order:9});
+  const ticket = path.join(f.request.workspace,'data-collection/outbox/parallel-ticket-fixture-request-9.json');
+  const previous = JSON.stringify({id:77,order:9,state:'review'});
+  const result = await runHost(f.request,f.config,f.output,{report:async event=>{
+    if (event.order === 4 && event.state === 'prepared') fs.writeFileSync(ticket,previous);
+    return {ok:true,state:'recorded_file'};
+  }});
+  assert.deepEqual(result.workers.map(record=>record.state),['review','reconcile_required']);
+  assert.equal(fs.readFileSync(ticket,'utf8'),previous);
+  assert.ok(!fs.existsSync(path.join(second.worktree,'worker-result.json')));
 });

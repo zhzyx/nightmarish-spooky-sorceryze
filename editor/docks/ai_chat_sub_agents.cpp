@@ -46,6 +46,7 @@
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/dialogs.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
@@ -167,6 +168,22 @@ Dictionary store_design_receipts(const String &p_path, const Dictionary &p_body)
 	result["sha256"] = payload.sha256_text();
 	return result;
 }
+String design_record_key(const Dictionary &p_binding, int p_parent, int p_child = -1) {
+	return (JSON::stringify(p_binding) + "/" + itos(p_parent) + "/" + itos(p_child)).sha256_text();
+}
+
+String local_design_operator() {
+	OS *os = OS::get_singleton();
+	const String name = os->get_environment(os->has_environment("USERNAME") ? "USERNAME" : "USER").strip_edges();
+	return name.is_empty() ? String() : "local:" + name;
+}
+
+bool receipt_available(const Dictionary &p_receipt) {
+	const String path = p_receipt.get("path", "");
+	const String hash = p_receipt.get("file_sha256", "");
+	return !path.is_empty() && !hash.is_empty() && FileAccess::get_sha256(path) == hash;
+}
+
 } // namespace
 
 bool AIChatDock::_design_parent_matches(int p_parent, const Dictionary &p_batch) const {
@@ -387,7 +404,30 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 	return JSON::stringify(result);
 }
 
+bool AIChatDock::_prepare_manual_design_attempt() {
+	Dictionary info = sub_agents[active_agent];
+	if (gonggong_receipt_pid >= 0 || info.get("parallel_external", false) || !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty()) {
+		return false;
+	}
+	const int parent = info["parent"];
+	if (design_batches.has(parent) && bool(design_batches[parent].get("reporting_blocked", false))) {
+		return false;
+	}
+	_cancel_design_batch(active_agent);
+	const String previous = info["state"];
+	info["state"] = "waiting";
+	_register_design_batch(parent, info["request_id"], info["issue_number"]);
+	if (_design_child_parent(active_agent) != parent) {
+		info["state"] = previous;
+		return false;
+	}
+	return true;
+}
+
 void AIChatDock::_design_turn_started() {
+	if (consultation_turn && sub_agents.has(active_agent) && sub_agents[active_agent].get("source", "") == "design") {
+		return; // A read-only follow-up does not replace this child's production attempt.
+	}
 	const int parent = _design_child_parent(active_agent);
 	if (design_child_starting != active_agent) {
 		if (design_parent_starting != active_agent) {
@@ -584,6 +624,12 @@ bool AIChatDock::_design_child_finished(int p_agent, bool p_completed, uint64_t 
 	body["business_accepted"] = Variant();
 	const String path = _snapshot_path(turn);
 	child["receipt_ref"] = path.is_empty() ? Dictionary() : store_design_receipts(path + ".tool-receipts.json", body);
+	if (p_completed && !bool(batch.get("read_only_review", false)) && !bool(batch.get("reporting_blocked", false)) && bool(Dictionary(child["receipt_ref"]).get("available", false))) {
+		Dictionary receipt = Dictionary(child["receipt_ref"]).duplicate();
+		receipt["file_sha256"] = FileAccess::get_sha256(receipt["path"]);
+		sub_agents[p_agent]["terminal_receipt"] = receipt;
+		_queue_history_save();
+	}
 	if (bool(batch.get("read_only_review", false)) && !bool(Dictionary(child["receipt_ref"]).get("available", false))) {
 		// A model reply without its durable host receipt cannot wake production.
 		batch["reporting_blocked"] = true;
@@ -717,10 +763,26 @@ void AIChatDock::_build_sub_agent_ui(VBoxContainer *p_page, int p_position) {
 	sub_agent_bar->add_child(add_sub_agent);
 	spawn_sub_agents = memnew(Button);
 	spawn_sub_agents->set_name("SpawnWorkOrderAgents");
+	spawn_sub_agents->set_meta("ai_control_exclude", true);
 	spawn_sub_agents->set_text(U"按工单落地");
-	spawn_sub_agents->set_tooltip_text(U"读取当前绑定需求文档 design-docs/<需求ID>.md：含「设计定版确认」和「## 生产工单」编号列表时，为每张工单创建子会话并按顺序执行。已创建过则继续执行未完成的工单。父会话一轮结束时也会自动检测。");
+	spawn_sub_agents->set_tooltip_text(U"读取当前绑定需求文档 design-docs/<需求ID>.md：核对当前版本后确认定版并派发。存在依赖时，请在前置子会话核对结果并点「验收当前工单」。");
 	spawn_sub_agents->connect("pressed", callable_mp(this, &AIChatDock::_spawn_sub_agents_pressed));
 	sub_agent_bar->add_child(spawn_sub_agents);
+	design_dialog = memnew(ConfirmationDialog);
+	design_dialog->set_name("WorkOrderConfirmation");
+	design_dialog->set_meta("ai_control_exclude", true);
+	design_dialog->connect("confirmed", callable_mp(this, &AIChatDock::_confirm_design_action));
+	add_child(design_dialog);
+	VBoxContainer *layout = memnew(VBoxContainer);
+	design_dialog->add_child(layout);
+	design_summary = memnew(Label);
+	design_summary->set_name("DesignSummary");
+	layout->add_child(design_summary);
+	design_evidence = memnew(LineEdit);
+	design_evidence->set_name("WorkOrderAcceptanceEvidence");
+	design_evidence->set_max_length(1024);
+	design_evidence->set_placeholder(U"已核对的实测结果与证据位置");
+	layout->add_child(design_evidence);
 }
 
 int AIChatDock::_sub_agent_root(int p_id) const {
@@ -828,21 +890,150 @@ void AIChatDock::_add_sub_agent() {
 	_refresh_sub_agents();
 }
 
+Dictionary AIChatDock::_read_design(int p_parent) const {
+	const String request_id = _work_order_binding("request_id", p_parent).strip_edges();
+	const int64_t issue = _work_order_binding("issue_number", p_parent).to_int();
+	const String root = _workflow_root(p_parent);
+	if (root.is_empty() || !AIChatIssueGuide::is_bound(issue, request_id)) {
+		return Dictionary();
+	}
+	Ref<FileAccess> file = FileAccess::open(root.path_join("design-docs").path_join(request_id + ".md"), FileAccess::READ);
+	if (file.is_null() || !file->get_length() || file->get_length() > MAX_DESIGN_DOCUMENT_BYTES) {
+		return Dictionary();
+	}
+	const int64_t length = file->get_length();
+	const Vector<uint8_t> bytes = file->get_buffer(length);
+	uint8_t hash[32];
+	if (bytes.size() != length || CryptoCore::sha256(bytes.ptr(), bytes.size(), hash) != OK) {
+		return Dictionary();
+	}
+	Dictionary doc = AIChatSubAgents::parse_work_orders(String::utf8((const char *)bytes.ptr(), bytes.size()));
+	if (!bool(doc["confirmation_section"]) || !bool(doc["valid"]) || Array(doc["orders"]).is_empty()) {
+		return Dictionary();
+	}
+	Dictionary binding;
+	binding["workspace"] = root;
+	binding["request_id"] = request_id;
+	binding["issue_number"] = itos(issue);
+	binding["sha256"] = String::hex_encode_buffer(hash, 32);
+	doc["binding"] = binding;
+	return doc;
+}
+
+bool AIChatDock::_design_child_ready(int p_child) const {
+	const Dictionary child = sub_agents[p_child];
+	const int parent = child.get("parent", -1);
+	const Dictionary approval = child.get("design_approval", Dictionary());
+	const Dictionary binding = approval.get("binding", Dictionary());
+	const Dictionary doc = _read_design(parent);
+	const Array orders = doc.get("orders", Array());
+	const int index = int(child.get("work_order", 0)) - 1;
+	if (binding.is_empty() || String(approval.get("operator", "")).is_empty() || doc.get("binding", Dictionary()) != Variant(binding) ||
+			String(child["request_id"]) != String(binding["request_id"]) || int64_t(child["issue_number"]) != String(binding["issue_number"]).to_int() || index < 0 || index >= orders.size()) {
+		return false;
+	}
+	EditorSettings *settings = EditorSettings::get_singleton();
+	if (settings->get_project_metadata("design_confirmations", design_record_key(binding, parent), Dictionary()) != Variant(approval)) {
+		return false;
+	}
+	const Dictionary order = orders[index];
+	if (int(child.get("number", 0)) != int(order["number"]) || child.get("title", "") != order["title"]) {
+		return false;
+	}
+	for (const Variant &number : Array(order["dependencies"])) {
+		bool accepted = false;
+		for (int id : _sub_agent_children(parent, true, child["request_id"])) {
+			const Dictionary predecessor = sub_agents[id];
+			const Dictionary receipt = predecessor.get("terminal_receipt", Dictionary());
+			const Dictionary acceptance = predecessor.get("acceptance", Dictionary());
+			if (predecessor.get("design_approval", Dictionary()) == Variant(approval) && int(predecessor.get("number", 0)) == int(number) && String(acceptance.get("number", "")) == itos(int(number)) &&
+					(predecessor.get("state", "") == "completed" || predecessor.get("state", "") == "review") &&
+					!String(acceptance.get("operator", "")).is_empty() && !String(acceptance.get("evidence", "")).is_empty() &&
+					acceptance.get("receipt", Dictionary()) == Variant(receipt) &&
+					settings->get_project_metadata("design_acceptances", design_record_key(binding, parent, id), Dictionary()) == Variant(acceptance) && receipt_available(receipt)) {
+				accepted = true;
+				break;
+			}
+		}
+		if (!accepted) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void AIChatDock::_confirm_design_action() {
+	const Dictionary action = pending_design_action;
+	pending_design_action = Dictionary();
+	const int parent = action.get("parent", -1);
+	const int child = action.get("child", -1);
+	const String actor = local_design_operator();
+	if (actor.is_empty() || parent != _sub_agent_root(active_agent) || busy || !history_writable || !allow_tools->is_pressed() || consultation_only->is_pressed() ||
+			action.get("binding", Dictionary()) != _read_design(parent).get("binding", Variant())) {
+		_append(TTR("Editor"), U"操作者、权限或设计版本已变化，请重新核对后确认。");
+		return;
+	}
+	if (child >= 0) {
+		const String evidence = design_evidence->get_text().strip_edges();
+		if (child != active_agent || !sub_agents.has(child) || evidence.is_empty() || sub_agents[child].get("terminal_receipt", Dictionary()) != action["receipt"] ||
+				!receipt_available(action["receipt"]) || !_design_child_ready(child)) {
+			_append(TTR("Editor"), U"请核对原工单终态回执，并填写实际验收证据。");
+			return;
+		}
+		Dictionary acceptance;
+		acceptance["operator"] = actor;
+		acceptance["receipt"] = action["receipt"];
+		acceptance["evidence"] = evidence;
+		acceptance["number"] = itos(int(sub_agents[child]["number"]));
+		EditorSettings::get_singleton()->set_project_metadata("design_acceptances", design_record_key(action["binding"], parent, child), acceptance);
+		sub_agents[child]["acceptance"] = acceptance;
+		_append(TTR("Editor"), U"已记录该工单的验收证据，继续检查后续依赖。");
+		_queue_history_save();
+		_save_history();
+		if (!design_batches.has(parent)) {
+			_register_design_batch(parent, _work_order_binding("request_id", parent), _work_order_binding("issue_number", parent).to_int());
+		}
+		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+		return;
+	}
+	Dictionary approval;
+	approval["binding"] = action["binding"];
+	approval["operator"] = actor;
+	EditorSettings::get_singleton()->set_project_metadata("design_confirmations", design_record_key(action["binding"], parent), approval);
+	_spawn_work_order_agents(parent, true, approval);
+}
+
 void AIChatDock::_spawn_sub_agents_pressed() {
 	if (!gonggong_recovered_result.is_empty() || busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || scheduled_agents.has(active_agent)) {
+		return;
+	}
+	if (sub_agents.has(active_agent) && sub_agents[active_agent].has("terminal_receipt") && !sub_agents[active_agent].has("acceptance") && gonggong_receipt_pid < 0) {
+		const Dictionary child = sub_agents[active_agent];
+		const Dictionary approval = child.get("design_approval", Dictionary());
+		const Dictionary receipt = child["terminal_receipt"];
+		pending_design_action.clear();
+		pending_design_action["parent"] = child["parent"];
+		pending_design_action["child"] = active_agent;
+		pending_design_action["binding"] = approval.get("binding", Dictionary());
+		pending_design_action["receipt"] = receipt;
+		design_summary->set_text(vformat(U"Issue #%d · %s · 工单 %d\n%s\n回执：%s\n请核对工单范围与回执，填写实际业务验收证据。", int64_t(child["issue_number"]), String(child["request_id"]), int(child["number"]), String(child["title"]), String(receipt["path"])));
+		design_evidence->clear();
+		design_evidence->show();
+		design_dialog->set_title(U"验收当前工单");
+		design_dialog->popup_centered();
 		return;
 	}
 	_spawn_work_order_agents(_sub_agent_root(active_agent), true);
 }
 
-bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
+bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const Dictionary &p_approval) {
 	if (design_batches.has(p_parent) && bool(design_batches[p_parent].get("read_only_review", false))) {
 		return false; // A delegated review owns this completion boundary.
 	}
 	if (sub_agents.has(p_parent) || scheduled_agents.has(p_parent) || _agent_index(p_parent) < 0 || !allow_tools->is_pressed() || consultation_only->is_pressed() || consultation_turn) {
 		return false;
 	}
-	if (p_explicit && gonggong_receipt_pid >= 0) {
+	if (p_explicit && p_approval.is_empty() && gonggong_receipt_pid >= 0) {
 		_append(TTR("Editor"), U"当前来源的结束回执仍在处理，暂未重新派发工单。等待真实回执后再继续；不会丢弃本批次的来源绑定。");
 		return false;
 	}
@@ -854,7 +1045,18 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 		}
 		return false;
 	}
-	if (!_sub_agent_children(p_parent, true, request_id).is_empty()) {
+	const Vector<int> existing = _sub_agent_children(p_parent, true, request_id);
+	if (!existing.is_empty()) {
+		if (p_explicit) {
+			const Dictionary binding = _read_design(p_parent).get("binding", Dictionary());
+			for (int id : existing) {
+				const Dictionary approval = sub_agents[id].get("design_approval", Dictionary());
+				if (binding.is_empty() || approval.get("binding", Variant()) != Variant(binding)) {
+					_append(TTR("Editor"), U"原工单缺少该设计版本的定版记录。请恢复已确认版本，或核对并关闭旧工单子会话后重新定版派发。");
+					return false;
+				}
+			}
+		}
 		return p_explicit && _resume_work_order_agents(p_parent, request_id);
 	}
 	// One design produces one set of children, whichever parent finished it.
@@ -869,21 +1071,29 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 	if (!p_explicit && sub_agent_spawned.has(request_id)) {
 		return false;
 	}
-	const String root = _workflow_root(p_parent);
-	const String path = root.path_join("design-docs").path_join(request_id + ".md");
-	Ref<FileAccess> file = root.is_empty() ? Ref<FileAccess>() : FileAccess::open(path, FileAccess::READ);
-	if (file.is_null() || file->get_length() > MAX_DESIGN_DOCUMENT_BYTES) {
+	const Dictionary parsed = _read_design(p_parent);
+	if (parsed.is_empty()) {
 		if (p_explicit) {
-			_append(TTR("Editor"), vformat(U"未找到或无法读取需求文档（上限 1 MiB）：%s", path));
+			_append(TTR("Editor"), U"请检查定版小节、生产工单编号和依赖（例如「依赖：工单 1–3」）。");
 		}
 		return false;
 	}
-	const Dictionary parsed = AIChatSubAgents::parse_work_orders(file->get_as_utf8_string());
-	file.unref();
 	const Array orders = parsed["orders"];
-	if (!bool(parsed["finalized"]) || orders.is_empty()) {
-		if (p_explicit) {
-			_append(TTR("Editor"), U"需求文档尚未包含「设计定版确认」小节和「## 生产工单」编号列表，未创建子会话。可在设计定稿后重试，或手动新建子会话。");
+	const Dictionary binding = parsed["binding"];
+	if (p_approval.get("binding", Dictionary()) != Variant(binding) || String(p_approval.get("operator", "")).is_empty()) {
+		if (p_parent == active_agent && !design_dialog->is_visible()) {
+			pending_design_action.clear();
+			pending_design_action["binding"] = binding;
+			pending_design_action["parent"] = p_parent;
+			String summary = vformat(U"确认以下设计定版并派发生产工单？\nIssue #%d · %s\n%s\nSHA-256 %s\n", issue, request_id, String(binding["workspace"]), String(binding["sha256"]));
+			for (const Variant &item : orders) {
+				const Dictionary order = item;
+				summary += vformat("\n%d. %s", int(order["number"]), String(order["title"]).left(80));
+			}
+			design_summary->set_text(summary);
+			design_evidence->hide();
+			design_dialog->set_title(U"确认设计定版");
+			design_dialog->popup_centered();
 		}
 		return false;
 	}
@@ -901,18 +1111,20 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit) {
 		info["source"] = "design";
 		info["state"] = "waiting";
 		info["work_order"] = i + 1;
+		info["number"] = order["number"];
+		info["design_approval"] = p_approval;
 		info["request_id"] = request_id;
 		info["issue_number"] = issue;
 		info["title"] = order.get("title", "");
 		const String prompt = AIChatSubAgents::work_order_prompt(parent_title, i + 1, orders.size(), order, issue, request_id);
-		if (_create_sub_agent(p_parent, AIChatSubAgents::tab_title(i + 1, order.get("title", "")), info, prompt) >= 0) {
+		if (_create_sub_agent(p_parent, AIChatSubAgents::tab_title(order["number"], order.get("title", "")), info, prompt) >= 0) {
 			created++;
 		}
 	}
 	sub_agent_spawned[request_id] = true;
 	_register_design_batch(p_parent, request_id, issue);
 	if (p_parent == active_agent) {
-		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子会话，将按顺序逐个落地。在上方子会话标签条查看进度；前序未完成时后续会停住，可点「继续落地」。", path.get_file(), created, parent_title));
+		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子会话，将按顺序逐个落地。在上方子会话标签条查看进度；前序未完成时后续会停住，可点「继续落地」。", request_id + ".md", created, parent_title));
 	}
 	_refresh_sub_agents();
 	_queue_history_save();
@@ -1035,6 +1247,9 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (state != "waiting" || !sub_agents.has(id) || _agent_index(id) < 0) {
 			return;
 		}
+		if (!bool(batch.get("read_only_review", false)) && !_design_child_ready(id)) {
+			continue;
+		}
 		const bool paused = id == active_agent ? queue_paused : agent_sessions[id].queue_paused;
 		if (paused) {
 			return;
@@ -1076,18 +1291,24 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	if (sub_agent_parallel_pid >= 0) {
 		return true;
 	}
-	const String request_id = _work_order_binding("request_id");
 	const int dispatch_parent = _sub_agent_root(active_agent);
+	const String request_id = _work_order_binding("request_id", dispatch_parent);
 	const String workspace = _workflow_root(dispatch_parent);
 	Array workers;
 	for (const KeyValue<int, Dictionary> &entry : sub_agents) {
 		if (int(entry.value.get("parent", -1)) != dispatch_parent || String(entry.value.get("source", "")) != "design" || String(entry.value.get("state", "")) != "waiting" || String(entry.value.get("request_id", "")) != request_id) {
 			continue;
 		}
+		if (!_design_child_ready(entry.key)) {
+			continue;
+		}
 		Dictionary worker;
 		worker["id"] = entry.key;
-		worker["order"] = entry.value.get("work_order", 0);
-		worker["prompt"] = vformat(U"落实 Issue #%d / %s 的生产工单 %d：%s。读取 design-docs/%s.md 获取定稿范围与验收。", int64_t(entry.value.get("issue_number", 0)), request_id, int(entry.value.get("work_order", 0)), String(entry.value.get("title", "")), request_id);
+		worker["order"] = entry.value["number"];
+		const Dictionary approval = entry.value["design_approval"];
+		const Dictionary binding = approval["binding"];
+		worker["designSha256"] = binding["sha256"];
+		worker["prompt"] = vformat(U"落实 Issue #%d / %s 的生产工单 %d：%s。读取 design-docs/%s.md 获取定稿范围与验收。", int64_t(entry.value.get("issue_number", 0)), request_id, int(entry.value["number"]), String(entry.value.get("title", "")), request_id);
 		workers.push_back(worker);
 	}
 	if (workers.is_empty()) {
@@ -1112,7 +1333,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	Dictionary dispatch_request;
 	dispatch_request["workspace"] = workspace;
 	dispatch_request["config"] = config;
-	dispatch_request["issue"] = int64_t(String(_work_order_binding("issue_number")).to_int());
+	dispatch_request["issue"] = int64_t(String(_work_order_binding("issue_number", dispatch_parent)).to_int());
 	dispatch_request["requestId"] = request_id;
 	dispatch_request["batchId"] = batch_id;
 	dispatch_request["workers"] = workers;
@@ -1170,9 +1391,23 @@ void AIChatDock::_poll_parallel_sub_agents() {
 		const Dictionary receipt = value;
 		const int id = receipt.get("id", -1);
 		if (sub_agents.has(id) && String(sub_agents[id].get("parallel_output", "")) == sub_agent_parallel_output && String(sub_agents[id].get("parallel_batch", "")) == String(result.get("batchId", "")) && String(sub_agents[id].get("request_id", "")) == String(result.get("requestId", ""))) {
+			const Dictionary approval = sub_agents[id].get("design_approval", Dictionary());
+			const Dictionary binding = approval.get("binding", Dictionary());
+			if (String(receipt.get("designSha256", "")).is_empty() || receipt.get("designSha256", "") != binding.get("sha256", "") ||
+					int(receipt.get("issue", 0)) != int(sub_agents[id]["issue_number"]) || int(receipt.get("order", 0)) != int(sub_agents[id]["number"])) {
+				continue;
+			}
 			const String state = receipt.get("state", "");
 			sub_agents[id]["state"] = state == "review" ? "review" : (state.begins_with("blocked") ? "waiting" : "interrupted");
 			sub_agents[id]["parallel_receipt"] = receipt;
+			if (state == "review") {
+				Dictionary terminal;
+				terminal["path"] = sub_agent_parallel_output;
+				terminal["file_sha256"] = FileAccess::get_sha256(sub_agent_parallel_output);
+				terminal["worker_id"] = itos(id);
+				terminal["batch"] = result["batchId"];
+				sub_agents[id]["terminal_receipt"] = terminal;
+			}
 		}
 	}
 	_append(TTR("Editor"), vformat(U"并行执行器已结束。工单保留各自结果；待验收不自动合入，未明结果不重跑。回执：%s", sub_agent_parallel_output));
@@ -1251,7 +1486,9 @@ void AIChatDock::_refresh_sub_agents() {
 	const bool child = sub_agents.has(active_agent);
 	add_sub_agent->set_disabled(locked || child || !history_writable || children.size() >= AIChatSubAgents::MAX_CHILDREN_PER_PARENT || sub_agents.size() >= AIChatSubAgents::MAX_CHILDREN || agent_tabs->get_tab_count() >= 256);
 	add_sub_agent->set_tooltip_text(child ? U"子会话不能再派生子会话；请切回父会话后新建。" : U"在当前父会话窗口内新建一个子会话。子会话不能再派生子会话。");
-	spawn_sub_agents->set_text(resumable ? U"继续落地" : U"按工单落地");
+	const bool can_accept = child && sub_agents[active_agent].has("terminal_receipt") && !sub_agents[active_agent].has("acceptance");
+	spawn_sub_agents->set_text(can_accept ? U"验收当前工单" : resumable ? U"继续落地"
+																		: U"按工单落地");
 	spawn_sub_agents->set_disabled(locked || scheduled);
 }
 

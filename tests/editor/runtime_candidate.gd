@@ -108,6 +108,11 @@ func _run():
 		_finish(dock, false, "second parent Issue")
 		return
 	tabs.current_tab = first_index
+	var confirmation = dock.find_child("WorkOrderConfirmation", true, false)
+	confirmation.visibility_changed.connect(func():
+		if confirmation.visible and confirmation.title == "确认设计定版":
+			confirmation.get_ok_button().call_deferred("emit_signal", "pressed")
+	)
 	_send(dock, "CANDIDATE_RESUME")
 	if not await _wait_reply(dock, "CANDIDATE_RESUMED_OK"):
 		_finish(dock, false, "first parent after second parent binding")
