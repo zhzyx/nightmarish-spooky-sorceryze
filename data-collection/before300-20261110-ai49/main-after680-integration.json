@@ -1,0 +1,32 @@
+{
+  "base": "a7b1a95439966292e7099db64c6ee78282889da2",
+  "upstream_pr": 680,
+  "upstream_paths": [
+    "AGENTS.md",
+    "customizations/components/issue-workorders/test_yanluo_definition.py",
+    "customizations/components/issue-workorders/yanluo.md",
+    "customizations/components/issue-workorders/yanluo_host.py",
+    "customizations/components/yanluo/AGENT.md",
+    "customizations/components/yanluo/HOST_PROTOCOL.md",
+    "customizations/components/yanluo/component.json",
+    "customizations/components/yanluo/reporting.json",
+    "customizations/host-agents.json",
+    "customizations/platforms/components.json",
+    "data-collection/requests/agent-review-yanluo-drift-20261110/217ba95f-7f20-4386-8f2a-5bc9cfc9a92a.json",
+    "data-collection/yanluo-0.1.3-approval.json",
+    "data-collection/yanluo-0.1.3-candidate.json",
+    "data-collection/yanluo-0.1.3-independent-review.json",
+    "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/dispatch-687f6d713cd24af9b076567682d07a29.json",
+    "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/dispatch-838dd460a15942a7965a3aca29fe0687.json",
+    "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/kuafu-0e0c086a539f32ad62cd5d135eeaa93d1db8eaae.json",
+    "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/kuafu-bde8a8190d43e243553b343a80b8f6b95db58c5e.json",
+    "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/yanluo-013-candidate-request.json"
+  ],
+  "own_source_changed": false,
+  "ten_policy_pins_match": true,
+  "old_main35b_native_input_unchanged": true,
+  "native_editor_sha256": "8670a10a7f2051baf998f6f695b88ae391d8299abfd2dc2de1810c1be5dfcd0f",
+  "admission": "Current main registered Yanluo0.1.3 approved exact definition. This task uses existing user authority and normal PR writer path; no grant/runtime authority inferred from definition approval.",
+  "ci_exact_candidate": "pending",
+  "usage": null
+}

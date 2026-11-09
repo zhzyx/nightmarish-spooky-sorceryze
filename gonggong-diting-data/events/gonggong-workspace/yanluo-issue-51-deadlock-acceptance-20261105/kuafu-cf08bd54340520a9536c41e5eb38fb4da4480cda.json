@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cf08bd54340520a9536c41e5eb38fb4da4480cda",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-51-deadlock-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "90a5df6fd59fac64e4d1c026a9df5b01508505083e7dbd89791ebed30059c708",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+    "action": "delivery",
+    "detection_head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+    "context_sha256": "9ed1d5e8b9bdaf34a0f43701671787768a6af3739122b61bb737cc8739ec3a2e",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261110-stop92/independent-packaging-delta.json",
+    "diagnosis": "Writer stopped before commit at PR_EVIDENCE_JSON array root. Wrapped unchanged6checks with original hash into object; updated acceptance hash. Independent directed packaging/parentdoc review passed; testsource and binary hashes unchanged.",
+    "next_action": "Retry formal signed writer; require actualCI/main and full92/51 acceptance before close.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T17:27:26.771509+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T17:31:00.671021+00:00",
+  "sha256": "fe8a66f6e8caaffad388efc541db4b52b43f86d8417e0f282db662a405e5dd50"
+}

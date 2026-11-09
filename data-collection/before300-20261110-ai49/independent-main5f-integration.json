@@ -1,0 +1,134 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "workspace": "<repository>/.worktrees/before300-ai49-main5f-20261110",
+  "baseline": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+  "scope": "Minimal read-only new-baseline mapping; no new review of trusted main internals, source mutation or execution",
+  "findings": [],
+  "conclusion": "The eleven previously reviewed source hashes and ten policy pins are unchanged after integration on main5f. New-main AIChatDock cpp/header are byte-identical in working tree and index to trusted baseline. Actual private mac binary hash matches the new normal-native receipt. No additional integration finding; Windows runtime_source remains pending.",
+  "reviewed_source_sha256": {
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+    "tools/run_gonggong_config_agent.ps1": "1c184443879a83a74bf50034f69361979e62c995182e7c9681868146ffd2333a",
+    "tools/gonggong_runtime_policy.ps1": "a4f379e83579ceb581fcb1e31eda114ae338bba4910f66ca35a42d02fdb3c318",
+    "tools/configure_gonggong_runtime.ps1": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9"
+  },
+  "policy_source_sha256": {
+    "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
+    "framework/framework-manifest.json": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+    "framework/foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
+    "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "framework/GOVERNANCE.md": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724",
+    "framework/specs/model-runtime.md": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a",
+    "framework/upstream/yuanheng/core.md": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202",
+    "framework/upstream/yuanheng/agents/yuanheng.md": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b",
+    "customizations/components/godot-host/README.md": "66a0acf47cbef976d4572bfd4e8f7e3bbb26e534e41860c20db435c880d1c434"
+  },
+  "trusted_main_unchanged_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+    "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab"
+  },
+  "build": {
+    "artifact": "<task-private>/before300-ai49-build/compile-main5f.log",
+    "observed": "macOS arm64 editor; log links actual binary and ends scons: done building targets; elapsed11.65s",
+    "preparation": {
+      "base": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+      "source": "current49-source-after-independent-review",
+      "reason": "Upstream PR664/666 changed native AIChatDock CPP/header. Recompile current native inputs in isolated copied cache; preserve source binaries and installation.",
+      "cache_copy": "APFS clone of this session own previous49wt; SCons evaluates source dependencies",
+      "command": "scons platform=macos arch=arm64 target=editor dev_build=no tests=no debug_symbols=no vulkan=no accesskit=no optimize=speed_trace lto=none -j4",
+      "started_at": 1794249640.581481,
+      "installation_changed": false
+    },
+    "binary": {
+      "path": "<repository>/.worktrees/before300-ai49-main5f-20261110/bin/godot.macos.editor.arm64",
+      "sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e"
+    }
+  },
+  "native": {
+    "report": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "windows_owned_process_cleanup": "not applicable",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+      "fixture_events_imported": false
+    },
+    "process_log_matches_json": true,
+    "source_freshness": {
+      "tests/editor/requirements_intake.gd": {
+        "sha256": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+        "mtime_ns": 1794249639965201831,
+        "precedes_receipt": true
+      },
+      "tests/editor/run_requirements_intake.py": {
+        "sha256": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+        "mtime_ns": 1794249639965303626,
+        "precedes_receipt": true
+      }
+    },
+    "receipt_mtime_ns": 1794249720279226927
+  },
+  "codex_regression": {
+    "artifact": "<task-private>/before300-ai49-build/main5f-codex-tests.log",
+    "observed": "21 tests/pass21/fail0/cancelled0/skipped0/todo0"
+  },
+  "diagnostics_preserved": [
+    "Missing WindowsPowerShell child process on mac",
+    "Plugin not attached to debugger",
+    "Canvas/CanvasItem/ObjectDB and other exit resource-leak diagnostics are retained in native logs; success is not a zero-diagnostic guarantee"
+  ],
+  "artifact_sha256": {
+    "main5f-build-preparation.json": "1c580a068d0abbb07ab7e7a9e9f98e1d25a00ce515d3b4396f6c8d13e9aa55a7",
+    "compile-main5f.log": "9c9866d5d2e050482a0b0bb568203bee12747ed72c0c36e0e7c53ce4f16baa2b",
+    "native-intake-main5f.json": "31584c0de3feea2ad2dcf30d9e056f11f9c2bb1790ca6188fb3a58ba62d66538",
+    "native-intake-main5f.process.log": "bdbc54e053213f3473ec8c2f5548a2143c65267598a2340a4406c48a9e58564f",
+    "native-intake-main5f.debug.json": "2bcea41c3747b4d778696f678f0943164d534a407756d7eb007456ffefe1d9a0",
+    "native-intake-main5f.stdout.log": "d133e3d5642758215fc406982f9504343d5d80335e09a97405503ba0124b5b6a",
+    "native-intake-main5f.stderr.log": "aebfd91b0a57352a45eb7a6f2b6cbd5d40068d32df015c46b839507caa1f50dd",
+    "main5f-codex-tests.log": "652a70b183d123e6ffaad14ecee4ca63a5fb792b706e97af3f8c398243876d69"
+  },
+  "limits": [
+    "Ordinary mac native fixture only; runtime_setup_and_resume=false, Windows-owned process cleanup not applicable, model/GitHub loopback fixtures only.",
+    "Exact combined Windows PowerShell/native governed-selector/runtime_source recovery, simulation/CI and main delivery remain pending.",
+    "No new execution, build, download, provider/desktop/oldqueue action or repository edits by this reviewer.",
+    "Previous skipped old-window/queue history and original PROCESS_EXIT unknown remain unchanged; not certification of provider success or whole-Issue completion."
+  ],
+  "coordination": "Reviewer remains available under the existing #49 review scope for a specific future Windows failure delta; no new periodic scan or separate worker claim.",
+  "original_receipt_sha256": "b0ac1d75c696ea11b29aea7b3cf8c76ecdf0b30fe3cc9c0181e4213229124d8e"
+}

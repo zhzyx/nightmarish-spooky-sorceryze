@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "native_page": true,
+  "runtime_setup_and_resume": false,
+  "catalog_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "windows_owned_process_cleanup": "not applicable",
+  "actual_native_read_tool_roundtrips": 1,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 11,
+  "development_calls": 7,
+  "issues_created": 5,
+  "events": 71,
+  "git_check": {
+    "git_state": "committed",
+    "files": 74,
+    "records": 71,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "supplement during intake amends the same Issue before the first development request",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call",
+    "clarification pauses and resumes the same requirement"
+  ],
+  "editor_sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+  "fixture_events_imported": false,
+  "original_receipt_sha256": "9bceb8255c419df9ab5cbbde6ae1ef5adc8e75371444fa8fe378b1b646ee07eb",
+  "source_sha256": {
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc"
+  },
+  "scope": "Actual final fixture normal mac only; runtime_source Windows pending; base9132 native binary does not attest later main read-batch/preview."
+}

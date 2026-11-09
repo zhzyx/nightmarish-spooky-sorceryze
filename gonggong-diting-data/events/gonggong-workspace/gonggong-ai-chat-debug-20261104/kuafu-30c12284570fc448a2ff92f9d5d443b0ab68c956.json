@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-30c12284570fc448a2ff92f9d5d443b0ab68c956",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "17d973153c3975972a5ee8084a226d872c1257f38a588ece24ca4ad979561836",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "dispatch",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/receipts/before300-20261109/ai49-review-terminal-result.json",
+    "diagnosis": "私有终态配置误用execution.completed，适配器明确只接受execution.finished/failed，拒绝前未释放claim。已改正确finished并清requests；真实collaboration.list_agents核对同一6f8工作者completed，经take/verify/响应原请求后驱动实际event_completed。未知471及其他claim未处理，无补位派发。",
+    "next_action": "终态原动作复验成功，保留原失败及实际工具回执；继续49新main交付，业务验收和真实main/Issue关闭仍另行核对。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T19:29:18.898630+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T19:49:41.218681+00:00",
+  "sha256": "286a777249923aa1900bd5224005d048ee451d414a917131fd7296cd2d20feb5"
+}

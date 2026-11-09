@@ -1,0 +1,100 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "workspace": "<repository>/.worktrees/before300-ai49-eec633-20261110",
+  "baseline": "2135ce1f21a8157c73a68b0f9f0035beee249b07",
+  "scope": "Independent read-only single Python fixture bootstrap-precondition delta and actual PR672 failure data only",
+  "findings": [],
+  "conclusion": "No concrete additional finding in this directed fixture delta. It establishes valid mutable startup runtime configuration before the private editor constructor can schedule automatic setup, while retaining the later deliberate missing-Python mutation and real product setup/recovery assertions. The new exact Windows candidate must still run; this is not execution acceptance.",
+  "actual_previous_failure": {
+    "overall": false,
+    "error": "AssertionError: requirements-intake failed; see process log",
+    "process_cases": [
+      [
+        "baseline interrupted replacement",
+        true
+      ],
+      [
+        "candidate interrupted replacement",
+        true
+      ],
+      [
+        "candidate interrupted fresh install",
+        true
+      ]
+    ],
+    "journal_cases": [
+      [
+        "prepared-before-backup",
+        true
+      ],
+      [
+        "prepared-after-backup",
+        true
+      ],
+      [
+        "legacy-configured",
+        true
+      ],
+      [
+        "outside-target",
+        true
+      ],
+      [
+        "missing-backup",
+        true
+      ]
+    ],
+    "runtime_setup": {
+      "ok": true,
+      "cases": [
+        "deploy all three components with no destination Python",
+        "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+        "rollback retains recovery files",
+        "repeated rollback rejected",
+        "failed framework self-check restores pre-deployment files",
+        "tampered source rejected before execution",
+        "governed host model step selects and validates a complete runtime package",
+        "changed host policy blocks model invocation before native selector starts",
+        "missing host policy blocks model invocation before native selector starts",
+        "launcher permits editor ignition without Python or Node"
+      ],
+      "source": "explicit existing package; no downloads",
+      "global_environment_modified": false
+    },
+    "native_observed": "At requirements_intake.gd line74 deliberate missing-Python set, _configure_python returned runtime_environment_locked. Debug has requests=0, journals=0, one /v1/models GET, and a real setup progress JSON already at context stage before any business demand.",
+    "ordering_basis": "Panel constructor queues ensure_environment; missing early startup configuration can queue start_setup before scene-driver configuration. The actual code and debug are consistent with an early setup worker holding the settings lock. This does not prove every possible lock source; the targeted fixture moves its preparation before process launch.",
+    "not_claimed": "PR672 strict10 runtime-setup and 3 interruption+5 journal passes are genuine for that old source. Its native scenario failed. Any still-running PR673 uses the old fixture and cannot validate this new delta."
+  },
+  "why_precondition_is_valid": [
+    "copy_editor creates an independent executable with _sc_ and editor_data. GongGongRuntimeConfig::configuration_path prioritizes that self-contained editor config directory. Writing installation/editor_data/gonggong/config.json therefore matches the real product schema1 location and does not touch user/global settings or the source editor installation.",
+    "Bootstrap JSON schema_version=1/runtimes has real sys.executable and existing Node; runtime-source mode also writes the compiled controlled Codex fixture path. Node/Git existence is asserted before editor startup. GONGGONG_GIT supplies the existing Git so startup prerequisites can be ready. The workspace/gh fixtures already supply the other product readiness inputs.",
+    "Child GONGGONG_PYTHON/GONGGONG_NODE/GONGGONG_CODEX overrides are removed. The product still reads its ordinary configuration; these fields remain mutable, and the existing GDScript _configure_python checks effective path and refuses an environment-frozen source.",
+    "The valid bootstrap exists before run_editor. In runtime mode GDScript still deliberately changes workflow_python to missing-python.exe after catalog readiness, then sends the original request and asserts real automatic setup window/progress and eventual continuation. The Python change does not keep Python artificially valid during that target failure.",
+    "No production constructor check, busy/task lock, setup worker, doctor, policy verification, native selector, GUI or success marker is disabled or replaced. Existing business request counts/read-tool roundtrip, bindings, committed fixture provenance and cleanup assertions remain. Report metadata merely states how bootstrap config was supplied."
+  ],
+  "delta_source_sha256": {
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147"
+  },
+  "unchanged_context_sha256": {
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "editor/docks/gonggong_runtime_config.cpp": "4887dd346c1fffb4d829be8a4b2a7d07684f01b8ad6d32b44bbc7c5fed11d500",
+    "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc"
+  },
+  "evidence_sha256": {
+    "summary.json": "4dbc283ad238900b61e9992f48660537a484194392a1ab2969ec5cf211168c99",
+    "runtime-setup.json": "849ee063ba7b04604295503a1a16a8f5b3caf8d3dcbc3f7056b3f7a3179f527b",
+    "requirements-intake.process.log": "3a58658e1eadd56b758d8e9c6a55b8746f25ed26bd677565b6627a93c259ea46",
+    "requirements-intake.debug.json": "3075ffa120a33a86f092ae0d80d382dc27684dab645425a3b0beb61f36cef4c2",
+    "requirements-intake.stdout.log": "64dd73114dc15f722f3bf46fe21fccbd173f23d8d80fb748b9a06c5df57d647d",
+    "requirements-intake.stderr.log": "41b1026f5ce5360230b2795aff4091544cbda8a538e502ecda46c60d2d56f6da"
+  },
+  "required_next": "Run this exact candidate on Windows and require all 3+5+10 scenarios plus the actual native runtime_source missing-Python/configuration/doctor/original-request path, expected11 requirements/7 development/1 read and committed fixture events. Preserve real failure diagnostics if a later precondition fails.",
+  "limits": [
+    "No fixture/script/binary/provider execution, compilation or rerun by reviewer.",
+    "No source/index/rule edits or network/Issue closure.",
+    "No claim that this new fixture is Windows-passed, that the PR672 native failure is a product regression, or that original PROCESS_EXIT/old-window queue is resolved."
+  ],
+  "original_receipt_sha256": "961e200fe41765c7e78663373546f6d0eece95b70e656e8aa624b75182993596"
+}

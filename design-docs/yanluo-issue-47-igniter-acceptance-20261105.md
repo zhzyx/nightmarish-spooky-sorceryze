@@ -60,3 +60,5 @@ PR643的真实Windows PowerShell5.1回执已确认旧main脚本中断后拒绝�
 2026-11-10 PR663：push侧完整运行时链路通过，PR侧3+5+7通过后确认部署未在旧20秒等待内到达模型夹具，报告有负位置无头popup；当时未采集setup状态，根因仍未唯一建立。新候选接main2746（PR664读批处理新增cpp/h），补1440x1000嵌入视口、有效目录就绪复核、确认按钮启用后真实pressed、部署分支名义120秒等待（外层240秒总watchdog）和setup/cache诊断。相同HTTP配置可能去重，未宣称一定新GET。普通mac新夹具通过，但旧私有二进制不证明2746全量构建；定向独立审查通过，新精确Windows仍待。
 
 最终整合基线为 main `5f018f6d70865017c96537cdf626b450c4b60fa9`，保留 PR664 读批次与 PR666 结构化预览。受审 #91 源码保持，仅本轮精确 Windows CI 可验收新增主线编辑器；旧 mac 证据不扩展到新完整二进制。映射见 runtime91-main5f018-integration.json。
+
+2026-11-10 交付后整体验收：PR667 正常合入 main `a7ea662405640ad6400c84a34a67715d86987730`，精确 head `512db26ed3e421a34bbdb567a0b54e8eb2c8f0fb` 的11项CI通过、14预期跳过。真实 Windows 完整旧baseline中断负例、候选替换/全新中断恢复、5journal、7部署及doctor后原需求恢复11/7/1/72通过，所属Job核空。原工单91和阻塞642均已done/completed并回读；验收按用户mac/Windows模拟范围，不把PE包装当独立供应商包或Linux/真实provider成功。精确artifact和关闭回读将在 data-collection/before300-20261110-stop92/runtime91-main-acceptance.json 及 pr667-postmerge/issue91-close-readback.json 保留。PR663单次native首marker失败根因保持unknown。

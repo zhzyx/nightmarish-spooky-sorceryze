@@ -1,0 +1,158 @@
+{
+  "issue": 49,
+  "related_regression_issue": 92,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Independent read-only audit of after49 existing Stop regression logs and mapping; not a new #92 source review or execution",
+  "findings": [],
+  "conclusion": "Raw mouse/keyboard logs, recorded JSON reports and source mapping are internally consistent. Both synthesized viewport input cases stop promptly, recover through gzip before the old server response is released, and reject the later sent old response. This is scoped #49 cancellation regression evidence on the previously audited main5f+49 private binary.",
+  "report": {
+    "path": "<repository>/.worktrees/before300-stop92-final-20261110/data-collection/before300-20261110-stop92/after49-native-input.json",
+    "sha256": "f046c4ef8ad27d0a88cd6494ba496b266a1d9da166544623ed2f0ea3622f3321",
+    "integration_base": "eec6330c141021b15ea93e86a6abdb5ce199421f",
+    "pending49_source_candidate": "b44a43750975b0c85cb484573f573f0e7584d3a4",
+    "49_pr": 678,
+    "main_delivered_at_test": false
+  },
+  "cases": {
+    "mouse": {
+      "stop_ms": 23.218,
+      "frame_gap_ms": 21.705,
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.021705,
+        "hovered_control": "Stop",
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_center": "(1398.0, 928.5)",
+        "stop_disabled_after": true,
+        "stop_has_area": true,
+        "stop_hovered": true,
+        "stop_inside_viewport": true,
+        "stop_seconds": 0.023218,
+        "stop_trigger": "synthesized_viewport_mouse",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true,
+        "viewport_size": "(1440.0, 1000.0)"
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "stdout_sha256": "0255113affcce35c704369bca130d553bdf63f6c423e3c6a82d56696a953112f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_empty": true,
+      "success_marker": true
+    },
+    "keyboard": {
+      "stop_ms": 27.215,
+      "frame_gap_ms": 25.123,
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.025123,
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "key_is_ui_accept": true,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_disabled_after": true,
+        "stop_had_focus": true,
+        "stop_has_area": true,
+        "stop_seconds": 0.027215,
+        "stop_trigger": "synthesized_viewport_keyboard",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true
+      },
+      "responses": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      },
+      "stdout_sha256": "b038139bc088518d943a7638d2260e80afa91c1d8f189c597dec8bf5b5a336d3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_empty": true,
+      "success_marker": true
+    }
+  },
+  "input_mapping": {
+    "mouse": "simulated_stop_input creates mouse motion/click at Stop center and pushes pressed/released events into the private viewport. Actual log reports hovered Stop, inside viewport, one gui_input down/up, one button_down and one pressed; active_after_input_down=true demonstrates release routes the normal activation.",
+    "keyboard": "simulated_stop_input focuses Stop, constructs KEY_SPACE mapping to ui_accept, and pushes pressed/released events into the same viewport. Log reports focus/ui_accept and one gui_input down/up/button_down/pressed.",
+    "not_signal_or_physical": "The executed mode records synthesized_viewport_mouse/keyboard. The direct pressed.emit branch is separate and not selected by these recorded triggers. Events go through viewport.push_input, not the OS desktop."
+  },
+  "ordering_and_late_result": {
+    "mouse_stop_ms": 23.218,
+    "keyboard_stop_ms": 27.215,
+    "both_overlay_removed": true,
+    "both_stop_disabled_after": true,
+    "both_recovery_received_before_old_release": true,
+    "both_old_response_outcome": "sent",
+    "both_stale_response_absent": true,
+    "recovery_encoding": "gzip",
+    "meaning": "Recovery was received while server_released_at_recovery=false; later observed_server_release=true and late_response_outcome=sent, followed by stale_response_absent=true. This supports rejection of the canceled old result rather than a test that never completed the old response."
+  },
+  "source_mapping": {
+    "recorded_source_hashes_match_current": true,
+    "source_sha256": {
+      "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+      "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+      "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+      "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+      "tools/gonggong_bridge.py": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+      "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+      "tools/check_gonggong_distribution.py": "f36d25ff5adf61fcf83ae932e77a2dc615227c7e4a72ede23fa7d1f4b4c8bf70",
+      "customizations/components/godot-host/bridge.py": "ff9c09591ce9340792b2d6b306a0f27c0d3dbf2fa90ab790f5793ad0edf5f262",
+      "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+      "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+      "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267",
+      "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+      "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab",
+      "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+      "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+      "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033"
+    },
+    "gh_fixture_literal_sha256": "d93abadd620cf03bfa942f67a27d5f6f4d8d9454f543aee6b4a58bd7bcb8a337",
+    "native_binary_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+    "prior_binary_audit": "<task-private>/before300-ai49-review/main5f-integration.json",
+    "five_native_source_mapping": "AIChatDock cpp/header, ai_chat_gonggong.cpp and panel cpp/header all match the source hashes bound to the independently audited 0bec main5f+49 private binary. New #49 bridge/requirements Python hashes are ff9c0959/d0ec0680 and match current integration. The two existing #92 test files match this supplied immutable report; this audit does not redo their original42-item review."
+  },
+  "diagnostics": [
+    "Both .stderr.txt files are empty and match report. Their stdout includes engine resource-leak diagnostics (RID/Canvas/CanvasItem/ObjectDB); successful assertions do not establish a leak-free run."
+  ],
+  "limits": [
+    "The 0bec binary does not contain later Daqian14-path changes. These five native-input hashes do not justify a full latest-main binary claim.",
+    "No physical mouse/keyboard input, desktop interaction, real provider, installation switch, #49 main delivery or original PROCESS_EXIT/old-window recovery acceptance.",
+    "Exact Windows CI remains required; old #92 deadlock cause stays unknown and original symptom was not reproduced.",
+    "No run, build, source/index edits, original #92 full review repetition or network/Issue change by reviewer."
+  ],
+  "original_receipt_sha256": "84b05fd5719087144309f24baa0ebb9ffd8dd172af50184ed2d8c8881e715850"
+}

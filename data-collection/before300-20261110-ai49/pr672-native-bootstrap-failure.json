@@ -1,0 +1,211 @@
+{
+  "ok": false,
+  "scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+  "standalone_vendor_package_tested": false,
+  "uncovered": [
+    "all power-loss cutpoints",
+    "concurrent deployment",
+    "interruption during rollback",
+    "real model/provider and GitHub publication",
+    "hardware or Linux acceptance"
+  ],
+  "baseline_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "candidate_script_sha256": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+  "editor_sha256": "9b4d523154193b0e7033c4929f988f08622e22416efd642386f76a7081fbb833",
+  "cases": [
+    {
+      "case": "baseline interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\baseline",
+        "changed": [
+          {
+            "backup": "<fixture-path-0>\\baseline\\project\\runtime\\.gonggong-setup\\abe058397beb4e75acf3240ce4956e96\\python-previous",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "070040719d0aee4fc5cd5de65094f1d473eead2954101890ccd9ba1bdca24b87"
+              }
+            ],
+            "name": "python",
+            "target": "<fixture-path-0>\\baseline\\project\\runtime\\python",
+            "source_manifest_sha256": "13c8c1f064dbd321a871df6fff00a45f9f7ff9393dfc7ac0cb5a1d351deb6f7a"
+          }
+        ],
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 1,
+      "rollback_output": {
+        "error": "No matching active deployment to roll back",
+        "receipt": null,
+        "ok": false,
+        "rollback": "not_needed",
+        "global_environment_changed": false,
+        "state": "repair_environment"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": false,
+      "repeated_rollback_rejected": false
+    },
+    {
+      "case": "candidate interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-replacement-中文",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "070040719d0aee4fc5cd5de65094f1d473eead2954101890ccd9ba1bdca24b87"
+              }
+            ],
+            "source_manifest_sha256": "13c8c1f064dbd321a871df6fff00a45f9f7ff9393dfc7ac0cb5a1d351deb6f7a",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\python",
+            "backup": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\4f8b3fcebf7646b9b5462f959a038c02\\python-previous"
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\4f8b3fcebf7646b9b5462f959a038c02\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": true,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    },
+    {
+      "case": "candidate interrupted fresh install",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-fresh",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "070040719d0aee4fc5cd5de65094f1d473eead2954101890ccd9ba1bdca24b87"
+              }
+            ],
+            "source_manifest_sha256": "13c8c1f064dbd321a871df6fff00a45f9f7ff9393dfc7ac0cb5a1d351deb6f7a",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\python",
+            "backup": ""
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\.gonggong-setup\\4b0d2910d1174b2bb8a76dd0577ab915\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    }
+  ],
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "fixture_files": [
+    {
+      "path": "python/python.exe",
+      "sha256": "070040719d0aee4fc5cd5de65094f1d473eead2954101890ccd9ba1bdca24b87"
+    },
+    {
+      "path": "node/node.exe",
+      "sha256": "3e7374a5ed86aeb0a4196e62ba73d155a49d268cdd5c8e49cfcb05474e004939"
+    },
+    {
+      "path": "git/cmd/git.exe",
+      "sha256": "6fa868c5fb606a49b57bd8f77711dc9e2ee62440604e5ebc262941cfff21cc58"
+    }
+  ],
+  "tool_versions": {
+    "python": "Python 3.15.2",
+    "node": "v22.23.4",
+    "git": "git version 2.56.0.windows.4",
+    "powershell": "5.1.26100.33648"
+  },
+  "journal_boundary_cases": [
+    {
+      "case": "prepared-before-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "prepared-after-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "legacy-configured",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "outside-target",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "missing-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    }
+  ],
+  "runtime-setup": {
+    "ok": true,
+    "cases": [
+      "deploy all three components with no destination Python",
+      "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+      "rollback retains recovery files",
+      "repeated rollback rejected",
+      "failed framework self-check restores pre-deployment files",
+      "tampered source rejected before execution",
+      "governed host model step selects and validates a complete runtime package",
+      "changed host policy blocks model invocation before native selector starts",
+      "missing host policy blocks model invocation before native selector starts",
+      "launcher permits editor ignition without Python or Node"
+    ],
+    "source": "explicit existing package; no downloads",
+    "global_environment_modified": false
+  },
+  "error": "AssertionError: requirements-intake failed; see process log",
+  "pr": 672,
+  "head": "81399bb23dec33e1eabea2b09a89a7d77c290aff",
+  "ci_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42679181861/job/129369053375",
+  "original_artifact_sha256": "4dbc283ad238900b61e9992f48660537a484194392a1ab2969ec5cf211168c99",
+  "native_failure": "At GD74, intentional missing Python setter returned runtime_environment_locked before any business request; setup progress already existed from constructor deferred environment check. Exact unique timing not sampled; production lock remains intact.",
+  "correction": "Seed valid Python/Node and fixture Codex in isolated installed schema1 JSON before editor construction, clear immutable Python/Node/Codex child overrides, provide existing Git. GD still changes Python to missing after actual catalog readiness and must execute automatic setup/doctor/original request. No success-marker or lock bypass.",
+  "new_windows": "pending",
+  "native_old_base_not_full_new_main_acceptance": true
+}

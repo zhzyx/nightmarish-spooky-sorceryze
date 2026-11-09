@@ -245,6 +245,14 @@ class IssueGuideTests(unittest.TestCase):
         self.assertEqual(bridge.find_gh({"GONGGONG_GH": str(tool)}), str(tool))
         self.assertEqual(Path(bridge.find_gh({"PATH": str(tool.parent)})), tool)
 
+    def test_workspace_gh_is_discovered_by_an_already_running_gui_without_path_changes(self):
+        tool = self.root / "project/runtime/gh/bin/gh.exe"
+        tool.parent.mkdir(parents=True)
+        tool.write_bytes(b"isolated fixture; never executed")
+        self.assertEqual(bridge.find_gh({"PATH": ""}, self.root), str(tool))
+        missing = str(self.root / "explicitly-missing-gh")
+        self.assertIsNone(bridge.find_gh({"GONGGONG_GH": missing, "PATH": ""}, self.root))
+
 
 if __name__ == "__main__":
     unittest.main()

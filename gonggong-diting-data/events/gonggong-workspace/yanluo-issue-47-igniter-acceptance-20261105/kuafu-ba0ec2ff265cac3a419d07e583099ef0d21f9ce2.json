@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ba0ec2ff265cac3a419d07e583099ef0d21f9ce2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9626638dcf842ffb8684fb6751ab58d801a30d52a0766da1f3467c9af2f0643c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "permission",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/668#issuecomment-6748429975",
+    "diagnosis": "GitHub集成评论接口403 Resource not accessible by integration；不表明当前协作者无WRITE权限。已在原有核验Sail-Li WRITE的gh通道发送相同授权消息并回读id6748429975；前两次GraphQL watch499改为固定head REST完成等待，667实际11项成功后合入。",
+    "next_action": "已恢复评论与CI回执操作；仅等待对方真实顺序答复，继续49精确CI，不重开已验收91/642、不操纵对方候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:53:15.634343+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T18:54:50.386794+00:00",
+  "sha256": "a36832ef9adcc2a0a5c815b752665152dfc9acdb88512dea653b3cbc3d64d63d"
+}

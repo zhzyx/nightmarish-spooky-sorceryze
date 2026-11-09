@@ -1,0 +1,117 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Directed read-only review of nine-source delta, #91 shared seam, inherited WindowsJob/workflow/helper; original reviews retained separately",
+  "status": "changes_requested",
+  "candidate_source_sha256": {
+    "tools/run_gonggong_config_agent.ps1": "0bc1cd0c1886257f93973a67d94f1ab30bc2be1eb9a43508b97ef88bfffe6c89",
+    "tools/gonggong_runtime_policy.ps1": "a4f379e83579ceb581fcb1e31eda114ae338bba4910f66ca35a42d02fdb3c318",
+    "tools/configure_gonggong_runtime.ps1": "252a00d8363227fb07de86ecc31407176f7781a06f159602f431fc4c9f419e34",
+    "tests/editor/requirements_intake.gd": "b14b9b85a5f4f799180b0add8a149dc578f36826a500a16720fea46ee27fabd5",
+    "tests/editor/run_requirements_intake.py": "4daf547cbddd16eec44b4f96f699911dbfde86490295635d23ccb9a0d078cdde",
+    "tests/editor/run_runtime_setup.py": "21376b769763a08d27b06326917c3cbe6c268f721558c27dae371d3406d572a4",
+    "tests/editor/run_runtime_setup_simulation.py": "8dc36ecd28704ad990080cc9bd63c5b9bb59c53cd685ea77c28cdddbd2ff9e69",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9"
+  },
+  "findings": [
+    {
+      "id": "R49-G1-delta",
+      "continues": "R49-G1",
+      "priority": "P1",
+      "path": "tools/gonggong_runtime_policy.ps1",
+      "line": 3,
+      "related_paths": [
+        "editor/docks/gonggong_panel.cpp:482",
+        "editor/docks/gonggong_panel.cpp:483",
+        "tools/run_gonggong_config_agent.ps1:136"
+      ],
+      "title": "Bind the policy loader to the actual trusted installed host",
+      "description": "The new module calls its PSScriptRoot parent a trusted installed host, but the unchanged native caller resolves and executes run_gonggong_config_agent.ps1 from the editable workspace textbox. That launcher dot-sources gonggong_runtime_policy.ps1 from the same workspace. Consequently both the policy code and its pinned-hash table are still selected by the workspace; changing that workspace/module can change the supposed safety root together with the policy. The actual caller does not use the running editor installedSourceRoot/verified host source. This is the previously identified trust-chain gap, not repaired merely by moving hashes from a workspace JSON lock into a workspace PowerShell file.",
+      "minimal_correction": "Resolve/launch the bootstrap and policy module from the running editor verified installed-host/source root (e.g. the existing GongGongHostPaths::engine_source route, after its normal trusted source checks); pass the editable workspace only as target data. Missing installed host provenance must fail closed for this model step. Retain pinned context/mandate and no-new-Agent semantics. Keep fixture installation and workspace separate so the test proves the actual production resolution rather than copying policy into a mutable workspace to mask the gap.",
+      "validation_basis": "Static actual-call-chain inspection; three native C++ hashes remained original. No Windows execution claim."
+    },
+    {
+      "id": "R49-D2",
+      "priority": "P2",
+      "path": "tests/editor/run_requirements_intake.py",
+      "line": 149,
+      "related_paths": [
+        "tests/editor/run_requirements_intake.py:106",
+        "tools/run_gonggong_config_agent.ps1:136",
+        "editor/docks/gonggong_panel.cpp:483"
+      ],
+      "title": "Make the Windows runtime-source fixture match the actual launcher path",
+      "description": "The fixture copies config_agent into root/tools, but calls copy_runtime_policy only for installation. The current native setup caller runs root/tools/config_agent, which dot-sources root/tools/gonggong_runtime_policy.ps1. That module is never installed at that path. Therefore the Windows runtime-source path will fail before invoking the native selector and never reach the expected intake/resume. The reported successful mac native run has runtime_setup_and_resume=false and cannot cover this branch.",
+      "minimal_correction": "Fix the production trusted installed-host resolution in R49-G1-delta, then let this fixture execute the already populated installation/tools launcher. Do not just add the module to the mutable workspace as a substitute for establishing production trust. Run the exact runtime-source Windows simulation after the fix.",
+      "validation_basis": "Read-only AST/source destination check: the sole copy_runtime_policy call targets installation; root/tools launcher is explicitly copied, root/tools policy module is absent."
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "R49-1",
+      "status": "statically_addressed_pending_exact_Windows_fixture",
+      "details": "Native stdin now temporarily uses UTF8Encoding(false) and restores OutputEncoding/ErrorActionPreference in finally; plan/deployment/GitHub JSON reads explicitly use UTF8. Native fixture is a compiled PE, strictly decodes stdin UTF8, requires verified foundation/mandate markers and Chinese text, and writes BOMless UTF8 Unicode plan. Actual Windows execution remains required."
+    },
+    {
+      "id": "R49-G1",
+      "status": "partially_addressed_not_closed",
+      "details": "Actual verified full governance/core/template/foundation context and scoped inventory/operation mandate are assembled; forbidden exclusion language is removed, tools remain disabled, and metadata no longer claims independent framework registration. This is substantive context work, not mere renaming. The actual installed-host trust binding remains defective as R49-G1-delta describes."
+    }
+  ],
+  "checks": [
+    {
+      "name": "source_fingerprints",
+      "result": "pass",
+      "detail": "All nine directed source SHA256 values match after-review-source.json. All 15 original sources outside this delta, including three native C++ files, match the original independent review receipt."
+    },
+    {
+      "name": "policy_pins_and_EOL",
+      "result": "pass",
+      "detail": "All 10 raw policy hashes match current bytes and HEAD Git object bytes. framework/** is -text preserving frozen mixed CRLF; remaining pinned text files use repository eol=lf. No frozen/framework/pointer/host README source edit."
+    },
+    {
+      "name": "directed_python_AST_Ruff",
+      "result": "pass",
+      "detail": "Five directed Python paths pass AST, Ruff check and Ruff format --check. Native fixture embeds C# string constants via JSON escaping so generated source is ASCII and BOMless output intentionally exercises UTF8 JSON reading."
+    },
+    {
+      "name": "git_diff_checks",
+      "result": "pass",
+      "detail": "Both working-tree and staged diff --check pass."
+    },
+    {
+      "name": "91_inheritance",
+      "result": "pass",
+      "detail": "WindowsJob, its test and Windows workflow are byte-identical to fixed c6dcec source. Shared configure seam retains atomic Flush(true)/same-dir Replace, full rollback prevalidation, prepared/deployed journal and UTF8 reads plus #49 explicit component paths/GH support. The helper differs from #91 only by Chinese package directory and strict10-case count plus explicit presence of all three new cases."
+    },
+    {
+      "name": "native_fixture_preconditions",
+      "result": "static scope only",
+      "detail": "GONGGONG_TEST_PYTHON is verified as effective non-environment source; catalog GET/readiness is asserted before demand; Windows editor invocation uses inherited suspended-before-assignment Job and env passthrough. Actual runtime-source path still blocked by R49-D2."
+    }
+  ],
+  "inherited_source_sha256": {
+    "tools/editor_provenance_process.py": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    "tools/test_editor_provenance_process.py": "806281770be7da1172c81e824346e577a2e14af0b1888a5439bda643a1f04365",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "root_report_readback": {
+    "path": "<task-private>/before300-ai49-build/native-intake-after91.json",
+    "ok": true,
+    "editor_sha256": "97c534b2f50c075dfe776e7ecc09e8e18621bc3e9d5591b8335bb2f8c12d745e",
+    "runtime_setup_and_resume": false,
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "read_tool_roundtrips": 1,
+    "events": 71,
+    "meaning": "Root-reported actual normal mac native result, not reviewer-run and not Windows/bootstrap/provider acceptance."
+  },
+  "limits": [
+    "No PowerShell parser/runtime or Windows process execution; no native selector compile/run by this reviewer.",
+    "No source/index edits, native build, desktop/model/provider calls, downloads, commit/push/main/Issue closure.",
+    "No future candidate/admission approval or governance exemption.",
+    "Original PROCESS_EXIT/provider/old-window/stoppedqueue limits retained; #91 exact Windows integration remains downstream required."
+  ],
+  "original_receipt_sha256": "2d1343de4de4075b39c7977c7781412da65ce5e47a593d40e04e4ffd46402e7d"
+}

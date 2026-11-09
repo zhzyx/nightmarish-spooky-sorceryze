@@ -1,0 +1,194 @@
+{
+  "ok": false,
+  "scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+  "standalone_vendor_package_tested": false,
+  "uncovered": [
+    "all power-loss cutpoints",
+    "concurrent deployment",
+    "interruption during rollback",
+    "real model/provider and GitHub publication",
+    "hardware or Linux acceptance"
+  ],
+  "baseline_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "candidate_script_sha256": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+  "editor_sha256": "c52b0a637b88629ea435c70a486f8def0657377b5906590c83f62710f587521f",
+  "cases": [
+    {
+      "case": "baseline interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\baseline",
+        "changed": [
+          {
+            "backup": "<fixture-path-0>\\baseline\\project\\runtime\\.gonggong-setup\\d2c640659194432f831c6d03836547d3\\python-previous",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "28eaa9b0d87049e05cb9cd6423c0ecfd446a8b44996b6e40252125846f201565"
+              }
+            ],
+            "name": "python",
+            "target": "<fixture-path-0>\\baseline\\project\\runtime\\python",
+            "source_manifest_sha256": "3f6c9987c18194b05b9c7cfe1a171a40e5498f81d9ceda5d3214eb038113b44a"
+          }
+        ],
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 1,
+      "rollback_output": {
+        "error": "No matching active deployment to roll back",
+        "receipt": null,
+        "ok": false,
+        "rollback": "not_needed",
+        "global_environment_changed": false,
+        "state": "repair_environment"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": false,
+      "repeated_rollback_rejected": false
+    },
+    {
+      "case": "candidate interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-replacement-中文",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "28eaa9b0d87049e05cb9cd6423c0ecfd446a8b44996b6e40252125846f201565"
+              }
+            ],
+            "source_manifest_sha256": "3f6c9987c18194b05b9c7cfe1a171a40e5498f81d9ceda5d3214eb038113b44a",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\python",
+            "backup": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\a2c8fa5355b048ee97b8850c9637bf7d\\python-previous"
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\a2c8fa5355b048ee97b8850c9637bf7d\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": true,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    },
+    {
+      "case": "candidate interrupted fresh install",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-fresh",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "28eaa9b0d87049e05cb9cd6423c0ecfd446a8b44996b6e40252125846f201565"
+              }
+            ],
+            "source_manifest_sha256": "3f6c9987c18194b05b9c7cfe1a171a40e5498f81d9ceda5d3214eb038113b44a",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\python",
+            "backup": ""
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\.gonggong-setup\\8bdac2e78f4a482094d8cd8995b79a0d\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    }
+  ],
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "fixture_files": [
+    {
+      "path": "python/python.exe",
+      "sha256": "28eaa9b0d87049e05cb9cd6423c0ecfd446a8b44996b6e40252125846f201565"
+    },
+    {
+      "path": "node/node.exe",
+      "sha256": "f4b67606700b8d0984665931106c505af82bc6b7b902308c009b6914770bec70"
+    },
+    {
+      "path": "git/cmd/git.exe",
+      "sha256": "c24225baec9147f6d3023b7533db72ff76c04365056a1d80cda0be037706e2b9"
+    }
+  ],
+  "tool_versions": {
+    "python": "Python 3.15.2",
+    "node": "v22.23.4",
+    "git": "git version 2.56.0.windows.4",
+    "powershell": "5.1.26100.33648"
+  },
+  "journal_boundary_cases": [
+    {
+      "case": "prepared-before-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "prepared-after-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "legacy-configured",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "outside-target",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "missing-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    }
+  ],
+  "error": "AssertionError: runtime-setup failed; see process log",
+  "original_receipt_sha256": "3cb63dd2b09f5cd91588e6de15ca2f660b11af4c14f792dff7a323a730957b5f",
+  "pr": 669,
+  "head": "9d2cc2b520d4379db094069377396c639fb2a467",
+  "ci_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42677472676/job/129362873687",
+  "diagnosis": "Get-FileHash unavailable during first policy pin check; policy_verified/provider_started false. Exact module/environment root cause unknown. Prior 3process+5journal passed;6 preceding deployment cases executed; newpositive/negative/launcher/native acceptance not passed.",
+  "repair": "Policy pin hash and same installer dependency use .NET SHA256 over raw OpenRead streams, preserving hashes/rejection and disposing resources. NewWindows verification pending.",
+  "original_process_log_sha256": "bfbd212dc896369f784c1a8a65ff62b7b4812fe5e5bb735290114d84efc62b4e",
+  "public_log_derivation": "UTF8 text, normalized line endings and one final newline; original log remains in exactCI artifact and task-private download"
+}

@@ -1,0 +1,87 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "workspace": "<repository>/.worktrees/before300-ai49-delivery-20261110",
+  "baseline": "12c1a23bc1e7cbbb9b99e73dcf6b82218cab31d7",
+  "scope": "Independent read-only two-PowerShell-source hash implementation delta and actual PR669 failure evidence only",
+  "findings": [],
+  "conclusion": "No concrete additional finding in the two-file directed delta. Replacing the missing Get-FileHash command dependency with the same existing configure .NET SHA256 byte-stream computation preserves the checksum contract. Actual Windows execution of this new exact candidate remains pending.",
+  "actual_failure": {
+    "path": "<task-private>/before300-20261109/pr669-runtime-push-failure/runtime-setup.process.log",
+    "observed": "runtime_setup.py line136 failed its new positive governed host-selection assertion. Output error states Get-FileHash is not recognized; policy_verified=false, provider_started=false, provider_completed=false. This locates the first observed rejection at policy hashing before selector invocation.",
+    "root_cause_limits": "No evidence here uniquely establishes PSModulePath or a particular module-environment cause. Removing the command dependency is a scoped compatibility repair; it does not prove the full environmental root cause.",
+    "process_interruption_cases": [
+      [
+        "baseline interrupted replacement",
+        true
+      ],
+      [
+        "candidate interrupted replacement",
+        true
+      ],
+      [
+        "candidate interrupted fresh install",
+        true
+      ]
+    ],
+    "journal_cases": [
+      [
+        "prepared-before-backup",
+        true
+      ],
+      [
+        "prepared-after-backup",
+        true
+      ],
+      [
+        "legacy-configured",
+        true
+      ],
+      [
+        "outside-target",
+        true
+      ],
+      [
+        "missing-backup",
+        true
+      ]
+    ],
+    "earlier_runtime_setup_progress": "Actual code order reaches line136 only after the first six deployment/checksum/rollback cases at lines65-99 have passed their assertions. It does not reach the launcher case at lines170-194, nor the subsequent tampered/missing-policy tests. Do not claim all original seven runtime-setup cases passed in PR669. A separate earlier PR667 seven-case result belongs to its own source.",
+    "overall": false,
+    "summary_error": "AssertionError: runtime-setup failed; see process log"
+  },
+  "delta_assessment": [
+    "Policy loader opens each verified existing file as bytes, computes System.Security.Cryptography.SHA256 over the stream, formats lowercase 64hex via BitConverter and disposes stream/algorithm in finally. It still compares to the same ten fixed pins before reading/injecting context.",
+    "Installer uses the same byte-stream SHA256 sequence and finally cleanup, then compares to the unchanged official archive pin before opening ZIP or executing the staged binary. Official version, URL, extraction whitelist, path checks and failure message remain unchanged.",
+    "Both changes match the existing configure_gonggong_runtime.ps1 Hash function semantics, already used by the deployment cases. No model authority, fallback checksum, weakened rejection, framework definition or governance-rule change was introduced.",
+    "All ten policy pins are byte-for-byte unchanged from HEAD and independently match current policy source files. The official gh archive SHA256 remains 98d0cfa794721665d7973dd728c78aff7bd836d58f10f6d7a03568eccb0a22e0."
+  ],
+  "source_sha256": {
+    "tools/gonggong_runtime_policy.ps1": "7f112b51fa15b6bfefd274697e1b731cf8d2e3f28513d93e3c3c6d3186259d52",
+    "tools/install_gonggong_github_cli.ps1": "b5b4cc79ba21ed5f2b9c3313f7a23380443cf48a5d90cf60522a6b9e6c8c4133"
+  },
+  "policy_pins": {
+    "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
+    "framework/framework-manifest.json": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+    "framework/foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
+    "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "framework/GOVERNANCE.md": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724",
+    "framework/specs/model-runtime.md": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a",
+    "framework/upstream/yuanheng/core.md": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202",
+    "framework/upstream/yuanheng/agents/yuanheng.md": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b",
+    "customizations/components/godot-host/README.md": "66a0acf47cbef976d4572bfd4e8f7e3bbb26e534e41860c20db435c880d1c434"
+  },
+  "failure_artifact_sha256": {
+    "runtime-setup.process.log": "bfbd212dc896369f784c1a8a65ff62b7b4812fe5e5bb735290114d84efc62b4e",
+    "summary.json": "3cb63dd2b09f5cd91588e6de15ca2f660b11af4c14f792dff7a323a730957b5f",
+    "interruption-diagnostics.json": "b07a530581ef6d98988f29aa18cac02e62641b96ecc63498fe91ffe21cfdeb8a"
+  },
+  "required_next": "Run the new exact candidate on Windows: full strict10-case runtime setup plus owned interruption/journal and native runtime_source request recovery. Require actual provider_started/PE-marker success for the positive mocked selector and zero invocation on negative policy cases. No real provider call is implied.",
+  "limits": [
+    "No PowerShell/Windows/parser/test/provider/native execution by this reviewer.",
+    "No source/index/framework edits or network/publication.",
+    "No claim that the installer archive path has now executed in Windows, full simulation passes, PSModulePath root cause is proved, or whole Issue49/main acceptance is complete."
+  ],
+  "original_receipt_sha256": "7abed5c9c6196464a7428c1c48336c8a97a5e8b5a02479625e445ef1b311dd8e"
+}

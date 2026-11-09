@@ -1,0 +1,82 @@
+{
+  "outcome": "pass",
+  "assertions": [
+    "all ten exact source/input hashes match final author manifest",
+    "baseline hash: ai_chat_semantic.baseline.gd",
+    "baseline hash: run_ai_chat_semantic.baseline.py",
+    "author baseline equals git base: ai_chat_semantic.baseline.gd",
+    "author baseline equals git base: run_ai_chat_semantic.baseline.py",
+    "public exact copy: results.json",
+    "public exact copy: checks.json",
+    "acceptance file hash: results.json",
+    "published exact artifact: results.json",
+    "acceptance file hash: checks.json",
+    "published exact artifact: checks.json",
+    "acceptance file hash: mouse.stdout.txt",
+    "published exact artifact: mouse.stdout.txt",
+    "acceptance file hash: keyboard.stdout.txt",
+    "published exact artifact: keyboard.stdout.txt",
+    "actual private binary SHA256 matches author and acceptance",
+    "prior reviewed exact production input: editor/docks/ai_chat_dock.cpp",
+    "prior reviewed exact production input: editor/docks/ai_chat_dock.h",
+    "mouse log equals manifest report and fixtures",
+    "mouse completed actual case marker and exit zero",
+    "mouse button/gui input down/up exactly once",
+    "mouse real existing button active until release",
+    "mouse original performance limits retained",
+    "mouse cancels overlay and disables Stop before old release",
+    "mouse recovery before observed old sent and no stale text",
+    "mouse exact regenerated response payload hashes",
+    "mouse gzip recovery",
+    "mouse hovered Stop inside private 1440x1000 viewport",
+    "keyboard log equals manifest report and fixtures",
+    "keyboard completed actual case marker and exit zero",
+    "keyboard button/gui input down/up exactly once",
+    "keyboard real existing button active until release",
+    "keyboard original performance limits retained",
+    "keyboard cancels overlay and disables Stop before old release",
+    "keyboard recovery before observed old sent and no stale text",
+    "keyboard exact regenerated response payload hashes",
+    "keyboard gzip recovery",
+    "keyboard focused ui_accept in embedded viewport",
+    "new synthetic helper does not emit pressed or call product stop directly",
+    "both simulated event edges go through viewport.push_input",
+    "legacy direct signal stop remains conditional separate branch",
+    "Python AST parse passed without writing bytecode"
+  ],
+  "exact_source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+    "tools/gonggong_bridge.py": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/check_gonggong_distribution.py": "f36d25ff5adf61fcf83ae932e77a2dc615227c7e4a72ede23fa7d1f4b4c8bf70",
+    "customizations/components/godot-host/bridge.py": "fc396d18e6f801e22b459e1ce9a5eaf9a00049808d7edd46bd8a0c3239fc5578",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+    "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267"
+  },
+  "exact_production_source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "ad315c0f1b531f3b375b17e26b976273de3289717b3fda43920255eb508b9074",
+    "editor/docks/ai_chat_dock.h": "e62e555172556d4f050504e9a50bb30c47538ffeb49264afd4d5f410ae6f3518"
+  },
+  "actual_binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "author_manifest_sha256": "570b33a006ae72765c6792a0f06451ff9ca7eec3056f5f3e454065991776b735",
+  "author_checks_sha256": "283016b07ef2a01f97e1e9487d726fd6572d2a1d3b4fe50c08b30c0fe74068b1",
+  "public_acceptance_sha256": "52c27a387cbcf66a00c959ac8d52e8a63571a78a5a3d73cee0c5118d083d91d1",
+  "design_doc_sha256": "f7599b604166ba28cfa4ee57154922bf7e2f85316cacb8a99da5316f6cccfdc2",
+  "reviewed_two_test_diff_sha256": "bfa64caf4358fc476b6dc5efdee5f554821a2fbdd4d2f87111e0e0a10610cbdd",
+  "regenerated_fixture_sha256": {
+    "highlight_tabs": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f",
+    "recovery": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+  },
+  "public_log_files_present": {
+    "mouse.stdout.txt": true,
+    "keyboard.stdout.txt": true
+  },
+  "native_rerun": false,
+  "public_copy": {
+    "original_sha256": "67f6bb1f090e869cd43f3b88ed5ce1b0a34ce947c51f3ca395c6afbb9b38b5fd",
+    "transformation": "private path prefixes replaced; checks and findings unchanged"
+  }
+}

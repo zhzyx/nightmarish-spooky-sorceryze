@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "native_page": true,
+  "runtime_setup_and_resume": false,
+  "catalog_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+  "windows_owned_process_cleanup": "not applicable",
+  "actual_native_read_tool_roundtrips": 1,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 11,
+  "development_calls": 7,
+  "issues_created": 5,
+  "events": 71,
+  "git_check": {
+    "git_state": "committed",
+    "files": 74,
+    "records": 71,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "supplement during intake amends the same Issue before the first development request",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call",
+    "clarification pauses and resumes the same requirement"
+  ],
+  "editor_sha256": "7d672ac2959e4f7c2b8a86c161fd2acbecf318d25fd7b779949ca00a44ae9f9c",
+  "fixture_events_imported": false,
+  "base": "a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd",
+  "original_receipt_sha256": "f926b52d97680bde3cb00bc2a8bd4e55e9f29b50b3a4f1dcee65da544d769d86",
+  "publication_scope": "Local isolated a681 verification only; no fresh Windows CI or main acceptance. Await other publishing tasks actual completion receipt."
+}

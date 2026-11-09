@@ -1,0 +1,44 @@
+{"directory": "/private/var/folders/z9/470shgl13vb8x0qmv2dn42580000gn/T/godot-semantic-eg41f419/gonggong-diting-data", "created": true, "git_committed": false, "records": 0}
+SEMANTIC_PROJECT /var/folders/z9/470shgl13vb8x0qmv2dn42580000gn/T/godot-semantic-eg41f419/project
+Godot Engine v4.8.beta.custom_build.35bde7b4a (2026-11-09 19:20:34 UTC) - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started 项目初始化 (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | 正在扫描文件结构……[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | 正在加载全局类名……[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | 正在校验 GDExtension……[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | 正在创建自动加载脚本……[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | 正在初始化插件……[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | 正在启动文件扫描……[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started 正在注册全局类…… (2 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started 正在加载编辑器 (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | 正在加载编辑器布局……[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | 正在加载停靠面板……[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+AI_CHAT_SEMANTIC_OK
+ERROR: 5 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 17 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.
+ERROR: 263 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.
+ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.
+ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.
+ERROR: 45 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.
+
+WARNING: 5 RIDs of type "Canvas" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)
+WARNING: 102 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)
+WARNING: 533 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2609)
+
+MOCK_RESULTS {"highlight_tabs": "{\"action\":\"highlight\",\"ok\":true,\"target\":\"main_screen_tabs\",\"visible\":true}"}
+MOCK_ERRORS []
+SEMANTIC_STOP_REPORT {"active_after_input_down": true, "button_down_count": 1, "frame_gap_seconds": 0.022988, "input_down_count": 1, "input_up_count": 1, "key_is_ui_accept": true, "late_response_outcome": "sent", "observed_server_release": true, "overlay_after": false, "overlay_before": true, "pressed_count": 1, "recovery_received": true, "server_released_at_recovery": false, "server_released_at_stop": false, "stale_response_absent": true, "stop_disabled_after": true, "stop_had_focus": true, "stop_has_area": true, "stop_seconds": 0.026751, "stop_trigger": "synthesized_viewport_keyboard", "stop_visible": true, "stop_was_enabled": true, "viewport_embeds_windows": true}
+SEMANTIC_STOP_FIXTURES {"highlight_tabs": {"content_encoding": "identity", "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"}, "recovery": {"content_encoding": "gzip", "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"}}
+SEMANTIC_SIMULATED_STOP_INPUT_OK keyboard

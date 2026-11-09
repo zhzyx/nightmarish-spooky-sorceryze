@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "before300-20261110-stop92-headless-scope",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-51-deadlock-acceptance-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-09T17:05:44.426173+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 92,
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "operator": "Sail-Li",
+    "scope": "User explicitly replaced real OS mouse/keyboard stop acceptance with headless simulated input, cancel/recovery and stale-result isolation. Original deadlock not reproduced remains unknown; no physical input or original root-cause claim. Current root coordinates real native worker and independent review; no userdesktop control.",
+    "intake": "passed",
+    "usage": null,
+    "evidence_path_from_repo_root": "data-collection/before300-20261110-stop92/acceptance.json"
+  },
+  "evidence_refs": [],
+  "sha256": "9498a760fe625fc32b9d7eb40f54f0ea9e65dc41ed927bcdb6de18dc7c18145e"
+}

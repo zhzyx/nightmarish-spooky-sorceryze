@@ -1,0 +1,12 @@
+{
+  "worker": "/root/sinan_2501840d1684dddf",
+  "reservation_key": "6101df81254ed2b84b52ab4143afba95694e56f23d31330051c4c868dd3f873e",
+  "state": "released_after_terminal_verification",
+  "raw_release_sha256": "acca36f10416785d4bae285b52cea10ff915cb04cf1f59b4054c0a5ea9831e72",
+  "actual_terminal_callback": "collaboration.final:/root/sinan_2501840d1684dddf:62e450-integration-review",
+  "verification": "actual collaboration.list_agents completed state, then NativeToolBridge verify_worker respond",
+  "driver_event": "event_completed",
+  "requests": [],
+  "business_acceptance": false,
+  "consumption": null
+}

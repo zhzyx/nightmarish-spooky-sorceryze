@@ -1,0 +1,21 @@
+{
+  "issues": [
+    49,
+    51,
+    92
+  ],
+  "primary_issue": 49,
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "issue49_handoff": "user-chat-20261110-explicit-handoff-issue49-root-accepted",
+  "stop_scope_decision": "user explicitly changed physical mouse/keyboard to headless simulated acceptance",
+  "base": "a7b1a95439966292e7099db64c6ee78282889da2",
+  "scope": "Only reviewed49 source and reviewed92 tests/documents/evidence plus delivered91 readbacks; historical original causes and old editor-window/paused-queue recovery remain unknown or user-skipped. Current finalCI/main/close not yet complete.",
+  "independent_review49": "data-collection/before300-20261110-ai49/independent-main35b-integration.json",
+  "independent_review92": "data-collection/before300-20261110-stop92/independent-review.json",
+  "native_editor_sha256": "8670a10a7f2051baf998f6f695b88ae391d8299abfd2dc2de1810c1be5dfcd0f",
+  "native_source_equivalence": "all current AI native CPP/header, Daqian dock and SCsub match actual13.03second privatebuild; upstream680 changes no native input",
+  "current_exactCI": "pending",
+  "main_publication": "pending",
+  "usage": null,
+  "diting_consumption": null
+}

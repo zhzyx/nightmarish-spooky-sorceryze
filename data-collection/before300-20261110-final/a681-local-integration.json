@@ -1,0 +1,59 @@
+{
+  "base": "a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd",
+  "issues": [
+    49,
+    51,
+    92
+  ],
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/run_requirements_intake.py": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "customizations/components/godot-host/bridge.py": "c98b6bf6d536c66ea8b4f0c3030d23cc314548e4b76504cc69eefb7c24f28e94",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/host-agents.json": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "editor/docks/ai_chat_dock.cpp": "66de8538cbee70b5ca4e74b019d2c0a2b12b4db259c957a44d94db7b02076eea",
+    "editor/docks/ai_chat_dock.h": "6adcd069e69f35f01b2f3c43111ede2ac11eb996285dfdfb7dac4553dc238a42",
+    "editor/docks/ai_chat_gonggong.cpp": "81ebd7fe7a9ef40f82c1a4f998e3e6317fb88f2ac2b4d1381db86900ecc5b0cf",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/daqian_dock.cpp": "d938fac02537479e22a6ed7857483e93a66b3a3f652c885349f8c53079a35414",
+    "editor/SCsub": "e1a5f07f19d8226ca20a0d290cc6be4257a2c3b67cc19c2264635e2b15602cf7"
+  },
+  "editor_sha256": "7d672ac2959e4f7c2b8a86c161fd2acbecf318d25fd7b779949ca00a44ae9f9c",
+  "local_build": {
+    "passed": true,
+    "seconds": 13.96,
+    "log_sha256": "a5d24f74dfa35318ab4f079048e7859493898b24fabe416465273b113532fa30"
+  },
+  "python_tests": {
+    "passed": 90,
+    "suites": [
+      35,
+      13,
+      42
+    ],
+    "log_sha256": "c2ca835544d5f414f6ff774989af4806290cf6bbc8cf4622fee952621f588b42"
+  },
+  "node_tests": {
+    "passed": 74,
+    "failed": 0,
+    "log_sha256": "b85aa8fcb4c0b8f98f24e2474cb60edcdc3c42e1ecb66aad31e6679fe6843086"
+  },
+  "native": "a681-native-intake.json",
+  "stop_inputs": "a681-stop-input.json",
+  "independent_review": {
+    "path": "a681-independent-integration.json",
+    "reviewer": "/root/sinan_491d683f7a23033f",
+    "source_sha256": "b776caf4364d84f525ae95de4fd04a5a43a8d1460903efc0299e54e3e0a85e3b",
+    "findings": 0
+  },
+  "remote_publication": "waiting for other publishing tasks actual completion receipt under user instruction",
+  "fresh_windows_ci": "not started",
+  "main_acceptance": false,
+  "original_cause": "unknown",
+  "physical_input": false,
+  "real_provider": false,
+  "consumption": null,
+  "execution_state": "Local verification and independent review complete; source worker terminal verification is separately recorded. No new remote CI, signature, push or main merge under other-tasks-first instruction."
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d0709f8d3ae0629c5815db2fa01dd6efe93ceeb3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "600e95b2377fdbab31b361c03f32763b8af645a880ea04e85d70ce28c61f9dbd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "validation",
+    "detection_head": "2135ce1f21a8157c73a68b0f9f0035beee249b07",
+    "context_sha256": "b04435f484763fafbacfbafc45a9e3b4893d258fd386c0c1761b670e4d7e4a31",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261110-ai49/pr672-native-bootstrap-failure.json",
+    "diagnosis": "672实际Windows3+5+10通过，native在GD74设置missing Python时runtime_environment_locked且构造期setup已出现、业务请求0。有效bootstrap写在GD内晚于构造期检查；单Pythonfixture改为启动前私有schema1配置Python/Node/fakeCodex、清子进程immutable覆盖，仍真实切missing并走原全部验收；独立定向审查及普通mac11/7/1/71通过。",
+    "next_action": "签发新精确候选运行完整Windows自动配置doctor与原需求恢复，原673未含新fixture不算通过；不绕过产品锁、不写成功marker。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T19:13:02.109985+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T19:15:53.891547+00:00",
+  "sha256": "aea51e048b1c587dc3c715e761c74d3664b06238e73697f0bcac5acad6307b3c"
+}

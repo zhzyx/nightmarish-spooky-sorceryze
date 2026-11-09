@@ -1,0 +1,28 @@
+{
+  "user_decision": "先让其他任务完成",
+  "receipts": [
+    {
+      "issue": 671,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671#issuecomment-6749817078",
+      "author": "Sail-Li",
+      "created_at": "2026-11-09T19:50:10Z",
+      "body": "已核对 #680 签发 head 804e8e84253096912b164b2166454e9f66b25695 的适用 CI 通过，合入提交 a7b1a95439966292e7099db64c6ee78282889da2 已回读进入远端 main。定义、宿主、注册表、候选和实际授权记录与已验证内容逐项匹配。\n\n#671 的三个验收项均已验证。0.1.3 将定义回查限制到定义变更与接入；用户批准的 21 文件摘要逐项吻合；使用已登记的真实清单、实际批准文件、隔离测试签名和测试操作者运行 GithubHost.authorize 已通过，定义漂移、版本不符和批准文件变更在回归中被拒绝。实际 PR 发布使用协作者本人签发路径，未调用生产私有 grant。0.1.2 与司南历史证据保留。该工单完成。\r\n"
+    },
+    {
+      "issue": 676,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/676#issuecomment-6750186568",
+      "author": "Sail-Li",
+      "created_at": "2026-11-09T20:07:40Z",
+      "body": "已验收 PR #681。签发 head e900bf6a194d2345471140dc576c772db8bebf26 的全部适用 CI 通过，远端 main 包含 a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd，合入树与签发树相同。\n\n生产子会话绑定父委托、工单、实施者与协调方；只读审查保留权限边界及独立性未知，真实回执记录读取范围、原始文件摘要与父候选。Windows 无头原生验证覆盖角色、普通咨询、审查回传、同分支 HEAD 或节选外内容漂移、链接替换；过期报告均未向父会话回传，待处理队列清除。42 项桥接回归通过。实际模型使用与生产宿主外部委托由各业务工单另行核实。\r\n"
+    },
+    {
+      "issue": 677,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/677#issuecomment-6750645232",
+      "author": "Sail-Li",
+      "created_at": "2026-11-09T20:28:38Z",
+      "body": "已验收 #684。签发 head b64a61022c35f56a5f9cc90d2350407ab4e77d47 的全部适用检查通过。远端 main 包含合入提交 62e450e1897c9c90a19664363f851d4b361eb958，合入树与签发树一致。\n\n编辑器无头实测覆盖待批准标题、确认后文件变更、非连续工单号 2/4、前项仅执行完成、空验收证据、只读咨询和手动重做。依赖项只在验证新终态回执并由操作者记录验收后启动。14 项并行执行器测试覆盖实际工作副本、旧票据与并发读取，45 项原生测试共 638 条断言通过。候选对应验证记录在 data-collection/editor-child-design-dependencies-validation.json 及后续 clang-recheck.json。本工单验收完成。\r\n"
+    }
+  ],
+  "meaning": "Actual business acceptance and main readback from original publishing task; permits resuming this previously authorized batch, no new permissions inferred",
+  "consumption": null
+}

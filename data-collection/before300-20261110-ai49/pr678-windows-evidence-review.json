@@ -1,0 +1,200 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Final independent read-only exact Windows result/source mapping audit; no rerun or source edits",
+  "findings": [],
+  "conclusion": "The previously pending exact Windows governed bootstrap and native original-request recovery are now evidenced as passing in the supplied PR678 push artifacts. Summary, individual reports, process summaries and native success marker agree. PR-side required editor steps are also recorded completed/success. Independent #49 source and evidence review duties are complete for this candidate; root retains fresh-main, merge and acceptance receipt responsibility.",
+  "ci_sources": {
+    "push_run_id": "42681815562",
+    "artifact_directory": "<task-private>/before300-20261109/pr678-runtime-push-pass",
+    "pr_editor_job_id": "129378380115",
+    "pr_steps_file": "<task-private>/before300-20261109/pr678-pr-editor-steps.json",
+    "id_mapping_basis": "Run/job identifiers supplied by root; saved raw artifact contents and job step status were directly read, without additional network access."
+  },
+  "windows_scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+  "tool_versions": {
+    "python": "Python 3.15.2",
+    "node": "v22.23.4",
+    "git": "git version 2.56.0.windows.4",
+    "powershell": "5.1.26100.33648"
+  },
+  "binary_sha256_reported_and_consistent": "d22f58f3edb8a0bb3bc0990f5f52ce023cbacad8d5fc898d3276d19f415c8b67",
+  "candidate_configure_sha256": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+  "process_interruption": {
+    "count": 3,
+    "cases": [
+      {
+        "case": "baseline interrupted replacement",
+        "ok": true,
+        "rollback_exit": 1,
+        "original_bytes_restored": false,
+        "recovery_retained": false,
+        "repeated_rollback_rejected": false
+      },
+      {
+        "case": "candidate interrupted replacement",
+        "ok": true,
+        "rollback_exit": 0,
+        "original_bytes_restored": true,
+        "recovery_retained": true,
+        "repeated_rollback_rejected": true
+      },
+      {
+        "case": "candidate interrupted fresh install",
+        "ok": true,
+        "rollback_exit": 0,
+        "original_bytes_restored": false,
+        "recovery_retained": true,
+        "repeated_rollback_rejected": true
+      }
+    ],
+    "baseline_note": "Baseline expected failure is one passing regression case, not a claim that the old baseline rollback works. Candidate replacement and fresh-install interrupted recovery both succeed."
+  },
+  "journal_boundaries": [
+    {
+      "case": "prepared-before-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "prepared-after-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "legacy-configured",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "outside-target",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "missing-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    }
+  ],
+  "runtime_setup": {
+    "report": {
+      "ok": true,
+      "cases": [
+        "deploy all three components with no destination Python",
+        "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+        "rollback retains recovery files",
+        "repeated rollback rejected",
+        "failed framework self-check restores pre-deployment files",
+        "tampered source rejected before execution",
+        "governed host model step selects and validates a complete runtime package",
+        "changed host policy blocks model invocation before native selector starts",
+        "missing host policy blocks model invocation before native selector starts",
+        "launcher permits editor ignition without Python or Node"
+      ],
+      "source": "explicit existing package; no downloads",
+      "global_environment_modified": false
+    },
+    "process_summary_matches": true,
+    "meaning": "All ten assertions completed, including real Windows PE governed UTF8/Chinese context-and-plan selection, changed/missing-policy zero-invocation rejection, checksum/deploy/rollback and missing-runtime launcher. No downloads or actual provider calls are implied."
+  },
+  "native": {
+    "report": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": true,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+      "windows_owned_process_cleanup": "verified Job empty",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "missing runtime starts an independent AI Agent and resumes the original request",
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "d22f58f3edb8a0bb3bc0990f5f52ce023cbacad8d5fc898d3276d19f415c8b67",
+      "fixture_events_imported": false
+    },
+    "process_summary_identical": true,
+    "stdout_success_marker": true,
+    "debug": {
+      "request_records": 19,
+      "requirements_journals": 11,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "configured_setup_results": 2
+    },
+    "meaning": "Mutable private installation bootstrap, deliberate missing Python, real product automatic runtime setup/doctor and continuation exercised; 11 requirements/7 development/1 actual read/5 fixture Issues/71 committed events, Job cleanup empty. Loopback model/GitHub, no production writes."
+  },
+  "source_binding": {
+    "runner_path": "<repository>/.worktrees/before300-ai49-eec633-20261110/tests/editor/run_requirements_intake.py",
+    "runner_sha256": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+    "matches_independent_bootstrap_review": true,
+    "review_ref": "<task-private>/before300-ai49-review/bootstrap-fixture-delta.json",
+    "configure_hash_matches_summary_and_current": true,
+    "native_binary_hash_limit": "Summary/native/process agree on the actual runner-reported Windows editor SHA256 d22f58f3...; this audit does not claim to independently possess/hash a downloaded Windows executable."
+  },
+  "pr_job_step_check": {
+    "overall": "success",
+    "required_steps": {
+      "Compilation": "success",
+      "Unit tests": "success",
+      "Runtime deployment interruption and original request recovery": "success",
+      "Upload runtime simulation report": "success"
+    },
+    "skipped_steps": [
+      "Tianshu native editor graph",
+      "Tianshu cross-provider loopback in the editor",
+      "Upload Tianshu editor results"
+    ]
+  },
+  "diagnostics_retained": [
+    "Native stdout retains renderer/text/font/RichTextLabel RID exit-leak diagnostics; stderr retains unattached debugger, Canvas/CanvasItem/ObjectDB leak diagnostics. The asserted scenario passes; not a zero-diagnostic/leak-free claim."
+  ],
+  "limits": [
+    "Windows-layout simulation uses actual PowerShell5.1 and compiled native PE fixtures delegating to host Python/Node/Git. Standalone vendor package/hardware/full power-loss cutpoints/concurrent deployment/interrupted rollback remain outside proven scope, as summary declares.",
+    "No physical input, real provider/production GitHub publication, actual account authorization or old-window/queue recovery proof. Original PROCESS_EXIT unique cause remains unknown and prior user-skipped window/queue remain skipped/unknown.",
+    "The 0bec mac Stop regression remains restricted to its five matching AI native inputs and excludes later Daqian14 paths. These new Windows results do not convert that old mac binary into a full latest-main mac build.",
+    "PR-side Tianshu graph and cross-provider loops are explicitly skipped and are not asserted passed. Fresh-main exact-candidate merge/signing/main readback and Issue close are root responsibility.",
+    "No rerun, compile, source/index/framework edit, provider/desktop action or network publication by this reviewer."
+  ],
+  "artifact_sha256": {
+    "summary.json": "3c8404a4d288413be4b50cf3cfa474bcd914be2899a5fe5969bf639e62185aeb",
+    "interruption-diagnostics.json": "0d056617269141223bd2f4f7af81ee00f99ce595534bf946c6d361145ba1b4d0",
+    "requirements-intake.stdout.log": "f287ac0e63eab8fa3ff11f418ce56426161b46c4ba96fd889bad969ea50171a5",
+    "requirements-intake.json": "3c4759bb19faae8303f36efbf907c1bb4165581d5a592248b38296c9bb6601f7",
+    "requirements-intake.debug.json": "b0629463ba1997f2d4b637ab32f291e0e32630d85772e21b00665902932ca068",
+    "runtime-setup.process.log": "77d6bba2234cfe047b591f319c037519224597639b397fa5fc7bba3f91dd4cd0",
+    "requirements-intake.process.log": "a09ab6fa26e08060216d87ec89e20758bc8f67fd77e0c0d06c29ab7ad5193a61",
+    "runtime-setup.json": "849ee063ba7b04604295503a1a16a8f5b3caf8d3dcbc3f7056b3f7a3179f527b",
+    "requirements-intake.stderr.log": "98433e2b39fe7920088a0f340378088754a9b7b4c38c04e02fe581d5fa4752b7"
+  },
+  "pr_steps_sha256": "dcc36114ec893e03e6d31355b2bdd27c233885d70a5042b4b0ef45b83312b847",
+  "review_terminal_state": "complete_for_exact_candidate",
+  "original_receipt_sha256": "6f12954897021d6262110442c839f0914b38c3c33a86b67f63fb0cb96c15cb3b",
+  "publication_scope": "PR678 Windows receipts bind oldeec exacthead e70 only; main35b integration requires fresh candidate CI. Normalmac current35b+49 privatebuild is not Windows runtime_source."
+}

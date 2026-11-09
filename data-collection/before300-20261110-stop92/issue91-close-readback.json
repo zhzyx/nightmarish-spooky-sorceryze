@@ -1,0 +1,11 @@
+{
+  "labels": [
+    "type:test",
+    "status:done",
+    "workspace:gonggong"
+  ],
+  "number": 91,
+  "state": "closed",
+  "state_reason": "completed",
+  "updated_at": "2026-11-09T18:50:24Z"
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "gonggong-ai-chat-debug-20261105-ai-runtime-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "step",
+  "occurred_at": "2026-11-05T15:09:48.6844855Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "codex-ai-runtime-intake",
+    "version": "gpt-6.1-sol",
+    "definition_sha256": "fcf5af3ff03c444d9596b5bd5ac69907d2468034e7bbf7199c7a3d8cb91c07ff",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "status": "windows_runtime_and_intake_recovery_verified",
+    "path_base": "repository_root",
+    "evidence": "data-collection/ai-chat-debug-20261104/ai-runtime-intake-verification-20261105.json",
+    "evidence_sha256": "d9cd5993bf9a35ae618f247cc44e06e27fd89144009a086d17afee89d3bebfd3",
+    "unit_tests_passed": 86,
+    "native_fixture_passed": true,
+    "real_model_json_smokes_passed": 2,
+    "usage": null,
+    "usage_reason": "Provider usage receipt unavailable; no inference from test or event counts.",
+    "remote_main_verified": false,
+    "host_authority_authenticated": false
+  },
+  "evidence_refs": [
+    "gonggong-ai-chat-debug-20261104-request"
+  ],
+  "sha256": "a1552bb249280b4f9a3fb99619abc9c37e870d455c918988c4abac3bf531f32c"
+}
