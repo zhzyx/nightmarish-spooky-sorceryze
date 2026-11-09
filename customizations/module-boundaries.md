@@ -53,3 +53,25 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 6. 将实际完成／失败、依赖变化与回执交给司南和谛听；配置、排队、落库、消费分开记录，不启动定时兜底。
 
 结构推演（不是运行验收）：独立需求可以由偃师输出到已授权文档服务，不要求 Git 或 Godot；相同工具的新设备若契约兼容只增加配置与该设备验证；遇到全新引擎时复用需求、协调、整合、质量与采集职责，仅补所需引擎能力映射。任何新服务都需真实权限和回读，不能据此宣称现已接通。
+
+## 新增模块的构建边界与验收
+
+路径以仓库根解析。发现与复盘见[并行工单复用编辑器](../design-docs/engine-artifact-reuse-rollout.md)。先沿 SCsub、生成器、加载器和分发清单追到实际消费点。即使源文件是 GDScript 或 Python，只要生成的头文件进入原生链接，该文件就属于编译输入。对运行时独立读取的包，记录宿主 API 版本、可信选择入口与包摘要；编译器、SDK、生成脚本或影响原生输出的选项变化时重新判断复用范围。
+
+| placement | 设计依据 | 必须实测的 checks |
+| --- | --- | --- |
+| native | 直接参与引擎编译或链接 | native_invalidation：改变原生输入后构建键失效，并验证新行为 |
+| embedded | 内容经生成器嵌入可执行文件 | generated_input_invalidation：改变生成输入后验证受影响的目标重建 |
+| runtime_package | 包可在既有宿主接口上单独替换 | same_binary_update、incompatible_rejection、rollback：验证新旧包行为、拒绝不兼容包、恢复旧行为 |
+| host_tool | 宿主进程独立执行，说明与引擎的调用关系 | host_behavior：从正常入口运行并核对产物或回执 |
+| mixed | 同一模块同时含原生和可替换业务包 | native_invalidation 及运行包的三项检查，分别列出输入边界 |
+
+偃师或模块主责在模块根写入 `build-impact.json`，字段为 `placement`、`reason`、`host_contract`、`rollback` 和 `evidence`。evidence 是仓库相对路径，指向实测 JSON；input_blobs 将实际测试的输入路径绑定到 Git blob ID（暂存后可用 `git rev-parse :路径` 取得），覆盖模块内所有文件（分类记录和证据文件自身除外），并列出实测涉及的外部输入。checks 中每一项保留 command、observed 与实际布尔值 passed。同二进制换包的检查还保留 before_executable、after_executable、before_package、after_package 四个 SHA-256。验收者按记录复核输入、检查方法与实际行为。构建分类记录用于审查；缓存命中仍由构建器核对实际输入。
+
+本地从已获取的目标分支核对完整候选 index：
+
+```text
+python customizations/components/issue-workorders/issue_gate.py --repo . --module-impact-only --base-ref origin/main
+```
+
+正式提交和 CI 使用相同检查。新增 Godot modules、接入组件目录、平台注册项、module.json/component.json 声明、项目插件和 GDExtension 进入核对范围。其他目录新增独立业务模块也随模块提交 build-impact.json。既有边界在引入时留存，变更构建归属或宿主契约时更新记录和受影响的验证证据。

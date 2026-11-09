@@ -1,0 +1,7 @@
+{
+  "placement": "mixed",
+  "reason": "桌面天枢图布局和展示脚本作为资源包加载。其余内嵌逻辑、原生宿主及移动端构建仍依赖编译图。",
+  "host_contract": "桌面编辑器默认读取安装位置的 tianshu-ui.json；显式覆盖绑定本地绝对路径和 SHA-256，同时校验包 ABI 与负载摘要。",
+  "rollback": "撤销显式选择并恢复受测安装包。原生宿主变化按编辑器版本回退。",
+  "evidence": "data-collection/tianshu-build-placement-687-release.json"
+}

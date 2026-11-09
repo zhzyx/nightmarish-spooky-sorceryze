@@ -16,6 +16,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+
 RESERVE_BYTES = 64 * 1024 * 1024
 
 
@@ -71,6 +73,11 @@ def copy_editor(source, directory):
             shutil.copy2(source, target)
         if target.stat().st_size != source.stat().st_size or target.samefile(source):
             raise OSError("Editor copy is incomplete or aliases its source")
+        from package_tianshu_ui import installed_package
+
+        package = installed_package(source)
+        if package.is_file():  # Older editors embed these scripts.
+            shutil.copyfile(package, directory / package.name)
         (directory / "_sc_").touch(exist_ok=False)
         (directory / "editor_data").mkdir()
         return target

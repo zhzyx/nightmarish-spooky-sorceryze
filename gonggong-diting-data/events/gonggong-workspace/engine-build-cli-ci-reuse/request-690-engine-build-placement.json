@@ -1,0 +1,23 @@
+{
+  "kind": "request",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "id": "codex-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/690",
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "scope": "engine-build-cli-ci-reuse",
+    "parent_issue": 687
+  },
+  "request_id": "engine-build-cli-ci-reuse",
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "event_id": "request-690-engine-build-placement",
+  "occurred_at": "2026-11-09T21:01:12.7823263+00:00",
+  "schema_version": 1,
+  "sha256": "8247d7ee35ec909b0d76363fb9b2e5ea53d7d059a5b01e0de5077f477bc36f7d"
+}

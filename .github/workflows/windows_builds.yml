@@ -12,11 +12,11 @@ on:
         type: boolean
         default: false
       daqian_build_run:
-        description: Existing MSVC editor artifact for test-only Tianshu changes
+        description: Successful default-branch build with matching native inputs for Tianshu acceptance
         type: string
         default: ""
       consultation_build_run:
-        description: Successful Windows editor run to reuse for consultation native acceptance (no build)
+        description: Successful default-branch build of this revision for consultation acceptance
         type: string
         default: ""
 
@@ -31,14 +31,13 @@ env:
 
 jobs:
   build-windows:
-    if: github.event_name != 'workflow_dispatch' || (inputs.consultation_build_run == '' && inputs.daqian_build_run == '')
     # Windows 10 with latest image
     runs-on: windows-latest
     name: ${{ matrix.name }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.editor_only && '{"include":[{"name":"Editor (target=editor)","cache-name":"windows-editor","target":"editor","scons-flags":"windows_subsystem=console vsproj=yes vsproj_gen_only=no","bin":"./bin/godot.windows.editor.x86_64.exe","compiler":"msvc"}]}' || '{"include":[{"name":"Editor (target=editor)","cache-name":"windows-editor","target":"editor","scons-flags":"windows_subsystem=console vsproj=yes vsproj_gen_only=no","bin":"./bin/godot.windows.editor.x86_64.exe","compiler":"msvc"},{"name":"Editor w/ clang-cl (target=editor, use_llvm=yes)","cache-name":"windows-editor-clang","target":"editor","scons-flags":"windows_subsystem=console use_llvm=yes","bin":"./bin/godot.windows.editor.x86_64.llvm.exe","compiler":"clang"},{"name":"Template (target=template_release)","cache-name":"windows-template","target":"template_release","bin":"./bin/godot.windows.template_release.x86_64.console.exe","compiler":"msvc"},{"name":"Template w/ GCC (target=template_release, use_mingw=yes)","cache-name":"windows-template-gcc","target":"template_release","scons-flags":"use_mingw=yes","bin":"./bin/godot.windows.template_release.x86_64.console.exe","compiler":"gcc"}]}') }}
+      matrix: ${{ fromJSON((inputs.editor_only || inputs.consultation_build_run || inputs.daqian_build_run) && '{"include":[{"name":"Editor (target=editor)","cache-name":"windows-editor","target":"editor","scons-flags":"windows_subsystem=console vsproj=yes vsproj_gen_only=no","bin":"./bin/godot.windows.editor.x86_64.exe","compiler":"msvc"}]}' || '{"include":[{"name":"Editor (target=editor)","cache-name":"windows-editor","target":"editor","scons-flags":"windows_subsystem=console vsproj=yes vsproj_gen_only=no","bin":"./bin/godot.windows.editor.x86_64.exe","compiler":"msvc"},{"name":"Editor w/ clang-cl (target=editor, use_llvm=yes)","cache-name":"windows-editor-clang","target":"editor","scons-flags":"windows_subsystem=console use_llvm=yes","bin":"./bin/godot.windows.editor.x86_64.llvm.exe","compiler":"clang"},{"name":"Template (target=template_release)","cache-name":"windows-template","target":"template_release","bin":"./bin/godot.windows.template_release.x86_64.console.exe","compiler":"msvc"},{"name":"Template w/ GCC (target=template_release, use_mingw=yes)","cache-name":"windows-template-gcc","target":"template_release","scons-flags":"use_mingw=yes","bin":"./bin/godot.windows.template_release.x86_64.console.exe","compiler":"gcc"}]}') }}
 
     steps:
       - name: Checkout
@@ -57,10 +56,15 @@ jobs:
 
       - name: Active provenance process ownership
         if: matrix.compiler == 'msvc' && matrix.target == 'editor'
-        run: python tools/test_editor_provenance_process.py
+        run: |
+          python tools/test_build_gonggong_editor.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/test_windows_editor_artifact.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/test_editor_provenance_process.py
 
       - name: Download Direct3D 12 SDK components
-        shell: sh
+        shell: bash
         id: d3d12-sdk
         run: |
           if python ./misc/scripts/install_d3d12_sdk_windows.py; then
@@ -72,7 +76,7 @@ jobs:
         continue-on-error: true
 
       - name: Download pre-built ANGLE
-        shell: sh
+        shell: bash
         id: angle-sdk
         run: |
           if python ./misc/scripts/install_angle.py; then
@@ -83,7 +87,7 @@ jobs:
           fi
 
       - name: Download pre-built AccessKit
-        shell: sh
+        shell: bash
         id: accesskit-sdk
         run: |
           if python ./misc/scripts/install_accesskit.py; then
@@ -93,7 +97,36 @@ jobs:
             echo "ACCESSKIT_ENABLED=no" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Configure reproducible MSVC editor metadata
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        run: |
+          "GONGGONG_NATIVE_SOURCE_ARCHIVE=1" >> $env:GITHUB_ENV
+          "BUILD_NAME=gh" >> $env:GITHUB_ENV
+
+      - name: Look up an immutable Windows editor
+        shell: bash
+        id: editor
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.consultation_build_run || inputs.daqian_build_run }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          CANDIDATE_REVISION: ${{ github.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          EDITOR_BUILD_FLAGS: platform=windows target=editor ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} redirect_build_objects=no
+        run: python .github/scripts/windows_editor_artifact.py lookup
+
+      - name: Generate the Visual Studio project for the current checkout
+        if: steps.editor.outputs.hit == 'true'
+        uses: ./.github/actions/godot-build
+        with:
+          platform: windows
+          target: editor
+          scons-flags: ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} vsproj_gen_only=yes d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}
+
       - name: Compilation
+        if: steps.editor.outputs.hit != 'true'
         uses: ./.github/actions/godot-build
         with:
           scons-flags: ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}
@@ -101,10 +134,18 @@ jobs:
           target: ${{ matrix.target }}
 
       - name: Save Godot build cache
+        if: steps.editor.outputs.hit != 'true'
         uses: ./.github/actions/godot-cache-save
         with:
           cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
+
+      - name: Package this checkout's Tianshu UI and record editor provenance
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        run: |
+          python tools/package_tianshu_ui.py --output bin/tianshu-ui.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python .github/scripts/windows_editor_artifact.py record
 
       - name: Prepare artifact
         if: matrix.compiler == 'msvc'
@@ -118,10 +159,21 @@ jobs:
         with:
           name: ${{ matrix.cache-name }}
 
+      - name: Index trusted editor inputs for later candidates
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-editor-key-${{ steps.editor.outputs.key }}
+          path: bin/windows-editor-inputs.json
+          if-no-files-found: error
+          retention-days: 60
+
       - name: Unit tests
         run: |
           ${{ matrix.bin }} --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ${{ matrix.bin }} --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ${{ matrix.bin }} --test --force-colors
 
       - name: Runtime deployment interruption and original request recovery
@@ -141,14 +193,14 @@ jobs:
           if-no-files-found: warn
 
       - name: Tianshu native editor graph
-        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && (inputs.editor_only || inputs.daqian_build_run)
         run: |
           python tests/editor/run_daqian_graph.py --godot ${{ matrix.bin }} --report daqian-native.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/editor/run_ai_chat_tab_order.py --godot ${{ matrix.bin }} --report daqian-tabs.json
 
       - name: Tianshu cross-provider loopback in the editor
-        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && (inputs.editor_only || inputs.daqian_build_run)
         run: |
           python tests/editor/run_daqian_graph.py --scenario parallel --godot ${{ matrix.bin }} --report daqian-parallel.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -157,109 +209,22 @@ jobs:
           python tests/editor/run_daqian_graph.py --scenario entry --godot ${{ matrix.bin }} --report daqian-entry.json
 
       - name: Upload Tianshu editor results
-        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && inputs.editor_only
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && (inputs.editor_only || inputs.daqian_build_run)
         uses: actions/upload-artifact@v7
         with:
           name: daqian-windows-native
           path: daqian-*.json
           if-no-files-found: warn
 
-  consultation-native:
-    if: github.event_name == 'workflow_dispatch' && inputs.consultation_build_run != ''
-    runs-on: windows-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Verify successful build and unchanged build inputs
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BUILD_RUN: ${{ inputs.consultation_build_run }}
-        run: |
-          if ($env:BUILD_RUN -notmatch '^\d+$') { throw 'Numeric build run required' }
-          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:BUILD_RUN" | ConvertFrom-Json
-          if ($LASTEXITCODE -ne 0 -or $run.conclusion -ne 'success' -or $run.path -ne '.github/workflows/windows_builds.yml') { throw 'Successful Windows build required' }
-          $jobs = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:BUILD_RUN/jobs" | ConvertFrom-Json
-          if (-not ($jobs.jobs | Where-Object { $_.name -eq 'Editor (target=editor)' -and $_.conclusion -eq 'success' })) { throw 'Successful MSVC editor job required' }
-          $changes = @(git diff --name-only $run.head_sha HEAD)
-          if ($LASTEXITCODE -ne 0) { throw 'Cannot compare build inputs' }
-          foreach ($file in $changes) {
-            if ($file -notmatch '^(data-collection/|design-docs/|gonggong-diting-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(consultation_only\.gd|run_consultation_only\.py)$)') { throw "Build input changed: $file" }
-          }
-          New-Item -ItemType Directory -Force native-report | Out-Null
-          @{ build_run = $env:BUILD_RUN; build_sha = $run.head_sha; test_sha = $env:GITHUB_SHA; allowed_nonbuild_changes = $changes } | ConvertTo-Json | Set-Content native-report/build-inputs.json
-          gh run download $env:BUILD_RUN --repo $env:GITHUB_REPOSITORY --name windows-editor --dir native-editor
-          if ($LASTEXITCODE -ne 0) { throw 'Artifact download failed' }
       - name: Native consultation permission regression
-        run: python tests/editor/run_consultation_only.py --godot native-editor/godot.windows.editor.x86_64.exe --out native-report/consultation.json
-      - name: Upload native report
-        if: always()
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && inputs.consultation_build_run
+        run: python tests/editor/run_consultation_only.py --godot ${{ matrix.bin }} --out native-report/consultation.json
+
+      - name: Upload native consultation report
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && inputs.consultation_build_run
         uses: actions/upload-artifact@v7
         with:
           name: consultation-native-report
-          path: native-report/*
-
-  daqian-native-reuse:
-    if: github.event_name == 'workflow_dispatch' && inputs.daqian_build_run != ''
-    runs-on: windows-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      actions: read
-    env:
-      GH_TOKEN: ${{ github.token }}
-      SOURCE_RUN: ${{ inputs.daqian_build_run }}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Verify original editor build and unchanged inputs
-        shell: pwsh
-        run: |
-          if ($env:SOURCE_RUN -notmatch '^\d+$') { throw 'Numeric source run required' }
-          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:SOURCE_RUN" | ConvertFrom-Json
-          if ($LASTEXITCODE -ne 0 -or $run.path -ne '.github/workflows/windows_builds.yml' -or $run.head_repository.full_name -ne $env:GITHUB_REPOSITORY -or $run.head_branch -ne $env:GITHUB_REF_NAME) { throw 'Wrong build source' }
-          $jobs = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:SOURCE_RUN/jobs" | ConvertFrom-Json
-          if ($LASTEXITCODE -ne 0) { throw 'Missing build job receipt' }
-          $editor = $jobs.jobs | Where-Object { $_.name -eq 'Editor (target=editor)' }
-          foreach ($step in @('Compilation','Upload artifact','Unit tests')) {
-            if (-not ($editor.steps | Where-Object { $_.name -eq $step -and $_.conclusion -eq 'success' })) { throw "Missing successful $step" }
-          }
-          git merge-base --is-ancestor $run.head_sha HEAD
-          if ($LASTEXITCODE -ne 0) { throw 'Build is not an ancestor of this candidate' }
-          $changes = @(git diff --name-only $run.head_sha HEAD)
-          if ($LASTEXITCODE -ne 0) { throw 'Unable to compare immutable sources' }
-          foreach ($f in $changes) {
-            if ($f -notmatch '^(data-collection/|design-docs/|gonggong-diting-data/|\.github/workflows/windows_builds\.yml$|tests/editor/(daqian_[a-z_]+\.gd|run_daqian_graph\.py|run_ai_chat_tab_order\.py)$)') { throw "Build or runtime input changed: $f" }
-          }
-          New-Item -ItemType Directory -Force native-report | Out-Null
-          @{build_sha=$run.head_sha; test_sha=$env:GITHUB_SHA; build_run=$env:SOURCE_RUN} | ConvertTo-Json | Set-Content native-report/input.json
-          gh run download $env:SOURCE_RUN --repo $env:GITHUB_REPOSITORY --name windows-editor --dir native-editor
-          if ($LASTEXITCODE -ne 0) { throw 'Unable to read original editor artifact' }
-      - name: Verify native graph, entry, and multi-provider loopback
-        shell: pwsh
-        run: |
-          $exe = "native-editor/godot.windows.editor.x86_64.exe"
-          foreach ($scenario in @('graph','entry','parallel')) {
-            python tests/editor/run_daqian_graph.py --scenario $scenario --godot $exe --report "native-report/$scenario.json"
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-          python tests/editor/run_ai_chat_tab_order.py --godot $exe --report native-report/tabs.json
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node tests/editor/daqian_model_harness.mjs
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: daqian-windows-native
-          path: native-report/
+          path: |
+            native-report/*
+            bin/windows-editor-inputs.json

@@ -1,0 +1,55 @@
+{
+  "request_id": "tianshu-versioned-ui-package",
+  "issue": 689,
+  "base": "62e450e1897c9c90a19664363f851d4b361eb958",
+  "platform": "Windows x86_64, MSVC, desktop editor",
+  "build": "SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no",
+  "installed_headless": {
+    "editor_sha256": "6f0abedad3a4bc448c7fa19ffea9941fb0530f4d5f2de88d3a7db1d805da1c4a",
+    "installed_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "candidate_sha256": "3dc6d3571390c8990781f25b1b562ed6f75774f8e34c80c0920daa821c50be01",
+    "cases": {
+      "installed": "48 应用更改",
+      "selected": "96 应用候选",
+      "rollback": "48 应用更改",
+      "independent_self_update_slot": "96 应用候选",
+      "wrong_pin": "blocked",
+      "missing_pin": "blocked",
+      "project_path": "blocked",
+      "missing_selected": "blocked",
+      "damaged_payload": "blocked",
+      "incompatible": "blocked",
+      "missing_default": "blocked"
+    }
+  },
+  "actual_tracked_layout_source_incremental_build": {
+    "before": {
+      "godot.windows.editor.x86_64.exe": "6f0abedad3a4bc448c7fa19ffea9941fb0530f4d5f2de88d3a7db1d805da1c4a",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "daqian_scripts.gen.h": "a915f5985d24d07a94485decb25b2e992f51f87c9b98fc08c60c092eb10519d8"
+    },
+    "modified": {
+      "godot.windows.editor.x86_64.exe": "6f0abedad3a4bc448c7fa19ffea9941fb0530f4d5f2de88d3a7db1d805da1c4a",
+      "tianshu-ui.json": "57d25452bb9cc42b4c643561c211b6011b182af013358e7e618771fed53b3187",
+      "daqian_scripts.gen.h": "a915f5985d24d07a94485decb25b2e992f51f87c9b98fc08c60c092eb10519d8"
+    },
+    "restored": {
+      "godot.windows.editor.x86_64.exe": "6f0abedad3a4bc448c7fa19ffea9941fb0530f4d5f2de88d3a7db1d805da1c4a",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "daqian_scripts.gen.h": "a915f5985d24d07a94485decb25b2e992f51f87c9b98fc08c60c092eb10519d8"
+    }
+  },
+  "existing_graph_regression": {
+    "state": "passed",
+    "editor_sha256": "6dbed4aa824fcb46b7b732b49915f70c1befcb012aa3fd66f0c9f74c11d02e77",
+    "scenario": "graph",
+    "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+  },
+  "installation": {
+    "command": "tools/install_gonggong_editor.ps1",
+    "direct_default_control_x": 48,
+    "inventory": "project/godot/installed.local.json",
+    "locked_package_replacement": "failure restored both original executable files, package and prior inventory"
+  },
+  "other_platforms": "macOS package switching is wired into macos_builds.yml. macOS and LinuxBSD native execution were not run on this Windows worker. Web/mobile retain their embedded graphs."
+}
