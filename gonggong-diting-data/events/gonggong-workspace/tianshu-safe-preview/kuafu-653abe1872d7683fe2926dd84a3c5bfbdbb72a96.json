@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-653abe1872d7683fe2926dd84a3c5bfbdbb72a96",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-safe-preview",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/652",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "648325a3d66e2fd8a831e3b60d80507b98047ebf112eddc0fa1c6ec6fb5a5218",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/652",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/597",
+    "action": "validation",
+    "detection_head": "7e68f2430d10fe0937568df78b59d693b731d38b",
+    "context_sha256": "d18ff310f457776e17b92d8421cf286ca336959bd8150e2af38b3d7449353ef1",
+    "operator": "Sail-Li",
+    "worker": "codex-safe-preview-652",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42661804002/job/129315014043",
+    "diagnosis": "Candidate omitted repository C++ and Python formatting; local patch matches CI emitted diff and local ruff checks pass",
+    "next_action": "After coordinated main655 receipt, integrate baseline and run formal gate and exact candidate CI again",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T17:12:50.718655+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T17:13:16.442965+00:00",
+  "sha256": "0321ee6e5d5864bd6540baa82bcd3dd82f83d591722af3a88d92ac6371503a9d"
+}
