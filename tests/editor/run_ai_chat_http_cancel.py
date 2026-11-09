@@ -112,6 +112,14 @@ def main():
                 self.respond()
 
             def do_GET(self):
+                if args.case != "models":
+                    payload = json.dumps({"data": [{"id": "fixture"}]}).encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(payload)))
+                    self.end_headers()
+                    self.wfile.write(payload)
+                    return
                 self.respond(models=True)
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)

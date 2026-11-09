@@ -128,6 +128,25 @@ class IsolationTests(unittest.TestCase):
         (first.parent / "editor_data/settings").write_text("first")
         self.assertFalse((second.parent / "editor_data/settings").exists())
 
+    def test_windows_console_wrapper_keeps_its_engine_private(self):
+        wrapper = self.root / "godot.windows.editor.console.exe"
+        engine = self.root / "godot.windows.editor.exe"
+        wrapper.write_bytes(b"console wrapper")
+        wrapper.chmod(0o755)
+        with self.assertRaises(FileNotFoundError):
+            isolation.copy_editor(wrapper, self.root / "missing-pair")
+        self.assertFalse((self.root / "missing-pair").exists())
+        engine.write_bytes(b"paired engine")
+        engine.chmod(0o755)
+        target = isolation.copy_editor(wrapper, self.root / "pair")
+        self.assertEqual(target.name, wrapper.name)
+        self.assertEqual(target.read_bytes(), wrapper.read_bytes())
+        private_engine = target.with_name(engine.name)
+        self.assertEqual(private_engine.read_bytes(), engine.read_bytes())
+        self.assertFalse(private_engine.samefile(engine))
+        self.assertFalse(target.samefile(wrapper))
+        self.assertTrue((target.parent / "_sc_").is_file())
+
     @unittest.skipUnless(os.environ.get("ISOLATION_TEST_EDITOR"), "real editor path not supplied")
     def test_real_editor_uses_private_settings_across_restart(self):
         before = digest_settings()

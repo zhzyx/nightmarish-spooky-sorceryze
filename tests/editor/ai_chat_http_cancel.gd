@@ -58,6 +58,17 @@ func _run():
 	if mode == "models":
 		await _refresh_models(dock)
 	else:
+		# Connection edits now refresh the catalog and lock Send until complete.
+		# Finish that real refresh before measuring the delayed chat request.
+		await _refresh_models(dock)
+		await create_timer(0.25).timeout
+		var catalog_deadline := Time.get_ticks_msec() + 5000
+		while backend.disabled and Time.get_ticks_msec() < catalog_deadline:
+			await process_frame
+		if backend.disabled:
+			push_error("Model discovery did not finish before cancellation probe")
+			quit(2)
+			return
 		dock.find_child("ChatInput", true, false).text = "DELAYED_RESPONSE_MUST_NOT_APPEAR"
 		dock.find_child("Send", true, false).pressed.emit()
 	var deadline := Time.get_ticks_msec() + 15000

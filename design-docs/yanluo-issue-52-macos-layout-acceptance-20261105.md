@@ -21,3 +21,9 @@
 本单由阎罗全仓审查及独立复核形成，后续由司南按真实需求事件派发；创建不等于已执行或生产启用。原父单未满足全部验收，继续开放；本单完成后重新核对父单。
 
 <!-- gonggong-host-git:Sail-Li -->
+
+## 2026-11-09 续办
+
+用户取消原硬件/Clang等待，接受macOS/Windows模拟范围。三次 macOS arm64 headless 启动验证全部隐藏/恢复、2D/3D/Script往返与分割位置、distraction-free、展开底栏不留空白；独立模拟补验无后缀/.exe/.console.exe入口并检查console配对。Windows原三进程证据保留其原输入范围，不冒充本机Windows实机。
+
+本轮源修订、实测与模拟边界统一引用 `data-collection/before300-20261109/validation.json` 及同目录各项报告（路径相对仓库根）。

@@ -26,6 +26,22 @@ def copy_editor(source, directory):
         raise ValueError("Editor source must be an executable file")
     if any(part.endswith(".app") for part in source.parts):
         raise ValueError("Application bundles are unsupported; supply a bare editor executable")
+    if source.name.endswith(".console.exe"):
+        # Godot's Windows console wrapper launches its sibling GUI executable.
+        engine = source.with_name(source.name.replace(".console.exe", ".exe"))
+        required = engine.stat().st_size + source.stat().st_size + RESERVE_BYTES
+        if shutil.disk_usage(directory.parent).free < required:
+            raise OSError(f"Insufficient isolation capacity: need {required} free bytes (editor pair plus reserve)")
+        private_engine = copy_editor(engine, directory)
+        target = private_engine.with_name(source.name)
+        try:
+            shutil.copy2(source, target)
+            if target.stat().st_size != source.stat().st_size or target.samefile(source):
+                raise OSError("Console wrapper copy is incomplete or aliases its source")
+            return target
+        except BaseException:
+            shutil.rmtree(private_engine.parent)
+            raise
     if directory.exists() or directory.is_symlink():
         raise ValueError("Isolation directory must be new")
     parent = directory.parent.resolve(strict=True)

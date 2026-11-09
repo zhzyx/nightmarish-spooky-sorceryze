@@ -20,3 +20,9 @@
 本单由阎罗全仓审查及独立复核形成，后续由司南按真实需求事件派发；创建不等于已执行或生产启用。原父单未满足全部验收，继续开放；本单完成后重新核对父单。
 
 <!-- gonggong-host-git:Sail-Li -->
+
+## 2026-11-09 续办
+
+用户收敛为macOS/Windows模拟范围。当前 producer 输出与历史 macOS native consumer 的27项接收矩阵全过；模拟编译ready状态后实际A→B进程、同项目history、dock_ready ack和watchdog started/closed_normally通过。纯Python13项通过。Linux实机/真实SCons/最新main构建/.app发布未执行，均明确保留，不构成本轮模拟范围的事实声明。
+
+本轮源修订、实测与模拟边界统一引用 `data-collection/before300-20261109/validation.json` 及同目录各项报告（路径相对仓库根）。

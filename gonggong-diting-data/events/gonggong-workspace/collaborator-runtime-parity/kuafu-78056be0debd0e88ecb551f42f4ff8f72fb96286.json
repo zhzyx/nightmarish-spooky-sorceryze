@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-78056be0debd0e88ecb551f42f4ff8f72fb96286",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "collaborator-runtime-parity",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "03c8467cec980c5c75d6231befee6ad7139999b0a6f385a7ccd3f620c1c2a24d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/637",
+    "action": "validation",
+    "detection_head": "cc297363ae1099bbbed8a9b5fb4d47c0e7ab257b",
+    "context_sha256": "3c54dbe60866d9e89d42c3a53992f4cdb1c95654c1f3fb55bbb285bd63403daf",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42619382538",
+    "diagnosis": "Reproduced stale framework/runtime import after acf8a3a15 runtime migration. Candidate imports host-http/runtime and verifies runtime_sha256 during historical inspection. Six worker tests now pass, including signed runtime drift rejection; independent review and main delivery pending.",
+    "next_action": "Review candidate and deliver through writer_submit PR/CI/main; reverify original worker suite after remote main contains fix.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T12:43:21.351032+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T12:49:33.276240+00:00",
+  "sha256": "b1d9f194833553182637c8b96fe90421348d9e9669026935772240e65269f775"
+}

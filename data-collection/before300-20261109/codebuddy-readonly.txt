@@ -1,0 +1,11 @@
+✔ CodeBuddy read-only session rejects writes, real shell and same-process capability escalation (132.416875ms)
+✔ CodeBuddy production parent dispatches native delegate_review through the reserved facade (136.657958ms)
+✔ Read-only CodeBuddy discovery and script reads stay on typed host requests (153.377792ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 454.853291

@@ -1,0 +1,114 @@
+{
+  "issue": 158,
+  "child": 160,
+  "operator": "Sail-Li",
+  "audit_agent": "/root/sinan_65a6cbfac09a5f69",
+  "authority": "user-chat-20261109-sail-before300",
+  "read_workspace": "<task-worktree>",
+  "baseline_head": "cc297363ae1099bbbed8a9b5fb4d47c0e7ab257b",
+  "remote_main_readback": "a425cc0aeb07c3e913b6f58603001d3165d3652d",
+  "intake": {
+    "exit_code": 0,
+    "status": "status:in-progress",
+    "updated_at": "2026-11-06T11:53:54Z",
+    "type": "type:development"
+  },
+  "completed": [
+    {
+      "acceptance": "Originating Codex continuous-execution instruction, inherited native dispatch receipts and PowerShell gate compatibility",
+      "evidence": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/159",
+        "data-collection/collaborator-runtime-parity-validation.json"
+      ],
+      "qualification": "Historical evidence records real native worker termination/release, PowerShell 5.1/7.6.5 intake and 30 tests. PR merged 4886c684 and issue-association SUCCESS; merge is ancestor of audit HEAD."
+    },
+    {
+      "acceptance": "Portable repository-host source, framework-integrity process, generic CLI production and documentation shipped main",
+      "evidence": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/171",
+        "data-collection/issue160-portable-runtime.json",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160#issuecomment-6684203881"
+      ],
+      "qualification": "Historical Sail-Li clean checkouts only; worker 29d205a6-ee76-4ed4-a816-54167cc3ff91 and post-main 4df6c34b-1a4c-4317-912a-9e12db1326fd reached terminal/released. Merge 7215a87a, CI SUCCESS, ancestor of audit HEAD. Later runtime migration has newly reproduced defect."
+    },
+    {
+      "acceptance": "Different actual collaborator PR/CI/main and actual dependency-ordered business continuation have public partial evidence",
+      "evidence": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/155",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6673443974",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/140#issuecomment-6697354069"
+      ],
+      "qualification": "kaiyunxue authored/merged PR155 with CI SUCCESS; personally reported Codex continuation #142->143->144 and eventual 13-child delivery PR342. This establishes actual second-account delivery and dependency continuation, but does not identify #160 independent-installation source/worker/terminal dispatch chain."
+    }
+  ],
+  "remaining": [
+    {
+      "acceptance": "Second WRITE collaborator independent-installation full Codex dispatch/termination/dependency/PR chain",
+      "status": "not_verified",
+      "owner": "Actual second collaborator using own account and installation; Sail-Li can receive public evidence",
+      "evidence": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160#issuecomment-6684203881"
+      ],
+      "next_event": "Receive exact intake source revision, genuine dispatched native worker identity/start/terminal receipt, dependency acceptance followed by next dispatch, and own PR CI/main readback. Correlate existing kaiyunxue delivery where appropriate; do not repeat same-account clones."
+    },
+    {
+      "acceptance": "Unattended event consumer / shared cross-installation claim service",
+      "status": "not_deployed_or_not_verified",
+      "qualification": "README explicitly says explicit-event process only; independent clone claim roots require actual handoff or shared service. These are separate conditional capabilities, not evidence supplied by PR171."
+    },
+    {
+      "acceptance": "Real model provider and Windows production runtime",
+      "status": "not_verified_by_issue160",
+      "qualification": "Existing tests used loopback/synthetic services; macOS checkout validation, not Windows production runtime."
+    }
+  ],
+  "new_defect": {
+    "severity": "blocking_model_dispatch",
+    "path": "customizations/components/repository-dispatch/worker.py:12",
+    "cause": "acf8a3a15 moved model runner to customizations/platforms/ai-access/host-http/runtime and removed framework/runtime, but repository worker import stayed stale. Current remote main retains stale import.",
+    "baseline_error": "ModuleNotFoundError: No module named 'runner'",
+    "reproduction": "python3 -B -m unittest discover -s customizations/components/repository-dispatch -p test_worker.py",
+    "baseline_log": "baseline-import-failure.log",
+    "parent_accepted_fix": true,
+    "candidate_patch": "proposed-worker-runtime-migration.patch",
+    "candidate_note": "Supplemental patch generated after root already applied ROOT-based import migration; includes historical host-runtime digest verification and updated fixture plus signed digest-drift refusal."
+  },
+  "verification": [
+    {
+      "command": "Required issue_gate.py --issue 158 --request-id collaborator-runtime-parity --tenant gonggong-workspace --intake-only",
+      "exit": 0
+    },
+    {
+      "command": "node --test customizations/components/repository-dispatch/session.test.mjs with bundled Node directory on PATH",
+      "passed": 4,
+      "failed": 0,
+      "qualification": "Initial attempt without Node on child PATH failed integrity subprocess; correct standard-runtime PATH passes. No Godot/UI or live issue dispatch was launched."
+    },
+    {
+      "command": "Python worker suite against baseline",
+      "passed": 0,
+      "failed": 1,
+      "qualification": "Import failure prevented test collection."
+    },
+    {
+      "command": "Baseline worker with new runner on PYTHONPATH",
+      "passed": 5,
+      "failed": 1,
+      "qualification": "Old recovery fixture lacks new runtime_sha256 and fails before expected expiry; confirms migration must update fixture."
+    },
+    {
+      "command": "python3 -B <private-dispatch-audit>/verify_candidate.py",
+      "passed": 6,
+      "failed": 0,
+      "log": "candidate-tests.log",
+      "qualification": "Temporary in-memory source candidate, actual host runtime imported; no supplier/model calls. Includes expired signed-ledger recovery and correctly resigned runtime digest drift refusal."
+    }
+  ],
+  "search_scope": {
+    "github": "Issues158/160/140/142 current bodies/comments; PR159/171/155/470 current states and checks; merged non-Sail-Li PR list (all returned authored kaiyunxue); issue search collaborator-runtime-second-host and 第二位协作者.",
+    "repository": "Design/runtime receipts, repository-dispatch source/tests, current framework migration and origin/main relevant-path comparison.",
+    "limits": "Public absence is not proof no private evidence exists; second-identity full chain remains unverified rather than declared impossible. PR470 is editor implementation with isolated model/Issue test services, not substituted for native Codex host acceptance."
+  },
+  "recommendation": "Fix and deliver runtime-migration defect; keep #158 and #160 OPEN until full acceptance or verified governed remainder rollover. Acknowledge existing second-account PR and dependency evidence without claiming independent-installation native dispatch acceptance.",
+  "worktree_write_policy": "Audit wrote only <private-dispatch-audit>. Root concurrently edits worker.py; another agent-owned tests/editor/run_issue52_layout_validation.py modification was observed and untouched. No private claims, other worktrees, desktop, ACL or identities modified."
+}

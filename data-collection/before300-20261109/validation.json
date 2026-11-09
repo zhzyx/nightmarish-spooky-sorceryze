@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "issue_number": 158,
+  "request_id": "collaborator-runtime-parity",
+  "author": "Sail-Li",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "scope": "all initially open Sail-Li issues with number <300",
+  "issue_numbers": [
+    49,
+    51,
+    56,
+    83,
+    91,
+    92,
+    93,
+    94,
+    95,
+    158,
+    160
+  ],
+  "initial_main": "cc297363ae1099bbbed8a9b5fb4d47c0e7ab257b",
+  "user_revisions": {
+    "160": "self-execution confirmation replaces second identity prerequisite",
+    "91,93,95": "macOS/Windows simulation scope; no Linux or original hardware prerequisite"
+  },
+  "production_fix": {
+    "path": "customizations/components/repository-dispatch/worker.py",
+    "bug": 637,
+    "before": "ModuleNotFoundError runner; stale framework/runtime import",
+    "after": "host-http/runtime import and historical runtime_sha256 verification",
+    "worker_tests": 6
+  },
+  "tests": {
+    "igniter": 15,
+    "isolation": {
+      "passed": 8,
+      "optional_real_editor_skipped": 1
+    },
+    "independent_repository_node_tests": 4,
+    "independent_runner_layout_simulations": 6,
+    "native_layout_phases": 3,
+    "native_themes": [
+      "Default",
+      "Light",
+      "Default"
+    ],
+    "native_http_cancel": "passed; headers, 3s delay, 1MiB gzip recovery; Stop 0.003256 seconds",
+    "self_update_python": 13,
+    "native_artifact_consumer_matrix": 27,
+    "native_ab_restart": "passed; simulated compilation, real processes and watchdog"
+  },
+  "native_binary": {
+    "version": "4.8.beta.custom_build.a2a119d51",
+    "sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+    "source_candidate_is_current_main": false,
+    "source_provenance": "historical binary from prior installation; reports do not attest current-main build"
+  },
+  "limitations": [
+    "No user desktop control or live user editor manipulation.",
+    "Current-native-source full build was not needed for test/adapter-only edits; historical native input is identified explicitly.",
+    "Original unexplained PROCESS_EXIT/deadlock causes remain unknown; loopback cancellation does not establish them.",
+    "Headless colors/focus/geometry do not establish pixel/native window or production model behavior.",
+    "Both igniter location selectors bind known executables in workspace state; no package installation/uninstallation was performed.",
+    "No unattended consumer or cross-installation claim service deployment is claimed."
+  ],
+  "pending": {
+    "49": "original Windows PROCESS_EXIT causal reproduction; old user-skipped queue not resumed",
+    "51,92": "original deadlock cause and physical input; signal cancellation is additional partial proof",
+    "56,94": "theme/controls checks done; full current development workflow still to verify",
+    "83": "current host-enforced read-only implementation and malicious protocol tests to correlate; no real provider claim",
+    "158,160": "post-delivery fresh-checkout self-confirmation and PR/main readback pending"
+  },
+  "native_evidence_reuse": {
+    "source_mappings": [
+      {
+        "path": "customizations/components/godot-host/test_environment_igniter.py",
+        "native_or_prior_review_sha256": "9ea9f5667165901e4cd5e8692f808757d78b8e93f12278429f099c57cebaba27",
+        "final_sha256": "cac8a19235b9cddbe2b079d7ba87043fa482b7f74baffcdf8cc9808b577b857a",
+        "delta": "Ruff formatting/import ordering only; layout also replaces a local lambda with equivalent def"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/test_worker.py",
+        "native_or_prior_review_sha256": "8223e76aa78eaeba81751374a00c48ae3a95bab5d5c988610de6f6ef3af55eef",
+        "final_sha256": "c1898f01c8f255b812d63cd5603185d5553bfb1d24f05697df75ee25517eaee4",
+        "delta": "Ruff formatting/import ordering only; layout also replaces a local lambda with equivalent def"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/worker.py",
+        "native_or_prior_review_sha256": "9f97f0667f09f8a18ed1edcdaebe87d7287bda7a6d127128d11124ed1db52fec",
+        "final_sha256": "efff74bab259350b3ab2b59c806ecd923ce255c450c75e491e68ed9010f6109e",
+        "delta": "Ruff formatting/import ordering only; layout also replaces a local lambda with equivalent def"
+      },
+      {
+        "path": "tests/editor/run_issue52_layout_validation.py",
+        "native_or_prior_review_sha256": "9eac1ca004d4ea479db7ab2f8cc0de60a60c1193129e7eebb2de69b76a5b9c43",
+        "final_sha256": "21c6245c24d8ff35795df04b5df55462092100e478388c0e441cd3150769aced",
+        "delta": "Ruff formatting/import ordering only; layout also replaces a local lambda with equivalent def"
+      },
+      {
+        "path": "tests/editor/run_ai_chat_theme_validation.py",
+        "native_or_prior_review_sha256": "055c10b6ac3d2975c47e995aabecd65d6d3304cfc22e3e3e196ca44dcf013df6",
+        "final_sha256": "fc642e6b071bfa11ea454d922dcde4cb61f53ba6dfcd156120c7de83f3a338bb",
+        "delta": "Ruff formatting/import ordering only; layout also replaces a local lambda with equivalent def"
+      }
+    ],
+    "helper_delta": "Windows console/engine pair copied together after initial native probes; independently verified with eight isolation tests and six simulated runner entry combinations; no repeated native execution claimed",
+    "native_input_unchanged": true
+  },
+  "codebuddy_protocol": {
+    "full_suite": {
+      "passed": 63,
+      "total": 65,
+      "environment_failures": 2,
+      "reason": "Two unrelated pinned CLI Edit/Glob classifiers require an intentionally uninstalled codebuddy-headless.js; SDK and zod test dependencies are pinned and SHA512-verified."
+    },
+    "readonly_relevant_tests": {
+      "passed": 3,
+      "failed": 0,
+      "command": "node --test --test-name-pattern='read-only session|Read-only CodeBuddy|production parent dispatches native delegate_review' tests/editor/test_codebuddy_acp.js",
+      "scope": "real bridge/host permission callbacks, explicit mock ACP process; no real provider"
+    },
+    "provider_exercised": false,
+    "implementation_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/571",
+    "codebuddy_lock_version": "2.176.0",
+    "sdk_lock_version": "1.9.0"
+  }
+}
