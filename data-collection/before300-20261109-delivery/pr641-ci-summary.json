@@ -1,0 +1,12 @@
+{
+  "signed_commit": "ef59ca890f7b593da2069c0317643a62519c352c",
+  "source_commit": "7ca78c6502a0bc41e39b7bf91b62d15d55c3f91c",
+  "tree": "82742d32dc6dfc41b97ae9c3095bbf8b8fa92091",
+  "checks": 25,
+  "success": 11,
+  "skipped": 14,
+  "failed_or_pending": 0,
+  "windows_passed": 8,
+  "static_passed": 2,
+  "association_passed": 1
+}

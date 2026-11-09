@@ -1,0 +1,79 @@
+{
+  "ok": false,
+  "scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+  "standalone_vendor_package_tested": false,
+  "uncovered": [
+    "all power-loss cutpoints",
+    "concurrent deployment",
+    "interruption during rollback",
+    "real model/provider and GitHub publication",
+    "hardware or Linux acceptance"
+  ],
+  "baseline_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "candidate_script_sha256": "a4ec92d3ede97cfbd2f47dff6155fb1ccecbdc75b3e920eb5a18d8a2eb72b73e",
+  "editor_sha256": "80433d22e6db68fc10f27d9312b59737470bb6993530b7a01e7de2721848b6aa",
+  "cases": [
+    {
+      "case": "baseline interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-uj4yypgv\\baseline",
+        "changed": [
+          {
+            "backup": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-uj4yypgv\\baseline\\project\\runtime\\.gonggong-setup\\b3232000cd804d46ae8aec7d41e9284b\\python-previous",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "c6daa07d8e0725b1f63ebd27570bbe8df2b74a59a1321bbe42a2ad85b12dc0a0"
+              }
+            ],
+            "name": "python",
+            "target": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-uj4yypgv\\baseline\\project\\runtime\\python",
+            "source_manifest_sha256": "fa82c41b62a37cf45872ec5ce45d863dc6de34489f380c538ff0e56c18c21b5c"
+          }
+        ],
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 1,
+      "rollback_output": {
+        "error": "No matching active deployment to roll back",
+        "receipt": null,
+        "ok": false,
+        "rollback": "not_needed",
+        "global_environment_changed": false,
+        "state": "repair_environment"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": false,
+      "repeated_rollback_rejected": false
+    }
+  ],
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "fixture_files": [
+    {
+      "path": "python/python.exe",
+      "sha256": "c6daa07d8e0725b1f63ebd27570bbe8df2b74a59a1321bbe42a2ad85b12dc0a0"
+    },
+    {
+      "path": "node/node.exe",
+      "sha256": "507be1b2738b8ddc8dee3680974dd0e5b92534c356478079b454219189d82a9c"
+    },
+    {
+      "path": "git/cmd/git.exe",
+      "sha256": "0a5dfd9603b35158595a77e988ea00e0d125212418133f48c0e0522a4d5d854d"
+    }
+  ],
+  "tool_versions": {
+    "python": "Python 3.15.2",
+    "node": "v22.23.4",
+    "git": "git version 2.56.0.windows.4",
+    "powershell": "5.1.26100.33648"
+  },
+  "error": "AssertionError: <fixture-path-1>\\tools\\configure_gonggong_runtime.ps1 : Exception \ncalling \"Replace\" with \"3\" argument(s): \"The path is not of a legal form.\"\n    + CategoryInfo          : NotSpecified: (:) [configure_gonggong_runtime.ps1], MethodInvocationException\n    + FullyQualifiedErrorId : ArgumentException,configure_gonggong_runtime.ps1\n \n"
+}

@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import http.server
+import importlib.util
 import json
 import os
 import shutil
@@ -11,6 +12,7 @@ import sys
 import tempfile
 import threading
 import time
+import uuid
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
@@ -50,6 +52,26 @@ else: raise SystemExit('unsupported fixture command')
 """
 
 
+def run_editor(command, root, env):
+    if os.name != "nt":
+        return subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=240)
+    # Reuse the existing suspended-before-assignment Job boundary. Cleanup is
+    # restricted to this invocation, including children left after editor exit.
+    spec = importlib.util.spec_from_file_location(
+        "requirements_owned_process", ROOT / "tools/editor_provenance_process.py"
+    )
+    processes = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(processes)
+    with processes.WindowsJob(uuid.uuid4().hex) as job:
+        child = job.spawn(command, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            stdout, stderr = child.communicate(timeout=240)
+        finally:
+            job.quiesce()
+            child.wait(timeout=5)
+        return subprocess.CompletedProcess(command, child.returncode, stdout, stderr)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
@@ -59,8 +81,9 @@ def main():
     requests = []
     normal = 0
     tool_roundtrips = 0
+    catalog_requests = []
     with tempfile.TemporaryDirectory(prefix="requirements-native-") as folder:
-        root = Path(folder)
+        root = Path(folder).resolve()
         shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copyfile(ROOT / "CURRENT_FRAMEWORK.json", root / "CURRENT_FRAMEWORK.json")
         shutil.copytree(ROOT / "customizations", root / "customizations", ignore=shutil.ignore_patterns("__pycache__"))
@@ -124,6 +147,18 @@ def main():
         (project / "workflow_probe.txt").write_text("NATIVE_WORKFLOW_READ_OK", encoding="utf-8")
 
         class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                catalog_requests.append(self.path)
+                if self.path != "/v1/models":
+                    self.send_error(404)
+                    return
+                body = json.dumps({"data": [{"id": "fixture", "object": "model"}]}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
             def do_POST(self):
                 nonlocal normal, tool_roundtrips
                 data = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -231,11 +266,14 @@ def main():
             os.environ,
             GONGGONG_WORKSPACE=str(root),
             GONGGONG_TEST_WORKSPACE=str(root),
-            GONGGONG_PYTHON=sys.executable,
+            GONGGONG_TEST_PYTHON=sys.executable,
             GONGGONG_GH=sys.executable,
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
+        # A frozen startup override would defeat the intentional missing-Python
+        # configuration and also prevent the deployed Python from taking over.
+        env.pop("GONGGONG_PYTHON", None)
         if args.runtime_source:
             env["GONGGONG_TEST_RUNTIME_SOURCE"] = str(args.runtime_source.resolve())
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
@@ -244,7 +282,7 @@ def main():
             env[name] = str(root / name)
             (root / name).mkdir()
         try:
-            result = subprocess.run(
+            result = run_editor(
                 [
                     str(isolated_editor),
                     "--headless",
@@ -254,10 +292,8 @@ def main():
                     "--script",
                     "res://gate.gd",
                 ],
-                cwd=root,
-                env=env,
-                capture_output=True,
-                timeout=240,
+                root,
+                env,
             )
         finally:
             server.shutdown()
@@ -269,6 +305,11 @@ def main():
             json.dumps(
                 {
                     "requests": requests,
+                    "catalog_requests": catalog_requests,
+                    "setup_reports": [
+                        {"name": p.name, "result": json.loads(p.read_text(encoding="utf-8-sig"))}
+                        for p in (installation / "editor_data").rglob("gonggong-setup-*.json")
+                    ],
                     "journals": [
                         json.loads(p.read_text(encoding="utf-8"))
                         for p in (root / ".gonggong-outbox/requirements").glob("*.json")
@@ -328,6 +369,8 @@ def main():
             "ok": True,
             "native_page": True,
             "runtime_setup_and_resume": bool(args.runtime_source),
+            "catalog_requests": catalog_requests,
+            "windows_owned_process_cleanup": "verified Job empty" if os.name == "nt" else "not applicable",
             "actual_native_read_tool_roundtrips": tool_roundtrips,
             "actual_yanshi_admission": True,
             "model_and_github": "isolated loopback/CLI fixtures only",

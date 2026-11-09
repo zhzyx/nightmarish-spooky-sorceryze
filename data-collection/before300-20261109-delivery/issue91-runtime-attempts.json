@@ -1,0 +1,44 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "scope": "Private macOS PowerShell portable dependency to execute unchanged Windows-layout deployment script simulation",
+  "actual_platform": "macOS arm64",
+  "download_expected": {
+    "assets": [
+      {
+        "digest": "sha256:638e954664d07a29190570faf862b8a50b35f7e1c10dbd0f0e8a7e0f70138b45",
+        "name": "hashes.sha256",
+        "size": 7358,
+        "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.9/hashes.sha256"
+      },
+      {
+        "digest": "sha256:a1c7e98ac403da4be5ba75c1c5855af272de7787a91d478c4267466fe58fc1af",
+        "name": "powershell-7.6.9-osx-arm64.tar.gz",
+        "size": 68117310,
+        "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.9/powershell-7.6.9-osx-arm64.tar.gz"
+      }
+    ],
+    "tag_name": "v7.6.9"
+  },
+  "attempts": [
+    {
+      "transport": "official browser_download_url via curl",
+      "result": "curl28; below100KB/s15s"
+    },
+    {
+      "transport": "authenticated gh release download",
+      "result": "timeout50s; partial file254KiB; no execution"
+    },
+    {
+      "transport": "public mirror, verified official digest required",
+      "result": "curl28 low speed;160KiB partial; not extracted"
+    }
+  ],
+  "runtime_extracted": false,
+  "status": "dependency transport blocked; no further download retry planned without changed connectivity or verified local runtime",
+  "production_installation_changed": false,
+  "scope_limits": [
+    "No PowerShell script execution or Windows/macOS native runtime installation claimed.",
+    "The proposed interruption experiment was not run; no product defect inferred from static inspection."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "base": "dde25abc843d8c012c95d7640a5ac9080367b60b",
+  "prior_base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "upstream_files": [
+    "data-collection/requests/tianshu-disable-manual-graph/40714ae2-15d9-4e6d-b530-8f64f3106306.json",
+    "design-docs/daqian/input.md",
+    "design-docs/tianshu-disable-manual-graph.md",
+    "editor/docks/daqian/issue_graph.gd",
+    "editor/docks/daqian/workspace.gd",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-disable-manual-graph/kuafu-889fff6b06972e9a5813843c8ff0889efb506171.json",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-disable-manual-graph/kuafu-d20519c5649a8b15760585e20b79b14f4843f00c.json",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-disable-manual-graph/tianshu-disable-manual-graph-intake.json",
+    "tests/editor/daqian_editor_parallel.gd",
+    "tests/editor/daqian_graph.gd",
+    "tests/editor/daqian_inputs.gd",
+    "tests/editor/daqian_publish.gd"
+  ],
+  "overlap": [],
+  "reuse": "Own seven source bytes identical to PR658 reviewed/actualWindows input; upstream Daqian graph/scripts/tests separate. Exact new SHA CI still required; old candidate did not contain newmain.",
+  "source_sha256": {
+    "tools/configure_gonggong_runtime.ps1": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+    "tests/editor/run_runtime_setup_simulation.py": "8d58edd81c17cc0098e60cc134f24ef92ab4b5816d899f776766dcb528db1439",
+    "tests/editor/requirements_intake.gd": "5c5b6657ce3b9b4717e2c55c24c865b87bd2474ffa266cfe5ed0776768f51b12",
+    "tests/editor/run_requirements_intake.py": "f1f08588a53c83fafc541711c08dc4bb3cd85bd8d00467c2a57b3178201efdf8",
+    "tools/editor_provenance_process.py": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    "tools/test_editor_provenance_process.py": "806281770be7da1172c81e824346e577a2e14af0b1888a5439bda643a1f04365",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "prior_ci": "8Windows+2static and restoredassociation passed; mainnotyet",
+  "raw_windows_report_sha256": "0f819f01ceb30a36b02f2c0ea2225d8d263090f909758b3c0f8cbee5fff80bbf"
+}

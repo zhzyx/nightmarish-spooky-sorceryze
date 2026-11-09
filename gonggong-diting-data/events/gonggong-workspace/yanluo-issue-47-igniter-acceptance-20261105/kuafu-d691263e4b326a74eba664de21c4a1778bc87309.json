@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d691263e4b326a74eba664de21c4a1778bc87309",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e8ac31d35b1ac6c23bf80b621375d546e91d9f85ddc1d08dddaab3672c8de7f3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "dispatch",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/receipt.json",
+    "diagnosis": "Root began reviewer dispatch before own implementation terminal reconcile completed; shared coordination lock correctly refused parallel launch. Original reconcile then completed normally; no lock deleted or unknown claim released. Later independent reviewer actually launched/completed and was verified. This was orchestration ordering, not a source protocol defect.",
+    "next_action": "Keep host coordination sequential; no product lock change. Continue exact91 Windows CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T15:16:50.652611+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T15:36:03.847781+00:00",
+  "sha256": "9c952777da1a4cbf8eeb3821acbe70d1ade923707f95e1cc1eb42466283021ac"
+}

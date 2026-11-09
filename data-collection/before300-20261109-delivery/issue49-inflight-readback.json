@@ -1,0 +1,49 @@
+{
+  "issue_number": 49,
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "intake_retry": "passed; currentstate in-review",
+  "active_candidate": {
+    "author": "kaiyunxue",
+    "base": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+    "draft": true,
+    "head": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+    "mergeable": null,
+    "mergeable_state": "unknown",
+    "number": 645,
+    "state": "open",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/645"
+  },
+  "publisher_claim": "PR645 bykaiyunxue preserves original execution ownership; no handoff accepted by root",
+  "publisher_reported_conflicts": 9,
+  "current_api_mergeability": "unknown at observed read; do not assume clean",
+  "stopped_original_gui_and_provider_tests_resumed": false,
+  "current_provider_exercised": false,
+  "root_actions": "Read-only intake and existing CLI version/login classification only; no model request, no changes to foreign worktree/branch.",
+  "recovery": "Original publisher completes integration or confirms real handoff; root retains whole-Issue acceptance coordination and preserves original unknowns.",
+  "publisher_write_paths": [
+    "customizations/components/godot-host/bridge.py",
+    "customizations/components/godot-host/requirements_agent.py",
+    "customizations/components/godot-host/test_issue_guide.py",
+    "customizations/components/godot-host/test_requirements_agent.py",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-host-20261105.md",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-verification-20261105.json",
+    "design-docs/ai-chat-debug-20261104.md",
+    "editor/docks/ai_chat_gonggong.cpp",
+    "editor/docks/gonggong_panel.cpp",
+    "editor/docks/gonggong_panel.h",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-ai-runtime-intake.json",
+    "tests/editor/requirements_intake.gd",
+    "tests/editor/run_requirements_intake.py",
+    "tests/editor/run_runtime_setup.py",
+    "tests/editor/test_codebuddy_bridge.js",
+    "tools/check_gonggong_github.ps1",
+    "tools/codebuddy_cli/godot_bridge.js",
+    "tools/configure_gonggong_runtime.ps1",
+    "tools/install_gonggong_github_cli.ps1",
+    "tools/run_gonggong_config_agent.ps1"
+  ],
+  "overlap_with_root91_candidate": [
+    "tools/configure_gonggong_runtime.ps1"
+  ]
+}
