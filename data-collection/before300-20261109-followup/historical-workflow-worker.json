@@ -1,0 +1,262 @@
+{
+  "issue": 94,
+  "worker": "Sail-Li",
+  "authorization": "user-chat-20261109-sail-before300",
+  "source_commit": "3d470a4151b85f95cc8bf93fdc14c426a238d9d4",
+  "files": {
+    "run_requirements_intake.py": "c72c06ef2ade0e37f8acc2ff8abfe3577d3b4579cba9a857edef2e692cedb486",
+    "run_ai_chat_integration.py": "e82acc65859c3980e1b352790dd77c670ab30026165395fa3c1e4b0d752dc94b",
+    "ai_chat_integration.gd": "4cbe008289e9c61a5d84a7cd83167f712eedb5dd9fc550cb7c63993cd8dba2bb",
+    "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed",
+    "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f"
+  },
+  "results": {
+    "requirements-node.json": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 72,
+      "git_check": {
+        "git_state": "committed",
+        "files": 75,
+        "records": 72,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_events_imported": false
+    },
+    "steering-final.json": {
+      "accepted_count": 2,
+      "failure": "",
+      "final_reply_count": 1,
+      "final_snapshot": "d3e7eb918e4c77fea5088bffcb019f3d",
+      "initial_reply_count": 1,
+      "initial_snapshot": "d3e7eb918e4c77fea5088bffcb019f3d",
+      "model_discovery_completed": true,
+      "passed": true,
+      "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+      "case": "steering",
+      "restart": null,
+      "requests": [
+        {
+          "users": [
+            "STEERING_ORIGINAL"
+          ]
+        },
+        {
+          "users": [
+            "STEERING_ORIGINAL",
+            "STEERING_ADDITION_ONE",
+            "STEERING_ADDITION_TWO"
+          ]
+        }
+      ],
+      "model_requests": [
+        "/v1/models"
+      ],
+      "errors": [],
+      "native_exit_code": 0,
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_sha256": {
+        "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+        "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+      },
+      "real_provider": false,
+      "model_transport": "isolated loopback mock"
+    },
+    "tools-final.json": {
+      "accepted_count": 2,
+      "failure": "",
+      "final_reply_count": 1,
+      "final_snapshot": "e72ea95dc895832dddfcda38346616b9",
+      "initial_reply_count": 1,
+      "initial_snapshot": "e72ea95dc895832dddfcda38346616b9",
+      "model_discovery_completed": true,
+      "passed": true,
+      "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+      "case": "tools",
+      "restart": null,
+      "requests": [
+        {
+          "users": [
+            "STEERING_ORIGINAL"
+          ]
+        },
+        {
+          "users": [
+            "STEERING_ORIGINAL",
+            "STEERING_ADDITION_ONE",
+            "STEERING_ADDITION_TWO"
+          ]
+        }
+      ],
+      "model_requests": [
+        "/v1/models"
+      ],
+      "errors": [],
+      "native_exit_code": 0,
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_sha256": {
+        "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+        "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+      },
+      "real_provider": false,
+      "model_transport": "isolated loopback mock"
+    },
+    "mode-final.json": {
+      "accepted_count": 1,
+      "failure": "",
+      "final_snapshot": "61829bc970f8f0a4acad4008593df215",
+      "initial_snapshot": "61829bc970f8f0a4acad4008593df215",
+      "model_discovery_completed": true,
+      "passed": true,
+      "received_status": "待执行 · 1 条 · 将作为独立任务执行",
+      "case": "mode",
+      "restart": null,
+      "requests": [
+        {
+          "users": [
+            "STEERING_ORIGINAL"
+          ]
+        }
+      ],
+      "model_requests": [
+        "/v1/models"
+      ],
+      "errors": [],
+      "native_exit_code": 0,
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_sha256": {
+        "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+        "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+      },
+      "real_provider": false,
+      "model_transport": "isolated loopback mock"
+    },
+    "stop-restore-content.json": {
+      "accepted_count": 2,
+      "failure": "",
+      "final_snapshot": "e058fb07b872701bca9df54e49e7e60b",
+      "initial_snapshot": "e058fb07b872701bca9df54e49e7e60b",
+      "model_discovery_completed": true,
+      "passed": true,
+      "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+      "case": "stop",
+      "restart": {
+        "failure": "",
+        "original_visible": true,
+        "passed": true,
+        "pending_visible": [
+          "STEERING_ADDITION_ONE",
+          "STEERING_ADDITION_TWO"
+        ],
+        "restored_backend": 0,
+        "restored_count": 2,
+        "restored_endpoint": "http://127.0.0.1:56021/v1/chat/completions",
+        "restored_model": "fixture",
+        "session_key_absent": true,
+        "snapshot": "e058fb07b872701bca9df54e49e7e60b"
+      },
+      "requests": [
+        {
+          "users": [
+            "STEERING_ORIGINAL"
+          ]
+        }
+      ],
+      "model_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "errors": [],
+      "native_exit_code": 0,
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_sha256": {
+        "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+        "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+      },
+      "real_provider": false,
+      "model_transport": "isolated loopback mock"
+    },
+    "cancel-restore-content.json": {
+      "accepted_count": 2,
+      "failure": "",
+      "final_snapshot": "5a66299c9c0d140711e54af0436ce797",
+      "initial_snapshot": "5a66299c9c0d140711e54af0436ce797",
+      "model_discovery_completed": true,
+      "passed": true,
+      "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+      "case": "cancel",
+      "restart": {
+        "failure": "",
+        "original_visible": true,
+        "passed": true,
+        "pending_visible": [
+          "STEERING_ADDITION_ONE",
+          "STEERING_ADDITION_TWO"
+        ],
+        "restored_backend": 0,
+        "restored_count": 2,
+        "restored_endpoint": "http://127.0.0.1:56029/v1/chat/completions",
+        "restored_model": "fixture",
+        "session_key_absent": true,
+        "snapshot": "5a66299c9c0d140711e54af0436ce797"
+      },
+      "requests": [
+        {
+          "users": [
+            "STEERING_ORIGINAL"
+          ]
+        }
+      ],
+      "model_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "errors": [],
+      "native_exit_code": 0,
+      "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+      "fixture_sha256": {
+        "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+        "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+      },
+      "real_provider": false,
+      "model_transport": "isolated loopback mock"
+    }
+  },
+  "binary_build": "4.8.beta.custom_build.a2a119d51 (2026-11-07 19:39:20 UTC)",
+  "binary_source": "<workspace>/bin/godot.macos.editor.arm64",
+  "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "scope": "historical macOS arm64 editor copied via copy_editor; headless controls; mock model and GitHub only",
+  "limits": [
+    "No current C++ binary build; no real model provider; no desktop input.",
+    "Legacy integration --queue retains FIFO assertions incompatible with current same-mode busy steering. Assertions were not weakened; modern run_ai_chat_steering.py is the current acceptance.",
+    "Windows PowerShell runtime deployment/doctor-to-original-requirement resumption was not executed on macOS.",
+    "Historical binary emits RID/ObjectDB cleanup warnings; requirements final manual repair modal also logs missing font, invalid headless window position and debugger attachment errors despite native flow assertions and exit code 0.",
+    "Initial requirements attempt failed because Node was absent from PATH; rerun used /Applications/ChatGPT.app/Contents/Resources/cua_node/bin.",
+    "No commits, pushes, other worktree edits or evidence overwrites by this worker."
+  ],
+  "validation": "git diff --check and AST parsing of three Python fixtures passed",
+  "processes": "All launched subprocess.run calls returned. Final ps check found no requirements-native/chat-steering worker; only the inspection shell and rg matched.",
+  "public_copy": {
+    "original_sha256": "d8b3aefc5920d077f529e92b61fdb0a4e2b95a8c08b211b9c198d5220534cc4a",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

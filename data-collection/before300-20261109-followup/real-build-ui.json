@@ -1,0 +1,54 @@
+{
+  "artifact_completed": false,
+  "failures": [],
+  "final_status": "编译已取消（退出码 1）。当前编辑器保持不变。Build cancelled; current editor unchanged",
+  "headless": true,
+  "passed": true,
+  "real_provider": false,
+  "real_scons_compile_seen": true,
+  "samples": [
+    {
+      "cancel_enabled": true,
+      "dock_size": "(587.0, 504.0)",
+      "screen": "AI Chat",
+      "status": "正在编译（构建节点估算） · 0% · 8 秒",
+      "visible": true
+    },
+    {
+      "cancel_enabled": true,
+      "dock_size": "(377.0, 504.0)",
+      "screen": "2D",
+      "status": "正在编译（构建节点估算） · 0% · 8 秒",
+      "visible": false
+    },
+    {
+      "cancel_enabled": true,
+      "dock_size": "(389.0, 528.0)",
+      "screen": "AI Chat",
+      "status": "正在编译（构建节点估算） · 0% · 8 秒",
+      "visible": true
+    },
+    {
+      "cancel_enabled": true,
+      "dock_size": "(436.0, 528.0)",
+      "screen": "Script",
+      "status": "正在编译（构建节点估算） · 0% · 8 秒",
+      "visible": false
+    },
+    {
+      "cancel_enabled": true,
+      "dock_size": "(389.0, 528.0)",
+      "screen": "AI Chat",
+      "status": "正在编译（构建节点估算） · 0% · 8 秒",
+      "visible": true
+    }
+  ],
+  "exit_code": 0,
+  "editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "worker_sha256": "736bf33cf86b7a550fb42ddd257df754327af2da79da9336873b6d11981498ff",
+  "scope": "Private native build controls invoke unchanged real editor_self_build.py and SCons on owned task source; private transparent trampoline only; cancelled after actual compilation to validate busy layout, no completed artifact or restart claimed",
+  "public_copy": {
+    "original_sha256": "9adb6013881032bf5707c2dacda7b62cf8bf9c4c7343d31f547ab4a98439c9b6",
+    "transformation": "private filesystem prefixes replaced; results unchanged"
+  }
+}

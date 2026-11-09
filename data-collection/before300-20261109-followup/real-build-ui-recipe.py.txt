@@ -1,0 +1,93 @@
+import hashlib,json,os,pathlib,runpy,shutil,subprocess,sys,tempfile
+ROOT=pathlib.Path('<task-worktree>')
+sys.path.insert(0,str(ROOT/'tests/editor'))
+from editor_test_isolation import copy_editor
+OUT=pathlib.Path('<private-evidence>')
+SCRIPT='''@tool
+extends SceneTree
+var failures: Array[String] = []
+func _initialize():
+ _run.call_deferred()
+func check(ok: bool, message: String):
+ if not ok: failures.append(message)
+func _run():
+ await create_timer(1).timeout
+ var dock = root.find_child("AI Chat",true,false)
+ EditorInterface.set_main_screen_editor("AI Chat")
+ var env = dock.get_environment_settings_control()
+ var backend = dock.get_ai_settings_control().find_child("AIBackend",true,false)
+ backend.select(0)
+ backend.item_selected.emit(0)
+ var ready_deadline = Time.get_ticks_msec()+15000
+ while backend.disabled and Time.get_ticks_msec()<ready_deadline: await process_frame
+ dock.get_ai_settings_control().find_child("AutoExecuteCommands",true,false).button_pressed = false
+ dock.get_ai_settings_control().find_child("AllowTools",true,false).button_pressed = true
+ env.find_child("EngineAutoRestart",true,false).button_pressed = false
+ env.find_child("EngineBuildArguments",true,false).text = "vulkan=no\\naccesskit=no\\ndebug_symbols=no\\ntests=no\\noptimize=speed_trace\\nlto=none\\nnum_jobs=2"
+ var build = env.find_child("BuildEngine",true,false)
+ var cancel = dock.find_child("CancelEngineBuild",true,false)
+ var status = dock.find_child("EngineBuildStatus",true,false)
+ var approval = dock.find_child("EngineBuildApproval",true,false)
+ build.pressed.emit()
+ check(approval.visible,"Build approval missing")
+ approval.hide()
+ approval.confirmed.emit()
+ var deadline = Time.get_ticks_msec()+120000
+ var compiling = false
+ var samples: Array[Dictionary] = []
+ while Time.get_ticks_msec()<deadline and not cancel.disabled:
+  var logs = DirAccess.get_files_at("res://.godot/editor")
+  for file in logs:
+   if file.begins_with("ai_engine_build_") and file.ends_with(".log"):
+    var text = FileAccess.get_file_as_string("res://.godot/editor/"+file)
+    var commands = text.split("\\nCOMMAND:")
+    var last_command = commands[commands.size()-1]
+    if commands.size() >= 3 and " --dry-run" not in last_command and "Building targets" in last_command and "Compiling " in last_command: compiling = true
+  if compiling: break
+  await create_timer(0.1).timeout
+ check(compiling,"Real SCons compile did not start: "+status.text)
+ if compiling:
+  for screen in ["AI Chat","2D","AI Chat","Script","AI Chat"]:
+   EditorInterface.set_main_screen_editor(screen)
+   await process_frame
+   samples.append({"screen":screen,"status":status.text,"cancel_enabled":not cancel.disabled,"dock_size":dock.size,"visible":dock.is_visible_in_tree()})
+   check(not cancel.disabled,"Build ended before layout sample")
+   if screen=="AI Chat":
+    var input = dock.find_child("ChatInput",true,false)
+    check(input.is_visible_in_tree() and input.size.x>0 and input.size.y>0,"Build hid composer")
+    input.text = "DRAFT_DURING_REAL_BUILD"
+    input.grab_focus()
+    check(input.has_focus(),"Build prevented composer focus")
+    check(dock.size.x>0 and dock.size.y>0,"Build produced empty main screen")
+  var settings = dock.find_child("AdvancedToggle",true,false)
+  settings.pressed.emit()
+  await process_frame
+  check(not dock.is_visible_in_tree(),"Settings navigation failed while building")
+  EditorInterface.set_main_screen_editor("AI Chat")
+  await process_frame
+  check(dock.find_child("ChatInput",true,false).text=="DRAFT_DURING_REAL_BUILD","Build navigation lost draft")
+ cancel.pressed.emit()
+ deadline=Time.get_ticks_msec()+30000
+ while not cancel.disabled and Time.get_ticks_msec()<deadline: await process_frame
+ check(cancel.disabled and "取消" in status.text,"Real build did not cancel: "+status.text)
+ var result={"passed":failures.is_empty(),"failures":failures,"real_scons_compile_seen":compiling,"samples":samples,"final_status":status.text,"headless":true,"real_provider":false,"artifact_completed":false}
+ FileAccess.open(OS.get_environment("BUILD_UI_REPORT"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "))
+ print("BUILD_UI_RESULT="+JSON.stringify(result))
+ quit(0 if failures.is_empty() else 1)
+'''
+with tempfile.TemporaryDirectory(prefix='real-build-ui-') as temp:
+ base=pathlib.Path(temp); binary=copy_editor(ROOT/'bin/godot.macos.editor.arm64',base/'engine');engine=binary.parent
+ shutil.copyfile(ROOT/'SConstruct',engine/'SConstruct');(engine/'tools').mkdir()
+ # A transparent private installation trampoline executes the original worker.
+ worker=ROOT/'tools/editor_self_build.py'
+ (engine/'tools/editor_self_build.py').write_text('import runpy,sys\nsys.path.insert(0,'+repr(str(worker.parent))+')\nrunpy.run_path('+repr(str(worker))+',run_name="__main__")\n')
+ project=base/'project';project.mkdir();(project/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Real build UI probe"\n');(project/'probe.gd').write_text(SCRIPT)
+ env=os.environ.copy();env.update(GONGGONG_BUILD_PYTHON='<private-build-runtime>/bin/python3',GONGGONG_PYTHON=sys.executable,GONGGONG_NODE='/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node',GONGGONG_GIT='/usr/bin/git',BUILD_UI_REPORT=str(base/'result.json'))
+ env['GONGGONG_RUNTIME_CONFIG']=str(base/'runtime.json');(base/'runtime.json').write_text('{"schema_version":1,"runtimes":{}}')
+ proc=subprocess.run([str(binary),'--headless','--editor','--path',str(project),'--script','res://probe.gd'],env=env,cwd=project,capture_output=True,timeout=160)
+ (OUT/'real-build-ui.stdout.log').write_bytes(proc.stdout);(OUT/'real-build-ui.stderr.log').write_bytes(proc.stderr)
+ for f in (project/'.godot/editor').glob('ai_engine_build_*'):
+  shutil.copyfile(f,OUT/('real-build-ui-'+f.suffix[1:]+'.'+f.suffix[1:]))
+ result=json.loads((base/'result.json').read_text()) if (base/'result.json').exists() else {'passed':False,'missing_result':True}
+ result.update(exit_code=proc.returncode,editor_sha256=hashlib.sha256((ROOT/'bin/godot.macos.editor.arm64').read_bytes()).hexdigest(),worker_sha256=hashlib.sha256(worker.read_bytes()).hexdigest(),scope='Private native build controls invoke unchanged real editor_self_build.py and SCons on owned task source; private transparent trampoline only; cancelled after actual compilation to validate busy layout, no completed artifact or restart claimed')
+ (OUT/'real-build-ui.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False));sys.exit(0 if result['passed'] else 1)

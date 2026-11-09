@@ -33,3 +33,12 @@
 本轮交付包括派发工作者迁移后的真实导入修复与历史 runtime_sha256 核验、隔离 Windows console/engine 配对修复、布局/主题/停止探针和 macOS/Windows 点火器模拟。工作者六项、点火器十五项、隔离八项（另有一个可选真实编辑器测试跳过）及独立 Node 四项通过。macOS 历史 a2a119d51 编辑器后台三阶段布局、深浅主题、延迟 HTTP 停止/恢复及真实 A/B 进程重启另行记录；没有把模拟编译或旧二进制称为最新 main 的真实构建。
 
 验收、原始平台边界、27 项自更新接收矩阵及各单剩余项见 `data-collection/before300-20261109/validation.json` 与同目录证据。#637 跟踪本次发现的运行时迁移故障。修复后沿协作者签发、CI、main 回读及干净检出自执行确认推进；未满足原症状因果或完整开发流的工单继续保持开放。交付不修改其他工作副本、用户安装或原暂停测试队列。
+
+
+## 2026-11-09 当前候选补验与交付结论
+
+PR#638已由Sail-Li以正常PR路径合入，main `7e5f7bc2046f4427188733909234228d9f84c690`，签发head `da330ea95123e441f01bd6f89a72a8854f8c8dc4`，内容树`507eac8e2d7266b85238b05e73c1efbb35dc7d8f`；工单关联、静态检查与全部8个Windows构建通过。
+
+按用户“直接自己执行确认即可”的修订，从该main建立干净独立安装，以本人Sail-Li权限完成#160 intake和仓库入口verify，真实worker `b0c97aa6-dd4f-477e-b5f4-ecd8e9d7a07b`启动、框架验证成功并released。该worker使用framework-integrity而非模型，no_model_used；当前Codex会话另有真实原生Agent派发、完成核验与补位回执，不将它们混为第二账号或供应商调用。修复后的worker6项在已交付主线上复验通过。#160、#158待本轮追加证据提交main后按修订范围关闭；不声称部署跨安装共用认领服务或无人值守消费者，不接管#140。
+
+关联#637的运行时迁移与发布TLS故障已分别恢复：修复源代码进入main、实际worker通过、同候选推送/签发/全部CI/main回读完成。证据见`data-collection/before300-20261109-followup/validation.json`（路径以仓库根为基准）与`self160-acceptance.json`。

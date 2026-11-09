@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-daa6fa8d760ba70863a72f4d0226dacafcf4cd79",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-56-ui-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2311ae950d06addc9a431e8bbd7b19455f014b4bb6f69105a7ada899c8e13b5d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/639",
+    "action": "validation",
+    "detection_head": "7e5f7bc2046f4427188733909234228d9f84c690",
+    "context_sha256": "2d770f565035d58b276a59845dd5e952ec84150a6c162119f1744a5f4b56706a",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-followup/validation.json",
+    "diagnosis": "Formal gate initially rejected missing same-tenant request event for exact Issue94 source; recorded actual existing user-authorized94 request through Diting, staged it, same primary formal gate nowlocal_checks_passed. No gate bypass; source/control tests unchanged.",
+    "next_action": "Finish exact staged dossier review and writer submission; CI/main remain required before Issue closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T14:22:59.239278+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T14:26:07.022941+00:00",
+  "sha256": "faccf0015c76396b31702b9d8c4c4b4523c9d01a4f80b85383b87e6fb3fd2f01"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "before300-20261109-issue94-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-56-ui-acceptance-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-09T14:24:33.881848+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+  "agent": {
+    "id": "codex-primary",
+    "origin": "actual_codex_host",
+    "version": "host-session",
+    "definition_sha256": "b7845a31af614b36680fec83b93c1b9d53c250daffb7c88da739f2e8a5f775b3"
+  },
+  "payload": {
+    "issue_number": 94,
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "operator": "Sail-Li",
+    "scope": "Continue user-created open Issues below300; #94 real theme repair, current requirements workflow and real build-busy UI verification with independent review and main delivery.",
+    "intake": "passed",
+    "usage": null,
+    "evidence_path_from_repo_root": "data-collection/before300-20261109-followup/validation.json"
+  },
+  "evidence_refs": [],
+  "sha256": "c1e1a60502fe85f99adc2a6a0bdb1a0cac8b7f1d2d6e3b0cbda6f48a3eca974c"
+}

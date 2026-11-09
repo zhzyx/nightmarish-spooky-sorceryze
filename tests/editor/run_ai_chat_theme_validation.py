@@ -11,6 +11,8 @@ import platform
 import shutil
 import subprocess
 import tempfile
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
@@ -34,6 +36,38 @@ def main():
         "probe_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
         "source_provenance": None,
     }
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_):
+            pass
+
+        def do_GET(self):
+            self.respond({"data": [{"id": "theme-fixture"}]})
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            self.respond({
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "THEME_REPLY\nBody text and 中文.\n```python\nprint(42)\n```",
+                        },
+                        "finish_reason": "stop",
+                    }
+                ]
+            })
+
+        def respond(self, value):
+            body = json.dumps(value).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
     try:
         with tempfile.TemporaryDirectory(prefix="ai-chat-theme-") as temporary:
             base = Path(temporary)
@@ -46,6 +80,7 @@ def main():
             shutil.copyfile(script, project / "probe.gd")
             env = os.environ.copy()
             env["AI_THEME_REPORT"] = str(base / "probe.json")
+            env["AI_THEME_ENDPOINT"] = f"http://127.0.0.1:{server.server_port}/v1/chat/completions"
             for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
                 env[name] = str(base / name.lower())
             version = subprocess.run(
@@ -78,6 +113,8 @@ def main():
         report.update(state="failed", error_type=type(error).__name__, error=str(error))
         raise
     finally:
+        server.shutdown()
+        server.server_close()
         report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False))
     return 0 if report["state"] == "passed" else 1

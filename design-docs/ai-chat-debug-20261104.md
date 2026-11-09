@@ -79,3 +79,10 @@
 本轮保留历史用户跳过的真实 Windows PROCESS_EXIT 补验与暂停队列。诊断、临时请求生命周期修复已有 main 交付；真实根因仍未知，不能用后续回环成功覆盖。
 
 本轮源修订、实测与模拟边界统一引用 `data-collection/before300-20261109/validation.json` 及同目录各项报告（路径相对仓库根）。
+
+
+## 2026-11-09 当前候选补验与交付结论
+
+保持用户先前跳过的旧窗口/暂停队列原状，不重发原真实请求。后续仓库历史`data-collection/tianshu-live-ai-515.json`和`tianshu-subscription-session-599.json`包含Windows隔离原生Daqian/Codex真实答复及文件读取/追问，可以证明各自新链路的成功，不能反推旧PROCESS_EXIT的唯一原因，也不能声称恢复旧窗口成功。
+
+当前候选的原生需求入口、实际读文件、消息恢复及键盘事件已通过，但模型和GitHub均使用隔离夹具。#49继续保留原服务失败根因及原窗口恢复未知，未用新回环结果冒充整体完成。新证据见`data-collection/before300-20261109-followup/validation.json`（路径以仓库根为基准）。

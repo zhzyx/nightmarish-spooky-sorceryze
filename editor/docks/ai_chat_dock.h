@@ -695,6 +695,7 @@ class AIChatDock : public EditorDock {
 	void _show_image(const Ref<Texture2D> &p_texture, const String &p_name);
 	VBoxContainer *_message_card(const String &p_role, bool p_user, bool p_error = false);
 	RichTextLabel *_message_text(VBoxContainer *p_parent, bool p_small = false);
+	void _update_message_theme();
 	void _render_markdown(RichTextLabel *p_label, const String &p_text);
 	void _begin_reply();
 	void _append_work(const String &p_text);

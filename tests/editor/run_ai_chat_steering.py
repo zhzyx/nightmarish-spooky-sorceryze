@@ -63,7 +63,7 @@ def main():
     parser.add_argument("--case", choices=["steering", "tools", "stop", "cancel", "mode"], default="steering")
     args = parser.parse_args()
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    errors, requests = [], []
+    errors, requests, model_requests = [], [], []
     with tempfile.TemporaryDirectory(prefix="chat-steering-", dir=args.out.parent) as folder:
         project = Path(folder).resolve()
         (project / "project.godot").write_text(
@@ -82,6 +82,15 @@ def main():
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_):
                 pass
+
+            def do_GET(self):
+                model_requests.append(self.path)
+                payload = json.dumps({"data": [{"id": "fixture"}]}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
 
             def do_POST(self):
                 try:
@@ -218,6 +227,7 @@ def main():
             case=args.case,
             restart=restored,
             requests=requests,
+            model_requests=model_requests,
             errors=errors,
             native_exit_code=run.returncode,
             editor_sha256=hashlib.sha256(args.godot.read_bytes()).hexdigest(),

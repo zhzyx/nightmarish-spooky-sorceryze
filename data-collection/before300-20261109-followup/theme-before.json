@@ -1,0 +1,59 @@
+{
+  "state": "failed",
+  "mode": "headless",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "probe_sha256": "af87e3bbaa05e854b1d941175ac129d52321936f7be18cf964bab51f6d380d57",
+  "source_provenance": null,
+  "binary_version": "4.8.beta.custom_build.a2a119d51",
+  "exit_code": 1,
+  "probe": {
+    "failures": [
+      "Light: existing message text contrast below 4.5:1",
+      "Light: existing message text contrast below 4.5:1"
+    ],
+    "samples": [
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "message_contrasts": [
+          7.75848572784661,
+          8.82540109862964
+        ],
+        "preset": "Default"
+      },
+      {
+        "background": "f5f5f5ff",
+        "editor_base": "e6e6e6ff",
+        "foreground": "000000bf",
+        "input_contrast": 9.90760111439829,
+        "message_contrasts": [
+          1.56351940069117,
+          1.35981678241585
+        ],
+        "preset": "Light"
+      },
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "message_contrasts": [
+          7.75848572784661,
+          8.82540109862964
+        ],
+        "preset": "Default"
+      }
+    ],
+    "scope": "headless theme colors, control geometry, focus signals and settings navigation; no pixel or provider acceptance"
+  },
+  "stdout": "Godot Engine v4.8.beta.custom_build.a2a119d51 (2026-11-07 19:39:20 UTC) - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started 项目初始化 (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在扫描文件结构……\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在加载全局类名……\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在校验 GDExtension……\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在创建自动加载脚本……\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在初始化插件……\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | 正在启动文件扫描……\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started 正在加载编辑器 (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载编辑器布局……\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | 正在加载停靠面板……\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\nAI_CHAT_THEME_RESULT={\"failures\":[\"Light: existing message text contrast below 4.5:1\",\"Light: existing message text contrast below 4.5:1\"],\"samples\":[{\"background\":\"1c1c1cff\",\"editor_base\":\"292929ff\",\"foreground\":\"ffffffbf\",\"input_contrast\":10.043122880017,\"message_contrasts\":[7.75848572784661,8.82540109862964],\"preset\":\"Default\"},{\"background\":\"f5f5f5ff\",\"editor_base\":\"e6e6e6ff\",\"foreground\":\"000000bf\",\"input_contrast\":9.90760111439829,\"message_contrasts\":[1.56351940069117,1.35981678241585],\"preset\":\"Light\"},{\"background\":\"1c1c1cff\",\"editor_base\":\"292929ff\",\"foreground\":\"ffffffbf\",\"input_contrast\":10.043122880017,\"message_contrasts\":[7.75848572784661,8.82540109862964],\"preset\":\"Default\"}],\"scope\":\"headless theme colors, control geometry, focus signals and settings navigation; no pixel or provider acceptance\"}\nERROR: 5 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.\nERROR: 20 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.\nERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.\nERROR: 165 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.\nERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.\nERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.\nERROR: 15 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.\n",
+  "stderr": "WARNING: Trying to access a non-existing editor theme font 'mono_font' in 'Editor'.\n     at: get_font (editor/themes/editor_theme.cpp:70)\nWARNING: 5 RIDs of type \"Canvas\" were leaked.\n   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)\nWARNING: 55 RIDs of type \"CanvasItem\" were leaked.\n   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)\nWARNING: 397 ObjectDB instances were leaked at exit (run with `--verbose` for details).\n   at: cleanup (core/object/object.cpp:2609)\n",
+  "public_copy": {
+    "original_sha256": "6de08f2cc1fc8f340b7b9948161074769c76b0ea9c7f0cf3167ea389855801ba",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

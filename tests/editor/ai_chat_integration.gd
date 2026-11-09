@@ -142,6 +142,9 @@ func _phase(name: String, marker: String, reject := false) -> bool:
 	return _check(marker in _chat_text(), "Missing response marker: " + marker)
 
 func _check_window_fill(root: Window, main_screen: Control) -> bool:
+	# Compare dock widths above the editor's minimum size on every host.
+	root.size = Vector2i(1600, 1000)
+	EditorInterface.set_distraction_free_mode(false)
 	EditorInterface.set_main_screen_editor("3D")
 	await create_timer(0.3).timeout
 	var bottom_panel = _find_by_name(root, "BottomPanel")

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "before300-20261109-issue94-request-host-metadata",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-56-ui-acceptance-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-09T14:30:31.400064+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 94,
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "operator": "Sail-Li",
+    "scope": "Continue user-created open Issues below300; #94 real theme repair, current requirements workflow and real build-busy UI verification with independent review and main delivery.",
+    "intake": "passed",
+    "usage": null,
+    "evidence_path_from_repo_root": "data-collection/before300-20261109-followup/validation.json",
+    "supersedes": "before300-20261109-issue94-request",
+    "correction": "Prior request copied historical codex-primary definition metadata without verifying its current fingerprint. This appended event binds the actual current operator-host definition used by this session; source request, authorization, scope and outcome are unchanged."
+  },
+  "evidence_refs": [],
+  "sha256": "ea8cba2c75688bbf32729013787f562a98205f980dc0be1ad2ad23e3d77a811a"
+}

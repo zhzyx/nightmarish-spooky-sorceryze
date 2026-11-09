@@ -58,6 +58,7 @@ def main():
     args = parser.parse_args()
     requests = []
     normal = 0
+    tool_roundtrips = 0
     with tempfile.TemporaryDirectory(prefix="requirements-native-") as folder:
         root = Path(folder)
         shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
@@ -69,6 +70,7 @@ def main():
             (root / relative).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, root / relative)
         shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
+        shutil.copyfile(ROOT / "tools/gonggong_runtime_config.py", root / "tools/gonggong_runtime_config.py")
         shutil.copyfile(ROOT / "tools/configure_gonggong_runtime.ps1", root / "tools/configure_gonggong_runtime.ps1")
         shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
         for name in ["auth", "api", "issue"]:
@@ -103,6 +105,13 @@ def main():
             str(root),
         ])
         isolated_editor = copy_editor(args.godot, root / "isolated-editor")
+        # Current hosts resolve receipt code from the running installation.
+        # Model that installation separately from this non-engine workspace:
+        # putting SConstruct in the workspace would request an engine checkout.
+        installation = isolated_editor.parent
+        shutil.copyfile(ROOT / "SConstruct", installation / "SConstruct")
+        for directory in ("customizations", "tools", "integrations"):
+            shutil.copytree(root / directory, installation / directory)
         project = root / "project"
         project.mkdir()
         # The editor changes cwd to the opened project before invoking Python.
@@ -112,13 +121,24 @@ def main():
             '[application]\nconfig/name="Requirements intake fixture"\n', encoding="utf-8"
         )
         shutil.copyfile(ROOT / "tests/editor/requirements_intake.gd", project / "gate.gd")
+        (project / "workflow_probe.txt").write_text("NATIVE_WORKFLOW_READ_OK", encoding="utf-8")
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_POST(self):
-                nonlocal normal
+                nonlocal normal, tool_roundtrips
                 data = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 requirements = "Requirements intake only" in data["messages"][0]["content"]
-                requests.append({"requirements": requirements})
+                # Framework context is appended as a system message on every
+                # request, including tool continuations. Classify the latest
+                # conversation message rather than the last wire message.
+                latest = next(message for message in reversed(data["messages"]) if message["role"] != "system")
+                tool_continuation = latest["role"] == "tool"
+                requests.append({
+                    "requirements": requirements,
+                    "roles": [message["role"] for message in data["messages"]],
+                    "has_native_read_marker": "NATIVE_WORKFLOW_READ_OK" in json.dumps(data["messages"]),
+                    "tool_continuation": tool_continuation,
+                })
                 if requirements:
                     value = json.loads(data["messages"][-1]["content"])
                     text = value["request"]
@@ -159,6 +179,11 @@ def main():
                         if "Clarify pending" in text and "用户补充" not in text
                         else [],
                     })
+                elif tool_continuation:
+                    assert latest["tool_call_id"] == "intake-workflow-read"
+                    assert "NATIVE_WORKFLOW_READ_OK" in latest["content"]
+                    tool_roundtrips += 1
+                    body = "INTAKE_WORK_REPLY_" + str(normal)
                 else:
                     normal += 1
                     users = [message["content"] for message in data["messages"] if message["role"] == "user"]
@@ -169,8 +194,24 @@ def main():
                             "Development started before applying the intake supplement"
                         )
                     body = "INTAKE_WORK_REPLY_" + str(normal)
+                message = {"role": "assistant", "content": body}
+                if not requirements and normal == 1 and not tool_continuation:
+                    assert any(tool["function"]["name"] == "read_file" for tool in data["tools"])
+                    message["content"] = ""
+                    message["tool_calls"] = [
+                        {
+                            "id": "intake-workflow-read",
+                            "type": "function",
+                            "function": {
+                                "name": "read_file",
+                                "arguments": json.dumps({"path": "res://workflow_probe.txt"}),
+                            },
+                        }
+                    ]
                 result = json.dumps({
-                    "choices": [{"message": {"role": "assistant", "content": body}, "finish_reason": "stop"}]
+                    "choices": [
+                        {"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}
+                    ]
                 }).encode()
                 try:
                     self.send_response(200)
@@ -251,6 +292,7 @@ def main():
         assert len(supplements) == 1 and supplements[0]["decision"] == "continue", requests
         assert not any(x["title"] == "Refine first feature during requirements phase" for x in issues), issues
         assert normal == 7 and sum(x["requirements"] for x in requests) == 11, requests
+        assert tool_roundtrips == 1, requests
         events = [
             json.loads(p.read_text(encoding="utf-8")) for p in (root / "gonggong-diting-data/events").rglob("*.json")
         ]
@@ -286,6 +328,7 @@ def main():
             "ok": True,
             "native_page": True,
             "runtime_setup_and_resume": bool(args.runtime_source),
+            "actual_native_read_tool_roundtrips": tool_roundtrips,
             "actual_yanshi_admission": True,
             "model_and_github": "isolated loopback/CLI fixtures only",
             "requirements_calls": 11,

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "issue_number": 94,
+  "request_id": "yanluo-issue-56-ui-acceptance-20261105",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "operator": "Sail-Li",
+  "base_main": "7e5f7bc2046f4427188733909234228d9f84c690",
+  "source_diff_sha256": "746fd9b3536df4f24bf7c990d7549155d43c680df1b4111d0d9f56a77dedc1ed",
+  "actual_candidate_binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "current_verification": {
+    "native_themes_and_keyboard": "passed",
+    "archived_message_nodes_preserved": true,
+    "theme_failure_before": "existing message contrast1.36/1.56",
+    "theme_after_light_min_contrast": 8.60856240069482,
+    "actual_scons_build_busy_layout_and_cancel": "passed; real non-dry-run compiler observed, no completed artifact claimed",
+    "native_requirements": {
+      "requirements": 11,
+      "development": 7,
+      "actual_native_read_continuations": 1,
+      "mock_issues": 5,
+      "real_fixture_events": 72,
+      "real_framework_admission": true
+    },
+    "native_stop_restart": "passed; same snapshot, exactoriginal/pending order, endpoint/backend/model retained, keyabsent",
+    "native_cancel_restart": "passed",
+    "native_layout_phases": 3,
+    "codebuddy_protocol": {
+      "passed": 65,
+      "failed": 0,
+      "real_provider": false
+    },
+    "runtime_config_reader": {
+      "passed": 9,
+      "failed": 0
+    },
+    "codebuddy_current_native_checks": 11
+  },
+  "issue_assessment": {
+    "93": "done/completed; remote read back after PR638",
+    "95": "done/completed; remote read back after PR638",
+    "56,94": "all3 scoped headless acceptance groups now passed; close only after this source candidate reaches main",
+    "158,160": "amended same-account clean-main verifier actually launched/released worker; preserve no secondidentity/no-model boundary; final persistence pending",
+    "83": "Current complete65pass plus actual native11check loop; host boundary accepted in explicit mock-provider scope, persist delivery before closure",
+    "49": "historical skipped physical UI/pausedqueue not resumed; PROCESS_EXIT cause unknown; historical realWindows Daqian/Codex replies in515/599 are separately reusable, do not establish original cause",
+    "51,92": "representative cancellation passed and broad original diagnostics retained; original user deadlock unknown and physical pointer/key stop remains unverified under silent-host rule",
+    "91": "mac/Windows runtime selector/restart/rollback simulations15passed and configreader9passed; actualPowerShell interruption/doctor fullresumption chain not newly exercised, do not equate bindings withpackageinstallation"
+  },
+  "limitations": [
+    "All Godot probes private/headless; no userdesktop input, installation switch or original pausedqueue manipulation.",
+    "Local HTTP/ACP/Issue fixtures are explicitly controlled; no production model/account result claimed.",
+    "Build-busy sample is short and canceled during actual compile; full candidate binary build separately completed before validation.",
+    "RID/ObjectDB cleanup warnings retained; no longduration stability claim.",
+    "No unattended service or cross-installation shared-claim service deployed."
+  ],
+  "files": {
+    "real-build-ui.json": "1750c197dcc3cd3708b9963b590b9be9944585ec3fda8fda3d33c219f9f5988f",
+    "independent-review.json": "6b393513535e78a189667cbe2da1c110f4394286d7f4a8778c32cdc7719f0dba",
+    "closed95.json": "887cbee895f415134d323e9d028a0afdd65c5152b02afdf40a83339139381bbb",
+    "real-build-processes-final.json": "91e01fd10cf7b88fb68a3d43aac0723e57b11a89a610f23040a1c62a264c6dd9",
+    "real-build-ui-build-log.txt": "66acb96178a893a241c28a614c271c1b83f618c8a33cfb5c2b72ce9f257fdf4f",
+    "theme-after.json": "cfdf59d1f29a5714a5392f9588da53643b398801bdedd502b859980a54d1c755",
+    "keyboard-welcome-assertion-failure.json": "743c4015f64714bdde617172674a145da63c44297cc5bdcd23613204319948e0",
+    "current-requirements.json": "e35a8e9522da6280052f88dffc9cd1f621edfb396c9eb7bb97daee480b7e7205",
+    "self160-acceptance.json": "691e637e7855534b035b10d5e99aadf2ff3206d5ee956b0c015a086fa943c81e",
+    "historical-workflow-worker.json": "1284104b77d5c0c4725d68aa1028f3bd724b895602c3870bd3f46dbaba271d27",
+    "independent-build-busy-review-supplement.json": "aa273352cf209cf040c92d35436eeecc9a9bfc8a0956976d4669a36ec7b860f5",
+    "self160-intake.json": "afe17489f898b975a890603a826299c127bfb0202286b8aaa507e8fdd0b19195",
+    "codebuddy-protocol-final.txt": "c272344e2f94cc727ad1bef9dc424611297f1db4a6c87ebf23d6c9773cc7dbb0",
+    "closed93.json": "6ca9a7f04f607173c8d57757cf688ae88a7d61e8d0c1226c0335298b39cb63ba",
+    "current-stop.json": "e328fdbd7b62da5f8e771a3cfdc7c41af139bff71c919602d8c8415a29602646",
+    "theme-before.json": "a5066304cb23ada55c08bdea16ffa715b71f6591e31f8b2dc272a8a8870765c6",
+    "workflow-fixture-repair.json": "d66369df76e73ca2636f835cc5c357502f56ca0a161cc08baf7b5bfb92f57e31",
+    "codebuddy-package-recovery.json": "c70e22956681a59cee81d23e3de78a674a0afaa40cfc9579a82de7f1e99225b5",
+    "current-layout.json": "0effc5cd8f7d6ed51192ca1a0d8ae77d646ab5c60c277b5bdc79ff9a01109c7d",
+    "independent-reviewed-inputs-final.json": "2db55b0b28fea2fe37e727404ddc7f71f6990a4ebe4d5ae1f0591b453269b53e",
+    "native-build.json": "aa4e8c08f540487675efcb19c34191e8b848ea6ba9d2cc5e44b1c93415c8bc06",
+    "codebuddy-native-current.json": "84d59e869581c7a8650d8bee7da6c3e34d7518a8d64ec5adab6adb61d3d5346f",
+    "theme-keyboard-final.json": "11e4c6a525dabd0a41dd0c9e7c82dfca84110a0d2bcb03e5bb3668eeeabb750c",
+    "codebuddy-evidence-mapping.json": "cac70e8e927e88ae8199947de58857631562226ff19db16ca8e96e4891b351f8",
+    "ui56-acceptance.json": "cccec7f264cbac28c49499c1a86f6a7ed7ebe4d6c15668dd96a524ddcf655dbc",
+    "current-cancel.json": "af6a53c37718e06826b8f90741d7c0d2e327fc2be02f3b4dd842905a8fb141f5",
+    "self160.json": "eee46daaf76f8b8e88f2a54f3dc9507aec9873dc845cecb7ca28641404a9e78d",
+    "real-build-ui-recipe.py.txt": "10536b4f5dfbe88acc348dc61f91d1816df90a75469cfbdf565c3c7b9ce14945"
+  },
+  "reviewed_source_input_manifest": "independent-reviewed-inputs-final.json",
+  "source_diff_sha256_note": "Historical review diff rendering may abbreviate Git blob IDs differently; exact per-file hashes and final --full-index staged receipt are authoritative."
+}

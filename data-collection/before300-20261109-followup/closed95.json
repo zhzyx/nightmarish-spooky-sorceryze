@@ -1,0 +1,18 @@
+{
+  "number": 95,
+  "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+  "state": "closed",
+  "state_reason": "completed",
+  "labels": [
+    "type:bug",
+    "status:done",
+    "workspace:gonggong"
+  ],
+  "closed_at": "2026-11-09T13:36:54Z",
+  "updated_at": "2026-11-09T13:36:55Z",
+  "merge_commit": "7e5f7bc2046f4427188733909234228d9f84c690",
+  "public_copy": {
+    "original_sha256": "bbf522b9b8ea181102b3912026768a35df5be31d4c9f06b0e59f0f04c4143a9c",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

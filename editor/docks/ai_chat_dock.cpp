@@ -1245,6 +1245,8 @@ VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool
 		row->add_child(spacer);
 	}
 	PanelContainer *panel = memnew(PanelContainer);
+	panel->set_meta("_ai_chat_message_user", p_user);
+	panel->set_meta("_ai_chat_message_error", p_error);
 	panel->set_h_size_flags(SIZE_EXPAND_FILL);
 	panel->set_stretch_ratio(p_user ? 0.75 : 1.0);
 	Ref<StyleBoxFlat> style;
@@ -1252,7 +1254,7 @@ VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool
 	const Color accent = get_theme_color("accent_color", "Editor");
 	const Color base = get_theme_color("base_color", "Editor");
 	style->set_bg_color(p_user ? base.lerp(accent, 0.10) : base);
-	style->set_border_color(p_error ? Color(0.9, 0.4, 0.35) : accent);
+	style->set_border_color(p_error ? get_theme_color("error_color", "Editor") : accent);
 	style->set_border_width(SIDE_LEFT, p_user ? 0 : 1 * EDSCALE);
 	style->set_corner_radius_all(8 * EDSCALE);
 	style->set_content_margin_all(12 * EDSCALE);
@@ -1262,10 +1264,11 @@ VBoxContainer *AIChatDock::_message_card(const String &p_role, bool p_user, bool
 	body->add_theme_constant_override("separation", 10 * EDSCALE);
 	panel->add_child(body);
 	Label *identity = memnew(Label);
+	identity->set_meta("_ai_chat_identity_error", p_error);
 	identity->set_text(p_role);
 	identity->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	identity->set_horizontal_alignment(p_user ? HORIZONTAL_ALIGNMENT_RIGHT : HORIZONTAL_ALIGNMENT_LEFT);
-	identity->add_theme_color_override("font_color", p_error ? Color(0.95, 0.5, 0.45) : accent);
+	identity->add_theme_color_override("font_color", p_error ? get_theme_color("error_color", "Editor") : accent);
 	body->add_child(identity);
 	return body;
 }
@@ -1283,12 +1286,55 @@ RichTextLabel *AIChatDock::_message_text(VBoxContainer *p_parent, bool p_small) 
 	text->add_theme_style_override("normal", transparent);
 	text->add_theme_style_override("focus", transparent);
 	if (p_small) {
+		text->set_meta("_ai_chat_small_message", true);
 		text->add_theme_font_size_override("normal_font_size", MAX(11, get_theme_font_size("normal_font_size", "RichTextLabel") - 2));
 		text->add_theme_color_override("default_color", get_theme_color("font_color", "Editor").lerp(get_theme_color("base_color", "Editor"), 0.3));
 	}
 	p_parent->add_child(text);
 	text->connect("meta_clicked", callable_mp(this, &AIChatDock::_show_details));
 	return text;
+}
+
+void AIChatDock::_update_message_theme() {
+	const Color accent = get_theme_color("accent_color", "Editor");
+	const Color base = get_theme_color("base_color", "Editor");
+	const Color error = get_theme_color("error_color", "Editor");
+	// The active view may be mounted outside this dock. Walk each session's
+	// messages without rebuilding transcripts or losing in-flight UI state.
+	Vector<Node *> message_roots;
+	if (message_list) {
+		message_roots.push_back(message_list);
+	}
+	for (const KeyValue<int, AgentSession> &session : agent_sessions) {
+		if (session.value.message_list && session.value.message_list != message_list) {
+			message_roots.push_back(session.value.message_list);
+		}
+	}
+	for (Node *message_root : message_roots) {
+		const TypedArray<Node> controls = message_root->find_children("*", "Control", true, false);
+		for (int i = 0; i < controls.size(); i++) {
+			Node *node = Object::cast_to<Node>(controls[i]);
+			PanelContainer *panel = Object::cast_to<PanelContainer>(node);
+			if (panel && panel->has_meta("_ai_chat_message_user")) {
+				Ref<StyleBoxFlat> style = panel->get_theme_stylebox("panel")->duplicate();
+				if (style.is_valid()) {
+					const bool user = panel->get_meta("_ai_chat_message_user");
+					style->set_bg_color(user ? base.lerp(accent, 0.10) : base);
+					style->set_border_color(bool(panel->get_meta("_ai_chat_message_error")) ? error : accent);
+					panel->add_theme_style_override("panel", style);
+				}
+			}
+			Label *identity = Object::cast_to<Label>(node);
+			if (identity && identity->has_meta("_ai_chat_identity_error")) {
+				identity->add_theme_color_override("font_color", bool(identity->get_meta("_ai_chat_identity_error")) ? error : accent);
+			}
+			RichTextLabel *text = Object::cast_to<RichTextLabel>(node);
+			if (text && text->has_meta("_ai_chat_small_message")) {
+				text->add_theme_font_size_override("normal_font_size", MAX(11, get_theme_font_size("normal_font_size", "RichTextLabel") - 2));
+				text->add_theme_color_override("default_color", get_theme_color("font_color", "Editor").lerp(base, 0.3));
+			}
+		}
+	}
 }
 
 void AIChatDock::_render_markdown(RichTextLabel *p_label, const String &p_text) {
@@ -1299,7 +1345,7 @@ void AIChatDock::_render_markdown(RichTextLabel *p_label, const String &p_text) 
 			if (code) {
 				p_label->pop();
 			} else {
-				p_label->push_font(get_theme_font("mono_font", "Editor"));
+				p_label->push_font(get_theme_font("source", "EditorFonts"));
 			}
 			code = !code;
 			continue;
@@ -1329,7 +1375,7 @@ void AIChatDock::_render_markdown(RichTextLabel *p_label, const String &p_text) 
 				if (bold) {
 					p_label->push_bold();
 				} else {
-					p_label->push_font(get_theme_font("mono_font", "Editor"));
+					p_label->push_font(get_theme_font("source", "EditorFonts"));
 				}
 				p_label->add_text(text.substr(i + marker.length(), end - i - marker.length()));
 				p_label->pop();
@@ -6816,6 +6862,7 @@ void AIChatDock::_notification(int p_what) {
 		callable_mp(this, &AIChatDock::_refresh_codex_models_on_start).call_deferred();
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	} else if (p_what == NOTIFICATION_THEME_CHANGED) {
+		_update_message_theme();
 		// Match the scene tabs, including their contrasting background strip.
 		agent_tabs_panel->add_theme_style_override("panel", get_theme_stylebox(SNAME("tabbar_background"), SNAME("TabContainer")));
 		agent_tabs->add_theme_color_override("font_selected_color", get_theme_color(SNAME("accent_color"), SNAME("Editor")));

@@ -47,6 +47,33 @@ func _run():
 	if not _check(dock != null, "AI Chat dock not found"):
 		_finish()
 		return
+	var mode := OS.get_environment("STEERING_CASE")
+	if mode == "restore":
+		# Inspect restored controls before the fixture writes connection values.
+		await create_timer(0.5).timeout
+		report["restored_count"] = dock.get_meta("queued_message_count", -1)
+		_check(report.restored_count == 2, "Restart lost pending supplements")
+		_check(dock.get_meta("queue_paused", false), "Restart resumed pending supplements automatically")
+		_check(dock.find_child("Stop", true, false).disabled, "Restart unexpectedly started work")
+		report["original_visible"] = "STEERING_ORIGINAL" in _text()
+		_check(report.original_visible, "Restart lost original visible request")
+		var pending: Array[String] = []
+		for label in dock.find_child("QueuedMessages", true, false).find_children("*", "Label", true, false):
+			pending.append(label.tooltip_text)
+		report["pending_visible"] = pending
+		_check(pending == ["STEERING_ADDITION_ONE", "STEERING_ADDITION_TWO"], "Restart lost pending supplement text or order")
+		var saved := _history()
+		if not saved.get("agents", []).is_empty():
+			report["snapshot"] = saved.agents[0].get("snapshot_id", "")
+		var ai = dock.get_ai_settings_control()
+		report["restored_backend"] = ai.find_child("AIBackend", true, false).selected
+		report["restored_endpoint"] = ai.find_child("APIEndpoint", true, false).text
+		report["restored_model"] = ai.find_child("APIModel", true, false).text
+		report["session_key_absent"] = ai.find_child("APIKey", true, false).text.is_empty()
+		_check(report.restored_backend == 0 and report.restored_endpoint == OS.get_environment("STEERING_ENDPOINT") and report.restored_model == "fixture", "Restart lost saved connection settings")
+		_check(report.session_key_absent, "Restart persisted the session-only credential")
+		_finish()
+		return
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup != null:
 		setup.hide()
@@ -69,19 +96,20 @@ func _run():
 	var consultation = dock.find_child("ConsultationOnly", true, false)
 	consultation.button_pressed = true
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
-	var mode := OS.get_environment("STEERING_CASE")
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = mode == "tools"
-	if mode == "restore":
-		await create_timer(0.5).timeout
-		report["restored_count"] = dock.get_meta("queued_message_count", -1)
-		_check(report.restored_count == 2, "Restart lost pending supplements")
-		_check(dock.get_meta("queue_paused", false), "Restart resumed pending supplements automatically")
-		_check(dock.find_child("Stop", true, false).disabled, "Restart unexpectedly started work")
-		var saved := _history()
-		if not saved.get("agents", []).is_empty():
-			report["snapshot"] = saved.agents[0].get("snapshot_id", "")
-		_finish()
-		return
+	if OS.get_environment("STEERING_CODEX") != "1":
+		# Connection edits debounce automatic discovery and disable Send while
+		# it runs. Complete that initialization before exercising busy input.
+		var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
+		key.text_changed.emit(key.text)
+		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+		var catalog_deadline := Time.get_ticks_msec() + 10000
+		while (backend.disabled or not "模型列表已获取" in status.text) and Time.get_ticks_msec() < catalog_deadline:
+			await process_frame
+		if not _check(not backend.disabled and "模型列表已获取" in status.text, "Model discovery did not finish before steering probe"):
+			_finish()
+			return
+		report["model_discovery_completed"] = true
 	_send("STEERING_ORIGINAL")
 	var deadline := Time.get_ticks_msec() + 15000
 	while not FileAccess.file_exists("res://server-waiting") and Time.get_ticks_msec() < deadline:

@@ -982,7 +982,7 @@ def main():
     worker = threading.Thread(target=server.serve_forever, daemon=True)
     worker.start()
     try:
-        with tempfile.TemporaryDirectory(prefix="ai_chat_validation_", dir=ROOT) as directory:
+        with tempfile.TemporaryDirectory(prefix="ai_chat_validation_") as directory:
             isolated_editor = macos_editor(args.godot, Path(directory) / "isolated-editor")
             project = Path(directory) / "project"
             project.mkdir()

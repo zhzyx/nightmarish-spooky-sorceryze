@@ -1,0 +1,196 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "phases": [
+    {
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          0
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        872.0
+      ],
+      "phase": "seed",
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    },
+    {
+      "distraction_preserved": true,
+      "expanded_panel_nonblank": true,
+      "filled_size": [
+        1592.0,
+        953.0
+      ],
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          0
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        872.0
+      ],
+      "phase": "initial",
+      "split_positions_restored": true,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    },
+    {
+      "distraction_preserved": true,
+      "expanded_panel_nonblank": true,
+      "filled_size": [
+        1592.0,
+        953.0
+      ],
+      "normal_offsets": {
+        "DockHSplitBottom": [
+          0
+        ],
+        "DockHSplitMain": [
+          189,
+          -171
+        ],
+        "DockVSplitCenter": [
+          -270
+        ],
+        "DockVSplitLeftL": [
+          0
+        ],
+        "DockVSplitLeftR": [
+          0
+        ],
+        "DockVSplitMain": [
+          0
+        ],
+        "DockVSplitRightL": [
+          0
+        ],
+        "DockVSplitRightR": [
+          0
+        ]
+      },
+      "normal_size": [
+        1226.0,
+        645.0
+      ],
+      "phase": "restart",
+      "split_positions_restored": true,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "saved_splits": {
+        "dock_split_2": "0",
+        "dock_split_3": "0",
+        "dock_hsplit_1": "0",
+        "dock_hsplit_2": "189",
+        "dock_hsplit_3": "-171",
+        "dock_hsplit_4": "0",
+        "dock_main_split": "0",
+        "dock_bottom_split": "0"
+      }
+    }
+  ],
+  "test_sha256": {
+    "run_issue52_layout_validation.py": "21c6245c24d8ff35795df04b5df55462092100e478388c0e441cd3150769aced",
+    "issue52_layout_validation.gd": "996b91452cfdb438501efc1b8035bb6c75eb4603d41eeb6b6a092e6421839000"
+  },
+  "public_copy": {
+    "original_sha256": "5e15e91414d084e014468b80c63f9d096f4d1a2a36b88c16a50da00c5d314cbb",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

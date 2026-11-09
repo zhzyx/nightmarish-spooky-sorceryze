@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "issue_number": 559,
+  "request_id": "editor-command-gaps-batch-20261108",
+  "editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "checks": [
+    "mounted native owner bound",
+    "wrong host rejected",
+    "manual confirmation preserved with autoexec",
+    "mounted original send accepted",
+    "actual native write_file changed only the owned private candidate sentinel",
+    "chat_history returned actual snapshot; manually confirmed chat_show_changes opened native nonempty diff with exact changed content",
+    "CodeBuddy parent delegated actual native reviewer",
+    "readonly ACP write/permission/terminal attacks rejected",
+    "typed native child report automatically returned to parent",
+    "single existing candidate retained",
+    "readonly sentinel absent"
+  ],
+  "provider": "offline ACP fixture only",
+  "limitations": [
+    "No production LLM/account/OS or pixel acceptance claimed",
+    "Native confirmation is simulated only inside the private fixture",
+    "ACP provider is simulated; actual vendor model behavior, authentication and OS filesystem isolation are not verified"
+  ],
+  "validation_for_issue": 83,
+  "validation_request_id": "codebuddy-cli-consultation-followup-20261105",
+  "original_report_sha256": "b4be5e501a2de2de83827df388778cd8cb83dbd87c80b1bdd045cd177be5721a"
+}
