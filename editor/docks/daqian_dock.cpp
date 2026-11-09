@@ -102,10 +102,11 @@ EditorDock *create_daqian_dock() {
 	Ref<Script> layout = load_editor_script(daqian_graph_layout);
 	Ref<Script> graph = load_editor_script(daqian_issue_graph);
 	Ref<Script> details = load_editor_script(daqian_operation_details);
+	Ref<Script> inspector = load_editor_script(daqian_issue_inspector);
 	Ref<Script> canvas = load_editor_script(daqian_canvas_context);
 	Ref<Script> workspace = load_editor_script(daqian_workspace);
 	Ref<Script> models = load_editor_script(daqian_model_settings);
-	if (details.is_null() || canvas.is_null() || rules.is_null() || layout.is_null() || graph.is_null() || workspace.is_null() || models.is_null()) {
+	if (inspector.is_null() || details.is_null() || canvas.is_null() || rules.is_null() || layout.is_null() || graph.is_null() || workspace.is_null() || models.is_null()) {
 		Label *message = memnew(Label);
 		message->set_text(U"加载天枢失败，请核对编辑器的 GDScript 支持及错误日志。");
 		dock->add_child(message);
@@ -117,6 +118,7 @@ EditorDock *create_daqian_dock() {
 	content->set("board_bundle_base64", editor_script_source(daqian_board_base64));
 	content->set("board_bundle_sha256", daqian_board_sha256);
 	content->set("details_script", details);
+	content->set("inspector_script", inspector);
 	content->set("canvas_script", canvas);
 	content->set_meta("unified_settings", true);
 	content->set("rules", rules);
