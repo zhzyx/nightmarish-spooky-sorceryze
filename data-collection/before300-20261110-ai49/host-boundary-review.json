@@ -1,0 +1,84 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Read-only directed review of actual trusted-host launch boundary and coupled configure/fixture changes only",
+  "conclusion": "No additional concrete source finding in this directed delta. R49-G1/R49-G1-delta and R49-D2 are statically addressed on these exact bytes; execution acceptance remains pending.",
+  "findings": [],
+  "prior_findings": [
+    {
+      "id": "R49-G1-delta",
+      "status": "statically_addressed",
+      "evidence": "GongGongPanel::run_setup and login_github now resolve GongGongHostPaths::engine_source() independently of the workspace textbox, require an absolute host root, and execute the host-source scripts. This is the same existing resolver as AIChatDock::_engine_root; managed origin failure resolves empty and therefore fails the absolute-root check. The bootstrap dot-sources policy from its own PSScriptRoot. Its configure and GitHub helpers now stay in that same trusted host tree. Selected workspace is passed as target data only."
+    },
+    {
+      "id": "R49-G1",
+      "status": "statically_addressed_for_bounded_host_step",
+      "evidence": "Pinned verified core/template/full foundation/current policy and operation+inventory mandate remain injected. Tools, writes, delegation, publication and framework-operation authority remain disabled; output remains untrusted path-selection data followed by host allowlist/probes. No framework definition, pending-pass reuse, new admitted identity or governance exemption is introduced. Trust rests on the existing host installed/source resolver and reviewed implementation, not the workspace lock."
+    },
+    {
+      "id": "R49-D2",
+      "status": "statically_addressed",
+      "evidence": "Native fixture policy and loader are already copied to the separate installation. The corrected native caller now executes that installation launcher, so its policy path matches the actual call; no compensating workspace policy copy was added. The fixture retains separate target workspace and controlled installed bridge."
+    },
+    {
+      "id": "R49-1",
+      "status": "statically_addressed_pending_Windows_execution",
+      "evidence": "Earlier explicit UTF8 native stdin with finally restoration and explicit UTF8 JSON decoding remain unchanged. Native compiled selector strict UTF8 input/Chinese context/BOMless Unicode output tests remain pending actual Windows execution."
+    }
+  ],
+  "inspected_details": [
+    "configure_gonggong_runtime.ps1 adds optional HostSourceRoot. Bootstrap supplies its fixed policy host root; doctorScript is resolved under that absolute root through Assert-Within, so model-selected or editable workspace paths do not choose the doctor implementation in this bootstrap path. Workspace remains the doctor --workspace argument. The optional legacy standalone path is retained for existing #91 fixture/contract; rollback path does not invoke doctor.",
+    "GongGongHostPaths::engine_source reads existing managed origin and requires its ok state, or locates the source ancestor of the actual executable for an unmanaged source build. This review reuses that already existing host boundary and does not claim a new independent release-authentication mechanism.",
+    "Policy module pins still match all ten original raw file byte hashes; mixed framework line endings are preserved by framework/** -text and other pinned text uses eol=lf. No frozen/framework source edits or rule exceptions.",
+    "GD fixture uses embedded subwindows and explicit geometry for stable headless assertions, refreshes and awaits catalog readiness after changing Python configuration, and retains bounded waits. Python runner explicitly rejects runtime-source deployment acceptance on non-Windows and records setup JSON diagnostics; normal mac success cannot be mislabeled runtime setup.",
+    "Only panel native source changed in this last boundary fix. AIChat/controller and panel header hashes remain those from the original independent review. Other unchanged delta dependencies match the prior delta-review source hashes."
+  ],
+  "checks": [
+    {
+      "name": "static_fingerprint_and_dependency_checks",
+      "result": "pass",
+      "detail": "Exact current hashes recorded below; unchanged delta dependencies and 10 policy pins verified; two other native source hashes match original review."
+    },
+    {
+      "name": "Python_AST_and_Ruff",
+      "result": "pass",
+      "detail": "AST parsed runner/runtime fixtures; modified run_requirements_intake.py passes Ruff check and format --check."
+    },
+    {
+      "name": "diff_whitespace",
+      "result": "pass",
+      "detail": "git diff --check passes."
+    }
+  ],
+  "root_reported_evidence": {
+    "native_panel_sha256": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "rebuilt_editor_sha256": "4c921776f522101c36dea23e4e2dc69adec4c33f715c99dbddc4a4cc25da0d00",
+    "normal_mac_native": {
+      "requirements": 11,
+      "development": 7,
+      "read_tool_roundtrips": 1,
+      "events": 71
+    },
+    "basis": "Parent report only; reviewer did not execute or independently read build receipt in this directed turn."
+  },
+  "source_sha256": {
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_host_paths.h": "ebb547e25d00e79e74b5dc98b833545b06dad4ac2ce327ac3eb19da554d1bbaa",
+    "tools/run_gonggong_config_agent.ps1": "1c184443879a83a74bf50034f69361979e62c995182e7c9681868146ffd2333a",
+    "tools/gonggong_runtime_policy.ps1": "a4f379e83579ceb581fcb1e31eda114ae338bba4910f66ca35a42d02fdb3c318",
+    "tools/configure_gonggong_runtime.ps1": "a7c860057685cb4b26ad94b17e10e6d63e2480a9bd31bbcc7c2a8f73245b3a93",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9"
+  },
+  "limits": [
+    "No Windows/PowerShell parser or runtime, compiled Windows selector, provider, actual setup recovery or GitHub authorization execution by this reviewer.",
+    "Exact Windows CI and native governed-selector/setup/recovery simulation remain mandatory downstream. This report is source review, not a Windows pass, framework Agent admission, future candidate approval or main acceptance.",
+    "No source/framework/index edits, build, desktop control, downloads, commit, push or Issue closure.",
+    "Original PROCESS_EXIT/root cause, provider and old-window/stoppedqueue limits remain unknown. Separate #91 cold-start predicate review is outside this directed delta."
+  ],
+  "original_receipt_sha256": "4f5d35deeb980a9617e15d815b717f6402d5247f7b53ef249231e2636fa108cf"
+}

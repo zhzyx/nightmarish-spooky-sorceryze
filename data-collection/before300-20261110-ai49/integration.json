@@ -1,0 +1,141 @@
+{
+  "issue": 49,
+  "worker": "Sail-Li delegated integration",
+  "state": "resolved_staged_not_committed",
+  "workspace": "<repository>/.worktrees/before300-ai49-handoff-20261110",
+  "authority": "user-chat-20261110-explicit-handoff-issue49-root-accepted",
+  "main_baseline": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "pr645_head": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+  "actual_merge_base": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+  "operation": "git cherry-pick --no-commit fixed head; manual both-intent conflict resolution; git add exact 20 paths only",
+  "conflicted_paths": [
+    "customizations/components/godot-host/bridge.py",
+    "customizations/components/godot-host/requirements_agent.py",
+    "customizations/components/godot-host/test_requirements_agent.py",
+    "design-docs/ai-chat-debug-20261104.md",
+    "editor/docks/ai_chat_gonggong.cpp",
+    "editor/docks/gonggong_panel.cpp",
+    "editor/docks/gonggong_panel.h",
+    "tests/editor/requirements_intake.gd",
+    "tests/editor/run_requirements_intake.py"
+  ],
+  "resolutions": [
+    "Preserve main installed-source/receipt-scope logic and runtime snapshot after igniter apply; add workspace-local gh discovery.",
+    "Keep latest-scope steering/new-task rejection and dynamic agent_id while accepting incomplete requirement drafts, caching clarification, and CodeBuddy read-only JSON data mode.",
+    "Keep exact bound Issue/ready validation after early clarification path; emit current Daqian questions phase without rebinding an incomplete draft.",
+    "Windows only uses independent AI configuration; non-Windows retains prior conversational igniter. Release paused task runtime lock before Windows setup and defer result activation while task locked.",
+    "Preserve central settings control and current layout; attach progress fields to independent setup window; retain canonical workflow_python/node updates, effective codex lookup, rollback receipt retention and old configured values.",
+    "Preserve current intake supplement queued amendment/native read-tool assertions; incomplete clarification does not publish and subsequent complete new requirement does not continue unrelated previous Issue.",
+    "Preserve both historical document sections; appended integration scope explicitly distinguishes original PR history from current validation."
+  ],
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py -v",
+      "exit": 0,
+      "tests": 35,
+      "log": "requirements-tests.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_issue_guide.py -v",
+      "exit": 0,
+      "tests": 13,
+      "log": "issue-guide-tests.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_bridge.py",
+      "exit": 0,
+      "tests": 41,
+      "log": "bridge-tests.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_environment_igniter.py",
+      "exit": 0,
+      "tests": 15,
+      "log": "igniter-tests.log"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node --test tests/editor/test_codebuddy_bridge.js",
+      "exit": 0,
+      "tests": 39,
+      "log": "codebuddy-tests-final.log",
+      "sandbox": "escalated local loopback fixture"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node --test tests/editor/test_codex_bridge.js",
+      "exit": 0,
+      "tests": 18,
+      "log": "codex-tests.log"
+    },
+    {
+      "command": "ruff check + ruff format --check six changed Python paths",
+      "exit": 0
+    },
+    {
+      "command": "/Library/Developer/CommandLineTools/usr/bin/clang-format -i then --dry-run --Werror changed 3 C++ paths",
+      "exit": 0,
+      "version": "21; repository CI22 final authority"
+    },
+    {
+      "command": "python3 -m py_compile changed Python source/tests",
+      "exit": 0
+    },
+    {
+      "command": "git diff --cached --check; git diff --quiet; git ls-files -u; exact staged 20-path assertion",
+      "exit": 0
+    }
+  ],
+  "environment_failures_retained": [
+    "Initial sandbox intake returned kuafu_intake_unavailable PermissionError/GITHUB_NETWORK; exact same intake then passed escalated, Issue open in-progress updated 2026-11-09T17:24:28Z actor Sail-Li.",
+    "Initial non-escalated cherry-pick failed at own worktree index.lock permission; escalated same command produced 9 actual content conflicts.",
+    "Initial Node tests lacked ignored SDK/CLI dependency and sandbox loopback EPERM; authorized read-only existing locked dependency copy + escalated local fixture passed all 39."
+  ],
+  "dependency_reuse": {
+    "source": "parent-authorized before300-sail tools/codebuddy_cli/node_modules",
+    "copied_only": [
+      "@agentclientprotocol/sdk",
+      "zod",
+      "@tencent-ai/codebuddy-code"
+    ],
+    "destination": "own ignored tools/codebuddy_cli/node_modules",
+    "network_install": false,
+    "source_mutated": false
+  },
+  "remaining_91_seams": {
+    "source_read_only": "c6dcecbed94be736e0b4f2c75a9ad3587bfd880f",
+    "accepted_main": false,
+    "shared_production": "tools/configure_gonggong_runtime.ps1: retain PR645 explicit Python/Node/Git/Gh selection + optional gh when combining #91 atomic same-directory durable journal, prepared/deployed mutation phases, deploying rollback, complete path prevalidation, UTF8 reads and NullString Replace.",
+    "shared_fixtures": "tests/editor/run_requirements_intake.py and requirements_intake.gd: combine new automatic AI/gh/clarification assertions with #91 GONGGONG_TEST_PYTHON bootstrap/no frozen production override, GET model catalog readiness, temporary paths and owned WindowsJob cleanup.",
+    "not_imported": "No #91 candidate changes were copied; root integrates its accepted main and owns retest."
+  },
+  "not_run": [
+    "PowerShell parsing or real Windows execution on this candidate (pwsh absent)",
+    "new native editor compile/probe (root coordinates after independent review)",
+    "real provider/model/API-key calls",
+    "desktop or stopped original queue"
+  ],
+  "remaining_acceptance": "Root owns independent review, accepted #91 main integration, exact candidate build/static/CI/admission, publication/main readback and complete Issue49 acceptance; historical PROCESS_EXIT unique cause and old window/queue remain unknown.",
+  "sha256": {
+    "customizations/components/godot-host/bridge.py": "ff9c09591ce9340792b2d6b306a0f27c0d3dbf2fa90ab790f5793ad0edf5f262",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/components/godot-host/test_issue_guide.py": "8642a269efece042b54c4b7ab31ac85069b400173d247fcc1b97c2eecb5555ba",
+    "customizations/components/godot-host/test_requirements_agent.py": "8b08ab253de715b191e15253e14f8f364a2b417eccb96856e5a01af244add0c6",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-host-20261105.md": "fcf5af3ff03c444d9596b5bd5ac69907d2468034e7bbf7199c7a3d8cb91c07ff",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-verification-20261105.json": "d9cd5993bf9a35ae618f247cc44e06e27fd89144009a086d17afee89d3bebfd3",
+    "design-docs/ai-chat-debug-20261104.md": "81184724b88540131514cd0e72f87db484972eb2b5438425f5836627ebaf44eb",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "e8d84601794a3fe38de8800603abf3bdd8dfeb79c64f9f1ef08c158817dcf81b",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-ai-runtime-intake.json": "061977507249b24f3957ee0d1d548c1d130d248e8c3ee68e580e8a3d464b8534",
+    "tests/editor/requirements_intake.gd": "8efc3fb66ed75a7f76185a5e731b399ed8c0e1c260efa5a79f20e2f7d93353fb",
+    "tests/editor/run_requirements_intake.py": "9558164b1c5a679d70b596ae7f6cef9193286d7e65ce90549e727c38e4f75f47",
+    "tests/editor/run_runtime_setup.py": "a2569871a248323d44a7dd5fb8f4c5d76a999700e1c0cadf46cc784b0cc549a8",
+    "tests/editor/test_codebuddy_bridge.js": "7b0eac52909160abd56eaf69f73b3de0419ae132c1ba8fc3125f5ad744b1bf65",
+    "tools/check_gonggong_github.ps1": "f6e28218ed3f61aadf2b58ee61f406a003b2d772a4aaa3482732915b95f920e8",
+    "tools/codebuddy_cli/godot_bridge.js": "462e0ffaf43ab7a12b340cdaa5134a692ed80756d54a86738f3508b654cd11f0",
+    "tools/configure_gonggong_runtime.ps1": "1a43fa811bc8f40cbc7caa07cbb44aa96c0a45f88e8f915c61aa138ff248aa16",
+    "tools/install_gonggong_github_cli.ps1": "767e14db60a56268205dba16b52cbc9cd61a83d3278cf81692ae4747e4fca122",
+    "tools/run_gonggong_config_agent.ps1": "94359e67f4ed261fac5decc83b239ca4dcfad44ddcd9a0cfacf921a19f4728c2"
+  },
+  "patch_sha256": "2d22ef6904c66995a47ce13ce7d0ff914ab19b86a6e382f9d1e12f7bb2c46163",
+  "original_receipt_sha256": "1e6f280e7134bfe190fecfa657c2579380462e61f8861ac522331c98c294e8fd"
+}
