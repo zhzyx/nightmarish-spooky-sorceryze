@@ -37,7 +37,7 @@
 // Journal of the in-flight agent loop and of the restart handoff contract.
 //
 // Recompiling the editor can only take effect in a new process, so a rebuild is
-// modelled as one very slow tool call: it is issued by the old process and its
+// modeled as one very slow tool call: it is issued by the old process and its
 // result is reported by the new one. The journal carries the exact loop position
 // across that boundary, and the acknowledgement proves that the new executable
 // reached a working AI dock rather than merely starting.
