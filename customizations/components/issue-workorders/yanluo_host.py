@@ -37,6 +37,36 @@ def read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
+def pinned_json(repo, relative, digest):
+    path = (repo / relative).resolve()
+    path.relative_to(repo)
+    content = path.read_bytes()
+    require(sha(content) == digest, "Signed record drift: " + relative)
+    return json.loads(content)
+
+
+def verify_definition(repo, registration, payload):
+    approval = pinned_json(repo, registration["approval"], payload["approval_sha256"])
+    manifest = pinned_json(repo, approval["candidate_manifest"], payload["candidate_manifest_sha256"])
+    digest = payload["definition_digest"]
+    require(
+        approval["decision"] == "approved"
+        and approval["subject"] == registration["id"] == "yanluo"
+        and approval["version"] == manifest["candidate_version"] == registration["version"]
+        and approval["candidate_digest"] == registration["candidate_digest"] == manifest["candidate_digest"] == digest,
+        "Yanluo definition has no matching approval",
+    )
+    records = manifest["files"]
+    paths = [item["path"] for item in records]
+    require(registration["definition"] in paths and len(set(paths)) == len(paths), "Invalid definition file inventory")
+    aggregate = sha("".join(item["path"] + "\0" + item["sha256"] + "\n" for item in records).encode())
+    require(aggregate == digest, "Definition manifest aggregate mismatch")
+    for item in records:
+        path = (repo / item["path"]).resolve()
+        path.relative_to(repo)
+        require(sha(path.read_bytes()) == item["sha256"], "Approved definition drift: " + item["path"])
+
+
 def validate_grant(grant, key, candidate, repo):
     require(len(key) >= 32, "Trusted host key must be provisioned outside model context")
     p = grant["payload"]
@@ -100,9 +130,8 @@ class GithubHost:
         for value in (c.commit, c.tree, c.expected_main):
             require(re.fullmatch("[0-9a-f]{40}", value), "Full Git object ID required")
         self.payload = validate_grant(self.grant, os.environ.get("GONGGONG_HOST_KEY", ""), c, self.repo)
-        registry_path = self.repo / "customizations/host-agents.json"
-        require(sha(registry_path.read_bytes()) == self.payload["host_registry_sha256"], "Host registration drift")
-        registrations = [x for x in read_json(registry_path)["agents"] if x["id"] == "yanluo"]
+        registry = pinned_json(self.repo, "customizations/host-agents.json", self.payload["host_registry_sha256"])
+        registrations = [x for x in registry["agents"] if x["id"] == "yanluo"]
         require(
             len(registrations) == 1
             and registrations[0]["governance_root"] == "yuanheng"
@@ -114,30 +143,7 @@ class GithubHost:
         settings = read_json(self.repo / "work-items.json")
         require(settings["repository"] == c.repository, "Wrong configured repository")
         require(self.api("user")["login"] == self.payload["account_login"], "GitHub identity changed")
-        approval = read_json(self.repo / "data-collection/yanluo-user-approval.json")
-        manifest = read_json(self.repo / approval["candidate_manifest"])
-        require(
-            sha((self.repo / approval["candidate_manifest"]).read_bytes()) == self.payload["candidate_manifest_sha256"],
-            "Approved file manifest differs from host grant",
-        )
-        require(
-            sha((self.repo / "data-collection/yanluo-user-approval.json").read_bytes())
-            == self.payload["approval_sha256"],
-            "Approval differs from trusted host grant",
-        )
-        require(manifest["candidate_digest"] == self.payload["definition_digest"], "Definition differs from host grant")
-        records = manifest["files"]
-        require(records and len({x["path"] for x in records}) == len(records), "Invalid definition file inventory")
-        aggregate = sha("".join(x["path"] + "\0" + x["sha256"] + "\n" for x in records).encode())
-        require(aggregate == manifest["candidate_digest"], "Definition manifest aggregate mismatch")
-        require(
-            approval["decision"] == "approved" and approval["candidate_digest"] == manifest["candidate_digest"],
-            "Yanluo definition has no matching approval",
-        )
-        for item in manifest["files"]:
-            path = (self.repo / item["path"]).resolve()
-            path.relative_to(self.repo)
-            require(sha(path.read_bytes()) == item["sha256"], "Approved definition drift: " + item["path"])
+        verify_definition(self.repo, registrations[0], self.payload)
         require(sha(Path(__file__).read_bytes()) == self.payload["adapter_sha256"], "Host implementation drift")
         trusted_files = [
             "customizations/components/issue-workorders/" + x

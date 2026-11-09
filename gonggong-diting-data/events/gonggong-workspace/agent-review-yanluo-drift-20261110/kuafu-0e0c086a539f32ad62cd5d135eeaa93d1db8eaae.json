@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0e0c086a539f32ad62cd5d135eeaa93d1db8eaae",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-review-yanluo-drift-20261110",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "458bf476c902a244eb1698293fb312b8eeef0fa8c1938f6167f28df37f90d421",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+    "action": "validation",
+    "detection_head": "a144411fb39d6470ed2b70a9f6ea6ad8220695ac",
+    "context_sha256": "4d42c47c77e01676094b84e54fa5373c2307109cc0f03e3cf2ce19cb542743e3",
+    "operator": "Sail-Li",
+    "worker": "codex-agent-review",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+    "diagnosis": "阎罗与后续司南派发候选固定了同一注册表的不同字节，当前安装仅匹配后者；签名宿主逐文件核验将拒绝原阎罗候选。",
+    "next_action": "保留既有批准记录。将阎罗新候选隔离，绑定独立审查与新批准，复验签名宿主准入和拒绝漂移两条路径。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:57:50.473559+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T18:58:24.271229+00:00",
+  "sha256": "dcdc3c44a9bb05c97c7ea685d09ec471c17ec613ddb86b9ea4481377c57653a3"
+}

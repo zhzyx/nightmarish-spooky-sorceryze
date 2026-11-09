@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "issue": 671,
+  "request_id": "agent-review-yanluo-drift-20261110",
+  "path_base": "repository_root",
+  "candidate_version": "0.1.3",
+  "candidate_digest": "c1ee883c09570dc0f59ea14694921676f519ca96f479ed6d8eb586baedf3a128",
+  "files": [
+    {
+      "path": "customizations/components/yanluo/AGENT.md",
+      "sha256": "0b425059a12ee9a1a8af5cfd8a6b0365fd7a972832f6add9810aa1d50bb9e49f"
+    },
+    {
+      "path": "customizations/components/yanluo/HOST_PROTOCOL.md",
+      "sha256": "b26db53b830364fc36477177463f1ccb36526e5d11ab2ab2294592774fabede5"
+    },
+    {
+      "path": "customizations/components/yanluo/closure.py",
+      "sha256": "41eded6e18a1f636564373b90615f161d57599d3025a1a892358539ffef09260"
+    },
+    {
+      "path": "customizations/components/yanluo/component.json",
+      "sha256": "73249c100f742749869290610e712635433b9df07a4f4211f4bdea219c319f1f"
+    },
+    {
+      "path": "customizations/components/yanluo/handoff.json",
+      "sha256": "ffe30e43db7775164aba1a705920c5109a6f7ed44bb04fd6df0b18cf1de9be32"
+    },
+    {
+      "path": "customizations/components/yanluo/reporting-binding.template.json",
+      "sha256": "1266d30e0a38dc5c488d8436f4bc662a013eb0fd1eaadf787b5258cdf30adacb"
+    },
+    {
+      "path": "customizations/components/yanluo/reporting.json",
+      "sha256": "009c9149d3407a7e536299ab89c838f95d91ecc89865749065f3cae48864e28b"
+    },
+    {
+      "path": "customizations/components/yanluo/test_closure.py",
+      "sha256": "1a20b87f5776e429cb6767844299f62b11ff2069c29212dea1646350a190945d"
+    },
+    {
+      "path": "framework/FOUNDATION.md",
+      "sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f"
+    },
+    {
+      "path": "framework/agents/diting/references/data-contract.md",
+      "sha256": "695dcd9c39e3a5eafa08b8d7d443410bc134becadd7f0b1fd7c103d1a67dc525"
+    },
+    {
+      "path": "framework/agents/diting/references/telemetry.md",
+      "sha256": "14836eada2634bd8e734b0f958c0ac295a7d49e6becf07e5b110c67cfcf88c34"
+    },
+    {
+      "path": "framework/agents/diting/scripts/ledger.py",
+      "sha256": "1f1fc17ee46e58c5172cd956f44e2b6dac2c545cf34ec73fd6863d7b442a8afc"
+    },
+    {
+      "path": "framework/agents/diting/scripts/telemetry.py",
+      "sha256": "e2f1968b5efa0b6dd51fe679b852178122d53c35bdfc696470bc4700a370d41a"
+    },
+    {
+      "path": "framework/contracts/diting-reporting.json",
+      "sha256": "049b79e2e4baf1f7b90d5d02a071a01f83e302d7f3c414eb5b1c848daa745bdd"
+    },
+    {
+      "path": "framework/foundation.lock.json",
+      "sha256": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c"
+    },
+    {
+      "path": "framework/skills/gonggong-check/SKILL.md",
+      "sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e"
+    },
+    {
+      "path": "framework/specs/governance-review.md",
+      "sha256": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7"
+    },
+    {
+      "path": "framework/tools/diting-report.py",
+      "sha256": "db562b8ec280dd33b3b75d5ec0906c514f793ad00db88bd344d439345f53d88b"
+    },
+    {
+      "path": "framework/tools/reporting.mjs",
+      "sha256": "e8fb00022516b30c4f6a6d23fe85e61e8a23a6c25da58a9874799f4fc8b40f6c"
+    },
+    {
+      "path": "framework/upstream/yuanheng/agents/yuanheng.md",
+      "sha256": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b"
+    },
+    {
+      "path": "framework/upstream/yuanheng/core.md",
+      "sha256": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202"
+    }
+  ]
+}

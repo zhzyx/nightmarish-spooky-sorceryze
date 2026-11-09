@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "agent-review-yanluo-drift-20261110",
+  "collected_at": "2026-11-09T19:19:59.804086+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/dispatch-687f6d713cd24af9b076567682d07a29.json",
+      "sha256": "8a8161ee5e231ec53c314a9c3dc661d4b59f99b01f2d4b8fce5bba779b75643f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-687f6d713cd24af9b076567682d07a29",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/kuafu-0e0c086a539f32ad62cd5d135eeaa93d1db8eaae.json",
+      "sha256": "62531bfd2de6ec6394103b4090c389fad3479fad9da186c37f107209fa0b11e3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-0e0c086a539f32ad62cd5d135eeaa93d1db8eaae",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-review-yanluo-drift-20261110/yanluo-013-candidate-request.json",
+      "sha256": "9fca7ba8871fee81b8fbc2eb374b56362e86c3dd7d3cffc598935f8f7ee7d60a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "yanluo-013-candidate-request",
+      "origin": "codex"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 671,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671"
+}

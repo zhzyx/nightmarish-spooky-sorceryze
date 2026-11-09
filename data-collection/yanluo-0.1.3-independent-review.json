@@ -1,0 +1,67 @@
+{
+  "template": false,
+  "permit_id": "yanluo-013-independent-review-671",
+  "status": "reviewed_pending_approval",
+  "event": "agent_definition_change",
+  "phase": "host_definition_release",
+  "subject": {
+    "id": "yanluo",
+    "version_or_digest": {
+      "version": "0.1.3",
+      "candidate_digest": "c1ee883c09570dc0f59ea14694921676f519ca96f479ed6d8eb586baedf3a128",
+      "candidate_manifest": "data-collection/yanluo-0.1.3-candidate.json"
+    },
+    "scope": [
+      "definition",
+      "responsibility_division"
+    ],
+    "agent_governance_refs": [
+      "framework/FOUNDATION.md",
+      "framework/upstream/yuanheng/core.md",
+      "framework/upstream/yuanheng/agents/yuanheng.md"
+    ]
+  },
+  "baseline": {
+    "foundation_version": "1.0",
+    "foundation_sha256": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "yuanheng_version": "0.4.1",
+    "policy_version": "0.10.0"
+  },
+  "review": {
+    "gonggong_framework": "pass",
+    "yuanheng": {
+      "purpose": "普通交付与定义回查分别按实际任务触发。",
+      "truth": "远端回读、未决项和真实批准分别核对。",
+      "economy": "复用正式门禁、交付编排与谛听记录。",
+      "authority": "受信 grant 绑定工单、操作者、登记与批准；保留独立复验。",
+      "adaptation": "精确候选漂移定向重验，关闭失败可独立恢复。",
+      "continuity": "保留原批准、在途占用与远端回执。"
+    },
+    "concision": {
+      "status": "pass",
+      "entry_characters": 800,
+      "rationale": "入口保留职责边界与验收条件，详细协议按需加载。"
+    },
+    "applicable_validation": "21/21 file hashes and aggregate, frozen charter verified; 13 signed-host fixture and 13 closure tests passed.",
+    "evidence_refs": [
+      "data-collection/yanluo-0.1.3-candidate.json",
+      "customizations/components/issue-workorders/test_yanluo_host.py",
+      "customizations/components/yanluo/test_closure.py"
+    ],
+    "evaluator_id": "/root/sinan_186f35e45d716f80",
+    "independence": "independent_read_only_subagent",
+    "unresolved": [
+      "Production grant and runtime telemetry require actual per-task host evidence."
+    ]
+  },
+  "approval": {
+    "approver_id": null,
+    "authority_ref": null,
+    "decision_evidence_ref": null,
+    "approved_at": null,
+    "valid_until_or_task_end": null,
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null
+  }
+}

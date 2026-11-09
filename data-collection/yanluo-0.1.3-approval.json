@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "path_base": "repository_root",
+  "issue": 671,
+  "subject": "yanluo",
+  "version": "0.1.3",
+  "candidate_digest": "c1ee883c09570dc0f59ea14694921676f519ca96f479ed6d8eb586baedf3a128",
+  "candidate_manifest": "data-collection/yanluo-0.1.3-candidate.json",
+  "decision": "approved",
+  "approver": "user_in_current_chat",
+  "authority_ref": "codex:01a1c1a6-e32a-7613-8803-fa3927c2bde6:request_user_input_async:call_402ef9dbb4584adb89df78a27342ed73",
+  "decision_text": "批准该精确候选合入并注册",
+  "observed_at": "2026-11-09T19:28:32.048222+00:00",
+  "approved_scope": [
+    "definition",
+    "host_registration"
+  ],
+  "runtime_authorization_granted": false,
+  "independent_review": "data-collection/yanluo-0.1.3-independent-review.json"
+}
