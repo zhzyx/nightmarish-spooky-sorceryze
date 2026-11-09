@@ -1,0 +1,49 @@
+{
+  "request_id": "maliang-bundled-hunyuan3d",
+  "issue_number": 611,
+  "packaging_issue": 616,
+  "macos": {
+    "hardware": "Apple M1, 16 GiB unified memory",
+    "system": "15.3.1",
+    "architecture": "arm64",
+    "device": [
+      "mps"
+    ],
+    "editor_sha256": "3895a3c08af4e020d694464741650887297f5f29edf469aab86c5b83315884a6",
+    "model_sha256": "3cc66f3bea33e4062b7dbc875ffe1d70c4888914aec3e91b60f94e9bd01b522b",
+    "source_image": "misc/logo/icon.png",
+    "source_sha256": "4c7157447b020ecb1a0cb755fe0569620247bf5def9f7c4409f063ac479509a9",
+    "parameters": {
+      "mesh_resolution": 128,
+      "mesh_steps": 5,
+      "octree_resolution": 64,
+      "prompt": ""
+    },
+    "configuration_sequence": [
+      "fresh",
+      "saved"
+    ],
+    "cli_connected": false,
+    "initial_connection_checks": 15,
+    "relocated_generation_checks": 23,
+    "glb_bytes": 109540,
+    "glb_sha256": "45e0f1719999fc964126fa5d316bdaf7d705138ef6b7c1ad1ff11b40df353646",
+    "scene_sha256": "cd72be8764be2d67a4ac787d8e00cfe273b80f9f1cdcc91745ecf718e21ab8cc",
+    "preview_and_reopened_vertices": 2045,
+    "runtime_seconds_from_model_log": 30.68,
+    "codesign_strict_after_generation": true
+  },
+  "regressions": {
+    "managed_runtime": {
+      "passed": 18,
+      "skipped_windows_only": 1
+    },
+    "generation_settings": 12,
+    "comfy_provider": 14,
+    "native_app_update": 15,
+    "activation": 16,
+    "editor_fixture_checks": 61,
+    "prior_settings_checks": 26
+  },
+  "windows": "Native distribution validation is tracked under #616."
+}

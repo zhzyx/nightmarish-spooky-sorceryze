@@ -1,0 +1,32 @@
+{
+  "request_id": "maliang-hunyuan-desktop-packaging",
+  "issue_number": 616,
+  "parent_issue": 611,
+  "release_sources_sha256": "efdd8b807bbc889f9bb87e075292fdb2472a76222b3c51bdd95d251977950918",
+  "source_files": {
+    ".github/workflows/maliang_hunyuan_windows.yml": "a8e00f36f6bb676a4b29969ac0b5ed92ddc075809fe4f0595f32aa069b8e0e2a",
+    "tests/editor/run_bundled_hunyuan_windows.ps1": "38938de571653fe9243cc767cbd850f3186ffbf4d2f3436a4aadf39f2e4a3588",
+    "tests/editor/test_maliang_package.py": "9413cfc7218b281acae5b2dfcd9a44e6b98103c1c22c864a1320ecc9c933bf6c",
+    "tools/maliang_hunyuan/HUNYUAN-NOTICE": "7b7ace3714c188b7a27e20edbcceaaac836540bbb63759a37039e5624c8f6bbc",
+    "tools/maliang_hunyuan/README.md": "7fb97fde82c6f4009a07e34f80fd48952f7fa8fa95d5edd668b6b0802b310472",
+    "tools/maliang_hunyuan/macos-cp312.txt": "7112f08733dace25bccc2bc409a94d84beb5def9d2c42a505bf54465b5f6a529",
+    "tools/maliang_hunyuan/probe.py": "120c987138fa3b3029e0f4c90ce7f892ad9839e63f85e692ca1cc11eac731e29",
+    "tools/maliang_hunyuan/windows-cp312.txt": "ffcac5e100ecc3bde4a9cd1f57d362eae67dec32748afeca2dff8c66417e11dd",
+    "tools/maliang_hunyuan/windows-crt.json": "8c14ec0c5bc6abe427e6c64967bb3e500cfc94599ad6aa6e82f1c45d36f2e2a2",
+    "tools/package_maliang_editor.py": "f207a0cc5318c6fc2cb411afc3decb488adc5a1d73b9f6690421839e550710d6"
+  },
+  "apple_silicon": {
+    "real_model": true,
+    "offline_receipt": "data-collection/maliang-bundled-hunyuan3d-mac.json",
+    "package_probe": "relocated interpreter, native torch and relative checkpoint discovery; strict app signature verified after native generation"
+  },
+  "windows_recipe": {
+    "platform": "Windows x64",
+    "pinned_wheels": 80,
+    "microsoft_runtime_dlls": 11,
+    "cuda_torch": "2.9.1+cu128",
+    "acceptance": "same-profile fresh connection, move, offline native image to mesh, publish and reopen",
+    "execution": "Acceptance will be recorded by the Windows job on this candidate."
+  },
+  "unit_tests_passed": 8
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-hunyuan-desktop-packaging-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-hunyuan-desktop-packaging",
+  "kind": "request",
+  "occurred_at": "2026-11-09T10:34:18.027660+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/616",
+  "agent": {
+    "id": "codex-maliang-native-host",
+    "version": "20261109",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "为 #611 组装 Mac、Windows 内含 Python、ComfyUI、模型和推理库的发行包并以原生 Windows 验收图生网格。",
+    "authority_ref": "codex:user:20261109:mac-and-pc-bundled-models",
+    "governing_source": "AGENTS.md",
+    "parent_issue": 611,
+    "design": "design-docs/maliang-hunyuan-desktop-packaging.md"
+  },
+  "evidence_refs": [],
+  "sha256": "a4d7216a78bac454ee46a5e9a2d4db18893fe4782ed42333aee20a1e4210e401"
+}

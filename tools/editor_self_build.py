@@ -362,7 +362,10 @@ def main(argv=None):
     parser.add_argument("--project", default="")
     parser.add_argument("--host-build-options", type=json.loads)
     parser.add_argument("--artifact-layout", choices=("raw", "native_app"), default="raw")
+    parser.add_argument("--maliang-release", type=Path, help="Signed Ma Liang .app for the first offline-model upgrade")
     args = parser.parse_args(argv)
+    if args.maliang_release is not None and args.artifact_layout != "native_app":
+        parser.error("--maliang-release requires --artifact-layout native_app")
     status = args.status.resolve()
     log_path = args.log.resolve()
     if not all(p.parent.is_dir() for p in (status, log_path, args.cancel)):
@@ -483,6 +486,7 @@ def main(argv=None):
                     from editor_native_app import (
                         EXECUTABLE_RELATIVE,
                         app_for_executable,
+                        maliang_template,
                         native_output_dir,
                         package_app,
                     )
@@ -491,7 +495,8 @@ def main(argv=None):
                     running_app = app_for_executable(args.current.resolve())
                     if running_app == native_app:
                         raise ValueError("Refusing to overwrite the running editor App")
-                    package_app(ROOT, artifact, checked, args.project, native_app)
+                    template = maliang_template(running_app, args.maliang_release)
+                    package_app(ROOT, artifact, checked, args.project, native_app, template)
                     artifact = native_app / EXECUTABLE_RELATIVE
                 snapshot = Path(str(native_app if native_app else artifact) + ".build.json")
                 snapshot.write_text(json.dumps(options, ensure_ascii=False), encoding="utf-8")

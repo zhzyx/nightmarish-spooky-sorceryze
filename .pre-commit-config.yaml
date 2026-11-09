@@ -81,6 +81,7 @@ repos:
     rev: v2.4.2
     hooks:
       - id: codespell
+        exclude: ^tools/maliang_hunyuan/HUNYUAN-NOTICE$
         additional_dependencies: [tomli]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
@@ -208,6 +209,7 @@ repos:
         types_or: [text]
         exclude: |
           (?x)^(
+            tools/maliang_hunyuan/HUNYUAN-NOTICE|
             framework/.*|
             data-collection/issue6-continuation-(workspace-fix|independent-review)-20261103\.json|
             data-collection/issue27-.*\.json|

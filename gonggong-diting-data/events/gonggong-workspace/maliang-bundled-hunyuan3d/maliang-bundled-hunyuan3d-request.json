@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-bundled-hunyuan3d-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-bundled-hunyuan3d",
+  "kind": "request",
+  "occurred_at": "2026-11-09T10:31:39.770559+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/611",
+  "agent": {
+    "id": "codex-maliang-native-host",
+    "version": "20261109",
+    "origin": "external-authorized-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "payload": {
+    "intent": "马良编辑器在 Apple Silicon macOS 和 Windows x64 随引擎提供 Hunyuan3D；从已有图片本机生成模型，用户无需配置 Python、ComfyUI 或服务地址。",
+    "authority_ref": "codex:user:20261109:mac-and-pc-bundled-models",
+    "governing_source": "AGENTS.md",
+    "parent_issue": null,
+    "design": "design-docs/maliang-bundled-hunyuan3d.md"
+  },
+  "evidence_refs": [],
+  "sha256": "b735c2fd29949b45cca1239daa5a6e9235fa05461ef01e92fb255c7c17da3434"
+}

@@ -1,0 +1,83 @@
+name: Maliang offline Windows editor
+on:
+  workflow_dispatch:
+    inputs:
+      recipient_modulus:
+        description: Optional recipient RSA public modulus (base64, exponent 65537) for a private Windows installer
+        type: string
+        required: false
+  pull_request:
+    paths:
+      - ".github/workflows/maliang_hunyuan_windows.yml"
+      - "tools/package_maliang_editor.py"
+      - "tools/maliang_hunyuan/**"
+      - "tests/editor/run_bundled_hunyuan_windows.ps1"
+      - "tests/editor/test_maliang_package.py"
+      - "samples/ainative-workbench/bundled_hunyuan_acceptance.gd"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  editor:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/windows_builds.yml
+    with:
+      editor_only: true
+
+  package-and-run:
+    needs: editor
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v8
+        with:
+          name: windows-editor
+          path: ${{ runner.temp }}/native-editor
+      - name: Package, relocate and generate with outbound access blocked
+        shell: pwsh
+        run: |
+          # These profiles belong to this disposable GitHub-hosted VM.
+          Set-NetFirewallProfile -Profile @('Domain','Private','Public') -Enabled True
+          & ./tests/editor/run_bundled_hunyuan_windows.ps1 -Editor "$env:RUNNER_TEMP/native-editor/godot.windows.editor.x86_64.exe" -WorkRoot "$env:RUNNER_TEMP/Maliang acceptance"
+      - name: Save the Windows receipt and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: maliang-windows-acceptance-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/Maliang acceptance/report/*.json
+            ${{ runner.temp }}/Maliang acceptance/report/*.log
+          if-no-files-found: warn
+      - name: Prepare the accepted Windows editor for the recipient
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        shell: pwsh
+        env:
+          RECIPIENT_MODULUS: ${{ inputs.recipient_modulus }}
+        run: |
+          & ./tools/maliang_hunyuan/seal_windows_editor.ps1 -EditorDirectory "$env:RUNNER_TEMP/Maliang acceptance/Relocated edition" -Destination "$env:RUNNER_TEMP/Maliang delivery" -RecipientModulus $env:RECIPIENT_MODULUS
+      - name: Deliver the private Windows installer
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: Maliang-Windows-x64-${{ github.run_id }}
+          path: ${{ runner.temp }}/Maliang delivery/
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save the small private-delivery receipt separately
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: Maliang-Windows-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/Maliang delivery/delivery.json
+          if-no-files-found: error
+          retention-days: 30

@@ -101,20 +101,41 @@ def verify_signature(app):
         )
 
 
+def maliang_template(running_app, release=None):
+    """Carry the signed offline distribution through subsequent engine updates."""
+    from ainative import bundled_hunyuan
+
+    app = Path(release).resolve(strict=True) if release is not None else running_app
+    if app is None:
+        return None
+    runtime = app / "Contents/Resources/maliang-hunyuan"
+    if release is None and not runtime.exists() and not runtime.is_symlink():
+        return None
+    if app.suffix != ".app" or runtime.is_symlink() or not runtime.is_dir():
+        raise ValueError("candidate_maliang_distribution_missing")
+    verify_signature(app)
+    config = json.loads((runtime / "config.json").read_text(encoding="utf-8"))
+    weight = runtime / "models/checkpoints" / bundled_hunyuan.MODEL_NAME
+    if (
+        config.get("distribution") != bundled_hunyuan.DISTRIBUTION
+        or not bundled_hunyuan.python_path(runtime).is_file()
+        or not (runtime / "ComfyUI-src/main.py").is_file()
+        or not (runtime / "model_paths.yaml").is_file()
+        or weight.stat().st_size != bundled_hunyuan.MODEL_SIZE
+        or digest(weight) != bundled_hunyuan.MODEL_SHA256
+    ):
+        raise ValueError("candidate_maliang_distribution_incomplete")
+    return app
+
+
 def clear_staged_signing_metadata(app):
     """Remove codesign-prohibited metadata only from the new staging copy."""
-    for path in (Path(app), *Path(app).rglob("*")):
-        result = subprocess.run(["/usr/bin/xattr", "-s", str(path)], capture_output=True, timeout=30)
+    # A model distribution also contains the private interpreter's library.
+    # Let xattr walk it in one pass per attribute, without following links.
+    for name in ("com.apple.FinderInfo", "com.apple.ResourceFork"):
+        result = subprocess.run(["/usr/bin/xattr", "-drs", name, str(app)], capture_output=True, timeout=120)
         if result.returncode:
             raise ValueError("candidate_native_metadata_cleanup_failed")
-        attributes = result.stdout.splitlines()
-        for name in ("com.apple.FinderInfo", "com.apple.ResourceFork"):
-            if name.encode("ascii") in attributes:
-                result = subprocess.run(
-                    ["/usr/bin/xattr", "-s", "-d", name, str(path)], capture_output=True, timeout=30
-                )
-                if result.returncode:
-                    raise ValueError("candidate_native_metadata_cleanup_failed")
 
 
 def copy_app(source, destination):
@@ -126,7 +147,7 @@ def copy_app(source, destination):
     # signatures codesign gives non-Mach-O nested components (e.g. alternate
     # template plists). ditto preserves those without re-signing anything.
     result = subprocess.run(
-        ["/usr/bin/ditto", "--rsrc", "--extattr", "--qtn", str(source), str(destination)],
+        ["/usr/bin/ditto", "--clone", "--rsrc", "--extattr", "--qtn", str(source), str(destination)],
         capture_output=True,
         timeout=120,
     )

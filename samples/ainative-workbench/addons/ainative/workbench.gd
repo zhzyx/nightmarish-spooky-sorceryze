@@ -84,6 +84,8 @@ var cli_fields: VBoxContainer
 var blender_fields: VBoxContainer
 var blender_path_edit: LineEdit
 var managed_comfy_panel: VBoxContainer
+const ManagedComfyPanel = preload('res://addons/ainative/managed_comfy_panel.gd')
+var bundled_runtime: Dictionary = {}
 var service_guide: Label
 var service_saved: Dictionary = {}
 var service_report: Dictionary = {}
@@ -161,6 +163,7 @@ func _ready():
 	db = state_dir.path_join("executor.sqlite")
 	var settings = ConfigFile.new()
 	settings.load(state_dir.path_join("local.cfg"))
+	if builtin: bundled_runtime = ManagedComfyPanel.discover_bundle()
 	var machine = VBoxContainer.new()
 	machine.name = 'AINativeLocalSettings'
 	content.add_child(machine)
@@ -186,13 +189,14 @@ func _ready():
 	var runtime_label = Label.new()
 	runtime_label.text = '马良工具与本机模型 Python（3.11+，独立于引擎编译 Python）'
 	service_advanced.add_child(runtime_label)
-	python_edit = line(service_advanced, "马良 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else settings.get_value("host", "python", default_python))
+	var configured_python = bundled_runtime.get('python', '') if settings.get_value('host', 'use_bundled_python', false) else settings.get_value('host', 'python', default_python)
+	python_edit = line(service_advanced, "马良 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else configured_python)
 	host_edit = line(service_advanced, "本机 editor_host.py 路径", configured_host)
 	factory_edit = line(service_advanced, "旧生成服务入口（兼容已有配置）", OS.get_environment("AINATIVE_PROVIDER_FACTORY") if OS.has_environment("AINATIVE_PROVIDER_FACTORY") else settings.get_value("host", "factory", "editor_demo:factory"))
 	button(service_advanced, "保存高级运行环境", save_settings)
 	button(environment_settings, "打开本机诊断日志", open_diagnostics)
 	_restore_service_settings(settings)
-	managed_comfy_panel = preload('res://addons/ainative/managed_comfy_panel.gd').new()
+	managed_comfy_panel = ManagedComfyPanel.new()
 	environment_settings.add_child(managed_comfy_panel)
 	managed_comfy_panel.initialize(self, settings)
 	_update_service_summary()
@@ -368,6 +372,8 @@ func _ready():
 	dialog.confirmed.connect(confirm_publish)
 	status = Label.new()
 	status.text = "右键节点运行；真实生成请先在“设置 → AI”连接服务并选择模型。" if builtin else "右键节点运行；真实生成请先在“本机设置”连接服务并选择模型。"
+	if managed_comfy_panel.using_bundle() and _service_mode() == 'codex':
+		status.text = '已有图片可直接运行“图像生成网格”。使用原图时请留空提示词。'
 	content.add_child(status)
 	service_config_link = button(self, "配置生成服务", open_service_settings)
 	service_config_link.hide()
@@ -419,7 +425,10 @@ func reclaim_settings_sections():
 func save_settings():
 	var c = ConfigFile.new()
 	c.load(state_dir.path_join("local.cfg"))
-	c.set_value("host", "python", python_edit.text)
+	# Resolve shipped components again from the executable after a move.
+	var uses_bundled_python = bundled_runtime.has('python') and python_edit.text == bundled_runtime.python
+	c.set_value('host', 'use_bundled_python', uses_bundled_python)
+	c.set_value("host", "python", null if uses_bundled_python else python_edit.text)
 	var bundled = get_meta('ainative_builtin',false) and host_edit.text==str(get_meta('ainative_tools_dir','')).path_join('editor_host.py')
 	c.set_value('host','use_bundled_script',bundled)
 	if not bundled: c.set_value("host", "script", host_edit.text)
@@ -432,11 +441,11 @@ func save_settings():
 func diagnostic_error(summary: String, raw_details) -> String:
 	var path = state_dir.path_join('diagnostics.log')
 	var output = FileAccess.open(path,FileAccess.READ_WRITE if FileAccess.file_exists(path) else FileAccess.WRITE)
-	if output==null: return summary+'；本机诊断日志无法写入。'
+	if output==null: return summary.trim_suffix('。')+'。本机诊断日志无法写入。'
 	output.seek_end()
 	output.store_line(Time.get_datetime_string_from_system(true)+' '+summary+'\n'+str(raw_details))
 	output.close()
-	return summary+'；可在“本机设置”中打开诊断日志。'
+	return summary.trim_suffix('。')+'。可在“本机设置”中打开诊断日志。'
 
 func open_diagnostics():
 	var path = state_dir.path_join('diagnostics.log')
@@ -708,11 +717,15 @@ func retry_node():
 	if run_id != "": launch("retry", {"run": run_id, "node": selected_id})
 
 func launch(command: String, spec: Dictionary):
+	var interpreter = python_edit.text.strip_edges()
+	if command == 'managed-comfy' and bundled_runtime.has('root') and spec.get('runtime_root') == bundled_runtime.root:
+		interpreter = bundled_runtime.python
 	# Empty executable paths abort on macOS before a child process can report an error.
 	# Reject them before writing a request or calling the operating system.
-	if python_edit.text.strip_edges().is_empty() or host_edit.text.strip_edges().is_empty():
-		var message = "运行环境为空。请在环境设置中选择马良使用的 Python 3.11 或更高版本。" if python_edit.text.strip_edges().is_empty() else "运行工具路径为空。请在环境设置中恢复马良内置工具路径。"
+	if interpreter.is_empty() or host_edit.text.strip_edges().is_empty():
+		var message = "运行环境为空。请在环境设置中选择马良使用的 Python 3.11 或更高版本。" if interpreter.is_empty() else "运行工具路径为空。请在环境设置中恢复马良内置工具路径。"
 		_show_run_problem(message, 'environment')
+		if command == 'managed-comfy': managed_comfy_panel.failed(message)
 		auto_step = false
 		creating = false
 		preview_target = ""
@@ -722,6 +735,7 @@ func launch(command: String, spec: Dictionary):
 	var f = FileAccess.open(prefix + ".json", FileAccess.WRITE)
 	if f == null:
 		_show_run_problem("无法写入本机运行请求，请检查用户目录是否可写。")
+		if command == 'managed-comfy': managed_comfy_panel.failed(status.text)
 		auto_step = false
 		if command == "create":
 			creating = false
@@ -730,17 +744,23 @@ func launch(command: String, spec: Dictionary):
 	f.store_string(JSON.stringify(spec, "", true, true))
 	f.close()
 	var arguments = PackedStringArray([host_edit.text, command, "--db", db, "--factory", factory_edit.text, "--spec", prefix + ".json", "--result", prefix + ".result"])
+	if bundled_runtime.has('python') and interpreter == bundled_runtime.python:
+		# Keep the trusted host's sibling imports, ignore PYTHONPATH and user site.
+		arguments = PackedStringArray(['-E', '-s', '-B']) + arguments
 	if command in ["create", "step"] and _uses_gui_service():
 		arguments.append_array(PackedStringArray(["--service-config", service_config_path]))
-	var pid = OS.create_process(python_edit.text, arguments)
+	var pid = OS.create_process(interpreter, arguments)
 	if pid < 0:
-		_show_run_problem("无法启动本机运行环境。请在环境设置中选择马良使用的 Python 3.11 或更高版本。", 'environment')
+		DirAccess.remove_absolute(prefix + ".json")
+		var message = diagnostic_error("无法启动本机运行环境，请检查马良 Python 的位置与执行权限。", interpreter)
+		_show_run_problem(message, 'environment')
+		if command == 'managed-comfy': managed_comfy_panel.failed(message)
 		auto_step = false
 		if command == "create":
 			creating = false
 			preview_target = ""
 		return
-	jobs[pid] = {"command": command, "prefix": prefix, "spec": spec}
+	jobs[pid] = {"command": command, "prefix": prefix, "spec": spec, "python":interpreter, "script":host_edit.text}
 
 func _process(_delta):
 	heartbeat += 1
@@ -755,8 +775,9 @@ func _process(_delta):
 			var message = str(result.get("message", "")) if result is Dictionary else ""
 			if message.is_empty():
 				message = "本机运行环境未返回有效结果。请确认 Python 3.11 或更高版本可用，并检查本机设置。"
-			var details: Dictionary = result.get("diagnostic", {}) if result is Dictionary else {"code":"host_result_missing"}
-			_show_run_problem(diagnostic_error("操作失败：" + message, details))
+			var details: Dictionary = result.get("diagnostic", {}) if result is Dictionary else {"code":"host_result_missing", "command":job.command, "python":job.python, "script":job.script, "exit_code":OS.get_process_exit_code(pid)}
+			message = diagnostic_error("操作失败：" + message, details)
+			_show_run_problem(message)
 			if job.command == "service-check": service_status.text = message
 			if job.command == 'managed-comfy': managed_comfy_panel.failed(message)
 			auto_step = false
@@ -789,6 +810,10 @@ func _process(_delta):
 				status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
 				if data.nodes[id].state == "failed" and data.nodes[id].get("error") == "invalid_result":
 					status.text += "（生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点）"
+				if data.nodes[id].state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() == 'codex':
+					var job_result = data.nodes[id].get('job')
+					var details = {'run':run_id, 'node':id, 'error':data.nodes[id].get('error'), 'job_error':job_result.get('error') if job_result is Dictionary else null, 'model_log':managed_comfy_panel.last_report.get('log_path', '')}
+					status.text = diagnostic_error(status.text, details)
 			if job.command == "retry": auto_step = true
 			if data.state != "running": auto_step = false
 			if not preview_target.is_empty() and data.nodes.has(preview_target) and data.nodes[preview_target].state == "succeeded":
@@ -1309,6 +1334,7 @@ func _workflow_confirmed():
 	elif workflow_mode == "open": open_graph()
 
 func _default_python_path(builtin: bool) -> String:
+	if bundled_runtime.has('python'): return bundled_runtime.python
 	if OS.get_name() == "Windows": return "python"
 	if builtin and OS.get_name() == "macOS":
 		var home = OS.get_environment("HOME")
@@ -1619,6 +1645,9 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
+	if kind.ends_with('mesh') and managed_comfy_panel != null:
+		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
+		if not bundle_problem.is_empty(): return bundle_problem
 	if _service_mode() not in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
