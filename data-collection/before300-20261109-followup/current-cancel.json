@@ -1,0 +1,49 @@
+{
+  "accepted_count": 2,
+  "failure": "",
+  "final_snapshot": "6f9d2a530883e0b50dda70a6b120a193",
+  "initial_snapshot": "6f9d2a530883e0b50dda70a6b120a193",
+  "model_discovery_completed": true,
+  "passed": true,
+  "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+  "case": "cancel",
+  "restart": {
+    "failure": "",
+    "original_visible": true,
+    "passed": true,
+    "pending_visible": [
+      "STEERING_ADDITION_ONE",
+      "STEERING_ADDITION_TWO"
+    ],
+    "restored_backend": 0,
+    "restored_count": 2,
+    "restored_endpoint": "http://127.0.0.1:56645/v1/chat/completions",
+    "restored_model": "fixture",
+    "session_key_absent": true,
+    "snapshot": "6f9d2a530883e0b50dda70a6b120a193"
+  },
+  "requests": [
+    {
+      "users": [
+        "STEERING_ORIGINAL"
+      ]
+    }
+  ],
+  "model_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "errors": [],
+  "native_exit_code": 0,
+  "editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "fixture_sha256": {
+    "run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+    "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+  },
+  "real_provider": false,
+  "model_transport": "isolated loopback mock",
+  "public_copy": {
+    "original_sha256": "29ba9b54c33124b578a30b2abdaba39ab1aa6589c1f8818487c7e5e13051d2d1",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

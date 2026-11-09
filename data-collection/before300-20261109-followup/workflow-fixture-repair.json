@@ -1,0 +1,53 @@
+{
+  "issue": 94,
+  "followup": "current-candidate receipt failure",
+  "candidate_editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "fixture_sha256": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+  "installed_inputs": {
+    "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267",
+    "customizations/components/godot-host/bridge.py": "fc396d18e6f801e22b459e1ce9a5eaf9a00049808d7edd46bd8a0c3239fc5578",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c"
+  },
+  "root_cause": "Private editor had no source-installation SConstruct ancestor, so current installed receipt provenance correctly rejected an empty engine root.",
+  "repair": "Copy real SConstruct and copied customizations/tools/integrations under the private editor installation; keep the separate non-engine workspace unchanged.",
+  "scope": "Current macOS arm64 candidate; copied editor; headless; actual framework admission and installed scoped receipts; model/GitHub fixtures only.",
+  "result": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": false,
+    "actual_native_read_tool_roundtrips": 1,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "issues_created": 5,
+    "events": 72,
+    "git_check": {
+      "git_state": "committed",
+      "files": 75,
+      "records": 72,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "supplement during intake amends the same Issue before the first development request",
+      "followup reuses Issue",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+    "fixture_events_imported": false
+  },
+  "intermediate_failed_experiment": "requirements-current-installed.*: putting SConstruct in workspace incorrectly selected engine-source candidate preparation; discarded.",
+  "remaining": "No engine-source candidate checkout acceptance, Windows runtime deployment, or real model-provider calls claimed.",
+  "validation": "AST parse and git diff --check passed",
+  "public_copy": {
+    "original_sha256": "db0a9df31b66729bdf11011731daf3d037449bb6a6524ab2b61577bc6e8a7e0f",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

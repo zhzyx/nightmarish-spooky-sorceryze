@@ -1,0 +1,42 @@
+{
+  "base_commit": "7e5f7bc2046f4427188733909234228d9f84c690",
+  "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "ad315c0f1b531f3b375b17e26b976273de3289717b3fda43920255eb508b9074",
+    "editor/docks/ai_chat_dock.h": "e62e555172556d4f050504e9a50bb30c47538ffeb49264afd4d5f410ae6f3518",
+    "tests/editor/ai_chat_theme_validation.gd": "af87e3bbaa05e854b1d941175ac129d52321936f7be18cf964bab51f6d380d57",
+    "tests/editor/run_ai_chat_theme_validation.py": "e0d6fd7244a84f8ad17d77a61a501824ca7304b03ed78cac4fe1537defb84978",
+    "tests/editor/requirements_intake.gd": "4f55a6b5dba56d0f9b0f8cf1616ac9052f84eb85f67fdafa8996b2480f9a7b2b",
+    "tests/editor/run_requirements_intake.py": "7f176971a4d0eefa89f190e9895dd77da68d2e56ee6a4da77e67a06a3435a615",
+    "tests/editor/ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed",
+    "tests/editor/run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f"
+  },
+  "build_command": "scons platform=macos arch=arm64 target=editor dev_build=no tests=no debug_symbols=no vulkan=no accesskit=no optimize=speed_trace lto=none -j4",
+  "build_result": "passed",
+  "builds": [
+    {
+      "result": "failed",
+      "reason": "const Variant requires explicit Object::cast_to<Node>; corrected before validation"
+    },
+    {
+      "result": "passed",
+      "seconds": 69.09
+    },
+    {
+      "result": "passed",
+      "seconds": 7.29,
+      "delta": "include active mounted message root as well as archived sessions"
+    }
+  ],
+  "shared_cache": "APFS private copy of previous object files and SCons signatures; original build tree unchanged",
+  "source_state": "uncommitted candidate, fingerprints exact; no effective installation switched",
+  "public_copy": {
+    "original_sha256": "b0a726b8ad0b43f4eedf01fa12027079cd8c8b31dce63eb1e52bb176827a4394",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  },
+  "post_build_probe_inputs": {
+    "tests/editor/ai_chat_theme_validation.gd": "56f242462c3c22a425dafbad660892138cc56accd55b2dd18e33b35f7c9c4fe1",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe"
+  },
+  "post_build_delta": "Test fixtures only: keyboard probe and separated private installed bridge source; C++ input fingerprints unchanged."
+}

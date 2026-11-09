@@ -1,0 +1,53 @@
+{
+  "issue": 56,
+  "reviewer": "independent native child agent; source not authored",
+  "findings": [],
+  "resolved_review_findings": [
+    {
+      "location": "tests/editor/ai_chat_theme_validation.gd Shift+Enter assertion",
+      "finding": "Empty message tree assumption fails on initial editor welcome message",
+      "resolution": "Parent changed to before/after count equality; final root probe passed exact final hash"
+    }
+  ],
+  "source_review": [
+    "Theme refresh enumerates active message_list and inactive AgentSession roots, including separately mounted active view, updating overrides without rebuilding transcript",
+    "Message-card role/error metadata applied at creation; refresh reproduces theme-aware card, identity, and small work-label styles",
+    "Session lifecycle erases closed archived roots and switches active root before restoration; no stale root introduced by this change",
+    "Normal RichTextLabel colors inherit current theme; explicit error/small colors refreshed; code font now uses source/EditorFonts instead of absent mono_font/Editor lookup",
+    "Workflow fixes preserve restore controls before fixture configuration and assert actual model discovery, pending text/order, snapshot, endpoint/model, and session-key nonpersistence",
+    "Requirements fixture separates installed source provenance from non-engine workspace; actual read_file loopback tool continuation asserted and 72 actual local fixture receipts committed; no production calls or imported receipt evidence claimed"
+  ],
+  "input_manifest": "independent-reviewed-inputs-final.json",
+  "commands": [
+    "git diff -- <nine reviewed files>",
+    "git diff --check -- <nine reviewed files>",
+    "Python ast.parse on four reviewed .py files",
+    "TMPDIR=<private-independent-review> PYTHONDONTWRITEBYTECODE=1 python3 tests/editor/run_ai_chat_theme_validation.py --godot bin/godot.macos.editor.arm64 --report <private-independent-review>/theme.json"
+  ],
+  "independent_execution": {
+    "initial": "sandbox localhost bind EPERM; controlled unsandboxed retry executed headless",
+    "result": "Intermediate keyboard fixture failed only invalid welcome-card assertion; newline/send and all theme contrast assertions passed",
+    "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+    "probe_sha256": "549c478ecc952e818a96bf443e536a9783a210171a929a94acbfe5e00a750496",
+    "evidence": "keyboard-welcome-assertion-failure.json"
+  },
+  "readback_evidence": {
+    "theme": "<private-evidence>/issue94-keyboard-themes-final.json: passed final exact probe hash56f242462c3c22a425dafbad660892138cc56accd55b2dd18e33b35f7c9c4fe1",
+    "stop_cancel": "<private-evidence>/issue94-current-{stop,cancel}.json: passed current binary and reviewed fixture hashes, restart retained queued text/order and snapshot, no session key persisted",
+    "layout": "<private-evidence>/current-layout.json: passed current binary, layout scripts not source-reviewed",
+    "requirements": "<private-workflow-evidence>/requirements-current-separate-installation.json: native page, actual admission,1 read tool roundtrip,11 requirement/7 development calls,72 events; mock GitHub/model only",
+    "build": "<private-evidence>/theme-build-evidence.json: C++/header hashes match reviewed source; build report read, build not independently repeated"
+  },
+  "limitations": [
+    "No physical display, native OS input/focus, pixels, real provider, Windows editor binary, or production deployment acceptance",
+    "Mounted session and error/small-font refresh source reviewed but not separately instantiated/asserted by this probe",
+    "Theme runner records source_provenance null honestly; separate build report supplies source-to-binary attribution",
+    "Stop/cancel are network-busy conversation tests, not actual SCons build-busy tests",
+    "Do not infer whole Issue94 or 3/3 business acceptance from these theme/layout/workflow probes",
+    "Only nine explicit files reviewed; no source edits, no commits/pushes, no desktop input; only private evidence output written"
+  ],
+  "public_copy": {
+    "original_sha256": "2bc6d3b4d86bd269575adce7b7b0e5bcb8bfcfcce4ec20d7da8b105c3d8d84e7",
+    "transformation": "private filesystem prefixes replaced; results unchanged; two relative evidence references mapped to public filenames"
+  }
+}

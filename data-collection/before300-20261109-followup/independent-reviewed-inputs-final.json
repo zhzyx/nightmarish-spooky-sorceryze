@@ -1,0 +1,24 @@
+{
+  "base": "7e5f7bc2046f4427188733909234228d9f84c690",
+  "sha256": {
+    "editor/docks/ai_chat_dock.cpp": "ad315c0f1b531f3b375b17e26b976273de3289717b3fda43920255eb508b9074",
+    "editor/docks/ai_chat_dock.h": "e62e555172556d4f050504e9a50bb30c47538ffeb49264afd4d5f410ae6f3518",
+    "tests/editor/ai_chat_theme_validation.gd": "56f242462c3c22a425dafbad660892138cc56accd55b2dd18e33b35f7c9c4fe1",
+    "tests/editor/run_ai_chat_theme_validation.py": "e0d6fd7244a84f8ad17d77a61a501824ca7304b03ed78cac4fe1537defb84978",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+    "tests/editor/run_ai_chat_integration.py": "e82acc65859c3980e1b352790dd77c670ab30026165395fa3c1e4b0d752dc94b",
+    "tests/editor/ai_chat_integration.gd": "4cbe008289e9c61a5d84a7cd83167f712eedb5dd9fc550cb7c63993cd8dba2bb",
+    "tests/editor/run_ai_chat_steering.py": "a7b5e0111b013467e0bbbf586133172cd13573e6a58713fa19a75e017649cc0f",
+    "tests/editor/ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+  },
+  "reviewed_diff_sha256": "746fd9b3536df4f24bf7c990d7549155d43c680df1b4111d0d9f56a77dedc1ed",
+  "ast_parse": "passed",
+  "diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "public_copy": {
+    "original_sha256": "88f5f7dedea8ab4b58a2e56692be74eccede154e567a60259b15d2a45d3e92ed",
+    "transformation": "private filesystem prefixes replaced; results unchanged"
+  }
+}

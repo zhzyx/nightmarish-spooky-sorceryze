@@ -1,0 +1,11 @@
+{
+  "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160",
+  "number": 160,
+  "type": "type:test",
+  "status": "status:in-progress",
+  "updated_at": "2026-11-09T12:53:11Z",
+  "public_copy": {
+    "original_sha256": "888aa42d7ab179a3b56a5a2b64fd5f91a4f8a2ac1fc184b6f31864b3ff3934d3",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

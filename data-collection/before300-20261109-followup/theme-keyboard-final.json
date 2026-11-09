@@ -1,0 +1,57 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "probe_sha256": "56f242462c3c22a425dafbad660892138cc56accd55b2dd18e33b35f7c9c4fe1",
+  "source_provenance": null,
+  "binary_version": "4.8.beta.custom_build.7e5f7bc20",
+  "exit_code": 0,
+  "probe": {
+    "failures": [],
+    "samples": [
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "message_contrasts": [
+          7.75848572784661,
+          8.82540109862964,
+          8.82540109862964
+        ],
+        "preset": "Default"
+      },
+      {
+        "background": "f5f5f5ff",
+        "editor_base": "e6e6e6ff",
+        "foreground": "000000bf",
+        "input_contrast": 9.90760111439829,
+        "message_contrasts": [
+          8.60856240069482,
+          9.15849596375518,
+          9.15849596375518
+        ],
+        "preset": "Light"
+      },
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "message_contrasts": [
+          7.75848572784661,
+          8.82540109862964,
+          8.82540109862964
+        ],
+        "preset": "Default"
+      }
+    ],
+    "scope": "headless theme colors, control geometry, focus signals and settings navigation; no pixel or provider acceptance"
+  },
+  "public_copy": {
+    "original_sha256": "97e8524b9871f0f0d9b305face9dc1188636156b3f6d627b90752ec2c005227a",
+    "transformation": "private filesystem prefixes replaced; results unchanged"
+  }
+}

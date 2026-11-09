@@ -1,0 +1,9 @@
+{
+  "scope": "after actual non-dry-run build cancellation",
+  "owned_editor_build_compiler_processes": [],
+  "method": "ps exact task/fixture prefixes, excluding currently authorized CodeBuddy test children",
+  "public_copy": {
+    "original_sha256": "b98a4a342bf17c6b4504cc16806cb8cbf4b715f799bcf351e5d318da2547d5b1",
+    "transformation": "private filesystem prefixes replaced; results unchanged"
+  }
+}

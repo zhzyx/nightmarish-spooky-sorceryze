@@ -1,0 +1,15 @@
+{
+  "issue_number": 160,
+  "request_id": "collaborator-runtime-second-host",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "clean_main": "7e5f7bc2046f4427188733909234228d9f84c690",
+  "tree": "507eac8e2d7266b85238b05e73c1efbb35dc7d8f",
+  "actual_intake": "passed",
+  "actual_worker": "b0c97aa6-dd4f-477e-b5f4-ecd8e9d7a07b",
+  "terminal_state": "released",
+  "model": "framework-integrity",
+  "model_evidence": "no_model_used",
+  "self_verification_replaces_second_identity": true,
+  "evidence": "self160.json",
+  "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/638"
+}

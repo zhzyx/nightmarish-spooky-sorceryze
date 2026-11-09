@@ -1,0 +1,14 @@
+{
+  "issue_number": 83,
+  "request_id": "codebuddy-cli-consultation-followup-20261105",
+  "version": "2.176.0",
+  "integrity": "sha512-MUJZgmbsL+ceBqzA9H4jeYt4W1bhCxOisF4g3mm5t7nVg29DTWc9PXVg4awkgQc6goPP6Ei7Db9v+sJYT6z8sg==",
+  "downloaded_bytes": 62540407,
+  "sha256": "9cbc6bb6fc650b6dc9460a9c58423dcf9d191efe3ba752589a130a36b644d863",
+  "install_scripts_executed": false,
+  "scope": "mirror transport recovered official-lock SHA512 exact pinned CLI static artifact; no model/account invocation",
+  "public_copy": {
+    "original_sha256": "4fd867a8cf65c722d16d45b2a002c0c83357ae2de429d379f92c370c2364d764",
+    "transformation": "private filesystem prefixes replaced; results unchanged"
+  }
+}

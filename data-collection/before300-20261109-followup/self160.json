@@ -1,0 +1,27 @@
+{
+  "results": [
+    {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#160",
+      "key": "fae6bf9df1c5dff0eb073a5d5111d16d91f0717206a7b1692eb32b4671fa3c0b",
+      "state": "released",
+      "receipt": {
+        "workerId": "b0c97aa6-dd4f-477e-b5f4-ecd8e9d7a07b",
+        "reference": "repository-worker:b0c97aa6-dd4f-477e-b5f4-ecd8e9d7a07b",
+        "target": "agent",
+        "model": "framework-integrity",
+        "requestedModel": null,
+        "observedModel": null,
+        "modelEvidence": "no_model_used",
+        "setupPending": false,
+        "planBinding": null
+      },
+      "owner": "Sail-Li",
+      "acceptance": "Framework integrity verifier exited successfully"
+    }
+  ],
+  "deferred": [],
+  "public_copy": {
+    "original_sha256": "539f905acf85b4a3f7a17563e668ea9585ea3322554ae19d9f68cf0824284e22",
+    "transformation": "private filesystem prefixes replaced; test results unchanged"
+  }
+}

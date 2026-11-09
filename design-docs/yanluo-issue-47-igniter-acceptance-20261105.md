@@ -28,3 +28,10 @@
 用户将环境范围收敛为模拟 macOS/Windows。新增四种可执行文件名/位置组合的恢复/回退模拟；15 项点火器回归通过，实际已有 Python/Node/Git 的两种位置选择经独立进程记录/回读/解绑通过。两种选择均在 workspace 状态记录绑定，并未安装/卸载系统软件。既有恢复/modal证据与真实供应商边界保留。
 
 本轮源修订、实测与模拟边界统一引用 `data-collection/before300-20261109/validation.json` 及同目录各项报告（路径相对仓库根）。
+
+
+## 2026-11-09 当前候选补验与交付结论
+
+本轮继续按用户收敛后的mac/Windows模拟范围记录：15项点火器测试覆盖project-local/user-level两种选择、无后缀/.exe路径、状态重载、幂等恢复、篡改拒绝和rollback；当前配置读取器9项通过。当前编辑器停止/取消后的第二进程还验证原消息、两条补充的内容顺序、snapshot及后端/端点/模型保留，API key不持久化。
+
+原Windows真实PowerShell部署/失败回退/doctor后恢复原需求的旧证据保留其原二进制和脚本映射（`data-collection/ai-chat-debug-20261104/verification.json`及`issue47-modal-20261105.json`）；本轮没有PowerShell执行入口，未新验真实中断过程、完整包安装/卸载与doctor跨重启的组合。环境选择/绑定模拟不等于包安装。#91保持开放，只挂起这些尚缺的组合验收，不回到Linux或x86_64/Clang14门槛。`data-collection/before300-20261109-followup/validation.json`（路径以仓库根为基准）保留实际与模拟边界。
