@@ -15,6 +15,12 @@
   "on_demand_organization": "upstream/yuanheng/skills/yuanheng-organize/SKILL.md",
   "specifications": [
     {
+      "path": "specs/method-learning.md",
+      "title": "从实际任务学习方法",
+      "load_when": "任务开始召回相似经验，或发生复盘、纠偏、试验和复用反馈时",
+      "conditional_references": []
+    },
+    {
       "path": "specs/module-system.md",
       "title": "共工模块系统规范",
       "load_when": "评估、开发或组合生产模块时",

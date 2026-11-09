@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-37d41e47b98022e7864678836ca1a5e7adf28022",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "framework-method-learning",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/692",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f623ba0fd891f93d468624e4af3b7d64e504407b661638b27bed42fa20c9a276",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/692",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/693",
+    "action": "dispatch",
+    "detection_head": "62e450e1897c9c90a19664363f851d4b361eb958",
+    "context_sha256": "7d1b6d13e62655c1d08834228544b32bd79a2631fc062d84809eb5c74f39a35a",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "codex-user-01a1c1a6-e32a-7613-8803-fa3927c2bde6-engine-reuse-rollout",
+    "evidence": "data-collection/receipts/engine-reuse-nov10/692-result.json",
+    "diagnosis": "在处理 #690 完成事件时并发派发 #692 遇到共用注册表锁。#690 释放后在原候选同一工作树重新派发成功，原生工作者 /root/sinan_87905c95be9caee4 已交付候选并回读终态。",
+    "next_action": "核验原分派结果及终态，结清此派发故障，原需求 #692 独立验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T21:07:59.193522+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T21:23:06.492501+00:00",
+  "sha256": "83e1d6bc16dc5239c7668183e45499539fcac8dccd020743f0f32a3daf2983f2"
+}
