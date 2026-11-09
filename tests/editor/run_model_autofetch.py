@@ -85,7 +85,41 @@ func _run():
         return
     checks.append("manual refresh button absent")
     var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
-    if case_name == "codex-startup":
+    if case_name == "codex-completed-status-delayed-poll":
+        # Hold the event loop until the actual subprocess has completed, then
+        # delay the native poll beyond its deadline without changing any clock.
+        var deadline := Time.get_ticks_msec() + 3000
+        while events("codex-login-status") < 1 and Time.get_ticks_msec() < deadline:
+            OS.delay_msec(10)
+        if events("codex-login-status") != 1 or events("codex-model-list") != 0:
+            finish(false, "status subprocess was not started before delayed poll")
+            return
+        var status_pid := 0
+        for line in FileAccess.get_file_as_string(OS.get_environment("ACCEPT_EVENTS")).split("\n"):
+            if line.is_empty():
+                continue
+            var event = JSON.parse_string(line)
+            if event is Dictionary and event.get("kind", "") == "codex-login-status":
+                status_pid = int(event.get("pid", 0))
+        if status_pid < 2:
+            finish(false, "actual fixture status PID missing")
+            return
+        deadline = Time.get_ticks_msec() + 3000
+        while OS.is_process_running(status_pid) and Time.get_ticks_msec() < deadline:
+            OS.delay_msec(10)
+        if OS.is_process_running(status_pid) or OS.get_process_exit_code(status_pid) != 0:
+            finish(false, "successful status child did not finish before delayed poll")
+            return
+        checks.append("successful status subprocess finished before delayed native poll")
+        OS.delay_msec(11000)
+        if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex"):
+            finish(false, "completed status result lost after delayed native poll")
+            return
+        if not await stable_count("codex-model-list", 1):
+            finish(false, "delayed status poll caused duplicate automatic discovery")
+            return
+        checks.append("completed exit result survived an eleven second UI pause; catalog fetched once")
+    elif case_name == "codex-startup":
         if not await wait_count("codex-model-list", 1) or not await stable_count("codex-model-list", 1):
             finish(false, "Codex startup must enumerate exactly once")
             return
@@ -327,6 +361,7 @@ process.stdin.on('data', chunk => {
 
 CASES = [
     "codex-startup",
+    "codex-completed-status-delayed-poll",
     "session-reuse",
     "session-catalog-freshness",
     "shared-config-inflight",

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "request_id": "codex-login-status-late-poll-20261109",
+  "issue_number": 618,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "scope": "Exact-HEAD official native build and isolated model-discovery regressions; original App acceptance remains separate",
+  "build": {
+    "source_head": "74290a58e709c09ca3c9f664d7ccfa2e97d34642",
+    "artifact_sha256": "7275a9230a579c2d17cf2143131b2ade6a4d2b968eec606958b81785bcdb90db",
+    "manifest_sha256": "ee00c3e00e42950cf28e977d2f520b2f76a85ebb7fd92ed0fa9df69d155e8beb",
+    "source_digest": "d30445e2aa66c3c6967b3de559612433fd0fbe4d8a31480cbcfc600d9cbbde94",
+    "source_input_count": 16566
+  },
+  "build_checks": {
+    "stage": "ready",
+    "exit_code": 0,
+    "strict_signature": "passed",
+    "resume_cases_passed": 5,
+    "log_sha256": "1a01d49812f46f7e48458cc72563f39ccf041a991b162e6bc37585319fe1a7f8",
+    "status_sha256": "c0e9cba6651c6dd94e3f01f9b331d87ec3a6ce42fd10789557ac02118ff27e00"
+  },
+  "validation": {
+    "mode": "Offline CLI/HTTP fixtures, exact signed Mach-O copy, private settings; no real inference",
+    "author": {
+      "passed": 15,
+      "failed": 0,
+      "report_sha256": "56652a5d5e9871bde196198b6aa03aa985b2fab93cd171630ff31f2c2837a930"
+    },
+    "independent": {
+      "worker": "/root/original_entry_final_review",
+      "passed": 2,
+      "failed": 0,
+      "cases": [
+        "codex-completed-status-delayed-poll",
+        "codex-status-timeout"
+      ],
+      "report_sha256": "c7a79cce1bb489dc4a08522a653ede9e799b95896da87eb63719f0e05bb439c7"
+    },
+    "predecessor_actual_failure_sha256": "4d398b96f7b98a269ec6c14ee9b1d2eb4fa26cd323d6bac7dd55160a8799ffea",
+    "source_unchanged": true,
+    "interactive_five_minute_timeout": "static coverage only; no five-minute runtime claim"
+  },
+  "real_provider_metadata": {
+    "exit_code": 0,
+    "models": 8,
+    "inference_requested": false,
+    "original_app_auto_discovery_verified": false,
+    "private_report_sha256": "cf3dc9e32ee117a89a962d315ed99cfdbfccb2e2eac48b728467f7c3f26ccec1"
+  },
+  "post_main_acceptance": {
+    "remote_merge": "pending",
+    "original_app_activation": "pending",
+    "real_cold_start_catalog": "pending",
+    "native_readonly_chat": "pending",
+    "business_accepted": false,
+    "owner": "Root"
+  },
+  "diting_consumption": null,
+  "independent_review": {
+    "worker": "/root/original_entry_final_review",
+    "status": "passed",
+    "checks_passed": 20,
+    "checks_total": 20,
+    "report_sha256": "ff881d2b7c896591e14a0fcec1eab610f60207ea8ad6143090dda7a3391c84b0",
+    "scope": "Source and exact new private native artifact only; original App activation, automatic directory and real chat remain pending"
+  }
+}

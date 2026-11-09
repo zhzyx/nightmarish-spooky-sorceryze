@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "issue_number": 618,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "event": "latest-main-integration-checkpoint",
+  "previous_source_candidate": "94ea48371070bb95f34e3851bde684a3b8e92e58",
+  "previous_pr": 621,
+  "integrated_main": "b50bc74739948367ba523d991d00fdab194efb00",
+  "reason": "PR622 changed shared chat source after the original signed candidate was validated; no stale merge was attempted.",
+  "old_A": {
+    "build_source": "74290a58e709c09ca3c9f664d7ccfa2e97d34642",
+    "artifact_sha256": "7275a9230a579c2d17cf2143131b2ade6a4d2b968eec606958b81785bcdb90db",
+    "manifest_sha256": "ee00c3e00e42950cf28e977d2f520b2f76a85ebb7fd92ed0fa9df69d155e8beb",
+    "fixture_author_passed": 15,
+    "fixture_independent_passed": 2,
+    "business_accepted": false,
+    "startup_validation": "cancelled before project load while awaiting OS Documents permission",
+    "cancel_receipt_sha256": "e5c016c19c5beb40dff91b76a25dcfaa94b4f52e1cc99265d2a55fdfc52daf14",
+    "preserved": true
+  },
+  "next_generation": {
+    "slot": "B",
+    "build": "pending",
+    "business_accepted": false
+  },
+  "acceptance_handoff": {
+    "receiver": "Root",
+    "original_criteria_preserved": true,
+    "component_issue": 618,
+    "original_application_owner_issue": 393,
+    "joint_dependency_issue": 390,
+    "receiver_intake_verified": true,
+    "original_application_acceptance": "pending",
+    "user_goal_unchanged": true,
+    "source": "Original human-authorized end-to-end task; Root retained sole original-App acceptance responsibility."
+  },
+  "kuafu_incident": "62bbda6b9e3b43cd72c9a65355b9dea81abc7a4a39104e8a9af337b492fb5000",
+  "diting_consumption": null
+}

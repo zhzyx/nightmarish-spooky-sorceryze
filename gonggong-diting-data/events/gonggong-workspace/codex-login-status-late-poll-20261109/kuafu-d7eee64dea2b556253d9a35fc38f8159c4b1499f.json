@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d7eee64dea2b556253d9a35fc38f8159c4b1499f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f592684e53aac5aafa19e9329b4fa25c99dca64b90c93f65c8031290b2dd84e7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "action": "validation",
+    "detection_head": "b0da58651e2323c283b50e8642f43b251856489a",
+    "context_sha256": "72aab4e0590f20cca483129d165c3b63c88de031e87147fbd83ecb2d93eb9b08",
+    "operator": "kaiyunxue",
+    "worker": "root-codex-login-status-late-poll",
+    "authority_ref": "Original human authorizes discovered-blocker repair through main and original App; Root remains unique business executor and acceptance coordinator.",
+    "evidence": "Same cc71 binary real native callback failed after a successful fixture login-status subprocess exited before an 11s event-loop pause; no model/list, explicit timeout label. Current main b0da58651 has same elapsed-first logic in both status and login branches.",
+    "diagnosis": "Host polling state-machine race: elapsed time alone overrides a completed subprocess result. Actual provider login and readonly chat work. Only still-running child processes should time out; exited children must use actual exit status.",
+    "next_action": "Root fixes both branches in isolated Issue618 worktree after successful intake; preserve frozen artifacts and credentials; regress actual delayed callback and still-running timeout, independent review, normal PR/main, then build and validate original App.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T09:54:33.571499+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T09:56:37.982820+00:00",
+  "sha256": "6e52e45cc55d949f3c88cffad060a5bd5982f7228c9da04ec35b4d4a8d3cb5fb"
+}
