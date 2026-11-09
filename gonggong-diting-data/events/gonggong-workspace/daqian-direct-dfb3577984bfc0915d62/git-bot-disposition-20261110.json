@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "event_id": "git-bot-disposition-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "request",
+  "occurred_at": "2026-11-09T22:31:36.419801+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "b007d96b43269ca0a0c85735441367e90e3524ea657911874abe0e9be8333dcc",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "authority": "Current user explicitly authorized assessing missing evidence and closing historical issues judged unresolvable.",
+    "closed_completed": [
+      525
+    ],
+    "closed_not_planned": [
+      255,
+      264,
+      278,
+      563
+    ],
+    "still_open": [
+      556,
+      662
+    ],
+    "total_counts": {
+      "accepted_repairs": 11,
+      "terminated_tracking": 4,
+      "active_trackers": 2
+    },
+    "evidence": "data-collection/git-bot-disposition-20261110.json",
+    "scope": "assess and dispose historical bot records; retain actionable original business and paused work"
+  },
+  "evidence_refs": [
+    "git-bot-host-policy-recovery-20261110"
+  ],
+  "sha256": "b53d6322d027cda26fe0e4eb490ea5d47fe7cd138e39778b22fce7023262143c"
+}

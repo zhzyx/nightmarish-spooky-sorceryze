@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "observed_at": "2026-11-09T22:31:36.390707+00:00",
+  "baseline": "ba8a7365fe5d5506190201ad5167d8d066012f42",
+  "operator": "Sail-Li",
+  "authority": "Current user explicitly authorized assessing missing evidence and closing historical issues judged unresolvable.",
+  "decision_boundary": "Missing information alone is not proof of permanent unfixability; terminal old tracking is cancelled/not_planned, never repair acceptance.",
+  "case_readbacks": [
+    {
+      "number": 255,
+      "parent_issue": 253,
+      "action": "intake",
+      "incident": "ce2f5989df89eb8ff45559d60d7e1249388256ba55cb65c256cc117c744474c7",
+      "stage": "readback",
+      "before": {
+        "state": "open",
+        "state_reason": null,
+        "labels": [
+          "type:bug",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "updated_at": "2026-11-06T21:19:48Z"
+      },
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/255#issuecomment-6753187902",
+      "comment_id": 6753187902,
+      "readback": {
+        "state": "closed",
+        "state_reason": "not_planned",
+        "closed_at": "2026-11-09T22:29:15Z",
+        "updated_at": "2026-11-09T22:29:15Z",
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/255",
+        "labels": [
+          "type:bug",
+          "status:cancelled",
+          "workspace:gonggong"
+        ]
+      },
+      "result": "closed_not_planned_verified",
+      "counts_as_repaired": false
+    },
+    {
+      "number": 264,
+      "parent_issue": 253,
+      "action": "delivery",
+      "incident": "ceedf07212048906b2c84a936c40e3e9df7e85eb5e1f85f278b467042634e467",
+      "stage": "readback",
+      "before": {
+        "state": "open",
+        "state_reason": null,
+        "labels": [
+          "type:bug",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "updated_at": "2026-11-06T21:19:47Z"
+      },
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/264#issuecomment-6753190828",
+      "comment_id": 6753190828,
+      "readback": {
+        "state": "closed",
+        "state_reason": "not_planned",
+        "closed_at": "2026-11-09T22:29:24Z",
+        "updated_at": "2026-11-09T22:29:24Z",
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/264",
+        "labels": [
+          "type:bug",
+          "status:cancelled",
+          "workspace:gonggong"
+        ]
+      },
+      "result": "closed_not_planned_verified",
+      "counts_as_repaired": false
+    },
+    {
+      "number": 278,
+      "parent_issue": 238,
+      "action": "delivery",
+      "incident": "b41179af323162b5f1ca404ddef85d44c8c8ddf35ea511bf2c51f4e6dcf07268",
+      "stage": "readback",
+      "before": {
+        "state": "open",
+        "state_reason": null,
+        "labels": [
+          "type:bug",
+          "status:planned",
+          "workspace:gonggong"
+        ],
+        "updated_at": "2026-11-06T21:19:45Z"
+      },
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/278#issuecomment-6753193588",
+      "comment_id": 6753193588,
+      "readback": {
+        "state": "closed",
+        "state_reason": "not_planned",
+        "closed_at": "2026-11-09T22:29:32Z",
+        "updated_at": "2026-11-09T22:29:32Z",
+        "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/278",
+        "labels": [
+          "type:bug",
+          "status:cancelled",
+          "workspace:gonggong"
+        ]
+      },
+      "result": "closed_not_planned_verified",
+      "counts_as_repaired": false
+    },
+    {
+      "number": 525,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/525#issuecomment-6753189036",
+      "comment_id": 6753189036,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "completed",
+        "labels": [
+          "type:bug",
+          "status:done",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T22:29:19Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/525"
+      }
+    },
+    {
+      "number": 563,
+      "operator": "Sail-Li",
+      "stage": "readback",
+      "comment_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/563#issuecomment-6753192643",
+      "comment_id": 6753192643,
+      "state": "closed_verified",
+      "readback": {
+        "state": "closed",
+        "state_reason": "not_planned",
+        "labels": [
+          "type:bug",
+          "status:cancelled",
+          "workspace:gonggong"
+        ],
+        "closed_at": "2026-11-09T22:29:30Z",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/563"
+      }
+    }
+  ],
+  "newly_accepted_repair": [
+    525
+  ],
+  "terminated_tracking": [
+    255,
+    264,
+    278,
+    563
+  ],
+  "total_counts": {
+    "accepted_repairs": 11,
+    "terminated_tracking": 4,
+    "active_trackers": 2
+  },
+  "still_open": {
+    "556": {
+      "reason": "Current reference-led human/organic/multiview quality remains actionable in original543; original visual criteria are not met.",
+      "current_intake": {
+        "issue": 543,
+        "request_id": "maliang-gpt-modeling-20261108",
+        "tenant": "gonggong-workspace",
+        "baseline": "ba8a7365fe5d5506190201ad5167d8d066012f42",
+        "status": "passed intake-only actual call",
+        "original_candidate_reverified": false,
+        "quality_accepted": false
+      },
+      "responsibility": "original543/maliang-host; preserve existing candidate and explicit quality criteria",
+      "next_action": "Use repository tenant in original host call; continue original quality fixes and real visual/multiview acceptance",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/556#issuecomment-6753194205"
+    },
+    "662": {
+      "reason": "Authenticated CodeBuddy account and measured business latency are recoverable prerequisites, not evidence of a permanently unfixable feature.",
+      "responsibility": "original592/659 chain; operator with authorized CodeBuddy host account",
+      "next_action": "Authenticate official account, execute actual matched requests on accepted pipeline, record baseline and observed latency",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662#issuecomment-6753194947"
+    }
+  },
+  "retained_business": [
+    518,
+    543,
+    534,
+    561,
+    592,
+    659
+  ],
+  "paused_draft561_resumed": false,
+  "parent": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "state": "open",
+    "updated_at": "2026-11-09T22:30:49Z",
+    "labels": [
+      "type:bug",
+      "status:in-progress",
+      "workspace:gonggong"
+    ],
+    "decision": "user-authorized historical case disposition; retain two actionable cases"
+  },
+  "independent_triage_review": {
+    "unrecoverable_old_events": "/root/bot_workflows",
+    "fix_evidence_and_business_boundary": "/root/historical_failures"
+  },
+  "original_evidence": "preserved; future original evidence or fresh reproduction may justify a new event or reopening"
+}
