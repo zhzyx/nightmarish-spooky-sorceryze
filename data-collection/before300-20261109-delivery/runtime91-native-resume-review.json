@@ -1,0 +1,72 @@
+{
+  "issue": 91,
+  "kind": "independent read-only native runtime-resume failure source review",
+  "head": "1132f0b48dd51bff6d51c415ee529762890ad096",
+  "source_sha256": {
+    "tests/editor/requirements_intake.gd": "4f55a6b5dba56d0f9b0f8cf1616ac9052f84eb85f67fdafa8996b2480f9a7b2b",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+    "editor/docks/ai_chat_dock.cpp": "ad315c0f1b531f3b375b17e26b976273de3289717b3fda43920255eb508b9074",
+    "editor/docks/gonggong_runtime_config.cpp": "4887dd346c1fffb4d829be8a4b2a7d07684f01b8ad6d32b44bbc7c5fed11d500",
+    "editor/docks/gonggong_panel.cpp": "95f4e01b3cac7d908e7592534575c2afa0593142d5ea1aa45c8665bfac8b003e",
+    "editor/docks/ai_chat_gonggong.cpp": "178bde6a51d93b0b1ee1058c441d3c1bb7a6300119527faa197d165fe2c6c183"
+  },
+  "actual_ci_evidence": {
+    "pr": 653,
+    "summary_ok": false,
+    "process_cases_passed": true,
+    "five_journal_cases_passed": true,
+    "seven_existing_powershell_cases_passed": true,
+    "native_failure": "gate.gd:58 Missing Python did not navigate to central environment settings before deployment confirmation",
+    "debug": {
+      "requests": [],
+      "journals": []
+    },
+    "secondary_cleanup_failure": "WinError32 project directory busy during TemporaryDirectory cleanup; log does not identify the exact process holding it"
+  },
+  "findings": [
+    {
+      "priority": 1,
+      "title": "The intentional missing Python cannot become effective under the inherited startup override",
+      "evidence": [
+        "run_requirements_intake.py:234 passes GONGGONG_PYTHON=sys.executable to the isolated editor",
+        "gonggong_runtime_config.cpp:245-261 initialize freezes non-derived environment runtime values into startup_overrides; AIChatDock constructor calls initialize before deferred GD runs",
+        "gonggong_runtime_config.cpp:319-325 read_effective selects startup_overrides ahead of configured runtimes",
+        "gonggong_panel.cpp:265-286 set_runtime_field updates configuration only; it does not replace frozen startup_overrides",
+        "requirements_intake.gd:39 and 49 ignore set_runtime_field return values; latter writes missing-python.exe only into configuration",
+        "gonggong_panel.cpp:208-243 tests effective workflow_python, so an existing environment Python prevents the expected missing-Python branch"
+      ],
+      "recommendation": "Pass the bootstrap interpreter to GD using a test-only variable (for example GONGGONG_TEST_PYTHON), remove GONGGONG_PYTHON from the editor environment before it starts, and configure the real or deliberately missing workflow_python via the existing setter. Assert setter return success and get_runtime_configuration effective source/path before sending. Retain explicit environment precedence in production. Do not use a frozen missing GONGGONG_PYTHON override, since that would also prevent a newly deployed interpreter from becoming effective."
+    },
+    {
+      "priority": 2,
+      "title": "Immediate send and a fixed 0.2-second delay do not establish the current asynchronous UI preconditions",
+      "evidence": [
+        "requirements_intake.gd starts _run deferred and sends immediately after backend/config/runtime edits, then waits only 0.2 seconds",
+        "ai_chat_dock.cpp:1858 disables Send while models_loading; _send_with_mode:2128 returns when Send is disabled even if pressed is emitted programmatically",
+        "ai_chat_dock.cpp:4932-4990 config edits start a 0.5-second debounce and schedule actual automatic discovery",
+        "models_loading spans the HTTP query and is cleared only in _models_completed",
+        "GongGongPanel::set_runtime_field can return runtime_environment_locked while task_locked; the GD currently ignores this error"
+      ],
+      "recommendation": "After setting the final connection, trigger the real text_changed/config path explicitly and wait under a deadline for current-config model discovery completion and enabled Send/backend. Assert all setters succeeded. After applying intentional missing Python, wait for any triggered config activity to settle, reassert effective missing executable, then send the original demand. Replace the 0.2-second sleep with a bounded predicate on central environment settings visibility, current environment tab, missing-Python label, and confirmation remaining hidden; include runtime configuration, Send/backend state, ModelStatus and native transcript in failure diagnostics. Do not bypass the normal send gate."
+    },
+    {
+      "priority": 2,
+      "title": "The model readiness fixture must implement the catalog response before requiring successful model status",
+      "evidence": [
+        "AST confirms Handler defines do_POST and log_message but no do_GET",
+        "HTTP discovery requests endpoint-derived /v1/models via GET in ai_chat_dock.cpp:5143",
+        "BaseHTTPRequestHandler therefore returns unsupported-method response for this fixture GET",
+        "Current inspected production success literal is 模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。, not 模型目录已完成自动刷新"
+      ],
+      "recommendation": "Add a deterministic loopback GET /v1/models JSON response containing id=fixture, trigger discovery for the final connection, and wait for the actual current success state plus enabled controls (optionally picker metadata fixture). Keep catalog request counting separate from existing 11 requirements and 7 development POST counters. Merely waiting for an unrelated or obsolete status literal would introduce a timeout."
+    }
+  ],
+  "callpath": "_send_with_mode -> queued message -> _start_message -> _request_completion -> _begin_gonggong_context -> ensure_environment_with_snapshot. Failed effective environment sets issue_guide_state=environment_setup, retains the original message, requests central environment settings and returns before issue/model requests. _environment_setup_completed later resumes that same original turn.",
+  "classification": "Concrete fixture setup defects and asynchronous readiness assumptions identified. The artifact does not record Send disabled or runtime metadata, so it does not prove which early gate uniquely caused this particular 0.2-second assertion failure. No production navigation defect has been established; repair the fixture preconditions and rerun before changing production.",
+  "cleanup": "Native failure exits the editor while launched bridge/watch processes can still exist; plain subprocess.run covers only its direct child. Preserve the first gate assertion and diagnostics, then ensure only descendants owned by the isolated invocation are terminated/reaped (or completed) before TemporaryDirectory cleanup. Do not scan/kill all Python/Godot processes. The busy-directory log alone does not identify the owner or establish a production lifecycle root cause.",
+  "boundary": "Read-only source/log review. No source writes, model calls, desktop operation, build, download, Windows execution, commit or push. Three+five+seven Windows cases are actual downloaded CI evidence; future native resume acceptance remains pending.",
+  "public_copy": {
+    "original_sha256": "420b72d0d583c0327f5c805b97bc328552303dfbe0ca66523b70f968c2b1edb2",
+    "transformation": "private evidence path prefixes replaced; source hashes and findings unchanged"
+  }
+}
