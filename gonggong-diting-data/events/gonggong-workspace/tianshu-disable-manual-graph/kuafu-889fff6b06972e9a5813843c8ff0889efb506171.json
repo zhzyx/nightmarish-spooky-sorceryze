@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-889fff6b06972e9a5813843c8ff0889efb506171",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-disable-manual-graph",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "18c18281ffc5a4ececc4f20bb04ea6eb2ff8321a05355a5957e7eccd4fbc0a9e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/648",
+    "action": "delivery",
+    "detection_head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+    "context_sha256": "9a2ec25ca1fb21d7f12550b9acc4a387147e4b7604f5bbc205f82589e95d8793",
+    "operator": "Sail-Li",
+    "worker": "codex-647",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647#issuecomment-6745402958",
+    "diagnosis": "首次夸父诊断产生新增采集事件，git-check 核实其尚未暂存。",
+    "next_action": "暂存本次真实事件并重跑签发",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T16:31:21.976209+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T16:32:38.866124+00:00",
+  "sha256": "2f5deacdcf33c8701602bf0a8bf34880bb83c029ed8f718ef7ef815f700cb3f6"
+}

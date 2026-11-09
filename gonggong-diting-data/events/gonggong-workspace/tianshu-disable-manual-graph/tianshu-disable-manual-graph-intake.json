@@ -1,0 +1,21 @@
+{
+  "payload": {
+    "design_document": "design-docs/tianshu-disable-manual-graph.md",
+    "intent": "移除天枢画板手动建图和连线操作"
+  },
+  "tenant_id": "gonggong-workspace",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+  "occurred_at": "2026-11-09T16:23:55.5049180Z",
+  "kind": "request",
+  "evidence_refs": [],
+  "agent": {
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "id": "codex-647",
+    "origin": "user-authorized-codex-chat",
+    "version": "host-version-unreported"
+  },
+  "event_id": "tianshu-disable-manual-graph-intake",
+  "schema_version": 1,
+  "request_id": "tianshu-disable-manual-graph",
+  "sha256": "92a6f628e66bba829414997e2f5d48b06a144502da552001a47e3894fb05788b"
+}

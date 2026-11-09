@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d20519c5649a8b15760585e20b79b14f4843f00c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-disable-manual-graph",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c765c6c65d22c7c223c9c9a800364903801ca1caf1c85ab03bd2160c3b1ca4d2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/648",
+    "action": "delivery",
+    "detection_head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+    "context_sha256": "9a2ec25ca1fb21d7f12550b9acc4a387147e4b7604f5bbc205f82589e95d8793",
+    "operator": "Sail-Li",
+    "worker": "codex-647",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42655229178",
+    "diagnosis": "GitHub Git HTTPS 直连超时。使用本机已配置系统代理，git ls-remote 回读 main 与 GitHub API 一致。",
+    "next_action": "在签发子进程启用系统代理并复验原候选交付",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T16:28:59.590420+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T16:31:02.523895+00:00",
+  "sha256": "10c2b6fc9789947252c019b37e067bc21ea604b717de1a75a22d3e93985dd4d3"
+}
