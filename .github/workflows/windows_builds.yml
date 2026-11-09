@@ -67,7 +67,7 @@ jobs:
         shell: bash
         id: d3d12-sdk
         run: |
-          if python ./misc/scripts/install_d3d12_sdk_windows.py; then
+          if python ./misc/scripts/install_d3d12_sdk_windows.py ${{ matrix.compiler == 'msvc' && matrix.target == 'editor' && '--msvc-only' || '' }}; then
             echo "D3D12_ENABLED=yes" >> "$GITHUB_OUTPUT"
           else
             echo "::warning::Windows: Direct3D 12 SDK installation failed, building without Direct3D 12 support."

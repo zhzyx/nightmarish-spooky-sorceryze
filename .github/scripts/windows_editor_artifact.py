@@ -63,6 +63,7 @@ def inputs(root, env):
     ):
         raise ValueError("Unidentified hosted runner or checkout")
     sdk = hashlib.sha256()
+    sdk_files = []
     for label, folder in (
         ("workspace", root / "bin/build_deps"),
         ("host", Path(env["LOCALAPPDATA"]) / "Godot/build_deps"),
@@ -70,9 +71,11 @@ def inputs(root, env):
         if folder.exists():
             for path in sorted(folder.rglob("*")):
                 if path.is_file():
-                    sdk.update(json.dumps([label, path.relative_to(folder).as_posix(), digest(path)]).encode())
+                    entry = [label, path.relative_to(folder).as_posix(), digest(path)]
+                    sdk.update(json.dumps(entry).encode())
+                    sdk_files.append(entry)
     flags = env["EDITOR_BUILD_FLAGS"].split()
-    return dict(
+    identity = dict(
         schema=2,
         source=source_identity(root, flags, env),
         image=[env["ImageOS"], env["ImageVersion"], env["RUNNER_ARCH"]],
@@ -83,6 +86,7 @@ def inputs(root, env):
         build_name=env["BUILD_NAME"],
         version_metadata="source_archive",
     )
+    return identity, sdk_files
 
 
 def trusted(run, repo, branch):
@@ -152,7 +156,7 @@ def main():
         record["binary_sha256"] = digest(destination / "godot.windows.editor.x86_64.exe")
         (destination / RECEIPT).write_text(json.dumps(record, indent=2), encoding="utf-8")
         return
-    expected = inputs(root, env)
+    expected, sdk_files = inputs(root, env)
     key = hashlib.sha256(json.dumps(expected, sort_keys=True).encode()).hexdigest()
     requested = env.get("SOURCE_RUN")
     repo, branch = env["GITHUB_REPOSITORY"], env["DEFAULT_BRANCH"]
@@ -186,6 +190,7 @@ def main():
         json.dumps(
             dict(
                 inputs=expected,
+                sdk_files=sdk_files,
                 revision=env["CANDIDATE_REVISION"],
                 pr_head=env.get("PR_HEAD"),
                 pr_base=env.get("PR_BASE"),

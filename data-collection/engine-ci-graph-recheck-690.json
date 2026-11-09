@@ -1,0 +1,44 @@
+{
+  "issue_number": 690,
+  "request_id": "engine-build-cli-ci-reuse",
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42721796858/job/129517304317",
+  "cause": "Windows 隔离图测试未在首启前绑定其工作区，配置模态窗截获 Ctrl+F；后续七个选择、返回与布局断言随之失败。",
+  "change": "在 graph 场景启动前传入已准备好的 fixture 工作区，保留原生输入和原 GDScript 断言。",
+  "actual_editor_reports": {
+    "ci-baseline": {
+      "state": "failed",
+      "editor_sha256": "80a44968705d179e521f2d090e32c96dafeff8c99c646f744295895bb613d172",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "local-baseline": {
+      "state": "failed",
+      "editor_sha256": "c0f2c0375f5fee122f2d8e0cd84e1399d2e9373ac90b9eb29146f179ce859b10",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "ci-graph-fixed": {
+      "state": "passed",
+      "editor_sha256": "80a44968705d179e521f2d090e32c96dafeff8c99c646f744295895bb613d172",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "local-graph-fixed": {
+      "state": "passed",
+      "editor_sha256": "c0f2c0375f5fee122f2d8e0cd84e1399d2e9373ac90b9eb29146f179ce859b10",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "ci-entry-fixed": {
+      "state": "passed",
+      "editor_sha256": "80a44968705d179e521f2d090e32c96dafeff8c99c646f744295895bb613d172",
+      "scenario": "entry",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    }
+  },
+  "other_verified": [
+    "Windows tab order: six phases",
+    "parallel, inputs and multi_issue native fixtures",
+    "four-protocol loopback, two concurrent workers and cancellation isolation"
+  ]
+}

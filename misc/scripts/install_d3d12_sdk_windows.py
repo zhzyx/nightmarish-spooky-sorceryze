@@ -16,6 +16,9 @@ from misc.utility.color import Ansi, color_print
 
 parser = argparse.ArgumentParser(description="Install D3D12 dependencies for Windows platforms.")
 parser.add_argument(
+    "--msvc-only", action="store_true", help="Install the published SDK without generating MinGW import libraries."
+)
+parser.add_argument(
     "--mingw_prefix",
     default=os.getenv("MINGW_PREFIX", ""),
     help="Explicitly specify a path containing the MinGW bin folder.",
@@ -105,7 +108,7 @@ if os.path.exists(pix_folder):
 print(f"Extracting WinPixEventRuntime {pix_version} to {pix_folder} ...")
 shutil.unpack_archive(pix_archive, pix_folder, "zip")
 os.remove(pix_archive)
-if has_mingw:
+if not args.msvc_only and has_mingw:
     print("Adapting WinPixEventRuntime to also support MinGW alongside MSVC.")
     cwd = os.getcwd()
     os.chdir(pix_folder)
@@ -120,7 +123,7 @@ if has_mingw:
         + "--machine arm64 --no-leading-underscore -d WinPixEventRuntime.def -D WinPixEventRuntime.dll -l ./bin/ARM64/libWinPixEventRuntime.a".split()
     )
     os.chdir(cwd)
-else:
+elif not args.msvc_only:
     print(
         'MinGW support requires "dlltool" and "gendef" dependencies, so only MSVC support is provided for WinPixEventRuntime. Did you forget to provide a `--mingw_prefix`?'
     )
