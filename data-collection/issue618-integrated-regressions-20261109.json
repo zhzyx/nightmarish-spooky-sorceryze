@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "issue_number": 618,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "event": "integrated-B-validation-and-latest-runtime-handoff",
+  "validated_generation": {
+    "build_source": "4a1570920b6b705333ddaac3931200228e4a383d",
+    "artifact_sha256": "6433c9bce88a4f5e3f325cf035b2ce3cdeacf44ee53cb3ffc723623fb364369e",
+    "source_input_count": 16568,
+    "author_models_passed": 15,
+    "author_report_sha256": "b67f5427bef073cc009c9179cc395a6af68c2ef0d33cc78c36deee9de3a91c4a",
+    "independent_models_passed": 2,
+    "independent_report_sha256": "d904a1968d2d1aa9a7f6ac281b9717916ceeb9157729562387589514833c8663",
+    "independent_source_artifact_checks_passed": 18,
+    "independent_source_artifact_report_sha256": "dcb53d3d2a8969c6f5f4148d7996c09599a50f7eb4deab4e2498ff1fa100b1f9",
+    "pending_command_confirm_exit": 0,
+    "pending_command_confirm_receipt_sha256": "7c25e420345b2735b64bc5bb56560714ae6fe93fdfc45469d28ae206bfab9f77",
+    "pending_command_stop_exit": 0,
+    "pending_command_stop_receipt_sha256": "9fef427e57f217a7e8babcde88d40b05d9a6dd447077565529de44006b743441",
+    "candidate_business_accepted": false,
+    "startup_validation": "cancelled before project load while macOS Documents permission pending",
+    "startup_cancellation_receipt_sha256": "e15b25c2fff019a41c31a3462f77d991648641b9a62c640978f58e127dc31c6a"
+  },
+  "latest_main_integrated": "3964d57c9cfdb5a3822060b9bd104219ed171570",
+  "additional_upstream_pr": 624,
+  "additional_source_inputs": [
+    "customizations/components/godot-host/test_bridge.py",
+    "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+    "integrations/gonggong/frozen-distribution.json"
+  ],
+  "cpp_models_runner_unchanged": true,
+  "next_generation": {
+    "build": "pending after source PR main readback",
+    "slot": "A",
+    "earlier_A_archived_byte_identically": true,
+    "archive_receipt_sha256": "b3158067c7b322bb60dcabc7d0beeebb8054edf1146c1eede09d480214e802c8",
+    "old_B_evidence_scope": "C3/B only; not a new-A acceptance receipt"
+  },
+  "original_application_acceptance": "pending under #393, Root",
+  "component_business_accepted": false,
+  "diting_consumption": null,
+  "latest_runtime_targeted_unit_checks": {
+    "tests": 4,
+    "exit_code": 0,
+    "check": "test_bridge.StorageValidationCostTests",
+    "receipt_sha256": "9a8ba8bebd8729748b339cad94285ab85a5c19c1b5aee595913566225dc0f24d"
+  }
+}

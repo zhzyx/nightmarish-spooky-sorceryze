@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b4bc1113d2b58ac785fea5975fe76f476e46cef2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "62bbda6b9e3b43cd72c9a65355b9dea81abc7a4a39104e8a9af337b492fb5000",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+    "action": "delivery",
+    "detection_head": "94ea48371070bb95f34e3851bde684a3b8e92e58",
+    "context_sha256": "72aab4e0590f20cca483129d165c3b63c88de031e87147fbd83ecb2d93eb9b08",
+    "operator": "kaiyunxue",
+    "worker": "root-codex-login-status-late-poll",
+    "authority_ref": "Original human authorizes discovered-blocker repair through main and original App; Root remains unique business executor and acceptance coordinator.",
+    "evidence": "PR621 pre-merge baseline drift B0 to b50bc747; old A startup cancellation sha256 e5c016c19c5beb40dff91b76a25dcfaa94b4f52e1cc99265d2a55fdfc52daf14; actual candidate acceptance pending.",
+    "diagnosis": "PR622 changed shared AI chat source. Prior A cannot attest the integrated tree. Documents OS permission is independent of Codex login.",
+    "next_action": "Root preserves historical A/MF, integrates latest main in owned303, builds separate B via official worker, then reruns targeted regressions and actual candidate/original-App acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T10:47:56.418289+00:00",
+    "attempted": null,
+    "repair_owner": "Root",
+    "continuable": "Source integration and isolated build/test continue; OS permission stays pending."
+  },
+  "occurred_at": "2026-11-09T10:49:01.141091+00:00",
+  "sha256": "e9d66676f40f7a2be28685ac56a07afc68a3aac2cf68a02311b02353684d579e"
+}

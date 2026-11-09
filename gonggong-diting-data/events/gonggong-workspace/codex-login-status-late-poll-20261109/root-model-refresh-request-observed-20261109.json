@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "root-model-refresh-request-observed-20261109",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "codex-login-status-late-poll-20261109",
+  "kind": "request",
+  "occurred_at": "2026-11-09T10:00:19.037000+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "event": "authorized_original_entry_acceptance_discovered_blocker",
+    "implementation_owner": "root-login-status-late-poll-20261109",
+    "base_commit": "b0da58651e2323c283b50e8642f43b251856489a",
+    "user_authority": "Continue full engine Agent workflow validation and repair discovered blockers through main and original App",
+    "actual_intake_passed": true,
+    "observed_model": null,
+    "usage": null,
+    "usage_unknown_reason": "not exposed by native host"
+  },
+  "evidence_refs": [],
+  "sha256": "1f1f4426adf334f3028eeb4d893c79f2d3c87e4c3b6879097a81bd1aa3848336"
+}
