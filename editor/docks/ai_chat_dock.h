@@ -429,6 +429,8 @@ class AIChatDock : public EditorDock {
 
 	Array tool_calls;
 	int tool_index = 0;
+	int read_batch_count = 0;
+	Vector<String> read_batch_results;
 	int tool_rounds = 0;
 	uint64_t request_generation = 0;
 	uint64_t session_generation = 0;
@@ -717,6 +719,10 @@ class AIChatDock : public EditorDock {
 	void _cancel_model_query();
 	void _stop();
 	void _next_tool(uint64_t p_session);
+	void _read_batch_item(uint64_t p_session);
+	void _publish_read_batch(uint64_t p_session);
+	void _show_tool_result(const Dictionary &p_call, const String &p_result);
+	void _append_tool_message(const String &p_result, bool p_file_success, bool p_structured_state);
 	void _finish_tool(const String &p_result, bool p_file_success = false, bool p_structured_state = false);
 	void _show_confirmation();
 	void _restore_confirmation_parent();
