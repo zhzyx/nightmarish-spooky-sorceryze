@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "request_id": "codex-login-status-late-poll-20261109",
+  "issue_number": 618,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/618",
+  "recorded_at": "2026-11-09T15:33:33.702698+00:00",
+  "scope": "Late actual startup Kuafu event retained byte-for-byte with its original pending facts; subsequent component and original-entry recovery are appended here, not rewritten into that event.",
+  "late_event": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/codex-login-status-late-poll-20261109/kuafu-d41eb2e246a31134e121a3e40d2c9e7936b2013d.json",
+    "sha256": "e0b4f1a4d92e9409953410845b5aa3e1852b83856358b0618ea642c5e79c1263",
+    "canonical_record_sha256": "b9dc30fc54c170a740ad21c7cd5e0781099f075825c2a5fa0093b93135b6c6bf",
+    "original_incident": "630d3dd6f74a4efc41dc73ba163aa4f4abbd4457e1b7f7782250a335d3c573a7",
+    "source_observation_retained": true
+  },
+  "component": {
+    "state": "CLOSED/completed/status:done",
+    "candidate": "0b10d334d3af5e80fde4c7a9adf38e1d2c527b4f",
+    "pr": 627,
+    "merge": "60745751daca1121dddf4a6b623b3d4f3ad0a946",
+    "official_completion_receipt_sha256": "901086bb6427562d81c39f7cd84e300013975aed5343791ee9db0a71b2dde20d",
+    "independent_component_sha256": "a6489f49a693fcc9e64434aecde1ed439229b2674e9887f17513dc839b53b1e8"
+  },
+  "original_entry_consumer": {
+    "issue_number": 393,
+    "accepted_observation_record": "data-collection/original-entry-final-acceptance-20261109.json",
+    "real_chat_observed": true,
+    "catalog_real_model_count": 9,
+    "preserved_original_scene_sha256": "f69e33572b6398eedf394227cb33a09ef09a38078bfdbaa0464b83d649575d6c"
+  },
+  "ci_recovery": {
+    "run_id": 42606545167,
+    "first_attempt": "failed due to Root PR-body association headers omission; retained",
+    "second_attempt": "success on corrected full signed-body association",
+    "source_signed_head": "23b6e139d368850514b6fe58608452b3fe06a1fd",
+    "earlier_finalizer_result_retained": true,
+    "retry_completed": true
+  },
+  "low_disk_or_icloud_root_cause": null,
+  "usage": null,
+  "diting_consumption": null
+}

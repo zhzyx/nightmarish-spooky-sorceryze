@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7c9fe0416e8680ae805e027cf0f17f67dc905fd2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-launch-receipt-20261107",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6226afe8cf644ef5e2375af3a7a829dec615832d849faa89f27384ec65e15463",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/393",
+    "action": "delivery",
+    "detection_head": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+    "context_sha256": "f63ce4d0c501addd3667d000d9c1158b96c1bac356b8e76a2060674110abcd5b",
+    "operator": "kaiyunxue",
+    "worker": "root-original-entry-final-evidence",
+    "authority_ref": "Original human authorizes completing engine workflow acceptance and main delivery; Root retains393/390 final acceptance and necessary delivery repair.",
+    "evidence": "Original signed-submit precommit failed before any commit: Diting Git history check failed; direct validator identified only omitted read-only olympus-hermes-data paths. Own sparse-checkout then materialized that exact directory. Directed validator exit0/files6422/records6301; private receipt SHA256 1bd636cc1b9497924dd749cf99c914bd5b213b1dade275aba84b7e63b1062b55.",
+    "diagnosis": "The metadata-only sparse checkout omitted the immutable legacy telemetry directory, so the trusted history validator correctly rejected absent working-copy history. Git index and tracked historical contents were not deleted or edited. This was Root checkout preparation, not a product/runtime defect. Root materialized the read-only directory using ordinary Git sparse-checkout without changing product inputs or validator rules.",
+    "next_action": "Preserve initial failure, commit this actual event with existing acceptance metadata after independent delta review, then retry the same normal signed-submission gate and verify committed-data, exact CI/main and393/390 closure. Current original App/UI remain owned by the separately authorized delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T15:46:25.005437+00:00",
+    "attempted": "Direct history validator reproduced omitted legacy paths; adding only the read-only directory made the exact validator pass with6422 files and6301 records. No product edit or rebuild.",
+    "repair_owner": "Root sole owner of its isolated metadata checkout and393/390 final acceptance.",
+    "continuable": "Actual original-entry acceptance49/49 and all product evidence remain valid; metadata formal submission/CI/main/Issue closure still pending."
+  },
+  "occurred_at": "2026-11-09T15:50:19.312889+00:00",
+  "sha256": "fbc2fd7a71dbe9a86d3c16f111748cab00733da24172af24fea129cf1003b85b"
+}
