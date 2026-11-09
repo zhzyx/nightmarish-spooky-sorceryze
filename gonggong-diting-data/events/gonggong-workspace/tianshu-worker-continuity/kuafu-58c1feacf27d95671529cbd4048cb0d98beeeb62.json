@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-58c1feacf27d95671529cbd4048cb0d98beeeb62",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-worker-continuity",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6b4730df13fb6a5242e617d6682b252dae4eee191f1598174876a84b744d944b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/617",
+    "action": "validation",
+    "detection_head": "2de7647655b41d672c03cb7d0e922b292ecc3df6",
+    "context_sha256": "03aa00835e4f0010b4ef202a07cd7395a3211fdd7241062951af15e1a989d043",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+    "evidence": "2de7647655b41d672c03cb7d0e922b292ecc3df6; check_command_restart with kill before explicit approval, return to same worker",
+    "diagnosis": "编辑器只在命令已进入守护进程后记录会话和候选。批准前退出时记录归档为未知，副作用为零，但原命令卡丢失且无法回原工作者审批。",
+    "next_action": "在原操作者、来源和候选重新核验后重新展示待审命令，保证旧批准不可重放；在命令已运行、用户停止或结果未知时禁止再次执行。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T09:47:52.235295+00:00",
+    "attempted": null,
+    "repair_owner": "Sinan worker for #594",
+    "continuable": "原已启动命令的回执恢复、无凭据订阅性能交付可独立继续。"
+  },
+  "occurred_at": "2026-11-09T09:51:03.434270+00:00",
+  "sha256": "e359110baf17f38d05f573974642fed571a2d1e9709ae025b57932dfd975a75d"
+}

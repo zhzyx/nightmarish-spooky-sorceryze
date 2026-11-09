@@ -1,0 +1,31 @@
+{
+  "request_id": "tianshu-worker-continuity",
+  "issue_number": 594,
+  "incident_issue": 617,
+  "parent_issue": 592,
+  "base": "b0da58651e2323c283b50e8642f43b251856489a",
+  "platform": "Windows x64, actual compiled Godot editor and subprocess, isolated project and local authorization/model fixture",
+  "before_fix": {
+    "stage": "kill before explicit approval",
+    "external_effects": 0,
+    "original_approval_reoffered": false,
+    "journal_owner_bound": false
+  },
+  "verified": [
+    "fresh approval card retains original content, actor, issue, candidate and step; old token refused",
+    "enabling automatic commands during restart does not execute an outstanding manual decision",
+    "explicit stop invalidates only this proposal and stale journal cannot revive it",
+    "stopping during changed-account review leaves the original proposal recoverable",
+    "replacing the public journal prevents cross-window approval or deletion of the other proposal",
+    "missing cwd pauses entire batch before second side effect; restored original cwd can reoffer card",
+    "missing original command exit receipt is unknown, never replayed; original receipt later recovered once"
+  ],
+  "verified_scenarios": [
+    "verified-594",
+    "verified-594--stop",
+    "verified-594--changed-actor",
+    "verified-594--missing-cwd",
+    "verified-594unknown"
+  ],
+  "editor_sha256": "12d59b74bd9651b9fb05a4f8490fd0793ef0ec2b079064221af0ea3a5f83b8ec"
+}

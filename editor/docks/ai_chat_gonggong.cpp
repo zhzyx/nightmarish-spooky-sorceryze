@@ -610,6 +610,11 @@ void AIChatDock::_poll_gonggong_context() {
 	gonggong_context = result["context"];
 	gonggong_governance_digest = result.get("governance_sha256", String());
 	set_meta("gonggong_status", "context_ready");
+	if (restoring_command_offer) {
+		command_recovery_reporting.clear();
+		_next_tool(session_generation);
+		return;
+	}
 	if (!gonggong_recovered_result.is_empty()) {
 		if (!_record_gonggong("step", "restart_result_recovery", "running")) {
 			_set_busy(false);

@@ -123,6 +123,9 @@ func run() -> void:
 		push_error("Bound tool never offered an inline approval")
 		quit(1)
 		return
+	if OS.has_environment("DAQIAN_TEST_PENDING_OFFER"):
+		FileAccess.open("res://old-offer.json", FileAccess.WRITE).store_string(JSON.stringify(op))
+		return
 	if OS.has_environment("DAQIAN_TEST_COMMAND_RESTART"):
 		check(chat.confirm_daqian_approval(op.token), "Original command approval refused")
 		var composer = root.find_child("ChatInput", true, false)
