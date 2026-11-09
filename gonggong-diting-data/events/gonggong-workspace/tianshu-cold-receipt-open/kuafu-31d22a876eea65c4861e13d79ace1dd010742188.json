@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-31d22a876eea65c4861e13d79ace1dd010742188",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cold-receipt-open",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/620",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "074fd4eb187759f16941b48725382068d62cb046ed8fe2939bb954a8ad6bb81c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/620",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/623",
+    "action": "delivery",
+    "detection_head": "b50bc74739948367ba523d991d00fdab194efb00",
+    "context_sha256": "7bc374b64c331700ca6c023736f3430da591c1f00a1273a0cfe00a97dea4e678",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/620",
+    "evidence": "PR_EVIDENCE_BINDING; data-collection/tianshu-cold-receipt-620.json; issue_gate.py check_pr_evidence",
+    "diagnosis": "Evidence used a numeric issue field where the schema requires issue_number for numeric identity. The check correctly rejected the unsigned index before publication.",
+    "next_action": "Correct evidence field, rerun exact index gate, verify signed PR and merge reception.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T10:33:38.960058+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T10:36:08.097980+00:00",
+  "sha256": "d66452650babb921f0d80c67fe9deac7fada20e9028b51836956519e61cdfaa1"
+}

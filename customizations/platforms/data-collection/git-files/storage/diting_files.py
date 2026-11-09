@@ -8,8 +8,10 @@ import re
 import runpy
 import subprocess
 import tempfile
+import time
 import uuid
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -181,6 +183,35 @@ def files(data):
     return sorted(found)
 
 
+def bounded_read(entry):
+    # Large records keep their original serial read behavior. Each completed
+    # worker may retain at most 256 KiB while earlier records are validated.
+    with entry[0].open("rb") as stream:
+        content = stream.read(256 * 1024 + 1)
+    return content if len(content) <= 256 * 1024 else None
+
+
+def dataset_contents(entries):
+    # Newly checked-out files can take several milliseconds each to open on
+    # Windows. Time actual reads; keep small datasets and warm scans serial.
+    sample = 16 if os.name == "nt" and len(entries) >= 256 else 0
+    elapsed = 0.0
+    for path, rel in entries[:sample]:
+        start = time.monotonic()
+        content = path.read_bytes()
+        elapsed += time.monotonic() - start
+        yield path, rel, content
+    if elapsed < 0.008:
+        for path, rel in entries[sample:]:
+            yield path, rel, path.read_bytes()
+        return
+    with ThreadPoolExecutor(max_workers=12) as pool:
+        for offset in range(sample, len(entries), 48):
+            group = entries[offset : offset + 48]
+            for (path, rel), content in zip(group, pool.map(bounded_read, group)):
+                yield path, rel, content if content is not None else path.read_bytes()
+
+
 def load(repo, historical=False, cache=None):
     repo, data = location(repo)
     expected_name, expected_origin = NAME, "gonggong"
@@ -199,15 +230,17 @@ def load(repo, historical=False, cache=None):
         raise ValueError("Invalid dataset manifest")
     uuid.UUID(meta["dataset_id"])
     records = {}
+    entries = []
     for p in allfiles:
         rel = p.relative_to(data).as_posix()
         if rel in {"dataset.json", "README.md", ".gitattributes"}:
             continue
         if not rel.startswith("events/") or not rel.endswith(".json"):
             raise ValueError("Unexpected/uncommitted temporary data file: " + rel)
+        entries.append((p, rel))
+    for p, rel, content in dataset_contents(entries):
         # Cache only successful event validation, scoped to a live caller session.
         # Exact bytes, never timestamps, decide reuse. Graph checks always run.
-        content = p.read_bytes()
         key_path = str(p.resolve()) if cache is not None else None
         previous = cache.get(key_path) if cache is not None else None
         if previous is not None and previous[0] == content:
