@@ -410,6 +410,7 @@ void AIChatDock::_begin_gonggong_context() {
 		return;
 	}
 	gonggong_context = String();
+	gonggong_governance_digest = String();
 	gonggong_generation = session_generation;
 	String candidate_error;
 	if (snapshot_state.has("engine_candidate") && (!_validate_engine_candidate(candidate_error) || !_recover_active_provenance(candidate_error, runtime))) {
@@ -607,6 +608,7 @@ void AIChatDock::_poll_gonggong_context() {
 		issue_guide_outcome = String();
 	}
 	gonggong_context = result["context"];
+	gonggong_governance_digest = result.get("governance_sha256", String());
 	set_meta("gonggong_status", "context_ready");
 	if (!gonggong_recovered_result.is_empty()) {
 		if (!_record_gonggong("step", "restart_result_recovery", "running")) {

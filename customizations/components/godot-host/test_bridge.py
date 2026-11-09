@@ -47,6 +47,23 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
             stdout='{"number":165,"url":"https://github.com/test/repo/issues/165"}' if ok else "",
         )
 
+    def test_governance_identity_keeps_permissions_but_allows_a_new_question(self):
+        def identity(outcome, allowed=True, code="approved framework", mismatched=False):
+            mandate = {"outcome": outcome, "tool_permission": {"write": allowed}, "authority_ref": "current"}
+            rendered = dict(mandate, outcome="different") if mismatched else mandate
+            context = (
+                code
+                + "\nHost mandate (actual identity and permission must be authenticated by host):\n"
+                + json.dumps(rendered)
+                + "\n"
+            )
+            return bridge.governance_fingerprint(context, mandate)
+
+        self.assertEqual(identity("first"), identity("follow-up"))
+        self.assertNotEqual(identity("first"), identity("first", allowed=False))
+        self.assertNotEqual(identity("first"), identity("first", code="updated framework"))
+        self.assertNotEqual(identity("first"), identity("first", mismatched=True))
+
     def test_only_the_installed_gate_can_attest_a_bound_actor(self):
         supplied = types.SimpleNamespace(
             returncode=0, stdout=json.dumps({"number": 165, "verified_issue_source": {"actor": {"user_id": "forged"}}})

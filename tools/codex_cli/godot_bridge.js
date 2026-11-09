@@ -155,6 +155,29 @@ function proxyEnvironment(env, python, platform = process.platform, invoke = spa
     return result;
 }
 
+let jobAttached = false;
+function attachJob() {
+    if (jobAttached) return;
+    // Share the kill-on-close job already shipped for the CodeBuddy connection.
+    // Fail closed if the Windows process-tree boundary cannot be established.
+    if (process.platform === 'win32') {
+        let job;
+        try {
+            job = require(path.join(__dirname, '../codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native',
+                'win32-' + process.arch, 'job-object.node'));
+        } catch (_) {
+            // A standalone Codex installation does not ship CodeBuddy's native addon.
+            const shell = path.join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe');
+            const attached = spawnSync(shell, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+                '-File', path.join(__dirname, 'attach_job.ps1'), String(process.pid)],
+                { windowsHide: true, stdio: 'ignore', timeout: 15000 });
+            if (attached.status !== 0) throw bridgeError('PROCESS_BOUNDARY_FAILED');
+        }
+        if (job && !job.ensureKillOnCloseJob()) throw bridgeError('PROCESS_BOUNDARY_FAILED');
+    }
+    jobAttached = true;
+}
+
 async function run(entry, request, onProgress, workflowPython) {
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
     if (fs.statSync(request).size > 1024 * 1024) throw bridgeError('REQUEST_SIZE_LIMIT');
@@ -176,23 +199,7 @@ async function run(entry, request, onProgress, workflowPython) {
         listener.unref();
         cleanupPipe.unref();
     }
-    // Share the kill-on-close job already shipped for the CodeBuddy connection.
-    // Fail closed if the Windows process-tree boundary cannot be established.
-    if (process.platform === 'win32') {
-        let job;
-        try {
-            job = require(path.join(__dirname, '../codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native',
-                'win32-' + process.arch, 'job-object.node'));
-        } catch (_) {
-            // A standalone Codex installation does not ship CodeBuddy's native addon.
-            const shell = path.join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe');
-            const attached = spawnSync(shell, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
-                '-File', path.join(__dirname, 'attach_job.ps1'), String(process.pid)],
-                { windowsHide: true, stdio: 'ignore', timeout: 15000 });
-            if (attached.status !== 0) throw bridgeError('PROCESS_BOUNDARY_FAILED');
-        }
-        if (job && !job.ensureKillOnCloseJob()) throw bridgeError('PROCESS_BOUNDARY_FAILED');
-    }
+    attachJob();
     let child;
     let timer;
     const stop = () => { if (child && child.exitCode === null) child.kill(); };
@@ -357,9 +364,60 @@ async function listModels(entry, { timeoutMs = 30000 } = {}) {
     }
 }
 
+// The editor sends absolute paths to its own bounded request files. Model output never
+// reaches this control channel. A rejected setup can use exec only before turn/start.
+async function serve(entry, python) {
+    const { start } = require('./subscription_session');
+    const lines = require('node:readline').createInterface({ input: process.stdin, crlfDelay: Infinity });
+    const write = value => process.stdout.write(JSON.stringify(value) + '\n');
+    const stage = activity => write({ event: 'codex_progress', activity });
+    const env = proxyEnvironment(process.env, python);
+    let session, checked = false;
+    const cleanup = () => session?.rpc.close();
+    process.stdin.once('end', () => { cleanup(); process.exit(0); }); // EOF closes the Windows job even during startup or exec.
+    process.once('exit', cleanup);
+    try {
+        attachJob();
+        for await (const line of lines) {
+            if (line.length > 16384) throw bridgeError('INVALID_REQUEST');
+            const control = JSON.parse(line);
+            if (!/^[a-f0-9]{64}$/.test(control.scope) || !path.isAbsolute(control.path)
+                || fs.statSync(control.path).size > 1024 * 1024) throw bridgeError('INVALID_REQUEST');
+            const input = validateRequest(JSON.parse(fs.readFileSync(control.path,'utf8')));
+            const eligible = !input.messages.some(m=>m.images?.length) && !!input.model;
+            if (eligible && !checked) {
+                checked = true;
+                try { session = await start(entry,python,env); } catch { session = null; }
+            }
+            if (!eligible || !session) {
+                // The next text round must not inherit a turn that went through exec.
+                if (session) { cleanup(); session = null; checked = false; }
+                const output = await run(entry,control.path,stage,python);
+                write({ ...output, transport: { mode: 'exec' } }); continue;
+            }
+            let turn;
+            try { turn = await session.turn(input,control.scope,outputSchemaFor(input,SCHEMA),promptFor,stage); }
+            catch (error) {
+                if (error.beforeTurn !== true) throw error;
+                cleanup(); session=null;
+                const output=await run(entry,control.path,stage,python);
+                write({...output,transport:{mode:'exec'}}); continue;
+            }
+            const output = completion(turn.output,input);
+            session.accepted(output.choices[0].message);
+            write({ ...output, transport: { mode: turn.mode, message_count: turn.messages } });
+        }
+    } catch(error) {
+        write({ error: serializeError(error.bridgeCode ? error : bridgeError('PROCESS_EXIT')) });
+        process.exitCode = 1;
+    } finally { lines.close(); cleanup(); process.stdin.destroy(); }
+}
+
 module.exports = { proxyEnvironment, listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
-    if (!['chat', 'models'].includes(process.argv[2])) {
+    if (process.argv[2] === 'session') {
+        serve(process.argv[3], process.argv[4]).catch(() => {process.exitCode=1;});
+    } else if (!['chat', 'models'].includes(process.argv[2])) {
         process.stdout.write(JSON.stringify({ error: { code: 'INVALID_REQUEST' } }));
         process.exitCode = 1;
     } else {
