@@ -1,0 +1,23 @@
+{
+  "kind": "request",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "id": "codex-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/692",
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "scope": "framework-method-learning",
+    "parent_issue": 687
+  },
+  "request_id": "framework-method-learning",
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "event_id": "request-692-framework-method-learning",
+  "occurred_at": "2026-11-09T21:20:52.0334884+00:00",
+  "schema_version": 1,
+  "sha256": "0c466e35902d99f9d0e784a2d5cba8969c9de22e8d20edf90bcac70e863a2a30"
+}

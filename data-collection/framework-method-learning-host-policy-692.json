@@ -1,0 +1,19 @@
+{
+  "request_id": "framework-method-learning",
+  "issue_number": 692,
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42703123431/job/129453081279",
+  "cause": "配置宿主在并行交付中新增了独立的框架清单精确摘要。框架候选已验证自身分发文件，运行时宿主仍绑定上一清单。",
+  "check": "Read-RuntimeHostPolicy using the installed tools/gonggong_runtime_policy.ps1",
+  "manifest_sha256": "2235d4517f951c9bedc7d05c651b8c9f1df45a4516ebc1d741b25fa2a2a0dd07",
+  "registered_pins_checked": 10,
+  "passed": true,
+  "scope": "宿主逐文件精确校验，包含冻结纲领和元衡原件；完整 Windows 回归另由同一候选 CI 执行。",
+  "runtime_recheck": {
+    "command": "tests/editor/run_runtime_setup_simulation.py --godot <signed-PR-Windows-editor> --out <isolated-report>",
+    "source_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42703123431",
+    "binary_sha256": "89950d338633bd5f3f7af889954e9986d65656da0663b0a8b9a0e51509d0af98",
+    "passed": true,
+    "interruption_cases": 3,
+    "scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures"
+  }
+}

@@ -4,7 +4,7 @@ $script:RuntimePolicyHostRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 
 $script:RuntimePolicyPins = @'
 {
   "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
-  "framework/framework-manifest.json": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+  "framework/framework-manifest.json": "2235d4517f951c9bedc7d05c651b8c9f1df45a4516ebc1d741b25fa2a2a0dd07",
   "framework/foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
   "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
   "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",

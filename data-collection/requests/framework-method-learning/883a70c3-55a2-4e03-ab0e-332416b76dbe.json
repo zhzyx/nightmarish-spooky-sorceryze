@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "framework-method-learning",
+  "collected_at": "2026-11-09T21:20:54.462322+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/framework-method-learning/dispatch-2dc525f3032f499d988fe438760e70be.json",
+      "sha256": "57d1563f2a05e45da03e029afdc5a4d88ecbdbeb0a2ee386a0aa129e38d94a47",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2dc525f3032f499d988fe438760e70be",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/framework-method-learning/request-692-framework-method-learning.json",
+      "sha256": "d3e9f64c3a85d5575678910984ff917bfa104be8a4a9f2097f3bd4468a38e1a2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-692-framework-method-learning",
+      "origin": "codex"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 692,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/692"
+}
