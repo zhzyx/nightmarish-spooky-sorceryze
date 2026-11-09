@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "event_id": "git-bot-host-policy-recovery-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "step",
+  "occurred_at": "2026-11-09T22:18:09.686689+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "b007d96b43269ca0a0c85735441367e90e3524ea657911874abe0e9be8333dcc",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "source_pr": 699,
+    "source_head": "e19d4a6be4049240661c1ce66f5bfb2e631bdac3",
+    "main_merge": "9789559ac15830cb211ea6d1e122c1b8acc62cb3",
+    "source_bug": 696,
+    "bug_readback": {
+      "closed_at": "2026-11-09T22:16:11Z",
+      "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/696",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 696,
+      "state": "closed",
+      "state_reason": "completed",
+      "updated_at": "2026-11-09T22:16:11Z"
+    },
+    "evidence": "data-collection/git-bot-host-policy-recovery-20261110.json",
+    "completed_bug_count": 10,
+    "remaining": [
+      255,
+      264,
+      278,
+      662,
+      525,
+      556,
+      563
+    ],
+    "parent_overall": "open"
+  },
+  "evidence_refs": [
+    "git-bot-parent-state-correction-20261110"
+  ],
+  "sha256": "7ff415394d651dbf85fec49f84865d9650ee6ee96020d5fd212be28c750a2e6d"
+}
