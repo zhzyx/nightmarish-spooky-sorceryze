@@ -1,0 +1,31 @@
+{
+  "platform": "darwin",
+  "scope": "real installed executable selection, separate-process record/reload and unpin; no package installation or OS uninstall",
+  "locations": [
+    {
+      "location": "project-local",
+      "deployed_components": [
+        "python",
+        "node",
+        "git"
+      ],
+      "fresh_process_record_reload": true,
+      "rollback": true,
+      "audit_log_retained": true,
+      "physical_state_location": "workspace/project/runtime/state for both selections"
+    },
+    {
+      "location": "user-level",
+      "deployed_components": [
+        "python",
+        "node",
+        "git"
+      ],
+      "fresh_process_record_reload": true,
+      "rollback": true,
+      "audit_log_retained": true,
+      "physical_state_location": "workspace/project/runtime/state for both selections"
+    }
+  ],
+  "state": "passed"
+}

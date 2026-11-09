@@ -1,0 +1,165 @@
+{
+  "scope": "historical macOS binary representative diagnostic; mock compilation; actual native consumer and process handoff",
+  "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "source_revision": "a2a119d51",
+  "results": [
+    {
+      "phase": "matrix",
+      "exit_code": 0,
+      "command": [
+        "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64",
+        "--headless",
+        "--display-driver",
+        "headless",
+        "--audio-driver",
+        "Dummy",
+        "--editor",
+        "--path",
+        "<private-self-update-probe>/portable-safe/matrix",
+        "--script",
+        "res://integration.gd"
+      ],
+      "matrix": [
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.windows.editor.x86_64.self_update_a.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.windows.editor.x86_64.self_update_b.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.linuxbsd.editor.x86_64.self_update_a",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.linuxbsd.editor.x86_64.self_update_b",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.template_release.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_c",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/other.macos.editor.arm64.self_update_b",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_ax",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-safe/godot.macos.editor.arm64.self_update_b",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        }
+      ]
+    },
+    {
+      "phase": "restart",
+      "exit_code": 0,
+      "command": [
+        "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_a",
+        "--headless",
+        "--display-driver",
+        "headless",
+        "--audio-driver",
+        "Dummy",
+        "--editor",
+        "--path",
+        "<private-self-update-probe>/portable-safe/restart",
+        "--script",
+        "res://integration.gd"
+      ],
+      "matrix": [
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        }
+      ],
+      "outgoing": {
+        "executable": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_a",
+        "pid": 51251
+      },
+      "receipt": {
+        "executable": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+        "ok": true,
+        "pid": 51278,
+        "project": "<private-self-update-probe>/portable-safe/restart"
+      }
+    }
+  ],
+  "watchdog_ack": {
+    "dock_ready": true,
+    "executable": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+    "pid": 51278,
+    "token": "6af1c035-c833-191082-ec4bcfc9",
+    "unix_time": 1794228280.11107,
+    "version": 1
+  },
+  "watchdog_report": {
+    "status": "started",
+    "binary": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+    "previous": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_a",
+    "closed_normally": true
+  }
+}

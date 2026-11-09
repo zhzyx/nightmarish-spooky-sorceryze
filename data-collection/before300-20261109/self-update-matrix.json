@@ -1,0 +1,242 @@
+{
+  "scope": "historical macOS binary representative diagnostic; mock compilation; actual native consumer and process handoff",
+  "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "source_revision": "a2a119d51",
+  "results": [
+    {
+      "phase": "matrix",
+      "exit_code": 0,
+      "command": [
+        "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.arm64",
+        "--headless",
+        "--display-driver",
+        "headless",
+        "--audio-driver",
+        "Dummy",
+        "--editor",
+        "--path",
+        "<private-self-update-probe>/portable-matrix-expanded/matrix",
+        "--script",
+        "res://integration.gd"
+      ],
+      "matrix": [
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.x86_64.self_update_a.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.x86_64.self_update_b.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.arm64.self_update_b",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.x86_64.self_update_a",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.x86_64.self_update_b",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.dev.double.x86_64.nothreads.self_update_a.mono.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.dev.double.x86_64.nothreads.self_update_b.mono.exe",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.template_release.x86_64.self_update_a.exe",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.x86_64.self_update_c.exe",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/other.windows.editor.x86_64.self_update_a.exe",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.windows.editor.x86_64.self_update_ax.exe",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/godot.windows.editor.x86_64.self_update_a.exe",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.dev.double.arm64.nothreads.self_update_a.mono",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.dev.double.arm64.nothreads.self_update_b.mono",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.template_release.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.arm64.self_update_c",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/other.macos.editor.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.macos.editor.arm64.self_update_ax",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/godot.macos.editor.arm64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.dev.double.x86_64.nothreads.self_update_a.mono",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": true,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.dev.double.x86_64.nothreads.self_update_b.mono",
+          "build_disabled": false,
+          "expected": true,
+          "progress": 100.0,
+          "status": "编译与启动校验通过 · 100% · 新版本已就绪"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.template_release.x86_64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.x86_64.self_update_c",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/other.linuxbsd.editor.x86_64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/engine/bin/godot.linuxbsd.editor.x86_64.self_update_ax",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        },
+        {
+          "accepted": false,
+          "artifact": "<private-self-update-probe>/portable-matrix-expanded/godot.linuxbsd.editor.x86_64.self_update_a",
+          "build_disabled": false,
+          "expected": false,
+          "progress": 99.0,
+          "status": "编译或校验失败（退出码 0）。当前编辑器保持不变。"
+        }
+      ]
+    }
+  ]
+}

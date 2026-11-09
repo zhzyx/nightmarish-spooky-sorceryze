@@ -1,16 +1,18 @@
 """Run or inspect a host-signed framework plan for one exact Sinan assignment."""
-from contextlib import closing
+
 import hashlib
 import hmac
 import json
 import os
-from pathlib import Path
 import sqlite3
 import sys
+from contextlib import closing
+from pathlib import Path
 
-FRAMEWORK = Path(__file__).resolve().parents[3] / "framework"
-sys.path.insert(0, str(FRAMEWORK / "runtime"))
-import runner
+ROOT = Path(__file__).resolve().parents[3]
+FRAMEWORK = ROOT / "framework"
+sys.path.insert(0, str(ROOT / "customizations/platforms/ai-access/host-http/runtime"))
+import runner  # noqa: E402 - load the host runtime from its repository-owned location.
 
 
 def resource(path):
@@ -27,14 +29,20 @@ def execute(grant, assignment, action="run", original=None):
         # branch accepts expiry; the ledger must still match the exact signed grant.
         if not hmac.compare_digest(runner.signature(payload), grant["signature"]):
             raise ValueError("Invalid historical grant signature")
-        if payload["framework_sha256"] != hashlib.sha256((FRAMEWORK / "framework-manifest.json").read_bytes()).hexdigest():
+        if payload.get("runtime_sha256") != runner.runtime_digest():
+            raise ValueError("Historical runtime binding changed")
+        if (
+            payload["framework_sha256"]
+            != hashlib.sha256((FRAMEWORK / "framework-manifest.json").read_bytes()).hexdigest()
+        ):
             raise ValueError("Historical framework binding changed")
     else:
         runner.verify_grant(grant, FRAMEWORK, state)
     task = payload["task"]
     if not (
         payload["authority_ref"] == task["authority_ref"] == assignment["authorityRef"]
-        and state.is_absolute() and resource(state) in assignment["writes"]
+        and state.is_absolute()
+        and resource(state) in assignment["writes"]
         and resource(FRAMEWORK.parent) in assignment["reads"]
         and task["tenant_id"] == "gonggong-workspace"
         and task["outcome"] == assignment["outcome"]

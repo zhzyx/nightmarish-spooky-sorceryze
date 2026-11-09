@@ -1,0 +1,115 @@
+{
+  "issue": 95,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+  "request_id": "yanluo-issue-63-nonwindows-artifact-20261105",
+  "source_revision": "cc297363ae1099bbbed8a9b5fb4d47c0e7ab257b",
+  "implemented_fix_commit": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "4945b2b5212eadb67fa9d059238d794d96c8c7d5708baf2ba5dfaabab3aafdfc",
+    "editor/docks/ai_chat_host_runtime.h": "680fd488a485212a55a15871ff926d405dbeb158d871a0158c24d127425f9f7e",
+    "tools/editor_self_build.py": "77d3427943823154e0fed94e5fd4d35c0558b64e5aa801aca854f3d16b18e38f",
+    "tests/editor/test_editor_self_build.py": "d07d8983f65c16d4ebc056a0cbb4c0bcf5caa10a0ccb8fd90628266d1d47c3bc",
+    "tests/editor/test_runtime_config.cpp": "231fe343e16b55cf257bbc5b699e62a3980396a8cf7df684dc6016650b9610fa",
+    "tests/editor/run_editor_self_update.py": "0aa7421ecbb4821aa008c08f471494c6c7a44bce933354c04e56ae7c99bf5b2c",
+    "tools/editor_restart_watchdog.py": "c48a9e4aa4932833be46d65e6740b4de559294b711dff5b33ef6b506327c9b76",
+    "main/main.cpp": "545dbd495a2068779819842a6a14f8ca48bf7362bb1a973c0533b0d7146ad05b"
+  },
+  "python_self_build": {
+    "passed": 13,
+    "total": 13,
+    "duration_seconds": 0.293,
+    "evidence": "python-self-build.log"
+  },
+  "native_unit_attempt": {
+    "state": "unavailable",
+    "reason": "Available macOS binary compiled without tests=yes",
+    "evidence": "native-path-matcher.log"
+  },
+  "native_artifact_consumer_matrix": {
+    "passed": 27,
+    "total": 27,
+    "positive": 12,
+    "negative": 15,
+    "actual_consumer": "AIChatDock::_poll_engine_build in historical macOS binary",
+    "name_producer": "current-source tools/editor_self_build.py:artifact_path",
+    "evidence": "portable-matrix-expanded-result.json",
+    "platform_names": [
+      "windows",
+      "macos",
+      "linuxbsd"
+    ],
+    "real_execution_platforms": [
+      "macos"
+    ]
+  },
+  "macos_ab_representative": {
+    "state": "passed",
+    "binary_version": "4.8.beta.custom_build.a2a119d51",
+    "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+    "compiled_during_probe": false,
+    "compile_worker": "mock; no compiler invoked",
+    "processes": [
+      51251,
+      51278
+    ],
+    "real_watchdog": true,
+    "ack": {
+      "dock_ready": true,
+      "executable": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+      "pid": 51278,
+      "token": "6af1c035-c833-191082-ec4bcfc9",
+      "unix_time": 1794228280.11107,
+      "version": 1
+    },
+    "report": {
+      "status": "started",
+      "binary": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_b",
+      "previous": "<private-self-update-probe>/portable-safe/engine/bin/godot.macos.editor.arm64.self_update_a",
+      "closed_normally": true
+    },
+    "evidence": "portable-safe-result.json"
+  },
+  "first_restart_attempt": {
+    "state": "failed_and_cleaned",
+    "reason": "--headless shorthand is not forwarded to restarted editor by Main::CLI_SCOPE_TOOL; child native startup did not acknowledge",
+    "own_processes_terminated": [
+      51033,
+      51118
+    ],
+    "retest": "Explicit --display-driver headless --audio-driver Dummy forwarded successfully without product patch",
+    "evidence": "portable-result.json"
+  },
+  "unknown": [
+    "Latest main exact native build and its unit tests",
+    "Real Linux process handoff or compilation",
+    "Real Windows process handoff in this run",
+    "Real SCons compile-to-ready end-to-end for macOS",
+    "Bound candidate/provenance and native .app managed publication path not exercised"
+  ],
+  "recommendation": "Keep #95 open under full compile/runtime acceptance. Root can add a durable cross-platform artifact matrix and portable headless runner; use current-source exact candidate tests or CI for native validation, retain real Linux unknown. No source edits made by this worker.",
+  "historical_current_source_equivalence": {
+    "tools/editor_self_build.py": {
+      "component": "artifact_path producer",
+      "equal": true,
+      "sha256": "3c79a614295fd4a4d453eb8f4b15a2a87aaab731ad98e03e7952c123892647de"
+    },
+    "editor/docks/ai_chat_host_runtime.h": {
+      "component": "filename acceptance boolean; directory calculation changed separately",
+      "equal": true,
+      "sha256": "34281dddb92a37b421403dd732cd999d3a80232bff5c2c5506e8b91bf3c14e7e"
+    }
+  },
+  "cleanup": {
+    "state": "verified",
+    "process_check": "ps -axo pid,ppid,command filtered to <private-self-update-probe>/(portable|native-unit-editor) returned no matches",
+    "shared_build_modified": false,
+    "installed_application_touched": false
+  },
+  "evidence_packaging": {
+    "python-self-build.log": "python-self-build.txt",
+    "native-path-matcher.log": "native-path-matcher.txt",
+    "portable-matrix-expanded-result.json": "self-update-matrix.json",
+    "portable-safe-result.json": "self-update-restart.json",
+    "portable-result.json": "Initial --headless-only restart diagnostic failed to propagate display mode; raw diagnostic not packaged. The failure, owned-child cleanup and safe recheck are summarized in this audit; final success is in self-update-restart.json."
+  }
+}

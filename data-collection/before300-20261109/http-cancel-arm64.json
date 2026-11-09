@@ -1,0 +1,39 @@
+{
+  "case": "headers",
+  "max_frame_gap_seconds": 0.007072,
+  "observed_server_release": true,
+  "recovery_max_frame_gap_seconds": 0.019561,
+  "recovery_received": true,
+  "server_released_at_recovery": false,
+  "server_released_at_stop_return": false,
+  "stale_response_absent": true,
+  "stop_call_seconds": 0.003256,
+  "stop_disabled_after": true,
+  "stop_trigger": "pressed_signal_callback",
+  "stop_was_enabled": true,
+  "editor_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "server_delay_seconds": 3.0,
+  "native_exit_code": 0,
+  "model_transport": "isolated loopback mock",
+  "real_provider": false,
+  "requests": [
+    {
+      "models": false,
+      "recovery": false
+    },
+    {
+      "models": false,
+      "recovery": true
+    }
+  ],
+  "errors": [],
+  "visible": false,
+  "gzip_recovery": true,
+  "fixture_sha256": {
+    "run_ai_chat_http_cancel.py": "48c0292280590f134cc6adcb65c11a1d0cf74654995c9b9447b2d5553c9fccdd",
+    "ai_chat_http_cancel.gd": "ecc88672e9e80901cd1d3da87f13116b827e8df649350880415e93d0cc32f668"
+  },
+  "max_stop_seconds": 0.25,
+  "max_allowed_frame_gap_seconds": 0.25,
+  "passed": true
+}

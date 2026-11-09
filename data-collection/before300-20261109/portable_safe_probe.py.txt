@@ -1,0 +1,126 @@
+"""Diagnostic derivative of tests/editor/run_editor_self_update.py; mock compile, real headless dock and restart."""
+import importlib.util,json,os,pathlib,shutil,subprocess,sys,time,hashlib
+ROOT=pathlib.Path('<task-worktree>')
+OUT=pathlib.Path('<private-self-update-probe>')
+SOURCE=OUT/'native-unit-editor/godot.macos.editor.arm64'
+BASE=OUT/'portable-safe'; BASE.mkdir(exist_ok=True)
+ENGINE=BASE/'engine'; BIN=ENGINE/'bin'; BIN.mkdir(parents=True,exist_ok=True); (ENGINE/'tools').mkdir(exist_ok=True)
+(ENGINE/'SConstruct').write_text('# isolated mock source marker\n')
+(BIN/'_sc_').touch(); (BIN/'editor_data').mkdir(exist_ok=True)
+(BIN/'editor_data/editor_settings-4.8.tres').write_text('[gd_resource type="EditorSettings" format=3]\n\n[resource]\ngonggong/workspace = ""\nai_chat/auto_execute_commands = true\nai_chat/engine_auto_restart = false\n')
+(ENGINE/'tools/editor_self_build.py').write_text('''import argparse,json,time\nfrom pathlib import Path\np=argparse.ArgumentParser()\nfor key in ('current','status','log','cancel','host-build-options','binding','project','artifact-layout'):p.add_argument('--'+key)\np.add_argument('--scons-arg',action='append',default=[])\na=p.parse_args()\nroot=Path(__file__).resolve().parents[1]\nmode=json.loads((root/'tools/mode').read_text())\npath=Path(a.status)\ndef state(**data):\n temp=path.with_suffix('.tmp');temp.write_text(json.dumps(data));temp.replace(path)\nPath(a.log).write_text('DIAGNOSTIC MOCK BUILD; no compiler invoked\\n')\nstate(stage='building',percent=50,exit_code=0);time.sleep(.2)\nstate(stage='ready',percent=100,exit_code=0,executable=mode['artifact'])\n''')
+shutil.copyfile(ROOT/'tools/editor_restart_watchdog.py',ENGINE/'tools/editor_restart_watchdog.py')
+# Python naming is the authoritative producer; exercise the native consumer through ready status.
+sys.path.insert(0,str(ROOT/'tools')); import editor_self_build as worker
+old_root=worker.ROOT; worker.ROOT=ENGINE
+cases=[]
+for platform in ('windows','macos','linuxbsd'):
+ for slot in ('a','b'):
+  opts=dict(platform=platform,dev_build='no',precision='single',arch='arm64' if platform=='macos' else 'x86_64',extra_suffix='self_update_'+slot,module_mono_enabled='no')
+  path=worker.artifact_path(opts);path.write_bytes(b'naming fixture, never executed');cases.append(dict(artifact=str(path),accepted=True,platform=platform,slot=slot))
+for name in ('godot.macos.template_release.arm64.self_update_a','godot.macos.editor.arm64.self_update_c','other.macos.editor.arm64.self_update_b','godot.macos.editor.arm64.self_update_ax'):
+ p=BIN/name;p.write_bytes(b'negative fixture');cases.append(dict(artifact=str(p),accepted=False))
+p=BASE/'godot.macos.editor.arm64.self_update_b';p.write_bytes(b'wrong-directory fixture');cases.append(dict(artifact=str(p),accepted=False))
+worker.ROOT=old_root
+# Actual distinct byte-identical processes for A/B handoff.
+for name in ('godot.macos.editor.arm64','godot.macos.editor.arm64.self_update_a','godot.macos.editor.arm64.self_update_b'):
+ dest=BIN/name;dest.unlink(missing_ok=True);subprocess.run(['/bin/cp','-c',str(SOURCE),str(dest)],check=True)
+(ENGINE/'tools/cases.json').write_text(json.dumps(cases))
+SCRIPT=r'''@tool
+extends SceneTree
+func _initialize():
+    _run.call_deferred()
+func _write(path, value):
+    var file = FileAccess.open(path, FileAccess.WRITE)
+    file.store_string(JSON.stringify(value))
+    file.close()
+func _run():
+    for i in range(10):
+        await process_frame
+    var dock = root.find_child("AI Chat", true, false)
+    if dock == null:
+        push_error("AI Chat dock missing")
+        quit(1)
+        return
+    var settings = dock.get_environment_settings_control()
+    var build = settings.find_child("BuildEngine", true, false)
+    var restart = settings.find_child("RestartUpdatedEngine", true, false)
+    var cancel = dock.find_child("CancelEngineBuild", true, false)
+    var status = dock.find_child("EngineBuildStatus", true, false)
+    var progress = dock.find_child("EngineBuildProgress", true, false)
+    dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+    dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
+    settings.find_child("EngineAutoRestart", true, false).button_pressed = false
+    var engine = OS.get_environment("SELF_UPDATE_TEST_ENGINE")
+    var cases = JSON.parse_string(FileAccess.get_file_as_string(engine + "/tools/cases.json"))
+    if OS.get_environment("SELF_UPDATE_TEST_PHASE") == "restart":
+        cases = [{"artifact": engine + "/bin/godot.macos.editor.arm64.self_update_b", "accepted": true}]
+    var results = []
+    for test in cases:
+        _write(engine + "/tools/mode", test)
+        build.pressed.emit()
+        var deadline = Time.get_ticks_msec() + 10000
+        while not cancel.disabled and Time.get_ticks_msec() < deadline:
+            await process_frame
+        var accepted = not restart.disabled and progress.value == 100
+        var result = {"artifact": test.artifact, "expected": test.accepted, "accepted": accepted, "status": status.text, "progress": progress.value, "build_disabled": build.disabled}
+        results.append(result)
+        _write("res://matrix.json", results)
+        if accepted != test.accepted:
+            push_error("Unexpected native artifact acceptance: " + JSON.stringify(result))
+            quit(1)
+            return
+    if OS.get_environment("SELF_UPDATE_TEST_PHASE") == "restart":
+        _write("res://outgoing.json", {"executable": OS.get_executable_path(), "pid": OS.get_process_id()})
+        restart.pressed.emit()
+        var deadline = Time.get_ticks_msec() + 20000
+        while Time.get_ticks_msec() < deadline:
+            await process_frame
+        push_error("Successful ready artifact did not restart")
+        quit(1)
+        return
+    quit(0)
+'''
+PLUGIN=r'''@tool
+extends EditorPlugin
+func _enter_tree():
+    _ready_check.call_deferred()
+func _ready_check():
+    if not OS.get_executable_path().ends_with(".self_update_b"):
+        return
+    for i in range(8):
+        await get_tree().process_frame
+    var dock = get_tree().root.find_child("AI Chat", true, false)
+    var path = ProjectSettings.globalize_path("res://").trim_suffix("/")
+    var ok = dock != null and FileAccess.file_exists("res://.godot/editor/ai_chat_history.json") and path == OS.get_environment("SELF_UPDATE_TEST_PROJECT")
+    var receipt = FileAccess.open("res://receipt.json", FileAccess.WRITE)
+    receipt.store_string(JSON.stringify({"ok":ok,"executable":OS.get_executable_path(),"pid":OS.get_process_id(),"project":path}))
+    receipt.close()
+    get_tree().quit(0 if ok else 1)
+'''
+env={k:v for k,v in os.environ.items() if not k.startswith(('GONGGONG_','CODEX_','AINATIVE_')) and not any(w in k.upper() for w in ('TOKEN','SECRET','CREDENTIAL','PASSWORD','API_KEY'))}
+env.update(HOME=str(BASE/'home'),TMPDIR=str(OUT),GONGGONG_RUNTIME_CONFIG=str(BASE/'runtime.json'),GONGGONG_BUILD_PYTHON=sys.executable,GONGGONG_PYTHON=sys.executable,SELF_UPDATE_TEST_ENGINE=str(ENGINE),PYTHONDONTWRITEBYTECODE='1')
+(BASE/'home').mkdir(exist_ok=True)
+(BASE/'runtime.json').write_text(json.dumps({'schema_version':1,'runtimes':{'build_python':sys.executable,'workflow_python':sys.executable}}))
+result=[]
+for phase in ('matrix','restart'):
+ project=BASE/phase;project.mkdir(exist_ok=True)
+ (project/'addons/restart_receipt').mkdir(parents=True,exist_ok=True)
+ (project/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Isolated non-Windows self update diagnostic"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[editor_plugins]\nenabled=PackedStringArray("res://addons/restart_receipt/plugin.cfg")\n')
+ (project/'integration.gd').write_text(SCRIPT)
+ (project/'addons/restart_receipt/plugin.gd').write_text(PLUGIN)
+ (project/'addons/restart_receipt/plugin.cfg').write_text('[plugin]\nname="Restart Receipt"\ndescription="Diagnostic"\nauthor="Godot"\nversion="1"\nscript="plugin.gd"\n')
+ env.update(SELF_UPDATE_TEST_PHASE=phase,SELF_UPDATE_TEST_PROJECT=str(project))
+ initial=BIN/('godot.macos.editor.arm64' if phase=='matrix' else 'godot.macos.editor.arm64.self_update_a')
+ cmd=[str(initial),'--headless','--display-driver','headless','--audio-driver','Dummy','--editor','--path',str(project),'--script','res://integration.gd']
+ with (BASE/(phase+'.log')).open('wb') as log:
+  p=subprocess.run(cmd,cwd=BASE,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=120)
+ deadline=time.monotonic()+30
+ if phase=='restart':
+  while not (project/'receipt.json').is_file() and time.monotonic()<deadline:time.sleep(.1)
+ entry=dict(phase=phase,exit_code=p.returncode,command=cmd)
+ for name in ('matrix','outgoing','receipt'):
+  if (project/(name+'.json')).exists():entry[name]=json.loads((project/(name+'.json')).read_text())
+ result.append(entry); print(json.dumps(entry,ensure_ascii=False))
+ if p.returncode:break
+(OUT/'portable-safe-result.json').write_text(json.dumps({'scope':'historical macOS binary representative diagnostic; mock compilation; actual native consumer and process handoff','binary_sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'source_revision':'a2a119d51','results':result},ensure_ascii=False,indent=2))

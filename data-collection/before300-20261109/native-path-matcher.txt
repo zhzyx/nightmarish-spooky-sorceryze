@@ -1,0 +1,4 @@
+ERROR: `--test` was specified on the command line, but this Godot binary was compiled without support for unit tests. Aborting.
+To be able to run unit tests, use the `tests=yes` SCons option when compiling Godot.
+
+   at: test_entrypoint (main/main.cpp:951)

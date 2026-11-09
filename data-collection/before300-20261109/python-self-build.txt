@@ -1,0 +1,7 @@
+...fixture isolated startup failed
+.SCons build failed (exit 7); see <private-self-update-probe>/tmp1r474dl_/build.log
+.........
+----------------------------------------------------------------------
+Ran 13 tests in 0.293s
+
+OK

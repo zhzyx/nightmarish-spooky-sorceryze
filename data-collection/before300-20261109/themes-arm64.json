@@ -1,0 +1,38 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "binary_sha256": "9f0bf6645160e901ee1e481639b7820c1e8383f91e3ae0fde6a90cb5b4352aea",
+  "probe_sha256": "bd0c71d8b4df7b37526c97658477f14d1981b8a3607d1e4948eb09ad40ff355b",
+  "source_provenance": null,
+  "binary_version": "4.8.beta.custom_build.a2a119d51",
+  "exit_code": 0,
+  "probe": {
+    "failures": [],
+    "samples": [
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "preset": "Default"
+      },
+      {
+        "background": "f5f5f5ff",
+        "editor_base": "e6e6e6ff",
+        "foreground": "000000bf",
+        "input_contrast": 9.90760111439829,
+        "preset": "Light"
+      },
+      {
+        "background": "1c1c1cff",
+        "editor_base": "292929ff",
+        "foreground": "ffffffbf",
+        "input_contrast": 10.043122880017,
+        "preset": "Default"
+      }
+    ],
+    "scope": "headless theme colors, control geometry, focus signals and settings navigation; no pixel or provider acceptance"
+  }
+}

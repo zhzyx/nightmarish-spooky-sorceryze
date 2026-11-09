@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-20700d9c02887d9b3c1f46f69d43dee2e9b9c043",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-63-nonwindows-artifact-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b03f63635b8614e07d046c299208502e35881d478e6a8dd1a37d83e4cc8baaf5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+    "action": "intake",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42618265967",
+    "diagnosis": "Root invocation omitted required tenant argument; corrected intake-only using work-items.json tenant gonggong-workspace passed. This is a host invocation error, not an artifact acceptance failure.",
+    "next_action": "Continue isolated macOS self-update verification; retain actual Linux end-to-end gap.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T12:35:14.518721+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T12:41:52.702879+00:00",
+  "sha256": "3573b75c7be6177ad77fd18eb589a0119346b85d158ab1c4a32a9d5350aded05"
+}

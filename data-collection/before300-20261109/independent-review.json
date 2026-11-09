@@ -1,0 +1,13 @@
+{
+  "head": "a425cc0aeb07c3e913b6f58603001d3165d3652d",
+  "source_diff_digest": "8b2389a3cd4cb9144884254e3a5fc5293f9504279573c2acbe0f1df24a16723f",
+  "source_patch_sha256": "0b7cacfbced684c98a2f5d15fc5c953c7766a0717ea6856272fe05f99e613c17",
+  "candidate_digest": "991d1fc45c1b12db3208bae10604d67f3e9b9ed9fab5736cb76cc9806a94677c",
+  "index_patch_sha256": "e72f3299af135a5d36f8884ce92e57db143550b063c6c02e6d4ed1a90ea13525",
+  "index_listing_sha256": "c13f91b9af71db9f4c9986253fafbe69561c3a7fd079f835844e361a3753f2aa",
+  "issue_number": 158,
+  "request_id": "collaborator-runtime-parity",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+  "native_tool_reference": "collaboration.FINAL_ANSWER:/root/sinan_3b4c811fa6711182",
+  "scope_note": "Exact reviewed index precedes this appended review receipt. This receipt changes evidence only; reviewed source/content hashes are retained."
+}
