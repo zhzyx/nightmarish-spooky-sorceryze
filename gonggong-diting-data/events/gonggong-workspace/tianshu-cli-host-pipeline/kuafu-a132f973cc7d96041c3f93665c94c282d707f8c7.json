@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a132f973cc7d96041c3f93665c94c282d707f8c7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-host-pipeline",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5e50b5d090a4f9bbd310f97571c2902b0474a8ad9e7ec121c5e8db00eba7dc73",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662",
+    "action": "delivery",
+    "detection_head": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+    "context_sha256": "6cfd4ed8a6a752937539e5f62182464924ac316a7b952d0bf00c2ed388be4b5f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42678561226",
+    "diagnosis": "Git HTTPS fetch timed out on a direct github.com:443 connection after 21 seconds; the configured Windows system HTTPS proxy restores this same authenticated read. Main also advanced during validation.",
+    "next_action": "Integrate the latest main and revalidate before signing via the configured network path.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:56:27.683900+00:00",
+    "attempted": "Reproduced exit 128 on authenticated fetch and repeated the same read via Windows configured proxy.",
+    "repair_owner": "Sail-Li",
+    "continuable": "No remote publication occurred on this attempt."
+  },
+  "occurred_at": "2026-11-09T19:00:08.331381+00:00",
+  "sha256": "445d7cbfc23bb58768e0a5b01ed0b19c6390abe197d9d0e7479ebaad3530a1df"
+}

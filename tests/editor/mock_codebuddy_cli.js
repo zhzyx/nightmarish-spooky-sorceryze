@@ -60,6 +60,18 @@ async function main() {
                 const actionResult = params.prompt.find(block => block.resource?.uri === 'godot://host/action-result');
                 assert(actionResult || text === '' || (text.startsWith('case:') || text.includes('case:readonly_boundary') || text.includes('current_host_design_batch')), 'User text acquired a bridge prefix');
                 assert(!text.includes('CLI-native execution is disabled'));
+                if (text === 'case:host_read_batch') {
+                    const names = ['first.txt', 'literal.txt', 'absent.txt', 'last.txt'];
+                    const reads = await Promise.allSettled(names.map(name => connection.readTextFile({
+                        sessionId: session.id, path: path.join(process.env.BATCH_PROJECT, name),
+                    })));
+                    fs.writeFileSync(process.env.BATCH_WIRE, JSON.stringify(reads.map(read =>
+                        read.status === 'fulfilled' ? { ok: true, content: read.value.content } : { ok: false, error: String(read.reason) })));
+                    await connection.sessionUpdate({ sessionId: session.id, update: {
+                        sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'ACP_BATCH_COMPLETE' },
+                    } });
+                    return { stopReason: 'end_turn' };
+                }
                 const recovery = params.prompt.find(block => block.resource?.uri === 'godot://conversation/recovery');
                 const blocks = params.prompt.filter(block => block.type === 'image');
                 let imageIndex = 0;
@@ -94,6 +106,15 @@ async function main() {
                 assert.notEqual(state.attach_editor_logs, true);
                 assert(!text.includes('AI_CHAT_ON_DEMAND_LOG_SENTINEL'), 'Ordinary chat must not include editor Output');
                 session.memory.push({ role: 'user', content: text, ...(currentImages.length ? { images: currentImages } : {}) });
+                if (text === 'case:nine_concurrent_reads') {
+                    const reads = Array.from({ length: 9 }, (_, index) => connection.readTextFile({
+                        sessionId: session.id, path: path.join(workspace.project_root, 'part-' + index + '.txt')
+                    }));
+                    const results = await Promise.all(reads);
+                    assert.deepEqual(results.map(result => result.content), Array.from({ length: 9 }, (_, i) => 'value-' + i));
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'ALL_NINE_OK' } } });
+                    return { stopReason: 'end_turn' };
+                }
                 if (text === 'case:protocol_flood') {
                     const payload = 'PRIVATE_PROTOCOL_PAYLOAD'.padEnd(256 * 1024, 'x');
                     await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'tool_call', toolCallId: 'flood-search', kind: 'search', status: 'in_progress', title: 'Grep' } });

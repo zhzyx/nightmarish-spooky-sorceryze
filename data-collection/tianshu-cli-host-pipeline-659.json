@@ -1,0 +1,44 @@
+{
+  "issue_number": 659,
+  "request_id": "tianshu-cli-host-pipeline",
+  "parent_issue": 592,
+  "dependency": 650,
+  "issue_base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "integration_dependency_head": "1413cd04652b186aa0d5e106749867b1e9c65b63",
+  "editor_sha256": "3a34bc70070dad74fc3e2ad0edfe16dfacb5c24f9deb11c86e447c14c5df695e",
+  "platform": "Windows x64",
+  "codebuddy": {
+    "editor": "production Godot host, production ACP bridge and real ACP SDK, isolated model peer and work order",
+    "result": {
+      "batch": 1,
+      "calls": {
+        "absent.txt": "acp_file_ad9b2425-d27f-4962-a4ad-82390f115155",
+        "first.txt": "acp_file_4a8a14d6-ec51-4676-a7af-ecf4e64e132c",
+        "last.txt": "acp_file_2159edb8-de52-40a3-ab82-67814be8d3e8",
+        "literal.txt": "acp_file_85bb1b3b-f870-4b38-849a-70417fa6a79f"
+      },
+      "successful": 3,
+      "failed": 1
+    },
+    "native_protocol": "9 concurrent read promises, two envelopes of 8 and 1, reversed host result order, all resolved correctly",
+    "live_account": "corrected real CLI probe reached authentication error; actual account latency unverified"
+  },
+  "codex": {
+    "native_tests": 45,
+    "assertions": 638,
+    "failure_injection": "result receipt refused after four actual reads, exactly one model request"
+  },
+  "node": {
+    "passed": 68,
+    "failed": 0,
+    "skipped": 1,
+    "skip_reason": "macOS-only protected command test"
+  },
+  "claude": "onboarding contract only; no provider installed or exercised",
+  "timing_reader": {
+    "sample_request": "tianshu-read-receipt-batch",
+    "paired_steps": 27,
+    "unmatched_starts": 0,
+    "unmatched_ends": 0
+  }
+}

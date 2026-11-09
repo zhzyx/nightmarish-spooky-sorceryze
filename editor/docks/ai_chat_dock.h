@@ -430,7 +430,11 @@ class AIChatDock : public EditorDock {
 	Array tool_calls;
 	int tool_index = 0;
 	int read_batch_count = 0;
-	Vector<String> read_batch_results;
+	struct FileReadResult {
+		String content;
+		bool success;
+	};
+	Vector<FileReadResult> read_batch_results;
 	int tool_rounds = 0;
 	uint64_t request_generation = 0;
 	uint64_t session_generation = 0;
