@@ -154,8 +154,11 @@ public:
 			const String stripped = line.strip_edges();
 			if (stripped.begins_with("#")) {
 				const String dated = stripped.trim_prefix(U"## 设计定版确认（").trim_suffix(U"）");
+				const String digits = dated.replace("-", "");
+				const bool date_suffix = dated.length() == 10 && dated[4] == '-' && dated[7] == '-' &&
+						digits.length() == 8 && !digits.begins_with("+") && digits.is_valid_int();
 				if (stripped == U"## 设计定版确认" || stripped == U"## 设计定版确认：当前操作者代表任务" ||
-						(stripped == String(U"## 设计定版确认（") + dated + U"）" && dated.match("????-??-??") && dated.replace("-", "").is_valid_int())) {
+						(stripped == String(U"## 设计定版确认（") + dated + U"）" && date_suffix)) {
 					confirmation_section = true;
 				}
 				if (stripped.begins_with("# ") || stripped.begins_with("## ")) {
