@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f5ac60180ab762c0749a8d32ab65c11e24ee501c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9e2a7fb2bcb51fc9ea77cb6cf89f8f653db3eb14e22692544dd2b752894c0fc8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "dispatch",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "diagnosis": "Root started review driver before own terminal driver finished; normal coordination lock rejected. Old reconcile config also retained completed implementation request, so after legitimate Issue progress changed revision it emitted a duplicate launch. Actual duplicate worker was immediately interrupted; exact stagedpatchSHA remains2d22ef6904c66995a47ce13ce7d0ff914ab19b86a6e382f9d1e12f7bb2c46163. New terminal config requests=[] preventsbackfill. No foreignlocks/claims deleted.",
+    "next_action": "Finish actual interrupted-worker terminal verification and wait driver exit before starting intended independentreview; preserve frozen20source and originalpublisher.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T17:37:57.374530+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T17:41:55.558989+00:00",
+  "sha256": "1a54d4d38a1e26736379d259b7edec4ebe25d255206eefcec23928c03736bfae"
+}

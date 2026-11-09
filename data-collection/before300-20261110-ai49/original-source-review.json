@@ -1,0 +1,100 @@
+{
+  "issue": 49,
+  "pr": 645,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "author": "/root/sinan_0116b0b22bdb684e",
+  "independent_read_only": true,
+  "workspace": "<repository>/.worktrees/before300-ai49-handoff-20261110",
+  "baseline": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "source_pr645": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+  "candidate_patch_sha256": "2d22ef6904c66995a47ce13ce7d0ff914ab19b86a6e382f9d1e12f7bb2c46163",
+  "source_sha256": {
+    "customizations/components/godot-host/bridge.py": "ff9c09591ce9340792b2d6b306a0f27c0d3dbf2fa90ab790f5793ad0edf5f262",
+    "customizations/components/godot-host/requirements_agent.py": "d0ec0680b56008d7bbed20c5f6d38ad3fb74ee1dd919493b3aff2125d69e7d18",
+    "customizations/components/godot-host/test_issue_guide.py": "8642a269efece042b54c4b7ab31ac85069b400173d247fcc1b97c2eecb5555ba",
+    "customizations/components/godot-host/test_requirements_agent.py": "8b08ab253de715b191e15253e14f8f364a2b417eccb96856e5a01af244add0c6",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-host-20261105.md": "fcf5af3ff03c444d9596b5bd5ac69907d2468034e7bbf7199c7a3d8cb91c07ff",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-verification-20261105.json": "d9cd5993bf9a35ae618f247cc44e06e27fd89144009a086d17afee89d3bebfd3",
+    "design-docs/ai-chat-debug-20261104.md": "81184724b88540131514cd0e72f87db484972eb2b5438425f5836627ebaf44eb",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "e8d84601794a3fe38de8800603abf3bdd8dfeb79c64f9f1ef08c158817dcf81b",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-chat-debug-20261104/gonggong-ai-chat-debug-20261105-ai-runtime-intake.json": "061977507249b24f3957ee0d1d548c1d130d248e8c3ee68e580e8a3d464b8534",
+    "tests/editor/requirements_intake.gd": "8efc3fb66ed75a7f76185a5e731b399ed8c0e1c260efa5a79f20e2f7d93353fb",
+    "tests/editor/run_requirements_intake.py": "9558164b1c5a679d70b596ae7f6cef9193286d7e65ce90549e727c38e4f75f47",
+    "tests/editor/run_runtime_setup.py": "a2569871a248323d44a7dd5fb8f4c5d76a999700e1c0cadf46cc784b0cc549a8",
+    "tests/editor/test_codebuddy_bridge.js": "7b0eac52909160abd56eaf69f73b3de0419ae132c1ba8fc3125f5ad744b1bf65",
+    "tools/check_gonggong_github.ps1": "f6e28218ed3f61aadf2b58ee61f406a003b2d772a4aaa3482732915b95f920e8",
+    "tools/codebuddy_cli/godot_bridge.js": "462e0ffaf43ab7a12b340cdaa5134a692ed80756d54a86738f3508b654cd11f0",
+    "tools/configure_gonggong_runtime.ps1": "1a43fa811bc8f40cbc7caa07cbb44aa96c0a45f88e8f915c61aa138ff248aa16",
+    "tools/install_gonggong_github_cli.ps1": "767e14db60a56268205dba16b52cbc9cd61a83d3278cf81692ae4747e4fca122",
+    "tools/run_gonggong_config_agent.ps1": "94359e67f4ed261fac5decc83b239ca4dcfad44ddcd9a0cfacf921a19f4728c2"
+  },
+  "status": "changes_requested",
+  "findings": [
+    {
+      "id": "R49-1",
+      "priority": "P2",
+      "title": "Preserve UTF-8 across the new Windows PowerShell 5.1 agent boundary",
+      "path": "tools/run_gonggong_config_agent.ps1",
+      "lines": [
+        206,
+        212,
+        243
+      ],
+      "description": "The editor explicitly launches WindowsPowerShell/v1.0/powershell.exe with -NoProfile. The new launcher pipes $prompt to native Codex without setting $OutputEncoding (Windows PowerShell 5.1 defaults to ASCII), so a non-ASCII workspace or candidate path is sent as question marks. Independently, plan.json and deployment.json are written as BOMless UTF-8 but read by Get-Content -Raw without -Encoding UTF8, which uses the legacy ANSI default in Windows PowerShell 5.1. The returned path therefore fails the exact inventory allowlist at lines218-221 or reaches GitHub/native activation with a corrupted path. This blocks automatic setup for common Chinese/non-ASCII user or workspace locations despite the candidate being executable and valid.",
+      "requested_change": "Use an explicit UTF-8 native-stdin boundary (save/restore $OutputEncoding appropriately, or an equivalent controlled process input stream) and explicit UTF-8 decoding of both JSON reads; add a fixture with actual non-ASCII workspace/runtime paths and a native child that checks received stdin bytes. Preserve the existing allowlist and do not normalize away corruption.",
+      "validation_basis": "Static code/PowerShell 5.1 encoding semantics; no PowerShell runtime available here. Existing added fixture paths and summaries are ASCII. The known #91 seam changes configure_gonggong_runtime.ps1 and two requirements fixtures, not this newly added launcher; integrating that seam alone will not repair these boundaries.",
+      "windows_execution_verified": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "exact_scope_and_hashes",
+      "result": "pass",
+      "detail": "Exactly the 20 staged paths match integration receipt hashes and index blobs; patch hash matches; no unstaged changes or unmerged entries; git diff --cached --check passes."
+    },
+    {
+      "name": "python_ast_and_changed_json",
+      "result": "pass"
+    },
+    {
+      "name": "ruff_check_and_format",
+      "result": "pass",
+      "detail": "All six changed Python files pass Ruff check and format --check."
+    },
+    {
+      "name": "node_syntax_and_targeted_json_data_tests",
+      "result": "pass",
+      "detail": "node --check tools/codebuddy_cli/godot_bridge.js; two targeted existing JSON-data tests pass, no network fixture/provider execution."
+    }
+  ],
+  "inspected_scope": [
+    "All 20 staged paths and integration receipt, including all four actual PowerShell scripts; full native panel/controller changed sections and surrounding lifecycle/task-lock/queue/binding paths.",
+    "Main unified runtime config writes, effective Codex lookup, runtime snapshots, workflow source resolution and installed bridge selection are retained in the conflict resolution. Receipt retention before canonical config writes and task-locked late result deferral remain present.",
+    "New partial drafts return clarification before binding/publication; strict complete proposal validation, credential pattern checks, continuation-only rejection, Yanshi admission and cancel checks remain in force.",
+    "CodeBuddy JSON mode requires tools disabled; normal chat/session routes retain prior modes. Result normalization rejects action-bearing objects and never emits tool_calls in JSON data mode; targeted tests pass.",
+    "Installer statically pins official URL/SHA256, extracts only a single expected gh.exe to a fixed path, rejects linked destination ancestors and existing invalid destinations; GitHub checker avoids returning raw auth/API output in ordinary results.",
+    "Non-Windows ensure_environment returns through existing path and _start_igniter retains conversational flow. Native task lock blocks setup/settings activation, and poll retains late results until release. Clear/session-switch cancellation prevents the completion callback from restarting an absent guide/igniter state."
+  ],
+  "explicit_pending_integration": {
+    "issue": 91,
+    "pr": 658,
+    "source": "c6dcecbed94be736e0b4f2c75a9ad3587bfd880f",
+    "accepted_main": false,
+    "shared_paths": [
+      "tools/configure_gonggong_runtime.ps1",
+      "tests/editor/requirements_intake.gd",
+      "tests/editor/run_requirements_intake.py"
+    ],
+    "details": "Atomic durable journals, complete path prevalidation, interruption rollback phases and UTF8/NullString fixes in configure, plus Windows-owned fixture cleanup/bootstrap/model catalog readiness, remain pending root integration and exact-candidate review. Existing seam deficiencies are not represented as newly discovered integration defects."
+  },
+  "limits": [
+    "No source edits, index mutation, commit, push, downloads, build, desktop control, model/provider calls, native binary execution or old stopped queue access.",
+    "No PowerShell parser or real Windows execution; no new C++ compile/native static probe. Those are required downstream and remain owned by root.",
+    "Original PROCESS_EXIT cause, original old-window recovery and provider/business acceptance remain unknown. Historical PR evidence is not current candidate acceptance.",
+    "No claim of #91 acceptance, complete runtime/build/provider/GitHub account acceptance, CI/main delivery or Issue49 closure.",
+    "Potential multi-step transitions such as clarification followed by GitHub repair, shutdown during setup, and repeated setup rollback need the forthcoming native candidate fixture; static inspection is not a substitute."
+  ],
+  "original_receipt_sha256": "ed348226a2dbd827ab9c2834d8a0f72912305c3b2b4d421dc646f1acfdd3fbca"
+}

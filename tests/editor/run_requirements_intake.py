@@ -16,6 +16,8 @@ import uuid
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
+from runtime_policy_fixture import copy_runtime_policy
+from runtime_selector_fixture import native_selector
 
 ROOT = Path(__file__).resolve().parents[2]
 GH_FIXTURE = """import json,sys,re,os
@@ -77,7 +79,15 @@ def main():
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--runtime-source", type=Path)
+    parser.add_argument("--runtime-python", type=Path)
+    parser.add_argument("--runtime-node", type=Path)
+    parser.add_argument("--runtime-git", type=Path)
     args = parser.parse_args()
+    direct_runtime = all((args.runtime_python, args.runtime_node, args.runtime_git))
+    if any((args.runtime_python, args.runtime_node, args.runtime_git)) and not direct_runtime:
+        parser.error("--runtime-python, --runtime-node and --runtime-git must be supplied together")
+    if os.name != "nt" and (args.runtime_source or direct_runtime):
+        parser.error("Runtime deployment/selector acceptance requires Windows")
     requests = []
     normal = 0
     tool_roundtrips = 0
@@ -95,6 +105,9 @@ def main():
         shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
         shutil.copyfile(ROOT / "tools/gonggong_runtime_config.py", root / "tools/gonggong_runtime_config.py")
         shutil.copyfile(ROOT / "tools/configure_gonggong_runtime.ps1", root / "tools/configure_gonggong_runtime.ps1")
+        shutil.copyfile(ROOT / "tools/run_gonggong_config_agent.ps1", root / "tools/run_gonggong_config_agent.ps1")
+        shutil.copyfile(ROOT / "tools/check_gonggong_github.ps1", root / "tools/check_gonggong_github.ps1")
+        shutil.copyfile(ROOT / "tools/install_gonggong_github_cli.ps1", root / "tools/install_gonggong_github_cli.ps1")
         shutil.copyfile(ROOT / "work-items.json", root / "work-items.json")
         for name in ["auth", "api", "issue"]:
             (root / name).write_text(GH_FIXTURE, encoding="utf-8")
@@ -135,6 +148,7 @@ def main():
         shutil.copyfile(ROOT / "SConstruct", installation / "SConstruct")
         for directory in ("customizations", "tools", "integrations"):
             shutil.copytree(root / directory, installation / directory)
+        copy_runtime_policy(ROOT, installation)
         project = root / "project"
         project.mkdir()
         # The editor changes cwd to the opened project before invoking Python.
@@ -192,27 +206,21 @@ def main():
                         return
                     decision = (
                         "continue"
-                        if existing
-                        and (
-                            "Refine" in text
-                            or ("Clarify pending" in text and "用户补充" in text)
-                            or ("second feature" in text and existing["number"] == 8002)
-                        )
+                        if existing and ("Refine" in text or ("second feature" in text and existing["number"] == 8002))
                         else "new"
                     )
                     requests[-1].update(
                         outcome=text, existing_issue=existing["number"] if existing else None, decision=decision
                     )
+                    incomplete = "Clarify pending" in text and "用户补充" not in text
                     body = json.dumps({
                         "decision": decision,
                         "title": text.splitlines()[0],
                         "category": "development",
-                        "goal": text,
-                        "scope": ["One requested change"],
-                        "acceptance": ["Observable requested result"],
-                        "questions": ["INTAKE_CLARIFICATION_REQUIRED"]
-                        if "Clarify pending" in text and "用户补充" not in text
-                        else [],
+                        "goal": "" if incomplete else text,
+                        "scope": [] if incomplete else ["One requested change"],
+                        "acceptance": [] if incomplete else ["Observable requested result"],
+                        "questions": ["INTAKE_CLARIFICATION_REQUIRED"] if incomplete else [],
                     })
                 elif tool_continuation:
                     assert latest["tool_call_id"] == "intake-workflow-read"
@@ -271,11 +279,30 @@ def main():
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
-        # A frozen startup override would defeat the intentional missing-Python
-        # configuration and also prevent the deployed Python from taking over.
         env.pop("GONGGONG_PYTHON", None)
-        if args.runtime_source:
-            env["GONGGONG_TEST_RUNTIME_SOURCE"] = str(args.runtime_source.resolve())
+        if args.runtime_source or direct_runtime:
+            runtime_source = args.runtime_source.resolve() if args.runtime_source else None
+            env["GONGGONG_RUNTIME_SOURCE"] = str(runtime_source) if runtime_source else ""
+            env["GONGGONG_TEST_RUNTIME_PYTHON"] = (
+                str(args.runtime_python.resolve()) if direct_runtime else str(runtime_source / "python/python.exe")
+            )
+            env["GONGGONG_TEST_RUNTIME_NODE"] = (
+                str(args.runtime_node.resolve()) if direct_runtime else str(runtime_source / "node/node.exe")
+            )
+            env["GONGGONG_TEST_RUNTIME_GIT"] = (
+                str(args.runtime_git.resolve()) if direct_runtime else str(runtime_source / "git/cmd/git.exe")
+            )
+            fake_codex, _marker = native_selector(
+                root / "native-selector",
+                {
+                    "python": env["GONGGONG_TEST_RUNTIME_PYTHON"],
+                    "node": env["GONGGONG_TEST_RUNTIME_NODE"],
+                    "git": env["GONGGONG_TEST_RUNTIME_GIT"],
+                    "gh": env["GONGGONG_GH"],
+                },
+            )
+            env["GONGGONG_TEST_CODEX"] = str(fake_codex)
+
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(name, None)
         for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
@@ -368,7 +395,7 @@ def main():
         report = {
             "ok": True,
             "native_page": True,
-            "runtime_setup_and_resume": bool(args.runtime_source),
+            "runtime_setup_and_resume": bool(args.runtime_source or direct_runtime),
             "catalog_requests": catalog_requests,
             "windows_owned_process_cleanup": "verified Job empty" if os.name == "nt" else "not applicable",
             "actual_native_read_tool_roundtrips": tool_roundtrips,
@@ -393,6 +420,8 @@ def main():
             "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
             "fixture_events_imported": False,
         }
+        if args.runtime_source or direct_runtime:
+            report["cases"].insert(0, "missing runtime starts an independent AI Agent and resumes the original request")
         args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(report))
 

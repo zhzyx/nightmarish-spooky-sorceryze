@@ -1,0 +1,117 @@
+{
+  "issue": 49,
+  "reviewer": "/root/sinan_6f8b354f1f864b2e",
+  "scope": "Additional read-only governance-boundary assessment; no rule/source edits or model calls",
+  "candidate_script_sha256": "94359e67f4ed261fac5decc83b239ca4dcfad44ddcd9a0cfacf921a19f4728c2",
+  "decision": "Current model invocation is not demonstrably governed and must be corrected before enabling it. A tightly scoped model data-selection step can remain ordinary host implementation work; neither read-only mode nor an independent label creates an exemption or a new admission.",
+  "finding": {
+    "id": "R49-G1",
+    "priority": "P1",
+    "path": "tools/run_gonggong_config_agent.ps1",
+    "lines": [
+      134,
+      175,
+      176,
+      191
+    ],
+    "problem": "Before model execution the launcher checks only that CURRENT_FRAMEWORK.json exists. It then assigns a dedicated independent configuration Agent role, explicitly excludes repository instructions, disables automatic rules, and supplies no verified Yuanheng/foundation/current host mandate context or existing agent admission. No inventory allowlist or tools-disabled sandbox establishes that missing governance chain. The function output is later used to configure and activate host runtimes, so it is not merely an inert test transcript.",
+    "classification": "Definite governance-context/enforcement gap. The present code is insufficient to attest either an admitted independent Agent or a governed step of the existing operator host. The evidence does not itself require registering a new Agent definition: the function is one structured data selection with no native tools, framework identity or independent publish/permission authority. Do not infer a blanket exemption; remediate and review the exact implementation as a host step."
+  },
+  "evidence": [
+    {
+      "path": "framework/AGENTS.md",
+      "excerpt": "所有 Agent 始终受元衡控制体系管理，无例外。",
+      "meaning": "Tools-disabled, temporary and external model steps cannot assert that governance does not apply."
+    },
+    {
+      "path": "framework/GOVERNANCE.md",
+      "lines": [
+        3,
+        5,
+        9,
+        11,
+        15
+      ],
+      "meaning": "No exemption; host owns identity/mandate/state; context contains shared core/template/frozen foundation/current responsibility/actual mandate. Ordinary business code does not require a new definition pass. Trust comes from a host-trusted baseline, not merely matching a nearby JSON lock."
+    },
+    {
+      "path": "framework/FOUNDATION.md",
+      "meaning": "Frozen invariant explicitly covers temporary, derived, external and third-party instances. Unmanaged instances cannot participate as GongGong Agents, obtain tool permission or submit effective results."
+    },
+    {
+      "path": "framework/specs/model-runtime.md",
+      "lines": [
+        3,
+        7,
+        9,
+        11
+      ],
+      "meaning": "Model-driven steps retain governance, actual mandate/resource/budget limits, context and task/attempt receipts. Tools disabled does not eliminate call consumption or reconciliation duties."
+    },
+    {
+      "path": "framework/specs/governance-review.md",
+      "meaning": "Only Agent/skill definition generation, new versions and external definition integration invoke definition review. Ordinary authorized code repair and use of existing capability do not require newly fabricated review passes or future-candidate admission."
+    },
+    {
+      "path": "framework/framework-manifest.json",
+      "meaning": "Default sources are core.md, yuanheng Agent template, FOUNDATION.md and host-issued task mandate. Registered IDs are yanshi/kuafu/diting/heqi/sinan; no codex-runtime-config identity exists. Their current manifest admission paths are pending records, so borrowing a name/pass would not be valid."
+    },
+    {
+      "path": "framework/tools/agent-context.mjs",
+      "meaning": "Normal loader verifies package integrity, exact candidate/admission and reporting, then assembles shared context plus mandate. It invokes Python for integrity; simply calling it would reintroduce the missing-Python bootstrap dependency."
+    },
+    {
+      "path": "integrations/gonggong/frozen-distribution.json",
+      "meaning": "scope=offline_registered_snapshot_consistency_only, exemption=null, registration_note says byte integrity is not approval. This provides file hashes for consistency, not a general bootstrap authorization."
+    },
+    {
+      "path": "data-collection/ai-chat-debug-20261104/ai-runtime-intake-host-20261105.md",
+      "meaning": "Historical host record explicitly says it does not create or approve a new Agent. Existing user authority covers automatic configuration and repairing GitHub/runtime setup, not a permanent governance exception."
+    }
+  ],
+  "minimal_authorized_correction": [
+    "Keep this as a bounded structured selection step under the existing authenticated editor/operator host. Remove the instruction that rejects repository instructions and remove claims of a separately admitted independent Agent. The prompt should explicitly retain Yuanheng/foundation governance and say only the broken requirements/Issue/Python bridge dependency is bypassed for environment repair; permission and activation remain exclusively with the existing host.",
+    "Before any provider invocation, use PowerShell/.NET to load and verify the relevant current governance context from a host-trusted installed/source baseline: resolve CURRENT_FRAMEWORK with its declared path base, reject absolute/traversal/link escapes, verify current pointer/manifest and selected core/template/foundation/AGENTS/GOVERNANCE bytes against the already trusted host release snapshot. Verify foundation.lock consistency too, but do not accept a lock or frozen-distribution file supplied by the same untrusted workspace as the sole trust root. The trusted release/snapshot hash must be supplied or pinned by the existing authenticated host boundary. Do not silently select a mutable workspace governance root or a stopped old candidate.",
+    "Attach the verified shared core, template, complete frozen foundation, relevant host policy and the actual host-issued scope/authority/operation identity as prompt context. Inventory remains a delimited untrusted data section. Missing Python/Node does not prevent this: Get-Content -Encoding UTF8 / File.ReadAllText with UTF8, ConvertFrom-Json, Get-FileHash or SHA256, and .NET path/reparse checks suffice. No new governance rule or rewritten foundation is needed.",
+    "Keep tools disabled, exact selected-path allowlisting, source_runtime forbidden and host-only deployment. Bind actual selected CLI/model and a bounded single-call attempt to the existing setup operation; persist attempted/completed/failed-or-unknown before/after the call and retain any unavailable usage as unknown. Use the existing responsibility/receipt chain when Python is repaired; do not equate a local log with Diting delivery or automatic production admission.",
+    "Fail closed only for the model-selection/activation step if the host cannot establish its governance trust or actual mandate. Continue discovery, diagnostics and other already authorized independent work. A deterministic host selection/explicit local path repair can restore missing runtimes without making an ungoverned provider call. This is a scoped fallback, not an exemption.",
+    "--ignore-rules can only remain if its narrow purpose is preventing untrusted workspace/config auto-loading and the complete required trusted policy/mandate is explicitly injected. Removing that flag alone is insufficient because the current working directory may be mutable/untrusted and it does not prove admission or trust. No need to automatically load every repository/framework file.",
+    "If implementation instead retains a separately accountable independent Agent definition or grants it autonomous tool/resource/publish authority, stop that newly introduced capability and follow existing gonggong-check / exact definition admission and reporting before enablement. This conditional is not a demand to create such a definition or obtain redundant user approval for the scoped host correction."
+  ],
+  "recommended_targeted_validation": [
+    "Native mock consumes UTF8 stdin and asserts core/template/full foundation and exact host mandate appear once, before the untrusted inventory; non-ASCII paths survive.",
+    "Corrupt governance source, pointer path-base/traversal, reparse destination, or trusted-snapshot mismatch: provider mock invocation count remains zero; no activation.",
+    "Mutating both a workspace policy and its colocated lock/snapshot cannot confer trust.",
+    "Missing Python/Node still allows the PowerShell governance precheck/context assembly and controlled selection fixture; no production bridge/Issue intake dependency is introduced.",
+    "No implicit reuse of pending Agent pass, model-proposed identity/permission or arbitrary source_runtime; retain original tools-disabled tests and exact allowlist rejection.",
+    "Unknown/interrupted provider attempt is retained and requires actual reconciliation/explicit scoped retry rather than an automatic second charge; unavailable usage remains unknown."
+  ],
+  "not_claimed": [
+    "New Agent admission",
+    "Host identity authenticated by this report",
+    "PowerShell execution or Windows validation",
+    "Actual provider invocation or governance-context test passed",
+    "Future candidate approval",
+    "Diting delivery or whole Issue49 acceptance"
+  ],
+  "source_sha256": {
+    "AGENTS.md": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc",
+    "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
+    "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "framework/GOVERNANCE.md": "7e4dbfeaf5e407be43247717a6b7cb6743757b446813ca4b7b128c6dbb377724",
+    "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "framework/foundation.lock.json": "deb2b662be355e3357a55acecc9e5946830c36571d800346ff7d712d720a999c",
+    "framework/framework-manifest.json": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+    "framework/specs/model-runtime.md": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a",
+    "framework/specs/governance-review.md": "b497a1f43aac1391ad30ba9413abf08a6cde166c598340820ae1ec4e40c857e7",
+    "framework/upstream/yuanheng/core.md": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202",
+    "framework/upstream/yuanheng/agents/yuanheng.md": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b",
+    "framework/tools/agent-context.mjs": "0f021ebfe046102811bd40be4ad5adbc5930b1e27c592db0fd16ede64242b486",
+    "framework/tools/admission.mjs": "9ba6fbad002faa6cb096ee794a7fd1bfa6827e93d9934c4127eca6b5b62e2b6e",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+    "customizations/components/godot-host/HOST_PROTOCOL.md": "a1b02eec51fc0f22abc97279d47eee028ef3c254705bc20e1039bd65fd3dc773",
+    "tools/run_gonggong_config_agent.ps1": "94359e67f4ed261fac5decc83b239ca4dcfad44ddcd9a0cfacf921a19f4728c2",
+    "data-collection/ai-chat-debug-20261104/ai-runtime-intake-host-20261105.md": "fcf5af3ff03c444d9596b5bd5ac69907d2468034e7bbf7199c7a3d8cb91c07ff"
+  },
+  "original_receipt_sha256": "2b052c0cc3651e9159c9cbb95a8234c4c867153ae6eda6284cd7fb6f83d4ca04"
+}

@@ -271,6 +271,73 @@ class RequirementsTests(unittest.TestCase):
         self.work.issue.assert_called_once()
         self.bridge.issue_start.assert_not_called()
 
+    def test_incomplete_draft_asks_for_clarification_without_publishing_or_recharging(self):
+        self.design.update(scope=[], acceptance=[], questions=["这次希望测试哪个功能？"])
+        result = self.invoke()
+        self.assertTrue(result["ok"])
+        self.assertFalse(result["ready"])
+        self.assertEqual(result["phase"], "clarification_required")
+        self.assertEqual(result["questions"], self.design["questions"])
+        self.assertNotIn("issue_number", result)
+        self.work.issue.assert_not_called()
+        self.bridge.issue_start.assert_not_called()
+        self.bridge.enqueue.assert_not_called()
+        self.assertFalse((self.root / "design-docs").exists())
+        self.request["retry_authorized"] = True
+        self.assertEqual(self.invoke(), result)
+        self.assertEqual(self.adapter.call.call_count, 1)
+
+    def test_empty_required_lists_without_model_questions_produce_a_targeted_question(self):
+        for field in ["scope", "acceptance"]:
+            with self.subTest(field=field):
+                self.request["conversation_id"] = "partial-" + field
+                self.design.update(scope=["输入反馈"], acceptance=["点击后显示反馈"], questions=[])
+                self.design[field] = []
+                with self.assertRaisesRegex(ValueError, "scope and acceptance"):
+                    module.proposal(self.design, ["requirement"])
+                result = self.invoke()
+                self.assertEqual(result["phase"], "clarification_required")
+                self.assertEqual(len(result["questions"]), 1)
+                self.assertTrue(result["questions"][0].strip())
+        self.work.issue.assert_not_called()
+        self.bridge.issue_start.assert_not_called()
+
+    def test_clarification_completes_requirements_and_preserves_the_original_draft(self):
+        self.design.update(scope=[], acceptance=[], questions=["这次希望测试哪个功能？"])
+        self.assertFalse(self.invoke()["ready"])
+        original = next((self.root / ".gonggong-outbox/requirements").glob("*.json"))
+        original_bytes = original.read_bytes()
+        self.request["outcome"] += "\n用户补充：点击按钮后应立即显示状态文字"
+        self.design.update(scope=["按钮点击反馈"], acceptance=["点击后出现状态文字"], questions=[])
+        self.assertTrue(self.invoke()["ready"])
+        self.assertEqual(original.read_bytes(), original_bytes)
+        self.assertEqual(self.adapter.call.call_count, 2)
+        self.work.issue.assert_called_once()
+        self.bridge.issue_start.assert_called_once()
+
+    def test_empty_goal_or_title_is_an_incomplete_draft_not_an_environment_error(self):
+        for field in ["title", "goal"]:
+            with self.subTest(field=field):
+                self.request["conversation_id"] = "missing-" + field
+                self.design.update(title="响应输入", goal="减少按钮延迟", questions=[])
+                self.design[field] = ""
+                with self.assertRaisesRegex(ValueError, "requirement " + field):
+                    module.proposal(self.design, ["requirement"])
+                result = self.invoke()
+                self.assertEqual(result["phase"], "clarification_required")
+                self.assertTrue(result["questions"])
+                self.assertFalse(result["ready"])
+        self.work.issue.assert_not_called()
+        self.bridge.issue_start.assert_not_called()
+
+    def test_incomplete_draft_still_rejects_credentials_before_persisting(self):
+        self.design.update(scope=[], acceptance=[], questions=["ghp_" + "a" * 20])
+        with self.assertRaisesRegex(ValueError, "credentials"):
+            self.invoke()
+        self.work.issue.assert_not_called()
+        for journal in (self.root / ".gonggong-outbox/requirements").glob("*.json"):
+            self.assertNotIn("ghp_", journal.read_text(encoding="utf-8"))
+
     def test_fix_github_access_before_model_or_publication(self):
         self.bridge.gh_state.return_value = ("gh", "gh_unauthenticated")
         result = self.invoke()
@@ -433,6 +500,12 @@ class RequirementsTests(unittest.TestCase):
                 self.assertEqual(payload["available_tools"], [])
                 self.assertFalse(payload["tool_context"]["permission_enabled"])
                 self.assertEqual(payload["agent_id"], expected_agent)
+                if backend == "codebuddy":
+                    self.assertEqual(payload["response_format"], "json")
+                    self.assertNotIn("For the CLI envelope", payload["messages"][0]["content"])
+                else:
+                    self.assertNotIn("response_format", payload)
+                    self.assertIn("For the CLI envelope", payload["messages"][0]["content"])
                 return subprocess.CompletedProcess(
                     args,
                     0,

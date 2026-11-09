@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "native_page": true,
+  "runtime_setup_and_resume": false,
+  "catalog_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "windows_owned_process_cleanup": "not applicable",
+  "actual_native_read_tool_roundtrips": 1,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 11,
+  "development_calls": 7,
+  "issues_created": 5,
+  "events": 71,
+  "git_check": {
+    "git_state": "committed",
+    "files": 74,
+    "records": 71,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "supplement during intake amends the same Issue before the first development request",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call",
+    "clarification pauses and resumes the same requirement"
+  ],
+  "editor_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+  "fixture_events_imported": false,
+  "original_receipt_sha256": "31584c0de3feea2ad2dcf30d9e056f11f9c2bb1790ca6188fb3a58ba62d66538",
+  "integration_base": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "6cffcacd580cd84328007baa651417df498f599315b15c986a85962215c6efe9",
+    "editor/docks/ai_chat_dock.h": "a10032ef3b6164bd0bbc60bff22b7ea470f9e06de6e574b79304df7b81a680ab",
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "af673898a09a9a9abcb4ffb025b0e53948a69bfd4acc4d0b48d63405989cefdc",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033",
+    "tests/editor/requirements_intake.gd": "1302b8c9d059aa11d5f91a5a0f664fcc835d516540610fbc0133a2f7ff64eb9d",
+    "tests/editor/run_requirements_intake.py": "49a86819fd484127ff6393ebd1b031d4f60f765ddf12e46fad907cd6a238ad65"
+  },
+  "build_log_sha256": "9c9866d5d2e050482a0b0bb568203bee12747ed72c0c36e0e7c53ce4f16baa2b",
+  "build_seconds": 11.65,
+  "scope": "Private compiled latest-main native inputs plus49 source; normal mac only, Windows governed-selector and runtime_source pending; no installed editor change"
+}

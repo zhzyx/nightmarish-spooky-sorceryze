@@ -34,9 +34,7 @@
 
 class LineEdit;
 class Label;
-class CheckBox;
 class ConfirmationDialog;
-class FileDialog;
 class Button;
 class TextEdit;
 class Timer;
@@ -56,14 +54,19 @@ class GongGongPanel : public VBoxContainer {
 	Timer *timer = nullptr;
 	int64_t worker = -1;
 	String result_path;
+	String setup_progress_path;
+	String setup_last_progress;
 	ConfirmationDialog *setup_dialog = nullptr;
-	FileDialog *setup_source_dialog = nullptr;
-	LineEdit *setup_source = nullptr;
 	Label *setup_missing = nullptr;
-	CheckBox *setup_components[3] = {};
+	TextEdit *setup_progress = nullptr;
+	Button *setup_github_login = nullptr;
+	String setup_github_path;
+	String setup_agent_details;
+	bool setup_github_authenticating = false;
 	Button *setup_rollback = nullptr;
 	bool setup_running = false;
 	bool setup_rolling_back = false;
+	bool setup_attempted = false;
 	Dictionary setup_previous;
 	String setup_receipt;
 	Callable setup_completed;
@@ -71,8 +74,10 @@ class GongGongPanel : public VBoxContainer {
 	void start_setup();
 	void rollback_setup();
 	void run_setup(bool p_rollback);
-	void choose_setup_source(const String &p_directory);
-	void open_setup_source();
+	void set_setup_status(const String &p_status);
+	void refresh_setup_progress();
+	void login_github();
+	void finish_setup_github(const Dictionary &p_github);
 	void run_action(const String &p_action);
 	void poll();
 	void save_issue_binding(const String &p_text);
@@ -94,6 +99,7 @@ public:
 	bool set_environment_python(const String &p_python);
 	String set_runtime_field(const String &p_field, const String &p_value);
 	void refresh_runtime_controls(const Dictionary &p_runtime);
+	bool start_ai_setup(const Array &p_missing);
 	void set_setup_completed(const Callable &p_callback) { setup_completed = p_callback; }
 	// Reflect a binding saved elsewhere (the chat Issue guide) without re-saving it.
 	void reload_issue_binding();
