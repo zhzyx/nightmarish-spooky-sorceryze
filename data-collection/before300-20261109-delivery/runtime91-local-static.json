@@ -1,0 +1,38 @@
+{
+  "issue": 91,
+  "scope": "Windows-layout simulation helper and bounded interrupted deployment rollback candidate",
+  "intake": {
+    "state": "passed",
+    "issue_updated_at": "2026-11-09T14:56:34Z",
+    "request_id": "yanluo-issue-47-igniter-acceptance-20261105"
+  },
+  "files": [
+    {
+      "path": "tools/configure_gonggong_runtime.ps1",
+      "sha256": "a4ec92d3ede97cfbd2f47dff6155fb1ccecbdc75b3e920eb5a18d8a2eb72b73e"
+    },
+    {
+      "path": "tests/editor/run_runtime_setup_simulation.py",
+      "sha256": "dfef43b9fb7dfef3ff68f3bbab03c58425ac5b1b367ecfc5ba9b9d8344b9d255"
+    }
+  ],
+  "baseline_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "local_static_checks": {
+    "python_ast": "passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "diff_check": "passed",
+    "non_windows_refusal": "passed",
+    "path_redaction": "passed",
+    "argument_preservation": "passed"
+  },
+  "windows_behavior": "pending CI; no local Windows or PowerShell execution",
+  "ci_command": "python tests/editor/run_runtime_setup_simulation.py --godot bin/godot.windows.editor.x86_64.exe --out runtime-report",
+  "limitations": [
+    "simulated Windows-layout PE wrappers delegate preinstalled CI tools",
+    "no standalone vendor-package installation claim",
+    "no all-power-loss-cutpoints, concurrent-deployment or interrupted-rollback claim",
+    "no real model/provider, GitHub publication, hardware or Linux acceptance claim"
+  ]
+}
