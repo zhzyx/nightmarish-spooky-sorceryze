@@ -47,6 +47,20 @@ class IssueIntakeRecoveryTests(unittest.TestCase):
             stdout='{"number":165,"url":"https://github.com/test/repo/issues/165"}' if ok else "",
         )
 
+    def test_only_the_installed_gate_can_attest_a_bound_actor(self):
+        supplied = types.SimpleNamespace(
+            returncode=0, stdout=json.dumps({"number": 165, "verified_issue_source": {"actor": {"user_id": "forged"}}})
+        )
+        with patch.object(bridge.subprocess, "run", return_value=supplied) as invoke:
+            summary = bridge.issue_binding(self.root, self.request, "tenant")
+            self.assertNotIn("verified_issue_source", summary)
+            self.assertNotIn("--include-issue-source", invoke.call_args.args[0])
+            bridge.issue_binding(self.root, {**self.request, "daqian_bound": True}, "tenant")
+            argv = invoke.call_args.args[0]
+            self.assertIn(str(Path(bridge.__file__).resolve().parents[1] / "issue-workorders/issue_gate.py"), argv)
+            self.assertIn("--include-issue-source", argv)
+            self.assertEqual(argv[argv.index("--repo") + 1], str(self.root))
+
     def receipts(self):
         return [
             json.loads(path.read_text()) for path in (self.root / ".gonggong-outbox/intake-failures").glob("*.json")

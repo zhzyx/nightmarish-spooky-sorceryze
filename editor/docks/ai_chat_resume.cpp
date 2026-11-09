@@ -39,6 +39,7 @@
 #include "core/math/math_funcs.h"
 #include "core/os/os.h"
 #include "core/templates/hash_set.h"
+#include "editor/docks/ai_chat_tools.h"
 #include "editor/file_system/editor_paths.h"
 
 namespace {
@@ -108,7 +109,7 @@ bool AIChatResume::images_valid(const Variant &p_value) {
 }
 
 bool AIChatResume::calls_valid(const Variant &p_value) {
-	if (p_value.get_type() != Variant::ARRAY || Array(p_value).size() > 8) {
+	if (p_value.get_type() != Variant::ARRAY || Array(p_value).size() > 32) {
 		return false;
 	}
 	HashSet<String> ids;
@@ -126,6 +127,9 @@ bool AIChatResume::calls_valid(const Variant &p_value) {
 		}
 		const Dictionary function = call["function"];
 		if (function.get("name", Variant()).get_type() != Variant::STRING || function.get("arguments", Variant()).get_type() != Variant::STRING) {
+			return false;
+		}
+		if (Array(p_value).size() > 8 && !AIChatTools::is_read_only_tool(function["name"])) {
 			return false;
 		}
 	}
@@ -206,7 +210,7 @@ bool AIChatResume::journal_valid(const Dictionary &p_journal) {
 	if (!whole_number(p_journal.get("version", Variant()), VERSION, VERSION)) {
 		return false;
 	}
-	if (!whole_number(p_journal.get("agent", Variant()), 0, INT32_MAX - 1) || !whole_number(p_journal.get("tool_rounds", Variant()), 0, 1 << 20) || !whole_number(p_journal.get("tool_index", Variant()), 0, 8)) {
+	if (!whole_number(p_journal.get("agent", Variant()), 0, INT32_MAX - 1) || !whole_number(p_journal.get("tool_rounds", Variant()), 0, 1 << 20) || !whole_number(p_journal.get("tool_index", Variant()), 0, 32)) {
 		return false;
 	}
 	if (p_journal.get("model", Variant()).get_type() != Variant::STRING || p_journal.get("cli_model", Variant()).get_type() != Variant::STRING) {
@@ -222,7 +226,8 @@ bool AIChatResume::journal_valid(const Dictionary &p_journal) {
 	if (!records_valid(p_journal.get("messages", Variant()), false) || !calls_valid(p_journal.get("tool_calls", Variant()))) {
 		return false;
 	}
-	if (int(p_journal["tool_index"]) > Array(p_journal["tool_calls"]).size()) {
+	const int count = Array(p_journal["tool_calls"]).size();
+	if (int(p_journal["tool_index"]) > count || (count > 8 && int(backend) != 2)) {
 		return false;
 	}
 	// A journal without a restart intent only documents an interruption; it is

@@ -1,0 +1,52 @@
+{
+  "request_id": "tianshu-codex-cli-progress",
+  "issue_number": 599,
+  "parent_issue": 592,
+  "base": "cc297363ae1099bbbed8a9b5fb4d47c0e7ab257b",
+  "model": "gpt-6.1-sol",
+  "authentication": "Codex CLI ChatGPT subscription",
+  "observations": [
+    {
+      "scenario": "three_rounds",
+      "terminal_receipts": [
+        "8d2db782c7249eef03ed23f9b65cc84434e2fe00df53176c00d844c6f73f8539",
+        "c0e52ce74bb2a7e5411408bcea8b6022b603283c6774d52c675335c6a26d38f2",
+        "edf87a4cd11d3a8f3b0ffe22719e3e4107f50a9fdd16068a0362d8a9a7a69008"
+      ],
+      "model_requests": 4,
+      "tool_calls": 1
+    },
+    {
+      "scenario": "nine_reads",
+      "terminal_receipts": [
+        "4c83deb16d3c97851e5e152c4e1cdb9528c4f35242a09bbd12f339413da98c73"
+      ],
+      "model_requests": 2,
+      "tool_calls": 9
+    }
+  ],
+  "headless_editor_sha256": "89f65178a1091cf22805307e21e0be8394ef4f5796cd5c66de053a1a7c87379a",
+  "admission_seconds": {
+    "old": [
+      4.253,
+      3.846,
+      3.834
+    ],
+    "new": [
+      1.958,
+      2.024,
+      1.928
+    ]
+  },
+  "workbench_three_turns_ms": [
+    85780,
+    16821,
+    17478
+  ],
+  "workbench_nine_reads_ms": 96712,
+  "notes": [
+    "Fresh Windows workbench processes, same machine. Concurrent independent scenarios; end-to-end times are individual observations.",
+    "Nine known independent files were read in one tool batch and returned correctly using two model calls. With the older eight-action limit this requires at least three calls.",
+    "The bound account and Issue use one authenticated read when supported. Read-only affiliation and REST compatibility retain independent checks."
+  ]
+}

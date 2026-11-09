@@ -370,9 +370,16 @@ def issue_binding(root, request, tenant):
         or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id)
     ):
         raise ValueError("Before development, create/reuse a real Issue and bind issue_number and stable request_id")
+    bound = request_id.startswith("daqian-direct-") or request.get("daqian_bound") is True
+    # A candidate supplies repository data, never the reader trusted to attest its own actor.
+    installation = Path(__file__).resolve().parents[3] if bound else root
     command = [
         sys.executable,
-        str(root / "customizations/components/issue-workorders/issue_gate.py"),
+        "-E",
+        "-s",
+        "-X",
+        "utf8",
+        str(installation / "customizations/components/issue-workorders/issue_gate.py"),
         "--repo",
         str(root),
         "--issue",
@@ -384,6 +391,8 @@ def issue_binding(root, request, tenant):
         "--intake-only",
     ]
     env = host_environment(root)
+    if bound:
+        command.append("--include-issue-source")
     deadline = time.monotonic() + 120
     for attempt in range(1, 3):
         try:
@@ -397,7 +406,10 @@ def issue_binding(root, request, tenant):
                 timeout=max(0.001, deadline - time.monotonic()),
             )
             if process.returncode == 0:
-                return json.loads(process.stdout)
+                result = json.loads(process.stdout)
+                if not bound:
+                    result.pop("verified_issue_source", None)
+                return result
             stderr, returncode = process.stderr or "", process.returncode
         except subprocess.TimeoutExpired:
             stderr, returncode = "GITHUB_TIMEOUT: intake read exceeded the time budget", None
@@ -426,7 +438,14 @@ def chat(root, request, tenant):
     permission_fields = ("tools_enabled", "file_changes_require_approval", "execution_requires_approval")
     if any(type(request.get(field)) is not bool for field in permission_fields):
         raise ValueError("Missing host permission state")
+    direct = request["request_id"].startswith("daqian-direct-")
     issue = issue_binding(root, request, tenant)
+    source = issue.pop("verified_issue_source", {})
+    if direct or request.get("daqian_bound") is True:
+        routing, api = direct_adapter()
+        # Public READ access is not membership. For read-only/legacy bindings use the
+        # explicit affiliation check, including its identity and pagination checks.
+        principal = source.get("actor") or routing.direct_issue.publish_collaborator(root)
     receipt_scope = {"tenant_id": tenant, "request_id": request["request_id"], "source_ref": issue["url"]}
     flush(root, receipt_scope)  # Required predecessors in this request must have receipts.
     binding = {
@@ -467,15 +486,12 @@ def chat(root, request, tenant):
         "tool_permission": {k: request[k] for k in permission_fields},
         "reporting": binding,
     }
-    if request["request_id"].startswith("daqian-direct-"):
-        routing, api = direct_adapter()
-        requirement = routing.chat_context(root, request, api)
+    if direct:
+        requirement = routing.chat_context(root, request, api, verified_source=source.get("row"), principal=principal)
         mandate["bound_requirement"] = requirement
         binding["actor"] = requirement["actor"]
         binding["source_sha256"] = requirement["source_sha256"]
     elif request.get("daqian_bound") is True:
-        routing, _ = direct_adapter()
-        principal = routing.direct_issue.collaborator(root)
         binding["actor"] = principal["user_id"]
         binding["source_sha256"] = routing.digest([issue["url"], request["request_id"], issue["updated_at"]])
     env = host_environment(root)

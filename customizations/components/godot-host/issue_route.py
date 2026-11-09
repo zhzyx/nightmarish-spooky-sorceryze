@@ -450,10 +450,15 @@ def prepare_start(root, request, bridge):
     )
 
 
-def chat_context(root, request, bridge):
-    work = bridge.work_items_module(root)
+def chat_context(root, request, bridge, *, verified_source=None, principal=None):
+    work = direct_issue.work_items if verified_source is not None else bridge.work_items_module(root)
     settings, _ = work.config(root)
-    binding, _, original, status, _ = issue_source(work, settings, request["issue_number"], request["request_id"])
+    if verified_source is None:
+        binding, _, original, status, _ = issue_source(work, settings, request["issue_number"], request["request_id"])
+    else:
+        binding, _, original, status, _ = source_from_row(
+            work, settings, request["issue_number"], request["request_id"], verified_source
+        )
     if status not in {"in-progress", "in-review"}:
         raise ValueError("请先确认开始推进")
     path = direct_issue.receipt_folder(root, request["request_id"]) / "start.json"
@@ -464,7 +469,9 @@ def chat_context(root, request, bridge):
         binding[field] != saved["binding"][field] for field in ("source_sha256", "request_id", "number", "url")
     ) or not saved.get("result", {}).get("ready"):
         raise ValueError("工单原文与已确认的推进回执不符，请核对后继续")
-    if direct_issue.collaborator(root)["user_id"] != saved["binding"]["actor"]:
+    if (principal if principal is not None else direct_issue.collaborator(root))["user_id"] != saved["binding"][
+        "actor"
+    ]:
         raise ValueError("推进回执与当前账号不符，请核对交接")
     return {
         "original": original,

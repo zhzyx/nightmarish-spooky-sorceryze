@@ -302,6 +302,17 @@ class DirectIssueTests(unittest.TestCase):
         self.rows[0]["updated_at"] = "2026-11-06T00:00:01Z"
         _, api = bridge.direct_adapter()
         context = issue_route.chat_context(self.root, start, api)
+        with patch.object(issue_route, "issue_source", side_effect=AssertionError("duplicate remote Issue read")):
+            self.assertEqual(
+                context,
+                issue_route.chat_context(
+                    self.root, start, api, verified_source=self.rows[0], principal={"user_id": "7"}
+                ),
+            )
+            with self.assertRaisesRegex(ValueError, "账号"):
+                issue_route.chat_context(
+                    self.root, start, api, verified_source=self.rows[0], principal={"user_id": "8"}
+                )
         self.assertEqual(context["original"], self.request["outcome"])
         self.assertEqual(context["decision"]["scope"], result["scope"])
         self.assertEqual(context["planned_revision"], bound["revision"])

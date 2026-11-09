@@ -41,6 +41,7 @@ public:
 	static constexpr int MAX_CONTEXT_BYTES = 384 * 1024;
 	static constexpr int MAX_REQUEST_BYTES = 1024 * 1024;
 
+	static bool is_read_only_tool(const String &p_name);
 	static bool compact_context(const Array &p_messages, Array &r_messages, Dictionary &r_stats);
 
 	static bool normalize_script_path(const String &p_path, String &r_path);

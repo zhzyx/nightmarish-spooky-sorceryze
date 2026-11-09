@@ -113,10 +113,6 @@ Dictionary chat_message(const String &p_role, const String &p_content) {
 	return message;
 }
 
-bool consultation_read_tool(const String &p_name) {
-	return p_name == "get_editor_state" || p_name == "read_logs" || p_name == "read_file" || p_name == "read_script" || p_name == "list_scripts" || p_name == "list_directory" || p_name == "get_parent_context";
-}
-
 Array chat_tools() {
 	Array tools;
 	const char *names[] = { "read_logs", "list_scripts", "read_script", "write_script", "check_script", "run_test", "read_file", "write_file", "list_directory", "run_command", "build_engine", "restart_engine", "rollback_engine", "get_parent_context", "complete_delivery", "delegate_review" };
@@ -2307,7 +2303,7 @@ void AIChatDock::_send_completion_after_receipt() {
 			if (String(function["name"]) == "delegate_review" && (sub_agents.has(active_agent) || scheduled_agents.has(active_agent))) {
 				continue;
 			}
-			if (!consultation_turn || consultation_read_tool(function["name"])) {
+			if (!consultation_turn || AIChatTools::is_read_only_tool(function["name"])) {
 				permitted_tools.push_back(tool);
 			}
 		}
@@ -2433,7 +2429,7 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 				break;
 			}
 			Dictionary function = function_value;
-			expanded_codex_reads = expanded_codex_reads && consultation_read_tool(function.get("name", ""));
+			expanded_codex_reads = expanded_codex_reads && AIChatTools::is_read_only_tool(function.get("name", ""));
 		}
 		if (!allow_tools->is_pressed() || (tool_calls.size() > 8 && !expanded_codex_reads) || String(choice.get("finish_reason", "")) == "length") {
 			const String reason = !allow_tools->is_pressed() ? String(U"本地工具权限已关闭，未执行本次操作。") : String(U"模型工具响应超过单批数量或输出长度限制，未执行本次操作。这不是权限未开放。");
@@ -2613,7 +2609,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 	}
 	const String name = name_value;
 	const Dictionary arguments = json.get_data();
-	if (consultation_turn && !consultation_read_tool(name)) {
+	if (consultation_turn && !AIChatTools::is_read_only_tool(name)) {
 		_finish_tool("Error: Consultation only permits read tools. No action was executed.");
 		return;
 	}
@@ -2622,7 +2618,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		return;
 	}
 	const bool engine_tool = name == "build_engine" || name == "restart_engine" || name == "rollback_engine";
-	if (backend->get_selected() == 1 && !(consultation_turn && consultation_read_tool(name)) && !engine_tool && name != "read_logs" && name != "read_file" && name != "write_file" && name != "run_command" && name != "get_parent_context" && name != "complete_delivery" && name != "delegate_review" && !AIChatEditorControl::handles(name)) {
+	if (backend->get_selected() == 1 && !(consultation_turn && AIChatTools::is_read_only_tool(name)) && !engine_tool && name != "read_logs" && name != "read_file" && name != "write_file" && name != "run_command" && name != "get_parent_context" && name != "complete_delivery" && name != "delegate_review" && !AIChatEditorControl::handles(name)) {
 		_finish_tool("Error: This native channel only supports on-demand logs, files, authorized Bash commands and the editor self-update tools.");
 		return;
 	}
@@ -5000,7 +4996,7 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 			if ((String(function["name"]) == "get_parent_context" && !sub_agents.has(active_agent)) || (String(function["name"]) == "delegate_review" && (sub_agents.has(active_agent) || scheduled_agents.has(active_agent)))) {
 				continue;
 			}
-			if (!consultation_turn || consultation_read_tool(function["name"])) {
+			if (!consultation_turn || AIChatTools::is_read_only_tool(function["name"])) {
 				permitted_tools.push_back(tool);
 			}
 		}
@@ -5110,7 +5106,7 @@ void AIChatDock::_start_cli(const Array &p_messages) {
 		Dictionary function = tool["function"];
 		const String name = function["name"];
 		if (consultation_turn) {
-			if (consultation_read_tool(name) && (name != "get_parent_context" || sub_agents.has(active_agent))) {
+			if (AIChatTools::is_read_only_tool(name) && (name != "get_parent_context" || sub_agents.has(active_agent))) {
 				native_tools.push_back(tool);
 			}
 			continue;

@@ -107,7 +107,75 @@ def check_repository(root, repository):
         raise ValueError("Git origin must match the configured GitHub repository")
 
 
-def intake(root, number, request_id, tenant):
+def read_bound_issue(repository, number):
+    """Read the Issue and effective viewer together for an interactive consumer."""
+    owner, name = repository.split("/", 1)
+    query = """query($owner:String!,$name:String!,$number:Int!){
+      viewer { login databaseId }
+      repository(owner:$owner,name:$name) { nameWithOwner databaseId viewerPermission
+        issue(number:$number) { number title state url updatedAt body
+          labels(first:100) { nodes { name } pageInfo { hasNextPage } }
+        }
+      }
+    }"""
+    try:
+        response = json.loads(
+            work_items.gh(
+                "api",
+                "graphql",
+                "-f",
+                "query=" + query,
+                "-f",
+                "owner=" + owner,
+                "-f",
+                "name=" + name,
+                "-F",
+                f"number={number}",
+            )
+        )
+    except work_items.GitHubCommandError as error:
+        if error.http_status in (403, 404) or str(error).startswith("GITHUB_COMMAND:"):
+            return None, None  # Use the existing REST checks for installations without GraphQL access.
+        raise
+    if response.get("errors"):
+        return None, None
+    repo = response["data"]["repository"]
+    if not repo or repo["nameWithOwner"].casefold() != repository.casefold():
+        raise ValueError("Bound repository is unavailable or changed")
+    row = repo["issue"]
+    if not row:
+        raise ValueError("Issue must be a real Issue in the configured repository")
+    if row["labels"]["pageInfo"]["hasNextPage"]:
+        return None, None  # Never evaluate truncated labels.
+    source = {
+        "number": row["number"],
+        "title": row["title"],
+        "state": row["state"].lower(),
+        "html_url": row["url"],
+        "updated_at": row["updatedAt"],
+        "body": row["body"],
+        "labels": row["labels"]["nodes"],
+    }
+    viewer = response["data"]["viewer"]
+    actor = None
+    if repo["viewerPermission"] in {"WRITE", "MAINTAIN", "ADMIN"}:
+        if (
+            not isinstance(viewer["login"], str)
+            or not viewer["login"]
+            or type(viewer["databaseId"]) is not int
+            or type(repo["databaseId"]) is not int
+        ):
+            raise ValueError("Unable to verify the authenticated repository collaborator")
+        actor = {
+            "login": viewer["login"],
+            "user_id": str(viewer["databaseId"]),
+            "repo": repository,
+            "repo_id": str(repo["databaseId"]),
+        }
+    return source, actor
+
+
+def intake(root, number, request_id, tenant, *, source=None):
     """Read the real work order before any host model/tool execution."""
     if type(number) is not int or number < 1 or not re.fullmatch(REQUEST, request_id):
         raise ValueError("Bind a real Issue number and its stable request ID before starting work")
@@ -115,8 +183,16 @@ def intake(root, number, request_id, tenant):
     if tenant != settings.get("tenant_id"):
         raise ValueError("Host tenant must match work-items.json")
     check_repository(root, settings["repository"])
-    value = json.loads(work_items.gh("api", f"repos/{settings['repository']}/issues/{number}"))
+    value, actor = read_bound_issue(settings["repository"], number) if source is not None else (None, None)
+    if value is None:
+        value = json.loads(work_items.gh("api", f"repos/{settings['repository']}/issues/{number}"))
     issue = check_issue(value, settings["repository"], number, request_id, {v["name"] for v in labels})
+    if source is not None:
+        # Private response to the requesting host; omitted from public recovery receipts.
+        source["row"] = {
+            key: value[key] for key in ("number", "html_url", "state", "body", "labels", "updated_at", "title")
+        }
+        source["actor"] = actor
     return issue
 
 
@@ -406,6 +482,9 @@ def main():
         help="Read explicit JSON requests from stdin; reuse only exact-byte event evidence in memory",
     )
     parser.add_argument("--intake-only", action="store_true")
+    parser.add_argument(
+        "--include-issue-source", action="store_true", help="Return the checked Issue row for local intake consumers"
+    )
     parser.add_argument("--tenant")
     parser.add_argument(
         "--base-ref",
@@ -413,6 +492,8 @@ def main():
         help="Fetched PR target; compare merge-base to candidate index, including already committed PR changes",
     )
     args = parser.parse_args()
+    if args.include_issue_source and not args.intake_only:
+        parser.error("--include-issue-source requires --intake-only")
     if args.session:
         if args.intake_only or args.issue is not None or args.request_id is not None:
             parser.error("--session takes issue/request_id from each input line")
@@ -441,9 +522,10 @@ def main():
         return
     if args.issue is None or args.request_id is None:
         parser.error("--issue and --request-id are required")
+    source = {} if args.include_issue_source else None
     try:
         result = (
-            intake(args.repo.resolve(), args.issue, args.request_id, args.tenant)
+            intake(args.repo.resolve(), args.issue, args.request_id, args.tenant, source=source)
             if args.intake_only
             else gate(args.repo.resolve(), args.issue, args.request_id, base_ref=args.base_ref)
         )
@@ -469,6 +551,8 @@ def main():
         result,
         args.tenant if args.intake_only else args.base_ref,
     )
+    if source is not None:
+        result["verified_issue_source"] = source
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
