@@ -5,24 +5,19 @@ inputs:
   target:
     description: Build target (editor, template_release, template_debug).
     default: editor
-    type: choice
-    options: [editor, template_debug, template_release]
   platform:
     description: Target platform.
-    type: string
   scons-flags:
     description: Additional SCons flags.
-    type: string
   scons-cache:
     description: The SCons cache path.
     default: ${{ github.workspace }}/.scons_cache/
-    type: string
 
 runs:
   using: composite
   steps:
     - name: SCons Build
-      shell: sh
+      shell: bash
       run: |
         echo "Building with flags:" platform=${{ inputs.platform }} target=${{ inputs.target }} ${{ inputs.scons-flags }} "cache_path=${{ inputs.scons-cache }}" redirect_build_objects=no
 
@@ -31,7 +26,9 @@ runs:
           rm -rf editor
         fi
 
-        if [ "${{ github.event.number }}" != "" ]; then
+        if [ "${GONGGONG_NATIVE_SOURCE_ARCHIVE:-}" = "1" ]; then
+          export BUILD_NAME=gh
+        elif [ "${{ github.event.number }}" != "" ]; then
           # Set build identifier with pull request number if available. This is displayed throughout the editor.
           export BUILD_NAME="gh-${{ github.event.number }}"
         else

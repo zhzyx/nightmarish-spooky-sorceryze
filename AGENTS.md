@@ -4,6 +4,8 @@
 
 仅 Godot 引擎任务遵循 [Godot 宿主的静默验证约定](customizations/components/godot-host/README.md#静默验证)。此约定适用于本仓库的 Godot 接入。
 
+新增模块时按[构建边界与验收](customizations/module-boundaries.md#新增模块的构建边界与验收)判断原生、嵌入资源、独立运行包或宿主工具，记录实际输入、宿主接口和回退方式，执行对应的构建失效或同一二进制上的更新与回退测试。正式工单门禁及 CI 核对候选中的新增模块和证据。
+
 当前及今后取得本仓库有效写权限（WRITE、MAINTAIN、ADMIN）的每位协作者，都可以本人身份行使本仓库已准入的全部共工框架操作权限。宿主核对本人在目标仓库的有效权限，授权随授予生效、随撤销终止，包含团队继承的写权限。协作者可发起和授权工单、调用已准入的 Agent 与 Skill、委托司南多 Agent 派发、发起夸父排障、谛听采集、合契整合及阎罗签发交付，也可按治理规则担任审查、批准和验收负责人。每次操作遵循工单范围、独立审查、精确候选准入和实际分支保护。默认使用[协作者签发入口](customizations/components/issue-workorders/yanluo.md#协作者快速签发和自动提交)。模型、生产工具与第三方服务使用操作者有权使用的宿主凭据。
 
 唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/；生成 Agent／Skill 定义时读取 framework/AGENTS.md 与 gonggong-check；普通需求不触发共工审查与元衡评价。冻结纲领和元衡原件不可修改，所有 Agent 受元衡治理。准入绑定精确候选，迁移不自动授权。

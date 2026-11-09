@@ -1,12 +1,14 @@
 import importlib.util
 import json
 import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT / "tools"), str(ROOT)]
 spec = importlib.util.spec_from_file_location("editor_self_build", ROOT / "tools/editor_self_build.py")
 assert spec is not None and spec.loader is not None
 worker = importlib.util.module_from_spec(spec)
@@ -52,7 +54,14 @@ class SelfBuildTests(unittest.TestCase):
 
     def test_protected_flags_and_invalid_input(self):
         current = Path("godot.windows.editor.dev.x86_64.mono.exe")
-        for value in ["extra_suffix=live", "platform=linuxbsd", "target=template_release", "--clean", "ninja=yes"]:
+        for value in [
+            "extra_suffix=live",
+            "platform=linuxbsd",
+            "target=template_release",
+            "--clean",
+            "ninja=yes",
+            "gonggong_native_probe=unexpected",
+        ]:
             with self.assertRaises(ValueError):
                 worker.build_options(current, [value])
         with self.assertRaises(ValueError):
@@ -305,7 +314,7 @@ class SelfBuildTests(unittest.TestCase):
                 def poll(self):
                     return self.returncode
 
-            def package(root, artifact, binding, project, destination):
+            def package(root, artifact, binding, project, destination, template):
                 executable = destination / native.EXECUTABLE_RELATIVE
                 executable.parent.mkdir(parents=True)
                 executable.write_bytes(artifact.read_bytes())
@@ -363,7 +372,4 @@ class SelfBuildTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, str(ROOT))
     unittest.main()

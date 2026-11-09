@@ -1,0 +1,76 @@
+{
+  "request_id": "engine-artifact-reuse-rollout",
+  "issue_number": 687,
+  "host": "Windows x86_64, MSVC, Godot tests=yes",
+  "command": "tools/build_gonggong_editor.ps1 -Jobs 8",
+  "procedure": "两个隔离工作树使用同一原生源码、不同 HEAD 和图布局包，同时从 Windows 构建入口启动。两边均删除 daqian_dock 的目标文件以便观测实际编译。",
+  "receipts": {
+    "a": {
+      "revision": "62e450e1897c9c90a19664363f851d4b361eb958",
+      "source_digest": "1b4e8b962204fb483e9ee5c448cea0020bf8a12fa7528c8c0895456edec2fb2f",
+      "native": {
+        "status": "hit",
+        "key": "954bb68197c6327b1ddbfa6088135a222ba90e0ee50fac1fd4849659b22b67d5",
+        "reason": "",
+        "artifact_sha256": "cac05df8c77b1f277e7b6fb1f2ab9478a920ce71ab7b67ac1db224254f325da2",
+        "producer_head": "b64a61022c35f56a5f9cc90d2350407ab4e77d47",
+        "consumer_head": "62e450e1897c9c90a19664363f851d4b361eb958",
+        "outputs": {
+          "bin/godot.windows.editor.x86_64.console.exe": "ab25df106ed170589344412a54ba4f017121cd293b9152afcf5365fefe09784f",
+          "bin/godot.windows.editor.x86_64.exe": "cac05df8c77b1f277e7b6fb1f2ab9478a920ce71ab7b67ac1db224254f325da2"
+        }
+      },
+      "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "aichat": "passed"
+    },
+    "b": {
+      "revision": "b64a61022c35f56a5f9cc90d2350407ab4e77d47",
+      "source_digest": "efc00f7e9fff5fcaeb1c464011376dd4833873d91edcfc767d0dd8adc427c8b9",
+      "native": {
+        "status": "built",
+        "key": "954bb68197c6327b1ddbfa6088135a222ba90e0ee50fac1fd4849659b22b67d5",
+        "reason": "",
+        "artifact_sha256": "cac05df8c77b1f277e7b6fb1f2ab9478a920ce71ab7b67ac1db224254f325da2",
+        "producer_head": "b64a61022c35f56a5f9cc90d2350407ab4e77d47",
+        "consumer_head": "b64a61022c35f56a5f9cc90d2350407ab4e77d47",
+        "outputs": {
+          "bin/godot.windows.editor.x86_64.exe": "cac05df8c77b1f277e7b6fb1f2ab9478a920ce71ab7b67ac1db224254f325da2",
+          "bin/godot.windows.editor.x86_64.console.exe": "ab25df106ed170589344412a54ba4f017121cd293b9152afcf5365fefe09784f"
+        }
+      },
+      "tianshu_sha256": "5e5a64e83167056960e89e7f412e2c22c3806bb75aaa0b326b8c336ebd307da5",
+      "aichat": "passed"
+    }
+  },
+  "daqian_cpp_compiles": {
+    "a": 0,
+    "b": 1
+  },
+  "consumer_test_cases_each": 45,
+  "consumer_assertions_each": 638,
+  "native_invalidation": {
+    "native_path": "editor/docks/daqian_dock.cpp",
+    "before": "954bb68197c6327b1ddbfa6088135a222ba90e0ee50fac1fd4849659b22b67d5",
+    "modified": "b8c81123bc2ab6dc91f8793836e32eceb948c9bc2991c94b5f1ac5db5275bc9d"
+  },
+  "initial_failure": "SCons 本地签名数据库、构建进度节点计数及 Codex 调用编号曾进入原生身份。实测能导致一次构建期间身份变化，或两份相同原生输入无法合用产物。限定排除已知本地状态并以实际依赖图核验。",
+  "restored_target_regression": "两个实际 Git 工作树，SCons 4.11.1、MD5-timestamp。先编 B、恢复 A、再切 B：禁用恢复代次时普通构建与缓存发布均错误得到 A；修正后两条路径均得到 B，再次构建跳过。",
+  "package_trial": {
+    "editor_sha256": "cac05df8c77b1f277e7b6fb1f2ab9478a920ce71ab7b67ac1db224254f325da2",
+    "installed_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "candidate_sha256": "3dc6d3571390c8990781f25b1b562ed6f75774f8e34c80c0920daa821c50be01",
+    "cases": {
+      "installed": "48 应用更改",
+      "selected": "96 应用候选",
+      "rollback": "48 应用更改",
+      "independent_self_update_slot": "96 应用候选",
+      "wrong_pin": "blocked",
+      "missing_pin": "blocked",
+      "project_path": "blocked",
+      "missing_selected": "blocked",
+      "damaged_payload": "blocked",
+      "incompatible": "blocked",
+      "missing_default": "blocked"
+    }
+  }
+}

@@ -298,6 +298,122 @@ def validate_command(command, root, env, name):
     return json.loads(result.stdout)
 
 
+# Build placement is recorded at module introduction. Existing modules are
+# grandfathered until their placement record changes; worktrees use Git blobs.
+PLACEMENT_CHECKS = {
+    "native": {"native_invalidation"},
+    "embedded": {"generated_input_invalidation"},
+    "runtime_package": {"same_binary_update", "incompatible_rejection", "rollback"},
+    "host_tool": {"host_behavior"},
+    "mixed": {"native_invalidation", "same_binary_update", "incompatible_rejection", "rollback"},
+}
+COMPONENT_REGISTRY = "customizations/platforms/components.json"
+
+
+def tree_inventory(root, revision):
+    entries = {}
+    for record in git(root, "ls-tree", "-rz", revision).split(b"\0"):
+        if record:
+            metadata, name = record.split(b"\t", 1)
+            mode, _, oid = metadata.split()
+            entries[os.fsdecode(name)] = (mode, oid.decode("ascii"))
+    return entries
+
+
+def module_roots(root, entries):
+    roots = set()
+    for name in entries:
+        parts = name.split("/")
+        if len(parts) >= 3 and parts[0] == "modules" and parts[2:] in (["SCsub"], ["config.py"]):
+            roots.add("/".join(parts[:2]))
+        elif (
+            len(parts) >= 4
+            and parts[:2] == ["customizations", "components"]
+            and Path(name).suffix not in {".md", ".txt"}
+        ):
+            roots.add("/".join(parts[:3]))
+        elif parts[0] in {"framework", "customizations", "editor", "samples", "project"} and (
+            parts[-1] in {"module.json", "component.json", "plugin.cfg"} or parts[-1].endswith(".gdextension")
+        ):
+            roots.add("/".join(parts[:-1]))
+    catalog = entries.get(COMPONENT_REGISTRY)
+    registrations = set()
+    if catalog:
+        document = json.loads(git(root, "cat-file", "blob", catalog[1]))
+        for item in document["components"] + document.get("candidate_extensions", []):
+            registrations.add((item["id"], item["path"]))
+    return roots, registrations
+
+
+def check_module_build_impact(root, base):
+    candidate = git(root, "write-tree").decode().strip()
+    before = tree_inventory(root, base)
+    after = tree_inventory(root, candidate)
+    old_roots, old_registered = module_roots(root, before)
+    new_roots, registered = module_roots(root, after)
+    required = (new_roots - old_roots) | {path for _, path in registered - old_registered}
+    suffix = "/build-impact.json"
+    for name in before.keys() | after.keys():
+        if (
+            name.endswith(suffix)
+            and name.split("/", 1)[0]
+            not in {"archive", "releases", "data-collection", "gonggong-diting-data", "olympus-hermes-data"}
+            and before.get(name) != after.get(name)
+        ):
+            module = name.removesuffix(suffix)
+            if name in after or module in new_roots or any(path == module for _, path in registered):
+                required.add(module)
+
+    def candidate_json(name):
+        entry = after.get(name)
+        if not entry or entry[0] not in (b"100644", b"100755"):
+            raise ValueError("MODULE_BUILD_IMPACT: missing regular candidate file " + name)
+        return json.loads(git(root, "cat-file", "blob", entry[1]))
+
+    for module in sorted(required):
+        name = module + suffix
+        record = candidate_json(name)
+        placement = record.get("placement")
+        if placement not in PLACEMENT_CHECKS or any(
+            not isinstance(record.get(key), str) or not record[key].strip()
+            for key in ("reason", "host_contract", "rollback", "evidence")
+        ):
+            raise ValueError("MODULE_BUILD_IMPACT: explain placement, host contract, rollback and evidence in " + name)
+        proof = candidate_json(record["evidence"])
+        inputs = proof.get("input_blobs")
+        module_files = {
+            path for path in after if path.startswith(module + "/") and path not in {name, record["evidence"]}
+        }
+        if not isinstance(inputs, dict) or not module_files or not module_files.issubset(inputs):
+            raise ValueError("MODULE_BUILD_IMPACT: evidence must cover every tested module input for " + module)
+        for path, oid in inputs.items():
+            if path not in after or after[path][0] not in (b"100644", b"100755") or after[path][1] != oid:
+                raise ValueError("MODULE_BUILD_IMPACT: tested input differs from candidate: " + path)
+        checks = proof.get("checks")
+        for key in sorted(PLACEMENT_CHECKS[placement]):
+            entry = checks.get(key) if isinstance(checks, dict) else None
+            if (
+                not isinstance(entry, dict)
+                or entry.get("passed") is not True
+                or any(
+                    not isinstance(entry.get(field), str) or not entry[field].strip()
+                    for field in ("command", "observed")
+                )
+            ):
+                raise ValueError("MODULE_BUILD_IMPACT: missing measured " + key + " evidence for " + module)
+        if "same_binary_update" in PLACEMENT_CHECKS[placement]:
+            swap = checks["same_binary_update"]
+            fields = ("before_executable", "after_executable", "before_package", "after_package")
+            if (
+                not all(isinstance(swap.get(f), str) and re.fullmatch(r"[0-9a-f]{64}", swap[f]) for f in fields)
+                or swap["before_executable"] != swap["after_executable"]
+                or swap["before_package"] == swap["after_package"]
+            ):
+                raise ValueError("MODULE_BUILD_IMPACT: package swap must bind one executable and two distinct packages")
+
+    return sorted(required)
+
+
 def check_pr_evidence(root, issue, request_id, tenant, base_ref):
     """Mirror issue-association on the PR diff, using the candidate index bytes."""
     base = git(root, "merge-base", "HEAD", base_ref).decode().strip()
@@ -333,7 +449,12 @@ def check_pr_evidence(root, issue, request_id, tenant, base_ref):
         raise ValueError(
             "PR_EVIDENCE_BINDING: Recorded Diting event must be delivered with matching data-collection evidence; include request_id and issue_url/issue/issue_number in a JSON file changed in this PR"
         )
-    return {"base_commit": base, "matching_event": matching_event, "matching_collection": matching_collection}
+    return {
+        "base_commit": base,
+        "matching_event": matching_event,
+        "matching_collection": matching_collection,
+        "module_build_impact": check_module_build_impact(root, base),
+    }
 
 
 def verify_platform_adapter(root, directory, registration_root=None):
@@ -491,7 +612,20 @@ def main():
         default="origin/main",
         help="Fetched PR target; compare merge-base to candidate index, including already committed PR changes",
     )
+    parser.add_argument(
+        "--module-impact-only", action="store_true", help="Check added modules against the PR base and full index"
+    )
     args = parser.parse_args()
+    if args.module_impact_only:
+        if args.intake_only or args.session or args.issue is not None or args.request_id is not None:
+            parser.error("--module-impact-only is a separate file check")
+        try:
+            root = args.repo.resolve()
+            base = git(root, "merge-base", "HEAD", args.base_ref).decode().strip()
+            print(json.dumps({"reviewed_modules": check_module_build_impact(root, base)}, ensure_ascii=False))
+        except (ValueError, OSError, TypeError, KeyError) as error:
+            parser.exit(1, str(error) + "\n")
+        return
     if args.include_issue_source and not args.intake_only:
         parser.error("--include-issue-source requires --intake-only")
     if args.session:

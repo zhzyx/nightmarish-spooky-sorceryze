@@ -223,6 +223,12 @@ def verified_manifest(manifest_path, report):
     artifact = Path(manifest["executable"])
     if not artifact.is_absolute() or artifact.is_symlink() or digest(artifact) != manifest.get("artifact_sha256"):
         raise ActivationError("activation_artifact_changed")
+    from package_tianshu_ui import verify_candidate_package
+
+    try:
+        verify_candidate_package(manifest)
+    except ValueError as error:
+        raise ActivationError(str(error)) from None
     if not os.access(artifact, os.X_OK):
         raise ActivationError("activation_artifact_not_executable")
     if "native_app" in manifest:
