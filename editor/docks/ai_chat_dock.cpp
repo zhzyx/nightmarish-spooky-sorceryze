@@ -2822,10 +2822,10 @@ void AIChatDock::_next_tool(uint64_t p_session) {
 		_request_completion();
 		return;
 	}
-	// Only synchronous Codex file reads share a receipt. The journal cursor
+	// Synchronous host file reads share a receipt across adapters. The journal cursor
 	// stays at the first read until every returned result has been verified.
 	int count = 0;
-	if (backend->get_selected() == 2 && !consultation_turn && gonggong_recovered_result.is_empty() && !restoring_command_offer && !daqian_approval_running) {
+	if (!consultation_turn && gonggong_recovered_result.is_empty() && !restoring_command_offer && !daqian_approval_running) {
 		while (tool_index + count < tool_calls.size() && count < 16) {
 			const Dictionary call = tool_calls[tool_index + count];
 			const Dictionary function = call.get("function", Dictionary());
@@ -2875,8 +2875,8 @@ void AIChatDock::_publish_read_batch(uint64_t p_session) {
 	if (!busy || p_session != session_generation || read_batch_count == 0) {
 		return;
 	}
-	for (const String &result : read_batch_results) {
-		_append_tool_message(result, false, false);
+	for (const FileReadResult &result : read_batch_results) {
+		_append_tool_message(result.content, result.success, false);
 		tool_index++;
 	}
 	read_batch_results.clear();
@@ -3176,7 +3176,7 @@ void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool 
 		// The host already read this file. Keep the actual result visible if
 		// the user stops before the combined receipt releases it to the model.
 		_show_tool_result(tool_calls[index], p_result);
-		read_batch_results.push_back(p_result);
+		read_batch_results.push_back({ p_result, p_file_success });
 		if (read_batch_results.size() == read_batch_count) {
 			if (!_record_gonggong("step", "read-batch-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned")) {
 				_set_busy(false);

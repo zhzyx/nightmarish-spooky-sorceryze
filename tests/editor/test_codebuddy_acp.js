@@ -67,6 +67,27 @@ test('Local restore notices survive ACP bootstrap without general system message
     assert(!JSON.stringify(blocks).includes('case:snapshot_multi'));
 });
 
+test('concurrent native reads retain their callback IDs across bounded host batches', { timeout: 15000 }, async t => {
+    const submit = await bridge(t, '', 'parallel_reads');
+    let response = await submit([{ role: 'user', content: 'case:nine_concurrent_reads' }]);
+    const ids = new Set();
+    for (const [round, count] of [[1, 8], [2, 1]]) {
+        const message = response.choices[0].message;
+        assert.equal(message.tool_calls.length, count);
+        const results = message.tool_calls.map(call => {
+            assert(!ids.has(call.id));
+            ids.add(call.id);
+            const file = path.basename(JSON.parse(call.function.arguments).path);
+            const match = /^part-(\d+)\.txt$/.exec(file);
+            assert(match);
+            return { role: 'tool', tool_call_id: call.id, content: 'value-' + match[1], godot_file_success: true };
+        });
+        response = await submit([message, ...results.reverse()], round);
+    }
+    assert.equal(ids.size, 9);
+    assert.equal(response.choices[0].message.content, 'ALL_NINE_OK');
+});
+
 test('ACP tasks process more than 64 MiB across tool yields and keep the session alive', { timeout: 30000 }, async t => {
     const submit = await bridge(t, '', 'large_protocol_agent');
     const proposal = await submit([{ role: 'user', content: 'case:protocol_flood' }]);
@@ -202,6 +223,15 @@ test('ACP steering reset closes detached commands and isolates old prompt and pi
     const directory = fs.mkdtempSync(path.join(root, 'tests/editor/acp-reset-'));
     const entry = path.join(directory, 'fixture.js');
     const pidFile = path.join(directory, 'terminal.pid');
+    const worker = path.join(directory, 'worker.js');
+    // Observe the OS process inside the shell on Windows as well as POSIX.
+    fs.writeFileSync(worker, `
+        const fs = require('node:fs');
+        const file = process.env.AI_CHAT_TEST_PID_FILE;
+        fs.writeFileSync(file + '.tmp', String(process.pid));
+        fs.renameSync(file + '.tmp', file);
+        setTimeout(() => {}, 60000);
+    `);
     const sdk = require('node:url').pathToFileURL(path.join(root, 'tools/codebuddy_cli/node_modules/@agentclientprotocol/sdk/dist/acp.js')).href;
     fs.writeFileSync(entry, `
         const fs = require('node:fs');
@@ -216,7 +246,7 @@ test('ACP steering reset closes detached commands and isolates old prompt and pi
                 prompt: async params => {
                     const text = params.prompt[0].text;
                     if (text === 'case:steering_background') {
-                        await connection.createTerminal({ sessionId, command: 'echo $$ > "' + process.env.AI_CHAT_TEST_PID_FILE + '"; exec sleep 60' });
+                        await connection.createTerminal({ sessionId, command: 'exec "$AI_CHAT_TEST_NODE" "$AI_CHAT_TEST_WORKER"' });
                         try { await connection.readTextFile({ sessionId, path: process.env.AI_CHAT_TEST_PID_FILE }); }
                         catch (_) {
                             await connection.sessionUpdate({ sessionId, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'STALE_RESET_REPLY' } } });
@@ -233,7 +263,7 @@ test('ACP steering reset closes detached commands and isolates old prompt and pi
         })().catch(() => { process.exitCode = 1; });
     `);
     const tools = [...definitions, { type: 'function', function: { name: 'run_command', parameters: { type: 'object' } } }];
-    const submit = await bridge(t, '', 'steering-reset', { entry, tools, env: { AI_CHAT_TEST_PID_FILE: pidFile } });
+    const submit = await bridge(t, '', 'steering-reset', { entry, tools, env: { AI_CHAT_TEST_PID_FILE: pidFile, AI_CHAT_TEST_NODE: process.execPath, AI_CHAT_TEST_WORKER: worker } });
     // Register after the bridge cleanup so its fixture remains until shutdown.
     t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
     const user = { role: 'user', content: 'case:steering_background' };

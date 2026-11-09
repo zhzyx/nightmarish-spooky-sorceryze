@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0ab24f8b917ec085e47870e9c627d2be3491c6ed",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-host-pipeline",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cfeeb691da7cb3d6ff2b307f42a1a1bf8dad5028eaf1764b6fcb40934b83a6b1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662",
+    "action": "delivery",
+    "detection_head": "a7ea662405640ad6400c84a34a67715d86987730",
+    "context_sha256": "6cfd4ed8a6a752937539e5f62182464924ac316a7b952d0bf00c2ed388be4b5f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/670",
+    "diagnosis": "The target main advanced to eec6330c after gate verification. The signing client correctly refused the previous base and did not publish it.",
+    "next_action": "Apply the previously reviewed content to the observed main, verify the integrated tree, and rerun the signing client.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T19:03:17.909456+00:00",
+    "attempted": "Reran stable-tree gate and fetched main using the system proxy.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Previous product tests passed and the CodeBuddy account gap remains open."
+  },
+  "occurred_at": "2026-11-09T19:04:34.133596+00:00",
+  "sha256": "ffa3f21f0628b1746431641e647898a8024806c806a91dd4af4a04a60061a965"
+}

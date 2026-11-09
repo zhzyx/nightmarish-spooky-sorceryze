@@ -495,7 +495,9 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
     const flushTools = () => {
         flushTimer = undefined;
         if (stopped || !active || active.yielded || !pending.size) return;
-        const calls = [...pending].filter(([, item]) => !item.sent).map(([id, item]) => {
+        // The ACP client may submit several independent reads concurrently.
+        // Yield at most one host envelope at a time and retain the original promises.
+        const calls = [...pending].filter(([, item]) => !item.sent).slice(0, 8).map(([id, item]) => {
             item.sent = true;
             return { id, type: 'function', function: { name: item.name, arguments: JSON.stringify(item.arguments) } };
         });
@@ -512,7 +514,9 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         if (reason !== 'none') {
             return deny(reason, api.bridgeError(reason === 'round_limit_reached' ? 'TOOL_ROUND_LIMIT_REACHED' : 'TOOLS_DISABLED').message);
         }
-        if (!active.input.available_tools.some(tool => tool.function?.name === name) || pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
+        const onlyReads = !writing && [...pending.values()].every(item => item.name === 'read_file');
+        if (pending.size >= (onlyReads ? 32 : 8)) return deny('capacity', 'Godot file callback queue is full');
+        if (!active.input.available_tools.some(tool => tool.function?.name === name) || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
         let args;
         try {
             args = fileArguments(params, writing);

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0912ab7a7dde215b22787f8c34290a967b6ae97c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-host-pipeline",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ccd268e5505738cc51e6131b551ff48533b85d09ede907cda1148ef1f9ae6778",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662",
+    "action": "validation",
+    "detection_head": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+    "context_sha256": "6cfd4ed8a6a752937539e5f62182464924ac316a7b952d0bf00c2ed388be4b5f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42678076092",
+    "diagnosis": "Validation detected a changing Issue or checkout snapshot while independent verification was still in progress. Its exact intermediate difference is unknown.",
+    "next_action": "Finish all tests first, then rerun the gate alone on a stable checkout and unchanged source Issue.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:53:22.212161+00:00",
+    "attempted": "Stopped parallel gate and test execution; the isolated fixture runs have now exited.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Authentication limitation is separately retained under #662."
+  },
+  "occurred_at": "2026-11-09T18:54:35.732411+00:00",
+  "sha256": "0f845b9b49917a250b6308262cad3ccba1dfd0e9562515c39a28d0fd06e2a2f3"
+}

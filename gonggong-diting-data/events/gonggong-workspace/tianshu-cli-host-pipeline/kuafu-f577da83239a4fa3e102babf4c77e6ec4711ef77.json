@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f577da83239a4fa3e102babf4c77e6ec4711ef77",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-cli-host-pipeline",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f6239205f8b044d08879d71950286b584935899bee64eb1b79a040bfb54ace41",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662",
+    "action": "validation",
+    "detection_head": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+    "context_sha256": "6cfd4ed8a6a752937539e5f62182464924ac316a7b952d0bf00c2ed388be4b5f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/659",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42677192562",
+    "diagnosis": "Precommit found no request-kind event binding this Issue; only its earlier quality event was present.",
+    "next_action": "Verify the new recorded delivery intake and rerun the exact candidate gate. The separate real CodeBuddy login remains outstanding.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T18:47:37.174170+00:00",
+    "attempted": "Ran trusted intake-only then the formal gate; the actual #659 delivery intake has been recorded through the installed host bridge.",
+    "repair_owner": "Sail-Li",
+    "continuable": "The native editor and isolated ACP and Codex verification are complete."
+  },
+  "occurred_at": "2026-11-09T18:52:11.807697+00:00",
+  "sha256": "483bc9b61f8a410db5733586a76c01d191a223d5a57e8db2515866a8b998773b"
+}
