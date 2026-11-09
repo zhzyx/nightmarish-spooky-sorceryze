@@ -1,6 +1,8 @@
 """Mock HTTP scene acceptance. No real model service is contacted."""
 
 import argparse
+import gzip
+import hashlib
 import json
 import os
 import shutil
@@ -12,7 +14,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor, macos_editor
 from run_requirements_intake import GH_FIXTURE
 
 CASES = {
@@ -70,10 +72,18 @@ def main():
     parser.add_argument(
         "--codex", action="store_true", help="Offline native Codex subprocess, requires --bounds or --guidance"
     )
-    parser.add_argument(
+    stop_group = parser.add_mutually_exclusive_group()
+    stop_group.add_argument(
         "--manual-stop", action="store_true", help="Visible 100-second delayed highlight response; click Stop"
     )
-    parser.add_argument("--signal-stop", action="store_true", help="Headless Stop signal callback; not a native click")
+    stop_group.add_argument(
+        "--signal-stop", action="store_true", help="Headless Stop signal callback; not a native click"
+    )
+    stop_group.add_argument(
+        "--simulated-stop-input",
+        choices=("mouse", "keyboard"),
+        help="Headless synthesized viewport input to Stop; no system desktop input",
+    )
     parser.add_argument(
         "--guidance", action="store_true", help="Target registry, guidance state machine and restart preview"
     )
@@ -82,16 +92,28 @@ def main():
     )
     args = parser.parse_args()
     assert not args.routing or args.guidance
-    assert not (args.manual_stop and args.signal_stop)
-    stop_case = args.manual_stop or args.signal_stop
+    stop_case = args.manual_stop or args.signal_stop or bool(args.simulated_stop_input)
+    stop_delay = 3 if args.simulated_stop_input else 100
     assert not args.codex or args.bounds or args.guidance
     assert not args.guidance or not (args.bounds or args.interfaces or stop_case)
     assert not stop_case or not (args.bounds or args.codex or args.interfaces)
     results, errors, seen = {}, [], set()
+    stop_fixtures = {}
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_args):
             pass
+
+        def do_GET(self):
+            if not args.simulated_stop_input or self.path != "/v1/models":
+                self.send_error(501)
+                return
+            payload = json.dumps({"data": [{"id": "mock-semantic"}]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
 
         def do_POST(self):
             try:
@@ -134,7 +156,7 @@ def main():
                         (project / "last-result.json").write_text(tool_results[-1], encoding="utf-8")
                     if stop_case and case == "highlight_tabs":
                         (project / "server-waiting").write_text("waiting")
-                        time.sleep(100)
+                        time.sleep(stop_delay)
                         (project / "server-released").write_text("released")
                     message = {"role": "assistant", "content": "Checked " + case}
                 elif stop_case and case == "recovery":
@@ -170,10 +192,20 @@ def main():
                         {"message": message, "finish_reason": "tool_calls" if "tool_calls" in message else "stop"}
                     ]
                 }).encode()
+                compressed_recovery = args.simulated_stop_input and case == "recovery"
+                if compressed_recovery:
+                    payload = gzip.compress(payload, mtime=0)
+                if stop_case and (compressed_recovery or (case == "highlight_tabs" and tool_results)):
+                    stop_fixtures[case] = {
+                        "sha256": hashlib.sha256(payload).hexdigest(),
+                        "content_encoding": "gzip" if compressed_recovery else "identity",
+                    }
                 outcome = "sent"
                 try:
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
+                    if compressed_recovery:
+                        self.send_header("Content-Encoding", "gzip")
                     self.send_header("Content-Length", str(len(payload)))
                     self.end_headers()
                     self.wfile.write(payload)
@@ -201,7 +233,11 @@ def main():
             for folder in ["framework", "customizations", ".github"]:
                 shutil.copytree(source / folder, workspace / folder, ignore=shutil.ignore_patterns("__pycache__"))
             (workspace / "tools").mkdir()
-            for relative in ("tools/check_gonggong_distribution.py", "integrations/gonggong/frozen-distribution.json"):
+            for relative in (
+                "tools/check_gonggong_distribution.py",
+                "tools/gonggong_runtime_config.py",
+                "integrations/gonggong/frozen-distribution.json",
+            ):
                 (workspace / relative).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source / relative, workspace / relative)
             shutil.copyfile(source / "tools/gonggong_bridge.py", workspace / "tools/gonggong_bridge.py")
@@ -270,7 +306,15 @@ def main():
                 ],
                 check=True,
             )
-            isolated_editor = macos_editor(args.godot, workspace / "isolated-editor")
+            isolate = copy_editor if args.simulated_stop_input else macos_editor
+            isolated_editor = isolate(args.godot, workspace / "isolated-editor")
+            if args.simulated_stop_input:
+                # The current host loads trusted receipt code from its running
+                # installation, independently of the mocked work-order workspace.
+                installation = isolated_editor.parent
+                shutil.copyfile(source / "SConstruct", installation / "SConstruct")
+                for directory in ("customizations", "tools", "integrations"):
+                    shutil.copytree(workspace / directory, installation / directory)
             project = workspace / "project"
             project.mkdir()
             for base in [workspace, project]:
@@ -301,6 +345,8 @@ def main():
             env["SEMANTIC_WIRE_DIR"] = str(workspace / "wire")
             env["SEMANTIC_MANUAL_STOP"] = "1" if stop_case else ""
             env["SEMANTIC_STOP_SIGNAL"] = "1" if args.signal_stop else ""
+            env["SEMANTIC_STOP_INPUT"] = args.simulated_stop_input or ""
+            env["SEMANTIC_STOP_DELAY"] = str(stop_delay)
             env.update(
                 GONGGONG_TEST_WORKSPACE=temp,
                 GONGGONG_WORKSPACE=temp,
@@ -318,7 +364,7 @@ def main():
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=300 if args.guidance else 240 if args.manual_stop else 180,
+                timeout=60 if args.simulated_stop_input else 300 if args.guidance else 240 if args.manual_stop else 180,
             )
             print(run.stdout)
             print(run.stderr)
@@ -378,6 +424,20 @@ def main():
                     and report["stale_response_absent"]
                 )
                 assert report["late_response_outcome"] in {"sent", "disconnected"}
+                if args.simulated_stop_input:
+                    assert report["stop_trigger"] == "synthesized_viewport_" + args.simulated_stop_input
+                    assert report["button_down_count"] == report["pressed_count"] == 1
+                    assert report["input_down_count"] == report["input_up_count"] == 1
+                    assert report["stop_visible"] and report["stop_has_area"]
+                    assert report["active_after_input_down"], report
+                    if args.simulated_stop_input == "keyboard":
+                        assert report["stop_had_focus"] and report["key_is_ui_accept"], report
+                    else:
+                        assert report["stop_hovered"], report
+                    assert stop_fixtures["recovery"]["content_encoding"] == "gzip"
+                    print("SEMANTIC_STOP_FIXTURES", json.dumps(stop_fixtures, sort_keys=True))
+                    print("SEMANTIC_SIMULATED_STOP_INPUT_OK", args.simulated_stop_input)
+                    return
                 print("SEMANTIC_SIGNAL_STOP_OK" if args.signal_stop else "SEMANTIC_MANUAL_STOP_OK")
                 return
             if args.bounds:

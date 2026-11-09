@@ -1,0 +1,51 @@
+{
+  "issue": 92,
+  "parent_issue": 51,
+  "reviewer": "/root/sinan_37d5001abb389315",
+  "role": "independent read-only amended-scope acceptance review",
+  "author": "/root/sinan_9dd690ee8cc1e081",
+  "author_terminal_verified": true,
+  "terminal_evidence": "verify_worker ce91d295-9e14-45f3-83cf-a12fef014090 state completed; collaboration.final:/root/sinan_9dd690ee8cc1e081",
+  "source_revision": "c5bbfabe218ec6b33b229971b31a2e241d48f1fe3cedaa48fd24758602a2ac5d",
+  "base_commit": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "scope": "Exact diff of tests/editor/ai_chat_semantic.gd and tests/editor/run_ai_chat_semantic.py; amended design document and before300-20261110-stop92 evidence. Local source/evidence review only.",
+  "outcome": "no actionable findings in reviewed exact candidate",
+  "findings": [],
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7"
+  },
+  "reviewed_two_test_diff_sha256": "bfa64caf4358fc476b6dc5efdee5f554821a2fbdd4d2f87111e0e0a10610cbdd",
+  "actual_binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "independent_checks": [
+    "Read AGENTS.md and Godot silent verification policy; no desktop tools, model requests, build, downloads or native rerun.",
+    "Executed check_evidence.py: 42 assertions passed. Independently recomputed ten source/dependency hashes, two git baseline hashes, private binary hash, previous production source mapping, all published evidence bytes and fixture payload hashes.",
+    "Independent Ruff check --no-cache and format --check --no-cache passed for run_ai_chat_semantic.py; Python AST parse passed; git diff --check passed for two tests and design document.",
+    "Inspected Viewport::notify_mouse_entered/push_input routing, BaseButton gui_input/on_action_event ui_accept/mouse handling, and Stop pressed connection to AIChatDock::_stop.",
+    "Exact new helper sends mouse motion plus press/release or focused Space ui_accept press/release through the same viewport, observes gui_input edges and button_down/pressed, and has no pressed.emit or direct product-handler call fallback.",
+    "Signal and manual modes remain distinct retained branches, retain 100-second delayed legacy behavior, and the new mode uses bounded three-second loopback delay and 60-second process timeout. Legacy modes were not rerun.",
+    "copy_editor writes the executable, self-contained settings and trusted host fixture only under a new TemporaryDirectory; copied runtime-config dependency resolves installation-relative bridge import. Synthetic-only installation layout adds no production source or user-installation mutation.",
+    "Private 1440x1000 geometry, embedded-window routing and synthetic mouse-enter preparation are explicit. Mouse log observes center (1398, 928.5) in viewport and hovered Stop; keyboard log observes focused Stop and ui_accept.",
+    "Both logs and final manifest agree on input/down-up/button counts exactly once, enabled through press, Stop disabled and highlight gone after release, stop_seconds and frame_gap_seconds below retained one-second limits.",
+    "Mouse cancellation is 0.028063 seconds; keyboard 0.034849 seconds; maximum measured frame gap 0.026428 seconds. gzip RECOVERY_OK precedes old server release in both cases. Old response is actually released and sent, then its unique Checked highlight_tabs text is absent after bounded observation.",
+    "Public mouse.stdout.txt/keyboard.stdout.txt are byte-identical to private sanitized logs and their acceptance.json hashes match. Results/checks JSON copies are also exact. RID/ObjectDB exit-leak diagnostics remain visible in logs; no leak-free claim is made."
+  ],
+  "scope_boundaries": [
+    "User-authorized headless synthesized viewport acceptance replaces the real OS mouse/keyboard clause. This review supplies no physical desktop, Windows-native input or display/focus evidence.",
+    "Existing private macOS arm64 binary reports prior source hint 7e5f7bc20. ai_chat_dock.cpp/h byte hashes match the previously committed independently reviewed input mapping, but this is not a complete rebuild of newer main or theme sources.",
+    "HTTP/model/GitHub fixtures are local mocks. No external provider request, production model acceptance, production receipt consumption or usage quantity is asserted.",
+    "The original historical deadlock symptom was not reproduced and its causal root remains unknown. Earlier dated unknowns and physical-input limitations remain historical evidence.",
+    "This review establishes only the exact local amended test/evidence review. Formal gate, exact-candidate CI, remote main readback, parent acceptance and Issue closure remain the root owner's subsequent responsibility."
+  ],
+  "review_artifacts": [
+    "evidence-checks.json",
+    "check_evidence.py"
+  ],
+  "writes": "<private-review-evidence> only",
+  "implementation_authorship": false,
+  "native_rerun": false,
+  "public_copy": {
+    "original_sha256": "f24da503ab55f6dc0efeb4399de6eda8fafde68d2bd75b94de949db5b6f14db8",
+    "transformation": "private path prefixes replaced; checks and findings unchanged"
+  }
+}

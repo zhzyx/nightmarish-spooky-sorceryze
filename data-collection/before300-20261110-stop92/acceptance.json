@@ -1,0 +1,57 @@
+{
+  "issue_number": 92,
+  "request_id": "yanluo-issue-51-deadlock-acceptance-20261105",
+  "parent_issue": 51,
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "scope_decision_ref": "user-chat-20261110-stop92-headless-input-scope-confirmed",
+  "user_decision": "改为无头模拟验收（建议）",
+  "replaces": "Real OS mouse/keyboard Stop input acceptance becomes headless simulated mouse/keyboard input, cancellation recovery and stale-result isolation.",
+  "original_deadlock_cause": "unknown; original symptom not reproduced; no causal claim",
+  "implementation": "two existing semantic test files only; no production source or user installation changes",
+  "validation": "Two actual synthesized viewport mouse/keyboard cases passed; independent review and CI/main still pending",
+  "usage": null,
+  "diting_consumption": null,
+  "actual_cases": {
+    "mouse_seconds": 0.028063,
+    "keyboard_seconds": 0.034849,
+    "max_frame_gap_seconds": 0.026428,
+    "both_input_down_up_counts": 1,
+    "both_button_down_pressed_counts": 1,
+    "gzip_recovery_before_old_release": true,
+    "observed_old_sent_then_absent": true
+  },
+  "source_hashes": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+    "tools/gonggong_bridge.py": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/check_gonggong_distribution.py": "f36d25ff5adf61fcf83ae932e77a2dc615227c7e4a72ede23fa7d1f4b4c8bf70",
+    "customizations/components/godot-host/bridge.py": "fc396d18e6f801e22b459e1ce9a5eaf9a00049808d7edd46bd8a0c3239fc5578",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+    "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267"
+  },
+  "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "production_source_mapping": {
+    "editor/docks/ai_chat_dock.cpp": "ad315c0f1b531f3b375b17e26b976273de3289717b3fda43920255eb508b9074",
+    "editor/docks/ai_chat_dock.h": "e62e555172556d4f050504e9a50bb30c47538ffeb49264afd4d5f410ae6f3518",
+    "basis": "Byte hashes equal committed prior native reviewed input manifest in before300-20261109-followup; no full newer main build claimed"
+  },
+  "files": {
+    "results.json": "570b33a006ae72765c6792a0f06451ff9ca7eec3056f5f3e454065991776b735",
+    "checks.json": "8b7e88ea01ae4f65ea3baf16037834bec29ebbee56c822a38fa8fbf25dd9660a",
+    "mouse.stdout.txt": "6a6fc8b884c2a4642e6b0989fdf959cf7fe4e0c1236a33e47ecc864ee2f32ea1",
+    "keyboard.stdout.txt": "300681c00e0102c44d5fac304bd538897e7ee048d8cd2fdcca65db7ab580cca1"
+  },
+  "independent_review": {
+    "reviewer": "/root/sinan_37d5001abb389315",
+    "state": "passed;42 evidence checks plus AST/Ruff/diff",
+    "files": [
+      "independent-review.json",
+      "independent-evidence-checks.json"
+    ],
+    "native_binary_rehashed": true
+  },
+  "packaging_correction": "Initial formal submission rejected top-level checks array before commit; wrapped as object with unchanged checks and original hash; formal retry pending"
+}

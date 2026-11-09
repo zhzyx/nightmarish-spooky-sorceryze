@@ -1,0 +1,174 @@
+{
+  "base_commit": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "binary_sha256": "8f6695436d4aa9f5ea84993446e345412acd5f84e4c04d6ab138ae538fad3600",
+  "runs": [
+    {
+      "mode": "mouse",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "tests/editor/run_ai_chat_semantic.py",
+        "--godot",
+        "<verified-private-editor>",
+        "--simulated-stop-input",
+        "mouse"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 10.89,
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.02507,
+        "hovered_control": "Stop",
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_center": "(1398.0, 928.5)",
+        "stop_disabled_after": true,
+        "stop_has_area": true,
+        "stop_hovered": true,
+        "stop_inside_viewport": true,
+        "stop_seconds": 0.028063,
+        "stop_trigger": "synthesized_viewport_mouse",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true,
+        "viewport_size": "(1440.0, 1000.0)"
+      },
+      "response_fixtures": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      }
+    },
+    {
+      "mode": "keyboard",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "tests/editor/run_ai_chat_semantic.py",
+        "--godot",
+        "<verified-private-editor>",
+        "--simulated-stop-input",
+        "keyboard"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 10.935,
+      "report": {
+        "active_after_input_down": true,
+        "button_down_count": 1,
+        "frame_gap_seconds": 0.026428,
+        "input_down_count": 1,
+        "input_up_count": 1,
+        "key_is_ui_accept": true,
+        "late_response_outcome": "sent",
+        "observed_server_release": true,
+        "overlay_after": false,
+        "overlay_before": true,
+        "pressed_count": 1,
+        "recovery_received": true,
+        "server_released_at_recovery": false,
+        "server_released_at_stop": false,
+        "stale_response_absent": true,
+        "stop_disabled_after": true,
+        "stop_had_focus": true,
+        "stop_has_area": true,
+        "stop_seconds": 0.034849,
+        "stop_trigger": "synthesized_viewport_keyboard",
+        "stop_visible": true,
+        "stop_was_enabled": true,
+        "viewport_embeds_windows": true
+      },
+      "response_fixtures": {
+        "highlight_tabs": {
+          "content_encoding": "identity",
+          "sha256": "7417f9b84a93163249c1521bbf4ea6c85e7ab6627ad4246cb2e8e436aba4a06f"
+        },
+        "recovery": {
+          "content_encoding": "gzip",
+          "sha256": "50b33ee866768eb7735a5d1027c1897f25b8345bca42358f67d2c23a8b7facb3"
+        }
+      }
+    }
+  ],
+  "scope": "private macOS arm64 editor; pure headless synthesized viewport Stop input; loopback mocked HTTP only; no desktop input, no external model request, no compile; original deadlock cause unknown",
+  "source_sha256": {
+    "tests/editor/ai_chat_semantic.gd": "6289f8eb8803b19f9ffa38297ec079230feec18863a9c792cfb91dbb61aedf7e",
+    "tests/editor/run_ai_chat_semantic.py": "01724bdfa72e1e454c6f4448650c76780d027e017e2e28740fd3de188abb69e7",
+    "tests/editor/editor_test_isolation.py": "aa1916f6ee15dad352321a4c078a1fb0a88894a818eac1d4268c1d58144b06c2",
+    "tests/editor/run_requirements_intake.py": "271df98eb712695fd206378fa343b35dabad8ed1d06a5b7fa55d492adfaf3dfe",
+    "tools/gonggong_bridge.py": "1d1d3e0e51fc4d13bacb587a52232f58fdf243c48e1ba47c109a5fc2ed966bb8",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/check_gonggong_distribution.py": "f36d25ff5adf61fcf83ae932e77a2dc615227c7e4a72ede23fa7d1f4b4c8bf70",
+    "customizations/components/godot-host/bridge.py": "fc396d18e6f801e22b459e1ce9a5eaf9a00049808d7edd46bd8a0c3239fc5578",
+    "integrations/gonggong/frozen-distribution.json": "809b2539473604685823cf816b06e90c2a6540a05ce4ab0664ddeee39413410c",
+    "SConstruct": "4ded5954aa9d7bacfa27d2b8c32af502b428406f5a998b52503bd887be13f267"
+  },
+  "loopback_delay_seconds": 3,
+  "baseline_sha256": {
+    "ai_chat_semantic.baseline.gd": "5be9c54d9a024fe2b97954aefbb3c50c74f4eb41eb7f956edf77dea58535c14e",
+    "run_ai_chat_semantic.baseline.py": "c68b79960508bf1bde07016e59e72714fc6012de5df9fe3beea4f74cd3111371"
+  },
+  "intake": {
+    "issue": 92,
+    "request_id": "yanluo-issue-51-deadlock-acceptance-20261105",
+    "tenant": "gonggong-workspace",
+    "actor": "Sail-Li",
+    "status": "status:in-progress",
+    "amended_headless_scope_readback": true,
+    "exit_code": 0
+  },
+  "limitations": [
+    "Private macOS arm64 editor binary is a prior build reporting source hint7e5f7bc20; not a rebuild of worktree/main9132b7c or full newer theme source.",
+    "Headless viewport simulation with embedded window routing and1440x1000 private editor geometry; no physical OS input or Windows-native input evidence.",
+    "Local mocked model/GitHub fixtures only; no provider request or production receipt acceptance.",
+    "Original historical deadlock was not reproduced; its causal root remains unknown.",
+    "Manual/signal modes were retained in source and not rerun because their existing100-second delayed cases are outside this narrow simulation run."
+  ],
+  "checks_file": "checks.json",
+  "previous_attempts": [
+    {
+      "evidence": "missing-installation-fixture-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "missing-runtime-fixture-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "missing-viewport-enter-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "native-window-hover-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "pregeometry-hover-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "sandbox-bind-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "setup-diagnostic-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    },
+    {
+      "evidence": "setup-failure.json",
+      "classification": "sandbox/local fixture setup or synthesized viewport preparation; not product deadlock reproduction"
+    }
+  ]
+}
