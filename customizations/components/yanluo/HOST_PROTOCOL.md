@@ -1,6 +1,6 @@
 # 阎罗宿主接入与职责交接
 
-所有路径以仓库根为基准。此目录是隔离待审候选，尚未注册到当前框架，不能生产执行。`closure.py` 是可测试的编排接口，Host 实现与宿主真实授权仍须接通；没有后台服务或全局接管。
+所有路径以仓库根为基准。宿主从 customizations/host-agents.json 回读本角色的版本和批准记录，核对精确候选后按当前工单的实际委托执行。closure.py 提供事件驱动的交付编排，Git 签名宿主实现在 customizations/components/issue-workorders/yanluo_host.py。
 
 ## 权责
 
@@ -25,7 +25,7 @@ Host 由受信宿主提供，不能让待审 PR 自己实现、替换或选择�
 2. `acquire/release` 在实际宿主跨进程串行化同仓库/main；不能只用模型约定或按事件分锁。释放只针对自己取得的租约。锁丢失时禁止写入。
 3. `read` 通过真实连接器回读 Issue 状态/修订、范围、所有贡献、PR/head/base 和精确候选，返回 candidate、published、closed、status、main 及修订标记。published 只来自持久发布回执及远端核对，绝非本地成功标记。响应未知先对账。
 4. `verify` 逐项取得 REQUIRED 的真实证据。固定验收清单及完整贡献快照，不以一个子项或一个 PR 完成代表整个 Issue；缺失、失败、跳过、pending 均不能返回 True。绑定 repository、commit/tree、依赖摘要与 scope_digest；候选或基准变化重验受影响部分。独立审查不能由阎罗自批。
-5. 提交前复用 `issue_gate.py --repo ... --issue ... --request-id ...` 正式门禁及 `framework/tools/check_delivery.py`、业务验收和 required CI。只暂存自己的明确清单，在隔离任务分支提交，再执行 `framework/extensions/diting-files/diting_files.py git-check --repo ... --require-committed`。不要把仅 intake-only、格式检查或候选模式当作正式通过。自动 main 发布前对任务分支精确 SHA 重新核对全部证据。
+5. 提交前复用 `issue_gate.py --repo ... --issue ... --request-id ...` 正式门禁及 `customizations/platforms/development/git/delivery/check_delivery.py`、业务验收和 required CI。只暂存自己的明确清单，在隔离任务分支提交，再执行 `customizations/platforms/data-collection/git-files/storage/diting_files.py git-check --repo ... --require-committed`。不要把仅 intake-only、格式检查或候选模式当作正式通过。自动 main 发布前对任务分支精确 SHA 重新核对全部证据。
 6. `publish` 使用受保护分支允许的 PR 合并/合并队列或已授权快进方式。原子校验候选 SHA 与预期父提交；GitHub PR 接口若不能同时锁定 base，使用严格 up-to-date required checks/合并队列保证最新整合树已验证，否则拒绝。禁止 admin 绕过、force push；CI 失败不放宽检查。PR 正文保留 GongGong-Issue/GongGong-Request，验收完成前不用自动关闭关键字。
 7. `read_main` 回读远端实际 commit/tree，核验精确候选进入 main。发生 squash 时需验证交付树对应关系，不能仅判断 SHA 祖先。未知发布回执只等待下一个真实事件对账，不能重复盲目发布。
 8. `record` 以稳定 event_id + candidate + phase 幂等追加共享谛听事件及 data-collection 回执，保存真实执行者、Issue 修订、检查与发布引用；相同键不同内容拒绝。公开证据需按已有 Git 交付规则另行提交，提交后追加回执不能伪称已在前一提交中；私有排队不等于 delivered/consumed。用量未知为 null+reason。
@@ -34,7 +34,7 @@ Host 由受信宿主提供，不能让待审 PR 自己实现、替换或选择�
 
 ## 准入与恢复
 
-独立审查当前候选全部文件、精确指纹及职责迁移，取得交付通行证，注册框架 Agent、更新受影响注册/上报/候选清单及完整性锁并重验；不得修改旧批准记录或冻结原件。随后接通 Host 各方法，完成真实代表任务及失败恢复回执，才可声明自动提交/关闭已启用。
+独立审查当前候选全部文件、精确指纹及职责迁移，取得交付通行证，更新宿主 Agent 登记、上报配置与候选清单并重验；不得修改旧批准记录或冻结原件。随后接通 Host 各方法，完成真实代表任务及失败恢复回执，才可声明自动提交/关闭已启用。
 
 回退只停止后续调用并将尚未执行部分明确交还原责任人；保留已经提交内容、Issue 历史和谛听事件，不撤销真实完成事实。本候选不得阻断其他已准入 Agent 的无关操作。
 

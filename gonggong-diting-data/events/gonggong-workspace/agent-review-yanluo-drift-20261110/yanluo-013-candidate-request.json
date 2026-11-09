@@ -1,0 +1,23 @@
+{
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "occurred_at": "2026-11-09T19:19:57.2659857+00:00",
+  "request_id": "agent-review-yanluo-drift-20261110",
+  "payload": {
+    "outcome": "复核并修复阎罗定义范围与宿主精确候选漂移",
+    "usage": null,
+    "usage_unknown_reason": "No observed provider usage",
+    "governance_skill": "framework/skills/gonggong-check/SKILL.md"
+  },
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/671",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e",
+    "id": "codex-host"
+  },
+  "event_id": "yanluo-013-candidate-request",
+  "sha256": "67eca2d0aa4e3674c6ae269bf00e6d4f83e04de5e499a505adaca1d48b26c2cf"
+}

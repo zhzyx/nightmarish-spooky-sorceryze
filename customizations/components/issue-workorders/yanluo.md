@@ -1,6 +1,6 @@
 # 阎罗当前宿主入口
 
-路径基准为仓库根。用户已批准 `customizations/components/yanluo` 的 v0.1.2 精确候选；原候选文件与待批记录保留为历史事实，实际批准见 `data-collection/yanluo-user-approval.json`。本接入在原位置加载该定义，不复制/迁移冻结框架、不改写旧批准。Git 专用执行留在 issue-workorders 接入层。
+路径基准为仓库根。当前定义位于 `customizations/components/yanluo`，精确版本、指纹与对应批准由受信 grant 绑定的 `customizations/host-agents.json` 登记。v0.1.2 的历史批准保存在 `data-collection/yanluo-user-approval.json`。本接入在原位置加载该定义，不复制/迁移冻结框架、不改写旧批准。Git 专用执行留在 issue-workorders 接入层。
 
 当前责任：合契交出已整合的候选、完整贡献快照和范围；阎罗负责最终核查、main 发布、发布后完成度复核、目标工单完成写入与回读；司南继续派发、依赖、父项验收和跨工单协调。已经在执行中的发布须完成原操作者交接，不能抢占或操纵其他工作树。此入口只接管新交接事件；原冻结 Agent 定义中的通用协作职责不扩展为另一位 main 发布者。
 

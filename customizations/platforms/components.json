@@ -63,11 +63,11 @@
     {
       "id": "yanluo",
       "display_name": "阎罗",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "path": "customizations/components/yanluo",
       "path_base": "repository_root",
       "ownership": "gonggong_customization",
-      "state": "candidate_pending_review",
+      "state": "approved_definition_host_authority_required",
       "entry": "customizations/components/yanluo/AGENT.md",
       "reporting": {
         "profile": "customizations/components/yanluo/reporting.json",
@@ -76,7 +76,7 @@
       "activation": false,
       "rollback": "Stop candidate invocation; retain original owners until an acknowledged handoff; preserve evidence",
       "framework_dependency": "CURRENT_FRAMEWORK.json; exact definition approval and host authority",
-      "validation": "data-collection/yanluo-user-approval.json"
+      "validation": "data-collection/yanluo-0.1.3-approval.json"
     }
   ],
   "module_migration": "customizations/module-migration.json",
