@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a944e2ebabd2c0f35211accbb9e6043ecf330728",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-safe-preview",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/652",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0c480019048dae0d3eee9264b7267af61e2d7068cdef5eb3b8c647ea0aa32128",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/652",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/597",
+    "action": "delivery",
+    "detection_head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+    "context_sha256": "d18ff310f457776e17b92d8421cf286ca336959bd8150e2af38b3d7449353ef1",
+    "operator": "Sail-Li",
+    "worker": "codex-safe-preview-652",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592",
+    "evidence": "same-worktree Git fetch origin main succeeded with OS-selected proxy environment",
+    "diagnosis": "Git direct route reset; Windows Internet Settings HTTPS proxy restores current repository readback without repository configuration changes",
+    "next_action": "Use child-only OS-selected proxy for Git delivery and verify exact remote receipts",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T17:06:16.146940+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T17:07:32.403200+00:00",
+  "sha256": "15deb0b31e58285dc5b1b72339c31295a2798b14692d946b42cdb462bb3bd1b8"
+}

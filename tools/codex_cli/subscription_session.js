@@ -178,7 +178,7 @@ class Subscription {
         }) :
                              prompt(input);
         const rpc = this.rpc, thread = this.thread;
-        let turn, resolve, reject, early = [], result = '', total = 0;
+        let turn, resolve, reject, early = [], result = '', total = 0, previewParser = new (require('./content_preview').ContentPreview)(), preview = '';
         const terminal = new Promise((ok, no) => {
             resolve = ok;
             reject = no;
@@ -200,6 +200,8 @@ class Subscription {
             if (p.method === 'item/agentMessage/delta') {
                 total += Buffer.byteLength(p.params.delta || '');
                 if (total > 2 * 1024 * 1024) throw fault();
+                const next = previewParser.feed(p.params.delta || '');
+                if (next && next !== preview) { preview = next; progress('content_preview', next); }
             }
             if (p.method === 'item/completed' && item?.type === 'agentMessage') result = item.text;
             if (p.method === 'turn/completed') {

@@ -370,7 +370,7 @@ async function serve(entry, python) {
     const { start } = require('./subscription_session');
     const lines = require('node:readline').createInterface({ input: process.stdin, crlfDelay: Infinity });
     const write = value => process.stdout.write(JSON.stringify(value) + '\n');
-    const stage = activity => write({ event: 'codex_progress', activity });
+    const stage = (activity, content_preview) => write({ event: 'codex_progress', activity, ...(content_preview ? { content_preview } : {}) });
     const env = proxyEnvironment(process.env, python);
     let session, checked = false;
     const cleanup = () => session?.rpc.close();

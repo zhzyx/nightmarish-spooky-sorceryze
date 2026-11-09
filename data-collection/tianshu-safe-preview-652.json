@@ -1,0 +1,28 @@
+{
+  "request_id": "tianshu-safe-preview",
+  "issue_number": 652,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/652",
+  "base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "tests": {
+    "pass": 24,
+    "fail": 0,
+    "skip": 0
+  },
+  "live": {
+    "engine_sha256": "55265aff34378d9a177122698f4f7f06c147ca97512d23734a3a531dc292c384",
+    "model": "gpt-6.1-sol",
+    "returncode": 0,
+    "events": [
+      "PREVIEW_VISIBLE 42892",
+      "PREVIEW_FINAL 68487",
+      "PREVIEW_CANCEL_CLEARED",
+      "PREVIEW_CANCEL_FOLLOWUP_OK"
+    ]
+  },
+  "independent_review": {
+    "worker": "sinan_331b32f0b150febb",
+    "result": "safety/performance blockers resolved; final binary receipt required and now obtained"
+  },
+  "scope": "plain-text preview only; complete action validation unchanged",
+  "privacy": "raw account and model logs excluded"
+}
