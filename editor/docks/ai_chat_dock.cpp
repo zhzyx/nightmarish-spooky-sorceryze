@@ -1769,6 +1769,10 @@ void AIChatDock::_automation_toggled(bool) {
 }
 
 void AIChatDock::_set_busy(bool p_busy) {
+	if (!p_busy) {
+		read_batch_count = 0;
+		read_batch_results.clear();
+	}
 	const bool was_busy = busy;
 	const bool finishing_offer = !p_busy && !command_offer_id.is_empty();
 	const bool terminal_retry = !delivery_retry_route.is_empty();
@@ -2818,11 +2822,67 @@ void AIChatDock::_next_tool(uint64_t p_session) {
 		_request_completion();
 		return;
 	}
+	// Only synchronous Codex file reads share a receipt. The journal cursor
+	// stays at the first read until every returned result has been verified.
+	int count = 0;
+	if (backend->get_selected() == 2 && !consultation_turn && gonggong_recovered_result.is_empty() && !restoring_command_offer && !daqian_approval_running) {
+		while (tool_index + count < tool_calls.size() && count < 16) {
+			const Dictionary call = tool_calls[tool_index + count];
+			const Dictionary function = call.get("function", Dictionary());
+			if (function.get("name", "") != "read_file") {
+				break;
+			}
+			count++;
+		}
+	}
+	if (count >= 2) {
+		read_batch_count = count;
+		// The batch starts here. Individual reads start only when selected,
+		// so stopping between frames never leaves unexecuted tools queued.
+		if (!_record_gonggong("step", "read-batch-" + itos(tool_rounds) + "-" + itos(tool_index), "running")) {
+			_set_busy(false);
+			return;
+		}
+		_flush_gonggong(callable_mp(this, &AIChatDock::_read_batch_item).bind(p_session));
+		return;
+	}
 	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "running")) {
 		_set_busy(false);
 		return;
 	}
 	_flush_gonggong(callable_mp(this, &AIChatDock::_tool_after_receipt).bind(p_session));
+}
+
+void AIChatDock::_read_batch_item(uint64_t p_session) {
+	if (!busy || p_session != session_generation || read_batch_count == 0) {
+		return;
+	}
+	String error;
+	if (!_recover_active_provenance(error) || (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(error))) {
+		_append(TTR("Error"), error);
+		_set_busy(false);
+		return;
+	}
+	const int index = tool_index + read_batch_results.size();
+	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(index), "running")) {
+		_set_busy(false);
+		return;
+	}
+	_tool_after_receipt(p_session);
+}
+
+void AIChatDock::_publish_read_batch(uint64_t p_session) {
+	if (!busy || p_session != session_generation || read_batch_count == 0) {
+		return;
+	}
+	for (const String &result : read_batch_results) {
+		_append_tool_message(result, false, false);
+		tool_index++;
+	}
+	read_batch_results.clear();
+	read_batch_count = 0;
+	_save_resume();
+	callable_mp(this, &AIChatDock::_next_tool).call_deferred(p_session);
 }
 
 void AIChatDock::_tool_after_receipt(uint64_t p_session) {
@@ -2833,7 +2893,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		_finish_tool("Error: Skipped unexecuted proposal because the user supplied new instructions. Replan using the updated scope.");
 		return;
 	}
-	Dictionary call = tool_calls[tool_index];
+	Dictionary call = tool_calls[tool_index + read_batch_results.size()];
 	Dictionary function = call["function"];
 	Variant name_value = function.get("name", Variant());
 	Variant args_value = function.get("arguments", Variant());
@@ -3099,32 +3159,39 @@ void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool 
 		return;
 	}
 	pending_action = String();
-	if (tool_index >= 0 && tool_index < tool_calls.size()) {
-		const Dictionary call = tool_calls[tool_index];
+	const int index = tool_index + read_batch_results.size();
+	if (index >= 0 && index < tool_calls.size()) {
+		const Dictionary call = tool_calls[index];
 		const Dictionary function = call["function"];
 		// The operation already happened. Keep its bounded actual status even
 		// when mandatory event recording subsequently refuses continuation.
 		_record_design_tool_receipt(function.get("name", ""), _redact(p_result), p_file_success);
 	}
 	_daqian_tool_result(p_result, p_file_success);
-	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
+	if (!_record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(index), "result_returned") || !_record_gonggong("message", "tool_result", "received_metadata_only")) {
 		_set_busy(false);
+		return;
+	}
+	if (read_batch_count > 0) {
+		// The host already read this file. Keep the actual result visible if
+		// the user stops before the combined receipt releases it to the model.
+		_show_tool_result(tool_calls[index], p_result);
+		read_batch_results.push_back(p_result);
+		if (read_batch_results.size() == read_batch_count) {
+			if (!_record_gonggong("step", "read-batch-" + itos(tool_rounds) + "-" + itos(tool_index), "result_returned")) {
+				_set_busy(false);
+				return;
+			}
+			_flush_gonggong(callable_mp(this, &AIChatDock::_publish_read_batch).bind(session_generation));
+		} else {
+			get_tree()->connect(SNAME("process_frame"), callable_mp(this, &AIChatDock::_read_batch_item).bind(session_generation), CONNECT_ONE_SHOT);
+		}
 		return;
 	}
 	_flush_gonggong(callable_mp(this, &AIChatDock::_finish_tool_after_receipt).bind(p_result, p_file_success, p_structured_state));
 }
 
-void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state) {
-	// The mandatory result receipt and original session are ready. Publish the
-	// handoff before advancing the batch, so a failed write is safe to retry.
-	if (!gonggong_recovered_result.is_empty() && !gonggong_recovery_ack_token.is_empty()) {
-		if (AIChatResume::write_ack(gonggong_recovery_ack_token, OS::get_singleton()->get_executable_path()) != OK) {
-			_append(TTR("Error"), U"本会话的工具结果已校验，但版本切换回执写入失败。已暂停接续并保留原续跑记录。");
-			_set_busy(false);
-			return;
-		}
-		gonggong_recovery_ack_token = String();
-	}
+void AIChatDock::_append_tool_message(const String &p_result, bool p_file_success, bool p_structured_state) {
 	Dictionary call = tool_calls[tool_index];
 	Dictionary function = call["function"];
 	const String name = function.get("name", "");
@@ -3138,6 +3205,11 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 		result["godot_file_success"] = p_file_success;
 	}
 	messages.push_back(result);
+}
+
+void AIChatDock::_show_tool_result(const Dictionary &p_call, const String &p_result) {
+	const Dictionary function = p_call["function"];
+	const String name = function.get("name", "");
 	Dictionary arguments;
 	JSON argument_json;
 	const Variant argument_value = function.get("arguments", Variant());
@@ -3154,6 +3226,22 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 	work_text->add_text(U"查看此步骤详情");
 	work_text->pop();
 	work_text->add_text("\n\n");
+}
+
+void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_success, bool p_structured_state) {
+	// The mandatory result receipt and original session are ready. Publish the
+	// handoff before advancing the batch, so a failed write is safe to retry.
+	if (!gonggong_recovered_result.is_empty() && !gonggong_recovery_ack_token.is_empty()) {
+		if (AIChatResume::write_ack(gonggong_recovery_ack_token, OS::get_singleton()->get_executable_path()) != OK) {
+			_append(TTR("Error"), U"本会话的工具结果已校验，但版本切换回执写入失败。已暂停接续并保留原续跑记录。");
+			_set_busy(false);
+			return;
+		}
+		gonggong_recovery_ack_token = String();
+	}
+	const Dictionary call = tool_calls[tool_index];
+	_append_tool_message(p_result, p_file_success, p_structured_state);
+	_show_tool_result(call, p_result);
 	tool_index++;
 	_save_resume();
 	if (!gonggong_recovered_result.is_empty()) {

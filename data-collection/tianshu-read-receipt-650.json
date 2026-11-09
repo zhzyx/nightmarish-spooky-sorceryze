@@ -1,0 +1,230 @@
+{
+  "issue_number": 650,
+  "request_id": "tianshu-read-receipt-batch",
+  "base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "test_binary_sha256": "7180258038219796eaf59d25325458aa9a85964c38eed7845b2dbd95668a1127",
+  "provider": "existing ChatGPT Codex login on Windows",
+  "model": "gpt-6.1-sol",
+  "task": "One group of nine distinct random source files, exact joined values, then two exact suffix questions sent through the same visible ChatInput and Send.",
+  "rounds": [
+    {
+      "ms": 61258,
+      "round": 1,
+      "transport": {
+        "message_count": 10.0,
+        "mode": "incremental"
+      }
+    },
+    {
+      "ms": 14349,
+      "round": 2,
+      "transport": {
+        "message_count": 5.0,
+        "mode": "bootstrap"
+      }
+    },
+    {
+      "ms": 7845,
+      "round": 3,
+      "transport": {
+        "message_count": 2.0,
+        "mode": "incremental"
+      }
+    }
+  ],
+  "terminal_receipts": [
+    [
+      "godot-event-92048-72313132",
+      "9be32ad38307250dbb7e00713d3765708c6c35b6b7a62461fc1647939957d25a"
+    ],
+    [
+      "godot-event-92048-86624497",
+      "535a41222d5b352462601562f71414ff8545ad0cd9d5297c1e336e3a56ad429c"
+    ],
+    [
+      "godot-event-92048-94480155",
+      "64eca5ace940c6a2813c44e11f2447b6e0e56b6ccc0562cbcc6e47ce13165a67"
+    ]
+  ],
+  "source_file_sha256": [
+    "48b3ecae1a97edb2c3c7726803965c0e54c299b0fd92cf341ffde70527797a1f",
+    "262b5e0d26108f6dad05bdfad1954639bfd509304b21a087b0aa10042865a8c4",
+    "8444ed0684faa31e2ae8d7a9287f72c1935e29b87012de9809cfc0a7114da63b",
+    "684ddfc3ba8cfbe22da1ea114584dd8a4285a8bc6620131f977a314495ad4a20",
+    "c91ed0b570d2a963ddb7859b2371fa020b358c7604e3d7ecc34cde8807612cee",
+    "e773be139a35c5a384133e52af0d09b827177cfbc352fca8d699c75fbf1773e3",
+    "99d4e8991820fe3d5950ec644450e0d6a1134891f34a33607fe5feaa2a7cb8df",
+    "6e7ce013952a6a77df44f4151da8741d6fb0055a02136b147935a9e93f7e2578",
+    "017a871833216398732429286f2af3112684f54d7f179cdbb8cce05718f4c6b3"
+  ],
+  "timing": {
+    "prior_nine_file_first_start_to_last_result_ms": 17750,
+    "current_nine_file_first_start_to_last_result_ms": 548,
+    "current_batch_open_to_results_queued_ms": 1622,
+    "prior_separate_end_to_end_ms": 96712,
+    "limit": "Different live samples. Tool interval excludes validation after the last result. End-to-end includes model and issue authorization."
+  },
+  "regression": {
+    "stop": {
+      "case": "stop",
+      "model_requests": 1,
+      "armed": true,
+      "changed": true,
+      "corrected": false,
+      "events": [
+        [
+          "model-0",
+          "running"
+        ],
+        [
+          "model-0",
+          "response_received"
+        ],
+        [
+          "read-batch-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "result_returned"
+        ],
+        [
+          "read-batch-1-0",
+          "cancelled"
+        ]
+      ],
+      "idle": true,
+      "receipt_error": false
+    },
+    "steer": {
+      "case": "steer",
+      "model_requests": 2,
+      "armed": true,
+      "changed": true,
+      "corrected": true,
+      "events": [
+        [
+          "model-0",
+          "running"
+        ],
+        [
+          "model-0",
+          "response_received"
+        ],
+        [
+          "read-batch-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "result_returned"
+        ],
+        [
+          "tool-1-1",
+          "running"
+        ],
+        [
+          "tool-1-1",
+          "result_returned"
+        ],
+        [
+          "tool-1-2",
+          "running"
+        ],
+        [
+          "tool-1-2",
+          "result_returned"
+        ],
+        [
+          "tool-1-3",
+          "running"
+        ],
+        [
+          "tool-1-3",
+          "result_returned"
+        ],
+        [
+          "read-batch-1-0",
+          "result_returned"
+        ],
+        [
+          "model-1",
+          "running"
+        ],
+        [
+          "model-1",
+          "response_received"
+        ]
+      ],
+      "idle": true,
+      "receipt_error": false
+    },
+    "receipt": {
+      "case": "receipt",
+      "model_requests": 1,
+      "armed": true,
+      "changed": false,
+      "corrected": false,
+      "events": [
+        [
+          "model-0",
+          "running"
+        ],
+        [
+          "model-0",
+          "response_received"
+        ],
+        [
+          "read-batch-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "running"
+        ],
+        [
+          "tool-1-0",
+          "result_returned"
+        ],
+        [
+          "tool-1-1",
+          "running"
+        ],
+        [
+          "tool-1-1",
+          "result_returned"
+        ],
+        [
+          "tool-1-2",
+          "running"
+        ],
+        [
+          "tool-1-2",
+          "result_returned"
+        ],
+        [
+          "tool-1-3",
+          "running"
+        ],
+        [
+          "tool-1-3",
+          "result_returned"
+        ],
+        [
+          "read-batch-1-0",
+          "result_returned"
+        ]
+      ],
+      "idle": true,
+      "receipt_error": true
+    }
+  }
+}
