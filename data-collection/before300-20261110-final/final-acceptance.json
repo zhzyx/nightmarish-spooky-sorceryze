@@ -1,0 +1,83 @@
+{
+  "issues": {
+    "49": {
+      "requirement": "Debug existing editor AI request/framework/bridge/reply chain and repair defects; external service failure must retain explicit evidence",
+      "completed_source": [
+        "main PR638/641 diagnostics and request lifecycle",
+        "User accepted current session PR645 handoff; own reviewed clarification/JSON/trusted-host governed config continuation integrated in PR691",
+        "Fresh62e450 native11 requirements/7 development/1 read/5 fixtureIssues/71 committed events",
+        "Historical515/599 actual Windows provider replies remain only their own evidence"
+      ],
+      "scope_decisions": [
+        "2026-11-05 user skipped remaining visible oldwindow/recovery and stopped original queue; not resumed",
+        "Original PROCESS_EXIT cause unknown; not inferred from mocks"
+      ],
+      "final_evidence": [
+        "pr691-windows-push.json",
+        "pr691-windows-pull-request.json",
+        "pr691-exact-checks.json",
+        "pr691-main-readback.json",
+        "62e450-independent-integration.json"
+      ],
+      "acceptance_conclusion": "Current authorized integration and revised acceptance completed; preserved old skipped window/queue is not a pass claim, and original PROCESS_EXIT cause remains unknown. External failure evidence and independent fixes satisfy original fallback requirement."
+    },
+    "92": {
+      "requirements": [
+        {
+          "item": "Representative original deadlock reproduction/causal evidence, record unknown if not reproducible",
+          "evidence": "Original not reproduced and unknown retained in issue92/design; no causal claim",
+          "state": "recorded_unknown_as_required"
+        },
+        {
+          "item": "User changed physical mouse/keyboard into headless synthesized viewport inputs; responsiveStop, cancellation recovery, oldresult isolation",
+          "evidence": "62e450-stop-input.json exact both down/up/button_down/pressed, gzip recovery before old release, observe oldsent then absent",
+          "state": "passed_on_delivered_source"
+        }
+      ],
+      "final_evidence": [
+        "62e450-stop-input.json",
+        "pr691-exact-checks.json",
+        "pr691-main-readback.json"
+      ]
+    },
+    "51": {
+      "requirement": "Active Olympus entry cleanup and framework/intake/bridge/requirements/data/package regressions, distinguish failed/unknown and actual providers",
+      "completed_source": [
+        "PR61/78/82/67 and PR638/641 immutable delivered evidence",
+        "Current49 preserves framework policies, data/issue boundaries and readonly historicalarchives",
+        "Current62e450 Stop/recovery audit fulfills revised child92 scope"
+      ],
+      "unknowns": "Original symptom not reproduced; no assertion unique deadlock cause or realprovider from fixtures",
+      "acceptance_conclusion": "Active entry and directly reproduced defects fixed and delivered; complete representative matrix retains historical exceptions and original cause unknown; revised92 Stop scope fulfilled by source now in main.",
+      "final_evidence": [
+        "62e450-stop-input.json",
+        "pr691-main-readback.json",
+        "design-docs/olympus-residue-deadlock-20261104.md"
+      ]
+    }
+  },
+  "status": "All revised business acceptance satisfied after exact CI and actual main readback; Issue state must be read from authoritative GitHub after this evidence archival",
+  "consumption": null,
+  "main": {
+    "pr": 691,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/691",
+    "merged_at": "2026-11-09T21:12:24Z",
+    "merged_by": "Sail-Li",
+    "signed_head": "eb2a1dc6b74b2abb558a8f2a5f87a06ee1641c83",
+    "merge_commit": "238dcceac262965c5d5e8d213fcd0bbea481fb92",
+    "main": "238dcceac262965c5d5e8d213fcd0bbea481fb92",
+    "main_tree": "76c6ba042f45be928ff36a3ac471606e91a3beb0",
+    "source_commit": "0282c624d460015608e097d6196c25467372984f",
+    "tree_matches_signed": true,
+    "plugin_write_result": "403 resource not accessible by integration; no publication",
+    "actual_publication_channel": "authenticated gh Sail-Li normal fixed-head PR merge",
+    "consumption": null
+  },
+  "issue_status_sources": {
+    "49": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "51": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+    "92": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92"
+  },
+  "native_children_readback": "final-native-child-readback.json",
+  "issue_state_not_claimed": true
+}

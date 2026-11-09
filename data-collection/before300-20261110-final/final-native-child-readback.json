@@ -1,0 +1,20 @@
+{
+  "native_relationships": [
+    {
+      "issue": 49,
+      "native_children": []
+    },
+    {
+      "issue": 51,
+      "native_children": []
+    },
+    {
+      "issue": 92,
+      "native_children": []
+    }
+  ],
+  "design_parent": 51,
+  "design_child": 92,
+  "meaning": "Historical51/92 parent linkage is design/body mapping; not claimed as a GitHub native relation. Read all current native children separately before parent closure.",
+  "consumption": null
+}

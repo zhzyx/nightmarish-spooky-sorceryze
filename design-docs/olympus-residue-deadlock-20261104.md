@@ -1,5 +1,13 @@
 # Olympus 残留与当前链路死锁排查
 
+## 2026-11-10 最终交付与验收
+
+本批 #49/#51/#92 的修复与用户修订范围已经验收。PR [#691](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/691) 的源提交 `0282c624d460015608e097d6196c25467372984f`、精确签发 `eb2a1dc6b74b2abb558a8f2a5f87a06ee1641c83` 全部适用检查通过（11 success／14 skip），远端 main 已接收 `238dcceac262965c5d5e8d213fcd0bbea481fb92`，内容树与签发树一致。两轮 Windows 实测各通过 3 个进程中断、5 个 journal 边界、10 个部署场景，实际原生自动配置后恢复原需求 11／7／1／5 Issue／71 事件、committed 及所属 Job 清空。mac 当前原生候选及无头鼠标／键盘 Stop、gzip 恢复先于旧响应释放和迟到隔离已实测，独立审查无可操作发现。
+
+逐项验收、精确来源与完整报告以仓库根的 `data-collection/before300-20261110-final/final-acceptance.json` 及 `pr691-*` 为准。#49 缺失需求进入澄清、禁用工具的业务 JSON 整理、真实宿主政策与 UTF8 配置后原需求续接已完成；#92 的原始症状无法复现按条款保留 unknown，用户将物理交互改为无头合成输入的验收已通过；#51 的有效入口残留及直接故障历史修复与当前子项分别留证。原真实 PROCESS_EXIT／卡死因果 unknown、用户跳过的旧窗口与旧队列、真实供应商与模拟的边界均保留，不把跳过项写成测试通过；未切换用户安装。
+
+工单完成状态及最终结束回执的权威来源分别为 [#49](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49)、[#92](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92)、[#51](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51)。以下各阶段记录按原时间与源版本保留，不把历史“待交付”解释为当前结论。消费与实际模型用量仍为 unknown。
+
 ## 2026-11-10 其他发布任务已验收，接续本批
 
 已回读其他发布者在 #671、#676、#677 的完整验收、精确签发检查和 main 接收回执（来源见 `data-collection/before300-20261110-final/other-publishers-completed.json`，路径以仓库根为基准）；用户要求的先后顺序已满足。新的隔离联合候选基于 main `62e450e1897c9c90a19664363f851d4b361eb958`，21 个新主线路径与本批写入无交叉，保留设计定版和前置验收后派发的新接口。
