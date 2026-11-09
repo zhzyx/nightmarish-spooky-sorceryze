@@ -1,0 +1,116 @@
+{
+  "issue_number": 620,
+  "parent_issue": 592,
+  "request_id": "tianshu-cold-receipt-open",
+  "dataset_revision": "b0da58651e2323c283b50e8642f43b251856489a",
+  "diagnosis": {
+    "cold_profile_seconds": 26.747,
+    "open_calls": 6351,
+    "open_seconds": 24.682,
+    "current_records": 6232
+  },
+  "controlled_ab": {
+    "method": "Four separate newly checked out Windows worktrees of the same revision; run record-batch twice per checkout, old/new/new/old; compare idempotence and SHA-256 on every run. Cold means fresh checkout, not OS cache eviction.",
+    "event_id": "godot-event-28348-93163929",
+    "sha256": "9e93dcc7bbaea9259ea7e654112aa987bcc3d68a582732cda7b757f62c51e89c",
+    "samples": [
+      {
+        "build": "old",
+        "cache": "cold",
+        "seconds": 21.328,
+        "index": 0
+      },
+      {
+        "build": "old",
+        "cache": "warm",
+        "seconds": 0.828,
+        "index": 0
+      },
+      {
+        "build": "new",
+        "cache": "cold",
+        "seconds": 3.281,
+        "index": 1
+      },
+      {
+        "build": "new",
+        "cache": "warm",
+        "seconds": 0.703,
+        "index": 1
+      },
+      {
+        "build": "new",
+        "cache": "cold",
+        "seconds": 3.141,
+        "index": 2
+      },
+      {
+        "build": "new",
+        "cache": "warm",
+        "seconds": 0.75,
+        "index": 2
+      },
+      {
+        "build": "old",
+        "cache": "cold",
+        "seconds": 21.359,
+        "index": 3
+      },
+      {
+        "build": "old",
+        "cache": "warm",
+        "seconds": 0.859,
+        "index": 3
+      }
+    ]
+  },
+  "editor": {
+    "provider": "Codex app-server, ChatGPT login",
+    "model": "gpt-6.1-sol",
+    "task": "Read a random file, followed by two exact short replies in the same work order.",
+    "extra_clicks": 0,
+    "first_cli_event_ms": 23332,
+    "elapsed_ms": [
+      44016,
+      13250,
+      9259
+    ],
+    "followup_modes": [
+      "bootstrap",
+      "incremental"
+    ],
+    "previous_separate_run_ms": [
+      56803,
+      13379,
+      8154
+    ],
+    "terminal_receipts": [
+      {
+        "event_id": "godot-event-76404-55945770",
+        "sha256": "8f2bef59a80696d5dbabfc1d753bf02d620bb0996a49c7a3f3a278931e7812eb"
+      },
+      {
+        "event_id": "godot-event-76404-70217191",
+        "sha256": "1b39816152dea3a67757b738206b856499252a0a322bd72ab75b9d52c845f400"
+      },
+      {
+        "event_id": "godot-event-76404-80467938",
+        "sha256": "d099e7a4876ba8e8c64e74d1eb9472e1b28dabec4bd620c5073c522cd47b297e"
+      }
+    ],
+    "limit": "Single live run per revision, model latency varies; does not establish parity with native Codex."
+  },
+  "validation": [
+    "Cold scan validates file bytes and complete evidence graph before writing.",
+    "Oversized corrupt final event rejects batch without creating the new event; corrected large record retains its exact receipt.",
+    "Independent review exercised 270 ordered files, a missing input, a large record, and a historical dangling reference with no target write."
+  ],
+  "bounds": {
+    "windows_min_events": 256,
+    "timed_sample": 16,
+    "min_sample_seconds": 0.008,
+    "workers": 12,
+    "group_size": 48,
+    "prefetch_bytes_per_record": 262144
+  }
+}

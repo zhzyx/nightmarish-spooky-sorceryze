@@ -640,6 +640,53 @@ with b['outbox_lock'](root, time.monotonic() + 3):
 
 
 class StorageValidationCostTests(unittest.TestCase):
+    def test_cold_batch_checks_last_event_before_any_write(self):
+        import itertools
+        import os
+        import runpy
+        import subprocess
+
+        root = Path(bridge.__file__).resolve().parents[3]
+        store = runpy.run_path(str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"))
+        data_name = store["NAME"]
+        template = {
+            "schema_version": 1,
+            "tenant_id": "tenant",
+            "request_id": "request",
+            "kind": "step",
+            "occurred_at": "2026-01-01T00:00:00Z",
+            "source_ref": "test",
+            "agent": {"id": "agent", "version": "1", "origin": "test", "definition_sha256": "0" * 64},
+            "payload": {},
+            "evidence_refs": [],
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            repo = Path(folder)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            data = repo / data_name
+            events = data / "events/tenant/request"
+            events.mkdir(parents=True)
+            (data / "dataset.json").write_bytes((root / data_name / "dataset.json").read_bytes())
+            for i in range(260):
+                value = store["event"]({**template, "event_id": f"event-{i:03}"})
+                (events / (value["event_id"] + ".json")).write_text(json.dumps(value), encoding="utf-8")
+            large = store["event"]({**template, "event_id": "event-259", "payload": {"data": "x" * 300000}})
+            last = events / "event-259.json"
+            last.write_text(json.dumps({**large, "payload": {"data": "y" * 300000}}), encoding="utf-8")
+            incoming = repo / "new.json"
+            incoming.write_text(json.dumps({**template, "event_id": "new"}), encoding="utf-8")
+            win = types.SimpleNamespace(**{**vars(os), "name": "nt"})
+            clock = types.SimpleNamespace(monotonic=itertools.count().__next__)
+            with patch.dict(store["load"].__globals__, {"os": win, "time": clock}):
+                with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                    store["record_batch"](repo, [incoming])
+                self.assertFalse((events / "new.json").exists())
+                last.write_text(json.dumps(large), encoding="utf-8")
+                receipts = store["record_batch"](repo, [last, incoming])["receipts"]
+            self.assertTrue(receipts[0]["idempotent"])
+            self.assertEqual(receipts[0]["sha256"], large["sha256"])
+            self.assertTrue((events / "new.json").is_file())
+
     def test_batch_interrupt_after_parent_allows_graph_and_retry(self):
         import copy
         import runpy
