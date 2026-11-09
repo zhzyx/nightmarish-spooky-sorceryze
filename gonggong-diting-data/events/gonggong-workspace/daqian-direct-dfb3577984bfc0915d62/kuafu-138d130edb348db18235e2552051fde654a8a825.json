@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-138d130edb348db18235e2552051fde654a8a825",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3ceade9c9e069b828ace85c8944b9f722ecc2b1437c15b671bb609dd5881e703",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "action": "user-report",
+    "detection_head": "40df26164b8b6298902bfa44cedc29cf35828775",
+    "context_sha256": "7cb96494cbcd909590771c6367b64e917be4f1b11c24e5e1903534a20beab5b8",
+    "operator": "Sail-Li",
+    "worker": "codex-git-bot-actions-20261110",
+    "authority_ref": "codex-user-git-bot-actions-parallel-20261110",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42703123431/job/129453081279",
+    "diagnosis": "Two distinct runtime simulation failures: push csc fixture compiler exceeded 60 seconds; PR 695 correctly rejected changed framework manifest against installed-host pin. Current main policy pin matches current manifest. Bot 23 regressions passed; historical zero-job cause remains unknown.",
+    "next_action": "Deliver bounded 180-second compiler wait with explicit failure diagnostics from isolated main candidate; independently review and run Windows CI. PR695 publisher must review and bind the new manifest before host verification. Reconcile historical original-operation receipts separately.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T21:43:50.573051+00:00",
+    "attempted": "Read failed jobs and runtime simulation artifacts; compared workflow/script bytes; syntax and timeout/nonzero/success fault injection passed for both fixture entry points.",
+    "repair_owner": "codex-git-bot-actions-20261110 owns main-based fixture fix; PR695 existing publisher retains framework candidate.",
+    "continuable": "Independent fixture fix, CI replay, bot regression, historical receipt audit."
+  },
+  "occurred_at": "2026-11-09T21:45:45.894052+00:00",
+  "sha256": "2a935f9c3ed63b3e95a243a2148bd940368eb8a2d14043ba3d1194115dc16626"
+}

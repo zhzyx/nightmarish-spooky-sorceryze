@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "recorded_at": "2026-11-09T21:46:34.002243+00:00",
+  "baseline": "40df26164b8b6298902bfa44cedc29cf35828775",
+  "scope": "Windows fixture cold compiler timeout; separate bot and historical recovery audit",
+  "implementation_worker": "/root/runtime_ci",
+  "independent_reviewer": "/root/bot_workflows",
+  "files": {
+    "tests/editor/run_runtime_setup_simulation.py": "af827c766a7a56e390b0710cfa33887756789e9ba01e54efd1272ca768fc674a",
+    "tests/editor/runtime_selector_fixture.py": "7b0f2406418d1c11dd6ed1b9e0ef5ce8ffc867ac251b0fd5c21e99294ec6ef11"
+  },
+  "checks": {
+    "syntax": "passed",
+    "diff_check": "passed",
+    "compiler_fault_injection": "both entry points timeout, nonzero exit and success passed; no retries; independent repeat passed",
+    "bot_regression": "23 tests passed by independent bot workflow audit",
+    "windows_native": "pending exact candidate CI"
+  },
+  "separate_failures": {
+    "runtime_host_policy_pr695": {
+      "issue": 696,
+      "state": "publisher_handoff_required",
+      "expected_manifest": "2235d4517f951c9bedc7d05c651b8c9f1df45a4516ebc1d741b25fa2a2a0dd07",
+      "current_main_manifest": "58919d24d8de302e09966ae6fb3f21432d2122746935a757d34ef051de33a51c",
+      "pin_changed": false
+    },
+    "historical_zero_job_runs": {
+      "runs": [
+        42674078883,
+        42673940739,
+        42673606552
+      ],
+      "root_cause": null,
+      "same_workflow_bytes_as_later_success": true
+    }
+  },
+  "native_dispatch": {
+    "workers": [
+      "/root/runtime_ci",
+      "/root/bot_workflows",
+      "/root/historical_failures"
+    ],
+    "observed_model": null,
+    "usage": null,
+    "sinan_session": "pending inherited model verification; actual native tools used, not represented as session admission"
+  },
+  "main_delivery": "pending",
+  "issue426_overall": "open; broader acceptance remains independent"
+}

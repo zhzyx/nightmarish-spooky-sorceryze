@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "request-git-bot-actions-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "request",
+  "occurred_at": "2026-11-09T21:45:14.085231+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "45fefae7adc5e30434dfde491c6d87be7922d940734c9156039eb0b5bc2f834c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "authority": "current user requests Git bot and Actions fixes in parallel",
+    "scope_document": "design-docs/git-bot-actions-20261110.md",
+    "native_workers": [
+      "/root/runtime_ci",
+      "/root/bot_workflows",
+      "/root/historical_failures"
+    ],
+    "sinan_session": "pending_inherited_model_verification",
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "c420441f4e915a6253d0b700ae37d5b4967f9194833df3baded88841320daf1b"
+}

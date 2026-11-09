@@ -99,8 +99,17 @@ def make_package(folder, tools):
             LAUNCHER.replace("NAME", json.dumps(name)).replace("TARGET", json.dumps(str(tools[name]))),
             encoding="utf-8",
         )
-        result = run([str(compiler), "/nologo", "/target:exe", f"/out:{binary}", str(source)], timeout=60)
-        assert result.returncode == 0, result.stdout.decode(errors="replace") + result.stderr.decode(errors="replace")
+        # A cold hosted Windows runner may need more than a minute to start csc.
+        try:
+            result = run([str(compiler), "/nologo", "/target:exe", f"/out:{binary}", str(source)], timeout=180)
+        except subprocess.TimeoutExpired as error:
+            raise RuntimeError(
+                f"Runtime launcher fixture {name}: compiler {compiler} timed out after {error.timeout} seconds"
+            ) from error
+        assert result.returncode == 0, (
+            f"Runtime launcher fixture {name}: compiler {compiler} exited with {result.returncode}\n"
+            + (result.stdout + result.stderr).decode(errors="replace")
+        )
         assert binary.read_bytes()[:2] == b"MZ"
         records.append({"path": relative, "sha256": digest(binary)})
     (folder / "installed.local.json").write_text(
