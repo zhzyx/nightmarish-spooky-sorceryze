@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-2c64be17808db3a146c33849a3f04a278efdc535723a0831f8b6ef3d6427a643",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/692",
+  "occurred_at": "2026-11-09T21:46:08.707552+00:00",
+  "evidence_refs": [
+    "dispatch-2dc525f3032f499d988fe438760e70be",
+    "learn-85ac33c474ee631050ec45094291830318e90eb2b5a7cd279df1da0efdbd8805"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 2,
+    "previous": "fab5c7b927234b495e1901a240d8aec6f6d2e36a78ded96d9f89830fdb8f9302",
+    "action": "revise",
+    "details": {
+      "method": "按实际构建消费者追踪依赖。原生对象、生成头和嵌入脚本归入原生键；经热替换与回退验证的版本化包独立交付。工作树独立构建目录，共享缓存按可靠依赖键复用。",
+      "when": "#687 Windows 编辑器的新工作树、共享缓存及天枢 UI 脚本布局变更；逐个消费者判定。",
+      "counterexample": "editor/SCsub 在本工单基线将天枢 GDScript 构建为头文件；马良 Python 当前为嵌入依赖。单按文件后缀或 fixture 名称排除会错误复用。",
+      "trial_plan": "回读 #689 同一 Windows 二进制的界面包切换、回退与 ABI 拒绝；另取跨工作树缓存命中、原生输入变化失效证据，已验证的范围分别提炼。"
+    },
+    "evidence": [
+      {
+        "path": "design-docs/framework-method-learning.md",
+        "sha256": "50a1b84f9ba744e309ebb208773f894a32f2fd07f9b2484b28ef079987fa02cc"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/framework-method-learning/dispatch-2dc525f3032f499d988fe438760e70be.json",
+      "sha256": "c0b5e7f0a4191194856fe0e994c32fd96edf007875d2c2c50f5844b99f9472cf"
+    }
+  },
+  "sha256": "ba2965f5ede679f50b0e7fc278ddff53860ba84bf9c5709bcff2afa9f638c910"
+}
