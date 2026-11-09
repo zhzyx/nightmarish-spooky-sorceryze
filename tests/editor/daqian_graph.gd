@@ -19,6 +19,12 @@ func check(value: bool, reason: String) -> void:
 		push_error(reason)
 
 
+func check_display_ports(canvas, card: GraphNode) -> void:
+	check(card.get_input_port_count() > 0 and card.get_output_port_count() > 0, "missing flow anchors")
+	check(not canvas._is_in_input_hotzone(card, 0, card.get_input_port_position(0)), "input port accepts wire drags")
+	check(not canvas._is_in_output_hotzone(card, 0, card.get_output_port_position(0)), "output port accepts wire drags")
+
+
 func check_snapshot_edits(rules: Script) -> void:
 	var edge := {"from": "a", "to": "b", "kind": "after"}
 	var base := {"nodes": {"a": {"value": "old"}, "b": {}}, "edges": [edge]}
@@ -221,27 +227,36 @@ func run() -> void:
 	workspace._new_requirement()
 	state = {"plan":{"nodes":{},"edges":[]},"revision":"0","execution_revision":"0",
 		"context":{"models":{"vision":["image"],"text":["text"]},"states":{}}, "can_edit":true}
+	var source := "image_input"
+	var left := "left_task"
+	var right := "right_task"
+	var merge := "summary"
+	state.plan.nodes = {
+		source: {"kind":"image", "title":"Image", "value":""},
+		left: {"kind":"task", "title":"Left", "value":"", "model":"vision"},
+		right: {"kind":"task", "title":"Right", "value":""},
+		merge: {"kind":"join", "title":"Summary", "value":""},
+	}
+	for task in [left, right]:
+		state.plan.edges.append({"from":source, "to":task, "kind":"data"})
+		state.plan.edges.append({"from":task, "to":merge, "kind":"data"})
 	graph.bind_issue("repo#1",state,apply_graph,read_graph)
-	var source = graph.add_node("image",Vector2.ZERO)
-	var left = graph.add_node("task",Vector2(300,-100))
-	var right = graph.add_node("task",Vector2(300,200))
-	var merge = graph.add_node("join",Vector2(650,0))
 	var img := Image.create_empty(4,4,false,Image.FORMAT_RGB8)
 	img.fill(Color.ORANGE)
 	graph.set_image(source,img)
 	await process_frame
-	graph.draft.nodes[left].model = "text"
-	check(graph.preview_edge(source,0,left,0).contains("图片"),"text model accepted image")
-	graph.draft.nodes[left].model = "vision"
-	graph.connect_ports(source,0,left,0)
-	graph.connect_ports(source,0,right,0)
-	graph.connect_ports(left,0,merge,0)
-	graph.connect_ports(right,0,merge,0)
-	check(graph.draft.edges.size() == 4, "fan out and join")
+	var original_plan: Dictionary = graph.draft.duplicate(true)
+	for button in graph.find_children("*", "Button", true, false):
+		check(button.text not in ["添加节点", "补充图片输入"], "manual node creation button on issue graph")
+	graph.canvas.popup_request.emit(Vector2.ZERO)
+	graph.canvas.connection_request.emit(left, 0, right, 0)
+	graph.canvas.disconnection_request.emit(source, 0, left, 0)
+	check(graph.draft == original_plan and graph.canvas.lines.size() == 4, "canvas gestures changed the supplied graph")
 	var left_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(left), 0]]
 	var right_wire: Line2D = graph.canvas.lines[[StringName(source), 0, StringName(right), 0]]
 	var left_card: GraphNode = graph.canvas.get_node(NodePath(left))
 	var right_card: GraphNode = graph.canvas.get_node(NodePath(right))
+	check_display_ports(graph.canvas, left_card)
 	var editor_field: TextEdit = left_card.get_node("PlanContent")
 	graph.context.states = {source:"completed", left:"running"}
 	graph.refresh_states()
@@ -265,24 +280,15 @@ func run() -> void:
 	graph.context.states.clear()
 	graph.refresh_states()
 	check(editor_field.editable and left_wire.material == graph.canvas.materials.pending, "clear state restores draft control")
-	check(graph.preview_edge(source,0,left,0).contains("相同"),"duplicate accepted")
-	check(graph.preview_edge(merge,1,left,1).contains("循环"),"mixed cycle accepted")
-	check(graph.preview_edge(source,0,left,1).contains("不匹配"),"mixed ports accepted")
 	graph.apply_draft()
 	check(writes == 1 and state.plan.edges.size() == 4,"group was not applied atomically")
-	graph.disconnect_ports(source,0,left,0)
 	graph.draft.nodes[left].value = "new input"
 	state.context.states[left] = "running"
 	state.execution_revision = "1"
 	graph.apply_draft()
-	check(writes == 1 and state.plan.edges.size()==4 and graph.draft.edges.size()==3,"running target changed or draft discarded")
+	check(writes == 1 and state.plan.edges.size() == 4 and graph.draft.nodes[left].value == "new input", "running target changed or draft discarded")
 	state.context.states.clear()
-	graph.context.protected_edges = [graph.draft.edges[0]]
-	var edge = graph.draft.edges[0]
-	graph.disconnect_ports(edge.from,0,edge.to,0)
-	check(graph.draft.edges.size()==3,"removed protected connection")
 	graph.positions.clear()
-	graph.draft.edges.append({"from":source, "to":left, "kind":"data"})
 	graph.draw_graph()
 	await settle_layout()
 	check_spacing(graph.canvas, "parallel tasks")
@@ -397,6 +403,7 @@ func run() -> void:
 	await settle_layout()
 	check_spacing(workspace.overview, "expanded board")
 	var pinned := workspace.overview.get_node("i_1") as GraphNode
+	check_display_ports(workspace.overview, pinned)
 	var full_title := pinned.get_node("OpenIssue") as Button
 	check(full_title.text == issues[0].title and full_title.size.y > 2 * full_title.get_theme_font("font").get_height(full_title.get_theme_font_size("font_size")), "long overview title did not expand")
 	var full_step := pinned.get_node("StepDetails").get_child(0) as Label
@@ -532,8 +539,11 @@ func run() -> void:
 	workspace.overview.get_node("i_1/OpenIssue").pressed.emit()
 	check(workspace.issue_link.uri == issues[0].url and "已完成" in workspace.work_status.text, "issue detail lost link or status")
 	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
+	var edited := "legacy_note"
+	var cached_plan := {"nodes":{edited:{"kind":"text", "title":"Notes", "value":""}}, "edges":[]}
+	workspace.saved.drafts[issues[1].url] = {"revision":issues[1].updated, "graph":cached_plan, "baseline":graph.rules.new_plan(), "positions":{}}
 	workspace._open_issue(issues[1])
-	var edited = graph.add_node("text",Vector2.ZERO)
+	await graph.await_graph_projection()
 	var input: TextEdit = graph.canvas.get_node(NodePath(edited)).find_children("*","TextEdit",false,false)[0]
 	input.grab_focus()
 	input.text = "草稿输入"

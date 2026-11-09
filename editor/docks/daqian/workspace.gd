@@ -456,7 +456,6 @@ func _ready() -> void:
 	visibility_changed.connect(func():
 		if board_projection_suspended and is_visible_in_tree() and current.is_empty() and not actor.is_empty():
 			_draw_board())
-	get_window().files_dropped.connect(_drop_images)
 	for dialog: Window in [clarification_dialog, history_dialog, models_dialog, editor.picker]:
 		dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
 	_gate_visibility(false)
@@ -4051,26 +4050,6 @@ func _update_direct_action() -> void:
 	publish_button.disabled = action.get("kind") == "wait"
 	publish_button.text = action.get("text", "")
 	publish_button.tooltip_text = action.get("detail", "")
-
-
-func _drop_images(paths: PackedStringArray) -> void:
-	if get_last_exclusive_window() != get_window() or not is_visible_in_tree() or not editor.is_visible_in_tree() or not editor.canvas.get_global_rect().has_point(editor.canvas.get_global_mouse_position()):
-		return
-	insert_dropped_images(paths,(editor.canvas.get_local_mouse_position()+editor.canvas.scroll_offset)/editor.canvas.zoom)
-
-
-func insert_dropped_images(paths: PackedStringArray,at: Vector2) -> void:
-	if actor.is_empty() or not editor.visible:
-		return
-	for path in paths:
-		if path.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp"]:
-			var image := Image.load_from_file(path)
-			if image and not image.is_empty():
-				var target: String = editor.pending_image
-				if target.is_empty() or not editor.draft.nodes.has(target):
-					target = editor.add_node("image",at)
-				editor.set_image(target,image)
-				editor.pending_image = ""
 
 
 func read_graph(id: String) -> Dictionary:

@@ -124,8 +124,8 @@ func run():
 	await panel._start_or_view_direct(binding)
 	check(panel.publish_button.text == "用当前模型重试判断" and not graph.canvas.has_node("wf-prepare"), "Start rejection left stale readiness cached")
 	await panel._start_or_view_direct(binding)
-	var custom = graph.add_node("text", Vector2(50, 600))
-	graph.draft.nodes[custom].value = "Keep personal notes"
+	var custom := "legacy_note"
+	graph.draft.nodes[custom] = {"kind":"text", "title":"Notes", "value":"Keep personal notes"}
 	panel._save()
 	panel._show_board()
 	panel._show_issue(source, {"revision":"", "plan":graph.rules.new_plan(), "context":{}})

@@ -27,18 +27,27 @@ func run():
 	panel._new_requirement()
 	var graph = panel.editor
 	graph.draft.nodes.requirement.value = "结合截图核对 AI 对话入口是否有猪头和醒目配色"
-	var img = graph.add_node("image",Vector2.ZERO)
+	var img := "screenshot"
+	var a := "inspect"
+	var b := "assess"
+	var join := "summary"
+	graph.draft.nodes.merge({
+		img: {"kind":"image", "title":"Screenshot", "value":""},
+		a: {"kind":"task", "title":"Inspect", "value":""},
+		b: {"kind":"task", "title":"Assess", "value":""},
+		join: {"kind":"join", "title":"Summary", "value":""},
+	})
+	for id in [a, b]:
+		graph.draft.edges.append_array([
+			{"from":"requirement", "to":id, "kind":"data"},
+			{"from":img, "to":id, "kind":"data"},
+			{"from":id, "to":join, "kind":"data"},
+		])
+	graph.draw_graph()
 	var image := Image.create_empty(8,4,false,Image.FORMAT_RGB8)
 	image.fill(Color.HOT_PINK)
 	graph.set_image(img,image)
-	var a = graph.add_node("task",Vector2(300,-100))
-	var b = graph.add_node("task",Vector2(300,200))
-	var join = graph.add_node("join",Vector2(650,0))
 	await process_frame
-	for id in [a,b]:
-		graph.connect_ports("requirement",0,id,0)
-		graph.connect_ports(img,0,id,0)
-		graph.connect_ports(id,0,join,0)
 	graph.debug_models[a] = "调试 · Claude"
 	graph.debug_models[b] = "调试 · Gemini"
 	await panel._start_debug()

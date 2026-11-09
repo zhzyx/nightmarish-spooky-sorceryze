@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianshu-disable-manual-graph",
+  "collected_at": "2026-11-09T16:24:01.804639+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-disable-manual-graph/tianshu-disable-manual-graph-intake.json",
+      "sha256": "2b53313a5c47236360ae3edb7e9e232d3a72a2cc3b8f4f10bc4e3fcea12ead4f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianshu-disable-manual-graph-intake",
+      "origin": "user-authorized-codex-chat"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 647,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/647"
+}

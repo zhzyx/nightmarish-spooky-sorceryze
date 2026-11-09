@@ -24,35 +24,45 @@ func run():
 	panel._new_requirement()
 	var graph=panel.editor
 	graph.draft.nodes.requirement.value="校验图片和待答分支"
-	var first=graph.add_node("task",Vector2(350,20))
-	var waiting=graph.add_node("task",Vector2(350,400))
-	var question=graph.add_node("question",Vector2(10,400))
-	graph.draft.nodes[question].value="请选择强调色"
-	var picture=graph.add_image_for_task(first)
+	var first := "first_task"
+	var waiting := "waiting_task"
+	var question := "color_question"
+	var picture := "picture"
+	var pasted := "clipboard_image"
+	graph.draft.nodes.merge({
+		first: {"kind":"task", "title":"First", "value":""},
+		waiting: {"kind":"task", "title":"Waiting", "value":""},
+		question: {"kind":"question", "title":"Question", "value":"请选择强调色"},
+		picture: {"kind":"image", "title":"Picture", "value":""},
+		pasted: {"kind":"image", "title":"Clipboard", "value":""},
+	})
+	graph.draft.edges.append_array([
+		{"from":picture, "to":first, "kind":"data"},
+		{"from":picture, "to":waiting, "kind":"data"},
+		{"from":question, "to":waiting, "kind":"data"},
+	])
+	graph.draw_graph()
 	var png:=Image.create_empty(12,7,false,Image.FORMAT_RGB8)
 	png.fill(Color.TEAL)
 	var path=ProjectSettings.globalize_path("res://daqian-input.png")
 	if png.save_png(path)!=OK:
 		fail("Cannot prepare image input")
 		return
+	graph.canvas.get_node(NodePath(picture + "/PickImage")).pressed.emit()
 	graph.picker.file_selected.emit(path)
+	graph.picker.hide()
 	var encoded=graph.draft.nodes[picture].value
-	if encoded.is_empty() or graph.draft.edges.size()!=1:
-		fail("Picker did not fill the image automatically linked to the requesting task")
+	if encoded.is_empty() or graph.draft.edges.size()!=3:
+		fail("Picker did not fill the existing image input")
 		return
 	graph.clipboard_image=func():return png
-	var pasted=graph.add_node("image",Vector2(5,125))
-	for button in graph.canvas.get_node(pasted).find_children("*","Button",true,false):
-		if button.text=="粘贴截图":
-			button.pressed.emit()
-	var count=graph.draft.nodes.size()
-	panel.insert_dropped_images(PackedStringArray([path]),Vector2(8,180))
-	if graph.draft.nodes[pasted].value!=encoded or graph.draft.nodes.size()!=count+1:
-		fail("Paste or drop entry did not create the expected image")
+	graph.canvas.get_node(NodePath(pasted + "/PasteImage")).pressed.emit()
+	var count: int = graph.draft.nodes.size()
+	root.files_dropped.emit(PackedStringArray([path]))
+	if graph.draft.nodes[pasted].value != encoded or graph.draft.nodes.size() != count:
+		fail("Paste must fill the existing card and dropping a file must preserve the graph")
 		return
 	await process_frame
-	graph.connect_ports(question,0,waiting,0)
-	graph.connect_ports(picture,0,waiting,0)
 	graph.debug_models[first]="调试 · Claude"
 	graph.debug_models[waiting]="调试 · Gemini"
 	await panel._start_debug()
