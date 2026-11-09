@@ -13,8 +13,16 @@ $model = Join-Path $source 'maliang-hunyuan/models/checkpoints/hunyuan3d-mini.sa
 if (!(Test-Path -LiteralPath $model -PathType Leaf) -or !(Test-Path "$source/*.exe" -PathType Leaf)) {
     throw 'The accepted Windows distribution must contain its model and editor.'
 }
-$sevenZip = (Get-Command 7z.exe -CommandType Application).Source
-$sevenZipDirectory = [IO.Path]::GetDirectoryName($sevenZip)
+$extractorFiles = @('7z.exe','7z.dll','License.txt')
+# Package the installed binaries, even when PATH points to a Chocolatey shim.
+$locations = @((Join-Path $env:ProgramFiles '7-Zip')) + @(Get-Command 7z.exe -All -CommandType Application -ErrorAction SilentlyContinue |
+    ForEach-Object { [IO.Path]::GetDirectoryName($_.Source) })
+$sevenZipDirectory = $locations | Select-Object -Unique | Where-Object {
+    $location = $_
+    !($extractorFiles | Where-Object { !(Test-Path -LiteralPath (Join-Path $location $_) -PathType Leaf) })
+} | Select-Object -First 1
+if (!$sevenZipDirectory) { throw 'Install the full 7-Zip package on the Windows build host.' }
+$sevenZip = Join-Path $sevenZipDirectory '7z.exe'
 $parameters = [Security.Cryptography.RSAParameters]::new()
 $parameters.Modulus = [Convert]::FromBase64String($RecipientModulus)
 $parameters.Exponent = [byte[]](1,0,1)
@@ -29,7 +37,7 @@ try {
 }
 New-Item -ItemType Directory -Path $dest | Out-Null
 $extractor = New-Item -ItemType Directory -Path "$dest/extract"
-foreach ($file in @('7z.exe','7z.dll','License.txt')) {
+foreach ($file in $extractorFiles) {
     Copy-Item -LiteralPath (Join-Path $sevenZipDirectory $file) -Destination $extractor.FullName
 }
 Set-Content "$extractor/SOURCE.txt" -Encoding ascii -Value '7-Zip by Igor Pavlov. Source code: https://www.7-zip.org/download.html'
