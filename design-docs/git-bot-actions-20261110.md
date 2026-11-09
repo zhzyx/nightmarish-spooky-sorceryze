@@ -19,3 +19,21 @@ PR [#695](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/695) 的 PR
 bot 核查发现历史 Kuafu 零作业失败 `42674078883`、`42673940739`、`42673606552` 与当前成功运行的工作流/脚本字节相同；API 未提供根因，保留未知。现有 bot 23 项回归通过，尚无足以修改当前 bot 实现的复现证据。关闭历史故障单须另留具体回执，原父工单和业务验收独立核对。
 
 本次源头修复合入并取得 Windows 定向回执后，关闭其已满足验收的故障范围；其他候选的精确准入、原操作复验或交接缺失继续在原单保存责任者与恢复条件，不将阶段性提交报告为所有问题完成，不新增周期扫描。
+
+## 交付后回读
+
+修复 PR [#697](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/697) 的签发 head `bbb36063af3b5e80ffba4900c8d6f9c3c7dc0e70` 在 push 和 PR 的适用检查全部通过后，由 Sail-Li 正常合入 main `392ef366255fb1815a8e1cc2a6d8b0c8ece58c84`；远端回读确认祖先关系。Windows PR run `42706022786` / MSVC job `129463174664` 的实际工件覆盖 3 个中断、5 个 journal、10 个部署场景，以及缺失 Python 配置后续接原请求，结果全部通过。编译器超时与非零退出保持失败，宿主 policy 变更/缺失拒绝测试仍通过。
+
+按原故障范围逐张核对源修复、原动作或编译器/断言和主线验收后，#629、#513、#468、#467、#458、#396、#614、#660、#675 均已写回具体验收评论，并回读为 `closed/completed/status:done`。完整回执与工作流清单见 [采集记录](../data-collection/git-bot-actions-recovery-20261110.json)。本次九张历史故障收尾未改动其原业务父单；#426 的误关闭与纠正见下段。
+
+#696 仍等原发布者接收完整框架候选并核验摘要；#255/#264/#278 缺原诊断或原操作复验；#662/#525/#556/#563 剩余原宿主账号、原操作或业务验收。#426 继续开放。[最新原工单进度](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426#issuecomment-6752439146) 是本轮收尾前的状态，源头修复交付回读以本节及采集记录为准。
+
+证据提交门禁发现 PR #697 的英文否定句仍含关闭关键字，合入时误触发父单自动关闭。已通过权威关闭事件确认来源为 #697，改写 PR 说明、重新打开 #426 并回读为 `open/reopened/status:in-progress`。之前 Diting 事件中的父单开放是未回读的预期状态，现已追加 `git-bot-parent-state-correction-20261110` 纠正并保留原件；源头修复、九张已验收故障和剩余范围没有变化。后续 PR 说明使用状态陈述，避免把关闭关键字放进否定句。
+
+## 原发布者接续后的最终范围
+
+原发布者已用 PR [#699](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/699) 在完整候选内更新框架清单 pin，全部 10 个受信文件摘要一致，验证函数未变。精确 head `e19d4a6be4049240661c1ce66f5bfb2e631bdac3` 的适用检查全部通过；PR run `42708326425` / MSVC job `129471155588` 的工件确认 10 个部署、3 个中断、5 个 journal、policy 变更/缺失拒绝及原请求恢复均通过。原发布者已合入 main `9789559ac15830cb211ea6d1e122c1b8acc62cb3`，#696 已回读为 `closed/completed/status:done`。详见 [新增采集回执](../data-collection/git-bot-host-policy-recovery-20261110.json)，旧的待交接快照保留为历史。
+
+本轮合计验收关闭 10 张故障单。仍开放的 #255/#264/#278 缺原诊断或原操作证据，#662/#525/#556/#563 保留原宿主账号、原操作或业务验收；#426 保持开放。最终资料在最新 main 上整合，替代只覆盖前九单的 PR #700，没有改动原发布者的工作树。
+
+沿新主线的复盘入口，在 `github-issue-delivery` 能力域召回结果为空后，将父单误关闭的纠偏记录为 `explicit-parent-state` 候选方法，附下一张同类工单的可证伪试验；尚未登记为已验证或全局规则。

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "observed_at": "2026-11-09T22:18:09.674695+00:00",
+  "recovered_bug": {
+    "closed_at": "2026-11-09T22:16:11Z",
+    "html_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/696",
+    "labels": [
+      "type:bug",
+      "status:done",
+      "workspace:gonggong"
+    ],
+    "number": 696,
+    "state": "closed",
+    "state_reason": "completed",
+    "updated_at": "2026-11-09T22:16:11Z"
+  },
+  "acceptance_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/696#issuecomment-6752922687",
+  "source_pr": 699,
+  "source_signed_head": "e19d4a6be4049240661c1ce66f5bfb2e631bdac3",
+  "main_merge": "9789559ac15830cb211ea6d1e122c1b8acc62cb3",
+  "main_contains_signed_head": true,
+  "publisher": "Sail-Li original framework candidate publisher",
+  "independent_pin_review": "10 exact file hashes match; only manifest pin changed; verification function unchanged",
+  "windows": {
+    "pr_run": 42708326425,
+    "msvc_job": 129471155588,
+    "all_applicable_checks": "passed",
+    "summary_sha256": "fde057b7b346a81d47e2d2bfa2fbba9fad1437d73342f2bed7f8d0392ecca6dd",
+    "deployment_cases": 10,
+    "interruption_cases": 3,
+    "journal_cases": 5,
+    "policy_change_rejected": true,
+    "missing_policy_rejected": true,
+    "request_resume": true
+  },
+  "previous_nine_bug_receipts": "data-collection/git-bot-actions-recovery-20261110.json",
+  "completed_bug_count": 10,
+  "remaining_bugs": [
+    255,
+    264,
+    278,
+    662,
+    525,
+    556,
+    563
+  ],
+  "parent_overall": "open; original-source evidence and host business acceptance remain",
+  "supersedes_status_only": "696 was pending in prior recovery snapshot; now closed with source/main acceptance"
+}

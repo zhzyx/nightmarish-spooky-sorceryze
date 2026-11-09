@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "event_id": "git-bot-actions-recovery-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "step",
+  "occurred_at": "2026-11-09T21:59:20.457237+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "45fefae7adc5e30434dfde491c6d87be7922d940734c9156039eb0b5bc2f834c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "stage": "main_delivery_and_historical_acceptance",
+    "source_pr": 697,
+    "source_signed_head": "bbb36063af3b5e80ffba4900c8d6f9c3c7dc0e70",
+    "main_merge": "392ef366255fb1815a8e1cc2a6d8b0c8ece58c84",
+    "windows_ci": "passed",
+    "runtime_summary_sha256": "f1177f95532f7a939b42695bf430ed1237bfba3aed082ee944b3fab6e2e3cbe8",
+    "closed_bugs": [
+      629,
+      513,
+      468,
+      467,
+      458,
+      396,
+      614,
+      660,
+      675
+    ],
+    "evidence": "data-collection/git-bot-actions-recovery-20261110.json",
+    "parent_overall": "open",
+    "remaining": [
+      "696",
+      "255",
+      "264",
+      "278",
+      "662",
+      "525",
+      "556",
+      "563"
+    ]
+  },
+  "evidence_refs": [
+    "request-git-bot-actions-20261110"
+  ],
+  "sha256": "bf8e936abd46c9feba0360f8a4c198183172ce0dee217a38917861ecf903d584"
+}

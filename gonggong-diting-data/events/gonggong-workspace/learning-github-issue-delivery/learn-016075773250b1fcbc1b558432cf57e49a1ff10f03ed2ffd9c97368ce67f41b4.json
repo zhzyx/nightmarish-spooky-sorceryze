@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-016075773250b1fcbc1b558432cf57e49a1ff10f03ed2ffd9c97368ce67f41b4",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "45fefae7adc5e30434dfde491c6d87be7922d940734c9156039eb0b5bc2f834c",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "occurred_at": "2026-11-09T22:18:10.135231+00:00",
+  "evidence_refs": [
+    "git-bot-parent-state-correction-20261110"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "explicit-parent-state",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "部分交付PR用中性状态陈述父单仍开放，避免在否定句中出现关闭关键字；合入前回读closingIssuesReferences，合入后回读父单state。",
+      "when": "GitHub上的部分交付，父工单仍有未验收项，PR关联字段和英文说明并存。",
+      "counterexample": "整体验收通过且已授权关闭的目标可用关闭关键字；本方法不替代手动关闭的验收或目标权限。",
+      "trial_plan": "下一张同域部分交付PR创建后查询closingIssuesReferences，预期不包含未完成父单且工单关联检查成功；合入后父单仍open。出现相反结果即记录反例，不启用复用。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/git-bot-actions-recovery-20261110.json",
+        "sha256": "f1a8531661617f67dc55a1105d2d9c8dc19f5381aa8a405671b0b1c369fc2108"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-dfb3577984bfc0915d62/git-bot-parent-state-correction-20261110.json",
+      "sha256": "81167d739fcff4ce661eeeecf421ae56b14af5edff03b26c69270c6280b08145"
+    }
+  },
+  "sha256": "ad9d5ff2cb3318bf8e5166335c06b3b834d6f93f985f99f9fd6ca3f0875bc9b5"
+}
