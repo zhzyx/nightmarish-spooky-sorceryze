@@ -1,0 +1,15 @@
+{
+  "pr": 691,
+  "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/691",
+  "merged_at": "2026-11-09T21:12:24Z",
+  "merged_by": "Sail-Li",
+  "signed_head": "eb2a1dc6b74b2abb558a8f2a5f87a06ee1641c83",
+  "merge_commit": "238dcceac262965c5d5e8d213fcd0bbea481fb92",
+  "main": "238dcceac262965c5d5e8d213fcd0bbea481fb92",
+  "main_tree": "76c6ba042f45be928ff36a3ac471606e91a3beb0",
+  "source_commit": "0282c624d460015608e097d6196c25467372984f",
+  "tree_matches_signed": true,
+  "plugin_write_result": "403 resource not accessible by integration; no publication",
+  "actual_publication_channel": "authenticated gh Sail-Li normal fixed-head PR merge",
+  "consumption": null
+}
