@@ -87,6 +87,7 @@ class AIChatDock : public EditorDock {
 	uint64_t gonggong_receipt_generation = 0;
 	String gonggong_recovered_result;
 	String gonggong_recovery_ack_token;
+	Dictionary command_recovery_reporting;
 	bool gonggong_recovery_can_send = false;
 	bool _record_gonggong(const String &p_kind, const String &p_phase, const String &p_status);
 	Callable gonggong_receipt_continuation;
@@ -221,9 +222,14 @@ class AIChatDock : public EditorDock {
 	bool _arm_engine_restart(const String &p_executable, int p_attempt);
 	void _arm_restart_watchdog();
 	void _abandon_engine_restart(const String &p_reason);
-	void _save_resume();
+	bool _save_resume();
 	void _clear_resume();
 	void _load_resume();
+	void _load_command_resume(const Dictionary &p_journal, const String &p_digest);
+	String _pending_command_path() const;
+	bool _retry_pending_command();
+	uint64_t command_watch_generation = 0;
+	void _watch_command(uint64_t p_generation, String p_owner, String p_receipt, uint64_t p_deadline);
 
 	LineEdit *endpoint = nullptr;
 	LineEdit *model = nullptr;
@@ -458,6 +464,12 @@ class AIChatDock : public EditorDock {
 	void _clear_delivery_files();
 	String pending_command;
 	String process_guard_result_path;
+	String completed_command_receipt_path;
+	String completed_command_owner;
+	String completed_command_call;
+	String observed_command_owner;
+	String recovering_command_digest;
+	Dictionary consumed_command_by_owner;
 	String pending_cwd;
 	int process_timeout_seconds = 120;
 	bool pending_existed = false;

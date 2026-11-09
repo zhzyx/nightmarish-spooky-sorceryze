@@ -123,6 +123,12 @@ func run() -> void:
 		push_error("Bound tool never offered an inline approval")
 		quit(1)
 		return
+	if OS.has_environment("DAQIAN_TEST_COMMAND_RESTART"):
+		check(chat.confirm_daqian_approval(op.token), "Original command approval refused")
+		var composer = root.find_child("ChatInput", true, false)
+		composer.text = "Preserve original queued work"
+		root.find_child("ChatLayout", true, false).find_child("Send", true, false).pressed.emit()
+		return
 	while not panel.editor.canvas.has_node("wf-operation") and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
 	if not panel.editor.canvas.has_node("wf-operation"):

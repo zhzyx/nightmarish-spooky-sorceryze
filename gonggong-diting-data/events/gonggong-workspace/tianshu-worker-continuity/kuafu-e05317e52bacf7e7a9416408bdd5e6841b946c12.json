@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e05317e52bacf7e7a9416408bdd5e6841b946c12",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-worker-continuity",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0c84c9b26850337f11828c4cc83cd8f5d1d6589c16473b22ea6f08787d14d725",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/612",
+    "action": "delivery",
+    "detection_head": "721524e16bfedbc31995487f2eecda13f7e67fd8",
+    "context_sha256": "6ca5ed1fa919db0da1f8c298b228e907d61031130439ccd3f77edad6a79846bf",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/594",
+    "evidence": "data-collection/tianshu-command-recovery-594.json; staged versus working bytes",
+    "diagnosis": "Windows 的验收 JSON 含 CRLF；Git 暂存为 LF，门禁正确拒绝两份字节不一致。",
+    "next_action": "新证据文件统一为 LF 后重跑同一候选的正式门禁并核验签发、CI、main。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T09:04:25.844358+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T09:05:59.345755+00:00",
+  "sha256": "bf8ce510c5c770ad75ef1cd1879a5db3b5298c2b8f32cf1ae93d99429f550943"
+}
