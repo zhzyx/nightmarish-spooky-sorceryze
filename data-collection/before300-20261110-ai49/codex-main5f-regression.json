@@ -1,0 +1,14 @@
+{
+  "integration_base": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+  "result": "passed",
+  "tests": 21,
+  "fail": 0,
+  "scope": "Actual node --test Codex bridge and content preview on latest-main plus49 candidate; no real provider",
+  "source_sha256": {
+    "tools/codex_cli/godot_bridge.js": "446765ef2bf0fa81d24d7944eb26f1138b548bca4820f8d30772012c065aa7e1",
+    "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+    "tests/editor/test_codex_bridge.js": "c70ef3aa8666d0c3e0333431f33c92d0dab26496ffa6940e212e1b338ef17ba4",
+    "tests/editor/test_codex_content_preview.js": "cdf8a20639ca0a2c0db0e3f45b489311ab8fa6375b61f31c5e9b7d962780285d"
+  },
+  "log_sha256": "652a70b183d123e6ffaad14ecee4ca63a5fb792b706e97af3f8c398243876d69"
+}

@@ -300,6 +300,12 @@ void AIChatDock::_clear_gonggong_files() {
 }
 
 void AIChatDock::_environment_setup_completed() {
+	if (igniter_state == "ai_agent") {
+		_append(TTR("Editor"), U"独立 AI 配置 Agent 已完成，正在用原消息重新进行 GongGong 入口校验…");
+		_cancel_igniter(String());
+		_igniter_resume();
+		return;
+	}
 	if (issue_guide_state != "environment_setup") {
 		return;
 	}
@@ -1064,6 +1070,16 @@ void AIChatDock::_poll_issue_guide() {
 			return;
 		}
 		if (!ok) {
+			if ((error == "gh_unavailable" || error == "gh_unauthenticated") && gonggong_panel) {
+				issue_guide_state = "environment_setup";
+				_set_busy(false);
+				Array missing;
+				missing.push_back(error == "gh_unavailable" ? "gh" : "github_auth");
+				if (gonggong_panel->start_ai_setup(missing)) {
+					_append(TTR("Editor"), String(U"GitHub 访问需要配置，已启动独立窗口；通过后会自动继续同一条需求。\n") + error);
+					return;
+				}
+			}
 			issue_guide_state = "agent_error";
 			_emit_daqian_requirement_phase("error");
 			if (error == "steering_requires_separate_task") {
@@ -1074,6 +1090,17 @@ void AIChatDock::_poll_issue_guide() {
 			_append(TTR("Error"), String(U"Yanshi 需求建单尚未完成，开发执行仍暂停。请先修复环境、模型 API 或 GitHub 权限，再回复“重试”。已发送的远程请求可能已生效，重试会按稳定需求 ID 对账。\n") + error);
 			if (error == "gh_unauthenticated") {
 				_append(TTR("Editor"), AIChatIssueGuide::gh_login_text(result.get("login_command", ""), U"重试"));
+			}
+			_set_busy(false);
+			return;
+		}
+		if (String(result.get("phase", String())) == "clarification_required") {
+			issue_guide_state = "agent_questions";
+			Dictionary design;
+			design["questions"] = result.get("questions", Array());
+			_emit_daqian_requirement_phase("questions", design);
+			for (const Variant &question : Array(result.get("questions", Array()))) {
+				_append(U"Yanshi", question);
 			}
 			_set_busy(false);
 			return;
@@ -1266,10 +1293,21 @@ bool AIChatDock::_start_igniter(const Array &p_missing) {
 	igniter_outcome = outcome;
 	igniter_missing = p_missing;
 	igniter_fields.clear();
-	igniter_state = "components";
 	set_meta("gonggong_status", "igniter");
-	_igniter_prompt();
-	_set_busy(false);
+	if (OS::get_singleton()->get_name() == "Windows") {
+		igniter_state = "ai_agent";
+		// Configuration writes are allowed only after releasing this paused turn's runtime lock.
+		_set_busy(false);
+		if (!gonggong_panel || !gonggong_panel->start_ai_setup(p_missing)) {
+			_cancel_igniter(String());
+			return false;
+		}
+		_append(TTR("Editor"), U"环境检查发现运行库配置失效，已启动独立 AI 配置 Agent；它不经过 GongGong 需求、工单或桥接流程。原消息会在配置通过后自动继续。");
+	} else {
+		igniter_state = "components";
+		_igniter_prompt();
+		_set_busy(false);
+	}
 	return true;
 }
 

@@ -1,0 +1,16 @@
+{
+  "source_sha256": {
+    "tools/run_gonggong_config_agent.ps1": "0bc1cd0c1886257f93973a67d94f1ab30bc2be1eb9a43508b97ef88bfffe6c89",
+    "tools/gonggong_runtime_policy.ps1": "a4f379e83579ceb581fcb1e31eda114ae338bba4910f66ca35a42d02fdb3c318",
+    "tools/configure_gonggong_runtime.ps1": "252a00d8363227fb07de86ecc31407176f7781a06f159602f431fc4c9f419e34",
+    "tests/editor/requirements_intake.gd": "b14b9b85a5f4f799180b0add8a149dc578f36826a500a16720fea46ee27fabd5",
+    "tests/editor/run_requirements_intake.py": "4daf547cbddd16eec44b4f96f699911dbfde86490295635d23ccb9a0d078cdde",
+    "tests/editor/run_runtime_setup.py": "21376b769763a08d27b06326917c3cbe6c268f721558c27dae371d3406d572a4",
+    "tests/editor/run_runtime_setup_simulation.py": "8dc36ecd28704ad990080cc9bd63c5b9bb59c53cd685ea77c28cdddbd2ff9e69",
+    "tests/editor/runtime_policy_fixture.py": "19eeef6c8008cc31786543362385c954de516771bfb2a30268e6a89f23e62fdb",
+    "tests/editor/runtime_selector_fixture.py": "a3c4f9d8337e7a7a71a260428a76ca3aad6b8e77865bd30dd1b2c69f8e95fec9"
+  },
+  "status": "Local review candidate; no Windows pass claimed",
+  "static_python_ast": "passed",
+  "original_receipt_sha256": "ab9a7bd3a271dc8beaf6c8b9e210bd413fa208d71209352ad4df33d7bd1c23bc"
+}

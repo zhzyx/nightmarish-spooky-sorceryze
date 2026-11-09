@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "native_page": true,
+  "runtime_setup_and_resume": false,
+  "catalog_requests": [
+    "/v1/models",
+    "/v1/models"
+  ],
+  "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+  "windows_owned_process_cleanup": "not applicable",
+  "actual_native_read_tool_roundtrips": 1,
+  "actual_yanshi_admission": true,
+  "model_and_github": "isolated loopback/CLI fixtures only",
+  "requirements_calls": 11,
+  "development_calls": 7,
+  "issues_created": 5,
+  "events": 71,
+  "git_check": {
+    "git_state": "committed",
+    "files": 74,
+    "records": 71,
+    "remote_merge_verified": false
+  },
+  "cases": [
+    "new requirement",
+    "supplement during intake amends the same Issue before the first development request",
+    "followup reuses Issue",
+    "new requirement while bound",
+    "same text new turn still classified",
+    "cancel before publication",
+    "model API repair then explicit retry",
+    "GitHub auth repair before model call",
+    "clarification pauses and resumes the same requirement"
+  ],
+  "editor_sha256": "0bec8047365f65a51591d9ab2e238aef510f3d0dd3d4cefde5f1fb7f802cff9e",
+  "fixture_events_imported": false,
+  "original_receipt_sha256": "c5ff6f536fa17ca5ab697125a1eba35f3c62e110200003337bd98c9459432a58",
+  "runner_sha256": "b693b781ac6a39eb218bad2514b20c9e041e404c090b400bf561b1579d82b147",
+  "scope": "Actual newfixture normal mac, own native input matches existing 0bec private binary; not full latest-main Daqian binary or Windows runtime_source"
+}

@@ -1,0 +1,25 @@
+{
+  "actual_release": {
+    "key": "a07b1e6f65c0599431e18632cb566222c3f44ae52f65acfe178c9b8f898a5a71",
+    "event": {
+      "type": "execution.finished",
+      "reference": "collaboration.final:/root/sinan_6f8b354f1f864b2e:main35b-integration"
+    },
+    "receipt": {
+      "workerId": "/root/sinan_6f8b354f1f864b2e",
+      "reference": "agent:/root/sinan_6f8b354f1f864b2e",
+      "target": "agent",
+      "model": "GPT-6",
+      "requestedModel": null,
+      "observedModel": null,
+      "modelEvidence": "host_inheritance_not_observed",
+      "setupPending": false,
+      "hostId": null
+    },
+    "state": "released_after_terminal_verification"
+  },
+  "source": "actual NativeToolBridge verified completion after collaboration.list_agents callback",
+  "requests_empty": true,
+  "unknown471_touched": false,
+  "consumption": null
+}

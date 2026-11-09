@@ -1,0 +1,17 @@
+{
+  "reason": "Three native C++ files changed; need actual private editor compilation. Clone own previous objects; SCons revalidates inputs.",
+  "base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "candidate": "staged20file integration, no main acceptance",
+  "command": "scons platform=macos arch=arm64 target=editor dev_build=no tests=no debug_symbols=no vulkan=no accesskit=no optimize=speed_trace lto=none -j4",
+  "cache_copy": "APFS independent copy of own previous633MiB bin/obj and SCons signatures; source unchanged",
+  "installation_changed": false,
+  "result": "Actual private native compile starting, source frozen; independent source review follows terminal cleanup",
+  "recorded_at": "2026-11-09T17:37:49.735000+00:00",
+  "source_sha256": {
+    "editor/docks/ai_chat_gonggong.cpp": "a1418be9f74196bb1eda6c485d5e904aa669f8473c0b92cd9876b8a8965cc0e4",
+    "editor/docks/gonggong_panel.cpp": "e8d84601794a3fe38de8800603abf3bdd8dfeb79c64f9f1ef08c158817dcf81b",
+    "editor/docks/gonggong_panel.h": "d958e0d29d3921d88f171c2241f0677bebedc71fb9bc83e56577723455c4b033"
+  },
+  "started_at": "2026-11-09T17:42:24.046015+00:00",
+  "original_receipt_sha256": "a563dd4528d14061ab92a5ccde868a8616cc8c3798200f1c25c4439acc29eb72"
+}
