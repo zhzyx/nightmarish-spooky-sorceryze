@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "operator": "Sail-Li",
+  "base_main": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "delivery": {
+    "pr638": "7e5f7bc2046f4427188733909234228d9f84c690",
+    "pr641": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+  },
+  "closed_readbacks": [
+    {
+      "number": 56,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/56",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:design",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T14:52:21Z",
+      "updated_at": "2026-11-09T14:52:22Z",
+      "merge_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+    },
+    {
+      "number": 83,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/83",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:requirement",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T14:52:42Z",
+      "updated_at": "2026-11-09T14:52:43Z",
+      "merge_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+    },
+    {
+      "number": 93,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/93",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:test",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T13:36:45Z",
+      "updated_at": "2026-11-09T13:36:46Z",
+      "merge_commit": "7e5f7bc2046f4427188733909234228d9f84c690"
+    },
+    {
+      "number": 94,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:test",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T14:52:08Z",
+      "updated_at": "2026-11-09T14:52:08Z",
+      "merge_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+    },
+    {
+      "number": 95,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/95",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T13:36:54Z",
+      "updated_at": "2026-11-09T13:36:55Z",
+      "merge_commit": "7e5f7bc2046f4427188733909234228d9f84c690"
+    },
+    {
+      "number": 158,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/158",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:development",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T14:53:12Z",
+      "updated_at": "2026-11-09T14:53:13Z",
+      "merge_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+    },
+    {
+      "number": 160,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/160",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:test",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T14:52:50Z",
+      "updated_at": "2026-11-09T14:52:50Z",
+      "merge_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d"
+    }
+  ],
+  "open_readbacks_at_collection": [
+    {
+      "number": 49,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+      "state": "open",
+      "labels": [
+        "type:bug",
+        "status:in-review",
+        "workspace:gonggong"
+      ],
+      "updated_at": "2026-11-09T14:55:47Z",
+      "remaining": "原PROCESS_EXIT的唯一根因和用户曾跳过的旧窗口/暂停队列恢复仍未知。未擅自恢复旧调查，也未用新mock答复覆盖。",
+      "recovery": "保持旧窗口/队列原状；原服务失败的新可诊断证据或用户重新明确恢复该场景时，沿原单接续。"
+    },
+    {
+      "number": 51,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/51",
+      "state": "open",
+      "labels": [
+        "type:bug",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "updated_at": "2026-11-09T14:56:06Z",
+      "remaining": "未复现最初用户卡死，不能猜定唯一根因；关联#92的真实OS鼠标/键盘停止交互仍缺。",
+      "recovery": "保留#92为剩余验收承接；新的原症状复现/日志或有权人在真实显示器上的停止回执到达后复验。"
+    },
+    {
+      "number": 91,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+      "state": "open",
+      "labels": [
+        "type:test",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "updated_at": "2026-11-09T14:56:34Z",
+      "remaining": "完整PowerShell中断/回退/doctor后恢复原需求的组合尚未新验。当前无PowerShell；官方直连、已认证release与镜像三种传输均超时或低速，未解包执行任何未校验文件。环境绑定模拟不等于完整包安装。",
+      "recovery": "#642已由夸父接收。获得可信可校验PowerShell运行时或下载通道恢复后，运行原组合验收；不重复无变化下载，不重设Linux/原x86编译器门槛。"
+    },
+    {
+      "number": 92,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/92",
+      "state": "open",
+      "labels": [
+        "type:bug",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "updated_at": "2026-11-09T14:56:20Z",
+      "remaining": "控件信号/gui_input不替代原文要求的真实OS鼠标/键盘停止交互；原始死锁因果仍unknown。",
+      "recovery": "按Godot宿主静默约定不驱动用户桌面；有权人提供原场景物理停止回执或可复现来源后，由当前责任者核验并接续。"
+    }
+  ],
+  "current_event": "Windows CI is available as an alternate actual PowerShell execution host; private download failure no longer assumed to exhaust all means. Interruption-safe script candidate and real Windows-layout simulation fixture are being prepared; CI validation pending.",
+  "usage": null,
+  "usage_unknown_reason": "host tools expose no model token or cost data",
+  "windows_runtime_acceptance": "pending exact new CI; do not close91 yet",
+  "runtime_candidate": {
+    "baseline_commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+    "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+    "source_sha256": {
+      "tools/configure_gonggong_runtime.ps1": "a4ec92d3ede97cfbd2f47dff6155fb1ccecbdc75b3e920eb5a18d8a2eb72b73e",
+      "tests/editor/run_runtime_setup_simulation.py": "dfef43b9fb7dfef3ff68f3bbab03c58425ac5b1b367ecfc5ba9b9d8344b9d255",
+      ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+    },
+    "windows_behavior": "pending CI; no localPowerShell success claimed"
+  },
+  "resolved_trackers": [
+    {
+      "number": 637,
+      "source_issue": 158,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/637",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T15:12:48Z"
+    },
+    {
+      "number": 639,
+      "source_issue": 94,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/639",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T15:13:00Z"
+    },
+    {
+      "number": 640,
+      "source_issue": 83,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/640",
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-09T15:13:18Z"
+    }
+  ],
+  "independent_static_review": "runtime91-independent-review.json; no findings; actualWindows runtime pending",
+  "collection_sha256": {
+    "main-after641.json": "373cd859dcd9f7e2d0a78f98bd419b40e6a43955cb2a0096b92615340ed564e9",
+    "issue91-runtime-attempts.json": "cafe2f527c89cac4a655cdb3f2096ad445ec4a9c316d7aed9b305d45c8feff02",
+    "pr641-checks.json": "a186f19f881deea9ef15a1eaa20491ca5e1b209efa5ab600a42cd5ea5f92147f",
+    "runtime91-independent-review.json": "b0f9fd7dbed76e66a355dca40132b0e2d4e7b71dd61550937ab65437ab4a8b1b",
+    "pr641-ci-summary.json": "d8f71ac4beb433f6d93fa2031a89cbb3b034edf79f4bbf5d25cd6cc0e4e63658",
+    "pr641-postmerge.json": "39b733c5e2b963d2d4baf5cbd787474f1c5ea61c6c71925360c778eebde08f98",
+    "runtime91-local-static.json": "3ffdd05d8265863f23b7eb5e7251465562982d33b911924be15ddfd4e603f4bc",
+    "identity-rest-readback.json": "d7a9d0129a6a9aa593c4faa8c610dc9e87f99f4d84dfe3bd4ac462efe7c6d5f3"
+  }
+}

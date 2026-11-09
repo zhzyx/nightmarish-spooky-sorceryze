@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b82a88a71a21fa4472d776075ca755d375e44302",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2de66450af1874abee4c38727d8f7dff82a68d86419b2f964dd1ac3a13fa4cd9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "dependency",
+    "detection_head": "7ca78c6502a0bc41e39b7bf91b62d15d55c3f91c",
+    "context_sha256": "29227f506fda49f1a7c1116daff6d221810fa32bc67db3542dae8385e0044f29",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": ".github/workflows/windows_builds.yml",
+    "diagnosis": "Available alternate host found: existing MSVC Windows CI already builds/tests editor and has PowerShell; local download failure does not exhaust authorized execution. Implementing explicit Windows-layout PE launcher simulation, unchanged d237 baseline interruption comparison and candidate recovery/native original-request resumption. No Windows result claimed before CI.",
+    "next_action": "Finish isolated91 worker, independent source review, formal delivery and exact Windows runtime CI. Keep91/642open until actual positive receipts; do not retry local downloads.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T14:45:42.599930+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T15:12:45.246108+00:00",
+  "sha256": "0b710ca31d81910cf8fa7673fa336a1c0b7c227426ceabc79dbb39b460a275b0"
+}

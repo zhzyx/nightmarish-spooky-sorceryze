@@ -1,0 +1,147 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "pr": 651,
+  "signed_head": "e1dc5116fa9b22d2d2c397efcf4d878775d960ad",
+  "run": 42658839897,
+  "job": 129304866896,
+  "whole_run_ok": false,
+  "actual_cases": [
+    {
+      "case": "baseline interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\baseline",
+        "changed": [
+          {
+            "backup": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\baseline\\project\\runtime\\.gonggong-setup\\95db8116717645c1b0ed1b7dd62080e5\\python-previous",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "357e8e6c3f49352ff964c0dd760ffc8a9de79709bf078974c2576407a84b85ae"
+              }
+            ],
+            "name": "python",
+            "target": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\baseline\\project\\runtime\\python",
+            "source_manifest_sha256": "1a24195be038413c077c0d43a569fc04e20b9f015ddfdcd9c21bf85a43ac73d5"
+          }
+        ],
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 1,
+      "rollback_output": {
+        "error": "No matching active deployment to roll back",
+        "receipt": null,
+        "ok": false,
+        "rollback": "not_needed",
+        "global_environment_changed": false,
+        "state": "repair_environment"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": false,
+      "repeated_rollback_rejected": false
+    },
+    {
+      "case": "candidate interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-replacement-中文",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "357e8e6c3f49352ff964c0dd760ffc8a9de79709bf078974c2576407a84b85ae"
+              }
+            ],
+            "source_manifest_sha256": "1a24195be038413c077c0d43a569fc04e20b9f015ddfdcd9c21bf85a43ac73d5",
+            "phase": "deployed",
+            "target": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-replacement-中文\\project\\runtime\\python",
+            "backup": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\94b2d0c13b18428e9ef7bbc34e2e09f0\\python-previous"
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\94b2d0c13b18428e9ef7bbc34e2e09f0\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": true,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    },
+    {
+      "case": "candidate interrupted fresh install",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-fresh",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "357e8e6c3f49352ff964c0dd760ffc8a9de79709bf078974c2576407a84b85ae"
+              }
+            ],
+            "source_manifest_sha256": "1a24195be038413c077c0d43a569fc04e20b9f015ddfdcd9c21bf85a43ac73d5",
+            "phase": "deployed",
+            "target": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-fresh\\project\\runtime\\python",
+            "backup": ""
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-6>\\AppData\\Local\\Temp\\gonggong-windows-simulation-5ubxa0en\\candidate-fresh\\project\\runtime\\.gonggong-setup\\ba568768b65047e59ac7432d7fe2aef7\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    }
+  ],
+  "candidate_script_sha256": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "editor_sha256": "54d7b1d5b26aff1fdff8bdbec7b10d7132d6cca24e5307bbeb94baf2af38e7b2",
+  "tool_versions": {
+    "python": "Python 3.15.2",
+    "node": "v22.23.4",
+    "git": "git version 2.56.0.windows.4",
+    "powershell": "5.1.26100.33648"
+  },
+  "error": "AssertionError: {'error': 'No matching active deployment to roll back', 'receipt': None, 'ok': False, 'rollback': 'not_needed', 'global_environment_changed': False, 'state': 'repair_environment'}",
+  "failure_location": "First hand-authored journal fixture prepared-before-backup. Actual interruption tests all completed.",
+  "observed_path_mismatch": "Manual receipt workspace contains short TEMP path RUNNER~1; PowerShell own canonical workspace in actual process receipts contains runneradmin. Strict workspace comparison refuses mismatched fixture before mutation.",
+  "production_boundary_to_preserve": "Do not weaken workspace or restore path checks. Canonicalize existing temporary root before creating fixtures.",
+  "runtime_setup_and_original_demand_resume": "not reached; pending exact corrected CI",
+  "raw_report_sha256": "377d28fe837b055479498635bffaea7db55fdb4559f3461561a8a75a3ec138b0",
+  "diagnostics_sha256": "67b2dbbcd04ca800ed366f94688caef063ffffa1295a0ded82ef06089cc96e3a"
+}

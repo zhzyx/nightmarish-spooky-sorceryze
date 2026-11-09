@@ -27,6 +27,16 @@ func _send(dock, text: String):
 	dock.find_child("ChatInput", true, false).text = text
 	dock.find_child("Send", true, false).pressed.emit()
 
+func _configure_python(dock, path: String) -> bool:
+	var error: String = dock.set_runtime_field("workflow_python", path)
+	var runtime: Dictionary = dock.get_runtime_configuration()
+	var effective: String = runtime.paths.get("workflow_python", "")
+	if not error.is_empty() or effective.replace("\\", "/").nocasecmp_to(path.replace("\\", "/")) != 0 or runtime.sources.get("workflow_python", "") == "environment":
+		print("NATIVE_RUNTIME_PRECONDITION ", JSON.stringify({"error": error, "runtime": runtime}))
+		push_error("Test Python configuration did not become effective")
+		return false
+	return true
+
 func _run():
 	var dock = root.find_child("AI Chat", true, false)
 	if dock == null:
@@ -35,7 +45,9 @@ func _run():
 	var folder := OS.get_environment("GONGGONG_TEST_WORKSPACE")
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", folder)
-	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
+	if not _configure_python(dock, OS.get_environment("GONGGONG_TEST_PYTHON")):
+		quit(1)
+		return
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
 	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
@@ -44,17 +56,33 @@ func _run():
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
 	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "intake-unit-session-secret"
+	var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
+	key.text_changed.emit(key.text)
+	var model_status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var ready_deadline := Time.get_ticks_msec() + 15000
+	while (backend.disabled or not "模型列表已获取" in model_status.text) and Time.get_ticks_msec() < ready_deadline:
+		await process_frame
+	if dock.find_child("Send", true, false).disabled or not "模型列表已获取" in model_status.text:
+		print("NATIVE_CATALOG_PRECONDITION ", model_status.text)
+		push_error("Local model catalog did not become ready before original demand")
+		quit(1)
+		return
 	var runtime_source = OS.get_environment("GONGGONG_TEST_RUNTIME_SOURCE")
 	if not runtime_source.is_empty():
-		root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", folder.path_join("missing-python.exe"))
+		if not _configure_python(dock, folder.path_join("missing-python.exe")):
+			quit(1)
+			return
 	_send(dock, "Create first feature button")
 	if not runtime_source.is_empty():
-		await create_timer(0.2).timeout
 		var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 		var settings_page = root.find_child("UnifiedSettings", true, false)
 		var categories = settings_page.find_child("UnifiedSettingsCategories", true, false)
 		var environment = dock.get_environment_settings_control()
+		var environment_deadline := Time.get_ticks_msec() + 15000
+		while (not settings_page.is_visible_in_tree() or categories.current_tab != 1 or not environment.is_visible_in_tree()) and Time.get_ticks_msec() < environment_deadline:
+			await process_frame
 		if not settings_page.is_visible_in_tree() or categories.current_tab != 1 or not environment.is_visible_in_tree() or setup.visible:
+			print("NATIVE_ENVIRONMENT_PRECONDITION ", JSON.stringify({"runtime": dock.get_runtime_configuration(), "send_disabled": dock.find_child("Send", true, false).disabled, "backend_disabled": backend.disabled, "model_status": model_status.text}))
 			push_error("Missing Python did not navigate to central environment settings before deployment confirmation")
 			quit(1)
 			return

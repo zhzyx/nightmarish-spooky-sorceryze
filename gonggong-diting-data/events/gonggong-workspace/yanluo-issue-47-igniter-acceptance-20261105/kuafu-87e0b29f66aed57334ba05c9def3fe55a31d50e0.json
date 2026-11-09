@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-87e0b29f66aed57334ba05c9def3fe55a31d50e0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2de66450af1874abee4c38727d8f7dff82a68d86419b2f964dd1ac3a13fa4cd9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "dependency",
+    "detection_head": "7ca78c6502a0bc41e39b7bf91b62d15d55c3f91c",
+    "context_sha256": "29227f506fda49f1a7c1116daff6d221810fa32bc67db3542dae8385e0044f29",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/issue91-runtime-attempts.json",
+    "diagnosis": "No PowerShell executable on current macOS host. Official68MB portable v7.6.9 metadata SHA was read; directcurl,authenticated ghrelease andmirror each timed out or failed speed threshold, leaving only unverified partial files. Nothing extracted/executed; no installer/doctor/interruption product defect inferred. Existing15runtime layout/state and9config tests remain valid separate evidence.",
+    "next_action": "Keep91/642open. Resume exact private PowerShell interruption,rollback,doctor and original-request recovery experiment only after verified local runtime or changed download connectivity. Continue all other accepted deliveries; no repeated unchanged download.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T14:45:42.599930+00:00",
+    "attempted": null,
+    "repair_owner": "codex-before300-root",
+    "continuable": "PR638/641 delivery and seven accepted original Issues; remaining original deadlock/physical-input unknowns stay separate."
+  },
+  "occurred_at": "2026-11-09T14:54:08.276749+00:00",
+  "sha256": "65045fd77e9bd13f7f61fad4b0197028c36c2e3f095a3ad95e631c145bbec699"
+}

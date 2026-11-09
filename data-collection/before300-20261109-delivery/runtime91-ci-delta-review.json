@@ -1,0 +1,43 @@
+{
+  "issue": 91,
+  "kind": "independent read-only narrow CI-driven delta review",
+  "result": "no actionable findings in the exact two-line delta; acknowledge for new exact candidate publication",
+  "source_commit": "7c7a684840d7ef054fa5fa5be1df4041d120d1f0",
+  "candidate_script_sha256": "bf4403dbf948bb83740ef7a77e3dfa99ba2643d9f1ba1d2c982db38cea558c61",
+  "exact_delta": [
+    "Remove UTF-8 BOM from first line; all remaining bytes are ASCII",
+    "File.Replace third argument changes from $null to [NullString]::Value only"
+  ],
+  "rationale": "PowerShell 5.1 converts untyped $null to an empty string when binding a string parameter. [NullString]::Value supplies a true null string to the .NET File.Replace backup-path parameter, preserving the intent to discard the replaced receipt without a backup file. This keeps same-directory atomic File.Replace, rather than replacing it with deletion or non-atomic overwrite. ASCII-only content has identical script characters under Windows PowerShell default decoding with or without a UTF-8 BOM.",
+  "checks": {
+    "exact_delta_bytes": "passed against full source commit",
+    "ascii_only_without_bom": "passed",
+    "file_format_equivalent_nonmutating": "passed",
+    "simulation_and_workflow_unchanged_vs_source_commit": {
+      "tests/editor/run_runtime_setup_simulation.py": true,
+      ".github/workflows/windows_builds.yml": true
+    },
+    "baseline_unchanged": "git-show baseline and downloaded first Windows summary both SHA256 4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d"
+  },
+  "ci_evidence": {
+    "pr": 643,
+    "windows_job": 129262608711,
+    "static_job": 129262609572,
+    "first_windows_summary_ok": false,
+    "completed_cases": [
+      {
+        "case": "baseline interrupted replacement",
+        "ok": true,
+        "rollback_exit": 1
+      }
+    ],
+    "candidate_failure": "File.Replace third argument: The path is not of a legal form.",
+    "static_failure": "file-format removed BOM only",
+    "artifacts_read": [
+      "<private-evidence>/pr643-runtime-first/summary.json",
+      "<private-evidence>/pr643-windows-failed.log",
+      "<private-evidence>/pr643-static-failed.log"
+    ]
+  },
+  "boundary": "Candidate Windows positive rerun pending; this follow-up is source/static review, not local PowerShell, C# or Windows execution. No baseline edits, implementation edits, full rerun, commit or push by reviewer."
+}

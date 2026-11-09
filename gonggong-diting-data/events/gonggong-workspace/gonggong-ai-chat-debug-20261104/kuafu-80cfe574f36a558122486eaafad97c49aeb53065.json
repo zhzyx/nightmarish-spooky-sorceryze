@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-80cfe574f36a558122486eaafad97c49aeb53065",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-chat-debug-20261104",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a62fb02475548bf9b3b59eba8501c8582a7d549a463088fd565cb54e4da8fd98",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49",
+    "action": "intake",
+    "detection_head": "7c7a684840d7ef054fa5fa5be1df4041d120d1f0",
+    "context_sha256": "b04435f484763fafbacfbafc45a9e3b4893d258fd386c0c1761b670e4d7e4a31",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/issue49-inflight-readback.json",
+    "diagnosis": "This host49 intake network read failed, exactretry nowpassed. Source readback shows separate actual publisherkaiyunxue owns openDraftPR645 head0b20b7e1b27dd8555448308c17d9e5a77b8db3cf, reported9integrationconflicts; APImergeability currentlyunknown. Rootdid notresume stoppedGUI/provider tests orchange foreigncandidate. CLIversion/loginclassifiedonly, no modelrequest.",
+    "next_action": "Preserve original publisher occupancy; wait for actual integration completion or confirmedhandoff, then rootwhole-Issue acceptance continues.49staysopen/in-review; no assumption that originalPROCESS_EXIT cause is known.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T15:40:10.791820+00:00",
+    "attempted": null,
+    "repair_owner": "PR645 original publisher; root retains acceptance coordination",
+    "continuable": "Root91 exactCI/main delivery and independent read-only source review."
+  },
+  "occurred_at": "2026-11-09T16:35:08.408960+00:00",
+  "sha256": "c0aac00189fa1019ff949f8e5e9dacecf0629e49f06e3cb105e883b01d378a9d"
+}

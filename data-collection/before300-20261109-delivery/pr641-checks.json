@@ -1,0 +1,179 @@
+{
+  "checks": [
+    {
+      "conclusion": "skipped",
+      "id": 129225285283,
+      "name": "🍎 macOS",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225285283"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225283802,
+      "name": "🏁 Windows / daqian-native-reuse",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225283802"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225283235,
+      "name": "🤖 Android",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225283235"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225283214,
+      "name": "🐧 Linux",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225283214"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225283182,
+      "name": "🍏 iOS",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225283182"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225283086,
+      "name": "🏁 Windows / consultation-native",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225283086"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225282838,
+      "name": "🌐 Web",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225282838"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225280954,
+      "name": "🏁 Windows / Editor w/ clang-cl (target=editor, use_llvm=yes)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225280954"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225280777,
+      "name": "🏁 Windows / Editor (target=editor)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225280777"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225280725,
+      "name": "🏁 Windows / Template w/ GCC (target=template_release, use_mingw=yes)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225280725"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225280708,
+      "name": "🏁 Windows / Template (target=template_release)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225280708"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225158766,
+      "name": "🤖 Android",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225158766"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225158699,
+      "name": "🐧 Linux",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225158699"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225158465,
+      "name": "🏁 Windows / consultation-native",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225158465"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225158046,
+      "name": "🍏 iOS",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225158046"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225158019,
+      "name": "🌐 Web",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225158019"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225157861,
+      "name": "🏁 Windows / daqian-native-reuse",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225157861"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 129225157571,
+      "name": "🍎 macOS",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225157571"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225156329,
+      "name": "🏁 Windows / Editor w/ clang-cl (target=editor, use_llvm=yes)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225156329"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225156324,
+      "name": "🏁 Windows / Template (target=template_release)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225156324"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225156314,
+      "name": "🏁 Windows / Editor (target=editor)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225156314"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225156284,
+      "name": "🏁 Windows / Template w/ GCC (target=template_release, use_mingw=yes)",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129225156284"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225028516,
+      "name": "issue-association",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243264/job/129225028516"
+    },
+    {
+      "conclusion": "success",
+      "id": 129225026219,
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636243224/job/129225026219"
+    },
+    {
+      "conclusion": "success",
+      "id": 129224908391,
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42636199226/job/129224908391"
+    }
+  ]
+}

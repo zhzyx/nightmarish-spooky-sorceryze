@@ -1,0 +1,178 @@
+{
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "pr": 653,
+  "signed_head": "542ec2520ec4dd75dabb7356a9d680a6025978db",
+  "run": 42661179893,
+  "job": 129313075388,
+  "whole_run_ok": false,
+  "process_cases": [
+    {
+      "case": "baseline interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\baseline",
+        "changed": [
+          {
+            "backup": "<fixture-path-0>\\baseline\\project\\runtime\\.gonggong-setup\\371262f2486e43bf9d7e60ac35a46ae6\\python-previous",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "539f72e678991647f76e5bf4cc557e2d9bca67a79f3282208a1b3467960a210f"
+              }
+            ],
+            "name": "python",
+            "target": "<fixture-path-0>\\baseline\\project\\runtime\\python",
+            "source_manifest_sha256": "940714d8bfbadabd391bd16547764964dbb296a7f0263cfe477d2ecfb74c0bfb"
+          }
+        ],
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 1,
+      "rollback_output": {
+        "error": "No matching active deployment to roll back",
+        "receipt": null,
+        "ok": false,
+        "rollback": "not_needed",
+        "global_environment_changed": false,
+        "state": "repair_environment"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": false,
+      "repeated_rollback_rejected": false
+    },
+    {
+      "case": "candidate interrupted replacement",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-replacement-中文",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "539f72e678991647f76e5bf4cc557e2d9bca67a79f3282208a1b3467960a210f"
+              }
+            ],
+            "source_manifest_sha256": "940714d8bfbadabd391bd16547764964dbb296a7f0263cfe477d2ecfb74c0bfb",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\python",
+            "backup": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\24b2eeb688cf489fa6d164f7ac140b62\\python-previous"
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-replacement-中文\\project\\runtime\\.gonggong-setup\\24b2eeb688cf489fa6d164f7ac140b62\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": true,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    },
+    {
+      "case": "candidate interrupted fresh install",
+      "ok": true,
+      "interruption": "owned PowerShell tree forcibly terminated at fixture staged-node probe after Python deployment",
+      "receipt_at_interruption": {
+        "workspace": "<fixture-path-0>\\candidate-fresh",
+        "changed": [
+          {
+            "name": "python",
+            "files": [
+              {
+                "path": "python/python.exe",
+                "sha256": "539f72e678991647f76e5bf4cc557e2d9bca67a79f3282208a1b3467960a210f"
+              }
+            ],
+            "source_manifest_sha256": "940714d8bfbadabd391bd16547764964dbb296a7f0263cfe477d2ecfb74c0bfb",
+            "phase": "deployed",
+            "target": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\python",
+            "backup": ""
+          }
+        ],
+        "journal_version": 1,
+        "state": "deploying"
+      },
+      "deployment_exit_after_termination": 1,
+      "deployment_stdout": "",
+      "deployment_stderr": "",
+      "rollback_exit": 0,
+      "rollback_output": {
+        "ok": true,
+        "global_environment_changed": false,
+        "receipt": "<fixture-path-0>\\candidate-fresh\\project\\runtime\\.gonggong-setup\\83363835107d4cf7a69ea72d6e8745ad\\receipt.json",
+        "state": "rolled_back"
+      },
+      "rollback_stdout": "",
+      "rollback_stderr": "",
+      "original_bytes_restored": false,
+      "recovery_retained": true,
+      "repeated_rollback_rejected": true
+    }
+  ],
+  "journal_boundary_cases": [
+    {
+      "case": "prepared-before-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "prepared-after-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "legacy-configured",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "outside-target",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    },
+    {
+      "case": "missing-backup",
+      "ok": true,
+      "kind": "explicit journal fixture with real PowerShell rollback"
+    }
+  ],
+  "runtime_setup": {
+    "ok": true,
+    "cases": [
+      "deploy all three components with no destination Python",
+      "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+      "rollback retains recovery files",
+      "repeated rollback rejected",
+      "failed framework self-check restores pre-deployment files",
+      "tampered source rejected before execution",
+      "launcher permits editor ignition without Python or Node"
+    ],
+    "source": "explicit existing package; no downloads",
+    "global_environment_modified": false
+  },
+  "error": "AssertionError: requirements-intake failed; see process log",
+  "native_first_error": "Missing Python did not navigate to central environment settings before deployment confirmation; requests/journals empty",
+  "secondary_error": "TemporaryDirectory cleanup WinError32 project held; holder not identified by original log",
+  "diagnosis": "See runtime91-native-resume-review.json; frozen environment Python defeats missing-config premise; missing GETmodels and asynchronous ready gate. No production defect uniquely established.",
+  "next": "Repair only fixture preconditions and reuse existing owned Windows Job API; exact Windows native resume still pending",
+  "report_sha256": "22750f3a5ec14adf33cb095a3bc838140a1b2a2a93d93a9882d160f474a9c14f"
+}

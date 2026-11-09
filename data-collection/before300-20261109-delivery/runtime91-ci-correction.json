@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "issue_number": 91,
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "prior_signed_commit": "19147a3cfc7eddbaf0f69ff6c2261e7894d37d77",
+  "prior_pr": 643,
+  "actual_run": 42646869266,
+  "actual_msvc_job": 129262608711,
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "baseline_interruption_failure_reproduced": true,
+  "prior_candidate_positive": false,
+  "first_failure": "WindowsPS5.1 File.Replace third $null binds empty string path",
+  "static_failure": "PR file-format removed prior BOM; push static did not encounter source diff",
+  "candidate_fix": "Explicit [NullString]::Value and ASCII-only script without BOM; atomic Replace retained",
+  "new_script_sha256": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+  "new_windows_result": "pending exact new signed-head CI",
+  "independent_delta": "existing native independent reviewer actual followup completed; no source edits by reviewer",
+  "files": {
+    "runtime91-first-windows-failure.json": "7d2ac4891fe6b88e160efcde2f4e370c5ee281f1cd02993da9c398f2e9193d08",
+    "runtime91-ci-delta-review.json": "6b84bf1df0f893acef1358e502db62c2322c6d223579853c67159e01afb77c49",
+    "runtime91-ci-delta-review-v2.json": "fe7beb27df111316752f44c2cf2afc08e25931378d2087e60dcfbd5bf31a444c"
+  },
+  "new_helper_sha256": "197122746a789254e6e02705e3e61e7cb71a3566e1543930adfd79320283740a",
+  "encoding_invariant": "Receipt and package JSON explicitly read UTF8 matching writer; existing replacement case uses Chinese workspace. No separate old encoding failure claim.",
+  "latest_independent_delta": "runtime91-ci-delta-review-v2.json"
+}
