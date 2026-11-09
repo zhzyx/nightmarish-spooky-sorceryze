@@ -56,12 +56,21 @@ def native_selector(folder, paths):
         "PLAN", json.dumps(json.dumps(plan, ensure_ascii=False))
     )
     source.write_text(text, encoding="ascii")
-    result = subprocess.run(
-        [str(compiler), "/nologo", "/target:exe", f"/out:{executable}", str(source)],
-        capture_output=True,
-        timeout=60,
-    )
+    # Keep cold compiler startup bounded without retrying a failed compilation.
+    try:
+        result = subprocess.run(
+            [str(compiler), "/nologo", "/target:exe", f"/out:{executable}", str(source)],
+            capture_output=True,
+            timeout=180,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RuntimeError(
+            f"Runtime selector fixture: compiler {compiler} timed out after {error.timeout} seconds"
+        ) from error
     if result.returncode != 0:
-        raise AssertionError((result.stdout + result.stderr).decode(errors="replace"))
+        raise AssertionError(
+            f"Runtime selector fixture: compiler {compiler} exited with {result.returncode}\n"
+            + (result.stdout + result.stderr).decode(errors="replace")
+        )
     assert executable.read_bytes()[:2] == b"MZ"
     return executable, marker
