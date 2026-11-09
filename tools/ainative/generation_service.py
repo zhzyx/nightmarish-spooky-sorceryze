@@ -391,10 +391,14 @@ def _probe_sculpt(config):
     )
 
 
-def _probe_codex(config):
+def _probe_codex(config, *, inspect_cli=True):
     from codex_provider import check_cli
 
-    cli = check_cli(config["cli_path"])
+    cli = (
+        check_cli(config["cli_path"])
+        if inspect_cli
+        else {"code": "cli_not_checked", "message": "本次图生网格只使用本机模型。"}
+    )
     mesh_config = {k: v for k, v in config.items() if k != "cli_path"}
     mesh_config.update(mode="comfy", image_model="")
     mesh_report, info = _probe_service(mesh_config)
@@ -415,7 +419,7 @@ def _probe_codex(config):
     combined = mesh_ready if image_ready else image
     report = dict(
         mode="codex",
-        connected=image_ready,
+        connected=image_ready or mesh_ready["ready"],
         cli=cli,
         models=dict(image=["builtin"], mesh=mesh_report.get("models", {}).get("mesh", [])),
         capabilities={
@@ -428,7 +432,7 @@ def _probe_codex(config):
         backend_revision=cli.get("version", "") + "|local-mesh:" + mesh_report.get("backend_revision", ""),
         message="Codex CLI 图像能力已连接；图像使用当前登录额度，网格由本机模型执行。"
         if image_ready
-        else image["message"],
+        else ("本机网格模型已就绪。" if mesh_ready["ready"] else "") + image["message"],
     )
     return report, info
 
@@ -528,7 +532,13 @@ def prepare_provider(config, model, database, run_id):
     if config["mode"] == "codex":
         from codex_provider import CodexProvider
 
-        report, info = _probe_codex(config)
+        requires_cli = any(
+            node["type"] != "image_to_mesh"
+            or str(node.get("parameters", {}).get("prompt", "")).strip()
+            or str(node.get("text", "")).strip()
+            for node in generated
+        )
+        report, info = _probe_codex(config, inspect_cli=requires_cli)
         for node in generated:
             kind = node["type"]
             ready = report["capabilities"][kind]

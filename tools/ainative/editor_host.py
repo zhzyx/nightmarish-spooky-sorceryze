@@ -8,6 +8,7 @@ import json
 import math
 import os
 import struct
+import sys
 import uuid
 from pathlib import Path
 
@@ -287,6 +288,14 @@ def dispatch(args, request):
 
 
 def main():
+    # The editor starts the bundled interpreter with -E -s -B. Its supervisor
+    # and generation workers start fresh interpreters, so pass that isolation
+    # on to them as well. Bytecode under the signed app invalidates its seal.
+    if sys.flags.ignore_environment and sys.flags.no_user_site and sys.dont_write_bytecode:
+        for key in tuple(os.environ):
+            if key.startswith("PYTHON"):
+                del os.environ[key]
+        os.environ.update(PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1")
     p = argparse.ArgumentParser()
     p.add_argument(
         "command",

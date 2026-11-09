@@ -28,6 +28,8 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+import bundled_hunyuan
+
 LEASE_SECONDS = 15
 MAX_JSON = 16 * 1024 * 1024
 TERMINAL = {"stopped", "failed"}
@@ -158,18 +160,37 @@ def _inspect(request):
     if not isinstance(root_value, str) or not root_value:
         raise ManagedError("runtime_missing", "请选择已安装的本机 ComfyUI 运行库目录。")
     root = Path(root_value).expanduser().resolve()
-    python = next((p for p in (root / "venv/Scripts/python.exe", root / "venv/bin/python") if p.is_file()), None)
     main = root / "ComfyUI-src/main.py"
-    if python is None or not main.is_file():
+    if not main.is_file():
         raise ManagedError("runtime_invalid", "运行库缺少 venv Python 或 ComfyUI-src/main.py；请选择完整的已有运行库。")
     config = Path(request.get("config_path") or root / "config.json").expanduser().resolve()
     try:
         body = _read(config)
         if not isinstance(body, dict) or not isinstance(body.get("checkpoints"), dict):
             raise ValueError("invalid configuration")
+        bundled = body.get("distribution") == bundled_hunyuan.DISTRIBUTION
+        if bundled:
+            python = bundled_hunyuan.python_path(root)
+            if not python.is_file() or not (root / "model_paths.yaml").is_file():
+                raise ManagedError("runtime_invalid", "内置网格运行库不完整，请重新安装完整的马良发行包。")
+        else:
+            python = next(
+                (p for p in (root / "venv/Scripts/python.exe", root / "venv/bin/python") if p.is_file()), None
+            )
+            if python is None:
+                raise ManagedError("runtime_invalid", "已有运行库缺少 Python，请选择完整的本机运行库。")
         endpoint = _endpoint(body.get("endpoint", ""))
         checkpoints = body["checkpoints"]
         mesh = _model(checkpoints["mesh"]["name"])
+        if bundled:
+            weight = root / "models/checkpoints" / bundled_hunyuan.MODEL_NAME
+            if (
+                mesh != bundled_hunyuan.MODEL_NAME
+                or not weight.is_file()
+                or weight.stat().st_size != bundled_hunyuan.MODEL_SIZE
+                or checkpoints["mesh"].get("sha256") != bundled_hunyuan.MODEL_SHA256
+            ):
+                raise ManagedError("model_missing", "发行包中的 Hunyuan3D 模型不完整，请重新安装完整发行包。")
         image = _model(checkpoints["image"]["name"]) if checkpoints.get("image", {}).get("name") else ""
         for name in (mesh, image):
             if name and not any(
@@ -188,6 +209,7 @@ def _inspect(request):
         raise ManagedError("config_invalid", "无法读取运行库 config.json；请检查现有本机配置和读取权限。") from None
     return dict(
         valid=True,
+        bundled=bundled,
         runtime_root=str(root),
         python=str(python),
         main=str(main),
@@ -264,6 +286,17 @@ def _process_identity(pid):
                 return str((times[0].dwHighDateTime << 32) | times[0].dwLowDateTime)
             finally:
                 kernel.CloseHandle(handle)
+        if sys.platform == "darwin":
+            # Darwin PROC_PIDTBSDINFO ends with the creation timeval. Unlike
+            # the PID or a process name, it changes when the PID is reused.
+            layout = struct.Struct("=12I48s6IQQ")
+            buffer = ctypes.create_string_buffer(layout.size)
+            proc_pidinfo = ctypes.CDLL("/usr/lib/libproc.dylib").proc_pidinfo
+            size = proc_pidinfo(int(pid), 3, 0, buffer, len(buffer))
+            if size != len(buffer):
+                return ""
+            seconds, micros = layout.unpack(buffer.raw)[-2:]
+            return f"{seconds}.{micros:06d}"
         stat = Path("/proc") / str(pid) / "stat"
         return stat.read_text().rsplit(")", 1)[1].split()[19]
     except (OSError, ValueError, IndexError):
@@ -329,7 +362,13 @@ def _listener_pid(endpoint):
     try:
         address = "[" + url.hostname + "]" if ":" in url.hostname else url.hostname
         result = subprocess.run(
-            ["lsof", "-nP", "-iTCP@" + address + ":" + str(url.port), "-sTCP:LISTEN", "-t"],
+            [
+                "/usr/sbin/lsof" if sys.platform == "darwin" else "lsof",
+                "-nP",
+                "-iTCP@" + address + ":" + str(url.port),
+                "-sTCP:LISTEN",
+                "-t",
+            ],
             capture_output=True,
             timeout=2,
             check=False,
@@ -396,20 +435,28 @@ def _hidden():
     return {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {"start_new_session": True}
 
 
-def _launch_command(config):
+def _launch_command(config, state=None):
     url = urllib.parse.urlsplit(config["endpoint"])
-    command = [
-        config["python"],
+    command = [config["python"]]
+    base = config["runtime_root"]
+    if config.get("bundled"):
+        if state is None:
+            raise ValueError("Missing writable runtime directory")
+        base = str(state)
+        command.extend(["-I", "-B", str(Path(__file__).with_name("bundled_hunyuan.py"))])
+    command.extend([
         config["main"],
         "--listen",
         url.hostname,
         "--port",
         str(url.port),
         "--base-directory",
-        config["runtime_root"],
+        base,
         "--disable-auto-launch",
         "--disable-all-custom-nodes",
-    ]
+    ])
+    if config.get("bundled"):
+        command.extend(["--extra-model-paths-config", str(Path(config["runtime_root"]) / "model_paths.yaml")])
     # Read declared argparse options without importing Torch or starting Comfy.
     # Native Hunyuan nodes remain available with all custom nodes disabled.
     cli = Path(config["runtime_root"]) / "ComfyUI-src/comfy/cli_args.py"
@@ -501,7 +548,7 @@ def manage(request):
                         )
                         return result
             probe = _probe(config, timeout=min(0.7, _remaining(deadline)))
-            if probe["connected"]:
+            if probe["connected"] and not config.get("bundled"):
                 result.update(
                     probe,
                     ok=True,
@@ -947,7 +994,10 @@ class _Supervisor:
             # Publish the exact controller before launching its child. A second
             # caller can discover ownership even if the original caller dies.
             self.persist()
-            command = _launch_command(self.config)
+            state = self.folder / "work"
+            if self.config.get("bundled"):
+                state.mkdir(exist_ok=True)
+            command = _launch_command(self.config, state)
             with open(self.folder / ("comfy-" + self.launch["instance_id"] + ".log"), "ab") as log:
                 flags = _hidden()
                 if os.name == "nt":
@@ -956,7 +1006,7 @@ class _Supervisor:
                     flags["preexec_fn"] = _parent_death
                 self.child = subprocess.Popen(
                     command,
-                    cwd=str(Path(self.config["main"]).parent),
+                    cwd=str(state if self.config.get("bundled") else Path(self.config["main"]).parent),
                     stdin=subprocess.DEVNULL,
                     stdout=log,
                     stderr=log,

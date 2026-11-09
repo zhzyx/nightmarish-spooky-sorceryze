@@ -289,6 +289,33 @@ class NativeAppTests(unittest.TestCase):
             native.digest(installed / native.EXECUTABLE_RELATIVE), native.digest(self.app / native.EXECUTABLE_RELATIVE)
         )
 
+    def test_engine_update_retains_the_signed_maliang_runtime(self):
+        from ainative import bundled_hunyuan
+
+        self.assertIsNone(native.maliang_template(self.template))
+        runtime = self.template / "Contents/Resources/maliang-hunyuan"
+        weight = runtime / "models/checkpoints" / bundled_hunyuan.MODEL_NAME
+        for path in (
+            weight,
+            bundled_hunyuan.python_path(runtime),
+            runtime / "ComfyUI-src/main.py",
+            runtime / "model_paths.yaml",
+        ):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b"fixture")
+        (runtime / "config.json").write_text(json.dumps({"distribution": bundled_hunyuan.DISTRIBUTION}))
+        self.package()
+        with (
+            patch.object(bundled_hunyuan, "MODEL_SIZE", 7),
+            patch.object(bundled_hunyuan, "MODEL_SHA256", native.digest(weight)),
+        ):
+            self.assertEqual(native.maliang_template(self.app), self.app)
+            self.assertEqual(native.maliang_template(None, self.app), self.app)
+        next_app = self.app.with_name("next.app")
+        native.package_app(self.root, "/usr/bin/true", self.binding, self.project, next_app, self.app)
+        self.assertEqual((next_app / weight.relative_to(self.template)).read_bytes(), b"fixture")
+        native.verify_signature(next_app)
+
 
 if __name__ == "__main__":
     unittest.main()

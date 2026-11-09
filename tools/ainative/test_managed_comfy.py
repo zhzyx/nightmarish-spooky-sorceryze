@@ -78,7 +78,8 @@ class ManagedComfyTests(unittest.TestCase):
         cls.suite = tempfile.TemporaryDirectory(prefix="managed-tests-", dir=cls.scratch)
         cls.suite_path = Path(cls.suite.name)
         cls.python_home = cls.suite_path / "fixture-python"
-        venv.EnvBuilder(with_pip=False).create(cls.python_home)
+        # Match the venv CLI on POSIX, including relocatable Python builds.
+        venv.EnvBuilder(with_pip=False, symlinks=os.name != "nt").create(cls.python_home)
         cls.python = cls.python_home / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
     @classmethod

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "maliang-hunyuan-desktop-packaging",
+  "collected_at": "2026-11-09T10:49:06.469427+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-hunyuan-desktop-packaging/dispatch-225df3dbcaf94513bf6294da5da6a8bc.json",
+      "sha256": "e6fca88619f899b19691fd207ef76db09514f7507f0017e7bfd431d49253d5f7",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-225df3dbcaf94513bf6294da5da6a8bc",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-hunyuan-desktop-packaging/dispatch-3bbef07d21c24ffc9fa9406d1a7c8c70.json",
+      "sha256": "6d012f1757e03110a7af3bced504dc5f63d22589b6455c254f55b0db62b5819f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-3bbef07d21c24ffc9fa9406d1a7c8c70",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-hunyuan-desktop-packaging/maliang-hunyuan-desktop-packaging-request.json",
+      "sha256": "33ff04f89c1d3dded3adfdde144d5bcf9dbff0a590267cc3a66d3187d6260c7e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "maliang-hunyuan-desktop-packaging-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 616,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/616"
+}

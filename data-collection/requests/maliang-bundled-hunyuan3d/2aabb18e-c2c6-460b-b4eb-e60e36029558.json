@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "maliang-bundled-hunyuan3d",
+  "collected_at": "2026-11-09T10:27:09.533165+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-bundled-hunyuan3d/dispatch-6b26617cb4e24072bf7b9949b93b4d35.json",
+      "sha256": "c356d259dfb34c73104408fa653382f22c7317fe82d65e8d25573409b2f79689",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-6b26617cb4e24072bf7b9949b93b4d35",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-bundled-hunyuan3d/dispatch-81d6102d38434b13b44f3a5be944ea58.json",
+      "sha256": "1fd7e76bedb4196b36617aa64beee5cb1c6f8b3d5768131cab2a1061fb3ae6ae",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-81d6102d38434b13b44f3a5be944ea58",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-bundled-hunyuan3d/dispatch-99979e2943cc4788837c01d79d9c9f35.json",
+      "sha256": "89d316e4a03f71324608cc71351c55edd54c6104ee751acc0a8f648a435e9a9e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-99979e2943cc4788837c01d79d9c9f35",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/maliang-bundled-hunyuan3d/dispatch-b9e55014c9bd4bba84fb1cd84de57678.json",
+      "sha256": "7153b6e298f28f5b1bae6d32d432f35a13c3de2bb2dc9fd3dfc0945baba441f6",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b9e55014c9bd4bba84fb1cd84de57678",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot"
+}

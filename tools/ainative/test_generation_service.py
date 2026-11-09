@@ -104,6 +104,22 @@ class ServiceTests(unittest.TestCase):
         self.assertTrue(all(method == "GET" for method, _ in self.requests))
         self.assertFalse(any(route in ("/prompt", "/upload/image") for _, route in self.requests))
 
+    def test_direct_codex_mesh_runs_without_cli(self):
+        config = {**self.config, "mode": "codex", "image_model": "", "cli_path": str(self.root / "no-cli")}
+        report = check_service(config)
+        self.assertTrue(report["connected"])
+        self.assertTrue(report["capabilities"]["image_to_mesh"]["ready"])
+        self.assertFalse(report["capabilities"]["text_to_mesh"]["ready"])
+
+        self.file.write_text(json.dumps(config))
+        source = self.root / "mesh-input.png"
+        source.write_bytes(b"\x89PNG\r\n\x1a\nfixture")
+        model = self.model("image_to_mesh")
+        model["nodes"][0].update(source=str(source), parameters={})
+        with patch("codex_provider.check_cli", side_effect=AssertionError("Direct mesh contacted the CLI")):
+            run = dispatch(self.args, {"model": model})["run_id"]
+        self.assertEqual(run_service(self.args.db, run)["mode"], "codex")
+
     def test_mesh_only_needs_no_image_model(self):
         self.info = {key: value for key, value in self.info.items() if key in MESH_NODES}
         report = check_service({**self.config, "image_model": ""})
