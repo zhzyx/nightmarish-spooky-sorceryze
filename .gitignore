@@ -435,6 +435,7 @@ __pycache__/
 /project/godot/bin/
 /project/godot/versions/
 /project/godot/installed.local.json
+/project/godot/.editor-install.lock
 /project/runtime/
 
 # Published asset metadata is source-controlled; large archives stay in Releases.

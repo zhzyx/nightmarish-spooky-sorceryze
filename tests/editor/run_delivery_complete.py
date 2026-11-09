@@ -214,6 +214,13 @@ def main():
             app = folder / "Original Private.app"
             (app / "Contents").mkdir(parents=True)
             binary = copy_editor(args.godot, app / "Contents/MacOS")
+            from package_tianshu_ui import installed_package
+
+            sidecar = binary.with_name(installed_package(args.godot).name)
+            if sidecar.is_file():
+                resources = app / "Contents/Resources"
+                resources.mkdir()
+                sidecar.rename(resources / "tianshu-ui.json")
             binary.rename(binary.with_name("Godot"))
             binary = binary.with_name("Godot")
             (app / "Contents/Info.plist").write_bytes(
@@ -284,6 +291,9 @@ def main():
                 raw = target / "bin/godot.macos.editor.arm64.self_update_a"
                 raw.parent.mkdir()
                 subprocess.run(["/bin/cp", "-c", str(binary), str(raw)], check=True)
+                source_package = installed_package(binary)
+                if source_package.is_file():
+                    shutil.copyfile(source_package, installed_package(raw))
                 if args.case == "retry-managed":
                     from editor_native_app import EXECUTABLE_RELATIVE, native_output_dir, package_app
 

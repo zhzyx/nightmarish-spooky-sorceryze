@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-artifact-reuse-rollout",
+  "collected_at": "2026-11-09T21:47:27.080041+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/dispatch-05857d6f84e1434b8c7b36c4e99f3a56.json",
+      "sha256": "0dd523d3c0acb2ea8ed6b35b9640ccf2bb86185ca7b604db66235378535e5cbd",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-05857d6f84e1434b8c7b36c4e99f3a56",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/dispatch-762bc6ad242649e38c60d2d82e595eb9.json",
+      "sha256": "a2b08414e248e904019bf8a099f0df3d15fe5c9b19ea6ac880bcb2b988d6ff56",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-762bc6ad242649e38c60d2d82e595eb9",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-artifact-reuse-rollout/request-687-engine-build-placement.json",
+      "sha256": "073d4a7cdb37ac40cfa2b960d17d33550aa48cfa2b2641ce2d3eb02f27b074ee",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-687-engine-build-placement",
+      "origin": "codex"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 687,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/687"
+}

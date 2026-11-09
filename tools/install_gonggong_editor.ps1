@@ -22,20 +22,71 @@ if ($buildRoot.FullName -ne $workspace) {
 }
 $destination = Join-Path $workspace 'project/godot/bin'
 $names = @('godot.windows.editor.x86_64.exe', 'godot.windows.editor.x86_64.console.exe')
+if (Test-Path -LiteralPath (Join-Path $buildRoot.FullName 'tools/package_tianshu_ui.py') -PathType Leaf) {
+    $names += 'tianshu-ui.json'
+}
 foreach ($name in $names) {
     if (-not (Test-Path -LiteralPath (Join-Path $BuildDirectory $name) -PathType Leaf)) { throw "Missing build artifact: $name" }
 }
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
-$records = @()
-foreach ($name in $names) {
-    $source = Join-Path $BuildDirectory $name
-    $target = Join-Path $destination $name
-    Copy-Item -LiteralPath $source -Destination $target -Force
-    $digest = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant() -ne $digest) { throw "Installation hash mismatch: $name" }
-    $records += @{path="bin/$name";sha256=$digest;bytes=(Get-Item -LiteralPath $target).Length}
+$installRoot = Split-Path -Parent $destination
+$lockPath = Join-Path $installRoot '.editor-install.lock'
+$lock = [IO.FileStream]::new($lockPath, 'OpenOrCreate', 'ReadWrite', 'None', 4096, [IO.FileOptions]::DeleteOnClose)
+$stage = Join-Path $installRoot ('.editor-install-' + [guid]::NewGuid().ToString('N'))
+$changes = @()
+$installed = @()
+$cleanup = $true
+try {
+    New-Item -ItemType Directory -Path $stage | Out-Null
+    $records = @()
+    foreach ($name in $names) {
+        $source = Join-Path $BuildDirectory $name
+        $staged = Join-Path $stage $name
+        Copy-Item -LiteralPath $source -Destination $staged
+        $digest = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ((Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash.ToLowerInvariant() -ne $digest) {
+            throw "Installation hash mismatch: $name"
+        }
+        $records += @{path="bin/$name";sha256=$digest;bytes=(Get-Item -LiteralPath $staged).Length}
+        $changes += @{source=$staged;target=(Join-Path $destination $name)}
+    }
+    $manifest = @{schema_version=1;path_base='installation_directory';workspace='../..';source_root='../..';default_editor='bin/godot.windows.editor.x86_64.exe';files=$records}
+    $stagedManifest = Join-Path $stage 'installed.local.json'
+    [IO.File]::WriteAllText($stagedManifest, ($manifest | ConvertTo-Json -Depth 8), [Text.UTF8Encoding]::new($false))
+    $changes += @{source=$stagedManifest;target=(Join-Path $installRoot 'installed.local.json')}
+    foreach ($change in $changes) {
+        if ([IO.File]::Exists($change.target)) {
+            $change.backup = $change.source + '.prev'
+            [IO.File]::Replace($change.source, $change.target, $change.backup)
+        } else {
+            [IO.File]::Move($change.source, $change.target)
+        }
+        $installed += $change
+    }
+    $manifest
+} catch {
+    # Preserve old executables, package and inventory together when any replacement fails.
+    for ($i = $installed.Count - 1; $i -ge 0; $i--) {
+        $change = $installed[$i]
+        try {
+            if ($change.backup) {
+                [IO.File]::Replace($change.backup, $change.target, $change.source)
+            } else {
+                [IO.File]::Delete($change.target)
+            }
+        } catch {
+            $cleanup = $false
+            Write-Warning "Installation rollback requires recovery from $stage for $($change.target)"
+        }
+    }
+    throw
+} finally {
+    try {
+        if ($cleanup -and [IO.Directory]::Exists($stage)) {
+            foreach ($file in [IO.Directory]::GetFiles($stage)) { [IO.File]::Delete($file) }
+            [IO.Directory]::Delete($stage)
+        }
+    } finally {
+        $lock.Dispose()
+    }
 }
-$manifest = @{schema_version=1;path_base='installation_directory';workspace='../..';source_root='../..';default_editor='bin/godot.windows.editor.x86_64.exe';files=$records}
-$json = $manifest | ConvertTo-Json -Depth 8
-[IO.File]::WriteAllText((Join-Path $workspace 'project/godot/installed.local.json'), $json, [Text.UTF8Encoding]::new($false))
-$manifest

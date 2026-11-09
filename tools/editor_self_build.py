@@ -211,6 +211,7 @@ def build_options(current, extra, host_options=None):
             "compiledb",
             "vsproj",
             "object_prefix",
+            "gonggong_native_probe",
         }:
             raise ValueError("Cannot override protected self-update option: " + key)
         options[key] = value
@@ -327,6 +328,7 @@ def private_check_editor(artifact, directory):
     import importlib.util
 
     from editor_native_app import digest
+    from package_tianshu_ui import installed_package
 
     spec = importlib.util.spec_from_file_location(
         "editor_test_isolation", ROOT / "tests/editor/editor_test_isolation.py"
@@ -338,6 +340,9 @@ def private_check_editor(artifact, directory):
     bare = unpacked / artifact.name
     shutil.copyfile(artifact, bare)
     shutil.copymode(artifact, bare)
+    package = installed_package(artifact)
+    if package.is_file():
+        shutil.copyfile(package, installed_package(bare))
     expected = digest(artifact)
     # copy_editor intentionally consults the parent process environment.
     inherited = os.environ.pop("GONGGONG_WORKSPACE", None)
@@ -463,22 +468,33 @@ def main(argv=None):
 
         with log_path.open("wb", buffering=0) as log:
             try:
-                env["GODOT_BUILD_COUNT_ONLY"] = "1"
-                code = step([*command, "--dry-run"])
-                if code:
-                    raise RuntimeError(f"SCons preparation failed (exit {code}); see {log_path}")
-                counted = json.loads(status.read_text(encoding="utf-8"))
-                total = counted.get("total", 0)
-                if counted.get("stage") != "counted" or total <= 0:
-                    raise RuntimeError("SCons did not publish a build node count")
-                env["GODOT_BUILD_COUNT_ONLY"] = "0"
-                env["GODOT_BUILD_PROGRESS_TOTAL"] = str(total)
-                write_status(status, stage="building", percent=0, total=total, estimated=True)
-                code = step(command)
-                if code:
-                    raise RuntimeError(f"SCons build failed (exit {code}); see {log_path}")
-                if not artifact.is_file():
-                    raise RuntimeError("SCons exited successfully but the expected editor is missing")
+                from editor_native_cache import build_or_reuse
+
+                def compile_native():
+                    env["GODOT_BUILD_COUNT_ONLY"] = "1"
+                    code = step([*command, "--dry-run"])
+                    if code:
+                        raise RuntimeError(f"SCons preparation failed (exit {code}); see {log_path}")
+                    counted = json.loads(status.read_text(encoding="utf-8"))
+                    total = counted.get("total", 0)
+                    if counted.get("stage") != "counted" or total <= 0:
+                        raise RuntimeError("SCons did not publish a build node count")
+                    env["GODOT_BUILD_COUNT_ONLY"] = "0"
+                    env["GODOT_BUILD_PROGRESS_TOTAL"] = str(total)
+                    write_status(status, stage="building", percent=0, total=total, estimated=True)
+                    code = step(command)
+                    if code:
+                        raise RuntimeError(f"SCons build failed (exit {code}); see {log_path}")
+                    if not artifact.is_file():
+                        raise RuntimeError("SCons exited successfully but the expected editor is missing")
+
+                native_receipt = build_or_reuse(
+                    ROOT, options, artifact, compile_native, env=env, cancelled=cancelled.is_set
+                )
+                if native_receipt["status"] == "hit" and (ROOT / "tools/package_tianshu_ui.py").is_file():
+                    from package_tianshu_ui import SOURCE, installed_package, pack
+
+                    pack(SOURCE, "1", installed_package(artifact))
                 native_app = None
                 # Older running hosts understand only raw executables and their
                 # adjacent manifests. A native-aware caller explicitly opts in.
@@ -562,6 +578,7 @@ def main(argv=None):
                     manifest = artifact_manifest(ROOT, artifact, checked, args.project, options, before, native_app)
                     verify_source(ROOT, manifest)
                     recorded = json.loads(args.binding.read_text(encoding="utf-8"))
+                    recorded["native_build"] = native_receipt
                     recorded["artifact_manifest"] = manifest
                     candidates.atomic_json(args.binding, recorded)
                 write_status(
@@ -572,6 +589,7 @@ def main(argv=None):
                     exit_code=0,
                     log=str(log_path),
                     configuration=options,
+                    native_build=native_receipt,
                     candidate_manifest=Path(manifest).as_posix() if manifest is not None else None,
                 )
                 return 0

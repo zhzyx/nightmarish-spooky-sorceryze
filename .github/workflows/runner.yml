@@ -58,7 +58,9 @@ jobs:
     permissions:
       contents: read
       actions: read
-    if: needs.static-checks.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    # The signed push and its PR represent one delivery. Validate the PR
+    # merge tree even when changes fall outside a file extension list.
+    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/heads/codex/submit/')
     uses: ./.github/workflows/windows_builds.yml
 
   web-build:

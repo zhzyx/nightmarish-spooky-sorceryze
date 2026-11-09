@@ -39,6 +39,14 @@ jobs:
           skip_initial_fetch: true
           files_yaml_from_source_file: .github/changed_files.yml
 
+      - name: Verify build placement evidence for new modules
+        env:
+          BASE: >-
+            ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha
+            || github.event.before != '0000000000000000000000000000000000000000' && github.event.before
+            || 'origin/main' }}
+        run: python3 -B customizations/components/issue-workorders/issue_gate.py --repo . --module-impact-only --base-ref "$BASE"
+
       - name: Style checks via prek
         uses: j178/prek-action@v3.0.0
         env:

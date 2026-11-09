@@ -276,6 +276,13 @@ def package_app(root, artifact, binding, project, destination, template=None):
         executable.unlink(missing_ok=True)
         shutil.copyfile(artifact, executable)
         shutil.copymode(artifact, executable)
+        from package_tianshu_ui import installed_package
+
+        package = installed_package(artifact)
+        installed = installed_package(executable)
+        installed.unlink(missing_ok=True)  # A template may carry an older package.
+        if package.is_file():
+            shutil.copyfile(package, installed)
         info_path = staged / "Contents/Info.plist"
         with info_path.open("rb") as stream:
             info = plistlib.load(stream)

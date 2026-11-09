@@ -1,0 +1,49 @@
+{
+  "request_id": "engine-artifact-reuse-rollout",
+  "issue_number": 687,
+  "measurements": [
+    "data-collection/engine-artifact-reuse-rollout-687-release.json",
+    "data-collection/engine-artifact-reuse-rollout-687.json",
+    "data-collection/tianshu-versioned-ui-package-689.json"
+  ],
+  "input_blobs": {
+    "editor/docks/daqian/graph_layout.gd": "31d4f70a50eb0f97a7c8317881b529b6223b8e3a",
+    "editor/docks/daqian/issue_graph.gd": "5d79aa5f7843f4ea76b5699779c96e2358ead2b7",
+    "editor/docks/daqian_dock.cpp": "1c3064bc93073a17dca227a7c9f39d4d9c9e5ad3",
+    "editor/SCsub": "abf087717cf0bda1139a05e4ea502766772d7853",
+    "tools/editor_native_cache.py": "d352db961abc8e87a06904bbf694cebee8a5f9c9",
+    "tools/package_tianshu_ui.py": "8347359a679166cd4cf4eb2fcb2912b3e14cb31e",
+    "editor/docks/daqian/canvas_context.gd": "745a75598dd534bdac9b83184097e9864c8dd154",
+    "editor/docks/daqian/graph_rules.gd": "e31fc37204efa85eb26a3dcb77952ce270e22180",
+    "editor/docks/daqian/issue_inspector.gd": "fe1c07b1967da44d9e402edcedd36872f8bb1825",
+    "editor/docks/daqian/model_settings.gd": "effd065a17af0193b6302a21a279034277c152fb",
+    "editor/docks/daqian/operation_details.gd": "ac8b301a2d9fb4774d5c9e2ebb5547a1ac1f1a16",
+    "editor/docks/daqian/workspace.gd": "7d71d04d37c648e5fac3d54d280232599800a179"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "tools/editor_native_cache.py native_key (MSVC, tests=yes), change editor/docks/daqian_dock.cpp, re-identify",
+      "observed": "581b763ba37e9d4da8f8a8a599b3c922a8705e8b79a3b4a42add9c43729e2fd6 -> ee399ba4b3c8cce6399fe8fe7b249863c8fd4c26bc51a075c378f0e2b8730882",
+      "passed": true
+    },
+    "same_binary_update": {
+      "command": "tests/editor/run_tianshu_ui_package.py --godot <installed-editor> --report <receipt>",
+      "observed": "图卡 X 48 → 96，按钮文字随包更新",
+      "passed": true,
+      "before_executable": "adedf8d0c7c0b9c290d03dba5cf2648bac445e0a74315c86f74a81ff59642b57",
+      "after_executable": "adedf8d0c7c0b9c290d03dba5cf2648bac445e0a74315c86f74a81ff59642b57",
+      "before_package": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "after_package": "3dc6d3571390c8990781f25b1b562ed6f75774f8e34c80c0920daa821c50be01"
+    },
+    "incompatible_rejection": {
+      "command": "tests/editor/run_tianshu_ui_package.py, incompatible case",
+      "observed": "拒绝不兼容的界面 ABI，并返回包不兼容诊断",
+      "passed": true
+    },
+    "rollback": {
+      "command": "tests/editor/run_tianshu_ui_package.py, rollback case",
+      "observed": "解除显式选择后图卡从 96 恢复到 48，按钮恢复原文案",
+      "passed": true
+    }
+  }
+}

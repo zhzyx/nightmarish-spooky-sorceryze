@@ -1,0 +1,23 @@
+{
+  "kind": "request",
+  "agent": {
+    "origin": "codex",
+    "version": "session",
+    "id": "codex-host",
+    "definition_sha256": "5be162dc60f589fe5512adc50e466135c873a9fc36dd17338f0523ac064cfebc"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/689",
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "scope": "tianshu-versioned-ui-package",
+    "parent_issue": 687
+  },
+  "request_id": "tianshu-versioned-ui-package",
+  "evidence_refs": [],
+  "tenant_id": "gonggong-workspace",
+  "event_id": "request-689-engine-build-placement",
+  "occurred_at": "2026-11-09T21:01:07.0416745+00:00",
+  "schema_version": 1,
+  "sha256": "24ec3add3fe157d6529654a1f6e386acf344554f7396d2c1038d9b8c00754d89"
+}
