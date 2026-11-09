@@ -1,0 +1,10 @@
+{
+  "operator": "Sail-Li",
+  "repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "effective_permission": "write",
+  "role_name": "write",
+  "normalized_viewer_permission": "WRITE",
+  "source": "live authenticated REST user/repository/self collaborator-permission; no cached identity",
+  "observed_at": "2026-11-09T15:30:58.698460+00:00",
+  "public_copy_original_sha256": "ba7d2ab0bc5efe9a96ba8e0fc90d9d56de0cb4dde8be930850bc09c009d47dbe"
+}

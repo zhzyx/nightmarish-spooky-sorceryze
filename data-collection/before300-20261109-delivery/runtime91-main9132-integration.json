@@ -1,0 +1,30 @@
+{
+  "issue_number": 91,
+  "authority_ref": "user-chat-20261109-sail-before300",
+  "base": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+  "prior_base": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "integration": "New isolated worktree; cumulative own candidate patch applied after refreshing clean checkout stat cache. Original task worktree retained.",
+  "upstream_delta": [
+    "data-collection/codex-login-status-late-poll-final-20261109.json",
+    "data-collection/original-entry-final-acceptance-20261109.json",
+    "design-docs/engine-launch-receipt-20261107.md",
+    "design-docs/gui-runtime-node-20261107.md",
+    "gonggong-diting-data/events/gonggong-workspace/codex-login-status-late-poll-20261109/kuafu-d41eb2e246a31134e121a3e40d2c9e7936b2013d.json",
+    "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/kuafu-7c9fe0416e8680ae805e027cf0f17f67dc905fd2.json",
+    "gonggong-diting-data/events/gonggong-workspace/engine-launch-receipt-20261107/root-original-entry-accepted-20261109.json"
+  ],
+  "source_sha256": {
+    "tools/configure_gonggong_runtime.ps1": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+    "tests/editor/run_runtime_setup_simulation.py": "197122746a789254e6e02705e3e61e7cb71a3566e1543930adfd79320283740a",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "review_reuse": "Exact three source byte hashes match runtime91-ci-delta-review-v2.json. Upstream delta is seven metadata/docs/event files without overlapping source/interfaces. New exact candidate CI remains required.",
+  "issue49_handoff": {
+    "pr": 645,
+    "publisher": "kaiyunxue",
+    "head": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+    "shared_file": "tools/configure_gonggong_runtime.ps1",
+    "intent_readonly_comparison": "PR645 adds PythonPath/NodePath/GitPath/GhPath selections and optional gh. Own91 preserves current main interface and repairs interruption journaling/rollback plus PS5 atomic JSON. Original publisher must retain both intents when integrating after91; no foreign worktree/branch changed and no handoff accepted."
+  },
+  "windows_candidate_validation": "pending exact new CI; first failed PR643 preserved and must not merge"
+}

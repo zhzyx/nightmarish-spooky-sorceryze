@@ -1,0 +1,29 @@
+{
+  "issue": 91,
+  "kind": "independent read-only adjacent CI delta review v2",
+  "result": "no actionable findings; acknowledge exact frozen source candidate for publication and required Windows positive rerun",
+  "source_commit": "7c7a684840d7ef054fa5fa5be1df4041d120d1f0",
+  "files": {
+    "tools/configure_gonggong_runtime.ps1": "218caad9f43c52de10dc7cf873a63e1005c3443475f577266e4bd54040021907",
+    "tests/editor/run_runtime_setup_simulation.py": "197122746a789254e6e02705e3e61e7cb71a3566e1543930adfd79320283740a",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "exact_delta_vs_source_commit": {
+    "powershell": [
+      "remove UTF8 BOM; remaining script ASCII-only",
+      "File.Replace backup-path argument $null -> [NullString]::Value",
+      "receipt Get-Content adds -Encoding UTF8",
+      "installed.local.json Get-Content adds -Encoding UTF8"
+    ],
+    "helper": "one existing candidate-replacement fixture folder gains -中文; no extra cases",
+    "workflow": "unchanged"
+  },
+  "rationale": "Write-Json explicitly emits UTF8 without BOM. Reading the receipt with -Encoding UTF8 makes workspace/target/backup path roundtripping independent of the Windows PowerShell 5.1 ANSI default; the manifest read now consistently expects its declared UTF8 JSON producer. Get-Content -Raw -Encoding UTF8 is supported by PS5.1. The existing replacement case now uses a non-ASCII workspace, and its unchanged assertions require rollback acceptance plus original bytes restoration, so a mangled workspace/path cannot pass. This adds no power-loss/concurrency/rollback-interruption coverage. Previous atomic File.Replace and NullString review remains applicable.",
+  "checks": {
+    "exact_expected_byte_delta": "passed for all three files",
+    "python_ast": "passed",
+    "nonmutating_file_format_equivalent": "passed for PS and Python",
+    "powershell_remaining_ascii_only": "passed"
+  },
+  "runtime_boundary": "No separate reproduction of an old UTF8 defect is claimed. Original oldbaseline Windows witness already passed; candidate positive Windows PowerShell/C#/native acceptance remains pending the new exact-candidate rerun. This is a read-only source review with no local runtime claim, implementation edits, commit or push."
+}

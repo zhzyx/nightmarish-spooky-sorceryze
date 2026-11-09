@@ -1,0 +1,43 @@
+{
+  "issue": 91,
+  "base": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+  "files": {
+    "tools/configure_gonggong_runtime.ps1": "a4ec92d3ede97cfbd2f47dff6155fb1ccecbdc75b3e920eb5a18d8a2eb72b73e",
+    "tests/editor/run_runtime_setup_simulation.py": "dfef43b9fb7dfef3ff68f3bbab03c58425ac5b1b367ecfc5ba9b9d8344b9d255",
+    ".github/workflows/windows_builds.yml": "5ef7699385b04c75bae503490588202aeed1c92148a771599b00ec586834986b"
+  },
+  "baseline_script_sha256": "4fd2e45c5d16c0ce55ef4236181c277f7dc58f4752d826ee0fc995c758bf206d",
+  "checks": {
+    "python_ast": "passed",
+    "helper_argument_preservation": "passed",
+    "plain_and_json_escaped_path_redaction": "passed",
+    "non_windows_refusal": "passed",
+    "ruff_check": "passed; --no-cache",
+    "ruff_format_check": "passed; --check --no-cache",
+    "tracked_source_diff_check": "passed"
+  },
+  "runtime_execution": "not run: this host is macOS; Windows CI pending",
+  "intake": {
+    "method": "direct read-only issue_gate.intake; no incident observer or repository writes",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "number": 91,
+    "type": "type:test",
+    "status": "status:in-progress",
+    "updated_at": "2026-11-09T15:19:15Z",
+    "request_id": "yanluo-issue-47-igniter-acceptance-20261105"
+  },
+  "review": {
+    "result": "no actionable findings in the exact three source files",
+    "implementation_author": false,
+    "runtime_acceptance": "pending Windows CI",
+    "uncovered": [
+      "all power-loss cutpoints",
+      "concurrent deployment",
+      "interruption during rollback",
+      "standalone vendor-package installation",
+      "real model/provider and GitHub publication",
+      "hardware or Linux acceptance"
+    ]
+  },
+  "public_copy_original_sha256": "a81099888005db4a83e1b5c4710c0de1c630e061773e583189d8cc22545cb65f"
+}

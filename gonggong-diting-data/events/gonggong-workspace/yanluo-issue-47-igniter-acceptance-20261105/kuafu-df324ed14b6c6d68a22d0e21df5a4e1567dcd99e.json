@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-df324ed14b6c6d68a22d0e21df5a4e1567dcd99e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "16a91ccbe4b64f5b0b0636e31259eec96252dbe00b1a2d46b1de7e2b4a56d4d2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/642",
+    "action": "intake",
+    "detection_head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+    "context_sha256": "29227f506fda49f1a7c1116daff6d221810fa32bc67db3542dae8385e0044f29",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "data-collection/before300-20261109-delivery/runtime91-main9132-integration.json",
+    "diagnosis": "Host invocation omitted explicit tenant; no source or repository tenancy defect. Exact intake retry with gonggong-workspace succeeded.",
+    "next_action": "Publish integrated candidate through formal writer gate; require exact Windows CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T16:48:11.010328+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T16:49:42.325574+00:00",
+  "sha256": "688a7ca38e71a8ce1829a2c8e7324d2ee328b4326d6c1f8e2761b2ced8e4b65e"
+}

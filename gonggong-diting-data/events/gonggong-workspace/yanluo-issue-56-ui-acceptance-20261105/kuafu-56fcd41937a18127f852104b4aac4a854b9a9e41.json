@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-56fcd41937a18127f852104b4aac4a854b9a9e41",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-56-ui-acceptance-20261105",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dd337e7a9352150c228752f9034f8bb21c860acabf0a67a3e72d4971200f530a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/94",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/639",
+    "action": "unknown-receipt",
+    "detection_head": "7ca78c6502a0bc41e39b7bf91b62d15d55c3f91c",
+    "context_sha256": "2d770f565035d58b276a59845dd5e952ec84150a6c162119f1744a5f4b56706a",
+    "operator": "Sail-Li",
+    "worker": "codex-before300-root",
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/641",
+    "diagnosis": "Push-run watch TLS timeout was only receipt transport failure. Re-read exactef59ca check-runs:8Windows success,2static success,association success,14expectedskip,nonefailed/pending. Normal PR641 merge d237ef78cc394a98db85b6eb1b39f0184217297d read back on remote main with exact tree82742d32dc6dfc41b97ae9c3095bbf8b8fa92091; no CI rerun or duplicate publish.",
+    "next_action": "Persist post-delivery receipt, complete accepted Issue closures; no source repair needed for this readback-only incident.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T14:46:43.423224+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T14:54:11.062052+00:00",
+  "sha256": "2eaeb78cbf918d67eaf67cb01465c72f42b5044b0a54059c781ff100aaf06fe2"
+}

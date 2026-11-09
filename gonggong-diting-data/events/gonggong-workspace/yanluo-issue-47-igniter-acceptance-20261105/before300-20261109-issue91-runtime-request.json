@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "before300-20261109-issue91-runtime-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "yanluo-issue-47-igniter-acceptance-20261105",
+  "kind": "request",
+  "occurred_at": "2026-11-09T15:24:33.149346+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/91",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 91,
+    "authority_ref": "user-chat-20261109-sail-before300",
+    "operator": "Sail-Li",
+    "scope": "Continue authorized before300 work: bounded interruption recovery candidate and real Windows CI simulation of exact baseline, rollback and original requirement resumption; preserve pending verification and original scope.",
+    "intake": "passed",
+    "usage": null,
+    "evidence_path_from_repo_root": "data-collection/before300-20261109-delivery/receipt.json"
+  },
+  "evidence_refs": [],
+  "sha256": "59aaef4d007a27a952370fbe4d64f41add9d31dfa460215a4576629eb66aae88"
+}
