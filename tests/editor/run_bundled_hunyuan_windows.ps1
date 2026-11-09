@@ -84,8 +84,12 @@ try {
     if (@(Get-NetFirewallProfile -PolicyStore ActiveStore | Where-Object Enabled -ne $true).Count) {
         throw 'Enable Windows Firewall on this test host for the offline acceptance.'
     }
-    # The model protocol uses IPv4 loopback. Deny everything except 127.0.0.0/8.
-    $outside = '0.0.0.0/2','64.0.0.0/3','96.0.0.0/4','112.0.0.0/5','120.0.0.0/6','124.0.0.0/7','126.0.0.0/8','128.0.0.0/1','::/0'
+    # Keep the editor's local model connection and block both IP families on every other connected interface.
+    $loopback = @(Get-NetIPAddress -IPAddress '127.0.0.1' | Select-Object -ExpandProperty InterfaceIndex)
+    $external = @(Get-NetIPInterface -ConnectionState Connected | Where-Object { $_.InterfaceIndex -notin $loopback } |
+        Select-Object -ExpandProperty InterfaceAlias -Unique)
+    if (!$loopback.Count -or !$external.Count) { throw 'Cannot identify the loopback and external interfaces on this test host.' }
+    $record.blocked_interfaces = $external
     if (Get-NetTCPConnection -State Listen -LocalPort 18788 -ErrorAction SilentlyContinue) {
         throw 'The acceptance port is already occupied on this host.'
     }
@@ -114,7 +118,7 @@ try {
         if (Test-Path $pythonWindowed) { $executables += $pythonWindowed }
         foreach ($application in $executables) {
             $name = 'Maliang-accept-' + [guid]::NewGuid().ToString('N')
-            New-NetFirewallRule -Name $name -DisplayName $name -Program $application -Direction Outbound -Action Block -Profile Any -RemoteAddress $outside | Out-Null
+            New-NetFirewallRule -Name $name -DisplayName $name -Program $application -Direction Outbound -Action Block -Profile Any -InterfaceAlias $external | Out-Null
             $ruleNames += $name
         }
         $record.offline_firewall = $true
@@ -161,6 +165,8 @@ try {
 } finally {
     foreach ($key in $before.Keys) { [Environment]::SetEnvironmentVariable($key, $before[$key], 'Process') }
     foreach ($rule in $ruleNames) { Remove-NetFirewallRule -Name $rule }
+    Get-ChildItem -LiteralPath $isolatedProfile -Recurse -File -Include 'supervisor.log','comfy-*.log' |
+        Copy-Item -Destination $report -Force
     $record | ConvertTo-Json -Depth 8 | Set-Content "$report/windows.json" -Encoding utf8NoBOM
     Pop-Location
 }
