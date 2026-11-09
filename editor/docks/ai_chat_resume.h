@@ -37,7 +37,7 @@
 // Journal of the in-flight agent loop and of the restart handoff contract.
 //
 // Recompiling the editor can only take effect in a new process, so a rebuild is
-// modelled as one very slow tool call: it is issued by the old process and its
+// modeled as one very slow tool call: it is issued by the old process and its
 // result is reported by the new one. The journal carries the exact loop position
 // across that boundary, and the acknowledgement proves that the new executable
 // reached a working AI dock rather than merely starting.
@@ -67,6 +67,7 @@ public:
 	static bool decode_journal(const String &p_body, Dictionary &r_journal);
 	static bool read_journal(Dictionary &r_journal);
 	static Error write_journal(const Dictionary &p_journal, Dictionary *r_stats = nullptr);
+	static Error write_command_offer(const Dictionary &p_journal, String &r_marker);
 	static void clear_journal();
 
 	static Error write_ack(const String &p_token, const String &p_executable);

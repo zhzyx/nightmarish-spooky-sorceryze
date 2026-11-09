@@ -697,16 +697,27 @@ bool AIChatDock::_save_resume() {
 	journal["snapshot_id"] = snapshot_id;
 	journal["messages"] = messages;
 	journal["tool_calls"] = tool_calls.duplicate(true);
-	if (!process_guard_result_path.is_empty() && pending_action == "run_command") {
-		journal["guard_receipt"] = process_guard_result_path.get_file();
+	if (!command_offer_id.is_empty() || (!process_guard_result_path.is_empty() && pending_action == "run_command")) {
+		if (!command_offer_id.is_empty()) {
+			journal["command_offer"] = command_offer_id;
+		} else {
+			journal["guard_receipt"] = process_guard_result_path.get_file();
+		}
 		journal["conversation"] = conversation_id;
 		journal["candidate"] = snapshot_state.get("engine_candidate", Dictionary());
 		journal["reporting"] = gonggong_reporting;
+	}
+	if (!command_offer_id.is_empty()) {
+		return command_offer_path.is_empty() && AIChatResume::write_command_offer(journal, command_offer_path) == OK;
 	}
 	return AIChatResume::write_journal(journal) == OK;
 }
 
 void AIChatDock::_clear_resume() {
+	Dictionary saved;
+	if (AIChatResume::read_journal(saved) && (saved.has("command_offer") || (saved.has("conversation") && saved.get("conversation", "") != conversation_id))) {
+		return; // Only its consumer can remove an exact outstanding proposal.
+	}
 	if (!observed_command_owner.is_empty() && observed_command_owner == conversation_id) {
 		return; // Keep an unclaimed command through fresh-gate rejection or delayed completion.
 	}
@@ -970,7 +981,9 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 	const Dictionary reporting = p_journal.get("reporting", Dictionary());
 	const int index = p_journal["tool_index"];
 	const Array calls = p_journal["tool_calls"];
-	if (!receipt.begins_with("provenance-guard-") || receipt != receipt.get_file() || receipt.contains(":") || !receipt.ends_with(".json") || reporting.is_empty() || candidate.is_empty() || index >= calls.size()) {
+	const String offer_id = p_journal.get("command_offer", "");
+	const bool offer = offer_id.length() == 32 && offer_id.is_valid_hex_number(false) && !p_journal.has("guard_receipt");
+	if ((!offer && (!receipt.begins_with("provenance-guard-") || receipt != receipt.get_file() || receipt.contains(":") || !receipt.ends_with(".json"))) || reporting.is_empty() || candidate.is_empty() || index >= calls.size()) {
 		_append(U"编辑器", U"已保留中断的工具批次，结果未知；请核对实际状态。");
 		return;
 	}
@@ -985,6 +998,27 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 	String error;
 	if (active_agent != agent || conversation_id != String(p_journal.get("conversation", "")) || candidate != Dictionary(snapshot_state.get("engine_candidate", Dictionary())) || snapshot_id != String(p_journal.get("snapshot_id", "")) || function.get("name", "") != "run_command" || !_validate_engine_candidate(error)) {
 		_append(TTR("Error"), String(U"原会话、工单或候选绑定不一致；中断记录已保留。") + error);
+		return;
+	}
+	if (offer) {
+		const String marker = AIChatResume::journal_path() + ".offer-" + p_digest;
+		if (busy || backend->get_selected() == 1 || p_digest.length() != 64 || !FileAccess::exists(marker) || FileAccess::get_sha256(marker) != p_digest || int(p_journal["backend"]) != backend->get_selected() || !allow_tools->is_pressed() || !_direct_daqian_task()) {
+			_append(TTR("Error"), U"原命令提案已失效或工单绑定不可核验。");
+			return;
+		}
+		command_offer_path = marker;
+		command_offer_id = offer_id;
+		restoring_command_offer = true;
+		command_recovery_reporting = reporting;
+		messages = p_journal["messages"];
+		tool_calls = calls;
+		tool_index = index;
+		tool_rounds = p_journal["tool_rounds"];
+		queue_paused = true;
+		turn_completed = false;
+		session_generation++;
+		_set_busy(true);
+		_begin_gonggong_context();
 		return;
 	}
 	if (consumed_command_by_owner.get(conversation_id, "") == p_digest) {
@@ -1081,6 +1115,10 @@ void AIChatDock::_load_resume() {
 	if (restart.is_empty()) {
 		const String path = AIChatResume::journal_path();
 		const String owner = journal.get("conversation", "");
+		if (journal.has("command_offer")) {
+			_load_command_resume(journal, FileAccess::get_sha256(path));
+			return;
+		}
 		const String preserved = owner.is_empty() ? path + ".interrupted-" + FileAccess::get_sha256(path) : path + ".pending-" + owner.sha256_text();
 		const String digest = FileAccess::get_sha256(path);
 		const String stopped = preserved + ".stopped-" + digest;
@@ -1686,6 +1724,7 @@ void AIChatDock::_automation_toggled(bool) {
 
 void AIChatDock::_set_busy(bool p_busy) {
 	const bool was_busy = busy;
+	const bool finishing_offer = !p_busy && !command_offer_id.is_empty();
 	const bool terminal_retry = !delivery_retry_route.is_empty();
 	if (terminal_retry && !p_busy && !allow_tools->is_pressed() && pending_action == "complete_delivery") {
 		_stop();
@@ -1695,6 +1734,14 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_design_turn_started();
 	}
 	if (was_busy && !p_busy && !terminal_retry) {
+		if (finishing_offer) {
+			// A rejected or unavailable authority only detaches this UI. The
+			// original account can revalidate the immutable proposal on restart.
+			command_offer_id = String();
+			command_offer_path = String();
+			restoring_command_offer = false;
+			command_recovery_reporting.clear();
+		}
 		const Dictionary execution = snapshot_state.get("daqian_execution", Dictionary());
 		if (!execution.is_empty() && !consultation_turn && snapshot_state.get("conversation_id", "") == conversation_id) {
 			const Dictionary last = transcript.is_empty() ? Dictionary() : Dictionary(transcript.back());
@@ -1804,7 +1851,9 @@ void AIChatDock::_set_busy(bool p_busy) {
 			if (!turn_completed && !queued_messages.is_empty()) {
 				queue_paused = true;
 			}
-			_clear_resume();
+			if (!finishing_offer) {
+				_clear_resume();
+			}
 			_queue_history_save();
 			_save_history();
 			if (turn_completed && !queue_paused && !queued_messages.is_empty()) {
@@ -2891,7 +2940,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		pending_action = name;
 		pending_command = command;
 		process_timeout_seconds = timeout;
-		if (allow_tools->is_pressed() && auto_execute_commands->is_pressed()) {
+		if (!restoring_command_offer && allow_tools->is_pressed() && auto_execute_commands->is_pressed()) {
 			_set_activity(U"正在自动执行已授权命令");
 			_append_work(U"已按自动执行授权放行本机命令，完整命令和结果保留在工具详情中。");
 			_confirm_action();
@@ -2990,6 +3039,14 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 }
 
 void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state) {
+	if (restoring_command_offer) {
+		// A missing cwd or a changed binding is a failed revalidation, not a
+		// result for the original command. Keep the rest of its batch paused.
+		pending_action = String();
+		_append(TTR("Error"), _redact(p_result));
+		_set_busy(false);
+		return;
+	}
 	if (!delivery_retry_route.is_empty()) {
 		pending_action = String();
 		_finish_delivery_retry(p_result);
@@ -3152,6 +3209,21 @@ bool AIChatDock::_offer_daqian_approval(const String &p_detail) {
 		}
 		return true;
 	}
+	if (tool == "run_command" && backend->get_selected() != 1 && snapshot_state.has("engine_candidate")) {
+		if (!restoring_command_offer) {
+			command_offer_id = new_conversation_id();
+			if (!command_offer_id.is_empty()) {
+				_save_resume();
+			}
+		}
+		if (command_offer_path.is_empty()) {
+			command_offer_id = String();
+			daqian_approval.clear();
+			_finish_tool("Error: Unable to persist the command proposal.");
+			return true;
+		}
+	}
+	restoring_command_offer = false; // Freshly bound card is ready for the user.
 	const Dictionary agent = gonggong_reporting["agent"];
 	_set_activity(U"等待在天枢工单的操作确认卡上批准");
 	_append(U"进度", U"在天枢返回本工单，点击「查看待确认操作」，核对详情后在卡片上选择执行并确认。");
@@ -3194,11 +3266,31 @@ Dictionary AIChatDock::_get_daqian_approval() const {
 	return daqian_approval.duplicate();
 }
 
+bool AIChatDock::_consume_command_offer() {
+	if (!command_offer_path.is_empty() && DirAccess::remove_absolute(command_offer_path) != OK) {
+		_append(TTR("Error"), U"无法核销原命令提案，已暂停操作。");
+		return false;
+	}
+	// Leave the shared pointer in place. A different window may already own it.
+	return true;
+}
+
 bool AIChatDock::_confirm_daqian_approval(const String &p_token) {
 	const Dictionary approval = _get_daqian_approval();
 	if (approval.is_empty() || approval["token"] != p_token) {
 		return false;
 	}
+	if (!command_offer_path.is_empty()) {
+		const String digest = FileAccess::get_sha256(AIChatResume::journal_path());
+		if (digest.length() != 64 || command_offer_path != AIChatResume::journal_path() + ".offer-" + digest || FileAccess::get_sha256(command_offer_path) != digest) {
+			return false;
+		}
+	}
+	if (!_consume_command_offer()) {
+		return false;
+	}
+	command_offer_id = String();
+	command_offer_path = String();
 	// Consume before any callbacks. A synchronous completion or a second click
 	// must never authorize the same tool again.
 	daqian_approval_running = true;
@@ -3255,6 +3347,11 @@ void AIChatDock::_daqian_tool_result(const String &p_result, bool p_file_success
 
 void AIChatDock::_show_confirmation() {
 	if (_offer_daqian_approval(preview->get_text())) {
+		return;
+	}
+	if (restoring_command_offer) {
+		_append(TTR("Error"), U"无法绑定原工单批准卡，恢复已暂停。");
+		_set_busy(false);
 		return;
 	}
 	// Settings are exclusive windows. Nest approval under the active modal so
@@ -3575,6 +3672,9 @@ void AIChatDock::_cancel_external_editor_request(const String &p_reason) {
 }
 
 void AIChatDock::_confirm_action() {
+	if (!command_offer_id.is_empty()) {
+		return; // Only a fresh Tianshu decision can consume the persisted offer.
+	}
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (_has_pending_steering() && pending_external_editor_message.is_empty() && !snapshot_restoring) {
@@ -3683,6 +3783,10 @@ void AIChatDock::_confirm_action() {
 }
 
 void AIChatDock::_reject_action() {
+	if (!command_offer_id.is_empty()) {
+		_stop();
+		return;
+	}
 	if (!pending_external_editor_message.is_empty()) {
 		_cancel_external_editor_request("user_rejected");
 	} else if (snapshot_restoring) {
@@ -6568,6 +6672,21 @@ void AIChatDock::_cancel_model_query() {
 }
 
 void AIChatDock::_stop() {
+	if (!command_offer_id.is_empty()) {
+		// Before the fresh card is available, Stop cancels only this window's
+		// verification. An unverified actor cannot revoke the original offer.
+		if (!restoring_command_offer && !_consume_command_offer()) {
+			return;
+		}
+		session_generation++;
+		queue_paused = true;
+		turn_completed = false;
+		pending_action = String();
+		tool_calls.clear();
+		_set_busy(false);
+		_append(TTR("Editor"), U"已停止本窗的命令确认流程。");
+		return;
+	}
 	if (!observed_command_owner.is_empty() && observed_command_owner == conversation_id) {
 		command_watch_generation++;
 		const String pending = _pending_command_path();
@@ -6674,7 +6793,7 @@ void AIChatDock::_stop() {
 	engine_tool_name = String();
 	engine_tool_arguments = Dictionary();
 	engine_tool_wants_restart = false;
-	AIChatResume::clear_journal();
+	_clear_resume();
 	messages.clear();
 	tool_calls.clear();
 	_cancel_issue_guide(String());

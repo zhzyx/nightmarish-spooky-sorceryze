@@ -411,6 +411,37 @@ Error AIChatResume::write_journal(const Dictionary &p_journal, Dictionary *r_sta
 	return error;
 }
 
+Error AIChatResume::write_command_offer(const Dictionary &p_journal, String &r_marker) {
+	String body;
+	Dictionary stats;
+	Error error = encode_journal(p_journal, body, stats);
+	if (error != OK) {
+		return error;
+	}
+	const String path = journal_path();
+	const String marker = path + ".offer-" + body.sha256_text();
+	// The random offer ID is part of the encoded body. Publish this exact
+	// proposal before the shared pointer, using a writer-specific staging file.
+	if (FileAccess::exists(marker)) {
+		return ERR_ALREADY_EXISTS;
+	}
+	error = store_atomic(marker, body);
+	if (error != OK) {
+		return error;
+	}
+	const String staging = marker + ".publishing";
+	error = store_atomic(staging, body);
+	if (error == OK) {
+		error = DirAccess::rename_absolute(staging, path);
+	}
+	if (error != OK) {
+		DirAccess::remove_absolute(marker);
+		return error;
+	}
+	r_marker = marker;
+	return OK;
+}
+
 void AIChatResume::clear_journal() {
 	const String path = journal_path();
 	if (FileAccess::exists(path)) {

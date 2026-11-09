@@ -144,6 +144,18 @@ class Model(BaseHTTPRequestHandler):
                     }
                 ],
             )
+        if "tool_calls" in message and (self.server.workspace.parent / "missing-cwd-fixture").exists():
+            project = self.server.workspace.parent
+            candidate = next(project.glob("godot-candidate-*"))
+            cwd = candidate / "temporary-cwd"
+            cwd.mkdir(exist_ok=True)
+            first = message["tool_calls"][0]["function"]
+            first["arguments"] = json.dumps({**json.loads(first["arguments"]), "cwd": str(cwd)})
+            message["tool_calls"].append({
+                "id": "forbidden-next-step",
+                "type": "function",
+                "function": {"name": "run_command", "arguments": json.dumps({"command": "echo next > next-step"})},
+            })
         finish = "tool_calls" if "tool_calls" in message else "stop"
         response = json.dumps({
             "choices": [{"message": message, "finish_reason": "content_filter" if filtered else finish}]
@@ -338,6 +350,14 @@ elif action == 'issue-start':
 else:
     assert action == 'chat'
     result = {!r}
+    if os.environ.get("DAQIAN_DELAY_AUTHORITY"):
+        import time
+        signal = Path(os.environ["DAQIAN_DELAY_AUTHORITY"])
+        signal.touch()
+        for _ in range(100):
+            if not signal.exists():
+                break
+            time.sleep(0.1)
     if os.environ.get("DAQIAN_CHANGED_AUTHORITY") == "1":
         result["reporting"]["actor"] = "changed"
 Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encoding="utf-8")
