@@ -142,7 +142,9 @@ def main():
             settings = isolated_editor.parent / "editor_data/editor_settings-4.8.tres"
             settings.write_text(
                 '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nai_chat/backend = 0\n'
-                + "ai_chat/endpoint = " + json.dumps(env["CANCEL_ENDPOINT"]) + "\n",
+                + "ai_chat/endpoint = "
+                + json.dumps(env["CANCEL_ENDPOINT"])
+                + "\n",
                 encoding="utf-8",
             )
         command = [str(isolated_editor)]

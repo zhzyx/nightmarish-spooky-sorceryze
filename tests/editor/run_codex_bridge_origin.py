@@ -19,7 +19,7 @@ def probe(source, node, installed):
         executable = copy_editor(source, root / "bin")
         if installed:
             (root / "SConstruct").touch()
-        for directory in ([root, project] if installed else [project]):
+        for directory in [root, project] if installed else [project]:
             bridge = directory / "tools/codex_cli/godot_bridge.js"
             bridge.parent.mkdir(parents=True)
             bridge.write_text(
@@ -47,13 +47,18 @@ func probe():
         await create_timer(0.05).timeout
     print("ORIGIN_STATUS=", status.text)
     quit()
-""", encoding="utf-8",
+""",
+            encoding="utf-8",
         )
         marker = root / "observed.txt"
         env = dict(os.environ, ORIGIN_MARKER=str(marker), GONGGONG_NODE=str(node), GONGGONG_CODEX=sys.executable)
         run = subprocess.run(
             [str(executable), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
-            cwd=project, env=env, capture_output=True, timeout=45, check=True,
+            cwd=project,
+            env=env,
+            capture_output=True,
+            timeout=45,
+            check=True,
         )
         status = next(line for line in run.stdout.decode("utf-8", "replace").splitlines() if "ORIGIN_STATUS=" in line)
         observed = Path(marker.read_text()).relative_to(root).as_posix() if marker.exists() else ""

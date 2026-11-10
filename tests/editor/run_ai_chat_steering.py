@@ -61,7 +61,9 @@ def main():
     parser.add_argument("--codex", action="store_true", help="Use the real Codex bridge with an offline CLI fixture")
     parser.add_argument("--node", type=Path, help="Node executable for --codex; defaults to PATH")
     parser.add_argument("--case", choices=["steering", "tools", "stop", "cancel", "mode", "issues"], default="steering")
-    parser.add_argument("--responses", action="store_true", help="Exercise the Responses wire format for concurrent Issues")
+    parser.add_argument(
+        "--responses", action="store_true", help="Exercise the Responses wire format for concurrent Issues"
+    )
     args = parser.parse_args()
     if args.responses and (args.case != "issues" or args.codex):
         parser.error("--responses requires the HTTP issues case")
@@ -174,9 +176,10 @@ def main():
                         finish = "tool_calls"
                     response = {"choices": [{"message": message, "finish_reason": finish}]}
                     if args.responses:
-                        response = {"status": "completed", "output": [
-                            {"type": "message", "content": [{"type": "output_text", "text": text}]}
-                        ]}
+                        response = {
+                            "status": "completed",
+                            "output": [{"type": "message", "content": [{"type": "output_text", "text": text}]}],
+                        }
                     payload = json.dumps(response).encode()
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
@@ -212,7 +215,9 @@ def main():
         settings = isolated_editor.parent / "editor_data/editor_settings-4.8.tres"
         settings.write_text(
             '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nai_chat/backend = 0\n'
-            + "ai_chat/endpoint = " + json.dumps(env["STEERING_ENDPOINT"]) + "\n",
+            + "ai_chat/endpoint = "
+            + json.dumps(env["STEERING_ENDPOINT"])
+            + "\n",
             encoding="utf-8",
         )
         restored = None
