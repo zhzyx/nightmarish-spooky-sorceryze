@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "issue": 646,
+  "recorded_on": "2026-11-10",
+  "status": "development_self_report_independent_acceptance_pending",
+  "correction": {
+    "mode": "append_only",
+    "reason": "The formal gate requires committed data-collection receipts to remain immutable; this file appends the Ruff-format revalidation without changing the original receipt.",
+    "original_validation": "data-collection/maliang-kimi-native-mesh-20261109/validation.json",
+    "original_validation_sha256": "5b948fbd265f018c1e89ad860a78d03790c8aecc5a5ceffca687a2056f7f079b",
+    "original_validation_preserved": true
+  },
+  "scope": "Only the CI-identified Ruff formatting correction, necessary affected revalidation and evidence-bound delivery; no provider expansion and no Kimi modeling POST",
+  "prior_native_editor_snapshot": "continuation_2026_11_10.native_editor in the original validation is pre-Ruff historical evidence and is not reused as the new binary or bundle result",
+  "superseded_submission": {
+    "candidate": "427f946440e5fc1c0afb23171aac539e1e438119",
+    "signed_commit": "5dee5d5387d9d94bc7b3d470ece34a32313f4111",
+    "pull_request": 728,
+    "pr_static_run": 42734814205,
+    "pr_static_job": 129561344913,
+    "pr_static_state": "failed_ruff_formatting",
+    "recovered": false
+  },
+  "static_checks": {
+    "ruff_version": "0.17.1",
+    "check": "passed",
+    "format_check": "passed",
+    "checked_candidate_python_files": 8,
+    "formatted_files": 5,
+    "ast_comparison": "non-import AST and imported symbol sets equal; only top-level import grouping and order excluded"
+  },
+  "affected_protocol_service_plan_and_real_builder": {
+    "tests": 35,
+    "result": "OK",
+    "skipped": 0,
+    "model_inference": false
+  },
+  "isolated_workbench_gui": {
+    "tests": 1,
+    "result": "OK",
+    "traffic": "local read-only HTTP fixture only; no model inference"
+  },
+  "native_editor": {
+    "state": "passed",
+    "signing_target_baseline": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+    "parent_commit_at_build": "427f946440e5fc1c0afb23171aac539e1e438119",
+    "working_changes_at_build": "five formatting-only Python files",
+    "build_source_digest": "18f8ed62a459c93c421985708bbdf9af04ac621549f4b0adbbbb52debc6608e7",
+    "native_cache_key": "dd974ef626c268195e12883db6c566b1c1d42dc8fa61d22d3cd58b262d7886d7",
+    "scons_result": "bundle regenerated; editor plugin compiled; editor and console linked; scons done building targets",
+    "engine_version_output": "4.8.beta.custom_build",
+    "binary": {
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "bytes": 176584704,
+      "sha256": "a7869c6c37743754e31af6a35d030682261424778535523cd7ae9b879c241bfb"
+    },
+    "console_binary": {
+      "path": "bin/godot.windows.editor.x86_64.console.exe",
+      "bytes": 240128,
+      "sha256": "7779672336db654f3456aad46b682b9216b571a7ace2c15b15fe8b6716b94ef3"
+    },
+    "aichat_native_tests": {
+      "filter": "[AIChat]*",
+      "passed_cases": 45,
+      "failed_cases": 0,
+      "passed_assertions": 638,
+      "skipped_outside_filter": 1514
+    },
+    "acceptance_command": "python tests/editor/run_ainative_builtin.py --godot bin/godot.windows.editor.x86_64.exe --report <private-report>",
+    "provider_factory": "editor_demo:factory",
+    "model_inference": false,
+    "runs": [
+      {"name": "mesh-and-rig", "passed": true, "returncode": 0, "checks": 108},
+      {"name": "independent-project", "passed": true, "returncode": 0, "checks": 64},
+      {"name": "sample-addon-compatibility", "passed": true, "returncode": 0, "checks": 22},
+      {"name": "relocated-runtime", "passed": true, "returncode": 0, "checks": 5}
+    ],
+    "kimi_checks": "the same native assertions passed on the rebuilt binary",
+    "bundle_file_count": 70,
+    "bundle_version": "f42471854c4b3bf4d56a66f79ca6a51af286feec0e9ad6b97447d73d92ab5704",
+    "installed_bundle_matches_source": true,
+    "project_state_isolated": true,
+    "same_engine_bundle": true,
+    "project_sources_unchanged": true,
+    "cleanup_diagnostics": "RID/ObjectDB/resource-exit diagnostics and sample debugger-detach output remain; no memory-clean claim or memory fix"
+  },
+  "event_collection": {
+    "new_public_paths_beyond_original_16": 7,
+    "quality_issue_events": [
+      "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-b3a15590188b6fd9e4e585a04f1340108beedfe9.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-54a4e0d292654ad5600cbe5ea999c940cbd5e3c9.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-0d3954a214bddff6a85c045919a710b741219505.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-3a92c46ce8ea8325129dc4cd6a2c010917ab9f28.json",
+      "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-c122551f6eb9a6b9964f1f5ff0b464184b43eaf7.json"
+    ],
+    "ruff_ci_incident": {
+      "id": "aa5506e728c66119e0e30591a17e0109052eb343bcd86b5474f073eb461996f9",
+      "received": true,
+      "assessed": true,
+      "local_targeted_revalidation": "passed",
+      "original_operation_reverified": false,
+      "replacement_head_ci": "pending"
+    },
+    "collection_gate_incident": {
+      "id": "8d368956a735fa483577e9147fa6cae10873a96759970487c78b097a0df6e7de",
+      "received": true,
+      "assessed": true,
+      "cause": "attempted in-place modification of a committed collection receipt",
+      "resolution": "original receipt restored; append-only correction added",
+      "formal_gate_rerun": "passed_before_main_integration",
+      "original_operation_reverified": false
+    },
+    "main_integration_incident": {
+      "id": "c0eb340c30a6f6f06560f5b21ce03248587c3d112e9187af58c2cd246a35999b",
+      "received": true,
+      "assessed": true,
+      "cause": "main advanced before signing",
+      "original_operation_reverified": false
+    },
+    "correction_commit_gate_incident": {
+      "id": "504b513e8f7512dcb21d950f2c7eaff1012f8a58e666a2b21d42c2306081df60",
+      "received": true,
+      "assessed": true,
+      "cause": "append-only correction became committed during local main replay and a subsequent edit was rejected",
+      "resolution": "complete candidate staged against the unchanged b792e237 baseline; temporary local commits not pushed",
+      "formal_gate_rerun": "pending",
+      "original_operation_reverified": false
+    },
+    "total_candidate_paths_including_original_16": 23
+  },
+  "main_integration": {
+    "previous_baseline": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+    "integrated_baseline": "b792e2379e33f92f74885a32c19b394097a0118b",
+    "integration_count": 1,
+    "upstream_candidate_path_overlap": [],
+    "upstream_build_script_impact": "only clean_source and console_sha256 receipt metadata added; compilation options and bundled resource inputs unchanged",
+    "candidate_files_replayed_without_content_change": true,
+    "native_binary_remains_pre_integration_rebuild": true,
+    "additional_native_revalidation_required": false,
+    "formal_gate_after_integration": "pending",
+    "later_main_policy": "after a signed head is obtained, later main updates follow PR rules rather than indefinite integration"
+  },
+  "delivery": {
+    "receipt_snapshot": "pre_replacement_submission_candidate; later signed-head, CI and merge receipts must be read back rather than falsified in this earlier tree",
+    "formal_gate": "pending",
+    "candidate": null,
+    "signed_commit": null,
+    "pull_request": null,
+    "exact_head_ci": "pending",
+    "main_merge": "pending",
+    "issue_closure_attempted": false,
+    "original_conversation_final_acceptance": "pending"
+  },
+  "private_paths_secrets_raw_prompts_base64_and_full_model_responses_included": false
+}

@@ -1,6 +1,6 @@
 # AINative 交换契约 v1
 
-本目录是 01-contracts 的可执行起点，使用 Python 3.11+ 标准库；尚未接入 Godot 编辑器或任何生成模型。所有相对路径以仓库根为基准。
+本目录从 01-contracts 的可执行交换契约起步，现已包含持久 Executor、Godot Workbench、真实 ComfyUI／Codex／Kimi Native Provider，以及预览、审核发布和下游资产入口。核心 Python 代码使用 Python 3.11+ 标准库；真实生成与构造仍需各自配置的外部服务或可执行文件。所有相对路径以仓库根为基准。
 
 运行：
 
@@ -133,3 +133,86 @@ booleans and values outside that safe range are rejected; `number` fields retain
 their original type. For the generation nodes, edit `seed` in the range
 **0–9,007,199,254,740,991** in Godot. Direct Python/CLI integer inputs keep their
 existing contract and provider range; core validation remains strictly typed.
+
+## Real Kimi Native Mesh provider (#646)
+
+`kimi_native` adds text-to-Mesh and image-to-Mesh without replacing any existing
+provider. `generate.py --provider` still defaults to `comfy`. The Workbench exposes
+Kimi Native as a separate generation-service choice; choosing it does not require
+ComfyUI, Hunyuan3D, ChatGPT/Codex or Blender configuration.
+
+The Native route is deliberately two-stage and is recorded as such:
+
+1. Kimi receives the modeling instructions and optional source image and returns one
+   strict JSON-Schema primitive plan. Model output is data, never executable code.
+2. The existing fixed `modeling_builder.gd` constructs Godot box, sphere, cylinder,
+   capsule and torus primitives and exports a self-contained GLB. The host independently
+   checks embedded GLB structure, indices, nondegenerate triangles, finite coordinates,
+   TRS/world bounds, vertex/triangle/byte budgets and the native builder receipt before
+   publishing the artifact. It never substitutes an old GLB or another provider's result.
+
+The closed plan allows 1–64 named parts; plan bytes, output bytes (64 MiB), vertices,
+triangles and numeric ranges are bounded. This is basic primitive geometry with opaque
+materials, not direct per-vertex neural generation, texture synthesis, production
+retopology, automatic humanoid rigging or animation. Sampling, seed and mesh-extraction
+parameters do not affect Kimi Native and are recorded as `not_applied` when supplied by
+a generic CLI. Only `text_to_mesh` and `image_to_mesh` are accepted; 2D image nodes,
+multiple images and unsupported context semantics fail explicitly. One PNG or JPEG
+source can be combined with node-level text constraints.
+
+### Local configuration and credentials
+
+Copy `kimi-config.example.json` outside the repository and replace `Godot.exe` with the
+actual local Godot executable. Keep `builder_path` pointed at the trusted built-in
+`modeling_builder.gd`. The configuration has exactly five fields:
+`endpoint`, `model`, `storage`, `godot_path`, `builder_path`. Relative `storage` resolves
+beside the configuration file and contains the durable `kimi-native-jobs.sqlite` plus
+private per-intent receipts. Use a durable location outside the repository.
+
+Set `AINATIVE_KIMI_CONFIG` to that file for CLI/factory use. Set either `KIMI_API_KEY` or
+`MOONSHOT_API_KEY` in the local user/process environment before launching the CLI or
+Godot. Never put a key in JSON, node parameters, command-line arguments, workflow files,
+logs or evidence. Only the key-owning `--probe` / `--api` Python children read it; the
+parent, persisted configuration, GLB and provenance do not receive it. Connection checks
+use `GET /models` and do not generate content.
+
+The default endpoint is `https://api.kimi.com/coding/v1` and the default model is
+`k3.1-pro`. Only official HTTPS endpoints and an explicit K3/K3.1 model allowlist are
+accepted; discovery does not silently choose another model. Redirects, ambient proxies,
+credential-bearing URLs and arbitrary relay endpoints are rejected.
+
+### CLI, recovery and provenance
+
+From the repository root, with the local environment and config already set:
+
+```powershell
+& $Python tools/ainative/generate.py --provider kimi_native --kind text_to_mesh --prompt 'a small four leg wooden table' --db D:/local-state/art.sqlite --output D:/local-state/text-kimi-package.json
+& $Python tools/ainative/generate.py --provider kimi_native --kind image_to_mesh --source D:/inputs/reference.png --prompt 'match the pictured object structure' --db D:/local-state/art.sqlite --output D:/local-state/image-kimi-package.json
+# Resume/read the same durable run; use a fresh output filename:
+& $Python tools/ainative/generate.py --provider kimi_native --run RUN_ID --db D:/local-state/art.sqlite --output D:/local-state/resumed-package.json
+```
+
+The CLI prints the run ID before polling and does not start inference services. Each new
+durable modeling intent performs at most one Chat Completions POST. Network loss,
+timeout, an unknown worker exit or an unknown response never causes an automatic second
+POST. Resume with the same run, database and local config; this reads the existing intent
+and terminal result rather than creating a new generation. A deliberate retry is a new,
+explicit user action. Cancellation terminates only processes owned by that intent; it
+does not interrupt shared services or other jobs. Late output cannot overwrite terminal
+state.
+
+Raw prompts, source images, API responses and builder diagnostics remain in private
+storage. Artifact provenance records the model and response ID, request/response/plan/
+GLB hashes, allowed token usage, source hash, builder hash and geometry, plus the two
+stages `kimi_strict_modeling_plan` and `fixed_godot_primitive_construction`. It also
+records `fallback_used=false` and `generated_code_executed=false`. Public summaries must
+omit raw prompts, base64, API keys, full responses and machine-private paths.
+
+For tests, run `python -m unittest discover -s tools/ainative -p "test_*.py"`; HTTP tests
+use local fixtures and do not prove real inference. Real generation acceptance requires
+both commands above, the private receipts, independent GLB validation, and Godot preview/
+staging/confirmed-publication/process-independent reopen checks. Fit must actually read
+the resulting mesh; a result such as `needs_landmarks` is not an automatic rigging
+success. Keep real rendered screenshots separate from headless geometry receipts. A
+loadable GLB and a nonblank screenshot do not by themselves establish production visual,
+topology, material, rigging, animation or performance quality.

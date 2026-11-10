@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3a92c46ce8ea8325129dc4cd6a2c010917ab9f28",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c0eb340c30a6f6f06560f5b21ce03248587c3d112e9187af58c2cd246a35999b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/717",
+    "action": "delivery",
+    "detection_head": "427f946440e5fc1c0afb23171aac539e1e438119",
+    "context_sha256": "d3f9d4802530b0b8f55e3ff4799daff305ec4a40418589b96a19004003781b97",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-continuation-subagent",
+    "authority_ref": "Issue #646 continuation authorization; repository WRITE verified for kaiyunxue",
+    "evidence": "Private writer-submit-ruff.json and the fetched c454886b..b792e237 path comparison",
+    "diagnosis": "The writer stopped before signing because main advanced from c454886b to b792e237. The observed upstream changes have no path overlap with the candidate; no candidate rework or provider change is indicated.",
+    "next_action": "Perform this single necessary main integration with the staged candidate preserved, rerun the formal gate and tracked check, then resume signing. Later main updates after a signed head follow PR rules rather than indefinite rebasing.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:45:18.895433+00:00",
+    "attempted": "Read the writer handoff, fetched the exact observed main once and checked every candidate path against the upstream diff; intersection is empty.",
+    "repair_owner": "kimi-work-continuation-subagent for this candidate integration",
+    "continuable": "One evidence-preserving integration and gate rerun; no new model request or unrelated native expansion"
+  },
+  "occurred_at": "2026-11-10T01:47:18.505308+00:00",
+  "sha256": "d29270eb1f28015d7d55c765b1eb259646efd0d63ae9772448c8de5e1c871a90"
+}

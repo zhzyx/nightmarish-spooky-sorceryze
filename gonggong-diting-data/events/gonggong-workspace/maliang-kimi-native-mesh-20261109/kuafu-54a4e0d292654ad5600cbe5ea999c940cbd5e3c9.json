@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-54a4e0d292654ad5600cbe5ea999c940cbd5e3c9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "aa5506e728c66119e0e30591a17e0109052eb343bcd86b5474f073eb461996f9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/717",
+    "action": "validation",
+    "detection_head": "427f946440e5fc1c0afb23171aac539e1e438119",
+    "context_sha256": "d3f9d4802530b0b8f55e3ff4799daff305ec4a40418589b96a19004003781b97",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-continuation-subagent",
+    "authority_ref": "Issue #646 continuation authorization; repository WRITE verified for kaiyunxue",
+    "evidence": "PR #728 static run 42734814205 job 129561344913; private ruff-fix and native-continuation-ruff receipts",
+    "diagnosis": "The failed PR head required exactly Ruff 0.17.1 import sorting and formatting in five Python files. That formatting is applied without business-logic edits; 35 affected tests, one isolated Workbench GUI test, a rebuilt editor, 45 AIChat cases and all four offline native suites passed locally.",
+    "next_action": "Submit the replacement candidate and verify its exact signed-head PR CI before merging. The old failed head is not reported as recovered; keep issue 646 open for original-conversation independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:19:36.842657+00:00",
+    "attempted": "Applied only the CI-identified Ruff 0.17.1 patch; rechecked eight Python files and reran affected offline and native validations with new binary and bundle hashes.",
+    "repair_owner": "kimi-work-continuation-subagent for this candidate formatting correction",
+    "continuable": "Evidence-bound replacement submission; replacement PR CI and original operation readback remain pending"
+  },
+  "occurred_at": "2026-11-10T01:35:13.727004+00:00",
+  "sha256": "b0e0e0c830ecacc023b1248c8fd7404e3d5d22dd1796812fc8c4df6940d33f65"
+}

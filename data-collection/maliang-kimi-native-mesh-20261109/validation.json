@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "issue": 646,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "recorded_on": "2026-11-10",
+  "status": "development_self_report_independent_acceptance_pending",
+  "independent_acceptance": "pending_original_conversation",
+  "baseline": {
+    "ref": "origin/main at isolated worktree creation",
+    "commit": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+    "merge_base_rechecked": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+    "branch": "codex/maliang-kimi-native-mesh-20261109",
+    "candidate_commit": null
+  },
+  "native_route": {
+    "provider": "kimi_native",
+    "generation_stages": [
+      "kimi_strict_modeling_plan",
+      "fixed_godot_primitive_construction"
+    ],
+    "capabilities": [
+      "text_to_mesh",
+      "image_to_mesh"
+    ],
+    "default_endpoint": "https://api.kimi.com/coding/v1",
+    "default_model": "k3.1-pro",
+    "allowed_models_observed_by_probe": [
+      "k3",
+      "k3-256k",
+      "k3.1-pro",
+      "k3.1-pro-highspeed"
+    ],
+    "probe": {
+      "connected": true,
+      "method": "GET /models",
+      "generation_requested": false
+    },
+    "authentication": "KIMI_API_KEY or MOONSHOT_API_KEY read only by key-owning API/probe child processes",
+    "secret_values_included": false,
+    "generated_code_executed": false,
+    "fallback_used": false,
+    "legacy_providers_replaced": false,
+    "raw_prompts_base64_full_responses_or_private_paths_included": false
+  },
+  "real_tasks": [
+    {
+      "kind": "text_to_mesh",
+      "run_id": "3830b6892c5946ca92049de556542738",
+      "idempotency_key": "fe3d7c00c9dc3061b9c92967de83bc5f8c8d681fbf4cde0ba6246b5f278f85c8",
+      "response_id": "chatcmpl-BetHJeFlUVZZmSr47ghV5RR1",
+      "requested_model": "k3.1-pro",
+      "response_model": "k3.1-pro",
+      "request_sha256": "99342f82859fed9c7e7eba1073ad52ffe09a7f817fccc28f81b73db3965d74ef",
+      "response_sha256": "dc5b51c988a054dd97d901d31c112c1f580075a2ef224c0a7c11e695475d60b4",
+      "plan_sha256": "d45bc13678da7fb6011ea2a0cd0497b555eba6b3df3feafaf20bec6e822f85c1",
+      "usage": {
+        "prompt_tokens": 795,
+        "completion_tokens": 826,
+        "reasoning_tokens": 215,
+        "total_tokens": 1621
+      },
+      "glb": {
+        "sha256": "697fff3ba2f92822c08fbda10989db25eb2a3762c31d6826ef4621cc35e65d16",
+        "bytes": 6492,
+        "parts": 9,
+        "vertices": 216,
+        "triangles": 108,
+        "bounds_min": [
+          -0.699999988079071,
+          0.0,
+          -0.4000000059604645
+        ],
+        "bounds_max": [
+          0.699999988079071,
+          0.7500000260770321,
+          0.4000000059604645
+        ]
+      },
+      "builder_sha256": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+      "native_builder_receipt_matches_independent_geometry": true
+    },
+    {
+      "kind": "image_to_mesh",
+      "run_id": "e747633215b14ab598cdb50b0421bb05",
+      "idempotency_key": "ea71c45703fb55ba1191a4bcf2b0e19869142ca1ca3a25f03f5a0e7db855a41d",
+      "response_id": "chatcmpl-HYuEQ6PnT2LxmhrOjJCSyxf8",
+      "requested_model": "k3.1-pro",
+      "response_model": "k3.1-pro",
+      "request_sha256": "e933efbbea54905920264bb55995c24cbc2e0e0ae679d7c0eddbc429c3aeb2c1",
+      "response_sha256": "87e03780ee0b04eac6be701d39c12476f4d20b8b82be977fc71f3efcc2f46ac3",
+      "plan_sha256": "8ffa5018220a96aa321a38d1f81affe92a56203a9a21838944bab247481917f2",
+      "usage": {
+        "prompt_tokens": 1594,
+        "cached_tokens": 256,
+        "completion_tokens": 1311,
+        "reasoning_tokens": 452,
+        "total_tokens": 2905
+      },
+      "source_image": {
+        "kind": "original_non_ai_reference",
+        "width": 768,
+        "height": 768,
+        "bytes": 5481
+      },
+      "glb": {
+        "sha256": "f189ca536b443863ee4a0abba10bd8e0b0aec95a1332c44a57df79667e2c539d",
+        "bytes": 8176,
+        "parts": 13,
+        "vertices": 312,
+        "triangles": 156,
+        "bounds_min": [
+          -0.75,
+          0.0,
+          -0.42500001192092896
+        ],
+        "bounds_max": [
+          0.75,
+          0.850000012665987,
+          0.42500001192092896
+        ]
+      },
+      "builder_sha256": "284d8f15bb76eb138c755978ee06eca49393c6416804ad5a9aff79505e6c645d",
+      "native_builder_receipt_matches_independent_geometry": true
+    }
+  ],
+  "real_evidence_policy": {
+    "model_posts_resent_during_final_validation": false,
+    "reference_or_glb_regenerated_during_final_validation": false,
+    "raw_receipts_and_glb": "retained_only_in_private_evidence_not_in_git",
+    "offline_export_revalidation": "passed_for_both_existing_exports"
+  },
+  "godot": {
+    "version": "4.8.beta.custom_build.ced0368bb",
+    "preview_stage_confirm_publish": {
+      "ok": true,
+      "implementation": "existing Executor read-only restore followed by real Workbench load_preview, review_publish and confirmation signal",
+      "new_model_inference": false,
+      "text": {
+        "run_id": "3830b6892c5946ca92049de556542738",
+        "mesh_instances": 9,
+        "vertices": 216,
+        "triangles": 108,
+        "staged_scene_sha256": "3421a17c3b471a78ef9dc4ccacc36a78c1b4b231e429e1fdc9a9f49d5ce226b1",
+        "published_scene": "text-published.tscn"
+      },
+      "image": {
+        "run_id": "e747633215b14ab598cdb50b0421bb05",
+        "mesh_instances": 13,
+        "vertices": 312,
+        "triangles": 156,
+        "staged_scene_sha256": "c76cdf44f9b9936215c9e8d822e72e7c7c040915f258a1f568e6d88d5c353021",
+        "published_scene": "image-published.tscn"
+      }
+    },
+    "process_independent_reopen": {
+      "ok": true,
+      "cache_mode": "ResourceLoader.CACHE_MODE_IGNORE",
+      "scenes_compared": 4,
+      "geometry_matches": true
+    },
+    "fit": {
+      "actual_text_glb_read": true,
+      "input_vertices": 216,
+      "input_faces": 108,
+      "degenerate_faces": 0,
+      "duplicate_faces": 0,
+      "status": "needs_landmarks",
+      "automatic_humanoid_accepted": false
+    },
+    "rendered_captures": [
+      {
+        "kind": "text",
+        "width": 800,
+        "height": 600,
+        "bytes": 6598,
+        "developer_read_and_confirmed_nonblank": true
+      },
+      {
+        "kind": "image",
+        "width": 800,
+        "height": 600,
+        "bytes": 8504,
+        "developer_read_and_confirmed_nonblank": true
+      }
+    ],
+    "headless_no_pixel_receipt_used_as_visual_evidence": false,
+    "independent_visual_acceptance": "pending"
+  },
+  "tests": [
+    {
+      "name": "Kimi protocol, service, plan and real fixed builder",
+      "working_directory": "tools/ainative",
+      "command": "env -u KIMI_API_KEY -u MOONSHOT_API_KEY AINATIVE_TEST_GODOT=<Godot> python -m unittest test_kimi_provider test_kimi_service test_generation_service test_modeling_provider.PlanTests -v",
+      "ran": 35,
+      "result": "OK",
+      "skipped": 0,
+      "real_builder_executed": true,
+      "model_inference": false
+    },
+    {
+      "name": "complete discovered suite, module group A",
+      "working_directory": "tools/ainative",
+      "command": "env -u KIMI_API_KEY -u MOONSHOT_API_KEY python -m unittest test_anatomy_base test_anatomy_body test_character_detail test_character_publish test_codex_provider test_comfy_provider test_contracts test_editor_host test_executor test_extensions test_garment_generate test_garment_prepare test_generation_service test_generation_service_gui test_interop test_jpeg_validation test_kimi_provider test_kimi_service -v",
+      "ran": 177,
+      "result": "OK",
+      "skipped": 4
+    },
+    {
+      "name": "complete discovered suite, module group B",
+      "working_directory": "tools/ainative",
+      "command": "env -u KIMI_API_KEY -u MOONSHOT_API_KEY python -m unittest test_managed_comfy test_modeling_provider test_modeling_service test_motion test_motion_provider test_organic_detail test_period_clothing test_period_groom test_portable_scene test_rigging test_sculpt_builder test_sculpt_provider test_sculpt_service test_turnaround_face test_turnaround_surface -v",
+      "ran": 193,
+      "result": "OK",
+      "skipped": 39
+    },
+    {
+      "name": "final Workbench isolated GUI regression",
+      "working_directory": "tools/ainative",
+      "command": "env -u KIMI_API_KEY -u MOONSHOT_API_KEY AINATIVE_GUI_TEST_TIMEOUT=90 AINATIVE_SERVICE_TEST_STATE=<isolated-state> AINATIVE_GUI_TEST_GODOT=<Godot> AINATIVE_SERVICE_GUI_REPORT=<private-report> AINATIVE_SERVICE_GUI_LOG=<private-log> python -m unittest test_generation_service_gui -v",
+      "ran": 1,
+      "result": "OK",
+      "skipped": 0,
+      "traffic": "local read-only HTTP fixture only; no model inference"
+    },
+    {
+      "name": "targeted Windows regression fixes",
+      "working_directory": "tools/ainative",
+      "command": "env -u KIMI_API_KEY -u MOONSHOT_API_KEY python -m unittest test_portable_scene test_turnaround_surface.RegistrationTests.test_import_is_stdlib_only -v",
+      "ran": 13,
+      "result": "OK",
+      "skipped": 2,
+      "skip_reason": "Windows symlink privilege unavailable"
+    }
+  ],
+  "test_totals": {
+    "discovered_modules_covered_by_two_groups": 370,
+    "group_failures": 0,
+    "group_errors": 0,
+    "group_skipped": 43,
+    "group_skips_note": "Kimi RealGodotBuilderTests and the GUI test were separately executed successfully. Unresolved skips: 1 existing Codex ModelingTests real-Godot builder test, 25 Blender tests, 11 Blender-runtime NumPy tests, 2 Pillow tests and 2 Windows symlink tests.",
+    "single_full_discover": "killed by the 300-second foreground tool limit before a final summary; not counted as pass or fail"
+  },
+  "native_editor_regression": {
+    "command": "python tests/editor/run_ainative_builtin.py --godot <Godot> --report <private-report>",
+    "state": "failed_before_kimi_assertions",
+    "first_failure": "native AINative editor plugin is registered",
+    "kimi_assertions_executed": false,
+    "available_binary": "4.8.beta.custom_build.ced0368bb (2026-11-05)",
+    "native_entry_introduced_by": "b4ae145bdfa851f147abec78d739521d13e9795c (2026-11-07)",
+    "engine_rebuilt": false,
+    "passing_sample_gui_not_substituted_for_native_ui": true
+  },
+  "static_checks": {
+    "changed_python_ast_and_py_compile": "passed",
+    "unused_import_scan": "passed",
+    "ruff": "unavailable_not_run",
+    "remaining_long_lines": "pre-existing Codex prompt/project strings only"
+  },
+  "known_limitations": [
+    "Bounded Godot primitive construction is not direct per-vertex neural GLB generation.",
+    "Only text_to_mesh and image_to_mesh are supported; 2D image nodes and multiple images are rejected.",
+    "No production topology, textures, automatic rigging, animation or performance quality is claimed.",
+    "Fit returned needs_landmarks for the table and did not claim humanoid acceptance.",
+    "Native editor Kimi assertions remain unexecuted on the available older binary.",
+    "Original conversation independent acceptance has not been performed."
+  ],
+  "delivery": {
+    "scope": "local_development_handoff_only",
+    "formal_precommit_gate": {
+      "command": "python customizations/components/issue-workorders/issue_gate.py --repo . --issue 646 --request-id maliang-kimi-native-mesh-20261109 --base-ref origin/main",
+      "exit_code": 1,
+      "state": "pending_kuafu_intake",
+      "failure": "GitHubCommandError",
+      "incident": "6d0e65d84d35c6b809a6b04559fbb194e645056d3d32fa86eaef7817a939b5d3",
+      "detail": "GITHUB_RUNTIME: gh executable missing; set GONGGONG_GH to the authenticated host CLI",
+      "retry_attempted": false
+    },
+    "local_commit": "not_created_gate_blocked",
+    "push": "not_attempted",
+    "pull_request": "not_created",
+    "ci": "not_started",
+    "main_merge": "not_attempted",
+    "issue_status": {
+      "last_verified": "status:in-progress at successful intake-only readback on 2026-11-09",
+      "final_remote_readback": "unavailable_because_gh_executable_is_missing",
+      "status_transition_attempted_by_developer": false
+    },
+    "post_commit_git_check": "not_applicable_without_commit"
+  },
+  "continuation_2026_11_10": {
+    "scope": "Native editor verification, current-main alignment and evidence-bound Git delivery only; no provider expansion and no Kimi modeling POST",
+    "independent_acceptance": {
+      "core_mesh": "passed_by_original_conversation",
+      "protocol_and_real_fixed_builder": {"tests": 35, "result": "OK", "skipped": 0},
+      "unique_python_tests_in_two_groups": {"tests": 370, "failures": 0, "errors": 0, "skipped": 43},
+      "workbench_gui": {"tests": 1, "result": "OK"},
+      "final_native_and_delivery_review": "pending_original_conversation"
+    },
+    "baseline_alignment": {
+      "original_development_base": "d237ef78cc394a98db85b6eb1b39f0184217297d",
+      "first_continuation_base": "1e5f504d8b12db3c898081bc4ab4db3fa99cb17a",
+      "intermediate_base": "b8f4757b3d80d3db2a69bd27576e8f4d6138e1bd",
+      "signing_target_baseline": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+      "original_16_path_patch_id": "96ec985604da0543f042fb606970f62821b6aa6c",
+      "original_16_paths_preserved": true,
+      "new_main_paths_intersecting_original_16_candidate_paths": 0,
+      "last_alignment_relevant_changes": "UTF-8 config reading in the non-candidate tools/ainative/start_local.ps1, host scripts and a non-Windows Linux header; no candidate file overlap",
+      "cached_diff_check": "passed",
+      "later_main_policy": "Use the exact signing target and handle later commits through repository PR rules; do not chase new main commits indefinitely"
+    },
+    "native_editor": {
+      "state": "passed",
+      "revalidated_baseline": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+      "build_source_digest": "cfddfe8ecf73bca65bbf4032051f4f5c8c2cc1a23851c2713a31ca8c786f819c",
+      "native_cache_key": "f1517b859a5f44457c93514e84feea46a06bf0ffdd1135ee04b0d4b3284ef776",
+      "scons_result": "up_to_date; binary hashes unchanged; native acceptance rerun passed",
+      "engine_version_output": "4.8.beta.custom_build",
+      "compiler": "MSVC 14.50.35717",
+      "windows_sdk": "10.0.26100.0",
+      "builder": "mainline tools/build_gonggong_editor.py; only the writable artifact-cache location was redirected to private workspace evidence",
+      "build_options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no -j20",
+      "library_targets_built_in_successful_groups": 69,
+      "binary": {"path": "bin/godot.windows.editor.x86_64.exe", "bytes": 176584704, "sha256": "485bf8e82ff61636c674f543f9493a3bb6e18da5d4909862132739404906e084"},
+      "console_binary": {"path": "bin/godot.windows.editor.x86_64.console.exe", "bytes": 240128, "sha256": "21ec0ad49ab5bde755a8e7f4f292c10deb0ecbc03dc79842d1785f524a669f7c"},
+      "aichat_native_tests": {"filter": "[AIChat]*", "passed_cases": 45, "failed_cases": 0, "passed_assertions": 638, "skipped_outside_filter": 1514},
+      "acceptance_command": "python tests/editor/run_ainative_builtin.py --godot bin/godot.windows.editor.x86_64.exe --report <private-report>",
+      "provider_factory": "editor_demo:factory",
+      "model_inference": false,
+      "runs": [
+        {"name": "mesh-and-rig", "passed": true, "returncode": 0, "checks": 108},
+        {"name": "independent-project", "passed": true, "returncode": 0, "checks": 64},
+        {"name": "sample-addon-compatibility", "passed": true, "returncode": 0, "checks": 22},
+        {"name": "relocated-runtime", "passed": true, "returncode": 0, "checks": 5}
+      ],
+      "native_plugin_and_main_screen_checks_passed": true,
+      "kimi_checks": [
+        "bundled service picker preserves all existing modes and adds Kimi Native",
+        "Kimi Native edits its semantic provider, official endpoint and model",
+        "Kimi Native does not require Codex, Blender or ComfyUI model settings",
+        "both Mesh node kinds route to Kimi Native",
+        "Kimi Native explicitly rejects image-generation nodes",
+        "Kimi Native saves settings without API credentials",
+        "Kimi Native settings survive a real Workbench reopen"
+      ],
+      "bundle_file_count": 70,
+      "bundle_version": "ee843c1583d274a7d443717a96719634e23cf57222ca940bd5b8e39bd0644490",
+      "installed_bundle_matches_source": true,
+      "project_state_isolated": true,
+      "same_engine_bundle": true,
+      "project_sources_unchanged": true,
+      "cleanup_diagnostics": "Editor-exit RID/ObjectDB/resource diagnostics and sample debugger-detach output remain in stdout; passing business assertions are not a memory-clean claim and no memory fix is included"
+    },
+    "event_collection": {
+      "tenant_id": "gonggong-workspace",
+      "event_path": "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/request-646-native-continuation-20261110.json",
+      "kind": "request",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+      "new_public_paths_beyond_original_16": 2,
+      "quality_issue_event": "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-mesh-20261109/kuafu-b3a15590188b6fd9e4e585a04f1340108beedfe9.json",
+      "gate_incident": {"id": "23824cfc97c79583c98d7e701c87bfc038a9abd7ea2cef28ab729d75e2a9369b", "cause": "host Node shell shim not directly executable by Python", "resolution": "isolated Node runtime and POSIX-form PATH; trusted framework validation and original formal gate passed", "product_source_changed": false, "independent_delivery_recovery_review": "pending_original_conversation"},
+      "agent": {"id": "kimi-work-continuation-subagent", "version": "session-20261110", "origin": "external-authorized-host", "definition_sha256": "298ea4bfb25955b3448ac16d03441fb9867ecb2ec1deb3887a61b8c50f510e3b"},
+      "definition_digest_semantics": "SHA-256 of the canonical, non-secret scope_definition object in the event payload; not a platform-version claim",
+      "model_usage": null,
+      "usage_unknown_reason": "No measured subagent-host consumption receipt; consumption is not inferred"
+    },
+    "delivery": {
+      "receipt_snapshot": "pre_submission_candidate; a Git commit cannot contain its own later signed head, CI or merge receipts; those are read back in the PR timeline and final handoff rather than falsified in this earlier tree",
+      "github_cli_authenticated": true,
+      "issue_state": "OPEN",
+      "issue_status": "status:in-progress",
+      "intake_only": "passed with explicit gonggong-workspace tenant after correcting an earlier omitted-tenant invocation",
+      "formal_gate": "pending",
+      "candidate_commit": null,
+      "post_commit_git_check": "pending",
+      "signed_commit": null,
+      "pull_request": null,
+      "exact_head_ci": "pending",
+      "main_merge": "pending",
+      "issue_closure_attempted": false,
+      "final_independent_acceptance": "pending_original_conversation"
+    }
+  }
+}
