@@ -88,7 +88,7 @@ class GongGongPanel : public VBoxContainer {
 	bool apply_environment_settings(const String &p_workspace, const String &p_tenant);
 
 public:
-	GongGongPanel();
+	GongGongPanel(bool p_check_environment = true);
 	bool ensure_environment();
 	bool ensure_environment_with_snapshot(const Dictionary &p_runtime);
 	Control *get_environment_settings_control() const { return environment_settings_control; }

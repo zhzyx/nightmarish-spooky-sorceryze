@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-chat-concurrency-intake",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-chat-concurrency",
+  "kind": "request",
+  "occurred_at": "2026-11-10T00:55:48Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "source": "GitHub Issue #723",
+    "design_document": "design-docs/issue-chat-concurrency.md",
+    "scope": "Concurrent issue chat, history, drafts, cancellation and receipts."
+  },
+  "evidence_refs": [],
+  "sha256": "9f72676f92147724ef5b47f1dc51abe4ec7d20cfddddf4242d2fd744811ba6a3"
+}

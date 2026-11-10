@@ -413,7 +413,7 @@ Array completed_history(const Array &p_records, bool p_visible) {
 } // namespace
 
 String AIChatDock::_history_path() const {
-	return EditorPaths::get_singleton()->get_project_settings_dir().path_join("ai_chat_history.json");
+	return resume_storage.storage_dir().path_join("ai_chat_history.json");
 }
 
 void AIChatDock::_queue_history_save() {
@@ -708,14 +708,14 @@ bool AIChatDock::_save_resume() {
 		journal["reporting"] = gonggong_reporting;
 	}
 	if (!command_offer_id.is_empty()) {
-		return command_offer_path.is_empty() && AIChatResume::write_command_offer(journal, command_offer_path) == OK;
+		return command_offer_path.is_empty() && resume_storage.write_command_offer(journal, command_offer_path) == OK;
 	}
-	return AIChatResume::write_journal(journal) == OK;
+	return resume_storage.write_journal(journal) == OK;
 }
 
 void AIChatDock::_clear_resume() {
 	Dictionary saved;
-	if (AIChatResume::read_journal(saved) && (saved.has("command_offer") || (saved.has("conversation") && saved.get("conversation", "") != conversation_id))) {
+	if (resume_storage.read_journal(saved) && (saved.has("command_offer") || (saved.has("conversation") && saved.get("conversation", "") != conversation_id))) {
 		return; // Only its consumer can remove an exact outstanding proposal.
 	}
 	if (!observed_command_owner.is_empty() && observed_command_owner == conversation_id) {
@@ -727,7 +727,7 @@ void AIChatDock::_clear_resume() {
 	if (engine_restart_armed) {
 		return; // The armed handoff owns the journal until the successor reads it.
 	}
-	AIChatResume::clear_journal();
+	resume_storage.clear_journal();
 }
 
 void AIChatDock::_replay_transcript(const Array &p_transcript) {
@@ -944,7 +944,8 @@ void AIChatDock::_load_history() {
 
 // Answer the restart that the previous process issued, then continue its loop.
 String AIChatDock::_pending_command_path() const {
-	return AIChatResume::journal_path() + ".pending-" + conversation_id.sha256_text();
+	// Pending receipts already carry the exact conversation and agent identity.
+	return AIChatResume().journal_path() + ".pending-" + conversation_id.sha256_text();
 }
 
 bool AIChatDock::_retry_pending_command() {
@@ -1001,7 +1002,7 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 		return;
 	}
 	if (offer) {
-		const String marker = AIChatResume::journal_path() + ".offer-" + p_digest;
+		const String marker = resume_storage.journal_path() + ".offer-" + p_digest;
 		if (busy || backend->get_selected() == 1 || p_digest.length() != 64 || !FileAccess::exists(marker) || FileAccess::get_sha256(marker) != p_digest || int(p_journal["backend"]) != backend->get_selected() || !allow_tools->is_pressed() || !_direct_daqian_task()) {
 			_append(TTR("Error"), U"原命令提案已失效或工单绑定不可核验。");
 			return;
@@ -1025,8 +1026,8 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 		if (FileAccess::get_sha256(_pending_command_path()) == p_digest) {
 			DirAccess::remove_absolute(_pending_command_path());
 		}
-		if (FileAccess::get_sha256(AIChatResume::journal_path()) == p_digest) {
-			AIChatResume::clear_journal();
+		if (FileAccess::get_sha256(resume_storage.journal_path()) == p_digest) {
+			resume_storage.clear_journal();
 		}
 		return;
 	}
@@ -1083,10 +1084,10 @@ void AIChatDock::_load_resume() {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	Dictionary journal;
-	if (!AIChatResume::read_journal(journal)) {
+	if (!resume_storage.read_journal(journal)) {
 		// Unreadable or stale leftovers are removed instead of being replayed.
-		AIChatResume::clear_journal();
-		AIChatResume::clear_report();
+		resume_storage.clear_journal();
+		resume_storage.clear_report();
 		_retry_pending_command();
 		return;
 	}
@@ -1104,26 +1105,26 @@ void AIChatDock::_load_resume() {
 	if (bool(journal.get("smoke_check", false))) {
 		// Offline startup probes do not resume a production tool or model turn.
 		if (!restart.is_empty()) {
-			AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
+			resume_storage.write_ack(restart["token"], OS::get_singleton()->get_executable_path());
 		}
-		AIChatResume::clear_journal();
-		AIChatResume::clear_report();
+		resume_storage.clear_journal();
+		resume_storage.clear_report();
 		return;
 	}
 	Dictionary report;
-	const bool has_report = AIChatResume::read_report(report);
+	const bool has_report = resume_storage.read_report(report);
 	if (restart.is_empty()) {
-		const String path = AIChatResume::journal_path();
+		const String path = resume_storage.journal_path();
 		const String owner = journal.get("conversation", "");
 		if (journal.has("command_offer")) {
 			_load_command_resume(journal, FileAccess::get_sha256(path));
 			return;
 		}
-		const String preserved = owner.is_empty() ? path + ".interrupted-" + FileAccess::get_sha256(path) : path + ".pending-" + owner.sha256_text();
+		const String preserved = owner.is_empty() ? path + ".interrupted-" + FileAccess::get_sha256(path) : AIChatResume().journal_path() + ".pending-" + owner.sha256_text();
 		const String digest = FileAccess::get_sha256(path);
 		const String stopped = preserved + ".stopped-" + digest;
 		if (!owner.is_empty() && !digest.is_empty() && FileAccess::exists(stopped) && FileAccess::get_sha256(stopped) == digest) {
-			AIChatResume::clear_journal();
+			resume_storage.clear_journal();
 			return;
 		}
 		if (FileAccess::exists(preserved) ? FileAccess::get_sha256(preserved) != FileAccess::get_sha256(path) : (DirAccess::copy_absolute(path, preserved + ".tmp") != OK || DirAccess::rename_absolute(preserved + ".tmp", preserved) != OK)) {
@@ -1164,7 +1165,7 @@ void AIChatDock::_load_resume() {
 	}
 	const String awaited = restart.get("tool_call_id", "");
 	if (awaited.is_empty()) {
-		AIChatResume::write_ack(restart["token"], OS::get_singleton()->get_executable_path());
+		resume_storage.write_ack(restart["token"], OS::get_singleton()->get_executable_path());
 		return; // A restart from the UI button has no tool call to answer.
 	}
 	const int agent = journal["agent"];
@@ -2169,6 +2170,12 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 }
 
 bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection) {
+	if (settings_owner) {
+		endpoint->set_text(settings_owner->endpoint->get_text());
+		api_key->set_text(settings_owner->api_key->get_text());
+		cli_bridge->set_text(settings_owner->cli_bridge->get_text());
+		cli_entry->set_text(settings_owner->cli_entry->get_text());
+	}
 	if (!bool(p_message.get("consultation_only", false)) && sub_agents.has(active_agent) && String(sub_agents[active_agent].get("source", "")) == "design" && !_design_child_ready(active_agent)) {
 		_append(TTR("Editor"), U"工单的设计版本、绑定或前置验收尚未通过。请核对设计版本，在前置子会话验收后继续。");
 		return false;
@@ -3263,7 +3270,7 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 	// The mandatory result receipt and original session are ready. Publish the
 	// handoff before advancing the batch, so a failed write is safe to retry.
 	if (!gonggong_recovered_result.is_empty() && !gonggong_recovery_ack_token.is_empty()) {
-		if (AIChatResume::write_ack(gonggong_recovery_ack_token, OS::get_singleton()->get_executable_path()) != OK) {
+		if (resume_storage.write_ack(gonggong_recovery_ack_token, OS::get_singleton()->get_executable_path()) != OK) {
 			_append(TTR("Error"), U"本会话的工具结果已校验，但版本切换回执写入失败。已暂停接续并保留原续跑记录。");
 			_set_busy(false);
 			return;
@@ -3292,8 +3299,8 @@ void AIChatDock::_finish_tool_after_receipt(const String &p_result, bool p_file_
 		}
 		command_recovery_reporting.clear();
 		gonggong_recovered_result = String();
-		AIChatResume::clear_journal();
-		AIChatResume::clear_report();
+		resume_storage.clear_journal();
+		resume_storage.clear_report();
 		_queue_history_save();
 		if (!gonggong_recovery_can_send) {
 			if (!completed_command_receipt_path.is_empty() && completed_command_owner == conversation_id && completed_command_call == String(call["id"])) {
@@ -3446,8 +3453,8 @@ bool AIChatDock::_confirm_daqian_approval(const String &p_token) {
 		return false;
 	}
 	if (!command_offer_path.is_empty()) {
-		const String digest = FileAccess::get_sha256(AIChatResume::journal_path());
-		if (digest.length() != 64 || command_offer_path != AIChatResume::journal_path() + ".offer-" + digest || FileAccess::get_sha256(command_offer_path) != digest) {
+		const String digest = FileAccess::get_sha256(resume_storage.journal_path());
+		if (digest.length() != 64 || command_offer_path != resume_storage.journal_path() + ".offer-" + digest || FileAccess::get_sha256(command_offer_path) != digest) {
 			return false;
 		}
 	}
@@ -4352,7 +4359,9 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("settings_requested", PropertyInfo(Variant::STRING, "section")));
 	ADD_SIGNAL(MethodInfo("runtime_configuration_changed"));
 	ClassDB::bind_method(D_METHOD("get_daqian_approval"), &AIChatDock::_get_daqian_approval);
+	ClassDB::bind_method(D_METHOD("get_daqian_issue_approval", "url"), &AIChatDock::_issue_approval);
 	ClassDB::bind_method(D_METHOD("confirm_daqian_approval", "token"), &AIChatDock::_confirm_daqian_approval);
+	ClassDB::bind_method(D_METHOD("confirm_daqian_issue_approval", "url", "token"), &AIChatDock::_confirm_issue_approval);
 	ClassDB::bind_method(D_METHOD("render_daqian_markdown", "label", "text"), &AIChatDock::_render_markdown);
 	ADD_SIGNAL(MethodInfo("daqian_approval_changed"));
 	ADD_SIGNAL(MethodInfo("daqian_approval_state", PropertyInfo(Variant::STRING, "token"), PropertyInfo(Variant::STRING, "state")));
@@ -4360,8 +4369,8 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_legacy_candidate_failure", "owner", "workspace", "issue"), &AIChatDock::_get_legacy_candidate_failure);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false));
-	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_daqian_chat);
-	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_daqian_chat);
+	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_selected_chat);
+	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_selected_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
 	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
@@ -4431,6 +4440,135 @@ Dictionary AIChatDock::_get_daqian_models() const {
 	result["options"] = options;
 	result["current"] = _active_model_field()->get_text().strip_edges();
 	return result;
+}
+
+AIChatDock *AIChatDock::_ensure_issue_worker(const String &p_key) {
+	if (issue_workers.has(p_key)) {
+		return issue_workers[p_key];
+	}
+	const String directory = resume_storage.storage_dir().path_join("tianshu_workers").path_join(p_key);
+	ERR_FAIL_COND_V(DirAccess::make_dir_recursive_absolute(directory) != OK, nullptr);
+	AIChatDock *worker = memnew(AIChatDock(directory));
+	worker->settings_owner = this;
+	worker->set_name("ParallelIssueChat");
+	worker->hide();
+	// The key is scoped to this editor process and never enters saved history.
+	worker->endpoint->set_text(endpoint->get_text());
+	worker->api_key->set_text(api_key->get_text());
+	worker->backend->select(backend->get_selected());
+	worker->model->set_text(model->get_text());
+	worker->cli_model->set_text(cli_model->get_text());
+	worker->codex_model->set_text(codex_model->get_text());
+	worker->cli_bridge->set_text(cli_bridge->get_text());
+	worker->cli_entry->set_text(cli_entry->get_text());
+	auto share_option = [](BaseButton *p_setting, BaseButton *p_copy) {
+		p_copy->set_pressed_no_signal(p_setting->is_pressed());
+		p_setting->connect(SNAME("toggled"), callable_mp(p_copy, &BaseButton::set_pressed_no_signal));
+	};
+	share_option(allow_tools, worker->allow_tools);
+	share_option(auto_apply_file_changes, worker->auto_apply_file_changes);
+	share_option(auto_execute_commands, worker->auto_execute_commands);
+	share_option(engine_auto_restart, worker->engine_auto_restart);
+	worker->discovered_model_catalogs = discovered_model_catalogs.duplicate(true);
+	for (const StringName &signal : { SNAME("settings_requested"), SNAME("daqian_chat_unmounted"), SNAME("daqian_issue_bound"), SNAME("daqian_requirement_phase"), SNAME("daqian_preview_received"), SNAME("daqian_preview_failed"), SNAME("daqian_work_event"), SNAME("daqian_execution_finished"), SNAME("daqian_approval_changed"), SNAME("daqian_approval_state") }) {
+		worker->connect(signal, Callable::create(Signal(this, signal), SNAME("emit")));
+	}
+	issue_workers.insert(p_key, worker);
+	add_child(worker);
+	return worker;
+}
+
+bool AIChatDock::_can_switch_issue() const {
+	return !history_restoring && !busy && pending_external_editor_message.is_empty() && engine_build_pid < 0 && !engine_restart_requested && !snapshot_restoring && !snapshot_transaction_failed && gonggong_recovered_result.is_empty() && issue_guide_state.is_empty() && igniter_state.is_empty() && gonggong_pid < 0;
+}
+
+bool AIChatDock::_transfer_archived_issue(int p_id, AIChatDock *p_worker) {
+	const int index = _agent_index(p_id);
+	if (index < 0 || !agent_sessions.has(p_id) || scheduled_agents.has(p_id) || sub_agents.has(p_id) || design_batches.has(p_id) || !_sub_agent_children(p_id, false).is_empty()) {
+		return false;
+	}
+	// Existing inactive tabs keep their live CLI handle, draft, messages and
+	// snapshot identity. An owned batch or child graph stays with its executor.
+	const AgentSession state = agent_sessions[p_id];
+	if (consumed_command_by_owner.has(state.conversation_id)) {
+		p_worker->consumed_command_by_owner[state.conversation_id] = consumed_command_by_owner[state.conversation_id];
+	}
+	const int target_index = p_worker->agent_tabs->get_tab_count();
+	const int target_id = p_id;
+	if (p_worker->_agent_index(target_id) >= 0) {
+		if (target_index != 1 || p_worker->active_agent != target_id || !p_worker->messages.is_empty()) {
+			return false;
+		}
+		p_worker->active_agent = p_worker->next_agent++;
+		p_worker->agent_tabs->set_tab_metadata(0, p_worker->active_agent);
+	}
+	p_worker->next_agent = MAX(p_worker->next_agent, target_id + 1);
+	p_worker->agent_tabs->set_block_signals(true);
+	p_worker->agent_tabs->add_tab(agent_tabs->get_tab_title(index));
+	p_worker->agent_tabs->set_tab_metadata(target_index, target_id);
+	p_worker->agent_tabs->set_block_signals(false);
+	p_worker->agent_sessions.insert(target_id, state);
+	// Persist the new copy before transferring its controls or live transport.
+	p_worker->_queue_history_save();
+	p_worker->_flush_history();
+	if (!p_worker->history_writable || p_worker->history_save_error || p_worker->history_dirty) {
+		p_worker->agent_sessions.erase(target_id);
+		p_worker->agent_tabs->set_block_signals(true);
+		p_worker->agent_tabs->remove_tab(target_index);
+		p_worker->agent_tabs->set_block_signals(false);
+		return false;
+	}
+	state.message_list->reparent(p_worker->agent_archive);
+	p_worker->_agent_selected(target_index);
+	// Historical buttons must call the new owner when opened after migration.
+	p_worker->_rebuild_snapshot_transcript();
+	EditorSettings *settings = EditorSettings::get_singleton();
+	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
+	Dictionary entry = bindings[state.conversation_id];
+	entry["worker_key"] = p_worker->resume_storage.directory.get_file();
+	bindings[state.conversation_id] = entry;
+	settings->set_project_metadata("daqian", "bindings", bindings);
+	settings->save_project_metadata();
+	agent_tabs->set_block_signals(true);
+	agent_tabs->remove_tab(index);
+	agent_tabs->set_block_signals(false);
+	agent_sessions.erase(p_id);
+	_queue_history_save();
+	return true;
+}
+
+bool AIChatDock::_mount_selected_chat(Control *p_host) {
+	return (selected_worker ? selected_worker : this)->_mount_daqian_chat(p_host);
+}
+
+void AIChatDock::_unmount_selected_chat() {
+	(selected_worker ? selected_worker : this)->_unmount_daqian_chat();
+}
+
+Dictionary AIChatDock::_issue_approval(const String &p_url) const {
+	if (p_url.is_empty()) {
+		return (selected_worker ? selected_worker : this)->_get_daqian_approval();
+	}
+	for (const KeyValue<String, AIChatDock *> &worker : issue_workers) {
+		const Dictionary operation = worker.value->_get_daqian_approval();
+		if (operation.get("url", "") == p_url) {
+			return operation;
+		}
+	}
+	const Dictionary primary = _get_daqian_approval();
+	return primary.get("url", "") == p_url ? primary : Dictionary();
+}
+
+bool AIChatDock::_confirm_issue_approval(const String &p_url, const String &p_token) {
+	if (p_url.is_empty() || p_token.is_empty()) {
+		return false;
+	}
+	for (const KeyValue<String, AIChatDock *> &worker : issue_workers) {
+		if (worker.value->daqian_approval.get("url", "") == p_url && worker.value->daqian_approval.get("token", "") == p_token) {
+			return worker.value->_confirm_daqian_approval(p_token);
+		}
+	}
+	return daqian_approval.get("url", "") == p_url && _confirm_daqian_approval(p_token);
 }
 
 bool AIChatDock::_mount_daqian_chat(Control *p_host) {
@@ -4545,6 +4683,10 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		return false;
 	};
 	auto show_session = [&]() {
+		if (selected_worker) {
+			selected_worker->_unmount_daqian_chat();
+			selected_worker = nullptr;
+		}
 		if (p_embedded) {
 			daqian_mount_conversation = conversation_id;
 			Dictionary entry = bindings[conversation_id];
@@ -4567,6 +4709,45 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	};
 	const Dictionary active = bindings.get(conversation_id, Dictionary());
 	const bool current_matches = matches(active, true);
+	if (resume_storage.directory.is_empty() && p_embedded && p_issue > 0 && is_inside_tree()) {
+		String owner;
+		String worker_key;
+		for (const Variant &key : bindings.keys()) {
+			const Dictionary entry = bindings[key];
+			if (matches(entry, key == conversation_id)) {
+				owner = key;
+				worker_key = entry.get("worker_key", "");
+				break;
+			}
+		}
+		const bool needs_worker = !current_matches && !_can_switch_issue() && !unverified_legacy && (!p_existing_only || !owner.is_empty());
+		if (!worker_key.is_empty() || needs_worker) {
+			if (worker_key.is_empty()) {
+				worker_key = (scope + "|" + itos(p_issue) + "|" + p_request).sha256_text();
+			}
+			ERR_FAIL_COND_V(worker_key.length() != 64 || !worker_key.is_valid_hex_number(false), U"工单的会话目录标识无效。");
+			AIChatDock *worker = _ensure_issue_worker(worker_key);
+			ERR_FAIL_NULL_V(worker, U"无法打开此工单的会话目录。");
+			if (needs_worker && !owner.is_empty() && !Dictionary(bindings[owner]).has("worker_key")) {
+				int id = -1;
+				for (const KeyValue<int, AgentSession> &archived : agent_sessions) {
+					if (archived.value.conversation_id == owner) {
+						id = archived.key;
+						break;
+					}
+				}
+				if (!_transfer_archived_issue(id, worker)) {
+					return U"关联会话仍有原工作者依赖或无法保存，请在原会话核对。";
+				}
+			}
+			const String error = worker->_open_daqian_chat(p_source, p_issue, p_request, p_message, p_preview, p_selection, p_embedded, p_preview_receipt, p_existing_only);
+			if (error.is_empty() && selected_worker != worker) {
+				_unmount_selected_chat();
+				selected_worker = worker;
+			}
+			return error;
+		}
+	}
 	if (p_message.is_empty() && p_selection.is_empty() && is_inside_tree() && current_matches && String(active.get("issue_number", "")).to_int() == p_issue && String(active.get("request_id", "")) == p_request) {
 		show_session();
 		return String();
@@ -4648,6 +4829,9 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		}
 		Dictionary entry;
 		entry["source"] = p_source;
+		if (!resume_storage.directory.is_empty()) {
+			entry["worker_key"] = resume_storage.directory.get_file();
+		}
 		if (!scope.is_empty()) {
 			entry["scope"] = scope;
 		}
@@ -6449,7 +6633,7 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 	journal["tool_calls"] = tool_driven ? tool_calls.duplicate(true) : Array();
 	journal["restart"] = restart;
 	Dictionary journal_stats;
-	const Error journal_error = AIChatResume::write_journal(journal, &journal_stats);
+	const Error journal_error = resume_storage.write_journal(journal, &journal_stats);
 	if (journal_error != OK) {
 		const String stage = journal_stats.get("stage", "unknown");
 		String reason;
@@ -6473,7 +6657,7 @@ bool AIChatDock::_arm_engine_restart(const String &p_executable, int p_attempt) 
 	if (journal_stats.get("encoding", "json") == "gzip-base64") {
 		_append_work(vformat(U"续跑记录已无损压缩：原始 %d 字节，落盘 %d 字节。消息、当前工具批次与参数保持完整。", journal_stats["uncompressed_bytes"], journal_stats["stored_bytes"]));
 	}
-	AIChatResume::clear_report();
+	resume_storage.clear_report();
 	engine_restart_target = p_executable;
 	engine_restart_token = token;
 	engine_restart_attempt = p_attempt;
@@ -6506,7 +6690,7 @@ void AIChatDock::_arm_restart_watchdog() {
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String watchdog = _engine_root().path_join("tools/editor_restart_watchdog.py");
-	const String cache = AIChatResume::global_dir();
+	const String cache = resume_storage.global_dir();
 	if (python.is_empty() || !FileAccess::exists(python) || !FileAccess::exists(watchdog) || engine_restart_token.is_empty() || cache.is_empty()) {
 		// Without a supervisor the switch still happens, but unverified.
 		OS::get_singleton()->set_restart_on_exit_executable(engine_restart_target);
@@ -6547,7 +6731,7 @@ void AIChatDock::_abandon_engine_restart(const String &p_reason) {
 	engine_restart_requested = false;
 	engine_restart_target = String();
 	engine_restart_token = String();
-	AIChatResume::clear_journal();
+	resume_storage.clear_journal();
 	engine_build_status->set_text(p_reason);
 	engine_build_timer->stop();
 	Dictionary result;
@@ -6675,7 +6859,7 @@ void AIChatDock::_start_process() {
 		}
 		if (pending_action == "run_command") {
 			guarded.push_back("--invocation");
-			guarded.push_back(FileAccess::get_sha256(AIChatResume::journal_path()));
+			guarded.push_back(FileAccess::get_sha256(resume_storage.journal_path()));
 		}
 #ifdef MACOS_ENABLED
 		const String profile = AIChatHostRuntime::command_profile(candidate, ProjectSettings::get_singleton()->get_resource_path());
@@ -6860,6 +7044,7 @@ void AIChatDock::_stop() {
 		turn_completed = false;
 		pending_action = String();
 		tool_calls.clear();
+		_end_gonggong("cancelled");
 		_set_busy(false);
 		_append(TTR("Editor"), U"已停止本窗的命令确认流程。");
 		return;
@@ -6873,8 +7058,8 @@ void AIChatDock::_stop() {
 				_append(TTR("Error"), U"未能保存已停止的恢复记录；请核对后继续。");
 				return;
 			}
-			if (FileAccess::get_sha256(AIChatResume::journal_path()) == digest) {
-				AIChatResume::clear_journal();
+			if (FileAccess::get_sha256(resume_storage.journal_path()) == digest) {
+				resume_storage.clear_journal();
 			}
 		}
 		observed_command_owner = String();
@@ -6989,8 +7174,21 @@ void AIChatDock::_notification(int p_what) {
 	if (p_what == NOTIFICATION_READY) {
 		_load_history();
 		_load_resume();
-		schedule_timer->start();
-		callable_mp(this, &AIChatDock::_refresh_codex_models_on_start).call_deferred();
+		if (resume_storage.directory.is_empty()) {
+			schedule_timer->start();
+			// Restore outstanding approvals and restart acknowledgements before
+			// a user reopens their issue. Idle histories remain lazy.
+			const String directory = resume_storage.storage_dir().path_join("tianshu_workers");
+			const Ref<DirAccess> folders = DirAccess::open(directory);
+			if (folders.is_valid()) {
+				for (const String &key : folders->get_directories()) {
+					if (key.length() == 64 && key.is_valid_hex_number(false) && FileAccess::exists(directory.path_join(key).path_join("ai_chat_resume.json"))) {
+						_ensure_issue_worker(key);
+					}
+				}
+			}
+			callable_mp(this, &AIChatDock::_refresh_codex_models_on_start).call_deferred();
+		}
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	} else if (p_what == NOTIFICATION_THEME_CHANGED) {
 		_update_message_theme();
@@ -7043,7 +7241,7 @@ void AIChatDock::_notification(int p_what) {
 		} else if (engine_restart_armed) {
 			// Exiting without the committed restart would leave a journal that the
 			// next start would answer for a switch that never happened.
-			AIChatResume::clear_journal();
+			resume_storage.clear_journal();
 		}
 		_queue_history_save();
 		_flush_history();
@@ -7083,7 +7281,8 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 	return control;
 }
 
-AIChatDock::AIChatDock() {
+AIChatDock::AIChatDock(const String &p_session_directory) {
+	resume_storage.directory = p_session_directory;
 	delivery_retry_instance = new_conversation_id();
 	GongGongRuntimeConfig::initialize();
 	Dictionary legacy_runtime;
@@ -7216,7 +7415,7 @@ void fragment() {
 	workspace_pages->add_child(timers_page);
 	workspace_pages->set_tab_title(0, U"会话");
 	workspace_pages->set_tab_title(1, U"定时器");
-	gonggong_panel = memnew(GongGongPanel);
+	gonggong_panel = memnew(GongGongPanel(p_session_directory.is_empty()));
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	gonggong_panel->set_runtime_changed_handler(callable_mp(this, &AIChatDock::_runtime_configuration_changed));
 	gonggong_panel->set_settings_requested(callable_mp(this, &AIChatDock::_request_settings));
@@ -7800,11 +7999,13 @@ void fragment() {
 	add_child(history_poll_timer);
 	_build_scheduler_ui(timers_page);
 	workspace_pages->connect("tab_changed", callable_mp(this, &AIChatDock::_workspace_selected));
-	AIChatEditorBridge *editor_bridge = memnew(AIChatEditorBridge);
-	editor_bridge->set_name("AIEditorControlBridge");
-	editor_bridge->set_handler(callable_mp(this, &AIChatDock::_editor_bridge_request));
-	editor_bridge->set_instruction_handler(callable_mp(this, &AIChatDock::_chat_instruction_request));
-	add_child(editor_bridge);
+	if (p_session_directory.is_empty()) {
+		AIChatEditorBridge *editor_bridge = memnew(AIChatEditorBridge);
+		editor_bridge->set_name("AIEditorControlBridge");
+		editor_bridge->set_handler(callable_mp(this, &AIChatDock::_editor_bridge_request));
+		editor_bridge->set_instruction_handler(callable_mp(this, &AIChatDock::_chat_instruction_request));
+		add_child(editor_bridge);
+	}
 	codex_login_timer = memnew(Timer);
 	codex_login_timer->set_wait_time(1.0);
 	codex_login_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_codex_login));
@@ -8077,7 +8278,7 @@ String AIChatDock::_snapshot_path(const String &p_id) const {
 	if (p_id.length() != 32 || !p_id.is_valid_hex_number(false)) {
 		return String();
 	}
-	return ProjectSettings::get_singleton()->globalize_path(_history_path().get_base_dir().path_join("ai_chat_snapshots").path_join(p_id + ".json"));
+	return ProjectSettings::get_singleton()->globalize_path(EditorPaths::get_singleton()->get_project_settings_dir().path_join("ai_chat_snapshots").path_join(p_id + ".json"));
 }
 
 bool AIChatDock::_prepare_snapshot_write(String &r_error) {

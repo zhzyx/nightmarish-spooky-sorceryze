@@ -168,20 +168,24 @@ bool AIChatResume::records_valid(const Variant &p_value, bool p_transcript) {
 	return true;
 }
 
-String AIChatResume::journal_path() {
-	return EditorPaths::get_singleton()->get_project_settings_dir().path_join("ai_chat_resume.json");
+String AIChatResume::storage_dir() const {
+	return directory.is_empty() ? EditorPaths::get_singleton()->get_project_settings_dir() : directory;
 }
 
-String AIChatResume::ack_path() {
-	return EditorPaths::get_singleton()->get_project_settings_dir().path_join("ai_chat_restart_ack.json");
+String AIChatResume::journal_path() const {
+	return storage_dir().path_join("ai_chat_resume.json");
 }
 
-String AIChatResume::report_path() {
-	return EditorPaths::get_singleton()->get_project_settings_dir().path_join("ai_chat_restart_report.json");
+String AIChatResume::ack_path() const {
+	return storage_dir().path_join("ai_chat_restart_ack.json");
 }
 
-String AIChatResume::global_dir() {
-	return ProjectSettings::get_singleton()->globalize_path(EditorPaths::get_singleton()->get_project_settings_dir());
+String AIChatResume::report_path() const {
+	return storage_dir().path_join("ai_chat_restart_report.json");
+}
+
+String AIChatResume::global_dir() const {
+	return ProjectSettings::get_singleton()->globalize_path(storage_dir());
 }
 
 bool AIChatResume::token_valid(const String &p_token) {
@@ -383,7 +387,7 @@ bool AIChatResume::decode_journal(const String &p_body, Dictionary &r_journal) {
 	return true;
 }
 
-bool AIChatResume::read_journal(Dictionary &r_journal) {
+bool AIChatResume::read_journal(Dictionary &r_journal) const {
 	if (!FileAccess::exists(journal_path())) {
 		return false;
 	}
@@ -394,7 +398,7 @@ bool AIChatResume::read_journal(Dictionary &r_journal) {
 	return decode_journal(file->get_as_utf8_string(), r_journal);
 }
 
-Error AIChatResume::write_journal(const Dictionary &p_journal, Dictionary *r_stats) {
+Error AIChatResume::write_journal(const Dictionary &p_journal, Dictionary *r_stats) const {
 	String body;
 	Dictionary stats;
 	Error error = encode_journal(p_journal, body, stats);
@@ -411,7 +415,7 @@ Error AIChatResume::write_journal(const Dictionary &p_journal, Dictionary *r_sta
 	return error;
 }
 
-Error AIChatResume::write_command_offer(const Dictionary &p_journal, String &r_marker) {
+Error AIChatResume::write_command_offer(const Dictionary &p_journal, String &r_marker) const {
 	String body;
 	Dictionary stats;
 	Error error = encode_journal(p_journal, body, stats);
@@ -442,7 +446,7 @@ Error AIChatResume::write_command_offer(const Dictionary &p_journal, String &r_m
 	return OK;
 }
 
-void AIChatResume::clear_journal() {
+void AIChatResume::clear_journal() const {
 	const String path = journal_path();
 	if (FileAccess::exists(path)) {
 		DirAccess::remove_absolute(path);
@@ -452,7 +456,7 @@ void AIChatResume::clear_journal() {
 	}
 }
 
-Error AIChatResume::write_ack(const String &p_token, const String &p_executable) {
+Error AIChatResume::write_ack(const String &p_token, const String &p_executable) const {
 	ERR_FAIL_COND_V(!token_valid(p_token), ERR_INVALID_PARAMETER);
 	Dictionary ack;
 	ack["version"] = VERSION;
@@ -466,7 +470,7 @@ Error AIChatResume::write_ack(const String &p_token, const String &p_executable)
 	return store_atomic(ack_path(), JSON::stringify(ack, "\t"));
 }
 
-bool AIChatResume::read_report(Dictionary &r_report) {
+bool AIChatResume::read_report(Dictionary &r_report) const {
 	Dictionary data;
 	if (!read_small_json(report_path(), 64 * 1024, data)) {
 		return false;
@@ -479,7 +483,7 @@ bool AIChatResume::read_report(Dictionary &r_report) {
 	return true;
 }
 
-void AIChatResume::clear_report() {
+void AIChatResume::clear_report() const {
 	const String path = report_path();
 	if (FileAccess::exists(path)) {
 		DirAccess::remove_absolute(path);

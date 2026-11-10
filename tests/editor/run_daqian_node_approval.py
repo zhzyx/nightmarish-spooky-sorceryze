@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 STORAGE = ROOT / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
 
 
-def prepare_candidate_fixture(project, workspace, row):
+def prepare_candidate_fixture(project, workspace, row, others=()):
     def git(root, *args):
         subprocess.run(["git", "-C", str(root), *args], capture_output=True, check=True)
 
@@ -34,7 +34,8 @@ def prepare_candidate_fixture(project, workspace, row):
     (workspace / "tools/editor_self_build.py").touch()
     (workspace / "work-items.json").write_text(json.dumps({"repository": "fixture/board", "tenant_id": "fixture"}))
     (workspace / "design-docs").mkdir()
-    (workspace / "design-docs" / (row["request"] + ".md")).write_text("Approval fixture")
+    for issue in [row, *others]:
+        (workspace / "design-docs" / (issue["request"] + ".md")).write_text("Approval fixture")
     dataset = workspace / "gonggong-diting-data"
     dataset.mkdir()
     (dataset / ".gitattributes").write_text("* text eol=lf\n")
@@ -58,7 +59,7 @@ def prepare_candidate_fixture(project, workspace, row):
         prefix
         + "import editor_engine_candidate as candidate\n"
         + "def verify(workspace, issue, request):\n"
-        + f"    assert issue == {row['number']!r} and request == {row['request']!r}\n"
+        + f"    assert (issue, request) in {[(item['number'], item['request']) for item in [row, *others]]!r}\n"
         + "candidate.verify_work_order = verify\nraise SystemExit(candidate.main())\n",
         encoding="utf-8",
     )
@@ -84,6 +85,8 @@ class Model(BaseHTTPRequestHandler):
         assert request["model"] == "fixture"
         messages = request["messages"]
         last_user = next(turn for turn in reversed(messages) if turn["role"] == "user")
+        if self.server.parallel and not any(turn["role"] == "tool" for turn in messages):
+            self.server.overlap.wait(timeout=40)
         if last_user["content"] == "Wait for steering":
             self.server.workspace.joinpath("awaiting-steering").touch()
             time.sleep(1.0)
@@ -252,7 +255,7 @@ def check_command_restart(command, env, project, changed_actor, stop_watching):
     print("DAQIAN_COMMAND_RESTART_OK", initial["conversation"], initial["tool_calls"][initial["tool_index"]]["id"])
 
 
-def run(binary, restart=False, changed_actor=False, stop_watching=False):
+def run(binary, restart=False, changed_actor=False, stop_watching=False, parallel=False):
     os.environ.pop("GONGGONG_WORKSPACE", None)
     with (
         tempfile.TemporaryDirectory(prefix="daqian-approval-", ignore_cleanup_errors=os.name == "nt") as tmp,
@@ -273,12 +276,15 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False):
         )
         workspace = project / ".fixture"
         server.restart = restart
+        server.parallel = parallel
+        server.overlap = threading.Barrier(2)
         server.workspace = workspace
         threading.Thread(target=server.serve_forever, daemon=True).start()
         project.joinpath("project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Approval test"\n', encoding="utf-8"
         )
-        shutil.copyfile(Path(__file__).with_name("daqian_node_approval.gd"), project / "test.gd")
+        fixture_name = "daqian_parallel_approval.gd" if parallel else "daqian_node_approval.gd"
+        shutil.copyfile(Path(__file__).with_name(fixture_name), project / "test.gd")
         bridge = workspace / "tools/gonggong_bridge.py"
         board = workspace / "customizations/components/godot-host/daqian/board.py"
         board.parent.mkdir(parents=True)
@@ -306,6 +312,11 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False):
                 ),
             ),
         )
+        others = (
+            [dict(row, number=211, url=row["url"][:-3] + "211", request="daqian-direct-" + "b" * 20)]
+            if parallel
+            else []
+        )
         reporting = dict(
             tenant_id="fixture",
             request_ref=row["request"],
@@ -328,6 +339,7 @@ if action == "flush":
     Path(sys.argv[sys.argv.index("--out")+1]).write_text(json.dumps({{"ok": True}}), encoding="utf-8")
     sys.exit()
 req = json.loads(Path(sys.argv[sys.argv.index("--request")+1]).read_text(encoding="utf-8"))
+row = next((item for item in [row, *{!r}] if item["number"] == req["issue_number"]), row)
 if action == 'issue-agent':
     marker = Path(__file__).parent.parent / 'amendment-attempted'
     assert 'Retain the amended icon scope' in str(req)
@@ -350,6 +362,7 @@ elif action == 'issue-start':
 else:
     assert action == 'chat'
     result = {!r}
+    result["reporting"].update(request_ref=row["request"], source_ref=row["url"])
     if os.environ.get("DAQIAN_DELAY_AUTHORITY"):
         import time
         signal = Path(os.environ["DAQIAN_DELAY_AUTHORITY"])
@@ -361,7 +374,7 @@ else:
     if os.environ.get("DAQIAN_CHANGED_AUTHORITY") == "1":
         result["reporting"]["actor"] = "changed"
 Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encoding="utf-8")
-""".format(row, str(STORAGE), dict(ok=True, context="Fixture", reporting=reporting)),
+""".format(row, str(STORAGE), others, dict(ok=True, context="Fixture", reporting=reporting)),
             encoding="utf-8",
         )
         board.write_text(
@@ -371,11 +384,24 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
             + 'root=Path(sys.argv[sys.argv.index("--repo")+1])\n'
             + 'if (root/"started").exists(): row["status"]="in-progress"\n'
             + 'if (root/"changed").exists(): row["updated"]="changed"\n'
-            + 'result={"access":actor} if "--access-only" in sys.argv else {"board":dict(actor,issues=[row], verified_at="now")}\n'
+            + f"issues=[row, *{others!r}]\n"
+            + 'result={"access":actor} if "--access-only" in sys.argv else {"board":dict(actor,issues=issues, verified_at="now")}\n'
             + 'Path(sys.argv[sys.argv.index("--result")+1]).write_text(json.dumps(result), encoding="utf-8")\n',
             encoding="utf-8",
         )
-        prepare_candidate_fixture(project, workspace, row)
+        if parallel:
+            # Keep Issue/model authority local while exercising production outbox locks,
+            # scope filtering, batch persistence and receipt verification.
+            installed_bridge = project / "customizations/components/godot-host/bridge.py"
+            installed_bridge.parent.mkdir(parents=True)
+            installed_bridge.write_text(
+                "# gonggong-scoped-batch-receipts-v1\nimport runpy, sys\nfrom pathlib import Path\n"
+                f"real = {str(ROOT / 'customizations/components/godot-host/bridge.py')!r}\n"
+                "local = Path(sys.argv[sys.argv.index('--workspace')+1]) / 'tools/gonggong_bridge.py'\n"
+                "runpy.run_path(real if sys.argv[1] == 'flush' else str(local), run_name='__main__')\n",
+                encoding="utf-8",
+            )
+        prepare_candidate_fixture(project, workspace, row, others)
         env = dict(
             {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},
             GONGGONG_RUNTIME_CONFIG=str(configuration),
@@ -420,16 +446,18 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
             raise SystemExit(decoded(exc.stdout) + decoded(exc.stderr)) from exc
         server.shutdown()
         log = result.stdout + result.stderr
-        if result.returncode or "DAQIAN_INLINE_APPROVAL_OK" not in log or "SCRIPT ERROR" in log:
+        marker = "DAQIAN_PARALLEL_APPROVAL_OK" if parallel else "DAQIAN_INLINE_APPROVAL_OK"
+        if result.returncode or marker not in log or "SCRIPT ERROR" in log:
             raise SystemExit(log)
-        print("DAQIAN_INLINE_APPROVAL_OK")
+        print(next(line for line in log.splitlines() if marker in line))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--command-restart", action="store_true")
+    parser.add_argument("--parallel", action="store_true")
     parser.add_argument("--changed-actor", action="store_true")
     parser.add_argument("--stop-watch", action="store_true")
     args = parser.parse_args()
-    run(args.godot, args.command_restart, args.changed_actor, args.stop_watch)
+    run(args.godot, args.command_restart, args.changed_actor, args.stop_watch, args.parallel)
