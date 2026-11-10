@@ -1,0 +1,20 @@
+{
+  "issue_number": 743,
+  "request_id": "render-auto-build",
+  "implementation_pr": 744,
+  "verified_merge": "cf7cce50ada0e1b52d159b405c38ab5247b08fb9",
+  "verified_tree": "439be4f25d051c0a31d9651112da6fdfbc277043",
+  "checks": [
+    {
+      "platform": "Windows x64",
+      "result": "passed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42753119985/job/129621146952"
+    },
+    {
+      "platform": "macOS arm64",
+      "result": "passed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42753119985/job/129621146585"
+    }
+  ],
+  "scope": "Each hosted worker observed skip on a documentation commit and compiled its configured targets from a mixed commit with BMP, portable rendering, Metal and MetalFX. No release tag was created."
+}
