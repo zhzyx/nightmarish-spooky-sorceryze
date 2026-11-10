@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d906b09dbf8e065ceb744e7a7720791f728a64d6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-592-carryover-v1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1e5c83eb405a6cc782f58938666c4e710a473feded15c0cad56a093a1db70f88",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/720",
+    "action": "intake",
+    "detection_head": "c096647fa2753ac7c561194b80c70cfb4a3e38c5",
+    "context_sha256": "cb52da9f5321c1743da03211abf78b9f1a089ae32a31df35ec7161402bd6b4c7",
+    "operator": "Sail-Li",
+    "worker": "Codex-Sail-Li",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42730290636",
+    "diagnosis": "工单开始时仍标为 planned，intake 要求 active 状态。",
+    "next_action": "已切换 in-progress 并在相同候选复验 intake 通过。继续短追问实测。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T00:42:01.747406+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T00:44:44.052777+00:00",
+  "sha256": "a3555f2e2bb48da5e763e4e3d23642b2d8b213eb429a74165002c9b189df80fc"
+}

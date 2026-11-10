@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "host-context-67ab624bbaec4480a69147424cd3c022",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-592-carryover-v1",
+  "kind": "request",
+  "occurred_at": "2026-11-10T01:59:45.848738+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "agent": {
+    "id": "gonggong-host-adapter",
+    "version": "1.2.1",
+    "definition_sha256": "ad5be6117ae175d5ab1ae35894618a9f6c7927bf7f3fa3e527fdba1c7b35d5b6",
+    "origin": "gonggong-host-adapter"
+  },
+  "payload": {
+    "framework_version": "0.10.0",
+    "requested_agent": "sinan",
+    "host": {
+      "id": "godot-editor",
+      "kind": "engine"
+    },
+    "issue": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+      "number": 706,
+      "type": "type:requirement",
+      "status": "status:in-progress",
+      "updated_at": "2026-11-10T01:56:14Z"
+    },
+    "candidate_digest": "59d90f15b093ee20a8a72044165c51c403dd2ea924f1c83df38f1a87f0de80b9",
+    "context_accepted": true,
+    "outcome_sha256": "c9de715cef12fc70a02af8ed2d48c7998702c2fca1816f8c84d51e3b8f1cd58e",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Not measured; context assembly is not model execution"
+  },
+  "evidence_refs": [],
+  "sha256": "1712c5b98b6749a5f28080024ab3d4bcb11e9e15ffd0fd60029d557e29c378b3"
+}
