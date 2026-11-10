@@ -24,7 +24,7 @@ $shortcut.TargetPath = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.
 $shortcut.Arguments = $arguments
 $shortcut.WorkingDirectory = $root
 $shortcut.Description = "Launch the verified installed GongGong editor"
-$shortcut.WindowStyle = 7  # Minimised, so the launcher shell stays out of the way.
+$shortcut.WindowStyle = 7  # Minimized, so the launcher shell stays out of the way.
 $shortcut.IconLocation = $probe.Editor + ',0'
 $shortcut.Save()
 

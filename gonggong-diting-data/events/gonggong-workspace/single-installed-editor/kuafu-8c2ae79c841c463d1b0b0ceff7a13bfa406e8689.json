@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8c2ae79c841c463d1b0b0ceff7a13bfa406e8689",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a9894de22b625d13884768f771c5ec854a283d47170fbc20ae904c2332417897",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/727",
+    "action": "validation",
+    "detection_head": "cdf6ad9623e0c1e2871274dae621e02e8681911b",
+    "context_sha256": "262ff7adcd4b448ae5d45c16979ee9b73bc2c53bf821dd8c2d4a8bf25d7e00a9",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42735415831/job/129563324693",
+    "diagnosis": "PR-scoped Ruff lint, formatting and spelling hooks modified four changed files.",
+    "next_action": "Applied the exact logged hook diff, reran changed suites, sign and validate the new tree.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:26:27.353263+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T01:27:20.125165+00:00",
+  "sha256": "14406e29dc3bd9499e8a9e73406832ec83d16d6739635d9c89b4b1c0acb25069"
+}

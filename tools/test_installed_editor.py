@@ -11,8 +11,8 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-import stage_installed_editor as stage
 import package_workspace_release as release
+import stage_installed_editor as stage
 import verify_release_bundle as verify
 
 
@@ -29,15 +29,24 @@ class ActionsStageTests(unittest.TestCase):
                 folder.mkdir()
                 for name in (stage.GUI, stage.PACKAGE, "D3D12Core.dll", "d3d12SDKLayers.dll"):
                     (folder / name).write_text(name)
-                (folder / stage.RECEIPT).write_text(json.dumps({
-                    "revision": revision, "inputs": {"flags": ["windows_subsystem=console"]},
-                }))
+                (folder / stage.RECEIPT).write_text(
+                    json.dumps({
+                        "revision": revision,
+                        "inputs": {"flags": ["windows_subsystem=console"]},
+                    })
+                )
 
             with patch.object(stage, "main_revision", return_value=revision), patch.object(stage, "restore", restore):
                 self.assertEqual(stage.stage(root, output, None, "42"), revision)
-            self.assertEqual({p.name for p in output.iterdir()}, {
-                stage.GUI, stage.PACKAGE, "D3D12Core.dll", "d3d12SDKLayers.dll",
-            })
+            self.assertEqual(
+                {p.name for p in output.iterdir()},
+                {
+                    stage.GUI,
+                    stage.PACKAGE,
+                    "D3D12Core.dll",
+                    "d3d12SDKLayers.dll",
+                },
+            )
 
 
 @unittest.skipUnless(shutil.which("powershell.exe"), "Windows launcher required")
@@ -53,8 +62,12 @@ class InstalledEditorTests(unittest.TestCase):
         scripts = self.root / "tools"
         scripts.mkdir()
         for name in (
-            "launch_gonggong_editor.ps1", "launch_latest_editor.ps1", "install_gonggong_editor.ps1",
-            "stage_installed_editor.py", "installed_editor_workspace.ps1", "run_issue_gate.ps1",
+            "launch_gonggong_editor.ps1",
+            "launch_latest_editor.ps1",
+            "install_gonggong_editor.ps1",
+            "stage_installed_editor.py",
+            "installed_editor_workspace.ps1",
+            "run_issue_gate.ps1",
             "initialize_downloaded_workspace.ps1",
         ):
             shutil.copyfile(Path(__file__).with_name(name), scripts / name)
@@ -74,12 +87,18 @@ class InstalledEditorTests(unittest.TestCase):
         receipts = self.build / "gonggong-build-receipts"
         receipts.mkdir()
         self.receipt = receipts / "build.json"
-        self.receipt.write_text(json.dumps(dict(
-            clean_source=True, revision=self.git("rev-parse", "HEAD").strip(), aichat="passed",
-            native={"artifact_sha256": stage.digest(self.build / stage.GUI)},
-            console_sha256=stage.digest(self.build / stage.CONSOLE),
-            tianshu_sha256=stage.digest(self.build / stage.PACKAGE),
-        )))
+        self.receipt.write_text(
+            json.dumps(
+                dict(
+                    clean_source=True,
+                    revision=self.git("rev-parse", "HEAD").strip(),
+                    aichat="passed",
+                    native={"artifact_sha256": stage.digest(self.build / stage.GUI)},
+                    console_sha256=stage.digest(self.build / stage.CONSOLE),
+                    tianshu_sha256=stage.digest(self.build / stage.PACKAGE),
+                )
+            )
+        )
         (self.root / "samples/gonggong-workbench").mkdir(parents=True)
 
     def git(self, *args):
@@ -87,9 +106,19 @@ class InstalledEditorTests(unittest.TestCase):
 
     def script(self, name, *args, success=True):
         result = subprocess.run(
-            ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
-             self.linked / "tools" / name, *args],
-            cwd=self.linked, capture_output=True, text=True, errors="replace",
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                self.linked / "tools" / name,
+                *args,
+            ],
+            cwd=self.linked,
+            capture_output=True,
+            text=True,
+            errors="replace",
         )
         self.assertEqual(result.returncode == 0, success, result.stderr)
         return re.sub(r"\n {15}", "", result.stdout)
@@ -111,15 +140,42 @@ class InstalledEditorTests(unittest.TestCase):
         self.script("install_gonggong_editor.ps1", "-BuildDirectory", self.build, "-Python", sys.executable)
         archive = self.root.parent / "verified.zip"
         manifest = archive.with_suffix(".json")
-        package_args = ["package", "--editor-stage", self.root / "project/godot", "--out", archive,
-                        "--manifest", manifest, "--build-root", self.linked]
+        package_args = [
+            "package",
+            "--editor-stage",
+            self.root / "project/godot",
+            "--out",
+            archive,
+            "--manifest",
+            manifest,
+            "--build-root",
+            self.linked,
+        ]
         with patch.object(release, "ROOT", self.root), patch.object(sys, "argv", list(map(str, package_args))):
             release.main()
         with zipfile.ZipFile(archive) as packed:
             self.assertFalse(any(name.startswith("project/godot/versions/") for name in packed.namelist()))
         extracted = self.root.parent / "extracted"
-        with patch.object(sys, "argv", list(map(str, ["verify", "--archive", archive, "--sha256", stage.digest(archive),
-                                       "--extract", extracted, "--report", self.root.parent / "verification.json"]))):
+        with patch.object(
+            sys,
+            "argv",
+            list(
+                map(
+                    str,
+                    [
+                        "verify",
+                        "--archive",
+                        archive,
+                        "--sha256",
+                        stage.digest(archive),
+                        "--extract",
+                        extracted,
+                        "--report",
+                        self.root.parent / "verification.json",
+                    ],
+                )
+            ),
+        ):
             verify.main()
         self.assertEqual((extracted / "project/godot/bin" / stage.GUI).read_text(), stage.GUI)
         git_root = Path(shutil.which("git")).resolve().parents[1]
@@ -127,10 +183,23 @@ class InstalledEditorTests(unittest.TestCase):
         git_link = extracted / "project/runtime/git"
         subprocess.run(["cmd", "/c", "mklink", "/J", git_link, git_root], check=True, capture_output=True)
         try:
-            for name, args in (("initialize_downloaded_workspace.ps1", []),
-                               ("launch_gonggong_editor.ps1", ["-Probe", "-ProjectManager"])):
-                subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
-                                "-File", extracted / "tools" / name, *args], check=True, capture_output=True)
+            for name, args in (
+                ("initialize_downloaded_workspace.ps1", []),
+                ("launch_gonggong_editor.ps1", ["-Probe", "-ProjectManager"]),
+            ):
+                subprocess.run(
+                    [
+                        "powershell.exe",
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        extracted / "tools" / name,
+                        *args,
+                    ],
+                    check=True,
+                    capture_output=True,
+                )
         finally:
             git_link.rmdir()
 

@@ -122,7 +122,11 @@ def restore(run_id, repo, branch, expected, destination, scratch):
     with zipfile.ZipFile(archive) as packed:
         # bin/* is uploaded with bin as the archive root.
         record = json.loads(packed.read(RECEIPT))
-        if not record.get("inputs") or (expected is not None and record["inputs"] != expected) or record.get("revision") != run["head_sha"]:
+        if (
+            not record.get("inputs")
+            or (expected is not None and record["inputs"] != expected)
+            or record.get("revision") != run["head_sha"]
+        ):
             raise ValueError("Editor source, build options, image or SDK changed")
         for entry in packed.infolist():
             path = PurePosixPath(entry.filename)
