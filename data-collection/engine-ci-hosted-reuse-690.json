@@ -1,0 +1,23 @@
+{
+  "issue_number": 690,
+  "request_id": "engine-build-cli-ci-reuse",
+  "platform": "GitHub Actions / Windows MSVC editor",
+  "acceptance": {
+    "consumer_run": "42727474058",
+    "consumer_sha": "f40ca33581c4ed8d858073ee653c557f84df8a43",
+    "source_run": 42726381736,
+    "source_sha": "f40ca33581c4ed8d858073ee653c557f84df8a43",
+    "artifact_id": 13722613079,
+    "archive_sha256": "sha256:1d9c1eabd45b18b7922cf86a17af743001eb64b1c5e873f109562a8d7d32bf3b",
+    "binary_sha256": "e3f83ca772b24564db0bbddc1eeac40dac5f60881b83693bd9e29071366d7414",
+    "key": "46ad32293f78ecec0a4b94dba807e39fab8d0e6f3382ee749c76097101e22969",
+    "source_tree": "69e03e339155032969db34b5a35981f9d41c62df",
+    "compiled": "skipped",
+    "unit_tests": "success",
+    "package_rebuilt": true,
+    "verified_default_branch_producer": 42726381736,
+    "consumer_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058/job/129536706547"
+  },
+  "producer_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42726381736",
+  "consumer_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058"
+}
