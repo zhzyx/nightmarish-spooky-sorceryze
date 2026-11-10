@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-1401dff2cf49bffe5a5c3d453a8134067234503aeb45830fc3ecc8dc300fb88d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/713",
+  "occurred_at": "2026-11-10T00:40:48.360902+00:00",
+  "evidence_refs": [
+    "verify-run-only-incident-713",
+    "learn-7bf8a9a0929a00f705a544aa83a13251ff876d5ac1fe70279a3ca854a40b0ce1"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "reconcile-workflow-incidents",
+    "revision": 2,
+    "previous": "5722c7cae6a77d8bfee64e5278dc7957069550283f601e7e84333d12edcf9d50",
+    "action": "verify",
+    "details": {
+      "test": "按已登记的失败作业链接匹配 #685、#713、#717，并从 GitHub API 核对两次作业的步骤结论。",
+      "expected": "只匹配 #713；原作业的天枢图步骤失败，修复候选的同一编辑器作业实际执行该步骤并通过。",
+      "observed": "只匹配 #713；原作业的天枢图步骤失败，修复候选的同一编辑器作业实际执行该步骤并通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/kuafu-run-713-closure.json",
+        "sha256": "70b142476434195bea2327e3011d6eae58c8f8f10a24c3328581efda70a37868"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-run-42721796858-attempt-1/verify-run-only-incident-713.json",
+      "sha256": "bf38d226849717a04c654a3b566fb3db02794f4aeaf195ddda9cfa26a0a455f9"
+    }
+  },
+  "sha256": "412092c88ce5888c4daafa94ec634c5a8b61bb33e68bfb7da9e5c4487b9054f5"
+}

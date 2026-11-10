@@ -1,0 +1,41 @@
+{
+  "request_id": "kuafu-run-42721796858-attempt-1",
+  "issue_number": 713,
+  "original_business_issue": 690,
+  "parent_issue": 687,
+  "incident_search": {
+    "685": {
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42689990291/attempts/1",
+      "original_issue": null,
+      "matches": false
+    },
+    "713": {
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42721796858/attempts/1",
+      "original_issue": null,
+      "matches": true
+    },
+    "717": {
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+      "original_issue": 646,
+      "matches": false
+    }
+  },
+  "failed": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42721796858/job/129517304317",
+    "run_id": 42721796858,
+    "head_sha": "8c009688ffcb5c1d27d2588d500e16ef76a58095",
+    "job": "Editor (target=editor)",
+    "step": "Tianshu native editor graph",
+    "conclusion": "failure"
+  },
+  "recovered": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058/job/129536706547",
+    "run_id": 42727474058,
+    "head_sha": "f40ca33581c4ed8d858073ee653c557f84df8a43",
+    "job": "Editor (target=editor)",
+    "step": "Tianshu native editor graph",
+    "conclusion": "success"
+  },
+  "repair": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/716",
+  "historical_candidate_replaced": true
+}
