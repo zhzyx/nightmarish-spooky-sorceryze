@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path, PurePosixPath
 import zipfile
 
@@ -9,6 +10,26 @@ import zipfile
 def sha_file(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def editor_files(installed, revision):
+    gui = 'bin/godot.windows.editor.x86_64.exe'
+    console = 'bin/godot.windows.editor.x86_64.console.exe'
+    if (installed.get('schema_version') != 2 or installed.get('main_revision') != revision
+            or installed.get('default_editor') != gui or installed.get('console_editor') not in (gui, console)):
+        raise ValueError('Release requires the verified installation of the exact source revision')
+    records = {}
+    for item in installed['files']:
+        name = item['path']
+        if (name not in (gui, installed['console_editor'], 'bin/tianshu-ui.json')
+                and not re.fullmatch(r'bin/[\w.-]+\.dll', name, re.ASCII)):
+            raise ValueError('Unexpected installed runtime component: ' + name)
+        if name in records or not re.fullmatch('[a-fA-F0-9]{64}', item['sha256']):
+            raise ValueError('Invalid installed runtime inventory')
+        records[name] = item
+    if not {gui, installed['console_editor'], 'bin/tianshu-ui.json'} <= records.keys():
+        raise ValueError('Incomplete installed editor inventory')
+    return records
 
 
 def main():
@@ -36,6 +57,18 @@ def main():
         manifest = json.loads(archive.read('bundle-manifest.json'))
         if set(names) != set(manifest['files']) | {'bundle-manifest.json'}:
             raise ValueError('Archive inventory differs from manifest')
+        if manifest.get('schema_version') == 2:
+            inventory = json.loads(archive.read('project/godot/installed.local.json'))
+            records = editor_files(inventory, manifest['source_commit'])
+            managed = {'project/godot/' + path for path in records}
+            for name in names:
+                if name.startswith('project/godot/') and (name.lower().endswith(('.exe', '.dll'))
+                        or name.startswith('project/godot/bin/')) and name not in managed:
+                    raise ValueError('Unexpected bundled editor file: ' + name)
+            for name, record in records.items():
+                entry = manifest['files']['project/godot/' + name]
+                if entry['sha256'] != record['sha256'] or entry['bytes'] != record['bytes']:
+                    raise ValueError('Bundled editor differs from verified installation: ' + name)
         for entry in entries:
             path = PurePosixPath(entry.filename)
             if path.is_absolute() or '..' in path.parts or '\\' in entry.filename or ':' in entry.filename:

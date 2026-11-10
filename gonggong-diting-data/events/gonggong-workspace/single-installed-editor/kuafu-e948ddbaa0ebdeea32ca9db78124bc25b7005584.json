@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e948ddbaa0ebdeea32ca9db78124bc25b7005584",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e0400bb7bd9fc4fbc4deed1487aef5a029a6d95e967351dc70f7b45c0e60be1f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/727",
+    "action": "validation",
+    "detection_head": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+    "context_sha256": "262ff7adcd4b448ae5d45c16979ee9b73bc2c53bf821dd8c2d4a8bf25d7e00a9",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "evidence": "data-collection/requests/single-installed-editor/issue-722.json",
+    "diagnosis": "Dispatch handoff did not include a request-kind event.",
+    "next_action": "Record actual Issue API readback and rerun the gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:16:55.422297+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T01:19:18.439543+00:00",
+  "sha256": "e07450754eecf9156e472052e9068080690c2ff71002641ad9372289ed53ee1c"
+}

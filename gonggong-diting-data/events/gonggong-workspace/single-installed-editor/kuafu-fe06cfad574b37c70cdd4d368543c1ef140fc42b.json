@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fe06cfad574b37c70cdd4d368543c1ef140fc42b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a3539aa978aae43db686bb261adb92e2f86aa5ee77ab8438ebb580642de947f5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/724",
+    "action": "dispatch",
+    "detection_head": "b8f4757b3d80d3db2a69bd27576e8f4d6138e1bd",
+    "context_sha256": "f72cf84c3a0d0721a7fbc5aee9e032c49fd9759a222fa3c6212a4413cc8670b0",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "evidence": "issue-722:codex-dispatch/dispatch-722/result.json",
+    "diagnosis": "Concurrent dispatch events contended on the shared coordination lock. The active event completed normally.",
+    "next_action": "Work proceeds from the successful serial retry.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T00:57:10.700543+00:00",
+    "attempted": "Serial retry recorded a running native worker and a receipt.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Both issue workers are running."
+  },
+  "occurred_at": "2026-11-10T01:00:47.772937+00:00",
+  "sha256": "3a3bfb99770d844fd533e15efc0384f4365643326da20814044e4cb003776f9b"
+}

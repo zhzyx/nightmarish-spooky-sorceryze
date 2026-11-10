@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "issue722-request-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "request",
+  "occurred_at": "2026-11-10T01:18:45.3301783+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue": 722,
+    "body": "<!-- gonggong-request:single-installed-editor -->\r\nWindows 桌面、维护脚本和工作台使用唯一经过验证的主线安装；清理已识别的旧安装与快捷方式；保留活跃工作树和工程数据。\r\n需求文档：design-docs/single-installed-editor.md",
+    "title": "统一共工编辑器安装与启动入口，清理旧版桌面入口",
+    "updated_at": "2026-11-10T01:17:16Z",
+    "readback": "Authenticated Issue API read by dispatched implementation worker"
+  },
+  "evidence_refs": [
+    "dispatch-5d162204376e4c459b83f5213da8061a"
+  ]
+}

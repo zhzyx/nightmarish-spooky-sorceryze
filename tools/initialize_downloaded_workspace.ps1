@@ -11,4 +11,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Git initialization failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'Snapshot staging failed.' }
 & $git -C $workspace -c user.name='GongGong release import' -c user.email='release-import@example.invalid' -c commit.gpgsign=false commit -m 'Import verified GongGong release snapshot'
 if ($LASTEXITCODE -ne 0) { throw 'Snapshot commit failed.' }
+$snapshot = & $git -C $workspace rev-parse HEAD
+if ($LASTEXITCODE -ne 0) { throw 'Snapshot revision readback failed.' }
+& $git -C $workspace config --local gonggong.releaseSnapshot $snapshot
+if ($LASTEXITCODE -ne 0) { throw 'Snapshot binding failed.' }
 Write-Output 'Release snapshot initialized. Original source commit is recorded in bundle-manifest.json.'

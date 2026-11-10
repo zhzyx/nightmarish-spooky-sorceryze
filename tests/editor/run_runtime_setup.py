@@ -1,6 +1,7 @@
 """Windows runtime bootstrap regression using an explicitly supplied existing runtime package."""
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -172,6 +173,18 @@ def main():
         editor = root / "project/godot/bin/godot.windows.editor.x86_64.exe"
         editor.parent.mkdir(parents=True)
         editor.write_bytes(b"probe-only; never executed")
+        shutil.copyfile(ROOT / "tools/installed_editor_workspace.ps1", root / "tools/installed_editor_workspace.ps1")
+        console = editor.with_suffix(".console.exe")
+        console.write_bytes(editor.read_bytes())
+        (root / "samples/gonggong-workbench").mkdir(parents=True)
+        inventory = {
+            "default_editor": "bin/" + editor.name,
+            "files": [
+                {"path": "bin/" + path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                for path in (editor, console)
+            ],
+        }
+        (editor.parents[1] / "installed.local.json").write_text(json.dumps(inventory))
         probe = subprocess.run(
             [
                 str(shell),

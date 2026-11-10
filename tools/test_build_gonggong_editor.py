@@ -24,6 +24,7 @@ class EditorCliTests(unittest.TestCase):
         with patch.dict(sys.modules, editor_native_cache=self.native):
             spec.loader.exec_module(self.cli)
         (self.root / "bin").mkdir()
+        (self.root / "bin/godot.windows.editor.x86_64.console.exe").write_bytes(b"console")
         self.head = "1" * 40
         self.source = "source"
         self.calls = []

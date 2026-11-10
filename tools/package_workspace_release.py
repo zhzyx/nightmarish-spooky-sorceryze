@@ -9,6 +9,8 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from verify_release_bundle import editor_files
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -92,28 +94,19 @@ def main():
             add(name, data, "fixed_cli_runtime_dependency")
         add("project/runtime/cli-dependencies.json", cli_raw, "cli_dependency_inventory")
         installed = json.loads((ROOT / "project/godot/installed.local.json").read_text(encoding="utf-8-sig"))
-        if {item["path"] for item in installed["files"]} != set(anchors["editor"]):
-            raise ValueError("Editor installation file set differs from reviewed inventory")
-        for item in installed["files"]:
-            data = (args.editor_stage / item["path"]).read_bytes()
-            if digest(data) != anchors["editor"][item["path"]]:
-                raise ValueError("Editor differs from reviewed artifact: " + item["path"])
-            item["sha256"], item["bytes"] = digest(data), len(data)
-            add("project/godot/" + item["path"], data, "reviewed_release_editor_derivative")
+        for name, item in editor_files(installed, ref).items():
+            installed_file = ROOT / "project/godot" / name
+            data = (args.editor_stage / name).read_bytes()
+            if digest(installed_file.read_bytes()) != item["sha256"] or digest(data) != item["sha256"]:
+                raise ValueError("Release stage differs from verified main installation: " + name)
+            add("project/godot/" + name, data, "verified_main_editor")
         add(
             "project/godot/installed.local.json",
             (json.dumps(installed, indent=2) + "\n").encode(),
             "release_installation_inventory",
         )
-        fallback = ROOT / "project/godot/versions/godot-4.7.2"
-        for name, expected in anchors["fallback"].items():
-            path = fallback / name
-            data = path.read_bytes()
-            if digest(data) != expected:
-                raise ValueError("Fallback differs from original installed artifact: " + name)
-            add(path.relative_to(ROOT).as_posix(), data, "original_unmodified_godot_4.7.2")
         manifest = {
-            "schema_version": 1,
+            "schema_version": 2,
             "source_commit": ref,
             "source_tree": tree,
             "path_base": "extracted_workspace_root",

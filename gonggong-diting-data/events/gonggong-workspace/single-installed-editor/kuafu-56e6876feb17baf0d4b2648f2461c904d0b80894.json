@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-56e6876feb17baf0d4b2648f2461c904d0b80894",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c4675e7d1897dc30b04cc9b00a5de9e67b02ba5f2802c2ae7893e69e4c31bbce",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/727",
+    "action": "validation",
+    "detection_head": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+    "context_sha256": "262ff7adcd4b448ae5d45c16979ee9b73bc2c53bf821dd8c2d4a8bf25d7e00a9",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "evidence": "data-collection/issue-722-installed-editor-validation.json",
+    "diagnosis": "Dispatch event lacked matching PR validation evidence.",
+    "next_action": "Restage the issue-linked validation record and rerun the formal gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:12:53.747658+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T01:14:29.302850+00:00",
+  "sha256": "1a01c6693e1f9577dce21bddbdd779c41d012bb452714f5f53ad76af4b5636c3"
+}
