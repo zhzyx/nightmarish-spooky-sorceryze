@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2b12ba4137e6e7e49bdce664c4eb3b5455bf2a24",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-module-build",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "15fca56f75efb431f9480d866e59618389332ea47095d3230984118a2090c097",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/740",
+    "action": "validation",
+    "detection_head": "2480e78868dcb1973bc40fac2d905e8e370c2252",
+    "context_sha256": "af4e1f016363a18c8b001a6bc899fdb9f08ba50f9d4876930bf60205a03c499c",
+    "operator": "Sail-Li",
+    "worker": "codex-739-build",
+    "authority_ref": "issue-739-user-authorized-formal-delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/741",
+    "diagnosis": "FreeType 和 MSDFgen 创建并直接链接静态库，env.modules_sources 为空。首版仅关注包装库，漏了两项真实编译目标。",
+    "next_action": "将已复验候选签发，核对 CI、主线、原工单和排障工单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T03:08:29.087388+00:00",
+    "attempted": "按模块前后链接输入之差收集实际构建节点。已实编两库并复验零编译重入，启用列表与 57 个别名逐项一致。",
+    "repair_owner": "Sail-Li",
+    "continuable": "继续 #739 模块编译验收。"
+  },
+  "occurred_at": "2026-11-10T03:11:52.822235+00:00",
+  "sha256": "9833527111dde4700670921be19740bd828b0648d1db8d47d959a797885972f6"
+}

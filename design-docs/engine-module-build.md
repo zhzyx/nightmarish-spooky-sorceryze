@@ -40,4 +40,6 @@ CI 在 PR 的合并树以及普通分支推送上编译匹配的 Windows MSVC �
 
 本机从清空构建产物的隔离检出编译 BMP，生成必要公共头、编译两个 BMP 源文件并得到归档。同配置重复构建编译动作数为零。在范围内加入 TGA 后，仅编译 TGA 的两个源文件。纯文档提交跳过 SCons，禁用 BMP、修改公共头及失去比较基线均转完整构建。直接将模块源码目录作为 SCons 目标可能在没有库时返回 up to date，应使用上述模块目标。
 
+FreeType 和 MSDFgen 通过模块的链接输入直接提供静态库。可用 `scons module-freetype module-msdfgen` 编译。macOS arm64 复验逐项比对了当前配置的 57 个已启用模块和 57 个归档别名，两库分别包含 44 和 19 个对象。同配置再次执行时，两库均复用。使用系统预编译库的模块若无本地归档，则没有独立归档目标。
+
 需求、独立审查和交付关联 [Issue #739](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739)。编译边界沿用 godot-build-placement 的已验证经验，按构建消费者识别。回退时使用 SCons 默认目标和原 Windows 完整构建工作流。
