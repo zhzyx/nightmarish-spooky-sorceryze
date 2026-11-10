@@ -106,7 +106,9 @@ def discover_python(root, env):
     found = _which(("python3", "python"), env)
     if found:
         return found
-    for candidate in _fixed_candidates(("python3", "python"), ("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", ".local/bin")):
+    for candidate in _fixed_candidates(
+        ("python3", "python"), ("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", ".local/bin")
+    ):
         return candidate
     return None
 
@@ -120,7 +122,9 @@ def discover_node(root, env):
     found = _which(("node",), env)
     if found:
         return found
-    for candidate in _fixed_candidates(("node",), ("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", ".local/bin", "n/bin")):
+    for candidate in _fixed_candidates(
+        ("node",), ("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", ".local/bin", "n/bin")
+    ):
         return candidate
     return None
 
@@ -276,16 +280,14 @@ def environment_deploy(root, selection, env=None):
         path = str(Path(path).resolve())
         if not os.access(path, os.X_OK):
             raise ValueError("Deploy path is not executable: " + path)
-        deployed.append(
-            {
-                "id": component_id,
-                "display": definition["display"],
-                "path": _relative(root, path),
-                "sha256": _sha256_file(Path(path)),
-                "env_key": definition["env_key"],
-                "evidence": list(definition["evidence"]),
-            }
-        )
+        deployed.append({
+            "id": component_id,
+            "display": definition["display"],
+            "path": _relative(root, path),
+            "sha256": _sha256_file(Path(path)),
+            "env_key": definition["env_key"],
+            "evidence": list(definition["evidence"]),
+        })
         env_changes[definition["env_key"]] = path
         if definition["prepend_path"]:
             directories = env_changes.get("PATH", "").split(os.pathsep) if env_changes.get("PATH") else []
@@ -360,8 +362,12 @@ def recovery_status(root):
     """
     state = read_state(root)
     if state is None:
-        return {"ok": not state_file(root).exists(), "active": False, "env_changes": {},
-                "error": "Invalid deployment record" if state_file(root).exists() else None}
+        return {
+            "ok": not state_file(root).exists(),
+            "active": False,
+            "env_changes": {},
+            "error": "Invalid deployment record" if state_file(root).exists() else None,
+        }
     try:
         if state.get("path_base", "workspace_root") != "workspace_root" or state.get("authorized") is not True:
             raise ValueError("Invalid deployment metadata")
@@ -372,7 +378,12 @@ def recovery_status(root):
         directories = []
         seen = set()
         for item in components:
-            if not isinstance(item, dict) or not isinstance(item.get("id"), str) or item["id"] not in COMPONENTS or item["id"] in seen:
+            if (
+                not isinstance(item, dict)
+                or not isinstance(item.get("id"), str)
+                or item["id"] not in COMPONENTS
+                or item["id"] in seen
+            ):
                 raise ValueError("Invalid or duplicate deployment component")
             seen.add(item["id"])
             definition = COMPONENTS[item["id"]]
@@ -415,12 +426,12 @@ if __name__ == "__main__":
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--selection", type=Path)
     args = parser.parse_args()
-    sys.stdout.reconfigure(encoding="utf-8")
     root = Path(args.workspace).resolve()
     if args.action == "check":
-        print(json.dumps(environment_check(root), ensure_ascii=False, indent=2))
+        result = environment_check(root)
     elif args.action == "deploy":
         selection = json.loads(args.selection.read_text(encoding="utf-8")) if args.selection else {}
-        print(json.dumps(environment_deploy(root, selection), ensure_ascii=False, indent=2))
+        result = environment_deploy(root, selection)
     else:
-        print(json.dumps(environment_rollback(root), ensure_ascii=False, indent=2))
+        result = environment_rollback(root)
+    sys.stdout.buffer.write((json.dumps(result, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
