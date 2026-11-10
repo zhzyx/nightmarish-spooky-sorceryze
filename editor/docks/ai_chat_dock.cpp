@@ -4374,7 +4374,7 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("launch_daqian_routing", "binding", "selection"), &AIChatDock::_launch_daqian_routing);
 	ClassDB::bind_method(D_METHOD("get_legacy_candidate_failure", "owner", "workspace", "issue"), &AIChatDock::_get_legacy_candidate_failure);
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
-	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only", "background"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_selected_chat);
 	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_selected_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
@@ -4556,13 +4556,16 @@ Dictionary AIChatDock::_issue_approval(const String &p_url) const {
 		return (selected_worker ? selected_worker : this)->_get_daqian_approval();
 	}
 	for (const KeyValue<String, AIChatDock *> &worker : issue_workers) {
+		// Checkout verification invokes Git synchronously. Only inspect candidates for this Issue.
+		if (worker.value->daqian_approval.get("url", "") != p_url) {
+			continue;
+		}
 		const Dictionary operation = worker.value->_get_daqian_approval();
-		if (operation.get("url", "") == p_url) {
+		if (!operation.is_empty()) {
 			return operation;
 		}
 	}
-	const Dictionary primary = _get_daqian_approval();
-	return primary.get("url", "") == p_url ? primary : Dictionary();
+	return daqian_approval.get("url", "") == p_url ? _get_daqian_approval() : Dictionary();
 }
 
 bool AIChatDock::_confirm_issue_approval(const String &p_url, const String &p_token) {
@@ -4647,8 +4650,10 @@ static bool has_personal_daqian_binding(const String &p_scope, const String &p_s
 	return false;
 }
 
-String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt, bool p_existing_only) {
-	daqian_mount_conversation = String();
+String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, const String &p_request, const String &p_message, bool p_preview, const Dictionary &p_selection, bool p_embedded, const String &p_preview_receipt, bool p_existing_only, bool p_background) {
+	if (!p_background) {
+		daqian_mount_conversation = String();
+	}
 	if (p_source.is_empty() || p_issue < 0 || ((p_issue == 0) != p_request.is_empty())) {
 		return U"工单绑定不完整。";
 	}
@@ -4689,6 +4694,9 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		return false;
 	};
 	auto show_session = [&]() {
+		if (p_background) {
+			return;
+		}
 		if (selected_worker) {
 			selected_worker->_unmount_daqian_chat();
 			selected_worker = nullptr;
@@ -4715,7 +4723,8 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	};
 	const Dictionary active = bindings.get(conversation_id, Dictionary());
 	const bool current_matches = matches(active, true);
-	if (resume_storage.directory.is_empty() && p_embedded && p_issue > 0 && is_inside_tree()) {
+	const bool canvas_preview = p_preview && p_source.begins_with("canvas_route_") && p_issue == 0;
+	if (resume_storage.directory.is_empty() && p_embedded && (p_issue > 0 || canvas_preview) && is_inside_tree()) {
 		String owner;
 		String worker_key;
 		for (const Variant &key : bindings.keys()) {
@@ -4726,10 +4735,10 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 				break;
 			}
 		}
-		const bool needs_worker = !current_matches && !_can_switch_issue() && !unverified_legacy && (!p_existing_only || !owner.is_empty());
+		const bool needs_worker = !current_matches && (p_background || !_can_switch_issue()) && !unverified_legacy && (!p_existing_only || !owner.is_empty());
 		if (!worker_key.is_empty() || needs_worker) {
 			if (worker_key.is_empty()) {
-				worker_key = (scope + "|" + itos(p_issue) + "|" + p_request).sha256_text();
+				worker_key = canvas_preview ? (scope + "|" + p_source).sha256_text() : (scope + "|" + itos(p_issue) + "|" + p_request).sha256_text();
 			}
 			ERR_FAIL_COND_V(worker_key.length() != 64 || !worker_key.is_valid_hex_number(false), U"工单的会话目录标识无效。");
 			AIChatDock *worker = _ensure_issue_worker(worker_key);
@@ -4746,8 +4755,8 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 					return U"关联会话仍有原工作者依赖或无法保存，请在原会话核对。";
 				}
 			}
-			const String error = worker->_open_daqian_chat(p_source, p_issue, p_request, p_message, p_preview, p_selection, p_embedded, p_preview_receipt, p_existing_only);
-			if (error.is_empty() && selected_worker != worker) {
+			const String error = worker->_open_daqian_chat(p_source, p_issue, p_request, p_message, p_preview, p_selection, p_embedded, p_preview_receipt, p_existing_only, p_background);
+			if (!p_background && error.is_empty() && selected_worker != worker) {
 				_unmount_selected_chat();
 				selected_worker = worker;
 			}

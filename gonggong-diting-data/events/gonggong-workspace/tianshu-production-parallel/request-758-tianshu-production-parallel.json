@@ -1,0 +1,25 @@
+{
+  "evidence_refs": [],
+  "event_id": "request-758-tianshu-production-parallel",
+  "request_id": "tianshu-production-parallel",
+  "occurred_at": "2026-11-10T17:56:50.1978224+00:00",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+  "agent": {
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "id": "codex-current-operator-host",
+    "version": "1",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage in Issue receipt",
+    "design": "design-docs/tianshu-production-parallel.md",
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-10T17:55:39Z",
+    "scope": "天枢聊天窗口跨 Issue 并行生产与流畅度验收"
+  },
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "sha256": "aee50a401e41508f43cd91d1e20605f979961176afa680042721dcc0f4eee032"
+}

@@ -1,0 +1,183 @@
+{
+  "request_id": "tianshu-production-parallel",
+  "issue_number": 758,
+  "sub_issues": [
+    759,
+    760
+  ],
+  "independent_ui_verification": 761,
+  "backend": "Windows x86_64 headless editor, logged-in Codex CLI gpt-6.1-sol, no separate model API key. Temporary Issue authority and private game/candidate workspaces. No user Issue prompt replay.",
+  "candidate_editor_sha256": "b0368b91a0931d3587577e62794df024e8ca1615cb662f11bf08be4c20185d81",
+  "baseline": {
+    "installed_editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+    "lookup_unrelated_issue_with_two_pending_approvals_us": 281006,
+    "git_started": true,
+    "canvas_live_before_router_clarification": "Both scopes classified explicit file creation as answer, refusing because consultation is read-only; no production was dispatched."
+  },
+  "live_canvas": {
+    "approval_arrived": {
+      "https://github.com/fixture/board/issues/210": 37425,
+      "https://github.com/fixture/board/issues/211": 37484
+    },
+    "assets": [
+      "scout",
+      "beacon"
+    ],
+    "sent": {
+      "https://github.com/fixture/board/issues/210": 4040,
+      "https://github.com/fixture/board/issues/211": 4074
+    },
+    "terminal": {
+      "https://github.com/fixture/board/issues/210": "completed",
+      "https://github.com/fixture/board/issues/211": "completed"
+    }
+  },
+  "live_sidebar": {
+    "assets": [
+      "scout",
+      "beacon"
+    ],
+    "sent": {
+      "https://github.com/fixture/board/issues/210": 6416,
+      "https://github.com/fixture/board/issues/211": 7504
+    },
+    "terminal": {
+      "https://github.com/fixture/board/issues/210": "completed",
+      "https://github.com/fixture/board/issues/211": "completed"
+    }
+  },
+  "live_effects": "Approved only the exact expected one-line command at each Issue. Read back scout.json and beacon.json from their respective real candidate directories, verified each id and hitpoints=100.",
+  "live_scene_generation": {
+    "entry": "Issue preview API with real account; generated text stored by the fixture",
+    "submitted_ms": [
+      0,
+      23
+    ],
+    "completed_ms": [
+      10303,
+      11215
+    ],
+    "instantiated": [
+      "Scout/Polygon2D",
+      "Beacon/Polygon2D"
+    ],
+    "max_frame_ms": 111.121,
+    "p95_frame_ms": 8.014
+  },
+  "controlled_approval_after": {
+    "execution_receipts": {
+      "daqian-direct-aaaaaaaaaaaaaaaaaaaa": [
+        "",
+        true
+      ],
+      "daqian-direct-bbbbbbbbbbbbbbbbbbbb": [
+        "",
+        true
+      ]
+    },
+    "separate_candidates": true,
+    "terminal": {
+      "https://github.com/fixture/board/issues/210": "cancelled",
+      "https://github.com/fixture/board/issues/211": "completed"
+    },
+    "unrelated_lookup_usec": 4
+  },
+  "controlled_cli_cancellation": {
+    "cancelled": {
+      "https://github.com/fixture/concurrency/issues/1": "本次请求已结束，未收到完整答复，请重试。"
+    },
+    "failures": [],
+    "passed": true,
+    "received": {
+      "https://github.com/fixture/concurrency/issues/2": "ISSUE_B_REPLY"
+    },
+    "case": "issues",
+    "responses": false,
+    "restart": {
+      "cancelled": {},
+      "failures": [],
+      "passed": true,
+      "received": {}
+    },
+    "requests": [
+      {
+        "users": [
+          "ISSUE_A"
+        ]
+      },
+      {
+        "users": [
+          "ISSUE_B"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "b0368b91a0931d3587577e62794df024e8ca1615cb662f11bf08be4c20185d81",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "0687bef4b0db039c14a0cc25d4bb155a161427dc24a89820ea06b1af1aeb8717",
+      "ai_chat_issues.gd": "dd592fb6ac2a27f76d1643e56017fe4ffcdf8505afb800d4aed45ba153f0aaa2"
+    },
+    "real_provider": false,
+    "cli_pids": [
+      63628,
+      124008
+    ],
+    "model_transport": "Codex bridge + offline JSONL CLI + loopback mock"
+  },
+  "component_tests": [
+    "DAQIAN_PREFLIGHT_RECEIPTS_OK",
+    "DAQIAN_CANVAS_CHAT_OK",
+    "[AIChat]* 45 cases, 638 assertions"
+  ],
+  "independent_cases": {
+    "canvas": {
+      "entry": "canvas",
+      "execution_receipts": {
+        "97b2f2583d56efb03a95cf971b7fe7b5": [
+          "",
+          true
+        ],
+        "97f727433bb9cf110e7e6a11773a0e33": [
+          "",
+          true
+        ]
+      },
+      "separate_candidates": true,
+      "terminal": {
+        "https://github.com/fixture/board/issues/210": "cancelled",
+        "https://github.com/fixture/board/issues/211": "completed"
+      }
+    },
+    "conversation": {
+      "entry": "conversation",
+      "execution_receipts": {},
+      "separate_candidates": true,
+      "terminal": {
+        "https://github.com/fixture/board/issues/210": "cancelled",
+        "https://github.com/fixture/board/issues/211": "completed"
+      }
+    },
+    "existing": {
+      "entry": "existing",
+      "execution_receipts": {
+        "ce5eb6d1e6df9e0fe5d92f1b86cfd708": [
+          "",
+          true
+        ]
+      },
+      "separate_candidates": true,
+      "terminal": {
+        "https://github.com/fixture/board/issues/426": "completed",
+        "https://github.com/fixture/board/issues/706": "cancelled"
+      }
+    }
+  },
+  "coverage_limits": [
+    "Two concurrent interactive Issues, Windows. Physical desktop input, provider capacity ceilings and arbitrary concurrency not benchmarked.",
+    "Independent UI fixtures use a loopback model; live canvas uses fixture Issues and actual Codex subscription, approvals and candidate writes."
+  ]
+}

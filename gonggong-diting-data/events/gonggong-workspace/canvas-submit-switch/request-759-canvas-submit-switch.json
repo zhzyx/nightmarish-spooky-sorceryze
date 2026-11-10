@@ -1,0 +1,25 @@
+{
+  "evidence_refs": [],
+  "event_id": "request-759-canvas-submit-switch",
+  "request_id": "canvas-submit-switch",
+  "occurred_at": "2026-11-10T17:56:51.9345496+00:00",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/759",
+  "agent": {
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "id": "codex-current-operator-host",
+    "version": "1",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage in Issue receipt",
+    "design": "design-docs/canvas-submit-switch.md",
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-10T17:32:15Z",
+    "scope": "天枢画布发送后切换工单保留已提交的问题"
+  },
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "sha256": "74e77638e429d7595d017518e87054c64b490a3f2c2423169673a6491f33c448"
+}
