@@ -25,7 +25,7 @@
 ./tools/launch_gonggong_editor.ps1 -Python PATH/TO/python.exe -Node PATH/TO/node.exe
 ```
 
-构建输出位于忽略的 `bin/`，安装脚本部署至 `project/godot/bin/` 并生成相对路径与 SHA256 清单。原独立安装保存在 `project/godot/versions/godot-4.7.2/`，不包含 GongGong 定制面板。源码和脚本入 Git，二进制与缓存不入 Git。启动后在 Agents 配置 HTTP 模型 endpoint、model 和凭据，或自行配置已安装的兼容 CLI。仓库不捆绑第三方账号登录状态和 CLI 私有依赖，默认使用 HTTP 配置入口。
+构建输出位于忽略的 `bin/`，安装脚本部署至 `project/godot/bin/` 并生成相对路径与 SHA256 清单。各工作树的默认入口均打开主检出的已验证安装。源码和脚本入 Git，二进制与缓存不入 Git。启动后在 Agents 配置 HTTP 模型 endpoint、model 和凭据，或自行配置已安装的兼容 CLI。仓库不捆绑第三方账号登录状态和 CLI 私有依赖，默认使用 HTTP 配置入口。
 
 GongGong 页设置工作区、Python 和租户，点击任一检查按钮保存设置。上游位置可通过环境变量或本机 `.gonggong-local.json` 绑定；示例文件在仓库根。没有有效上游、定义准入或文件数据回执时，聊天明确拒绝发送，不能回退为未受框架管理的模型聊天。
 

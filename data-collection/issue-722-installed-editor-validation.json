@@ -1,0 +1,21 @@
+{
+  "request_id": "single-installed-editor",
+  "issue": 722,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "scope": "Source candidate validation; machine installation and desktop cleanup tracked separately",
+  "base": "c454886b",
+  "checks": [
+    {
+      "command": "python -m unittest discover -s tools -p test_installed_editor.py -v",
+      "result": "3 passed; package, verify, extract, initialize and probe a 16-file single-editor release, real Windows PowerShell installer and launch probes with isolated primary and linked checkout, clean build receipt, stale hash and changed checkout; Actions artifact shape simulated"
+    },
+    {
+      "command": "python tools/test_build_gonggong_editor.py",
+      "result": "2 passed"
+    },
+    {
+      "command": "python tools/test_windows_editor_artifact.py",
+      "result": "7 passed"
+    }
+  ]
+}

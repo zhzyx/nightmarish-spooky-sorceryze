@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a70a80de97956c37c1b07f829b2f280f6e6eb06d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "single-installed-editor",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "71b52628c689c3c0ef2351660d0540aec7d7875ae79a30cf585a9de05d114d1d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/727",
+    "action": "validation",
+    "detection_head": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+    "context_sha256": "262ff7adcd4b448ae5d45c16979ee9b73bc2c53bf821dd8c2d4a8bf25d7e00a9",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/722",
+    "evidence": "data-collection/requests/single-installed-editor/issue-722.json",
+    "diagnosis": "Kuafu notifications changed the remote Issue while the exact-candidate gate ran. Both action runs finished.",
+    "next_action": "Recheck stable staged bytes and current remote Issue in writer_submit.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:20:35.792683+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T01:21:52.155659+00:00",
+  "sha256": "1c5d512c968c74d5819fc58d2bc8dac818ee4d801e6ffffe2b3d12bb9dbf41e6"
+}

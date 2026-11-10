@@ -1,61 +1,62 @@
 [CmdletBinding()]
-param([string]$BuildDirectory)
+param(
+    [Parameter(ParameterSetName='Local')][string]$BuildDirectory,
+    [Parameter(Mandatory,ParameterSetName='Actions')][string]$ActionsRun,
+    [string]$Python = $env:GONGGONG_PYTHON
+)
 $ErrorActionPreference = 'Stop'
-$workspace = Split-Path -Parent $PSScriptRoot
-if (-not $BuildDirectory) { $BuildDirectory = Join-Path $workspace 'bin' }
-# An external build will load the bridge scripts from this installation's workspace.
-# Check the producer's scripts before touching either installed executable.
-$buildRoot = Get-Item -LiteralPath $BuildDirectory
-while ($buildRoot -and -not (Test-Path -LiteralPath (Join-Path $buildRoot.FullName 'SConstruct') -PathType Leaf)) {
-    $buildRoot = $buildRoot.Parent
-}
-if (-not $buildRoot) { throw 'Cannot locate build source. Supply a build directory inside its Godot checkout.' }
-if ($buildRoot.FullName -ne $workspace) {
-    foreach ($script in @('codex_cli/godot_bridge.js','codex_cli/action_schema.js','codex_cli/attach_job.ps1',
-                          'codebuddy_cli/godot_bridge.js','codebuddy_cli/godot_acp.js','codebuddy_cli/godot_terminal.js','codebuddy_cli/package-lock.json')) {
-        $relative = "tools/$script"
-        if ((Get-FileHash -LiteralPath (Join-Path $buildRoot.FullName $relative)).Hash -ne
-            (Get-FileHash -LiteralPath (Join-Path $workspace $relative)).Hash) {
-            throw "CLI bridge version mismatch: $relative. Align the installation with the build source first."
-        }
-    }
-}
+. (Join-Path $PSScriptRoot 'installed_editor_workspace.ps1')
+$checkout = Split-Path -Parent $PSScriptRoot
+$workspace = Get-EditorWorkspace $checkout
+$runtime = & (Join-Path $PSScriptRoot 'run_issue_gate.ps1') -Repo $checkout -Python $Python -ProbeOnly | ConvertFrom-Json
+if (-not $BuildDirectory) { $BuildDirectory = Join-Path $checkout 'bin' }
 $destination = Join-Path $workspace 'project/godot/bin'
-$names = @('godot.windows.editor.x86_64.exe', 'godot.windows.editor.x86_64.console.exe')
-if (Test-Path -LiteralPath (Join-Path $buildRoot.FullName 'tools/package_tianshu_ui.py') -PathType Leaf) {
-    $names += 'tianshu-ui.json'
-}
-foreach ($name in $names) {
-    if (-not (Test-Path -LiteralPath (Join-Path $BuildDirectory $name) -PathType Leaf)) { throw "Missing build artifact: $name" }
-}
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 $installRoot = Split-Path -Parent $destination
 $lockPath = Join-Path $installRoot '.editor-install.lock'
-$lock = [IO.FileStream]::new($lockPath, 'OpenOrCreate', 'ReadWrite', 'None', 4096, [IO.FileOptions]::DeleteOnClose)
+$lock = [IO.FileStream]::new($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None, 4096, [IO.FileOptions]::DeleteOnClose)
 $stage = Join-Path $installRoot ('.editor-install-' + [guid]::NewGuid().ToString('N'))
 $changes = @()
 $installed = @()
 $cleanup = $true
 try {
     New-Item -ItemType Directory -Path $stage | Out-Null
+    $sourceArgs = if ($ActionsRun) { @('--actions-run', $ActionsRun) } else { @('--build-directory', $BuildDirectory) }
+    $revision = & $runtime.python (Join-Path $PSScriptRoot 'stage_installed_editor.py') --workspace $workspace --stage $stage @sourceArgs
+    if ($LASTEXITCODE -ne 0 -or $revision -notmatch '^[a-f0-9]{40}$') { throw 'Main editor staging failed.' }
     $records = @()
+    $names = @([IO.Directory]::GetFiles($stage) | ForEach-Object { [IO.Path]::GetFileName($_) })
     foreach ($name in $names) {
-        $source = Join-Path $BuildDirectory $name
         $staged = Join-Path $stage $name
-        Copy-Item -LiteralPath $source -Destination $staged
-        $digest = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
-        if ((Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash.ToLowerInvariant() -ne $digest) {
-            throw "Installation hash mismatch: $name"
-        }
+        $digest = Get-EditorDigest $staged
         $records += @{path="bin/$name";sha256=$digest;bytes=(Get-Item -LiteralPath $staged).Length}
         $changes += @{source=$staged;target=(Join-Path $destination $name)}
     }
-    $manifest = @{schema_version=1;path_base='installation_directory';workspace='../..';source_root='../..';default_editor='bin/godot.windows.editor.x86_64.exe';files=$records}
+    $consoleName = 'godot.windows.editor.x86_64.console.exe'
+    $console = if ($names -contains $consoleName) { "bin/$consoleName" } else { 'bin/godot.windows.editor.x86_64.exe' }
+    # Remove previously managed runtime components that the new build no longer ships.
+    $previous = Join-Path $installRoot 'installed.local.json'
+    if ([IO.File]::Exists($previous)) {
+        $old = Get-Content -LiteralPath $previous -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($item in $old.files) {
+            if ($item.path -match '^bin/([a-zA-Z0-9_.-]+[.]dll|godot[.]windows[.]editor[.]x86_64[.]console[.]exe)$') {
+                $name = $Matches[1]
+                $target = Join-Path $destination $name
+                if ($names -notcontains $name -and [IO.File]::Exists($target)) {
+                    if ((Get-EditorDigest $target) -ne $item.sha256) { throw "Changed previous runtime file: $target" }
+                    $changes += @{target=$target;remove=$true;backup=(Join-Path $stage ($name + '.prev'))}
+                }
+            }
+        }
+    }
+    $manifest = @{console_editor=$console;schema_version=2;main_revision=$revision;path_base='installation_directory';workspace='../..';source_root='../..';default_editor='bin/godot.windows.editor.x86_64.exe';files=$records}
     $stagedManifest = Join-Path $stage 'installed.local.json'
     [IO.File]::WriteAllText($stagedManifest, ($manifest | ConvertTo-Json -Depth 8), [Text.UTF8Encoding]::new($false))
     $changes += @{source=$stagedManifest;target=(Join-Path $installRoot 'installed.local.json')}
     foreach ($change in $changes) {
-        if ([IO.File]::Exists($change.target)) {
+        if ($change['remove']) {
+            [IO.File]::Move($change.target, $change.backup)
+        } elseif ([IO.File]::Exists($change.target)) {
             $change.backup = $change.source + '.prev'
             [IO.File]::Replace($change.source, $change.target, $change.backup)
         } else {
@@ -69,7 +70,9 @@ try {
     for ($i = $installed.Count - 1; $i -ge 0; $i--) {
         $change = $installed[$i]
         try {
-            if ($change.backup) {
+            if ($change['remove']) {
+                [IO.File]::Move($change.backup, $change.target)
+            } elseif ($change.backup) {
                 [IO.File]::Replace($change.backup, $change.target, $change.source)
             } else {
                 [IO.File]::Delete($change.target)

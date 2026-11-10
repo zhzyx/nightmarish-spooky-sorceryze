@@ -38,6 +38,7 @@ def build(root, jobs, use_mingw=False, cache_path=None, cache_limit=8):
     command = [sys.executable, "-m", "SCons", *(f"{k}={v}" for k, v in options.items()), f"-j{jobs}"]
     binary = root / "bin/godot.windows.editor.x86_64.exe"
     head = git_bytes(root, "rev-parse", "HEAD").decode().strip()
+    clean_source = not git_bytes(root, "status", "--porcelain", "--untracked-files=all").strip()
     source = source_snapshot(root)["source_digest"]
 
     def compile_editor():
@@ -57,6 +58,8 @@ def build(root, jobs, use_mingw=False, cache_path=None, cache_limit=8):
         worktree=str(root),
         revision=head,
         source_digest=source,
+        clean_source=clean_source,
+        console_sha256=hashlib.sha256(console.read_bytes()).hexdigest(),
         native=native,
         tianshu_sha256=hashlib.sha256(package.read_bytes()).hexdigest(),
         aichat="passed",

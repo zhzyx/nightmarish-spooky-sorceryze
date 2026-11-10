@@ -1,6 +1,10 @@
 # 共工 Windows 完整交付
 
-本包包含唯一当前 `framework/`、Godot 源码、共工 Windows x64 编辑器、Git/Godot/CLI/采集子模块、示例、Python/Node/Git、固定版本 CLI 依赖和同版本 Git Bash，以及原始 Godot 4.7.2 回退安装。无需外部共工来源；不含本机凭据。模型验收仅使用模拟服务。
+新完整工作区包仅收录主工作区经安装器核验、与制包源码提交一致的共工编辑器。运行 `tools/package_workspace_release.py` 时将 `--editor-stage` 指向该安装目录或逐文件相同的候选目录。安装清单、可执行文件、运行库和天枢包的摘要必须一致。使用 `tools/verify_release_bundle.py` 和发布的可信包摘要复核。
+
+## 2026-11-04 已发布包
+
+该历史包包含唯一当前 `framework/`、Godot 源码、共工 Windows x64 编辑器、Git/Godot/CLI/采集子模块、示例、Python/Node/Git、固定版本 CLI 依赖和同版本 Git Bash，以及原始 Godot 4.7.2 回退安装。无需外部共工来源；不含本机凭据。模型验收仅使用模拟服务。
 
 [发布页面及摘要清单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/tag/gonggong-windows-x64-20261104-r2) · [下载完整 ZIP](https://github.com/zhzyx/nightmarish-spooky-sorceryze/releases/download/gonggong-windows-x64-20261104-r2/gonggong-windows-x64-20261104-r2.zip)。清单绑定源码提交、构建输入、可执行文件和逐文件摘要；旧发布继续保留。
 
