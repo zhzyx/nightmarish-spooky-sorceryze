@@ -218,14 +218,17 @@ The host will independently execute and validate every selected binary. It alone
     $inventoryCount = @($inventory).Count
     Write-AgentProgress 'selection' ("The host validated $inventoryCount candidates; the independent Codex Agent is selecting a complete set.")
     $previousOutputEncoding = $OutputEncoding
+    $previousConsoleEncoding = [Console]::OutputEncoding
     try {
         $OutputEncoding = [Text.UTF8Encoding]::new($false)
+        [Console]::OutputEncoding = $OutputEncoding
         $ErrorActionPreference = 'Continue'
         $providerStarted = $true
         $prompt | & $codexExe @arguments 2>&1 | Out-File -LiteralPath $agentLog -Encoding utf8
         $agentExit = $LASTEXITCODE
         $providerCompleted = $true
     } finally {
+        [Console]::OutputEncoding = $previousConsoleEncoding
         $OutputEncoding = $previousOutputEncoding
         $ErrorActionPreference = $previousErrorAction
     }

@@ -10,7 +10,7 @@ $ErrorActionPreference = 'Stop'
 $runtime = (Resolve-Path -LiteralPath $RuntimeRoot).Path
 if (-not $Config) { $Config = Join-Path $runtime 'config.json' }
 $configPath = (Resolve-Path -LiteralPath $Config).Path
-$settings = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+$settings = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $endpoint = [uri]$settings.endpoint
 if ($endpoint.Scheme -notin @('http','https') -or $endpoint.UserInfo -or $endpoint.Query -or $endpoint.Fragment) { throw 'Invalid trusted endpoint' }
 $pythonPath = Join-Path $runtime 'venv/Scripts/python.exe'

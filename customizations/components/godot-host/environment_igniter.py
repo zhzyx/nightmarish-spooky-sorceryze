@@ -415,6 +415,7 @@ if __name__ == "__main__":
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--selection", type=Path)
     args = parser.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8")
     root = Path(args.workspace).resolve()
     if args.action == "check":
         print(json.dumps(environment_check(root), ensure_ascii=False, indent=2))

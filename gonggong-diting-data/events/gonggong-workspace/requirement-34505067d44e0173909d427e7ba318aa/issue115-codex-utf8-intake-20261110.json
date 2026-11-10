@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "issue115-codex-utf8-intake-20261110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-34505067d44e0173909d427e7ba318aa",
+  "kind": "request",
+  "occurred_at": "2026-11-10T00:46:24.9111857+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/115",
+  "agent": {
+    "version": "session",
+    "origin": "codex",
+    "id": "codex-host",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8"
+  },
+  "payload": {
+    "outcome": "核对并修复开发文件编码，验证 Godot 中文标签和文件读写",
+    "usage": null,
+    "usage_unknown_reason": "No observed provider usage"
+  },
+  "evidence_refs": [],
+  "sha256": "a6201ce066098026aaffebaac440c46d8130a25935599da7fc2faf61e1402513"
+}
