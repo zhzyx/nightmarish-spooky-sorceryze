@@ -178,11 +178,15 @@ func _run():
 		return
 	if not test_codex.is_empty():
 		var github_setup = dock.find_child("GongGongRuntimeSetup", true, false)
+		var login = github_setup.find_child("GongGongGitHubLogin", true, false)
+		var progress = github_setup.find_child("GongGongSetupProgress", true, false)
 		for attempt in range(1200):
 			await create_timer(0.05).timeout
-			if "gh_unauthenticated" in github_setup.find_child("GongGongSetupProgress", true, false).text:
+			# The progress file can report the error before the worker exits and
+			# the panel handles its final receipt to expose the login control.
+			if github_setup.visible and login.visible and "gh_unauthenticated" in progress.text:
 				break
-		if not github_setup.visible or not github_setup.find_child("GongGongGitHubLogin", true, false).visible:
+		if not github_setup.visible or not login.visible or "gh_unauthenticated" not in progress.text:
 			push_error("GitHub authentication failure did not remain visible in the independent configuration window")
 			quit(1)
 			return
