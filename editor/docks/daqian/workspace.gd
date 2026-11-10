@@ -1267,7 +1267,8 @@ func _adapt_layout() -> void:
 func _pending_operation(item: Dictionary) -> Dictionary:
 	if offline or not fresh_progress or actor.is_empty() or item.get("closed", true) or item.get("status") not in ["in-progress", "in-review"] or not is_instance_valid(chat) or not chat.has_method("get_daqian_approval"):
 		return {}
-	return details_panel.matching_operation(item, chat.get_daqian_approval(), _repo(), actor.user_id)
+	var operation: Dictionary = chat.get_daqian_issue_approval(item.get("url", "")) if chat.has_method("get_daqian_issue_approval") else chat.get_daqian_approval()
+	return details_panel.matching_operation(item, operation, _repo(), actor.user_id)
 
 
 func _operation_state(token: String, state: String) -> void:
@@ -1286,8 +1287,9 @@ func _approval_binding() -> Dictionary:
 
 
 func _confirm_operation(token: String) -> void:
+	var url: String = editor.workflow.get("item", {}).get("url", "")
 	await details_panel.confirm(token, _approval_binding, _board_command, _pending_operation,
-			func(verified_token): return chat.confirm_daqian_approval(verified_token))
+			func(verified_token): return chat.confirm_daqian_issue_approval(url, verified_token) if chat.has_method("confirm_daqian_issue_approval") else chat.confirm_daqian_approval(verified_token))
 
 
 func _show_operation_details(token: String) -> void:

@@ -60,7 +60,7 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--codex", action="store_true", help="Use the real Codex bridge with an offline CLI fixture")
     parser.add_argument("--node", type=Path, help="Node executable for --codex; defaults to PATH")
-    parser.add_argument("--case", choices=["steering", "tools", "stop", "cancel", "mode"], default="steering")
+    parser.add_argument("--case", choices=["steering", "tools", "stop", "cancel", "mode", "issues"], default="steering")
     args = parser.parse_args()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, requests, model_requests = [], [], []
@@ -73,7 +73,7 @@ def main():
         )
         # Per-process self-contained settings also isolate macOS, which ignores XDG.
         isolated_editor = copy_editor(args.godot, project / "isolated-editor")
-        fixture = Path(__file__).with_name("ai_chat_steering.gd")
+        fixture = Path(__file__).with_name("ai_chat_issues.gd" if args.case == "issues" else "ai_chat_steering.gd")
         shutil.copyfile(fixture, project / "gate.gd")
         entry = project / "offline-codex.js"
         entry.write_text(MOCK_CODEX, encoding="utf-8")
@@ -102,7 +102,16 @@ def main():
                     assert body["model"] == "fixture"
                     if args.case != "tools":
                         assert body.get("tools", []) == [], "Read-only fixture acquired tools"
-                    if len(requests) == 1:
+                    if args.case == "issues":
+                        (issue,) = users
+                        assert issue in {"ISSUE_A", "ISSUE_B"}, users
+                        (project / issue).touch()
+                        deadline = time.monotonic() + 25
+                        while not (project / "release-response").exists() and time.monotonic() < deadline:
+                            time.sleep(0.02)
+                        assert all((project / name).exists() for name in ("ISSUE_A", "ISSUE_B", "release-response"))
+                        text = json.dumps({"result": issue + "_REPLY"})
+                    elif len(requests) == 1:
                         assert users == ["STEERING_ORIGINAL"], users
                         (project / "server-waiting").touch()
                         deadline = time.monotonic() + 25
@@ -154,7 +163,7 @@ def main():
                     self.send_header("Content-Length", str(len(payload)))
                     self.end_headers()
                     self.wfile.write(payload)
-                except (BrokenPipeError, ConnectionResetError):
+                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                     pass
                 except Exception as exc:
                     errors.append(str(exc))
@@ -188,7 +197,7 @@ def main():
                 capture_output=True,
                 timeout=65,
             )
-            if args.case in {"stop", "cancel"} and run.returncode == 0:
+            if args.case in {"stop", "cancel", "issues"} and run.returncode == 0:
                 seeded = json.loads((project / "steering-report.json").read_bytes())
                 env["STEERING_CASE"] = "restore"
                 restart = subprocess.run(
@@ -230,7 +239,9 @@ def main():
             model_requests=model_requests,
             errors=errors,
             native_exit_code=run.returncode,
-            editor_sha256=hashlib.sha256(args.godot.read_bytes()).hexdigest(),
+            editor_sha256=hashlib.sha256(
+                args.godot.with_name(args.godot.name.replace(".console.exe", ".exe")).read_bytes()
+            ).hexdigest(),
             fixture_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__), fixture]},
             real_provider=False,
             model_transport="Codex bridge + offline JSONL CLI + loopback mock"
@@ -242,7 +253,7 @@ def main():
             and (restored is None or restored.get("passed", False))
             and run.returncode == 0
             and not errors
-            and len(requests) == (2 if args.case in {"steering", "tools"} else 1)
+            and len(requests) == (2 if args.case in {"steering", "tools", "issues"} else 1)
         )
         args.out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(report))

@@ -1,0 +1,81 @@
+{
+  "request_id": "issue-chat-concurrency",
+  "issue_number": 723,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+  "source_base": "b792e2379e33f92f74885a32c19b394097a0118b",
+  "editor_sha256": "bf2fea20d5b5f77d5013ef2f1c3f1012c156165716c971a83d9c91c0166b41dd",
+  "tianshu_ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+  "runtime": "Windows x86_64, isolated Godot headless editor, local HTTP model and fixture Issues",
+  "native_tests": {
+    "suite": "[AIChat]*",
+    "tests_passed": 45,
+    "assertions_passed": 638
+  },
+  "concurrent_issue_chat": {
+    "cancelled": {
+      "https://github.com/fixture/concurrency/issues/1": "本次请求已结束，未收到完整答复，请重试。"
+    },
+    "failures": [],
+    "passed": true,
+    "received": {
+      "https://github.com/fixture/concurrency/issues/2": "ISSUE_B_REPLY"
+    },
+    "case": "issues",
+    "restart": {
+      "cancelled": {},
+      "failures": [],
+      "passed": true,
+      "received": {}
+    },
+    "requests": [
+      {
+        "users": [
+          "ISSUE_A"
+        ]
+      },
+      {
+        "users": [
+          "ISSUE_B"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "bf2fea20d5b5f77d5013ef2f1c3f1012c156165716c971a83d9c91c0166b41dd",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "8aacfbd249986b1bdfc0805f5b481bd57877eb9b1f112223e81498ab96efc951",
+      "ai_chat_issues.gd": "e9ea264bcb4e3347e934e53d335c85b88a5d4e2c02762a5b80f4046a007bf09f"
+    },
+    "real_provider": false,
+    "model_transport": "isolated loopback mock"
+  },
+  "development_command_approvals": {
+    "execution_receipts": {
+      "daqian-direct-aaaaaaaaaaaaaaaaaaaa": [
+        "",
+        true
+      ],
+      "daqian-direct-bbbbbbbbbbbbbbbbbbbb": [
+        "",
+        true
+      ]
+    },
+    "separate_candidates": true,
+    "terminal": {
+      "https://github.com/fixture/board/issues/210": "cancelled",
+      "https://github.com/fixture/board/issues/211": "completed"
+    }
+  },
+  "checks": [
+    "tests/editor/run_ai_chat_steering.py --case issues --godot <console> --out <isolated-report.json>",
+    "tests/editor/run_daqian_node_approval.py --parallel --godot <console>"
+  ],
+  "operator": "Sail-Li",
+  "development_receipt_transport": "Installed host scoped flush, batch record and matching digest receipts",
+  "additional_observations": [
+    "The longer single-Issue approval walkthrough passed approval, retry and amendment checks before its headless canvas Enter preview timed out. Its editor keyboard focus path is outside the two-Issue regression."
+  ]
+}

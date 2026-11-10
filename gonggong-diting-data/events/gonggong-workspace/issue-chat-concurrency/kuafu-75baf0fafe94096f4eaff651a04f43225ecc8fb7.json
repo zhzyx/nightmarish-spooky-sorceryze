@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-75baf0fafe94096f4eaff651a04f43225ecc8fb7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-chat-concurrency",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7e8820f72ea058690e121c9dfbb7158f0f9f253945b557374ade3bd916c06f6c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/726",
+    "action": "user-report",
+    "detection_head": "b8f4757b3d80d3db2a69bd27576e8f4d6138e1bd",
+    "context_sha256": "c25eb528e921ba57972fcd5b193c2a5bec25895c1910ce9871a3ab91b96a6411",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+    "evidence": "769c03bdc editor/docks/ai_chat_dock.cpp:4058, main b8f4757b editor/docks/ai_chat_dock.cpp:4575",
+    "diagnosis": "The second issue reaches the shared chat busy/restore guard before mounting its conversation. The active branch cannot be distinguished from the generic user-visible error.",
+    "next_action": "Validate per-issue routing, send overlap, navigation and cancellation at the native editor entry.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:08:16.074409+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li, issue 723",
+    "continuable": "Independent desktop installation cleanup continues in issue 722."
+  },
+  "occurred_at": "2026-11-10T01:09:21.961868+00:00",
+  "sha256": "7772814bdb3fe4deaae26c64d1445c2e7a2ae80dd0e020bc44a11ca085802e19"
+}
