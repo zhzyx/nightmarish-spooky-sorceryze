@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-748-editor-path-audit",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-path-audit",
+  "kind": "request",
+  "occurred_at": "2026-11-10T17:47:41.730031+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "operator": "Sail-Li",
+    "scope": "Audit editor runtime, Windows controls and recovery, Tianshu, model providers and release entry points under issue 748",
+    "usage": null,
+    "usage_unknown_reason": "No metered host usage provided"
+  },
+  "sha256": "5896d00a4ef51c3bd869c17e2d82209ee963f975b3ff4f4cb1ca8bdefdfdcba9"
+}

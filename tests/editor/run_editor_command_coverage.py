@@ -12,7 +12,7 @@ import time
 import urllib.parse
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor
 
 
 def await_json(path, process):
@@ -29,15 +29,19 @@ def main():
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
+    # A Windows console launcher has a different PID from the editor it starts.
+    binary = args.godot.resolve(strict=True)
+    if binary.name.endswith(".console.exe"):
+        binary = binary.with_suffix("").with_suffix(".exe")
     source = Path(__file__).resolve().parents[2]
     spec = importlib.util.spec_from_file_location("editor_client", source / "tools/editor_control_client.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     with tempfile.TemporaryDirectory(prefix="editor-command-coverage-") as folder:
         project = Path(folder)
-        editor = macos_editor(args.godot, project / "private-editor")
+        editor = copy_editor(binary, project / "private-editor")
         (editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
-            '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\n'
+            '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nai_chat/endpoint = ""\n'
         )
         (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Command Coverage"\n')
         shutil.copyfile(Path(__file__).with_name("editor_command_coverage.gd"), project / "test.gd")
@@ -461,7 +465,8 @@ def main():
                     "interrupted_by_editor_restart",
                     "editor_closed",
                 ), recovered
-                assert client.route(restart_pending)["routing_status"] == "cancelled"
+                replayed = client.route(restart_pending)
+                assert replayed.get("routing_status") == "cancelled", replayed
                 cancelled_again = client.route(message)
                 assert cancelled_again["receipt_restored"] and cancelled_again["routing_status"] == "cancelled", (
                     cancelled_again

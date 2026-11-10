@@ -68,6 +68,10 @@
 #include "scene/main/window.h"
 #include "scene/resources/packed_scene.h"
 
+#ifdef WINDOWS_ENABLED
+#include <windows.h>
+#endif
+
 #ifdef UNIX_ENABLED
 #include <signal.h>
 
@@ -93,6 +97,17 @@ bool receipt_owner_may_be_alive(int64_t p_pid) {
 		return true;
 	}
 	return errno != ESRCH;
+#elif defined(WINDOWS_ENABLED)
+	if (p_pid <= 0 || p_pid > UINT32_MAX) {
+		return true;
+	}
+	HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(p_pid));
+	if (!process) {
+		return GetLastError() != ERROR_INVALID_PARAMETER;
+	}
+	const DWORD state = WaitForSingleObject(process, 0);
+	CloseHandle(process);
+	return state != WAIT_OBJECT_0;
 #else
 	// Without an authoritative non-child liveness probe, preserve the lock.
 	return true;
@@ -844,6 +859,7 @@ void AIChatEditorControl::_restore_routes() {
 		return;
 	}
 	const Variant parsed = JSON::parse_string(file->get_as_text());
+	file->close(); // Restoration rewrites this file through an atomic rename on Windows.
 	if (parsed.get_type() != Variant::DICTIONARY || !bounded_integer(Dictionary(parsed).get("version", Variant()), 1, 1) || Dictionary(parsed).get("records", Variant()).get_type() != Variant::ARRAY || Array(Dictionary(parsed)["records"]).size() > 256) {
 		routes_store_healthy = false;
 		routes_store_error = "invalid_record_document";
