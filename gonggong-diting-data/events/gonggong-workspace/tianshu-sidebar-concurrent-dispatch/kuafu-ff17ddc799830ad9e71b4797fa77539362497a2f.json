@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ff17ddc799830ad9e71b4797fa77539362497a2f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fd97ad424e3bf3ed92e4aecfc2fe41378e58f87e0b6fa9d0baa55d2c28ffc2e9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "action": "user-report",
+    "detection_head": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+    "context_sha256": "ea3b0c0ece4aa24dc14c0c683a5e4c0ceef874f496a1fd565e553ff2a976f1df",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "evidence": "Existing bindings #706 primary, #426 empty worker. Reproduced via actual Issue canvas Send, prior installed editor SHA 35491b7d; B never reached the loopback model. #758 candidate 7ca15144 independently passes the same test.",
+    "diagnosis": "Canvas pre-routing passed issue 0 and missed worker isolation. The previous two-developer test injected the later execution path. A second UI path uses the bound conversation Send and did overlap.",
+    "next_action": "Coordinate main integration by #758 and independent regression/installed build by #761 and #748.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T17:24:45.211108+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li, #758 with #759/#760 and #761 verification",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T17:56:20.228751+00:00",
+  "sha256": "97b62ffde6b80910a962c561b39bf638c34887658040d124d21e0d39341bbe70"
+}

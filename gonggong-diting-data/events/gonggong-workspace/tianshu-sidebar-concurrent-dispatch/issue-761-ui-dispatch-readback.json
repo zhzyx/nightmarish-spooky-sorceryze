@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "issue-761-ui-dispatch-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "kind": "request",
+  "occurred_at": "2026-11-10T18:01:40.250218+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 761,
+    "title": "修复天枢 Issue 内聊天派发指令无法并行的现场路径",
+    "state": "OPEN",
+    "body_sha256": "95be42b3737183fbe2d3f6eb0c2d32b7e181169fc0b0d7f3df41519fc6cdc951",
+    "issue_updated_at": "2026-11-10T17:56:23Z",
+    "assignment_revision": "3a9fa8e51d47d636a4e33777b4cc5323ef5b6184759d1d73e09a2819c01335bc",
+    "parent_issue": 748,
+    "worker": "/root/sinan_7b8b1dd5d90e6b06"
+  },
+  "evidence_refs": [
+    "dispatch-5814bc5b35454bbbb5c9a3b4e622a2f8"
+  ],
+  "sha256": "754a8e2a2f82edb42d8974664f93ee5ae24ac6fa03fc3c08a549eba3b555be70"
+}

@@ -1,0 +1,131 @@
+{
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "issue_number": 761,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "base": "4117b7003ee274fccd294d3268880a29a4009a0c",
+  "baseline": {
+    "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+    "ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "runner": "tests/editor/run_daqian_node_approval.py --godot <isolated-editor-source> --parallel-entry <case>",
+    "transport": "private headless editor; loopback model; fixture Git worktrees",
+    "cases": {
+      "conversation": {
+        "exit": 0,
+        "terminal": {
+          "210": "cancelled",
+          "211": "completed"
+        },
+        "executions": {
+          "210": 0,
+          "211": 1
+        }
+      },
+      "canvas": {
+        "exit": 1,
+        "route_received": [
+          210
+        ],
+        "second_canvas_history": "请求失败 · AI 对话正在处理另一项工作，请保留草稿稍后再试。",
+        "two_approvals": false
+      },
+      "existing": {
+        "exit": 1,
+        "first_root_model_received": 706,
+        "second_persisted_empty_worker": 426,
+        "second_canvas_history": "请求失败 · AI 对话正在处理另一项工作，请保留草稿稍后再试。",
+        "two_approvals": false,
+        "after_process_restart": true
+      }
+    }
+  },
+  "validation": {
+    "source_issue": 758,
+    "editor_sha256": "b0368b91a0931d3587577e62794df024e8ca1615cb662f11bf08be4c20185d81",
+    "ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "reports": {
+      "canvas": {
+        "exit": 0,
+        "route_issues": [
+          210,
+          211
+        ],
+        "execution_issues": [
+          210,
+          211
+        ],
+        "end_states": {
+          "210": "cancelled",
+          "211": "completed"
+        },
+        "executions": {
+          "210": 0,
+          "211": 1
+        },
+        "execution_receipts": [
+          "71e49227db2d8093e4c12d6f7405d0b5",
+          "9a2a71ebe8ae6b8ae7c471cc4c84b2de"
+        ],
+        "unrelated_lookup_usec": 8
+      },
+      "conversation": {
+        "exit": 0,
+        "route_issues": [],
+        "execution_issues": [
+          210,
+          211
+        ],
+        "end_states": {
+          "210": "cancelled",
+          "211": "completed"
+        },
+        "executions": {
+          "210": 0,
+          "211": 1
+        },
+        "unrelated_lookup_usec": 4
+      },
+      "existing": {
+        "exit": 0,
+        "restarted": true,
+        "persisted_bindings": {
+          "706": "primary",
+          "426": "empty saved worker"
+        },
+        "route_issues": [
+          426
+        ],
+        "execution_issues": [
+          426,
+          706
+        ],
+        "end_states": {
+          "706": "cancelled",
+          "426": "completed"
+        },
+        "executions": {
+          "706": 0,
+          "426": 1
+        },
+        "execution_receipts": [
+          "2033b12781857d868a572c088ac42322"
+        ],
+        "unrelated_lookup_usec": 4
+      }
+    },
+    "assertions": [
+      "Two execution requests reached the loopback model before either tool call was released.",
+      "Separate Git candidates, unique tokens, wrong-Issue approval refused, cancellation isolated.",
+      "Current canvas remained on the second Issue.",
+      "One command write in the second candidate only."
+    ],
+    "test_sha256": {
+      "tests/editor/daqian_parallel_approval.gd": "5e45c1bbec57debfde8fd1e1b94b7a0e7d24ccfc1330f1c45ef97f2e800d6268",
+      "tests/editor/run_daqian_node_approval.py": "bfdce961cb483abcf94243f575baa50db19e8ac227550edb9c86ed789e161fe6"
+    },
+    "test_hash_basis": "UTF-8 LF Git blob bytes",
+    "initial_passing_editor": "7ca151448b64a8e042462386bd418a7ce295fe09ab813139180af89d656ecd3d",
+    "product_main": "db5ae81dfc5eba4b4ec333dd89154ba0e9e968e5",
+    "product_pr": 766,
+    "provider_evidence": "data-collection/tianshu-production-parallel-758.json"
+  }
+}

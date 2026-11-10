@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1865be6b564fedbe4c590458eafe6a95eb8c50c9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9f7392ff0e65a23536784bd24b7dcbc050082a6e7c6457f4564b8521cf8aa810",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "action": "validation",
+    "detection_head": "721bb850731f4ebf47826df23bd50e7770729e47",
+    "context_sha256": "f5181b3d613da0e5d271e507e356dd2aeb49a2cbfe64014c74ab49225feda902",
+    "operator": "Sail-Li",
+    "worker": "codex-761-validation",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42872942881/job/130028648620",
+    "diagnosis": "CI Ruff 改写测试 runner 两处换行，已按原始差异取得相同 d745fcb6 文件对象。",
+    "next_action": "重新执行三个 UI 场景，签发新候选，按新 head 回读 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T18:15:23.328417+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T18:15:58.717622+00:00",
+  "sha256": "d1c18586589075b15a24bcea5dea0253a59886f6eedc8c71f537355caeda1aa1"
+}
