@@ -1,0 +1,38 @@
+name: Engine build routing
+on:
+  pull_request:
+    paths:
+      - .github/workflows/engine_build_scope.yml
+      - .github/workflows/runner.yml
+      - .github/workflows/static_checks.yml
+      - modules/SCsub
+      - tools/build_engine_modules.py
+      - tests/python_build/check_engine_build_scope.py
+
+jobs:
+  verify-routing:
+    if: ${{ !vars.DISABLE_GODOT_CI || github.run_attempt > 1 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            worker: windows
+            python-arch: x64
+            flags: platform=windows target=editor d3d12=no
+          - os: macos-26
+            worker: metal
+            python-arch: arm64
+            flags: platform=macos target=editor arch=arm64 metal=yes vulkan=no
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/godot-deps
+        with:
+          python-arch: ${{ matrix.python-arch }}
+      - name: Verify automatic scope on docs and mixed native commits
+        run: >-
+          python tests/python_build/check_engine_build_scope.py ${{ matrix.worker }} ${{ matrix.flags }}
+          angle=no accesskit=no

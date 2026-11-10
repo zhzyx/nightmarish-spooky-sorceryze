@@ -2,6 +2,12 @@ name: 📊 Static Checks
 on:
   workflow_call:
     outputs:
+      has-metal:
+        description: Whether this change needs an Apple rendering worker.
+        value: ${{ jobs.static-checks.outputs.has-metal }}
+      needs-d3d12:
+        description: Whether the scoped Windows build needs the Direct3D 12 SDK.
+        value: ${{ jobs.static-checks.outputs.needs-d3d12 }}
       build-base:
         description: Resolved base commit for the engine scope.
         value: ${{ jobs.static-checks.outputs.build-base }}
@@ -22,6 +28,8 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     outputs:
+      has-metal: ${{ steps.engine-scope.outputs.has-metal }}
+      needs-d3d12: ${{ steps.engine-scope.outputs.needs-d3d12 }}
       build-base: ${{ steps.engine-scope.outputs.build-base }}
       build-mode: ${{ steps.engine-scope.outputs.build-mode }}
       changed-files: '"${{ steps.changed-files.outputs.clangd_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators.
@@ -47,7 +55,7 @@ jobs:
                 format('refs/remotes/origin/{0}', github.event.repository.default_branch) || '' }}
         run: |
           python3 tools/test_build_engine_modules.py
-          python3 tools/build_engine_modules.py --committed --base "$BUILD_BASE" --new-branch-base "$NEW_BRANCH_BASE"
+          python3 tools/build_engine_modules.py --ci-platform windows --committed --base "$BUILD_BASE" --new-branch-base "$NEW_BRANCH_BASE"
 
       - name: Get changed files
         id: changed-files

@@ -1,0 +1,90 @@
+{
+  "issue_number": 743,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/743",
+  "request_id": "render-auto-build",
+  "base_commit": "1ae9a41405cdc8f6c5dedc01b8d6368f5292b374",
+  "input_sha256": {
+    "modules/SCsub": "f8933fed71e499cc6aa90baedb0f90d909cfd0645076d2ccf18c11a6a3ede9b0",
+    "tools/build_engine_modules.py": "221ad3bd98070151f7f6a3fcee25dc4e91ecb08eb02f6826763491940a554e67",
+    "tools/test_build_engine_modules.py": "7b5ed94e2b1b5d77ce842f86698c7f0ac7d2f8501e594f6feecab83165b598a9",
+    "tests/python_build/check_engine_build_scope.py": "443543ccd7f9dd0e83331e9a9d2011d90e3e1b096c4d267f5e5965e251490086",
+    ".github/workflows/runner.yml": "0006697d5d86af06e6bba77eadfc289f7c7e356ae9dfbc7e9aa70bc9211009f3",
+    ".github/workflows/static_checks.yml": "99c8376aecad7d41c7b741ade1e0c3cdc97624faf677c30ee7118d9937bbf2da",
+    ".github/workflows/engine_build_scope.yml": "0634839f8584124aee7493500349753a41732f9fbca1b393a603ece64d4118f6"
+  },
+  "local_host": "macOS arm64, SCons 4.10.1, Vulkan disabled; both diff partitions executed against this host before remote Windows verification",
+  "acceptance": {
+    "metal": {
+      "plans": [
+        {
+          "mode": "skip",
+          "sources": [],
+          "reason": ""
+        },
+        {
+          "mode": "modules",
+          "sources": [
+            "drivers/metal/metal_objects_shared.cpp",
+            "servers/rendering/renderer_rd/effects/metal_fx.cpp"
+          ],
+          "reason": ""
+        }
+      ],
+      "targets": [
+        "Selected SCons targets: bin/obj/drivers/metal/metal_objects_shared.macos.editor.arm64.o bin/obj/servers/rendering/renderer_rd/effects/metal_fx.macos.editor.arm64.o"
+      ],
+      "compiled": [
+        "Compiling thirdparty/spirv-cross/spirv_cfg.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_cross.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_parser.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_msl.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_reflect.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_glsl.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_cross_parsed_ir.cpp ...",
+        "Compiling thirdparty/spirv-cross/spirv_cross_util.cpp ...",
+        "Compiling thirdparty/metal-cpp/metal_cpp.cpp ...",
+        "Compiling thirdparty/offset_allocator/offsetAllocator.cpp ...",
+        "Compiling thirdparty/amd-fsr2/ffx_assert.cpp ...",
+        "Compiling thirdparty/amd-fsr2/ffx_fsr2.cpp ...",
+        "Compiling servers/rendering/renderer_rd/effects/metal_fx.cpp ...",
+        "Compiling drivers/metal/metal_objects_shared.cpp ..."
+      ]
+    },
+    "portable": {
+      "plans": [
+        {
+          "mode": "skip",
+          "sources": [],
+          "reason": ""
+        },
+        {
+          "mode": "modules",
+          "sources": [
+            "modules/bmp/image_loader_bmp.cpp",
+            "servers/rendering/instance_uniforms.cpp",
+            "servers/rendering/renderer_rd/effects/metal_fx.cpp"
+          ],
+          "reason": ""
+        }
+      ],
+      "targets": [
+        "Selected SCons targets: bin/obj/servers/rendering/instance_uniforms.macos.editor.arm64.o bin/obj/servers/rendering/renderer_rd/effects/metal_fx.macos.editor.arm64.o module-bmp"
+      ],
+      "compiled": [
+        "Compiling thirdparty/amd-fsr2/ffx_assert.cpp ...",
+        "Compiling servers/rendering/instance_uniforms.cpp ...",
+        "Compiling thirdparty/amd-fsr2/ffx_fsr2.cpp ...",
+        "Compiling modules/bmp/image_loader_bmp.cpp ...",
+        "Compiling modules/bmp/register_types.cpp ...",
+        "Compiling servers/rendering/renderer_rd/effects/metal_fx.cpp ..."
+      ]
+    }
+  },
+  "unit_tests": "6 tests passed, including old/new backend guard detection, unknown targets and atomic fallback",
+  "event_conditions": "14 comparisons using the actual runner.yml expressions, including main, merge_group, mixed PR, signed push, compile failure, and Windows+macOS full workflows for a documentation-only tag. No release tag was published by the test.",
+  "review": [
+    "Independent review identified missing Apple coverage for conditional and bundled Metal sources, CI log coloring and the change to main integration policy.",
+    "User confirmed main uses the scoped route and full validation moves to releases. Added both-side marker checks, third-party input routing, NO_COLOR in the hosted fixture, and reran the mixed compilation."
+  ],
+  "policy_source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/743#issuecomment-6758464871"
+}
